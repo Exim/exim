@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/call_radius.c,v 1.2 2005/01/04 10:00:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/call_radius.c,v 1.3 2005/03/29 14:19:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -29,12 +29,13 @@ static void dummy(int x) { dummy(x-1); }
 #else  /* RADIUS_CONFIG_FILE */
 
 
-/* Two different Radius libraries are supported. The default is radiusclient. */
+/* Two different Radius libraries are supported. The default is radiusclient,
+using its original API. At release 0.4.0 the API changed. */
 
 #ifdef RADIUS_LIB_RADLIB
   #include <radlib.h>
 #else
-  #ifndef RADIUS_LIB_RADIUSCLIENT
+  #if !defined(RADIUS_LIB_RADIUSCLIENT) && !defined(RADIUS_LIB_RADIUSCLIENTNEW)
   #define RADIUS_LIB_RADIUSCLIENT
   #endif
   #include <radiusclient.h>
@@ -67,12 +68,15 @@ int result;
 int sep = 0;
 
 #ifdef RADIUS_LIB_RADLIB
-struct rad_handle *h;
+  struct rad_handle *h;
 #else
-VALUE_PAIR *send = NULL;
-VALUE_PAIR *received;
-unsigned int service = PW_AUTHENTICATE_ONLY;
-char msg[4096];
+  #ifdef RADIUS_LIB_RADIUSCLIENTNEW
+    rc_handle *h;
+  #endif
+  VALUE_PAIR *send = NULL;
+  VALUE_PAIR *received;
+  unsigned int service = PW_AUTHENTICATE_ONLY;
+  char msg[4096];
 #endif
 
 
@@ -87,10 +91,11 @@ DEBUG(D_auth) debug_printf("Running RADIUS authentication for user \"%s\" "
 
 /* Authenticate using the radiusclient library */
 
-#ifdef RADIUS_LIB_RADIUSCLIENT
+#ifndef RADIUS_LIB_RADLIB
 
 rc_openlog("exim");
 
+#ifdef RADIUS_LIB_RADIUSCLIENT
 if (rc_read_config(RADIUS_CONFIG_FILE) != 0)
   *errptr = string_sprintf("RADIUS: can't open %s", RADIUS_CONFIG_FILE);
 
@@ -106,13 +111,37 @@ else if (rc_avpair_add(&send, PW_USER_PASSWORD, CS radius_args, 0) == NULL)
 else if (rc_avpair_add(&send, PW_SERVICE_TYPE, &service, 0) == NULL)
   *errptr = string_sprintf("RADIUS: add service type failed\n");
 
+#else  /* RADIUS_LIB_RADIUSCLIENT unset => RADIUS_LIB_RADIUSCLIENT2 */
+
+if ((h = rc_read_config(RADIUS_CONFIG_FILE)) != 0)
+  *errptr = string_sprintf("RADIUS: can't open %s", RADIUS_CONFIG_FILE);
+
+else if (rc_read_dictionary(h, rc_conf_str(h, "dictionary")) != 0)
+  *errptr = string_sprintf("RADIUS: can't read dictionary");
+
+else if (rc_avpair_add(h, &send, PW_USER_NAME, user, 0, 0) == NULL)
+  *errptr = string_sprintf("RADIUS: add user name failed\n");
+
+else if (rc_avpair_add(h, &send, PW_USER_PASSWORD, CS radius_args, 0, 0) == NULL)
+  *errptr = string_sprintf("RADIUS: add password failed\n");
+
+else if (rc_avpair_add(h, &send, PW_SERVICE_TYPE, &service, 0, 0) == NULL)
+  *errptr = string_sprintf("RADIUS: add service type failed\n");
+
+#endif  /* RADIUS_LIB_RADIUSCLIENT */
+
 if (*errptr != NULL)
   {
   DEBUG(D_auth) debug_printf("%s\n", *errptr);
   return ERROR;
   }
 
+#ifdef RADIUS_LIB_RADIUSCLIENT
 result = rc_auth(0, send, &received, msg);
+#else
+result = rc_auth(h, 0, send, &received, msg);
+#endif
+
 DEBUG(D_auth) debug_printf("RADIUS code returned %d\n", result);
 
 switch (result)
@@ -133,7 +162,7 @@ switch (result)
   return ERROR;
   }
 
-#else  /* RADIUS_LIB_RADIUSCLIENT not set => RADIUS_LIB_RADLIB is set */
+#else  /* RADIUS_LIB_RADLIB is set */
 
 /* Authenticate using the libradius library */
 

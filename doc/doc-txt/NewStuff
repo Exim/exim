@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.30 2005/03/22 16:52:06 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.31 2005/03/29 14:19:21 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -90,6 +90,12 @@ PH/02 A new expansion item for dynamically loading and calling a locally-
 TF/01 $received_time is a new expansion variable containing the time and date
       as a number of seconds since the start of the Unix epoch when the
       current message was received.
+
+PH/03 There is a new value for RADIUS_LIB_TYPE that can be set in
+      Local/Makefile. It is RADIUSCLIENTNEW, and it requests that the new API,
+      in use from radiusclient 0.4.0 onwards, be used. It does not appear to be
+      possible to detect the different versions automatically.
+
 
 Version 4.50
 ------------

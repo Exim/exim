@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.6 2005/02/17 11:58:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.7 2005/03/29 14:19:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -677,6 +677,7 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
     else if (strcmp(name, "RADIUS_LIB_TYPE") == 0)
       {
       if (strcmp(value, "RADIUSCLIENT") == 0 ||
+          strcmp(value, "RADIUSCLIENTNEW") == 0 ||
           strcmp(value, "RADLIB") == 0)
         {
         fprintf(new, "#define RADIUS_LIB_%s\n", value);

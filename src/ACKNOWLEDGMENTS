@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.16 2005/03/22 14:11:54 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.17 2005/03/29 14:19:21 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  22 March 2005
+Last updated:  29 March 2005
 
 
 THE OLD LIST
@@ -83,6 +83,7 @@ Steve Campbell            eximstats extensions and continued maintenance
 Brian Candler             Use h_errno for gethostbyname()
                           Suggested patch for .ifdef etc
                           Several minor fixes and suggestions
+Pete Carah                Patch for change to radiusclient API
 Oliver Cook               Suggested patch for exigrep & rejected messages
                             Patch to add sender/host info to local_scan() rejects
                             Suggested patch to add queue time to "Completed"

@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.9 2005/03/22 14:11:54 ph10 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.10 2005/03/29 14:19:21 ph10 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -722,17 +722,24 @@ ZCAT_COMMAND=/usr/bin/zcat
 
 # If you have set RADIUS_CONFIG_FILE, you should also set one of these to
 # indicate which RADIUS library is used:
-#
-# RADIUSCLIENT is the radiusclient library; you probably need to add
-#   -libradiusclient to EXTRALIBS
-#
-# RADLIB is the Radius library that comes with FreeBSD (the header file is
-#   called radlib.h); you probably need to add -lradius to EXTRALIBS
 
 # RADIUS_LIB_TYPE=RADIUSCLIENT
+# RADIUS_LIB_TYPE=RADIUSCLIENTNEW
 # RADIUS_LIB_TYPE=RADLIB
 
-# If you don't set one of these, Exim assumes the radiusclient library.
+# RADIUSCLIENT is the radiusclient library; you probably need to add
+#   -lradiusclient to EXTRALIBS.
+#
+# The API for the radiusclient library was changed at release 0.4.0.
+# Unfortunately, the header file does not define a version number that clients
+# can use to support both the old and new APIs. If you are using version 0.4.0
+# or later of the radiusclient library, you should use RADIUSCLIENTNEW.
+#
+# RADLIB is the Radius library that comes with FreeBSD (the header file is
+#   called radlib.h); you probably need to add -lradius to EXTRALIBS.
+#
+# If you do not set RADIUS_LIB_TYPE, Exim assumes the radiusclient library,
+# using the original API.
 
 
 #------------------------------------------------------------------------------

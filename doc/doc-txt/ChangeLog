@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.102 2005/03/29 11:01:32 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.103 2005/03/29 14:19:21 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -89,6 +89,12 @@ PH/15 Further to TK/02 and TK/03 above, tidied up the tables of what conditions
       negation of where the condition IS allowed.
 
 PH/16 Installed updated OS/os.c-cygwin from the Cygwin maintainer.
+
+PH/17 The API for radiusclient changed at release 0.4.0. Unfortunately, the
+      header file does not have a version number, so I've had to invent a new
+      value for RADIUS_LIB_TYPE, namely "RADIUSCLIENTNEW" to request the new
+      API. The code is untested by me (my Linux distribution still has 0.3.2 of
+      radiusclient), but it was contributed by a Radius user.
 
 
 A note about Exim versions 4.44 and 4.50
