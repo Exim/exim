@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/local_scan.h,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/local_scan.h,v 1.1.2.1 2004/12/02 09:15:11 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -147,6 +147,7 @@ extern void    header_add(int, char *, ...);
 extern void    header_add_at_position(BOOL, uschar *, BOOL, int, char *, ...);
 extern void    header_remove(int, uschar *);
 extern BOOL    header_testname(header_line *, uschar *, int, BOOL);
+extern BOOL    header_testname_incomplete(header_line *, uschar *, int, BOOL);
 extern void    log_write(unsigned int, int, char *format, ...);
 extern int     lss_b64decode(uschar *, uschar **);
 extern uschar *lss_b64encode(uschar *, int);

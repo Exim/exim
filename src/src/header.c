@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/header.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/header.c,v 1.1.2.1 2004/12/02 09:15:11 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -40,6 +40,19 @@ while (*tt == ' ' || *tt == '\t') tt++;
 return *tt == ':';
 }
 
+/* This is a copy of the function above, only that it is possible to pass
+   only the beginning of a header name. It simply does a front-anchored
+   substring match. Arguments and Return codes are the same as for
+   header_testname() above. */
+
+BOOL
+header_testname_incomplete(header_line *h, uschar *name, int len, BOOL notdel)
+{
+uschar *tt;
+if (h->type == '*' && notdel) return FALSE;
+if (h->text == NULL || strncmpic(h->text, name, len) != 0) return FALSE;
+return TRUE;
+}
 
 
 /*************************************************

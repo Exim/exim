@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_out.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_out.c,v 1.1.2.1 2004/12/02 09:15:11 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -216,6 +216,9 @@ if (host_lookup_failed) fprintf(f, "-host_lookup_failed\n");
 if (sender_local) fprintf(f, "-local\n");
 if (local_error_message) fprintf(f, "-localerror\n");
 if (local_scan_data != NULL) fprintf(f, "-local_scan %s\n", local_scan_data);
+#ifdef WITH_CONTENT_SCAN
+if (spam_score_int != NULL) fprintf(f,"-spam_score_int %s\n", spam_score_int);
+#endif
 if (deliver_manual_thaw) fprintf(f, "-manual_thaw\n");
 if (sender_set_untrusted) fprintf(f, "-sender_set_untrusted\n");
 

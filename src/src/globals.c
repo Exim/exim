@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.6.2.2 2004/11/26 16:04:26 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.6.2.3 2004/12/02 09:15:11 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -447,6 +447,11 @@ uschar *deliver_selectstring   = NULL;
 BOOL    deliver_selectstring_regex = FALSE;
 uschar *deliver_selectstring_sender = NULL;
 BOOL    deliver_selectstring_sender_regex = FALSE;
+#ifdef WITH_OLD_DEMIME
+int     demime_errorlevel      = 0;
+int     demime_ok              = 0;
+uschar *demime_reason          = NULL;
+#endif
 BOOL    disable_logging        = FALSE;
 
 uschar *dns_again_means_nonexist = NULL;
@@ -494,6 +499,9 @@ int     filter_sn[FILTER_VARIABLE_COUNT];
 uschar *filter_test            = NULL;
 uschar *filter_thisaddress     = NULL;
 int     finduser_retries       = 0;
+#ifdef WITH_OLD_DEMIME
+uschar *found_extension        = NULL;
+#endif
 uid_t   fixed_never_users[]    = { FIXED_NEVER_USERS };
 uschar *freeze_tell            = NULL;
 uschar *fudged_queue_times     = US"";

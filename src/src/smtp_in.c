@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.5 2004/11/10 15:21:16 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.5.2.1 2004/12/02 09:15:11 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -805,6 +805,10 @@ message_size = -1;
 acl_warn_headers = NULL;
 queue_only_policy = FALSE;
 deliver_freeze = FALSE;                              /* Can be set by ACL */
+#ifdef WITH_CONTENT_SCAN
+fake_reject = FALSE;                                 /* Can be set by ACL */
+no_mbox_unspool = FALSE;                             /* Can be set by ACL */
+#endif
 submission_mode = FALSE;                             /* Can be set by ACL */
 active_local_from_check = local_from_check;          /* Can be set by ACL */
 active_local_sender_retain = local_sender_retain;    /* Can be set by ACL */
@@ -1774,6 +1778,9 @@ BOOL drop = rc == FAIL_DROP;
 uschar *lognl;
 uschar *sender_info = US"";
 uschar *what = (where == ACL_WHERE_PREDATA)? US"DATA" :
+#ifdef WITH_CONTENT_SCAN
+               (where == ACL_WHERE_MIME)? US"during MIME ACL checks" :
+#endif  
                (where == ACL_WHERE_DATA)? US"after DATA" :
   string_sprintf("%s %s", acl_wherenames[where], smtp_data);
 
@@ -1785,7 +1792,11 @@ fixed, sender_address at this point became the rewritten address. I'm not sure
 this is what should be logged, so I've changed to logging the unrewritten
 address to retain backward compatibility. */
 
+#ifndef WITH_CONTENT_SCAN
 if (where == ACL_WHERE_RCPT || where == ACL_WHERE_DATA)
+#elif
+if (where == ACL_WHERE_RCPT || where == ACL_WHERE_DATA || where == ACL_WHERE_MIME)
+#endif
   {
   sender_info = string_sprintf("F=<%s> ", (sender_address_unrewritten != NULL)?
     sender_address_unrewritten : sender_address);

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.1.2.1 2004/12/02 09:15:11 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -277,6 +277,11 @@ tls_cipher = NULL;
 tls_peerdn = NULL;
 #endif
 
+#ifdef WITH_CONTENT_SCAN
+fake_reject = FALSE;
+spam_score_int = NULL;
+#endif
+
 /* Generate the full name and open the file. If message_subdir is already
 set, just look in the given directory. Otherwise, look in both the split
 and unsplit directories, as for the data file above. */
@@ -369,6 +374,10 @@ for (;;)
     local_error_message = TRUE;
   else if (Ustrncmp(big_buffer, "-local_scan ", 12) == 0)
     local_scan_data = string_copy(big_buffer + 12);
+#ifdef WITH_CONTENT_SCAN    
+  else if (Ustrncmp(big_buffer, "-spam_score_int ", 16) == 0)
+    spam_score_int = string_copy(big_buffer + 16);  
+#endif    
   else if (Ustrcmp(big_buffer, "-host_lookup_failed") == 0)
     host_lookup_failed = TRUE;
   else if (Ustrncmp(big_buffer, "-body_linecount", 15) == 0)

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.6.2.1 2004/11/26 16:04:26 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.6.2.2 2004/12/02 09:15:11 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -241,6 +241,11 @@ extern uschar *deliver_selectstring;   /* For selecting by recipient */
 extern BOOL    deliver_selectstring_regex; /* String is regex */
 extern uschar *deliver_selectstring_sender; /* For selecting by sender */
 extern BOOL    deliver_selectstring_sender_regex; /* String is regex */
+#ifdef WITH_OLD_DEMIME
+extern int     demime_errorlevel;      /* Severity of MIME error */
+extern int     demime_ok;              /* Nonzero if message has been demimed */
+extern uschar *demime_reason;          /* Reason for broken MIME container */
+#endif
 extern BOOL    disable_logging;        /* Disables log writing when TRUE */
 
 extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */
@@ -288,6 +293,9 @@ extern uschar *filter_test;            /* Run as a filter tester on this file */
 extern uschar *filter_thisaddress;     /* For address looping */
 extern int     finduser_retries;       /* Retry count for getpwnam() */
 extern uid_t   fixed_never_users[];    /* Can't be overridden */
+#ifdef WITH_OLD_DEMIME
+extern uschar *found_extension;        /* demime acl condition: file extension found */
+#endif
 extern uschar *freeze_tell;            /* Message on (some) freezings */
 extern uschar *fudged_queue_times;     /* For use in test harness */
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.1.2.1 2004/12/02 09:15:11 tom Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -132,6 +132,10 @@ int     deliver_frozen_at      = 0;
 BOOL    deliver_manual_thaw    = FALSE;
 BOOL    dont_deliver           = FALSE;
 
+#ifdef WITH_CONTENT_SCAN
+BOOL   fake_reject             = FALSE;
+#endif
+
 header_line *header_last       = NULL;
 header_line *header_list       = NULL;
 
@@ -142,6 +146,11 @@ int     interface_port         = 0;
 BOOL    local_error_message    = FALSE;
 uschar *local_scan_data        = NULL;
 BOOL    log_timezone           = FALSE;
+
+#ifdef WITH_CONTENT_SCAN
+uschar *spam_score_int         = NULL;
+#endif
+
 int     message_age            = 0;
 uschar *message_id;
 uschar *message_id_external;

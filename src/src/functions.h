@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.5.2.1 2004/11/30 15:18:58 tom Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.5.2.2 2004/12/02 09:15:11 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -68,6 +68,9 @@ extern void    deliver_msglog(const char *, ...);
 extern void    deliver_set_expansions(address_item *);
 extern int     deliver_split_address(address_item *);
 extern void    deliver_succeeded(address_item *);
+#ifdef WITH_OLD_DEMIME
+extern int     demime(uschar **);
+#endif
 extern BOOL    directory_make(uschar *, uschar *, int, BOOL);
 extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
 extern void    dns_build_reverse(uschar *, uschar *);
@@ -173,6 +176,9 @@ extern void    queue_count(void);
 extern void    queue_run(uschar *, uschar *, BOOL);
 
 extern int     random_number(int);
+#ifdef WITH_CONTENT_SCAN
+extern int     recv_line(int, uschar *, int);
+#endif
 extern int     rda_interpret(redirect_block *, int, uschar *, uschar *, ugid_block *,
                  address_item **, uschar **, error_block **, int *, uschar *);
 extern int     rda_is_filter(const uschar *);

@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.4.2.1 2004/11/25 15:33:54 tom Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.4.2.2 2004/12/02 09:15:11 tom Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -322,6 +322,16 @@ EXIM_MONITOR=eximon.bin
 # features.
 
 #WITH_CONTENT_SCAN=yes
+
+# If you want to use the deprecated "demime" condition in the DATA ACL,
+# uncomment the line below. Doing so will also explicitly turn on the
+# WITH_CONTENT_SCAN option. If possible, use the MIME ACL instead of
+# the "demime" condition.
+
+#WITH_OLD_DEMIME=yes
+
+
+
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.2.2.2 2004/11/30 15:18:58 tom Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.2.2.3 2004/12/02 09:15:11 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -131,12 +131,12 @@ enough to hold all the headers from a normal kind of message. */
 into big_buffer_size and in some circumstances increased. It should be at least
 as long as the maximum path length. */
 
-#if defined PATH_MAX && PATH_MAX > 1024
+#if defined PATH_MAX && PATH_MAX > 16384
 #define BIG_BUFFER_SIZE PATH_MAX
-#elif defined MAXPATHLEN && MAXPATHLEN > 1024
+#elif defined MAXPATHLEN && MAXPATHLEN > 16384
 #define BIG_BUFFER_SIZE MAXPATHLEN
 #else
-#define BIG_BUFFER_SIZE 1024
+#define BIG_BUFFER_SIZE 16384
 #endif
 
 /* This limits the length of data returned by local_scan(). Because it is
@@ -545,6 +545,7 @@ to the header name, by calling header_checkname(). */
 #define htype_add_top       'a'
 #define htype_add_rec       'r'
 #define htype_add_bot       'z'
+#define htype_add_rfc       'f'
 
 /* Types of item in options lists. These are the bottom 8 bits of the "type"
 field, which is an int. The opt_void value is used for entries in tables that
