@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.15 2005/01/12 14:23:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.16 2005/01/12 14:41:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1682,7 +1682,7 @@ for (; cb != NULL; cb = cb->next)
        else
         {
         /* Explicitly reset to default string */
-        fake_reject_text = US"Your message has been rejected but is being kept for evaluation.\nIf it was a legit message, it may still be delivered to the target recipient(s).";
+        fake_reject_text = US"Your message has been rejected but is being kept for evaluation.\nIf it was a legitimate message, it may still be delivered to the target recipient(s).";
         }
       break;
 
