@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.6 2005/01/25 14:16:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.7 2005/02/16 16:28:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -230,7 +230,7 @@ int n;
 int rcount = 0;
 long int uid, gid;
 BOOL inheader = FALSE;
-uschar originator[64];
+uschar *p;
 
 /* Reset all the global variables to their default values. However, there is
 one exception. DO NOT change the default value of dont_deliver, because it may
@@ -325,9 +325,21 @@ messages for delivery delays that have been sent. */
 
 if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
 
-if (sscanf(CS big_buffer, "%s %ld %ld", originator, &uid, &gid) != 3)
-  goto SPOOL_FORMAT_ERROR;
-originator_login = string_copy(originator);
+p = big_buffer + Ustrlen(big_buffer);
+while (p > big_buffer && isspace(p[-1])) p--;
+*p = 0;
+if (!isdigit(p[-1])) goto SPOOL_FORMAT_ERROR;
+while (p > big_buffer && isdigit(p[-1])) p--;
+gid = Uatoi(p);
+if (p <= big_buffer || *(--p) != ' ') goto SPOOL_FORMAT_ERROR;
+*p = 0;
+if (!isdigit(p[-1])) goto SPOOL_FORMAT_ERROR;
+while (p > big_buffer && isdigit(p[-1])) p--;
+uid = Uatoi(p);
+if (p <= big_buffer || *(--p) != ' ') goto SPOOL_FORMAT_ERROR;
+*p = 0;
+ 
+originator_login = string_copy(big_buffer);
 originator_uid = (uid_t)uid;
 originator_gid = (gid_t)gid;
 

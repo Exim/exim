@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.79 2005/02/16 15:24:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.80 2005/02/16 16:28:36 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -374,6 +374,15 @@ Exim version 4.50
     earlier. On busy systems, this bug wouldn't be noticed because something
     else would have woken the daemon, and it would have reaped the completed
     process earlier.
+
+80. If a message was submitted locally by a user whose login name contained one
+    or more spaces (ugh!), the spool file that Exim wrote was not re-readable.
+    It caused a spool format error. I have fixed the spool reading code. A
+    related problem was that the "from" clause in the Received: line became
+    illegal because of the space(s). It is now covered by ${quote_local_part.
+
+81. Included the latest eximstats from Steve (adds average sizes to HTML Top
+    tables).
 
 
 ----------------------------------------------------

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.15 2005/01/25 14:16:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.16 2005/02/16 16:28:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -788,7 +788,7 @@ date  will be automatically added on the end. */
 uschar *received_header_text   = US
      "Received: "
      "${if def:sender_rcvhost {from $sender_rcvhost\n\t}"
-     "{${if def:sender_ident {from $sender_ident }}"
+     "{${if def:sender_ident {from ${quote_local_part:$sender_ident} }}"
      "${if def:sender_helo_name {(helo=$sender_helo_name)\n\t}}}}"
      "by $primary_hostname "
      "${if def:received_protocol {with $received_protocol}} "
