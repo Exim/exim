@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.8 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.9 2005/03/15 14:09:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -107,11 +107,12 @@ in sys/file.h. */
 #include <sysexits.h>
 #endif
 
-/* A few OS don't have socklen_t; their os.h files define SOCKLEN_T to
-be size_t or whatever. */
+/* A few OS don't have socklen_t; their os.h files define EXIM_SOCKLEN_T to
+be size_t or whatever. We used to use SOCKLEN_T, but then it was discovered
+that this is used by the AIX include files. */
 
-#ifndef SOCKLEN_T
-#define SOCKLEN_T socklen_t
+#ifndef EXIM_SOCKLEN_T
+#define EXIM_SOCKLEN_T socklen_t
 #endif
 
 /* Ensure that the sysexits we reference are defined */

@@ -1,11 +1,11 @@
-/* $Cambridge: exim/src/OS/os.h-Unixware7,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.h-Unixware7,v 1.2 2005/03/15 14:09:12 ph10 Exp $ */
 
 /* Exim: OS-specific C header file for Unixware 7 */
 
 #define NO_SYSEXITS
 
 #define ICONV_ARG2_TYPE char **
-#define SOCKLEN_T size_t
+#define EXIM_SOCKLEN_T size_t
 
 #define LOAD_AVG_NEEDS_ROOT
 #define HAVE_DEV_KMEM

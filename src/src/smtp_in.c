@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.12 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.13 2005/03/15 14:09:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1262,16 +1262,16 @@ if (!sender_host_unknown)
   if (!host_checking && !sender_host_notsocket)
     {
     #if OPTSTYLE == 1
-    SOCKLEN_T optlen = sizeof(struct ip_options) + MAX_IPOPTLEN;
+    EXIM_SOCKLEN_T optlen = sizeof(struct ip_options) + MAX_IPOPTLEN;
     struct ip_options *ipopt = store_get(optlen);
     #elif OPTSTYLE == 2
     struct ip_opts ipoptblock;
     struct ip_opts *ipopt = &ipoptblock;
-    SOCKLEN_T optlen = sizeof(ipoptblock);
+    EXIM_SOCKLEN_T optlen = sizeof(ipoptblock);
     #else
     struct ipoption ipoptblock;
     struct ipoption *ipopt = &ipoptblock;
-    SOCKLEN_T optlen = sizeof(ipoptblock);
+    EXIM_SOCKLEN_T optlen = sizeof(ipoptblock);
     #endif
 
     /* Occasional genuine failures of getsockopt() have been seen - for

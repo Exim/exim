@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.9 2005/02/17 11:58:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.10 2005/03/15 14:09:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -142,7 +142,7 @@ handle_smtp_call(int *listen_sockets, int listen_socket_count,
 {
 pid_t pid;
 union sockaddr_46 interface_sockaddr;
-SOCKLEN_T ifsize = sizeof(interface_sockaddr);
+EXIM_SOCKLEN_T ifsize = sizeof(interface_sockaddr);
 int dup_accept_socket = -1;
 int max_for_this_host = 0;
 int wfsize = 0;
@@ -1578,7 +1578,7 @@ for (;;)
   struct sockaddr_in accepted;
   #endif
 
-  SOCKLEN_T len = sizeof(accepted);
+  EXIM_SOCKLEN_T len = sizeof(accepted);
   pid_t pid;
 
   /* This code is placed first in the loop, so that it gets obeyed at the

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.15 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.16 2005/03/15 14:09:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3450,7 +3450,7 @@ barf. */
 if (smtp_input)
   {
   union sockaddr_46 inetd_sock;
-  SOCKLEN_T size = sizeof(inetd_sock);
+  EXIM_SOCKLEN_T size = sizeof(inetd_sock);
   if (getpeername(0, (struct sockaddr *)(&inetd_sock), &size) == 0)
     {
     int family = ((struct sockaddr *)(&inetd_sock))->sa_family;
