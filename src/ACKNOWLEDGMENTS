@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.14 2005/03/08 11:38:21 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.15 2005/03/15 12:27:54 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  08 March 2005
+Last updated:  15 March 2005
 
 
 THE OLD LIST
@@ -197,6 +197,7 @@ Heiko Schlichting         Diagnosis of intermittent daemon crash bug
 Stephan Schulz            Patch for $host_data caching error
 Tony Sheen                Log files with datestamped names and auto rollover
 Martin Sluka              Patch for exigrep to include non-message lines
+Russell Stuart            Diagnosis of obscure batch multiple delivery bug
 Tamas Tevesz              Patch for crypt16() support
 Johan Thelmen             Support for the F-Secure virus scanner
 William Thompson          Suggested patch for acl_smtp_helo

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.7 2005/02/17 11:58:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.8 2005/03/15 12:27:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2080,6 +2080,7 @@ while (addr_local != NULL)
     same characteristics. These are:
 
       same transport
+      not previously delivered (see comment about 50 lines above)
       same local part if the transport's configuration contains $local_part
       same domain if the transport's configuration contains $domain
       same errors address
@@ -2093,6 +2094,7 @@ while (addr_local != NULL)
       {
       BOOL ok =
         tp == next->transport &&
+        !previously_transported(next) &&
         (!uses_lp  || Ustrcmp(next->local_part, addr->local_part) == 0) &&
         (!uses_dom || Ustrcmp(next->domain, addr->domain) == 0) &&
         same_strings(next->p.errors_address, addr->p.errors_address) &&
