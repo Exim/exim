@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.8 2004/12/29 16:00:58 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.9 2004/12/29 16:34:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -220,7 +220,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_HELO),
   
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* bmi_optin */
+  (1<<ACL_WHERE_AUTH)|                             /* bmi_optin */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_MIME)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|                                       
@@ -237,7 +237,7 @@ static unsigned int cond_forbids[] = {
   0,                                               /* control */
   
 #ifdef WITH_CONTENT_SCAN
-  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* decode */
+  (1<<ACL_WHERE_AUTH)|                             /* decode */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -249,7 +249,7 @@ static unsigned int cond_forbids[] = {
   0,                                               /* delay */
   
 #ifdef WITH_OLD_DEMIME
-  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* demime */
+  (1<<ACL_WHERE_AUTH)|                             /* demime */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -285,7 +285,7 @@ static unsigned int cond_forbids[] = {
   0,                                               /* logwrite */
   
 #ifdef WITH_CONTENT_SCAN
-  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* malware */
+  (1<<ACL_WHERE_AUTH)|                             /* malware */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -297,7 +297,7 @@ static unsigned int cond_forbids[] = {
   0,                                               /* message */
 
 #ifdef WITH_CONTENT_SCAN
-  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* mime_regex */
+  (1<<ACL_WHERE_AUTH)|                             /* mime_regex */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -315,7 +315,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_VRFY),
 
 #ifdef WITH_CONTENT_SCAN
-  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* regex */
+  (1<<ACL_WHERE_AUTH)|                             /* regex */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -339,7 +339,7 @@ static unsigned int cond_forbids[] = {
   0,                                               /* set */
 
 #ifdef WITH_CONTENT_SCAN
-  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* spam */
+  (1<<ACL_WHERE_AUTH)|                             /* spam */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
