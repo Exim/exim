@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/pipe.c,v 1.1 2004/10/07 13:10:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/pipe.c,v 1.2 2004/10/14 14:52:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -800,14 +800,16 @@ if (!written_ok)
     }
   else
     {
-    addr->transport_return = PANIC;
+    addr->transport_return = PANIC; 
     addr->basic_errno = errno;
     if (errno == ERRNO_CHHEADER_FAIL)
       addr->message =
         string_sprintf("Failed to expand headers_add or headers_remove: %s",
           expand_string_message);
     else if (errno == ERRNO_FILTER_FAIL)
-      addr->message = string_sprintf("Filter process failure");
+      addr->message = string_sprintf("Transport filter process failed (%d)%s",
+      addr->more_errno,
+      (addr->more_errno == EX_EXECFAILED)? ": unable to execute command" : "");
     else if (errno == ERRNO_WRITEINCOMPLETE)
       addr->message = string_sprintf("Failed repeatedly to write data");
     else

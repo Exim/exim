@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/lmtp.c,v 1.1 2004/10/07 13:10:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/lmtp.c,v 1.2 2004/10/14 14:52:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -141,7 +141,9 @@ end the DATA. */
 
 if (*errno_value == ERRNO_FILTER_FAIL)
   {
-  *message = string_sprintf("transport filter process failed (%d)", more_errno);
+  *message = string_sprintf("transport filter process failed (%d)%s", 
+    more_errno, 
+    (more_errno == EX_EXECFAILED)? ": unable to execute command" : "");
   return FALSE;
   }
 

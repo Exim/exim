@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.2 2004/10/14 14:52:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1095,29 +1095,34 @@ if (filter_pid > 0 && (rc = child_close(filter_pid, 30)) != 0 && yield)
   }
 
 /* Wait for the writing process to complete. If it ends successfully,
-read the results from its pipe. */
+read the results from its pipe, provided we haven't already had a filter 
+process failure. */
 
 DEBUG(D_transport) debug_printf("waiting for writing process\n");
 if (write_pid > 0)
   {
-  if ((rc = child_close(write_pid, 30)) == 0)
+  rc = child_close(write_pid, 30);
+  if (yield)
     {
-    BOOL ok;
-    read(pfd[pipe_read], (void *)&ok, sizeof(BOOL));
-    if (!ok)
+    if (rc == 0)   
       {
-      read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
-      read(pfd[pipe_read], (void *)&(addr->more_errno), sizeof(int));
-      yield = FALSE;
+      BOOL ok;
+      read(pfd[pipe_read], (void *)&ok, sizeof(BOOL));
+      if (!ok)
+        {
+        read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
+        read(pfd[pipe_read], (void *)&(addr->more_errno), sizeof(int));
+        yield = FALSE;
+        }
       }
-    }
-  else if (yield)
-    {
-    yield = FALSE;
-    save_errno = ERRNO_FILTER_FAIL;
-    addr->more_errno = rc;
-    DEBUG(D_transport) debug_printf("writing process returned %d\n", rc);
-    }
+    else
+      {
+      yield = FALSE;
+      save_errno = ERRNO_FILTER_FAIL;
+      addr->more_errno = rc;
+      DEBUG(D_transport) debug_printf("writing process returned %d\n", rc);
+      }
+    }   
   }
 close(pfd[pipe_read]);
 

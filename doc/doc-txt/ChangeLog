@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.4 2004/10/14 11:21:02 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.5 2004/10/14 14:52:45 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -15,6 +15,9 @@ Exim version 4.44
  3. Closing a stable door: arrange to panic-die if setitimer() ever fails. The
     bug fixed in 4.43/37 would have been diagnosed quickly if this had been in
     place.
+
+ 4. Give more explanation in the error message when the command for a transport
+    filter fails to execute.
 
 
 Exim version 4.43
