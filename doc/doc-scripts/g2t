@@ -1,0 +1,1347 @@
+#! /usr/bin/perl -w
+# $Cambridge: exim/doc/doc-scripts/g2t,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+
+# A Perl script to turn the SGCAL source of the Exim documentation into
+# Texinfo input, more or less...
+
+# Supply the source file names as arguments.
+# The output goes to the standard output.
+
+
+##################################################
+#         Ensure unique node name                #
+##################################################
+
+# Node names must be unique. Occasionally in the Exim spec there are duplicate
+# section names, and it's become too much of a hassle to keep them distinct
+# manually. So it is now automated.
+
+########### Never really got this working. Abandoned ###############
+
+sub unique {
+my($node) = $_[0];
+if (defined $node_names{$node})
+  {
+  $node_names{$node} += 1; 
+  $node = "$node ($node_names{$node})"; 
+  
+print STDERR "+++ $node\n";
+ 
+  }
+else
+  {
+  $node_names{$node} = 0;
+  }
+$node;
+}  
+
+
+
+##################################################
+#         De-comma a node name                   #
+##################################################
+
+# Commas, colons, and apostrophes are not permitted in Texinfo
+# node names. I find this incredible, but it is clearly documented.
+# The Exim manual has been re-organized not to have colons or
+# apostrophes in any chapter or section titles, but I can't manage
+# without commas. This function turns "," into " and", which is
+# the best that can be done; we can use some clever Perlery to
+# just take out commas before "and".
+
+# Sigh. The Sendmail option -p<rval>:<sval> now means that there's a colon
+# in the node name for that option. Turn the colon into <colon>. This is also
+# done for menus.
+
+# Another thing that causes problems in node names in some versions of
+# Texinfo is the use of @sc{xxx} for small caps. Just turn these all into
+# real caps. This is also done for menus.
+
+sub decomma {
+$_[0] =~ s/,(?!\sand)/ and/g;
+$_[0] =~ s/,//g;
+$_[0] =~ s/\@sc\{([^}]*)\}/\U$1/g;
+$_[0] =~ s/:/<colon>/g;
+$_[0];
+}
+
+
+
+##################################################
+#           De-quote a string                    #
+##################################################
+
+# @x is turned into x, except when x=@, or when asis is set,
+# in which case single @ must turn into @@. A single substitute
+# doesn't work in the non-asis case, because of the problems of
+# handling things like @@@$, so we do it the hard way.
+
+sub dequote {
+if ($asis) { $_[0] =~ s/@/@@/g; } else
+  {
+  $_[0] =~ s/@@/&at&/g;
+  $_[0] =~ s/@([^@])/$1/g;
+  $_[0] =~ s/&at&/@@/g;
+  }
+$_[0];
+}
+
+
+##################################################
+#           Get next line                        #
+##################################################
+
+# Called from handle_directive, to get the next source line
+# into $_.
+
+sub get_next_line {
+if ($processing_subsection)
+  { return $_ = shift @SUBBUFFER; }
+else
+  { return $_ = <>; }
+}
+
+
+
+##################################################
+#           Handle text lines                    #
+##################################################
+
+# This function is handed whole paragraphs, and we assume that
+# SGCAL font changing markup is always complete within a paragraph.
+# We have to replace escaped versions of significant characters with
+# some magic before performing general transformations, and then
+# put them back afterwards. The character & is not common in the text,
+# and && is unknown, so we use that.
+
+sub handle_text {
+$_ = $_[0];
+
+if ($asis)
+  {
+  $_ = dequote($_);
+  s/(\{|\})/\@$1/g;
+  return $_;
+  }
+
+while (/~~/)
+  {
+  $left = $`;
+  ($name) = $' =~ /^(\w+)/;
+  $right = $';
+
+  $value = $references{$name};
+  $value = "" if !defined($value);
+
+  if ($value =~ /\*\*\*\*/)
+    {
+    $value = ($` eq $current_chapter)? "\"$'\"" :
+      "\"$'\" in chapter \"$`\"";
+    $value = "" if $value eq "\"\"";
+    }
+  elsif ($value !~ /^[0-9]+\.[0-9]+$/)   # quote unless version number
+    {                                                
+    $value = "\"$value\"";                          
+    }
+
+  $_ = "${left}${value}${right}";
+  }
+
+s/\@\@/&&a/g;         # @@
+s/\@\\/&&b/g;         # @\
+s/\@</&&l/g;          # @<
+s/\@>/&&g/g;          # @>
+s/\@\{/&&c/g;         # @{
+s/\@\}/&&d/g;         # @}
+s/\@#/&&s/g;          # @#
+
+# Now remove all other @'s
+
+$_ = dequote($_);
+
+# Convert SGCAL markup
+
+s/#/ /g;                            # turn #   into a space
+s/\$~//g;                           # turn $~  into nothing
+s/__/_/g;                           # turn __  into _
+s/\$sm\{//g;                        # turn $sm{     into nothing
+s/\$sc\{([^\}]*?)\}/$1/g;           # turn $sc{xxx} into xxx
+s/\$st\{([^\}]*?)\}/$1/g;           # turn $st{xxx} into xxx
+s/\$si\{([^\}]*?)\}/$1/g;           # turn $si{xxx} into xxx
+s/\$tt\{([^\}]*?)\}/$1/g;           # turn $tt{xxx} into xxx
+
+s/\$it\{([^\}]*?)\}/$1/g;           # turn $it{xxx} into xxx
+
+s/\$bf\{([^\}]*?)\}/$1/g;           # turn $bf{xxx} into xxx
+s/\$rm\{([^\}]*?)\}/$1/g;           # turn $rm{xxx} into xxx
+s/\$cb\{([^\}]*?)\}/$1/g;           # turn $cb{xxx} into xxx
+
+# This is a fudge for some specific usages of $<; can't just do a global
+# is it occurs in things like $<variable name> as well.
+
+s/\[\$<\]/[]/g;                     # turn [$<]     into []
+s/&&b\$<\./&&b./g;                  # turn \$<.     into \.  (\ == &&b by now)
+s/(\d)\$<-/$1-/g;                   # turn 0$<-     into 0-
+
+# There is one case where the terminating } of an escape sequence is
+# in another paragraph - this follows $sm{ - it can be fixed by
+# removing any stray } in a paragraph that contains no { chars.
+
+s/\}//g if !/\{/;
+
+# Any remaining {} must be escaped to prevent Texinfo from complaining
+
+s/(\{|\})/\@$1/g;
+
+# Now to conversions that put {} into the file.
+# Change <<..>> from @var to just <...> as the caps that Texinfo
+# uses look far too shouty.
+
+s/\\\\([^\\]*?)\\\\/\@sc\{\L$1\}/g; # turn \\xxx\\  into @sc{xxx}
+s/\\\(([^)]*?)\)\\/\@file\{$1\}/g;  # turn \(xxx)\  into @file{xxx}
+s/\\\"([^\"]*?)\"\\/\@file\{$1\}/g; # turn \"xxx"\  into @file{xxx}
+
+s/\\\?([^?]*?)\?\\/$1/g;            # turn \?URL?\    into URL
+s/<<([^>]*?)>>/<$1>/g;              # turn <<xxx>>    into <xxx>
+s/\\\$([^\$]*?)\$\\/\$$1/g;         # turn \$xxx$\    into $xxx
+s/\\\-([^-]*?)\-\\/\-$1/g;          # turn \-xxx-\    into -xxx
+s/\\\*\*([^*]*?)\*\*\\/$1/g;        # turn \**xxx**\  into xxx
+s/\[\(([\w\/]*)\)\]//g;             # remove inline HTML
+
+s/\\\*([^*]*?)\*\\/\@dfn\{$1\}/g;     # turn \*xxx*\    into @dfn{xxx}
+s/\\%([^*]*?)%\\/\@dfn\{$1\}/g;       # turn \%xxx%\    into @dfn{xxx}
+s/:::([^:]*?)::/\@dfn\{:$1:\}/g;      # turn :::xxx::   into @dfn{:xxx:}
+s/::([^:]*?)::/\@dfn\{$1:\}/g;        # turn ::xxx::    into @dfn{xxx:}
+s/\\([^\\]*?)\\/\@dfn\{$1\}/g;        # turn \xxx\      into @dfn{xxx}
+s/\$\*\$/\*/g;                        # turn $*$        into *
+
+# Put back escaped SGCAL specials
+
+s/&&a/\@\@/g;
+s/&&b/\\/g;
+s/&&l/</g;
+s/&&g/>/g;
+s/&&c/\@{/g;
+s/&&rc/{/g;
+s/&&rd/}/g;
+s/&&d/\@}/g;
+s/&&s/#/g;
+
+# Remove any null flags ($$)
+
+s/\$\$//g;
+
+# If the paragraph starts with $c\b, change this into @center. Assume
+# we don't ever get two of these in a row.
+
+s/^\$c\b/\@center /;
+
+# If the paragraph starts with $e\b, stuff some tabs in there, as
+# Texinfo can't do this on its own (as far as I can see). They must
+# tabs; Texinfo treats them as different to spaces. Sigh.
+
+s/^\$e\b/\t\t\t\t\t\t\t/;
+
+# Handle $t. The Exim spec only ever has one tab per line. Er, not
+# quite true, but a good enough assumption. $t is always followed
+# by a non-word character.
+
+# The .tabs directive has stashed the value in the $tab variable.
+# Don't count Texinfo font chars.
+
+while (/(^|.+?\n)(.+?)\$t(\W.*\n)/)
+  {
+  $before = $` . $1;
+  $after = $';
+  $left = $2;
+  $right = $3;
+
+  $left =~ s/\s$//;
+  $right =~ s/^\s+//;
+
+  $plainleft = $left;
+  $plainleft =~ s/\@[a-z]+\{([^}]+?)\}/$1/g;
+  $plainleft =~ s/\@//g;
+
+  $_ = $before . $left . (" " x ($tab - length($plainleft))) . $right . $after;
+
+  # Fudge for the one case where there are two tabs
+
+  if ($tab2 != 0)
+    {
+    $temp = $tab;
+    $tab = $tab2;
+    $tab2 = $temp;
+    }
+  }
+
+# Return the new line (paragraph)
+
+$_;
+}
+
+
+
+##################################################
+#           Handle directive lines               #
+##################################################
+
+# Use get_next_line() instead of <> because this is called to process
+# stacked up subsection lines
+
+sub handle_directive {
+
+my($new_lastwasitem) = 0;
+
+# Chapter directives just require . => @; however, dequoting the
+# line thereafter will remove the first @, so just force it back
+# afterwards. If the chapter is is one describing a driver, set
+# the driver name.
+
+if (/\.chapter/)
+  {
+  tr/./@/;
+  push(@ONESECTION, "@" . &dequote("$_\n"));
+  $driver_name = (/The\s+(\S+)\s+(director|router|transport|authenticator)/)? $1 :
+    (/Generic options common to both directors and routers/)?
+      "director or router" :
+    (/[Gg]eneric\s+options for (\S+)s/)? $1 : "";
+  $driver_name = &dequote($driver_name);
+  }
+
+# Section directives just require . => @; however, dequoting the
+# line thereafter will remove the first @, so just force it back
+# afterwards. Remove any colons in section titles as they cause
+# Texinfo trouble. Also remove any \\ (small caps) markup, which
+# appears in a couple of cases.
+
+elsif (/\.section/)
+  {
+  tr/./@/;
+  s/://;
+  s"\\\\""g;
+  push(@ONESECTION, "@" . &dequote("$_\n"));
+
+  # Horrible magic fudge to cope with the fact that exim_lock has
+  # -v and -q options, just like the main program.
+
+  $driver_name = "exim_lock" if /Mailbox maintenance/;
+  
+  # Similar magic for exiqgrep, which also duplicates options
+  
+  $driver_name = "exiqgrep" if /Selective queue listing/;  
+  }
+
+# .newline must put @* on the end of the previous line, if any, except
+# inside a display, where it causes trouble.
+
+elsif (/\.newline/)
+  {
+  if (@ONESECTION > 0 && ! $indisplay)
+    {
+    $_ = pop(@ONESECTION);
+    s/(\n*)$/\@*$1/;
+    push(@ONESECTION, $_);
+    }
+  }
+
+# .blank turns into @sp, adding 1 if no argument
+
+elsif (/\.blank/)
+  {
+  s/\.blank\s+(\d+)/\@sp $1/;
+  s/\.blank/\@sp 1/;
+  push(@ONESECTION, $_);
+  }
+
+# .rule turns into a line of hyphens
+
+elsif (/\.rule/)
+  {
+  push(@ONESECTION, ("-" x ($in_itemize? 68 : 73)) . "\@*\n");
+  }
+
+# There's one explicit .tabset setting for two tab stops
+
+elsif (/\.tabset\s*/)
+  {
+  $rest = $';
+  ($first,$second) = $rest =~ /(\d+)em\s+(\d+)em/;
+  $tab = ($first * 7)/6;
+  $tab2 = $tab + ($second * 7)/6;
+  }
+
+# .tabs remembers the first (and only) tab setting
+
+elsif (/\.tabs\s*/)
+  {
+  $tab = ($' * 7)/6;
+  $tab2 = 0;
+  }
+
+# .tempindent is used only to align some of the expansion stuff nicely;
+# just ignore it. It is used in conjunction with .push/.pop.
+
+elsif (/\.(tempindent|push|pop)\s*/)
+  {
+  }
+
+# There are some instances of .if ~~sys.fancy in the source. Some of these
+# are two-part things, in which case we just keep the non-fancy. For diagrams,
+# however, they are in three parts:
+#
+# .if ~~sys.fancy
+# <aspic drawing stuff>
+# .elif ~~nothtml
+# <ascii art for txt and Texinfo>
+# .else
+# <HTML instructions for including a gif>
+# .fi
+
+elsif (/\.if \~\~sys\.fancy/)
+  {
+  while (&get_next_line())
+    { last if /\.else\b/ || /\.elif\s+\~\~nothtml/ || /\.fi\b/; }
+
+  if (/\.elif/)
+    {
+    $skip_else = 1;
+    }
+  }
+
+# There are occasional requirements to do things differently for
+# Texinfo/HTML and the PS/txt versions, and there are also some
+# HTML-specific things.
+
+elsif (/\.if\s+~~sgcal/ || /\.if\s+~~html/)
+  {
+  while (&get_next_line()) { last if /\.else\b/ || /\.fi\b/; }
+  }
+
+# We may also have Texinfo-specific bits
+
+elsif (/^\.if\s+~~texinfo/)
+  {
+  $skip_else = 1;
+  }
+
+# Ignore any other .if directives
+
+elsif (/\.if/) {}
+
+# Skip else part if flag set
+
+elsif (/\.else/ && $skip_else)
+  {
+  while (&get_next_line()) { last if /\.fi\b/; }
+  $skip_else = 0;
+  }
+
+# Ignore other .fi and .else as any .if directives are handled specially
+
+elsif (/\.fi/ || /\.else/) {}
+
+# Ignore .indent
+
+elsif (/\.indent/) {}
+
+# Plain .index goes to @cindex - the "concept" index. Also, there
+# are some calls to vindex and findex in the SGCAL source - treated
+# as synonymous with .index - which are split into the equivalent
+# indexes here.
+
+elsif (/\.(.?)index/)
+  {
+  $rest = $';
+  $letter = ($1 eq "")? "c" : $1;
+  tr/./@/;                           # .index -> @index
+  
+  $rest =~ s/\\\(//g;                # Remove markup
+  $rest =~ s/\)\\//g; 
+  $rest =~ s/\\%//g;
+  $rest =~ s/%\\//g;
+  $rest =~ s/\\\*//g;
+  $rest =~ s/\*\\//g;    
+  $rest =~ s/\\"//g;
+  $rest =~ s/"\\//g;
+  $rest =~ s/:://g;
+  $rest =~ s/\\-/-/g;
+  $rest =~ s/-\\//g;
+  $rest =~ s/~~//g;     
+ 
+  $rest =~ tr/\\//d;                 # Remove \
+   
+  $rest =~ s/\@\$/\$/g;              # @$  -> $
+  $rest =~ s/\@_/_/g;                # @_  -> _
+  $rest =~ s/\@\+/+/g;               # @+  -> +
+  $rest =~ s/\$\*\$/\*/g;            # $*$ -> *
+  $rest =~ s/\$([^\$]+)\$/\$$1/g;    # $x$ -> $x
+   
+  $rest =~ s/^\s+//;                 # Remove leading spaces
+  $rest =~ s/\s+$//;                 # Remove trailing spaces
+  $rest =~ s/\|\|/:/;                # || -> : 
+  push(@ONESECTION, "\@${letter}index $rest\n");
+
+  # Duplicate entries for things that were listed as "x see y"
+
+  if (defined $indirections{$rest})
+    {
+    push(@ONESECTION, "\@${letter}index $indirections{$rest}\n");
+    }
+  }
+
+# Various flavours of numberpars map to itemize and enumerate.
+# Haven't found a way of having a blank space 'bullet' yet, so
+# currently using minus.
+
+elsif (/\.numberpars/)
+  {
+  $rest = $';
+  $type = "enumerate";
+  $flag = "";
+
+  if    ($rest =~ /\$\./)  { $flag = " \@bullet"; $type = "itemize" }
+  elsif ($rest =~ /\" \"/) { $flag = " \@minus";  $type = "itemize"; }
+  elsif ($rest =~ /roman/) { $flag = " a"; $type = "enumerate"; }
+
+  push(@ONESECTION, "\n\@$type$flag\n\n\@item\n");
+  push(@ENDLIST, $type);
+  $in_itemize++;
+  }
+
+elsif (/\.nextp/)
+  {
+  push(@ONESECTION, "\n\@item\n");
+  }
+
+elsif (/\.endp/)
+  {
+  $endname = pop(@ENDLIST);
+  push(@ONESECTION, "\@end $endname\n\n");
+  $in_itemize--;
+  }
+
+# The normal .display (typewriter font) => @example, while the rm
+# form goes to @display (no change of font). For Texinfo we need a
+# blank line after @display.
+
+elsif (/\.display/)
+  {
+  $type = /rm/? "display" : "example";
+  $asis = 1 if /asis/;
+  $indisplay = 1;
+  push(@ONESECTION, "\@$type\n\n");
+  push(@ENDLIST, $type);
+  }
+
+elsif (/\.endd/)
+  {
+  $asis = 0;
+  $indisplay = 0;
+  $endname = pop(@ENDLIST);
+  push(@ONESECTION, "\@end $endname\n\n");
+  }
+
+elsif (/\.conf/)
+  {
+  ($option, $type, $default) =
+    /\.conf\s+(\S+)\s+("(?:[^"]|"")+"|\S+)\s+("(?:[^"]|"")+"|.*)/;
+
+  $option = &dequote($option);
+
+  # If $type ends with $**$ (turned into a dagger for PS version),
+  # replace with ", expanded". Remove any surrounding quotes.
+
+  $type =~ s/^"([^"]+)"/$1/;
+  $type =~ s/\$\*\*\$/, expanded/;
+
+  # Default may be quoted, and it may also have quotes that are required,
+  # if it is a string.
+
+  $default =~ s/^"(.*)"$/$1/;
+  $default =~ s/""/"/g;
+  $default = &handle_text($default);
+
+  push(@ONESECTION, "\nType: $type\@*\nDefault: $default\n\n");
+  }
+
+# Handle .startitems, .enditems, and .item
+
+elsif (/\.startitem/ || /\.enditem/) {}
+
+elsif (/\.item/)
+  {
+  $arg = $';
+  $arg =~ s/^\s*"//;
+  $arg =~ s/"\s*$//;
+  $arg = &dequote($arg);
+  $arg = &handle_text("\\**$arg**\\");
+
+  # If there are two .items in a row, we don't want to put in the
+  # separator line.
+
+#  push(@ONESECTION, "\n\@example\n");
+  push(@ONESECTION, "\n");
+  if (! $lastwasitem)
+    {
+    push(@ONESECTION, "_" x 75, "\n\n");
+    }
+#  push(@ONESECTION, "$arg\n\@end example\n\n");
+  push(@ONESECTION, "$arg\n\n");
+  $new_lastwasitem = 1;
+  }
+
+elsif (/\.option/)
+  {
+  chomp($arg = $');
+  $arg =~ s/^\s*//;
+  $arg = &dequote("-$arg");
+  $arg = &handle_text($arg);
+  }
+
+# Texinfo has no facility for emphasis bars.
+
+elsif (/\.em/) {}
+elsif (/\.nem/) {}
+
+# Just ignore any .(r)set directives pro tem (or maybe always!)
+
+elsif (/\.r?set/) {}
+
+# Ignore .space, .linelength, and .justify
+
+elsif (/\.space/ || /\.justify/ || /\.linelength/) {}
+
+# Found an SGCAL directive that isn't dealt with. Oh dear.
+# Turn the embarrassing characters into question marks and
+# output it in an emphasized way.
+
+else
+  {
+  tr/@{}/???/;
+  push(@ONESECTION, "\n\>>>>>>> $_\n") if ! /^\.( |$)/;
+  }
+
+$lastwasitem = $new_lastwasitem;
+}
+
+
+
+##################################################
+#             Flush a section                    #
+##################################################
+
+# $section_name is the name of the next section.
+# $current_section is the name of the one we have buffered up.
+# If it is unset, we are at the first section of a chapter.
+# $previous_node is the section we last flushed if it was a node.
+
+sub flush_section {
+
+# If there is no text in the section, omit it entirely. However, it
+# will have had a pointer set up at the start of the previous section.
+# Remember what to replace this with when the chapter gets flushed.
+
+my($skip) = 1;
+foreach $s (@ONESECTION)
+  {
+  if ($s !~ /^(\@cindex|\@section|\s*$)/) { $skip = 0; last }
+  }
+
+if ($skip)
+  {
+  pop @section_list;
+  $rewrite{$current_section} = $section_name;
+  @ONESECTION = ();
+  return;
+  }
+
+# There is data in the section: write it out to the chapter file
+
+if ($current_section)
+  {
+  printf ONECHAPTER ("\@node %s, %s, %s, %s\n",
+    &decomma($current_section), &decomma($section_name),
+    &decomma($previous_node), &decomma($current_up));
+  $previous_node = $current_section;
+  while(scalar(@ONESECTION))
+    { print ONECHAPTER shift(@ONESECTION); }
+  }
+else
+  {
+  while(scalar(@ONESECTION))
+    { push(@TOPSECTION, shift(@ONESECTION)); }
+  }
+}
+
+
+
+##################################################
+#          Handle a "subsection"                 #
+##################################################
+
+# A "subsection" is a set of options that must have their own
+# local menu. Do two passes; the first just collects the names
+# for the menu. This is called for .conf and .option items.
+
+sub handle_subsection{
+my($type) = $_[0];
+my($save_up) = $current_up;
+
+$current_up = $current_section? $current_section : $current_chapter;
+
+@sublist = ();
+@SUBBUFFER = ();
+
+while (<>)
+  {
+  last if /^\.end$type/;
+  push(@SUBBUFFER, $_);
+
+  # .conf takes the first non-space string as the name, but as there are
+  # duplicate confs in various parts of the spec, use the driver name to
+  # de-duplicate; .option takes the entire rest of arg as the name, but
+  # removes any sequence of ... because this disturbs TexInfo. Also, it
+  # turns @- into -.
+
+  if (/^\.$type\s+(\S+)(.*)/)
+    {
+    if ($type eq "conf")
+      {
+      $name = &handle_text($1);
+      $name .= " ($driver_name)" if ($driver_name ne "");
+      }
+    else
+      {
+      chomp($name = &handle_text("-$1$2"));
+      $name =~ s/\s*\.\.\.//g;
+
+      $name .= " ($driver_name)" if ($driver_name ne "");
+
+      # There seems to be a major problem in texinfo with the string "--".
+      # In the text it gets turned into a single hyphen. This happens if it
+      # is used as a menu item, but *not* as a node name. Exim has a command
+      # line option "--". With no special action, this appears in the menu
+      # as "-", but then the info software complains there is no node called
+      # "-". If we triple it in the menu it gets displayed OK, but building
+      # software complains about non-existent cross references etc.
+
+      # I have gone for the horrid kludge of turning it into "-<hyhen>"
+      # in the menus and nodes.
+
+      # Exim 4 has added --help, which has the same problem.
+
+      $name = "-<hyphen>" if ($name eq "--");
+      $name = "-<hyphen>help" if ($name eq "--help");
+      }
+    push(@sublist, $name);
+    }
+  }
+
+push (@ONESECTION, "\n\@sp 2\n\@menu\n");
+for ($i = 0; $i < scalar(@sublist); $i++)
+  {
+  $mitem = $sublist[$i];
+  $mitem =~ s/\@sc\{([^}]*)\}/\U$1/g;       # Get rid of small caps
+  $mitem =~ s/:/<colon>/g;                  # Get rid of colons
+  push (@ONESECTION, "* ${mitem}::\n");
+  }
+push (@ONESECTION, "\@end menu\n\n");
+
+$prevsub = $current_up;
+$processing_subsection = 1;
+while ($_ = shift(@SUBBUFFER))
+  {
+  if (/^\.$type\s+(\S+)/)
+    {
+    $name = shift @sublist;
+    $next = (scalar(@sublist))? $sublist[0] : "";
+    push @ONESECTION, sprintf("\@node %s, %s, %s, %s\n",
+      &decomma($name), &decomma($next), &decomma($prevsub),
+      &decomma($current_up));
+
+    if ($name eq "-<hyphen>")    # Fudge for Texinfo
+      {
+      push(@ONESECTION,
+	   "\@findex $name\n",
+	   "\@unnumberedsubsec --- option\n");
+      push(@ONESECTION,
+           "This option consists of two consecutive hyphens. It appears in\n",
+           "the menu as \"-<hyphen>\" because otherwise Texinfo gets\n",
+           "confused with its cross-referencing.\n");
+      }
+    elsif ($name eq "-<hyphen>help")    # Fudge for Texinfo
+      {
+      push(@ONESECTION,
+	   "\@findex $name\n",
+	   "\@unnumberedsubsec ---help option\n");
+      push(@ONESECTION,
+           "This option consists of \"help\" preceded by two consecutive\n" .
+           "hyphens. It appears in the menu as \"-<hyphen>help\" because\n" .
+           "otherwise Texinfo gets confused with its cross-referencing.\n");
+      }
+    else
+      {
+      push(@ONESECTION,
+	   "\@findex $name\n",
+	   "\@unnumberedsubsec $name option\n");
+      }
+
+    $prevsub = $name;
+    }
+
+  # Then handle as text or directive
+
+  if (substr($_, 0, 1) eq ".")
+    { handle_directive(); }
+  else
+    {
+    while($nextline = shift(@SUBBUFFER))
+      {
+      last if $nextline =~ /^(\.|\s*$)/;
+      $_ .= $nextline;
+      }
+    push(@ONESECTION, handle_text($_));
+    $_ = $nextline;
+    last if !defined($_);
+    redo;
+    }
+  }
+
+$processing_subsection = 0;
+$section_pending = 1;
+$current_up = $save_up;
+}
+
+
+
+
+##################################################
+#            Handle a single chapter             #
+##################################################
+
+sub handle_chapter{
+chop;
+($current_chapter) = /^\.chapter (.*)/;
+$current_chapter = &dequote($current_chapter);
+
+$current_chapter = $current_chapter;
+
+my($tmp) = $current_chapter;
+$tmp =~ s/\[\[\[\]\]\]/./;
+print STDERR "processing chapter: $tmp\n";
+
+# Remember the chapter name for the top-level menu
+
+push(@chapter_list, $current_chapter);
+
+# Open a temporary file to hold the chapter's text while collecting
+# all its sections for a chapter-level menu.
+
+$ONECHAPTER = "/tmp/ONECHAPTER.$$";
+open(ONECHAPTER, ">$ONECHAPTER") || die "Can't open $ONECHAPTER for writing";
+
+# Initialize for handling sections
+
+@section_list = ();
+%rewrite = ();
+@ONESECTION = ();
+@TOPSECTION = ();
+undef $current_section;
+undef $next_node;
+
+$processing_subsection = 0;
+
+$previous_node = $current_up = $current_chapter;
+$section_pending = 0;
+
+# Handle the .chapter directive as the first text of a section without
+# a section title.
+
+handle_directive();
+
+# Loop, handling each section. Assume they are sufficiently short that
+# we can buffer the text in store, in an array called ONESECTION, instead
+# of thrashing yet another file.
+
+while (<>)
+  {
+  last if /^\.chapter /;
+
+  # Handle a new section, preserving $_ (handle_text flattens it).
+  # It seems we cannot get a fullstop into a Texinfo node name; use a magic
+  # character string that gets turned back into a dot by the post-processing.
+
+  if (/^\.section\s+/)
+    {
+    $save = $_;
+    $section_name = $';
+    $section_name =~ s/(\s|\n)+$//;
+    $section_name =~ s/://;
+    $section_name = &handle_text($section_name);
+    flush_section();
+    push(@section_list, $section_name);
+    $current_section = $section_name;
+    $next_node = $section_name if !$next_node;
+    $section_pending = 0;
+    $_ = $save;
+    }
+
+  # The .startconf macro introduces a set of .conf's which must have
+  # their own local set of menus. Suspend processing the section while
+  # we sort out the menu and copy their data. This is all done in a
+  # subroutine that is shared with options.
+
+  elsif (/^\.startconf/)
+    {
+    handle_subsection("conf");
+    next;
+    }
+
+  elsif (/^\.startoption/)
+    {
+    handle_subsection("option");
+    next;
+    }
+
+  # Deal with the actual data lines; if there's a section pending
+  # start a new section on hitting some text. We hope this happens
+  # only once per chapter...
+
+  if (substr($_, 0, 1) eq ".")
+    {
+    handle_directive();
+    }
+  else
+    {
+    while($nextline = <>)
+      {
+      last if $nextline =~ /^(\.|\s*$)/;
+      $_ .= $nextline;
+      }
+    if ($section_pending && !/^\s*$/)
+      {
+      $section_name = (defined $current_section)?
+        "$current_section (continued)" :
+        "$current_chapter (continued)" ;
+      flush_section();
+      push(@section_list, $section_name);
+      $current_section = $section_name;
+      $next_node = $section_name if !$next_node;
+      $section_pending = 0;
+      }
+
+    push(@ONESECTION, handle_text($_));
+    $_ = $nextline;
+    last if !defined($_);
+    redo;
+    }
+  }
+
+# Flush any pending text, making its next field null.
+# and fudging section_name for the final section of the previous.
+
+$section_name = "";
+flush_section();
+
+# Set up section name as the start of the next chapter
+
+$section_name = "Concept Index" if (!$doing_filter);
+
+if (defined $_ && /^\.chapter (.*)/)
+  {
+  $section_name = $1;
+  $section_name = &dequote($section_name);
+  }
+$next_node = $section_name;
+
+# Write out the chapter to the CHAPTERS file, sticking the chapter
+# menu after the text that came before the first section heading. This
+# will always at least contain the chapter title.
+
+printf CHAPTERS ("\@node %s, %s, %s, Top\n",
+  &decomma($current_chapter), &decomma($next_node),
+  &decomma($previous_chapter));
+
+# The pre-section stuff; if we hit an @end menu line, it is the menu of
+# a "subsection" before the first section. In that case, we need to put
+# the chapter's menu one the end of it, and then resume with the rest of
+# the TOPSECTION data afterwards. We also need to thread together this
+# "subsection"s nodes because they are all at the same level under the
+# chapter.
+
+$in_menu = 0;
+while(scalar(@TOPSECTION))
+  {
+  $s = shift(@TOPSECTION);
+  if ($s =~ /^\@end menu/)
+    {
+    $in_menu = 1;
+    last;
+    }
+  print CHAPTERS $s;
+  }
+
+# Menu for sections
+
+undef $next_actual_section;
+undef $point_back;
+
+if (scalar(@section_list))
+  {
+  print CHAPTERS "\n\@sp 2\n\@menu\n" if ! $in_menu;
+  $next_actual_section = $section_list[0];
+  for ($i = 0; $i < scalar(@section_list); $i++)
+    {
+    $section_name = $section_list[$i];
+    $section_name =~ s/\@sc\{([^}]*)\}/\U$1/g;
+    print CHAPTERS "* ${section_name}::\n";
+    }
+  $in_menu = 1;
+  }
+print CHAPTERS "\@end menu\n\n" if $in_menu;
+
+# Remainder of topsection; we must arrange that the final @node in
+# it (which will have a blank "next" field) actually points on to
+# the next section, if any. If this happens, then the next section
+# must point back to the final @node.
+
+while(scalar(@TOPSECTION))
+  {
+  $s = shift(@TOPSECTION);
+  if ($next_actual_section && $s =~
+         /^\@node\s+([^,]+),\s*,\s*([^,]*),\s*(.*)/)
+    {
+    my($t1, $t2, $t3) = ($1, $2, $3);    # So can be decomma'd
+    printf CHAPTERS ("\@node %s, %s, %s, %s\n", &decomma($t1),
+      &decomma($next_actual_section), &decomma($t2), &decomma($t3));
+    $point_back = $1;
+    }
+  else { print CHAPTERS $s; }
+  }
+
+close(ONECHAPTER);
+open(ONECHAPTER, "$ONECHAPTER") || die "Can't open $ONECHAPTER for reading";
+
+# While copying the chapter data, check for node references to empty
+# sections that got omitted and correct them, and correct the prev pointer
+# in the first node if necessary.
+
+while ($buff = <ONECHAPTER>)
+  {
+  foreach $key (keys %rewrite)
+    {
+    $buff =~ s/$key/$rewrite{$key}/;
+    }
+  if ($point_back && $buff =~ /^\@node\s+([^,]+),\s*([^,]*),\s*([^,]*),\s*(.*)/)
+    {
+    my($t1, $t2, $t4) = ($1, $2, $4);   # so can be decomma'd
+    printf CHAPTERS ("\@node %s, %s, %s, %s\n", &decomma($t1),
+      &decomma($t2), &decomma($point_back), &decomma($t4));
+    undef $point_back;
+    }
+  else { print CHAPTERS $buff; }
+  }
+
+$previous_chapter = $current_chapter;
+
+close(ONECHAPTER);
+unlink($ONECHAPTER);
+}
+
+
+
+##################################################
+#                Main Program                    #
+##################################################
+
+# This is a two-pass algorithm. The first pass goes through and gets the
+# variable names for cross references. The second pass does the real work,
+# but we can't just read through doing the translation in one pass. We need
+# to know the list of chapters in order to build a top-level menu, and for
+# each chapter we need to know the sections in order to build a section
+# menu. Consequently, make use of temporary files to buffer things.
+
+# This script is used for the filter document and the overview as well;
+# flags tell it if it is doing one of them.
+
+$doing_filter = 0;
+$skip_else = 0;
+$in_itemize = 0;
+$lastwasitem = 0;
+
+$chapter_number = 0;
+$section_number = 0;
+
+if ($#ARGV >= 0 && $ARGV[0] eq "-filter")
+  {
+  $doing_filter = 1;
+  shift @ARGV;
+  }
+
+# First pass: Just fish out variable settings. Save the arguments so that
+# they can be reinstated for a second pass.
+
+print STDERR "Scanning for references\n";
+@save_argv = @ARGV;
+
+# Pick up any .set directives right at the very start
+
+while (<>)
+  {
+  last if ! /^\.set\s+(\S+)\s+(.+)$/;
+  $name = $1;
+  $value = $2;
+  $value =~ s/^\"?(.*?)\"?\s*$/$1/;
+  $references{$name} = $value;
+  }
+
+# Now skip everything before the first .chapter except for
+# .index lines that set up indirections. Save these so that
+# the relevant index entries can be duplicated.
+
+while (<>)
+  {
+  if (/^\.chapter\s+(.+)$/)
+    {
+    $chapter_number++;
+    $section_number = 0;
+    $current_chapter = $1;
+    $current_chapter = $current_chapter;
+    $current_section = "";
+    last;
+    }
+
+  if (/^\.index\s+([^\$]+)\s+\$it\{see\s+([^}]+)\}\s*$/)
+    {
+    $indirections{"$2"} = $1;
+    }
+  }
+
+# Do the business
+
+while (<>)
+  {
+  if (/^\.chapter\s+(.+)$/)
+    {
+    $current_chapter = $1;
+    $current_chapter = &dequote($current_chapter);
+    $current_section = "";
+    }
+  elsif (/^\.section\s+(.+)$/)
+    {
+    $current_section = $1;
+    $current_section = &dequote($current_section);
+    $current_section =~ s/://;
+    }
+  elsif (/^\.r?set\s+(\S+)\s+(.+)$/ && $1 ne "runningfoot")
+    {
+    $name = $1;
+    $value = $2;
+
+    # Only set the first time. This handles a few special cases in part2
+    # which is included in the filter text as well.
+
+    if (!exists($references{$name}))
+      {
+      $value =~ s/^\"?(.*?)\"?\s*$/$1/;
+      $value =~ s/~~chapter\./~~chapter****/;
+      $value =~ s/~~chapter/$current_chapter/;
+      $value =~ s/~~section/$current_section/;
+      $references{$name} = $value;
+      }
+    }
+  }
+
+$final_chapter = defined($current_chapter)? $current_chapter : "";
+
+# Reinstate ARGV with the list of files and proceed to the main pass
+
+@ARGV = @save_argv;
+
+# $asis is set true when processing .display asis blocks, to stop
+# characters getting interpreted.
+
+$asis = 0;
+
+# $indisplay is set true while processing .display blocks, to stop
+# .newlines being handled therein (adding @* wrecks alignment)
+
+$indisplay = 0;
+
+# $tab is set to the value of the tab stop - only one stop is ever used
+# in the Exim source.
+
+$tab = 0;
+
+# Current driver name, for disambiguating nodes
+
+$driver_name = "";
+
+# $section_pending is set if a new section is to be started on hitting
+# any data lines.
+
+$section_pending = 0;
+
+# Open a file to buffer up the entire set of chapters
+
+$CHAPTERS = "/tmp/CHAPTERS.$$";
+open(CHAPTERS, ">$CHAPTERS") || die "Can't open $CHAPTERS for writing";
+
+# Skip everything before the first .chapter
+
+while (<>) { last if /^\.chapter /; }
+
+# Loop, handling each chapter
+
+$current_up = "";
+$previous_chapter = "Top";
+$previous_node = "Top";
+
+$chapter_number = 0;
+$section_number = 0;
+
+while (defined ($_) && /^\.chapter /)
+  {
+  handle_chapter();
+  }
+
+# Output the stuff at the start of the file
+
+print "\\input texinfo\n";
+
+print "\@set{wmYear} 2003\n";
+print "\@set{wmAuthor} Philip Hazel\n";
+print "\@set{wmAuthor_email} <ph10\@\@cus.cam.ac.uk>\n";
+print "\@set{COPYRIGHT1} Copyright \@copyright{} \@value{wmYear} University of Cambridge\n";
+
+print "\@c %**start of header\n";
+
+if (!$doing_filter)
+  {
+  print "\@setfilename spec.info\n";
+  print "\@settitle Exim Specification\n";
+  }
+else
+  {
+  print "\@setfilename filter.info\n";
+  print "\@settitle Exim Filter Specification\n";
+  }
+
+print "\@paragraphindent 0\n";
+print "\@c %**end of header\n\n";
+
+
+print "\@titlepage\n";
+print "\@title The Exim Mail Transfer Agent\n";
+print "\@author \@value{wmAuthor}\n";
+
+print "\@page\n";
+print "\@vskip 0pt plus 1filll\n";
+
+print "Permission is granted to make and distribute verbatim copies of this manual provided the\n";
+print "copyright notice and this permission notice are preserved on all copies.\n";
+
+print "\@sp2\n";
+print "\@value{COPYRIGHT1}\@*\n";
+
+print "\@end titlepage\n\n";
+
+# Output the top-level node and its introductory blurb
+
+print "\@node       Top,       $chapter_list[0], (dir), (dir)\n";
+print "\@top\n";
+
+if (!$doing_filter)
+{
+print <<End;
+The Exim Mail Transfer Agent\@*
+****************************
+
+The specification of the Exim Mail Transfer Agent is converted mechanically
+into Texinfo format from its original marked-up source. Some typographic
+representations are changed, chapters and sections cannot be numbered, and
+Texinfo lacks the ability to mark updated parts of the specification with
+change bars.
+
+Because the chapters and sections are unnumbered, cross references are set to
+their names. This makes the English a bit odd, with phrases like \`see chapter
+\"Retry configuration\"\' but it seemed very cumbersome to change this to \`see
+the chapter entitled \"Retry configuration\"\' each time.
+
+Each chapter, section, and configuration option has been placed in a separate
+Texinfo node. Texinfo doesn\'t allow commas, colons, or apostrophes in node
+names, which is a rather nasty restriction. I have arranged not to use colons
+or apostrophes in section titles, but cannot bring myself to omit them from
+titles such as \"The foo, bar and baz commands\". For the corresponding node
+names I have just used multiple occurrences of \"and\", though it looks very
+ugly.
+
+If a chapter or section continues after a list of configuration options that is
+not in a new section, a new node is started, using the chapter\'s or section\'s
+name plus \`(continued)\'. The \`Up\' operation from a section or configuration
+option returns to the start of the current chapter; the \`Up\' operation at a
+chapter start returns to the top of the document; the \`Up\' in a list of
+configuration options within a section returns to the top of that section.
+
+A number of drivers have options with the same name, so they have been
+disambiguated by adding the name of the driver to its option names in order to
+create node names. Thus, for example, the specification of the \`command\'
+options of the \`lmtp\' and \`pipe\' transports are in nodes called \`command
+(lmtp)\' and \`command (pipe)\', respectively.
+
+End
+}
+
+else
+{
+print <<End;
+Filtering with the Exim Mail Transfer Agent\@*
+*******************************************
+
+The specifications of the Exim Mail Transfer Agent\'s filtering facility is
+converted mechanically into Texinfo format from its original marked-up source.
+Some typographic representations are changed, chapters and sections cannot be
+numbered, and Texinfo lacks the ability to mark updated parts of the
+specification with change bars.
+
+Because the chapters and sections are unnumbered, cross references are set to
+their names. This makes the English a bit odd, with phrases like \`see section
+\"Multiple personal mailboxes\"\' but it seemed very cumbersome to change this to
+\`see the section entitled \"Multiple personal mailboxes\"\' each time.
+
+End
+}
+
+# Output the top-level menu
+
+print "\@menu\n";
+
+while (scalar(@chapter_list))
+  {
+  $name = &decomma(shift(@chapter_list));
+  print "* ${name}::\n";
+  }
+print "* Concept Index::\n" if (!$doing_filter);
+print "\@end menu\n\n";
+
+# Copy the chapters, then delete the temporary file
+
+close(CHAPTERS);
+open(CHAPTERS, "$CHAPTERS") || die "Can't open $CHAPTERS for reading";
+print $buff while($buff = <CHAPTERS>);
+close(CHAPTERS);
+unlink($CHAPTERS);
+
+# Output the finishing off stuff
+
+if (!$doing_filter)
+  {
+  print "\@node Concept Index, , $final_chapter, Top\n";
+  print "\@chapter Concept Index\n\@printindex cp\n";
+  print "\@chapter Function Index\n\@printindex fn\n";
+  }
+print "\@contents\n";
+print "\@bye\n";
+
+# End

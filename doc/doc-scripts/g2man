@@ -1,0 +1,251 @@
+#! /usr/bin/perl -w
+# $Cambridge: exim/doc/doc-scripts/g2man,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+
+# Script to find the command line options in the Exim spec, and turn them
+# into a man page, because people like that.
+
+
+##################################################
+#            De-markup one line                  #
+##################################################
+
+sub process {
+my($x) = $_[0];
+
+# Hide SGCAL escapes
+
+$x =~ s/\@\@/&&a/g;         # @@
+$x =~ s/\@\\/&&b/g;         # @\
+$x =~ s/\@</&&l/g;          # @<
+$x =~ s/\@>/&&g/g;          # @>
+$x =~ s/\@\{/&&c/g;         # @{
+$x =~ s/\@\}/&&d/g;         # @}
+$x =~ s/\@#/&&s/g;          # @#
+$x =~ s/\@(.)/$1/g;         # all other @s
+
+# Convert SGCAL markup
+
+$x =~ s/#/ /g;                            # turn #   into a space
+$x =~ s/\$~//g;                           # turn $~  into nothing
+$x =~ s/__/_/g;                           # turn __  into _
+$x =~ s/\$sc\{([^\}]*?)\}/$1/g;           # turn $sc{xxx}   into xxx
+$x =~ s/\$st\{([^\}]*?)\}/$1/g;           # turn $st{xxx}   into xxx
+$x =~ s/\$si\{([^\}]*?)\}/$1/g;           # turn $si{xxx}   into xxx
+$x =~ s/\$tt\{([^\}]*?)\}/$1/g;           # turn $tt{xxx}   into xxx
+$x =~ s/\$it\{([^\}]*?)\}/$1/g;           # turn $it{xxx}   into xxx
+$x =~ s/\$bf\{([^\}]*?)\}/$1/g;           # turn $bf{xxx}   into xxx
+$x =~ s/\$rm\{([^\}]*?)\}/$1/g;           # turn $rm{xxx}   into xxx
+$x =~ s/\$cb\{([^\}]*?)\}/$1/g;           # turn $cb{xxx}   into xxx
+
+
+$x =~ s/\\\\([^\\]*?)\\\\/\U$1/g;         # turn \\xxx\\    into XXX
+$x =~ s/\\\(([^)]*?)\)\\/$1/g;            # turn \(xxx)\    into xxx
+$x =~ s/\\\"([^\"]*?)\"\\/$1/g;           # turn \"xxx"\    into xxx
+$x =~ s/\\\%([^\%]*?)\%\\/"$1"/g;         # turn \%xxx%\    into "xxx"
+
+$x =~   s/\\\?([^?]*?)\?\\/$1/g;          # turn \?URL?\    into URL
+$x =~   s/<<([^>]*?)>>/<$1>/g;            # turn <<xxx>>    into <xxx>
+$x =~   s/\\\$([^\$]*?)\$\\/\$$1/g;       # turn \$xxx$\    into $xxx
+$x =~   s/\\\-([^\\]*?)\-\\/\-$1/g;       # turn \-xxx-\    into -xxx
+$x =~   s/\\\*\*([^*]*?)\*\*\\/$1/g;      # turn \**xxx**\  into xxx
+$x =~   s/\[\(([\w\/]*)\)\]//g;           # remove inline HTML
+
+$x =~ s/\\\*([^*]*?)\*\\/$1/g;            # turn \*xxx*\    into xxx
+$x =~ s/\\([^\\]*?)\\/"$1"/g;             # turn \xxx\      into "xxx"
+$x =~ s/\$\*\$/\*/g;                      # turn $*$        into *
+$x =~ s/\$t\b//g;                         # turn $t         into nothing
+
+$x =~ s/::([^:]+)::/$1:/g;                # turn ::xxx::    into xxx:
+
+# Put back escaped SGCAL specials
+
+$x =~ s/&&a/\@/g;             # @@ => @
+$x =~ s/&&b/\\/g;             # @\ => \          
+$x =~ s/&&l/</g;              # @< => <
+$x =~ s/&&g/>/g;              # @> => >
+$x =~ s/&&c/\@{/g;            # @{ => @{
+# $x =~ s/&&rc/{/g;             # 
+# $x =~ s/&&rd/}/g;             # 
+$x =~ s/&&d/\@}/g;            # @} => @}
+$x =~ s/&&s/#/g;              # @#
+
+# Remove any null flags ($$)
+
+$x =~ s/\$\$//g;
+
+$x;
+}
+
+
+##################################################
+#             De-reference a paragraph           #
+##################################################
+
+# Remove sentences or parenthetical comments that contain references.
+
+sub deref {
+my($t) = $_[0];
+
+$t =~ s/^(\n*)[^.()]+~~[^.]+\.\s*/$1/;
+$t =~ s/\s?\.[^.()]+~~[^.]+\././g;
+$t =~ s/\s?\([^~).]+~~[^)]+\)//g;
+
+$t;
+}
+
+
+##################################################
+#            Quote what needs quoting            #
+##################################################
+
+# This is for anything that must be quoted in the final output, independent
+# of whether it is in "asis" text or not.
+
+sub mustquote {
+my($t) = $_[0];
+$t =~ s/(?<!\\)-/\\-/g;
+
+$t;
+}
+
+
+
+##################################################
+#              Main Program                      #
+##################################################
+
+open(IN, "spec.src") || die "Can't open spec.src\n";
+open(OUT, ">exim.8" ) || die "Can't open exim.8\n";
+
+print OUT <<End;
+.TH EXIM 8
+.SH NAME
+exim \\- a Mail Transfer Agent
+.SH SYNOPSIS
+.B exim [options] arguments ...
+.br
+.B mailq [options] arguments ...
+.br
+.B rsmtp [options] arguments ...
+.br
+.B rmail [options] arguments ...
+.br
+.B runq [options] arguments ...
+.br
+.B newaliases [options] arguments ...
+
+.SH DESCRIPTION
+Exim is a mail transfer agent (MTA) developed at the University of Cambridge.
+It is a large program with very many facilities. For a full specification, see
+the reference manual. This man page contains only a description of the command
+line options. It has been automatically generated from the reference manual
+source, which is why the formatting is poor in some places.
+
+.SH SETTING OPTIONS BY PROGRAM NAME
+.TP 10
+\\fBmailq\\fR
+Behave as if the option \\-bp were present before any other options. The \\-bp
+option requests a listing of the contents of the mail queue on the standard
+output.
+.TP
+\\fBrsmtp\\fR
+Behaves as if the option \\-bS were present before any other options, for
+compatibility with Smail. The \\-bS option is used for reading in a number of
+messages in batched SMTP format.
+.TP
+\\fBrmail\\fR
+Behave as if the \\-i and \\-oee options were present before any other options,
+for compatibility with Smail. The name \\fBrmail\\fR is used as an interface by
+some UUCP systems. The \\-i option specifies that a dot on a line by itself
+does not terminate a non\\-SMTP message; \\-oee requests that errors detected in
+non\\-SMTP messages be reported by emailing the sender.
+.TP
+\\fBrunq\\fR
+Behave as if the option \\-q were present before any other options, for 
+compatibility with Smail. The \\-q option causes a single queue runner process
+to be started. It processes the queue once, then exits.
+.TP
+\\fBnewaliases\\fR
+Behave as if the option \\-bi were present before any other options, for
+compatibility with Sendmail. This option is used for rebuilding Sendmail's
+alias file. Exim does not have the concept of a single alias file, but can be
+configured to run a specified command if called with the \\-bi option.
+
+
+.SH OPTIONS
+.TP 10
+End
+
+while (<IN>) { last if /^\.startoptions/; }
+die "Can't find start of options\n" if ! defined $_;
+
+# Find the start of the first option
+
+while (<IN>) { last if /^\.option/; }
+die "Can't find start of first option\n" if ! defined $_;
+
+# Loop for each individual option
+
+while (/^\.option (.*)/)
+  {
+  $nlpending = 0;
+  $itemtext = "";
+
+  printf OUT ("\\fB\\-%s\\fR\n", &mustquote(&process($1)));
+
+  # Process the data for the option
+
+  while (<IN>)
+    {
+    last if /^\.(?:option|endoptions)/;
+    next if /^\.index/;
+    next if /^\.em\s*$/;
+    next if /^\.nem\s*$/;
+
+    if (/^\.display(?:\s+flow)?(?:\s+rm)?\s*$/)
+      {
+      print OUT &mustquote(&deref($itemtext));
+      $itemtext = "";
+      print OUT "\n";
+      while (($_ = <IN>) !~ /^\.endd/)
+        {
+        print OUT "  ", &mustquote(&deref(&process($_))) if ! /^\./;
+        }
+      $nlpending = 1;
+      }
+
+    elsif (/^\.display asis\s*$/)
+      {
+      print OUT &mustquote(&deref($itemtext));
+      $itemtext = "";
+      print OUT "\n";
+      while (($_ = <IN>) !~ /^\.endd/)
+        {
+        print OUT &mustquote("  $_");
+        }
+      $nlpending = 1;
+      }
+
+    elsif (/^\s*$/)
+      {
+      print OUT &mustquote(&deref($itemtext));
+      $itemtext = "";
+      $nlpending++;
+      }
+
+    else
+      {
+      while ($nlpending > 0)
+        {
+        $itemtext .= "\n";
+        $nlpending--;
+        }
+      $itemtext .= &process($_);
+      }
+    }
+
+  print OUT &mustquote(&deref($itemtext));
+  print OUT ".TP\n";
+  }
+
+# End of g2man

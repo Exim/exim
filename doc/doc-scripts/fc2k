@@ -1,0 +1,344 @@
+#! /usr/bin/perl -w
+# $Cambridge: exim/doc/doc-scripts/fc2k,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+
+# Script to read the HTML table of contents for the Exim FAQ and create an
+# HTML KWIC index out of it.
+
+
+########################################################################
+# List of words to ignore - kept alphabetically for reference, but they
+# don't have to be in order.
+
+$ignore_list = "
+
+a ability able about address addresses addressed affect affected
+after against all allow allowed allows already also although always am an and
+and/or any anybody anyone anything anywhere are aren't arrange arrive as at
+
+back bad based basically be because been behave behaviour being best between
+bob both bug build builds built busy but by
+
+call called calls can can't cannot causes causing central certain code comes
+coming command commands complain complaining complains configure configured
+conjunction contact contain contains contained correct correctly could
+currently customer
+
+day days defined deliver delivers delivered delivery deliveries did do does
+doesn't doing don't down during
+
+e-mail e-mails each easy else email emails entirely entries entry especially
+etc even ever every example exim exim's experiencing
+
+far few file files find fine fly following for form found from fully
+
+get gets getting given gives giving go goes going got
+
+handle handles handled handling happen happens has have haven't having helpful
+him host hosts how however
+
+i i'd i'm i've if in indeed instead into is issue issues isn't it it's its
+
+jim just
+
+keep keeps know knows
+
+like line lines look looked looking lot
+
+machine machines machine's mail mails main make me mean means message messages
+might more must my myself
+
+near need neither no nor not now
+
+occur of off often ok on one only or other our out over own
+
+part parts particular per place possibility possible present problem problems
+put puts
+
+quite
+
+raised rather really reason rid right round run runs
+
+same say saying see seeing seem seems seen sees set setting she should so some
+somehow something sometimes stand state statement still strange such supposed
+system systems
+
+take takes than that the their them then there these they things think this
+those to try though to/for told too tried tries trying
+
+under until up use uses used using usually
+
+valid value values via
+
+want wanted wanting was way we we've well what what's when where whereabouts
+whenever whether which while who whose why will with within without wish won't
+wondered work worked working works would wrong
+
+xxx
+
+yet yyy
+
+";
+########################################################################
+
+
+# The regular expression fragment that defines the separator between words
+
+$wordgap = "(?:[]().?,;:\"']|(?><[^>]*>))*(?:\\s+|\$)(?:[[(\"'`]|(?><[^>]*>))*";
+
+
+########################################################################
+# Function to add to a length to accommodate HTML stuff
+
+sub setlen{
+my($len, $s) = @_;
+
+$len += length($1) while ($s =~ /(<\/?[a-z]+>)/ig);
+$len += 1 while ($s =~ /&#\d+;/g);
+
+return $len;
+}
+
+
+########################################################################
+# Function to write out the list of initials with references
+
+sub write_initials {
+my($this_initial) = "$_[0]";
+
+print OUT "<p>\n&nbsp;&nbsp;";
+
+foreach $initial (sort keys %initials)
+  {
+  if ($initial eq $this_initial)
+    {
+    print OUT "&nbsp;&nbsp;&nbsp;<font size=7 color=\"#FF0A0A\"><b>$initial</b></font>&nbsp;";
+    }
+  else
+    {
+    print OUT "<a href=\"FAQ-KWIC_$initial.html\">&nbsp;&nbsp;$initial</a>";
+    }
+  }
+
+print OUT "&nbsp;"x4 . "<a href=\"FAQ.html#TOC\">FAQ Contents</a>\n</p>\n";
+}
+
+
+
+########################################################################
+# The main program. We can pick out the contents lines because they lie
+# between <li> and </li> in the file, sometimes on more than one physical
+# line.
+
+# Turn the list of ignorable words into a hash for quick lookup. Add the
+# empty word to the list.
+
+@words = split /\s+/, $ignore_list;
+foreach $word (@words) { $ignore{$word} = 1; }
+$ignore{""} = 1;
+
+
+# Open the file and do the job
+
+open(IN, "html/FAQ.html") || die "Can't open html/FAQ.html\n";
+
+while (<IN>)
+  {
+  next unless /^<li>/;
+  $_ .= <IN> while !/<\/li>$/;
+  chomp;
+  s/\n\s*/ /g;
+
+  # Extract the operative text into $text, with the beginning in $pre.
+
+  my($pre,$text,$post) = /^<li>(.*<\/a>:(?:&nbsp;)*)(.*)<br><br><\/li>$/;
+
+  # Now split into words. As well as punctuation, there may be HTML thingies
+  # between words. Absorb them into the separators.
+
+  my(@words) = split /$wordgap/, $text;
+
+  # Lower case all the words, and remove those that we don't want.
+  # Then keep a list of all the used initials.
+
+  REMOVE_IGNORE:
+  for ($i = 0; $i < scalar @words; $i++)
+    {
+    my($word) = $words[$i] = "\L$words[$i]\E";
+
+    # Remove certain forms of word and those on the ignore list
+
+    if (defined $ignore{$word} ||  # word on ignore list
+        $word =~ /^-+$/        ||  # word consists entirely of hyphens
+        $word =~ /^-[^a-z]/    ||  # follows leading hyphen with non-letter
+        $word =~ /^[^a-z-]/    ||  # starts with a non-letter or hyphen
+        $word =~ /[@^.]/           # contains @ or ^ or .
+       )
+      {
+      splice(@words, $i, 1);
+      redo REMOVE_IGNORE if $i < scalar @words;
+      }
+      
+    # Otherwise, build up a list of initials
+     
+    else
+      {
+      my($inword) = $word; 
+      $inword =~ s/^-//; 
+      $initial = substr($inword, 0, 1);
+      $initials{"\U$initial\E"} = 1;
+      }
+    }
+
+  # Create the lines for the KWIC index, and store them in associative
+  # arrays, with the keyword as the key. That will get them sorted
+  # automatically.
+
+  while (scalar @words > 0)
+    {
+    my($word) = shift @words;
+    my($pretext, $casedword, $posttext) =
+      $text =~ /(.*?)(?<![a-z])(\Q$word\E)(?![a-z])(.*)/i;
+      
+    # Remove a leading hyphen from $word so that it sorts according to
+    # the leading letter. What is actually output is $casedword, which
+    # retains the hyphen.
+    
+    $word =~ s/^-//;   
+
+    my($prelen) = length $pretext;
+    my($postlen) = length $posttext;
+
+    # We want to chop excessively long entries on either side. We can't set
+    # a fixed length because of the HTML control data. Call a function to
+    # add the given length to allow for HTML stuff. This is crude, but it
+    # does roughtly the right thing.
+
+    my($leftlen) = &setlen(70, $pretext);
+    my($rightlen) = &setlen(70, $posttext);
+
+    if ($prelen > $leftlen)
+      {
+      my($cutoff) = $leftlen;
+      $cutoff++
+        while ($cutoff < $prelen && substr($pretext, -$cutoff, 1) ne " ");
+      $pretext = "... " . substr($pretext, -$cutoff);
+      }
+
+    if ($postlen > $rightlen)
+      {
+      my($cutoff) = $rightlen;
+      $cutoff++
+        while ($cutoff < $postlen && substr($posttext, $cutoff, 1) ne " ");
+      $posttext = substr($posttext, 0, $cutoff) . "...";
+      }
+
+    # If the pre text has a font-ending not preceded by a font beginning
+    # (i.e. we've chopped the beginning off), we must insert a beginning.
+
+    while ($pretext =~ /^(.*?)<\/(small|tt|b|i)>/ && $1 !~ /<$2>/)
+      {
+      $pretext = "<$2>" . $pretext;
+      }
+
+    # If the pre text ends in a special font, we have to terminate that,
+    # and reset it at the start of the post text.
+
+    my($poststart) = "";
+
+    while ($pretext =~ /<(small|tt|b|i)>(?!.*?<\/\1>)/)
+      {
+      $pretext .= "</$1>";
+      $poststart .= "<$1>";
+      }
+
+    # If the post text changes font but doesn't close it, we must add
+    # the closure.
+
+    while ($posttext =~ /<(small|tt|b|i)>(?!.*?<\/\1>)/)
+      {
+      $posttext .= "</$1>";
+      }
+
+    # Remove any unnecessary changes in either of them
+
+    $pretext  =~ s/<(small|tt|b|i)>\s*<\/\1>//g;
+    $posttext =~ s/<(small|tt|b|i)>\s*<\/\1>//g;
+
+    # Save the texts in associative arrays. Add the question number to
+    # the end of the word to make the key.
+
+    $pre =~ /(Q\d\d\d\d)/;
+    my($key) = "$word-$1";
+
+    $tableft{$key}  = $pre . $pretext;
+    $tabright{$key} = $poststart .
+      "<font color=\"#FF0A0A\">$casedword</font>" . $posttext;
+    }
+  }
+
+close(IN);
+
+# Now write out the files. Each letter in the index goes in a different file
+
+$current_initial = "";
+
+foreach $key (sort keys %tableft)
+  {
+  my($initial) = $key =~ /^(.)/;
+  $initial = "\U$initial\E";
+
+  if ($initial ne $current_initial)
+    {
+    if ($current_initial ne "")
+      {
+      print OUT "</table>\n";
+      &write_initials($current_initial);
+      print OUT "</body>\n</html>\n";
+      close OUT;
+      }
+
+    open (OUT, ">html/FAQ-KWIC_$initial.html") ||
+      die "Can't open html/FAQ-KWIC_$initial.html\n";
+    print OUT
+      "<html>\n" .
+      "<head>\n" .
+      "<title>Exim FAQ: KWIC index section $initial</title>\n" .
+      "</head>\n" .
+      "<body bgcolor=\"#F8F8F8\" text=\"#00005A\" link=\"#0066FF\" alink=\"#0066FF\" vlink=\"#000099\">\n" .
+      "<h1>Exim FAQ: Keyword-in-context index</h1>\n";
+
+    write_initials($initial);
+
+    if ($initial eq "A")
+      {
+      print OUT <<End ;
+<p>
+This <i>Keyword-in-context</i> index for the Exim FAQ is generated
+automatically from the FAQ source. Browsers may not display the data very
+prettily, but it is hoped that it may provide a useful aid for finding things
+in the FAQ.
+</p>
+End
+      }
+
+    print OUT "<table border>\n";
+    $current_initial = $initial;
+    }
+
+  print OUT "<tr>\n";
+  print OUT "<td align=\"right\">$tableft{$key}</td>\n";
+  print OUT "<td align=\"left\">$tabright{$key}</td>\n";
+  print OUT "</tr>\n";
+  }
+
+# Close the final file
+
+if ($current_initial ne "")
+  {
+  print OUT "</table>\n";
+  &write_initials($current_initial);
+  print OUT "</body>\n</html>\n";
+  close OUT;
+  }
+
+# End

@@ -1,0 +1,1451 @@
+#! /usr/bin/perl -w
+# $Cambridge: exim/doc/doc-scripts/g2h,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+
+# This is a script that turns the SGCAL source of Exim's documentation into
+# HTML. It can be used for both the filter document and the main Exim
+# specification. The syntax is
+#
+#    g2h [-split no|section|chapter] <source file> <title>
+#
+# Previously, -split section was used for the filter document, and -split
+# chapter for the main specification. However, the filter document has gained
+# some chapters, so they are both split by chapter now. Only one -split can be
+# specified.
+#
+# A number of assumptions about the style of the input markup are made.
+#
+# The HTML is written into the directory html/ using the source file base
+# name as its base.
+
+# Written by Philip Hazel
+# Starting 21-Dec-2001
+# Last modified 26-Nov-2003
+
+#############################################################################
+
+
+
+##################################################
+#             Open an output file                #
+##################################################
+
+sub openout {
+open (OUT, ">$_[0]") || die "Can't open $_[0]\n";
+
+# Boilerplate
+
+print OUT "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n";
+
+print OUT "<html>\n<head>\n<title>$doctitle" .
+  (($thischapter > 0)? " chapter $thischapter" : "") .
+  (($thissection > 0)? " section $thissection" : "") .
+  "</title>\n</head>\n" .
+  "<body bgcolor=\"#F8F8F8\" text=\"#00005A\" " .
+  "link=\"#FF6600\" alink=\"#FF9933\" vlink=\"#990000\">\n";
+
+# Forward/backward links when chapter splitting
+
+if ($chapsplit)
+  {
+  print OUT "<font size=2>\n";
+  printf OUT ("<a href=\"${file_base}_%s.html\">Previous</a>&nbsp;&nbsp;\n",
+    $thischapter - 1) if $thischapter > 1;
+  printf OUT ("<a href=\"${file_base}_%s.html\">Next</a>&nbsp;&nbsp;\n",
+    $thischapter + 1) if $thischapter < $maxchapter;
+  print OUT "<a href=\"${file_base}_toc.html\">Contents</a>\n";
+  print OUT "&nbsp;" x 6, "($doctitle)\n</font><hr>\n";
+  }
+
+# Forward/backward links when section splitting
+
+elsif ($sectsplit)
+  {
+  print OUT "<font size=2>\n";
+  printf OUT ("<a href=\"${file_base}_%s.html\">Previous</a>&nbsp;&nbsp;\n",
+    $thissection - 1) if $thissection > 1;
+  printf OUT ("<a href=\"${file_base}_%s.html\">Next</a>&nbsp;&nbsp;\n",
+    $thissection + 1) if $thissection < $maxsection;
+  print OUT "<a href=\"${file_base}_toc.html\">Contents</a>\n";
+  print OUT "&nbsp;" x 6, "($doctitle)\n</font><hr>\n";
+  }
+
+# Save the final component of the current file name (for TOC creation)
+
+$_[0] =~ /^(?:.*)\/([^\/]+)$/;
+$current_file = $1;
+}
+
+
+
+##################################################
+#              Close an output file              #
+##################################################
+
+# The first argument is one of:
+#
+# "CHAP"   a chapter is ending
+# "SECT"   a section is ending
+# ""       the whole thing is ending
+#
+# In the first two cases $thischapter and $thissection contain the new chapter
+# and section numbers, respectively. In the third case, we can deduce what is
+# ending from the flags. The variables contain the current values.
+
+sub closeout {
+my($s) = $_[0];
+
+print OUT "<hr>\n" if !$lastwasrule;
+&setpar(0);
+
+if ($s eq "CHAP")
+  {
+  print OUT "<font size=2>\n";
+  printf OUT ("<a href=\"${file_base}_%s.html\">Previous</a>&nbsp;&nbsp;",
+    $thischapter - 2) if ($thischapter > 2);
+  print OUT "<a href=\"${file_base}_$thischapter.html\">Next</a>&nbsp;&nbsp;";
+  print OUT "<a href=\"${file_base}_toc.html\">Contents</a>\n";
+  print OUT "&nbsp;" x 6, "($doctitle)\n</font>\n";
+  }
+
+elsif ($s eq "SECT")
+  {
+  print OUT "<font size=2>\n";
+  printf OUT ("<a href=\"${file_base}_%s.html\">Previous</a>&nbsp;&nbsp;",
+    $thissection - 2) if ($thissection > 2);
+  print OUT "<a href=\"${file_base}_$thissection.html\">Next</a>&nbsp;&nbsp;";
+  print OUT "<a href=\"${file_base}_toc.html\">Contents</a>\n";
+  print OUT "&nbsp;" x 6, "($doctitle)\n</font>\n";
+  }
+
+else
+  {
+  if ($chapsplit)
+    {
+    print OUT "<font size=2>\n";
+    printf OUT ("<a href=\"${file_base}_%s.html\">Previous</a>&nbsp;&nbsp;",
+      $thischapter - 1) if ($thischapter > 1);
+    print OUT "<a href=\"${file_base}_toc.html\">Contents</a>\n";
+    print OUT "&nbsp;" x 6, "($doctitle)\n</font>\n";
+    }
+  elsif ($sectsplit)
+    {
+    print OUT "<font size=2>\n";
+    printf OUT ("<a href=\"${file_base}_%s.html\">Previous</a>&nbsp;&nbsp;",
+      $thissection - 1) if ($thissection > 1);
+    print OUT "<a href=\"${file_base}_toc.html\">Contents</a>\n";
+    print OUT "&nbsp;" x 6, "($doctitle)\n</font>\n";
+    }
+  }
+
+print OUT "</body>\n</html>\n";
+close(OUT);
+}
+
+
+
+##################################################
+#            Handle an index line                #
+##################################################
+
+# This function returns an empty string so that it can be called as part
+# of an s operator when handling index items within paragraphs. The two
+# arguments are:
+#
+#   the text to index, already converted to HTML
+#   1 for the concept index, 0 for the options index
+
+sub handle_index {
+my($text) = $_[0];
+my($hash) = $_[1]? \%cindex : \%oindex;
+my ($key,$ref);
+
+# Up the index count, and compute the reference to the file and the
+# label within it.
+
+$index_count++;
+$ref = $chapsplit?
+      "${file_base}_$thischapter.html#IX$index_count"
+  : $sectsplit?
+      "${file_base}_$thissection.html#IX$index_count"
+  :
+      "#IX$index_count";
+
+# Create the index key, which consists of the text with all the HTML
+# coding and any leading quotation marks removed. Turn the primary/secondary
+# splitting string "||" into ":".
+
+$text =~ s/\|\|/:/g;
+
+$key = "$text";
+$key =~ s/<[^>]+>//g;
+$key =~ s/&#(\d+);/chr($1)/eg;
+$key =~ s/^`+//;
+
+# Turn all spaces in the text into &nbsp; so that they don't ever split.
+# However, there may be spaces in the HTML that already exists in the
+# text, so we have to avoid changing spaces inside <>.
+
+$text =~ s/ (?=[^<>]*(?:<|$))/&nbsp;/g;
+
+# If this is the first encounter with this index key, we create a
+# straightforward reference.
+
+if (!defined $$hash{$key})
+  {
+  $$hash{$key} = "<a href=\"$ref\">$text</a>";
+  }
+
+# For the second and subsequent encounters, add "[2]" etc. to the
+# index text. We find out the number by counting occurrences of "<a"
+# in the existing string.
+
+else
+  {
+  my($number) = 1;
+  $number++ while $$hash{$key} =~ /<a/g;
+  $$hash{$key} .= " &nbsp;<a href=\"$ref\">[$number]</a>";
+  }
+
+# Place the name in the current output
+
+print OUT "<a name=\"IX$index_count\"></a>\n";
+return "";
+}
+
+
+
+##################################################
+#             Handle emphasis bars               #
+##################################################
+
+# Set colour green for text marked with "emphasis bars", keeping
+# track in case the matching isn't perfect.
+
+sub setinem {
+if ($_[0])
+  {
+  return "" if $inem;
+  $inem = 1;
+  return "<font color=green>\n";
+  }
+else
+  {
+  return "" if !$inem;
+  $inem = 0;
+  return "</font>\n";
+  }
+}
+
+
+
+##################################################
+#          Convert marked-up text                #
+##################################################
+
+# This function converts text from SGCAL markup to HTML markup, with a couple
+# of exceptions:
+#
+# 1. We don't touch $t because that is handled by the .display code.
+#
+# 2. The text may contain embedded .index, .em, and .nem directives. We
+#    handle .em and .nem, but leave .index because it must be done during
+#    paragraph outputting.
+#
+# In a non-"rm" display, we turn $rm{ into cancelling of <tt>. Otherwise
+# it is ignored - in practice it is only used in that special case.
+#
+# The order in which things are done in this function is highly sensitive!
+
+sub handle_text {
+my($s) = $_[0];
+my($rmspecial) = $_[1];
+
+# Escape all & characters (they aren't involved in markup) but for the moment
+# use &+ instead of &# so that we can handle # characters in the text.
+
+$s =~ s/&/&+038;/g;
+
+# Turn SGCAL literals into HTML literals that don't look like SGCAL
+# markup, so won't be touched by what follows. Again, use + instead of #.
+
+$s =~ s/@@/&+064;/g;
+$s =~ s/@([^@])/"&+".sprintf("%0.3d",ord($1)).";"/eg;
+
+# Now turn any #s that are markup into spaces, and convert the previously
+# created literals to the correct form.
+
+$s =~ s/#/&nbsp;/g;
+$s =~ s/&\+(\d+);/&#$1;/g;
+
+# Some simple markup that doesn't involve argument text.
+
+$s =~ s/\$~//g;                   # turn $~  into nothing
+$s =~ s/__/_/g;                   # turn __  into _
+$s =~ s/--(?=$|\s|\d)/&#150;/mg;  # turn --  into endash in text or number range
+$s =~ s/\(c\)/&copy;/g;           # turn (c) into copyright symbol
+
+# Use double quotes
+
+# $s =~ s/`([^']+)'/``$1''/g;
+
+$s =~ s/`([^']+)'/&#147;$1&#148;/g;
+
+# This is a fudge for some specific usages of $<; can't just do a global
+# is it occurs in things like "$<variable name>" as well.
+
+$s =~ s/(\d)\$<-/$1-/g;  # turn 0$<- into 0-
+$s =~ s/\$<//g;          # other $< is ignored
+
+# Turn <<...>> into equivalent SGCAL markup that doesn't involve the use of
+# < and >, and then escape the remaining < and > characters in the text.
+
+$s =~ s/<<([^>]*?)>>/<\$it{$1}>/g;   # turn <<xxx>> into <$it{xxx}>
+$s =~ s/</&#060;/g;
+$s =~ s/>/&#062;/g;
+
+# Other markup...
+
+$s =~ s/\$sm\{//g;              # turn $sm{     into nothing
+$s =~ s/\$smc\{//g;             # turn $smc{    into nothing
+$s =~ s/\$smi\{//g;             # turn $smi{    into nothing
+
+$s =~ s/\$tt\{([^\}]*?)\}/<tt>$1<\/tt>/g;    # turn $tt{xxx} into <tt>xxx</tt>
+$s =~ s/\$it\{([^\}]*?)\}/<em>$1<\/em>/g;    # turn $it{xxx} into <em>xxx</em>
+$s =~ s/\$bf\{([^\}]*?)\}/<b>$1<\/b>/g;      # turn $bf{xxx} into <b>xxx</b>
+
+$s =~ s/\$cb\{([^\}]*?)\}/<tt><b>$1<\/b><\/tt>/g; # turn $cb{xxx} into
+                                                  #   <tt><b>xxx</b></tt>
+
+$s =~ s/\\\\([^\\]*?)\\\\/<font size=-1>$1<\/font>/g; # turn \\xxx\\ into
+                                                      #  small font
+$s =~ s/\\\?([^?]*?)\?\\/<a href="$1">$1<\/a>/g;      # turn \?URL?\ into URL
+
+$s =~ s/\\\(([^)]*?)\)\\/<i>$1<\/i>/g;       # turn \(xxx)\ into <i>xxx</i>
+$s =~ s/\\\"([^\"]*?)\"\\/<tt>$1<\/tt>/g;    # turn \"xxx"\ into <tt>xxx</tt>
+
+
+$s =~ s/\\\$([^\$]*?)\$\\/<tt>\$$1<\/tt>/g;  # turn \$xxx$\   into <tt>$xxx</tt>
+$s =~ s/\\\-([^\\]*?)\-\\/<i>-$1<\/i>/g;     # turn \-xxx-\   into -italic
+$s =~ s/\\\*\*([^*]*?)\*\*\\/<b>$1<\/b>/g;   # turn \**xxx**\ into <b>xxx</b>
+$s =~ s/\\\*([^*]*?)\*\\/<i>$1<\/i>/g;       # turn \*xxx*\   into italic
+$s =~ s/\\%([^*]*?)%\\/<b>$1<\/b>/g;         # turn \%xxx%\   into bold
+$s =~ s/\\([^\\]*?)\\/<tt>$1<\/tt>/g;        # turn \xxx\     into <tt>xxx</tt>
+$s =~ s/::([^\$]*?)::/<i>$1:<\/i>/g;         # turn ::xxx::   into italic:
+$s =~ s/\$\*\$/\*/g;                         # turn $*$       into *
+
+# Handle $rm{...}
+
+if ($rmspecial)
+  {
+  $s =~ s/\$rm\{([^\}]*?)\}/<\/tt>$1<tt>/g;  # turn $rm{xxx} into </tt>xxx<tt>
+  }
+else
+  {
+  $s =~ s/\$rm\{([^\}]*?)\}/$1/g;            # turn $rm{xxx} into xxx
+  }
+
+# There is one case where the terminating } of an escape sequence is
+# in another paragraph - this follows $sm{ - it can be fixed by
+# removing any stray } in a paragraph that contains no { chars.
+
+$s =~ s/\}//g if !/\{/;
+
+# Remove any null flags ($$)
+
+$s =~ s/\$\$//g;
+
+# If the paragraph starts with $c\b, remove it.
+
+$s =~ s/^\$c\b//;
+
+# If the paragraph starts with $e\b, indent it slightly.
+
+$s =~ s/^\$e\b/&nbsp;&nbsp;/;
+
+# Handle .em, and .nem directives that occur within the paragraph
+
+$s =~ s/\.em\s*\n/&setinem(1)/eg;
+$s =~ s/\.nem\s*\n/&setinem(0)/eg;
+
+# Explicitly included HTML
+
+$s =~ s/\[\(([^)]+)\)\]/<$1>/g;  # turn [(...)] into <...>
+
+# Finally, do the substitutions and return the modified text.
+
+$s =~ s/~~(\w+)/$var_value{$1}/eg;
+
+return $s;
+}
+
+
+
+##################################################
+#            Start/end a paragraph               #
+##################################################
+
+# We want to leave paragraphs unterminated until we know that a horizontal
+# rule does not follow, to avoid getting space inserted before the rule,
+# which doesn't look good. So we have this function to help control things.
+# If the argument is 1 we are starting a new paragraph; if it is 0 we want
+# to force the ending of any incomplete paragraph.
+
+sub setpar {
+if ($inpar)
+  {
+  print OUT "</p>\n";
+  $inpar = 0;
+  }
+if ($_[0])
+  {
+  print OUT "<p>\n";
+  $inpar = 1;
+  }
+}
+
+
+
+##################################################
+#            Handle a "paragraph"                #
+##################################################
+
+# Read a paragraph of text, which may contain many lines and may contain
+# .index, .em, and .nem directives within it. We may also encounter
+# ".if ~~html" within paragraphs. Process those directives,
+# convert the markup, and output the rest as an HTML paragraph.
+
+
+sub handle_paragraph{
+my($par) = $_;
+my($htmlcond) = 0;
+while(<IN>)
+  {
+  if (/^\.if\s+~~html\b/)
+    {
+    $htmlcond = 1;
+    $par =~ s/\s+$//;         # lose unwanted whitespace and newlines
+    next;
+    }
+  elsif ($htmlcond && /^\.else\b/)
+    {
+    while (<IN>) { last if /^\.fi\b/; }
+    $htmlcond = 0;
+    next;
+    }
+  elsif ($htmlcond && /^\.fi\b/)
+    {
+    $htmlcond = 0;
+    next;
+    }
+
+  last if /^\s*$/ || (/^\./ && !/^\.index\b/ && !/^\.em\b/ && !/^\.nem\b/);
+  $par .= $_;
+  }
+$par = &handle_text($par, 0);
+
+# We can't handle .index until this point, when we do it just before
+# outputting the paragraph.
+
+if ($par !~ /^\s*$/)
+  {
+  &setpar(1);
+  $par =~ s/\.index\s+([^\n]+)\n/&handle_index($1, 1)/eg;
+  print OUT "$par";
+  }
+}
+
+
+
+##################################################
+#         Handle a non-paragraph directive       #
+##################################################
+
+# The directives .index, .em, and .nem can also appear within paragraphs,
+# and are then handled within the handle_paragraph() code.
+
+sub handle_directive{
+my($new_lastwasitem) = 0;
+
+$lastwasrule = 0;
+
+if (/^\.r?set\b/ || /^\.(?:\s|$)/) {}      # ignore .(r)set and comments
+
+elsif (/^\.justify\b/) {}                  # and .justify
+
+elsif (/^\.newline\b/) { print OUT "<br>\n"; }
+
+elsif (/^\.blank\b/ || /^\.space\b/) { print OUT "<br>\n"; }
+
+elsif (/^\.rule\b/)  { &setpar(0); print OUT "<hr>\n"; $lastwasrule = 1; }
+
+elsif (/^\.index\s+(.*)/) { &handle_index(&handle_text($1), 1); }
+
+# Emphasis is handled by colour
+
+elsif (/^\.em\b/)
+  {
+  &setpar(0);
+  print OUT "<font color=green>" if ! $inem;
+  $inem = 1;
+  }
+
+elsif (/^\.nem\b/)
+  {
+  &setpar(0);
+  print OUT "</font>" if $inem;
+  $inem = 0;
+  }
+
+# Ignore tab setting stuff - we use tables instead.
+
+elsif (/^\.tabs(?:et)?\b/) {}
+
+# .tempindent is used only to align some of the expansion stuff nicely;
+# just ignore it. It is used in conjunction with .push/.pop.
+
+elsif (/^\.(tempindent|push|pop)\b/) {}
+
+# There are some instances of .if ~~sys.fancy in the source. Some of those
+# that are not inside displays are two-part things, in which case we just keep
+# the non-fancy part. For diagrams, however, they are in three parts:
+#
+# .if ~~sys.fancy
+# <aspic drawing stuff for PostScript and PDF>
+# .elif !~~html
+# <ascii art for txt and Texinfo>
+# .else
+# <HTML instructions for including a gif>
+# .fi
+#
+# In this case, we skip to the third part.
+
+elsif (/^\.if\s+~~sys\.fancy/ || /^\.else\b/)
+  {
+  while (<IN>)
+    { last if /^\.else\b/ || /^\.elif\s+!\s*~~html/ || /^\.fi\b/; }
+
+  if (/^\.elif\b/)
+    {
+    while (<IN>) { last if /^\.else\b/ || /^\.fi\b/; }
+    }
+  }
+
+# Similarly, for .if !~~sys.fancy, take the non-fancy part.
+
+elsif (/^\.if\s+!\s*~~sys.fancy/) {}
+
+# There are some explicit tests for ~~html for direct HTML inclusions
+
+elsif (/^\.if\s+~~html\b/) {}
+
+# There are occasional requirements to do things differently for Texinfo/HTML
+# and PS/txt versions. The latter are produced by SGCAL, so that's what the
+# flag is called.
+
+elsif (/\.if\s+~~sgcal/)
+  {
+  while (<IN>) { last if /\.else\b/ || /\.fi\b/; }
+  }
+
+# Also there is a texinfo flag
+
+elsif (/^\.if\s+~~texinfo\b/)
+  {
+  while (<IN>)
+    { last if /^\.else\b/ || /^\.elif\s+!\s*~~html/ || /^\.fi\b/; }
+  }
+
+# Ignore any other .if, .else, or .fi directives
+
+elsif (/^\.if\b/ || /^\.fi\b/ || /^\.else\b/) {}
+
+# Ignore .indent
+
+elsif (/^\.indent\b/) {}
+
+# Various flavours of numberpars map to corresponding list types.
+
+elsif (/^\.numberpars\b/)
+  {
+  $rest = $';
+  &setpar(0);
+
+  if ($rest =~ /(?:\$\.|\" \")/)
+    {
+    unshift @endlist, "ul";
+    unshift @listtype, "";
+    print OUT "<ul>\n<li>";
+    }
+  else
+    {
+    $nptype = ($rest =~ /roman/)? "a" : "1";
+    unshift @endlist, "ol";
+    unshift @listtype, " TYPE=\"$nptype\"";
+    print OUT "<ol>\n<li$listtype[0]>";
+    }
+  }
+
+elsif (/^\.nextp\b/)
+  {
+  &setpar(0);
+  print OUT "</li>\n<li$listtype[0]>";
+  }
+
+elsif (/^\.endp\b/)
+  {
+  &setpar(0);
+  print OUT "</li>\n</$endlist[0]>\n";
+  shift @listtype;
+  shift @endlist;
+  }
+
+# .display asis can use <pre> which uses a typewriter font.
+# Otherwise, we have to do our own line breaking. Turn tabbed lines
+# into an HTML table. There will always be a .tabs line first.
+
+elsif (/^\.display\b/)
+  {
+  my($intable) = 0;
+  my($asis) = /asis/;
+  my($rm) = /rm/;
+  my($eol,$indent);
+
+  # For non asis displays, start a paragraph, and set up to put an
+  # explicit break after every line.
+
+  if (!$asis)
+    {
+    &setpar(1);
+    $eol = "<br>";
+    $indent = "<tt>&nbsp;&nbsp;</tt>";
+    }
+
+  # For asis displays, use <pre> and no explicit breaks
+
+  else
+    {
+    print OUT "<pre>\n";
+    $eol = "";
+    $indent = "&nbsp;&nbsp;";
+    }
+
+  # Now read through until we hit .endd (or EOF, but that shouldn't happen)
+  # and process the lines in the display.
+
+  while (<IN>)
+    {
+    last if /^\.endd\b/;
+
+    # The presence of .tabs[et] starts a table
+
+    if (/^\.tabs/)
+      {
+      $intable = 1;
+      print OUT "<table cellspacing=0 cellpadding=0>\n";
+      }
+
+    # Some displays have an indent setting - ignore
+
+    elsif (/^\.indent\b/) {}
+
+    # Some displays have .blank inside them
+
+    elsif (/^\.blank\b/)
+      {
+      print OUT "<br>\n";
+      }
+      
+    # Some displays have emphasis inside them
+    
+    elsif (/^\.em\b/)
+      {
+      print OUT "<font color=green>" if ! $inem;
+      $inem = 1;
+      }    
+
+    elsif (/^\.nem\b/)
+      {
+      print OUT "</font>" if $inem;
+      $inem = 0;
+      }    
+
+    # There are occasional instances of .if [!]~~sys.fancy inside displays.
+    # In both cases we want the non-fancy alternative. (The only thing that
+    # matters in practice is noticing .tabs[et] actually.) Assume the syntax
+    # is valid.
+
+    elsif (/^\.if\s+~~sys.fancy/ || /^\.else\b/)
+      {
+      while (<IN>)
+        {
+        last if /^\.fi\b/ || /^\.else/;
+        }
+      }
+
+    elsif (/^\.if\s+!\s*~~sys.fancy/) {}
+
+    elsif (/^\.fi\b/) {}
+
+    # Ignore .newline and .linelength
+
+    elsif (/^\.newline\b/ || /^\.linelength\b/) {}
+    
+    # Ignore comments
+    
+    elsif (/^\.(\s|$)/) {}  
+
+    # There shouldn't be any other directives inside displays
+
+    elsif (/^\./)
+      {
+      print "*** Ignored directive inside .display: $_";
+      }
+
+    # Handle a data line within a display. If it's an asis display, the only
+    # conversion is to escape the HTML characters. Otherwise, process the
+    # SGCAL markup.
+
+    else
+      {
+      chomp;
+      if ($asis)
+        {
+        s/&/&#038;/g;
+        s/</&#060;/g;
+        s/>/&#062;/g;
+        }
+      else
+        {
+        $_ = &handle_text($_, !$rm);
+        $_ = "<tt>$_</tt>" if !$rm && $_ ne "";
+        }
+
+      # In a table, break fields at $t. For non-rm we must break the
+      # <tt> group as well.
+
+      if ($intable)
+        {
+        if ($rm)
+          {
+          s/\s*\$t\s*/&nbsp;&nbsp;<\/td><td>/g;
+          }
+        else
+          {
+          s/\s*\$t\s*/&nbsp;&nbsp;<\/tt><\/td><td><tt>/g;
+          }
+        s/<tt><\/tt>//g;
+        print OUT "<tr><td>&nbsp;&nbsp;$_</td></tr>\n";
+        }
+
+      # Otherwise, output straight, with <br> for non asis displays
+
+      else
+        {
+        s/<tt><\/tt>//g;
+        print OUT "$indent$_$eol\n";
+        }
+      }
+    }    # Loop for display contents
+
+  # Finish off the table and the <pre> - leave a paragraph open
+
+  print OUT "</table>\n" if $intable;
+  print OUT "</pre>\n" if $asis;
+  }
+
+# Handle configuration option definitions
+
+elsif (/^\.startconf\b/) {}
+
+elsif (/^\.conf\b/)
+  {
+  my($option, $type, $default) =
+    /^\.conf\s+(\S+)\s+("(?:[^"]|"")+"|\S+)\s+("(?:[^"]|"")+"|.*)/;
+
+  $option =~ s/\@_/_/g;       # Underscore will be quoted in option name
+
+  # If $type ends with $**$, add ",expanded" as there doesn't seem to be
+  # a dagger character generally available.
+
+  $type =~ s/^"([^"]+)"/$1/;
+  $type =~ s/\$\*\*\$/, expanded/;
+
+  # Default may be quoted, and it may also have quotes that are required,
+  # if it is a string.
+
+  $default =~ s/^"(.*)"$/$1/;
+  $default =~ s/""/"/g;
+  $default = &handle_text($default, 0);
+
+  print OUT "<hr>";
+  &setpar(0);
+  &handle_index($option, 0);
+  print OUT "<h3>$option</h3>\n" .
+            "<i>Type:</i>&nbsp; $type<br><i>Default:</i>&nbsp; $default<br>\n";
+  }
+
+elsif (/^\.endconf\b/)
+  {
+  print OUT "<hr><br>\n";
+  }
+
+
+# Handle "items" - used for expansion items and the like. We force the
+# item text into bold, and put a rule between items.
+
+elsif (/^\.startitems\b/) {}
+
+elsif (/^\.item\s+(.*)/)
+  {
+  my($arg) = $1;
+  chomp($arg);
+  $arg =~ s/^"(.*)"$/$1/;
+  $arg = &handle_text($arg, 0);
+
+  # If there are two .items in a row, we don't want to put in the
+  # separator line or start a new paragraph.
+
+  if ($lastwasitem)
+    {
+    print OUT "<br>";
+    }
+  else
+    {
+    print OUT "<hr>";
+    &setpar(1);
+    }
+  print OUT "<b>$arg</b>\n";
+  $new_lastwasitem = 1;
+  }
+
+elsif (/^\.enditems\b/)
+  {
+  print OUT "<hr><br>\n";
+  }
+
+
+# Handle command line option items
+
+elsif (/^\.startoptions\b/) {}
+
+elsif (/^\.option\s+(.*)/)
+  {
+  my($arg) = $1;
+  $arg =~ s/^"(.*)"$/$1/;
+
+  print OUT "<hr>";
+  &setpar(0);
+
+  # For indexing, we want to take up to the first # or < in the line,
+  # before processing.
+
+  my($name) = $arg =~ /^([^#<]+)/;
+  $name = &handle_text($name, 0);
+  &handle_index("-$name", 0);
+
+  # Output as heading, after the index
+
+  $arg = &handle_text($arg, 0);
+  print OUT "<h3>-$arg</h3>\n";
+  }
+
+elsif (/^\.endoptions\b/)
+  {
+  print OUT "<hr><br>\n";
+  }
+
+# Found an SGCAL directive that isn't dealt with. Oh dear.
+
+else
+  {
+  print "*** Unexpected SGCAL directive: line $. ignored:\n";
+  print "$_\n";
+  }
+
+# Remember if last was a .item, and read the next line
+
+$lastwasitem = $new_lastwasitem;
+$_ = <IN>;
+}
+
+
+
+##################################################
+#         First Pass - collect references        #
+##################################################
+
+sub pass_one{
+$thischapter = 0;
+
+open (IN, $source_file) || die "Can't open $source_file (first pass)\n";
+$_ = <IN>;
+
+# At the start of the specification text, there are some textual replacement
+# definitions. They set values, but not cross-references.
+
+while (/^\.r?set\s+(\S+)\s+"?([^"]+)\"?\s*$/)
+  {
+  $var_value{$1} = $2;
+  $_ = <IN>;
+  }
+
+# Now skip on till we hit the start of the first chapter. It will be numbered
+# 0 if we hit ".set chapter -1". There is only ever one unnumbered chapter.
+
+while (!/^\.chapter/)
+  {
+  $thischapter = -1 if /^\.set\s+chapter\s+-1/;
+  $_ = <IN>;
+  }
+
+# Loop for handling chapters
+
+while ($_)
+  {
+  $thischapter++;
+  $thissection = 0;
+
+  # Scan through chapter, setting up cross-references to the chapter
+  # and to the sections within it.
+
+  while (<IN>)
+    {
+    last if /^\.chapter/;
+    chomp;
+
+    if (/^\.section/)
+      {
+      $thissection++;
+      next;
+      }
+
+    # Handle .(r)set directives.
+
+    if (/^\.r?set\s+(\S+)\s+"?([^"]+)\"?\s*$/ && $1 ne "runningfoot")
+      {
+      my($key,$value) = ($1,$2);
+      $value =~ s/~~chapter/$thischapter/e;
+      $value =~ s/~~section/$thissection/e;
+
+      # Only one of $chapsplit or $sectsplit can be set.
+
+      if ($key =~ /^CHAP/)
+        {
+        $value = $chapsplit?
+          "<a href=\"${file_base}_$thischapter.html\">$value</a>"
+          :
+          "<a href=\"#CHAP$thischapter\">$value</a>";
+        }
+
+      elsif ($key =~ /^SECT/)
+        {
+        $value = $chapsplit?
+          "<a href=\"${file_base}_$thischapter.html" .
+            "#SECT$thischapter.$thissection\">$value</a>"
+          :
+          $sectsplit? "<a href=\"${file_base}_$thissection.html\">$value</a>"
+          :
+          "<a href=\"#SECT$thischapter.$thissection\">$value</a>";
+        }
+
+      $var_value{$key} = $value;
+      }
+    }
+  }
+
+close(IN);
+}
+
+
+
+
+
+##################################################
+#         Second Pass - generate HTML            #
+##################################################
+
+sub pass_two{
+my($tocn) = 0;
+my($inmacro) = 0;
+my($insection) = 0;
+
+$inem = 0;
+$thischapter = 0;
+$thissection = 0;
+
+# Open the source file and get the first line
+
+open (IN, $source_file) || die "Can't open $source_file (2nd pass)\n";
+$_ = <IN>;
+
+# Skip on till we hit the start of the first chapter, but note if we
+# pass ".set chapter -1", which is used to indicate no chapter numbering for 
+# the first chapter (we number is 0). Keep track of whether we are in macro
+# definitions or not, and when not, notice occurrences of .index, because this
+# are the "x see y" type entries.
+
+while (!/^\.chapter/)
+  {
+  $thischapter = -1 if /^\.set\s+chapter\s+-1/;
+  $inmacro = 1 if /^\.macro/;
+  $inmacro = 0 if /^\.endm/;
+  if (!$inmacro && /^\.index\s+(.*)/)
+    {
+    my($key);
+    my($s) = $1;
+    $s = &handle_text($s, 0);
+    $s =~ s/ /&nbsp;/g;            # All spaces unsplittable
+    $key = "\L$s";
+    $key =~ s/<[^>]+>//g;
+    $key =~ s/&#(\d+);/chr($1)/eg;
+    $cindex{$key} = $s;
+    }
+  $_ = <IN>;
+  }
+  
+# Open the TOC file
+
+open (TOC, ">$html/${file_base}_toc.html") ||
+  die "Can't open $html/${file_base}_toc.html\n";
+
+print TOC "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n";
+print TOC "<html>\n<head>\n<title>$doctitle Contents</title>\n</head>\n" .
+  "<body bgcolor=\"#F8F8F8\" text=\"#00005A\" " .
+  "link=\"#FF6600\" alink=\"#FF9933\" vlink=\"#990000\">\n";
+print TOC "<h1>$doctitle</h1><hr>\n<ul>\n";
+
+# Open the data file if we are not splitting at chapters
+
+&openout("$html/${file_base}.html") if !$chapsplit;
+
+# Loop for handling chapters. At the start of this loop, $_ is either EOF,
+# or contains a .chapter line.
+
+$firstchapter = $thischapter + 1; 
+
+while ($_)
+  {
+  print TOC "</ul>\n" if $insection;
+  $insection = 0;
+
+  $thischapter++;
+  $thissection = 0;
+  $lastwasrule = 0;
+
+  # Start a new file if required
+
+  if ($chapsplit)
+    {
+    &closeout("CHAP") if $thischapter != $firstchapter;
+    &openout("$html/${file_base}_$thischapter.html");
+    }
+
+  # Set up the chapter title. Save it for the TOC. Set up the anchor and
+  # link back to the TOC and show the title.
+
+  $_ =~ /^\.chapter\s+(.*)/;
+
+  my($title) = (($thischapter > 0)? "$thischapter. " : "") . &handle_text($1, 0);
+
+  $tocn++;
+  print TOC "<li><a " .
+    "name=\"TOC$tocn\" " .
+    "href=\"$current_file#CHAP$thischapter\">$title</a></li>\n";
+
+  print OUT "<h1>\n";
+  print OUT "<a name=\"CHAP$thischapter\" href=\"${file_base}_toc.html#TOC$tocn\">\n";
+  print OUT "$title\n</a></h1>\n";
+
+  # Scan the contents of the chapter
+
+  $_ = <IN>;
+  while ($_)
+    {
+    last if /^\.chapter/;
+
+    # Handle the start of a new section, starting a new file if required
+
+    if (/^\.section\s+(.*)/)
+      {
+      $thissection++;
+
+      print TOC "<ul>\n" if !$insection;
+      $insection = 1;
+
+      my($title) = (($thischapter > 0)? "$thischapter." : "") .
+        "$thissection. " . &handle_text($1, 0);
+
+      if ($sectsplit)
+        {
+        &closeout("SECT");
+        &openout("$html/${file_base}_$thissection.html");
+        }
+
+      $tocn++;
+      printf TOC ("<li><a " .
+        "name=\"TOC$tocn\" " .
+        "href=\"$current_file#SECT%s$thissection\">%s</a></li>\n",
+          ($thischapter > 0)? "$thischapter." : "", $title);
+
+      &setpar(0);
+      print OUT "<h2>\n";
+      printf OUT ("<a name=\"SECT%s$thissection\" ",
+        ($thischapter > 0)? "$thischapter." : "");
+      print OUT "href=\"${file_base}_toc.html#TOC$tocn\">\n";
+      print OUT "$title\n</a></h2>\n";
+      $_ = <IN>;
+      $lastwasrule = 0;
+      }
+
+    # Blank lines at this level are ignored
+
+    elsif (/^\s*$/)
+      {
+      $_ = <IN>;
+      }
+
+    # Directive and non-directive lines are handled independently, though
+    # in each case further lines may be read. Afterwards, the next line is
+    # in $_. If .em is at the start of a paragraph, treat it with the
+    # paragraph, because the matching .nem will be too. Messy!
+
+    elsif (/^\./)
+      {
+      if (/^\.em\b/)
+        {
+        $_=<IN>;
+        if (/^\./)
+          {
+          print OUT "<font color=green>" if ! $inem;
+          $inem = 1;
+          # Used to handle it here - but that fails if it is .section.
+          # Just let the next iteration of the loop handle it.  
+          # &handle_directive();
+          }
+
+        else
+          {
+          $_ = ".em\n" . $_;
+          &handle_paragraph();
+          $lastwasrule = 0;
+          $lastwasitem = 0;
+          }
+        }
+
+      # Not .em
+
+      else
+        {
+        &handle_directive();
+        }
+      }
+
+    # Not a directive
+
+    else
+      {
+      &handle_paragraph();
+      $lastwasrule = 0;
+      $lastwasitem = 0;
+      }
+
+    } # Loop for each line in a chapter
+  }   # Loop for each chapter
+
+# Close the last file, end off the TOC, and we are done.
+
+&closeout("");
+
+print TOC "</ul>\n" if $insection;
+
+if (defined %cindex)
+  {
+  $cindex_tocn = ++$tocn;
+  print TOC "<li><a name=\"TOC$tocn\" ".
+    "href=\"${file_base}_cindex.html\">Concept Index</a></li>\n";
+  }
+
+if (defined %oindex)
+  {
+  $oindex_tocn = ++$tocn;
+  print TOC "<li><a name=\"TOC$tocn\" ".
+    "href=\"${file_base}_oindex.html\">Option Index</a></li>\n";
+  }
+
+print TOC "</ul>\n</body>\n</html>\n";
+close(TOC);
+close(IN);
+}
+
+
+
+
+##################################################
+#           Adjust index points                  #
+##################################################
+
+# Because of the way the source is written, there are often index entries
+# that immediately follow the start of chapters and sections and the definition
+# of "items" like "helo = verify". This gets the correct page numbers for the
+# PostScript and PDF formats. However, for HTML we want the index anchor to be
+# before the section heading, because browsers tend to put the index point at
+# the top of the screen. So we re-read all the files we've just created, and
+# move some of the index points about. This is necessary only if indexes exist.
+# The files are small enough to be handled entirely in memory.
+
+sub adjust_index_points {
+print "Adjusting index points to precede headings\n";
+
+$" = "";
+
+opendir(DIR, "$html") || die "Failed to opendir $html\n";
+while ($file = readdir(DIR))
+  {
+  my($i);
+  next unless $file =~ /^${file_base}_\d+\.html$/;
+
+  open(IN, "<$html/$file") ||
+    die "Failed to open $html/$file (read)\n";
+  my(@lines) = <IN>;
+  close(IN);
+
+  for ($i = 0; $i < @lines; $i++)
+    {
+    if ($lines[$i] =~ /^<a name="IX\d+"><\/a>$/)
+      {
+      # Handle an index line that follows a heading definition. Move it back
+      # to just before the <h1> or whatever. This preserves the order of
+      # multiple index lines, not that that matters.
+
+      if ($lines[$i-1] =~ /^<\/a><\/h(\d)>/)
+        {
+        my($j);
+        my($found) = 0;
+        for ($j = $i-2; $j > 0 && $j > $i - 10; $j--)
+          {
+          if ($lines[$j] =~ /<h$1>/)
+            {
+            $found = 1;
+            last;
+            }
+          }
+        if ($found)
+          {
+          splice(@lines, $j, 0, splice(@lines, $i, 1));
+          }
+        }
+
+      # Handle an index line that follows an "item". Move it back one line.
+
+      elsif ($lines[$i-1] =~ /^<b>.*<\/b>\s*$/)
+        {
+        splice(@lines, $i-1, 0, splice(@lines, $i, 1));
+        }
+
+      # Handle an index line that follows a "conf" definition
+
+      elsif ($lines[$i-1] =~ /^<i>Type:<\/i>/ && $lines[$i-2] =~ /^<h3>/)
+        {
+        splice(@lines, $i-2, 0, splice(@lines, $i, 1));
+        }
+
+      # Handle an index line that follows an "option" definition
+
+      elsif ($lines[$i-1] =~ /^<h3>/)
+        {
+        splice(@lines, $i-1, 0, splice(@lines, $i, 1));
+        }
+      }
+    }
+
+  open(OUT, ">$html/$file") ||
+    die "Failed to open $html/$file (write)\n";
+
+  print OUT "@lines";
+  close OUT;
+  undef @lines;
+  }
+}
+
+
+
+
+##################################################
+#               Create Index                     #
+##################################################
+
+sub create_index{
+my($hash)   = $_[0];
+my($ifname) = $_[1];
+my($ititle) = $_[2];
+my(%indexindex);
+
+open(INDEX, ">$html/${file_base}_$_[1].html") ||
+  die "Failed to open $html/${file_base}_$ifname\n";
+
+print INDEX "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n";
+print INDEX "<html>\n<head>\n<title>$doctitle $ititle</title>\n";
+print INDEX "<base target=\"body\">\n</head>\n";
+
+print INDEX "<body bgcolor=\"#FFFFDF\" text=\"#00005A\" " .
+  "link=\"#FF6600\" alink=\"#FF9933\" vlink=\"#990000\">\n";
+
+print INDEX "<h3>$ititle</h3>\n";
+
+# We have to scan the keys in the hash twice; first to build the list
+# of initial letters, and then to do the business. The first time we
+# do not need to sort them.
+
+foreach $key (keys %$hash)
+  {
+  my($initial) = substr($key,0,1);
+  $initial = "\U$initial";
+  $indexindex{$initial} = 1 if $initial ge "A";
+  }
+
+print INDEX "<p>\n";
+foreach $key (sort keys %indexindex)
+  {
+  print INDEX "&nbsp;<a href=\"#$key\" target=\"index\">$key</a>\n";
+  }
+print INDEX "<hr></p>\n";
+
+my($letter) = "";
+print INDEX "<p>\n";
+
+foreach $key (sort
+      { ("\L$a" eq "\L$b")? ("$a" cmp "$b") : ("\L$a" cmp "\L$b") }
+    keys %$hash)
+  {
+  my($initial) = substr($key,0,1);
+  $initial = "\U$initial";
+  if ($initial ne $letter)
+    {
+    if ($initial ge "A")
+      {
+      print INDEX "<br>\n" if $letter ne "";
+      print INDEX "<a name=\"$initial\"></a>\n";
+      print INDEX "<font size=\"+1\">\U$initial\E</font><br>\n";
+      }
+    $letter = $initial;
+    }
+  print INDEX "$$hash{$key}<br>\n";
+  }
+
+print INDEX "</p>\n";
+
+print INDEX "</body>\n</html>\n";
+close(INDEX);
+}
+
+
+
+
+##################################################
+#           Show usage and die                   #
+##################################################
+
+sub usage {
+die "Usage: g2h [-split no|section|chapter] <source> <title>\n";
+}
+
+
+
+##################################################
+#           Entry point and main program         #
+##################################################
+
+
+# Directory in which to put the new HTML files
+
+$html = "html";
+
+# Global variables.
+
+%cindex = ();
+%oindex = ();
+
+$chapsplit = 0;
+$cindex_tocn = 0;
+$file_base = "";
+$index_count = 0;
+$inem = 0;
+$inpar = 0;
+$lastwasitem = 0;
+$lastwasrule = 0;
+$oindex_tocn = 0;
+$sectsplit = 0;
+$source_file = "";
+$thischapter = 0;
+$thissection = 0;
+
+
+# Handle options
+
+my($splitset) = 0;
+
+while (scalar @ARGV > 0 && $ARGV[0] =~ /^-/)
+  {
+  if ($ARGV[0] eq "-split" && !$splitset)
+    {
+    $splitset = 1;
+    shift @ARGV;
+    my($type) = shift @ARGV;
+    if    ($type eq "section") { $sectsplit = 1; }
+    elsif ($type eq "chapter") { $chapsplit = 1; }
+    elsif ($type eq "no"     ) { $sectsplit = $chapsplit = 0; }
+    else                       { &usage(); }
+    }
+  else { &usage(); }
+  }
+
+# Get the source file and its base
+
+&usage() if scalar @ARGV <= 0;
+$source_file = shift @ARGV;
+($file_base) = $source_file =~ /^(.*)\.src$/;
+
+&usage() if scalar @ARGV <= 0;
+$doctitle = shift @ARGV;
+
+print "\nCreate HTML for $doctitle from $source_file\n";
+
+# Remove the old HTML files
+
+print "Removing old HTML files\n";
+system("/bin/rm -rf $html/${file_base}_*.html");
+
+# First pass identifies all the chapters and sections, and collects the
+# values of the cross-referencing variables.
+
+print "Scanning for cross-references\n";
+&pass_one();
+
+$maxchapter = $thischapter;      # Used if chapter splitting
+$maxsection = $thissection;      # Used if section splitting
+
+# Second pass actually creates the HTML files.
+
+print "Creating the HTML files\n";
+&pass_two();
+
+# Reprocess for moving some of the index points, if indexes were created
+
+&adjust_index_points() if scalar(keys %cindex) > 0 || scalar(keys %oindex) > 0;
+
+# Finally, we must create the option and concept indexes if any data
+# has been collected for them.
+
+if (scalar(keys %cindex) > 0)
+  {
+  print "Creating concept index\n";
+  &create_index(\%cindex, "cindex", "Concepts");
+  }
+
+if (scalar(keys %oindex) > 0)
+  {
+  print "Creating option index\n";
+  &create_index(\%oindex, "oindex", "Options");
+  }
+
+# End of g2h

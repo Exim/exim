@@ -1,0 +1,71 @@
+#! /usr/bin/perl -w
+# $Cambridge: exim/doc/doc-scripts/DoConts,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+
+$style = (@ARGV > 0)? $ARGV[0] : "a4ps";
+
+open(IN, "z-rawindex")   || die "Can't open z-rawindex\n";
+open(OUT, ">z-contents") || die "Can't open z-contents\n";
+
+print OUT <<'EOF';
+.if ~~sys.fancy
+.linelength ~~sys.linelength + 0.2in
+.pagedepth ~~sys.pagedepth - 0.2in
+.linedepth 12.24
+.fi
+.include "markup.sg"
+.set chapter -1
+.set p 0
+.format p roman
+.tabset 2em 2em
+.
+.foot
+.set p ~~sys.pagenumber
+$c [~~p]
+.endfoot
+.
+.chapter Contents
+.disable filling
+.justify left
+EOF
+
+while(<IN>)
+  {
+  if (/\$e/)
+    {
+    s/\$e\s*$//;                      # "see also" lines have no line number
+    s/--\s*\d+$//;                    # remove "extra" number for index page 
+
+    s/\n$//;                          # trailing newline
+    
+    if (!/^\$/)
+      {
+      print OUT ".blank\n";
+      print OUT ".if ~~sys.leftonpage < 2*~~sys.linedepth\n";
+      print OUT ".newpage\n";
+      print OUT ".fi\n";  
+      print OUT "\$shead\{$_\}\n"; 
+      print OUT ".blank\n";
+      }  
+    else
+      { 
+      print OUT "$_\n";
+      } 
+    }  
+  } 
+
+close(IN);
+close(OUT);
+
+system("sgcal z-contents -to zc-gcode -style $style -index /dev/null");
+if ($style eq "a4ps")
+  {
+  system("sgtops zc-gcode -to zc-ps");
+  print "PostScript in zc-ps\n";
+  }
+else
+  {
+  system("mv -f zc-gcode zc-txt");
+  print "Text in zc-txt\n";       
+  }
+
+# End

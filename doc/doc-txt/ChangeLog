@@ -1,0 +1,2058 @@
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+
+Change log file for Exim from version 4.21
+-------------------------------------------
+
+
+Exim version 4.44
+-----------------
+
+1.  Minor wording change to the doc/README.SIEVE file.
+
+
+Exim version 4.43
+-----------------
+
+ 1. Fixed a longstanding but relatively impotent bug: a long time ago, before
+    PIPELINING, the function smtp_write_command() used to return TRUE or FALSE.
+    Now it returns an integer. A number of calls were still expecting a T/F
+    return. Fortuitously, in all cases, the tests worked in OK situations,
+    which is the norm. However, things would have gone wrong on any write
+    failures on the smtp file descriptor. This function is used when sending
+    messages over SMTP and also when doing verify callouts.
+
+ 2. When Exim is called to do synchronous delivery of a locally submitted
+    message (the -odf or -odi options), it no longer closes stderr before doing
+    the delivery.
+
+ 3. Implemented the mua_wrapper option.
+
+ 4. Implemented mx_fail_domains and srv_fail_domains for the dnslookup router.
+
+ 5. Implemented the functions header_remove(), header_testname(),
+    header_add_at_position(), and receive_remove_recipient(), and exported them
+    to local_scan().
+
+ 6. If an ACL "warn" statement specified the addition of headers, Exim already
+    inserted X-ACL-Warn: at the start if there was no header name. However, it
+    was not making this test for the second and subsequent header lines if
+    there were newlines in the string. This meant that an invalid header could
+    be inserted if Exim was badly configured.
+
+ 7. Allow an ACL "warn" statement to add header lines at the start or after all
+    the Received: headers, as well as at the end.
+
+ 8. Added the rcpt_4xx retry error code.
+
+ 9. Added postmaster_mailfrom=xxx to callout verification option.
+
+10. Added mailfrom=xxxx to the callout verification option, for verify=
+    header_sender only.
+
+11. ${substr_1_:xxxx} and ${substr__3:xxxx} are now diagnosed as syntax errors
+    (they previously behaved as ${substr_1_0:xxxx} and ${substr:_0_3:xxxx}).
+
+12. Inserted some casts to stop certain compilers warning when using pointer
+    differences as field lengths or precisions in printf-type calls (mostly
+    affecting debugging statements).
+
+13. Added optional readline() support for -be (dynamically loaded).
+
+14. Obscure bug fix: if a message error (e.g. 4xx to MAIL) happened within the
+    same clock tick as a message's arrival, so that its received time was the
+    same as the "first fail" time on the retry record, and that message
+    remained on the queue past the ultimate address timeout, every queue runner
+    would try a delivery (because it was past the ultimate address timeout) but
+    after another failure, the ultimate address timeout, which should have then
+    bounced the address, did not kick in. This was a "< instead of <=" error;
+    in most cases the first failure would have been in the next clock tick
+    after the received time, and all would be well.
+
+15. The special items beginning with @ in domain lists (e.g. @mx_any) were not
+    being recognized when the domain list was tested by the match_domain
+    condition in an expansion string.
+
+16. Added the ${str2b64: operator.
+
+17. Exim was always calling setrlimit() to set a large limit for the number of
+    processes, without checking whether the existing limit was already
+    adequate. (It did check for the limit on file descriptors.) Furthermore,
+    errors from getrlimit() and setrlimit() were being ignored. Now they are
+    logged to the main and panic logs, but Exim does carry on, to try to do its
+    job under whatever limits there are.
+
+18. Imported PCRE 5.0.
+
+19. Trivial typo in log message " temporarily refused connection" (the leading
+    space).
+
+20. If the log selector return_path_on_delivery was set and an address was
+    redirected to /dev/null, the delivery process crashed because it assumed
+    that a return path would always be set for a "successful" delivery. In this
+    case, the whole delivery is bypassed as an optimization, and therefore no
+    return path is set.
+
+21. Internal re-arrangement: the function for sending a challenge and reading
+    a response while authentication was assuming a zero-terminated challenge
+    string. It's now changed to take a pointer and a length, to allow for
+    binary data in such strings.
+
+22. Added the cyrus_sasl authenticator (code supplied by MBM).
+
+23. Exim was not respecting finduser_retries when seeking the login of the
+    uid under which it was called; it was always trying 10 times. (The default
+    setting of finduser_retries is zero.) Also, it was sleeping after the final
+    failure, which is pointless.
+
+24. Implemented tls_on_connect_ports.
+
+25. Implemented acl_smtp_predata.
+
+26. If the domain in control=submission is set empty, Exim assumes that the
+    authenticated id is a complete email address when it generates From: or
+    Sender: header lines.
+
+27. Added "#define SOCKLEN_T int" to OS/os.h-SCO and OS/os.h-SCO_SV. Also added
+    definitions to OS/Makefile-SCO and OS/Makefile-SCO_SV that put basename,
+    chown and chgrp in /bin and hostname in /usr/bin.
+
+28. Exim was keeping the "process log" file open after each use, just as it
+    does for the main log. This opens the possibility of it remaining open for
+    long periods when the USR1 signal hits a daemon. Occasional processlog
+    errors were reported, that could have been caused by this. Anyway, it seems
+    much more sensible not to leave this file open at all, so that is what now
+    happens.
+
+29. The long-running daemon process does not normally write to the log once it
+    has entered its main loop, and it closes the log before doing so. This is
+    so that log files can straightforwardly be renamed and moved. However,
+    there are a couple of unusual error situations where the daemon does write
+    log entries, and I had neglected to close the log afterwards.
+
+30. The text of an SMTP error response that was received during a remote
+    delivery was being truncated at 512 bytes. This is too short for some of
+    the long messages that one sometimes sees. I've increased the limit to
+    1024.
+
+31. It is now possible to make retry rules that apply only when a message has a
+    specific sender, in particular, an empty sender.
+
+32. Added "control = enforce_sync" and "control = no_enforce_sync". This makes
+    it possible to be selective about when SMTP synchronization is enforced.
+
+33. Added "control = caseful_local_part" and "control = "caselower_local_part".
+
+32. Implemented hosts_connection_nolog.
+
+33. Added an ACL for QUIT.
+
+34. Setting "delay_warning=" to disable warnings was not working; it gave a
+    syntax error.
+
+35. Added mailbox_size and mailbox_filecount to appendfile.
+
+36. Added control = no_multiline_responses to ACLs.
+
+37. There was a bug in the logic of the code that waits for the clock to tick
+    in the case where the clock went backwards by a substantial amount such
+    that the microsecond fraction of "now" was more than the microsecond
+    fraction of "then" (but the whole seconds number was less).
+
+38. Added support for the libradius Radius client library this is found on
+    FreeBSD (previously only the radiusclient library was supported).
+
+
+Exim version 4.42
+-----------------
+
+ 1. When certain lookups returned multiple values in the form name=value, the
+    quoting of the values was not always being done properly. Specifically:
+    (a) If the value started with a double quote, but contained no whitespace,
+        it was not quoted.
+    (b) If the value contained whitespace other than a space character (i.e.
+        tabs or newlines or carriage returns) it was not quoted.
+    This fix has been applied to the mysql and pgsql lookups by writing a
+    separate quoting function and calling it from the lookup code. The fix
+    should probably also be applied to nisplus, ibase and oracle lookups, but
+    since I cannot test any of those, I have not disturbed their existing code.
+
+ 2. A hit in the callout cache for a specific address caused a log line with no
+    reason for rejecting RCPT. Now it says "Previous (cached) callout
+    verification failure".
+
+ 3. There was an off-by-one bug in the queryprogram router. An over-long
+    return line was truncated at 256 instead of 255 characters, thereby
+    overflowing its buffer with the terminating zero. As well as fixing this, I
+    have increased the buffer size to 1024 (and made a note to document this).
+
+ 4. If an interrupt, such as the USR1 signal that is send by exiwhat, arrives
+    when Exim is waiting for an SMTP response from a remote server, Exim
+    restarts its select() call on the socket, thereby resetting its timeout.
+    This is not a problem when such interrupts are rare. Somebody set up a cron
+    job to run exiwhat every 2 minutes, which is less than the normal select()
+    timeout (5 or 10 minutes). This meant that the select() timeout never
+    kicked in because it was always reset. I have fixed this by comparing the
+    time when an interrupt arrives with the time at the start of the first call
+    to select(). If more time than the timeout has elapsed, the interrupt is
+    treated as a timeout.
+
+ 5. Some internal re-factoring in preparation for the addition of Sieve
+    extensions (by MH). In particular, the "personal" test is moved to a
+    separate function, and given an option for scanning Cc: and Bcc: (which is
+    not set for Exim filters).
+
+ 6. When Exim created an email address using the login of the caller as the
+    local part (e.g. when creating a From: or Sender: header line), it was not
+    quoting the local part when it contained special characters such as @.
+
+ 7. Installed new OpenBSD configuration files.
+
+ 8. Reworded some messages for syntax errors in "and" and "or" conditions to
+    try to make them clearer.
+
+ 9. Callout options, other than the timeout value, were being ignored when
+    verifying sender addresses in header lines. For example, when using
+
+      verify = header_sender/callout=no_cache
+
+    the cache was (incorrectly) being used.
+
+10. Added a missing instance of ${EXE} to the exim_install script; this affects
+    only the Cygwin environment.
+
+11. When return_path_on_delivery was set as a log selector, if different remote
+    addresses in the same message used different return paths and parallel
+    remote delivery occurred, the wrong values would sometimes be logged.
+    (Whenever a remote delivery process finished, the return path value from
+    the most recently started remote delivery process was logged.)
+
+12. RFC 3848 specifies standard names for the "with" phrase in Received: header
+    lines when AUTH and/or TLS are in use. This is the "received protocol"
+    field. Exim used to use "asmtp" for authenticated SMTP, without any
+    indication (in the protocol name) for TLS use. Now it follows the RFC and
+    uses "esmtpa" if the connection is authenticated, "esmtps" if it is
+    encrypted, and "esmtpsa" if it is both encrypted and authenticated. These
+    names appear in log lines as well as in Received: header lines.
+
+13. Installed MH's patches for Sieve to add the "copy" and "vacation"
+    extensions, and comparison tests, and to fix some bugs.
+
+14. Changes to the "personal" filter test:
+
+    (1) The test was buggy in that it was just doing the equivalent of
+    "contains" tests on header lines. For example, if a user's address was
+    anne@some.where, the "personal" test would incorrectly be true for
+
+      To: susanne@some.where
+
+    This test is now done by extracting each address from the header in turn,
+    and checking the entire address. Other tests that are part of "personal"
+    are now done using regular expressions (for example, to check local parts
+    of addresses in From: header lines).
+
+    (2) The list of non-personal local parts in From: addresses has been
+    extended to include "listserv", "majordomo", "*-request", and "owner-*",
+    taken from the Sieve specification recommendations.
+
+    (3) If the message contains any header line starting with "List-" it is
+    treated as non-personal.
+
+    (4) The test for "circular" in the Subject: header line has been removed
+    because it now seems ill-conceived.
+
+15. Minor typos in src/EDITME comments corrected.
+
+16. Installed latest exipick from John Jetmore.
+
+17. If headers_add on a router specified a text string that was too long for
+    string_sprintf() - that is, longer than 8192 bytes - Exim panicked. The use
+    of string_sprintf() is now avoided.
+
+18. $message_body_size was not set (it was always zero) when running the DATA
+    ACL and the local_scan() function.
+
+19. For the "mail" command in an Exim filter, no default was being set for
+    the once_repeat time, causing a random time value to be used if "once" was
+    specified. (If the value happened to be <= 0, no repeat happened.) The
+    default is now 0s, meaning "never repeat". The "vacation" command was OK
+    (its default is 7d). It's somewhat surprising nobody ever noticed this bug
+    (I found it when inspecting the code).
+
+20. There is now an overall timeout for performing a callout verification. It
+    defaults to 4 times the callout timeout, which applies to individual SMTP
+    commands during the callout. The overall timeout applies when there is more
+    than one host that can be tried. The timeout is checked before trying the
+    next host. This prevents very long delays if there are a large number of
+    hosts and all are timing out (e.g. when the network connections are timing
+    out). The value of the overall timeout can be changed by specifying an
+    additional sub-option for "callout", called "maxwait". For example:
+
+      verify = sender/callout=5s,maxwait=20s
+
+21. Add O_APPEND to the open() call for maildirsize files (Exim already seeks
+    to the end before writing, but this should make it even safer).
+
+22. Exim was forgetting that it had advertised PIPELINING for the second and
+    subsequent messages on an SMTP connection. It was also not resetting its
+    memory on STARTTLS and an internal HELO.
+
+23. When Exim logs an SMTP synchronization error within a session, it now
+    records whether PIPELINING has been advertised or not.
+
+24. Added 3 instances of "(long int)" casts to time_t variables that were being
+    formatted using %ld, because on OpenBSD (and perhaps others), time_t is int
+    rather than long int.
+
+25. Installed the latest Cygwin configuration files from the Cygwin maintainer.
+
+26. Added the never_mail option to autoreply.
+
+
+Exim version 4.41
+-----------------
+
+ 1. A reorganization of the code in order to implement 4.40/8 caused a daemon
+    crash if the getsockname() call failed; this can happen if a connection is
+    closed very soon after it is established. The problem was simply in the
+    order in which certain operations were done, causing Exim to try to write
+    to the SMTP stream before it had set up the file descriptor. The bug has
+    been fixed by making things happen in the correct order.
+
+
+Exim version 4.40
+-----------------
+
+ 1. If "drop" was used in a DATA ACL, the SMTP output buffer was not flushed
+    before the connection was closed, thus losing the rejection response.
+
+ 2. Commented out the definition of SOCKLEN_T in os.h-SunOS5. It is needed for
+    some early Solaris releases, but causes trouble in current releases where
+    socklen_t is defined.
+
+ 3. When std{in,out,err} are closed, re-open them to /dev/null so that they
+    always exist.
+
+ 4. Minor refactoring of os.c-Linux to avoid compiler warning when IPv6 is not
+    configured.
+
+ 5. Refactoring in expand.c to improve memory usage. Pre-allocate a block so
+    that releasing the top of it at the end releases what was used for sub-
+    expansions (unless the block got too big). However, discard this block if
+    the first thing is a variable or header, so that we can use its block when
+    it is dynamic (useful for very large $message_headers, for example).
+
+ 6. Lookups now cache *every* query, not just the most recent. A new, separate
+    store pool is used for this. It can be recovered when all lookup caches are
+    flushed. Lookups now release memory at the end of their result strings.
+    This has involved some general refactoring of the lookup sources.
+
+ 7. Some code has been added to the store_xxx() functions to reduce the amount
+    of flapping under certain conditions.
+
+ 8. log_incoming_interface used to affect only the <= reception log lines. Now
+    it causes the local interface and port to be added to several more SMTP log
+    lines, for example "SMTP connection from", and rejection lines.
+
+ 9. The Sieve author supplied some patches for the doc/README.SIEVE file.
+
+10. Added a conditional definition of _BSD_SOCKLEN_T to os.h-Darwin.
+
+11. If $host_data was set by virtue of a hosts lookup in an ACL, its value
+    could be overwritten at the end of the current message (or the start of a
+    new message if it was set in a HELO ACL). The value is now preserved for
+    the duration of the SMTP connection.
+
+12. If a transport had a headers_rewrite setting, and a matching header line
+    contained an unqualified address, that address was qualified, even if it
+    did not match any rewriting rules. The underlying bug was that the values
+    of the flags that permit the existence of unqualified sender and recipient
+    addresses in header lines (set by {sender,recipient}_unqualified_hosts for
+    non-local messages, and by -bnq for local messages) were not being
+    preserved with the message after it was received.
+
+13. When Exim was logging an SMTP synchronization error, it could sometimes log
+    "next input=" as part of the text comprising the host identity instead of
+    the correct text. The code was using the same buffer for two different
+    strings. However, depending on which order the printing function evaluated
+    its arguments, the bug did not always show up. Under Linux, for example, my
+    test suite worked just fine.
+
+14. Exigrep contained a use of Perl's "our" scoping after change 4.31/70. This
+    doesn't work with some older versions of Perl. It has been changed to "my",
+    which in any case is probably the better facility to use.
+
+15. A really picky compiler found some instances of statements for creating
+    error messages that either had too many or two few arguments for the format
+    string.
+
+16. The size of the buffer for calls to the DNS resolver has been increased
+    from 1024 to 2048. A larger buffer is needed when performing PTR lookups
+    for addresses that have a lot of PTR records. This alleviates a problem; it
+    does not fully solve it.
+
+17. A dnsdb lookup for PTR records that receives more data than will fit in the
+    buffer now truncates the list and logs the incident, which is the same
+    action as happens when Exim is looking up a host name and its aliases.
+    Previously in this situation something unpredictable would happen;
+    sometimes it was "internal error: store_reset failed".
+
+18. If a server dropped the connection unexpectedly when an Exim client was
+    using GnuTLS and trying to read a response, the client delivery process
+    crashed while trying to generate an error log message.
+
+19. If a "warn" verb in an ACL added multiple headers to a message in a single
+    string, for example:
+
+      warn message = H1: something\nH2: something
+
+    the text was added as a single header line from Exim's point of view
+    though it ended up OK in the delivered message. However, searching for the
+    second and subsequent header lines using $h_h2: did not work. This has been
+    fixed. Similarly, if a system filter added multiple headers in this way,
+    the routers could not see them.
+
+20. Expanded the error message when iplsearch is called with an invalid key to
+    suggest using net-iplsearch in a host list.
+
+21. When running tests using -bh, any delays imposed by "delay" modifiers in
+    ACLs are no longer actually imposed (and a message to that effect is
+    output).
+
+22. If a "gecos" field in a passwd entry contained escaped characters, in
+    particular, if it contained a \" sequence, Exim got it wrong when building
+    a From: or a Sender: header from that name. A second bug also caused
+    incorrect handling when an unquoted " was present following a character
+    that needed quoting.
+
+23. "{crypt}" as a password encryption mechanism for a "crypteq" expansion item
+    was not being matched caselessly.
+
+24. Arranged for all hyphens in the exim.8 source to be escaped with
+    backslashes.
+
+25. Change 16 of 4.32, which reversed 71 or 4.31 didn't quite do the job
+    properly. Recipient callout cache records were still being keyed to include
+    the sender, even when use_sender was set false. This led to far more
+    callouts that were necessary. The sender is no longer included in the key
+    when use_sender is false.
+
+26. Added "control = submission" modifier to ACLs.
+
+27. Added the ${base62d: operator to decode base 62 numbers.
+
+28. dnsdb lookups can now access SRV records.
+
+29. CONFIGURE_OWNER can be set at build time to define an alternative owner for
+    the configuration file.
+
+30. The debug message "delivering xxxxxx-xxxxxx-xx" is now output in verbose
+    (-v) mode. This makes the output for a verbose queue run more intelligible.
+
+31. Added a use_postmaster feature to recipient callouts.
+
+32. Added the $body_zerocount variable, containing the number of binary zero
+    bytes in the message body.
+
+33. The time of last modification of the "new" subdirectory is now used as the
+    "mailbox time last read" when there is a quota error for a maildir
+    delivery.
+
+34. Added string comparison operators lt, lti, le, lei, gt, gti, ge, gei.
+
+35. Added +ignore_unknown as a special item in host lists.
+
+36. Code for decoding IPv6 addresses in host lists is now included, even if
+    IPv6 support is not being compiled. This fixes a bug in which an IPv6
+    address was recognized as an IP address, but was then not correctly decoded
+    into binary, causing unexpected and incorrect effects when compared with
+    another IP address.
+
+
+Exim version 4.34
+-----------------
+
+ 1. Very minor rewording of debugging text in manualroute to say "list of
+    hosts" instead of "hostlist".
+
+ 2. If verify=header_syntax was set, and a header line with an unqualified
+    address (no domain) and a large number of spaces between the end of the
+    name and the colon was received, the reception process suffered a buffer
+    overflow, and (when I tested it) crashed. This was caused by some obsolete
+    code that should have been removed. The fix is to remove it!
+
+ 3. When running in the test harness, delay a bit after writing a bounce
+    message to get a bit more predictability in the log output.
+
+ 4. Added a call to search_tidyup() just before forking a reception process. In
+    theory, someone could use a lookup in the expansion of smtp_accept_max_
+    per_host which, without the tidyup, could leave open a database connection.
+
+ 5. Added the variables $recipient_data and $sender_data which get set from a
+    lookup success in an ACL "recipients" or "senders" condition, or a router
+    "senders" option, similar to $domain_data and $local_part_data.
+
+ 6. Moved the writing of debug_print from before to after the "senders" test
+    for routers.
+
+ 7. Change 4.31/66 (moving the time when the Received: is generated) caused
+    problems for message scanning, either using a data ACL, or using
+    local_scan() because the Received: header was not generated till after they
+    were called (in order to set the time as the time of reception completion).
+    I have revised the way this works. The header is now generated after the
+    body is received, but before the ACL or local_scan() are called. After they
+    are run, the timestamp in the header is updated.
+
+
+Exim version 4.33
+-----------------
+
+ 1. Change 4.24/6 introduced a bug because the SIGALRM handler was disabled
+    before starting a queue runner without re-exec. This happened only when
+    deliver_drop_privilege was set or when the Exim user was set to root. The
+    effect of the bug was that timeouts during subsequent deliveries caused
+    crashes instead of being properly handled. The handler is now left at its
+    default (and expected) setting.
+
+ 2. The other case in which a daemon avoids a re-exec is to deliver an incoming
+    message, again when deliver_drop_privilege is set or Exim is run as root.
+    The bug described in (1) was not present in this case, but the tidying up
+    of the other signals was missing. I have made the two cases consistent.
+
+ 3. The ignore_target_hosts setting on a manualroute router was being ignored
+    for hosts that were looked up using the /MX notation.
+
+ 4. Added /ignore=<ip list> feature to @mx_any, @mx_primary, and @mx_secondary
+    in domain lists.
+
+ 5. Change 4.31/55 was buggy, and broke when there was a rewriting rule that
+    operated on the sender address. After changing the $sender_address to <>
+    for the sender address verify, Exim was re-instated it as the original
+    (before rewriting) address, but remembering that it had rewritten it, so it
+    wasn't rewriting it again. This bug also had the effect of breaking the
+    sender address verification caching when the sender address was rewritten.
+
+ 6. The ignore_target_hosts option was being ignored by the ipliteral router.
+    This has been changed so that if the ip literal address matches
+    ignore_target_hosts, the router declines.
+
+ 7. Added expansion conditions match_domain, match_address, and match_local_
+    part (NOT match_host).
+
+ 8. The placeholder for the Received: header didn't have a length field set.
+
+ 9. Added code to Exim itself and to exim_lock to test for a specific race
+    condition that could lead to file corruption when using MBX delivery. The
+    issue is with the lockfile that is created in /tmp. If this file is removed
+    after a process has opened it but before that process has acquired a lock,
+    there is the potential for a second process to recreate the file and also
+    acquire a lock. This could lead to two Exim processes writing to the file
+    at the same time. The added code performs the same test as UW imapd; it
+    checks after acquiring the lock that its file descriptor still refers to
+    the same named file.
+
+10. The buffer for building added header lines was of fixed size, 8192 bytes.
+    It is now parameterized by HEADER_ADD_BUFFER_SIZE and this can be adjusted
+    when Exim is built.
+
+11. Added the smtp_active_hostname option. If used, this will typically be made
+    to depend on the incoming interface address. Because $interface_address is
+    not set up until the daemon has forked a reception process, error responses
+    that can happen earlier (such as "too many connections") no longer contain
+    a host name.
+
+12. If an expansion in a condition on a "warn" statement fails because a lookup
+    defers, the "warn" statement is abandoned, and the next ACL statement is
+    processed. Previously this caused the whole ACL to be aborted.
+
+13. Added the iplsearch lookup type.
+
+14. Added ident_timeout as a log selector.
+
+15. Added tls_certificate_verified as a log selector.
+
+16. Added a global option tls_require_ciphers (compare the smtp transport
+    option of the same name). This controls incoming TLS connections.
+
+17. I finally figured out how to make tls_require_ciphers do a similar thing
+    in GNUtls to what it does in OpenSSL, that is, set up an appropriate list
+    before starting the TLS session.
+
+18. Tabs are now shown as \t in -bP output.
+
+19. If the log selector return_path_on_delivery was set, Exim crashed when
+    bouncing a message because it had too many Received: header lines.
+
+20. If two routers both had headers_remove settings, and the first one included
+    a superfluous trailing colon, the final name in the first list and the
+    first name in the second list were incorrectly joined into one item (with a
+    colon in the middle).
+
+
+Exim version 4.32
+-----------------
+
+ 1. Added -C and -D options to the exinext utility, mainly to make it easier
+    to include in the automated testing, but these could be helpful when
+    multiple configurations are in use.
+
+ 2. The exinext utility was not formatting the output nicely when there was
+    an alternate port involved in the retry record key, nor when there was a
+    message id as well (for retries that were specific to a specific message
+    and a specific host). It was also confused by IPv6 addresses, because of
+    the additional colons they contain. I have fixed the IPv4 problem, and
+    patched it up to do a reasonable job for IPv6.
+
+ 3. When there is an error after a MAIL, RCPT, or DATA SMTP command during
+    delivery, the log line now contains "pipelined" if PIPELINING was used.
+
+ 4. An SMTP transport process used to panic and die if the bind() call to set
+    an explicit outgoing interface failed. This has been changed; it is now
+    treated in the same way as a connect() failure.
+
+ 5. A reference to $sender_host_name in the part of a conditional expansion
+    that was being skipped was still causing a DNS lookup. This no longer
+    occurs.
+
+ 6. The def: expansion condition was not recognizing references to header lines
+    that used bh_ and bheader_.
+
+ 7. Added the _cache feature to named lists.
+
+ 8. The code for checking quota_filecount in the appendfile transport was
+    allowing one more file than it should have been.
+
+ 9. For compatibility with Sendmail, the command line option
+
+      -prval:sval
+
+    is equivalent to
+
+      -oMr rval -oMs sval
+
+    and sets the incoming protocol and host name (for trusted callers). The
+    host name and its colon can be omitted when only the protocol is to be set.
+    Note the Exim already has two private options, -pd and -ps, that refer to
+    embedded Perl. It is therefore impossible to set a protocol value of "d" or
+    "s", but I don't think that's a major issue.
+
+10. A number of refactoring changes to the code, none of which should affect
+    Exim's behaviour:
+
+    (a) The number of logging options was getting close to filling up the
+    32-bit word that was used as a bit map. I have split them into two classes:
+    those that are passed in the argument to log_write(), and those that are
+    only ever tested independently outside of that function. These are now in
+    separate 32-bit words, so there is plenty of room for expansion again.
+    There is no change in the user interface or the logging behaviour.
+
+    (b) When building, for example, log lines, the code previously used a
+    macro that called string_cat() twice, in order to add two strings. This is
+    not really sufficiently general. Furthermore, there was one instance where
+    it was actually wrong because one of the argument was used twice, and in
+    one call a function was used. (As it happened, calling the function twice
+    did not affect the overall behaviour.) The macro has been replaced by a
+    function that can join an arbitrary number of extra strings onto a growing
+    string.
+
+    (c) The code for expansion conditions now uses a table and a binary chop
+    instead of a serial search (which was left over from when there were very
+    few conditions). Also, it now recognizes conditions like "pam" even when
+    the relevant support is not compiled in: a suitably worded error message is
+    given if an attempt is made to use such a condition.
+
+11. Added ${time_interval:xxxxx}.
+
+12. A bug was causing one of the ddress fields not to be passed back correctly
+    from remote delivery subprocesses. The field in question was not being
+    subsequently used, so this caused to problems in practice.
+
+13. Added new log selectors queue_time and deliver_time.
+
+14. Might have fixed a bug in maildirsizefile handling that threw up
+    "unexpected character" debug warnings, and recalculated the data
+    unnecessarily. In any case, I expanded the warning message to give more
+    information.
+
+15. Added the message "Restricted characters in address" to the statements in
+    the default ACL that block characters like @ and % in local parts.
+
+16. Change 71 for release 4.31 proved to be much less benign that I imagined.
+    Three changes have been made:
+
+    (a) There was a serious bug; a negative response to MAIL caused the whole
+        recipient domain to be cached as invalid, thereby blocking all messages
+        to all local parts at the same domain, from all senders. This bug has
+        been fixed. The domain is no longer cached after a negative response to
+        MAIL if the sender used is not empty.
+
+    (b) The default behaviour of using MAIL FROM:<> for recipient callouts has
+        been restored.
+
+    (c) A new callout option, "use_sender" has been added for people who want
+        the modified behaviour.
+
+
+Exim version 4.31
+-----------------
+
+ 1. Removed "EXTRALIBS=-lwrap" from OS/Makefile-Unixware7 on the advice of
+    Larry Rosenman.
+
+ 2. Removed "LIBS = -lresolv" from OS/Makefile-Darwin as it is not needed, and
+    indeed breaks things for older releases.
+
+ 3. Added additional logging to the case where there is a problem reading data
+    from a filter that is running in a subprocess using a pipe, in order to
+    try to track down a specific problem.
+
+ 4. Testing facility fudge: when running in the test harness and attempting
+    to connect to 10.x.x.x (expecting a connection timeout) I'm now sometimes
+    getting "No route to host". Convert this to a timeout.
+
+ 5. Define ICONV_ARG2_TYPE as "char **" for Unixware7 to avoid compiler
+    warning.
+
+ 6. Some OS don't have socklen_t but use size_t instead. This affects the
+    fifth argument of getsockopt() amongst other things. This is now
+    configurable by a macro called SOCKLEN_T which defaults to socklen_t, but
+    can be set for individual OS. I have set it for SunOS5, OSF1, and
+    Unixware7. Current versions of SunOS5 (aka Solaris) do have socklen_t, but
+    some earlier ones do not.
+
+ 7. Change 4.30/15 was not doing the test caselessly.
+
+ 8. The standard form for an IPv6 address literal was being rejected by address
+    parsing in, for example, MAIL and RCPT commands. An example of this kind of
+    address is [IPv6:2002:c1ed:8229:10:202:2dff:fe07:a42a]. Exim now accepts
+    this, as well as the form without the "IPv6" on the front (but only when
+    address literals are enabled, of course).
+
+ 9. Added some casts to avoid compiler warnings in OS/os.c-Linux.
+
+10. Exim crashed if a message with an empty sender address specified by -f
+    encountered a router with an errors_to setting. This could be provoked only
+    by a command such as
+
+      exim -f "" ...
+
+    where an empty string was supplied; "<>" did not hit this bug.
+
+11. Installed PCRE release 4.5.
+
+12. If EHLO/HELO was rejected by an ACL, the value of $sender_helo_name
+    remained set. It is now erased.
+
+13. exiqgrep wasn't working on MacOS X because it didn't correctly compute
+    times from message ids (which are base 36 rather than the normal 62).
+
+14. "Expected" SMTP protocol errors that can arise when PIPELINING is in use
+    were being counted as actual protocol errors, and logged if the log
+    selector +smtp_protocol_error was set. One cannot be perfect in this test,
+    but now, if PIPELINING has been advertised, RCPT following a rejected MAIL,
+    and DATA following a set of rejected RCPTs do not count as protocol errors.
+    In other words, Exim assumes they were pipelined, though this may not
+    actually be the case. Of course, in all cases the client gets an
+    appropriate error code.
+
+15. If a lookup fails in an ACL condition, a message about the failure may
+    be available; it is used if testing the ACL cannot continue, because most
+    such messages specify what the cause of the deferral is. However, some
+    messages (e.g. "MYSQL: no data found") do not cause a defer. There was bug
+    that caused an old message to be retained and used if a later statement
+    caused a defer, replacing the real cause of the deferral.
+
+16. If an IP address had so many PTR records that the DNS lookup buffer
+    was not large enough to hold them, Exim could crash while trying to process
+    the truncated data. It now detects and logs this case.
+
+17. Further to 4.21/58, another change has been made: if (and only if) the
+    first line of a message (the first header line) ends with CRLF, a bare LF
+    in a subsequent header line has a space inserted after it, so as not to
+    terminate the header.
+
+18. Refactoring: tidied an ugly bit of code in appendfile that copied data
+    unnecessarily, used atoi() instead of strtol(), and didn't check the
+    termination when getting file sizes from file names by regex.
+
+19. Completely re-implemented the support for maildirsize files, in the light
+    of a number of problems with the previous contributed implementation
+    (4.30/29). In particular:
+
+    . If the quota is zero, the maildirsize file is maintained, but no quota is
+      imposed.
+
+    . If the maildir directory does not exist, it is created before any attempt
+      to write a maildirsize file.
+
+    . The quota value in the file is just a cache; if the quota is changed in
+      the transport, the new value overrides.
+
+    . A regular expression is available for excluding directories from the
+      count.
+
+20. The autoreply transport checks the characters in options that define the
+    message's headers; it allows continued headers, but it was checking with
+    isspace() after an embedded newline instead of explicitly looking for a
+    space or a tab.
+
+21. If all the "regular" hosts to which an address was routed had passed their
+    expiry times, and had not reached their retry times, the address was
+    bounced, even if fallback hosts were defined. Now Exim should go on to try
+    the fallback hosts.
+
+22. Increased buffer sizes in the callout code from 1024 to 4096 to match the
+    equivalent code in the SMTP transport. Some hosts send humungous responses
+    to HELO/EHLO, more than 1024 it seems.
+
+23. Refactoring: code in filter.c used (void *) for "any old type" but this
+    gives compiler warnings in some environments. I've now done it "properly",
+    using a union.
+
+24. The replacement for inet_ntoa() that is used with gcc on IRIX systems
+    (because of problems with the built-in one) was declared to return uschar *
+    instead of char *, causing compiler failure.
+
+25. Fixed a file descriptor leak when processing alias/forward files.
+
+26. Fixed a minor format string issue in dbfn.c.
+
+27. Typo in exim.c: ("dmbnz" for "dbmnz").
+
+28. If a filter file refered to $h_xxx or $message_headers, and the headers
+    contained RFC 2047 "words", Exim's memory could, under certain conditions,
+    become corrupted.
+
+29. When a sender address is verified, it is cached, to save repeating the test
+    when there is more than one recipient in a message. However, when the
+    verification involves a callout, it is possible for different callout
+    options to be set for different recipients. It is too complicated to keep
+    track of this in the cache, so now Exim always runs a verification when a
+    callout is required, relying on the callout cache for the optimization.
+    The overhead is duplication of the address routing, but this should not be
+    too great.
+
+30. Fixed a bug in callout caching. If a RCPT command caused the sender address
+    to be verified with callout=postmaster, and the main callout worked but the
+    postmaster check failed, the verification correctly failed. However, if a
+    subsequent RCPT command asked for sender verification *without* the
+    postmaster check, incorrect caching caused this verification also to fail,
+    incorrectly.
+
+31. Exim caches DNS lookup failures so as to avoid multiple timeouts; however,
+    it was not caching the DNS options (qualify_single, search_parents) that
+    were used when the lookup failed. A subsequent lookup with different
+    options therefore always gave the same answer, though there were cases
+    where it should not have. (Example: a "domains = !$mx_any" option on a
+    dnslookup router: the "domains" option is always processed without any
+    widening, but the router might have qualify_single set.) Now Exim uses the
+    cached value only when the same options are set.
+
+32. Added John Jetmore's "exipick" utility to the distribution.
+
+33. GnuTLS: When an attempt to start a TLS session fails for any reason other
+    than a timeout (e.g. a certificate is required, and is not provided), an
+    Exim server now closes the connection immediately. Previously it waited for
+    the client to close - but if the client is SSL, it seems that they each
+    wait for each other, leading to a delay before one of them times out.
+
+34: GnuTLS: Updated the code to use the new GnuTLS 1.0.0 API. I have not
+    maintained 0.8.x compatibility because I don't think many are using it, and
+    it is clearly obsolete.
+
+35. Added TLS support for CRLs: a tls_crl global option and one for the smtp
+    transport.
+
+36. OpenSSL: $tls_certificate_verified was being set to 1 even if the
+    client certificate was expired. A simple patch fixes this, though I don't
+    understand the full logic of why the verify callback is called multiple
+    times.
+
+37. OpenSSL: a patch from Robert Roselius: "Enable client-bug workaround.
+    Versions of OpenSSL as of 0.9.6d include a 'CBC countermeasure' feature,
+    which causes problems with some clients (such as the Certicom SSL Plus
+    library used by Eudora). This option, SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS,
+    disables the coutermeasure allowing Eudora to connect."
+
+38. Exim was not checking that a write() to a log file succeeded. This could
+    lead to Bad Things if a log got too big, in particular if it hit a file
+    size limit. Exim now panics and dies if it cannot write to a log file, just
+    as it does if it cannot open a log file.
+
+39. Modified OS/Makefile-Linux so that it now contains
+
+      CFLAGS=-O -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
+
+    The two -D definitions ensure that Exim is compiled with large file
+    support, which makes it possible to handle log files that are bigger than
+    2^31.
+
+40. Fixed a subtle caching bug: if (in an ACL or a set of routers, for
+    instance) a domain was checked against a named list that involved a lookup,
+    causing $domain_data to be set, then another domain was checked against the
+    same list, then the first domain was re-checked, the value of $domain_data
+    after the final check could be wrong. In particular, if the second check
+    failed, it could be set empty. This bug probably also applied to
+    $localpart_data.
+
+41. The strip_trailing_dot option was not being applied to the address given
+    with the -f command-line option.
+
+42. The code for reading a message's header from the spool was incrementing
+    $received_count, but never initializing it. This meant that the value was
+    incorrect (doubled) while delivering a message in the same process in which
+    it was received. In the most common configuration of Exim, this never
+    happens - a fresh exec is done - but it can happen when
+    deliver_drop_privilege is set.
+
+43. When Exim logs an SMTP synchronization error - client data sent too soon -
+    it now includes up to 150 characters of the unexpected data in the log
+    line.
+
+44. The exim_dbmbuild utility uses fixed size buffers for reading input lines
+    and building data strings. The size of both of these buffers was 10 000
+    bytes - far larger than anybody would *ever* want, thought I. Needless to
+    say, somebody hit the limit. I have increased the maximum line length to
+    20 000 and the maximum data length of concatenated lines to 100 000. I have
+    also fixed two bugs, because there was no checking on these buffers. Tsk,
+    tsk. Now exim_dbmbuild gives a message and exits with an error code if a
+    buffer is too small.
+
+45. The exim_dbmbuild utility did not support quoted keys, as Exim does in
+    lsearch lookups. Now it does.
+
+46. When parsing a route_list item in a manualroute router, a fixed-length
+    buffer was used for the list of hosts. I made this 1024 bytes long,
+    thinking that nobody would ever have a list of hosts that long. Wrong.
+    Somebody had a whole pile of complicated expansion conditions, and the
+    string was silently truncated, leading to an expansion error. It turns out
+    that it is easier to change to an unlimited length (owing to other changes
+    that have happened since this code was originally written) than to build
+    structure for giving a limitation error. The length of the item that
+    expands into the list of hosts is now unlimited.
+
+47. The lsearch lookup could not handle data where the length of text line was
+    more than 4095 characters. Such lines were truncated, leading to shortened
+    data being returned. It should now handle lines of any length.
+
+48. Minor wording revision: "cannot test xxx in yyy ACL" becomes "cannot test
+    xxx condition in yyy ACL" (e.g. "cannot test domains condition in DATA
+    ACL").
+
+49. Cosmetic tidy to scripts like exicyclog that are generated by globally
+    replacing strings such as BIN_DIRECTORY in a source file: the replacement
+    no longer happens in comment lines. A list of replacements is now placed
+    at the head of all of the source files, except those whose only change is
+    to replace PERL_COMMAND in the very first #! line.
+
+50. Replaced the slow insertion sort in queue.c, for sorting the list of
+    messages on the queue, with a bottom-up merge sort, using code contributed
+    by Michael Haardt. This should make operations like -bp somewhat faster on
+    large queues. It won't affect queue runners, except when queue_run_in_order
+    is set.
+
+51. Installed eximstats 1.31 in the distribution.
+
+52. Added support for SRV lookups to the dnslookup router.
+
+53. If an ACL referred to $message_body or $message_body_end, the value was not
+    reset for any messages that followed in the same SMTP session.
+
+54. The store-handling optimization for building very long strings was not
+    differentiating between the different store pools. I don't think this
+    actually made any difference in practice, but I've tidied it.
+
+55. While running the routers to verify a sender address, $sender_address
+    was still set to the sender address. This is wrong, because when routing to
+    send a bounce to the sender, it would be empty. Therefore, I have changed
+    it so that, while verifying a sender address, $sender_address is set to <>.
+    (There is no change to what happens when verifying a recipient address.)
+
+56. After finding MX (or SRV) records, Exim was doing a DNS lookup for the
+    target A or AAAA records (if not already returned) without resetting the
+    qualify_single or search_parents options of the DNS resolver. These are
+    inappropriate in this case because the targets of MX and SRV records must
+    be FQDNs. A broken DNS record could cause trouble if it happened to have a
+    target that, when qualified, matched something in the local domain. These
+    two options are now turned off when doing these lookups.
+
+57. It seems that at least some releases of Reiserfs (which does not have the
+    concept of a fixed number of inodes) returns zero and not -1 for the
+    number of available inodes. This interacted badly with check_spool_inodes,
+    which assumed that -1 was the "no such thing" setting. What I have done is
+    to check that the total number of inodes is greater than zero before doing
+    the test of how many are available.
+
+58. When a "warn" ACL statement has a log_message modifier, the message is
+    remembered, and not repeated. This is to avoid a lot of repetition when a
+    message has many recipients that cause the same warning to be written.
+    Howewer, Exim was preserving the list of already written lines for an
+    entire SMTP session, which doesn't seem right. The memory is now reset if a
+    new message is started.
+
+59. The "rewrite" debugging flag was not showing the result of rewriting in the
+    debugging output unless log_rewrite was also set.
+
+60. Avoid a compiler warning on 64-bit systems in dsearch.c by avoiding the use
+    of (int)(handle) when we know that handle contains (void *)(-1).
+
+61. The Exim daemon panic-logs an error return when it closes the incoming
+    connection. However "connection reset by peer" seems to be common, and
+    isn't really an error worthy of noting specially, so that particular error
+    is no long logged.
+
+62. When Exim is trying to find all the local interfaces, it used to panic and
+    die if the ioctl to get the interface flags failed. However, it seems that
+    on at least one OS (Solaris 9) it is possible to have an interface that is
+    included in the list of interfaces, but for which you get a failure error
+    for this call. This happens when the interface is not "plumbed" into a
+    protocol (i.e. neither IPv4 nor IPv6). I've changed the code so that a
+    failure of the "get flags" call assumes that the interface is down.
+
+63. Added a ${eval10: operator, which assumes all numbers are decimal. This
+    makes life easier for people who are doing arithmetic on fields extracted
+    from dates, where you often get leading zeros that should not be
+    interpreted as octal.
+
+64. Added qualify_domain to the redirect router, to override the global
+    setting.
+
+65. If a pathologically long header line contained very many addresses (the
+    report of this problem mentioned 10 000) and each of them was rewritten,
+    Exim could use up a very large amount of memory. (It kept on making new
+    copies of the header line as it rewrote, and never released the old ones.)
+    At the expense of a bit more processing, the header rewriting function has
+    been changed so that it no longer eats memory in this way.
+
+66. The generation of the Received: header has been moved from the time that a
+    message starts to be received, to the time that it finishes. The timestamp
+    in the Received: header should now be very close to that of the <= log
+    line. There are two side-effects of this change:
+
+    (a) If a message is rejected by a DATA or non-SMTP ACL or local_scan(), the
+        logged header lines no longer include the local Received: line, because
+        it has not yet been created. The same applies to a copy of the message
+        that is returned to a non-SMTP sender when a message is rejected.
+
+    (b) When a filter file is tested using -bf, no additional Received: header
+        is added to the test message. After some thought, I decided that this
+        is a bug fix.
+
+    This change does not affect the value of $received_for. It is still set
+    after address rewriting, but before local_scan() is called.
+
+67. Installed the latest Cygwin-specific files from the Cygwin maintainer.
+
+68. GnuTLS: If an empty file is specified for tls_verify_certificates, GnuTLS
+    gave an unhelpful panic error message, and a defer error. I have managed to
+    change this behaviour so that it now rejects any supplied certificate,
+    which seems right, as the list of acceptable certificates is empty.
+
+69. OpenSSL: If an empty file is specified for tls_verify_certificates, OpenSSL
+    gave an unhelpful defer error. I have not managed to make this reject any
+    supplied certificates, but the error message it gives is "no certificate
+    supplied", which is not helpful.
+
+70. exigrep's output now also includes lines that are not associated with any
+    message, but which match the given pattern. Implemented by a patch from
+    Martin Sluka, which also tidied up the Perl a bit.
+
+71. Recipient callout verification, like sender verification, was using <> in
+    the MAIL FROM command. This isn't really the right thing, since the actual
+    sender may affect whether the remote host accepts the recipient or not. I
+    have changed it to use the actual sender in the callout; this means that
+    the cache record is now keyed on a recipient/sender pair, not just the
+    recipient address. There doesn't seem to be a real danger of callout loops,
+    since a callout by the remote host to check the sender would use <>.
+    [SEE ABOVE: changed after hitting problems.]
+
+72. Exim treats illegal SMTP error codes that do not begin with 4 or 5 as
+    temporary errors. However, in the case of such a code being given after
+    the end of a data transmission (i.e. after ".") Exim was failing to write
+    a retry record for the message. (Yes, there was some broken host that was
+    actually sending 8xx at this point.)
+
+73. An unknown lookup type in a host list could cause Exim to panic-die when
+    the list was checked. (An example that provoked this was putting <; in the
+    middle of a list instead of at the start.) If this happened during a DATA
+    ACL check, a -D file could be left lying around. This kind of configuration
+    error no longer causes Exim to die; instead it causes a defer errror. The
+    incident is still logged to the main and panic logs.
+
+74. Buglet left over from Exim 3 conversion. The message "too many messages
+    in one connection" was written to the rejectlog but not the mainlog, except
+    when address rewriting (yes!) was being logged.
+
+75. Added write_rejectlog option.
+
+76. When a system filter was run not as root (that is, when system_filter_user
+    was set), the values of the $n variables were not being returned to the
+    main process; thus, they were not subsequently available in the $sn
+    variables.
+
+77. Added +return_path_on_delivery log selector.
+
+78. A connection timeout was being treated differently from recipients deferred
+    when testing hosts_max_try with a message that was older than the host's
+    retry timeout. (The host should not be counted, thus allowing all hosts to
+    be tried at least once before bouncing.) This may have been the cause of an
+    occasionally reported bug whereby a message would remain on the queue
+    longer than the retry timeout, but would be bounced if a delivery was
+    forced. I say "may" because I never totally pinned down the problem;
+    setting up timeout/retry tests is difficult. See also the next item.
+
+79. The ultimate address timeout was not being applied to errors that involved
+    a combination of host plus message (for example, a timeout on a MAIL
+    command). When an address resolved to a number of possible hosts, and they
+    were not all tried for each delivery (e.g. because of hosts_max_try), a
+    message could remain on the queue longer than the retry timeout.
+
+80. Sieve bug: "stop" inside "elsif" was broken. Applied a patch from Michael
+    Haardt.
+
+81. Fixed an obscure SMTP outgoing bug which required at least the following
+    conditions: (a) there was another message waiting for the same server;
+    (b) the server returned 5xx to all RCPT commands in the first message so
+    that the message was not completed; (c) the server dropped the connection
+    or gave a negative response to the RSET that Exim sends to abort the
+    transaction. The observed case was a dropped connection after DATA that had
+    been sent in pipelining mode. That is, the server had advertised PIPELINING
+    but was not implementing it correctly. The effect of the bug was incorrect
+    behaviour, such as trying another host, and this could lead to a crash.
+
+
+Exim version 4.30
+-----------------
+
+ 1. The 3rd arguments to getsockname(), getpeername(), and accept() in exim.c
+    and daemon.c were passed as pointers to ints; they should have been
+    pointers to socklen_t variables (which are typically unsigned ints).
+
+ 2. Some signed/unsigned type warnings in the os.c file for Linux have been
+    fixed.
+
+ 3. Fixed a really odd bug that affected only the testing scheme; patching a
+    certain fixed string in the binary changed the value of another string that
+    happened to be identical to the end of the original first string.
+
+ 4. When gethostbyname() (or equivalent) is passed an IP address as a "host
+    name", it returns that address as the IP address. On some operating
+    systems (e.g. Solaris), it also passes back the IP address string as the
+    "host name". However, on others (e.g. Linux), it passes back an empty
+    string. Exim wasn't checking for this, and was changing the host name to an
+    empty string, assuming it had been canonicized.
+
+ 5. Although rare, it is permitted to have more than one PTR record for a given
+    IP address. I thought that gethostbyaddr() or getipnodebyaddr() always gave
+    all the names associated with an address, because they do in Solaris.
+    However, it seems that they do not in Linux for data that comes from the
+    DNS. If an address in /etc/hosts has multiple names, they _are_ all given.
+    I found this out when I moved to a new Linux workstation and tried to run
+    the Exim test suite.
+
+    To get round this problem I have changed the code so that it now does its
+    own call to the DNS to look up PTR records when searching for a host name.
+    If nothing can be found in the DNS, it tries gethostbyaddr(), so that
+    addresses that are only in /etc/hosts are still found.
+
+    This behaviour is, however, controlled by an option called host_lookup_
+    order, which defaults to "bydns:byaddr". If people want to use the other
+    order, or indeed, just use one or the other means of lookup, they can
+    specify it in this variable.
+
+ 6. If a PTR record yields an empty name, Exim treats it as non-existent. In
+    some operating systems, this comes back from gethostbyaddr() as an empty
+    string, and this is what Exim used to test for. However, it seems that in
+    other systems, "." is yielded. Exim now tests for this case too.
+
+ 7. The values of check_spool_space and check_log_space are now held internally
+    as a number of kilobytes instead of an absolute number of bytes. If a
+    numbers is specified without 'K' or 'M', it is rounded up to the nearest
+    kilobyte. This means that much larger values can be stored.
+
+ 8. Exim monitor: an attempt to get the action menu when not actually pointing
+    at a message produces an empty menu entitled "No message selected". This
+    works on Solaris (OpenWindows). However, XFree86 does not like a menu with
+    no entries in it ("Shell widget menu has zero width and/or height"). So I
+    have added a single, blank menu entry in this case.
+
+ 9. Added ${quote_local_part.
+
+10. MIME decoding is now applied to the contents of Subject: header lines when
+    they are logged.
+
+11. Now that a reference to $sender_host_address automatically causes a reverse
+    lookup to occur if necessary (4.13/18), there is no need to arrange for a
+    host lookup before query-style lookups in lists that might use this
+    variable. This has therefore been abolished, and the "net-" prefix is no
+    longer necessary for query-style lookups.
+
+12. The Makefile for SCO_SV contained a setting of LDFLAGS. This appears to
+    have been a typo for LFLAGS, so it has been changed.
+
+13. The install script calls Exim with "-C /dev/null" in order to find the
+    version number. If ALT_CONFIG_PREFIX was set, this caused an error message
+    to be output. Howeve, since Exim outputs its version number before the
+    error, it didn't break the script. It just looked ugly. I fixed this by
+    always allowing "-C /dev/null" if the caller is root.
+
+14. Ignore overlarge ACL variable number when reading spool file - insurance
+    against a later release with more variables having written the file.
+
+15. The standard form for an IPv6 address literal was being rejected by EHLO.
+    Example: [IPv6:2002:c1ed:8229:10:202:2dff:fe07:a42a]. Exim now accepts
+    this, as well as the form without the "IPv6" on the front.
+
+16. Added CHOWN_COMMAND=/usr/sbin/chown and LIBS=-lresolv to the
+    OS/Makefile-Darwin file.
+
+17. Fixed typo in lookups/ldap.c: D_LOOKUP should be D_lookup. This applied
+    only to LDAP libraries that do not have LDAP_OPT_DEREF.
+
+18. After change 4.21/52, "%ld" was used to format the contents of the $inode
+    variable. However, some OS use ints for inodes. I've added cast to long int
+    to get rid of the compiler warning.
+
+19. I had forgotten to lock out "/../" in configuration file names when
+    ALT_CONFIG_PREFIX was set.
+
+20. Routers used for verification do not need to specify transports. However,
+    if such a router generated a host list, and callout was configured, Exim
+    crashed, because it could not find a port number from the (non-existent)
+    transport. It now assumes port 25 in this circumstance.
+
+21. Added the -t option to exigrep.
+
+22. If LOOKUP_LSEARCH is defined, all three linear search methods (lsearch,
+    wildlsearch, nwildlsearch) are compiled. LOOKUP_WILDLSEARCH and LOOKUP_
+    NWILDLSEARCH are now obsolete, but retained for compatibility. If either of
+    them is set, LOOKUP_LSEARCH is forced.
+
+23. "exim -bV" now outputs a list of lookups that are included in the binary.
+
+24. Added sender and host information to the "rejected by local_scan()" log
+    line; previously there was no indication of these.
+
+25. Added .include_if_exists.
+
+26. Change 3.952/11 added an explicit directory sync on top of a file sync for
+    Linux. It turns out that not all file systems support this. Apparently some
+    versions of NFS do not. (It's rare to put Exim's spool on NFS, but people
+    do it.) To cope with this, the error EINVAL, which means that sync-ing is
+    not supported on the file descriptor, is now ignored when Exim is trying to
+    sync a directory. This applies only to Linux.
+
+27. Added -DBIND_8_COMPAT to the CLFAGS setting for Darwin.
+
+28. In Darwin (MacOS X), the PAM headers are in /usr/include/pam and not in
+    /usr/include/security. There's now a flag in OS/os.h-Darwin to cope with
+    this.
+
+29. Added support for maildirsize files from supplied patch (modified a bit).
+
+30. The use of :fail: followed by an empty string could lead Exim to respond to
+    sender verification failures with (e.g.):
+
+      550 Verification failed for <xxx>
+      550 Sender verify failed
+
+    where the first response line was missing the '-' that indicates it is not
+    the final line of the response.
+
+31. The loop for finding the name of the user that called Exim had a hardwired
+    limit of 10; it now uses the value of finduser_retries, which is used for
+    all other user lookups.
+
+32. Added $received_count variable, available in data and not_smtp ACLs, and at
+    delivery time.
+
+33. Exim was neglecting to zero errno before one call of strtol() when
+    expanding a string and expecting an integer value. On some systems this
+    resulted in spurious "integer overflow" errors. Also, it was casting the
+    result into an int without checking.
+
+34. Testing for a connection timeout using "timeout_connect" in the retry rules
+    did not work. The code looks as if it has *never* worked, though it appears
+    to have been documented since at least releast 1.62. I have made it work.
+
+35. The "timeout_DNS" error in retry rules, also documented since at least
+    1.62, also never worked. As it isn't clear exactly what this means, and
+    clearly it isn't a major issue, I have abolished the feature by treating it
+    as "timeout", and writing a warning to the main and panic logs.
+
+36. The display of retry rules for -brt wasn't always showing the error code
+    correctly.
+
+37. Added new error conditions to retry rules: timeout_A, timeout_MX,
+    timeout_connect_A, timeout_connect_MX.
+
+38. Rewriting the envelope sender at SMTP time did not allow it to be rewritten
+    to the empty sender.
+
+39. The daemon was not analysing the content of -oX till after it had closed
+    stderr and disconnected from the controlling terminal. This meant that any
+    syntax errors were only noted on the panic log, and the return code from
+    the command was 0. By re-arranging the code a little, I've made the
+    decoding happen first, so such errors now appear on stderr, and the return
+    code is 1. However, the actual setting up of the sockets still happens in
+    the disconnected process, so errors there are still only recorded on the
+    panic log.
+
+40. A daemon listener on a wildcard IPv6 socket that also accepts IPv4
+    connections (as happens on some IP stacks) was logged at start up time as
+    just listening for IPv6. It now logs "IPv6 with IPv4". This differentiates
+    it from "IPv6 and IPv4", which means that two separate sockets are being
+    used.
+
+41. The debug output for gethostbyname2() or getipnodebyname() failures now
+    says whether AF_INET or AF_INET6 was passed as an argument.
+
+42. Exiwhat output was messed up when time zones were included in log
+    timestamps.
+
+43. Exiwhat now gives more information about the daemon's listening ports,
+    and whether -tls-on-connect was used.
+
+44. The "port" option of the smtp transport is now expanded.
+
+45. A "message" modifier in a "warn" statement in a non-message ACL was being
+    silently ignored. Now an error message is written to the main and panic
+    logs.
+
+46. There's a new ACL modifier called "logwrite" which writes to a log file
+    as soon as it is encountered.
+
+47. Added $local_user_uid and $local_user_gid at routing time.
+
+48. Exim crashed when trying to verify a sender address that was being
+    rewritten to "<>".
+
+49. Exim was recognizing only a space character after ".include". It now also
+    recognizes a tab character.
+
+50. Fixed several bugs in the Perl script that creates the exim.8 man page by
+    extracting the relevant information from the specification. The man page no
+    longer contains scrambled data for the -d option, and I've added a section
+    at the front about calling Exim under different names.
+
+51. Added "extra_headers" argument to the "mail" command in filter files.
+
+52. Redirecting mail to an unqualified address in a Sieve filter caused Exim to
+    crash.
+
+53. Installed eximstats 1.29.
+
+54. Added transport_filter_timeout as a generic transport option.
+
+55. Exim no longer adds an empty Bcc: header to messages that have no To: or
+    Cc: header lines. This was required by RFC 822, but it not required by RFC
+    2822.
+
+56. Exim used to add From:, Date:, and Message-Id: header lines to any
+    incoming messages that did not have them. Now it does so only if the
+    message originates locally, that is, if there is no associated remote host
+    address. When Resent- header lines are present, this applies to the Resent-
+    lines rather than the non-Resent- lines.
+
+57. Drop incoming SMTP connection after too many syntax or protocol errors. The
+    limit is controlled by smtp_max_synprot_errors, defaulting to 3.
+
+58. Messages for configuration errors now include the name of the main
+    configuration file - useful now that there may be more than one file in a
+    list (.included file names were always shown).
+
+59. Change 4.21/82 (run initgroups() when starting the daemon) causes problems
+    for those rare installations that do not start the daemon as root or run it
+    setuid root. I've cut out the call to initgroups() if the daemon is not
+    root at that time.
+
+60. The Exim user and group can now be bound into the binary as text strings
+    that are looked up at the start of Exim's processing.
+
+61. Applied a small patch for the Interbase code, supplied by Ard Biesheuvel.
+
+62. Added $mailstore_basename variable.
+
+63. Installed patch to sieve.c from Michael Haardt.
+
+64. When Exim failed to open the panic log after failing to open the main log,
+    the original message it was trying to log was written to stderr and debug
+    output, but if they were not available (the usual case in production), it
+    was lost. Now it is written to syslog before the two lines that record the
+    failures to open the logs.
+
+65. Users' Exim filters run in subprocesses under the user's uid. It is
+    possible for a "deliver" command or an alias in a "personal" command to
+    provoke an address rewrite. If logging of address rewriting is configured,
+    this fails because the process is not running as root or exim. There may be
+    a better way of dealing with this, but for the moment (because 4.30 needs
+    to be released), I have disabled address rewrite logging when running a
+    filter in a non-root, non-exim process.
+
+
+Exim version 4.24
+-----------------
+
+ 1. The buildconfig auxiliary program wasn't quoting the value set for
+    HEADERS_CHARSET. This caused a compilation error complaining that 'ISO' was
+    not defined. This bug was masked in 4.22 by the effect that was fixed in
+    change 4.23/1.
+
+ 2. Some messages that were rejected after a message id was allocated were
+    shown as "incomplete" by exigrep. It no longer does this for messages that
+    are rejected by local_scan() or the DATA or non-SMTP ACLs.
+
+ 3. If a Message-ID: header used a domain literal in the ID, and Exim did not
+    have allow_domain_literals set, the ID did not get logged in the <= line.
+    Domain literals are now always recognized in Message-ID: header lines.
+
+ 4. The first argument for a ${extract expansion item is the key name or field
+    number. Leading and trailing spaces in this item were not being ignored,
+    causing some misleading effects.
+
+ 5. When deliver_drop_privilege was set, single queue runner processes started
+    manually (i.e. by the command "exim -q") or by the daemon (which uses the
+    same command in the process it spins off) were not dropping privilege.
+
+ 6. When the daemon running as "exim" started a queue runner, it always
+    re-executed Exim in the spun-off process. This is a waste of effort when
+    deliver_drop_privilege is set. The new process now just calls the
+    queue-runner function directly.
+
+
+Exim version 4.23
+-----------------
+
+ 1. Typo in the src/EDITME file: it referred to HEADERS_DECODE_TO instead of
+    HEADERS_CHARSET.
+
+ 2. Change 4.21/73 introduced a bug. The pid file path set by -oP was being
+    ignored. Though the use of -oP was forcing the writing of a pid file, it
+    was always written to the default place.
+
+ 3. If the message "no IP address found for host xxxx" is generated during
+    incoming verification, it is now followed by identification of the incoming
+    connection (so you can more easily find what provoked it).
+
+ 4. Bug fix for Sieve filters: "stop" inside a block was not working properly.
+
+ 5. Added some features to "harden" Exim a bit more against certain attacks:
+
+    (a) There is now a build-time option called FIXED_NEVER_USERS that can
+        be put in Local/Makefile. This is like the never_users runtime option,
+        but it cannot be overridden. The default setting is "root".
+
+    (b) If ALT_CONFIG_PREFIX is defined in Local/Makefile, it specifies a
+        prefix string with which any file named in a -C command line option
+        must start.
+
+    (c) If ALT_CONFIG_ROOT_ONLY is defined in Local/Makefile, root privilege
+        is retained for -C and -D only if the caller of Exim is root. Without
+        it, the exim user may also use -C and -D and retain privilege.
+
+    (d) If DISABLE_D_OPTION is defined in Local/Makefile, the use of the -D
+        command line option is disabled.
+
+ 6. Macro names set by the -D option must start with an upper case letter, just
+    like macro names defined in the configuration file.
+
+ 7. Added "dereference=" facility to LDAP.
+
+ 8. Two instances of the typo "uknown" in the source files are fixed.
+
+ 9. If a PERL_COMMAND setting in Local/Makefile was not at the start of a line,
+    the Configure-Makefile script screwed up while processing it.
+
+10. Incorporated PCRE 4.4.
+
+11. The SMTP synchronization check was not operating right at the start of an
+    SMTP session. For example, it could not catch a HELO sent before the client
+    waited for the greeting. There is now a check for outstanding input at the
+    point when the greeting is written. Because of the duplex, asynchronous
+    nature of TCP/IP, it cannot be perfect - the incorrect input may be on its
+    way, but not yet received, when the check is performed.
+
+12. Added tcp_nodelay to make it possible to turn of the setting of TCP_NODELAY
+    on TCP/IP sockets, because this apparently causes some broken clients to
+    timeout.
+
+13. Installed revised OS/Makefile-CYGWIN and OS/os.c-cygwin (the .h file was
+    unchanged) from the Cygwin maintainer.
+
+14. The code for -bV that shows what is in the binary showed "mbx" when maildir
+    was supported instead of testing for mbx. Effectively a typo.
+
+15. The spa authenticator server code was not checking that the input it
+    received was valid base64.
+
+16. The debug output line for the "set" modifier in ACLs was not showing the
+    name of the variable that was being set.
+
+17. Code tidy: the variable type "vtype_string" was never used. Removed it.
+
+18. Previously, a reference to $sender_host_name did not cause a DNS reverse
+    lookup on its own. Something else was needed to trigger the lookup. For
+    example, a match in host_lookup or the need for a host name in a host list.
+    Now, if $sender_host_name is referenced and the host name has not yet been
+    looked up, a lookup is performed. If the lookup fails, the variable remains
+    empty, and $host_lookup_failed is set to "1".
+
+19. Added "eqi" as a case-independent comparison operator.
+
+20. The saslauthd authentication condition could segfault if neither service
+    nor realm was specified.
+
+21. If an overflowing value such as "2048M" was set for message_size_limit, the
+    error message that was logged was misleading, and incoming SMTP
+    connections were dropped. The message is now more accurate, and temporary
+    errors are given to SMTP connections.
+
+22. In some error situations (such as 21 above) Exim rejects all SMTP commands
+    (except RSET) with a 421 error, until QUIT is received. However, it was
+    failing to send a response to QUIT.
+
+23. The HELO ACL was being run before the code for helo_try_verify_hosts,
+    which made it impossible to use "verify = helo" in the HELO ACL. The HELO
+    ACL is now run after the helo_try_verify_hosts code.
+
+24. "{MD5}" and "{SHA1}" are now recognized as equivalent to "{md5"} and
+    "{sha1}" in the "crypteq" expansion condition (in fact the comparison is
+    case-independent, so other case variants are also recognized). Apparently
+    some systems use these upper case variants.
+
+25. If more than two messages were waiting for the same host, and a transport
+    filter was specified for the transport, Exim sent two messages over the
+    same TCP/IP connection, and then failed with "socket operation on non-
+    socket" when it tried to send the third.
+
+26. Added Exim::debug_write and Exim::log_write for embedded Perl use.
+
+27. The extern definition of crypt16() in expand.c was not being excluded when
+    the OS had its own crypt16() function.
+
+28. Added bounce_return_body as a new option, and bounce_return_size_limit
+    as a preferred synonym for return_size_limit, both as an option and as an
+    expansion variable.
+
+29. Added LIBS=-liconv to OS/Makefile-OSF1.
+
+30. Changed the default configuration ACL to relax the local part checking rule
+    for addresses that are not in any local domains. For these addresses,
+    slashes and pipe symbols are allowed within local parts, but the sequence
+    /../ is explicitly forbidden.
+
+31. SPA server authentication was not clearing the challenge buffer before
+    using it.
+
+32. log_message in a "warn" ACL statement was writing to the reject log as
+    well as to the main log, which contradicts the documentation and doesn't
+    seem right (because no rejection is happening). So I have stopped it.
+
+33. Added Ard Biesheuvel's lookup code for accessing an Interbase database.
+    However, I am unable to do any testing of this.
+
+34. Fixed an infelicity in the appendfile transport. When checking directories
+    for a mailbox, to see if any needed to be created, it was accidentally
+    using path names with one or more superfluous leading slashes; tracing
+    would show up entries such as stat("///home/ph10", 0xFFBEEA48).
+
+35. If log_message is set on a "discard" verb in a MAIL or RCPT ACL, its
+    contents are added to the log line that is written for every discarded
+    recipient. (Previously a log_message setting was ignored.)
+
+36. The ${quote: operator now quotes the string if it is empty.
+
+37. The install script runs exim in order to find its version number. If for
+    some reason other than non-existence or emptiness, which it checks, it
+    could not run './exim', it was installing it with an empty version number,
+    i.e. as "exim-". This error state is now caught, and the installation is
+    aborted.
+
+38. An argument was missing from the function that creates an error message
+    when Exim fails to connect to the socket for saslauthd authentication.
+    This could cause Exim to crash, or give a corrupted message.
+
+39. Added isip, isip4, and isip6 to ${if conditions.
+
+40. The ACL variables $acl_xx are now saved with the message, and can be
+    accessed later in routers, transports, and filters.
+
+41. The new lookup type nwildlsearch is like wildlsearch, except that the key
+    strings in the file are not string-expanded.
+
+42. If a MAIL command specified a SIZE value that was too large to fit into an
+    int variable, the check against message_size_limit failed. Such values are
+    now forced to INT_MAX, which is around 2Gb for a 32-bit variable. Maybe one
+    day this will have to be increased, but I don't think I want to be around
+    when emails are that large.
+
+
+
+Exim version 4.22
+-----------------
+
+ 1. Removed HAVE_ICONV=yes from OS/Makefile-FreeBSD, since it seems that
+    iconv() is not standard in FreeBSD.
+
+ 2. Change 4.21/17 was buggy and could cause stack overwriting on a system with
+    IPv6 enabled. The observed symptom was a segmentation fault on return from
+    the function os_common_find_running_interfaces() in src/os.c.
+
+ 3. In the check_special_case() function in daemon.c I had used "errno" as an
+    argument name, which causes warnings on some systems. This was basically a
+    typo, since it was named "eno" in the comments!
+
+ 4. The code that waits for the clock to tick (at a resolution of some fraction
+    of a second) so as to ensure message-id uniqueness was always waiting for
+    at least one whole tick, when it could have waited for less. [This is
+    almost certainly not relevant at current processor speeds, where it is
+    unlikely to ever wait at all. But we try to future-proof.]
+
+ 5. The function that sleeps for a time interval that includes fractions of a
+    second contained a race. It did not block SIGALRM between setting the
+    timer, and suspending (a couple of lines later). If the interval was short
+    and the sigsuspend() was delayed until after it had expired, the suspension
+    never ended. On busy systems this could lead to processes getting stuck for
+    ever.
+
+ 6. Some uncommon configurations may cause a lookup to happen in a queue runner
+    process, before it forks any delivery processes. The open lookup caching
+    mechanism meant that the open file or database connection was passed into
+    the delivery process. The problem was that delivery processes always tidy
+    up cached lookup data. This could cause a problem for the next delivery
+    process started by the queue runner, because the external queue runner
+    process does not know about the closure. So the next delivery process
+    still has data in the lookup cache. In the case of a file lookup, there was
+    no problem because closing a file descriptor in a subprocess doesn't affect
+    the parent. However, if the lookup was caching a connection to a database,
+    the connection was closed, and the second delivery process was likely to
+    see errors such as "PGSQL: query failed: server closed the connection
+    unexpectedly". The problem has been fixed by closing all cached lookups
+    in a queue runner before running a delivery process.
+
+ 7. Compiler warning on Linux for the second argument of iconv(), which doesn't
+    seem to have the "const" qualifier which it has on other OS. I've
+    parameterised it.
+
+ 8. Change 4.21/2 was too strict. It is only if there are two authenticators
+    *of the same type* (client or server) with the same public name that an
+    error should be diagnosed.
+
+ 9. When Exim looked up a host name for an IP address, but failed to find the
+    original IP address when looking up the host name (a safety check), it
+    output the message "<ip address> does not match any IP for NULL", which was
+    confusing, to say the least. The bug was that the host name should have
+    appeared instead of "NULL".
+
+10. Since release 3.03, if Exim is called by a uid other than root or the Exim
+    user that is built into the binary, and the -C or -D options is used, root
+    privilege is dropped before the configuration file is read. In addition,
+    logging is switched to stderr instead of the normal log files. If the
+    configuration then re-defines the Exim user, the unprivileged environment
+    is probably not what is expected, so Exim logs a panic warning message (but
+    proceeds).
+
+    However, if deliver_drop_privilege is set, the unprivileged state may well
+    be exactly what is intended, so the warning has been cut out in that case,
+    and Exim is allowed to try to write to its normal log files.
+
+
+Exim version 4.21
+-----------------
+
+ 1. smtp_return_error_details was not giving details for temporary sender
+    or receiver verification errors.
+
+ 2. Diagnose a configuration error if two authenticators have the same public
+    name.
+
+ 3. Exim used not to create the message log file for a message until the first
+    delivery attempt. This could be confusing when incoming messages were held
+    for policy or load reasons. The message log file is now created at the time
+    the message is received, and an initial "Received" line is written to it.
+
+ 4. The automatically generated man page for command line options had a minor
+    bug that caused no ill effects; however, a more serious problem was that
+    the procedure for building the man page automatically didn't always
+    operate. Consequently, release 4.20 contains an out-of-date version. This
+    shouldn't happen again.
+
+ 5. When building Exim with embedded Perl support, the script that builds the
+    Makefile was calling 'perl' to find its compile-time parameters, ignoring
+    any setting of PERL_COMMAND in Local/Makefile. This is now fixed.
+
+ 6. The freeze_tell option was not being used for messages that were frozen on
+    arrival, either by an ACL or by local_scan().
+
+ 7. Added the smtp_incomplete_transaction log selector.
+
+ 8. After STARTTLS, Exim was not forgetting that it had advertised AUTH, so it
+    was accepting AUTH without a new EHLO.
+
+ 9. Added tls_remember_esmtp to cope with YAEB. This allows AUTH and other
+    ESMTP extensions after STARTTLS without a new EHLO, in contravention of the
+    RFC.
+
+10. Logging of TCP/IP connections (when configured) now happens in the main
+    daemon process instead of the child process, so that the TCP/IP connection
+    count is more accurate (but it can never be perfect).
+
+11. The use of "drop" in a nested ACL was not being handled correctly in the
+    outer ACL. Now, if condition failure induced by the nested "drop" causes
+    the outer ACL verb to deny access ("accept" or "discard" after "endpass",
+    or "require"), the connection is dropped.
+
+12. Similarly, "discard" in a nested ACL wasn't being handled. A nested ACL
+    that yield "discard" can now be used with an "accept" or a "discard" verb,
+    but an error is generated for any others (because I can't see a useful way
+    to define what should happen).
+
+13. When an ACL is read dynamically from a file (or anywhere else), the lines
+    are now processed in the same way as lines in the Exim configuration file.
+    In particular, continuation lines are supported.
+
+14. Added the "dnslists = a.b.c!=n.n.n.n" feature.
+
+15. Added -ti meaning -t -i.
+
+16. Check for letters, digits, hyphens, and dots in the names of dnslist
+    domains, and warn by logging if others are found.
+
+17. At least on BSD, alignment is not guarenteed for the array of ifreq's
+    returned from GIFCONF when Exim is trying to find the list of interfaces on
+    a host. The code in os.c has been modified to copy each ifreq to an aligned
+    structure in all cases.
+
+    Also, in some cases, the returned ifreq's were being copied to a 'struct
+    ifreq' on the stack, which was subsequently passed to host_ntoa(). That
+    means the last couple of bytes of an IPv6 address could be chopped if the
+    ifreq contained only a normal sockaddr (14 bytes storage).
+
+18. Named domain lists were not supported in the hosts_treat_as_local option.
+    An entry such as +xxxx was not recognized, and was treated as a literal
+    domain name.
+
+19. Ensure that header lines added by a DATA ACL are included in the reject log
+    if the ACL subsequently rejects the message.
+
+20. Upgrade the cramtest.pl utility script to use Digest::MD5 instead of just
+    MD5 (which is deprecated).
+
+21. When testing a filter file using -bf, Exim was writing a message when it
+    took the sender from a "From " line in the message, but it was not doing so
+    when it took $return_path from a Return-Path: header line. It now does.
+
+22. If the contents of a "message" modifier for a "warn" ACL verb do not begin
+    with a valid header line field name (a series of printing characters
+    terminated by a colon, Exim now inserts X-ACL-Warn: at the beginning.
+
+23. Changed "disc" in the source to "disk" to conform to the documentation and
+    the book and for uniformity.
+
+24. Ignore Sendmail's -Ooption=value command line item.
+
+25. When execve() failed while trying to run a command in a pipe transport,
+    Exim was returning EX_UNAVAILBLE (69) from the subprocess. However, this
+    could be confused with a return value of 69 from the command itself. This
+    has been changed to 127, the value the shell returns if it is asked to run
+    a non-existent command. The wording for the related log line suggests a
+    non-existent command as the problem.
+
+26. If received_header_text expands to an empty string, do not add a Received:
+    header line to the message. (Well, it adds a token one on the spool, but
+    marks it "old" so that it doesn't get used or transmitted.)
+
+27. Installed eximstats 1.28 (addition of -nt option).
+
+28. There was no check for failure on the call to getsockname() in the daemon
+    code. This can fail if there is a shortage of resources on the system, with
+    ENOMEM, for example. A temporary error is now given on failure.
+
+29. Contrary to the C standard, it seems that in some environments, the
+    equivalent of setlocale(LC_ALL, "C") is not obeyed at the start of a C
+    program. Exim now does this explicitly; it affects the formatting of
+    timestamps using strftime().
+
+30. If exiqsumm was given junk data, it threw up some uninitialized variable
+    complaints. I've now initialized all the variables, to avoid this.
+
+32. Header lines added by a system filter were not being "seen" during
+    transport-time rewrites.
+
+33. The info_callback() function passed to OpenSSL is set up with type void
+    (*)(SSL *, int, int), as described somewhere. However, when calling the
+    function (actually a macro) that sets it up, the type void(*)() is
+    expected. I've put in a cast to prevent warnings from picky compilers.
+
+34. If a DNS black list lookup found a CNAME record, but there were no A
+    records associated with the domain it pointed at, Exim crashed.
+
+35. If a DNS black list lookup returned more than one A record, Exim ignored
+    all but the first. It now scans all returned addresses if a particular IP
+    value is being sought. In this situation, the contents of the
+    $dnslist_value variable are a list of all the addresses, separated by a
+    comma and a space.
+
+36. Tightened up the rules for host name lookups using reverse DNS. Exim used
+    to accept a host name and all its aliases if the forward lookup for any of
+    them yielded the IP address of the incoming connection. Now it accepts only
+    those names whose forward lookup yields the correct IP address. Any other
+    names are discarded. This closes a loophole whereby a rogue DNS
+    administrator could create reverse DNS records to break through a
+    wildcarded host restriction in an ACL.
+
+37. If a user filter or a system filter that ran in a subprocess used any of
+    the numerical variables ($1, $2 etc), or $thisaddress, in a pipe command,
+    the wrong values were passed to the pipe command ($thisaddress had the
+    value of $0, $0 had the value of $1, etc). This bug was introduced by
+    change 4.11/101, and not discovered because I wrote an inadequate test. :-(
+
+38. Improved the line breaking for long SMTP error messages from ACLs.
+    Previously, if there was no break point between 40 and 75 characters, Exim
+    left the rest of the message alone. Two changes have been made: (a) I've
+    reduced the minimum length to 35 characters; (b) if it can't find a break
+    point between 35 and 75 characters, it looks ahead and uses the first one
+    that it finds. This may give the occasional overlong line, but at least the
+    remaining text gets split now.
+
+39. Change 82 of 4.11 was unimaginative. It assumed the limit on the number of
+    file descriptors might be low, and that setting 1000 would always raise it.
+    It turns out that in some environments, the limit is already over 1000 and
+    that lowering it causes trouble. So now Exim takes care not to decrease it.
+
+40. When delivering a message, the value of $return_path is set to $sender_
+    address at the start of routing (routers may change the value). By an
+    oversight, this default was not being set up when an address was tested by
+    -bt or -bv, which affected the outcome if any router or filter referred to
+    $return_path.
+
+41. The idea of the "warn" ACL verb is that it adds a header or writes to the
+    log only when "message" or "log_message" are set. However, if one of the
+    conditions was an address verification, or a call to a nested ACL, the
+    messages generated by the underlying test were being passed through. This
+    no longer happens. The underlying message is available in $acl_verify_
+    message for both "message" and "log_message" expansions, so it can be
+    passed through if needed.
+
+42. Added RFC 2047 interpretation of header lines for $h_ expansions, with a
+    new expansion $bh_ to give the encoded byte string without charset
+    translation. Translation happens only if iconv() is available; HAVE_ICONV
+    indicates this at build time. HEADERS_CHARSET gives the charset to
+    translate to; headers_charset can change it in the configuration, and
+    "headers charset" can change it in an individual filter file.
+
+43. Now that we have a default RFC 2047 charset (see above), the code in Exim
+    that creates RFC 2047 encoded "words" labels them as that charset instead
+    of always using iso-8859-1. The cases are (i) the explicit ${rfc2047:
+    expansion operator; (ii) when Exim creates a From: line for a local
+    message; (iii) when a header line is rewritten to include a "phrase" part.
+
+44. Nasty bug in exiqsumm: the regex to skip already-delivered addresses was
+    buggy, causing it to skip the first lines of messages whose message ID
+    ended in 'D'. This would not have bitten before Exim release 4.14, because
+    message IDs were unlikely to end in 'D' before then. The effect was to have
+    incorrect size information for certain domains.
+
+45. #include "config.h" was missing at the start of the crypt16.c module. This
+    caused trouble on Tru64 (aka OSF1) systems, because HAVE_CRYPT16 was not
+    noticed.
+
+46. If there was a timeout during a "random" callout check, Exim treated it as
+    a failure of the random address, and carried on sending RSET and the real
+    address. If the delay was just some slowness somewhere, the response to the
+    original RCPT would be taken as a response to RSET and so on, causing
+    mayhem of various kinds.
+
+47. Change 50 for 4.20 was a heap of junk. I don't know what I was thinking
+    when I implemented it. It didn't allow for the fact that some option values
+    may legitimatetly be negative (e.g. size_addition), and it didn't even do
+    the right test for positive values.
+
+48. Domain names in DNS records are case-independent. Exim always looks them up
+    in lower case. Some resolvers return domain names in exactly the case they
+    appear in the zone file, that is, they may contain uppercase letters. Not
+    all resolvers do this - some return always lower case. Exim was treating a
+    change of case by a resolver as a change of domain, similar to a widening
+    of a domain abbreviation. This triggered its re-routing code and so it was
+    trying to route what was effectively the same domain again. This normally
+    caused routing to fail (because the router wouldn't handle the domain
+    twice). Now Exim checks for this case specially, and just changes the
+    casing of the domain that it ultimately uses when it transmits the message
+    envelope.
+
+49. Added Sieve (RFC 3028) support, courtesy of Michael Haardt's contributed
+    module.
+
+50. If a filter generated a file delivery with a non-absolute name (possible if
+    no home directory exists for the router), the forbid_file option was not
+    forbidding it.
+
+51. Added '&' feature to dnslists, to provide bit mask matching in addition to
+    the existing equality matching.
+
+52. Exim was using ints instead of ino_t variables in some places where it was
+    dealing with inode numbers.
+
+53. If TMPDIR is defined in Local/Makefile (default in src/EDITME is
+    TMPDIR="/tmp"), Exim checks for the presence of an environment variable
+    called TMPDIR, and if it finds it is different, it changes its value.
+
+54. The smtp_printf() function is now made available to local_scan() so
+    additional output lines can be written before returning. There is also an
+    smtp_fflush() function to enable the detection of a dropped connection.
+    The variables smtp_input and smtp_batched_input are exported to
+    local_scan().
+
+55. Changed the default runtime configuration: the message "Unknown user"
+    has been removed from the ACL, and instead placed on the localuser router,
+    using the cannot_route_message feature. This means that any verification
+    failures that generate their own messages won't get overridden. Similarly,
+    the "Unrouteable address" message that was in the ACL for unverifiable
+    relay addresses has also been removed.
+
+56. Added hosts_avoid_esmtp to the smtp transport.
+
+57. The exicyclog script was not checking for the esoteric option
+    CONFIGURE_FILE_USE_EUID in the Local/Makefile. It now does this, but it
+    will work only if exicyclog is run under the appropriate euid.
+
+58. Following a discussion on the list, the rules by which Exim recognises line
+    endings on incoming messages have been changed. The -dropcr and drop_cr
+    options are now no-ops, retained only for backwards compatibility. The
+    following line terminators are recognized: LF CRLF CR. However, special
+    processing applies to CR:
+
+    (i)  The sequence CR . CR does *not* terminate an incoming SMTP message,
+         nor a local message in the state where . is a terminator.
+
+    (ii) If a bare CR is encountered in a header line, an extra space is added
+         after the line terminator so as not to end the header. The reasoning
+         behind this is that bare CRs in header lines are most likely either
+         to be mistakes, or people trying to play silly games.
+
+59. The size of a message, as listed by "-bp" or in the Exim monitor window,
+    was being incorrectly given as 18 bytes larger than it should have been.
+    This is a VOB (very old bug).
+
+60. This may never have affected anything current, but just in case it has:
+    When the local host is found other than at the start of a list of hosts,
+    the local host, those with the same MX, and any that follow, are discarded.
+    When the list in question was part of a longer list of hosts, the following
+    hosts (not currently being processed) were also being discarded. This no
+    longer happens. I'm not sure if this situation could ever has previously
+    arisen.
+
+61. Added the "/MX" feature to lists of hosts in the manualroute and query
+    program routers.
+
+62. Whenever Exim generates a new message, it now adds an Auto-Submitted:
+    header. This is something that is recommended in a new Internet Draft, and
+    is something that is documented as being done by Sendmail. There are two
+    possible values. For messages generated by the autoreply transport, Exim
+    adds:
+
+      Auto-Submitted: auto-replied
+
+    whereas for all other generated messages (e.g. bounces) it adds
+
+      Auto-Submitted: auto-generated
+
+63. The "personal" condition in filters now includes a test for the
+    Auto-Submitted: header. If it contains the string "auto-" the message it
+    not considered personal.
+
+64. Added rcpt_include_affixes as a generic transport option.
+
+65. Added queue_only_override (default true).
+
+66. Added the syslog_duplication option.
+
+67. If what should have been the first header line of a message consisted of
+    a space followed by a colon, Exim was mis-interpreting it as a header line.
+    It isn't of course - it is syntactically invalid and should therefore be
+    treated as the start of the message body. The misbehaviour could have
+    caused a number of strange effects, including loss of data in subsequent
+    header lines, and spool format errors.
+
+68. Formerly, the AUTH parameter on a MAIL command was trusted only if the
+    client host had authenticated. This control can now be exercised by an ACL
+    for more flexibility.
+
+69. By default, callouts do not happen when testing with -bh. There is now a
+    variant, -bhc, which does actually run the callout code, including
+    consulting and updating the callout cache.
+
+70. Added support for saslauthd authentication, courtesy of Alexander
+    Sabourenkov.
+
+71. If statvfs() failed on the spool or log directories while checking their
+    size for availability, Exim confusingly gave the error "space shortage".
+    Furthermore, in debugging mode it crashed with a floating point exception.
+    These checks are done if check_{spool,log}_{space,inodes} are set, and when
+    an SMTP message arrives with SIZE= on the MAIL command. As this is a really
+    serious problem, Exim now writes to the main and panic logs when this
+    happens, with details of the failure. It then refuses to accept the
+    incoming message, giving the message "spool directory problem" or "log
+    directory problem" with a 421 code for SMTP messages.
+
+72. When Exim is about to re-exec itself, it ensures that the file descriptors
+    0, 1, and 2 exist, because some OS complain for execs without them (see
+    ChangeLog 4.05/30). If necessary, Exim opens /dev/null to use for these
+    descriptors. However, the code omitted to check that the open succeeded,
+    causing mysterious errors if for some reason the permissions on /dev/null
+    got screwed. Now Exim writes a message to the main and panic logs, and
+    bombs out if it can't open /dev/null.
+
+73. Re-vamped the way daemon_smtp_port, local_interfaces, and -oX work and
+    interact so that it is all more flexible. It is supposed to remain
+    backwards compatible. Also added extra_local_interfaces.
+
+74. Invalid data sent to a SPA (NTLM) server authenticator could cause the code
+    to bomb out with an assertion failure - to the client this appears as a
+    connection drop. This problem occurs in the part of the code that was taken
+    from the Samba project. Fortunately, the assertion is in a very simple
+    function, so I have fixed this by reproducing the function inline in the
+    one place where it is called, and arranging for authentication to fail
+    instead of killing the process with assert().
+
+75. The SPA client code was not working when the server requested OEM rather
+    than Unicode encoding.
+
+76. Added code to make require_files with a specific uid setting more usable in
+    the case where statting the file as root fails - usually a non-root-mounted
+    NFS file system. When this happens and the failure is EACCES, Exim now
+    forks a subprocess and does the per-uid checking as the relevant uid.
+
+77. Added process_log_path.
+
+78. If log_file_path was not explicitly set, a setting of check_log_space or
+    check_log_inodes was ignored.
+
+79. If a space check for the spool or log partitions fails, the incident is now
+    logged. Of course, in the latter case the data may get lost...
+
+80. Added the %p formatting code to string_format() so that it can be used to
+    print addresses in debug_print(). Adjusted all the address printing in the
+    debugging in store.c to use %p rather than %d.
+
+81. There was a concern that a line of code in smtp_in.c could overflow a
+    buffer if a HELO/EHLO command was given followed by 500 or so spaces. As
+    initially expressed, the concern was not well-founded, because trailing
+    spaces are removed early. However, if the trailing spaces were followed by
+    a NULL, they did not get removed, so the overflow was possible. Two fixes
+    were applied:
+
+    (a) I re-wrote the offending code in a cleaner fashion.
+    (b) If an incoming SMTP command contains a NULL character, it is rejected
+        as invalid.
+
+82. When Exim changes uid/gid to the Exim user at daemon start time, it now
+    runs initgroups(), so that if the Exim user is in any additional groups,
+    they will be used during message reception.
+
+
+Exim version 4.20
+-----------------
+
+The change log for 4.20 and earlier releases has been archived.
+
+****

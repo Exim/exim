@@ -1,0 +1,130 @@
+#!/usr/bin/perl
+# $Cambridge: exim/doc/doc-scripts/JoinPS,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+
+# Make the basic PostScript file for the Exim spec from the gcode file, then
+# join it together with the contents and the index, to make a single
+# PostScript file, suitable for double-sided printing.
+
+sub blank_page {
+my($title) = shift @_;
+printf(OUT "%%%%Page: %s %d\nxpage\n\n", $title, $pagenumber++);
+}
+
+
+@roman = ("i", "ii", "iii", "iv", "v", "vi", "vii", "viii", "ix", "x",
+          "xi", "xii", "xiii", "xiv", "xv", "xvi", "xvii", "xviii", "xix");
+
+$pagenumber = 1;
+
+system("sgtops z-gcode -to z-ps") && die "sgtops run failed\n";
+
+open(SPEC, "z-ps") || die "Can't open z-ps\n";
+open(CONTS, "zc-ps") || die "Can't open zc-ps\n";
+open(INDEX, "zi-ps") || die "Can't open zi-ps\n";
+open(OUT, ">spec.ps") || die "Can't open spec.ps\n";
+
+# Copy spec headings etc.
+
+while (<SPEC>)
+  {
+  last if (/^%%Page:/) ;
+  print OUT;
+  }
+
+# Copy the first two pages - the title page, and its blank verso
+
+for ($i = 1; $i < 3; $i++)
+  {
+  printf(OUT "%%%%Page: title%s %d\n", ($i == 1)? "" : "-verso", $pagenumber++);
+  while (<SPEC>)
+    {
+    last if (/^%%Page:/) ;
+    print OUT;
+    }
+  }   
+
+# Skip the contents heading
+
+while (<CONTS>)
+  {
+  last if (/^%%Page:/) ;
+  }
+
+# Output the contents pages - fudge the roman numerals as we know there
+# won't be a vast number of them.
+
+$subpagenumber = 0;
+while (!eof CONTS)
+  {
+  printf(OUT "%%%%Page: %s %d\n", $roman[$subpagenumber++], $pagenumber++);
+  while (<CONTS>)
+    {
+    next if (/^%%Pages:/);
+    next if (/^%%Trailer/);
+    last if (/^%%Page:/) ;
+    print OUT;
+    }
+  }
+printf(OUT "\n");
+
+# If contents was an odd number of pages, insert a blank page
+
+&blank_page("contents-pad") if ($pagenumber & 1) == 0;
+
+# Copy the rest of the main file
+
+$subpagenumber = 1;
+
+while (!eof SPEC)
+  {
+  printf(OUT "%%%%Page: %d %d\n", $subpagenumber++, $pagenumber++);
+  while (<SPEC>)
+    {
+    next if (/^%%Pages:/);
+    next if (/^%%Trailer/);
+    last if (/^%%Page:/) ;
+    print OUT;
+    }
+  }
+printf(OUT "\n");
+
+# If contents was an odd number of pages, insert a blank page
+
+&blank_page("body-pad") if ($pagenumber & 1) == 0;
+
+# Skip the index heading
+
+while (<INDEX>)
+  {
+  last if (/^%%Page:/) ;
+  }
+
+# Copy the index pages
+
+$subpagenumber = 1;
+
+while (!eof INDEX)
+  {
+  printf(OUT "%%%%Page: I%d %d\n", $subpagenumber++, $pagenumber++);
+  while (<INDEX>)
+    {
+    next if (/^%%Pages:/);
+    next if (/^%%Trailer/);
+    last if (/^%%Page:/) ;
+    print OUT;
+    }
+  }
+
+# Add final comments
+
+printf(OUT "%%%%Trailer\n");
+printf(OUT "%%%%Pages: %d\n", $pagenumber-1);
+
+# That's it
+
+close(SPEC);
+close(CONTS);
+close(INDEX);
+close(OUT);
+
+# End
