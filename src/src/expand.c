@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.5 2004/11/17 15:21:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.6 2004/11/17 16:12:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2175,17 +2175,24 @@ uschar *s = *sptr;    /* Local value */
 uschar *sub1, *sub2;
 
 /* If there are no following strings, we substitute the contents of $value for
-lookups and for extractions in the success case. In the fail case, nothing is
-substituted. In the case of "if", lack of following strings is an error. */
+lookups and for extractions in the success case. For the ${if item, the string
+"true" is substituted. In the fail case, nothing is substituted for all three 
+items. */
 
 while (isspace(*s)) s++;
 if (*s == '}')
   {
-  if (type[0] == 'i') goto FAILED_CURLY;
-  if (yes && lookup_value != NULL)
-    *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, lookup_value,
-      Ustrlen(lookup_value));
-  lookup_value = save_lookup;
+  if (type[0] == 'i')
+    {
+    if (yes) *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, US"true", 4); 
+    }
+  else
+    {      
+    if (yes && lookup_value != NULL)
+      *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, lookup_value,
+        Ustrlen(lookup_value));
+    lookup_value = save_lookup;
+    }
   s++;
   goto RETURN;
   }

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.10 2004/11/17 14:32:25 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.11 2004/11/17 16:12:26 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -89,6 +89,24 @@ Version 4.44
     of those variables is -1. If the operating system does not have the ability
     to find the amount of free space (only true for experimental systems), the
     space value is -1.
+
+11. It is now permitted to omit both strings after an "if" condition; if the
+    condition is true, the result is the string "true". As before, when the
+    second string is omitted, a false condition yields an empty string. This
+    makes it less cumbersome to write custom ACL and router conditions. For
+    example, instead of
+
+      condition = ${if eq {$acl_m4}{1}{yes}{no}}
+
+    or the shorter form
+
+      condition = ${if eq {$acl_m4}{1}{yes}}
+
+    (because the second string has always defaulted to ""), you can now write
+
+      condition = ${if eq {$acl_m4}{1}}
+
+    Previously this was a syntax error.
 
 
 Version 4.43

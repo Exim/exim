@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.30 2004/11/17 15:21:10 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.31 2004/11/17 16:12:26 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -128,6 +128,11 @@ Exim version 4.44
     generates multiple encoded words if necessary. To be on the safe side, I
     have increased the buffer size for the ${rfc2047: expansion operator from
     1024 to 2048 bytes.
+
+33. It is now permitted to omit both strings after an "if" condition; if the
+    condition is true, the result is "true". As before, when the second string
+    is omitted, a false condition yields an empty string. This makes it less
+    cumbersome to write custom ACL and router conditions.
 
 
 Exim version 4.43
