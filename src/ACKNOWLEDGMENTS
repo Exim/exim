@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.13 2005/01/13 10:09:36 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.14 2005/03/08 11:38:21 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  04 January 2005
+Last updated:  08 March 2005
 
 
 THE OLD LIST
@@ -167,7 +167,8 @@ Lionel Elie Mamane        Patch for IPv4/IPv6 listen() problem on USAGI Linux
                           Patch for callout caching bug
 Everton da Silva Marques  Suggested patch for SRV handling
                           Suggested patch for SRV/MX lookup retry option
-Nikos Mavroyanopoulos     GnuTLS proof of concept code
+Nikos Mavrogiannopoulos   GnuTLS proof of concept code
+                          Update to RSA and D-H parameter caching code
 Andy Mell                 Fix for rejectlog regeneration bug
 Marc Merlin               Many suggestions and patches for callouts and
                             SMTP error message features

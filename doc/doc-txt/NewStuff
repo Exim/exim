@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.26 2005/02/17 12:24:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.27 2005/03/08 11:38:21 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -7,6 +7,37 @@ This file contains descriptions of new features that have been added to Exim,
 but have not yet made it into the main manual (which is most conveniently
 updated when there is a relatively large batch of changes). The doc/ChangeLog
 file contains a listing of all changes, including bug fixes.
+
+
+Version 4.51
+------------
+
+PH/01. The format in which GnuTLS parameters are written to the gnutls-param
+       file in the spool directory has been changed. This change has been made
+       to alleviate problems that some people had with the generation of the
+       parameters by Exim when /dev/random was exhausted. In this situation,
+       Exim would hang until /dev/random acquired some more entropy.
+
+       The new code exports and imports the DH and RSA parameters in PEM
+       format. This means that the parameters can be generated externally using
+       the certtool command that is part of GnuTLS.
+
+       To replace the parameters with new ones, instead of deleting the file
+       and letting Exim re-create it, you can generate new parameters using
+       certtool and, when this has been done, replace Exim's cache file by
+       renaming. The relevant commands are something like this:
+
+         # rm -f new.params
+         # touch new.params
+         # chown exim:exim new.params
+         # chmod 0400 new.params
+         # certtool --generate-privkey --bits 512 >new.params
+         # echo "" >>new.params
+         # certtool --generate-dh-params --bits 1024 >> new.params
+         # mv new.params params
+
+       If Exim never has to generate the parameters itself, the possibility of
+       stalling is removed.
 
 
 Version 4.50

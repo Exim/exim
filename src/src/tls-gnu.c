@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.5 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.6 2005/03/08 11:38:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -24,6 +24,8 @@ functions from the GnuTLS library. */
 #define UNKNOWN_NAME "unknown"
 #define DH_BITS      768
 #define RSA_BITS     512
+#define PARAM_SIZE 2*1024
+
 
 /* Values for verify_requirment and initialized */
 
@@ -230,43 +232,6 @@ return TRUE;                            /* accept */
 
 
 
-
-/*************************************************
-*        Write/read datum to/from file           *
-*************************************************/
-
-/* These functions are used for saving and restoring the RSA and D-H parameters
-for use by all Exim processes. Data that is read is placed in malloc'd store
-because that's what happens for newly generated data.
-
-Arguments:
-  fd          the file descriptor
-  d           points to the datum
-
-returns:      FALSE on error (errno set)
-*/
-
-static BOOL
-write_datum(int fd, gnutls_datum *d)
-{
-if (write(fd, &(d->size), sizeof(d->size)) != sizeof(d->size)) return FALSE;
-if (write(fd, d->data, d->size) != d->size) return FALSE;
-return TRUE;
-}
-
-
-static BOOL
-read_datum(int fd, gnutls_datum *d)
-{
-if (read(fd, &(d->size), sizeof(d->size)) != sizeof(d->size)) return FALSE;
-d->data = malloc(d->size);
-if (d->data == NULL) return FALSE;
-if (read(fd, d->data, d->size) != d->size) return FALSE;
-return TRUE;
-}
-
-
-
 /*************************************************
 *          Setup up RSA and DH parameters        *
 *************************************************/
@@ -290,8 +255,9 @@ Returns:     OK/DEFER/FAIL
 static int
 init_rsa_dh(host_item *host)
 {
-int fd, ret;
-gnutls_datum m, e, d, p, q, u, prime, generator;
+int fd;
+int ret = -1;
+gnutls_datum m;
 uschar filename[200];
 
 /* Initialize the data structures for holding the parameters */
@@ -308,20 +274,63 @@ if (!string_format(filename, sizeof(filename), "%s/gnutls-params",
       spool_directory))
   return tls_error(US"overlong filename", host, 0);
 
-/* Open the cache file for reading. If this fails because of a non-existent
-file, compute a new set of parameters, write them to a temporary file, and then
-rename that file as the cache file. Other opening errors are bad. */
+/* Open the cache file for reading and if successful, read it and set up the
+parameters. If we can't set up the RSA parameters, assume that we are dealing
+with an old-style cache file that is in another format, and fall through to
+compute new values. However, if we correctly get RSA parameters, a failure to
+set up D-H parameters is treated as an error. */
 
 fd = Uopen(filename, O_RDONLY, 0);
-if (fd < 0)
+if (fd >= 0)
   {
-  unsigned int rsa_bits = RSA_BITS;
-  unsigned int dh_bits = DH_BITS;
-  uschar tempfilename[sizeof(filename) + 10];
+  struct stat statbuf;
+  if (fstat(fd, &statbuf) < 0)
+    {
+    (void)close(fd);
+    return tls_error(US"TLS cache stat failed", host, 0);
+    }
 
-  if (errno != ENOENT)
-    return tls_error(string_open_failed(errno, "%s for reading", filename),
-      host, 0);
+  m.size = statbuf.st_size;
+  m.data = malloc(m.size);
+  if (m.data == NULL)
+    return tls_error(US"memory allocation failed", host, 0);
+  if (read(fd, m.data, m.size) != m.size)
+    return tls_error(US"TLS cache read failed", host, 0);
+  (void)close(fd);
+
+  ret = gnutls_rsa_params_import_pkcs1(rsa_params, &m, GNUTLS_X509_FMT_PEM);
+  if (ret < 0)
+    {
+    DEBUG(D_tls)
+      debug_printf("RSA params import failed: assume old-style cache file\n");
+    }
+  else
+    {
+    ret = gnutls_dh_params_import_pkcs3(dh_params, &m, GNUTLS_X509_FMT_PEM);
+    if (ret < 0)
+      return tls_error(US"DH params import", host, ret);
+    DEBUG(D_tls) debug_printf("read RSA and D-H parameters from file\n");
+    }
+
+  free(m.data);
+  }
+
+/* If the file does not exist, fall through to compute new data and cache it.
+If there was any other opening error, it is serious. */
+
+else if (errno != ENOENT)
+  return tls_error(string_open_failed(errno, "%s for reading", filename),
+    host, 0);
+
+/* If ret < 0, either the cache file does not exist, or the data it contains
+is not useful. One particular case of this is when upgrading from an older
+release of Exim in which the data was stored in a different format. We don't
+try to be clever and support both formats; we just regenerate new data in this
+case. */
+
+if (ret < 0)
+  {
+  uschar tempfilename[sizeof(filename) + 10];
 
   DEBUG(D_tls) debug_printf("generating %d bit RSA key...\n", RSA_BITS);
   ret = gnutls_rsa_params_generate2(rsa_params, RSA_BITS);
@@ -342,23 +351,40 @@ if (fd < 0)
       host, 0);
   (void)fchown(fd, exim_uid, exim_gid);   /* Probably not necessary */
 
-  ret = gnutls_rsa_params_export_raw(rsa_params, &m, &e, &d, &p, &q, &u,
-    &rsa_bits);
+  /* export the parameters in a format that can be generated using GNUTLS'
+   * certtool or other programs.
+   *
+   * The commands for certtool are:
+   * $ certtool --generate-privkey --bits 512 >params
+   * $ echo "" >>params
+   * $ certtool --generate-dh-params --bits 1024 >> params
+   */
+
+  m.size = PARAM_SIZE;
+  m.data = malloc(m.size);
+  if (m.data == NULL)
+    return tls_error(US"memory allocation failed", host, 0);
+
+  ret = gnutls_rsa_params_export_pkcs1(rsa_params, GNUTLS_X509_FMT_PEM,
+    m.data, &m.size);
   if (ret < 0) return tls_error(US"RSA params export", host, ret);
 
-  ret = gnutls_dh_params_export_raw(dh_params, &prime, &generator, &dh_bits);
-  if (ret < 0) return tls_error(US"DH params export", host, ret);
+  /* Do not write the null termination byte. */
 
-  if (!write_datum(fd, &m) ||
-      !write_datum(fd, &e) ||
-      !write_datum(fd, &d) ||
-      !write_datum(fd, &p) ||
-      !write_datum(fd, &q) ||
-      !write_datum(fd, &u) ||
-      !write_datum(fd, &prime) ||
-      !write_datum(fd, &generator))
+  m.size = Ustrlen(m.data);
+  if (write(fd, m.data, m.size) != m.size || write(fd, "\n", 1) != 1)
     return tls_error(US"TLS cache write failed", host, 0);
 
+  m.size = PARAM_SIZE;
+  ret = gnutls_dh_params_export_pkcs3(dh_params, GNUTLS_X509_FMT_PEM, m.data,
+    &m.size);
+  if (ret < 0) return tls_error(US"DH params export", host, ret);
+
+  m.size = Ustrlen(m.data);
+  if (write(fd, m.data, m.size) != m.size || write(fd, "\n", 1) != 1)
+    return tls_error(US"TLS cache write failed", host, 0);
+
+  free(m.data);
   (void)close(fd);
 
   if (rename(CS tempfilename, CS filename) < 0)
@@ -366,31 +392,6 @@ if (fd < 0)
       tempfilename, filename, strerror(errno)), host, 0);
 
   DEBUG(D_tls) debug_printf("wrote RSA and D-H parameters to file\n");
-  }
-
-/* File opened for reading; get the data */
-
-else
-  {
-  if (!read_datum(fd, &m) ||
-      !read_datum(fd, &e) ||
-      !read_datum(fd, &d) ||
-      !read_datum(fd, &p) ||
-      !read_datum(fd, &q) ||
-      !read_datum(fd, &u) ||
-      !read_datum(fd, &prime) ||
-      !read_datum(fd, &generator))
-    return tls_error(US"TLS cache read failed", host, 0);
-
-  (void)close(fd);
-
-  ret = gnutls_rsa_params_import_raw(rsa_params, &m, &e, &d, &p, &q, &u);
-  if (ret < 0) return tls_error(US"RSA params import", host, ret);
-
-  ret = gnutls_dh_params_import_raw(dh_params, &prime, &generator);
-  if (ret < 0) return tls_error(US"DH params import", host, ret);
-
-  DEBUG(D_tls) debug_printf("read RSA and D-H parameters from file\n");
   }
 
 DEBUG(D_tls) debug_printf("initialized RSA and D-H parameters\n");
@@ -524,7 +525,7 @@ if (cas != NULL)
 /* Associate the parameters with the x509 credentials structure. */
 
 gnutls_certificate_set_dh_params(x509_cred, dh_params);
-gnutls_certificate_set_rsa_params(x509_cred, rsa_params);
+gnutls_certificate_set_rsa_export_params(x509_cred, rsa_params);
 
 DEBUG(D_tls) debug_printf("initialized certificate stuff\n");
 return OK;

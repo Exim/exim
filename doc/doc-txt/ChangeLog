@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.85 2005/03/07 09:56:23 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.86 2005/03/08 11:38:21 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -10,6 +10,13 @@ Exim version 4.51
 PH/01. Installed a patch from the Sieve maintainer that allows -bf to be used
        to test Sieve filters that use "vacation".
 
+PH/02. Installed a slightly modified version of Nikos Mavrogiannopoulos' patch
+       that changes the way the GnuTLS parameters are stored in the cache file.
+       The new format can be generated externally. For backward compatibility,
+       if the data in the cache doesn't make sense, Exim assumes it has read an
+       old-format file, and it generates new data and writes a new file. This
+       means that you can't go back to an older release without removing the
+       file.
 
 
 A note about Exim versions 4.44 and 4.50
