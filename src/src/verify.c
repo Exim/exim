@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.12 2005/01/12 15:41:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.13 2005/01/14 10:25:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -377,6 +377,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
   smtp_outblock outblock;
   int host_af;
   int port = 25;
+  BOOL send_quit = TRUE; 
   uschar *helo = US"HELO";
   uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
   uschar inbuffer[4096];
@@ -609,6 +610,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
     if (errno == ETIMEDOUT)
       {
       HDEBUG(D_verify) debug_printf("SMTP timeout\n");
+      send_quit = FALSE; 
       }
     else if (errno == 0)
       {
@@ -637,7 +639,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
 
   /* End the SMTP conversation and close the connection. */
 
-  (void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
+  if (send_quit) (void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
   close(inblock.sock);
   }    /* Loop through all hosts, while !done */
 
