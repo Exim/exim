@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.17 2005/03/22 14:11:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.18 2005/03/22 16:52:06 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -439,6 +439,7 @@ static var_entry var_table[] = {
   { "received_count",      vtype_int,         &received_count },
   { "received_for",        vtype_stringptr,   &received_for },
   { "received_protocol",   vtype_stringptr,   &received_protocol },
+  { "received_time",       vtype_int,         &received_time },
   { "recipient_data",      vtype_stringptr,   &recipient_data },
   { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure },
   { "recipients",          vtype_recipients,  NULL },
@@ -3920,7 +3921,7 @@ while (*s != 0)
         {
         expand_string_message = string_sprintf("dlsym \"%s\" in \"%s\" failed: "
           "%s", argv[1], argv[0], dlerror());
-       log_write(0, LOG_MAIN|LOG_PANIC, "%s", expand_string_message);
+        log_write(0, LOG_MAIN|LOG_PANIC, "%s", expand_string_message);
         goto EXPAND_FAILED;
         }
 

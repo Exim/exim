@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.98 2005/03/22 16:44:04 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.99 2005/03/22 16:52:06 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -74,6 +74,8 @@ PH/12 If the last host in a fallback_hosts list was multihomed, only the first
 PH/13 If "headers_add" in a transport didn't end in a newline, Exim printed
       the result incorrectly in the debug output. (It correctly added a newline
       to what was transported.)
+
+TF/01 Added $received_time.
 
 
 A note about Exim versions 4.44 and 4.50

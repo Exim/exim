@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.29 2005/03/22 15:02:34 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.30 2005/03/22 16:52:06 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -87,6 +87,9 @@ PH/02 A new expansion item for dynamically loading and calling a locally-
       you need to add -shared to the gcc command. Also, in the Exim build-time
       configuration, you must add -export-dynamic to EXTRALIBS.
 
+TF/01 $received_time is a new expansion variable containing the time and date
+      as a number of seconds since the start of the Unix epoch when the
+      current message was received.
 
 Version 4.50
 ------------
