@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.6.2.2 2004/12/02 09:15:11 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.6.2.3 2004/12/10 09:24:38 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -285,6 +285,7 @@ extern uschar *extra_local_interfaces; /* Local, non-listen interfaces */
 
 #ifdef WITH_CONTENT_SCAN
 extern BOOL    fake_reject;            /* TRUE if fake reject is to be given */
+extern uschar *fake_reject_text;       /* Option for the fakereject control statement: can contain user defined message. Default is in globals.c. */
 #endif
 extern int     filter_n[FILTER_VARIABLE_COUNT]; /* filter variables */
 extern BOOL    filter_running;         /* TRUE while running a filter */

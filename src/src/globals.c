@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.6.2.3 2004/12/02 09:15:11 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.6.2.4 2004/12/10 09:24:38 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -492,6 +492,7 @@ uschar *extra_local_interfaces = NULL;
 
 #ifdef WITH_CONTENT_SCAN
 BOOL    fake_reject            = FALSE;
+uschar *fake_reject_text       = US"Your message has been rejected but is being kept for evaluation.\nIf it was a legit message, it may still be delivered to the target recipient(s).";
 #endif
 int     filter_n[FILTER_VARIABLE_COUNT];
 BOOL    filter_running         = FALSE;

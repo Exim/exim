@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.4.2.2 2004/12/02 16:33:30 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.4.2.3 2004/12/10 09:24:38 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3385,11 +3385,7 @@ if (smtp_input)
       smtp_printf("250 OK id=%s\r\n", message_id);
 #else      
         if (fake_reject)
-          {
-            smtp_printf("550-FAKE_REJECT id=%s\r\n", message_id);
-            smtp_printf("550-Your message has been rejected but is being kept for evaluation.\r\n");
-            smtp_printf("550 If it was a legit message, it may still be delivered to the target recipient(s).\r\n");
-          }
+          smtp_respond(550,TRUE,fake_reject_text);
         else  
           smtp_printf("250 OK id=%s\r\n", message_id);      
 #endif     
@@ -3403,11 +3399,7 @@ if (smtp_input)
     else if (smtp_reply[0] != 0)
       {
         if (fake_reject && (smtp_reply[0] == '2'))
-        {
-          smtp_printf("550-FAKE_REJECT id=%s\r\n", message_id);
-          smtp_printf("550-Your message has been rejected but is being kept for evaluation.\r\n");
-          smtp_printf("550 If it was a legit message, it may still be delivered to the target recipient(s).\r\n");
-        }
+          smtp_respond(550,TRUE,fake_reject_text);
         else 
           smtp_printf("%.1024s\r\n", smtp_reply);
       };
