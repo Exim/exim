@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.21 2005/03/08 16:57:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.22 2005/03/09 13:16:29 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -407,7 +407,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_MIME),
+    (1<<ACL_WHERE_VRFY),
 #endif
 
   (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|      /* sender_domains */
