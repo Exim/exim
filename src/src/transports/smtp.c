@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.7 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.8 2005/03/22 15:45:35 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2172,11 +2172,6 @@ for (cutoff_retry = 0; expired &&
     uschar *retry_message_key = NULL;
     uschar *serialize_key = NULL;
 
-    /* Default next host is next host. :-) But this can vary if the
-    hosts_max_try limit is hit (see below). */
-
-    nexthost = host->next;
-
     /* Set the flag requesting that this host be added to the waiting
     database if the delivery fails temporarily or if we are running with
     queue_smtp or a 2-stage queue run. This gets unset for certain
@@ -2282,6 +2277,13 @@ for (cutoff_retry = 0; expired &&
       expired = FALSE;
       continue;      /* With next host */
       }
+
+    /* The default next host is the next host. :-) But this can vary if the
+    hosts_max_try limit is hit (see below). NOTE: we cannot put this setting
+    earlier than this, because a multihomed host whose addresses are not looked
+    up till just above will add to the host list. */
+
+    nexthost = host->next;
 
     /* If queue_smtp is set (-odqs or the first part of a 2-stage run), or the
     domain is in queue_smtp_domains, we don't actually want to attempt any

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.96 2005/03/22 15:07:42 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.97 2005/03/22 15:45:35 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -67,6 +67,9 @@ PH/10 Added a nasty fudge to try to recognize and flatten LDAP passwords in
       also be put in a bounce message.
 
 PH/11 Installed exipick version 20050225.0 from John Jetmore.
+
+PH/12 If the last host in a fallback_hosts list was multihomed, only the first
+      of its addresses was ever tried. (Bugzilla bug #2.)
 
 
 A note about Exim versions 4.44 and 4.50
