@@ -1,4 +1,4 @@
-## $Cambridge: exim/doc/doc-src/FAQ.src,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+## $Cambridge: exim/doc/doc-src/FAQ.src,v 1.2 2004/10/12 09:54:44 ph10 Exp $
 ##
 ## This file is processed by Perl scripts to produce an ASCII and an HTML
 ## version. Lines starting with ## are omitted. The markup used with paragraphs
@@ -62,7 +62,7 @@ location is
 There are brief descriptions of these files at the end of this document.
 
 Philip Hazel
-Last update: 31-March-2004
+Last update: 12-October-2004
 
 
 The FAQ is divided into the following sections:
@@ -1548,6 +1548,33 @@ Q0091: Why is Exim giving the error \*Failed to send message from address_reply
        configuration?
 
 A0091: See Q0065.
+
+
+Q0092: Exim crashes when I try to start the daemon, but works fine otherwise.
+
+A0092: There was a known problem (a db incompatibility) that made the function
+       \^^getservbyname()^^\ crash in some operating systems. See, for 
+       instance:
+       
+       \?http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=129025?\ 
+       
+       The workaround in Exim is to set
+       
+==>      daemon_smtp_port = 25
+
+       in the configuration, to stop Exim calling the failing function. 
+       
+
+Q0093: The error message \*Program received signal SIGINT, Interrupt.*\ occurs 
+       when I try to use Exim with PostgreSQL.
+       
+A0093: Check that you have not set
+
+==>      log_statement=true
+
+       in the PostgreSQL configuration file. It seems that this causes 
+       PostgreSQL to return logging information as the first row in a query 
+       result, which totally confuses Exim. 
 
 
 
