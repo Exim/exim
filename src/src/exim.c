@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.6 2004/10/19 11:40:52 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.7 2004/11/04 12:19:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -640,7 +640,7 @@ if (address == NULL)
 else
   {
   int rc = verify_address(deliver_make_addr(address,TRUE), stdout, flags, -1,
-    -1, NULL, NULL, NULL);
+    -1, -1, NULL, NULL, NULL);
   if (rc == FAIL) *exit_value = 2;
     else if (rc == DEFER && *exit_value == 0) *exit_value = 1;
   }

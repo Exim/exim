@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.3 2004/10/19 11:29:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.4 2004/11/04 12:19:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3078,7 +3078,7 @@ while (done <= 0)
         {
         address_item *addr = deliver_make_addr(address, FALSE);
         switch(verify_address(addr, NULL, vopt_is_recipient | vopt_qualify, -1,
-               -1, NULL, NULL, NULL))
+               -1, -1, NULL, NULL, NULL))
           {
           case OK:
           s = string_sprintf("250 <%s> is deliverable", address);
@@ -3115,7 +3115,8 @@ while (done <= 0)
       BOOL save_log_testing_mode = log_testing_mode;
       address_test_mode = log_testing_mode = TRUE;
       (void) verify_address(deliver_make_addr(smtp_data, FALSE), smtp_out,
-        vopt_is_recipient | vopt_qualify | vopt_expn, -1, -1, NULL, NULL, NULL);
+        vopt_is_recipient | vopt_qualify | vopt_expn, -1, -1, -1, NULL, NULL, 
+        NULL);
       address_test_mode = FALSE;
       log_testing_mode = save_log_testing_mode;    /* true for -bh */
       }

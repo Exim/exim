@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.14 2004/11/04 10:42:11 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.15 2004/11/04 12:19:48 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -55,6 +55,9 @@ Exim version 4.44
     $sender_address_data in subsequent conditions in the ACL statement.
 
 14. Added forbid_sieve_filter and forbid_exim_filter to the redirect router.
+
+15. Added a new option "connect=<time>" to callout options, to set a different
+    connection timeout.
 
 
 Exim version 4.43

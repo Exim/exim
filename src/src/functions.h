@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.2 2004/11/04 12:19:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -292,10 +292,10 @@ extern int     tree_insertnode(tree_node **, tree_node *);
 extern tree_node *tree_search(tree_node *, uschar *);
 extern void    tree_write(tree_node *, FILE *);
 
-extern int     verify_address(address_item *, FILE *, int, int, int, uschar *,
-                 uschar *, BOOL *);
+extern int     verify_address(address_item *, FILE *, int, int, int, int,
+                 uschar *, uschar *, BOOL *);
 extern int     verify_check_dnsbl(uschar **);
-extern int     verify_check_header_address(uschar **, uschar **, int, int,
+extern int     verify_check_header_address(uschar **, uschar **, int, int, int,
                  uschar *, uschar *, int);
 extern int     verify_check_headers(uschar **);
 extern int     verify_check_host(uschar **);

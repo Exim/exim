@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/rf_get_errors_address.c,v 1.1 2004/10/07 13:10:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/rf_get_errors_address.c,v 1.2 2004/11/04 12:19:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -102,7 +102,7 @@ else
 
   DEBUG(D_route|D_verify)
     debug_printf("------ Verifying errors address %s ------\n", s);
-  if (verify_address(snew, NULL, vopt_is_recipient | vopt_qualify, -1, -1,
+  if (verify_address(snew, NULL, vopt_is_recipient | vopt_qualify, -1, -1, -1,
     NULL, NULL, NULL) == OK) *errors_to = snew->address;
   DEBUG(D_route|D_verify)
     debug_printf("------ End verifying errors address %s ------\n", s);

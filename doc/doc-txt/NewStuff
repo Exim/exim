@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.5 2004/11/04 10:42:11 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.6 2004/11/04 12:19:48 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -32,6 +32,14 @@ Version 4.44
     forbid_exim_filter. When filtering is enabled by allow_filter, these
     options control which type(s) of filtering are permitted. By default, both
     Exim and Sieve filters are allowed.
+
+ 6. A new option for callouts makes it possible to set a different (usually
+    smaller) timeout for making the SMTP connection. The keyword is "connect".
+    For example:
+
+       verify = sender/callout=5s,connect=1s
+
+    If not specified, it defaults to the general timeout value.
 
 
 Version 4.43

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.2 2004/11/04 12:19:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -123,7 +123,8 @@ Arguments:
   portstring        "port" option from transport, or NULL
   protocolstring    "protocol" option from transport, or NULL
   callout           the per-command callout timeout
-  callout_overall   the overall callout timeout (if < 0; use 4*callout)
+  callout_overall   the overall callout timeout (if < 0 use 4*callout)
+  callout_connect   the callout connection timeout (if < 0 use callout)
   options           the verification options - these bits are used:
                       vopt_is_recipient => this is a recipient address
                       vopt_callout_no_cache => don't use callout cache
@@ -138,8 +139,8 @@ Returns:            OK/FAIL/DEFER
 
 static int
 do_callout(address_item *addr, host_item *host_list, transport_feedback *tf,
-  int callout, int callout_overall, int options, uschar *se_mailfrom,
-  uschar *pm_mailfrom)
+  int callout, int callout_overall, int callout_connect, int options, 
+  uschar *se_mailfrom, uschar *pm_mailfrom)
 {
 BOOL is_recipient = (options & vopt_is_recipient) != 0;
 BOOL callout_no_cache = (options & vopt_callout_no_cache) != 0;
@@ -355,10 +356,11 @@ if (callout_random && callout_random_local_part != NULL)
       "callout_random_local_part: %s", expand_string_message);
   }
 
-/* Default the overall callout timeout if not set, and record the time we are
-starting so that we can enforce it. */
+/* Default the connect and overall callout timeouts if not set, and record the
+time we are starting so that we can enforce it. */
 
 if (callout_overall < 0) callout_overall = 4 * callout;
+if (callout_connect < 0) callout_connect = callout;
 callout_start_time = time(NULL);
 
 /* Now make connections to the hosts and do real callouts. The list of hosts
@@ -435,10 +437,10 @@ for (host = host_list; host != NULL && !done; host = host->next)
   outblock.authenticating = FALSE;
 
   /* Connect to the host; on failure, just loop for the next one, but we
-  set the error for the last one. */
+  set the error for the last one. Use the callout_connect timeout. */
 
   inblock.sock = outblock.sock =
-    smtp_connect(host, host_af, port, interface, callout, TRUE);
+    smtp_connect(host, host_af, port, interface, callout_connect, TRUE);
   if (inblock.sock < 0)
     {
     addr->message = string_sprintf("could not connect to %s [%s]: %s",
@@ -782,9 +784,10 @@ Arguments:
                      vopt_callout_recippmaster => use postmaster for recipient
 
   callout          if > 0, specifies that callout is required, and gives timeout
-                     for individual connections and commands
+                     for individual commands
   callout_overall  if > 0, gives overall timeout for the callout function;
                    if < 0, a default is used (see do_callout())
+  callout_connect  the connection timeout for callouts                  
   se_mailfrom      when callout is requested to verify a sender, use this
                      in MAIL FROM; NULL => ""
   pm_mailfrom      when callout is requested, if non-NULL, do the postmaster
@@ -800,7 +803,8 @@ Returns:           OK      address verified
 
 int
 verify_address(address_item *vaddr, FILE *f, int options, int callout,
-  int callout_overall, uschar *se_mailfrom, uschar *pm_mailfrom, BOOL *routed)
+  int callout_overall, int callout_connect, uschar *se_mailfrom, 
+  uschar *pm_mailfrom, BOOL *routed)
 {
 BOOL allok = TRUE;
 BOOL full_info = (f == NULL)? FALSE : (debug_selector != 0);
@@ -1054,7 +1058,7 @@ while (addr_new != NULL)
         else
           {
           rc = do_callout(addr, host_list, &tf, callout, callout_overall,
-            options, se_mailfrom, pm_mailfrom);
+            callout_connect, options, se_mailfrom, pm_mailfrom);
           }
         }
       else
@@ -1426,6 +1430,7 @@ Arguments:
   log_msgptr       points to where to put a log error message
   callout          timeout for callout check (passed to verify_address())
   callout_overall  overall callout timeout (ditto)
+  callout_connect  connect callout timeout (ditto) 
   se_mailfrom      mailfrom for verify; NULL => ""
   pm_mailfrom      sender for pm callout check (passed to verify_address())
   options          callout options (passed to verify_address())
@@ -1439,8 +1444,8 @@ Returns:           result of the verification attempt: OK, FAIL, or DEFER;
 
 int
 verify_check_header_address(uschar **user_msgptr, uschar **log_msgptr,
-  int callout, int callout_overall, uschar *se_mailfrom, uschar *pm_mailfrom,
-  int options)
+  int callout, int callout_overall, int callout_connect, uschar *se_mailfrom, 
+  uschar *pm_mailfrom, int options)
 {
 static int header_types[] = { htype_sender, htype_reply_to, htype_from };
 int yield = FAIL;
@@ -1529,7 +1534,8 @@ for (i = 0; i < 3; i++)
           {
           vaddr = deliver_make_addr(address, FALSE);
           new_ok = verify_address(vaddr, NULL, options | vopt_fake_sender,
-            callout, callout_overall, se_mailfrom, pm_mailfrom, NULL);
+            callout, callout_overall, callout_connect, se_mailfrom, 
+            pm_mailfrom, NULL);
           }
         }
 

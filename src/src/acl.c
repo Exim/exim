@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.4 2004/10/19 13:40:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.5 2004/11/04 12:19:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -689,6 +689,7 @@ acl_verify(int where, address_item *addr, uschar *arg,
 int sep = '/';
 int callout = -1;
 int callout_overall = -1;
+int callout_connect = -1;
 int verify_options = 0;
 int rc;
 BOOL verify_header_sender = FALSE;
@@ -835,6 +836,11 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
         uschar *opt;
         uschar buffer[256];
         while (isspace(*ss)) ss++;
+        
+        /* This callout option handling code has become a mess as new options 
+        have been added in an ad hoc manner. It should be tidied up into some 
+        kind of table-driven thing. */
+ 
         while ((opt = string_nextinlist(&ss, &optsep, buffer, sizeof(buffer)))
               != NULL)
           {
@@ -903,6 +909,25 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
               return ERROR;
               }
             }
+          else if (strncmpic(opt, US"connect", 7) == 0)
+            {
+            opt += 7;
+            while (isspace(*opt)) opt++;
+            if (*opt++ != '=')
+              {
+              *log_msgptr = string_sprintf("'=' expected after "
+                "\"callout_overaall\" in ACL condition \"%s\"", arg);
+              return ERROR;
+              }
+            while (isspace(*opt)) opt++;
+            callout_connect = readconf_readtime(opt, 0, FALSE);
+            if (callout_connect < 0)
+              {
+              *log_msgptr = string_sprintf("bad time value in ACL condition "
+                "\"verify %s\"", arg);
+              return ERROR;
+              }
+            }
           else    /* Plain time is callout connect/command timeout */
             {
             callout = readconf_readtime(opt, 0, FALSE);
@@ -948,7 +973,7 @@ message if giving out verification details. */
 if (verify_header_sender)
   {
   rc = verify_check_header_address(user_msgptr, log_msgptr, callout,
-    callout_overall, se_mailfrom, pm_mailfrom, verify_options);
+    callout_overall, callout_connect, se_mailfrom, pm_mailfrom, verify_options);
   if (smtp_return_error_details)
     {
     if (*user_msgptr == NULL && *log_msgptr != NULL)
@@ -1031,7 +1056,7 @@ else if (verify_sender_address != NULL)
       verify_options. */
 
       rc = verify_address(sender_vaddr, NULL, verify_options, callout,
-        callout_overall, se_mailfrom, pm_mailfrom, &routed);
+        callout_overall, callout_connect, se_mailfrom, pm_mailfrom, &routed);
 
       HDEBUG(D_acl) debug_printf("----------- end verify ------------\n");
 
@@ -1083,7 +1108,7 @@ else
 
   addr2 = *addr;
   rc = verify_address(&addr2, NULL, verify_options|vopt_is_recipient, callout,
-    callout_overall, se_mailfrom, pm_mailfrom, NULL);
+    callout_overall, callout_connect, se_mailfrom, pm_mailfrom, NULL);
   HDEBUG(D_acl) debug_printf("----------- end verify ------------\n");
   *log_msgptr = addr2.message;
   *user_msgptr = addr2.user_message;
