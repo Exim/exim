@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.2 2004/11/04 12:19:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.3 2004/11/17 14:32:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -180,6 +180,7 @@ extern void    receive_bomb_out(uschar *);
 extern BOOL    receive_check_fs(int);
 extern BOOL    receive_check_set_sender(uschar *);
 extern BOOL    receive_msg(BOOL);
+extern int     receive_statvfs(BOOL, int *); 
 extern void    receive_swallow_smtp(void);
 extern BOOL    regex_match_and_setup(const pcre *, uschar *, int, int);
 extern const pcre *regex_must_compile(uschar *, BOOL, BOOL);

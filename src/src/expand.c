@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.3 2004/11/05 16:53:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.4 2004/11/17 14:32:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -283,7 +283,9 @@ enum {
   vtype_reply,          /* value not used; get reply from headers */
   vtype_pid,            /* value not used; result is pid */
   vtype_host_lookup,    /* value not used; get host name */
-  vtype_load_avg        /* value not used; result is int from os_getloadavg */
+  vtype_load_avg,       /* value not used; result is int from os_getloadavg */
+  vtype_pspace,         /* partition space; value is T/F for spool/log */
+  vtype_pinodes         /* partition inodes; value is T/F for spool/log */  
   };
 
 /* This table must be kept in alphabetical order. */
@@ -352,6 +354,8 @@ static var_entry var_table[] = {
   { "local_user_gid",      vtype_gid,         &local_user_gid },
   { "local_user_uid",      vtype_uid,         &local_user_uid },
   { "localhost_number",    vtype_int,         &host_number },
+  { "log_inodes",          vtype_pinodes,     (void *)FALSE },
+  { "log_space",           vtype_pspace,      (void *)FALSE },  
   { "mailstore_basename",  vtype_stringptr,   &mailstore_basename },
   { "message_age",         vtype_int,         &message_age },
   { "message_body",        vtype_msgbody,     &message_body },
@@ -421,6 +425,8 @@ static var_entry var_table[] = {
   { "sn8",                 vtype_filter_int,  &filter_sn[8] },
   { "sn9",                 vtype_filter_int,  &filter_sn[9] },
   { "spool_directory",     vtype_stringptr,   &spool_directory },
+  { "spool_inodes",        vtype_pinodes,     (void *)TRUE },
+  { "spool_space",         vtype_pspace,      (void *)TRUE },  
   { "thisaddress",         vtype_stringptr,   &filter_thisaddress },
   { "tls_certificate_verified", vtype_int,    &tls_certificate_verified },
   { "tls_cipher",          vtype_stringptr,   &tls_cipher },
@@ -1310,6 +1316,22 @@ while (last > first)
       s[ptr] = 0;     /* string_cat() leaves room */
       }
     return s;
+    
+    case vtype_pspace:
+      {
+      int inodes;
+      sprintf(CS var_buffer, "%d", 
+        receive_statvfs((BOOL)(var_table[middle].value), &inodes));  
+      }
+    return var_buffer;
+    
+    case vtype_pinodes:
+      {
+      int inodes;
+      (void) receive_statvfs((BOOL)(var_table[middle].value), &inodes);  
+      sprintf(CS var_buffer, "%d", inodes);
+      }
+    return var_buffer;
     }
   }
 

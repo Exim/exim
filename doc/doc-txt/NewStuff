@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.9 2004/11/11 11:40:36 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.10 2004/11/17 14:32:25 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -70,6 +70,25 @@ Version 4.44
  9. $host_address is now set to the target address during the checking of
     ignore_target_hosts.
 
+10. There are four new variables called $spool_space, $log_space,
+    $spool_inodes, and $log_inodes. The first two contain the amount of free
+    space in the disk partitions where Exim has its spool directory and log
+    directory, respectively. (When these are in the same partition, the values
+    will, of course, be the same.) The second two variables contain the numbers
+    of free inodes in the respective partitions.
+
+    NOTE: Because disks can nowadays be very large, the values in the space
+    variables are in kilobytes rather than in bytes. Thus, for example, to
+    check in an ACL that there is at least 50M free on the spool, you would
+    write:
+
+       condition = ${if > {$spool_space}{50000}{yes}{no}}
+
+    The values are recalculated whenever any of these variables is referenced.
+    If the relevant file system does not have the concept of inodes, the value
+    of those variables is -1. If the operating system does not have the ability
+    to find the amount of free space (only true for experimental systems), the
+    space value is -1.
 
 
 Version 4.43

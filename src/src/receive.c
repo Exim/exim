@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.3 2004/10/19 11:04:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.4 2004/11/17 14:32:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -92,6 +92,117 @@ return
 
 
 /*************************************************
+*          Read space info for a partition       *
+*************************************************/
+
+/* This function is called by receive_check_fs() below, and also by string 
+expansion for variables such as $spool_space. The field names for the statvfs 
+structure are macros, because not all OS have F_FAVAIL and it seems tidier to
+have macros for F_BAVAIL and F_FILES as well. Some kinds of file system do not
+have inodes, and they return -1 for the number available.
+
+Later: It turns out that some file systems that do not have the concept of
+inodes return 0 rather than -1. Such systems should also return 0 for the total
+number of inodes, so we require that to be greater than zero before returning 
+an inode count.
+
+Arguments:
+  isspool       TRUE for spool partition, FALSE for log partition
+  inodeptr      address of int to receive inode count; -1 if there isn't one
+  
+Returns:        available on-root space, in kilobytes
+                -1 for log partition if there isn't one  
+                
+All values are -1 if the STATFS functions are not available. 
+*/
+
+int 
+receive_statvfs(BOOL isspool, int *inodeptr)
+{
+#ifdef HAVE_STATFS
+struct STATVFS statbuf;
+uschar *path;
+uschar *name;
+uschar buffer[1024];
+
+/* The spool directory must always exist. */
+
+if (isspool)
+  {
+  path = spool_directory; 
+  name = US"spool"; 
+  } 
+  
+/* Need to cut down the log file path to the directory, and to ignore any
+appearance of "syslog" in it. */
+
+else
+  {
+  int sep = ':';              /* Not variable - outside scripts use */
+  uschar *p = log_file_path;
+  name = US"log"; 
+
+  /* An empty log_file_path means "use the default". This is the same as an
+  empty item in a list. */
+
+  if (*p == 0) p = US":";
+  while ((path = string_nextinlist(&p, &sep, buffer, sizeof(buffer))) != NULL)
+    {
+    if (Ustrcmp(path, "syslog") != 0) break;
+    }
+
+  if (path == NULL)  /* No log files */
+    {
+    *inodeptr = -1; 
+    return -1;       
+    } 
+
+  /* An empty string means use the default, which is in the spool directory. 
+  But don't just use the spool directory, as it is possible that the log 
+  subdirectory has been symbolically linked elsewhere. */
+
+  if (path[0] == 0) 
+    {
+    sprintf(CS buffer, CS"%s/log", CS spool_directory);
+    path = buffer;
+    }  
+  else 
+    {
+    uschar *cp; 
+    if ((cp = Ustrrchr(path, '/')) != NULL) *cp = 0;
+    } 
+  }
+  
+/* We now have the patch; do the business */
+
+memset(&statbuf, 0, sizeof(statbuf));
+
+if (STATVFS(CS path, &statbuf) != 0)
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "cannot accept message: failed to stat "
+    "%s directory %s: %s", name, spool_directory, strerror(errno));
+  smtp_closedown(US"spool or log directory problem");
+  exim_exit(EXIT_FAILURE);
+  }
+  
+*inodeptr = (statbuf.F_FILES > 0)? statbuf.F_FAVAIL : -1;
+
+/* Disks are getting huge. Take care with computing the size in kilobytes. */
+ 
+return (int)(((double)statbuf.F_BAVAIL * (double)statbuf.F_FRSIZE)/1024.0);
+
+/* Unable to find partition sizes in this environment. */
+
+#else
+*inodeptr = -1;
+return -1;
+#endif
+}
+
+
+
+
+/*************************************************
 *     Check space on spool and log partitions    *
 *************************************************/
 
@@ -113,123 +224,44 @@ Returns:       FALSE if there isn't enough space, or if the information cannot
 BOOL
 receive_check_fs(int msg_size)
 {
-#ifdef HAVE_STATFS
-BOOL rc = TRUE;
-struct STATVFS statbuf;
-
-memset(&statbuf, 0, sizeof(statbuf));
-
-/* The field names are macros, because not all OS have F_FAVAIL and it seems
-tidier to have macros for F_BAVAIL and F_FILES as well. Some kinds of file
-server do not have inodes, and they return -1 for the number available, so we
-do the check only when this field is non-negative.
-
-Later: It turns out that some file systems that do not have the concept of
-inodes return 0 rather than -1. Such systems should also return 0 for the total
-number of inodes, so we require that to be greater than zero before doing the
-test. */
+int space, inodes;
 
 if (check_spool_space > 0 || msg_size > 0 || check_spool_inodes > 0)
   {
-  if (STATVFS(CS spool_directory, &statbuf) != 0)
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC, "cannot accept message: failed to stat "
-      "spool directory %s: %s", spool_directory, strerror(errno));
-    smtp_closedown(US"spool directory problem");
-    exim_exit(EXIT_FAILURE);
-    }
-
-  /* check_spool_space is held in K because disks are getting huge */
-
-  if (statbuf.F_BAVAIL < (unsigned long)
-        ((((double)check_spool_space) * 1024.0 + (double)msg_size) /
-            (double)statbuf.F_FRSIZE)
-       ||
-      (statbuf.F_FILES > 0 &&
-       statbuf.F_FAVAIL >= 0 &&
-       statbuf.F_FAVAIL < check_spool_inodes))
-    rc = FALSE;
-
+  space = receive_statvfs(TRUE, &inodes); 
+  
   DEBUG(D_receive)
-    debug_printf("spool directory %s space = %d blocks; inodes = %d; "
-      "check_space = %dK (%d blocks); inodes = %d; msg_size = %d (%d blocks)\n",
-      spool_directory, (int)statbuf.F_BAVAIL, (int)statbuf.F_FAVAIL,
-      check_spool_space,
-      (int)(((double)check_spool_space * 1024.0) / (double)statbuf.F_FRSIZE),
-      check_spool_inodes, msg_size, (int)(msg_size / statbuf.F_FRSIZE));
-
-  if (!rc)
-    {
+    debug_printf("spool directory space = %dK inodes = %d "
+      "check_space = %dK inodes = %d msg_size = %d\n",
+      space, inodes, check_spool_space, check_spool_inodes, msg_size);
+  
+  if ((space >= 0 && space < check_spool_space) || 
+      (inodes >= 0 && inodes < check_spool_inodes))
+    {   
     log_write(0, LOG_MAIN, "spool directory space check failed: space=%d "
-      "inodes=%d", (int)statbuf.F_BAVAIL, (int)statbuf.F_FAVAIL);
+      "inodes=%d", space, inodes);
     return FALSE;
     }
   }
-
-/* Need to cut down the log file path to the directory, and to ignore any
-appearance of "syslog" in it. */
 
 if (check_log_space > 0 || check_log_inodes > 0)
   {
-  uschar *path;
-  int sep = ':';              /* Not variable - outside scripts use */
-  uschar *cp;
-  uschar *p = log_file_path;
-  uschar buffer[1024];
-
-  /* An empty log_file_path means "use the default". This is the same as an
-  empty item in a list. */
-
-  if (*p == 0) p = US":";
-  while ((path = string_nextinlist(&p, &sep, buffer, sizeof(buffer))) != NULL)
-    {
-    if (Ustrcmp(path, "syslog") != 0) break;
-    }
-
-  if (path == NULL) return TRUE;    /* No log files, so no problem */
-
-  /* An empty string means use the default */
-
-  if (path[0] == 0)
-    path = string_sprintf("%s/log/%%slog", spool_directory);
-
-  if ((cp = Ustrrchr(path, '/')) == NULL)
-    {
-    DEBUG(D_receive) debug_printf("cannot find slash in %s\n", path);
-    return FALSE;
-    }
-  *cp = 0;
-
-  if (STATVFS(CS path, &statbuf) != 0)
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC, "cannot accept message: failed to stat "
-      "log directory %s: %s", path, strerror(errno));
-    smtp_closedown(US"log directory problem");
-    exim_exit(EXIT_FAILURE);
-    }
-
-  if (statbuf.F_BAVAIL < (unsigned long)
-        (((double)check_log_space * 1024.0) / (double)statbuf.F_FRSIZE)
-      ||
-      statbuf.F_FAVAIL < check_log_inodes) rc = FALSE;
-
+  space = receive_statvfs(FALSE, &inodes); 
+  
   DEBUG(D_receive)
-    debug_printf("log directory %s space = %d blocks; inodes = %d; "
-      "check_space = %dK (%d blocks); inodes = %d\n",
-      path, (int)statbuf.F_BAVAIL, (int)statbuf.F_FAVAIL,
-      check_log_space,
-      (int)(((double)check_log_space * 1024.0) / (double)statbuf.F_FRSIZE),
-      check_log_inodes);
-
-  if (!rc)
-    {
+    debug_printf("log directory space = %dK inodes = %d "
+      "check_space = %dK inodes = %d\n",
+      space, inodes, check_log_space, check_log_inodes);
+  
+  if ((space >= 0 && space < check_log_space) || 
+      (inodes >= 0 && inodes < check_log_inodes))
+    {   
     log_write(0, LOG_MAIN, "log directory space check failed: space=%d "
-      "inodes=%d", (int)statbuf.F_BAVAIL, (int)statbuf.F_FAVAIL);
+      "inodes=%d", space, inodes);
     return FALSE;
     }
-  }
-
-#endif
+  }   
+  
 return TRUE;
 }
 

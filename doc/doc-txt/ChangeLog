@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.28 2004/11/12 16:54:55 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.29 2004/11/17 14:32:25 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -116,6 +116,11 @@ Exim version 4.44
 30. Exim went into a mad DNS loop when attempting to do a callout where the
     host was specified on an smtp transport, and looking it up yielded more
     than one IP address.
+
+31. Re-factored the code for checking spool and log partition space into a
+    function that finds that data and another that does the check. The former
+    is then used to implement four new variables: $spool_space, $log_space,
+    $spool_inodes, and $log_inodes.
 
 
 Exim version 4.43
