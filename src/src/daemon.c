@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.6 2005/01/27 15:00:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.7 2005/01/27 15:15:30 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
