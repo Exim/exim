@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.7 2005/03/22 14:11:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.8 2005/03/22 15:02:34 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -45,20 +45,16 @@ optionlist redirect_router_options[] = {
       (void *)offsetof(redirect_router_options_block, bit_options) },
   { "forbid_file",        opt_bool,
       (void *)offsetof(redirect_router_options_block, forbid_file) },
-  #ifdef EXPAND_DLFUNC
   { "forbid_filter_dlfunc", opt_bit | (RDON_DLFUNC << 16),
       (void *)offsetof(redirect_router_options_block, bit_options) },
-  #endif
   { "forbid_filter_existstest",  opt_bit | (RDON_EXISTS << 16),
       (void *)offsetof(redirect_router_options_block, bit_options) },
   { "forbid_filter_logwrite",opt_bit | (RDON_LOG << 16),
       (void *)offsetof(redirect_router_options_block, bit_options) },
   { "forbid_filter_lookup", opt_bit | (RDON_LOOKUP << 16),
       (void *)offsetof(redirect_router_options_block, bit_options) },
-  #ifdef EXIM_PERL
   { "forbid_filter_perl", opt_bit | (RDON_PERL << 16),
       (void *)offsetof(redirect_router_options_block, bit_options) },
-  #endif
   { "forbid_filter_readfile", opt_bit | (RDON_READFILE << 16),
       (void *)offsetof(redirect_router_options_block, bit_options) },
   { "forbid_filter_readsocket", opt_bit | (RDON_READSOCK << 16),

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.28 2005/03/22 14:11:54 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.29 2005/03/22 15:02:34 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -46,12 +46,20 @@ PH/02 A new expansion item for dynamically loading and calling a locally-
 
       set in Local/Makefile. The facility is not included by default (a
       suitable error is given if you try to use it when it is not there.)
-      You load and call the function like this:
+
+      If you enable EXPAND_DLFUNC, you should also be aware of the new redirect
+      router option forbid_filter_dlfunc. If you have unprivileged users on
+      your system who are permitted to create filter files, you might want to
+      set forbid_filter_dlfunc=true in the appropriate router, to stop them
+      using ${dlfunc to run code within Exim.
+
+      You load and call an external function like this:
 
         ${dlfunc{/some/file}{function}{arg1}{arg2}...}
 
-      Once loaded, Exim remembers it so that it doesn't reload it in the same
-      Exim process (but of course Exim does start new processes frequently).
+      Once loaded, Exim remembers the dynamically loaded object so that it
+      doesn't reload the same object file in the same Exim process (but of
+      course Exim does start new processes frequently).
 
       There may be from zero to eight arguments to the function. When compiling
       a local function that is to be called in this way, local_scan.h should be
