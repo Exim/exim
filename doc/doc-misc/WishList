@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.18 2005/02/15 15:49:06 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.19 2005/02/15 16:39:19 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1843,5 +1843,10 @@ runners must be startable for the different "queues". Don't forget that the
 If headers_{add,remove} could be specified multiple times, it would be easier
 for those people that construct configs using .ifdef or .include, etc.
 ------------------------------------------------------------------------------
---- HWM 314 ------------------------------------------------------------------
+
+(315) 15-Feb-05 M String variables for use in filters.
+
+Currently, only numerical variables are supported.
+------------------------------------------------------------------------------
+--- HWM 315 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
