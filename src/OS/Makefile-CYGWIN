@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-CYGWIN,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-CYGWIN,v 1.2 2004/11/10 10:36:48 ph10 Exp $
 
 # OS-specific file for Cygwin.
 
@@ -65,10 +65,13 @@ SUPPORT_MBX=yes
 LOOKUP_DBM=yes
 LOOKUP_LSEARCH=yes
 
+LDAP_LIB_TYPE=OPENLDAP2
+LIBS_EXIM +=-lldap
+
 # LOOKUP_CDB=yes
 LOOKUP_DNSDB=yes
-# LOOKUP_DSEARCH=yes
-# LOOKUP_LDAP=yes
+LOOKUP_DSEARCH=yes
+LOOKUP_LDAP=yes
 # LOOKUP_MYSQL=yes
 # LOOKUP_NIS=yes
 # LOOKUP_NISPLUS=yes
