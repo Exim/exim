@@ -1,0 +1,24 @@
+# $Cambridge: exim/src/OS/Makefile-GNU,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+
+# Exim: OS-specific make file for GNU/Hurd.
+
+BASENAME_COMMAND=look_for_it
+
+DBMLIB = -ldb
+USE_DB = yes
+
+LIBS = -lnsl -lcrypt
+LIBRESOLV = -lresolv
+
+CFLAGS = -O2 -g -Wall
+
+X11=/usr/X11R6
+XINCLUDE=-I$(X11)/include
+XLFLAGS=-L$(X11)/lib
+X11_LD_LIB=$(X11)/lib
+
+EXIWHAT_PS_ARG=ax
+EXIWHAT_EGREP_ARG='/exim( |$$)'
+EXIWHAT_KILL_SIGNAL=-USR1
+
+# End

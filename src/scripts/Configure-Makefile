@@ -1,0 +1,170 @@
+#! /bin/sh
+# $Cambridge: exim/src/scripts/Configure-Makefile,v 1.1 2004/10/06 15:07:40 ph10 Exp $
+
+# Shell script to build Makefile in a build directory. It must be called
+# from inside the directory. It does its own checking of when to rebuild; it
+# just got too horrendous to get it right in "make", because of the optionally
+# existing configuration files.
+
+
+# First off, get the OS type, and check that there is a make file for it.
+
+ostype=`../scripts/os-type -generic` || exit 1
+
+if [ ! -r ../OS/Makefile-$ostype ] ; then
+  echo ""
+  echo "*** Sorry - operating system $ostype is not supported"
+  echo "*** See OS/Makefile-* for supported systems" 1>&2
+  echo ""
+  exit 1
+fi
+
+# We also need the architecture type, in order to test for any architecture-
+# specific configuration files.
+
+archtype=`../scripts/arch-type` || exit 1
+
+# Now test for either the non-existence of Makefile, or for any of its
+# components being newer. Note that the "newer" script gives the right
+# answer (for our purposes) when the first file is non-existent.
+
+editme=../Local/Makefile
+rebuild=yes
+
+if [ -f Makefile ] ; then
+  rebuild=no
+  if ../scripts/newer $editme Makefile || \
+     ../scripts/newer $editme-$ostype Makefile || \
+     ../scripts/newer $editme-$archtype Makefile || \
+     ../scripts/newer $editme-$ostype-$archtype Makefile || \
+     ../scripts/newer ../scripts/Configure-Makefile Makefile || \
+     ../scripts/newer ../OS/Makefile-Base Makefile || \
+     ../scripts/newer ../OS/Makefile-Default Makefile
+  then
+    rebuild=yes
+  fi
+fi
+
+# If the "build" variable is set it means that a build name was explicitly
+# given. Arrange to pick up a build-specific configuration file.
+
+if [ "X$build" != "X" ] ; then
+  mfb=Local/Makefile-$build
+  if ../scripts/newer $editme-$build Makefile ; then
+    rebuild=yes
+  fi
+else
+  mfb=
+fi
+
+
+# If Makefile is up-to-date, no need to rebuild it.
+
+if [ $rebuild = no ] ; then
+  echo "\`Makefile' is up to date."
+  echo " "
+  exit
+fi
+
+# Makefile needs to be rebuilt in the current directory by joining
+# the generic default makefile, the OS base makefile, and then local
+# generic, OS-specific, architecture-specific, and OS+architecture-specific
+# makefiles, if they exist. These files all contain macro definitions, with
+# later definitions overriding earlier ones. Make a temporary file first, in
+# case things go wrong. A second temporary is needed for sorting out the
+# default Perl stuff. Use short macro names to save typing.
+
+mf=Makefile
+mft=$mf-t
+mftt=$mf-tt
+
+# Ensure the temporary does not exist and start the new one by setting
+# the OSTYPE and ARCHTYPE variables.
+
+rm -f $mft $mftt
+(echo "OSTYPE=$ostype"; echo "ARCHTYPE=$archtype"; echo "") > $mft || exit 1
+
+# Now concatenate the files to the temporary file. Copy the files using sed to
+# remove comments, blank lines, and trailing white space.
+
+# BEWARE: a tab character is needed in the sed command below. It has had
+# a nasty tendency to get lost in the past, causing a problem if a tab has
+# actually been present in one of the files. Use a variable to hold a space
+# and a tab to keep the tab in one place.
+
+st='	 '
+
+for f in OS/Makefile-Default \
+         OS/Makefile-$ostype \
+         Local/Makefile \
+         Local/Makefile-$ostype \
+         Local/Makefile-$archtype \
+         Local/Makefile-$ostype-$archtype \
+         $mfb
+do   if test -r ../$f
+     then   echo "# From $f"
+            sed "/^#/d;/^[$st]*\$/d;s/[$st]*\$//" ../$f || exit 1
+            echo "# End of $f"
+            echo ""
+     fi
+done >> $mft || exit 1
+
+# See if there is a definition of EXIM_PERL in what we have built so far.
+# If so, run Perl to find the default values for PERL_CC, PERL_CCOPTS,
+# and PERL_LIBS. These need to be put at the top of the Makefile, so we rename
+# what we have so far and then copy it afterwards. Use the value of PERL_COMMAND
+# if it has been defined.
+
+EXIM_PERL=`grep EXIM_PERL $mft`
+
+PERL_COMMAND=`grep PERL_COMMAND $mft | sed -e "\\$!d;s/^[$st]*PERL_COMMAND[$st]*=[$st]*//"`
+if [ "${PERL_COMMAND}" = "" ] ; then
+  PERL_COMMAND='perl'
+fi
+
+if [ "${EXIM_PERL}" != "" ] ; then
+  testperl=`$PERL_COMMAND --version`
+  if [ "$testperl" = "" ] ; then
+    echo "*** EXIM_PERL is set, but '$PERL_COMMAND --version' failed"
+    exit 1
+  fi
+
+  mv $mft $mftt
+  echo "PERL_CC=`$PERL_COMMAND -MConfig -e 'print $Config{cc}'`" >>$mft
+  echo "PERL_CCOPTS=`$PERL_COMMAND -MExtUtils::Embed -e ccopts`" >>$mft
+  echo "PERL_LIBS=`$PERL_COMMAND -MExtUtils::Embed -e ldopts`" >>$mft
+  echo "" >>$mft
+  cat $mftt >> $mft
+  rm -f $mftt
+fi
+
+# Record the build variable in the Makefile.
+
+echo "build=$build" >>$mft
+echo "" >>$mft
+
+# Finally, join on the generic base make file, which contains the actual
+# rules and stuff.
+
+cat ../OS/Makefile-Base >> $mft || exit 1
+
+# If the new makefile is the same as the existing one, say so, and just
+# update the timestamp. Otherwise remove the old and install the new.
+
+if      [ -s $mf ] && cmp -s $mft $mf
+then    echo ">>> rebuilt $mf unchanged"
+        echo " "
+        touch $mf || exit
+        rm -f $mft
+elif    rm -f $mf
+        mv $mft $mf
+then    echo ">>> New $mf installed"
+        echo '>>> Use "make makefile" if you need to force rebuilding of the makefile'
+        echo " "
+else    echo " "
+        echo "*** Failed to install $mf - see $mft"
+        echo " "
+        exit 1;
+fi
+
+# End of Configure-Makefile

@@ -1,0 +1,22 @@
+/* $Cambridge: exim/src/OS/os.h-HP-UX-9,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+
+/* Exim: OS-specific C header file for HP-UX version 9 */
+
+#define LOAD_AVG_NEEDS_ROOT
+#define HAVE_DEV_KMEM
+#define LOAD_AVG_TYPE   double
+#define LOAD_AVG_SYMBOL "avenrun"
+#define KERNEL_PATH     "/hp-ux"
+#define FSCALE          1.0
+
+#define HAVE_SYS_VFS_H
+
+#define SELECT_ARG2_TYPE   int
+#define F_FREESP           O_TRUNC
+#define NEED_H_ERRNO       1
+
+#define killpg(pgid,sig)   kill(-(pgid),sig)
+
+typedef struct flock flock_t;
+
+/* End */

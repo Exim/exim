@@ -1,0 +1,12 @@
+/* $Cambridge: exim/src/OS/os.h-FreeBSD,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+
+/* Exim: OS-specific C header file for FreeBSD */
+
+#define HAVE_BSD_GETLOADAVG
+#define HAVE_MMAP
+#define HAVE_SYS_MOUNT_H
+#define SIOCGIFCONF_GIVES_ADDR
+
+typedef struct flock flock_t;
+
+/* End */

@@ -1,0 +1,23 @@
+# $Cambridge: exim/src/OS/Makefile-SunOS4,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+
+# Exim: OS-specific make file for SunOS4
+
+CFLAGS=-O
+
+# Don't need -DSTRERROR_FROM_ERRLIST in PCRE_CFLAGS, because it is in os.h
+# for SunOS4, which gets included for pcre.
+
+PCRE_CFLAGS=-DUSE_BCOPY
+
+CHOWN_COMMAND=/usr/etc/chown
+HOSTNAME_COMMAND=/usr/bin/hostname
+EXIT_FAILURE=1
+EXIT_SUCCESS=0
+LIBRESOLV=-lresolv
+XINCLUDE=-I/usr/include/X11
+
+EXIWHAT_PS_ARG=-ax
+EXIWHAT_EGREP_ARG='/exim( |$$)'
+EXIWHAT_KILL_SIGNAL=-30
+
+# End

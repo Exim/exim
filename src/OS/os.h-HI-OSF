@@ -1,0 +1,11 @@
+/* $Cambridge: exim/src/OS/os.h-HI-OSF,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+
+/* Exim: OS-specific C header file for HI-OSF/1-MJ and HI-UX/MPP */
+
+#define HAVE_SYS_MOUNT_H
+
+typedef struct flock           flock_t;
+#define F_FREESP               O_TRUNC
+#define DN_EXPAND_ARG4_TYPE    u_char *
+
+/* End */

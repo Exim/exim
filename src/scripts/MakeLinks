@@ -1,0 +1,244 @@
+#!/bin/sh
+# $Cambridge: exim/src/scripts/MakeLinks,v 1.1 2004/10/06 15:07:40 ph10 Exp $
+
+# Script to build links for all the exim source files from the system-
+# specific build directory. It should be run from within that directory.
+
+test ! -d ../src && \
+  echo "*** $0 should be run in a system-specific subdirectory." && \
+  exit 1
+test -r version.c && \
+  echo "*** It appears that $0 has already been run." && \
+  exit 1
+if [ -r pcre/Makefile ] ; then
+  echo "*** It appears that $0 was previously interrupted."
+  echo "*** You need to remove the build directory, and then run 'make' again."
+  exit 1
+fi
+
+
+# Initialize the file holding the compile number
+
+echo "0" > cnumber.h
+
+echo ""
+echo ">>> Creating links to source files..."
+
+
+# The PCRE regular expression library sources have to be linked
+# independently in their own sub-directory, since their .o files
+# are built using their own Makefile in the sub-directory.
+mkdir pcre
+cd pcre
+ln -s ../../src/pcre/Makefile            Makefile
+ln -s ../../src/pcre/config.h            config.h
+ln -s ../../src/pcre/dftables.c          dftables.c
+ln -s ../../src/pcre/internal.h          internal.h
+ln -s ../../src/pcre/pcre.h              pcre.h
+ln -s ../../src/pcre/maketables.c        maketables.c
+ln -s ../../src/pcre/get.c               get.c
+ln -s ../../src/pcre/pcre.c              pcre.c
+ln -s ../../src/pcre/pcretest.c          pcretest.c
+ln -s ../../src/pcre/printint.c          printint.c
+ln -s ../../src/pcre/study.c             study.c
+cd ..
+
+# Likewise for the lookups
+mkdir lookups
+cd lookups
+ln -s ../../src/lookups/README           README
+ln -s ../../src/lookups/Makefile         Makefile
+ln -s ../../src/lookups/cdb.h            cdb.h
+ln -s ../../src/lookups/cdb.c            cdb.c
+ln -s ../../src/lookups/dbmdb.h          dbmdb.h
+ln -s ../../src/lookups/dbmdb.c          dbmdb.c
+ln -s ../../src/lookups/dnsdb.h          dnsdb.h
+ln -s ../../src/lookups/dnsdb.c          dnsdb.c
+ln -s ../../src/lookups/dsearch.h        dsearch.h
+ln -s ../../src/lookups/dsearch.c        dsearch.c
+ln -s ../../src/lookups/ibase.h          ibase.h
+ln -s ../../src/lookups/ibase.c          ibase.c
+ln -s ../../src/lookups/ldap.h           ldap.h
+ln -s ../../src/lookups/ldap.c           ldap.c
+ln -s ../../src/lookups/lsearch.h        lsearch.h
+ln -s ../../src/lookups/lsearch.c        lsearch.c
+ln -s ../../src/lookups/mysql.h          mysql.h
+ln -s ../../src/lookups/mysql.c          mysql.c
+ln -s ../../src/lookups/nis.h            nis.h
+ln -s ../../src/lookups/nis.c            nis.c
+ln -s ../../src/lookups/nisplus.h        nisplus.h
+ln -s ../../src/lookups/nisplus.c        nisplus.c
+ln -s ../../src/lookups/oracle.h         oracle.h
+ln -s ../../src/lookups/oracle.c         oracle.c
+ln -s ../../src/lookups/passwd.h         passwd.h
+ln -s ../../src/lookups/passwd.c         passwd.c
+ln -s ../../src/lookups/pgsql.h          pgsql.h
+ln -s ../../src/lookups/pgsql.c          pgsql.c
+ln -s ../../src/lookups/testdb.h         testdb.h
+ln -s ../../src/lookups/testdb.c         testdb.c
+ln -s ../../src/lookups/whoson.h         whoson.h
+ln -s ../../src/lookups/whoson.c         whoson.c
+
+ln -s ../../src/lookups/lf_functions.h   lf_functions.h
+ln -s ../../src/lookups/lf_check_file.c  lf_check_file.c
+ln -s ../../src/lookups/lf_quote.c       lf_quote.c
+
+cd ..
+
+# Likewise for the code for the routers
+mkdir routers
+cd routers
+ln -s ../../src/routers/README           README
+ln -s ../../src/routers/Makefile         Makefile
+ln -s ../../src/routers/accept.h         accept.h
+ln -s ../../src/routers/accept.c         accept.c
+ln -s ../../src/routers/dnslookup.h      dnslookup.h
+ln -s ../../src/routers/dnslookup.c      dnslookup.c
+ln -s ../../src/routers/ipliteral.h      ipliteral.h
+ln -s ../../src/routers/ipliteral.c      ipliteral.c
+ln -s ../../src/routers/iplookup.h       iplookup.h
+ln -s ../../src/routers/iplookup.c       iplookup.c
+ln -s ../../src/routers/manualroute.h    manualroute.h
+ln -s ../../src/routers/manualroute.c    manualroute.c
+ln -s ../../src/routers/queryprogram.h   queryprogram.h
+ln -s ../../src/routers/queryprogram.c   queryprogram.c
+ln -s ../../src/routers/redirect.h       redirect.h
+ln -s ../../src/routers/redirect.c       redirect.c
+
+ln -s ../../src/routers/rf_functions.h          rf_functions.h
+ln -s ../../src/routers/rf_change_domain.c      rf_change_domain.c
+ln -s ../../src/routers/rf_expand_data.c        rf_expand_data.c
+ln -s ../../src/routers/rf_get_errors_address.c rf_get_errors_address.c
+ln -s ../../src/routers/rf_get_munge_headers.c  rf_get_munge_headers.c
+ln -s ../../src/routers/rf_get_transport.c      rf_get_transport.c
+ln -s ../../src/routers/rf_get_ugid.c           rf_get_ugid.c
+ln -s ../../src/routers/rf_queue_add.c          rf_queue_add.c
+ln -s ../../src/routers/rf_lookup_hostlist.c    rf_lookup_hostlist.c
+ln -s ../../src/routers/rf_self_action.c        rf_self_action.c
+ln -s ../../src/routers/rf_set_ugid.c           rf_set_ugid.c
+
+cd ..
+
+# Likewise for the code for the transports
+mkdir transports
+cd transports
+ln -s ../../src/transports/README           README
+ln -s ../../src/transports/Makefile         Makefile
+ln -s ../../src/transports/appendfile.h     appendfile.h
+ln -s ../../src/transports/appendfile.c     appendfile.c
+ln -s ../../src/transports/autoreply.h      autoreply.h
+ln -s ../../src/transports/autoreply.c      autoreply.c
+ln -s ../../src/transports/lmtp.h           lmtp.h
+ln -s ../../src/transports/lmtp.c           lmtp.c
+ln -s ../../src/transports/pipe.h           pipe.h
+ln -s ../../src/transports/pipe.c           pipe.c
+ln -s ../../src/transports/smtp.h           smtp.h
+ln -s ../../src/transports/smtp.c           smtp.c
+
+ln -s ../../src/transports/tf_maildir.c     tf_maildir.c
+ln -s ../../src/transports/tf_maildir.h     tf_maildir.h
+
+cd ..
+
+# Likewise for the code for the authorization functions
+mkdir auths
+cd auths
+ln -s ../../src/auths/README             README
+ln -s ../../src/auths/Makefile           Makefile
+ln -s ../../src/auths/b64encode.c        b64encode.c
+ln -s ../../src/auths/b64decode.c        b64decode.c
+ln -s ../../src/auths/call_pam.c         call_pam.c
+ln -s ../../src/auths/call_pwcheck.c     call_pwcheck.c
+ln -s ../../src/auths/call_radius.c      call_radius.c
+ln -s ../../src/auths/cyrus_sasl.c       cyrus_sasl.c
+ln -s ../../src/auths/cyrus_sasl.h       cyrus_sasl.h
+ln -s ../../src/auths/get_data.c         get_data.c
+ln -s ../../src/auths/get_no64_data.c    get_no64_data.c
+ln -s ../../src/auths/md5.c              md5.c
+ln -s ../../src/auths/xtextencode.c      xtextencode.c
+ln -s ../../src/auths/xtextdecode.c      xtextdecode.c
+ln -s ../../src/auths/cram_md5.c         cram_md5.c
+ln -s ../../src/auths/cram_md5.h         cram_md5.h
+ln -s ../../src/auths/plaintext.c        plaintext.c
+ln -s ../../src/auths/plaintext.h        plaintext.h
+ln -s ../../src/auths/pwcheck.c          pwcheck.c
+ln -s ../../src/auths/pwcheck.h          pwcheck.h
+ln -s ../../src/auths/auth-spa.c         auth-spa.c
+ln -s ../../src/auths/auth-spa.h         auth-spa.h
+ln -s ../../src/auths/sha1.c             sha1.c
+ln -s ../../src/auths/spa.c              spa.c
+ln -s ../../src/auths/spa.h              spa.h
+cd ..
+
+# The basic source files for Exim and utilities. NB local_scan.h gets linked,
+# but local_scan.c does not, because its location is taken from the build-time
+# configuration. Likewise for the os.c file, which gets build dynamically.
+
+ln -s ../src/dbfunctions.h     dbfunctions.h
+ln -s ../src/dbstuff.h         dbstuff.h
+ln -s ../src/exim.h            exim.h
+ln -s ../src/functions.h       functions.h
+ln -s ../src/globals.h         globals.h
+ln -s ../src/local_scan.h      local_scan.h
+ln -s ../src/macros.h          macros.h
+ln -s ../src/mytypes.h         mytypes.h
+ln -s ../src/osfunctions.h     osfunctions.h
+ln -s ../src/store.h           store.h
+ln -s ../src/structs.h         structs.h
+
+ln -s ../src/acl.c             acl.c
+ln -s ../src/buildconfig.c     buildconfig.c
+ln -s ../src/child.c           child.c
+ln -s ../src/crypt16.c         crypt16.c
+ln -s ../src/daemon.c          daemon.c
+ln -s ../src/dbfn.c            dbfn.c
+ln -s ../src/debug.c           debug.c
+ln -s ../src/deliver.c         deliver.c
+ln -s ../src/directory.c       directory.c
+ln -s ../src/dns.c             dns.c
+ln -s ../src/drtables.c        drtables.c
+ln -s ../src/dummies.c         dummies.c
+ln -s ../src/enq.c             enq.c
+ln -s ../src/exim.c            exim.c
+ln -s ../src/exim_dbmbuild.c   exim_dbmbuild.c
+ln -s ../src/exim_dbutil.c     exim_dbutil.c
+ln -s ../src/exim_lock.c       exim_lock.c
+ln -s ../src/expand.c          expand.c
+ln -s ../src/filter.c          filter.c
+ln -s ../src/filtertest.c      filtertest.c
+ln -s ../src/globals.c         globals.c
+ln -s ../src/header.c          header.c
+ln -s ../src/host.c            host.c
+ln -s ../src/ip.c              ip.c
+ln -s ../src/log.c             log.c
+ln -s ../src/lss.c             lss.c
+ln -s ../src/match.c           match.c
+ln -s ../src/moan.c            moan.c
+ln -s ../src/parse.c           parse.c
+ln -s ../src/perl.c            perl.c
+ln -s ../src/queue.c           queue.c
+ln -s ../src/rda.c             rda.c
+ln -s ../src/readconf.c        readconf.c
+ln -s ../src/receive.c         receive.c
+ln -s ../src/retry.c           retry.c
+ln -s ../src/rewrite.c         rewrite.c
+ln -s ../src/rfc2047.c         rfc2047.c
+ln -s ../src/route.c           route.c
+ln -s ../src/search.c          search.c
+ln -s ../src/sieve.c           sieve.c
+ln -s ../src/smtp_in.c         smtp_in.c
+ln -s ../src/smtp_out.c        smtp_out.c
+ln -s ../src/spool_in.c        spool_in.c
+ln -s ../src/spool_out.c       spool_out.c
+ln -s ../src/store.c           store.c
+ln -s ../src/string.c          string.c
+ln -s ../src/tls.c             tls.c
+ln -s ../src/tls-gnu.c         tls-gnu.c
+ln -s ../src/tls-openssl.c     tls-openssl.c
+ln -s ../src/tod.c             tod.c
+ln -s ../src/transport.c       transport.c
+ln -s ../src/tree.c            tree.c
+ln -s ../src/verify.c          verify.c
+ln -s ../src/version.c         version.c
+
+# End of MakeLinks

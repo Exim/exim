@@ -1,0 +1,26 @@
+/* $Cambridge: exim/src/OS/os.h-mips,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+
+/* Exim: OS-specific C header file for RiscOS4bsd */
+
+#define LOAD_AVG_NEEDS_ROOT
+#define HAVE_DEV_KMEM
+#define LOAD_AVG_TYPE   long
+#define LOAD_AVG_SYMBOL "_avenrun"
+#define KERNEL_PATH     "/unix"
+
+#define HAVE_MMAP
+#define HAVE_SYS_VFS_H
+
+#define F_FREESP     O_TRUNC
+#define EXIT_FAILURE 1
+#define EXIT_SUCCESS 0
+typedef struct flock flock_t;
+
+#define STRERROR_FROM_ERRLIST
+#define memmove(a, b, c) bcopy(b, a, c)
+
+extern char *strerror(int);
+extern int   sys_nerr;
+extern char *sys_errlist[];
+
+/* End */

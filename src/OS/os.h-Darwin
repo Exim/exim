@@ -1,0 +1,29 @@
+/* $Cambridge: exim/src/OS/os.h-Darwin,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+
+/* Exim: OS-specific C header file for Darwin (Mac OS X) */
+
+/* #define CRYPT_H */  /* Apparently this isn't needed */
+
+#define HAVE_MMAP
+#define HAVE_SYS_MOUNT_H
+#define PAM_H_IN_PAM
+#define SIOCGIFCONF_GIVES_ADDR
+
+#define F_FREESP     O_TRUNC
+typedef struct flock flock_t;
+
+#define BASE_62 36  /* HFS+ aliases lower and upper cases in filenames.
+                               Consider reducing MAX_LOCALHOST_NUMBER */
+
+#ifndef        _BSD_SOCKLEN_T_
+#define _BSD_SOCKLEN_T_ int32_t                 /* socklen_t (duh) */
+#endif
+
+/* Settings for handling IP options. There's no netinet/ip_var.h. The IP
+option handling is in the style of the later GLIBCs but the GLIBC macros
+aren't set, so we invent a new one. */
+
+#define NO_IP_VAR_H
+#define DARWIN_IP_OPTIONS
+
+/* End */

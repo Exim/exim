@@ -1,0 +1,12 @@
+# $Cambridge: exim/src/OS/Makefile-OSF1,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+
+# Exim: OS-specific make file for OSF1
+
+CFLAGS=-O
+LIBS=-liconv
+HAVE_CRYPT16=yes
+HAVE_ICONV=yes
+HOSTNAME_COMMAND=/usr/bin/hostname
+EXIWHAT_EGREP_ARG='/exim( |$$)'
+
+# End

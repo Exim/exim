@@ -1,0 +1,20 @@
+/* $Cambridge: exim/src/OS/os.h-GNU,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+
+/* Exim: OS-specific C header file for GNU/Hurd */
+
+#define CRYPT_H
+#define HAVE_MMAP
+#define HAVE_SYS_VFS_H
+#define NO_IP_VAR_H
+#define NO_NET_IF_H
+#define NO_FIND_INTERFACES
+#define SETRLIMIT_NOT_SUPPORTED
+#define GLIBC_IP_OPTIONS
+
+#define F_FREESP     O_TRUNC
+typedef struct flock flock_t;
+
+#define os_strsignal strsignal
+#define OS_STRSIGNAL
+
+/* End */

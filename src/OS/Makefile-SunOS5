@@ -1,0 +1,24 @@
+# $Cambridge: exim/src/OS/Makefile-SunOS5,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+
+# Exim: OS-specific make file for SunOS5
+
+CFLAGS=-O
+
+HAVE_ICONV=yes
+
+BASENAME_COMMAND=look_for_it
+HOSTNAME_COMMAND=look_for_it
+
+RANLIB=@true
+LIBS=-lsocket -lnsl -lkstat
+LIBRESOLV=-lresolv
+
+EXIWHAT_MULTIKILL_CMD=pkill
+EXIWHAT_MULTIKILL_ARG='exim( |$$|-)'
+
+X11=/usr/openwin
+XINCLUDE=-I$(X11)/include
+XLFLAGS=-L$(X11)/lib -R$(X11)/lib
+X11LIB=$(X11)/lib
+
+# End

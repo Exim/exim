@@ -1,0 +1,7 @@
+/* $Cambridge: exim/src/OS/os.h-NetBSD-a.out,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+
+/* Exim: OS-specific C header file for NetBSD (a.out binary format) */
+
+#include "../OS/os.h-NetBSD"     /* Same as for ELF format */
+
+/* End */

@@ -1,0 +1,17 @@
+/* $Cambridge: exim/src/OS/os.h-ULTRIX,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+
+/* Exim: OS-specific C header file for Ultrix */
+
+/* Well, it *does* have statfs(), but its structure is called something
+different, all the members have different names, and the function returns
+1 on success rather than 0. As this is for a minority function, and I think
+a minority operating system, easiest just to say "no" until someone asks. */
+
+#undef HAVE_STATFS
+
+#define F_FREESP     O_TRUNC
+#define NEED_H_ERRNO
+#define NO_OPENLOG
+typedef struct flock flock_t;
+
+/* End */

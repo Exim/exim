@@ -1,0 +1,39 @@
+/* $Cambridge: exim/src/OS/os.h-Linux,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+
+/* Exim: OS-specific C header file for Linux */
+
+#define CRYPT_H
+#define GLIBC_IP_OPTIONS
+#define HAVE_MMAP
+#define HAVE_SYS_VFS_H
+#define NO_IP_VAR_H
+#define SIOCGIFCONF_GIVES_ADDR
+#define SIG_IGN_WORKS
+
+/* Some versions of Linux need explicit sync-ing of directories as well as
+files. This setting requests that. If the directory is on NFS, it may not
+be possible to sync it - in that case, Exim now should ignore the error. But
+if you have problems in that area, try undefining this. But be aware that you
+may be in a situation where files are not being properly "committed to stable
+storage" as quickly as Exim thinks they are. */
+
+#define NEED_SYNC_DIRECTORY
+
+/* Other OS have "const" in here */
+#define ICONV_ARG2_TYPE char **
+
+#define F_FREESP     O_TRUNC
+typedef struct flock flock_t;
+
+#define os_strsignal strsignal
+#define OS_STRSIGNAL
+
+#define os_find_running_interfaces os_find_running_interfaces_linux
+
+/* Need a prototype for the Linux-specific function. The structure hasn't
+been defined yet, so we need to pre-declare it. */
+
+struct ip_address_item;
+extern struct ip_address_item *os_find_running_interfaces_linux(void);
+
+/* End */

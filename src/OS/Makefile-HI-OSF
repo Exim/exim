@@ -1,0 +1,10 @@
+# $Cambridge: exim/src/OS/Makefile-HI-OSF,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+
+# Exim: OS-specific make file for HI-OSF/1-MJ and HI-UX/MPP
+
+CC=cc
+CFLAGS=-O
+RANLIB=@true
+EXIWHAT_EGREP_ARG='/exim( |$$)'
+
+# End
