@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.38 2004/11/24 15:43:36 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.39 2004/11/24 16:14:50 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -168,6 +168,9 @@ Exim version 4.44
     domain.
 
 39. Added log_selector=+queue_time_overall.
+
+40. When running the queue in the test harness, wait just a tad after forking a
+    delivery process, to get repeatability of debugging output.
 
 
 Exim version 4.43

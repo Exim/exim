@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/queue.c,v 1.2 2004/11/05 14:59:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/queue.c,v 1.3 2004/11/24 16:14:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -615,6 +615,7 @@ for (i  = (queue_run_in_order? -1 : 0);
     if ((pid = fork()) == 0)
       {
       int rc;
+      if (running_in_test_harness) millisleep(100);
       (void)close(pfd[pipe_read]);
       rc = deliver_message(f->text, force_delivery, FALSE);
       _exit(rc == DELIVER_NOT_ATTEMPTED);
