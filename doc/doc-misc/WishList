@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.3 2004/10/25 09:54:04 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.4 2004/10/27 10:47:33 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -630,7 +630,7 @@ This could perhaps be done by extending the local_scan() idea and providing a
 (15) 01-Jan-02  M  More hooks like local_scan()
 
 One request has been for a similar hook at logging time. For other SMTP
-interactions, maybe a hook into the ACL? See also 79 and 218.
+interactions, maybe a hook into the ACL? See also 79 and 218 and 301.
 ------------------------------------------------------------------------------
 
 (17) 11-Jan-02  M  The construction of config.h needs refactoring
@@ -1747,5 +1747,12 @@ and explicit keep commands.
 
 Currently, if allow_filter is set, either kind of filter is permitted.
 ------------------------------------------------------------------------------
---- HWM 300 ------------------------------------------------------------------
+
+(301) 27-Oct-04 M Use an "ACL" to filter logging
+
+This idea was for ACL syntax to be able to "accept" or "deny" individual log
+lines. This would make it possible to have, for example, per-host logging for
+certain things. See also 15 above.
+------------------------------------------------------------------------------
+--- HWM 301 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
