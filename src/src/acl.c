@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.9 2004/12/29 16:34:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.10 2005/01/02 18:22:05 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -373,9 +373,9 @@ enum {
   CONTROL_ENFORCE_SYNC, CONTROL_NO_ENFORCE_SYNC, CONTROL_FREEZE,
   CONTROL_QUEUE_ONLY, CONTROL_SUBMISSION,
 #ifdef WITH_CONTENT_SCAN
-  CONTROL_NO_MBOX_UNSPOOL, CONTROL_FAKEREJECT,
+  CONTROL_NO_MBOX_UNSPOOL, 
 #endif
-  CONTROL_NO_MULTILINE };
+  CONTROL_FAKEREJECT, CONTROL_NO_MULTILINE };
 
 /* Bit map vector of which controls are not allowed at certain times. For
 each control, there's a bitmap of dis-allowed times. For some, it is easier to
@@ -404,8 +404,8 @@ static unsigned int control_forbids[] = {
 
 #ifdef WITH_CONTENT_SCAN
   (1<<ACL_WHERE_NOTSMTP),                          /* no_mbox_unspool */
-  (1<<ACL_WHERE_NOTSMTP),                          /* fakereject */
 #endif
+  (1<<ACL_WHERE_NOTSMTP),                          /* fakereject */
 
   (1<<ACL_WHERE_NOTSMTP)                           /* no_multiline */
 };
@@ -431,8 +431,8 @@ static control_def controls_list[] = {
   { US"queue_only",             CONTROL_QUEUE_ONLY, FALSE},
 #ifdef WITH_CONTENT_SCAN
   { US"no_mbox_unspool",        CONTROL_NO_MBOX_UNSPOOL, FALSE},
-  { US"fakereject",             CONTROL_FAKEREJECT, TRUE},
 #endif
+  { US"fakereject",             CONTROL_FAKEREJECT, TRUE},
   { US"submission",             CONTROL_SUBMISSION, TRUE}
   };
 
