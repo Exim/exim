@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.99 2005/03/22 16:52:06 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.100 2005/03/29 09:49:49 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -76,6 +76,11 @@ PH/13 If "headers_add" in a transport didn't end in a newline, Exim printed
       to what was transported.)
 
 TF/01 Added $received_time.
+
+PH/14 Modified the default configuration to add an acl_smtp_data ACL, with
+      commented out examples of how to interface to a virus scanner and to
+      SpamAssassin. Also added commented examples of av_scanner and
+      spamd_address settings.
 
 
 A note about Exim versions 4.44 and 4.50

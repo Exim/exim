@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/configure.default,v 1.1 2004/10/07 10:39:01 ph10 Exp $
+# $Cambridge: exim/src/src/configure.default,v 1.2 2005/03/29 09:49:49 ph10 Exp $
 
 ######################################################################
 #                  Runtime configuration file for Exim               #
@@ -100,15 +100,34 @@ hostlist   relay_from_hosts = 127.0.0.1
 # SMTP mail by using the loopback address. A number of MUAs use this method of
 # sending mail.
 
-
 # All three of these lists may contain many different kinds of item, including
 # wildcarded names, regular expressions, and file lookups. See the reference
-# manual for details. The lists above are used in the access control list for
-# incoming messages. The name of this ACL is defined here:
+# manual for details. The lists above are used in the access control lists for
+# checking incoming messages. The names of these ACLs are defined here:
 
 acl_smtp_rcpt = acl_check_rcpt
+acl_smtp_data = acl_check_data
 
-# You should not change that setting until you understand how ACLs work.
+# You should not change those settings until you understand how ACLs work.
+
+
+# If you are running a version of Exim that was compiled with the content-
+# scanning extension, you can cause incoming messages to be automatically
+# scanned for viruses. You have to modify the configuration in two places to
+# set this up. The first of them is here, where you define the interface to
+# your scanner. This example is typical for ClamAV; see the manual for details
+# of what to set for other virus scanners. The second modification is in the
+# acl_check_data access control list (see below).
+
+# av_scanner = clamd:/tmp/clamd
+
+
+# For spam scanning, there is a similar option that defines the interface to
+# SpamAssassin. You do not need to set this if you are using the default, which
+# is shown in this commented example. As for virus scanning, you must also
+# modify the acl_check_data access control list to enable spam scanning.
+
+# spamd_address = 127.0.0.1 783
 
 
 # Specify the domain you want to be added to all unqualified addresses
@@ -342,6 +361,37 @@ acl_check_rcpt:
   # an explicit message.
 
   deny    message       = relay not permitted
+
+
+# This ACL is used after the contents of a message have been received. This
+# is the ACL in which you can test a message's headers or body, and in
+# particular, this is where you can invoke external virus or spam scanners.
+# Some suggested ways of configuring these tests are shown below, commented
+# out. Without any tests, this ACL accepts all messages. If you want to use
+# such tests, you must ensure that Exim is compiled with the content-scanning
+# extension (WITH_CONTENT_SCAN=yes in Local/Makefile).
+
+acl_check_data:
+
+  # Deny if the message contains a virus. Before enabling this check, you
+  # must install a virus scanner and set the av_scanner option above.
+  #
+  # deny    malware   = *
+  #         message   = This message contains a virus ($malware_name).
+
+  # Add headers to a message if it is judged to be spam. Before enabling this,
+  # you must install SpamAssassin. You may also need to set the spamd_address
+  # option above.
+  #
+  # warn    spam      = nobody
+  #         message   = X-Spam_score: $spam_score\n\
+  #                     X-Spam_score_int: $spam_score_int\n\
+  #                     X-Spam_bar: $spam_bar\n\
+  #                     X-Spam_report: $spam_report
+
+  # Accept the message.
+
+  accept
 
 
 
