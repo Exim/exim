@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.12 2004/12/01 14:33:21 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.13 2004/12/06 14:14:14 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1812,5 +1812,11 @@ If a queue-runner opened the -D file and took out the lock before forking, it
 would waste fewer resources if the message was already being delivered. But how
 often would this actually matter in practice?
 ------------------------------------------------------------------------------
---- HWM 309 ------------------------------------------------------------------
+
+(310) 06-Dec-04 S After "personal" save what matched
+
+The idea is to save the email address that actually was found in the message
+in a variable so it can be used (e.g. as the From: address in an autoreply).
+------------------------------------------------------------------------------
+--- HWM 310 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
