@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.3 2004/10/18 09:16:57 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.4 2004/10/18 09:26:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2837,12 +2837,21 @@ else
       strerror(errno));
     rlp.rlim_cur = rlp.rlim_max = 0;
     }
+    
+  /* I originally chose 1000 as a nice big number that was unlikely to 
+  be exceeded. It turns out that some older OS have a fixed upper limit of
+  256. */
+     
   if (rlp.rlim_cur < 1000)
     {
     rlp.rlim_cur = rlp.rlim_max = 1000;
     if (setrlimit(RLIMIT_NOFILE, &rlp) < 0)
-      log_write(0, LOG_MAIN|LOG_PANIC, "setrlimit(RLIMIT_NOFILE) failed: %s",
-        strerror(errno));
+      { 
+      rlp.rlim_cur = rlp.rlim_max = 256;
+      if (setrlimit(RLIMIT_NOFILE, &rlp) < 0)
+        log_write(0, LOG_MAIN|LOG_PANIC, "setrlimit(RLIMIT_NOFILE) failed: %s",
+          strerror(errno));
+      } 
     }
   #endif
 

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.7 2004/10/18 09:16:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.8 2004/10/18 09:26:02 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -25,7 +25,12 @@ Exim version 4.44
     now done for all such subprocesses. The other cases are: ${run, transport
     filters, and the commands run by the lmtp and pipe transports.
 
- 5. Added CONFIGURE_GROUP build-time option.
+ 6. Added CONFIGURE_GROUP build-time option.
+
+ 7. Some older OS have a limit of 256 on the maximum number of file
+    descriptors. Exim was using setrlimit() to set 1000 as a large value
+    unlikely to be exceeded. Change 4.43/17 caused a lot of logging on these
+    systems. I've change it so that if it can't get 1000, it tries for 256.
 
 
 Exim version 4.43
