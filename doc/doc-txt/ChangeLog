@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.15 2004/11/04 12:19:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.16 2004/11/05 12:33:59 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -58,6 +58,9 @@ Exim version 4.44
 
 15. Added a new option "connect=<time>" to callout options, to set a different
     connection timeout.
+
+16. If FIXED_NEVER_USERS was defined, but empty, Exim was assuming the uid 0
+    was its contents. (It was OK if the option was not defined at all.)
 
 
 Exim version 4.43

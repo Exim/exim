@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.2 2004/10/18 09:16:57 ph10 Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.3 2004/11/05 12:33:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -584,7 +584,7 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
     else
       {
       int count = 1;
-      int i;
+      int i, j;
       uid_t *vector;
       char *p = list;
       while (*p != 0) if (*p++ == ':') count++;
@@ -592,17 +592,22 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
       vector = malloc((count+1) * sizeof(uid_t));
       vector[0] = (uid_t)count;
 
-      for (i = 1; i <= count; list++, i++)
+      for (i = 1, j = 0; i <= count; list++, i++)
         {
         char name[64];
+         
         p = list;
         while (*list != 0 && *list != ':') list++;
         strncpy(name, p, list-p);
         name[list-p] = 0;
-
-        if (name[strspn(name, "0123456789")] == 0)
+        
+        if (name[0] == 0)
           {
-          vector[i] = (uid_t)atoi(name);
+          continue; 
+          }  
+        else if (name[strspn(name, "0123456789")] == 0)
+          {
+          vector[j++] = (uid_t)atoi(name);
           }
         else
           {
@@ -614,13 +619,12 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
               name);
             return 1;
             }
-          vector[i] = pw->pw_uid;
+          vector[j++] = pw->pw_uid;
           }
         }
-      fprintf(new, "#define FIXED_NEVER_USERS     %d, ", count);
-      for (i = 1; i <= count - 1; i++)
-        fprintf(new, "%d, ", (unsigned int)vector[i]);
-      fprintf(new, "%d\n", (unsigned int)vector[i]);
+      fprintf(new, "#define FIXED_NEVER_USERS     %d", j);
+      for (i = 0; i < j; i++) fprintf(new, ", %d", (unsigned int)vector[i]);
+      fprintf(new, "\n");
       }
     continue;
     }
