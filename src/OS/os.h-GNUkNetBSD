@@ -1,6 +1,6 @@
-/* $Cambridge: exim/src/OS/os.h-GNU,v 1.2 2005/01/04 10:25:58 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.h-GNUkNetBSD,v 1.1 2005/01/04 10:25:58 ph10 Exp $ */
 
-/* Exim: OS-specific C header file for GNU/Hurd */
+/* Exim: OS-specific C header file for GNU/kNetBSD */
 
 #define CRYPT_H
 #define GLIBC_IP_OPTIONS
@@ -16,6 +16,9 @@ typedef struct flock flock_t;
 #define os_strsignal strsignal
 #define OS_STRSIGNAL
 
-/* Hurd-specific bits below */
+/* kNetBSD-specific bits below */
+
+#define HAVE_SYS_MOUNT_H
+#define SIOCGIFCONF_GIVES_ADDR
 
 /* End */

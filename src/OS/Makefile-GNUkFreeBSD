@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-GNU,v 1.2 2005/01/04 10:25:58 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-GNUkFreeBSD,v 1.1 2005/01/04 10:25:58 ph10 Exp $
 
 # Exim: OS-specific make file for GNU and variants.
 

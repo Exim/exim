@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.59 2004/12/29 10:55:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.60 2005/01/04 10:25:58 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -271,6 +271,9 @@ Exim version 4.50
 61. There was a buffer overflow vulnerability in the SPA authentication code
     (which came originally from the Samba project). I have added a test to the
     spa_base64_to_bits() function which I hope fixes it.
+
+62. Configuration update for GNU/Hurd and variations. Updated Makefile-GNU and
+    os.h-GNU, and added configuration files for GNUkFreeBSD and GNUkNetBSD.
 
 
 Exim version 4.43
