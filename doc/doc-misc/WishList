@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.26 2005/03/15 15:46:24 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.27 2005/03/30 08:23:11 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -301,7 +301,8 @@ This would allow special handling of certain errors from certain hosts. In
 particular, it would allow failing of certain 4xx codes.
 
 This is now available for 4xx responses to RCPT commands. Is anything more
-needed?
+needed? Apparently, yes; there's been a request for a similar feature for MAIL
+commands.
 ------------------------------------------------------------------------------
 
 (148) 15-May-2000 S  Warn recipient if message rejected for quota excession.
