@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.10 2005/01/11 15:51:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.11 2005/01/12 14:47:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1555,7 +1555,7 @@ for (i = 0; i < 3; i++)
             }
           }
 
-        /* Else go ahead with the sender verification. But is isn't *the*
+        /* Else go ahead with the sender verification. But it isn't *the*
         sender of the message, so set vopt_fake_sender to stop sender_address
         being replaced after rewriting or qualification. */
 
