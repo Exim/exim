@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.7 2004/11/19 15:18:57 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.8 2004/11/24 15:04:11 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1790,5 +1790,11 @@ does the *@ thing. A more sensible plan would be something like:
 
 That is, try the local part and * at each of the partial domain values.
 ------------------------------------------------------------------------------
---- HWM 306 ------------------------------------------------------------------
+
+(307) 24-Nov-04 S Check the syntax of Message-ID: header lines
+
+This could be added to "verify=header_syntax" or, if the incompatibility is
+felt to be too great, an additional condition, or a sub-option, could be added.
+------------------------------------------------------------------------------
+--- HWM 307 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
