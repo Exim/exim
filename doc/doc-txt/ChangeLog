@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.104 2005/03/29 14:53:09 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.105 2005/03/29 15:19:25 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -98,6 +98,15 @@ PH/17 The API for radiusclient changed at release 0.4.0. Unfortunately, the
 
 PH/18 Installed Lars Mainka's patch for the support of CRL collections in
       files or directories, for OpenSSL.
+
+PH/19 When an Exim process that is running as root has to create an Exim log
+      file, it does so in a subprocess that runs as exim:exim so as to get the
+      ownership right at creation (otherwise, other Exim processes might see
+      the file with the wrong ownership). There was no test for failure of this
+      fork() call, which would lead to the process getting stuck as it waited
+      for a non-existent subprocess. Forks do occasionally fail when resources
+      run out. I reviewed all the other calls to fork(); they all seem to check
+      for failure.
 
 
 A note about Exim versions 4.44 and 4.50

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/log.c,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/log.c,v 1.3 2005/03/29 15:19:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -321,8 +321,9 @@ if (*fd >= 0)
 /* Open was not successful: try creating the file. If this is a root process,
 we must do the creating in a subprocess set to exim:exim in order to ensure
 that the file is created with the right ownership. Otherwise, there can be a
-race if an exim process is trying to write to the log at the same time. The use
-of SIGUSR1 by the exiwhat utility can provoke a lot of simultaneous writing. */
+race if another Exim process is trying to write to the log at the same time.
+The use of SIGUSR1 by the exiwhat utility can provoke a lot of simultaneous
+writing. */
 
 euid = geteuid();
 
@@ -350,10 +351,16 @@ else if (euid == root_uid)
     _exit((create_log(buffer) < 0)? 1 : 0);
     }
 
-  /* Wait for the subprocess. If it succeeded retry the open. */
+  /* If we created a subprocess, wait for it. If it succeeded retry the open. */
 
-  while (waitpid(pid, &status, 0) != pid);
-  if (status == 0) *fd = Uopen(buffer, O_APPEND|O_WRONLY, LOG_MODE);
+  if (pid > 0)
+    {
+    while (waitpid(pid, &status, 0) != pid);
+    if (status == 0) *fd = Uopen(buffer, O_APPEND|O_WRONLY, LOG_MODE);
+    }
+
+  /* If we failed to create a subprocess, we are in a bad way. We fall through
+  with *fd still < 0, and errno set, letting the code below handle the error. */
   }
 
 /* If we now have an open file, set the close-on-exec flag and return. */
