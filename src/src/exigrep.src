@@ -1,0 +1,154 @@
+#! PERL_COMMAND -w
+# $Cambridge: exim/src/src/exigrep.src,v 1.1 2004/10/07 10:39:01 ph10 Exp $
+
+use strict;
+
+# Copyright (c) 2004 University of Cambridge.
+# See the file NOTICE for conditions of use and distribution.
+
+# Except when they appear in comments, the following placeholders in this
+# source are replaced when it is turned into a runnable script:
+#
+# PERL_COMMAND
+# ZCAT_COMMAND
+# COMPRESS_SUFFIX
+
+# PROCESSED_FLAG
+
+# This is a perl script which extracts from an Exim log all entries
+# for all messages that have an entry that matches a given pattern.
+# If *any* entry for a particular message matches the pattern, *all*
+# entries for that message are displayed.
+
+# We buffer up information on a per-message basis. It is done this way rather
+# than reading the input twice so that the input can be a pipe.
+
+# There must be one argument, which is the pattern. Subsequent arguments
+# are the files to scan; if none, the standard input is read. If any file
+# appears to be compressed, it is passed through zcat. We can't just do this
+# for all files, because zcat chokes on non-compressed files.
+
+use Getopt::Std qw(getopts);
+use POSIX qw(mktime);
+
+
+# This subroutine converts a time/date string from an Exim log line into
+# the number of seconds since the epoch. It handles optional timezone
+# information.
+
+sub seconds {
+my($year,$month,$day,$hour,$min,$sec,$tzs,$tzh,$tzm) =
+  $_[0] =~ /^(\d{4})-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)(?>\s([+-])(\d\d)(\d\d))?/;
+
+my $seconds = mktime $sec, $min, $hour, $day, $month - 1, $year - 1900;
+
+if (defined $tzs)
+  {
+  $seconds -= $tzh * 3600 + $tzm * 60 if $tzs eq "+";
+  $seconds += $tzh * 3600 + $tzm * 60 if $tzs eq "-";
+  }
+
+return $seconds;
+}
+
+
+# This subroutine processes a single line (in $_) from a log file. Program
+# defensively against short lines finding their way into the log.
+
+my (%saved, %id_list, $pattern, $queue_time);
+
+sub do_line {
+return unless
+  my($date,$entry) = /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d (?:[+-]\d{4} )?)(.*)/;
+
+# Handle the case when the log line belongs to a specific message. We save
+# lines for specific messages until the message is complete. Then either print
+# discard.
+
+if (my($id) = $entry =~ /^(\w{6}\-\w{6}\-\w{2})/)
+  {
+  $saved{$id} = '' unless defined($saved{$id});
+
+  # Save up the data for this message in case it becomes interesting later.
+
+  $saved{$id} .= $_;
+
+  # Are we interested in this id ?
+
+  $id_list{$id} = 1 if /$pattern/io;
+
+  # See if this is a completion for some message. If it is interesting,
+  # print it, but in any event, throw away what was saved.
+
+  if ($entry =~
+        /(?:Completed$|rejected (?:by local_scan|by non-SMTP ACL|after DATA))/)
+    {
+    if ($saved{$id} =~ /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d ([+-]\d{4} )?)(\w{6}\-\w{6}\-\w{2})/)
+      {
+      my $old_sec = &seconds($1);
+      my $sec = &seconds($date);
+      delete $id_list{$id} if $id_list{$id} && $sec - $old_sec <= $queue_time;
+      }
+
+    if ($id_list{$id})
+      {
+      delete $id_list{$id};
+      print "$saved{$id}\n";
+      }
+
+    delete $saved{$id};
+    }
+  }
+
+# Handle the case where the log line does not belong to a specific message.
+# Print it if it is interesting.
+
+elsif ($entry =~ /$pattern/io) { print "$_\n"; }
+}
+
+
+# The main program. Extract the pattern and make sure any relevant characters
+# are quoted if the -l flag is given. The -t flag gives a time-on-queue value
+# which is an additional condition.
+
+getopts('lt:',\my %args);
+$queue_time = $args{'t'}? $args{'t'} : -1;
+
+die "usage: exigrep [-l] [-t <seconds>] <pattern> [<log file>]...\n"
+  if ($#ARGV < 0);
+
+$pattern = shift @ARGV;
+$pattern = quotemeta $pattern if $args{l};
+
+
+# If file arguments are given, open each one and process according as it is
+# is compressed or not.
+
+if (@ARGV)
+  {
+  foreach (@ARGV)
+    {
+    my $filename = $_;
+    if ($filename =~ /\.(?:COMPRESS_SUFFIX)$/)
+      {
+      open(LOG, "ZCAT_COMMAND $filename |") ||
+        die "Unable to zcat $filename: $!\n";
+      }
+    else
+      {
+      open(LOG, "<$filename") || die "Unable to open $filename: $!\n";
+      }
+    do_line() while (<LOG>);
+    close(LOG);
+    }
+  }
+
+# If no files are named, process STDIN only
+
+else { do_line() while (<STDIN>); }
+
+# At the end of processing all the input, print any uncompleted data
+
+for (keys %id_list) { print "+++ $_ not completed +++\n$saved{$_}\n;" }
+
+# End of exigrep

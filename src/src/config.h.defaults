@@ -1,0 +1,147 @@
+/* $Cambridge: exim/src/src/config.h.defaults,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+
+/*************************************************
+*     Exim - an Internet mail transport agent    *
+*************************************************/
+
+/* Copyright (c) University of Cambridge 1995 - 2004 */
+/* See the file NOTICE for conditions of use and distribution. */
+
+/* The default settings for Exim configuration variables. A #define without
+any data just defines the existence of the variable; it won't get included
+in config.h unless some value is defined in Local/Makefile. */
+
+#define ALT_CONFIG_PREFIX
+#define ALT_CONFIG_ROOT_ONLY
+
+#define APPENDFILE_MODE            0600
+#define APPENDFILE_DIRECTORY_MODE  0700
+#define APPENDFILE_LOCKFILE_MODE   0600
+
+#define AUTH_CRAM_MD5
+#define AUTH_CYRUS_SASL
+#define AUTH_PLAINTEXT
+#define AUTH_SPA
+
+#define BIN_DIRECTORY
+
+#define CONFIGURE_FILE
+#define CONFIGURE_FILE_USE_EUID
+#define CONFIGURE_FILE_USE_NODE
+#define CONFIGURE_OWNER
+#define CYRUS_PWCHECK_SOCKET
+#define CYRUS_SASLAUTHD_SOCKET
+
+#define DEFAULT_CRYPT              crypt
+#define DELIVER_IN_BUFFER_SIZE     8192
+#define DELIVER_OUT_BUFFER_SIZE    8192
+#define DISABLE_D_OPTION
+
+#define EXIMDB_DIRECTORY_MODE      0750
+#define EXIMDB_LOCK_TIMEOUT          60
+#define EXIMDB_LOCKFILE_MODE       0640
+#define EXIMDB_MODE                0640
+
+#define EXIM_PERL
+
+/* Both uid and gid are triggered by this */
+#define EXIM_UID
+
+#define FIXED_NEVER_USERS         "root"
+
+#define HAVE_CRYPT16
+#define HAVE_SA_LEN
+#define HEADERS_CHARSET           "ISO-8859-1"
+#define HEADER_ADD_BUFFER_SIZE     8192
+#define HEADER_MAXSIZE            (1024*1024)
+
+#define INPUT_DIRECTORY_MODE       0750
+#define IPV6_USE_INET_PTON
+
+#define LDAP_LIB_TYPE
+#define LOCAL_SCAN_HAS_OPTIONS
+
+#define LOG_DIRECTORY_MODE         0750
+#define LOG_FILE_PATH
+#define LOG_MODE                   0640
+
+#define LOOKUP_CDB
+#define LOOKUP_DBM
+#define LOOKUP_DNSDB
+#define LOOKUP_DSEARCH
+#define LOOKUP_IBASE
+#define LOOKUP_LDAP
+#define LOOKUP_LSEARCH
+#define LOOKUP_MYSQL
+#define LOOKUP_NIS
+#define LOOKUP_NISPLUS
+#define LOOKUP_ORACLE
+#define LOOKUP_PASSWD
+#define LOOKUP_PGSQL
+#define LOOKUP_TESTDB
+#define LOOKUP_WHOSON
+#define LOOKUP_WILDLSEARCH
+#define LOOKUP_NWILDLSEARCH
+
+#define MAX_FILTER_SIZE           (1024*1024)
+#define MAX_LOCALHOST_NUMBER        256
+#define MAX_INCLUDE_SIZE          (1024*1024)
+#define MAX_INTERFACES              250
+#define MAX_NAMED_LIST               16
+#define MSGLOG_DIRECTORY_MODE      0750
+
+#define PID_FILE_PATH
+
+#define RADIUS_CONFIG_FILE
+#define RADIUS_LIB_TYPE
+
+#define ROUTER_ACCEPT
+#define ROUTER_DNSLOOKUP
+#define ROUTER_IPLITERAL
+#define ROUTER_IPLOOKUP
+#define ROUTER_MANUALROUTE
+#define ROUTER_QUERYPROGRAM
+#define ROUTER_REDIRECT
+
+#define SPOOL_DIRECTORY
+#define SPOOL_DIRECTORY_MODE       0750
+#define SPOOL_MODE                 0640
+#define STRING_SPRINTF_BUFFER_SIZE 8192
+
+#define SUPPORT_A6
+#define SUPPORT_CRYPTEQ
+#define SUPPORT_MAILDIR
+#define SUPPORT_MAILSTORE
+#define SUPPORT_MBX
+#define SUPPORT_MOVE_FROZEN_MESSAGES
+#define SUPPORT_PAM
+#define SUPPORT_TLS
+#define SUPPORT_TRANSLATE_IP_ADDRESS
+
+#define SYSLOG_LOG_PID
+#define SYSLOG_LONG_LINES
+
+#define TIMEZONE_DEFAULT
+#define TMPDIR
+
+#define TRANSPORT_APPENDFILE
+#define TRANSPORT_AUTOREPLY
+#define TRANSPORT_LMTP
+#define TRANSPORT_PIPE
+#define TRANSPORT_SMTP
+
+#define USE_DB
+#define USE_GDBM
+#define USE_GNUTLS
+#define USE_READLINE
+#define USE_TCP_WRAPPERS
+#define USE_TDB
+
+/* Things that are not routinely changed but are nevertheless configurable
+just in case. */
+
+#define DNS_MAXNAME                 256
+#define EXPAND_MAXN                  20
+#define ROOT_UID                      0
+
+/* End of config.h.defaults */

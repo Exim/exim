@@ -1,0 +1,2856 @@
+#!PERL_COMMAND -w
+# $Cambridge: exim/src/src/eximstats.src,v 1.1 2004/10/07 10:39:01 ph10 Exp $
+
+# Copyright (c) 2001 University of Cambridge.
+# See the file NOTICE for conditions of use and distribution.
+
+# Perl script to generate statistics from one or more Exim log files.
+
+# Usage: eximstats [<options>] <log file> <log file> ...
+
+# 1996-05-21: Ignore lines not starting with valid date/time, just in case
+#               these get into a log file.
+# 1996-11-19: Add the -h option to control the size of the histogram,
+#               and optionally turn it off.
+#             Use some Perl 5 things; it should be everywhere by now.
+#             Add the Perl -w option and rewrite so no warnings are given.
+#             Add the -t option to control the length of the "top" listing.
+#             Add the -ne, -nt options to turn off errors and transport
+#               information.
+#             Add information about length of time on queue, and -q<list> to
+#               control the intervals and turn it off.
+#             Add count and percentage of delayed messages to the Received
+#               line.
+#             Show total number of errors.
+#             Add count and percentage of messages with errors to Received
+#               line.
+#             Add information about relaying and -nr to suppress it.
+# 1997-02-03  Merged in some of the things Nigel Metheringham had done:
+#               Re-worded headings
+#               Added received histogram as well as delivered
+#               Added local senders' league table
+#               Added local recipients' league table
+# 1997-03-10  Fixed typo "destinationss"
+#             Allow for intermediate address between final and original
+#               when testing for relaying
+#             Give better message when no input
+# 1997-04-24  Fixed bug in layout of error listing that was depending on
+#               text length (output line got repeated).
+# 1997-05-06  Bug in option decoding when only one option.
+#             Overflow bug when handling very large volumes.
+# 1997-10-28  Updated to handle revised log format that might show
+#               HELO name as well as host name before IP number
+# 1998-01-26  Bugs in the function for calculating the number of seconds
+#               since 1970 from a log date
+# 1998-02-02  Delivery to :blackhole: doesn't have a T= entry in the log
+#               line; cope with this, thereby avoiding undefined problems
+#             Very short log line gave substring error
+# 1998-02-03  A routed delivery to a local transport may not have <> in the
+#               log line; terminate the address at white space, not <
+# 1998-09-07  If first line of input was a => line, $thissize was undefined;
+#               ensure it is zero.
+# 1998-12-21  Adding of $thissize from => line should have been adding $size.
+#             Oops. Should have looked more closely when fixing the previous
+#               bug!
+# 1999-11-12  Increased the field widths for printed integers; numbers are
+#               bigger than originally envisaged.
+# 2001-03-21  Converted seconds() routine to use Time::Local, fixing a bug
+#               whereby seconds($timestamp) - id_seconds($id) gave an
+#               incorrect result.
+#             Added POD documentation.
+#             Moved usage instructions into help() subroutine.
+#             Added 'use strict' and declared all global variables.
+#             Added '-html' flag and resultant code.
+#             Added '-cache' flag and resultant code.
+#             Added add_volume() routine and converted all volume variables
+#               to use it, fixing the overflow problems for individual hosts
+#               on large sites.
+#             Converted all volume output to GB/MB/KB as appropriate.
+#             Don't store local user stats if -nfl is specified.
+#             Modifications done by: Steve Campbell (<steve@computurn.com>)
+# 2001-04-02  Added the -t_remote_users flag. Steve Campbell.
+# 2001-10-15  Added the -domain flag. Steve Campbell.
+# 2001-10-16  Accept files on STDIN or on the command line. Steve Campbell.
+# 2001-10-21  Removed -domain flag and added -bydomain, -byhost, and -byemail.
+#             We now generate our main parsing subroutine as an eval statement
+#             which improves performance dramatically when not all the results
+#             are required. We also cache the last timestamp to time convertion.
+#
+#             NOTE: 'Top 50 destinations by (message count|volume)' lines are
+#             now 'Top N (host|email|domain) destinations by (message count|volume)'
+#             where N is the topcount. Steve Campbell.
+#
+# 2001-10-30  V1.16 Joachim Wieland.
+#            Fixed minor bugs in add_volume() when taking over this version
+#               for use in Exim 4: -w gave uninitialized value warnings in
+#               two situations: for the first addition to a counter, and if
+#               there were never any gigabytes, thereby leaving the $gigs
+#               value unset.
+#             Initialized $last_timestamp to stop a -w uninitialized warning.
+#             Minor layout tweak for grand totals (nitpicking).
+#             Put the IP addresses for relaying stats in [] and separated by
+#               a space from the domain name.
+#             Removed the IPv4-specific address test when picking out addresses
+#               for relaying. Anything inside [] is OK.
+#
+# 2002-07-02  Philip Hazel
+#             Fixed "uninitialized variable" message that occurred for relay
+#               messages that arrived from H=[1.2.3.4] hosts (no name shown).
+#               This bug didn't affect the output.
+#
+# 2002-04-15  V1.17 Joachim Wieland.
+#             Added -charts, -chartdir. -chartrel options which use
+#             GD::Graph modules to create graphical charts of the statistics.
+#
+# 2002-04-15  V1.18 Steve Campbell.
+#             Added a check for $domain to to stop a -w uninitialized warning.
+#             Added -byemaildomain option.
+#             Only print HTML header links to included tables!
+#
+# 2002-08-02  V1.19 Steve Campbell.
+#             Changed the debug mode to dump the parser onto STDERR rather
+#             than STDOUT. Documented the -d flag into the help().
+#             Rejoined the divergent 2002-04-15 and 2002-07-02 releases.
+#
+# 2002-08-21  V1.20 Steve Campbell.
+#             Added the '-merge' option to allow merging of previous reports.
+#             Fixed a missing semicolon when doing -bydomain.
+#             Make volume charts plot the data gigs and bytes rather than just bytes.
+#             Only process log lines with $flag =~ /<=|=>|->|==|\*\*|Co/
+#             Converted Emaildomain to Edomain - the column header was too wide!
+#             This changes the text output slightly. You can revert to the old
+#             column widths by changing $COLUMN_WIDTHS to 7;
+#
+# 2002-09-04  V1.21 Andreas J Mueller
+#             Local deliveries domain now defaults to 'localdomain'.
+#             Don't match F=<From> when looking for the user.
+#
+# 2002-09-05  V1.22 Steve Campbell
+#             Fixed a perl 5.005 incompatibility problem ('our' variables).
+#
+# 2002-09-11  V1.23 Steve Campbell
+#             Stopped -charts option from throwing errors on null data.
+#             Don't print out 'Errors encountered' unless there are any.
+
+# 2002-10-21  V1.23a Philip Hazel - patch from Tony Finch put in until
+#               Steve's eximstats catches up.
+#             Handle log files that include the timezone after the timestamp.
+#             Switch to assuming that log timestamps are in local time, with
+#               an option for UTC timestamps, as in Exim itself.
+#
+# 2003-02-05  V1.24 Steve Campbell
+#             Added in Sergey Sholokh's code to convert '<' and '>' characters
+#             in HTML output. Also added code to convert them back with -merge.
+#             Fixed timestamp offsets to convert to seconds rather than minutes.
+#             Updated -merge to work with output files using timezones.
+#             Added cacheing to speed up the calculation of timezone offsets.
+#
+# 2003-02-07  V1.25 Steve Campbell
+#             Optimised the usage of mktime() in the seconds subroutine.
+#             Removed the now redundant '-cache' option.
+#             html2txt() now explicitly matches HTML tags.
+#             Implemented a new sorting algorithm - the top_n_sort() routine.
+#             Added Danny Carroll's '-nvr' flag and code.
+#
+# 2003-03-13  V1.26 Steve Campbell
+#             Implemented HTML compliance changes recommended by Bernard Massot.
+#             Bug fix to allow top_n_sort() to handle null keys.
+#             Convert all domains and edomains to lowercase.
+#             Remove preceding dots from domains.
+#
+# 2003-03-13  V1.27 Steve Campbell
+#             Replaced border attributes with 'border=1', as recommended by
+#             Bernard Massot.
+#
+# 2003-06-03  V1.28 John Newman
+#             Added in the ability to skip over the parsing and evaulation of
+#             specific transports as passed to eximstats via the new "-nt/.../"
+#             command line argument.  This new switch allows the viewing of
+#             not more accurate statistics but more applicable statistics when
+#             special transports are in use (ie; SpamAssassin).  We need to be
+#             able to ignore transports such as this otherwise the resulting
+#             local deliveries are significantly skewed (doubled)...
+#
+# 2003-11-06  V1.29 Steve Campbell
+#             Added the '-pattern "Description" "/pattern/"' option.
+#
+# 2004-02-17  V1.30 Steve Campbell
+#             Added warnings if required GD::Graph modules are not available or
+#             insufficient -chart* options are specified.
+#
+# 2004-02-20  V1.31 Andrea Balzi
+#             Only show the Local Sender/Destination links if the tables exist.
+#
+
+
+=head1 NAME
+
+eximstats - generates statistics from Exim mainlog files.
+
+=head1 SYNOPSIS
+
+ eximstats [Options] mainlog1 mainlog2 ... > report.txt
+ eximstats -merge [Options] report.1.txt report.2.txt ... > weekly_report.txt
+
+Options:
+
+=over 4
+
+=item B<-h>I<number>
+
+histogram divisions per hour. The default is 1, and
+0 suppresses histograms. Valid values are:
+
+0, 1, 2, 3, 5, 10, 15, 20, 30 or 60.
+
+=item B<-ne>
+
+Don't display error information.
+
+=item B<-nr>
+
+Don't display relaying information.
+
+=item B<-nr>I</pattern/>
+
+Don't display relaying information that matches.
+
+=item B<-nt>
+
+Don't display transport information.
+
+=item B<-nt>I</pattern/>
+
+Don't display transport information that matches
+
+=item B<-q>I<list>
+
+List of times for queuing information single 0 item suppresses.
+
+=item B<-t>I<number>
+
+Display top <number> sources/destinations
+default is 50, 0 suppresses top listing.
+
+=item B<-tnl>
+
+Omit local sources/destinations in top listing.
+
+=item B<-t_remote_users>
+
+Include remote users in the top source/destination listings.
+
+=item B<-byhost>
+
+Show results by sending host. This may be combined with
+B<-bydomain> and/or B<-byemail> and/or B<-byedomain>. If none of these options
+are specified, then B<-byhost> is assumed as a default.
+
+=item B<-bydomain>
+
+Show results by sending domain.
+May be combined with B<-byhost> and/or B<-byemail> and/or B<-byedomain>.
+
+=item B<-byemail>
+
+Show results by sender's email address.
+May be combined with B<-byhost> and/or B<-bydomain> and/or B<-byedomain>.
+
+=item B<-byemaildomain> or B<-byedomain>
+
+Show results by sender's email domain.
+May be combined with B<-byhost> and/or B<-bydomain> and/or B<-byemail>.
+
+=item B<-pattern> I<Description> I</Pattern/>
+
+Look for the specified pattern and count the number of lines in which it appears.
+This option can be specified multiple times. Eg:
+
+ -pattern 'Refused connections' '/refused connection/'
+
+
+=item B<-merge>
+
+This option allows eximstats to merge old eximstat reports together. Eg:
+
+ eximstats mainlog.sun > report.sun.txt
+ eximstats mainlog.mon > report.mon.txt
+ eximstats mainlog.tue > report.tue.txt
+ eximstats mainlog.wed > report.web.txt
+ eximstats mainlog.thu > report.thu.txt
+ eximstats mainlog.fri > report.fri.txt
+ eximstats mainlog.sat > report.sat.txt
+ eximstats -merge       report.*.txt > weekly_report.txt
+ eximstats -merge -html report.*.txt > weekly_report.html
+
+=over 4
+
+=item *
+
+You can merge text or html reports and output the results as text or html.
+
+=item *
+
+You can use all the normal eximstat output options, but only data
+included in the original reports can be shown!
+
+=item *
+
+When merging reports, some loss of accuracy may occur in the top I<n> lists.
+This will be towards the ends of the lists.
+
+=item *
+
+The order of items in the top I<n> lists may vary when the data volumes
+round to the same value.
+
+=back
+
+=item B<-html>
+
+Output the results in HTML.
+
+=item B<-charts>
+
+Create graphical charts to be displayed in HTML output.
+
+This requires the following modules which can be obtained
+from http://www.cpan.org/modules/01modules.index.html
+
+=over 4
+
+=item GD
+
+=item GDTextUtil
+
+=item GDGraph
+
+=back
+
+To install these, download and unpack them, then use the normal perl installation procedure:
+
+ perl Makefile.PL
+ make
+ make test
+ make install
+
+=item B<-chartdir>I <dir>
+
+Create the charts in the directory <dir>
+
+=item B<-chartrel>I <dir>
+
+Specify the relative directory for the "img src=" tags from where to include
+the charts
+
+=item B<-d>
+
+Debug flag. This outputs the eval()'d parser onto STDOUT which makes it
+easier to trap errors in the eval section. Remember to add 1 to the line numbers to allow for the
+title!
+
+=back
+
+=head1 DESCRIPTION
+
+Eximstats parses exim mainlog files and outputs a statistical
+analysis of the messages processed. By default, a text
+analysis is generated, but you can request an html analysis
+by using the B<-html> flag. See the help (B<-help>) to learn
+about how to create charts from the tables.
+
+=head1 AUTHOR
+
+There is a web site at http://www.exim.org - this contains details of the
+mailing list exim-users@exim.org.
+
+=head1 TO DO
+
+This program does not perfectly handle messages whose received
+and delivered log lines are in different files, which can happen
+when you have multiple mail servers and a message cannot be
+immeadiately delivered. Fixing this could be tricky...
+
+=head1 SUBROUTINES
+
+The following section will only be of interest to the
+program maintainers:
+
+=cut
+
+use integer;
+use strict;
+
+# use Time::Local;  # PH/FANF
+use POSIX;
+
+use vars qw($HAVE_GD_Graph_pie $HAVE_GD_Graph_linespoints);
+eval { require GD::Graph::pie; };
+$HAVE_GD_Graph_pie = $@ ? 0 : 1;
+eval { require GD::Graph::linespoints; };
+$HAVE_GD_Graph_linespoints = $@ ? 0 : 1;
+
+
+##################################################
+#             Static data                        #
+##################################################
+# 'use vars' instead of 'our' as perl5.005 is still in use out there!
+use vars qw(@tab62 @days_per_month $gig);
+use vars qw($VERSION);
+use vars qw($COLUMN_WIDTHS);
+
+
+@tab62 =
+  (0,1,2,3,4,5,6,7,8,9,0,0,0,0,0,0,     # 0-9
+   0,10,11,12,13,14,15,16,17,18,19,20,  # A-K
+  21,22,23,24,25,26,27,28,29,30,31,32,  # L-W
+  33,34,35, 0, 0, 0, 0, 0,              # X-Z
+   0,36,37,38,39,40,41,42,43,44,45,46,  # a-k
+  47,48,49,50,51,52,53,54,55,56,57,58,  # l-w
+  59,60,61);                            # x-z
+
+@days_per_month = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
+$gig     = 1024 * 1024 * 1024;
+$VERSION = '1.31';
+
+# How much space do we allow for the Hosts/Domains/Emails/Edomains column headers?
+$COLUMN_WIDTHS = 8;
+
+# Declare global variables.
+use vars qw($total_received_data  $total_received_data_gigs  $total_received_count);
+use vars qw($total_delivered_data $total_delivered_data_gigs $total_delivered_count);
+use vars qw(%arrival_time %size %from_host %from_address);
+use vars qw(%timestamp2time);			#Hash of timestamp => time.
+use vars qw($last_timestamp $last_time);	#The last time convertion done.
+use vars qw($last_date $date_seconds);		#The last date convertion done.
+use vars qw($last_offset $offset_seconds);	#The last time offset convertion done.
+use vars qw($localtime_offset);
+use vars qw($i);				#General loop counter.
+use vars qw($debug);				#Debug mode?
+use vars qw($ntopchart);			#How many entries should make it into the chart?
+use vars qw($gddirectory);			#Where to put files from GD::Graph
+
+$ntopchart = 5;
+
+# The following are parameters whose values are
+# set by command line switches:
+use vars qw($show_errors $show_relay $show_transport $transport_pattern);
+use vars qw($topcount $local_league_table $include_remote_users);
+use vars qw($hist_opt $hist_interval $hist_number $volume_rounding);
+use vars qw($relay_pattern @queue_times $html @user_patterns @user_descriptions);
+
+use vars qw(%do_sender);                #Do sender by Host, Domain, Email, and/or Edomain tables.
+use vars qw($charts $chartrel $chartdir $charts_option_specified);
+use vars qw($merge_reports);			#Merge old reports ?
+
+# The following are modified in the parse() routine, and
+# referred to in the print_*() routines.
+use vars qw($queue_more_than $delayed_count $relayed_unshown $begin $end);
+use vars qw(%received_count       %received_data       %received_data_gigs);
+use vars qw(%delivered_count      %delivered_data      %delivered_data_gigs);
+use vars qw(%received_count_user  %received_data_user  %received_data_gigs_user);
+use vars qw(%delivered_count_user %delivered_data_user %delivered_data_gigs_user);
+use vars qw(%transported_count    %transported_data    %transported_data_gigs);
+use vars qw(%remote_delivered %relayed %delayed %had_error %errors_count);
+use vars qw(@queue_bin @remote_queue_bin @received_interval_count @delivered_interval_count);
+use vars qw(@user_pattern_totals);
+
+use vars qw(%report_totals);
+
+
+
+
+##################################################
+#                   Subroutines                  #
+##################################################
+
+
+=head2 volume_rounded();
+
+ $rounded_volume = volume_rounded($bytes,$gigabytes);
+
+Given a data size in bytes, round it to KB, MB, or GB
+as appropriate.
+
+Eg 12000 => 12KB, 15000000 => 14GB, etc.
+
+Note: I've experimented with Math::BigInt and it results in a 33%
+performance degredation as opposed to storing numbers split into
+bytes and gigabytes.
+
+=cut
+
+sub volume_rounded {
+  my($x,$g) = @_;
+  $x = 0 unless $x;
+  $g = 0 unless $g;
+  my($rounded);
+
+  while ($x > $gig) {
+    $g++;
+    $x -= $gig;
+  }
+
+  if ($volume_rounding) {
+    # Values < 1 GB
+    if ($g <= 0) {
+      if ($x < 10000) {
+        $rounded = sprintf("%6d", $x);
+      }
+      elsif ($x < 10000000) {
+        $rounded = sprintf("%4dKB", ($x + 512)/1024);
+      }
+      else {
+        $rounded = sprintf("%4dMB", ($x + 512*1024)/(1024*1024));
+      }
+    }
+    # Values between 1GB and 10GB are printed in MB
+    elsif ($g < 10) {
+      $rounded = sprintf("%4dMB", ($g * 1024) + ($x + 512*1024)/(1024*1024));
+    }
+    else {
+      # Handle values over 10GB
+      $rounded = sprintf("%4dGB", $g + ($x + $gig/2)/$gig);
+    }
+  }
+  else {
+    # We don't want any rounding to be done.
+    $rounded = sprintf("%4d", ($g * $gig) + $x);
+  }
+
+  return $rounded;
+}
+
+
+=head2 un_round();
+
+ un_round($rounded_volume,\$bytes,\$gigabytes);
+
+Given a volume in KB, MB or GB, as generated by volume_rounded(),
+do the reverse transformation and convert it back into Bytes and Gigabytes.
+These are added to the $bytes and $gigabytes parameters.
+
+Given a data size in bytes, round it to KB, MB, or GB
+as appropriate.
+
+EG: 500 => (500,0), 14GB => (0,14), etc.
+
+=cut
+
+sub un_round {
+  my($rounded,$bytes_sref,$gigabytes_sref) = @_;
+
+  if ($rounded =~ /(\d+)GB/) {
+    $$gigabytes_sref += $1;
+  }
+  elsif ($rounded =~ /(\d+)MB/) {
+    $$gigabytes_sref +=   $1 / 1024;
+    $$bytes_sref     += (($1 % 1024 ) * 1024 * 1024);
+  }
+  elsif ($rounded =~ /(\d+)KB/) {
+    $$gigabytes_sref +=  $1 / (1024 * 1024);
+    $$bytes_sref     += ($1 % (1024 * 1024) * 1024);
+  }
+  elsif ($rounded =~ /(\d+)/) {
+    $$gigabytes_sref += $1 / $gig;
+    $$bytes_sref     += $1 % $gig;
+  }
+
+  #Now reduce the bytes down to less than 1GB.
+  add_volume($bytes_sref,$gigabytes_sref,0) if ($$bytes_sref > $gig);
+}
+
+
+=head2 add_volume();
+
+  add_volume(\$bytes,\$gigs,$size);
+
+Add $size to $bytes/$gigs where this is a number split into
+bytes ($bytes) and gigabytes ($gigs). This is significantly
+faster than using Math::BigInt.
+
+=cut
+
+sub add_volume {
+my($bytes_ref,$gigs_ref,$size) = @_;
+$$bytes_ref = 0 if ! defined $$bytes_ref;
+$$gigs_ref = 0 if ! defined $$gigs_ref;
+$$bytes_ref += $size;
+while ($$bytes_ref > $gig)
+  {
+  $$gigs_ref++;
+  $$bytes_ref -= $gig;
+  }
+}
+
+
+=head2 format_time();
+
+ $formatted_time = format_time($seconds);
+
+Given a time in seconds, break it down into
+weeks, days, hours, minutes, and seconds.
+
+Eg 12005 => 3h20m5s
+
+=cut
+
+sub format_time {
+my($t) = pop @_;
+my($s) = $t % 60;
+$t /= 60;
+my($m) = $t % 60;
+$t /= 60;
+my($h) = $t % 24;
+$t /= 24;
+my($d) = $t % 7;
+my($w) = $t/7;
+my($p) = "";
+$p .= "$w"."w" if $w > 0;
+$p .= "$d"."d" if $d > 0;
+$p .= "$h"."h" if $h > 0;
+$p .= "$m"."m" if $m > 0;
+$p .= "$s"."s" if $s > 0 || $p eq "";
+$p;
+}
+
+
+=head2 unformat_time();
+
+ $seconds = unformat_time($formatted_time);
+
+Given a time in weeks, days, hours, minutes, or seconds, convert it to seconds.
+
+Eg 3h20m5s => 12005
+
+=cut
+
+sub unformat_time {
+  my($formated_time) = pop @_;
+  my $time = 0;
+
+  while ($formated_time =~ s/^(\d+)([wdhms]?)//) {
+    $time +=  $1 if ($2 eq '' || $2 eq 's');
+    $time +=  $1 * 60 if ($2 eq 'm');
+    $time +=  $1 * 60 * 60 if ($2 eq 'h');
+    $time +=  $1 * 60 * 60 * 24 if ($2 eq 'd');
+    $time +=  $1 * 60 * 60 * 24  * 7 if ($2 eq 'w');
+  }
+  $time;
+}
+
+
+=head2 seconds();
+
+ $time = seconds($timestamp);
+
+Given a time-of-day timestamp, convert it into a time() value using
+POSIX::mktime.  We expect the timestamp to be of the form
+"$year-$mon-$day $hour:$min:$sec", with month going from 1 to 12,
+and the year to be absolute (we do the necessary conversions). The
+timestamp may be followed with an offset from UTC like "+$hh$mm"; if the
+offset is not present, and we have not been told that the log is in UTC
+(with the -utc option), then we adjust the time by the current local
+time offset so that it can be compared with the time recorded in message
+IDs, which is UTC.
+
+To improve performance, we only use mktime on the date ($year-$mon-$day),
+and only calculate it if the date is different to the previous time we
+came here. We then add on seconds for the '$hour:$min:$sec'.
+
+We also store the results of the last conversion done, and only
+recalculate if the date is different.
+
+We used to have the '-cache' flag which would store the results of the
+mktime() call. However, the current way of just using mktime() on the
+date obsoletes this.
+
+=cut
+
+sub seconds {
+  my($timestamp) = @_;
+
+  # Is the timestamp the same as the last one?
+  return $last_time if ($last_timestamp eq $timestamp);
+
+  return 0 unless ($timestamp =~ /^((\d{4})\-(\d\d)-(\d\d))\s(\d\d):(\d\d):(\d\d)( ([+-])(\d\d)(\d\d))?/o);
+
+  unless ($last_date eq $1) {
+    $last_date = $1;
+    my(@timestamp) = (0,0,0,$4,$3,$2);
+    $timestamp[5] -= 1900;
+    $timestamp[4]--;
+    $date_seconds = mktime(@timestamp);
+  }
+  my $time = $date_seconds + ($5 * 3600) + ($6 * 60) + $7;
+
+  # SC. Use cacheing. Also note we want seconds not minutes.
+  #my($this_offset) = ($10 * 60 + $11) * ($9 . "1") if defined $8;
+  if (defined $8 && ($8 ne $last_offset)) {
+    $last_offset = $8;
+    $offset_seconds = ($10 * 60 + $11) * 60;
+    $offset_seconds = -$offset_seconds if ($9 eq '-');
+  }
+
+
+  if (defined $7) {
+    #$time -= $this_offset;
+    $time -= $offset_seconds;
+  } elsif (defined $localtime_offset) {
+    $time -= $localtime_offset;
+  }
+
+  # Store the last timestamp received.
+  $last_timestamp = $timestamp;
+  $last_time      = $time;
+
+  $time;
+}
+
+
+=head2 id_seconds();
+
+ $time = id_seconds($message_id);
+
+Given a message ID, convert it into a time() value.
+
+=cut
+
+sub id_seconds {
+my($sub_id) = substr((pop @_), 0, 6);
+my($s) = 0;
+my(@c) = split(//, $sub_id);
+while($#c >= 0) { $s = $s * 62 + $tab62[ord(shift @c) - ord('0')] }
+$s;
+}
+
+
+
+=head2 calculate_localtime_offset();
+
+ $localtime_offset = calculate_localtime_offset();
+
+Calculate the the localtime offset from gmtime in seconds.
+
+ $localtime = time() + $localtime_offset.
+
+These are the same semantics as ISO 8601 and RFC 2822 timezone offsets.
+(West is negative, East is positive.)
+
+=cut
+
+# $localtime = gmtime() + $localtime_offset.  OLD COMMENT
+# This subroutine commented out as it's not currently in use.
+
+#sub calculate_localtime_offset {
+#  # Pick an arbitrary date, convert it to localtime & gmtime, and return the difference.
+#  my (@sample_date) = (0,0,0,5,5,100);
+#  my $localtime = timelocal(@sample_date);
+#  my $gmtime    = timegm(@sample_date);
+#  my $offset = $localtime - $gmtime;
+#  return $offset;
+#}
+
+sub calculate_localtime_offset {
+  # Assume that the offset at the moment is valid across the whole
+  # period covered by the logs that we're analysing. This may not
+  # be true around the time the clocks change in spring or autumn.
+  my $utc = time;
+  # mktime works on local time and gmtime works in UTC
+  my $local = mktime(gmtime($utc));
+  return $local - $utc;
+}
+
+
+=head2 print_queue_times();
+
+ $time = print_queue_times($message_type,\@queue_times,$queue_more_than);
+
+Given the type of messages being output, the array of message queue times,
+and the number of messages which exceeded the queue times, print out
+a table.
+
+=cut
+
+sub print_queue_times {
+no integer;
+my($string,$array,$queue_more_than) = @_;
+my(@chartdatanames);
+my(@chartdatavals);
+
+my $printed_one = 0;
+my $cumulative_percent = 0;
+#$queue_unknown += keys %arrival_time;
+
+my $queue_total = $queue_more_than;
+for ($i = 0; $i <= $#queue_times; $i++) { $queue_total += $$array[$i] }
+
+my $temp = "Time spent on the queue: $string";
+
+my($format);
+if ($html) {
+  print "<hr><a name=\"$string time\"></a><h2>$temp</h2>\n";
+  print "<table border=0 width=\"100%\">\n";
+  print "<tr><td>\n";
+  print "<table border=1>\n";
+  print "<tr><th>Time</th><th>Messages</th><th>Percentage</th><th>Cumulative Percentage</th>\n";
+  $format = "<tr><td align=\"right\">%s %s</td><td align=\"right\">%d</td><td align=\"right\">%5.1f%%</td><td align=\"right\">%5.1f%%</td>\n";
+}
+else
+{
+  printf("%s\n%s\n\n", $temp, "-" x length($temp));
+  $format = "%5s %4s   %6d %5.1f%%  %5.1f%%\n";
+}
+
+for ($i = 0; $i <= $#queue_times; $i++) {
+  if ($$array[$i] > 0)
+    {
+    my $percent = ($$array[$i] * 100)/$queue_total;
+    $cumulative_percent += $percent;
+    printf($format,
+      $printed_one? "     " : "Under",
+      format_time($queue_times[$i]),
+      $$array[$i], $percent, $cumulative_percent);
+    if (!defined($queue_times[$i])) {
+      print "Not defined";
+    }
+    push(@chartdatanames,
+      ($printed_one? "" : "Under") . format_time($queue_times[$i]));
+    push(@chartdatavals, $$array[$i]);
+    $printed_one = 1;
+  }
+}
+
+if ($queue_more_than > 0) {
+  my $percent = ($queue_more_than * 100)/$queue_total;
+  $cumulative_percent += $percent;
+  printf($format,
+    "Over ",
+    format_time($queue_times[$#queue_times]),
+    $queue_more_than, $percent, $cumulative_percent);
+}
+push(@chartdatanames, "Over " . format_time($queue_times[$#queue_times]));
+push(@chartdatavals, $queue_more_than);
+
+#printf("Unknown   %6d\n", $queue_unknown) if $queue_unknown > 0;
+if ($html) {
+  print "</table>\n";
+  print "</td><td>\n";
+
+  if ($HAVE_GD_Graph_pie && $charts) {
+    my @data = (
+       \@chartdatanames,
+       \@chartdatavals
+    );
+    my $graph = GD::Graph::pie->new(200, 200);
+    my $pngname;
+    my $title;
+    if ($string =~ /all/) { $pngname = "queue_all.png"; $title = "Queue (all)"; }
+    if ($string =~ /remote/) { $pngname = "queue_rem.png"; $title = "Queue (remote)"; }
+    $graph->set(
+        title             => $title,
+    );
+    my $gd = $graph->plot(\@data) or warn($graph->error);
+    if ($gd) {
+      open(IMG, ">$chartdir/$pngname") or die $!;
+      binmode IMG;
+      print IMG $gd->png;
+      close IMG;
+      print "<img src=\"$chartrel/$pngname\">";
+    }
+  }
+  print "</td></tr></table>\n";
+}
+print "\n";
+}
+
+
+
+=head2 print_histogram();
+
+ print_histogram('Deliverieds|Messages received',@interval_count);
+
+Print a histogram of the messages delivered/received per time slot
+(hour by default).
+
+=cut
+
+sub print_histogram {
+my($text) = shift;
+my(@interval_count) = @_;
+my(@chartdatanames);
+my(@chartdatavals);
+my($maxd) = 0;
+for ($i = 0; $i < $hist_number; $i++)
+  { $maxd = $interval_count[$i] if $interval_count[$i] > $maxd; }
+
+my $scale = int(($maxd + 25)/50);
+$scale = 1 if $scale == 0;
+
+my($type);
+if ($text eq "Deliveries")
+  {
+  $type = ($scale == 1)? "delivery" : "deliveries";
+  }
+else
+  {
+  $type = ($scale == 1)? "message" : "messages";
+  }
+
+my($title) = sprintf("$text per %s (each dot is $scale $type)",
+  ($hist_interval == 60)? "hour" :
+  ($hist_interval == 1)?  "minute" : "$hist_interval minutes");
+
+if ($html) {
+  print "<hr><a name=\"$text\"></a><h2>$title</h2>\n";
+  print "<table border=0 width=\"100%\">\n";
+  print "<tr><td><pre>\n";
+}
+else {
+  printf("%s\n%s\n\n", $title, "-" x length($title));
+}
+
+my $hour = 0;
+my $minutes = 0;
+for ($i = 0; $i < $hist_number; $i++)
+  {
+  my $c = $interval_count[$i];
+
+  # If the interval is an hour (the maximum) print the starting and
+  # ending hours as a label. Otherwise print the starting hour and
+  # minutes, which take up the same space.
+
+  my $temp;
+  if ($hist_opt == 1)
+    {
+    $temp = sprintf("%02d-%02d", $hour, $hour + 1);
+    print $temp;
+    push(@chartdatanames, $temp);
+    $hour++;
+    }
+  else
+    {
+    if ($minutes == 0)
+      { $temp = sprintf("%02d:%02d", $hour, $minutes) }
+    else
+      { $temp = sprintf("  :%02d", $minutes) }
+    print $temp;
+    push(@chartdatanames, $temp);
+    $minutes += $hist_interval;
+    if ($minutes >= 60)
+      {
+      $minutes = 0;
+      $hour++;
+      }
+    }
+  push(@chartdatavals, $c);
+  printf(" %6d %s\n", $c, "." x ($c/$scale));
+  }
+print "\n";
+if ($html)
+  {
+  print "</pre>\n";
+  print "</td><td>\n";
+  if ($HAVE_GD_Graph_linespoints && $charts) {
+    # calculate the graph
+    my @data = (
+       \@chartdatanames,
+       \@chartdatavals
+    );
+    my $graph = GD::Graph::linespoints->new(300, 300);
+    $graph->set(
+        x_label           => 'Time',
+        y_label           => 'Amount',
+        title             => $text,
+        x_labels_vertical => 1
+    );
+    my($pngname);
+    if ($text =~ /Deliveries/) { $pngname = "histogram_del.png"; }
+    if ($text =~ /Messages/)   { $pngname = "histogram_mes.png"; }
+    my $gd = $graph->plot(\@data) or warn($graph->error);
+    if ($gd) {
+      open(IMG, ">$chartdir/$pngname") or die $!;
+      binmode IMG;
+      print IMG $gd->png;
+      close IMG;
+      print "<img src=\"$chartrel/$pngname\">";
+    }
+  }
+  print "</td></tr></table>\n";
+}
+}
+
+
+
+=head2 print_league_table();
+
+ print_league_table($league_table_type,\%message_count,\%message_data,\%message_data_gigs);
+
+Given hashes of message count and message data, which are keyed by
+the table type (eg by the sending host), print a league table
+showing the top $topcount (defaults to 50).
+
+=cut
+
+sub print_league_table {
+my($text,$m_count,$m_data,$m_data_gigs) = @_;
+my($name) = ($topcount == 1)? "$text" : "$topcount ${text}s";
+my($temp) = "Top $name by message count";
+my(@chartdatanames) = ();
+my(@chartdatavals) = ();
+my $chartotherval = 0;
+
+my($format);
+if ($html) {
+  print "<hr><a name=\"$text count\"></a><h2>$temp</h2>\n";
+  print "<table border=0 width=\"100%\">\n";
+  print "<tr><td>\n";
+  print "<table border=1>\n";
+  print "<tr><th>Messages</th><th>Bytes</th><th>\u$text</th>\n";
+
+  # Align non-local addresses to the right (so all the .com's line up).
+  # Local addresses are aligned on the left as they are userids.
+  my $align = ($text !~ /local/i) ? 'right' : 'left';
+  $format = "<tr><td align=\"right\">%d</td><td align=\"right\">%s</td><td align=\"$align\" nowrap>%s</td>\n";
+}
+else {
+  printf("%s\n%s\n\n", $temp, "-" x length($temp));
+  $format = "%7d %10s   %s\n";
+}
+
+my($key,$htmlkey);
+foreach $key (top_n_sort($topcount,$m_count,$m_data_gigs,$m_data)) {
+  if ($html) {
+    $htmlkey = $key;
+    $htmlkey =~ s/>/\&gt\;/g;
+    $htmlkey =~ s/</\&lt\;/g;
+    printf($format, $$m_count{$key}, volume_rounded($$m_data{$key},$$m_data_gigs{$key}), $htmlkey);
+  }
+  else {
+    printf($format, $$m_count{$key}, volume_rounded($$m_data{$key},$$m_data_gigs{$key}), $key);
+  }
+  if (scalar @chartdatanames < $ntopchart)
+    {
+    push(@chartdatanames, $key);
+    push(@chartdatavals, $$m_count{$key});
+    }
+  else
+    {
+    $chartotherval += $$m_count{$key};
+    }
+  }
+push(@chartdatanames, "Other");
+push(@chartdatavals, $chartotherval);
+
+if ($html)
+  {
+  print "</table>\n";
+  print "</td><td>\n";
+  if ($HAVE_GD_Graph_pie && $charts)
+    {
+    # calculate the graph
+    my @data = (
+       \@chartdatanames,
+       \@chartdatavals
+    );
+    my $graph = GD::Graph::pie->new(300, 300);
+    $graph->set(
+        x_label           => 'Name',
+        y_label           => 'Amount',
+        title             => 'By count',
+    );
+    my $gd = $graph->plot(\@data) or warn($graph->error);
+    if ($gd) {
+      my $temp = $text;
+      $temp =~ s/ /_/g;
+      open(IMG, ">$chartdir/${temp}_count.png") or die $!;
+      binmode IMG;
+      print IMG $gd->png;
+      close IMG;
+      print "<img src=\"$chartrel/${temp}_count.png\">";
+    }
+  }
+  print "</td><td>\n";
+  print "</td></tr></table>\n";
+}
+print "\n";
+
+$temp = "Top $name by volume";
+if ($html) {
+  print "<hr><a name=\"$text volume\"></a><h2>$temp</h2>\n";
+  print "<table border=0 width=\"100%\">\n";
+  print "<tr><td>\n";
+  print "<table border=1>\n";
+  print "<tr><th>Messages</th><th>Bytes</th><th>\u$text</th>\n";
+}
+else {
+  printf("%s\n%s\n\n", $temp, "-" x length($temp));
+}
+
+@chartdatanames = ();
+@chartdatavals = ();
+$chartotherval = 0;
+foreach $key (top_n_sort($topcount,$m_data_gigs,$m_data,$m_count)) {
+  if ($html) {
+    $htmlkey = $key;
+    $htmlkey =~ s/>/\&gt\;/g;
+    $htmlkey =~ s/</\&lt\;/g;
+    printf($format, $$m_count{$key}, volume_rounded($$m_data{$key},$$m_data_gigs{$key}), $htmlkey);
+  }
+  else {
+    printf($format, $$m_count{$key}, volume_rounded($$m_data{$key},$$m_data_gigs{$key}), $key);
+  }
+
+  if (scalar @chartdatanames < $ntopchart)
+    {
+    push(@chartdatanames, $key);
+    push(@chartdatavals, $$m_count{$key});
+    }
+  else
+    {
+    $chartotherval += $$m_count{$key};
+    }
+  }
+push(@chartdatanames, "Other");
+push(@chartdatavals, $chartotherval);
+
+if ($html) {
+  print "</table>\n";
+  print "</td><td>\n";
+  if ($HAVE_GD_Graph_pie && $charts) {
+    # calculate the graph
+    my @data = (
+       \@chartdatanames,
+       \@chartdatavals
+    );
+    my $graph = GD::Graph::pie->new(300, 300);
+    $graph->set(
+        x_label           => 'Name',
+        y_label           => 'Volume',
+        title             => 'By Volume',
+    );
+    my $gd = $graph->plot(\@data) or warn($graph->error);
+    if ($gd) {
+      my $temp = $text;
+      $temp =~ s/ /_/g;
+      open(IMG, ">$chartdir/${temp}_volume.png") or die $!;
+      binmode IMG;
+      print IMG $gd->png;
+      close IMG;
+      print "<img src=\"$chartrel/${temp}_volume.png\">";
+    }
+  }
+  print "</td><td>\n";
+  print "</td></tr></table>\n";
+}
+
+print "\n";
+}
+
+
+=head2 top_n_sort();
+
+  @sorted_keys = top_n_sort($n,$href1,$href2,$href3);
+
+Given a hash which has numerical values, return the sorted $n keys which
+point to the top values. The second and third hashes are used as
+tiebreakers. They all must have the same keys.
+
+The idea behind this routine is that when you only want to see the
+top n members of a set, rather than sorting the entire set and then
+plucking off the top n, sort through the stack as you go, discarding
+any member which is lower than your current n'th highest member.
+
+This proves to be an order of magnitude faster for large hashes.
+On 200,000 lines of mainlog it benchmarked 9 times faster.
+On 700,000 lines of mainlog it benchmarked 13.8 times faster.
+
+We assume the values are > 0.
+
+=cut
+
+sub top_n_sort {
+  my($n,$href1,$href2,$href3) = @_;
+
+  # PH's original sort was:
+  #
+  # foreach $key (sort
+  #               {
+  #               $$m_count{$b}     <=> $$m_count{$a} ||
+  #               $$m_data_gigs{$b} <=> $$m_data_gigs{$a}  ||
+  #               $$m_data{$b}      <=> $$m_data{$a}  ||
+  #               $a cmp $b
+  #               }
+  #             keys %{$m_count})
+  #
+
+  #We use a key of '_' to represent non-existant values, as null keys are valid.
+  #'_' is not a valid domain, edomain, host, or email.
+  my(@top_n_keys) = ('_') x $n;
+  my($minimum_value1,$minimum_value2,$minimum_value3) = (0,0,0);
+  my $top_n_key = '';
+  my $n_minus_1 = $n - 1;
+  my $n_minus_2 = $n - 2;
+
+  # Pick out the top $n keys.
+  my($key,$value1,$value2,$value3,$i,$comparison,$insert_position);
+  while (($key,$value1) = each %$href1) {
+
+    #print STDERR "key $key ($value1,",$href2->{$key},",",$href3->{$key},") <=> ($minimum_value1,$minimum_value2,$minimum_value3)\n";
+
+    # Check to see that the new value is bigger than the lowest of the
+    # top n keys that we're keeping.
+    $comparison = $value1        <=> $minimum_value1 ||
+		  $href2->{$key} <=> $minimum_value2 ||
+		  $href3->{$key} <=> $minimum_value3 ||
+		  $top_n_key cmp $key;
+    next unless ($comparison == 1);
+
+    # As we will be using these values a few times, extract them into scalars.
+    $value2 = $href2->{$key};
+    $value3 = $href3->{$key};
+
+    # This key is bigger than the bottom n key, so the lowest position we
+    # will insert it into is $n minus 1 (the bottom of the list).
+    $insert_position = $n_minus_1;
+
+    # Now go through the list, stopping when we find a key that we're
+    # bigger than, or we come to the penultimate position - we've
+    # already tested bigger than the last.
+    #
+    # Note: we go top down as the list starts off empty.
+    # Note: stepping through the list in this way benchmarks nearly
+    # three times faster than doing a sort() on the reduced list.
+    # I assume this is because the list is already in order, and
+    # we get a performance boost from not having to do hash lookups
+    # on the new key.
+    for ($i = 0; $i < $n_minus_1; $i++) {
+      $top_n_key = $top_n_keys[$i];
+      if ( ($top_n_key eq '_') ||
+	   ( ($value1 <=> $href1->{$top_n_key} ||
+              $value2 <=> $href2->{$top_n_key} ||
+	      $value3 <=> $href3->{$top_n_key} ||
+	      $top_n_key cmp $key) == 1
+	   )
+	 ) {
+	$insert_position = $i;
+	last;
+      }
+    }
+
+    # Remove the last element, then insert the new one.
+    $#top_n_keys = $n_minus_2;
+    splice(@top_n_keys,$insert_position,0,$key);
+
+    # Extract our new minimum values.
+    $top_n_key = $top_n_keys[$n_minus_1];
+    if ($top_n_key ne '_') {
+      $minimum_value1 = $href1->{$top_n_key};
+      $minimum_value2 = $href2->{$top_n_key};
+      $minimum_value3 = $href3->{$top_n_key};
+    }
+  }
+
+  # Return the top n list, grepping out non-existant values, just in case
+  # we didn't have that many values.
+  return(grep(!/^_$/,@top_n_keys));
+}
+
+
+=head2 html_header();
+
+ $header = html_header($title);
+
+Print our HTML header and start the <body> block.
+
+=cut
+
+sub html_header {
+  my($title) = @_;
+  my $text = << "EoText";
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-15">
+<title>$title</title>
+</head>
+<body bgcolor="white">
+<h1>$title</h1>
+EoText
+  return $text;
+}
+
+
+
+=head2 help();
+
+ help();
+
+Display usage instructions and exit.
+
+=cut
+
+sub help {
+  print << "EoText";
+
+eximstats Version $VERSION
+
+Usage: eximstats [Options] mainlog1 mainlog2 ... > report.txt
+       eximstats -html  [Options] mainlog1 mainlog2 ... > report.html
+       eximstats -merge [Options] report.1.txt report.2.txt ... > weekly_rep.txt
+       eximstats -merge -html [Options] report.1.html ... > weekly_rep.html
+
+Parses exim mainlog files and generates a statistical analysis of
+the messages processed. Valid options are:
+
+-h<number>      histogram divisions per hour. The default is 1, and
+                0 suppresses histograms. Other valid values are:
+		2, 3, 5, 10, 15, 20, 30 or 60.
+-ne             don't display error information
+-nr             don't display relaying information
+-nr/pattern/    don't display relaying information that matches
+-nt             don't display transport information
+-nt/pattern/    don't display transport information that matches
+-nvr		don't do volume rounding. Display in bytes, not KB/MB/GB.
+-q<list>        list of times for queuing information
+                single 0 item suppresses
+-t<number>      display top <number> sources/destinations
+                default is 50, 0 suppresses top listing
+-tnl            omit local sources/destinations in top listing
+-t_remote_users show top user sources/destinations from non-local domains
+
+-byhost		show results by sending host (default unless bydomain or
+                byemail is specified)
+-bydomain	show results by sending domain.
+-byemail	show results by sender's email address
+-byedomain	show results by sender's email domain
+
+-pattern "Description" /pattern/
+                Count lines matching specified patterns and show them in
+		the results. It can be specified multiple times. Eg:
+		-pattern 'Refused connections' '/refused connection/'
+
+-merge          merge previously generated reports into a new report
+
+-html           output the results in HTML
+-charts         Create charts (this requires the GD::Graph modules)
+-chartdir <dir> Create the charts' png files in the directory <dir>
+-chartrel <dir> Specify the relative directory for the "img src=" tags
+                from where to include the charts in the html file
+		-chartdir and -chartrel default to '.'
+
+-d		Debug mode - dump the eval'ed parser onto STDERR.
+
+EoText
+
+  exit 1;
+}
+
+
+
+=head2 generate_parser();
+
+ $parser = generate_parser();
+
+This subroutine generates the parsing routine which will be
+used to parse the mainlog. We take the base operation, and remove bits not in use.
+This improves performance depending on what bits you take out or add.
+
+I've tested using study(), but this does not improve performance.
+
+We store our parsing routing in a variable, and process it looking for #IFDEF (Expression)
+or #IFNDEF (Expression) statements and corresponding #ENDIF (Expression) statements. If
+the expression evaluates to true, then it is included/excluded accordingly.
+
+=cut
+
+sub generate_parser {
+  my $parser = '
+  my($ip,$host,$email,$edomain,$domain,$thissize,$size,$old,$new);
+  my($tod,$m_hour,$m_min,$id,$flag);
+  while (<$fh>) {
+    next if length($_) < 38;
+
+    # PH/FANF
+    # next unless /^(\\d{4}\\-\\d\\d-\\d\\d\\s(\\d\\d):(\\d\\d):\\d\\d)/;
+    next unless /^(\\d{4}\\-\\d\\d-\\d\\d\\s(\\d\\d):(\\d\\d):\\d\\d( [-+]\\d\\d\\d\\d)?)/o;
+
+    ($tod,$m_hour,$m_min) = ($1,$2,$3);
+
+    # PH
+    my($extra) = defined($4)? 6 : 0;
+    $id   = substr($_, 20 + $extra, 16);
+    $flag = substr($_, 37 + $extra, 2);
+';
+
+  # Watch for user specified patterns.
+  my $user_pattern_index = 0;
+  foreach (@user_patterns) {
+    $user_pattern_totals[$user_pattern_index] = 0;
+    $parser .= "  \$user_pattern_totals[$user_pattern_index]++ if $_;\n";
+    $user_pattern_index++;
+  }
+
+  $parser .= '
+    next unless ($flag =~ /<=|=>|->|==|\\*\\*|Co/);
+
+    #Strip away the timestamp, ID and flag (which could be "Com" for completed)
+    #This speeds up the later pattern matches.
+    # $_ = substr($_, 40);
+
+    $_ = substr($_, 40 + $extra);  # PH
+
+    # JN - Skip over certain transports as specified via the "-nt/.../" command
+    # line switch (where ... is a perl style regular expression).  This is
+    # required so that transports that skew stats such as SpamAssassin can be
+    # ignored.
+    #IFDEF ($transport_pattern)
+    if (/\\sT=(\\S+)/) {
+       next if ($1 =~ /$transport_pattern/o) ;
+    }
+    #ENDIF ($transport_pattern)
+
+
+    $host = "local";		#Host is local unless otherwise specified.
+    $domain = "localdomain";	#Domain is localdomain unless otherwise specified.
+
+
+    # Do some pattern matches to get the host and IP address.
+    # We expect lines to be of the form "H=[IpAddr]" or "H=Host [IpAddr]" or
+    # "H=Host (UnverifiedHost) [IpAddr]" or "H=(UnverifiedHost) [IpAddr]".
+    # We do 2 separate matches to keep the matches simple and fast.
+    if (/\\sH=(\\S+)/) {
+      $host = $1;
+
+      ($ip) = /\\sH=.*?(\\s\\[[^]]+\\])/;
+      # If there is only an IP address, it will be in $host and $ip will be
+      # unset. That is OK, because we only use $ip in conjunction with $host
+      # below. But make it empty to avoid warning messages.
+      $ip = "" if !defined $ip;
+
+      #IFDEF ($do_sender{Domain})
+      if ($host !~ /^\\[/ && $host =~ /^(\\(?)[^\\.]+\\.([^\\.]+\\..*)/) {
+	# Remove the host portion from the DNS name. We ensure that we end up with
+	# at least xxx.yyy. $host can be "(x.y.z)" or  "x.y.z".
+	$domain = lc("$1.$2");
+	$domain =~ s/^\\.//;		#Remove preceding dot.
+      }
+      #ENDIF ($do_sender{Domain})
+
+    }
+
+    #IFDEF ($do_sender{Email})
+    $email = (/^(\S+)/) ? $1 : "";
+    #ENDIF ($do_sender{Email})
+
+    #IFDEF ($do_sender{Edomain})
+    $edomain = (/^\S*?\\@(\S+)/) ? lc($1) : "";
+    #ENDIF ($do_sender{Edomain})
+
+    if ($tod lt $begin) {
+      $begin = $tod;
+    }
+    elsif ($tod gt $end) {
+      $end   = $tod;
+    }
+
+
+    if ($flag eq "<=") {
+      $thissize = (/\\sS=(\\d+)( |$)/) ? $1 : 0;
+      $size{$id} = $thissize;
+
+      #IFDEF ($show_relay)
+      if ($host ne "local") {
+	# Save incoming information in case it becomes interesting
+	# later, when delivery lines are read.
+	my($from) = /^(\\S+)/;
+	$from_host{$id} = "$host$ip";
+	$from_address{$id} = $from;
+      }
+      #ENDIF ($show_relay)
+
+      #IFDEF ($local_league_table || $include_remote_users)
+	if (/\sU=(\\S+)/) {
+	  my $user = $1;
+
+	  #IFDEF ($local_league_table && $include_remote_users)
+	  {				#Store both local and remote users.
+	  #ENDIF ($local_league_table && $include_remote_users)
+
+	  #IFDEF ($local_league_table && ! $include_remote_users)
+	  if ($host eq "local") {		#Store local users only.
+	  #ENDIF ($local_league_table && ! $include_remote_users)
+
+	  #IFDEF ($include_remote_users && ! $local_league_table)
+	  if ($host ne "local") {		#Store remote users only.
+	  #ENDIF ($include_remote_users && ! $local_league_table)
+
+	    $received_count_user{$user}++;
+	    add_volume(\\$received_data_user{$user},\\$received_data_gigs_user{$user},$thissize);
+          }
+	}
+      #ENDIF ($local_league_table || $include_remote_users)
+
+      #IFDEF ($do_sender{Host})
+	$received_count{Host}{$host}++;
+	add_volume(\\$received_data{Host}{$host},\\$received_data_gigs{Host}{$host},$thissize);
+      #ENDIF ($do_sender{Host})
+
+      #IFDEF ($do_sender{Domain})
+        if ($domain) {
+	  $received_count{Domain}{$domain}++;
+	  add_volume(\\$received_data{Domain}{$domain},\\$received_data_gigs{Domain}{$domain},$thissize);
+	}
+      #ENDIF ($do_sender{Domain})
+
+      #IFDEF ($do_sender{Email})
+	$received_count{Email}{$email}++;
+	add_volume(\\$received_data{Email}{$email},\\$received_data_gigs{Email}{$email},$thissize);
+      #ENDIF ($do_sender{Email})
+
+      #IFDEF ($do_sender{Edomain})
+	$received_count{Edomain}{$edomain}++;
+	add_volume(\\$received_data{Edomain}{$edomain},\\$received_data_gigs{Edomain}{$edomain},$thissize);
+      #ENDIF ($do_sender{Edomain})
+
+      $total_received_count++;
+      add_volume(\\$total_received_data,\\$total_received_data_gigs,$thissize);
+
+      #IFDEF ($#queue_times >= 0)
+	$arrival_time{$id} = $tod;
+      #ENDIF ($#queue_times >= 0)
+
+      #IFDEF ($hist_opt > 0)
+	$received_interval_count[($m_hour*60 + $m_min)/$hist_interval]++;
+      #ENDIF ($hist_opt > 0)
+    }
+
+    elsif ($flag eq "=>") {
+      $size = $size{$id} || 0;
+      if ($host ne "local") {
+        $remote_delivered{$id} = 1;
+
+
+        #IFDEF ($show_relay)
+        # Determine relaying address if either only one address listed,
+        # or two the same. If they are different, it implies a forwarding
+        # or aliasing, which is not relaying. Note that for multi-aliased
+        # addresses, there may be a further address between the first
+        # and last.
+
+        if (defined $from_host{$id}) {
+          if (/^(\\S+)(?:\\s+\\([^)]\\))?\\s+<([^>]+)>/) {
+            ($old,$new) = ($1,$2);
+	  }
+          else {
+	    $old = $new = "";
+	  }
+
+          if ("\\L$new" eq "\\L$old") {
+            ($old) = /^(\\S+)/ if $old eq "";
+            my $key = "H=\\L$from_host{$id}\\E A=\\L$from_address{$id}\\E => " .
+              "H=\\L$host\\E$ip A=\\L$old\\E";
+            if (!defined $relay_pattern || $key !~ /$relay_pattern/o) {
+              $relayed{$key} = 0 if !defined $relayed{$key};
+              $relayed{$key}++;
+	    }
+            else {
+	      $relayed_unshown++
+            }
+          }
+        }
+        #ENDIF ($show_relay)
+
+      }
+
+      #IFDEF ($local_league_table || $include_remote_users)
+	#IFDEF ($local_league_table && $include_remote_users)
+	{				#Store both local and remote users.
+	#ENDIF ($local_league_table && $include_remote_users)
+
+	#IFDEF ($local_league_table && ! $include_remote_users)
+	if ($host eq "local") {		#Store local users only.
+	#ENDIF ($local_league_table && ! $include_remote_users)
+
+	#IFDEF ($include_remote_users && ! $local_league_table)
+	if ($host ne "local") {		#Store remote users only.
+	#ENDIF ($include_remote_users && ! $local_league_table)
+
+	  if (my($user) = split((/\\s</)? " <" : " ", $_)) {
+	    if ($user =~ /^[\\/|]/) {
+	      my($parent) = $_ =~ /(<[^@]+@?[^>]*>)/;
+	      $user = "$user $parent" if defined $parent;
+	    }
+	    $delivered_count_user{$user}++;
+	    add_volume(\\$delivered_data_user{$user},\\$delivered_data_gigs_user{$user},$size);
+	  }
+	}
+      #ENDIF ($local_league_table || $include_remote_users)
+
+      #IFDEF ($do_sender{Host})
+	$delivered_count{Host}{$host}++;
+	add_volume(\\$delivered_data{Host}{$host},\\$delivered_data_gigs{Host}{$host},$size);
+      #ENDIF ($do_sender{Host})
+      #IFDEF ($do_sender{Domain})
+        if ($domain) {
+	  $delivered_count{Domain}{$domain}++;
+	  add_volume(\\$delivered_data{Domain}{$domain},\\$delivered_data_gigs{Domain}{$domain},$size);
+	}
+      #ENDIF ($do_sender{Domain})
+      #IFDEF ($do_sender{Email})
+	$delivered_count{Email}{$email}++;
+	add_volume(\\$delivered_data{Email}{$email},\\$delivered_data_gigs{Email}{$email},$size);
+      #ENDIF ($do_sender{Email})
+      #IFDEF ($do_sender{Edomain})
+	$delivered_count{Edomain}{$edomain}++;
+	add_volume(\\$delivered_data{Edomain}{$edomain},\\$delivered_data_gigs{Edomain}{$edomain},$size);
+      #ENDIF ($do_sender{Edomain})
+
+      $total_delivered_count++;
+      add_volume(\\$total_delivered_data,\\$total_delivered_data_gigs,$size);
+
+      #IFDEF ($show_transport)
+        my $transport = (/\\sT=(\\S+)/) ? $1 : ":blackhole:";
+        $transported_count{$transport}++;
+        add_volume(\\$transported_data{$transport},\\$transported_data_gigs{$transport},$size);
+      #ENDIF ($show_transport)
+
+      #IFDEF ($hist_opt > 0)
+        $delivered_interval_count[($m_hour*60 + $m_min)/$hist_interval]++;
+      #ENDIF ($hist_opt > 0)
+
+    }
+
+    elsif ($flag eq "==" && defined($size{$id}) && !defined($delayed{$id})) {
+      $delayed_count++;
+      $delayed{$id} = 1;
+    }
+
+    elsif ($flag eq "**") {
+      $had_error{$id} = 1 if defined ($size{$id});
+
+      #IFDEF ($show_errors)
+        $errors_count{$_}++;
+      #ENDIF ($show_errors)
+
+    }
+
+    elsif ($flag eq "Co") {
+      #Completed?
+      #IFDEF ($#queue_times >= 0)
+        #Note: id_seconds() benchmarks as 42% slower than seconds() and computing
+        #the time accounts for a significant portion of the run time.
+        my($queued);
+        if (defined $arrival_time{$id}) {
+          $queued = seconds($tod) - seconds($arrival_time{$id});
+	  delete($arrival_time{$id});
+        }
+        else {
+	  $queued = seconds($tod) - id_seconds($id);
+        }
+
+        for ($i = 0; $i <= $#queue_times; $i++) {
+          if ($queued < $queue_times[$i]) {
+            $queue_bin[$i]++;
+            $remote_queue_bin[$i]++ if $remote_delivered{$id};
+            last;
+	  }
+	}
+        $queue_more_than++ if $i > $#queue_times;
+      #ENDIF ($#queue_times >= 0)
+
+      #IFDEF ($show_relay)
+        delete($from_host{$id});
+        delete($from_address{$id});
+      #ENDIF ($show_relay)
+
+    }
+  }';
+
+  # We now do a 'C preprocessor style operation on our parser
+  # to remove bits not in use.
+  my(%defines_in_operation,$removing_lines,$processed_parser);
+  foreach (split (/\n/,$parser)) {
+    if ((/^\s*#\s*IFDEF\s*\((.*?)\)/i  && ! eval $1) ||
+	(/^\s*#\s*IFNDEF\s*\((.*?)\)/i &&   eval $1)	) {
+      $defines_in_operation{$1} = 1;
+      $removing_lines = 1;
+    }
+
+    $processed_parser .= $_."\n" unless $removing_lines;
+
+    if (/^\s*#\s*ENDIF\s*\((.*?)\)/i) {
+      delete $defines_in_operation{$1};
+      unless (keys %defines_in_operation) {
+	$removing_lines = 0;
+      }
+    }
+  }
+  print STDERR "# START OF PARSER:\n$processed_parser\n# END OF PARSER\n\n" if $debug;
+
+  return $processed_parser;
+}
+
+
+
+=head2 parse();
+
+ parse($parser,\*FILEHANDLE);
+
+This subroutine accepts a parser and a filehandle from main and parses each
+line. We store the results into global variables.
+
+=cut
+
+sub parse {
+  my($parser,$fh) = @_;
+
+  if ($merge_reports) {
+    parse_old_eximstat_reports($fh);
+  }
+  else {
+    eval $parser;
+    die ($@) if $@;
+  }
+
+}
+
+
+
+=head2 print_header();
+
+ print_header();
+
+Print our headers and contents.
+
+=cut
+
+sub print_header {
+
+  my $title = "Exim statistics from $begin to $end";
+
+  if ($html) {
+    print html_header($title);
+    print "<ul>\n";
+    print "<li><a href=\"#grandtotal\">Grand total summary</a>\n";
+    print "<li><a href=\"#patterns\">User Specified Patterns</a>\n" if @user_patterns;
+    print "<li><a href=\"#transport\">Deliveries by Transport</a>\n" if $show_transport;
+    if ($hist_opt) {
+      print "<li><a href=\"#Messages received\">Messages received per hour</a>\n";
+      print "<li><a href=\"#Deliveries\">Deliveries per hour</a>\n";
+    }
+    if ($#queue_times >= 0) {
+      print "<li><a href=\"#all messages time\">Time spent on the queue: all messages</a>\n";
+      print "<li><a href=\"#messages with at least one remote delivery time\">Time spent on the queue: messages with at least one remote delivery</a>\n";
+    }
+    print "<li><a href=\"#Relayed messages\">Relayed messages</a>\n" if $show_relay;
+    if ($topcount) {
+      foreach ('Host','Domain','Email','Edomain') {
+	next unless $do_sender{$_};
+	print "<li><a href=\"#sending \l$_ count\">Top $topcount sending \l${_}s by message count</a>\n";
+	print "<li><a href=\"#sending \l$_ volume\">Top $topcount sending \l${_}s by volume</a>\n";
+      }
+      if ($local_league_table || $include_remote_users) {
+	print "<li><a href=\"#local sender count\">Top $topcount local senders by message count</a>\n";
+	print "<li><a href=\"#local sender volume\">Top $topcount local senders by volume</a>\n";
+      }
+      foreach ('Host','Domain','Email','Edomain') {
+	next unless $do_sender{$_};
+	print "<li><a href=\"#\l$_ destination count\">Top $topcount \l$_ destinations by message count</a>\n";
+	print "<li><a href=\"#\l$_ destination volume\">Top $topcount \l$_ destinations by volume</a>\n";
+      }
+      if ($local_league_table || $include_remote_users) {
+	print "<li><a href=\"#local destination count\">Top $topcount local destinations by message count</a>\n";
+	print "<li><a href=\"#local destination volume\">Top $topcount local destinations by volume</a>\n";
+      }
+    }
+    print "<li><a href=\"#errors\">List of errors</a>\n" if %errors_count;
+    print "</ul>\n<hr>\n";
+
+  }
+  else {
+    print "\n$title\n";
+  }
+}
+
+
+=head2 print_grandtotals();
+
+ print_grandtotals();
+
+Print the grand totals.
+
+=cut
+
+sub print_grandtotals {
+
+  # Get the sender by headings and results. This is complicated as we can have
+  # different numbers of columns.
+  my($sender_txt_header,$sender_html_header,$sender_txt_format,$sender_html_format);
+  my(@received_totals,@delivered_totals);
+  foreach ('Host','Domain','Email','Edomain') {
+    next unless $do_sender{$_};
+    if ($merge_reports) {
+      push(@received_totals, get_report_total($report_totals{Received},"${_}s"));
+      push(@delivered_totals,get_report_total($report_totals{Delivered},"${_}s"));
+    }
+    else {
+      push(@received_totals,scalar(keys %{$received_data{$_}}));
+      push(@delivered_totals,scalar(keys %{$delivered_data{$_}}));
+    }
+    $sender_html_header .= "<th>${_}s</th>";
+    $sender_txt_header  .= " " x ($COLUMN_WIDTHS - length($_)) . $_ . 's';
+    $sender_html_format .= "<td align=\"right\">%d</td>";
+    $sender_txt_format  .= " " x ($COLUMN_WIDTHS - 5) . "%6d";
+  }
+
+  my($format1,$format2);
+  if ($html) {
+    print << "EoText";
+<a name="grandtotal"></a>
+<h2>Grand total summary</h2>
+<table border=1>
+<tr><th>TOTAL</th><th>Volume</th><th>Messages</th>$sender_html_header<th colspan=2>At least one addr<br>Delayed</th><th colspan=2>At least one addr<br>Failed</th>
+EoText
+
+    $format1 = "<tr><td>%s</td><td align=\"right\">%s</td>$sender_html_format<td align=\"right\">%d</td>";
+    $format2 = "<td align=\"right\">%d</td><td align=\"right\">%4.1f%%</td><td align=\"right\">%d</td><td align=\"right\">%4.1f%%</td>";
+  }
+  else {
+    my $sender_spaces = " " x length($sender_txt_header);
+    print << "EoText";
+
+Grand total summary
+-------------------
+                                    $sender_spaces           At least one address
+  TOTAL               Volume    Messages $sender_txt_header      Delayed       Failed
+EoText
+    $format1 = "  %-16s %9s      %6d $sender_txt_format";
+    $format2 = "  %6d %4.1f%% %6d %4.1f%%",
+  }
+
+  my($volume,$failed_count);
+  if ($merge_reports) {
+    $volume = volume_rounded($report_totals{Received}{Volume}, $report_totals{Received}{'Volume-gigs'});
+    $total_received_count = get_report_total($report_totals{Received},'Messages');
+    $failed_count  = get_report_total($report_totals{Received},'Failed');
+    $delayed_count = get_report_total($report_totals{Received},'Delayed');
+  }
+  else {
+    $volume = volume_rounded($total_received_data, $total_received_data_gigs);
+    $failed_count = keys %had_error;
+  }
+
+  {
+    no integer;
+    printf("$format1$format2\n",'Received',$volume,$total_received_count,
+      @received_totals,$delayed_count,
+      ($total_received_count) ? ($delayed_count*100/$total_received_count) : 0,
+      $failed_count,
+      ($total_received_count) ? ($failed_count*100/$total_received_count) : 0);
+  }
+
+  if ($merge_reports) {
+    $volume = volume_rounded($report_totals{Delivered}{Volume}, $report_totals{Delivered}{'Volume-gigs'});
+    $total_delivered_count = get_report_total($report_totals{Delivered},'Messages');
+  }
+  else {
+    $volume = volume_rounded($total_delivered_data, $total_delivered_data_gigs);
+  }
+  printf("$format1\n\n",'Delivered',$volume,$total_delivered_count,@delivered_totals);
+  print "</table>\n" if $html;
+}
+
+
+=head2 print_user_patterns()
+
+ print_user_patterns();
+
+Print the counts of user specified patterns.
+
+=cut
+
+sub print_user_patterns {
+  my($format1);
+
+  if ($html) {
+    print "<hr><a name=\"patterns\"></a><h2>User Specified Patterns</h2>\n";
+    print "<table border=0 width=\"100%\">\n";
+    print "<tr><td>\n";
+    print "<table border=1>\n";
+    print "<tr><th>&nbsp;</th><th>Total</th>\n";
+    $format1 = "<tr><td>%s</td><td align=\"right\">%d</td>";
+  }
+  else {
+    print "User Specified Patterns\n";
+    print "-----------------------";
+    print "\n                       Total\n";
+    $format1 = "  %-18s  %6d";
+  }
+
+  my($key);
+  if ($merge_reports) {
+    # We are getting our data from previous reports.
+    foreach $key (@user_descriptions) {
+      my $count = get_report_total($report_totals{patterns}{$key},'Total');
+      printf("$format1\n",$key,$count);
+    }
+  }
+  else {
+    # We are getting our data from mainlog files.
+    my $user_pattern_index = 0;
+    foreach $key (@user_descriptions) {
+      printf("$format1\n",$key,$user_pattern_totals[$user_pattern_index]);
+      $user_pattern_index++;
+    }
+  }
+  if ($html) {
+    print "</table>\n";
+  }
+  print "\n";
+}
+
+
+=head2 print_transport();
+
+ print_transport();
+
+Print totals by transport.
+
+=cut
+
+sub print_transport {
+  my($format1);
+  my(@chartdatanames);
+  my(@chartdatavals_count);
+  my(@chartdatavals_vol);
+  no integer;		#Lose this for charting the data.
+
+  if ($html) {
+    print "<hr><a name=\"transport\"></a><h2>Deliveries by Transport</h2>\n";
+    print "<table border=0 width=\"100%\">\n";
+    print "<tr><td>\n";
+    print "<table border=1>\n";
+    print "<tr><th>&nbsp;</th><th>Volume</th><th>Messages</th>\n";
+    $format1 = "<tr><td>%s</td><td align=\"right\">%s</td><td align=\"right\">%d</td>";
+  }
+  else {
+    print "Deliveries by transport\n";
+    print "-----------------------";
+    print "\n                      Volume    Messages\n";
+    $format1 = "  %-18s  %6s      %6d";
+  }
+
+  my($key);
+  if ($merge_reports) {
+    # We are getting our data from previous reports.
+    foreach $key (sort keys %{$report_totals{transport}}) {
+      my $count = get_report_total($report_totals{transport}{$key},'Messages');
+      printf("$format1\n",$key,
+	volume_rounded($report_totals{transport}{$key}{Volume},$report_totals{transport}{$key}{'Volume-gigs'}),
+	$count);
+      push(@chartdatanames, $key);
+      push(@chartdatavals_count, $count);
+      push(@chartdatavals_vol, $report_totals{transport}{$key}{'Volume-gigs'}*$gig + $report_totals{transport}{$key}{Volume} );
+    }
+  }
+  else {
+    # We are getting our data from mainlog files.
+    foreach $key (sort keys %transported_data) {
+      printf("$format1\n",$key,
+	volume_rounded($transported_data{$key},$transported_data_gigs{$key}),
+	$transported_count{$key});
+      push(@chartdatanames, $key);
+      push(@chartdatavals_count, $transported_count{$key});
+      push(@chartdatavals_vol, $transported_data_gigs{$key}*$gig + $transported_data{$key});
+    }
+  }
+  if ($html) {
+    print "</table>\n";
+    print "</td><td>\n";
+    if ($HAVE_GD_Graph_pie && $charts)
+      {
+      # calculate the graph
+      my @data = (
+         \@chartdatanames,
+         \@chartdatavals_count
+      );
+      my $graph = GD::Graph::pie->new(200, 200);
+      $graph->set(
+          x_label           => 'Transport',
+          y_label           => 'Messages',
+          title             => 'By count',
+      );
+      my $gd = $graph->plot(\@data) or warn($graph->error);
+      if ($gd) {
+	open(IMG, ">$chartdir/transports_count.png") or die $!;
+	binmode IMG;
+	print IMG $gd->png;
+	close IMG;
+	print "<img src=\"$chartrel/transports_count.png\">";
+      }
+    }
+    print "</td><td>\n";
+
+    if ($HAVE_GD_Graph_pie && $charts) {
+      my @data = (
+         \@chartdatanames,
+         \@chartdatavals_vol
+      );
+      my $graph = GD::Graph::pie->new(200, 200);
+      $graph->set(
+          title             => 'By volume',
+      );
+      my $gd = $graph->plot(\@data) or warn($graph->error);
+      if ($gd) {
+	open(IMG, ">$chartdir/transports_vol.png") or die $!;
+	binmode IMG;
+	print IMG $gd->png;
+	close IMG;
+	print "<img src=\"$chartrel/transports_vol.png\">";
+      }
+    }
+    print "</td></tr></table>\n";
+  }
+  print "\n";
+}
+
+
+
+=head2 print_relay();
+
+ print_relay();
+
+Print our totals by relay.
+
+=cut
+
+sub print_relay {
+  my $temp = "Relayed messages";
+  print "<hr><a name=\"$temp\"></a><h2>$temp</h2>\n" if $html;
+  if (scalar(keys %relayed) > 0 || $relayed_unshown > 0) {
+    my $shown = 0;
+    my $spacing = "";
+    my($format);
+
+    if ($html) {
+      print "<table border=1>\n";
+      print "<tr><th>Count</th><th>From</th><th>To</th>\n";
+      $format = "<tr><td align=\"right\">%d</td><td>%s</td><td>%s</td>\n";
+    }
+    else {
+      printf("%s\n%s\n\n", $temp, "-" x length($temp));
+      $format = "%7d %s\n      => %s\n";
+    }
+
+    my($key);
+    foreach $key (sort keys %relayed) {
+      my $count = $relayed{$key};
+      $shown += $count;
+      $key =~ s/[HA]=//g;
+      my($one,$two) = split(/=> /, $key);
+      printf($format, $count, $one, $two);
+      $spacing = "\n";
+    }
+    print "</table>\n<p>\n" if $html;
+    print "${spacing}Total: $shown (plus $relayed_unshown unshown)\n";
+  }
+  else {
+    print "No relayed messages\n";
+    print "-------------------\n" unless $html;
+  }
+  print "\n";
+}
+
+
+
+=head2 print_errors();
+
+ print_errors();
+
+Print our errors. In HTML, we display them as a list rather than a table -
+Netscape doesn't like large tables!
+
+=cut
+
+sub print_errors {
+  my $total_errors = 0;
+
+  if (scalar(keys %errors_count) != 0) {
+    my $temp = "List of errors";
+    my($format);
+    if ($html) {
+      print "<hr><a name=\"errors\"></a><h2>$temp</h2>\n";
+      print "<ul><li><b>Count - Error</b>\n";
+      $format = "<li>%d - %s\n";
+    }
+    else {
+      printf("%s\n%s\n\n", $temp, "-" x length($temp));
+    }
+
+    my($key);
+    foreach $key (sort keys %errors_count) {
+      my $text = $key;
+      chomp($text);
+      $text =~ s/\s\s+/ /g;	#Convert multiple spaces to a single space.
+      $total_errors += $errors_count{$key};
+      if ($html) {
+
+        #Translate HTML tag characters. Sergey Sholokh.
+        $text =~ s/\</\&lt\;/g;
+        $text =~ s/\>/\&gt\;/g;
+
+	printf($format,$errors_count{$key},$text);
+      }
+      else {
+	printf("%5d ", $errors_count{$key});
+	while (length($text) > 65) {
+	  my($first,$rest) = $text =~ /(.{50}\S*)\s+(.+)/;
+	  last if !$first;
+	  printf("%s\n	    ", $first);
+	  $text = $rest;
+	}
+	printf("%s\n\n", $text);
+      }
+    }
+    print "</ul>\n<p>\n" if $html;
+
+    $temp = "Errors encountered: $total_errors";
+    print $temp,"\n";
+    print "-" x length($temp),"\n" unless $html;
+  }
+
+}
+
+
+=head2 parse_old_eximstat_reports();
+
+ parse_old_eximstat_reports($fh);
+
+Parse old eximstat output so we can merge daily stats to weekly stats and weekly to monthly etc.
+
+To test that the merging still works after changes, do something like the following.
+All the diffs should produce no output.
+
+ options='-bydomain -byemail -byhost -byedomain'
+ options="$options -pattern 'Completed Messages' /Completed/"
+ options="$options -pattern 'Received Messages' /<=/"
+
+ ./eximstats $options mainlog > mainlog.txt
+ ./eximstats $options -merge mainlog.txt > mainlog.2.txt
+ diff mainlog.txt mainlog.2.txt
+
+ ./eximstats $options -html mainlog > mainlog.html
+ ./eximstats $options -merge -html mainlog.txt  > mainlog.2.html
+ diff mainlog.html mainlog.2.html
+
+ ./eximstats $options -merge mainlog.html > mainlog.3.txt
+ diff mainlog.txt mainlog.3.txt
+
+ ./eximstats $options -merge -html mainlog.html > mainlog.3.html
+ diff mainlog.html mainlog.3.html
+
+ ./eximstats $options -nvr   mainlog > mainlog.nvr.txt
+ ./eximstats $options -merge mainlog.nvr.txt > mainlog.4.txt
+ diff mainlog.txt mainlog.4.txt
+
+ # double_mainlog.txt should have twice the values that mainlog.txt has.
+ ./eximstats $options mainlog mainlog > double_mainlog.txt
+
+=cut
+
+sub parse_old_eximstat_reports {
+  my($fh) = @_;
+
+  my(%league_table_value_entered, %league_table_value_was_zero, %table_order);
+
+  while (<$fh>) {
+    if (/Exim statistics from ([\d\-]+ [\d:]+(\s+[\+\-]\d+)?) to ([\d\-]+ [\d:]+(\s+[\+\-]\d+)?)/) {
+      $begin = $1 if ($1 lt $begin);
+      $end   = $3 if ($3 gt $end);
+    }
+    elsif (/Grand total summary/) {
+      # Fill in $report_totals{Received|Delivered}{Volume|Messages|Hosts|Domains|...|Delayed|DelayedPercent|Failed|FailedPercent}
+      my(@fields);
+      while (<$fh>) {
+	$_ = html2txt($_);		#Convert general HTML markup to text.
+	s/At least one addr//g;		#Another part of the HTML output we don't want.
+
+#  TOTAL               Volume    Messages    Hosts Domains      Delayed       Failed
+#  Received              26MB         237      177      23       8  3.4%     28 11.8%
+#  Delivered             13MB         233       99      88
+	if (/TOTAL\s+(.*?)\s*$/) {
+	  @fields = split(/\s+/,$1);
+          #Delayed and Failed have two columns each, so add the extra field names in.
+	  splice(@fields,-1,1,'DelayedPercent','Failed','FailedPercent');
+	}
+	elsif (/(Received|Delivered)\s+(.*?)\s*$/) {
+	  print STDERR "Parsing $_" if $debug;
+	  add_to_totals($report_totals{$1},\@fields,$2);
+	}
+	last if (/Delivered/);		#Last line of this section.
+      }
+    }
+
+    elsif (/User Specified Patterns/i) {
+#User Specified Patterns
+#-----------------------
+#                       Total
+#  Description             85
+
+      while (<$fh>) { last if (/Total/); }	#Wait until we get the table headers.
+      while (<$fh>) {
+	print STDERR "Parsing $_" if $debug;
+	$_ = html2txt($_);		#Convert general HTML markup to text.
+	if (/^\s*(.*?)\s+(\d+)\s*$/) {
+	  $report_totals{patterns}{$1} = {} unless (defined $report_totals{patterns}{$1});
+	  add_to_totals($report_totals{patterns}{$1},['Total'],$2);
+	}
+	last if (/^\s*$/);			#Finished if we have a blank line.
+      }
+    }
+
+    elsif (/Deliveries by transport/i) {
+#Deliveries by transport
+#-----------------------
+#                      Volume    Messages
+#  :blackhole:           70KB          51
+#  address_pipe         655KB           1
+#  smtp                  11MB         151
+
+      while (<$fh>) { last if (/Volume/); }	#Wait until we get the table headers.
+      while (<$fh>) {
+	print STDERR "Parsing $_" if $debug;
+	$_ = html2txt($_);		#Convert general HTML markup to text.
+	if (/(\S+)\s+(\d+\S*\s+\d+)/) {
+	  $report_totals{transport}{$1} = {} unless (defined $report_totals{transport}{$1});
+	  add_to_totals($report_totals{transport}{$1},['Volume','Messages'],$2);
+	}
+	last if (/^\s*$/);			#Finished if we have a blank line.
+      }
+    }
+    elsif (/(Messages received|Deliveries) per/) {
+#      Messages received per hour (each dot is 2 messages)
+#---------------------------------------------------
+#
+#00-01    106 .....................................................
+#01-02    103 ...................................................
+
+      # Set a pointer to the interval array so we can use the same code
+      # block for both messages received and delivered.
+      my $interval_aref = ($1 eq 'Deliveries') ? \@delivered_interval_count : \@received_interval_count;
+      my $reached_table = 0;
+      while (<$fh>) {
+	$reached_table = 1 if (/^00/);
+	next unless $reached_table;
+	print STDERR "Parsing $_" if $debug;
+	if (/^(\d+):(\d+)\s+(\d+)/) {		#hh:mm start time format ?
+	  $$interval_aref[($1*60 + $2)/$hist_interval] += $3;
+	}
+	elsif (/^(\d+)-(\d+)\s+(\d+)/) {	#hh-hh start-end time format ?
+	  $$interval_aref[($1*60)/$hist_interval] += $3;
+	}
+	else {					#Finished the table ?
+	  last;
+	}
+      }
+    }
+
+    elsif (/Time spent on the queue: (all messages|messages with at least one remote delivery)/) {
+#Time spent on the queue: all messages
+#-------------------------------------
+#
+#Under   1m      217  91.9%   91.9%
+#        5m        2   0.8%   92.8%
+#        3h        8   3.4%   96.2%
+#        6h        7   3.0%   99.2%
+#       12h        2   0.8%  100.0%
+
+      # Set a pointer to the queue bin so we can use the same code
+      # block for both all messages and remote deliveries.
+      my $bin_aref = ($1 eq 'all messages') ? \@queue_bin : \@remote_queue_bin;
+      my $reached_table = 0;
+      while (<$fh>) {
+	$_ = html2txt($_);		#Convert general HTML markup to text.
+	$reached_table = 1 if (/^\s*Under/);
+	next unless $reached_table;
+	my $previous_seconds_on_queue = 0;
+	if (/^\s*(Under|Over|)\s+(\d+[smhdw])\s+(\d+)/) {
+	  print STDERR "Parsing $_" if $debug;
+	  my($modifier,$formated_time,$count) = ($1,$2,$3);
+	  my $seconds = unformat_time($formated_time);
+	  my $time_on_queue = ($seconds + $previous_seconds_on_queue) / 2;
+	  $previous_seconds_on_queue = $seconds;
+	  $time_on_queue = $seconds * 2 if ($modifier eq 'Over');
+	  my($i);
+	  for ($i = 0; $i <= $#queue_times; $i++) {
+	    if ($time_on_queue < $queue_times[$i]) {
+	      $$bin_aref[$i] += $count;
+	      last;
+	    }
+	  }
+          # There's only one counter for messages going over the queue
+          # times so make sure we only count it once.
+          $queue_more_than += $count if (($bin_aref == \@queue_bin) && ($i > $#queue_times));
+	}
+	else {
+	  last;					#Finished the table ?
+	}
+      }
+    }
+
+    elsif (/Relayed messages/) {
+#Relayed messages
+#----------------
+#
+#      1 addr.domain.com [1.2.3.4] a.user@domain.com
+#      => addr2.domain2.com [5.6.7.8] a2.user2@domain2.com
+#
+#<tr><td align="right">1</td><td>addr.domain.com [1.2.3.4] a.user@domain.com </td><td>addr2.domain2.com [5.6.7.8] a2.user2@domain2.com</td>
+
+      my $reached_table = 0;
+      my($count,$sender);
+      while (<$fh>) {
+	unless ($reached_table) {
+	  last if (/No relayed messages/);
+	  $reached_table = 1 if (/^\s*\d/ || />\d+</);
+	  next unless $reached_table;
+	}
+	if (/>(\d+)<.td><td>(.*?) ?<.td><td>(.*?)</) {
+	  update_relayed($1,$2,$3);
+	}
+	elsif (/^\s*(\d+)\s+(.*?)\s*$/) {
+	  ($count,$sender) = ($1,$2);
+	}
+	elsif (/=>\s+(.*?)\s*$/) {
+	  update_relayed($count,$sender,$1);
+	}
+	else {
+	  last;					#Finished the table ?
+	}
+      }
+    }
+
+    elsif (/Top (.*?) by (message count|volume)/) {
+#Top 50 sending hosts by message count
+#-------------------------------------
+#
+#     48     1468KB   local
+      my($category,$by_count_or_volume) = ($1,$2);
+
+      #As we show 2 views of each table (by count and by volume),
+      #most (but not all) entries will appear in both tables.
+      #Set up a hash to record which entries we have already seen
+      #and one to record which ones we are seeing for the first time.
+      if ($by_count_or_volume =~ /count/) {
+	undef %league_table_value_entered;
+	undef %league_table_value_was_zero;
+	undef %table_order;
+      }
+
+      #As this section processes multiple different table categories,
+      #set up pointers to the hashes to be updated.
+      my($count_href,$data_href,$data_gigs_href);
+      if ($category =~ /local sender/) {
+        $count_href      = \%received_count_user;
+	$data_href	 = \%received_data_user;
+	$data_gigs_href  = \%received_data_gigs_user;
+      }
+      elsif ($category =~ /sending (\S+?)s?\b/) {
+        #Top 50 sending (host|domain|email|edomain)s
+        #Top sending (host|domain|email|edomain)
+        $count_href      = \%{$received_count{"\u$1"}};
+	$data_href	 = \%{$received_data{"\u$1"}};
+	$data_gigs_href  = \%{$received_data_gigs{"\u$1"}};
+      }
+      elsif ($category =~ /local destination/) {
+        $count_href      = \%delivered_count_user;
+	$data_href	 = \%delivered_data_user;
+	$data_gigs_href  = \%delivered_data_gigs_user;
+      }
+      elsif ($category =~ /(\S+) destination/) {
+        #Top 50 (host|domain|email|edomain) destinations
+        #Top (host|domain|email|edomain) destination
+        $count_href      = \%{$delivered_count{"\u$1"}};
+	$data_href	 = \%{$delivered_data{"\u$1"}};
+	$data_gigs_href  = \%{$delivered_data_gigs{"\u$1"}};
+      }
+
+      my $reached_table = 0;
+      while (<$fh>) {
+	$_ = html2txt($_);		#Convert general HTML markup to text.
+	$reached_table = 1 if (/^\s*\d/);
+	next unless $reached_table;
+	if (/^\s*(\d+)\s+(\S+)\s*(.*?)\s*$/) {
+	  my($count,$rounded_volume,$entry) = ($1,$2,$3);
+          #Note: $entry fields can be both null and can contain spaces.
+
+	  #Add the entry into the %table_order hash if it has a rounded volume (KB/MB/GB).
+	  push(@{$table_order{$rounded_volume}{$by_count_or_volume}},$entry) if ($rounded_volume =~ /\D/);
+
+          unless ($league_table_value_entered{$entry}) {
+	    $league_table_value_entered{$entry} = 1;
+	    unless ($$count_href{$entry}) {
+	      $$count_href{$entry}     = 0;
+	      $$data_href{$entry}      = 0;
+	      $$data_gigs_href{$entry} = 0;
+	      $league_table_value_was_zero{$entry} = 1;
+	    }
+
+	    $$count_href{$entry} += $count;
+            #Add the rounded value to the data and data_gigs hashes.
+	    un_round($rounded_volume,\$$data_href{$entry},\$$data_gigs_href{$entry});
+	    print STDERR "$category by $by_count_or_volume: added $count,$rounded_volume to $entry\n" if $debug;
+	  }
+	}
+	else {		#Finished the table ?
+	  if ($by_count_or_volume =~ /volume/) {
+	    #Add a few bytes to appropriate entries to preserve the order.
+
+	    my($rounded_volume);
+	    foreach $rounded_volume (keys %table_order) {
+	      #For each rounded volume, we want to create a list which has things
+	      #ordered from the volume table at the front, and additional things
+	      #from the count table ordered at the back.
+	      @{$table_order{$rounded_volume}{volume}} = () unless defined $table_order{$rounded_volume}{volume};
+	      @{$table_order{$rounded_volume}{'message count'}} = () unless defined $table_order{$rounded_volume}{'message count'};
+	      my(@order,%mark);
+	      map {$mark{$_} = 1} @{$table_order{$rounded_volume}{volume}};
+	      @order = @{$table_order{$rounded_volume}{volume}};
+	      map {push(@order,$_)} grep(!$mark{$_},@{$table_order{$rounded_volume}{'message count'}});
+
+	      my $bonus_bytes = $#order;
+	      $bonus_bytes = 511 if ($bonus_bytes > 511);	#Don't go over the half-K boundary!
+	      while (@order and ($bonus_bytes > 0)) {
+		my $entry = shift(@order);
+		if ($league_table_value_was_zero{$entry}) {
+		  $$data_href{$entry} += $bonus_bytes;
+		  print STDERR "$category by $by_count_or_volume: added $bonus_bytes bonus bytes to $entry\n" if $debug;
+		}
+		$bonus_bytes--;
+	      }
+	    }
+	  }
+
+	  last;
+	}
+      }
+    }
+    elsif (/List of errors/) {
+#List of errors
+#--------------
+#
+#    1 07904931641@one2one.net R=external T=smtp: SMTP error
+#            from remote mailer after RCPT TO:<07904931641@one2one.net>:
+#            host mail.one2one.net [193.133.192.24]: 550 User unknown
+#
+#<li>1 - ally.dufc@dunbar.org.uk R=external T=smtp: SMTP error from remote mailer after RCPT TO:<ally.dufc@dunbar.org.uk>: host mail.dunbar.org.uk [216.167.89.88]: 550 Unknown local part ally.dufc in <ally.dufc@dunbar.org.uk>
+
+
+      my $reached_table = 0;
+      my($count,$error,$blanks);
+      while (<$fh>) {
+	$reached_table = 1 if (/^( *|<li>)(\d+)/);
+	next unless $reached_table;
+
+	s/^<li>(\d+) -/$1/;	#Convert an HTML line to a text line.
+	$_ = html2txt($_);	#Convert general HTML markup to text.
+
+	if (/\t\s*(.*)/) {
+	  $error .= ' ' . $1;	#Join a multiline error.
+	}
+	elsif (/^\s*(\d+)\s+(.*)/) {
+	  if ($error) {
+            #Finished with a previous multiline error so save it.
+	    $errors_count{$error} = 0 unless $errors_count{$error};
+	    $errors_count{$error} += $count;
+	  }
+	  ($count,$error) = ($1,$2);
+	}
+	elsif (/Errors encountered/) {
+	  if ($error) {
+            #Finished the section, so save our stored last error.
+	    $errors_count{$error} = 0 unless $errors_count{$error};
+	    $errors_count{$error} += $count;
+	  }
+	  last;
+	}
+      }
+    }
+
+  }
+}
+
+
+
+=head2 update_relayed();
+
+ update_relayed($count,$sender,$recipient);
+
+Adds an entry into the %relayed hash. Currently only used when
+merging reports.
+
+=cut
+
+sub update_relayed {
+  my($count,$sender,$recipient) = @_;
+
+  #When generating the key, put in the 'H=' and 'A=' which can be used
+  #in searches.
+  my $key = "H=$sender => H=$recipient";
+  $key =~ s/ ([^=\s]+\@\S+|<>)/ A=$1/g;
+  if (!defined $relay_pattern || $key !~ /$relay_pattern/o) {
+    $relayed{$key} = 0 if !defined $relayed{$key};
+    $relayed{$key} += $count;
+  }
+  else {
+    $relayed_unshown += $count;
+  }
+}
+
+
+=head2 add_to_totals();
+
+ add_to_totals(\%totals,\@keys,$values);
+
+Given a line of space seperated values, add them into the provided hash using @keys
+as the hash keys.
+
+If the value contains a '%', then the value is set rather than added. Otherwise, we
+convert the value to bytes and gigs. The gigs get added to I<Key>-gigs.
+
+=cut
+
+sub add_to_totals {
+  my($totals_href,$keys_aref,$values) = @_;
+  my(@values) = split(/\s+/,$values);
+  my(@keys) = @$keys_aref;		#Make a copy as we destroy the one we use.
+  my($value);
+  foreach $value (@values) {
+    my $key = shift(@keys) or next;
+    if ($value =~ /%/) {
+      $$totals_href{$key} = $value;
+    }
+    else {
+      $$totals_href{$key} = 0 unless ($$totals_href{$key});
+      $$totals_href{"$key-gigs"} = 0 unless ($$totals_href{"$key-gigs"});
+      un_round($value, \$$totals_href{$key}, \$$totals_href{"$key-gigs"});
+      print STDERR "Added $value to $key - $$totals_href{$key} , " . $$totals_href{"$key-gigs"} . "GB.\n" if $debug;
+    }
+  }
+}
+
+=head2 get_report_total();
+
+ $total = get_report_total(\%hash,$key);
+
+If %hash contains values split into Units and Gigs, we calculate and return
+
+  $hash{$key} + 1024*1024*1024 * $hash{"${key}-gigs"}
+
+=cut
+
+sub get_report_total {
+  no integer;
+  my($hash_ref,$key) = @_;
+  if ($$hash_ref{"${key}-gigs"}) {
+    return $$hash_ref{$key} + $gig * $$hash_ref{"${key}-gigs"};
+  }
+  return $$hash_ref{$key} || 0;
+}
+
+=head2 html2txt();
+
+ $text_line = html2txt($html_line);
+
+Convert a line from html to text. Currently we just convert HTML tags to spaces
+and convert &gt;, &lt;, and &nbsp; tags back.
+
+=cut
+
+sub html2txt {
+  ($_) = @_;
+
+  # Convert HTML tags to spacing. Note that the reports may contain <Userid> and
+  # <Userid@Domain> words, so explicitly specify the HTML tags we will remove
+  # (the ones used by this program). If someone is careless enough to have their
+  # Userid the same as an HTML tag, there's not much we can do about it.
+  s/<\/?(html|head|title|body|h\d|ul|li|a\s+|table|tr|td|th|pre|hr|p|br)\b.*?>/ /og;
+
+  s/\&lt\;/\</og;             #Convert '&lt;' to '<'.
+  s/\&gt\;/\>/og;             #Convert '&gt;' to '>'.
+  s/\&nbsp\;/ /og;            #Convert '&nbsp;' to ' '.
+  return($_);
+}
+
+=head2 get_next_arg();
+
+ $arg = get_next_arg();
+
+Because eximstats arguments are often passed as variables,
+we can't rely on shell parsing to deal with quotes. This
+subroutine returns $ARGV[1] and does a shift. If $ARGV[1]
+starts with a quote (' or "), and doesn't end in one, then
+we append the next argument to it and shift again. We repeat
+until we've got all of the argument.
+
+This isn't perfect as all white space gets reduced to one space,
+but it's as good as we can get! If it's esential that spacing
+be preserved precisely, then you get that by not using shell
+variables.
+
+=cut
+
+sub get_next_arg {
+  my $arg = '';
+  my $matched_pattern = 0;
+  while ($ARGV[1]) {
+    $arg .= ' ' if $arg;
+    $arg .= $ARGV[1]; shift(@ARGV);
+    if ($arg !~ /^['"]/) {
+      $matched_pattern = 1;
+      last;
+    }
+    if ($arg =~ s/^(['"])(.*)\1$/$2/) {
+      $matched_pattern = 1;
+      last;
+    }
+  }
+  die "Mismatched argument quotes - <$arg>.\n" unless $matched_pattern;
+  return $arg;
+}
+
+
+
+##################################################
+#                 Main Program                   #
+##################################################
+
+
+$last_timestamp = '';
+$last_date = '';
+$show_errors = 1;
+$show_relay = 1;
+$show_transport = 1;
+$topcount = 50;
+$local_league_table = 1;
+$include_remote_users = 0;
+$hist_opt = 1;
+$volume_rounding = 1;
+$localtime_offset = calculate_localtime_offset();    # PH/FANF
+
+$charts = 0;
+$charts_option_specified = 0;
+$chartrel = ".";
+$chartdir = ".";
+
+@queue_times = (60, 5*60, 15*60, 30*60, 60*60, 3*60*60, 6*60*60,
+                12*60*60, 24*60*60);
+
+$last_offset = '';
+$offset_seconds = 0;
+
+# Decode options
+
+while (@ARGV > 0 && substr($ARGV[0], 0, 1) eq '-')
+  {
+  if    ($ARGV[0] =~ /^\-h(\d+)$/) { $hist_opt = $1 }
+  elsif ($ARGV[0] =~ /^\-ne$/)     { $show_errors = 0 }
+  elsif ($ARGV[0] =~ /^\-nr(.?)(.*)\1$/)
+    {
+    if ($1 eq "") { $show_relay = 0 } else { $relay_pattern = $2 }
+    }
+  elsif ($ARGV[0] =~ /^\-q([,\d\+\-\*\/]+)$/)
+    {
+    @queue_times = split(/,/, $1);
+    my($q);
+    foreach $q (@queue_times) { $q = eval($q) + 0 }
+    @queue_times = sort { $a <=> $b } @queue_times;
+    @queue_times = () if ($#queue_times == 0 && $queue_times[0] == 0);
+    }
+  elsif ($ARGV[0] =~ /^-nt$/)       { $show_transport = 0 }
+  elsif ($ARGV[0] =~ /^\-nt(.?)(.*)\1$/)
+    {
+    if ($1 eq "") { $show_transport = 0 } else { $transport_pattern = $2 }
+    }
+  elsif ($ARGV[0] =~ /^-t(\d+)$/)   { $topcount = $1 }
+  elsif ($ARGV[0] =~ /^-tnl$/)      { $local_league_table = 0 }
+  elsif ($ARGV[0] =~ /^-html$/)     { $html = 1 }
+  elsif ($ARGV[0] =~ /^-merge$/)    { $merge_reports = 1 }
+  elsif ($ARGV[0] =~ /^-charts$/)   {
+    $charts = 1;
+    warn "WARNING: CPAN Module GD::Graph::pie not installed. Obtain from www.cpan.org\n" unless $HAVE_GD_Graph_pie;
+    warn "WARNING: CPAN Module GD::Graph::linespoints not installed. Obtain from www.cpan.org\n" unless $HAVE_GD_Graph_linespoints;
+  }
+  elsif ($ARGV[0] =~ /^-chartdir$/) { $chartdir = $ARGV[1]; shift; $charts_option_specified = 1; }
+  elsif ($ARGV[0] =~ /^-chartrel$/) { $chartrel = $ARGV[1]; shift; $charts_option_specified = 1; }
+  elsif ($ARGV[0] =~ /^-cache$/)    { } #Not currently used.
+  elsif ($ARGV[0] =~ /^-byhost$/)   { $do_sender{Host} = 1 }
+  elsif ($ARGV[0] =~ /^-bydomain$/) { $do_sender{Domain} = 1 }
+  elsif ($ARGV[0] =~ /^-byemail$/)  { $do_sender{Email} = 1 }
+  elsif ($ARGV[0] =~ /^-byemaildomain$/)  { $do_sender{Edomain} = 1 }
+  elsif ($ARGV[0] =~ /^-byedomain$/)  { $do_sender{Edomain} = 1 }
+  elsif ($ARGV[0] =~ /^-nvr$/)      { $volume_rounding = 0 }
+  elsif ($ARGV[0] =~ /^-d$/)        { $debug = 1 }
+  elsif ($ARGV[0] =~ /^--?h(elp)?$/){ help() }
+  elsif ($ARGV[0] =~ /^-t_remote_users$/) { $include_remote_users = 1 }
+  elsif ($ARGV[0] =~ /^-pattern$/)
+    {
+    push(@user_descriptions,get_next_arg());
+    push(@user_patterns,get_next_arg());
+    }
+  elsif ($ARGV[0] =~ /^-utc$/)
+    {
+    # We don't need this value if the log is in UTC.
+    $localtime_offset = undef;
+    }
+  else
+    {
+    print STDERR "Eximstats: Unknown or malformed option $ARGV[0]\n";
+    help();
+    }
+  shift;
+  }
+
+  # Check that all the charts options are specified.
+  warn "-charts option not specified. Use -help for help.\n" if ($charts_option_specified && ! $charts);
+
+  # Default to display tables by sending Host.
+  $do_sender{Host} = 1 unless ($do_sender{Domain} || $do_sender{Email} || $do_sender{Edomain});
+
+
+for (my $i = 0; $i <= $#queue_times; $i++) {
+  $queue_bin[$i] = 0;
+  $remote_queue_bin[$i] = 0;
+}
+
+# Compute the number of slots for the histogram
+
+if ($hist_opt > 0)
+  {
+  if ($hist_opt > 60 || 60 % $hist_opt != 0)
+    {
+    print "Eximstats: -h must specify a factor of 60\n";
+    exit 1;
+    }
+  $hist_interval = 60/$hist_opt;		#Interval in minutes.
+  $hist_number = (24*60)/$hist_interval;	#Number of intervals per day.
+  @received_interval_count = (0) x $hist_number;
+  @delivered_interval_count = (0) x $hist_number;
+  }
+
+#$queue_unknown = 0;
+
+$total_received_data = 0;
+$total_received_data_gigs = 0;
+$total_received_count = 0;
+
+$total_delivered_data = 0;
+$total_delivered_data_gigs = 0;
+$total_delivered_count = 0;
+
+$queue_more_than = 0;
+$delayed_count = 0;
+$relayed_unshown = 0;
+$begin = "9999-99-99 99:99:99";
+$end = "0000-00-00 00:00:00";
+my($section,$type);
+foreach $section ('Received','Delivered') {
+  foreach $type ('Volume','Messages','Delayed','Failed','Hosts','Domains','Emails','Edomains') {
+    $report_totals{$section}{$type} = 0;
+  }
+}
+
+# Generate our parser.
+my $parser = generate_parser();
+
+
+
+if (@ARGV) {
+  # Scan the input files and collect the data
+  foreach my $file (@ARGV) {
+    if ($file =~ /\.gz/) {
+      unless (open(FILE,"gunzip -c $file |")) {
+	print STDERR "Failed to gunzip -c $file: $!";
+	next;
+      }
+    }
+    elsif ($file =~ /\.Z/) {
+      unless (open(FILE,"uncompress -c $file |")) {
+	print STDERR "Failed to uncompress -c $file: $!";
+	next;
+      }
+    }
+    else {
+      unless (open(FILE,$file)) {
+	print STDERR "Failed to read $file: $!";
+	next;
+      }
+    }
+    #Now parse the filehandle, updating the global variables.
+    parse($parser,\*FILE);
+    close FILE;
+  }
+}
+else {
+  #No files provided. Parse STDIN, updating the global variables.
+  parse($parser,\*STDIN);
+}
+
+
+if ($begin eq "9999-99-99 99:99:99") {
+  print "**** No valid log lines read\n";
+  exit 1;
+}
+
+# Output our results.
+print_header();
+print_grandtotals();
+
+# Print counts of user specified patterns if required.
+print_user_patterns() if @user_patterns;
+
+# Print totals by transport if required.
+print_transport() if $show_transport;
+
+# Print the deliveries per interval as a histogram, unless configured not to.
+# First find the maximum in one interval and scale accordingly.
+if ($hist_opt > 0) {
+  print_histogram("Messages received", @received_interval_count);
+  print_histogram("Deliveries", @delivered_interval_count);
+}
+
+# Print times on queue if required.
+if ($#queue_times >= 0) {
+  print_queue_times("all messages", \@queue_bin,$queue_more_than);
+  print_queue_times("messages with at least one remote delivery",\@remote_queue_bin,$queue_more_than);
+}
+
+# Print relay information if required.
+print_relay() if $show_relay;
+
+# Print the league tables, if topcount isn't zero.
+if ($topcount > 0) {
+  foreach ('Host','Domain','Email','Edomain') {
+    next unless $do_sender{$_};
+    print_league_table("sending \l$_", $received_count{$_}, $received_data{$_},$received_data_gigs{$_});
+  }
+
+  print_league_table("local sender", \%received_count_user,
+    \%received_data_user,\%received_data_gigs_user) if ($local_league_table || $include_remote_users);
+  foreach ('Host','Domain','Email','Edomain') {
+    next unless $do_sender{$_};
+    print_league_table("\l$_ destination", $delivered_count{$_}, $delivered_data{$_},$delivered_data_gigs{$_});
+  }
+  print_league_table("local destination", \%delivered_count_user,
+    \%delivered_data_user,\%delivered_data_gigs_user) if ($local_league_table || $include_remote_users);
+}
+
+# Print the error statistics if required.
+print_errors() if $show_errors;
+
+if ($html) {
+  print "</body>\n</html>\n"
+}
+
+# End of eximstats
