@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.13 2005/04/04 10:33:49 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.14 2005/04/06 16:43:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -351,8 +351,9 @@ if (smtp_input)
   msg = US"SMTP incoming data timeout";
   log_write(L_lost_incoming_connection,
             LOG_MAIN, "SMTP data timeout (message abandoned) on connection "
-            "from %s",
-            (sender_fullhost != NULL)? sender_fullhost : US"local process");
+            "from %s F=<%s>",
+            (sender_fullhost != NULL)? sender_fullhost : US"local process",
+            sender_address);
   }
 else
   {
