@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.2 2005/03/01 10:21:43 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.3 2005/03/29 15:21:57 ph10 Exp $
 
               Notes on the Sieve implementation for Exim
 
@@ -114,13 +114,14 @@ This may be implemented in future by adding a header line to mails that
 are filed into "inbox" due to an error in the filter.
 
 
-Strings Containing Header Names
+Strings Containing Header Names Or Envelope Elements
 
 RFC 3028 does not specify what happens if a string denoting a header
-field does not contain a valid header name, e.g. it contains a colon.
+field or envelope element does not contain a valid name, e.g. it
+contains a colon for a header or it is not "from" or "to" for envelopes.
 This implementation generates an error instead of ignoring the header
-field in order to ease script debugging, which fits in the common
-picture of Sieve.
+field in order to ease script debugging, which fits in the common picture
+of Sieve.
 
 
 Header Test With Invalid MIME Encoding In Header
