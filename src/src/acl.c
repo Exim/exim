@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.24 2005/03/15 11:37:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.25 2005/03/15 15:36:41 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1028,6 +1028,13 @@ address_item *sender_vaddr = NULL;
 uschar *verify_sender_address = NULL;
 uschar *pm_mailfrom = NULL;
 uschar *se_mailfrom = NULL;
+
+/* Some of the verify items have slash-separated options; some do not. Diagnose
+an error if options are given for items that don't expect them. This code has
+now got very message. Refactoring to use a table would be a good idea one day.
+*/
+
+uschar *slash = Ustrchr(arg, '/');
 uschar *list = arg;
 uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
 
@@ -1037,6 +1044,7 @@ if (ss == NULL) goto BAD_VERIFY;
 
 if (strcmpic(ss, US"reverse_host_lookup") == 0)
   {
+  if (slash != NULL) goto NO_OPTIONS;
   if (sender_host_address == NULL) return OK;
   return acl_verify_reverse(user_msgptr, log_msgptr);
   }
@@ -1047,6 +1055,7 @@ mandatory verification, the connection doesn't last this long.) */
 
 if (strcmpic(ss, US"certificate") == 0)
   {
+  if (slash != NULL) goto NO_OPTIONS;
   if (tls_certificate_verified) return OK;
   *user_msgptr = US"no verified certificate";
   return FAIL;
@@ -1054,12 +1063,43 @@ if (strcmpic(ss, US"certificate") == 0)
 
 /* We can test the result of optional HELO verification */
 
-if (strcmpic(ss, US"helo") == 0) return helo_verified? OK : FAIL;
+if (strcmpic(ss, US"helo") == 0)
+  {
+  if (slash != NULL) goto NO_OPTIONS;
+  return helo_verified? OK : FAIL;
+  }
 
-/* Handle header verification options - permitted only after DATA or a non-SMTP
-message. */
+/* Check that all relevant header lines have the correct syntax. If there is
+a syntax error, we return details of the error to the sender if configured to
+send out full details. (But a "message" setting on the ACL can override, as
+always). */
 
-if (strncmpic(ss, US"header_", 7) == 0)
+if (strcmpic(ss, US"header_syntax") == 0)
+  {
+  if (slash != NULL) goto NO_OPTIONS;
+  if (where != ACL_WHERE_DATA && where != ACL_WHERE_NOTSMTP)
+    {
+    *log_msgptr = string_sprintf("cannot check header contents in ACL for %s "
+      "(only possible in ACL for DATA)", acl_wherenames[where]);
+    return ERROR;
+    }
+  rc = verify_check_headers(log_msgptr);
+  if (rc != OK && smtp_return_error_details && *log_msgptr != NULL)
+    *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
+  return rc;
+  }
+
+
+/* The remaining verification tests check recipient and sender addresses,
+either from the envelope or from the header. There are a number of
+slash-separated options that are common to all of them. */
+
+
+/* Check that there is at least one verifiable sender address in the relevant
+header lines. This can be followed by callout and defer options, just like
+sender and recipient. */
+
+if (strcmpic(ss, US"header_sender") == 0)
   {
   if (where != ACL_WHERE_DATA && where != ACL_WHERE_NOTSMTP)
     {
@@ -1067,29 +1107,7 @@ if (strncmpic(ss, US"header_", 7) == 0)
       "(only possible in ACL for DATA)", acl_wherenames[where]);
     return ERROR;
     }
-
-  /* Check that all relevant header lines have the correct syntax. If there is
-  a syntax error, we return details of the error to the sender if configured to
-  send out full details. (But a "message" setting on the ACL can override, as
-  always). */
-
-  if (strcmpic(ss+7, US"syntax") == 0)
-    {
-    int rc = verify_check_headers(log_msgptr);
-    if (rc != OK && smtp_return_error_details && *log_msgptr != NULL)
-      *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
-    return rc;
-    }
-
-  /* Check that there is at least one verifiable sender address in the relevant
-  header lines. This can be followed by callout and defer options, just like
-  sender and recipient. */
-
-  else if (strcmpic(ss+7, US"sender") == 0) verify_header_sender = TRUE;
-
-  /* Unknown verify argument starting with "header_" */
-
-  else goto BAD_VERIFY;
+  verify_header_sender = TRUE;
   }
 
 /* Otherwise, first item in verify argument must be "sender" or "recipient".
@@ -1127,7 +1145,8 @@ else
     }
   }
 
-/* Remaining items are optional */
+/* Remaining items are optional; they apply to sender and recipient
+verification, including "header sender" verification. */
 
 while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
       != NULL)
@@ -1501,8 +1520,16 @@ return rc;
 
 BAD_VERIFY:
 *log_msgptr = string_sprintf("expected \"sender[=address]\", \"recipient\", "
-  "\"header_syntax\" or \"header_sender\" at start of ACL condition "
+  "\"helo\", \"header_syntax\", \"header_sender\" or "
+  "\"reverse_host_lookup\" at start of ACL condition "
   "\"verify %s\"", arg);
+return ERROR;
+
+/* Options supplied when not allowed come here */
+
+NO_OPTIONS:
+*log_msgptr = string_sprintf("unexpected '/' found in \"%s\" "
+  "(this verify item has no options)", arg);
 return ERROR;
 }
 

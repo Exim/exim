@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.24 2005/03/07 09:36:43 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.25 2005/03/15 15:36:41 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1884,5 +1884,8 @@ address. The wish is for options to control these numbers.
 
 ... and possibly "accept" or "deny" it.
 ------------------------------------------------------------------------------
---- HWM 321 ------------------------------------------------------------------
+
+(322) 15-Mar-05 M Add a /defer_ok option to verify=reverse_host_lookup
+------------------------------------------------------------------------------
+--- HWM 322 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------

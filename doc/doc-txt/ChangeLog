@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.91 2005/03/15 14:09:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.92 2005/03/15 15:36:41 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -42,6 +42,13 @@ PH/04. Change 4.11/85 fixed an obscure bug concerned with addresses that are
 
 PH/05. Renamed the macro SOCKLEN_T as EXIM_SOCKLEN_T because AIX uses SOCKLEN_T
        in its include files, and this causes problems building Exim.
+
+PH/06. A number of "verify =" ACL conditions have no options (e.g. verify =
+       header_syntax) but Exim was just ignoring anything given after a slash.
+       In particular, this caused confusion with an attempt to use "verify =
+       reverse_host_lookup/defer_ok". An error is now given when options are
+       supplied for verify items that do not have them. (Maybe reverse_host_
+       lookup should have a defer_ok option, but that's a different point.)
 
 
 A note about Exim versions 4.44 and 4.50
