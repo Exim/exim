@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.9 2004/11/24 16:32:34 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.10 2004/11/25 11:03:37 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1319,6 +1319,10 @@ done.)
 ------------------------------------------------------------------------------
 
 (202) 10-Oct-03 S  -bvsomething to do a callout after the verify
+
+For example: -bvc and -bvsc. The problem now (Nov 04) is that there are quite a
+few possible callout options that can be specified in an ACL, and they would
+have to be replicated here.
 ------------------------------------------------------------------------------
 
 (203) 14-Oct-03 S  verify=something to easily check for header presence
@@ -1372,7 +1376,9 @@ Unfortunately, this isn't quite as trivial as it seems.
 (215) 14-Nov-03 S  A way of turning off message-submission fix-ups
 
 Globally, and perhaps also via an ACL control so that it can be done on a
-per-message basis.
+per-message basis. Is this still needed? Since this item was added to this
+list, default fixups for non-local messages have been removed, and control =
+submission has been added.
 ------------------------------------------------------------------------------
 
 (215) 26-Nov-03 M/L Conversion of IDNA domain names for logging
@@ -1414,6 +1420,9 @@ radical suggestion for a complete re-design, and is therefore BIG.
 ------------------------------------------------------------------------------
 
 (223) 22-Dec-03 S  Support SOA lookup in dnsdb lookups
+
+This could be like zns, and climb up the tree till it hits a zone. Would the
+name of the zone be required?
 ------------------------------------------------------------------------------
 
 (225) 22-Dec-03 M  Add acl= to routers
@@ -1654,7 +1663,8 @@ Similar to the bounce and delivery warn message files.
 (280) 23-Jun-04 M A way of adding a header line after callout defer_ok
 
 This would record that, e.g., a sender domain verified, but the callout
-could not be done.
+could not be done. There are ways of fudging this, using ACL variables and
+"warn" statements.
 ------------------------------------------------------------------------------
 
 (285) 16-Jul-04 M Separate and independent log_selector for rejectlog
