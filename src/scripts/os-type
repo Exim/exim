@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/os-type,v 1.2 2005/02/17 10:04:41 ph10 Exp $
+# $Cambridge: exim/src/scripts/os-type,v 1.3 2005/04/06 10:53:47 ph10 Exp $
 
 # Shell script to determine the operating system type. Some of the heuristics
 # herein have accumulated over the years and may not strictly be needed now,
@@ -23,7 +23,8 @@ case "$os" in '') os=`uname -s`;; esac
 
 # Identify Glibc systems under different names.
 
-case "$os" in GNU|GNU/*|Linux) os=Linux;; esac
+case "$os" in GNU) os=GNU;; esac
+case "$os" in GNU/*|Linux) os=Linux;; esac
 
 # It is believed that all systems respond to uname -s, but just in case
 # there is one that doesn't, use the shell's $OSTYPE variable. It is known
@@ -149,9 +150,9 @@ Linux)  if [ -L /usr/lib/libc.so ]; then
 # ELF soon.
 
 NetBSD) if echo __ELF__ | ${CC-cc} -E - | grep -q __ELF__ ; then
-	    # Non-ELF system
-	    os="NetBSD-a.out"
-	fi
+        # Non-ELF system
+        os="NetBSD-a.out"
+        fi
         ;;
 
 esac

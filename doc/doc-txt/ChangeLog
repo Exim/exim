@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.112 2005/04/06 10:06:14 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.113 2005/04/06 10:53:47 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -153,6 +153,10 @@ PH/24 The cyrus_sasl authenticator was advertising mechanisms for which it
 PH/25 When debugging is enabled, the contents of the command line are added
       to the debugging output, even when log_selector=+arguments is not
       specified.
+
+PH/26 Change scripts/os-type so that when "uname -s" returns just "GNU", the
+      answer is "GNU", and only if the return is "GNU/something" is the answer
+      "Linux".
 
 
 A note about Exim versions 4.44 and 4.50
