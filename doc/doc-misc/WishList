@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.22 2005/03/02 09:23:14 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.23 2005/03/03 09:04:26 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1861,7 +1861,23 @@ At least try to catch some of the exit routes from the daemon and either delete
 or empty the pid file.
 ------------------------------------------------------------------------------
 
-(318) 02-Mar-06 S Add current connection count to daemon's exiwhat output
+(318) 02-Mar-05 S Add current connection count to daemon's exiwhat output
 ------------------------------------------------------------------------------
---- HWM 317 ------------------------------------------------------------------
+
+(319) 03-Mar-05 ? Allow file rather than directory for scanning call
+
+"I can call arbitrary scanning software by specifying the full path. I can pass
+a directory to be scanned in the arguments. I'd like to be able to pass a
+specific file name instead of a directory. I think this would allow me to call
+Bogofilter at smtp time. Bogofilter requires a filename, not a directory. The
+file would contain the complete email. I suppose there may be other scanning
+solutions with a similar requirement."
+------------------------------------------------------------------------------
+
+(320) 03-Mar-05 T Options to control daemon retry binding
+
+Currently the daemon tries 10 times at 30-second intervals to listen on an IP
+address. The wish is for options to control these numbers.
+------------------------------------------------------------------------------
+--- HWM 320 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
