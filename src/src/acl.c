@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.16 2005/01/12 14:41:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.17 2005/01/12 15:41:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1345,8 +1345,10 @@ else
   rc = verify_address(&addr2, NULL, verify_options|vopt_is_recipient, callout,
     callout_overall, callout_connect, se_mailfrom, pm_mailfrom, NULL);
   HDEBUG(D_acl) debug_printf("----------- end verify ------------\n");
+  
   *log_msgptr = addr2.message;
-  *user_msgptr = addr2.user_message;
+  *user_msgptr = (addr2.user_message != NULL)? 
+    addr2.user_message : addr2.message;
   *basic_errno = addr2.basic_errno;
 
   /* Make $address_data visible */

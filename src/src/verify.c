@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.11 2005/01/12 14:47:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.12 2005/01/12 15:41:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1100,7 +1100,7 @@ while (addr_new != NULL)
   want to continue to verify the new child. */
 
   if (rc == REROUTED) continue;
-
+  
   /* Handle hard failures */
 
   if (rc == FAIL)
