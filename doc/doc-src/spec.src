@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-src/spec.src,v 1.2 2005/01/11 15:17:51 ph10 Exp $
+. $Cambridge: exim/doc/doc-src/spec.src,v 1.3 2005/01/14 16:18:57 tom Exp $
 .
 .set version "4.50"
 .set previousversion "4.40"
@@ -22841,10 +22841,10 @@ temporarily created in a file called:
 .endd
 The \(.eml)\ extension is a friendly hint to virus scanners that they can
 expect an MBOX-like structure inside that file. The file is created when the
-first exiscan facility is called. Subsequent calls to exiscan conditions open
-the same file again. The directory is recursively removed when the
-\acl@_smtp@_data\ ACL has finished running. When the MIME ACL decodes files,
-they are put into that same directory by default.
+first content scanning facility is called. Subsequent calls to content
+scanning conditions open the same file again. The directory is recursively
+removed when the \acl@_smtp@_data\ ACL has finished running. When the MIME
+ACL decodes files, they are put into that same directory by default.
 
 
 .section Scanning for viruses
@@ -22886,7 +22886,7 @@ av_scanner = aveserver:/var/run/aveserver
 .index virus scanners||clamd
 \clamd\: This daemon-type scanner is GPL and free. You can get it at
 \?http://www.clamav.net/?\. Clamd does not seem to unpack MIME containers,
-so it is recommended to use the demime facility with it. It takes one option:
+so it is recommended to unpack MIME attachments in the MIME ACL. It takes one option:
 either the path and name of a UNIX socket file, or a hostname or IP number, and
 a port, separated by space, as in the second of these examples:
 .display asis
@@ -22909,7 +22909,7 @@ scanner. If the expression matches, a virus was found. You must make absolutely
 sure that this expression matches on `virus found'. This is called the
 `trigger' expression.
 .nextp
-Another regular expression, containing exactly one pair of braces, to match the
+Another regular expression, containing exactly one pair of parentheses, to match the
 name of the virus found in the scanners output. This is called the `name'
 expression.
 .endp
@@ -22986,8 +22986,18 @@ The default path is \(/var/run/sophie)\, so if you are using this, you can omit
 the option.
 .endp
 
-When \av@_scanner\ is correcly set, you can use the \malware\ condition in the
-DATA ACL. The condition takes a right-hand argument that is expanded before
+When \av@_scanner\ is correctly set, you can use the \malware\ condition in the
+DATA ACL.
+
+The \malware\ condition caches its results, so when you use it multiple times
+for the same message, the actual scanning process is only carried out once. 
+
+\av@_scanner\ is expanded each time \malware\ is called. This makes
+it possible to use different scanners. See further below for an example.
+However, using expandable items in \av@_scanner\ disables the result caching
+of the \malware\ condition.
+
+The condition takes a right-hand argument that is expanded before
 use. It can then be one of
 .numberpars $.
 `true', `*', or `1', in which case the message is scanned for viruses. The
@@ -23009,9 +23019,6 @@ When a virus is found, the condition sets up an expansion variable called
 \$malware@_name$\ that contains the name of the virus. You can use it in a
 \message\ modifier that specifies the error returned to the sender, and/or in
 logging data.
-
-The \malware\ condition caches its results, so when you use it multiple times
-for the same message, the actual scanning process is only carried out once.
 
 If your virus scanner cannot unpack MIME and TNEF containers itself, you should
 use the \demime\ condition (see section ~~SECTdemimecond) before the \malware\
@@ -23044,9 +23051,6 @@ deny message = This message contains malware ($malware_name)
    set acl_m0 = aveserver
    malware = *
 .endd
-However, when \av@_scanner\ is expanded, the caching of the \malware\
-condition result does not happen, so each \malware\ condition call causes a
-new scan of the message.
 
 
 .section Scanning with SpamAssassin
@@ -23353,12 +23357,15 @@ All parts contained within an attachment multipart are attachments.
 .endp
 
 As an example, the following will ban `HTML mail' (including that sent with
-alternative plain text), while allowing HTML files to be attached:
+alternative plain text), while allowing HTML files to be attached. HTML 
+coverletter mail attached to non-HMTL coverletter mail will also be allowed:
 .display asis
 deny message = HTML mail is not accepted here
+   !condition = $mime_is_rfc822
    condition = $mime_is_coverletter
    condition = ${if eq{$mime_content_type}{text/html}{1}{0}}
 .endd
+
 
 .tempindent 0
 \$mime@_is@_multipart$\:
@@ -23431,8 +23438,10 @@ CPU-intensive.
 .index MIME content scanning
 The \demime\ ACL condition provides MIME unpacking, sanity checking and file
 extension blocking. It uses a simpler interface to MIME decoding than the MIME
-ACL functionality, but provides no additional facilities. It is kept in exiscan
-for backward compatibility.
+ACL functionality, but provides no additional facilities. Please note that this
+condition is deprecated and kept only for for backward compatibility. You must
+set the WITH_OLD_DEMIME option in the Makefile at build time to be able to use
+the \demime\ condition.
 
 The \demime\ condition unpacks MIME containers in the message. It detects
 errors in MIME containers and can match file extensions found in the message
@@ -23525,18 +23534,6 @@ want to apply a lot of checking to messages before accepting them. You can do a
 certain amount through string expansions and the \condition\ condition in the
 ACL that runs after the SMTP \\DATA\\ command or the ACL for non-SMTP messages
 (see chapter ~~CHAPACL), but this has its limitations.
-
-.index \exiscan\
-An increasingly popular way of doing additional checking is to make use of the
-Exiscan patch for Exim, which adds ACL conditions that perform body scans of
-various kinds. This is available from
-.if ~~html
-[(A HREF="http://duncanthrax.net/exiscan-acl/")]
-/?http://duncanthrax.net/exiscan-acl/?\.
-[(/A)]
-.else
-\?http:@/@/duncanthrax.net/exiscan-acl/?\.
-.fi
 
 To allow for even more general checking that can be customized to a site's own
 requirements, there is the possibility of linking Exim with a private message
