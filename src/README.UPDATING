@@ -1,4 +1,4 @@
-$Cambridge: exim/src/README.UPDATING,v 1.2 2005/01/11 15:15:33 ph10 Exp $
+$Cambridge: exim/src/README.UPDATING,v 1.3 2005/01/11 15:17:52 ph10 Exp $
 
 This document contains detailed information about incompatibilities that might
 be encountered when upgrading from one release of Exim to another. The
@@ -31,11 +31,11 @@ that might affect a running system.
 Version 4.50
 ------------
 
-The exicyclog script has been updated to use three-digit numbers in rotated log 
-files if the maximum number to keep is greater than 99. If you are already 
-keeping more than 99, there will be an incompatible change when you upgrade. 
-You will probably want to rename your old log files to the new form before 
-running the new exicyclog. The following script, by Mick Swisher, can do this 
+The exicyclog script has been updated to use three-digit numbers in rotated log
+files if the maximum number to keep is greater than 99. If you are already
+keeping more than 99, there will be an incompatible change when you upgrade.
+You will probably want to rename your old log files to the new form before
+running the new exicyclog. The following script, by Mick Swisher, can do this
 for you:
 
 # Begin conversion

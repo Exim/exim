@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.11 2005/01/04 13:31:41 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.12 2005/01/11 15:17:52 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -154,6 +154,8 @@ Christian Kellner         Patch for LDAP dereferencing
 Alex Kiernan              Patch for libradius
                           Diagnosis of milliwait clock-backwards bug
 Tom Kistner               SPA server code
+                          Writing and maintaining the content scanning 
+                            extension (exiscan)
 Friso Kuipers             Patch for GDBM problem
 Chris Liddiard            Fix for bug in exiqsumm
 Chris Lightfoot           Patch for -restore-times in exim_lock
@@ -173,6 +175,7 @@ Andreas Metzler           Patch for message_id_header_domain
                           Suggested patch for multi-config files in scripts bug
 Alex Miller               Suggested readline() patch                           
                           Patch for LDAP_RES_SEARCH_REFERENCE handling
+                          Support for the DrWeb content scanner 
 Andreas Mueller           Patch for logging uncompleted SMTP transactions
 Pete Naylor               Patch for LDAP TCP connect timeout setting
 Marcin Owsiany            Diagnosis of a tricky timeout failure bug
@@ -193,6 +196,7 @@ Stephan Schulz            Patch for $host_data caching error
 Tony Sheen                Log files with datestamped names and auto rollover
 Martin Sluka              Patch for exigrep to include non-message lines
 Tamas Tevesz              Patch for crypt16() support
+Johan Thelmen             Support for the F-Secure virus scanner
 William Thompson          Suggested patch for acl_smtp_helo
                           Suggested patch for nested ACL "drop" bug
                           Suggested patch for continuation lines in file ACLs

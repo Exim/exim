@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-src/filter.src,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+. $Cambridge: exim/doc/doc-src/filter.src,v 1.2 2005/01/11 15:17:51 ph10 Exp $
 .
 .if !set style
 .library "a4ps"
@@ -82,9 +82,9 @@ $c[~~sys.pagenumber]$e
 .set chapter -1
 .chapter Exim's interfaces to mail filtering
 .space -2ld
-Exim is a mail transfer agent for Unix-like systems. This document describes
-the user interfaces to its in-built mail filtering facilities, and is copyright
-(c) University of Cambridge 2004. It corresponds to Exim version 4.40.
+This document describes the user interfaces to Exim's in-built mail filtering
+facilities, and is copyright (c) University of Cambridge 2005. It corresponds
+to Exim version 4.50.
 .rule
 
 . ---------------------------------------------------------------------------
@@ -96,8 +96,8 @@ the user interfaces to its in-built mail filtering facilities, and is copyright
 
 .if ~~sgcal
 .space 1ld
-$chead{Contents}
-.space 1ld
+. $chead{Contents}
+. space 1ld
 .tabset 2em 2em
 .push
 .linedepth ~~sys.linedepth - 1
@@ -143,15 +143,6 @@ enabled or disabled. A local document should be provided to describe exactly
 what has been enabled. In the absence of this, consult your system
 administrator.
 
-It is important to realize that, in Exim, no deliveries are actually made while
-a filter or traditional \(.forward)\ file is being processed. The result of
-such processing is a list of destinations to which a message should be
-delivered -- the deliveries themselves take place later, along with all other
-deliveries for the message. This means that it is not possible to test for
-successful deliveries while filtering. It also means that any duplicate
-addresses that are generated are dropped, since Exim never delivers the same 
-message to the same address more than once.
-
 This document describes how to use a filter file and the format of its
 contents. It is intended for use by end-users. Both Sieve filters and Exim
 filters are covered. However, for Sieve filters, only issues that relate to the
@@ -163,6 +154,23 @@ separated by commas or newlines, but other types of item are also available.
 The full details can be found in the chapter on the \%redirect%\ router in the
 Exim specification, which also describes how the system administrator can set
 up and control the use of filtering.
+
+
+.em
+.section Filter operation
+It is important to realize that, in Exim, no deliveries are actually made while
+a filter or traditional \(.forward)\ file is being processed. Running a filter 
+or processing a traditional \(.forward)\ file sets up future delivery 
+operations, but does not carry them out.
+
+The result of filter or \(.forward)\ file processing is a list of destinations
+to which a message should be delivered. The deliveries themselves take place
+later, along with all other deliveries for the message. This means that it is
+not possible to test for successful deliveries while filtering. It also means
+that any duplicate addresses that are generated are dropped, because Exim never
+delivers the same message to the same address more than once.
+.nem
+
 
 .section Testing a new filter file
 .rset SECTtesting "~~chapter.~~section"
@@ -300,10 +308,14 @@ context as `the specific implementation of Sieve for Exim'.
 This chapter does not contain a description of Sieve, since that can be found
 in RFC 3028, which should be read in conjunction with these notes.
 
-The Exim Sieve implementation offers the core as defined by RFC 3028, the
-\%envelope%\ and the \%fileinto%\ extensions, but not the \%reject%\ extension.
-Exim does not support message delivery notifications (MDNs), so adding it just
-to the Sieve filter (as required for \%reject%\) makes little sense.
+The Exim Sieve implementation offers the core as defined by RFC 3028,
+.em
+comparison tests, the \%copy%\, \%envelope%\, \%fileinto%\, and \%vacation%\
+extensions,
+.nem
+but not the \%reject%\ extension. Exim does not support message delivery
+notifications (MDNs), so adding it just to the Sieve filter (as required for
+\%reject%\) makes little sense.
 
 In order for Sieve to work properly in Exim, the system administrator needs to 
 make some adjustments to the Exim configuration. These are described in the 
@@ -588,6 +600,11 @@ personal filter files:
 
 \$body@_linecount$\: The number of lines in the body of the message.
 
+.em
+\$body@_zerocount$\: The number of binary zero characters in the body of the 
+message.
+.nem
+
 \$home$\: In conventional configurations, this variable normally contains the
 user's home directory. The system administrator can, however, change this.
 
@@ -726,26 +743,44 @@ paths.
 
 
 .section Significant deliveries
+.rset SECTsigdel "~~chapter.~~section"
 When in the course of delivery a message is processed by a filter file, what
-happens next, that is, after the whole filter file has been processed, depends
-on whether the filter has set up any $it{significant deliveries} or not. If
-there is at least one significant delivery, the filter is considered to
-have handled the entire delivery arrangements for the current address, and no
-further processing of the address takes place. If, however, no significant
-deliveries have been set up, Exim continues processing the current address as
-if there were no filter file, and typically sets up a delivery of a copy of the
-message into a local mailbox. In particular, this happens in the special case
-of a filter file containing only comments.
+happens next, that is, after the filter file has been processed, depends on
+whether or not the filter sets up any $it{significant deliveries}. If at least
+one significant delivery is set up, the filter is considered to have handled
+the entire delivery arrangements for the current address, and no further
+processing of the address takes place. If, however, no significant deliveries
+are set up, Exim continues processing the current address as if there were no
+filter file, and typically sets up a delivery of a copy of the message into a
+local mailbox. In particular, this happens in the special case of a filter file
+containing only comments.
 
 The delivery commands \"deliver"\, \"save"\, and \"pipe"\ are by default
 significant. However, if such a command is preceded by the word \"unseen"\, its
 delivery is not considered to be significant. In contrast, other commands such
-as \"mail"\ and \"vacation"\ do not count as significant deliveries unless
+as \"mail"\ and \"vacation"\ do not set up significant deliveries unless
 preceded by the word \"seen"\.
+
+.em
+The following example commands set up significant deliveries:
+.display asis
+deliver jack@beanstalk.example
+pipe $home/bin/mymailscript
+seen mail subject "message discarded"
+seen finish
+.endd
+The following example commands do not set up significant deliveries:
+.display asis
+unseen deliver jack@beanstalk.example
+unseen pipe $home/bin/mymailscript
+mail subject "message discarded"
+finish
+.endd
+.nem
 
 
 .section Filter commands
-The filter commands which are described in subsequent sections are listed
+The filter commands that are described in subsequent sections are listed
 below, with the section in which they are described in brackets:
 .display rm
 .tabs 15
@@ -764,11 +799,14 @@ below, with the section in which they are described in brackets:
 \testprint\  $t print while testing (section ~~SECTtestprint)
 \vacation\   $t tailored form of \mail\ (section ~~SECTmail)
 .endd
-In addition, when Exim's filtering facilities are being used as a system
-filter, the \"fail"\, \"freeze"\, and \"headers"\ commands are available.
-However, since they are usable only by the system administrator and not by
-ordinary users, they are described in the main Exim specification rather than
-in this document.
+.em
+The \"headers"\ command has additional parameters that can be used only in a
+system filter. The \"fail"\ and \"freeze"\ commands are available only when
+Exim's filtering facilities are being used as a system filter, and are
+therefore usable only by the system administrator and not by ordinary users.
+They are mentioned only briefly in this document; for more information, see the
+main Exim specification.
+.nem
 
 .section The add command
 .rset SECTadd "~~chapter.~~section"
@@ -776,11 +814,12 @@ in this document.
      add <<number>> to <<user variable>>
 e.g. add 2 to n3
 .endd
-There are 10 user variables of this type, and their values can be obtained by
-the normal expansion syntax (for example \$n3$\) in other commands. At the
-start of filtering, these variables all contain zero. Both arguments of the
-\"add"\ command are expanded before use, making it possible to add variables to
-each other. Subtraction can be obtained by adding negative numbers.
+There are 10 user variables of this type, with names \"n0"\ -- \"n9"\. Their
+values can be obtained by the normal expansion syntax (for example \$n3$\) in
+other commands. At the start of filtering, these variables all contain zero.
+Both arguments of the \"add"\ command are expanded before use, making it
+possible to add variables to each other. Subtraction can be obtained by adding
+negative numbers.
 
 
 .section The deliver command
@@ -789,11 +828,16 @@ each other. Subtraction can be obtained by adding negative numbers.
      deliver <<mail address>>
 e.g. deliver "Dr Livingstone <David@@somewhere.africa.example>"
 .endd
-This provides a forwarding operation. The message is sent on to the given
-address, exactly as happens if the address had appeared in a traditional
-\(.forward)\ file. If you want to deliver the message to a number of different
-addresses, you can use more than one \"deliver"\ command (each one may have
-only one address). However, duplicate addresses are discarded.
+This command provides a forwarding operation. 
+.em
+The delivery that it sets up is significant unless the command is preceded by
+\"unseen"\ (see section ~~SECTsigdel).
+.nem
+The message is sent on to the given address, exactly as happens if the address
+had appeared in a traditional \(.forward)\ file. If you want to deliver the
+message to a number of different addresses, you can use more than one
+\"deliver"\ command (each one may have only one address). However, duplicate
+addresses are discarded.
 
 To deliver a copy of the message to your normal mailbox, your login name can be
 given as the address. Once an address has been processed by the filtering
@@ -801,8 +845,8 @@ mechanism, an identical generated address will not be so processed again, so
 doing this does not cause a loop.
 
 However, if you have a mail alias, you should $it{not} refer to it here. For
-example, if the mail address \"L.Gulliver"\ is aliased to \"lg103"\ then all
-references in Gulliver's \(.forward)\ file should be to \"lg103"\. A reference
+example, if the mail address \"L.Gulliver"\ is aliased to \"lg303"\ then all
+references in Gulliver's \(.forward)\ file should be to \"lg303"\. A reference
 to the alias will not work for messages that are addressed to that alias,
 since, like \(.forward)\ file processing, aliasing is performed only once on an
 address, in order to avoid looping.
@@ -812,10 +856,10 @@ Following the new address, an optional second address, preceded by
 the forwarded message will be sent. Instead of going to the message's original
 sender, they go to this new address. For ordinary users, the only value that is
 permitted for this address is the user whose filter file is being processed.
-For example, the user \"lg103"\ whose mailbox is in the domain
+For example, the user \"lg303"\ whose mailbox is in the domain
 \lilliput.example\ could have a filter file that contains
 .display asis
-     deliver jon@elsewhere.example errors_to lg103@lilliput.example
+     deliver jon@elsewhere.example errors_to lg303@lilliput.example
 .endd
 Clearly, using this feature makes sense only in situations where not all
 messages are being forwarded. In particular, bounce messages must not be
@@ -829,10 +873,15 @@ goes wrong.
      save <<file name>>
 e.g. save @$home/mail/bookfolder
 .endd
-This causes a copy of the message to be appended to the given file (that is,
-the file is used as a mail folder). More than one \"save"\ command may appear;
-each one causes a copy of the message to be written to its argument file,
-provided they are different (duplicate \"save"\ commands are ignored).
+.em
+This command specifies that a copy of the message is to be appended to the
+given file (that is, the file is to be used as a mail folder). The delivery
+that \"save"\ sets up is significant unless the command is preceded by
+\"unseen"\ (see section ~~SECTsigdel).
+.nem
+More than one \"save"\ command may be obeyed; each one causes a copy of the
+message to be written to its argument file, provided they are different
+(duplicate \"save"\ commands are ignored).
 
 If the file name does not start with a / character, the contents of the
 \$home$\ variable are prepended, unless it is empty. In conventional
@@ -878,10 +927,14 @@ ending in a slash causes an error.
      pipe <<command>>
 e.g. pipe "@$home/bin/countmail @$sender@_address"
 .endd
-This command sets up delivery to a specified command using a pipe. Remember,
-however, that no deliveries are done while the filter is being processed. All
-deliveries happen later on. Therefore, the result of running the pipe is not
-available to the filter.
+.em
+This command specifies that the message is to be delivered to the specified
+command using a pipe. The delivery that it sets up is significant unless the
+command is preceded by \"unseen"\ (see section ~~SECTsigdel).
+.nem
+Remember, however, that no deliveries are done while the filter is being
+processed. All deliveries happen later on. Therefore, the result of running the
+pipe is not available to the filter.
 
 When the deliveries are done, a separate process is run, and a copy of the
 message is passed on its standard input. The process runs as the user, under
@@ -981,7 +1034,7 @@ or failed.
 The command should return a zero completion code if all has gone well. Most
 non-zero codes are treated by Exim as indicating a failure of the pipe. This is
 treated as a delivery failure, causing the message to be returned to its
-sender. However, there are some completion codes which are treated as temporary
+sender. However, there are some completion codes that are treated as temporary
 errors. The message remains on Exim's spool disk, and the delivery is tried
 again later, though it will ultimately time out if the delivery failures go on
 too long. The completion codes to which this applies can be specified by the
@@ -995,16 +1048,17 @@ can be varied by the system administrator.
 
 .section Mail commands
 .rset SECTmail "~~chapter.~~section"
-There are two commands which cause the creation of a new mail message, neither
+There are two commands that cause the creation of a new mail message, neither
 of which count as a significant delivery unless the command is preceded by the
-word \"seen"\. This is a powerful facility, but it should be used with care,
-because of the danger of creating infinite sequences of messages. The system
-administrator can forbid the use of these commands altogether.
+word \"seen"\ (see section ~~SECTsigdel). This is a powerful facility, but it
+should be used with care, because of the danger of creating infinite sequences
+of messages. The system administrator can forbid the use of these commands
+altogether.
 
 To help prevent runaway message sequences, these commands have no effect when
-the incoming message is a delivery error message, and messages sent by this
-means are treated as if they were reporting delivery errors. Thus they should
-never themselves cause a delivery error message to be returned. The basic
+the incoming message is a bounce (delivery error) message, and messages sent by
+this means are treated as if they were reporting delivery errors. Thus, they
+should never themselves cause a bounce message to be returned. The basic
 mail-sending command is
 .display
      mail [to <<address-list>>]
@@ -1026,13 +1080,13 @@ e.g. mail text "Your message about @$h@_subject: has been received"
 
 Each <<address-list>> can contain a number of addresses, separated by commas, 
 in the format of a ::To:: or ::Cc:: header line. In fact, the text you supply 
-here is copied exactly into the appropriate header line. Thus, it may contain 
+here is copied exactly into the appropriate header line. It may contain
 additional information as well as email addresses. For example:
 .display asis
 mail to "Julius Caesar <jc@rome.example>, \
          <ma@rome.example> (Mark A.)"
 .endd
-Similarly, the texts supplied for ::From:: and ::Reply-to:: are copied into 
+Similarly, the texts supplied for \"from"\ and \"reply@_to"\ are copied into 
 their respective header lines.
 
 As a convenience for use in one common case, there is also a command called
@@ -1059,13 +1113,13 @@ mailing lists or elsewhere. Sending an automatic response to a mailing list or
 a mailing list manager is an Internet Sin.
 
 For both commands, the key/value argument pairs can appear in any order. At
-least one of \"text"\ or \"file"\ must appear (except with \"vacation"\); if
-both are present, the text string appears first in the message. If \"expand"\
-precedes \"file"\, each line of the file is subject to string expansion as
-it is included in the message.
+least one of \"text"\ or \"file"\ must appear (except with \"vacation"\, where 
+there is a default for \"file"\); if both are present, the text string appears
+first in the message. If \"expand"\ precedes \"file"\, each line of the file is
+subject to string expansion before it is included in the message.
 
 Several lines of text can be supplied to \"text"\ by including the escape
-sequence `@\n' in the string where newlines are required. If the command is
+sequence `@\n' in the string wherever a newline is required. If the command is
 output during filter file testing, newlines in the text are shown as `@\n'.
 
 Note that the keyword for creating a \"Reply-To:"\ header is \reply@_to\,
@@ -1206,18 +1260,28 @@ specification rather than in this document.
 
 .section The headers command
 .rset SECTheaders "~~chapter.~~section"
-The \"headers"\ command can be used to change the target character set which is 
+The \"headers"\ command can be used to change the target character set that is
 used when translating the contents of encoded header lines for insertion by the
 \"@$header@_"\ mechanism (see section ~~SECTheadervariables above). The default
 can be set in the Exim configuration; if not specified, ISO-8859-1 is used. The
-only currently supported format for the \"headers"\ command is as in this
-example:
+only currently supported format for the \"headers"\ command 
+.em
+in user filters
+.nem
+is as in this example:
 .display asis
 headers charset "UTF-8"
 .endd
 That is, \"headers"\ is followed by the word \"charset"\ and then the name of a
 character set. This particular example would be useful if you wanted to compare
 the contents of a header to a UTF-8 string.
+
+.em
+In system filter files, the \"headers"\ command can be used to add or remove 
+header lines from the message. These features are described in the main Exim 
+specification.
+.nem
+
 
 
 .section Obeying commands conditionally
@@ -1258,18 +1322,16 @@ negative forms of condition that are more English-like.
 
 .section String testing conditions
 There are a number of conditions that operate on text strings, using the words
-`begins', `ends', `is', `contains' and `matches'.
-
-Note that if you want to apply the same test to more than one header line, you 
-can easily concatenate them into a single string for testing, as in this 
-example:
+`begins', `ends', `is', `contains' and `matches'. If you want to apply the same
+test to more than one header line, you can easily concatenate them into a
+single string for testing, as in this example:
 .display asis
 if "$h_to:, $h_cc:" contains me@domain.example then ...
 .endd
 
-If any of the condition names are written in lower case, the testing of letters
-is done without regard to case; if they are written in upper case (for example,
-`CONTAINS') then the case of letters is significant.
+If a string-testing condition name is written in lower case, the testing
+of letters is done without regard to case; if it is written in upper case
+(for example, `CONTAINS'), the case of letters is taken into account.
 .display
      <<text1>> begins <<text2>>
      <<text1>> does not begin <<text2>>
@@ -1306,7 +1368,6 @@ For a `matches' test, after expansion of both strings, the second one is
 interpreted as a regular expression. Exim uses the PCRE regular expression
 library, which provides regular expressions that are compatible with Perl.
 
-.em
 The match succeeds if the regular expression matches any part of the first 
 string. If you want a regular expression to match only at the start or end of
 the subject string, you must encode that requirement explicitly, using the @^
@@ -1322,7 +1383,6 @@ To match only the first two, you could use this:
 .display asis
 if $sender_address matches "^(bill|john)@" then ...
 .endd
-.nem
 
 Care must be taken if you need a backslash in a regular expression, because
 backslashes are interpreted as escape characters both by the string expansion
@@ -1357,16 +1417,15 @@ or
 if $sender_address matches "\\N\\.com$\\N"
 .endd
 
-
 If the regular expression contains bracketed sub-expressions, numeric
 variable substitutions such as \$1$\ can be used in the subsequent actions
 after a successful match. If the match fails, the values of the numeric
-variables remain unchanged. Previous values are not restored after \"endif"\ --
-in other words, only one set of values is ever available. If the condition
+variables remain unchanged. Previous values are not restored after \"endif"\.
+In other words, only one set of values is ever available. If the condition
 contains several sub-conditions connected by \"and"\ or \"or"\, it is the
 strings extracted from the last successful match that are available in
 subsequent actions. Numeric variables from any one sub-condition are also
-available for use in subsequent sub-conditions, since string expansion of a
+available for use in subsequent sub-conditions, because string expansion of a
 condition occurs just before it is tested.
 
 .section Numeric testing conditions
@@ -1383,112 +1442,22 @@ by one of the letters K or M (upper case or lower case) which cause
 multiplication by 1024 and 1024x1024 respectively.
 
 .section Testing for significant deliveries
-Whether or not any previously obeyed filter commands have resulted in a
-significant delivery can be tested by the condition \"delivered"\, for example:
+You can use the \"delivered"\ condition to test whether or not any previously
+obeyed filter commands have set up a significant delivery. For example:
 .display asis
 if not delivered then save mail/anomalous endif
 .endd
 
 .section Testing for error messages
-The condition \"error@_message"\ is true if the incoming message is a mail
-delivery error message (bounce message). Putting the command
+The condition \"error@_message"\ is true if the incoming message is a bounce
+(mail delivery error) message. Putting the command
 .display asis
 if error_message then finish endif
 .endd
 at the head of your filter file is a useful insurance against things going
-wrong in such a way that you cannot receive delivery error reports, and is
-highly recommended. Note that \"error@_message"\ is a condition, not an
-expansion variable, and therefore is not preceded by \@$\.
-
-.section Testing for personal mail
-.rset SECTpersonal "~~chapter.~~section"
-A common requirement is to distinguish between incoming personal mail and mail
-from a mailing list,
-or from a robot or other automatic process (for example, a bounce message).
-In particular, this test is normally required for so-called `vacation
-messages'. The condition
-.display
-     personal
-.endd
-is a shorthand for
-.display
-     not error@_message and
-     @$header@_to: contains "@$local@_part@@@$domain" and
-     @$header@_from: does not contain "@$local@_part@@@$domain" and
-     @$header@_from: does not contain "server@@" and
-     @$header@_from: does not contain "daemon@@" and
-     @$header@_from: does not contain "root@@" and
-     @$header@_auto-submitted: does not contain "auto-" and
-     @$header@_subject: does not contain "circular" and
-     @$header@_precedence: does not contain "bulk" and
-     @$header@_precedence: does not contain "list" and
-     @$header@_precedence: does not contain "junk"
-.endd
-The variable \$local@_part$\ contains the local part of the mail address of
-the user whose filter file is being run -- it is normally your login id. The
-\$domain$\ variable contains the mail domain. This condition tests for the
-appearance of the current user in the \"To:"\ header, checks that the sender is
-not the current user or one of a number of common daemons, and checks the
-content of the \"Subject:"\ and \"Precedence:"\ headers.
-
-If prefixes or suffixes are in use for local parts -- something which depends
-on the configuration of Exim (see section ~~SECTmbox below) -- the first two
-tests above are also done with
-.display asis
-$local_part_prefix$local_part$local_part_suffix
-.endd
-instead of just \$local@_part$\. If the system is configured to rewrite local
-parts of mail addresses, for example, to rewrite `dag46' as `Dirk.Gently',
-the rewritten form of the address is also used in the tests.
-
-This example shows the use of \"personal"\ in a filter file that is sending out
-vacation messages:
-.display asis
-if personal then
-  mail
-   to $reply_address
-   subject "Re: $h_subject:"
-   file $home/vacation/message
-   once $home/vacation/once
-   once_repeat 10d
-endif
-.endd
-
-It is quite common for people who have mail accounts on a number of different
-systems to forward all their mail to one system, and in this case a check for
-personal mail should test all their various mail addresses. To allow for this,
-the \"personal"\ condition keyword can be followed by
-.display
-alias <<address>>
-.endd
-any number of times, for example
-.display asis
-if personal alias smith@else.where.example
-            alias jones@other.place.example
-then ...
-.endd
-This causes messages containing the alias addresses in any places where the
-local address is tested to be treated as personal.
-
-.section Testing delivery status
-There are two conditions which are intended mainly for use in system filter
-files, but which are available in users' filter files as well. The condition
-\"first@_delivery"\ is true if this is the first attempt to deliver the
-message, and false otherwise. 
-.em
-This indicator is not reset until the first delivery process successfully 
-terminates; if there is a crash or a power failure (for example), the next 
-delivery attempt is also a `first delivery'.
-.nem
-
-In a user filter file it will be false only if
-there was previously an error in the filter, or if a delivery for the user
-failed owing to, for example, a quota error, or forwarding to a remote
-address that was deferred for some reason.
-
-The condition \"manually@_thawed"\ is true only if the message was `frozen' for
-some reason, and was subsequently released by the system administrator. It is
-unlikely to be of use in users' filter files.
+wrong in such a way that you cannot receive delivery error reports. \**Note**\:
+\"error@_message"\ is a condition, not an expansion variable, and therefore is
+not preceded by \@$\.
 
 .section Testing a list of addresses
 There is a facility for looping through a list of addresses and applying a
@@ -1535,6 +1504,130 @@ if foranyaddress $h_to:,$h_cc: ....
 .endd
 scans through the addresses in both the \To:\ and the \Cc:\ headers.
 
+.section Testing for personal mail
+.rset SECTpersonal "~~chapter.~~section"
+A common requirement is to distinguish between incoming personal mail and mail
+from a mailing list, or from a robot or other automatic process (for example, a
+bounce message). In particular, this test is normally required for `vacation
+messages'.
+
+.em
+The \"personal"\ condition checks that the message is not a bounce message and 
+that the current user's email address appears in the \"To:"\ header. It also
+checks that the sender is not the current user or one of a number of common
+daemons, and that there are no header lines starting \"List-"\ in the message.
+Finally, it checks the content of the \"Precedence:"\ header line, if there is
+one.
+
+You should always use the \"personal"\ condition when generating automatic
+responses. 
+.nem
+This example shows the use of \"personal"\ in a filter file that is sending out
+vacation messages:
+.display asis
+if personal then
+  mail
+   to $reply_address
+.newline
+.em    
+   subject "I am on holiday"
+.nem
+.newline    
+   file $home/vacation/message
+   once $home/vacation/once
+   once_repeat 10d
+endif
+.endd
+.em
+It is tempting, when writing commands like the above, to quote the original
+subject in the reply. For example:
+.display asis
+subject "Re: $h_subject:"
+.endd
+There is a danger in doing this, however. It may allow a third party to 
+subscribe you to an opt-in mailing list, provided that the list accepts bounce 
+messages as subscription confirmations. (Messages sent from filters are always 
+sent as bounce messages.) Well-managed lists require a non-bounce message to
+confirm a subscription, so the danger is relatively small.
+
+If prefixes or suffixes are in use for local parts -- something which depends
+on the configuration of Exim (see section ~~SECTmbox below) -- the tests for
+the current user are done with the full address (including the prefix and
+suffix, if any) as well as with the prefix and suffix removed. If the system is
+configured to rewrite local parts of mail addresses, for example, to rewrite
+`dag46' as `Dirk.Gently', the rewritten form of the address is also used in the
+tests.
+.nem
+
+.em
+.section Alias addresses for the personal condition
+It is quite common for people who have mail accounts on a number of different
+systems to forward all their mail to one system, and in this case a check for
+personal mail should test all their various mail addresses. To allow for this,
+the \"personal"\ condition keyword can be followed by
+.display
+alias <<address>>
+.endd
+any number of times, for example
+.display asis
+if personal alias smith@else.where.example
+            alias jones@other.place.example
+then ...
+.endd
+The alias addresses are treated as alternatives to the current user's email 
+address when testing the contents of header lines.
+.nem
+
+
+.em
+.section Details of the personal condition
+The basic \"personal"\ test is roughly equivalent to the following:
+.display flow asis
+not error_message and
+$message_headers does not contain "\nList-" and
+$header_auto-submitted: does not contain "auto-" and
+$header_precedence: does not contain "bulk" and
+$header_precedence: does not contain "list" and
+$header_precedence: does not contain "junk" and
+foranyaddress $header_to: 
+  ( $thisaddress contains "$local_part@$domain" ) and
+not foranyaddress $header_from:
+  (
+  $thisaddress contains "$local_part@domain" or
+  $thisaddress contains "server@" or
+  $thisaddress contains "daemon@" or
+  $thisaddress contains "root@" or
+  $thisaddress contains "listserv@" or
+  $thisaddress contains "majordomo@" or
+  $thisaddress contains "-request@" or
+  $thisaddress matches  "^owner-[^@]+@"       
+  ) 
+.endd
+The variable \$local@_part$\ contains the local part of the mail address of
+the user whose filter file is being run -- it is normally your login id. The
+\$domain$\ variable contains the mail domain. As explained above, if aliases 
+or rewriting are defined, or if prefixes or suffixes are in use, the tests for 
+the current user are also done with alternative addresses.
+.nem
+
+
+.section Testing delivery status
+There are two conditions that are intended mainly for use in system filter
+files, but which are available in users' filter files as well. The condition
+\"first@_delivery"\ is true if this is the first process that is attempting to
+deliver the message, and false otherwise. This indicator is not reset until the
+first delivery process successfully terminates; if there is a crash or a power
+failure (for example), the next delivery attempt is also a `first delivery'.
+
+In a user filter file \"first@_delivery"\ will be false only if
+there was previously an error in the filter, or if a delivery for the user
+failed owing to, for example, a quota error, or if forwarding to a remote
+address was deferred for some reason.
+
+The condition \"manually@_thawed"\ is true only if the message was `frozen' for
+some reason, and was subsequently released by the system administrator. It is
+unlikely to be of use in users' filter files.
+
 .section Multiple personal mailboxes
 .rset SECTmbox "~~chapter.~~section"
 The system administrator can configure Exim so that users can set up variants
@@ -1543,22 +1636,20 @@ administrator or local documentation to see if this facility is enabled on your
 system, and if so, what the details are.
 
 The facility involves the use of a prefix or a suffix on an email address. For
-example, all mail addressed to \lg103-<<something>>\ would be the property of
-user \lg103\, who could determine how it was to be handled, depending on the
+example, all mail addressed to \lg303-<<something>>\ would be the property of
+user \lg303\, who could determine how it was to be handled, depending on the
 value of <<something>>.
 
 There are two possible ways in which this can be set up. The first possibility
-is the use of multiple \(.forward)\ files. In this case, mail to \lg103-foo\,
+is the use of multiple \(.forward)\ files. In this case, mail to \lg303-foo\,
 for example, is handled by looking for a file called \.forward-foo\ in
-\lg103's\ home directory. If such a file does not exist, delivery fails and the
+\lg303's\ home directory. If such a file does not exist, delivery fails and the
 message is returned to its sender.
 
 The alternative approach is to pass all messages through a single \(.forward)\
-file, which must be a filter file in order to distinguish between the different
-cases by referencing the variables \$local@_part@_prefix$\ or
-\$local@_part@_suffix$\, as in the final example in section ~~SECTex below. If
-the filter file does not handle a prefixed or suffixed address, delivery fails
-and the message is returned to its sender.
+file, which must be a filter file so that it can distinguish between the
+different cases by referencing the variables \$local@_part@_prefix$\ or
+\$local@_part@_suffix$\, as in the final example in section ~~SECTex below.
 
 It is possible to configure Exim to support both schemes at once. In this case,
 a specific \.forward-foo\ file is first sought; if it is not found, the basic
@@ -1572,7 +1663,7 @@ suffixes in its checking.
 As was explained above, filtering just sets up addresses for delivery -- no
 deliveries are actually done while a filter file is active. If any of the
 generated addresses subsequently suffers a delivery failure, an error message
-is generated in the normal way. However, if the filter command which sets up a
+is generated in the normal way. However, if a filter command that sets up a
 delivery is preceded by the word \"noerror"\, errors for that delivery,
 $it{and any deliveries consequent on it} (that is, from alias, forwarding, or
 filter files it invokes) are ignored.
