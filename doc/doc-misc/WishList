@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.1 2004/10/08 10:38:47 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.2 2004/10/14 13:21:25 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1717,6 +1717,13 @@ AUTH during the callout checking, on all types of connection. I suppose that
 means making TLS available as well. This probably means a rewrite of the code
 that actually does the callout. Should we use the relevant transport in a new
 "callout" mode instead of keeping things separate? See also 253.
+
+And here's another submitted idea: "My actual suggestion is that if this model
+is followed, the parent process doesn't have to stop the callout process if it
+is taking too long to respond: it can return 450 to the incoming connection
+within the 5 minute SMTP command timeout and leave the callout process to
+continue, in the hope that it will eventually get a result and store it in the
+callout cache in time for the sender's next attempt."
 ------------------------------------------------------------------------------
 
 (296) 09-Sep-04 S Make deliver_time work for == lines as well as =>
