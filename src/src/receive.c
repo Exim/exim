@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.2 2004/10/18 11:36:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2723,6 +2723,7 @@ else
       Uunlink(spool_name);
       log_write(0, LOG_MAIN|LOG_REJECT, "F=<%s> rejected by non-SMTP ACL: %s",
         sender_address, log_msg);
+      if (user_msg == NULL) user_msg = US"local configuration problem";   
       if (smtp_batched_input)
         {
         moan_smtp_batch(NULL, "%d %s", 550, user_msg);

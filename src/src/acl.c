@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.2 2004/10/18 11:36:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -48,6 +48,12 @@ static uschar *conditions[] = { US"acl", US"authenticated", US"condition",
   US"endpass", US"hosts", US"local_parts", US"log_message", US"logwrite",
   US"message", US"recipients", US"sender_domains", US"senders", US"set",
   US"verify" };
+  
+/* ACL control names */
+
+static uschar *controls[] = { US"error", US"caseful_local_part",
+  US"caselower_local_part", US"enforce_sync", US"no_enforce_sync", US"freeze",
+  US"queue_only", US"submission", US"no_multiline"}; 
 
 /* Flags to indicate for which conditions /modifiers a string expansion is done
 at the outer level. In the other cases, expansion already occurs in the
@@ -99,8 +105,8 @@ static uschar cond_modifiers[] = {
   FALSE    /* verify */
 };
 
-/* Bit map of which conditions are not allowed at certain times. For each
-condition, there's a bitmap of dis-allowed times. */
+/* Bit map vector of which conditions are not allowed at certain times. For
+each condition, there's a bitmap of dis-allowed times. */
 
 static unsigned int cond_forbids[] = {
   0,                                               /* acl */
@@ -166,7 +172,6 @@ static unsigned int cond_forbids[] = {
   always and check in the verify function itself */
 
   0                                                /* verify */
-
 };
 
 
@@ -176,35 +181,48 @@ enum { CONTROL_ERROR, CONTROL_CASEFUL_LOCAL_PART, CONTROL_CASELOWER_LOCAL_PART,
   CONTROL_ENFORCE_SYNC, CONTROL_NO_ENFORCE_SYNC, CONTROL_FREEZE,
   CONTROL_QUEUE_ONLY, CONTROL_SUBMISSION, CONTROL_NO_MULTILINE };
 
-/* Structure listing various control arguments, with their characteristics.
-The maximum "where" value controls the ACLs in which the various controls are
-permitted to occur. Specifying ACL_WHERE_RCPT limits it to just the RCPT ACL;
-specifying ACL_WHERE_NOTSMTP limits it to "message" ACLs. */
+/* Bit map vector of which controls are not allowed at certain times. For
+each control, there's a bitmap of dis-allowed times. For some, it is easier to
+specify the negation of a small number of allowed times. */
+
+static unsigned int control_forbids[] = {
+  0,                                               /* error */
+  ~(1<<ACL_WHERE_RCPT),                            /* caseful_local_part */
+  ~(1<<ACL_WHERE_RCPT),                            /* caselower_local_part */
+  (1<<ACL_WHERE_NOTSMTP),                          /* enforce_sync */
+  (1<<ACL_WHERE_NOTSMTP),                          /* no_enforce_sync */
+   
+  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* freeze */
+    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+    (1<<ACL_WHERE_NOTSMTP)),
+     
+  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* queue_only */
+    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+    (1<<ACL_WHERE_NOTSMTP)),
+     
+  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* submission */
+    (1<<ACL_WHERE_PREDATA)),                       
+     
+  (1<<ACL_WHERE_NOTSMTP)                           /* no_multiline */
+};
+
+/* Structure listing various control arguments, with their characteristics. */
 
 typedef struct control_def {
   uschar *name;
   int    value;                  /* CONTROL_xxx value */
-  int    where_max;              /* Maximum "where" value */
   BOOL   has_option;             /* Has /option(s) following */
 } control_def;
 
 static control_def controls_list[] = {
-  { US"caseful_local_part",     CONTROL_CASEFUL_LOCAL_PART,
-    ACL_WHERE_RCPT,    FALSE },
-  { US"caselower_local_part",   CONTROL_CASELOWER_LOCAL_PART,
-    ACL_WHERE_RCPT,    FALSE },
-  { US"enforce_sync",           CONTROL_ENFORCE_SYNC,
-    INT_MAX,           FALSE },
-  { US"freeze",                 CONTROL_FREEZE,
-    ACL_WHERE_NOTSMTP, FALSE },
-  { US"no_enforce_sync",        CONTROL_NO_ENFORCE_SYNC,
-    INT_MAX,           FALSE },
-  { US"no_multiline_responses", CONTROL_NO_MULTILINE,
-    INT_MAX,           FALSE },
-  { US"queue_only",             CONTROL_QUEUE_ONLY,
-    ACL_WHERE_NOTSMTP, FALSE },
-  { US"submission",             CONTROL_SUBMISSION,
-    ACL_WHERE_NOTSMTP, TRUE  }
+  { US"caseful_local_part",     CONTROL_CASEFUL_LOCAL_PART, FALSE},
+  { US"caselower_local_part",   CONTROL_CASELOWER_LOCAL_PART, FALSE},
+  { US"enforce_sync",           CONTROL_ENFORCE_SYNC, FALSE},
+  { US"freeze",                 CONTROL_FREEZE, FALSE},
+  { US"no_enforce_sync",        CONTROL_NO_ENFORCE_SYNC, FALSE},
+  { US"no_multiline_responses", CONTROL_NO_MULTILINE, FALSE},
+  { US"queue_only",             CONTROL_QUEUE_ONLY, FALSE},
+  { US"submission",             CONTROL_SUBMISSION, TRUE}
   };
 
 /* Enable recursion between acl_check_internal() and acl_check_condition() */
@@ -1155,13 +1173,6 @@ if (d >= controls_list + sizeof(controls_list)/sizeof(control_def) ||
   return CONTROL_ERROR;
   }
 
-if (where > d->where_max)
-  {
-  *log_msgptr = string_sprintf("cannot use \"control=%s\" in %s ACL",
-    arg, acl_wherenames[where]);
-  return CONTROL_ERROR;
-  }
-
 *pptr = arg + len;
 return d->value;
 }
@@ -1210,6 +1221,7 @@ int rc = OK;
 for (; cb != NULL; cb = cb->next)
   {
   uschar *arg;
+  int control_type; 
 
   /* The message and log_message items set up messages to be used in
   case of rejection. They are expanded later. */
@@ -1325,7 +1337,18 @@ for (; cb != NULL; cb = cb->next)
     break;
 
     case ACLC_CONTROL:
-    switch (decode_control(arg, &p, where, log_msgptr))
+    control_type = decode_control(arg, &p, where, log_msgptr);
+
+    /* Check this control makes sense at this time */
+
+    if ((control_forbids[control_type] & (1 << where)) != 0)
+      {
+      *log_msgptr = string_sprintf("cannot use \"control=%s\" in %s ACL",
+        controls[control_type], acl_wherenames[where]);
+      return ERROR;
+      }                                                     
+
+    switch(control_type)
       {
       case CONTROL_ERROR:
       return ERROR;

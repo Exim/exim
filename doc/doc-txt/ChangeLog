@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.8 2004/10/18 09:26:02 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.9 2004/10/18 11:36:23 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -31,6 +31,12 @@ Exim version 4.44
     descriptors. Exim was using setrlimit() to set 1000 as a large value
     unlikely to be exceeded. Change 4.43/17 caused a lot of logging on these
     systems. I've change it so that if it can't get 1000, it tries for 256.
+
+ 8. "control=submission" was allowed, but had no effect, in a DATA ACL. This
+    was an oversight, and furthermore, ever since the addition of extra
+    controls (e.g. 4.43/32), the checks on when to allow different forms of
+    "control" were broken. There should now be diagnostics for all cases when a
+    control that does not make sense is encountered.
 
 
 Exim version 4.43
