@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.73 2005/01/14 13:20:10 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.74 2005/01/26 14:52:08 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -342,6 +342,9 @@ Exim version 4.50
     This is wrong and can cause the other end to generate a synchronization
     error if it is another Exim or anything else that does the synchronization
     check. A QUIT command is no longer sent after a timeout.
+
+73. $host_lookup_deferred has been added, to make it easier to detect DEFERs
+    during host lookups.
 
 
 ----------------------------------------------------
