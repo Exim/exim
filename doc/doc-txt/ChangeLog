@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.54 2004/12/21 13:59:15 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.55 2004/12/21 14:38:02 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -240,6 +240,9 @@ Exim version 4.50
     it alone. Component reversal etc. now happens only for IP addresses.
 
 56. Improve error message when ldap_search() fails in OpenLDAP or Solaris LDAP.
+
+57. Double the size of the debug message buffer (to 2048) so that more of very
+    long debug lines gets shown.
 
 
 Exim version 4.43

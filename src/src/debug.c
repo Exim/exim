@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/debug.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/debug.c,v 1.2 2004/12/21 14:38:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -10,7 +10,7 @@
 
 #include "exim.h"
 
-static uschar  debug_buffer[1024];
+static uschar  debug_buffer[2048];
 static uschar *debug_ptr = debug_buffer;
 static int     debug_prefix_length = 0;
 
