@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.5 2004/11/25 14:31:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.6 2004/12/20 15:24:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -86,11 +86,17 @@ consist of a number of parts.
 separator character that is used when multiple records are found. The default 
 separator is newline.
 
-(b) If the next sequence of characters is a sequence of letters and digits 
-followed by '=', it is interpreted as the name of the DNS record type. The 
-default is "A".
+(b) If the next sequence of characters is 'defer_FOO' followed by a comma,
+the defer behaviour is set to FOO. The possible behaviours are: 'strict', where
+any defer causes the whole lookup to defer; 'lax', where a defer causes the
+whole lookup to defer only if none of the DNS queries succeeds; and 'never',
+where all defers are as if the lookup failed. The default is 'lax'.
 
-(c) Then there follows list of domain names. This is a generalized Exim list, 
+(c) If the next sequence of characters is a sequence of letters and digits 
+followed by '=', it is interpreted as the name of the DNS record type. The 
+default is "TXT".
+
+(d) Then there follows list of domain names. This is a generalized Exim list, 
 which may start with '<' in order to set a specific separator. The default 
 separator, as always, is colon. */
 
@@ -102,6 +108,7 @@ int rc;
 int size = 256;
 int ptr = 0;
 int sep = 0;
+int defer_mode = PASS;
 int type = T_TXT;
 int failrc = FAIL;
 uschar *outsep = US"\n";
@@ -131,6 +138,40 @@ if (*keystring == '>')
   keystring += 2; 
   while (isspace(*keystring)) keystring++;
   } 
+
+/* Check for a defer behaviour keyword. */
+
+if (strncmpic(keystring, US"defer_", 6) == 0)
+  {
+  keystring += 6;
+  if (strncmpic(keystring, US"strict", 6) == 0)
+    {
+    defer_mode = DEFER;
+    keystring += 6;
+    }
+  else if (strncmpic(keystring, US"lax", 3) == 0)
+    {
+    defer_mode = PASS;
+    keystring += 3;
+    }
+  else if (strncmpic(keystring, US"never", 5) == 0)
+    {
+    defer_mode = OK;
+    keystring += 5;
+    }
+  else
+    {
+    *errmsg = US"unsupported dnsdb defer behaviour";
+    return DEFER;
+    }
+  while (isspace(*keystring)) keystring++;
+  if (*keystring++ != ',')
+    {
+    *errmsg = US"dnsdb defer behaviour syntax error";
+    return DEFER;
+    }
+  while (isspace(*keystring)) keystring++;
+  }
 
 /* If the keystring contains an = this must be preceded by a valid type name. */
 
@@ -214,8 +255,9 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
   if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
   if (rc != DNS_SUCCEED)
     {
-    failrc = DEFER;
-    continue;
+    if (defer_mode == DEFER) return DEFER;          /* always defer */
+      else if (defer_mode == PASS) failrc = DEFER;  /* defer only if all do */
+    continue;                                       /* treat defer as fail */
     }
   
   /* Search the returned records */

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.20 2004/12/17 14:52:44 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.21 2004/12/20 15:24:27 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -152,9 +152,21 @@ Version 4.50
     single item are handled.
 
     The dnsdb lookup fails only if all the DNS lookups fail. If there is a
-    temporary DNS error for any of them, the remaining lookups are still done,
-    and only if none of them succeed does the dnsdb lookup defer. As long as at
-    least one of the DNS lookups yields some data, the dnsdb lookup succeeds.
+    temporary DNS error for any of them, the behaviour is controlled by
+    an optional keyword followed by a comma that may appear before the record
+    type. The possible keywords are "defer_strict", "defer_never", and
+    "defer_lax". With "strict" behaviour, any temporary DNS error causes the
+    whole lookup to defer. With "never" behaviour, a temporary DNS error is
+    ignored, and the behaviour is as if the DNS lookup failed to find anything.
+    With "lax" behaviour, all the queries are attempted, but a temporary DNS
+    error causes the whole lookup to defer only if none of the other lookups
+    succeed. The default is "lax", so the following lookups are equivalent:
+
+      ${lookup dnsdb{defer_lax,a=one.host.com:two.host.com}}
+      ${lookup dnsdb{a=one.host.com:two.host.com}}
+
+    Thus, in the default case, as long as at least one of the DNS lookups
+    yields some data, the dnsdb lookup succeeds.
 
 15. It is now possible to specify the character to be used as a separator when
     a dnsdb lookup returns data from more than one DNS record. The default is a
