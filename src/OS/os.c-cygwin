@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/OS/os.c-cygwin,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.c-cygwin,v 1.2 2005/03/29 11:01:32 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -78,7 +78,7 @@ int cygwin_setgid(gid_t gid )
     res = setgid(gid);
     if (cygwin_debug)
       fprintf(stderr, "setgid %lu %lu %d pid: %d\n",
-	      gid, getgid(), res, getpid());
+              gid, getgid(), res, getpid());
   }
   return res;
 }
@@ -124,19 +124,19 @@ static DWORD get_privileges ()
       && LookupPrivilegeValue (NULL, SE_CREATE_TOKEN_NAME, &cluid)
       && LookupPrivilegeValue(NULL, SE_RESTORE_NAME, &rluid)
       && (GetTokenInformation( hToken, TokenPrivileges,
-			       privs, sizeof (buffer), &length)
-	  || (GetLastError () == ERROR_INSUFFICIENT_BUFFER
-	      && (privs = (PTOKEN_PRIVILEGES) alloca (length))
-	      && GetTokenInformation(hToken, TokenPrivileges,
-				     privs, length, &length)))) {
+                               privs, sizeof (buffer), &length)
+          || (GetLastError () == ERROR_INSUFFICIENT_BUFFER
+              && (privs = (PTOKEN_PRIVILEGES) alloca (length))
+              && GetTokenInformation(hToken, TokenPrivileges,
+                                     privs, length, &length)))) {
     for (i = 0; i < privs->PrivilegeCount; i++) {
       if (privs->Privileges[i].Luid.QuadPart == cluid.QuadPart)
-	ret |= CREATE_BIT;
+        ret |= CREATE_BIT;
       else if (privs->Privileges[i].Luid.QuadPart == rluid.QuadPart)
-	ret |= RESTORE_BIT;
+        ret |= RESTORE_BIT;
       else continue;
       if (ret == (CREATE_BIT | RESTORE_BIT))
-	break;
+        break;
     }
   }
   else
@@ -227,7 +227,7 @@ void cygwin_init(int argc, char ** argv, void * rup,
   if (privileged) {             /* Can setuid */
     if (cygwin_setgid(* (gid_t *) egp) /* Setuid to exim */
         || cygwin_setuid(* (uid_t *) eup))
-      privileged = -1;		/* Problem... Perhaps not in 544 */
+      privileged = -1;          /* Problem... Perhaps not in 544 */
   }
 
   /* Pretend we are root to avoid useless execs.
@@ -241,31 +241,74 @@ void cygwin_init(int argc, char ** argv, void * rup,
 
   if (cygwin_debug) {
     fprintf(stderr, "Starting uid %ld, gid %ld, ntsec %lu, privileged %d.\n",
-	    myuid, mygid, cygwin_internal(CW_CHECK_NTSEC, NULL), privileged);
+            myuid, mygid, cygwin_internal(CW_CHECK_NTSEC, NULL), privileged);
     fprintf(stderr, "root_uid %ld, exim_uid %ld, exim_gid %ld, config_uid %ld.\n",
-	    * (uid_t *) rup, * (uid_t *) eup, * (gid_t *) egp, * (uid_t *) cup);
+            * (uid_t *) rup, * (uid_t *) eup, * (gid_t *) egp, * (uid_t *) cup);
   }
   return;
 }
+
+#ifndef OS_LOAD_AVERAGE /* Can be set on command line */
+#define OS_LOAD_AVERAGE /* src/os.c need not provide it */
 
 /*****************************************************************
  *
  Functions for average load measurements
 
+ There are two methods, which work only on NT.
+
+ The first one uses the HKEY_PERFORMANCE_DATA registry to
+ get performance data. It is complex but well documented
+ and works on all NT versions.
+
+ The second one uses NtQuerySystemInformation.
+ Its use is discouraged starting with WinXP.
+
+ Until 4.43, the Cygwin port of exim was using the first
+ method.
+
+*****************************************************************/
+#define PERF_METHOD2
+
+/* Structure to compute the load average efficiently */
+typedef struct {
+  DWORD Lock;
+  unsigned long long Time100ns;   /* Last measurement time */
+  unsigned long long IdleCount;   /* Latest cumulative idle time */
+  unsigned long long LastCounter; /* Last measurement counter */
+  unsigned long long PerfFreq;    /* Perf counter frequency */
+  int LastLoad;                   /* Last reported load, or -1 */
+#ifdef PERF_METHOD1
+  PPERF_DATA_BLOCK PerfData;      /* Pointer to a buffer to get the data */
+  DWORD BufferSize;               /* Size of PerfData */
+  LPSTR * NamesArray;             /* Temporary (malloc) buffer for index */
+#endif
+} cygwin_perf_t;
+
+static struct {
+   HANDLE handle;
+   pid_t pid;
+   cygwin_perf_t *perf;
+} cygwin_load = {NULL, 0, NULL};
+
+#ifdef PERF_METHOD1
+/*************************************************************
+ METHOD 1
+
  Obtaining statistics in Windows is done at a low level by
  calling registry functions, in particular the key
  HKEY_PERFORMANCE_DATA on NT and successors.
  Something equivalent exists on Win95, see Microsoft article
- HOWTO: Access the Performance Registry Under Windows 95 (Q174631)
+ HOWTO: Access the Performance Registry Under Windows 95 (KB 174631)
  but it is not implemented here.
 
  The list of objects to be polled is specified in the string
  passed to RegQueryValueEx in ReadStat() below.
  On NT, all objects are polled even if info about only one is
  required. This is fixed in Windows 2000. See articles
- INFO: Perflib Calling Close Procedure in Windows 2000 (Q270127)
+ INFO: Perflib Calling Close Procedure in Windows 2000 (KB 270127)
  INFO: Performance Data Changes Between Windows NT 4.0 and Windows
- 2000 (Q296523)
+ 2000 (KB 296523)
 
  It is unclear to me how the counters are primarily identified.
  Whether it's by name strings or by the offset of their strings
@@ -280,8 +323,6 @@ void cygwin_init(int argc, char ** argv, void * rup,
  as expected.
 
 *****************************************************************/
-#ifndef OS_LOAD_AVERAGE /* Can be set on command line */
-#define OS_LOAD_AVERAGE /* src/os.c need not provide it */
 
 /* Object and counter indices and names */
 #define PROCESSOR_OBJECT_INDEX 238
@@ -289,19 +330,6 @@ void cygwin_init(int argc, char ** argv, void * rup,
 #define PROCESSOR_OBJECT_NAME "Processor"
 #define PROCESSOR_TIME_COUNTER 6
 #define PROCESSOR_TIME_NAME "% Processor Time"
-
-/* Structure to compute the load average efficiently */
-static struct {
-  long long Time100ns;       /* Last measurement time */
-  long long IdleCount;       /* Latest cumulative idle time */
-  long long LastCounter;     /* Last measurement counter */
-  long long PerfFreq;        /* Perf counter frequency */
-  PPERF_DATA_BLOCK PerfData; /* Pointer to a buffer to get the data */
-  DWORD BufferSize;          /* Size of PerfData */
-  int LastLoad;              /* Last reported load, or -1 */
-  LPSTR * NamesArray;        /* Temporary (malloc) buffer for index */
-  BOOL Init;                 /* True if initialized */
-} cygwin_load = { 0, 0, 0, 0, NULL, 0, 0, NULL, FALSE};
 
 #define BYTEINCREMENT 800    /* Block to add to PerfData */
 
@@ -331,8 +359,8 @@ static struct {
 /*****************************************************************
  *
  Load the counter and object names from the registry
- to cygwin_load.NameStrings
- and index them in cygwin_load.NamesArray
+ to cygwin_load.perf->NameStrings
+ and index them in cygwin_load.perf->NamesArray
 
  NameStrings seems to be taken from the file
  X:\Winnt\system32\perfc009.dat
@@ -352,21 +380,21 @@ static BOOL GetNameStrings( )
 
   /* Get the number of Counter items into dwArraySize. */
   if ((res = RegOpenKeyEx( HKEY_LOCAL_MACHINE,
-			   "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Perflib",
-			   0,
-			   KEY_QUERY_VALUE, /* KEY_READ, */
-			   &hKeyPerflib))
+                           "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Perflib",
+                           0,
+                           KEY_QUERY_VALUE, /* KEY_READ, */
+                           &hKeyPerflib))
       != ERROR_SUCCESS) {
     DEBUG(D_load) debug_printf("RegOpenKeyEx (1): error %ld (Windows)\n", res);
     return FALSE;
   }
   dwNamesSize = sizeof(dwArraySize); /* Temporary reuse */
   if ((res = RegQueryValueEx( hKeyPerflib,
-			      "Last Counter",
-			      NULL,
-			      NULL,
-			      (LPBYTE) &dwArraySize,
-			      &dwNamesSize ))
+                              "Last Counter",
+                              NULL,
+                              NULL,
+                              (LPBYTE) &dwArraySize,
+                              &dwNamesSize ))
       != ERROR_SUCCESS) {
     DEBUG(D_load) debug_printf("RegQueryValueEx (1): error %ld (Windows)\n", res);
     return FALSE;
@@ -374,10 +402,10 @@ static BOOL GetNameStrings( )
   RegCloseKey( hKeyPerflib );
   /* Open the key containing the counter and object names. */
   if ((res = RegOpenKeyEx( HKEY_LOCAL_MACHINE,
-			   "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Perflib\\009",
-			   0,
-			   KEY_READ,
-			   &hKeyPerflib))
+                           "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Perflib\\009",
+                           0,
+                           KEY_READ,
+                           &hKeyPerflib))
       != ERROR_SUCCESS) {
     DEBUG(D_load) debug_printf("RegOpenKeyEx (2): error %ld (Windows)\n", res);
     return FALSE;
@@ -388,21 +416,21 @@ static BOOL GetNameStrings( )
   lpCurrentString = NULL;
   while (1) {
     res = RegQueryValueEx( hKeyPerflib,
-			   "Counter",
-			   NULL,
-			   NULL,
-			   (unsigned char *) lpCurrentString,
-			   &dwNamesSize);
+                           "Counter",
+                           NULL,
+                           NULL,
+                           (unsigned char *) lpCurrentString,
+                           &dwNamesSize);
     if ((res == ERROR_SUCCESS) && /* Bug (NT 4.0): SUCCESS was returned on first call */
-	(cygwin_load.NamesArray != NULL)) break;
-    if ((res == ERROR_SUCCESS) || /* but cygwin_load.NamesArrays == NULL */
+        (cygwin_load.perf->NamesArray != NULL)) break;
+    if ((res == ERROR_SUCCESS) || /* but cygwin_load.perf->NamesArrays == NULL */
         (res == ERROR_MORE_DATA)) {
       /* Allocate memory BOTH for the names array and for the counter and object names */
-      if ((cygwin_load.NamesArray =
-	   (LPSTR *) malloc( (dwArraySize + 1) * sizeof(LPSTR) + dwNamesSize * sizeof(CHAR)))
-	  != NULL) {
+      if ((cygwin_load.perf->NamesArray =
+           (LPSTR *) malloc( (dwArraySize + 1) * sizeof(LPSTR) + dwNamesSize * sizeof(CHAR)))
+          != NULL) {
         /* Point to area for the counter and object names */
-	lpCurrentString = (LPSTR) & cygwin_load.NamesArray[dwArraySize + 1];
+        lpCurrentString = (LPSTR) & cygwin_load.perf->NamesArray[dwArraySize + 1];
         continue;
       }
       DEBUG(D_load) debug_printf("Malloc: errno %d (%s)\n", errno, strerror(errno));
@@ -417,7 +445,7 @@ static BOOL GetNameStrings( )
   while (*lpCurrentString) {
     dwCounter = atol( lpCurrentString );
     lpCurrentString += (lstrlen(lpCurrentString)+1);
-    cygwin_load.NamesArray[dwCounter] = lpCurrentString;
+    cygwin_load.perf->NamesArray[dwCounter] = lpCurrentString;
     lpCurrentString += (strlen(lpCurrentString)+1);
   }
   return TRUE;
@@ -429,23 +457,23 @@ static BOOL GetNameStrings( )
 
 *****************************************************************/
 static BOOL ReadTimeCtr(PPERF_OBJECT_TYPE PerfObj,
-			PPERF_COUNTER_DEFINITION CurCntr,
-			PPERF_COUNTER_BLOCK PtrToCntr,
-			unsigned long long * TimePtr){
+                        PPERF_COUNTER_DEFINITION CurCntr,
+                        PPERF_COUNTER_BLOCK PtrToCntr,
+                        unsigned long long * TimePtr){
   int j;
   /* Scan all counters. */
   for( j = 0; j < PerfObj->NumCounters; j++ ) {
     if (CurCntr->CounterNameTitleIndex == PROCESSOR_TIME_COUNTER) {
       /* Verify it is really the proc time counter */
       if ((CurCntr->CounterType != PERF_100NSEC_TIMER_INV) || /* Wrong type */
-	  ((cygwin_load.NamesArray != NULL) &&		      /* Verify name */
-	   (strcmp(cygwin_load.NamesArray[CurCntr->CounterNameTitleIndex],
-		   PROCESSOR_TIME_NAME)))) {
-	log_write(0, LOG_MAIN|LOG_PANIC,
+          ((cygwin_load.perf->NamesArray != NULL) &&                  /* Verify name */
+           (strcmp(cygwin_load.perf->NamesArray[CurCntr->CounterNameTitleIndex],
+                   PROCESSOR_TIME_NAME)))) {
+        log_write(0, LOG_MAIN|LOG_PANIC,
                   "Incorrect Perf counter type or name %x %s",
-		  (unsigned) CurCntr->CounterType,
-		  cygwin_load.NamesArray[CurCntr->CounterNameTitleIndex]);
-	return FALSE;
+                  (unsigned) CurCntr->CounterType,
+                  cygwin_load.perf->NamesArray[CurCntr->CounterNameTitleIndex]);
+        return FALSE;
       }
       *TimePtr += *(unsigned long long int *) ((PBYTE) PtrToCntr + CurCntr->CounterOffset);
       return TRUE; /* return TRUE as soon as we found the counter */
@@ -455,6 +483,7 @@ static BOOL ReadTimeCtr(PPERF_OBJECT_TYPE PerfObj,
   }
   return FALSE;
 }
+
 /*****************************************************************
  *
  ReadStat()
@@ -462,8 +491,8 @@ static BOOL ReadTimeCtr(PPERF_OBJECT_TYPE PerfObj,
  Return TRUE if success.
 
  *****************************************************************/
-static BOOL ReadStat(long long int *Time100nsPtr,
-				     long long int * IdleCountPtr)
+static BOOL ReadStat(unsigned long long int *Time100nsPtr,
+                     unsigned long long int * IdleCountPtr)
 {
   PPERF_OBJECT_TYPE PerfObj;
   PPERF_INSTANCE_DEFINITION PerfInst;
@@ -476,20 +505,20 @@ static BOOL ReadStat(long long int *Time100nsPtr,
      We may need to blindly increase the buffer size.
      BufferSize does not return info but may be changed */
   while (1) {
-    DWORD BufferSize = cygwin_load.BufferSize;
+    DWORD BufferSize = cygwin_load.perf->BufferSize;
     res = RegQueryValueEx( HKEY_PERFORMANCE_DATA,
-			   PROCESSOR_OBJECT_STRING,
-			   NULL,
-			   NULL,
-			   (LPBYTE) cygwin_load.PerfData,
-			   &BufferSize );
+                           PROCESSOR_OBJECT_STRING,
+                           NULL,
+                           NULL,
+                           (LPBYTE) cygwin_load.perf->PerfData,
+                           &BufferSize );
     if (res == ERROR_SUCCESS) break;
     if (res == ERROR_MORE_DATA ) {
       /* Increment if necessary to get a buffer that is big enough. */
-      cygwin_load.BufferSize += BYTEINCREMENT;
-      if ((cygwin_load.PerfData =
-	   (PPERF_DATA_BLOCK) realloc( cygwin_load.PerfData, cygwin_load.BufferSize ))
-	  != NULL) continue;
+      cygwin_load.perf->BufferSize += BYTEINCREMENT;
+      if ((cygwin_load.perf->PerfData =
+           (PPERF_DATA_BLOCK) realloc( cygwin_load.perf->PerfData, cygwin_load.perf->BufferSize ))
+          != NULL) continue;
       DEBUG(D_load) debug_printf("Malloc: errno %d (%s)\n", errno, strerror(errno));
     }
     else { /* Serious error */
@@ -501,62 +530,62 @@ static BOOL ReadStat(long long int *Time100nsPtr,
   *Time100nsPtr = 0;
   *IdleCountPtr = 0;
   /* We should only have one object, but write general code just in case. */
-  PerfObj = FirstObject( cygwin_load.PerfData );
-  for( i = 0; i < cygwin_load.PerfData->NumObjectTypes; i++ ) {
+  PerfObj = FirstObject( cygwin_load.perf->PerfData );
+  for( i = 0; i < cygwin_load.perf->PerfData->NumObjectTypes; i++ ) {
     /* We are only interested in the processor object */
     if ( PerfObj->ObjectNameTitleIndex == PROCESSOR_OBJECT_INDEX) {
       /* Possibly verify it is really the Processor object. */
-      if ((cygwin_load.NamesArray != NULL) &&
-	  (strcmp(cygwin_load.NamesArray[PerfObj->ObjectNameTitleIndex],
-		  PROCESSOR_OBJECT_NAME))) {
-	log_write(0, LOG_MAIN|LOG_PANIC,
-		  "Incorrect Perf object name %s",
-		  cygwin_load.NamesArray[PerfObj->ObjectNameTitleIndex]);
-	return FALSE;
+      if ((cygwin_load.perf->NamesArray != NULL) &&
+          (strcmp(cygwin_load.perf->NamesArray[PerfObj->ObjectNameTitleIndex],
+                  PROCESSOR_OBJECT_NAME))) {
+        log_write(0, LOG_MAIN|LOG_PANIC,
+                  "Incorrect Perf object name %s",
+                  cygwin_load.perf->NamesArray[PerfObj->ObjectNameTitleIndex]);
+        return FALSE;
       }
       /* Get the first counter */
       PerfCntr = FirstCounter( PerfObj );
       /* See if the object has instances.
-	 It should, but write general code. */
+         It should, but write general code. */
       if( PerfObj->NumInstances != PERF_NO_INSTANCES ) {
-	PerfInst = FirstInstance( PerfObj );
-	for( k = 0; k < PerfObj->NumInstances; k++ ) {
-	  /* There can be several processors.
+        PerfInst = FirstInstance( PerfObj );
+        for( k = 0; k < PerfObj->NumInstances; k++ ) {
+          /* There can be several processors.
              Accumulate both the Time100ns and the idle counter.
-             On Win 2000 I have seen an instance named "_Total".
-	     Do not use it.	We only use instances with a single
+             Starting with Win2000 there is an instance named "_Total".
+             Do not use it.     We only use instances with a single
              character in the name.
              If we examine the object names, we also look at the instance
              names and their lengths and issue reports */
-	  if ( cygwin_load.NamesArray != NULL) {
+          if ( cygwin_load.perf->NamesArray != NULL) {
             CHAR ascii[30]; /* The name is in unicode */
-	    wsprintf(ascii,"%.29lS",
-		     (char *)((PBYTE)PerfInst + PerfInst->NameOffset));
-	    log_write(0, LOG_MAIN,
+            wsprintf(ascii,"%.29lS",
+                     (char *)((PBYTE)PerfInst + PerfInst->NameOffset));
+            log_write(0, LOG_MAIN,
                       "Perf: Found processor instance \"%s\", length %d",
                       ascii, PerfInst->NameLength);
-	    if ((PerfInst->NameLength != 4) &&
+            if ((PerfInst->NameLength != 4) &&
                 (strcmp(ascii, "_Total") != 0)) {
-	      log_write(0, LOG_MAIN|LOG_PANIC,
+              log_write(0, LOG_MAIN|LOG_PANIC,
                         "Perf: WARNING: Unexpected processor instance name");
-	      return FALSE;
+              return FALSE;
             }
           }
-	  if (PerfInst->NameLength == 4) {
-            *Time100nsPtr += cygwin_load.PerfData->PerfTime100nSec.QuadPart;
-	    PtrToCntr = InstanceCounterBlock(PerfInst);
-	    if (! ReadTimeCtr(PerfObj, PerfCntr, PtrToCntr, IdleCountPtr)) {
-	      return FALSE;
-	    }
+          if (PerfInst->NameLength == 4) {
+            *Time100nsPtr += cygwin_load.perf->PerfData->PerfTime100nSec.QuadPart;
+            PtrToCntr = InstanceCounterBlock(PerfInst);
+            if (! ReadTimeCtr(PerfObj, PerfCntr, PtrToCntr, IdleCountPtr)) {
+              return FALSE;
+            }
           }
-	  PerfInst = NextInstance( PerfInst );
-	}
+          PerfInst = NextInstance( PerfInst );
+        }
         return (*Time100nsPtr != 0); /* Something was read */
       }
       else { /* No instance, just the counter data */
-	*Time100nsPtr = cygwin_load.PerfData->PerfTime100nSec.QuadPart;
-	PtrToCntr = ObjectCounterBlock(PerfObj);
-	return ReadTimeCtr(PerfObj, PerfCntr, PtrToCntr, IdleCountPtr);
+        *Time100nsPtr = cygwin_load.perf->PerfData->PerfTime100nSec.QuadPart;
+        PtrToCntr = ObjectCounterBlock(PerfObj);
+        return ReadTimeCtr(PerfObj, PerfCntr, PtrToCntr, IdleCountPtr);
       }
     }
     PerfObj = NextObject( PerfObj );
@@ -564,43 +593,176 @@ static BOOL ReadStat(long long int *Time100nsPtr,
   return FALSE; /* Did not find the Processor object */
 }
 
+#elif defined(PERF_METHOD2)
+
+/*************************************************************
+  METHOD 2
+
+  Uses NtQuerySystemInformation.
+  This requires definitions that are not part of
+  standard include files.
+*************************************************************/
+#include <ntdef.h>
+
+typedef enum _SYSTEM_INFORMATION_CLASS
+{
+  SystemBasicInformation = 0,
+  SystemPerformanceInformation = 2,
+  SystemTimeOfDayInformation = 3,
+  SystemProcessesAndThreadsInformation = 5,
+  SystemProcessorTimes = 8,
+  SystemPagefileInformation = 18,
+  /* There are a lot more of these... */
+} SYSTEM_INFORMATION_CLASS;
+
+typedef struct _SYSTEM_BASIC_INFORMATION
+{
+  ULONG Unknown;
+  ULONG MaximumIncrement;
+  ULONG PhysicalPageSize;
+  ULONG NumberOfPhysicalPages;
+  ULONG LowestPhysicalPage;
+  ULONG HighestPhysicalPage;
+  ULONG AllocationGranularity;
+  ULONG LowestUserAddress;
+  ULONG HighestUserAddress;
+  ULONG ActiveProcessors;
+  UCHAR NumberProcessors;
+} SYSTEM_BASIC_INFORMATION, *PSYSTEM_BASIC_INFORMATION;
+
+typedef struct __attribute__ ((aligned (8))) _SYSTEM_PROCESSOR_TIMES
+{
+  LARGE_INTEGER IdleTime;
+  LARGE_INTEGER KernelTime;
+  LARGE_INTEGER UserTime;
+  LARGE_INTEGER DpcTime;
+  LARGE_INTEGER InterruptTime;
+  ULONG InterruptCount;
+} SYSTEM_PROCESSOR_TIMES, *PSYSTEM_PROCESSOR_TIMES;
+
+typedef NTSTATUS NTAPI (*NtQuerySystemInformation_t) (SYSTEM_INFORMATION_CLASS, PVOID, ULONG, PULONG);
+typedef ULONG NTAPI (*RtlNtStatusToDosError_t) (NTSTATUS);
+
+static NtQuerySystemInformation_t NtQuerySystemInformation;
+static RtlNtStatusToDosError_t RtlNtStatusToDosError;
+
+/*****************************************************************
+ *
+ LoadNtdll()
+ Load special functions from the NTDLL
+ Return TRUE if success.
+
+ *****************************************************************/
+
+static BOOL LoadNtdll()
+{
+  HINSTANCE hinstLib;
+
+  if ((hinstLib = LoadLibrary("NTDLL.DLL"))
+      && (NtQuerySystemInformation =
+          (NtQuerySystemInformation_t) GetProcAddress(hinstLib,
+                                                        "NtQuerySystemInformation"))
+      && (RtlNtStatusToDosError =
+          (RtlNtStatusToDosError_t) GetProcAddress(hinstLib,
+                                                     "RtlNtStatusToDosError")))
+    return TRUE;
+
+  DEBUG(D_load)
+    debug_printf("perf: load: %ld (Windows)\n", GetLastError());
+  return FALSE;
+}
+
+/*****************************************************************
+ *
+ ReadStat()
+ Measures current Time100ns and IdleCount
+ Return TRUE if success.
+
+ *****************************************************************/
+
+static BOOL ReadStat(unsigned long long int *Time100nsPtr,
+                     unsigned long long int *IdleCountPtr)
+{
+  NTSTATUS ret;
+  SYSTEM_BASIC_INFORMATION sbi;
+  PSYSTEM_PROCESSOR_TIMES spt;
+
+  *Time100nsPtr = *IdleCountPtr = 0;
+
+  if ((ret = NtQuerySystemInformation(SystemBasicInformation,
+                                      (PVOID) &sbi, sizeof sbi, NULL))
+      != STATUS_SUCCESS) {
+    DEBUG(D_load)
+      debug_printf("Perf: NtQuerySystemInformation: %lu (Windows)\n",
+                   RtlNtStatusToDosError(ret));
+  }
+  else if (!(spt = (PSYSTEM_PROCESSOR_TIMES) alloca(sizeof(spt[0]) * sbi.NumberProcessors))) {
+    DEBUG(D_load)
+      debug_printf("Perf: alloca: errno %d (%s)\n", errno, strerror(errno));
+  }
+  else if ((ret = NtQuerySystemInformation(SystemProcessorTimes, (PVOID) spt,
+                                           sizeof spt[0] * sbi.NumberProcessors, NULL))
+           != STATUS_SUCCESS) {
+    DEBUG(D_load)
+      debug_printf("Perf: NtQuerySystemInformation: %lu (Windows)\n",
+                   RtlNtStatusToDosError(ret));
+  }
+  else {
+    int i;
+    for (i = 0; i < sbi.NumberProcessors; i++) {
+      *Time100nsPtr += spt[i].KernelTime.QuadPart;;
+      *Time100nsPtr += spt[i].UserTime.QuadPart;
+      *IdleCountPtr += spt[i].IdleTime.QuadPart;
+    }
+    return TRUE;
+  }
+  return FALSE;
+}
+#endif /* PERF_METHODX */
+
 /*****************************************************************
  *
  InitLoadAvg()
- Initialize the cygwin_load structure.
- and set cygwin_load.Flag to TRUE if successful.
+ Initialize the cygwin_load.perf structure.
+ and set cygwin_load.perf->Flag to TRUE if successful.
  This is called the first time os_getloadavg is called
  *****************************************************************/
-static void InitLoadAvg()
+static void InitLoadAvg(cygwin_perf_t *this)
 {
   BOOL success = TRUE;
-  cygwin_load.Init = TRUE;        /* We have run */
+
   /* Get perf frequency and counter */
-  QueryPerformanceFrequency((LARGE_INTEGER *)& cygwin_load.PerfFreq);
-  QueryPerformanceCounter((LARGE_INTEGER *)& cygwin_load.LastCounter);
+  QueryPerformanceFrequency((LARGE_INTEGER *)& this->PerfFreq);
+  QueryPerformanceCounter((LARGE_INTEGER *)& this->LastCounter);
+
+#ifdef PERF_METHOD1
   DEBUG(D_load) {
     /* Get the name strings through the registry
        to verify that the object and counter numbers
        have the names we expect */
     success = GetNameStrings();
   }
-  /* Get initial values for Time100ns and IdleCount
-     and possibly verify the names */
-  //  success = success &&
-  success = ReadStat( & cygwin_load.Time100ns,
-		      & cygwin_load.IdleCount);
+#endif
+  /* Get initial values for Time100ns and IdleCount */
+  success = success
+            && ReadStat( & this->Time100ns,
+                         & this->IdleCount);
   /* If success, set the Load to 0, else to -1 */
-  if (success) cygwin_load.LastLoad = 0;
+  if (success) this->LastLoad = 0;
   else {
     log_write(0, LOG_MAIN, "Cannot obtain Load Average");
-    cygwin_load.LastLoad = -1;
+    this->LastLoad = -1;
   }
+#ifdef PERF_METHOD1
   /* Free the buffer created for debug name verification */
-  if (cygwin_load.NamesArray != NULL) {
-    free(cygwin_load.NamesArray);
-    cygwin_load.NamesArray = NULL;
+  if (this->NamesArray != NULL) {
+    free(this->NamesArray);
+    this->NamesArray = NULL;
   }
+#endif
 }
+
+
 /*****************************************************************
  *
  os_getloadavg()
@@ -611,42 +773,89 @@ static void InitLoadAvg()
 
  The first time we are called we initialize the counts
  and return 0 or -1.
- The load cannot be measured because we use the processor 100%
+ The initial load cannot be measured as we use the processor 100%
 *****************************************************************/
+static SECURITY_ATTRIBUTES sa = {sizeof (SECURITY_ATTRIBUTES), NULL, TRUE};
 #define AVERAGING 10
+
 int os_getloadavg()
 {
-  long long Time100ns, IdleCount, CurrCounter;
+  unsigned long long Time100ns, IdleCount, CurrCounter;
   int value;
+  pid_t newpid;
 
-  if (! cygwin_load.Init) InitLoadAvg();
-  else if (cygwin_load.LastLoad >= 0) { /* Initialized OK */
+  /* New process.
+     Reload the dlls and the file mapping */
+  if ((newpid = getpid()) != cygwin_load.pid) {
+    BOOL new;
+    cygwin_load.pid = newpid;
+
+#ifdef PERF_METHOD2
+    if (!LoadNtdll()) {
+      log_write(0, LOG_MAIN, "Cannot obtain Load Average");
+      cygwin_load.perf = NULL;
+      return -1;
+    }
+#endif
+
+    if ((new = !cygwin_load.handle)) {
+      cygwin_load.handle = CreateFileMapping (INVALID_HANDLE_VALUE, &sa, PAGE_READWRITE,
+                                              0, sizeof(cygwin_perf_t), NULL);
+      DEBUG(D_load)
+        debug_printf("Perf: CreateFileMapping: handle %x\n", (unsigned) cygwin_load.handle);
+    }
+    cygwin_load.perf = (cygwin_perf_t *) MapViewOfFile (cygwin_load.handle,
+                                                        FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+    DEBUG(D_load)
+      debug_printf("Perf: MapViewOfFile: addr %x\n", (unsigned) cygwin_load.perf);
+    if (new && cygwin_load.perf)
+      InitLoadAvg(cygwin_load.perf);
+  }
+
+  /* Check if initialized OK */
+  if (!cygwin_load.perf || cygwin_load.perf->LastLoad < 0)
+    return -1;
+
+  /* If we cannot get the lock, we return 0.
+     This is to prevent any lock-up possibility.
+     Finding a lock busy is unlikely, and giving up only
+     results in an immediate delivery .*/
+
+  if (InterlockedCompareExchange(&cygwin_load.perf->Lock, 1, 0)) {
+    DEBUG(D_load)
+      debug_printf("Perf: Lock busy\n");
+    return 0;
+  }
+
     /* Get the current time (PerfCounter) */
     QueryPerformanceCounter((LARGE_INTEGER *)& CurrCounter);
     /* Calls closer than AVERAGING sec apart use the previous value */
-    if (CurrCounter - cygwin_load.LastCounter >
-	AVERAGING * cygwin_load.PerfFreq) {
+  if (CurrCounter - cygwin_load.perf->LastCounter >
+      AVERAGING * cygwin_load.perf->PerfFreq) {
       /* Get Time100ns and IdleCount */
       if (ReadStat( & Time100ns, & IdleCount)) { /* Success */
-	/* Return processor load on 1000 scale */
-	value = 1000 - ((1000 * (IdleCount - cygwin_load.IdleCount)) /
-			(Time100ns - cygwin_load.Time100ns));
-	cygwin_load.Time100ns = Time100ns;
-	cygwin_load.IdleCount = IdleCount;
-	cygwin_load.LastCounter = CurrCounter;
-	cygwin_load.LastLoad = value;
+        /* Return processor load on 1000 scale */
+      value = 1000 - ((1000 * (IdleCount - cygwin_load.perf->IdleCount)) /
+                      (Time100ns - cygwin_load.perf->Time100ns));
+      cygwin_load.perf->Time100ns = Time100ns;
+      cygwin_load.perf->IdleCount = IdleCount;
+      cygwin_load.perf->LastCounter = CurrCounter;
+      cygwin_load.perf->LastLoad = value;
+      DEBUG(D_load)
+        debug_printf("Perf: New load average %d\n", value);
       }
       else { /* Something bad happened.
-		Refuse to measure the load anymore
-		but don't bother releasing the buffer */
+                Refuse to measure the load anymore
+                but don't bother releasing the buffer */
         log_write(0, LOG_MAIN, "Cannot obtain Load Average");
-	cygwin_load.LastLoad = -1;
-      }
+      cygwin_load.perf->LastLoad = -1;
     }
   }
+  else
   DEBUG(D_load)
-    debug_printf("Perf: load average = %d\n", cygwin_load.LastLoad);
-  return cygwin_load.LastLoad;
+      debug_printf("Perf: Old load average %d\n", cygwin_load.perf->LastLoad);
+  cygwin_load.perf->Lock = 0;
+  return cygwin_load.perf->LastLoad;
 }
 #endif /* OS_LOAD_AVERAGE */
 #endif /* COMPILE_UTILITY */

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.101 2005/03/29 10:56:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.102 2005/03/29 11:01:32 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -87,6 +87,8 @@ PH/15 Further to TK/02 and TK/03 above, tidied up the tables of what conditions
       errors. Some of the entries in the conditions table (which is a table of
       where they are NOT allowed) were getting very unwieldy; rewrote them as a
       negation of where the condition IS allowed.
+
+PH/16 Installed updated OS/os.c-cygwin from the Cygwin maintainer.
 
 
 A note about Exim versions 4.44 and 4.50
