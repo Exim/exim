@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/parse.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/parse.c,v 1.2 2004/11/17 15:21:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -847,6 +847,11 @@ If the only characters that strictly need quoting are spaces, we return the
 original string, unmodified. If a quoted string is too long for the buffer, it
 is truncated. (This shouldn't happen: this is normally handling short strings.)
 
+Hmmph. As always, things get perverted for other uses. This function was 
+originally for the "phrase" part of addresses. Now it is being used for much 
+longer texts in ACLs and via the ${rfc2047: expansion item. This means we have 
+to check for overlong "encoded-word"s and split them. November 2004.
+
 Arguments:
   string       the string to quote - already checked to contain non-printing
                  chars
@@ -866,7 +871,8 @@ parse_quote_2047(uschar *string, int len, uschar *charset, uschar *buffer,
   int buffer_size)
 {
 uschar *s = string;
-uschar *t;
+uschar *p, *t;
+int hlen;
 BOOL coded = FALSE;
 
 if (charset == NULL) charset = US"iso-8859-1";
@@ -876,11 +882,25 @@ if (charset == NULL) charset = US"iso-8859-1";
 if (!string_format(buffer, buffer_size, "=?%s?Q?", charset))
   return US"String too long";
 
-t = buffer + Ustrlen(buffer);
+hlen = Ustrlen(buffer);
+t = buffer + hlen;
+p = buffer;
+
 for (; len > 0; len--)
   {
   int ch = *s++;
-  if (t > buffer + buffer_size - 8) break;
+  if (t > buffer + buffer_size - hlen - 8) break;
+  
+  if (t - p > 70)
+    {
+    *t++ = '?';
+    *t++ = '=';
+    *t++ = ' ';
+    p = t;
+    Ustrncpy(p, buffer, hlen);
+    t += hlen;
+    }      
+ 
   if (ch < 33 || ch > 126 ||
       Ustrchr("?=()<>@,;:\\\".[]_", ch) != NULL)
     {
@@ -893,7 +913,11 @@ for (; len > 0; len--)
     }
   else *t++ = ch;
   }
-sprintf(CS t, "?=");
+   
+*t++ = '?';
+*t++ = '=';  
+*t = 0;
+ 
 return coded? buffer : string;
 }
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.4 2004/11/17 14:32:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.5 2004/11/17 15:21:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4083,7 +4083,7 @@ while (*s != 0)
 
       case EOP_RFC2047:
         {
-        uschar buffer[1024];
+        uschar buffer[2048];
         uschar *string = parse_quote_2047(sub, Ustrlen(sub), headers_charset,
           buffer, sizeof(buffer));
         yield = string_cat(yield, &size, &ptr, string, Ustrlen(string));

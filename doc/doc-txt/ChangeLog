@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.29 2004/11/17 14:32:25 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.30 2004/11/17 15:21:10 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -121,6 +121,13 @@ Exim version 4.44
     function that finds that data and another that does the check. The former
     is then used to implement four new variables: $spool_space, $log_space,
     $spool_inodes, and $log_inodes.
+
+32. The RFC2047 encoding function was originally intended for short strings
+    such as real names; it was not keeping to the 75-character limit for
+    encoded words that the RFC imposes. It now respects the limit, and
+    generates multiple encoded words if necessary. To be on the safe side, I
+    have increased the buffer size for the ${rfc2047: expansion operator from
+    1024 to 2048 bytes.
 
 
 Exim version 4.43
