@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/cyrus_sasl.c,v 1.2 2005/04/05 14:02:30 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/cyrus_sasl.c,v 1.3 2005/04/05 14:33:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -7,7 +7,7 @@
 /* Copyright (c) University of Cambridge 1995 - 2003 */
 /* See the file NOTICE for conditions of use and distribution. */
 
-/* This code was contributed by Matthew Byng-Maddick */
+/* This code was originally contributed by Matthew Byng-Maddick */
 
 /* Copyright (c) A L Digital 2004 */
 
@@ -71,17 +71,41 @@ auth_cyrus_sasl_options_block auth_cyrus_sasl_option_defaults = {
 enable consistency checks to be done, or anything else that needs
 to be set up. */
 
+
+/* Auxiliary function, passed in data to sasl_server_init(). */
+
+static int
+mysasl_config(void *context,
+              const char *plugin_name,
+              const char *option,
+              const char **result,
+              unsigned int *len)
+{
+if (context && !strcmp(option, "mech_list"))
+  {
+  *result = context;
+  if (len != NULL) *len = strlen(*result);
+  return SASL_OK;
+  }
+return SASL_FAIL;
+}
+
+/* Here's the real function */
+
 void
 auth_cyrus_sasl_init(auth_instance *ablock)
 {
 auth_cyrus_sasl_options_block *ob =
   (auth_cyrus_sasl_options_block *)(ablock->options_block);
-sasl_callback_t cbs[]={{SASL_CB_LIST_END, NULL, NULL}};
-sasl_conn_t *conn;
 uschar *list, *listptr, *buffer;
 int rc, i;
 unsigned int len;
 uschar *rs_point;
+
+sasl_conn_t *conn;
+sasl_callback_t cbs[]={
+  {SASL_CB_GETOPT, NULL, NULL },
+  {SASL_CB_LIST_END, NULL, NULL}};
 
 /* default the mechanism to our "public name" */
 if(ob->server_mech == NULL)
@@ -90,7 +114,12 @@ if(ob->server_mech == NULL)
 /* we're going to initialise the library to check that there is an
  * authenticator of type whatever mechanism we're using
  */
+
+cbs[0].proc = &mysasl_config;
+cbs[0].context = ob->server_mech;
+
 rc=sasl_server_init(cbs, "exim");
+
 if( rc != SASL_OK )
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
       "couldn't initialise Cyrus SASL library.", ablock->name);

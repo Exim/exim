@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.109 2005/04/05 14:02:30 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.110 2005/04/05 14:33:27 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -124,6 +124,31 @@ PH/22 Added support for macro redefinition, and (re)definition in between
 
 PH/23 The cyrus_sasl authenticator was expanding server_hostname, but then
       forgetting to use the resulting value; it was using the unexpanded value.
+
+PH/24 The cyrus_sasl authenticator was advertising mechanisms for which it
+      hadn't been configured. The fix is from Juergen Kreileder, who
+      understands it better than I do:
+
+      "Here's what I see happening with three configured cyrus_sasl
+      authenticators configured (plain, login, cram-md5):
+
+      On startup auth_cyrus_sasl_init() gets called for each of these.
+      This means three calls to sasl_listmech() without a specified mech_list.
+      => SASL tests which mechs of all available mechs actually work
+      => three warnings about OTP not working
+      => the returned list contains: plain, login, cram-md5, digest-md5, ...
+
+      With the patch, sasl_listmech() also gets called three times.  But now
+      SASL's mech_list option is set to the server_mech specified in the the
+      authenticator.  Or in other words, the answer from sasl_listmech()
+      gets limited to just the mech you're testing for (which is different
+      for each call.)
+      => the return list contains just 'plain' or 'login', 'cram-md5' or
+      nothing depending on the value of ob->server_mech.
+
+      I've just tested the patch: Authentication still works fine,
+      unavailable mechs specified in the exim configuration are still
+      caught, and the auth.log warnings about OTP are gone."
 
 
 A note about Exim versions 4.44 and 4.50

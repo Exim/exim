@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.19 2005/04/05 13:58:35 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.20 2005/04/05 14:33:27 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -159,6 +159,7 @@ Alex Kiernan              Patch for libradius
 Tom Kistner               SPA server code
                           Writing and maintaining the content scanning
                             extension (exiscan)
+Jürgen Kreileder          Fix for cyrus_sasl advertisement problem
 Friso Kuipers             Patch for GDBM problem
 Chris Liddiard            Fix for bug in exiqsumm
 Chris Lightfoot           Patch for -restore-times in exim_lock
