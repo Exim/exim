@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.7 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.8 2005/01/13 11:12:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -789,9 +789,15 @@ if (rc == -1 || result == NULL)
 
 /* A return code that isn't -1 doesn't necessarily mean there were no problems
 with the search. The message must be an LDAP_RES_SEARCH_RESULT or 
-LDAP_RES_SEARCH_REFERENCE or else it's something we can't handle. */
+LDAP_RES_SEARCH_REFERENCE or else it's something we can't handle. Some versions 
+of LDAP do not define LDAP_RES_SEARCH_REFERENCE (LDAP v1 is one, it seems). So 
+we don't provide that functionality when we can't. :-) */
 
-if (rc != LDAP_RES_SEARCH_RESULT && rc != LDAP_RES_SEARCH_REFERENCE)
+if (rc != LDAP_RES_SEARCH_RESULT 
+#ifdef LDAP_RES_SEARCH_REFERENCE
+    && rc != LDAP_RES_SEARCH_REFERENCE
+#endif     
+   )
   {
   *errmsg = string_sprintf("ldap_result returned unexpected code %d", rc);
   goto RETURN_ERROR;
@@ -806,8 +812,11 @@ We need to parse the message to find out exactly what's happened. */
     CSS &error2, NULL, NULL, 0);
   DEBUG(D_lookup) debug_printf("ldap_parse_result: %d\n", ldap_parse_rc);
   if (ldap_parse_rc < 0 && 
-      (ldap_parse_rc != LDAP_NO_RESULTS_RETURNED ||
-       ldap_rc != LDAP_RES_SEARCH_REFERENCE))
+      (ldap_parse_rc != LDAP_NO_RESULTS_RETURNED
+      #ifdef LDAP_RES_SEARCH_REFERENCE 
+      || ldap_rc != LDAP_RES_SEARCH_REFERENCE
+      #endif  
+     ))
     {
     *errmsg = string_sprintf("ldap_parse_result failed %d", ldap_parse_rc);
     goto RETURN_ERROR;

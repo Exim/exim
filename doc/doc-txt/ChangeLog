@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.68 2005/01/12 15:41:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.69 2005/01/13 11:12:12 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -233,6 +233,10 @@ Exim version 4.50
       of ldap_search was unknown to exim because of LDAP_RES_SEARCH_REFERENCE.
       But simultaneously result of request was absolutely normal ldap result,
       so I produce this patch..."
+
+    Later: it seems that not all versions of LDAP support LDAP_RES_SEARCH_
+    REFERENCE, so I have modified the code to exclude the patch when that macro
+    is not defined.
 
 55. Some experimental protocols are using DNS PTR records for new purposes. The
     keys for these records are domain names, not reversed IP addresses. The
