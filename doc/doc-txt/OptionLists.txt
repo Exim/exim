@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.2 2004/10/18 09:16:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.3 2004/11/04 10:42:11 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -196,6 +196,7 @@ file_transport                       string*         unset         redirect     
 final_timeout                        time            10m           smtp
 finduser_retries                     integer         0             main
 forbid_blackhole                     boolean         false         redirect          4.00
+forbid_exim_filter                   boolean         false         redirect          4.44
 forbid_fail                          boolean         false         redirect          4.00
 forbid_file                          boolean         false         redirect          4.00
 forbid_filter_existstest             boolean         false         redirect          4.00
@@ -208,6 +209,7 @@ forbid_filter_reply                  boolean         false         redirect     
 forbid_filter_run                    boolean         false         redirect          4.00
 forbid_include                       boolean         false         redirect          4.00
 forbid_pipe                          boolean         false         redirect          4.00
+forbid_sieve_filter                  boolean         false         redirect          4.44
 freeze_exec_fail                     boolean         false         pipe              1.89
 freeze_tell                          boolean         false         main              4.00 replaces freeze_tell_mailmaster
 from                                 string*         unset         autoreply

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.1 2004/10/07 13:10:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.2 2004/11/04 10:42:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -41,6 +41,8 @@ optionlist redirect_router_options[] = {
       (void *)offsetof(redirect_router_options_block, file_transport_name) },
   { "forbid_blackhole",   opt_bit | (RDON_BLACKHOLE << 16),
       (void *)offsetof(redirect_router_options_block, bit_options) },
+  { "forbid_exim_filter", opt_bit | (RDON_EXIM_FILTER << 16),
+      (void *)offsetof(redirect_router_options_block, bit_options) },
   { "forbid_file",        opt_bool,
       (void *)offsetof(redirect_router_options_block, forbid_file) },
   { "forbid_filter_existstest",  opt_bit | (RDON_EXISTS << 16),
@@ -65,6 +67,8 @@ optionlist redirect_router_options[] = {
       (void *)offsetof(redirect_router_options_block, bit_options) },
   { "forbid_pipe",        opt_bool,
       (void *)offsetof(redirect_router_options_block, forbid_pipe) },
+  { "forbid_sieve_filter",opt_bit | (RDON_SIEVE_FILTER << 16),
+      (void *)offsetof(redirect_router_options_block, bit_options) },
   { "hide_child_in_errmsg", opt_bool,
       (void *)offsetof(redirect_router_options_block,  hide_child_in_errmsg) },
   { "ignore_eacces",      opt_bit | (RDON_EACCES << 16),

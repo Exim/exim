@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/rda.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/rda.c,v 1.2 2004/11/04 10:42:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -374,23 +374,42 @@ if (*filtertype != FILTER_FORWARD)
   int frc;
   int old_expand_forbid = expand_forbid;
 
+  DEBUG(D_route) debug_printf("data is %s filter program\n",
+    (*filtertype == FILTER_EXIM)? "an Exim" : "a Sieve");
+
+  /* RDO_FILTER is an "allow" bit */
+   
   if ((options & RDO_FILTER) == 0)
     {
     *error = US"filtering not enabled";
     return FF_ERROR;
     }
 
-  DEBUG(D_route) debug_printf("data is %s filter program\n",
-    (*filtertype == FILTER_EXIM)? "an Exim" : "a Sieve");
-
   expand_forbid =
     (expand_forbid & ~RDO_FILTER_EXPANSIONS) |
     (options & RDO_FILTER_EXPANSIONS);
-
-  frc = (*filtertype == FILTER_EXIM)?
-    filter_interpret(data, options, generated, error)
-    :
-    sieve_interpret(data, options, sieve_vacation_directory, generated, error);
+  
+  /* RDO_{EXIM,SIEVE}_FILTER are forbid bits */
+   
+  if (*filtertype == FILTER_EXIM)
+    {
+    if ((options & RDO_EXIM_FILTER) != 0)
+      {
+      *error = US"Exim filtering not enabled";
+      return FF_ERROR;
+      }    
+    frc = filter_interpret(data, options, generated, error);
+    }  
+  else
+    {
+    if ((options & RDO_SIEVE_FILTER) != 0)
+      {
+      *error = US"Sieve filtering not enabled";
+      return FF_ERROR;
+      }
+    frc = sieve_interpret(data, options, sieve_vacation_directory, generated, 
+      error);
+    }   
 
   expand_forbid = old_expand_forbid;
   return frc;

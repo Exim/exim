@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.2 2004/11/04 10:42:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -467,23 +467,25 @@ and some forbid, reflecting the "allow" and "forbid" options in the redirect
 router, which were chosen to represent the standard situation for users'
 .forward files. */
 
-#define RDO_BLACKHOLE  0x00000001  /* Forbid :blackhole: */
-#define RDO_DEFER      0x00000002  /* Allow :defer: or "defer" */
-#define RDO_EACCES     0x00000004  /* Ignore EACCES */
-#define RDO_ENOTDIR    0x00000008  /* Ignore ENOTDIR */
-#define RDO_EXISTS     0x00000010  /* Forbid "exists" in expansion in filter */
-#define RDO_FAIL       0x00000020  /* Allow :fail: or "fail" */
-#define RDO_FILTER     0x00000040  /* Allow a filter script */
-#define RDO_FREEZE     0x00000080  /* Allow "freeze" */
-#define RDO_INCLUDE    0x00000100  /* Forbid :include: */
-#define RDO_LOG        0x00000200  /* Forbid "log" */
-#define RDO_LOOKUP     0x00000400  /* Forbid "lookup" in expansion in filter */
-#define RDO_PERL       0x00000800  /* Forbid "perl" in expansion in filter */
-#define RDO_READFILE   0x00001000  /* Forbid "readfile" in exp in filter */
-#define RDO_READSOCK   0x00002000  /* Forbid "readsocket" in exp in filter */
-#define RDO_RUN        0x00004000  /* Forbid "run" in expansion in filter */
-#define RDO_REALLOG    0x00008000  /* Really do log (not testing/verifying) */
-#define RDO_REWRITE    0x00010000  /* Rewrite generated addresses */
+#define RDO_BLACKHOLE    0x00000001  /* Forbid :blackhole: */
+#define RDO_DEFER        0x00000002  /* Allow :defer: or "defer" */
+#define RDO_EACCES       0x00000004  /* Ignore EACCES */
+#define RDO_ENOTDIR      0x00000008  /* Ignore ENOTDIR */
+#define RDO_EXISTS       0x00000010  /* Forbid "exists" in expansion in filter */
+#define RDO_FAIL         0x00000020  /* Allow :fail: or "fail" */
+#define RDO_FILTER       0x00000040  /* Allow a filter script */
+#define RDO_FREEZE       0x00000080  /* Allow "freeze" */
+#define RDO_INCLUDE      0x00000100  /* Forbid :include: */
+#define RDO_LOG          0x00000200  /* Forbid "log" */
+#define RDO_LOOKUP       0x00000400  /* Forbid "lookup" in expansion in filter */
+#define RDO_PERL         0x00000800  /* Forbid "perl" in expansion in filter */
+#define RDO_READFILE     0x00001000  /* Forbid "readfile" in exp in filter */
+#define RDO_READSOCK     0x00002000  /* Forbid "readsocket" in exp in filter */
+#define RDO_RUN          0x00004000  /* Forbid "run" in expansion in filter */
+#define RDO_REALLOG      0x00008000  /* Really do log (not testing/verifying) */
+#define RDO_REWRITE      0x00010000  /* Rewrite generated addresses */
+#define RDO_EXIM_FILTER  0x00020000  /* Forbid Exim filters */
+#define RDO_SIEVE_FILTER 0x00040000  /* Forbid Sieve filters */
 
 /* This is the set that apply to expansions in filters */
 
@@ -497,7 +499,7 @@ automated, but I haven't bothered. Keep this list in step with the above! */
 enum { RDON_BLACKHOLE, RDON_DEFER, RDON_EACCES, RDON_ENOTDIR, RDON_EXISTS,
   RDON_FAIL, RDON_FILTER, RDON_FREEZE, RDON_INCLUDE, RDON_LOG, RDON_LOOKUP,
   RDON_PERL, RDON_READFILE, RDON_READSOCK, RDON_RUN, RDON_REALLOG,
-  RDON_REWRITE };
+  RDON_REWRITE, RDON_EXIM_FILTER, RDON_SIEVE_FILTER };
 
 /* Results of filter or forward file processing. Some are only from a filter;
 some are only from a forward file. */

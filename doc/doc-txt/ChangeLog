@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.13 2004/10/19 13:40:39 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.14 2004/11/04 10:42:11 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -53,6 +53,8 @@ Exim version 4.44
 
 13. The value of address_data from a sender verification is now available in
     $sender_address_data in subsequent conditions in the ACL statement.
+
+14. Added forbid_sieve_filter and forbid_exim_filter to the redirect router.
 
 
 Exim version 4.43
