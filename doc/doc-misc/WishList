@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.11 2004/11/25 13:54:30 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.12 2004/12/01 14:33:21 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1805,5 +1805,12 @@ These variables would hold the number of physical lines in the body and header
 that were longer than 998 bytes. This would be fiddly to implement because of
 the way Exim currently reads the input. It isn't just a trivial patch.
 ------------------------------------------------------------------------------
---- HWM 308 ------------------------------------------------------------------
+
+(309) 01-Dec-04 S/M Queue runners should get locks before forking
+
+If a queue-runner opened the -D file and took out the lock before forking, it
+would waste fewer resources if the message was already being delivered. But how
+often would this actually matter in practice?
+------------------------------------------------------------------------------
+--- HWM 309 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
