@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.37 2004/11/24 14:38:13 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.38 2004/11/24 15:43:36 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -154,10 +154,13 @@ Exim version 4.44
     (1) There is a new type, "zns", which walks up the domain tree until it
         finds some nameserver records. It should be used with care.
 
-    (2) It is now possible to give a list of domains (or IP addresses) to be
+    (2) There is a new type, "mxh", which is like "mx" except that it returns
+        just the host names, not the priorities.
+
+    (3) It is now possible to give a list of domains (or IP addresses) to be
         looked up.
 
-    (3) It is now possible to specify the separator character for use when
+    (4) It is now possible to specify the separator character for use when
         multiple records are returned.
 
 38. The dnslists ACL condition has been extended: it is now possible to supply

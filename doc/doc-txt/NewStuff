@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.15 2004/11/24 14:38:13 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.16 2004/11/24 15:43:36 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -108,7 +108,7 @@ Version 4.44
 
     Previously this was a syntax error.
 
-12. There is now a new "record type" that can be specified in dnsdb lookups. It
+12. There is a new "record type" that can be specified in dnsdb lookups. It
     is "zns" (for "zone NS"). It performs a lookup for NS records on the given
     domain, but if none are found, it removes the first component of the domain
     name, and tries again. This process continues until NS records are found
@@ -129,7 +129,11 @@ Version 4.44
     the name servers for the high-level domains such as .com or .co.uk are not
     going to be on such a list.
 
-13. It is now possible to specify a list of domains or IP addresses to be
+13. Another new "record type" is "mxh"; this looks up MX records just as "mx"
+    does, but it returns only the names of the hosts, omitting the priority
+    values.
+
+14. It is now possible to specify a list of domains or IP addresses to be
     looked up in a dnsdb lookup. The list is specified in the normal Exim way,
     with colon as the default separator, but with the ability to change this.
     For example:
@@ -151,13 +155,13 @@ Version 4.44
     of them yields some data, the lookup succeeds. However, if there is a
     temporary DNS error for any of them, the lookup defers.
 
-14. It is now possible to specify the character to be used as a separator when
+15. It is now possible to specify the character to be used as a separator when
     a dnsdb lookup returns data from more than one DNS record. The default is a
     newline. To specify a different character, put '>' followed by the new
     character at the start of the query. For example:
 
       ${lookup dnsdb{>: a=h1.test.ex:h2.test.ex}}
-      ${lookup dnsdb{>| mx=<;m1.test.ex;m2.test.ex}}
+      ${lookup dnsdb{>| mxh=<;m1.test.ex;m2.test.ex}}
 
     It is permitted to specify a space as the separator character. Note that
     more than one DNS record can be found for a single lookup item; this
@@ -166,7 +170,7 @@ Version 4.44
     The same effect could be achieved by wrapping the lookup in ${tr...}; this
     feature is just a syntactic simplification.
 
-15. It is now possible to supply a list of domains and/or IP addresses to be
+16. It is now possible to supply a list of domains and/or IP addresses to be
     lookup up in a DNS blacklist. Previously, only a single domain name could
     be given, for example:
 
@@ -196,7 +200,7 @@ Version 4.44
     Once a DNS record has been found (that matches a specific IP return
     address, if specified), no further lookups are done.
 
-16. The log selector queue_time_overall causes Exim to output the time spent on
+17. The log selector queue_time_overall causes Exim to output the time spent on
     the queue as an addition to the "Completed" message. Like queue_time (which
     puts the queue time on individual delivery lines), the time is tagged with
     "QT=", and it is measured from the time that the message starts to be

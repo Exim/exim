@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.3 2004/11/19 15:18:57 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.4 2004/11/24 15:43:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -32,6 +32,7 @@ static char *type_names[] = {
 #endif
   "cname",
   "mx",
+  "mxh",
   "ns",
   "ptr",
   "srv",
@@ -49,6 +50,7 @@ static int type_values[] = {
 #endif
   T_CNAME,
   T_MX,
+  T_MXH,     /* Private type for "MX hostnames" */
   T_NS,
   T_PTR,
   T_SRV,
@@ -184,6 +186,8 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
         != NULL)
   {       
   uschar rbuffer[256];
+  int searchtype = (type == T_ZNS)? T_NS :          /* record type we want */
+                   (type == T_MXH)? T_MX : type; 
 
   /* If the type is PTR, we have to construct the relevant magic lookup
   key. This code is now in a separate function. */
@@ -196,24 +200,25 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
   
   DEBUG(D_lookup) debug_printf("dnsdb key: %s\n", domain);
   
-  /* Do the lookup and sort out the result. We use the special 
-  lookup function that knows about pseudo types like "zns". If the lookup 
-  fails, continue with the next domain. */
+  /* Do the lookup and sort out the result. There are two special types that 
+  are handled specially: T_ZNS and T_MXH. The former is handled in a special 
+  lookup function so that the facility could be used from other parts of the
+  Exim code. The latter affects only what happens later on in this function,
+  but for tidiness it is handled in a similar way. If the lookup fails,
+  continue with the next domain. */
   
   rc = dns_special_lookup(&dnsa, domain, type, NULL);
   
   if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
   if (rc != DNS_SUCCEED) return DEFER;
   
-  /* If the lookup was a pseudo-type, change it to the correct type for
-  searching the returned records; then search for them. */
-  
-  if (type == T_ZNS) type = T_NS;
+  /* Search the returned records */
+
   for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
        rr != NULL;
        rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
     {
-    if (rr->type != type) continue;
+    if (rr->type != searchtype) continue;
   
     /* There may be several addresses from an A6 record. Put the configured 
     separator between them, just as for between several records. However, A6 
@@ -245,26 +250,33 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
       yield = string_cat(yield, &size, &ptr, (uschar *)(rr->data+1),
         (rr->data)[0]);
       }
-    else   /* T_CNAME, T_MX, T_NS, T_SRV, T_PTR */
+    else   /* T_CNAME, T_MX, T_MXH, T_NS, T_SRV, T_PTR */
       {
+      int num; 
       uschar s[264];
       uschar *p = (uschar *)(rr->data);
-      if (type == T_MX)
+       
+      if (type == T_MXH)
         {
-        int num;
+        /* mxh ignores the priority number and includes only the hostnames */
+        GETSHORT(num, p);            /* pointer is advanced */
+        }
+      else if (type == T_MX)
+        {
         GETSHORT(num, p);            /* pointer is advanced */
         sprintf(CS s, "%d ", num);
         yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         }
       else if (type == T_SRV)
         {
-        int num, weight, port;
+        int weight, port;
         GETSHORT(num, p);            /* pointer is advanced */
         GETSHORT(weight, p);
         GETSHORT(port, p);
         sprintf(CS s, "%d %d %d ", num, weight, port);
         yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         }
+         
       rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
         (DN_EXPAND_ARG4_TYPE)(s), sizeof(s));
   

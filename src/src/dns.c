@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.2 2004/11/19 09:45:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.3 2004/11/24 15:43:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -649,6 +649,10 @@ dns_special_lookup(dns_answer *dnsa, uschar *name, int type,
   uschar **fully_qualified_name)
 {
 if (type >= 0) return dns_lookup(dnsa, name, type, fully_qualified_name);
+
+/* The "mx hosts only" type doesn't require any special action here */
+
+if (type == T_MXH) return dns_lookup(dnsa, name, T_MX, fully_qualified_name);
 
 /* Find nameservers for the domain or the nearest enclosing zone, excluding the 
 root servers. */
