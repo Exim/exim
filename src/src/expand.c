@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.15 2005/03/08 16:57:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.16 2005/03/09 08:27:51 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1257,6 +1257,7 @@ while (last > first)
 #ifdef EXPERIMENTAL_DOMAINKEYS
 
     case vtype_dk_verify:
+    if (dk_verify_block == NULL) return US"";
     s = NULL;
     if (Ustrcmp(var_table[middle].name, "dk_result") == 0)
       s = dk_verify_block->result_string;
