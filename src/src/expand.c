@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.7 2004/11/18 11:17:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.8 2004/12/16 15:11:47 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -318,6 +318,12 @@ static var_entry var_table[] = {
   { "authenticated_id",    vtype_stringptr,   &authenticated_id },
   { "authenticated_sender",vtype_stringptr,   &authenticated_sender },
   { "authentication_failed",vtype_int,        &authentication_failed },
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  { "bmi_alt_location",    vtype_stringptr,   &bmi_alt_location },
+  { "bmi_base64_tracker_verdict", vtype_stringptr, &bmi_base64_tracker_verdict },
+  { "bmi_base64_verdict",  vtype_stringptr,   &bmi_base64_verdict },
+  { "bmi_deliver",         vtype_int,         &bmi_deliver },
+#endif
   { "body_linecount",      vtype_int,         &body_linecount },
   { "body_zerocount",      vtype_int,         &body_zerocount },
   { "bounce_recipient",    vtype_stringptr,   &bounce_recipient },
@@ -326,6 +332,10 @@ static var_entry var_table[] = {
   { "caller_uid",          vtype_uid,         &real_uid },
   { "compile_date",        vtype_stringptr,   &version_date },
   { "compile_number",      vtype_stringptr,   &version_cnumber },
+#ifdef WITH_OLD_DEMIME
+  { "demime_errorlevel",   vtype_int,         &demime_errorlevel },
+  { "demime_reason",       vtype_stringptr,   &demime_reason },
+#endif
   { "dnslist_domain",      vtype_stringptr,   &dnslist_domain },
   { "dnslist_text",        vtype_stringptr,   &dnslist_text },
   { "dnslist_value",       vtype_stringptr,   &dnslist_value },
@@ -334,6 +344,9 @@ static var_entry var_table[] = {
   { "exim_gid",            vtype_gid,         &exim_gid },
   { "exim_path",           vtype_stringptr,   &exim_path },
   { "exim_uid",            vtype_uid,         &exim_uid },
+#ifdef WITH_OLD_DEMIME
+  { "found_extension",     vtype_stringptr,   &found_extension },
+#endif 
   { "home",                vtype_stringptr,   &deliver_home },
   { "host",                vtype_stringptr,   &deliver_host },
   { "host_address",        vtype_stringptr,   &deliver_host_address },
@@ -357,6 +370,9 @@ static var_entry var_table[] = {
   { "log_inodes",          vtype_pinodes,     (void *)FALSE },
   { "log_space",           vtype_pspace,      (void *)FALSE },  
   { "mailstore_basename",  vtype_stringptr,   &mailstore_basename },
+#ifdef WITH_CONTENT_SCAN
+  { "malware_name",        vtype_stringptr,   &malware_name },
+#endif
   { "message_age",         vtype_int,         &message_age },
   { "message_body",        vtype_msgbody,     &message_body },
   { "message_body_end",    vtype_msgbody_end, &message_body_end },
@@ -364,6 +380,24 @@ static var_entry var_table[] = {
   { "message_headers",     vtype_msgheaders,  NULL },
   { "message_id",          vtype_stringptr,   &message_id },
   { "message_size",        vtype_int,         &message_size },
+#ifdef WITH_CONTENT_SCAN
+  { "mime_anomaly_level",  vtype_int,         &mime_anomaly_level },
+  { "mime_anomaly_text",   vtype_stringptr,   &mime_anomaly_text },
+  { "mime_boundary",       vtype_stringptr,   &mime_boundary },
+  { "mime_charset",        vtype_stringptr,   &mime_charset },
+  { "mime_content_description", vtype_stringptr, &mime_content_description },
+  { "mime_content_disposition", vtype_stringptr, &mime_content_disposition },
+  { "mime_content_id",     vtype_stringptr,   &mime_content_id },
+  { "mime_content_size",   vtype_int,         &mime_content_size },
+  { "mime_content_transfer_encoding",vtype_stringptr, &mime_content_transfer_encoding },
+  { "mime_content_type",   vtype_stringptr,   &mime_content_type },
+  { "mime_decoded_filename", vtype_stringptr, &mime_decoded_filename },
+  { "mime_filename",       vtype_stringptr,   &mime_filename },
+  { "mime_is_coverletter", vtype_int,         &mime_is_coverletter },
+  { "mime_is_multipart",   vtype_int,         &mime_is_multipart },
+  { "mime_is_rfc822",      vtype_int,         &mime_is_rfc822 },
+  { "mime_part_count",     vtype_int,         &mime_part_count },
+#endif
   { "n0",                  vtype_filter_int,  &filter_n[0] },
   { "n1",                  vtype_filter_int,  &filter_n[1] },
   { "n2",                  vtype_filter_int,  &filter_n[2] },
@@ -394,6 +428,9 @@ static var_entry var_table[] = {
   { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure }, 
   { "recipients",          vtype_recipients,  NULL },
   { "recipients_count",    vtype_int,         &recipients_count },
+#ifdef WITH_CONTENT_SCAN
+  { "regex_match_string",  vtype_stringptr,   &regex_match_string },
+#endif
   { "reply_address",       vtype_reply,       NULL },
   { "return_path",         vtype_stringptr,   &return_path },
   { "return_size_limit",   vtype_int,         &bounce_return_size_limit },
@@ -424,9 +461,29 @@ static var_entry var_table[] = {
   { "sn7",                 vtype_filter_int,  &filter_sn[7] },
   { "sn8",                 vtype_filter_int,  &filter_sn[8] },
   { "sn9",                 vtype_filter_int,  &filter_sn[9] },
+#ifdef WITH_CONTENT_SCAN
+  { "spam_bar",            vtype_stringptr,   &spam_bar },
+  { "spam_report",         vtype_stringptr,   &spam_report },
+  { "spam_score",          vtype_stringptr,   &spam_score },
+  { "spam_score_int",      vtype_stringptr,   &spam_score_int },
+#endif
+#ifdef EXPERIMENTAL_SPF
+  { "spf_header_comment",  vtype_stringptr,   &spf_header_comment },
+  { "spf_received",        vtype_stringptr,   &spf_received },
+  { "spf_result",          vtype_stringptr,   &spf_result },
+  { "spf_smtp_comment",    vtype_stringptr,   &spf_smtp_comment },
+#endif
   { "spool_directory",     vtype_stringptr,   &spool_directory },
   { "spool_inodes",        vtype_pinodes,     (void *)TRUE },
   { "spool_space",         vtype_pspace,      (void *)TRUE },  
+#ifdef EXPERIMENTAL_SRS
+  { "srs_db_address",      vtype_stringptr,   &srs_db_address },
+  { "srs_db_key",          vtype_stringptr,   &srs_db_key },
+  { "srs_orig_recipient",  vtype_stringptr,   &srs_orig_recipient },
+  { "srs_orig_sender",     vtype_stringptr,   &srs_orig_sender },
+  { "srs_recipient",       vtype_stringptr,   &srs_recipient },
+  { "srs_status",          vtype_stringptr,   &srs_status },
+#endif
   { "thisaddress",         vtype_stringptr,   &filter_thisaddress },
   { "tls_certificate_verified", vtype_int,    &tls_certificate_verified },
   { "tls_cipher",          vtype_stringptr,   &tls_cipher },

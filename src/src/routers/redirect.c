@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.2 2004/11/04 10:42:11 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.3 2004/12/16 15:11:48 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -101,6 +101,16 @@ optionlist redirect_router_options[] = {
       (void *)offsetof(redirect_router_options_block, sieve_vacation_directory) },
   { "skip_syntax_errors", opt_bool,
       (void *)offsetof(redirect_router_options_block, skip_syntax_errors) },
+#ifdef EXPERIMENTAL_SRS
+  { "srs",                opt_stringptr,
+      (void *)offsetof(redirect_router_options_block, srs) },
+  { "srs_alias",          opt_stringptr,
+      (void *)offsetof(redirect_router_options_block, srs_alias) },
+  { "srs_condition",      opt_stringptr,
+      (void *)offsetof(redirect_router_options_block, srs_condition) },
+  { "srs_db",             opt_stringptr,
+      (void *)offsetof(redirect_router_options_block, srs_db) },
+#endif
   { "syntax_errors_text", opt_stringptr,
       (void *)offsetof(redirect_router_options_block, syntax_errors_text) },
   { "syntax_errors_to",   opt_stringptr,
@@ -134,6 +144,12 @@ redirect_router_options_block redirect_router_option_defaults = {
   NULL,        /* qualify_domain */
   NULL,        /* owners */
   NULL,        /* owngroups */
+#ifdef EXPERIMENTAL_SRS
+  NULL,        /* srs */
+  NULL,        /* srs_condition */
+  NULL,        /* srs_db */
+  NULL,        /* srs_alias */
+#endif
   022,         /* modemask */
   RDO_REWRITE, /* bit_options */
   FALSE,       /* check_ancestor */
@@ -526,6 +542,36 @@ if (!ugid.gid_set && pw != NULL)
   ugid.gid_set = TRUE;
   }
 
+#ifdef EXPERIMENTAL_SRS
+  /* For reverse SRS, fill the srs_recipient expandsion variable,
+  on failure, return decline/fail as relevant */
+  if(ob->srs != NULL)
+  {
+    BOOL usesrs = TRUE;
+    
+    if(ob->srs_condition != NULL)
+      usesrs = expand_check_condition(ob->srs_condition, "srs_condition expansion failed", NULL);
+    
+    if(usesrs)
+      if(Ustrcmp(ob->srs, "reverse") == 0 || Ustrcmp(ob->srs, "reverseandforward") == 0)
+      {
+        uschar *res;
+        int n_srs;
+    
+        srs_orig_recipient = addr->address;
+        eximsrs_init();
+        if(ob->srs_db)
+          eximsrs_db_set(TRUE, ob->srs_db);
+        if((n_srs = eximsrs_reverse(&res, addr->address)) != OK)
+          return n_srs;
+        srs_recipient = res;
+        eximsrs_done();
+        DEBUG(D_any)
+          debug_printf("SRS: Recipient '%s' rewriteen to '%s'\n", srs_orig_recipient, srs_recipient);
+      }
+  }
+#endif
+
 /* Call the function that interprets redirection data, either inline or from a
 file. This is a separate function so that the system filter can use it. It will
 run the function in a subprocess if necessary. If qualify_preserve_domain is
@@ -748,6 +794,39 @@ else
     (addr_prop.errors_address != NULL)? addr_prop.errors_address : US"",
     (addr_prop.errors_address != NULL)? "\n" : "");
   }
+
+#ifdef EXPERIMENTAL_SRS
+  /* On successful redirection, check for SRS forwarding and adjust sender */
+  if(ob->srs != NULL)
+  {
+    BOOL usesrs = TRUE;
+    
+    if(ob->srs_condition != NULL)
+      usesrs = expand_check_condition(ob->srs_condition, "srs_condition expansion failed", NULL);
+    
+    if(usesrs)
+      if((Ustrcmp(ob->srs, "forward") == 0 || Ustrcmp(ob->srs, "reverseandforward") == 0) && !verify)
+      {
+        uschar *res;
+        uschar *usedomain;
+        int n_srs;
+      
+        srs_orig_sender = sender_address;
+        eximsrs_init();
+        if(ob->srs_db)
+          eximsrs_db_set(FALSE, ob->srs_db);
+
+        if(ob->srs_alias != NULL ? (usedomain = expand_string(ob->srs_alias)) == NULL : 1)
+          usedomain = deliver_domain;
+                
+        if((n_srs = eximsrs_forward(&res, sender_address, usedomain)) != OK)
+          return n_srs;
+        sender_address = res;
+        DEBUG(D_any)
+          debug_printf("SRS: Sender '%s' rewritten to '%s'\n", srs_orig_sender, sender_address);
+    }
+  }
+#endif
 
 /* Control gets here only when the address has been completely handled. Put the
 original address onto the succeed queue so that any retry items that get

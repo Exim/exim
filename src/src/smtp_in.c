@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.5 2004/11/10 15:21:16 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.6 2004/12/16 15:11:47 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -805,6 +805,10 @@ message_size = -1;
 acl_warn_headers = NULL;
 queue_only_policy = FALSE;
 deliver_freeze = FALSE;                              /* Can be set by ACL */
+#ifdef WITH_CONTENT_SCAN
+fake_reject = FALSE;                                 /* Can be set by ACL */
+no_mbox_unspool = FALSE;                             /* Can be set by ACL */
+#endif
 submission_mode = FALSE;                             /* Can be set by ACL */
 active_local_from_check = local_from_check;          /* Can be set by ACL */
 active_local_sender_retain = local_sender_retain;    /* Can be set by ACL */
@@ -815,6 +819,16 @@ sender_verified_list = NULL;        /* No senders verified */
 memset(sender_address_cache, 0, sizeof(sender_address_cache));
 memset(sender_domain_cache, 0, sizeof(sender_domain_cache));
 authenticated_sender = NULL;
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+bmi_run = 0;
+bmi_verdicts = NULL;
+#endif
+#ifdef EXPERIMENTAL_SPF
+spf_header_comment = NULL;
+spf_received = NULL;
+spf_result = NULL;  
+spf_smtp_comment = NULL;
+#endif
 body_linecount = body_zerocount = 0;
 
 for (i = 0; i < ACL_M_MAX; i++) acl_var[ACL_C_MAX + i] = NULL;
@@ -1774,6 +1788,9 @@ BOOL drop = rc == FAIL_DROP;
 uschar *lognl;
 uschar *sender_info = US"";
 uschar *what = (where == ACL_WHERE_PREDATA)? US"DATA" :
+#ifdef WITH_CONTENT_SCAN
+               (where == ACL_WHERE_MIME)? US"during MIME ACL checks" :
+#endif  
                (where == ACL_WHERE_DATA)? US"after DATA" :
   string_sprintf("%s %s", acl_wherenames[where], smtp_data);
 
@@ -1785,7 +1802,11 @@ fixed, sender_address at this point became the rewritten address. I'm not sure
 this is what should be logged, so I've changed to logging the unrewritten
 address to retain backward compatibility. */
 
+#ifndef WITH_CONTENT_SCAN
 if (where == ACL_WHERE_RCPT || where == ACL_WHERE_DATA)
+#else
+if (where == ACL_WHERE_RCPT || where == ACL_WHERE_DATA || where == ACL_WHERE_MIME)
+#endif
   {
   sender_info = string_sprintf("F=<%s> ", (sender_address_unrewritten != NULL)?
     sender_address_unrewritten : sender_address);
@@ -2339,6 +2360,11 @@ while (done <= 0)
           }
         }
       }
+
+#ifdef EXPERIMENTAL_SPF
+    /* set up SPF context */
+    spf_init(sender_helo_name, sender_host_address);
+#endif
 
     /* Apply an ACL check if one is defined */
 

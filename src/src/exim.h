@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.3 2004/11/24 15:43:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.4 2004/12/16 15:11:47 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -381,16 +381,32 @@ extern int ferror(FILE *);
 
 /* Exim includes are in several files. Note that local_scan.h #includes
 mytypes.h and store.h, so we don't need to mention them explicitly. */
+#include "config.h"
+
+/* Before including the rest of the Exim headers, lets clear up some content
+scanning dependencies. */
+#ifdef WITH_OLD_DEMIME
+#define WITH_CONTENT_SCAN
+#endif
 
 #include "local_scan.h"
 #include "macros.h"
-#include "config.h"
 #include "dbstuff.h"
 #include "structs.h"
 #include "globals.h"
 #include "functions.h"
 #include "dbfunctions.h"
 #include "osfunctions.h"
+
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+#include "bmi_spam.h"
+#endif
+#ifdef EXPERIMENTAL_SPF
+#include "spf.h"
+#endif
+#ifdef EXPERIMENTAL_SRS
+#include "srs.h"
+#endif
 
 /* The following stuff must follow the inclusion of config.h because it
 requires various things that are set therein. */

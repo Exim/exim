@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.10 2004/11/25 13:54:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.11 2004/12/16 15:11:47 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -838,6 +838,21 @@ fprintf(f, "Support for:");
   #else
   fprintf(f, " OpenSSL");
   #endif
+#endif
+#ifdef WITH_CONTENT_SCAN
+  fprintf(f, " Content_Scanning");
+#endif
+#ifdef WITH_OLD_DEMIME
+  fprintf(f, " Old_Demime");
+#endif
+#ifdef EXPERIMENTAL_SPF
+  fprintf(f, " Experimental_SPF");
+#endif
+#ifdef EXPERIMENTAL_SRS
+  fprintf(f, " Experimental_SRS");
+#endif
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  fprintf(f, " Experimental_Brightmail");
 #endif
 fprintf(f, "\n");
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.2 2004/10/18 09:16:57 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.3 2004/12/16 15:11:47 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -143,6 +143,9 @@ static optionlist optionlist_config[] = {
   { "acl_smtp_helo",            opt_stringptr,   &acl_smtp_helo },
   { "acl_smtp_mail",            opt_stringptr,   &acl_smtp_mail },
   { "acl_smtp_mailauth",        opt_stringptr,   &acl_smtp_mailauth },
+#ifdef WITH_CONTENT_SCAN
+  { "acl_smtp_mime",            opt_stringptr,   &acl_smtp_mime },
+#endif
   { "acl_smtp_predata",         opt_stringptr,   &acl_smtp_predata },
   { "acl_smtp_quit",            opt_stringptr,   &acl_smtp_quit },
   { "acl_smtp_rcpt",            opt_stringptr,   &acl_smtp_rcpt },
@@ -156,7 +159,13 @@ static optionlist optionlist_config[] = {
   { "allow_utf8_domains",       opt_bool,        &allow_utf8_domains },
   { "auth_advertise_hosts",     opt_stringptr,   &auth_advertise_hosts },
   { "auto_thaw",                opt_time,        &auto_thaw },
+#ifdef WITH_CONTENT_SCAN
+  { "av_scanner",               opt_stringptr,   &av_scanner },
+#endif
   { "bi_command",               opt_stringptr,   &bi_command },
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  { "bmi_config_file",          opt_stringptr,   &bmi_config_file },
+#endif
   { "bounce_message_file",      opt_stringptr,   &bounce_message_file },
   { "bounce_message_text",      opt_stringptr,   &bounce_message_text },
   { "bounce_return_body",       opt_bool,        &bounce_return_body },
@@ -318,8 +327,14 @@ static optionlist optionlist_config[] = {
   { "smtp_receive_timeout",     opt_time,        &smtp_receive_timeout },
   { "smtp_reserve_hosts",       opt_stringptr,   &smtp_reserve_hosts },
   { "smtp_return_error_details",opt_bool,        &smtp_return_error_details },
+#ifdef WITH_CONTENT_SCAN
+  { "spamd_address",            opt_stringptr,   &spamd_address },
+#endif
   { "split_spool_directory",    opt_bool,        &split_spool_directory },
   { "spool_directory",          opt_stringptr,   &spool_directory },
+#ifdef EXPERIMENTAL_SRS
+  { "srs_config",               opt_stringptr,   &srs_config },
+#endif
   { "strip_excess_angle_brackets", opt_bool,     &strip_excess_angle_brackets },
   { "strip_trailing_dot",       opt_bool,        &strip_trailing_dot },
   { "syslog_duplication",       opt_bool,        &syslog_duplication },

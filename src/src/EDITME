@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.4 2004/11/05 12:33:59 ph10 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.5 2004/12/16 15:11:47 tom Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -313,6 +313,50 @@ LOOKUP_LSEARCH=yes
 # local OS-specific make files.
 
 EXIM_MONITOR=eximon.bin
+
+#------------------------------------------------------------------------------
+# Compiling Exim with content scanning support: If you want to compile Exim
+# with support for message body content scanning, set WITH_CONTENT_SCAN to
+# the value "yes". This will give you malware and spam scanning in the DATA ACL,
+# and the MIME ACL. Please read the documentation to learn more about these
+# features.
+
+#WITH_CONTENT_SCAN=yes
+
+# If you want to use the deprecated "demime" condition in the DATA ACL,
+# uncomment the line below. Doing so will also explicitly turn on the
+# WITH_CONTENT_SCAN option. If possible, use the MIME ACL instead of
+# the "demime" condition.
+
+#WITH_OLD_DEMIME=yes
+
+#------------------------------------------------------------------------------
+# Compiling Exim with experimental features. These are documented in
+# experimental-spec.txt. "Experimental" means that the way these features are
+# implemented may still change. Backward compatability is not guaranteed.
+
+# Uncomment the following lines to add SPF support. You need to have libspf2
+# installed on your system (www.libspf2.org). Depending on where it is installed
+# you may have to edit the CFLAGS and LDFLAGS lines.
+#EXPERIMENTAL_SPF=yes
+#CFLAGS  += -I/usr/local/include
+#LDFLAGS += -lspf2
+
+# Uncommend the following lines to add SRS (Sender rewriting scheme) support.
+# You need to have libsrs_alt installed on your system (srs.mirtol.com).
+# Depending on where it is installed you may have to edit the CFLAGS and
+# LDFLAGS lines.
+#EXPERIMENTAL_SRS=yes
+#CFLAGS  += -I/usr/local/include
+#LDFLAGS += -lsrs_alt
+
+# Uncommend the following lines to add Brightmail AntiSpam support. You need
+# to have the Brightmail client SDK installed. Please check the experimental
+# documentation for implementation details. You need to edit the CFLAGS and
+# LDFLAGS lines.
+#EXPERIMENTAL_BRIGHTMAIL=yes
+#CFLAGS  += -I/opt/brightmail/bsdk-6.0/include
+#LDFLAGS += -lxml2 -lbmiclient_single -L/opt/brightmail/bsdk-6.0/lib
 
 
 

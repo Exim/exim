@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/config.h.defaults,v 1.2 2004/10/18 09:16:57 ph10 Exp $ */
+/* $Cambridge: exim/src/src/config.h.defaults,v 1.3 2004/12/16 15:11:47 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -53,7 +53,7 @@ in config.h unless some value is defined in Local/Makefile. */
 #define HAVE_CRYPT16
 #define HAVE_SA_LEN
 #define HEADERS_CHARSET           "ISO-8859-1"
-#define HEADER_ADD_BUFFER_SIZE     8192
+#define HEADER_ADD_BUFFER_SIZE    (8192 * 4)
 #define HEADER_MAXSIZE            (1024*1024)
 
 #define INPUT_DIRECTORY_MODE       0750
@@ -107,7 +107,7 @@ in config.h unless some value is defined in Local/Makefile. */
 #define SPOOL_DIRECTORY
 #define SPOOL_DIRECTORY_MODE       0750
 #define SPOOL_MODE                 0640
-#define STRING_SPRINTF_BUFFER_SIZE 8192
+#define STRING_SPRINTF_BUFFER_SIZE (8192 * 4)
 
 #define SUPPORT_A6
 #define SUPPORT_CRYPTEQ
@@ -137,6 +137,14 @@ in config.h unless some value is defined in Local/Makefile. */
 #define USE_READLINE
 #define USE_TCP_WRAPPERS
 #define USE_TDB
+
+#define WITH_CONTENT_SCAN
+#define WITH_OLD_DEMIME
+
+/* EXPERIMENTAL features */
+#define EXPERIMENTAL_SPF
+#define EXPERIMENTAL_SRS
+#define EXPERIMENTAL_BRIGHTMAIL
 
 /* Things that are not routinely changed but are nevertheless configurable
 just in case. */

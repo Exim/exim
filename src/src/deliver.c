@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.3 2004/11/24 14:38:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.4 2004/12/16 15:11:47 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -156,6 +156,13 @@ deliver_localpart_data = addr->p.localpart_data;
 deliver_domain = addr->domain;
 self_hostname = addr->self_hostname;
 
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+bmi_deliver = 1;    /* deliver by default */
+bmi_alt_location = NULL;
+bmi_base64_verdict = NULL;
+bmi_base64_tracker_verdict = NULL;
+#endif
+
 /* If there's only one address we can set everything. */
 
 if (addr->next == NULL)
@@ -205,6 +212,19 @@ if (addr->next == NULL)
       deliver_localpart_suffix = addr->parent->suffix;
       }
     }
+
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+    /* Set expansion variables related to Brightmail AntiSpam */
+    bmi_base64_verdict = bmi_get_base64_verdict(deliver_localpart_orig, deliver_domain_orig);
+    bmi_base64_tracker_verdict = bmi_get_base64_tracker_verdict(bmi_base64_verdict);
+    /* get message delivery status (0 - don't deliver | 1 - deliver) */
+    bmi_deliver = bmi_get_delivery_status(bmi_base64_verdict);
+    /* if message is to be delivered, get eventual alternate location */
+    if (bmi_deliver == 1) {
+      bmi_alt_location = bmi_get_alt_location(bmi_base64_verdict);
+    };
+#endif
+
   }
 
 /* For multiple addresses, don't set local part, and leave the domain and

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.2 2004/12/16 15:11:47 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -271,10 +271,20 @@ sender_local = FALSE;
 sender_set_untrusted = FALSE;
 tree_nonrecipients = NULL;
 
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+bmi_run = 0;
+bmi_verdicts = NULL;
+#endif
+
 #ifdef SUPPORT_TLS
 tls_certificate_verified = FALSE;
 tls_cipher = NULL;
 tls_peerdn = NULL;
+#endif
+
+#ifdef WITH_CONTENT_SCAN
+fake_reject = FALSE;
+spam_score_int = NULL;
 #endif
 
 /* Generate the full name and open the file. If message_subdir is already
@@ -369,6 +379,14 @@ for (;;)
     local_error_message = TRUE;
   else if (Ustrncmp(big_buffer, "-local_scan ", 12) == 0)
     local_scan_data = string_copy(big_buffer + 12);
+#ifdef WITH_CONTENT_SCAN    
+  else if (Ustrncmp(big_buffer, "-spam_score_int ", 16) == 0)
+    spam_score_int = string_copy(big_buffer + 16);  
+#endif
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  else if (Ustrncmp(big_buffer, "-bmi_verdicts ", 14) == 0)
+    bmi_verdicts = string_copy(big_buffer + 14);
+#endif
   else if (Ustrcmp(big_buffer, "-host_lookup_failed") == 0)
     host_lookup_failed = TRUE;
   else if (Ustrncmp(big_buffer, "-body_linecount", 15) == 0)

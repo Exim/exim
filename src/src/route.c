@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/route.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/route.c,v 1.2 2004/12/16 15:11:47 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -34,6 +34,16 @@ optionlist optionlist_routers[] = {
                  (void *)(offsetof(router_instance, address_data)) },
   { "address_test",       opt_bool|opt_public,
                  (void *)(offsetof(router_instance, address_test)) },
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  { "bmi_deliver_alternate",   opt_bool | opt_public,
+                 (void *)(offsetof(router_instance, bmi_deliver_alternate)) },
+  { "bmi_deliver_default",   opt_bool | opt_public,
+                 (void *)(offsetof(router_instance, bmi_deliver_default)) },
+  { "bmi_dont_deliver",   opt_bool | opt_public,
+                 (void *)(offsetof(router_instance, bmi_dont_deliver)) },
+  { "bmi_rule",           opt_stringptr|opt_public,
+                 (void *)(offsetof(router_instance, bmi_rule)) },
+#endif
   { "cannot_route_message", opt_stringptr | opt_public,
                  (void *)(offsetof(router_instance, cannot_route_message)) },
   { "caseful_local_part", opt_bool | opt_public,
@@ -981,6 +991,46 @@ if (r->condition != NULL)
     return SKIP;
     }
   }
+
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+/* check if a specific Brightmail AntiSpam rule fired on the message */
+if (r->bmi_rule != NULL) {
+  DEBUG(D_route) debug_printf("checking bmi_rule\n");
+  if (bmi_check_rule(bmi_base64_verdict, r->bmi_rule) == 0) {
+    /* none of the rules fired */
+    DEBUG(D_route)
+      debug_printf("%s router skipped: none of bmi_rule rules fired\n", r->name);
+    return SKIP;
+  };
+};
+
+/* check if message should not be delivered */
+if (r->bmi_dont_deliver) {
+  if (bmi_deliver == 1) {
+    DEBUG(D_route)
+      debug_printf("%s router skipped: bmi_dont_deliver is FALSE\n", r->name);
+    return SKIP;
+  };
+};
+
+/* check if message should go to an alternate location */
+if (r->bmi_deliver_alternate) {
+  if ((bmi_deliver == 0) || (bmi_alt_location == NULL)) {
+    DEBUG(D_route)
+      debug_printf("%s router skipped: bmi_deliver_alternate is FALSE\n", r->name);
+    return SKIP;
+  };
+};
+
+/* check if message should go to default location */
+if (r->bmi_deliver_default) {
+  if ((bmi_deliver == 0) || (bmi_alt_location != NULL)) {
+    DEBUG(D_route)
+      debug_printf("%s router skipped: bmi_deliver_default is FALSE\n", r->name);
+    return SKIP;
+  };
+};
+#endif
 
 /* All the checks passed. */
 

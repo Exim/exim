@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.8 2004/11/25 13:54:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.9 2004/12/16 15:11:47 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -164,6 +164,9 @@ uschar *acl_smtp_expn          = NULL;
 uschar *acl_smtp_helo          = NULL;
 uschar *acl_smtp_mail          = NULL;
 uschar *acl_smtp_mailauth      = NULL;
+#ifdef WITH_CONTENT_SCAN
+uschar *acl_smtp_mime          = NULL;
+#endif
 uschar *acl_smtp_predata       = NULL;
 uschar *acl_smtp_quit          = NULL;
 uschar *acl_smtp_rcpt          = NULL;
@@ -181,6 +184,9 @@ error codes - keep in step with definitions of ACL_WHERE_xxxx in macros.h. */
 uschar *acl_wherenames[]       = { US"RCPT",
                                    US"MAIL",
                                    US"PREDATA",
+#ifdef WITH_CONTENT_SCAN
+                                   US"MIME",
+#endif
                                    US"DATA",
                                    US"non-SMTP",
                                    US"AUTH",
@@ -197,6 +203,9 @@ uschar *acl_wherenames[]       = { US"RCPT",
 int     acl_wherecodes[]       = { 550,     /* RCPT */
                                    550,     /* MAIL */
                                    550,     /* PREDATA */
+#ifdef WITH_CONTENT_SCAN
+                                   550,     /* MIME */
+#endif                                   
                                    550,     /* DATA */
                                    0,       /* not SMTP; not relevant */
                                    503,     /* AUTH */
@@ -309,6 +318,9 @@ auth_instance auth_defaults    = {
 uschar *auth_defer_msg         = US"reason not recorded";
 uschar *auth_defer_user_msg    = US"";
 int     auto_thaw              = 0;
+#ifdef WITH_CONTENT_SCAN
+uschar *av_scanner             = US"sophie:/var/run/sophie";  /* AV scanner */
+#endif
 
 BOOL    background_daemon      = TRUE;
 uschar *base62_chars=
@@ -316,6 +328,15 @@ uschar *base62_chars=
 uschar *bi_command             = NULL;
 uschar *big_buffer             = NULL;
 int     big_buffer_size        = BIG_BUFFER_SIZE;
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+uschar *bmi_alt_location       = NULL;
+uschar *bmi_base64_tracker_verdict = NULL;
+uschar *bmi_base64_verdict     = NULL;
+uschar *bmi_config_file        = US"/opt/brightmail/etc/brightmail.cfg";
+int     bmi_deliver            = 1;
+int     bmi_run                = 0;
+uschar *bmi_verdicts           = NULL;
+#endif
 int     body_linecount         = 0;
 int     body_zerocount         = 0;
 uschar *bounce_message_file    = NULL;
@@ -435,6 +456,11 @@ uschar *deliver_selectstring   = NULL;
 BOOL    deliver_selectstring_regex = FALSE;
 uschar *deliver_selectstring_sender = NULL;
 BOOL    deliver_selectstring_sender_regex = FALSE;
+#ifdef WITH_OLD_DEMIME
+int     demime_errorlevel      = 0;
+int     demime_ok              = 0;
+uschar *demime_reason          = NULL;
+#endif
 BOOL    disable_logging        = FALSE;
 
 uschar *dns_again_means_nonexist = NULL;
@@ -473,6 +499,10 @@ uschar *expand_string_message;
 BOOL    extract_addresses_remove_arguments = TRUE;
 uschar *extra_local_interfaces = NULL;
 
+#ifdef WITH_CONTENT_SCAN
+BOOL    fake_reject            = FALSE;
+uschar *fake_reject_text       = US"Your message has been rejected but is being kept for evaluation.\nIf it was a legit message, it may still be delivered to the target recipient(s).";
+#endif
 int     filter_n[FILTER_VARIABLE_COUNT];
 BOOL    filter_running         = FALSE;
 int     filter_sn[FILTER_VARIABLE_COUNT];
@@ -481,6 +511,9 @@ uschar *filter_test_sfile      = NULL;
 uschar *filter_test_ufile      = NULL;
 uschar *filter_thisaddress     = NULL;
 int     finduser_retries       = 0;
+#ifdef WITH_OLD_DEMIME
+uschar *found_extension        = NULL;
+#endif
 uid_t   fixed_never_users[]    = { FIXED_NEVER_USERS };
 uschar *freeze_tell            = NULL;
 uschar *fudged_queue_times     = US"";
@@ -636,6 +669,9 @@ uschar *lookup_value           = NULL;
 
 macro_item  *macros            = NULL;
 uschar *mailstore_basename     = NULL;
+#ifdef WITH_CONTENT_SCAN
+uschar *malware_name           = NULL;  /* Virus Name */
+#endif
 int     max_username_length    = 0;
 int     message_age            = 0;
 uschar *message_body           = NULL;
@@ -656,9 +692,33 @@ int     message_size           = 0;
 uschar *message_size_limit     = US"50M";
 uschar  message_subdir[2]      = { 0, 0 };
 uschar *message_reference      = NULL;
+
+/* MIME ACL expandables */
+#ifdef WITH_CONTENT_SCAN
+int     mime_anomaly_level     = NULL;
+uschar *mime_anomaly_text      = NULL;
+uschar *mime_boundary          = NULL;
+uschar *mime_charset           = NULL;
+uschar *mime_content_description = NULL;
+uschar *mime_content_disposition = NULL;
+uschar *mime_content_id        = NULL;
+unsigned int mime_content_size = 0;
+uschar *mime_content_transfer_encoding = NULL;
+uschar *mime_content_type      = NULL;
+uschar *mime_decoded_filename  = NULL;
+uschar *mime_filename          = NULL;
+int     mime_is_multipart      = 0;
+int     mime_is_coverletter    = 0;
+int     mime_is_rfc822         = 0;
+int     mime_part_count        = -1;
+#endif
+
 BOOL    mua_wrapper            = FALSE;
 
 uid_t  *never_users            = NULL;
+#ifdef WITH_CONTENT_SCAN
+BOOL    no_mbox_unspool        = FALSE;
+#endif
 BOOL    no_multiline_responses = FALSE;
 
 uid_t   original_euid;
@@ -759,6 +819,9 @@ const pcre *regex_From         = NULL;
 const pcre *regex_PIPELINING   = NULL;
 const pcre *regex_SIZE         = NULL;
 const pcre *regex_ismsgid      = NULL;
+#ifdef WITH_CONTENT_SCAN
+uschar *regex_match_string     = NULL;
+#endif
 int     remote_delivery_count  = 0;
 int     remote_max_parallel    = 2;
 uschar *remote_sort_domains    = NULL;
@@ -783,6 +846,9 @@ router_instance  router_defaults = {
     NULL,                      /* driver name */
 
     NULL,                      /* address_data */
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+    NULL,                      /* bmi_rule */
+#endif    
     NULL,                      /* cannot_route_message */
     NULL,                      /* condition */
     NULL,                      /* current_directory */
@@ -811,6 +877,11 @@ router_instance  router_defaults = {
     NULL,                      /* transport_name */
 
     TRUE,                      /* address_test */
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+    FALSE,                     /* bmi_deliver_alternate */
+    FALSE,                     /* bmi_deliver_default */
+    FALSE,                     /* bmi_dont_deliver */
+#endif
     TRUE,                      /* expn */
     FALSE,                     /* caseful_local_part */
     FALSE,                     /* check_local_user */
@@ -939,9 +1010,33 @@ int     smtp_rlr_limit         = 0;
 int     smtp_rlr_threshold     = INT_MAX;
 BOOL    smtp_use_pipelining    = FALSE;
 BOOL    smtp_use_size          = FALSE;
+
+#ifdef WITH_CONTENT_SCAN
+uschar *spamd_address          = US"127.0.0.1 783";
+uschar *spam_bar               = NULL;
+uschar *spam_report            = NULL;
+uschar *spam_score             = NULL;
+uschar *spam_score_int         = NULL;
+#endif
+#ifdef EXPERIMENTAL_SPF
+uschar *spf_header_comment     = NULL;
+uschar *spf_received           = NULL;
+uschar *spf_result             = NULL;
+uschar *spf_smtp_comment       = NULL;
+#endif
+
 BOOL    split_spool_directory  = FALSE;
 uschar *spool_directory        = US SPOOL_DIRECTORY
                            "\0<--------------Space to patch spool_directory->";
+#ifdef EXPERIMENTAL_SRS
+uschar *srs_config             = NULL;
+uschar *srs_db_address         = NULL;
+uschar *srs_db_key             = NULL;
+uschar *srs_orig_recipient     = NULL;
+uschar *srs_orig_sender        = NULL;
+uschar *srs_recipient          = NULL;
+uschar *srs_status             = NULL;
+#endif      
 int     string_datestamp_offset= -1;
 BOOL    strip_excess_angle_brackets = FALSE;
 BOOL    strip_trailing_dot     = FALSE;

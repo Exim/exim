@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.4 2004/11/25 13:54:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.5 2004/12/16 15:11:47 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -131,12 +131,12 @@ enough to hold all the headers from a normal kind of message. */
 into big_buffer_size and in some circumstances increased. It should be at least
 as long as the maximum path length. */
 
-#if defined PATH_MAX && PATH_MAX > 1024
+#if defined PATH_MAX && PATH_MAX > 16384
 #define BIG_BUFFER_SIZE PATH_MAX
-#elif defined MAXPATHLEN && MAXPATHLEN > 1024
+#elif defined MAXPATHLEN && MAXPATHLEN > 16384
 #define BIG_BUFFER_SIZE MAXPATHLEN
 #else
-#define BIG_BUFFER_SIZE 1024
+#define BIG_BUFFER_SIZE 16384
 #endif
 
 /* This limits the length of data returned by local_scan(). Because it is
@@ -552,6 +552,7 @@ to the header name, by calling header_checkname(). */
 #define htype_add_top       'a'
 #define htype_add_rec       'r'
 #define htype_add_bot       'z'
+#define htype_add_rfc       'f'
 
 /* Types of item in options lists. These are the bottom 8 bits of the "type"
 field, which is an int. The opt_void value is used for entries in tables that
@@ -741,11 +742,18 @@ ordered to make it easy to implement tests for certain ACLs when processing
 order without checking carefully! Furthermore, remember to keep these in step
 with the tables of names and response codes in globals.c. */
 
+/* FIXME: the #ifdef below does not work here. Why? */
+
 enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_MAIL,       /* )                                           */
        ACL_WHERE_PREDATA,    /* ) There are several tests for "in message", */
-       ACL_WHERE_DATA,       /* ) implemented by <= WHERE_NOTSMTP           */
-       ACL_WHERE_NOTSMTP,    /* )                                           */
+                             /* ) implemented by <= WHERE_NOTSMTP           */
+                             /* )                                           */
+#ifdef WITH_CONTENT_SCAN
+       ACL_WHERE_MIME,       
+#endif
+       ACL_WHERE_DATA,       
+       ACL_WHERE_NOTSMTP,    
 
        ACL_WHERE_AUTH,       /* These remaining ones are not currently    */
        ACL_WHERE_CONNECT,    /* required to be in a special order so they */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.2 2004/12/16 15:11:47 tom Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -43,6 +43,11 @@ int     action_queue_update = TRUE;
 uschar  actioned_message[24];
 uschar *action_required;
 uschar *alternate_config = NULL;
+
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+int     bmi_run                = 0;
+uschar *bmi_verdicts           = NULL;
+#endif
 
 int     body_max = 20000;
 
@@ -132,6 +137,10 @@ int     deliver_frozen_at      = 0;
 BOOL    deliver_manual_thaw    = FALSE;
 BOOL    dont_deliver           = FALSE;
 
+#ifdef WITH_CONTENT_SCAN
+BOOL   fake_reject             = FALSE;
+#endif
+
 header_line *header_last       = NULL;
 header_line *header_list       = NULL;
 
@@ -142,6 +151,11 @@ int     interface_port         = 0;
 BOOL    local_error_message    = FALSE;
 uschar *local_scan_data        = NULL;
 BOOL    log_timezone           = FALSE;
+
+#ifdef WITH_CONTENT_SCAN
+uschar *spam_score_int         = NULL;
+#endif
+
 int     message_age            = 0;
 uschar *message_id;
 uschar *message_id_external;
