@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.20 2005/02/21 10:22:48 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.21 2005/02/25 14:10:18 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1854,5 +1854,11 @@ Currently, only numerical variables are supported.
 When a callout fails, put the entire SMTP response into a variable. This is not
 trivial because we probably should retain it in the cache as well.
 ------------------------------------------------------------------------------
---- HWM 316 ------------------------------------------------------------------
+
+(317) 25-Feb-05 S Delete the pid file when the daemon exits
+
+At least try to catch some of the exit routes from the daemon and either delete
+or empty the pid file.
+------------------------------------------------------------------------------
+--- HWM 317 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
