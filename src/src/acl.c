@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.22 2005/03/09 13:16:29 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.23 2005/03/09 14:36:54 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -94,12 +94,12 @@ static uschar *conditions[] = { US"acl", US"authenticated",
   US"demime",
 #endif
 #ifdef EXPERIMENTAL_DOMAINKEYS
-  US"dk_domain_source",
-  US"dk_policy",
-  US"dk_sender_domains",
-  US"dk_sender_local_parts",
-  US"dk_senders",
-  US"dk_status",
+  US"dk_domain_source",         
+  US"dk_policy",                
+  US"dk_sender_domains",        
+  US"dk_sender_local_parts",    
+  US"dk_senders",               
+  US"dk_status",                
 #endif
   US"dnslists", US"domains", US"encrypted",
   US"endpass", US"hosts", US"local_parts", US"log_message", US"logwrite",
@@ -149,12 +149,12 @@ static uschar cond_expand_at_top[] = {
   TRUE,    /* demime */
 #endif
 #ifdef EXPERIMENTAL_DOMAINKEYS
-  TRUE,
-  TRUE,
-  TRUE,
-  TRUE,
-  TRUE,
-  TRUE,
+  TRUE,    /* dk_domain_source */     
+  TRUE,    /* dk_policy */            
+  TRUE,    /* dk_sender_domains */    
+  TRUE,    /* dk_sender_local_parts */
+  TRUE,    /* dk_senders */           
+  TRUE,    /* dk_status */            
 #endif
   TRUE,    /* dnslists */
   FALSE,   /* domains */
@@ -205,12 +205,12 @@ static uschar cond_modifiers[] = {
   FALSE,   /* demime */
 #endif
 #ifdef EXPERIMENTAL_DOMAINKEYS
-  FALSE,
-  FALSE,
-  FALSE,
-  FALSE,
-  FALSE,
-  FALSE,
+  FALSE,   /* dk_domain_source */     
+  FALSE,   /* dk_policy */            
+  FALSE,   /* dk_sender_domains */    
+  FALSE,   /* dk_sender_local_parts */
+  FALSE,   /* dk_senders */           
+  FALSE,   /* dk_status */            
 #endif
   FALSE,   /* dnslists */
   FALSE,   /* domains */
@@ -292,7 +292,7 @@ static unsigned int cond_forbids[] = {
 #endif
 
 #ifdef EXPERIMENTAL_DOMAINKEYS
-  (1<<ACL_WHERE_AUTH)|
+  (1<<ACL_WHERE_AUTH)|                            /* dk_domain_source */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -300,7 +300,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY),
 
-  (1<<ACL_WHERE_AUTH)|
+  (1<<ACL_WHERE_AUTH)|                            /* dk_policy */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -308,7 +308,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY),
 
-  (1<<ACL_WHERE_AUTH)|
+  (1<<ACL_WHERE_AUTH)|                            /* dk_sender_domains */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -316,7 +316,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY),
 
-  (1<<ACL_WHERE_AUTH)|
+  (1<<ACL_WHERE_AUTH)|                            /* dk_sender_local_parts */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -324,7 +324,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY),
 
-  (1<<ACL_WHERE_AUTH)|
+  (1<<ACL_WHERE_AUTH)|                            /* dk_senders */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -332,7 +332,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY),
 
-  (1<<ACL_WHERE_AUTH)|
+  (1<<ACL_WHERE_AUTH)|                            /* dk_status */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -475,7 +475,7 @@ static unsigned int control_forbids[] = {
   0,                                               /* bmi_run */
 #endif
 #ifdef EXPERIMENTAL_DOMAINKEYS
-  (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA),      /* dk_verify */
+  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP),      /* dk_verify */
 #endif
 
   0,                                               /* error */
@@ -493,12 +493,12 @@ static unsigned int control_forbids[] = {
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* freeze */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-    (1<<ACL_WHERE_NOTSMTP)),
+    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME)),
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* queue_only */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-    (1<<ACL_WHERE_NOTSMTP)),
+    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_MIME)),
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* submission */
@@ -507,12 +507,14 @@ static unsigned int control_forbids[] = {
 #ifdef WITH_CONTENT_SCAN
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* no_mbox_unspool */
-    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)),
+    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+    (1<<ACL_WHERE_MIME)),
 #endif
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakereject */
-    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)),
+    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+    (1<<ACL_WHERE_MIME)),
 
   (1<<ACL_WHERE_NOTSMTP)                           /* no_multiline */
 };
