@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.19 2004/11/10 10:29:56 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.20 2004/11/10 14:15:20 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -69,6 +69,10 @@ Exim version 4.44
     information about exactly what failed.
 
 19. Added -dd to debug only the daemon process.
+
+20. Incorporated Michael Haardt's patch to ldap.c for improving the way it
+    handles timeouts, both on the server side and network timeouts. Renamed the
+    CONNECT parameter as NETTIMEOUT (but kept the old name for compatibility).
 
 
 Exim version 4.43

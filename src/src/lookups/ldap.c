@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.1 2004/10/07 13:10:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.2 2004/11/10 14:15:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -72,13 +72,6 @@ LDAP_LIB_OPENLDAP1
 #endif
 
 
-/* For libraries without TCP connect timeouts */
-
-#ifndef LDAP_X_IO_TIMEOUT_NO_TIMEOUT
-#define LDAP_X_IO_TIMEOUT_NO_TIMEOUT (-1)
-#endif
-
-
 /* Four types of LDAP search are implemented */
 
 #define SEARCH_LDAP_MULTIPLE 0       /* Get attributes from multiple entries */
@@ -136,7 +129,7 @@ Arguments:
   password      password for authentication, or NULL
   sizelimit     max number of entries returned, or 0 for no limit
   timelimit     max time to wait, or 0 for no limit
-  tcplimit      max time to connect, or NULL for OS default
+  tcplimit      max time to connect, or 0 for OS default
   deference     the dereference option, which is one of
                   LDAP_DEREF_{NEVER,SEARCHING,FINDING,ALWAYS}
 
@@ -376,8 +369,19 @@ if (lcp == NULL)
   in Netscape SDK v4.1; I don't know about other libraries. */
 
   #ifdef LDAP_X_OPT_CONNECT_TIMEOUT
-  ldap_set_option(ld, LDAP_X_OPT_CONNECT_TIMEOUT, (void *)&tcplimit);
+  if (tcplimit > 0)
+    {
+    unsigned int timeout1000 = tcplimit*1000;
+    ldap_set_option(ld, LDAP_X_OPT_CONNECT_TIMEOUT, (void *)&timeout1000);
+    }
   #endif
+
+  /* Set the TCP connect timeout. This works with OpenLDAP 2.2.14. */
+
+  #ifdef LDAP_OPT_NETWORK_TIMEOUT
+  if (tcplimit > 0)
+    ldap_set_option(ld, LDAP_OPT_NETWORK_TIMEOUT, (void *)timeoutptr);
+  #endif 
 
   /* I could not get TLS to work until I set the version to 3. That version
   seems to be the default nowadays. The RFC is dated 1997, so I would hope
@@ -443,6 +447,15 @@ else
       host, porttext);
   }
 
+/* Whatever follows, obey this timeout in any requests. */
+
+if (tcplimit > 0)
+  {
+  timeout.tv_sec = tcplimit;
+  timeout.tv_usec = 0;
+  timeoutptr = &timeout;
+  }
+
 /* Bind with the user/password supplied, or an anonymous bind if these values
 are NULL, unless a cached connection is already bound with the same values. */
 
@@ -457,23 +470,41 @@ if (!lcp->bound ||
   {
   DEBUG(D_lookup) debug_printf("%sbinding with user=%s password=%s\n",
     (lcp->bound)? "re-" : "", user, password);
-  if ((rc = ldap_bind_s(lcp->ld, CS user, CS password, LDAP_AUTH_SIMPLE))
-       != LDAP_SUCCESS)
+  if ((msgid = ldap_bind(lcp->ld, CS user, CS password, LDAP_AUTH_SIMPLE))
+       == -1)
     {
-    /* Invalid credentials when just checking credentials returns FAIL. This
-    stops any further servers being tried. */
+    *errmsg = string_sprintf("failed to bind the LDAP connection to server "
+      "%s%s - LDAP error", host, porttext);
+    goto RETURN_ERROR;
+    }
 
-    if (search_type == SEARCH_LDAP_AUTH && rc == LDAP_INVALID_CREDENTIALS)
-      {
-      DEBUG(D_lookup)
-        debug_printf("Invalid credentials: ldapauth returns FAIL\n");
-      error_yield = FAIL;
-      goto RETURN_ERROR_NOMSG;
-      }
+  if ((rc = ldap_result( lcp->ld, msgid, 1, timeoutptr, &result )) <= 0)
+    {
+    *errmsg = string_sprintf("failed to bind the LDAP connection to server "
+      "%s%s - LDAP error: %s", host, porttext, 
+      rc == -1 ? "result retrieval failed" : "timeout" );
+    result = NULL;
+    goto RETURN_ERROR;
+    }
 
-    /* Otherwise we have a problem that doesn't stop further servers from being
-    tried. */
+  rc = ldap_result2error( lcp->ld, result, 0 );
 
+  /* Invalid credentials when just checking credentials returns FAIL. This
+  stops any further servers being tried. */
+
+  if (search_type == SEARCH_LDAP_AUTH && rc == LDAP_INVALID_CREDENTIALS)
+    {
+    DEBUG(D_lookup)
+      debug_printf("Invalid credentials: ldapauth returns FAIL\n");
+    error_yield = FAIL;
+    goto RETURN_ERROR_NOMSG;
+    }
+
+  /* Otherwise we have a problem that doesn't stop further servers from being
+  tried. */
+
+  if (rc != LDAP_SUCCESS)
+    {
     *errmsg = string_sprintf("failed to bind the LDAP connection to server "
       "%s%s - LDAP error %d: %s", host, porttext, rc, ldap_err2string(rc));
     goto RETURN_ERROR;
@@ -484,6 +515,9 @@ if (!lcp->bound ||
   lcp->bound = TRUE;
   lcp->user = (user == NULL)? NULL : string_copy(user);
   lcp->password = (password == NULL)? NULL : string_copy(password);
+
+  ldap_msgfree(result);
+  result = NULL;
   }
 
 /* If we are just checking credentials, return OK. */
@@ -527,13 +561,6 @@ if (msgid == -1)
 
 /* Loop to pick up results as they come in, setting a timeout if one was
 given. */
-
-if (timelimit > 0)
-  {
-  timeout.tv_sec = timelimit;
-  timeout.tv_usec = 0;
-  timeoutptr = &timeout;
-  }
 
 while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
         LDAP_RES_SEARCH_ENTRY)
@@ -916,7 +943,7 @@ control_ldap_search(uschar *ldap_url, int search_type, uschar **res,
 BOOL defer_break = FALSE;
 int timelimit = LDAP_NO_LIMIT;
 int sizelimit = LDAP_NO_LIMIT;
-int tcplimit = LDAP_X_IO_TIMEOUT_NO_TIMEOUT;
+int tcplimit = 0;
 int dereference = LDAP_DEREF_NEVER;
 int sep = 0;
 uschar *url = ldap_url;
@@ -949,7 +976,8 @@ while (strncmpic(url, US"ldap", 4) != 0)
       else if (strncmpic(name, US"PASS=", namelen) == 0) password = value;
       else if (strncmpic(name, US"SIZE=", namelen) == 0) sizelimit = Uatoi(value);
       else if (strncmpic(name, US"TIME=", namelen) == 0) timelimit = Uatoi(value);
-      else if (strncmpic(name, US"CONNECT=", namelen) == 0) tcplimit = Uatoi(value) * 1000;
+      else if (strncmpic(name, US"CONNECT=", namelen) == 0) tcplimit = Uatoi(value);
+      else if (strncmpic(name, US"NETTIME=", namelen) == 0) tcplimit = Uatoi(value);
 
       /* Don't know if all LDAP libraries have LDAP_OPT_DEREF */
 
