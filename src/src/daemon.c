@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.7 2005/01/27 15:15:30 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.8 2005/02/16 15:24:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -39,8 +39,8 @@ static int   accept_retry_errno;
 static BOOL  accept_retry_select_failed;
 
 static int   queue_run_count = 0;
-static pid_t *queue_pid_slots;
-static smtp_slot *smtp_slots;
+static pid_t *queue_pid_slots = NULL;
+static smtp_slot *smtp_slots = NULL;
 
 static BOOL  write_pid = TRUE;
 
@@ -775,6 +775,72 @@ return FALSE;
 
 
 
+
+/*************************************************
+*         Handle terminating subprocesses        *
+*************************************************/
+
+/* Handle the termination of child processes. Theoretically, this need be done
+only when sigchld_seen is TRUE, but rumour has it that some systems lose
+SIGCHLD signals at busy times, so to be on the safe side, this function is
+called each time round. It shouldn't be too expensive.
+
+Arguments:  none
+Returns:    nothing
+*/
+
+static void
+handle_ending_processes(void)
+{
+int status;
+pid_t pid;
+
+while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
+  {
+  int i;
+  DEBUG(D_any) debug_printf("child %d ended: status=0x%x\n", (int)pid,
+    status);
+
+  /* If it's a listening daemon for which we are keeping track of individual 
+  subprocesses, deal with an accepting process that has terminated. */
+
+  if (smtp_slots != NULL)
+    {
+    for (i = 0; i < smtp_accept_max; i++)
+      {
+      if (smtp_slots[i].pid == pid)
+        {
+        if (smtp_slots[i].host_address != NULL)
+          store_free(smtp_slots[i].host_address);
+        smtp_slots[i] = empty_smtp_slot;
+        if (--smtp_accept_count < 0) smtp_accept_count = 0;
+        DEBUG(D_any) debug_printf("%d SMTP accept process%s now running\n",
+          smtp_accept_count, (smtp_accept_count == 1)? "" : "es");
+        break;
+        }
+      }
+    if (i < smtp_accept_max) continue;  /* Found an accepting process */
+    }
+
+  /* If it wasn't an accepting process, see if it was a queue-runner
+  process that we are tracking. */
+
+  if (queue_pid_slots != NULL)
+    {
+    for (i = 0; i < queue_run_max; i++)
+      {
+      if (queue_pid_slots[i] == pid)
+        {
+        queue_pid_slots[i] = 0;
+        if (--queue_run_count < 0) queue_run_count = 0;
+        DEBUG(D_any) debug_printf("%d queue-runner process%s now running\n",
+          queue_run_count, (queue_run_count == 1)? "" : "es");
+        break;
+        }
+      }
+    }
+  }
+}
 
 
 
@@ -1513,7 +1579,6 @@ for (;;)
   #endif
 
   SOCKLEN_T len = sizeof(accepted);
-  int status;
   pid_t pid;
 
   /* This code is placed first in the loop, so that it gets obeyed at the
@@ -1622,7 +1687,7 @@ for (;;)
 
   if (daemon_listen)
     {
-    int sk, lcount;
+    int sk, lcount, select_errno;
     int max_socket = 0;
     BOOL select_failed = FALSE;
     fd_set select_listen;
@@ -1659,6 +1724,17 @@ for (;;)
       select_failed = TRUE;
       lcount = 1;
       }
+      
+    /* Clean up any subprocesses that may have terminated. We need to do this 
+    here so that smtp_accept_max_per_host works when a connection to that host 
+    has completed, and we are about to accept a new one. When this code was 
+    later in the sequence, a new connection could be rejected, even though an 
+    old one had just finished. Preserve the errno from any select() failure for 
+    the use of the common select/accept error processing below. */
+    
+    select_errno = errno;
+    handle_ending_processes();
+    errno = select_errno; 
       
     /* Loop for all the sockets that are currently ready to go. If select
     actually failed, we have set the count to 1 and select_failed=TRUE, so as
@@ -1754,57 +1830,7 @@ for (;;)
     tv.tv_sec = queue_interval;
     tv.tv_usec = 0;
     select(0, NULL, NULL, NULL, &tv);
-    }
-
-  /* Handle the termination of a child process. Theoretically, this need
-  be done only when sigchld_seen is TRUE, but rumour has it that some systems
-  lose SIGCHLD signals at busy times, so to be on the safe side, just
-  do it each time round. It shouldn't be too expensive. */
-
-  while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
-    {
-    int i;
-    DEBUG(D_any) debug_printf("child %d ended: status=0x%x\n", (int)pid,
-      status);
-
-    /* If it's a listening daemon, deal with an accepting process that has
-    terminated. */
-
-    if (daemon_listen)
-      {
-      for (i = 0; i < smtp_accept_max; i++)
-        {
-        if (smtp_slots[i].pid == pid)
-          {
-          if (smtp_slots[i].host_address != NULL)
-            store_free(smtp_slots[i].host_address);
-          smtp_slots[i] = empty_smtp_slot;
-          if (--smtp_accept_count < 0) smtp_accept_count = 0;
-          DEBUG(D_any) debug_printf("%d SMTP accept process%s now running\n",
-            smtp_accept_count, (smtp_accept_count == 1)? "" : "es");
-          break;
-          }
-        }
-      if (i < smtp_accept_max) continue;  /* Found an accepting process */
-      }
-
-    /* If it wasn't an accepting process, see if it was a queue-runner
-    process, if we are keeping track of them. */
-
-    if (queue_interval > 0)
-      {
-      for (i = 0; i < queue_run_max; i++)
-        {
-        if (queue_pid_slots[i] == pid)
-          {
-          queue_pid_slots[i] = 0;
-          if (--queue_run_count < 0) queue_run_count = 0;
-          DEBUG(D_any) debug_printf("%d queue-runner process%s now running\n",
-            queue_run_count, (queue_run_count == 1)? "" : "es");
-          break;
-          }
-        }
-      }
+    handle_ending_processes(); 
     }
 
   /* Re-enable the SIGCHLD handler if it has been run. It can't do it

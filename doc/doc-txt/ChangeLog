@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.78 2005/02/15 09:31:13 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.79 2005/02/16 15:24:21 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -366,6 +366,14 @@ Exim version 4.50
     for the non-SMTP ACL.
 
 78. Error message wording change in sieve.c.
+
+79. If smtp_accept_max_per_host was set, the number of connections could be
+    restricted to fewer than expected, because the daemon was trying to set up
+    a new connection before checking whether the processes handling previous
+    connections had finished. The check for completed processes is now done
+    earlier. On busy systems, this bug wouldn't be noticed because something
+    else would have woken the daemon, and it would have reaped the completed
+    process earlier.
 
 
 ----------------------------------------------------
