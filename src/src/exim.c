@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.2 2004/10/14 11:21:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.3 2004/10/18 09:16:57 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1234,7 +1234,7 @@ because some OS define it in /usr/include/unistd.h. */
 
 extern char **environ;
 
-/* If the Exim user and/or group and/or the configuration file owner were
+/* If the Exim user and/or group and/or the configuration file owner/group were
 defined by ref:name at build time, we must now find the actual uid/gid values.
 This is a feature to make the lives of binary distributors easier. */
 
@@ -1265,6 +1265,15 @@ if (!route_finduser(US CONFIGURE_OWNERNAME, NULL, &config_uid))
   {
   fprintf(stderr, "exim: failed to find uid for user name \"%s\"\n",
     CONFIGURE_OWNERNAME);
+  exit(EXIT_FAILURE);
+  }
+#endif
+
+#ifdef CONFIGURE_GROUPNAME
+if (!route_findgroup(US CONFIGURE_GROUPNAME, &config_gid))
+  {
+  fprintf(stderr, "exim: failed to find gid for group name \"%s\"\n",
+    CONFIGURE_GROUPNAME);
   exit(EXIT_FAILURE);
   }
 #endif

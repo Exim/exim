@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.2 2004/10/18 09:16:57 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -175,6 +175,9 @@ extern int     connection_max_messages;/* Max down one SMTP connection */
 extern BOOL    config_changed;         /* True if -C used */
 extern FILE   *config_file;            /* Configuration file */
 extern uschar *config_filename;        /* Configuration file name */
+#ifdef CONFIGURE_GROUP
+extern gid_t   config_gid;             /* Additional group owner */
+#endif
 extern int     config_lineno;          /* Line number */
 extern uschar *config_main_filelist;   /* List of possible config files */
 extern uschar *config_main_filename;   /* File name actually used */

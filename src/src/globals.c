@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.2 2004/10/18 09:16:57 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -341,6 +341,9 @@ BOOL    config_changed         = FALSE;
 FILE   *config_file            = NULL;
 uschar *config_filename        = NULL;
 int     config_lineno          = 0;
+#ifdef CONFIGURE_GROUP
+gid_t   config_gid             = CONFIGURE_GROUP;
+#endif
 uschar *config_main_filelist   = US CONFIGURE_FILE
                          "\0<-----------Space to patch configure_filename->";
 uschar *config_main_filename   = NULL;

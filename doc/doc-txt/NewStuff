@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.2 2004/10/18 09:16:57 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -7,6 +7,14 @@ This file contains descriptions of new features that have been added to Exim,
 but have not yet made it into the main manual (which is most conveniently
 updated when there is a relatively large batch of changes). The doc/ChangeLog
 file contains a listing of all changes, including bug fixes.
+
+
+Version 4.44
+------------
+
+ 1. There is a new build-time option called CONFIGURE_GROUP which works like
+    CONFIGURE_OWNER. It specifies one additional group that is permitted for
+    the runtime configuration file when the group write permission is set.
 
 
 Version 4.43

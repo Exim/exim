@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/config.h.defaults,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/config.h.defaults,v 1.2 2004/10/18 09:16:57 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -28,6 +28,7 @@ in config.h unless some value is defined in Local/Makefile. */
 #define CONFIGURE_FILE
 #define CONFIGURE_FILE_USE_EUID
 #define CONFIGURE_FILE_USE_NODE
+#define CONFIGURE_GROUP
 #define CONFIGURE_OWNER
 #define CYRUS_PWCHECK_SOCKET
 #define CYRUS_SASLAUTHD_SOCKET

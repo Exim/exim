@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.6 2004/10/15 13:21:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.7 2004/10/18 09:16:57 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -24,6 +24,8 @@ Exim version 4.44
     was being done only for the command run by the queryprogram router. It is
     now done for all such subprocesses. The other cases are: ${run, transport
     filters, and the commands run by the lmtp and pipe transports.
+
+ 5. Added CONFIGURE_GROUP build-time option.
 
 
 Exim version 4.43

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.2 2004/10/18 09:16:57 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2595,8 +2595,11 @@ if (!config_changed)
        && statbuf.st_uid != config_uid           /* owner not the special one */
        #endif
          ) ||                                    /* or */
-      (statbuf.st_gid != exim_gid &&             /* group not exim & */
-       (statbuf.st_mode & 020) != 0) ||          /* group writeable  */
+      (statbuf.st_gid != exim_gid                /* group not exim & */
+       #ifdef CONFIGURE_GROUP
+       && statbuf.st_gid != config_gid           /* group not the special one */
+       #endif  
+       && (statbuf.st_mode & 020) != 0) ||       /* group writeable  */
                                                  /* or */
       ((statbuf.st_mode & 2) != 0))              /* world writeable  */
 

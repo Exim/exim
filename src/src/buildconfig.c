@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.2 2004/10/18 09:16:57 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -472,17 +472,20 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
     continue;
     }
 
-  /* CONFIGURE_OWNER is a special case. We look in the environment for
-  CONFIGURE_OWNER. If the value is not numeric, we look up the user. A lot of
-  this code is similar to that for EXIM_USER, but we aren't interested in a gid
-  here, and it's all optional, so just keep it separate. */
+  /* CONFIGURE_OWNER and CONFIGURE_GROUP are special cases. We look in the
+  environment for first. If the value is not numeric, we look up the user or
+  group. A lot of this code is similar to that for EXIM_USER, but it's easier
+  to keep it separate. */
 
-  if (strcmp(name, "CONFIGURE_OWNER") == 0)
+  if (strcmp(name, "CONFIGURE_OWNER") == 0 ||
+      strcmp(name, "CONFIGURE_GROUP") == 0)
     {
+    int isgroup = name[10] == 'G'; 
     uid_t uid = 0;
+    gid_t gid = 0; 
     char *s;
     char *username = NULL;
-    char *user = getenv("CONFIGURE_OWNER");
+    char *user = getenv(name);
 
     if (user == NULL) user = "";
     while (isspace((unsigned char)(*user))) user++;
@@ -496,9 +499,9 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
       {
       if (iscntrl((unsigned char)(*s)))
         {
-        printf("\n*** CONFIGURE_OWNER contains the control character 0x%02X in "
+        printf("\n*** %s contains the control character 0x%02X in "
           "one of the files\n    in the \"Local\" directory. Please review "
-          "your build-time\n    configuration.\n\n", *s);
+          "your build-time\n    configuration.\n\n", name, *s);
         return 1;
         }
       }
@@ -507,10 +510,13 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
 
     if (user[strspn(user, "0123456789")] == 0)
       {
-      uid = (uid_t)atoi(user);
+      if (isgroup)
+        gid = (gid_t)atoi(user);
+      else    
+        uid = (uid_t)atoi(user);
       }
 
-    /* User name given. Normally, we look up the uid right away. However,
+    /* Name given. Normally, we look up the uid or gid right away. However,
     people building binary distributions sometimes want to retain the name till
     runtime. This is supported if the name begins "ref:". */
 
@@ -519,6 +525,19 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
       user += 4;
       while (isspace(*user)) user++;
       username = user;
+      }
+
+    else if (isgroup)
+      {
+      struct group *gr = getgrnam(user);
+      if (gr == NULL)
+        {
+        printf("\n*** Group \"%s\" (specified in one of the Makefiles) does not "
+          "exist.\n    Please review your build-time configuration.\n\n",
+          user);
+        return 1;
+        }
+      gid = gr->gr_gid;
       }
 
     else
@@ -531,7 +550,6 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
           user);
         return 1;
         }
-
       uid = pw->pw_uid;
       }
 
@@ -539,8 +557,17 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
     are set to zero but will be replaced at runtime. */
 
     if (username != NULL)
-      fprintf(new, "#define CONFIGURE_OWNERNAME         \"%s\"\n", username);
-    fprintf(new, "#define CONFIGURE_OWNER              %d\n", (int)uid);
+      {
+      if (isgroup)
+        fprintf(new, "#define CONFIGURE_GROUPNAME         \"%s\"\n", username);
+      else 
+        fprintf(new, "#define CONFIGURE_OWNERNAME         \"%s\"\n", username);
+      }
+    
+    if (isgroup)
+      fprintf(new, "#define CONFIGURE_GROUP              %d\n", (int)gid);
+    else   
+      fprintf(new, "#define CONFIGURE_OWNER              %d\n", (int)uid);
     continue;
     }
 
