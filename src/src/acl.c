@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.23 2005/03/09 14:36:54 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.24 2005/03/15 11:37:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -94,12 +94,12 @@ static uschar *conditions[] = { US"acl", US"authenticated",
   US"demime",
 #endif
 #ifdef EXPERIMENTAL_DOMAINKEYS
-  US"dk_domain_source",         
-  US"dk_policy",                
-  US"dk_sender_domains",        
-  US"dk_sender_local_parts",    
-  US"dk_senders",               
-  US"dk_status",                
+  US"dk_domain_source",
+  US"dk_policy",
+  US"dk_sender_domains",
+  US"dk_sender_local_parts",
+  US"dk_senders",
+  US"dk_status",
 #endif
   US"dnslists", US"domains", US"encrypted",
   US"endpass", US"hosts", US"local_parts", US"log_message", US"logwrite",
@@ -149,12 +149,12 @@ static uschar cond_expand_at_top[] = {
   TRUE,    /* demime */
 #endif
 #ifdef EXPERIMENTAL_DOMAINKEYS
-  TRUE,    /* dk_domain_source */     
-  TRUE,    /* dk_policy */            
-  TRUE,    /* dk_sender_domains */    
+  TRUE,    /* dk_domain_source */
+  TRUE,    /* dk_policy */
+  TRUE,    /* dk_sender_domains */
   TRUE,    /* dk_sender_local_parts */
-  TRUE,    /* dk_senders */           
-  TRUE,    /* dk_status */            
+  TRUE,    /* dk_senders */
+  TRUE,    /* dk_status */
 #endif
   TRUE,    /* dnslists */
   FALSE,   /* domains */
@@ -205,12 +205,12 @@ static uschar cond_modifiers[] = {
   FALSE,   /* demime */
 #endif
 #ifdef EXPERIMENTAL_DOMAINKEYS
-  FALSE,   /* dk_domain_source */     
-  FALSE,   /* dk_policy */            
-  FALSE,   /* dk_sender_domains */    
+  FALSE,   /* dk_domain_source */
+  FALSE,   /* dk_policy */
+  FALSE,   /* dk_sender_domains */
   FALSE,   /* dk_sender_local_parts */
-  FALSE,   /* dk_senders */           
-  FALSE,   /* dk_status */            
+  FALSE,   /* dk_senders */
+  FALSE,   /* dk_status */
 #endif
   FALSE,   /* dnslists */
   FALSE,   /* domains */

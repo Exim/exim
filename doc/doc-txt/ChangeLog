@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.88 2005/03/09 14:41:00 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.89 2005/03/15 11:37:21 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -24,6 +24,12 @@ PH/02. Installed a slightly modified version of Nikos Mavrogiannopoulos' patch
        old-format file, and it generates new data and writes a new file. This
        means that you can't go back to an older release without removing the
        file.
+
+PH/03. A redirect router that has both "unseen" and "one_time" set does not
+       work if there are any delivery delays because "one_time" forces the
+       parent to be marked "delivered", so its unseen clone is never tried
+       again. For this reason, Exim now forbids the simultaneous setting of
+       these two options.
 
 
 A note about Exim versions 4.44 and 4.50

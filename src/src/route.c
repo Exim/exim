@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/route.c,v 1.4 2005/01/11 15:51:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/route.c,v 1.5 2005/03/15 11:37:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1888,8 +1888,6 @@ DEFER can be given if the expansion fails */
 yield = exp_bool(addr, r->name, US"unseen", r->unseen, r->expand_unseen,
   &unseen);
 if (yield != OK) goto ROUTE_EXIT;
-
-
 
 /* Debugging output recording a successful routing */
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.5 2005/02/17 11:58:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.6 2005/03/15 11:37:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -185,7 +185,10 @@ if ((ob->file == NULL) == (ob->data == NULL))
     "%sone of \"file\" or \"data\" must be specified",
     rblock->name, (ob->file == NULL)? "" : "only ");
 
-/* Onetime aliases can only be real addresses. Headers can't be manipulated. */
+/* Onetime aliases can only be real addresses. Headers can't be manipulated.
+The combination of one_time and unseen is not allowed. We can't check the
+expansion of "unseen" here, but we assume that if it is set to anything other
+than false, there is likely to be a problem. */
 
 if (ob->one_time)
   {
@@ -194,6 +197,9 @@ if (ob->one_time)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
       "\"headers_add\" and \"headers_remove\" are not permitted with "
       "\"one_time\"", rblock->name);
+  if (rblock->unseen || rblock->expand_unseen != NULL)
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+      "\"unseen\" may not be used with \"one_time\"", rblock->name);
   }
 
 /* The defaults for check_owner and check_group depend on other settings. The
