@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.33 2005/04/05 13:58:34 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.34 2005/04/06 14:03:53 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -129,6 +129,17 @@ PH/06 Macros may now be defined or redefined between router, transport,
       configuration. They may not, however, be changed within an individual
       driver or ACL, or in the local_scan, retry, or rewrite sections of the
       configuration.
+
+PH/07 $acl_verify_message is now set immediately after the failure of a
+      verification in an ACL, and so is available in subsequent modifiers. In
+      particular, the message can be preserved by coding like this:
+
+         warn  !verify = sender
+               set acl_m0 = $acl_verify_message
+
+      Previously, $acl_verify_message was set only while expanding "message"
+      and "log_message" when a very denied access.
+
 
 
 Version 4.50

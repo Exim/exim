@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.27 2005/04/05 13:58:35 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.28 2005/04/06 14:03:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2099,10 +2099,13 @@ for (; cb != NULL; cb = cb->next)
 
     /* If the verb is WARN, discard any user message from verification, because
     such messages are SMTP responses, not header additions. The latter come
-    only from explicit "message" modifiers. */
+    only from explicit "message" modifiers. However, put the user message into
+    $acl_verify_message so it can be used in subsequent conditions or modifiers
+    (until something changes it). */
 
     case ACLC_VERIFY:
     rc = acl_verify(where, addr, arg, user_msgptr, log_msgptr, basic_errno);
+    acl_verify_message = *user_msgptr;
     if (verb == ACL_WARN) *user_msgptr = NULL;
     break;
 

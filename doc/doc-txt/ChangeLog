@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.113 2005/04/06 10:53:47 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.114 2005/04/06 14:03:53 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -157,6 +157,16 @@ PH/25 When debugging is enabled, the contents of the command line are added
 PH/26 Change scripts/os-type so that when "uname -s" returns just "GNU", the
       answer is "GNU", and only if the return is "GNU/something" is the answer
       "Linux".
+
+PH/27 $acl_verify_message is now set immediately after the failure of a
+      verification in an ACL, and so is available in subsequent modifiers. In
+      particular, the message can be preserved by coding like this:
+
+         warn  !verify = sender
+               set acl_m0 = $acl_verify_message
+
+      Previously, $acl_verify_message was set only while expanding "message"
+      and "log_message" when a very denied access.
 
 
 A note about Exim versions 4.44 and 4.50
