@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.55 2004/12/21 14:38:02 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.56 2004/12/21 16:26:31 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -243,6 +243,9 @@ Exim version 4.50
 
 57. Double the size of the debug message buffer (to 2048) so that more of very
     long debug lines gets shown.
+
+58. The exicyclog utility now does better if the number of log files to keep
+    exceeds 99. In this case, it numbers them 001, 002 ... instead of 01, 02...
 
 
 Exim version 4.43
