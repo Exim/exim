@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.12 2004/11/19 09:45:54 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.13 2004/11/19 15:18:57 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -128,6 +128,43 @@ Version 4.44
     servers for a given domain are on a blacklist. You can probably assume that
     the name servers for the high-level domains such as .com or .co.uk are not
     going to be on such a list.
+
+13. It is now possible to specify a list of domains or IP addresses to be
+    looked up in a dnsdb lookup. The list is specified in the normal Exim way,
+    with colon as the default separator, but with the ability to change this.
+    For example:
+
+      ${lookup dnsdb{one.domain.com:two.domain.com}}
+      ${lookup dnsdb{a=one.host.com:two.host.com}}
+      ${lookup dnsdb{ptr = <; 1.2.3.4 ; 4.5.6.8}}
+
+    In order to retain backwards compatibility, there is one special case: if
+    the lookup type is PTR and no change of separator is specified, Exim looks
+    to see if the rest of the string is precisely one IPv6 address. In this
+    case, it does not treat it as a list.
+
+    The data from each lookup is concatenated, with newline separators (by
+    default - see 14 below), in the same way that multiple DNS records for a
+    single item are handled.
+
+    The lookup fails only if all the DNS lookups fail. As long as at least one
+    of them yields some data, the lookup succeeds. However, if there is a
+    temporary DNS error for any of them, the lookup defers.
+
+14. It is now possible to specify the character to be used as a separator when
+    a dnsdb lookup returns data from more than one DNS record. The default is a
+    newline. To specify a different character, put '>' followed by the new
+    character at the start of the query. For example:
+
+      ${lookup dnsdb{>: a=h1.test.ex:h2.test.ex}}
+      ${lookup dnsdb{>| mx=<;m1.test.ex;m2.test.ex}}
+
+    It is permitted to specify a space as the separator character. Note that
+    more than one DNS record can be found for a single lookup item; this
+    feature is relevant even when you do not specify a list.
+
+    The same effect could be achieved by wrapping the lookup in ${tr...}; this
+    feature is just a syntactic simplification.
 
 
 Version 4.43

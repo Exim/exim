@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.34 2004/11/19 09:45:54 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.35 2004/11/19 15:18:57 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -149,8 +149,16 @@ Exim version 4.44
     per-process caching. But the chance of anyone hitting this buglet seems
     very small.
 
-37. The dnsdb lookup has a new type, "zns", which walks up the domain tree
-    until it finds some nameserver records. It should be used with care.
+37. The dnsdb lookup has been extended in a number of ways.
+
+    (1) There is a new type, "zns", which walks up the domain tree until it
+        finds some nameserver records. It should be used with care.
+
+    (2) It is now possible to give a list of domains (or IP addresses) to be
+        looked up.
+
+    (3) It is now possible to specify the separator character for use when
+        multiple records are returned.
 
 
 Exim version 4.43

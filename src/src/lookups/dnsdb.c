@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.2 2004/11/19 09:45:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.3 2004/11/19 15:18:57 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -77,7 +77,20 @@ return (void *)(-1);   /* Any non-0 value */
 *           Find entry point for dnsdb           *
 *************************************************/
 
-/* See local README for interface description. */
+/* See local README for interface description. The query in the "keystring" may
+consist of a number of parts.
+
+(a) If the first significant character is '>' then the next character is the 
+separator character that is used when multiple records are found. The default 
+separator is newline.
+
+(b) If the next sequence of characters is a sequence of letters and digits 
+followed by '=', it is interpreted as the name of the DNS record type. The 
+default is "A".
+
+(c) Then there follows list of domain names. This is a generalized Exim list, 
+which may start with '<' in order to set a specific separator. The default 
+separator, as always, is colon. */
 
 int
 dnsdb_find(void *handle, uschar *filename, uschar *keystring, int length,
@@ -86,9 +99,10 @@ dnsdb_find(void *handle, uschar *filename, uschar *keystring, int length,
 int rc;
 int size = 256;
 int ptr = 0;
+int sep = 0;
 int type = T_TXT;
-uschar *orig_keystring = keystring;
-uschar *equals = Ustrchr(keystring, '=');
+uschar *outsep = US"\n";
+uschar *equals, *domain;
 uschar buffer[256];
 
 /* Because we're the working in the search pool, we try to reclaim as much
@@ -105,12 +119,26 @@ filename = filename;
 length = length;
 do_cache = do_cache;
 
-/* If the keystring contains an = this is preceded by a type name. */
+/* If the string starts with '>' we change the output separator */
 
-if (equals != NULL)
+while (isspace(*keystring)) keystring++;
+if (*keystring == '>')
   {
-  int i;
-  int len = equals - keystring;
+  outsep = keystring + 1;
+  keystring += 2; 
+  while (isspace(*keystring)) keystring++;
+  } 
+
+/* If the keystring contains an = this must be preceded by a valid type name. */
+
+if ((equals = Ustrchr(keystring, '=')) != NULL)
+  {
+  int i, len;
+  uschar *tend = equals;
+   
+  while (tend > keystring && isspace(tend[-1])) tend--; 
+  len = tend - keystring; 
+ 
   for (i = 0; i < sizeof(type_names)/sizeof(uschar *); i++)
     {
     if (len == Ustrlen(type_names[i]) &&
@@ -120,111 +148,150 @@ if (equals != NULL)
       break;
       }
     }
+     
   if (i >= sizeof(type_names)/sizeof(uschar *))
     {
     *errmsg = US"unsupported DNS record type";
     return DEFER;
     }
-  keystring += len + 1;
+     
+  keystring = equals + 1;
+  while (isspace(*keystring)) keystring++;
   }
-
-/* If the type is PTR, we have to construct the relevant magic lookup
-key. This code is now in a separate function. */
-
-if (type == T_PTR)
-  {
-  dns_build_reverse(keystring, buffer);
-  keystring = buffer;
-  }
-
-DEBUG(D_lookup) debug_printf("dnsdb key: %s\n", keystring);
-
-/* Initialize the resolver, in case this is the first time it is used
-in this run. Then do the lookup and sort out the result. */
+  
+/* Initialize the resolver in case this is the first time it has been used. */
 
 dns_init(FALSE, FALSE);
-rc = dns_special_lookup(&dnsa, keystring, type, NULL);
 
-if (rc == DNS_NOMATCH || rc == DNS_NODATA) return FAIL;
-if (rc != DNS_SUCCEED) return DEFER;
+/* The remainder of the string must be a list of domains. As long as the lookup 
+for at least one of them succeeds, we return success. Failure means that none 
+of them were found. 
 
-/* If the lookup was a pseudo-type, change it to the correct type for searching 
-the returned records; then search for them. */
+The original implementation did not support a list of domains. Adding the list 
+feature is compatible, except in one case: when PTR records are being looked up 
+for a single IPv6 address. Fortunately, we can hack in a compatibility feature 
+here: If the type is PTR and no list separator is specified, and the entire 
+remaining string is valid as an IP address, set an impossible separator so that 
+it is treated as one item. */
 
-if (type == T_ZNS) type = T_NS;
-for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-     rr != NULL;
-     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
-  {
-  if (rr->type != type) continue;
+if (type == T_PTR && keystring[0] != '<' &&
+    string_is_ip_address(keystring, NULL) > 0) 
+  sep = -1;
 
-  /* There may be several addresses from an A6 record. Put newlines between
-  them, just as for between several records. */
+/* Now scan the list and do a lookup for each item */
 
-  if (type == T_A ||
-      #ifdef SUPPORT_A6
-      type == T_A6 ||
-      #endif
-      type == T_AAAA)
+while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer))) 
+        != NULL)
+  {       
+  uschar rbuffer[256];
+
+  /* If the type is PTR, we have to construct the relevant magic lookup
+  key. This code is now in a separate function. */
+  
+  if (type == T_PTR)
     {
-    dns_address *da;
-    for (da = dns_address_from_rr(&dnsa, rr); da != NULL; da = da->next)
-      {
-      if (ptr != 0) yield = string_cat(yield, &size, &ptr, US"\n", 1);
-      yield = string_cat(yield, &size, &ptr, da->address, Ustrlen(da->address));
-      }
-    continue;
+    dns_build_reverse(domain, rbuffer);
+    domain = rbuffer;
     }
-
-  /* Other kinds of record just have one piece of data each. */
-
-  if (ptr != 0) yield = string_cat(yield, &size, &ptr, US"\n", 1);
-
-  if (type == T_TXT)
+  
+  DEBUG(D_lookup) debug_printf("dnsdb key: %s\n", domain);
+  
+  /* Do the lookup and sort out the result. We use the special 
+  lookup function that knows about pseudo types like "zns". If the lookup 
+  fails, continue with the next domain. */
+  
+  rc = dns_special_lookup(&dnsa, domain, type, NULL);
+  
+  if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
+  if (rc != DNS_SUCCEED) return DEFER;
+  
+  /* If the lookup was a pseudo-type, change it to the correct type for
+  searching the returned records; then search for them. */
+  
+  if (type == T_ZNS) type = T_NS;
+  for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+       rr != NULL;
+       rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
     {
-    yield = string_cat(yield, &size, &ptr, (uschar *)(rr->data+1),
-      (rr->data)[0]);
-    }
-  else   /* T_CNAME, T_MX, T_NS, T_PTR */
-    {
-    uschar s[264];
-    uschar *p = (uschar *)(rr->data);
-    if (type == T_MX)
+    if (rr->type != type) continue;
+  
+    /* There may be several addresses from an A6 record. Put the configured 
+    separator between them, just as for between several records. However, A6 
+    support is not normally configured these days. */
+  
+    if (type == T_A ||
+        #ifdef SUPPORT_A6
+        type == T_A6 ||
+        #endif
+        type == T_AAAA)
       {
-      int num;
-      GETSHORT(num, p);            /* pointer is advanced */
-      sprintf(CS s, "%d ", num);
-      yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+      dns_address *da;
+      for (da = dns_address_from_rr(&dnsa, rr); da != NULL; da = da->next)
+        {
+        if (ptr != 0) yield = string_cat(yield, &size, &ptr, outsep, 1);
+        yield = string_cat(yield, &size, &ptr, da->address, 
+          Ustrlen(da->address));
+        }
+      continue;
       }
-    else if (type == T_SRV)
+  
+    /* Other kinds of record just have one piece of data each, but there may be 
+    several of them, of course. */
+  
+    if (ptr != 0) yield = string_cat(yield, &size, &ptr, outsep, 1);
+  
+    if (type == T_TXT)
       {
-      int num, weight, port;
-      GETSHORT(num, p);            /* pointer is advanced */
-      GETSHORT(weight, p);
-      GETSHORT(port, p);
-      sprintf(CS s, "%d %d %d ", num, weight, port);
-      yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+      yield = string_cat(yield, &size, &ptr, (uschar *)(rr->data+1),
+        (rr->data)[0]);
       }
-    rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
-      (DN_EXPAND_ARG4_TYPE)(s), sizeof(s));
-
-    /* If an overlong response was received, the data will have been
-    truncated and dn_expand may fail. */
-
-    if (rc < 0)
+    else   /* T_CNAME, T_MX, T_NS, T_SRV, T_PTR */
       {
-      log_write(0, LOG_MAIN, "host name alias list truncated for %s",
-        orig_keystring);
-      break;
+      uschar s[264];
+      uschar *p = (uschar *)(rr->data);
+      if (type == T_MX)
+        {
+        int num;
+        GETSHORT(num, p);            /* pointer is advanced */
+        sprintf(CS s, "%d ", num);
+        yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+        }
+      else if (type == T_SRV)
+        {
+        int num, weight, port;
+        GETSHORT(num, p);            /* pointer is advanced */
+        GETSHORT(weight, p);
+        GETSHORT(port, p);
+        sprintf(CS s, "%d %d %d ", num, weight, port);
+        yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+        }
+      rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
+        (DN_EXPAND_ARG4_TYPE)(s), sizeof(s));
+  
+      /* If an overlong response was received, the data will have been
+      truncated and dn_expand may fail. */
+  
+      if (rc < 0)
+        {
+        log_write(0, LOG_MAIN, "host name alias list truncated: type=%s "
+          "domain=%s", dns_text_type(type), domain);
+        break;
+        }
+      else yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
       }
-    else yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
-    }
-  }
+    }    /* Loop for list of returned records */
+  }      /* Loop for list of domains */
 
+/* Reclaim unused memory */
+
+store_reset(yield + ptr + 1);
+
+/* If ptr == 0 we have not found anything. Otherwise, insert the terminating 
+zero and return the result. */
+
+if (ptr == 0) return FAIL;
 yield[ptr] = 0;
-store_reset(yield + ptr + 1);    /* Reclaim unused */
 *result = yield;
-
 return OK;
 }
 

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.6 2004/11/09 09:32:58 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.7 2004/11/19 15:18:57 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1411,13 +1411,6 @@ That is, make a C API available for custom filtering at this point.
 possibility to have multiple conditions in routers. It will be great to also
 be able to set variables in routers like in acl's." This is effectively a
 radical suggestion for a complete re-design, and is therefore BIG.
-------------------------------------------------------------------------------
-
-(222) 19-Dec-03 S  Iterative option for dnsdb
-
-A way of getting a dnsdb lookup to chop off components until something is
-found: e.g. ${lookup dndsb-i{ns=a.b.c.d}} would look for nameservers for
-a.b.c.d, then b.c.d, etc.
 ------------------------------------------------------------------------------
 
 (223) 22-Dec-03 S  Support SOA lookup in dnsdb lookups
