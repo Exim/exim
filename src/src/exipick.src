@@ -1,5 +1,5 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.3 2005/02/17 11:58:26 ph10 Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.4 2005/03/22 15:07:42 ph10 Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
@@ -8,10 +8,10 @@ use strict;
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
-my $p_version = "20041110.0";
+my $p_version = "20050225.0";
 my $p_usage   = "Usage: $p_name [--help|--version] (see --help for details)";
 my $p_cp      = <<EOM;
-        Copyright (c) 2003-2004 John Jetmore <jj33\@pobox.com>
+        Copyright (c) 2003-2005 John Jetmore <jj33\@pobox.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,34 +29,37 @@ my $p_cp      = <<EOM;
 EOM
 ext_usage(); # before we do anything else, check for --help
 
+$| = 1; # unbuffer STDOUT
+
 Getopt::Long::Configure("bundling_override");
 GetOptions(
-  'spool:s' => \$G::spool,      # exim spool dir
-  'bp'      => \$G::mailq_bp,   # List the queue (noop - default)
-  'bpa'     => \$G::mailq_bpa,  # ... with generated address as well
-  'bpc'     => \$G::mailq_bpc,  # ... but just show a count of messages
-  'bpr'     => \$G::mailq_bpr,  # ... do not sort
-  'bpra'    => \$G::mailq_bpra, # ... with generated addresses, unsorted
-  'bpru'    => \$G::mailq_bpru, # ... only undelivered addresses, unsorted
-  'bpu'     => \$G::mailq_bpu,  # ... only undelivered addresses
-  'and'     => \$G::and,        # 'and' the criteria (default)
-  'or'      => \$G::or,         # 'or' the criteria
-  'f:s'     => \$G::qgrep_f,    # from regexp
-  'r:s'     => \$G::qgrep_r,    # recipient regexp
-  #'s:s'     => \$G::qgrep_s,    # match against size field
-  'y:s'     => \$G::qgrep_y,    # message younger than (secs)
-  'o:s'     => \$G::qgrep_o,    # message older than (secs)
-  'z'       => \$G::qgrep_z,    # frozen only
-  'x'       => \$G::qgrep_x,    # non-frozen only
-  'c'       => \$G::qgrep_c,    # display match count
-  'l'       => \$G::qgrep_l,    # long format (default)
-  'i'       => \$G::qgrep_i,    # message ids only
-  'b'       => \$G::qgrep_b,    # brief format
-  'flatq'   => \$G::flatq,      # brief format
-  'caseful' => \$G::caseful,    # in '=' criteria, respect case
-  'caseless'=> \$G::caseless,   #   ...ignore case (default)
-  'show-vars:s' => \$G::show_vars, # display the contents of these vars
-  'show-rules' => \$G::show_rules # display compiled match rules
+  'spool:s'     => \$G::spool,      # exim spool dir
+  'bp'          => \$G::mailq_bp,   # List the queue (noop - default)
+  'bpa'         => \$G::mailq_bpa,  # ... with generated address as well
+  'bpc'         => \$G::mailq_bpc,  # ... but just show a count of messages
+  'bpr'         => \$G::mailq_bpr,  # ... do not sort
+  'bpra'        => \$G::mailq_bpra, # ... with generated addresses, unsorted
+  'bpru'        => \$G::mailq_bpru, # ... only undelivered addresses, unsorted
+  'bpu'         => \$G::mailq_bpu,  # ... only undelivered addresses
+  'and'         => \$G::and,        # 'and' the criteria (default)
+  'or'          => \$G::or,         # 'or' the criteria
+  'f:s'         => \$G::qgrep_f,    # from regexp
+  'r:s'         => \$G::qgrep_r,    # recipient regexp
+  #'s:s'         => \$G::qgrep_s,    # match against size field
+  'y:s'         => \$G::qgrep_y,    # message younger than (secs)
+  'o:s'         => \$G::qgrep_o,    # message older than (secs)
+  'z'           => \$G::qgrep_z,    # frozen only
+  'x'           => \$G::qgrep_x,    # non-frozen only
+  'c'           => \$G::qgrep_c,    # display match count
+  'l'           => \$G::qgrep_l,    # long format (default)
+  'i'           => \$G::qgrep_i,    # message ids only
+  'b'           => \$G::qgrep_b,    # brief format
+  'flatq'       => \$G::flatq,      # brief format
+  'caseful'     => \$G::caseful,    # in '=' criteria, respect case
+  'caseless'    => \$G::caseless,   #   ...ignore case (default)
+  'show-vars:s' => \$G::show_vars,  # display the contents of these vars
+  'show-rules'  => \$G::show_rules, # display compiled match rules
+  'show-tests'  => \$G::show_tests  # display tests as applied to each message
 ) || exit(1);
 
 push(@ARGV, "\$sender_address =~ /$G::qgrep_f/") if ($G::qgrep_f);
@@ -65,26 +68,27 @@ push(@ARGV, "\$message_age < $G::qgrep_y")       if ($G::qgrep_y);
 push(@ARGV, "\$message_age > $G::qgrep_o")       if ($G::qgrep_o);
 push(@ARGV, "\$deliver_freeze")                  if ($G::qgrep_z);
 push(@ARGV, "!\$deliver_freeze")                 if ($G::qgrep_x);
-$G::mailq_bp   = $G::mailq_bp; # shut up -w
-$G::and        = $G::and;      # shut up -w
-$G::msg_ids    = {};
-$G::caseless   = $G::caseful ? 0 : 1; # nocase by default, case if both used
-$spool         = $G::spool if ($G::spool);
-my $count_only = 1 if ($G::mailq_bpc || $G::qgrep_c);
-my $unsorted   = 1 if ($G::mailq_bpr || $G::mailq_bpra || $G::mailq_bpru);
-my $msg        = get_all_msgs($spool, $unsorted);
-my $crit       = process_criteria(\@ARGV);
-my $e          = Exim::SpoolFile->new();
-my $tcount     = 0 if ($count_only);
-my $mcount     = 0 if ($count_only);
-$e->set_spool($spool);
-$e->set_undelivered_only(1) if ($G::mailq_bpru || $G::mailq_bpu);
-$e->set_show_generated(1)   if ($G::mailq_bpa || $G::mailq_bpra);
-$e->output_long()           if ($G::qgrep_l);
-$e->output_idonly()         if ($G::qgrep_i);
-$e->output_brief()          if ($G::qgrep_b);
-$e->output_flatq()          if ($G::flatq);
+$G::mailq_bp        = $G::mailq_bp;        # shut up -w
+$G::and             = $G::and;             # shut up -w
+$G::msg_ids         = {};
+$G::caseless        = $G::caseful ? 0 : 1; # nocase by default, case if both
+@G::recipients_crit = ();
+$spool              = $G::spool if ($G::spool);
+my $count_only      = 1 if ($G::mailq_bpc || $G::qgrep_c);
+my $unsorted        = 1 if ($G::mailq_bpr || $G::mailq_bpra || $G::mailq_bpru);
+my $msg             = get_all_msgs($spool, $unsorted);
+my $crit            = process_criteria(\@ARGV);
+my $e               = Exim::SpoolFile->new();
+my $tcount          = 0 if ($count_only);
+my $mcount          = 0 if ($count_only);
+$e->set_undelivered_only(1)      if ($G::mailq_bpru || $G::mailq_bpu);
+$e->set_show_generated(1)        if ($G::mailq_bpra || $G::mailq_bpa);
+$e->output_long()                if ($G::qgrep_l);
+$e->output_idonly()              if ($G::qgrep_i);
+$e->output_brief()               if ($G::qgrep_b);
+$e->output_flatq()               if ($G::flatq);
 $e->set_show_vars($G::show_vars) if ($G::show_vars);
+$e->set_spool($spool);
 
 MSG:
 foreach my $m (@$msg) {
@@ -96,10 +100,22 @@ foreach my $m (@$msg) {
   }
   $tcount++;
   my $match = 0;
+  my @local_crit = ();
+  foreach my $c (@G::recipients_crit) {              # handle each_recip* vars
+    foreach my $addr (split(/, /, $e->get_var($c->{var}))) {
+      my %t = ( 'cmp' => $c->{cmp}, 'var' => $c->{var} );
+      $t{cmp} =~ s/"?\$var"?/'$addr'/;
+      push(@local_crit, \%t);
+    }
+  }
+  if ($G::show_tests) { print $e->get_var('message_id'), "\n"; }
   CRITERIA:
-  foreach my $c (@$crit) {
+  foreach my $c (@$crit, @local_crit) {
     my $var = $e->get_var($c->{var});
     my $ret = eval($c->{cmp});
+    if ($G::show_tests) {
+      printf "  %25s =  '%s'\n  %25s => $ret\n",$c->{var},$var,$c->{cmp},$ret;
+    }
     if ($@) {
       print STDERR "Error in eval '$c->{cmp}': $@\n";
       next(MSG);
@@ -109,10 +125,10 @@ foreach my $m (@$msg) {
       else        { next(CRITERIA); }
     } else { # no match
       if ($G::or) { next(CRITERIA); }
-      else        { next(MSG); }
+      else        { next(MSG);      }
     }
   }
-  next(MSG) if (scalar(@$crit) > 0 && !$match);
+  next(MSG) if (scalar(@$crit, @local_crit) > 0 && !$match);
 
   if ($count_only) {
     $mcount++;
@@ -174,6 +190,13 @@ sub process_criteria {
     } else {
       print STDERR "Expression $_ did not parse\n";
       $e = 1;
+    }
+    # support the each_* psuedo variables.  Steal the criteria off of the
+    # queue for special processing later
+    if ($c[-1]{var} =~ /^each_(recipients(_(un)?del)?)$/) {
+      my $var = $1;
+      push(@G::recipients_crit,pop(@c));
+      $G::recipients_crit[-1]{var} = $var; # remove each_ from the variable
     }
   }
 
@@ -390,7 +413,7 @@ sub _parse_header {
 
   # line 2
   chomp($_ = <I>);
-  return(0) if (!/^(\S+)\s(\d+)\s(\d+)$/);
+  return(0) if (!/^(.+)\s(\d+)\s(\d+)$/);
   $self->{_vars}{originator_login} = $1;
   $self->{_vars}{originator_uid}   = $2;
   $self->{_vars}{originator_gid}   = $3;
@@ -432,13 +455,26 @@ sub _parse_header {
         $self->{_vars}{local_error_message} = 1;
       } elsif ($tag eq '-local_scan') {
         $self->{_vars}{local_scan_data} = $arg;
+      } elsif ($tag eq '-spam_score_int') {
+        $self->{_vars}{spam_score_int} = $arg;
+        $self->{_vars}{spam_score}     = $arg / 10;
+      } elsif ($tag eq '-bmi_verdicts') {
+        $self->{_vars}{bmi_verdicts} = $arg;
+      } elsif ($tag eq '-host_lookup_deferred') {
+        $self->{_vars}{host_lookup_deferred} = 1;
       } elsif ($tag eq '-host_lookup_failed') {
         $self->{_vars}{host_lookup_failed} = 1;
       } elsif ($tag eq '-body_linecount') {
         $self->{_vars}{body_linecount} = $arg;
+      } elsif ($tag eq '-body_zerocount') {
+        $self->{_vars}{body_zerocount} = $arg;
       } elsif ($tag eq '-frozen') {
         $self->{_vars}{deliver_freeze} = 1;
         $self->{_vars}{deliver_frozen_at} = $arg;
+      } elsif ($tag eq '-allow_unqualified_recipient') {
+        $self->{_vars}{allow_unqualified_recipient} = 1;
+      } elsif ($tag eq '-allow_unqualified_sender') {
+        $self->{_vars}{allow_unqualified_sender} = 1;
       } elsif ($tag eq '-deliver_firsttime') {
         $self->{_vars}{deliver_firsttime} = 1;
         $self->{_vars}{first_delivery} = 1;
@@ -463,6 +499,8 @@ sub _parse_header {
       } elsif ($tag eq '-interface_address') {
         $self->{_vars}{interface_port} = $self->_get_host_and_port(\$arg);
         $self->{_vars}{interface_address} = $arg;
+      } elsif ($tag eq '-active_hostname') {
+        $self->{_vars}{smtp_active_hostname} = $arg;
       } elsif ($tag eq '-host_auth') {
         $self->{_vars}{sender_host_authenticated} = $arg;
       } elsif ($tag eq '-host_name') {
@@ -475,12 +513,6 @@ sub _parse_header {
         $self->{_vars}{received_protocol} = $arg;
       } elsif ($tag eq '-N') {
         $self->{_vars}{dont_deliver} = 1;
-      } elsif ($tag eq '-body_zerocount') {
-        $self->{_vars}{body_zerocount} = $arg;
-      } elsif ($tag eq '-allow_unqualified_recipient') {
-        $self->{_vars}{allow_unqualified_recipient} = 1;
-      } elsif ($tag eq '-allow_unqualified_sender') {
-        $self->{_vars}{allow_unqualified_sender} = 1;
       } else {
         # unrecognized tag, save it for reference
         $self->{$tag} = $arg;
@@ -523,7 +555,7 @@ sub _parse_header {
       $self->{_recips}{$1} = { pno => $4, errors_to => $2 };
       $addr = $1;
     } elsif (/^.*#(\d+)$/) {
-      print STDERR "exim4 #$1 style (unimplemented): $_\n";
+      #print STDERR "exim4 #$1 style (unimplemented): $_\n";
       $self->_error("exim4 #$1 style (unimplemented): $_");
     } else {
       #print STDERR "default type: $_\n";
@@ -739,21 +771,21 @@ exipick [--help|--version] | [-spool <spool>] [-and|-or] [-bp|-bpa|-bpc|-bpr|-bp
 
 =head1 DESCRIPTION
 
-exipick is designed to display the contents of a Exim mail spool based on user-specified criteria.  It is designed to mimic the output of 'exim -bp' (or any of the other -bp* options) and Exim's spec.txt should be used to learn more about the exact format of the output.  The criteria are formed by creating comparisons against characteristics of the messages, for instance message_size, sender_helo_name, or message_headers.
+exipick is designed to display the contents of a Exim mail spool based on user-specified criteria.  It is designed to mimic the output of 'exim -bp' (or any of the other -bp* options) and Exim's spec.txt should be used to learn more about the exact format of the output.  The criteria are formed by creating comparisons against characteristics of the messages, for instance $message_size, $sender_helo_name, or $message_headers.
 
 =head1 OPTIONS
 
 =over 4
 
-=item -spool
+=item --spool
 
-The path to exim's spool directory.  In general usage you should set the $spool variable in the script to your site's main spool directory, but this option is useful for alternate installs, or installs on NFS servers, etc.
+The path to Exim's spool directory.  In general usage you should set the $spool variable in the script to your site's main spool directory (and if exipick was installed from the Exim distribution, this is done by default), but this option is useful for alternate installs, or installs on NFS servers, etc.
 
-=item -and
+=item --and
 
 A message will be displayed only if it matches all of the specified criteria.  This is the default.
 
-=item -or
+=item --or
 
 A message will be displayed if it matches any of the specified criteria.
 
@@ -805,7 +837,7 @@ Please see the 'exiqgrep' documentation for more details on the behaviour and ou
 
 =item <criterion>
 
-The criteria are used to determine whether or not a given message should be displayed.  The criteria are built using variables containing information about the individual messages (see VARIABLES section for list and descriptions of available variables).  Each criterion is evaluated for each message in the spool and if all (by default) criteria match or (if -or option is specified) any criterion matches, the message is displayed.  See VARIABLE TYPES for explanation of types of variables and the evaluations that can be performed on them and EXAMPLES section for complete examples.
+The criteria are used to determine whether or not a given message should be displayed.  The criteria are built using variables containing information about the individual messages (see VARIABLES section for list and descriptions of available variables).  Each criterion is evaluated for each message in the spool and if all (by default) criteria match or (if --or option is specified) any criterion matches, the message is displayed.  See VARIABLE TYPES for explanation of types of variables and the evaluations that can be performed on them and EXAMPLES section for complete examples.
 
 The format of a criterion is explained in detail below, but a key point to make is that the variable being compared must always be on the left side of the comparison.
 
@@ -831,27 +863,27 @@ Although there are variable types defined, they are defined only by the type of 
 
 Variable of the numeric type can be of integer or float.  Valid comparisons are <, <=, >, >=, ==, and !=.
 
-The numbers specified in the criteria can have a suffix of d, h, m, s, M, K, or B, in which case the number will be mulitplied by 86400, 3600, 60, 1, 1048576, 1024, or 1 respectively.  These suffixes are case sensitive.  While these are obviously designed to aid in date and size calculations, they are not restricted to variables of their respective types.
+The numbers specified in the criteria can have a suffix of d, h, m, s, M, K, or B, in which case the number will be mulitplied by 86400, 3600, 60, 1, 1048576, 1024, or 1 respectively.  These suffixes are case sensitive.  While these are obviously designed to aid in date and size calculations, they are not restricted to variables of their respective types.  That is, though it's odd it's legal to create a criterion of a message being around for 3 kiloseconds: '$message_age >= 3K'.
 
 =item BOOLEAN
 
-Variables of the boolean type are very easy to use in criteria.  The format is either the variable by itself or the variable negated with a ! sign.  For instance, 'deliver_freeze' matches if the message in question is frozen, '!deliver_freeze' matches if message is not frozen.
+Variables of the boolean type are very easy to use in criteria.  The format is either the variable by itself or the variable negated with a ! sign.  For instance, '$deliver_freeze' matches if the message in question is frozen, '!$deliver_freeze' matches if message is not frozen.
 
 =item STRING
 
-String variables are basically defined as those that are neither numeric nor boolean and can contain any data.  There are several types of comparisons that can be made against string variables.  With the exception of '=', the operators all match the functionality of the like-named perl operators.
+String variables are basically defined as those that are neither numeric nor boolean and can contain any data.  The string operators are =, eq, ne, =~, and !~.  With the exception of '=', the operators all match the functionality of the like-named perl operators.
 
-The simplest form is a bare string regular expression, represented by the operator '='.  The value used for the comparison will be evaluated as a regular expression and can be as simple or as complex as desired.  For instance 'sender_helo_name = example' on the simple end or 'sender_helo_name = ^aol\.com$' on the more complex end.  This comparison is caseless by default.  See --caseful option.
+The simplest form is a bare string regular expression, represented by the operator '='.  The value used for the comparison will be evaluated as a regular expression and can be as simple or as complex as desired.  For instance '$sender_helo_name = example' on the simple end or '$sender_helo_name = ^aol\.com$' on the more complex end.  This comparison is caseless by default, but see the --caseful option to change this.
 
-Slightly more complex is the string comparison with the operators 'eq' and 'ne' for equal and not equal, respectively.  'sender_helo_name eq hotmail.com' is true for messages with the exact helo string "hotmail.com", while 'sender_helo_name ne hotmail.com' is true for any message any helo string other than hotmail.com.
+Slightly more complex is the string comparison with the operators 'eq' and 'ne' for equal and not equal, respectively.  '$sender_helo_name eq hotmail.com' is true for messages with the exact helo string "hotmail.com", while '$sender_helo_name ne hotmail.com' is true for any message with a helo string other than "hotmail.com".
 
-The most complex and the most flexible format are straight regular expressions with the operators =~ and !~.  The value in the criteria is expected to be a correctly formatted perl regular expression B<including the regexp delimiters (usually //)>.  The criterion 'sender_helo_name !~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/' matches for any message which does not have an IP address for its helo string.
+The most complex and the most flexible format are straight regular expressions with the operators '=~' and '!~'.  The value in the criteria is expected to be a correctly formatted perl regular expression B<including the regexp delimiters (usually //)>.  The criterion '$sender_helo_name !~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/' matches for any message which does not have an IP address for its helo string.
 
 =back
 
 =head1 VARIABLES
 
-With a few exceptions the available variables match Exim's internal expansion variables in both name and exact contents.  There are a few notable additions and format deviations which are noted below.  Although a brief explanation is offered below, Exim's spec.txt should be consulted for full details.  It is important to remember that not every variable will be defined for every message.  For example, sender_host_port is not defined for messages not received from a remote host.
+With a few exceptions the available variables match Exim's internal expansion variables in both name and exact contents.  There are a few notable additions and format deviations which are noted below.  Although a brief explanation is offered below, Exim's spec.txt should be consulted for full details.  It is important to remember that not every variable will be defined for every message.  For example, $sender_host_port is not defined for messages not received from a remote host.
 
 In the list below, '.' denotes standard messages with contents matching Exim's variable, '#' denotes standard variables with non-standard contents, and '+' denotes a non-standard variable.
 
@@ -859,47 +891,51 @@ In the list below, '.' denotes standard messages with contents matching Exim's v
 
 =over 4
 
-=item + allow_unqualified_recipient
+=item + $allow_unqualified_recipient
 
 TRUE if unqualified recipient addresses are permitted in header lines.
 
-=item + allow_unqualified_sender
+=item + $allow_unqualified_sender
 
 TRUE if unqualified sender addresses are permitted in header lines.
 
-=item + deliver_freeze
+=item + $deliver_freeze
 
-TRUE if the message is frozen.
+TRUE if the message is currently frozen.
 
-=item . first_delivery
+=item . $first_delivery
 
-TRUE if the message has not been deferred.
+TRUE if the message has never been deferred.
 
-=item . manually_thawed
+=item . $manually_thawed
 
 TRUE when the message has been manually thawed.
 
-=item + dont_deliver
+=item + $dont_deliver
 
 TRUE if, under normal circumstances, Exim will not try to deliver the message.
 
-=item . host_lookup_failed
+=item . $host_lookup_deferred
 
-TRUE if there was an attempt to look up the host's name from its IP address, but the attempt failed.
+TRUE if there was an attempt to look up the host's name from its IP address, but an error occurred that during the attempt.
 
-=item + local_error_message
+=item . $host_lookup_failed
+
+TRUE if there was an attempt to look up the host's name from its IP address, but the attempt returned a negative result.
+
+=item + $local_error_message
 
 TRUE if the message is a locally-generated error message.
 
-=item + sender_local
+=item + $sender_local
 
 TRUE if the message was locally generated.
 
-=item + sender_set_untrusted
+=item + $sender_set_untrusted
 
 TRUE if the envelope sender of this message was set by an untrusted local caller.
 
-=item . tls_certificate_verified
+=item . $tls_certificate_verified
 
 TRUE if a TLS certificate was verified when the message was received.
 
@@ -909,67 +945,67 @@ TRUE if a TLS certificate was verified when the message was received.
 
 =over 4
 
-=item . body_linecount
+=item . $body_linecount
 
 The number of lines in the message's body.
 
-=item . body_zerocount
+=item . $body_zerocount
 
 The number of binary zero bytes in the message's body.
 
-=item + deliver_frozen_at
+=item + $deliver_frozen_at
 
 The epoch time at which message was frozen.
 
-=item . interface_port
+=item . $interface_port
 
 The local port number if network-originated messages.
 
-=item . message_age
+=item . $message_age
 
 The number of seconds since the message was received.
 
-=item . message_body_size
+=item . $message_body_size
 
 The size of the body in bytes.
 
-=item . message_size
+=item . $message_size
 
 The size of the message in bytes.
 
-=item . originator_gid
+=item . $originator_gid
 
 The group id under which the process that called Exim was running as when the message was received.
 
-=item . originator_uid
+=item . $originator_uid
 
 The user id under which the process that called Exim was running as when the message was received.
 
-=item . received_count
+=item . $received_count
 
 The number of Received: header lines in the message.
 
-=item + received_time
+=item + $received_time
 
 The epoch time at which the message was received.
 
-=item . recipients_count
+=item . $recipients_count
 
 The number of envelope recipients for the message.
 
-=item + recipients_del_count
+=item + $recipients_del_count
 
 The number of envelope recipients for the message which have already been delivered.  Note that this is the count of original recipients to which the message has been delivered.  It does not include generated addresses so it is possible that this number will be less than the number of addresses in the recipients_del string.
 
-=item + recipients_undel_count
+=item + $recipients_undel_count
 
 The number of envelope recipients for the message which have not yet been delivered.
 
-=item . sender_host_port
+=item . $sender_host_port
 
 The port number that was used on the remote host for network-originated messages.
 
-=item + warning_count
+=item + $warning_count
 
 The number of delay warnings which have been sent for this message.
 
@@ -979,103 +1015,131 @@ The number of delay warnings which have been sent for this message.
 
 =over 4
 
-=item . acl_c0-acl_c9, acl_m0-acl_m9
+=item . $acl_c0-$acl_c9, $acl_m0-$acl_m9
 
 User definable variables.
 
-=item . authenticated_id
+=item . $authenticated_id
 
 Optional saved information from authenticators, or the login name of the calling process for locally submitted messages.
 
-=item . authenticated_sender
+=item . $authenticated_sender
 
 The value of AUTH= param for smtp messages, or a generated value from the calling processes login and qualify domain for locally submitted messages.
 
-=item # header_*
+=item + $bmi_verdicts
+
+I honestly don't know what the format of this variable is.  It only exists if you have Exim compiled with WITH_CONTENT_SCAN and EXPERIMENTAL_BRIGHTMAIL (and, you know, pay Symantec/Brightmail a bunch of money for the client libs and a server to use them with).
+
+=item + $each_recipients
+
+This is a psuedo variable which allows you to apply a criterion against each address in $recipients individually.  This allows you to create criteria against which every individual recipient is tested.  For instance, '$recipients =~ /aol.com/' will match if any of the recipient addresses contain the string "aol.com".  However, with the criterion '$each_recipients =~ /@aol.com$/', a message will only match if B<every> recipient matches that pattern.  Note that this obeys --and or --or being set.  Using it with --or is very similar to just matching against $recipients, but with the added benefit of being able to use anchors at the beginning and end of each recipient address.
+
+=item + $each_recipients_del
+
+Like $each_recipients, but for the $recipients_del variable.
+
+=item + $each_recipients_undel
+
+Like $each_recipients, but for the $recipients_undel variable.
+
+=item # $header_*
 
 The value of the same named message header, for example header_to or header_reply-to.  These variables are really closer to Exim's rheader_* variables, with the exception that leading and trailing space is removed.
 
-=item . interface_address
+=item . $interface_address
 
 The address of the local IP interface for network-originated messages.
 
-=item . local_scan_data
+=item . $local_scan_data
 
 The text returned by the local_scan() function when a message is received.
 
-=item # message_body
+=item # $message_body
 
 The message's body.  Unlike Exim's variable of the same name, this variable contains the entire message body.  The logic behind this is that the message body is not read unless it is specifically referenced, so under normal circumstances it is not a penalty, but when you need the entire body you need the entire body.  Like Exim's copy, newlines and nulls are replaced by spaces.
 
-=item . message_headers
+=item . $message_headers
 
 A concatenation of all the header lines except for lines added by routers or transports.
 
-=item . message_id
+=item . $message_id
 
 The unique message id that is used by Exim to identify the message.
 
-=item + originator_login
+=item + $originator_login
 
 The login of the process which called Exim.
 
-=item . received_protocol
+=item . $received_protocol
 
 The name of the protocol by which the message was received.
 
-=item # recipients
+=item # $recipients
 
 The list of envelope recipients for a message.  Unlike Exim's version, this variable always contains every envelope recipient of the message.  The recipients are separated by a comma and a space.
 
-=item + recipients_del
+=item + $recipients_del
 
 The list of delivered envelope recipients for a message.  This non-standard variable is in the same format as recipients and contains the list of already-delivered recipients including any generated addresses.
 
-=item + recipients_undel
+=item + $recipients_undel
 
 The list of undelivered envelope recipients for a message.  This non-standard variable is in the same format as recipients and contains the list of undelivered recipients.
 
-=item . reply_address
+=item . $reply_address
 
 The contents of the Reply-To: header line if one exists and it is not empty, or otherwise the contents of the From: header line.
 
-=item . sender_address
+=item . $sender_address
 
 The sender's address that was received in the message's envelope.  For bounce messages, the value of this variable is the empty string.
 
-=item . sender_address_domain
+=item . $sender_address_domain
 
-The domain part of sender_address.
+The domain part of $sender_address.
 
-=item . sender_address_local_part
+=item . $sender_address_local_part
 
-The local part of sender_address.
+The local part of $sender_address.
 
-=item . sender_helo_name
+=item . $sender_helo_name
 
 The HELO or EHLO value supplied for smtp or bsmtp messages.
 
-=item . sender_host_address
+=item . $sender_host_address
 
 The remote host's IP address.
 
-=item . sender_host_authenticated
+=item . $sender_host_authenticated
 
 The name of the authenticator driver which successfully authenticated the client from which the message was received.
 
-=item . sender_host_name
+=item . $sender_host_name
 
 The remote host's name as obtained by looking up its IP address.
 
-=item . sender_ident
+=item . $sender_ident
 
 The identification received in response to an RFC 1413 request for remote messages, the login name of the user that called Exim for locally generated messages.
 
-=item . tls_cipher
+=item . $smtp_active_hostname
+
+The value of the active host name when the message was received, as specified by the "smtp_active_hostname" option.
+
+=item . $spam_score
+
+The spam score of the message, for example '3.4' or '30.5'.  (Requires exiscan or WITH_CONTENT_SCAN)
+
+=item . $spam_score_int
+
+The spam score of the message, multiplied by ten, as an integer value.  For instance '34' or '305'.  (Requires exiscan or WITH_CONTENT_SCAN)
+
+=item . $tls_cipher
 
 The cipher suite that was negotiated for encrypted SMTP connections.
 
-=item . tls_peerdn
+=item . $tls_peerdn
 
 The value of the Distinguished Name of the certificate if Exim is configured to request one.
 
@@ -1085,19 +1149,19 @@ The value of the Distinguished Name of the certificate if Exim is configured to 
 
 =over 4
 
-=item exipick 'deliver_freeze'
+=item exipick '$deliver_freeze'
 
 Display only frozen messages.
 
-=item exipick 'received_protocol eq asmtp' 'message_age < 20m'
+=item exipick '$received_protocol eq asmtp' '$message_age < 20m'
 
-Display only messages wich were delivered over an authenticated smtp session in the last 20 minutes.
+Display only messages which were delivered over an authenticated smtp session in the last 20 minutes.
 
-=item exipick -bpc 'message_size > 200K'
+=item exipick -bpc '$message_size > 200K'
 
 Display a count of messages in the queue which are over 200 kilobytes in size.
 
-=item exipick -or 'sender_helo_name =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/' 'sender_helo_name = _'
+=item exipick -or '$sender_helo_name =~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/' '$sender_helo_name = _'
 
 Display message which have a HELO string which either is an IP address or contains an underscore.
 
@@ -1105,7 +1169,7 @@ Display message which have a HELO string which either is an IP address or contai
 
 =head1 REQUIREMENTS
 
-None that I know of, except an Exim installation.  Your life will also be a lot easier if you set $spool at the top of the script to your install's spool directory.
+None that I know of, except an Exim installation.  Your life will also be a lot easier if you set $spool at the top of the script to your install's spool directory (assuming this was not done automatically by the Exim install process).
 
 =head1 ACKNOWLEDGEMENTS
 

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.95 2005/03/22 14:50:10 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.96 2005/03/22 15:07:42 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -65,6 +65,8 @@ PH/10 Added a nasty fudge to try to recognize and flatten LDAP passwords in
       an address' error message when a string expansion fails (syntax or
       whatever). Otherwise not only does the password appear in the log, it may
       also be put in a bounce message.
+
+PH/11 Installed exipick version 20050225.0 from John Jetmore.
 
 
 A note about Exim versions 4.44 and 4.50
