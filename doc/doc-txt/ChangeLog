@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.10 2004/10/19 11:04:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.11 2004/10/19 11:29:25 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -39,6 +39,8 @@ Exim version 4.44
     control that does not make sense is encountered.
 
  9. Added the /retain_sender option to "control=submission".
+
+10. $recipients is now available in the predata ACL (oversight).
 
 
 Exim version 4.43

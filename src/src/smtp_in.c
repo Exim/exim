@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.2 2004/10/19 11:04:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.3 2004/10/19 11:29:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3033,9 +3033,14 @@ while (done <= 0)
       smtp_printf("554 Too many recipients\r\n");
       break;
       }
-
-    rc = (acl_smtp_predata == NULL)? OK :
-      acl_check(ACL_WHERE_PREDATA, NULL, acl_smtp_predata, &user_msg, &log_msg);
+      
+    if (acl_smtp_predata == NULL) rc = OK; else
+      { 
+      enable_dollar_recipients = TRUE;
+      rc = acl_check(ACL_WHERE_PREDATA, NULL, acl_smtp_predata, &user_msg, 
+        &log_msg);
+      enable_dollar_recipients = FALSE;
+      }
 
     if (rc == OK)
       {
