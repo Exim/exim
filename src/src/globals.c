@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.6 2004/11/10 10:29:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.7 2004/11/24 14:38:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -601,6 +601,7 @@ bit_table log_options[]        = {
   { US"outgoing_port",                LX_outgoing_port },
   { US"queue_run",                    L_queue_run },
   { US"queue_time",                   LX_queue_time },
+  { US"queue_time_overall",           LX_queue_time_overall },
   { US"received_recipients",          LX_received_recipients },
   { US"received_sender",              LX_received_sender },
   { US"rejected_header",              LX_rejected_header },

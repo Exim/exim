@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.2 2004/11/18 10:35:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.3 2004/11/24 14:38:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -6315,14 +6315,21 @@ if (addr_defer == NULL)
     }
 
   /* Remove the two message files. */
-
+  
   sprintf(CS spoolname, "%s/input/%s/%s-D", spool_directory, message_subdir, id);
   if (Uunlink(spoolname) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s", spoolname);
   sprintf(CS spoolname, "%s/input/%s/%s-H", spool_directory, message_subdir, id);
   if (Uunlink(spoolname) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s", spoolname);
-  log_write(0, LOG_MAIN, "Completed");
+
+  /* Log the end of this message, with queue time if requested. */
+
+  if ((log_extra_selector & LX_queue_time_overall) != 0)
+    log_write(0, LOG_MAIN, "Completed QT=%s", 
+      readconf_printtime(time(NULL) - received_time));
+  else
+    log_write(0, LOG_MAIN, "Completed");
   }
 
 /* If there are deferred addresses, we are keeping this message because it is

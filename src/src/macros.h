@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.2 2004/11/04 10:42:11 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.3 2004/11/24 14:38:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -361,16 +361,17 @@ only in the name table to set all options in both bit maps. */
 #define LX_incoming_port               0x80000020
 #define LX_outgoing_port               0x80000040
 #define LX_queue_time                  0x80000080
-#define LX_received_sender             0x80000100
-#define LX_received_recipients         0x80000200
-#define LX_rejected_header             0x80000400
-#define LX_return_path_on_delivery     0x80000800
-#define LX_sender_on_delivery          0x80001000
-#define LX_smtp_confirmation           0x80002000
-#define LX_subject                     0x80004000
-#define LX_tls_certificate_verified    0x80008000
-#define LX_tls_cipher                  0x80010000
-#define LX_tls_peerdn                  0x80020000
+#define LX_queue_time_overall          0x80000100
+#define LX_received_sender             0x80000200
+#define LX_received_recipients         0x80000400
+#define LX_rejected_header             0x80000800
+#define LX_return_path_on_delivery     0x80001000
+#define LX_sender_on_delivery          0x80002000
+#define LX_smtp_confirmation           0x80004000
+#define LX_subject                     0x80008000
+#define LX_tls_certificate_verified    0x80010000
+#define LX_tls_cipher                  0x80020000
+#define LX_tls_peerdn                  0x80040000
 
 #define L_default     (L_connection_reject        | \
                        L_delay_delivery           | \

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.36 2004/11/22 11:30:03 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.37 2004/11/24 14:38:13 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -163,6 +163,8 @@ Exim version 4.44
 38. The dnslists ACL condition has been extended: it is now possible to supply
     a list of IP addresses and/or domains to be looked up in a particular DNS
     domain.
+
+39. Added log_selector=+queue_time_overall.
 
 
 Exim version 4.43

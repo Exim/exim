@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.5 2004/11/12 15:03:40 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.6 2004/11/24 14:38:13 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  10 November 2004
+Last updated:  24 November 2004
 
 
 THE OLD LIST
@@ -85,6 +85,7 @@ Brian Candler             Use h_errno for gethostbyname()
                           Several minor fixes and suggestions
 Oliver Cook               Suggested patch for exigrep & rejected messages
                             Patch to add sender/host info to local_scan() rejects
+                            Suggested patch to add queue time to "Completed"
 Jennifer Corley           Designing the new Exim logo
 John Dalbec               Patch for quota_warn_threshold bug
 Vivek Dasmohapatra        Suggested patch for CRL support

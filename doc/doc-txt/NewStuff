@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.14 2004/11/22 11:30:03 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.15 2004/11/24 14:38:13 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -195,6 +195,12 @@ Version 4.44
 
     Once a DNS record has been found (that matches a specific IP return
     address, if specified), no further lookups are done.
+
+16. The log selector queue_time_overall causes Exim to output the time spent on
+    the queue as an addition to the "Completed" message. Like queue_time (which
+    puts the queue time on individual delivery lines), the time is tagged with
+    "QT=", and it is measured from the time that the message starts to be
+    received, so it includes the reception time.
 
 
 Version 4.43
