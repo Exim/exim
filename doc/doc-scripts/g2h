@@ -1,5 +1,5 @@
 #! /usr/bin/perl -w
-# $Cambridge: exim/doc/doc-scripts/g2h,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+# $Cambridge: exim/doc/doc-scripts/g2h,v 1.2 2005/01/27 10:25:35 ph10 Exp $
 
 # This is a script that turns the SGCAL source of Exim's documentation into
 # HTML. It can be used for both the filter document and the main Exim
@@ -180,6 +180,7 @@ $key = "$text";
 $key =~ s/<[^>]+>//g;
 $key =~ s/&#(\d+);/chr($1)/eg;
 $key =~ s/^`+//;
+$key =~ s/^"//;
 
 # Turn all spaces in the text into &nbsp; so that they don't ever split.
 # However, there may be spaces in the HTML that already exists in the
@@ -755,7 +756,10 @@ elsif (/^\.display\b/)
 
 # Handle configuration option definitions
 
-elsif (/^\.startconf\b/) {}
+elsif (/^\.startconf\s+(.*)/) 
+  {
+  $confuse = $1; 
+  }
 
 elsif (/^\.conf\b/)
   {
@@ -781,6 +785,7 @@ elsif (/^\.conf\b/)
   &setpar(0);
   &handle_index($option, 0);
   print OUT "<h3>$option</h3>\n" .
+            "<i>Use:</i>&nbsp; $confuse<br>" . 
             "<i>Type:</i>&nbsp; $type<br><i>Default:</i>&nbsp; $default<br>\n";
   }
 
@@ -831,7 +836,7 @@ elsif (/^\.startoptions\b/) {}
 elsif (/^\.option\s+(.*)/)
   {
   my($arg) = $1;
-  $arg =~ s/^"(.*)"$/$1/;
+  $arg =~ s/"([^"]*)"/$1/g;
 
   print OUT "<hr>";
   &setpar(0);
@@ -881,7 +886,10 @@ open (IN, $source_file) || die "Can't open $source_file (first pass)\n";
 $_ = <IN>;
 
 # At the start of the specification text, there are some textual replacement
-# definitions. They set values, but not cross-references.
+# definitions. They set values, but not cross-references. They may be preceded
+# by comments.
+
+$_ = <IN> while (/^\.(\s|$)/);
 
 while (/^\.r?set\s+(\S+)\s+"?([^"]+)\"?\s*$/)
   {
@@ -1300,7 +1308,7 @@ foreach $key (keys %$hash)
   {
   my($initial) = substr($key,0,1);
   $initial = "\U$initial";
-  $indexindex{$initial} = 1 if $initial ge "A";
+  $indexindex{$initial} = 1 if $initial ge "A" && $initial le "Z";
   }
 
 print INDEX "<p>\n";
@@ -1314,19 +1322,24 @@ my($letter) = "";
 print INDEX "<p>\n";
 
 foreach $key (sort
-      { ("\L$a" eq "\L$b")? ("$a" cmp "$b") : ("\L$a" cmp "\L$b") }
+      {
+      my($aa) = $a; 
+      my($bb) = $b; 
+       
+      $aa =~ s/^\x93//;   # Seems like the actual char values are
+      $bb =~ s/^\x93//;   # set by this time, not "&#147;"
+ 
+      return ("\L$aa" eq "\L$bb")? ("$aa" cmp "$bb") : ("\L$aa" cmp "\L$bb"); 
+      }
     keys %$hash)
   {
   my($initial) = substr($key,0,1);
   $initial = "\U$initial";
-  if ($initial ne $letter)
+  if ($initial ne $letter && $initial ge "A" && $initial le "Z")
     {
-    if ($initial ge "A")
-      {
-      print INDEX "<br>\n" if $letter ne "";
-      print INDEX "<a name=\"$initial\"></a>\n";
-      print INDEX "<font size=\"+1\">\U$initial\E</font><br>\n";
-      }
+    print INDEX "<br>\n";
+    print INDEX "<a name=\"$initial\"></a>\n";
+    print INDEX "<font size=\"+1\">\U$initial\E</font><br>\n";
     $letter = $initial;
     }
   print INDEX "$$hash{$key}<br>\n";
@@ -1367,6 +1380,7 @@ $html = "html";
 
 $chapsplit = 0;
 $cindex_tocn = 0;
+$confuse = "";
 $file_base = "";
 $index_count = 0;
 $inem = 0;

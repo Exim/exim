@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-src/spec.src,v 1.4 2005/01/26 14:52:08 ph10 Exp $
+. $Cambridge: exim/doc/doc-src/spec.src,v 1.5 2005/01/27 10:25:35 ph10 Exp $
 .
 .set version "4.50"
 .set previousversion "4.40"
@@ -22236,6 +22236,7 @@ sender address in the ACL that is run for a \\VRFY\\ command.
 .section ACL verbs
 The ACL verbs are as follows:
 .numberpars $.
+.index \accept\, ACL verb
 \accept\: If all the conditions are met, the ACL returns `accept'. If any of
 the conditions are not met, what happens depends on whether \endpass\ appears
 among the conditions (for syntax see below). If the failing condition is before
@@ -22252,6 +22253,7 @@ to the next statement. If it does match, the recipient is verified, and the
 command is accepted if verification succeeds. However, if verification fails,
 the ACL yields `deny', because the failing condition is after \endpass\.
 .nextp
+.index \defer\, ACL verb
 \defer\: If all the conditions are met, the ACL returns `defer' which, in an
 SMTP session, causes a 4\*xx*\ response to be given. For a non-SMTP ACL,
 \defer\ is the same as \deny\, because there is no way of sending a temporary
@@ -22259,6 +22261,7 @@ error. For a \\RCPT\\ command, \defer\ is much the same as using a
 \%redirect%\ router and \":defer:"\ while verifying, but the \defer\ verb can
 be used in any ACL, and even for a recipient it might be a simpler approach.
 .nextp
+.index \deny\, ACL verb
 \deny\: If all the conditions are met, the ACL returns `deny'. If any of the
 conditions are not met, control is passed to the next ACL statement. For
 example,
@@ -22267,6 +22270,7 @@ deny dnslists = blackholes.mail-abuse.org
 .endd
 rejects commands from hosts that are on a DNS black list.
 .nextp
+.index \discard\, ACL verb
 \discard\: This verb behaves like \accept\, except that it returns `discard'
 from the ACL instead of `accept'. It is permitted only on ACLs that are
 concerned with receiving messages, and it causes recipients to be discarded.
@@ -22279,6 +22283,7 @@ message's recipients are discarded. Recipients that are discarded before
 \\DATA\\ do not appear in the log line when the \log@_recipients\ log selector
 is set.
 .nextp
+.index \drop\, ACL verb
 \drop\: This verb behaves like \deny\, except that an SMTP connection is
 forcibly closed after the 5\*xx*\ error message has been sent. For example:
 .display asis
@@ -22291,6 +22296,7 @@ drop   message   = I don't take more than 20 RCPTs
 There is no difference between \deny\ and \drop\ for the connect-time ACL. The
 connection is always dropped after sending a 550 response.
 .nextp
+.index \require\, ACL verb
 \require\: If all the conditions are met, control is passed to the next ACL
 statement. If any of the conditions are not met, the ACL returns `deny'. For
 example, when checking a \\RCPT\\ command,
@@ -22300,6 +22306,7 @@ require verify = sender
 passes control to subsequent statements only if the message's sender can be
 verified. Otherwise, it rejects the command.
 .nextp
+.index \warn\, ACL verb
 \warn\: If all the conditions are met, a header line is added to an incoming
 message and/or a line is written to Exim's main log. In all cases, control
 passes to the next ACL statement. The text of the added header line and the log
@@ -22447,6 +22454,7 @@ The ACL modifiers are as follows:
 .startitems
 
 .item "control = <<text>>"
+.index \control\, ACL modifier
 .em
 This modifier affects the subsequent processing of the SMTP connection or of an
 incoming message that is accepted. The effect of the first type of control
@@ -22501,6 +22509,7 @@ require  control = no_multiline_response
 .endp
 
 .item "delay = <<time>>"
+.index \delay\, ACL modifier
 .index \-bh-\ option
 This modifier causes Exim to wait for the time interval before proceeding. The
 time is given in the usual Exim notation. This modifier may appear in any ACL.
@@ -22530,12 +22539,14 @@ accept  ...
 .endd
 
 .item endpass
+.index \endpass\, ACL modifier
 This modifier, which has no argument, is recognized only in \accept\
 statements. It marks the boundary between the conditions whose failure causes
 control to pass to the next statement, and the conditions whose failure causes
 the ACL to return `deny'. See the description of \accept\ above.
 
 .item "log@_message = <<text>>"
+.index \log@_message\, ACL modifier
 This modifier sets up a message that is used as part of the log message if the
 ACL denies access or a \warn\ statement's conditions are true. For example:
 .display asis
@@ -22571,6 +22582,7 @@ both \log@_message\ and \message\, a default built-in message is used for
 logging rejections.
 
 .item "logwrite = <<text>>"
+.index \logwrite\, ACL modifier
 .index log||in ACL, immediate
 This modifier writes a message to a log file as soon as it is encountered when
 processing an ACL. (Compare \log@_message\, which, except in the case of
@@ -22591,6 +22603,7 @@ logwrite = :panic: text for panic log only
 .endd
 
 .item "message = <<text>>"
+.index \message\, ACL modifier
 This modifier sets up a text string that is expanded and used as an error
 message if the current statement causes the ACL to deny access. The expansion
 happens at the time Exim decides that access is to be denied, not at the time
@@ -22618,6 +22631,7 @@ routers to be passed back as part of the SMTP response, you should either not
 use a \message\ modifier, or make use of \$acl@_verify@_message$\.
 
 .item "set <<acl@_name>> = <<value>>"
+.index \set\, ACL modifier
 This modifier puts a value into one of the ACL variables (see section
 ~~SECTaclvariables).
 
@@ -22627,7 +22641,7 @@ This modifier puts a value into one of the ACL variables (see section
 .em
 .section Use of the control modifier
 .rset SECTcontrols "~~chapter.~~section"
-.index \control\ modifier
+.index \control\, ACL modifier
 The \control\ modifier supports the following settings:
 
 .startitems
@@ -22783,6 +22797,8 @@ the same SMTP connection.
 .rset SECTaddheadwarn "~~chapter.~~section"
 .index header lines||adding in an ACL
 .index header lines||position of added lines
+.index \warn\, ACL verb
+.index \message\, ACL modifier
 The \message\ modifier can be used on a \warn\ statement to add an extra header
 line to an incoming message, as in this example:
 .display asis
@@ -22859,6 +22875,7 @@ The conditions are as follows:
 .item "acl = <<name of acl or ACL string or file name >>"
 .index ~~ACL||nested
 .index ~~ACL||indirect
+.index \acl\, ACL condition
 The possible values of the argument are the same as for the
 \acl@_smtp@_$it{xxx}\ options. The named or inline ACL is run. If it returns
 `accept' the condition is true; if it returns `deny' the condition is false. If
@@ -22880,6 +22897,7 @@ circumstances. For example, different ACLs can be used to handle \\RCPT\\
 commands for different local users or different local domains.
 
 .item "authenticated = <<string list>>"
+.index \authenticated\, ACL condition
 .index authentication||ACL checking
 .index ~~ACL||testing for authentication
 If the SMTP connection is not authenticated, the condition is false. Otherwise,
@@ -22890,6 +22908,7 @@ authenticated = *
 .endd
 
 .item "condition = <<string>>"
+.index \condition\, ACL condition
 .index customizing||ACL condition
 .index ~~ACL||customized test
 .index ~~ACL||testing, customized
@@ -22902,6 +22921,7 @@ values, some error is assumed to have occured, and the ACL returns `defer'.
 
 .em
 .item "decode = <<location>>"
+.index \decode\, ACL condition
 This condition is available only when Exim is compiled with the
 content-scanning extension, and it is allowed only the the ACL defined by
 \acl@_smtp@_mime\. It causes the current MIME part to be decoded into a file.
@@ -22910,6 +22930,7 @@ For details, see chapter ~~CHAPexiscan.
 
 
 .item "dnslists = <<list of domain names and other data>>"
+.index \dnslists\, ACL condition
 .index DNS list||in ACL
 .index black list (DNS)
 .index ~~ACL||testing a DNS list
@@ -22920,6 +22941,7 @@ There are too many different variants of this condition to describe briefly
 here. See sections ~~SECTmorednslists--~~SECTmorednslistslast for details.
 
 .item "domains = <<domain list>>"
+.index \domains\, ACL condition
 .index domain||ACL checking
 .index ~~ACL||testing a recipient domain
 This condition is relevant only after a \\RCPT\\ command. It checks that the
@@ -22929,6 +22951,7 @@ succeeds with a lookup, the result of the lookup is placed in \$domain@_data$\
 until the next \domains\ test.
 
 .item "encrypted = <<string list>>"
+.index \encrypted\, ACL condition
 .index encryption||checking in an ACL
 .index ~~ACL||testing for encryption
 If the SMTP connection is not encrypted, the condition is false. Otherwise, the
@@ -22939,6 +22962,7 @@ encrypted = *
 .endd
 
 .item "hosts = << host list>>"
+.index \hosts\, ACL condition
 .index host||ACL checking
 .index ~~ACL||testing the client host
 This condition tests that the calling host matches the host list. If you have
@@ -22974,6 +22998,7 @@ deny  hosts = net-lsearch;/some/file
 which gives a custom error message for each denied host.
 
 .item "local@_parts = <<local part list>>"
+.index \local@_parts\, ACL condition
 .index local part||ACL checking
 .index ~~ACL||testing a local part
 This condition is relevant only after a \\RCPT\\ command. It checks that the
@@ -22985,6 +23010,7 @@ the result of the lookup is placed in \$local@_part@_data$\ until the next
 
 .em
 .item "malware = <<option>>"
+.index \malware\, ACL condition
 .index ~~ACL||virus scanning
 .index ~~ACL||scanning for viruses
 This condition is available only when Exim is compiled with the
@@ -22995,6 +23021,7 @@ viruses. For details, see chapter ~~CHAPexiscan.
 
 .em
 .item "mime@_regex = <<list of regular expressions>>"
+.index \mime@_regex\, ACL condition
 .index ~~ACL||testing by regex matching
 This condition is available only when Exim is compiled with the
 content-scanning extension, and it is allowed only the the ACL defined by
@@ -23004,6 +23031,7 @@ with any of the regular expressions. For details, see chapter ~~CHAPexiscan.
 
 
 .item "recipients = <<address list>>"
+.index \recipients\, ACL condition
 .index recipient||ACL checking
 .index ~~ACL||testing a recipient
 This condition is relevant only after a \\RCPT\\ command. It checks the entire
@@ -23012,6 +23040,7 @@ recipient address against a list of recipients.
 
 .em
 .item "regex = <<list of regular expressions>>"
+.index \regex\, ACL condition
 .index ~~ACL||testing by regex matching
 This condition is available only when Exim is compiled with the
 content-scanning extension. It causes the incoming message to be scanned
@@ -23021,6 +23050,7 @@ for a match with any of the regular expressions. For details, see chapter
 
 
 .item "sender@_domains = <<domain list>>"
+.index \sender@_domains\, ACL condition
 .index sender||ACL checking
 .index ~~ACL||testing a sender domain
 This condition tests the domain of the sender of the message against the given
@@ -23033,6 +23063,7 @@ ACL for a \\RCPT\\ command, the recipient's domain (which is in \$domain$\) can
 be used to influence the sender checking.
 
 .item "senders = <<address list>>"
+.index \senders\, ACL condition
 .index sender||ACL checking
 .index ~~ACL||testing a sender
 This condition tests the sender of the message against the given list. To test
@@ -23044,6 +23075,7 @@ senders = :
 
 .em
 .item "spam = <<username>>"
+.index \spam\, ACL condition
 .index ~~ACL||scanning for spam
 This condition is available only when Exim is compiled with the
 content-scanning extension. It causes the incoming message to be scanned by
@@ -23052,6 +23084,7 @@ SpamAssassin. For details, see chapter ~~CHAPexiscan.
 
 
 .item "verify = certificate"
+.index \verify\, ACL condition
 .index TLS||client certificate verification
 .index certificate||verification of client
 .index ~~ACL||certificate verification
@@ -23062,6 +23095,7 @@ server requests a certificate only if the client matches \tls@_verify@_hosts\
 or \tls@_try@_verify@_hosts\ (see chapter ~~CHAPTLS).
 
 .item "verify = header@_sender/<<options>>"
+.index \verify\, ACL condition
 .index ~~ACL||verifying sender in the header
 .index header lines||verifying the sender in
 .index sender||verifying in header
@@ -23089,6 +23123,7 @@ deny    senders = :
 .endd
 
 .item "verify = header@_syntax"
+.index \verify\, ACL condition
 .index ~~ACL||verifying header syntax
 .index header lines||verifying syntax
 .index verifying||header syntax
@@ -23110,6 +23145,7 @@ To: @
 and this condition can be used to reject such messages.
 
 .item "verify = helo"
+.index \verify\, ACL condition
 .index ~~ACL||verifying HELO/EHLO
 .index \\HELO\\||verifying
 .index \\EHLO\\||verifying
@@ -23122,6 +23158,7 @@ commands does not happen by default. See the description of the
 to request it.
 
 .item "verify = recipient/<<options>>"
+.index \verify\, ACL condition
 .index ~~ACL||verifying recipient
 .index recipient||verifying
 .index verifying||recipient
@@ -23136,6 +23173,7 @@ the value for the child address.
 
 
 .item "verify = reverse@_host@_lookup"
+.index \verify\, ACL condition
 .index ~~ACL||verifying host reverse lookup
 .index host||verifying reverse lookup
 This condition ensures that a verified host name has been looked up from the IP
@@ -23150,6 +23188,7 @@ is no client host involved), it always succeeds.
 
 
 .item "verify = sender/<<options>>"
+.index \verify\, ACL condition
 .index ~~ACL||verifying sender
 .index sender||verifying
 .index verifying||sender
@@ -23169,6 +23208,7 @@ Details of verification are given later, starting at section
 avoid doing it more than once per message.
 
 .item "verify = sender=address/<<options>>"
+.index \verify\, ACL condition
 This is a variation of the previous option, in which a modified address is
 verified as a sender.
 

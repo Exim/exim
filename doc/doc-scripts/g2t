@@ -1,5 +1,5 @@
 #! /usr/bin/perl -w
-# $Cambridge: exim/doc/doc-scripts/g2t,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+# $Cambridge: exim/doc/doc-scripts/g2t,v 1.2 2005/01/27 10:25:35 ph10 Exp $
 
 # A Perl script to turn the SGCAL source of the Exim documentation into
 # Texinfo input, more or less...
@@ -892,8 +892,10 @@ while (<>)
   # we sort out the menu and copy their data. This is all done in a
   # subroutine that is shared with options.
 
-  elsif (/^\.startconf/)
+  elsif (/^\.startconf\s+(.*)/)
     {
+    $confuse = $1; 
+    $confuse = &dequote($confuse); 
     handle_subsection("conf");
     next;
     }
@@ -1069,6 +1071,7 @@ $doing_filter = 0;
 $skip_else = 0;
 $in_itemize = 0;
 $lastwasitem = 0;
+$confuse = "";
 
 $chapter_number = 0;
 $section_number = 0;
