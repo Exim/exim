@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.8 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.9 2005/01/11 15:51:03 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -236,7 +236,7 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
   records for different purposes where the key string is a host name). This
   code for doing the reversal is now in a separate function. */
   
-  if (type == T_PTR && string_is_ip_address(domain, NULL)) 
+  if (type == T_PTR && string_is_ip_address(domain, NULL) > 0) 
     {
     dns_build_reverse(domain, rbuffer);
     domain = rbuffer;

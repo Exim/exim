@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.2 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.3 2005/01/11 15:51:03 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -305,7 +305,7 @@ for (;;)
     else
       {
       addr->message = US"all relevant MX records point to non-existent hosts";
-      if (!allow_mx_to_ip && string_is_ip_address(h.name, NULL))
+      if (!allow_mx_to_ip && string_is_ip_address(h.name, NULL) > 0)
         {
         addr->user_message =
           string_sprintf("It appears that the DNS operator for %s\n"

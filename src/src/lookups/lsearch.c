@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/lsearch.c,v 1.2 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/lsearch.c,v 1.3 2005/01/11 15:51:03 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -213,7 +213,7 @@ for (last_was_eol = TRUE;
       int maskoffset;
       int save = buffer[linekeylength];
       buffer[linekeylength] = 0;
-      if (!string_is_ip_address(buffer, &maskoffset) ||
+      if (string_is_ip_address(buffer, &maskoffset) == 0 ||
           !host_is_in_net(keystring, buffer, maskoffset)) continue;
       buffer[linekeylength] = save;
       }
@@ -369,7 +369,7 @@ iplsearch_find(void *handle, uschar *filename, uschar *keystring, int length,
 {
 do_cache = do_cache;  /* Keep picky compilers happy */
 if ((length == 1 && keystring[0] == '*') ||
-    string_is_ip_address(keystring, NULL))
+    string_is_ip_address(keystring, NULL) > 0)
   {
   return internal_lsearch_find(handle, filename, keystring, length, result,
     errmsg, LSEARCH_IP);

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.5 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.6 2005/01/11 15:51:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -493,7 +493,7 @@ ip_address_item *next;
 while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
   {
   int port = host_extract_port(s);            /* Leaves just the IP address */
-  if (!string_is_ip_address(s, NULL))
+  if (string_is_ip_address(s, NULL) == 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Malformed IP address \"%s\" in %s",
       s, name);
 

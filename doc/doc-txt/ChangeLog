@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.64 2005/01/04 16:36:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.65 2005/01/11 15:51:02 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -291,6 +291,11 @@ Exim version 4.50
     the caching.)
 
 66. Added hosts_max_try_hardlimit to the smtp transport, default 50.
+
+67. The string_is_ip_address() function returns 0, 4, or 6, for "no an IP
+    address", "IPv4 address", and "IPv6 address", respectively. Some calls of
+    the function were treating the return as a boolean value, which happened to
+    work because 0=false and not-0=true, but is not correct code.
 
 
 Exim version 4.43

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.9 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.10 2005/01/11 15:51:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1049,7 +1049,8 @@ while (addr_new != NULL)
             for (host = host_list; host != NULL; host = nexthost)
               {
               nexthost = host->next;
-              if (tf.gethostbyname || string_is_ip_address(host->name, NULL))
+              if (tf.gethostbyname || 
+                  string_is_ip_address(host->name, NULL) > 0)
                 (void)host_find_byname(host, NULL, &canonical_name, TRUE);
               else
                 {
@@ -1830,7 +1831,7 @@ if (*ss == '@')
 /* If the pattern is an IP address, optionally followed by a bitmask count, do
 a (possibly masked) comparision with the current IP address. */
 
-if (string_is_ip_address(ss, &maskoffset))
+if (string_is_ip_address(ss, &maskoffset) > 0)
   return (host_is_in_net(cb->host_address, ss, maskoffset)? OK : FAIL);
 
 /* If the item is of the form net[n]-lookup;<file|query> then it is a lookup on
@@ -2600,7 +2601,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
     while ((keydomain = string_nextinlist(&key, &keysep, keybuffer, 
             sizeof(keybuffer))) != NULL)
       {       
-      if (string_is_ip_address(keydomain, NULL))
+      if (string_is_ip_address(keydomain, NULL) > 0)
         {
         uschar keyrevadd[128];
         invert_address(keyrevadd, keydomain);

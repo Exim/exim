@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/ipliteral.c,v 1.3 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/ipliteral.c,v 1.4 2005/01/11 15:51:03 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -118,7 +118,7 @@ host name to "(unnamed)". */
 if (domain[0] != '[' || domain[len-1] != ']') return DECLINE;
 domain[len-1] = 0;  /* temporarily */
 
-if (!string_is_ip_address(domain+1, NULL))
+if (string_is_ip_address(domain+1, NULL) == 0)
   {
   domain[len-1] = ']';
   return DECLINE;

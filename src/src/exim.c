@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.12 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.13 2005/01/11 15:51:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -599,7 +599,7 @@ static int
 check_port(uschar *address)
 {
 int port = host_extract_port(address);
-if (!string_is_ip_address(address, NULL))
+if (string_is_ip_address(address, NULL) == 0) 
   {
   fprintf(stderr, "exim abandoned: \"%s\" is not an IP address\n", address);
   exit(EXIT_FAILURE);
@@ -622,7 +622,7 @@ Arguments:
   flags        flag bits for verify_address()
   exit_value   to be set for failures
 
-Returns:       nothint
+Returns:       nothing
 */
 
 static void
