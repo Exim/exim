@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.62 2005/01/04 11:01:33 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.63 2005/01/04 13:31:41 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -283,6 +283,12 @@ Exim version 4.50
 
 64. A call to exiwhat cut short delays set up by "delay" modifiers in ACLs.
     This has been fixed.
+
+65. Caching of lookup data for "hosts =" ACL conditions, when a named host list
+    was in use, was not putting the data itself into the right store pool;
+    consequently, it could be overwritten for a subsequent message in the same
+    SMTP connection. (Fix 4.40/11 dealt with the non-cache case, but overlooked
+    the caching.)
 
 
 Exim version 4.43

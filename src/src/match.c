@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.4 2005/01/04 13:31:41 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -630,9 +630,11 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
             store_pool = POOL_PERM;
             p = store_get(sizeof(namedlist_cacheblock));
             p->key = string_copy(get_check_key(arg, type));
+
+
+            p->data = (*valueptr == NULL)? NULL : string_copy(*valueptr);
             store_pool = old_pool;
 
-            p->data = *valueptr;
             p->next = nb->cache_data;
             nb->cache_data = p;
             if (*valueptr != NULL)

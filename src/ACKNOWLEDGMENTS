@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.10 2004/12/21 12:00:59 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.11 2005/01/04 13:31:41 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  21 December 2004
+Last updated:  04 January 2005
 
 
 THE OLD LIST
@@ -189,6 +189,7 @@ David Saez                Suggested patch for $sender_hostname lookup if needed
 Peter Savitch             Diagnosis of FPE bug when statvfs() fails on spool
 Harald Schueler           Patch for dn_expand() failure on truncated data
 Heiko Schlichting         Diagnosis of intermittent daemon crash bug
+Stephan Schulz            Patch for $host_data caching error
 Tony Sheen                Log files with datestamped names and auto rollover
 Martin Sluka              Patch for exigrep to include non-message lines
 Tamas Tevesz              Patch for crypt16() support
