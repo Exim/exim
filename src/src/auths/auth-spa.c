@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/auth-spa.c,v 1.1 2004/10/07 13:10:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/auth-spa.c,v 1.2 2004/12/29 10:55:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -406,8 +406,11 @@ spa_bits_to_base64 (unsigned char *out, const unsigned char *in, int inlen)
   *out = '\0';
 }
 
+
+/* The outlength parameter was added by PH, December 2004 */
+
 int
-spa_base64_to_bits (char *out, const char *in)
+spa_base64_to_bits (char *out, int outlength, const char *in)
 /* base 64 to raw bytes in quasi-big-endian order, returning count of bytes */
 {
   int len = 0;
@@ -420,6 +423,8 @@ spa_base64_to_bits (char *out, const char *in)
 
   do
     {
+      if (len >= outlength)                   /* Added by PH */
+        return (-1);                          /* Added by PH */
       digit1 = in[0];
       if (DECODE64 (digit1) == BAD)
        return (-1);
@@ -437,11 +442,15 @@ spa_base64_to_bits (char *out, const char *in)
       ++len;
       if (digit3 != '=')
        {
+         if (len >= outlength)                   /* Added by PH */
+           return (-1);                          /* Added by PH */
          *out++ =
            ((DECODE64 (digit2) << 4) & 0xf0) | (DECODE64 (digit3) >> 2);
          ++len;
          if (digit4 != '=')
            {
+             if (len >= outlength)                   /* Added by PH */
+               return (-1);                          /* Added by PH */
              *out++ = ((DECODE64 (digit3) << 6) & 0xc0) | DECODE64 (digit4);
              ++len;
            }

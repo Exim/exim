@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/auth-spa.h,v 1.1 2004/10/07 13:10:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/auth-spa.h,v 1.2 2004/12/29 10:55:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -11,6 +11,9 @@
  * All the code used here was torn by Marc Prud'hommeaux out of the
  * Samba project (by Andrew Tridgell, Jeremy Allison, and others).
  */
+ 
+/* December 2004: The spa_base64_to_bits() function has no length checking in 
+it. I have added a check. PH */ 
 
 /* It seems that some systems have existing but different definitions of some
 of the following types. I received a complaint about "int16" causing
@@ -77,7 +80,7 @@ typedef struct
 #define spa_request_length(ptr) (((ptr)->buffer - (uint8x*)(ptr)) + (ptr)->bufIndex)
 
 void spa_bits_to_base64 (unsigned char *, const unsigned char *, int);
-int spa_base64_to_bits(char *, const char *);
+int spa_base64_to_bits(char *, int, const char *);
 void spa_build_auth_response (SPAAuthChallenge *challenge,
        SPAAuthResponse *response, char *user, char *password);
 void spa_build_auth_request (SPAAuthRequest *request, char *user,

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/spa.c,v 1.2 2004/12/20 14:57:05 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/spa.c,v 1.3 2004/12/29 10:55:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -135,7 +135,7 @@ if (auth_get_no64_data(&data, US"NTLM supported") != OK)
   return FAIL;
   }
 
-if (spa_base64_to_bits((char *)(&request), (const char *)(data)) < 0)
+if (spa_base64_to_bits((char *)(&request), sizeof(request), (const char *)(data)) < 0)
   {
   DEBUG(D_auth) debug_printf("auth_spa_server(): bad base64 data in "
   "request: %s\n", data);
@@ -155,7 +155,7 @@ if (auth_get_no64_data(&data, msgbuf) != OK)
   }
 
 /* dump client response */
-if (spa_base64_to_bits((char *)(&response), (const char *)(data)) < 0)
+if (spa_base64_to_bits((char *)(&response), sizeof(response), (const char *)(data)) < 0)
   {
   DEBUG(D_auth) debug_printf("auth_spa_server(): bad base64 data in "
   "response: %s\n", data);
@@ -324,7 +324,7 @@ auth_spa_client(
        /* convert the challenge into the challenge struct */
        DSPA("\n\n%s authenticator: challenge (%s)\n\n",
                ablock->name, buffer + 4);
-       spa_base64_to_bits ((char *)(&challenge), (const char *)(buffer + 4));
+       spa_base64_to_bits ((char *)(&challenge), sizeof(challenge), (const char *)(buffer + 4));
 
        spa_build_auth_response (&challenge, &response,
                CS username, CS password);

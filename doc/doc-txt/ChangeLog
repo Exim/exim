@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.58 2004/12/29 10:16:52 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.59 2004/12/29 10:55:58 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -257,9 +257,20 @@ Exim version 4.50
     to be a valid IP address. However, in the case of IPv6 addresses, it was
     not checking this. This is a hostage to fortune. Exim now panics and dies
     if the condition is not met. A case was found where this could be provoked
-    from a dnsdb lookup; fortuitously, this particular loophole had already
-    been fixed by change 4.50/55 above. If there are any other similar
-    loopholes, the new check should stop them being exploited.
+    from a dnsdb PTR lookup with an IPv6 address that had more than 8
+    components; fortuitously, this particular loophole had already been fixed
+    by change 4.50/55 above.
+
+    If there are any other similar loopholes, the new check in host_aton()
+    itself should stop them being exploited. The report I received stated that
+    data on the command line could provoke the exploit when Exim was running as
+    exim, but did not say which command line option was involved. All I could
+    find was the use of -be with a bad dnsdb PTR lookup, and in that case it is
+    running as the user.
+
+61. There was a buffer overflow vulnerability in the SPA authentication code
+    (which came originally from the Samba project). I have added a test to the
+    spa_base64_to_bits() function which I hope fixes it.
 
 
 Exim version 4.43
