@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.13 2005/04/04 10:33:49 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.14 2005/04/06 14:40:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -184,8 +184,9 @@ extern int     random_number(int);
 #ifdef WITH_CONTENT_SCAN
 extern int     recv_line(int, uschar *, int);
 #endif
-extern int     rda_interpret(redirect_block *, int, uschar *, uschar *, ugid_block *,
-                 address_item **, uschar **, error_block **, int *, uschar *);
+extern int     rda_interpret(redirect_block *, int, uschar *, uschar *,
+                 uschar *, uschar *, ugid_block *, address_item **, uschar **,
+                 error_block **, int *, uschar *);
 extern int     rda_is_filter(const uschar *);
 extern BOOL    readconf_depends(driver_instance *, uschar *);
 extern void    readconf_driver_init(uschar *, driver_instance **,
@@ -247,8 +248,8 @@ extern void    set_process_info(char *, ...);
 extern void    sha1_end(sha1 *, const uschar *, int, uschar *);
 extern void    sha1_mid(sha1 *, const uschar *);
 extern void    sha1_start(sha1 *);
-extern int     sieve_interpret(uschar *, int, uschar *, address_item **,
-                 uschar **);
+extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
+                 address_item **, uschar **);
 extern void    sigalrm_handler(int);
 extern void    smtp_closedown(uschar *);
 extern int     smtp_connect(host_item *, int, int, uschar *, int, BOOL);

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.8 2005/03/22 15:02:34 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.9 2005/04/06 14:40:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -97,6 +97,10 @@ optionlist redirect_router_options[] = {
       (void *)offsetof(redirect_router_options_block, reply_transport_name) },
   { "rewrite",            opt_bit | (RDON_REWRITE << 16),
       (void *)offsetof(redirect_router_options_block, bit_options) },
+  { "sieve_subaddress", opt_stringptr,
+      (void *)offsetof(redirect_router_options_block, sieve_subaddress) },
+  { "sieve_useraddress", opt_stringptr,
+      (void *)offsetof(redirect_router_options_block, sieve_useraddress) },
   { "sieve_vacation_directory", opt_stringptr,
       (void *)offsetof(redirect_router_options_block, sieve_vacation_directory) },
   { "skip_syntax_errors", opt_bool,
@@ -138,6 +142,8 @@ redirect_router_options_block redirect_router_option_defaults = {
   NULL,        /* include_directory */
   NULL,        /* pipe_transport_name */
   NULL,        /* reply_transport_name */
+  NULL,        /* sieve_subaddress */
+  NULL,        /* sieve_useraddress */
   NULL,        /* sieve_vacation_directory */
   NULL,        /* syntax_errors_text */
   NULL,        /* syntax_errors_to */
@@ -613,9 +619,10 @@ else
   }
 
 frc = rda_interpret(&redirect, options, ob->include_directory,
-  ob->sieve_vacation_directory, &ugid, &generated, &(addr->message),
-  ob->skip_syntax_errors? &eblock : NULL, &filtertype,
-  string_sprintf("%s router (recipient is %s)", rblock->name, addr->address));
+  ob->sieve_vacation_directory, ob->sieve_useraddress, ob->sieve_subaddress,
+  &ugid, &generated, &(addr->message), ob->skip_syntax_errors? &eblock : NULL,
+  &filtertype, string_sprintf("%s router (recipient is %s)", rblock->name,
+  addr->address));
 
 qualify_domain_recipient = save_qualify_domain_recipient;
 

@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.8 2005/03/01 10:21:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.9 2005/04/06 14:40:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Michael Haardt 2003,2004 */
+/* Copyright (c) Michael Haardt 2003-2005 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This code was contributed by Michael Haardt. */
@@ -61,6 +61,8 @@ struct Sieve
   int vacation_ran;
 #endif
   uschar *vacation_directory;
+  const uschar *subaddress;
+  const uschar *useraddress;
   int require_copy;
   int require_iascii_numeric;
   };
@@ -1711,10 +1713,8 @@ if (parse_identifier(filter,CUS "address"))
           case ADDRPART_LOCALPART: part=extracted_addr; part[domain-1]='\0'; break;
           case ADDRPART_DOMAIN: part=extracted_addr+domain; break;
 #ifdef SUBADDRESS
-          case ADDRPART_DETAIL:
-          part=NULL;
+          case ADDRPART_DETAIL: part=NULL; break;
 #endif
-          break;
           }
 
         *end_addr = saveend;
@@ -2019,9 +2019,7 @@ else if (parse_identifier(filter,CUS "envelope"))
         case ADDRPART_LOCALPART: envelopeExpr=CUS "${local_part:$sender_address}"; break;
         case ADDRPART_DOMAIN: envelopeExpr=CUS "${domain:$sender_address}"; break;
 #ifdef SUBADDRESS
-        case ADDRPART_DETAIL:
-        envelopeExpr=CUS 0;
-        break;
+        case ADDRPART_DETAIL: envelopeExpr=CUS 0; break;
 #endif
         }
       }
@@ -2031,8 +2029,8 @@ else if (parse_identifier(filter,CUS "envelope"))
         {
         case ADDRPART_ALL: envelopeExpr=CUS "$local_part_prefix$local_part$local_part_suffix@$domain"; break;
 #ifdef SUBADDRESS
-        case ADDRPART_USER: envelopeExpr=CUS "$local_part_prefix$local_part"; break;
-        case ADDRPART_DETAIL: envelopeExpr=CUS "$local_part_suffix"; break;
+        case ADDRPART_USER: envelopeExpr=filter->useraddress; break;
+        case ADDRPART_DETAIL: envelopeExpr=filter->subaddress; break;
 #endif
         case ADDRPART_LOCALPART: envelopeExpr=CUS "$local_part_prefix$local_part$local_part_suffix"; break;
         case ADDRPART_DOMAIN: envelopeExpr=CUS "$domain"; break;
@@ -2724,6 +2722,8 @@ Arguments:
   options     controls whether various special things are allowed, and requests
               special actions (not currently used)
   sieve_vacation_directory  where to store vacation "once" files
+  useraddress string expression for :user part of address
+  subaddress  string expression for :subaddress part of address
   generated   where to hang newly-generated addresses
   error       where to pass back an error text
 
@@ -2737,7 +2737,7 @@ Returns:      FF_DELIVERED     success, a significant action was taken
 
 int
 sieve_interpret(uschar *filter, int options, uschar *vacation_directory,
-  address_item **generated, uschar **error)
+  uschar *useraddress, uschar *subaddress, address_item **generated, uschar **error)
 {
 struct Sieve sieve;
 int r;
@@ -2762,6 +2762,9 @@ else
     return FF_ERROR;
     }
   }
+
+sieve.useraddress = useraddress == NULL ? CUS "$local_part_prefix$local_part$local_part_suffix" : useraddress;
+sieve.subaddress = subaddress;
 
 #ifdef COMPILE_SYNTAX_CHECKER
 if (parse_start(&sieve,0,generated)==1)

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.h,v 1.3 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.h,v 1.4 2005/04/06 14:40:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -25,6 +25,8 @@ typedef struct {
   uschar *include_directory;
   uschar *pipe_transport_name;
   uschar *reply_transport_name;
+  uschar *sieve_subaddress;
+  uschar *sieve_useraddress;
   uschar *sieve_vacation_directory;
   uschar *syntax_errors_text;
   uschar *syntax_errors_to;

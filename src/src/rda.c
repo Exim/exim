@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/rda.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/rda.c,v 1.5 2005/04/06 14:40:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -333,6 +333,8 @@ Arguments:
   options                   the options bits
   include_directory         restrain to this directory
   sieve_vacation_directory  passed to sieve_interpret
+  sieve_useraddress         passed to sieve_interpret
+  sieve_subaddress          passed to sieve_interpret
   generated                 where to hang generated addresses
   error                     for error messages
   eblockp                   for details of skipped syntax errors
@@ -348,7 +350,8 @@ Returns:                    a suitable return for rda_interpret()
 
 static int
 rda_extract(redirect_block *rdata, int options, uschar *include_directory,
-  uschar *sieve_vacation_directory, address_item **generated, uschar **error,
+  uschar *sieve_vacation_directory, uschar *sieve_useraddress,
+  uschar *sieve_subaddress, address_item **generated, uschar **error,
   error_block **eblockp, int *filtertype)
 {
 uschar *data;
@@ -407,8 +410,8 @@ if (*filtertype != FILTER_FORWARD)
       *error = US"Sieve filtering not enabled";
       return FF_ERROR;
       }
-    frc = sieve_interpret(data, options, sieve_vacation_directory, generated,
-      error);
+    frc = sieve_interpret(data, options, sieve_vacation_directory,
+      sieve_useraddress, sieve_subaddress, generated, error);
     }
 
   expand_forbid = old_expand_forbid;
@@ -515,6 +518,8 @@ Arguments:
                               plus ENOTDIR and EACCES handling bits
   include_directory         restrain :include: to this directory
   sieve_vacation_directory  directory passed to sieve_interpret()
+  sieve_useraddress         passed to sieve_interpret
+  sieve_subaddress          passed to sieve_interpret
   ugid                      uid/gid to run under - if NULL, no change
   generated                 where to hang generated addresses, initially NULL
   error                     pointer for error message
@@ -541,7 +546,8 @@ Returns:        values from extraction function, or FF_NONEXIST:
 
 int
 rda_interpret(redirect_block *rdata, int options, uschar *include_directory,
-  uschar *sieve_vacation_directory, ugid_block *ugid, address_item **generated,
+  uschar *sieve_vacation_directory, uschar *sieve_useraddress,
+  uschar *sieve_subaddress, ugid_block *ugid, address_item **generated,
   uschar **error, error_block **eblockp, int *filtertype, uschar *rname)
 {
 int fd, rc, pfd[2];
@@ -586,7 +592,8 @@ if (!ugid->uid_set ||                         /* Either there's no uid, or */
      Ustrstr(data, ":include:") == NULL))     /* and there's no :include: */
   {
   return rda_extract(rdata, options, include_directory,
-    sieve_vacation_directory, generated, error, eblockp, filtertype);
+    sieve_vacation_directory, sieve_useraddress, sieve_subaddress,
+    generated, error, eblockp, filtertype);
   }
 
 /* We need to run the processing code in a sub-process. However, if we can
@@ -631,7 +638,8 @@ if ((pid = fork()) == 0)
   /* Now do the business */
 
   yield = rda_extract(rdata, options, include_directory,
-    sieve_vacation_directory, generated, error, eblockp, filtertype);
+    sieve_vacation_directory, sieve_useraddress, sieve_subaddress, generated,
+    error, eblockp, filtertype);
 
   /* Pass back whether it was a filter, and the return code and any overall
   error text via the pipe. */

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.115 2005/04/06 14:09:17 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.116 2005/04/06 14:40:23 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -175,6 +175,9 @@ PH/28 Modified OS/os.c-Linux with
 
       to make Exim compile on kfreebsd-gnu. (I'm totally confused about the
       nomenclature these days.)
+
+PH/29 Installed patch from the Sieve maintainer that adds the options
+      sieve_useraddress and sieve_subaddress to the redirect router.
 
 
 

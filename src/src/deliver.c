@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.10 2005/04/05 15:47:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.11 2005/04/06 14:40:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4662,6 +4662,8 @@ else if (system_filter != NULL && process_recipients != RECIP_FAIL_TIMEOUT)
       RDO_REWRITE,
     NULL,                   /* No :include: restriction (not used in filter) */
     NULL,                   /* No sieve vacation directory (not sieve!) */
+    NULL,                   /* No sieve user address (not sieve!) */
+    NULL,                   /* No sieve subaddress (not sieve!) */
     &ugid,                  /* uid/gid data */
     &addr_new,              /* Where to hang generated addresses */
     &filter_message,        /* Where to put error message */
