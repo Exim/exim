@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.76 2005/01/27 15:00:39 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.77 2005/01/27 15:57:51 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -360,6 +360,10 @@ Exim version 4.50
 
 76. Arrange for output from Perl's "warn" command to be written to Exim's main
     log by default. The user can override this with suitable Perl magic.
+
+77. The use of log_message on a "discard" ACL verb, which is supposed to add to
+    the log message when discard triggers, was not working for the DATA ACL or
+    for the non-SMTP ACL.
 
 
 ----------------------------------------------------

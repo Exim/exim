@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.9 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.10 2005/01/27 15:57:51 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1115,6 +1115,7 @@ BOOL yield = FALSE;
 BOOL resents_exist = FALSE;
 uschar *resent_prefix = US"";
 uschar *blackholed_by = NULL;
+uschar *blackhole_log_msg = US"";
 
 flock_t lock_data;
 error_block *bad_addresses = NULL;
@@ -2869,6 +2870,8 @@ else
         {
         recipients_count = 0;
         blackholed_by = US"DATA ACL";
+        if (log_msg != NULL) 
+          blackhole_log_msg = string_sprintf(": %s", log_msg); 
         }
       else if (rc != OK)
         {
@@ -2896,6 +2899,7 @@ else
       {
       recipients_count = 0;
       blackholed_by = US"non-SMTP ACL";
+      if (log_msg != NULL) blackhole_log_msg = string_sprintf(": %s", log_msg); 
       }
     else if (rc != OK)
       {
@@ -3429,7 +3433,7 @@ if (blackholed_by != NULL)
   uschar *detail = (local_scan_data != NULL)?
     string_printing(local_scan_data) :
     string_sprintf("(%s discarded recipients)", blackholed_by);
-  log_write(0, LOG_MAIN, "=> blackhole %s", detail);
+  log_write(0, LOG_MAIN, "=> blackhole %s%s", detail, blackhole_log_msg);
   log_write(0, LOG_MAIN, "Completed");
   message_id[0] = 0;
   }
