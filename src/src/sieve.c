@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.3 2004/12/21 09:40:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.4 2005/02/15 09:31:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2102,7 +2102,7 @@ if (*filter->pc=='{')
     }
   else
     {
-    filter->errmsg=CUS "missing closing brace";
+    filter->errmsg=CUS "expecting command or closing brace"; 
     return -1;
     }
   }
