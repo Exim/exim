@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.2 2004/11/10 10:29:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -362,6 +362,7 @@ if (pid == 0)
   int i;
   int queue_only_reason = 0;
   int old_pool = store_pool;
+  int save_debug_selector = debug_selector; 
   BOOL local_queue_only;
   #ifdef SA_NOCLDWAIT
   struct sigaction act;
@@ -432,14 +433,25 @@ if (pid == 0)
   /* Attempt to get an id from the sending machine via the RFC 1413
   protocol. We do this in the sub-process in order not to hold up the
   main process if there is any delay. Then set up the fullhost information
-  in case there is no HELO/EHLO. */
-
+  in case there is no HELO/EHLO. 
+  
+  If debugging is enabled only for the daemon, we must turn if off while 
+  finding the id, but turn it on again afterwards so that information about the 
+  incoming connection is output. */
+  
+  if (debug_daemon) debug_selector = 0;
   verify_get_ident(IDENT_PORT);
   host_build_sender_fullhost();
+  debug_selector = save_debug_selector; 
 
   DEBUG(D_any)
     debug_printf("Process %d is handling incoming connection from %s\n",
       (int)getpid(), sender_fullhost);
+
+  /* Now disable debugging permanently if it's required only for the daemon
+  process. */
+
+  if (debug_daemon) debug_selector = 0;
 
   /* If there are too many child processes for immediate delivery,
   set the local_queue_only flag, which is initialized from the
@@ -1511,9 +1523,16 @@ for (;;)
       if ((pid = fork()) == 0)
         {
         int sk;
+        
         DEBUG(D_any) debug_printf("Starting queue-runner: pid %d\n",
           (int)getpid());
 
+        /* Disable debugging if it's required only for the daemon process. We
+        leave the above message, because it ties up with the "child ended" 
+        debugging messages. */
+
+        if (debug_daemon) debug_selector = 0;
+ 
         /* Close any open listening sockets in the child */
 
         for (sk = 0; sk < listen_socket_count; sk++) close(listen_sockets[sk]);

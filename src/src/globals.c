@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.5 2004/11/05 16:53:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.6 2004/11/10 10:29:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -363,6 +363,7 @@ uschar *continue_transport     = NULL;
 
 BOOL    daemon_listen          = FALSE;
 uschar *daemon_smtp_port       = US"smtp";
+BOOL    debug_daemon           = FALSE;
 int     debug_fd               = -1;
 FILE   *debug_file             = NULL;
 bit_table debug_options[]      = {

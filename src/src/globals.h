@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.5 2004/11/05 16:53:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.6 2004/11/10 10:29:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -194,6 +194,7 @@ extern uschar *continue_transport;     /* Transport for continued delivery */
 
 extern BOOL    daemon_listen;          /* True if listening required */
 extern uschar *daemon_smtp_port;       /* Can be a list of ports */
+extern BOOL    debug_daemon;           /* Debug the daemon process only */
 extern int     debug_fd;               /* The fd for debug_file */
 extern FILE   *debug_file;             /* Where to write debugging info */
 extern bit_table debug_options[];      /* Table of debug options */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.7 2004/11/04 12:19:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.8 2004/11/10 10:29:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1863,7 +1863,8 @@ for (i = 1; i < argc; i++)
     break;
 
     /* -d: Set debug level (see also -v below) or set the drop_cr option.
-    The latter is now a no-opt, retained for compatibility only. */
+    The latter is now a no-op, retained for compatibility only. If -dd is used, 
+    debugging subprocesses of the daemon is disabled. */
 
     case 'd':
     if (Ustrcmp(argrest, "ropcr") == 0)
@@ -1879,6 +1880,11 @@ for (i = 1; i < argc; i++)
       unsigned int selector = D_default;
       debug_selector = 0;
       debug_file = NULL;
+      if (*argrest == 'd')
+        {
+        debug_daemon = TRUE;
+        argrest++;
+        }
       if (*argrest != 0)
         decode_bits(&selector, NULL, argrest, debug_options,
           debug_options_count, US"debug");

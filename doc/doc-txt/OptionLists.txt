@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.3 2004/11/04 10:42:11 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.4 2004/11/10 10:29:56 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -589,7 +589,8 @@ provide compatibility with Sendmail.
 -bvs             Test sender address verification
 -C             + Use alternate configuration file
 -D             + Define macro for configuration file
--d               Turn on debugging output
+-d             + Turn on debugging output
+-dd            + Ditto, but if a daemon, not for subprocesses
 -dropcr          Remove CR character in input: became a no-op in 4.21
 -E               Internal use only
 -ex            * Synonym for -oex (for several different x)

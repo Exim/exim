@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.7 2004/11/05 16:53:28 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.8 2004/11/10 10:29:56 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -60,6 +60,12 @@ Version 4.44
 
     The main use of these variables is expected to be to distinguish between
     rejections of MAIL and rejections of RCPT.
+
+ 8. The command line option -dd behaves exactly like -d except when used on a
+    command that starts a daemon process. In that case, debugging is turned off
+    for the subprocesses that the daemon creates. Thus, it is useful for
+    monitoring the behaviour of the daemon without creating as much output as
+    full debugging.
 
 
 
