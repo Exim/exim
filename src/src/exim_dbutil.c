@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.2 2004/12/20 12:29:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1246,8 +1246,12 @@ while (keychain != NULL)
 
     if (Ustat(buffer, &statbuf) != 0)
       {
-      dbfn_delete(dbm, key);
-      printf("deleted %s (no message)\n", key);
+      sprintf(CS(buffer + path_len), "%c/%s-D", id[5], id);
+      if (Ustat(buffer, &statbuf) != 0)
+        {
+        dbfn_delete(dbm, key);
+        printf("deleted %s (no message)\n", key);
+        }
       }
     }
   }

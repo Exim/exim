@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.44 2004/12/20 11:46:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.45 2004/12/20 12:29:10 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -189,6 +189,11 @@ Exim version 4.50
 
 46. Reset the locale to "C" after calling embedded Perl, in case it was changed
     (this can affect the format of dates).
+
+47. exim_tidydb, when checking for the continued existence of a message for
+    which it has found a message-specific retry record, was not finding
+    messages that were in split spool directories. Consequently, it was
+    deleting retry records that should have stayed in existence.
 
 
 Exim version 4.43
