@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.6 2005/01/11 15:51:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.7 2005/01/12 12:17:41 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -735,9 +735,10 @@ host_aton(uschar *address, int *bin)
 int x[4];
 int v4offset = 0;
 
-/* Handle IPv6 address, which may end with an IPv4 address. This code is NOT
-enclosed in #if HAVE_IPV6 in order that IPv6 addresses are recognized even if
-IPv6 is not supported. */
+/* Handle IPv6 address, which may end with an IPv4 address. It may also end 
+with a "scope", introduced by a percent sign. This code is NOT enclosed in #if
+HAVE_IPV6 in order that IPv6 addresses are recognized even if IPv6 is not
+supported. */
 
 if (Ustrchr(address, ':') != NULL)
   {
@@ -751,17 +752,17 @@ if (Ustrchr(address, ':') != NULL)
 
   /* If the address starts with a colon, it will start with two colons.
   Just lose the first one, which will leave a null first component. */
-
+  
   if (*p == ':') p++;
 
   /* Split the address into components separated by colons. The input address 
   is supposed to be checked for syntax. There was a case where this was 
   overlooked; to guard against that happening again, check here and crash if 
-  there is a violation. */
+  there are too many components. */
 
-  while (*p != 0)
+  while (*p != 0 && *p != '%')
     {
-    int len = Ustrcspn(p, ":");
+    int len = Ustrcspn(p, ":%");
     if (len == 0) nulloffset = ci;
     if (ci > 7) log_write(0, LOG_MAIN|LOG_PANIC_DIE, 
       "Internal error: invalid IPv6 address \"%s\" passed to host_aton()",

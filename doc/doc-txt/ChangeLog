@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.65 2005/01/11 15:51:02 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.66 2005/01/12 12:17:41 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -296,6 +296,9 @@ Exim version 4.50
     address", "IPv4 address", and "IPv6 address", respectively. Some calls of
     the function were treating the return as a boolean value, which happened to
     work because 0=false and not-0=true, but is not correct code.
+
+68. The host_aton() function was not handling scoped IPv6 addresses (those
+    with, for example, "%eth0" on the end) correctly.
 
 
 Exim version 4.43
