@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.2 2004/11/10 14:15:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.3 2004/11/11 12:05:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -129,7 +129,7 @@ Arguments:
   password      password for authentication, or NULL
   sizelimit     max number of entries returned, or 0 for no limit
   timelimit     max time to wait, or 0 for no limit
-  tcplimit      max time to connect, or 0 for OS default
+  tcplimit      max time for network activity, e.g. connect, or 0 for OS default
   deference     the dereference option, which is one of
                   LDAP_DEREF_{NEVER,SEARCHING,FINDING,ALWAYS}
 
@@ -269,6 +269,15 @@ for (lcp = ldap_connections; lcp != NULL; lcp = lcp->next)
       (host != NULL && strcmpic(lcp->host, host) != 0))
     continue;
   if (ldapi || port == lcp->port) break;
+  }
+
+/* Use this network timeout in any requests. */
+
+if (tcplimit > 0)
+  {
+  timeout.tv_sec = tcplimit;
+  timeout.tv_usec = 0;
+  timeoutptr = &timeout;
   }
 
 /* If no cached connection found, we must open a connection to the server. If
@@ -447,15 +456,6 @@ else
       host, porttext);
   }
 
-/* Whatever follows, obey this timeout in any requests. */
-
-if (tcplimit > 0)
-  {
-  timeout.tv_sec = tcplimit;
-  timeout.tv_usec = 0;
-  timeoutptr = &timeout;
-  }
-
 /* Bind with the user/password supplied, or an anonymous bind if these values
 are NULL, unless a cached connection is already bound with the same values. */
 
@@ -474,7 +474,7 @@ if (!lcp->bound ||
        == -1)
     {
     *errmsg = string_sprintf("failed to bind the LDAP connection to server "
-      "%s%s - LDAP error", host, porttext);
+      "%s%s - ldap_bind() returned -1", host, porttext);
     goto RETURN_ERROR;
     }
 
