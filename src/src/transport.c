@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.6 2005/03/08 16:57:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.7 2005/03/22 16:44:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -797,7 +797,10 @@ if ((options & topt_no_headers) == 0)
   same alias might share some of them) but we want to output them in the
   opposite order. This is a bit tedious, but there shouldn't be very many
   of them. We just walk the list twice, reversing the pointers each time,
-  but on the second time, write out the items. */
+  but on the second time, write out the items.
+
+  Headers added to an address by a router are guaranteed to end with a newline.
+  */
 
   if (addr != NULL)
     {
@@ -824,7 +827,8 @@ if ((options & topt_no_headers) == 0)
   /* If a string containing additional headers exists, expand it and write
   out the result. This is done last so that if it (deliberately or accidentally)
   isn't in header format, it won't mess up any other headers. An empty string
-  or a forced expansion failure are noops. */
+  or a forced expansion failure are noops. An added header string from a
+  transport may not end with a newline; add one if it does not. */
 
   if (add_headers != NULL)
     {
@@ -846,7 +850,11 @@ if ((options & topt_no_headers) == 0)
         if (s[len-1] != '\n' && !write_chunk(fd, US"\n", 1, use_crlf))
           return FALSE;
         DEBUG(D_transport)
-          debug_printf("added header line(s):\n%s---\n", s);
+          {
+          debug_printf("added header line(s):\n%s", s);
+          if (s[len-1] != '\n') debug_printf("\n");
+          debug_printf("---\n");
+          }
         }
       }
     }
