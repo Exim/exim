@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.19 2005/02/15 16:39:19 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.20 2005/02/21 10:22:48 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1848,5 +1848,11 @@ for those people that construct configs using .ifdef or .include, etc.
 
 Currently, only numerical variables are supported.
 ------------------------------------------------------------------------------
---- HWM 315 ------------------------------------------------------------------
+
+(316) 21-Feb-05 M Put callout response into a variable
+
+When a callout fails, put the entire SMTP response into a variable. This is not
+trivial because we probably should retain it in the cache as well.
+------------------------------------------------------------------------------
+--- HWM 316 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
