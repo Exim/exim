@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.3 2004/11/11 12:05:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.4 2004/11/17 16:31:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -380,8 +380,13 @@ if (lcp == NULL)
   #ifdef LDAP_X_OPT_CONNECT_TIMEOUT
   if (tcplimit > 0)
     {
-    unsigned int timeout1000 = tcplimit*1000;
+    int timeout1000 = tcplimit*1000;
     ldap_set_option(ld, LDAP_X_OPT_CONNECT_TIMEOUT, (void *)&timeout1000);
+    }
+  else
+    {
+    int notimeout = LDAP_X_IO_TIMEOUT_NO_TIMEOUT;
+    ldap_set_option(ld, LDAP_X_OPT_CONNECT_TIMEOUT, (void *)&notimeout);
     }
   #endif
 
