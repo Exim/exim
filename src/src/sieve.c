@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.4 2005/02/15 09:31:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.5 2005/02/15 15:48:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -32,8 +32,7 @@
 /* The code is currently broken.                                    */
 #undef SUBADDRESS
 
-/* Define this for development of the vacation Sieve extension.     */
-/* The code is not yet finished.                                    */
+/* Define this for the vacation Sieve extension.                    */
 #define VACATION
 
 /* Must be >= 1                                                     */
