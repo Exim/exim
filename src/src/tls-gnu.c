@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.2 2004/11/25 10:26:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -461,7 +461,12 @@ if (cert_expanded != NULL)
     cert_expanded, key_expanded);
   rc = gnutls_certificate_set_x509_key_file(x509_cred, CS cert_expanded,
     CS key_expanded, GNUTLS_X509_FMT_PEM);
-  if (rc < 0) return tls_error(US"cert/key setup", host, rc);
+  if (rc < 0) 
+    {
+    uschar *msg = string_sprintf("cert/key setup: cert=%s key=%s",
+      cert_expanded, key_expanded); 
+    return tls_error(msg, host, rc);
+    } 
   }
 
 /* A certificate is mandatory in a server, but not in a client */

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.39 2004/11/24 16:14:50 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.40 2004/11/25 10:26:04 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -171,6 +171,10 @@ Exim version 4.44
 
 40. When running the queue in the test harness, wait just a tad after forking a
     delivery process, to get repeatability of debugging output.
+
+41. Include certificate and key file names in error message when GnuTLS fails
+    to set them up, because the GnuTLS error message doesn't include the name
+    of the failing file when there is a problem reading it.
 
 
 Exim version 4.43
