@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.25 2005/03/15 15:36:41 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.26 2005/03/15 15:46:24 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1714,7 +1714,7 @@ include sockets as well as TCP/IP connections. Also, people want to make use of
 AUTH during the callout checking, on all types of connection. I suppose that
 means making TLS available as well. This probably means a rewrite of the code
 that actually does the callout. Should we use the relevant transport in a new
-"callout" mode instead of keeping things separate? See also 253.
+"callout" mode instead of keeping things separate? See also 253 and 323.
 
 And here's another submitted idea: "My actual suggestion is that if this model
 is followed, the parent process doesn't have to stop the callout process if it
@@ -1887,5 +1887,12 @@ address. The wish is for options to control these numbers.
 
 (322) 15-Mar-05 M Add a /defer_ok option to verify=reverse_host_lookup
 ------------------------------------------------------------------------------
---- HWM 322 ------------------------------------------------------------------
+
+(323) 15-Mar-05 M Make callouts use smtp_data from the smtp transport
+
+This is yet another problem caused by duplicating the SMTP code between the
+transport and the callout verification. See item 294 above. Merging the
+transport and the callout code could prevent this kind of thing from happening.
+------------------------------------------------------------------------------
+--- HWM 323 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
