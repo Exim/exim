@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.5.2.2 2004/11/30 15:18:58 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.5.2.3 2004/12/02 16:33:30 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -38,7 +38,11 @@ enum { ACLC_ACL, ACLC_AUTHENTICATED, ACLC_CONDITION, ACLC_CONTROL,
 #ifdef WITH_CONTENT_SCAN
        ACLC_DECODE,
 #endif
-       ACLC_DELAY, ACLC_DNSLISTS, ACLC_DOMAINS, ACLC_ENCRYPTED, ACLC_ENDPASS,
+       ACLC_DELAY,
+#ifdef WITH_OLD_DEMIME
+       ACLC_DEMIME,
+#endif        
+       ACLC_DNSLISTS, ACLC_DOMAINS, ACLC_ENCRYPTED, ACLC_ENDPASS,
        ACLC_HOSTS, ACLC_LOCAL_PARTS, ACLC_LOG_MESSAGE, ACLC_LOGWRITE,
 #ifdef WITH_CONTENT_SCAN
        ACLC_MALWARE,
@@ -66,7 +70,11 @@ static uschar *conditions[] = { US"acl", US"authenticated", US"condition",
 #ifdef WITH_CONTENT_SCAN
   US"decode",
 #endif
-  US"delay", US"dnslists", US"domains", US"encrypted",
+  US"delay",
+#ifdef WITH_OLD_DEMIME
+  US"demime",
+#endif
+  US"dnslists", US"domains", US"encrypted",
   US"endpass", US"hosts", US"local_parts", US"log_message", US"logwrite",
 #ifdef WITH_CONTENT_SCAN
   US"malware",
@@ -104,6 +112,9 @@ static uschar cond_expand_at_top[] = {
   TRUE,    /* decode */
 #endif
   TRUE,    /* delay */
+#ifdef WITH_OLD_DEMIME
+  TRUE,    /* demime */
+#endif
   TRUE,    /* dnslists */
   FALSE,   /* domains */
   FALSE,   /* encrypted */
@@ -143,6 +154,9 @@ static uschar cond_modifiers[] = {
   FALSE,   /* decode */
 #endif
   TRUE,    /* delay */
+#ifdef WITH_OLD_DEMIME
+  FALSE,   /* demime */
+#endif
   FALSE,   /* dnslists */
   FALSE,   /* domains */
   FALSE,   /* encrypted */
@@ -196,6 +210,17 @@ static unsigned int cond_forbids[] = {
 #endif
 
   0,                                               /* delay */
+  
+#ifdef WITH_CONTENT_SCAN
+  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* demime */
+    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
+    (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
+    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
+    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_MIME),
+#endif
+  
   (1<<ACL_WHERE_NOTSMTP),                          /* dnslists */
 
   (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* domains */
@@ -1620,6 +1645,12 @@ for (; cb != NULL; cb = cb->next)
         }
       }
     break;
+
+#ifdef WITH_OLD_DEMIME
+    case ACLC_DEMIME:
+      rc = demime(&arg);
+    break;
+#endif
 
     case ACLC_DNSLISTS:
     rc = verify_check_dnsbl(&arg);

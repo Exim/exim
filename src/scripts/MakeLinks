@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Cambridge: exim/src/scripts/MakeLinks,v 1.1.2.2 2004/11/26 09:24:54 tom Exp $
+# $Cambridge: exim/src/scripts/MakeLinks,v 1.1.2.3 2004/12/02 16:33:30 tom Exp $
 
 # Script to build links for all the exim source files from the system-
 # specific build directory. It should be run from within that directory.
@@ -180,6 +180,9 @@ cd ..
 
 ln -s ../src/dbfunctions.h     dbfunctions.h
 ln -s ../src/dbstuff.h         dbstuff.h
+# WITH_OLD_DEMIME
+ln -s ../src/demime.h          demime.h
+#
 ln -s ../src/exim.h            exim.h
 ln -s ../src/functions.h       functions.h
 ln -s ../src/globals.h         globals.h
@@ -204,6 +207,9 @@ ln -s ../src/daemon.c          daemon.c
 ln -s ../src/dbfn.c            dbfn.c
 ln -s ../src/debug.c           debug.c
 ln -s ../src/deliver.c         deliver.c
+# WITH_OLD_DEMIME
+ln -s ../src/demime.c          demime.c
+#
 ln -s ../src/directory.c       directory.c
 ln -s ../src/dns.c             dns.c
 ln -s ../src/drtables.c        drtables.c

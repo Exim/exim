@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.9.2.1 2004/12/02 09:15:11 tom Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.9.2.2 2004/12/02 16:33:30 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -841,6 +841,9 @@ fprintf(f, "Support for:");
 #endif
 #ifdef WITH_CONTENT_SCAN
   fprintf(f, " Content_Scanning");
+#endif
+#ifdef WITH_OLD_DEMIME
+  fprintf(f, " Old_Demime");
 #endif
 fprintf(f, "\n");
 

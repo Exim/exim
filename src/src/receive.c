@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.4.2.1 2004/12/02 09:15:11 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.4.2.2 2004/12/02 16:33:30 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3383,7 +3383,7 @@ if (smtp_input)
       {
 #ifndef WITH_CONTENT_SCAN
       smtp_printf("250 OK id=%s\r\n", message_id);
-#elif      
+#else      
         if (fake_reject)
           {
             smtp_printf("550-FAKE_REJECT id=%s\r\n", message_id);
@@ -3399,7 +3399,7 @@ if (smtp_input)
       }
 #ifndef WITH_CONTENT_SCAN
     else if (smtp_reply[0] != 0) smtp_printf("%.1024s\r\n", smtp_reply);
-#elif
+#else
     else if (smtp_reply[0] != 0)
       {
         if (fake_reject && (smtp_reply[0] == '2'))

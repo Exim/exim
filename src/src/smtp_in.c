@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.5.2.1 2004/12/02 09:15:11 tom Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.5.2.2 2004/12/02 16:33:30 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1794,7 +1794,7 @@ address to retain backward compatibility. */
 
 #ifndef WITH_CONTENT_SCAN
 if (where == ACL_WHERE_RCPT || where == ACL_WHERE_DATA)
-#elif
+#else
 if (where == ACL_WHERE_RCPT || where == ACL_WHERE_DATA || where == ACL_WHERE_MIME)
 #endif
   {

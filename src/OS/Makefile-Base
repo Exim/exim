@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.1.2.2 2004/11/30 15:18:58 tom Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.1.2.3 2004/12/02 16:33:30 tom Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -287,7 +287,7 @@ convert4r4: Makefile ../src/convert4r4.src
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
 
-OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
+OBJ_WITH_CONTENT_SCAN = demime.o malware.o mime.o regex.o spam.o spool_mbox.o
 
 OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
@@ -551,6 +551,7 @@ verify.o:        $(HDRS) verify.c
 
 # Dependencies for WITH_CONTENT_SCAN modules
 
+demime.o:        $(HDRS) demime.c
 malware.o:       $(HDRS) malware.c
 mime.o:          $(HDRS) mime.c
 regex.o:         $(HDRS) regex.c
