@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.81 2005/02/16 16:40:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.82 2005/02/17 09:49:08 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -385,6 +385,9 @@ Exim version 4.50
     tables).
 
 82. Updated OS/Makefile-AIX as per message from Mike Meredith.
+
+83. Patch from Sieve maintainer to fix unterminated string problem in
+    "vacation" handling.
 
 
 ----------------------------------------------------

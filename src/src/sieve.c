@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.5 2005/02/15 15:48:46 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.6 2005/02/17 09:49:08 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2486,6 +2486,7 @@ while (*filter->pc)
         start=capacity;
         once=string_cat(filter->vacation_directory,&capacity,&start,US"/",1);
         once=string_cat(once,&capacity,&start,hexdigest,33);
+        once[start] = '\0';
 
         /* process subject */
 
@@ -2541,10 +2542,13 @@ while (*filter->pc)
           capacity = 0;
           start = 0;
           addr->reply->headers = string_cat(NULL,&capacity,&start,reason.character,mime_body-reason.character);
+          addr->reply->headers[start] = '\0';
           capacity = 0;
           start = 0;
-          if (mime_body<reason_end) mime_body+=sizeof(nlnl)-1;
+          if (mime_body+(sizeof(nlnl)-1)<reason_end) mime_body+=sizeof(nlnl)-1;
+          else mime_body=reason_end-1;
           addr->reply->text = string_cat(NULL,&capacity,&start,mime_body,reason_end-mime_body);
+          addr->reply->text[start] = '\0';
           }
         else
           {
