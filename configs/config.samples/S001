@@ -1,0 +1,70 @@
+This script patches an Exim binary in order to change the compiled-in 
+configuration file name. See FAQ 0065 for a situation in which this might 
+be a useful thing to do.
+
+============================================================
+#!/usr/local/bin/perl
+#
+# Patch the config file location in exim so as to avoid using
+# exim -C and thus having problems with vacation messages etc.
+#
+# Placed in the public domain.
+
+# This is the default in exim RPMS.
+my $oldconf = "/etc/exim/exim4.conf";
+
+die "Usage: $0 infile outfile configfile\n" unless (@ARGV == 3);
+my ($in, $out, $newconf) = @ARGV;
+
+# We mustn't make our string longer than the original!
+die "configfile location must be ".length($oldconf)." chars long or less\n"
+	if (length($newconf) > length($oldconf));
+
+# Get original details.
+my @stat = (stat($in));
+die "stat($in): $!\n" if (@stat == 0);
+
+# Get original binary.
+open(F, "<$in") || die "Can't read $in\n";
+read(F, $exim, $stat[7]) || die "Can't read $in\n";
+die "Didn't read full data\n" unless (length($exim) == $stat[7]);
+close(F);
+
+# Find the old config location.
+my $pos = 0;
+my @positions = ();
+while (($pos = index($exim, $oldconf."\0", $pos)) >= 0)
+{
+	print "Config file name found at byte offset $pos\n";
+	push(@positions, $pos);
+	$pos++;
+}
+
+die "Old config location ($oldconf) not found\n" if (@positions == 0);
+
+# We could be clever here and try to isolate the correct instance,
+# but for now I'm going to assume it's the only instance.
+die "Too many possible config locations found\n" if (@positions > 1);
+
+# Patch in the new config location
+substr($exim, $positions[0], length($newconf)+1) = $newconf."\0";
+
+# Write out the patched version.
+open(F, ">$out") || die "Can't write $out\n";
+print F $exim;
+close(F);
+
+# Set permissions on new copy to match old.
+chmod($stat[2] & 07777, $out);
+
+# Print the config file path.
+$out = "./".$out unless ($out =~ m#/#);
+print <<EOF;
+
+Trying to run '$out -bP configure_file'. If it has worked
+either it will be printed below or you will get a LOG: MAIN PANIC
+about it (if the config file doesn't already exist)
+
+EOF
+system($out, "-bP", "configure_file");
+============================================================

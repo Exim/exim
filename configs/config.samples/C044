@@ -1,0 +1,148 @@
+Date: Mon, 2 Dec 2002 10:35:06 +0000
+From: Mike Richardson <doctor@mcc.ac.uk>
+
+Hiya,
+
+I thought I'd submit this as an example of an authenticated mail hub
+configuration. Several people have asked for it so I thought it
+might be of interest.
+
+Authenticated mail hubs using LDAP to authenticate against which simply
+forward mail to central mailrouters. X headers are added for audit
+trail purposes. 
+
+Config:
+#########################################################################
+
+acl_smtp_rcpt = acl_check_rcpt
+
+ignore_bounce_errors_after = 12h
+
+timeout_frozen_after = 3d
+
+# LDAP server:
+
+hide ldap_default_servers=ldap.your.site
+
+# SSL options. advertise TLS but don't insist on it.
+
+tls_advertise_hosts=*
+tls_certificate=/var/cert/securemail.your.site.cert
+tls_privatekey=/var/cert/securemail.your.site.key
+tls_verify_hosts= *
+
+# Remove the queue runner logs and add logging of the interface, protocols
+# and connections. Useful for debugging when users are having difficulty
+# configuring and connecting. Many ISPs use Transparent Proxying
+
+log_selector= +incoming_interface -queue_run +smtp_protocol_error
++smtp_syntax_error +smtp_connection
+
+# SMTP input limits. Some connections are reserved for local users.
+
+smtp_accept_max=200
+smtp_accept_queue=150
+smtp_accept_reserve=10
+smtp_reserve_hosts=130.88.0.0/16
+smtp_connect_backlog=100
+
+# Overloading
+
+queue_only_load=5
+deliver_queue_load_max=7
+
+# Message size limits
+
+message_size_limit=10M
+return_size_limit=65535
+
+# Spool space check
+
+check_spool_space=100M
+
+# directory splitting
+
+split_spool_directory
+
+# Parallel remote deliver
+
+remote_max_parallel = 10
+
+# My system filter is to create extra logging info for X-Mailer info.
+
+system_filter=/etc/systemfilter
+system_filter_user=exim
+
+# Listen of multiple interfaces to defeat transparent proxying
+
+local_interfaces = 130.88.200.47.25 : 130.88.200.47.465 : 130.88.200.47.587
+
+# Only accept local traffic and authenticated stuff.
+# Error message points to useful web page.
+
+acl_check_rcpt:
+
+  accept  hosts = :
+  deny    local_parts   = ^.*[@%!/|]
+  require verify        = sender
+
+  accept  authenticated = *
+
+  deny    message       = Not authenticated, see http://www.useful.web.page/
+
+
+
+######################################################################
+#                      ROUTERS CONFIGURATION                         #
+#               Specifies how addresses are handled                  #
+######################################################################
+
+begin routers
+
+# Manual route to force all traffic through our hubs which handle all
+# the alias expansion, domain routing etc.
+# I add an X header for audit trail purposes but no more information that
+# would be expected from a legitimate email. Don't want to upset the DPA
+# people
+
+smarthost:
+  driver = manualroute
+  headers_add =X-Authenticated-Sender: ${lookup ldap\
+{ldap:///o=ac,c=uk?cn?sub?(&(uid=$authenticated_id))}{$value}{no}} from \
+${sender_fullhost}\nX-Authenticated-From: ${lookup ldap\
+{ldap:///o=ac,c=uk?mail?sub?(&(uid=$authenticated_id))}{$value}{no}}
+  transport = remote_smtp
+  domains = ! +local_domains
+  route_list=* mailrouter.your.site 
+  ignore_target_hosts = 0.0.0.0 : 127.0.0.0/8
+  no_more
+
+# All other routes as per normal...
+
+
+######################################################################
+#                   AUTHENTICATION CONFIGURATION                     #
+######################################################################
+
+# This only supports PLAIN and LOGIN due to the nature of our LDAP server.
+
+begin authenticators
+
+plain:
+  driver= plaintext
+  public_name = PLAIN
+  server_condition="${lookup ldap {user=\"${lookup \
+ldapdn{ldap:///o=ac,c=uk?sn?sub?(&(uid=$2))}{$value}{no}}\" pass=$3 \
+ldap:///o=ac,c=uk?sn?sub?(&(uid=$2))}{yes}{no}}"
+  server_set_id = $2
+ 
+login:
+  driver = plaintext
+  public_name= LOGIN
+  server_prompts = "Username:: : Password::"
+  server_condition="${lookup ldap {user=\"${lookup \
+ldapdn{ldap:///o=ac,c=uk?sn?sub?(&(uid=$1))}{$value}{no}}\" pass=$2 \
+ldap:///o=ac,c=uk?sn?sub?(&(uid=$1))}{yes}{no}}"
+  server_set_id=$1
+# End of Exim configuration file
+##########################################################################

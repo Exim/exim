@@ -1,0 +1,97 @@
+Date: Sat, 4 Apr 1998 07:23:39 +0200 (GMT+0200)
+From: "F. Jacot Guillarmod" <Jacot@ru.ac.za>
+
+Here's four checks installed in our system wide filter that knock out
+a lot of otherwise hard to detect rubbish - and would handle the above
+example.  The most interesting one is the hotmail.com "validity check".
+
+# ===========================================================================
+# authenticated sender, but not from pegasus
+#-------------------------------------------
+elif "$h_comments" contains "authenticated sender" and
+     "$h_x-mailer" does not contain "pegasus" then
+
+    log "$tod_log $message_id SPAMAUTHS: sender=$sender_address \
+	 subject=$header_subject: recipients_count=$recipients_count \
+	 recipients=$recipients"
+    save /usr/local/lib/mail/spam
+
+# claims to be from hotmail.com
+#------------------------------
+elif "$h_from" contains "hotmail.com" and
+     "${if !def:header_x-originating-ip {nospam}}" is nospam then
+
+    log "$tod_log $message_id SPAMHOTMAIL: sender=$sender_address \
+	 subject=$header_subject: recipients_count=$recipients_count \
+	 recipients=$recipients"
+    save /usr/local/lib/mail/spam
+
+# claims to be from juno.com
+#------------------------------
+elif "$h_from" contains "juno.com" and
+     "${if def:header_x-mailer {juno} {spam}}" is spam then
+
+    log "$tod_log $message_id SPAMJUNO: sender=$sender_address \
+	 subject=$header_subject: recipients_count=$recipients_count \
+	 recipients=$recipients"
+    save /usr/local/lib/mail/spam
+
+# spam X-UIDL header found
+# ------------------------
+elif "${if def:header_x-uidl {spam}}" is spam then
+
+    log "$tod_log $message_id SPAM-X-UIDL: sender=$sender_address \
+	 subject=$header_subject: recipients_count=$recipients_count \
+	 recipients=$recipients"
+    save /usr/local/lib/mail/spam
+# ===========================================================================
+
+
+The following rule seems to work (but I don't use it):
+
+# either To: is contained in From: or there is no To: line
+# --------------------------------------------------------
+elif $h_from contains $h_to then
+
+     log "$tod_log $message_id SPAM-TOEQFRM: sender=$sender_address \
+	 subject=$header_subject: recipients_count=$recipients_count \
+	 recipients=$recipients"
+     save /usr/local/lib/mail/spam
+# --------------------------------------------------------
+
+
+
+Here's parts of my personal .forward file - I'm relying on the system wide exim
+configs to zap spam, and only do the old fashioned stuff to whatever gets
+through:
+
+#==========================================================================
+# Exim filter            <<== do not edit or remove this line
+
+if   error_message then finish endif
+
+logfile $home/eximfilter.log
+
+# Mail from support system
+if   $header_subject contains "[Help #"
+then
+  save $home/Mail/in.support
+
+# Mail from squid mailing list to local newsgroup
+elif   $header_subject contains "squid-users-digest"
+then
+  deliver "<ru-list-squid@quagga.ru.ac.za>"
+
+# Mail from exim-users mailing list to local newsgroup
+elif   $return_path contains "exim-users-request"
+then
+  deliver "<ru-list-exim-users@quagga.ru.ac.za>"
+
+# Stuff to be thrown away
+if   $header_subject contains "Warning From uucp"
+then
+  seen finish
+endif
+
+#==========================================================================
+

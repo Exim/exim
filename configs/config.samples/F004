@@ -1,0 +1,71 @@
+Date: Tue, 23 Nov 1999 02:49:32 +0200
+From: Vadim Vygonets <vadik@cs.huji.ac.il>
+
+This is an Exim filter snippet to change locally-generated 
+Message-Id: and Resent-Message-Id: headers to world-unique values.
+
+
+# Exim filter
+
+# Copyright (c) 1999
+#	Hans Matzen <hans@tm.informatik.uni-frankfurt.de>,
+#	Vadim Vygonets <vadik@vygo.net>.  All rights reserved.
+
+#################################################################
+# Change locally-generated Message-Id: and Resent-Message-Id:
+# headers to world-unique values.
+
+# Notes:
+# Change every occurence of "home.dom" to your home domain.
+# Change every occurence of "uniqie.remote.dom" to some unique value.
+
+# Unique values, as Vadik explained in his message to exim-users,
+# can be chosen in different ways:
+
+### The ideal way is to choose "hostnames" in existing domains whose
+### admins you know, and you will be sure that no hostname ending
+### with ".nonexistant.friendly.dom" will ever appear on this planet,
+### not even on someone else's message IDs.
+
+### Another ideas include putting after your hostname things like:
+### .972.2.6412694.phone
+### .29.32.columbia.street.jerusalem.96583.israel.addr
+### .1122.3576.3847.1446.visa.01.2002.expiration.date.vadim.vygonets.name.credit.card
+
+# This snippet provides to schemes to do such rewriting.  The
+# first scheme is to have mapping from local hostnames to unique
+# "Message-Id domains".  The second scheme is to use one unique
+# "Message-Id domain", inserting the original "domain" into the
+# "local-part" of the new Message-Id header.
+
+# Precaution
+headers remove "X-Vygo-Net-Temporary-Message-Id"
+
+# Change Message-Id:
+if "${if def:h_Message-Id: {yes}}" is yes and 
+    ${lc:${domain:$h_Message-Id:}} is    "home.dom" or
+    ${lc:${domain:$h_Message-Id:}} ends ".home.dom" then
+# This is if you want to have a file mapping each hostname to a unique
+# Message-Id domain part, or, if it fails, preserves the original domain part:
+#	headers add "X-Vygo-Net-Temporary-Message-Id: <${local_part:$h_Message-Id:}@${lookup{${domain:$h_Message-Id:}}lsearch{/var/exim/msgid-hosts}{$value}{${domain:$h_Message-Id:}}}>\n"
+# This rewrites Message-Id as <local_part.domain@unique.domain>:
+	headers add "X-Vygo-Net-Temporary-Message-Id: <${local_part:$h_Message-Id:}.${domain:$h_Message-Id:}@unique.remote.dom>\n"
+	headers remove "Message-Id"
+	headers add "Message-Id: $h_X-Vygo-Net-Temporary-Message-Id:"
+	headers remove "X-Vygo-Net-Temporary-Message-Id"
+endif
+
+# Change Resent-Message-Id:
+if "${if def:h_Resent-Message-Id: {yes}}" is yes and 
+    ${lc:${domain:$h_Resent-Message-Id:}} is    "home.dom" or
+    ${lc:${domain:$h_Resent-Message-Id:}} ends ".home.dom" then
+# This is if you want to have a file mapping each hostname to a unique
+# Message-Id domain part, or, if it fails, preserves the original domain part:
+#	headers add "X-Vygo-Net-Temporary-Message-Id: <${local_part:$h_Resent-Message-Id:}@${lookup{${domain:$h_Resent-Message-Id:}}lsearch{/var/exim/msgid-hosts}{$value}{${domain:$h_Resent-Message-Id:}}}>\n"
+# This rewrites Message-Id as <local_part.domain@unique.domain>:
+	headers add "X-Vygo-Net-Temporary-Message-Id: <${local_part:$h_Resent-Message-Id:}.${domain:$h_Resent-Message-Id:}@unique.remote.dom>\n"
+	headers remove "Resent-Message-Id"
+	headers add "Resent-Message-Id: $h_X-Vygo-Net-Temporary-Message-Id:"
+	headers remove "X-Vygo-Net-Temporary-Message-Id"
+endif
+

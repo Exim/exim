@@ -1,0 +1,324 @@
+From: Nathan Ollerenshaw <nathan@valuecommerce.co.jp>
+
+## I've been working quite hard to come up with a config that reasonably 
+## matches the qmail-ldap setup, without the warts. I want to submit it 
+## for inclusion in your config.samples archive, in case anyone else needs 
+## to do the same as I. I hope its useful.
+## 
+## A few notes; it supports catchalls but not dash extension addressing, 
+## as I couldn't be bothered, and I'm unsure as to how many people 
+## actually use the feature. Certainly nobody on my system. It supports 
+## autoreplies, but not an autoreply on a catchall, because this just 
+## kills your mailserver when someone does a dictionary spam attack 
+## against a domain set up this way.
+
+
+######################################################################
+#                  Runtime configuration file for Exim               #
+######################################################################
+
+#domainlist local_domains = @ : lsearch:/apps/conf/mail/locals
+domainlist local_domains = lsearch;/apps/conf/mail/locals
+domainlist relay_to_domains =
+
+# the pop-before-smtp package at http://popbsmtp.sourceforge.net/
+# creates the /etc/mail/popauth.db file for us. We have to use dbmnz
+# lookup type here.
+
+hostlist   relay_from_hosts = 127.0.0.1 : net-dbmnz;/etc/mail/popauth.db
+primary_hostname = [[[SET THIS TO LOCAL HOST NAME]]]
+
+# LDAP settings
+
+# Set the following to your ldap server(s)
+ldap_default_servers = ldap::389
+BASEDN = [[[SET THIS TO YOUR BASE DN IN LDAP]]]
+
+acl_smtp_rcpt = acl_check_rcpt
+acl_smtp_data = acl_check_data
+
+exim_user = vmail
+exim_group = vmail
+trusted_users = vmail
+never_users = root
+host_lookup = *
+rfc1413_hosts = *
+rfc1413_query_timeout = 0s
+ignore_bounce_errors_after = 2d
+timeout_frozen_after = 7d
+bounce_return_body = false
+accept_8bitmime = true
+allow_mx_to_ip = true
+auto_thaw = 60m
+smtp_accept_max = 0
+smtp_load_reserve = 20
+delay_warning = 4h:8h:24h
+dns_again_means_nonexist = !+local_domains : !+relay_to_domains
+
+spamd_address = 127.0.0.1 783
+av_scanner = clamd:127.0.0.1 3310
+
+# Spool settings
+
+split_spool_directory = true
+check_spool_space = 100M
+check_spool_inodes = 1000
+
+# Logging - enable a bunch of extra useful stuff. Never know, could help
+# one day, and at least its better than qmail! Har har!
+
+log_selector = +delivery_size +received_sender +received_recipients \
+        +subject +sender_on_delivery
+
+# NOTE TO SELF: Lets use syslog and have all six mail servers log to a
+# central location so its easier to do statistics gathering and fault
+# analysis.
+
+# MACROS
+
+# Secret for all machines in the cluster. Change it to whatever you feel
+# is best.
+
+SECRET = Ni2opNyw2pNM3cmWn21nOSbwdq
+
+GET_ADDRESS_DATA = ${lookup ldap {\
+        ldap:///BASEDN??sub?(&(uid=${quote_ldap:$local_part}@${quote_ldap:$domain}))\
+        }\
+}
+
+GET_CATCHALL_DATA = ${lookup ldap {\
+        ldap:///BASEDN??sub?(&(uid=catchall@${quote_ldap:$domain}))\
+        }\
+}
+
+MSGCOOKIE = ${hmac{md5}{SECRET}{$body_linecount}}
+
+######################################################################
+#                      ROUTERS CONFIGURATION                         #
+#               Specifies how addresses are handled                  #
+######################################################################
+
+begin routers
+
+dnslookup:
+  driver = dnslookup
+  domains = ! +local_domains
+  transport = remote_smtp
+  ignore_target_hosts = 0.0.0.0 : 127.0.0.0/8
+  no_more
+
+system_aliases:
+  driver = redirect
+  condition = ${if eq {{$primary_hostname}{$domain} {1}{0}} }
+  allow_fail
+  allow_defer
+  data = ${lookup{$local_part}lsearch{/etc/aliases}}
+  file_transport = address_file
+  pipe_transport = address_pipe
+
+# the forward router does the initial LDAP lookup. It then caches this in
+# $address_data for use by any of the other routers. Each router will fall
+# through if they then don't meet their condition.
+
+lookup:
+  driver = redirect
+  address_data = GET_ADDRESS_DATA
+  # data is intentionally left blank so that the router will decline
+  # we just want this router to do a lookup so the results are availble
+  # for the other routers.
+  data = 
+
+# OK, this is where we start supporting crazy qmail-ldap stuff. First, we
+# check if the address has a deliveryMode of 'forwardonly'. forwardonly is
+# a misnomer, because its possible for and address to be a forward, a mailbox
+# and an autoreply. So, we make it do the forward, and check to see if it is
+# also a reply or localdelivery, if so we set unseen to yes to make Exim
+# copy the message and send it to the next router. 
+
+forward:
+  driver = redirect
+  condition = ${if match {${extract{deliveryMode}{$address_data}}}{forwardonly} {1}{0}}
+  data = ${extract{mailForwardingAddress}{$address_data}}
+  unseen = ${if or {{match {${extract{deliveryMode}{$address_data}}}{reply}} \
+                    {match {${extract{deliveryMode}{$address_data}}}{localdelivery}}} \
+                    {yes}{no}}
+
+# Same deal, check if its a reply, if so we send it to the correct transport.
+# After, we see if it needs to go to localdelivery as well.
+
+reply:
+  driver = accept
+  condition = ${if match {${extract{deliveryMode}{$address_data}}}{reply} {1}{0}}
+  transport = auto_reply
+  unseen = ${if match {${extract{deliveryMode}{$address_data}}}{localdelivery} {yes}{no}}
+
+localdelivery:
+  driver = accept
+  condition = ${if match {${extract{deliveryMode}{$address_data}}}{localdelivery} {1}{0}}
+  transport = local_delivery
+
+# If we've reached this point, the account doesn't exist, so we need to
+# check to see if there is a catchall account, and if so do the usual for
+# it too. NOTE: we do not support auto-reply in a catch-all.
+#
+# This could, of course, be abused by someone assigning an auto-reply to
+# a forward_catchall.
+
+# NOTE TO SELF: See if reply router can be failed if an address comes from
+#               a catchall.
+
+lookup_catchall:
+  driver = redirect
+  address_data = GET_CATCHALL_DATA
+  # data is intentionally left blank so that the router will decline
+  # just want this router to do a lookup.
+  data =  
+  # could probably do a no_more = true based on the result of that LDAP
+  # lookup to skip the next few routers, but there is no point as they are
+  # not doing anything heavy so I'll just let them fall through and fail.
+
+# The catchall routers are exactly the same as the above routers, except
+# they make use of the GET_CATCHALL_DATA address_data to decide what to do
+# with the mail.
+
+forward_catchall:
+  driver = redirect
+  condition = ${if match {${extract{deliveryMode}{$address_data}}}{forwardonly} {1}{0}}
+  data = ${extract{mailForwardingAddress}{$address_data}}
+  unseen = ${if match {${extract{deliveryMode}{$address_data}}}{localdelivery} {yes}{no}}
+
+localdelivery_catchall:
+  driver = accept
+  condition = ${if match {${extract{deliveryMode}{$address_data}}}{localdelivery} {1}{0}}
+  transport = local_delivery
+
+######################################################################
+#                      TRANSPORTS CONFIGURATION                      #
+######################################################################
+
+begin transports
+
+remote_smtp:
+  driver = smtp
+
+# Deliver to the mailbox specified in the LDAP directory. We make sure
+# that quota is obeyed, and we try to send a messge to the user if it
+# gets to over 85%.
+
+local_delivery:
+  driver = appendfile
+  maildir_format
+  directory = ${extract{mailMessageStore}{$address_data}}/Maildir
+  create_directory
+  directory_mode = 0700
+  delivery_date_add
+  envelope_to_add
+  return_path_add
+  group = vmail
+  user = vmail
+  mode = 0600
+  quota = ${eval:${sg{${extract{1}{,}{${extract{mailQuota}{$address_data}}}}}{S}{}}/1024}K
+  maildir_use_size_file = true
+  quota_warn_threshold = 85%
+
+# We set this to iso-2022-jp because we're in japan. Set it to whatever.
+
+auto_reply:
+  driver = autoreply
+  subject = "[Auto-Reply] $header_subject"
+  headers = "Content-Type: text/plain; charset=iso-2022-jp"
+  to = "$sender_address"
+  text = ${extract{mailReplyText}{$address_data}}
+  from = $local_part@$domain
+
+
+######################################################################
+#                       ACL CONFIGURATION                            #
+#         Specifies access control lists for incoming SMTP mail      #
+######################################################################
+
+begin acl
+
+# You should probably set up exiscan-acl's mime check here to scan for viruses
+# and spam and reject at SMTP time. As I won't be doing that for a while, I've
+# left it as an exercise for the reader.
+
+acl_check_rcpt:
+  accept  hosts = :
+  deny    message       = Restricted characters in address
+          domains       = +local_domains
+          local_parts   = ^[.] : ^.*[@%!/|]
+  deny    message       = Restricted characters in address
+          domains       = !+local_domains
+          local_parts   = ^[./|] : ^.*[@%!] : ^.*/\\.\\./
+  accept  local_parts   = postmaster
+          domains       = +local_domains
+  require verify        = sender
+  accept  domains       = +local_domains
+          endpass
+          verify        = recipient
+  accept  domains       = +relay_to_domains
+          endpass
+          verify        = recipient
+  accept  hosts         = +relay_from_hosts
+  accept  authenticated = *
+  deny    message       = relay not permitted
+
+acl_check_data:
+  require verify        = header_syntax
+          message       = This message has malformed headers.
+  deny    message       = This message contains malformed MIME ($demime_reason).
+          demime        = *
+          condition     = ${if >{$demime_errorlevel}{2}{1}{0}}
+  deny    message       = We do not accept ".$found_extension" attachments here as \
+                          they are common file extensions for viruses. If you wish \
+                          to send such an attachment, please zip it first.
+          demime        = bat:btm:cmd:com:cpl:dll:exe:lnk:msi:pif:prf:reg:scr:vbs:url
+  accept
+
+begin retry
+
+# Address or Domain    Error       Retries
+# -----------------    -----       -------
+
+*                      *           F,2h,15m; G,16h,1h,1.5; F,4d,6h
+
+######################################################################
+#                      REWRITE CONFIGURATION                         #
+######################################################################
+
+# There are no rewriting specifications in this default configuration file.
+
+begin rewrite
+
+######################################################################
+#                   AUTHENTICATION CONFIGURATION                     #
+######################################################################
+
+# There are no authenticator specifications in this default configuration file.
+
+begin authenticators
+
+plain:
+  driver = plaintext
+  public_name = PLAIN
+  server_condition = ${if ldapauth {user="uid=${quote_ldap_dn:$2},BASEDN" \
+                        pass=${quote:$3} ldap:///}{yes}{no}}
+  server_set_id = $2
+  
+
+login:
+  driver = plaintext
+  public_name = LOGIN
+  server_prompts = Username:: : Password::
+  server_condition = ${if ldapauth {user="uid=${quote_ldap_dn:$1},BASEDN" \
+                        pass=${quote:$2} ldap:///}{yes}{no}}
+  server_set_id = $1
+
+######################################################################
+#                   CONFIGURATION FOR local_scan()                   #
+######################################################################
+
+# begin local_scan
+
+# End of Exim configuration file

@@ -1,0 +1,35 @@
+From: Ephraim Silverberg <ephraim@cs.huji.ac.il>
+Date: Tue, 17 Feb 1998 12:55:55 +0200
+
+We're using Exim 1.82 and have written a message filter to intercept spam
+messages that RBL doesn't catch.  Since we have met with reasonable success
+since installing (and refining) the filter -- 566 genuine spam messages
+intercepted during a time period where there were 67 RBL rejections -- I
+thought that the rest of the list may be interested in reviewing our filter
+as a starting point for their own system message filter.
+
+There are a number of caveats, however:
+
+1. The suspected spam is not automatically rejected as RBL hosts are, but
+   is saved to a folder that should be read/writable by the mail
+   administrators.  The reason for this is that the filter catches also
+   some legitimate mail and these messages should be bounced to their
+   originally intended recipient(s) (ala X-Envelope-To:) and the filter
+   refined and/or the databases (described below) updated.
+
+2. My filter traps blank/non-existent To: lines as well as To: lines
+   contained in From: lines, but firsts exempts the following categories
+   from this check: mailing lists, local mail, mail originating in the
+   country (e.g. in our case *.il) and mail coming from autosupport servers.
+
+Beyond implicit checks, it uses four DBM databases: two that exempt the
+message from any spam (beyond RBL) checks (software servers and strange mailing
+lists need to be here) -- one based on $sender_address and the other on
+$header_to: lines -- and, conversely, two databases for known spammers that
+have valid mail headers that aren't caught by implicit checks. All entries
+in these databases are lowercase so that we don't need two lines for
+'friend@public.com' and 'Friend@Public.com'.
+
+The sample filter package is at ftp://ftp.cs.huji.ac.il/pub/exim/spam_filter/
+
+Comments and suggestions are welcome.

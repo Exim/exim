@@ -1,0 +1,83 @@
+From: Kirill Miazine <lists@km.krot.org>
+Date: Tue, 2 Apr 2002 19:41:24 +0200
+
+Hello,
+
+Since Exim 4 configuration needed to get Mailman work differs a little
+bit from Exim 3 and since I still haven't seen a "recipe" for Mailman
+with Exim 4, I'm providing my configuration (based heavily on
+http://www.exim.org/howto/mailman.html).
+
+Following goes into main config settings:
+
+domainlist lists_domains = lists.krot.org
+MAILMAN_HOME=/local/lists
+MAILMAN_WRAP=MAILMAN_HOME/mail/wrapper
+MAILMAN_UID=mailman
+MAILMAN_GID=exim
+
+
+Following routers are defined:
+
+list_owner:
+    driver = redirect
+    domains = +lists_domains
+    require_files = MAILMAN_HOME/lists/$local_part/config.db
+    local_part_suffix = -owner
+    data = ${lc:$local_part}-admin@$domain
+
+owner_list:
+    driver = redirect
+    domains = +lists_domains
+    require_files = MAILMAN_HOME/lists/$local_part/config.db
+    local_part_prefix = owner-
+    data = ${lc:$local_part}-admin@$domain
+
+list_admin:
+    driver = accept
+    domains = +lists_domains
+    require_files = MAILMAN_HOME/lists/$local_part/config.db
+    local_part_suffix = -admin
+    transport = list_admin
+
+list_request:
+    driver = accept
+    domains = +lists_domains
+    require_files = MAILMAN_HOME/lists/$local_part/config.db
+    local_part_suffix = -request
+    transport = list_request
+
+list:
+    driver = accept
+    domains = +lists_domains
+    require_files = MAILMAN_HOME/lists/$local_part/config.db
+    transport = list
+
+
+And these transports are needed:
+
+list_admin:
+    driver = pipe
+    command = MAILMAN_WRAP mailowner ${lc:$local_part}
+    current_directory = MAILMAN_HOME
+    home_directory = MAILMAN_HOME
+    user = MAILMAN_UID
+    group = MAILMAN_GID
+
+list_request:
+    driver = pipe
+    command = MAILMAN_WRAP mailcmd ${lc:$local_part}
+    current_directory = MAILMAN_HOME
+    home_directory = MAILMAN_HOME
+    user = MAILMAN_UID
+    group = MAILMAN_GID
+
+list:
+    driver = pipe
+    command = MAILMAN_WRAP post ${lc:$local_part}
+    current_directory = MAILMAN_HOME
+    home_directory = MAILMAN_HOME
+    user = MAILMAN_UID
+    group = MAILMAN_GID
+
+Mailman was configured --with-mail-gid=exim.

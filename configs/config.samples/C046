@@ -1,0 +1,35 @@
+Date: Wed, 18 Sep 2002 15:22:44 +0100 (BST)
+From: Tony Finch <fanf2@cam.ac.uk>
+
+I wanted to be able to preserve the envelope contents (except for the return
+path when I'm feeling paranoid about error handling).
+
+Feel free to add this to the examples -- someone else might find it useful. I
+also have a complete configuration which I have been recommending to other
+people in Cambridge (although it could work elsewhere with tweaks) at
+http://www-uxsup.csx.cam.ac.uk/~fanf2/conf4.satellite.
+
+# Deliver a duplicate of some proportion of all messages to a special
+# machine specified in the file /MAIL_TAP_HOST, if it exists. The
+# probability of sending a message is the reciprocal of the second
+# number in the hash part of the condition. The address data is used
+# to prevent redirected addresses from being tapped twice. The
+# originating host and sender are recorded in extra headers. If the
+# delivery fails the bounce goes to a rubbish bin (although this means
+# that the traffic seen by the tap is not quite the same as the
+# traffic seen here).
+
+traffic_tap:
+  unseen
+  no_expn
+  no_verify
+  transport = smtp
+  driver = manualroute
+  require_files = /MAIL_TAP_HOST
+  route_data = ${readfile{/MAIL_TAP_HOST}{:}}
+  address_data = ${if!def:address_data{tapped}fail}
+  condition = ${if!eq{a}{${hash_1_1:$message_headers$message_body}}{no}{yes}}
+  headers_add = ${if!def:sender_host_address{}{X-Orig-Remote-Host: $sender_host_address}}\n\
+                X-Orig-Return-Path: $return_path
+  errors_to = YOUR_RUBBISH_BIN_ADDRESS_HERE
+

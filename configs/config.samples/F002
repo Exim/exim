@@ -1,0 +1,98 @@
+Date: Tue, 03 Mar 1998 15:45:24 -0500
+From: Dan Birchall <djb@16straight.com>
+
+History:
+
+In early 1997, I wrote a little PERL program which refused
+mail from unknown addresses until they mailed me promising
+not to spam me.  (This ran on my account as an end-user
+solution.)  It was very effective, but didn't scale well.
+
+Recently, I'd been thinking of adding some similar 
+functionality to my Exim filter file.  Someone on another
+list mentioned that they were going to work on doing the
+same in their Sendmail config, and since I'd already 
+thought through how to do it in Exim, and knew it'd be
+slightly easier than falling out of bed, I went ahead and
+did it.  I mentioned having done it, and Piete bugged me
+to send it here too. :)
+
+Structure:
+
+There are two (optionally three) flat files involved, plus
+a system-wide filter file and one (optionally two) shell
+script(s).
+
+The first flat file contains a list of recipient e-mail
+addresses handled by my server, with parameters stating
+whether they do or do not wish to be afforded some degree
+of protection from spam through various filters.  An
+excerpt:
+
+djb@16straight.com: spam=no
+djb@mule.16straight.com: spam=no untrusted=no
+djb@scream.org: spam=no relay=no untrusted=no
+
+Various filters in my filter file read this, and based
+on the values of certain parameters, will take certain
+measures to prevent spam from reaching an address.  This
+particular filter works on the "untrusted" parameter.
+
+The second flat file contains a list of IP addresses for
+hosts that the server has been instructed to trust.  (At
+this point, this is a system-wide list; if a host is
+trusted, it's trusted for all addresses.  It should be
+fairly similar to arrange for some sort of user-specific
+list, but I haven't had the need.)  An excerpt:
+
+206.214.98.16: good=yes
+205.180.57.68: good=yes
+204.249.49.75: good=yes
+
+The filter is as follows:
+
+if
+${lookup{$recipients:untrusted}lsearch{/usr/exim/lists/shield}{$value}}
+is "no"
+and
+${lookup{$sender_host_address:good}lsearch{/usr/exim/lists/good_hosts}{$value}}
+is ""
+then freeze endif
+
+Basically, if $recipients is found in the first file, with
+an "untrusted=no" parameter, and the sending host's IP
+address is *not* in the second file, or does not have a
+"good=yes" parameter next to it, the message is frozen.
+
+I then come along as root and run this script, with the
+Exim message ID as the only argument:
+
+echo -n `grep host_address /usr/exim/spool/input/$1-H |cut -f2 -d" "` >>
+/usr/exim/lists/good_hosts
+echo ": good=yes" >> /usr/exim/lists/good_hosts
+sendmail -M $1
+
+This adds the sending host's IP to the good_hosts file and
+forces delivery of the message.
+
+Options:
+
+The other optional file is a blacklist; the other optional
+script puts the sending host's IP in *that* file and deletes
+the message.
+
+This is just yet another fun little way to play with spam.
+(Looks like meat, tastes like play-doh... or is it the 
+other way around?)
+
+Bugs:
+
+Yes, there are weaknesses.  Specifically:
+
+* multi-address $recipients will probably get by this
+* scalability is always a concern
+* large ISP's that generate lots of mail _and_ spam...
+
+This is near the top of my filter file, though, and
+there are several other filters below it to catch any
+stuff it might miss.

@@ -1,0 +1,44 @@
+From: Suresh Ramasubramanian <linux@frodo.hserus.net>
+Date: Mon, 11 Aug 2003 11:57:39 +0530
+
+I've been seeing a whole bunch of IPs that send me spam / virus mail and 
+HELOing as one of my own IPs, or as HELO one.of.my.own.domains (or maybe 
+HELO primary_hostname)
+
+On the other hand, I have users relaying through my box with AUTH, using 
+mozilla, which HELO's as "HELO hserus.net" if a hserus.net user relays.
+
+Here's something to stop this stuff - in acl_check_rcpt:
+
+[snippet in exim configure file]
+
+  accept  hosts = :
+
+  # Accept all authenticated senders
+  accept  authenticated = *
+
+  # Spam control
+
+  # Be polite and say HELO. Reject anything from hosts that havn't given
+  # a valid HELO/EHLO to us.
+  deny condition = ${if \
+    or{{!def:sender_helo_name}{eq{$sender_helo_name}{}}}{yes}{no}}
+           message = RFCs mandate HELO/EHLO before mail can be sent
+
+  # Forged hostname - HELOs as my own hostname or domain
+  deny	message = Forged hostname detected in HELO: $sender_helo_name
+	hosts	= !+relay_from_hosts
+	log_message = Forged hostname detected in HELO: \
+	$sender_helo_name
+	condition = ${lookup {$sender_helo_name} \
+		lsearch{/usr/local/etc/exim/local_domains}{yes}{no}}
+
+  # Forged hostname -HELOs as one of my own IPs
+  deny message = Forged IP detected in HELO: $sender_helo_name
+       hosts = !+relay_from_hosts
+       log_message = Forged IP detected in HELO: $sender_helo_name
+       condition = ${if \
+	  eq{$sender_helo_name}{$interface_address}{yes}{no}}
+
+[end snippet]
+

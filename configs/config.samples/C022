@@ -1,0 +1,28 @@
+Date: Tue, 14 Sep 1999 00:58:56 +0200
+Updated: Fri, 11 Jan 2002 05:13:57 +0200
+From: Vadim Vygonets <vadik@cs.huji.ac.il>
+
+This is the Exim configuration file of a machine which delivers mail to several
+local domains, where the mail is delivered locally, several hairy domains,
+handled as described below, and a half-virtual domain, which is first processed
+by its special alias file, then processed as other local domains (including the
+processing by the global alias file).
+
+This contribution consists of a number of files that are in the tar archive 
+C022.tar, which unpacks into a directory called "virtual". See the README file 
+therein for an explanation of the configuration.
+ 
+This is the updated virtual domain handling for Exim 4.  The
+main changes are:
+
+1. Now there's the alias file admin.raw for privileged aliases
+   (such as Postmaster).  It is processed earlier than
+   domain-specific files.  The domain is not preserved on
+   redirection.
+
+2. <DOMAIN>.rewrite.raw is gone, and <DOMAIN>.aliases.raw is
+   renamed to <DOMAIN>.raw.  The functionality was put into
+   entries with keys ending with a '+', and the data are allowed
+   to have no domain (which made the rewrite rule slightly more
+   complicated).
+

@@ -1,0 +1,116 @@
+Date: Wed, 22 Nov 2000 17:51:42 -0500 (EST)
+From: Dave C. <djc@microwave.com>
+
+[Syntax converted for Exim 4 by PH, 06-Dec-2001. Unchecked.]
+
+Ok.. Ive come up with something which might be worth including in the
+cookbook. Credit where it is due, the idea for this came from Nigel's
+C014.
+
+I have a setup to support ETRN for a few small (ok, two) domains.
+Currently it just leaves all the mail in the exim spool, and uses the
+default exim etrn response to flush it out.
+
+I don't like that - I agree with the opinion expressed on the list that
+mail should be delivered somewhere else, and then shoved down an SMTP
+session by some other program. Ive searched far and wide for something
+suitable to do that shoving, and finally hit upon the only program I
+trust to do that, handling errors and rejections correctly - exim
+itself.
+
+Nigel's solution for 'situation where a site I MX for has a known
+outage', combined with a bit of bash scriptery, seems to form a neat
+solution. (An intermittently connected host sort of falls under the
+'known outage' category ;)
+
+Without any further fluff, here are the details. Additional comments
+appear below..
+
+Either the real (intermittently connected) destination host needs to be
+listed as the lowest MX (with the exim server as a less preferred) , or
+the exim server needs to be the lowest MX, but have a router before the
+lookuphost router which uses route_list or something appropriate to
+normally deliver mail to the dialup host. The former is probably better
+for a host which is usually connected and is only occasionally
+disconnected (since other hosts would be able to delivery directly most
+of the time, skipping an extra relay), while the latter would probably
+work better for the converse ;) This paragraph actually applies anytime
+you are using ETRN..
+
+In either case, the routers below must precede whatever router handles
+the normal direct-to-dialup-destination..
+
+--
+
+smtp_etrn_command = /etc/exim/etrn_script $domain
+
+[- Content of /etc/exim/etrn_script: -]
+#!/bin/sh
+ 
+# Where exim lives
+EXIM=/usr/sbin/exim
+ 
+# Something appropriate to generate a temporary unique string 
+UNIQ=`head -c100 /dev/urandom | md5sum | cut -f 1 -d" "`
+
+arg=$1
+domain=`echo $arg | sed 's/^\#//g'`
+ 
+if ( test -f /var/spool/etrn/${domain} ); then
+ exim_lock -q /var/spool/etrn/${domain} "mv /var/spool/etrn/${domain} /tmp/etrn-bsmtp-${UNIQ}"
+ ( cat /tmp/etrn-bsmtp-${UNIQ}
+   echo "QUIT" ) | $EXIM -bS -oMr etrn_requeue
+ rm -f /tmp/etrn-bsmtp-${UNIQ}
+fi
+ 
+$EXIM -R $domain
+
+[- end of etrn_script -]
+
+[- exim transport -]
+
+bsmtp_for_etrn:
+ driver=appendfile
+ file=/var/spool/etrn/$domain
+ user=exim
+ batch_max = 1000
+ use_bsmtp 
+
+[- routers -]
+[- You probably would want to put the domains in a file or a dbm and
+[- adjused the 'domains' setting appropriately for both of these..
+
+# If any message has already been delivered to the bsmtp file,
+# this will detect the existence of the file and all messages will
+# go there, regardless of age.
+etrn_already:
+ driver = accept
+ transport = bsmtp_for_etrn
+ require_files = /var/spool/etrn/$domain
+ domains = etrntest.somedomain.com
+ 
+# If a message has been on the queue for over the specified amount of
+# time, this will catch it and drop it into the bsmtp file
+etrn_delay:
+ driver = accept
+ transport = bsmtp_for_etrn
+ condition = ${if >{$message_age}{1800} {yes}{no}}
+ domains = etrntest.somedomain.com
+
+[- -]
+
+Basically, this setup lets exim try to deliver to the real host for up
+to whatever time is specified in the \%etrn_delay%\ router. (1800 seconds =
+30 minutes), and then delivers all waiting messages, and any further
+messages, directly to a BSMTP file. This setup uses one big BSMTP
+file per domain, it probably wouldnt be too complex to have it use separate
+files.
+
+When the \^etrn_script^\ runs, it locks and renames the BSMTP file, and
+reinjects the messages to Exim, which (presumably) will now be able to
+deliver them. If it can't, then once they are too old they will again
+be sent off to the BSMTP file.. (If for som reason this occurs over and
+over without Exim being able to deliver them, eventually the messages
+will be returned with \*too many Received headers*\; this is a good
+thing, since their age will never get high enough for them to be
+returned by any retry rules).

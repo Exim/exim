@@ -1,0 +1,150 @@
+From: John Jetmore <jetmore@cinergycom.com>
+Date: Wed, 24 Sep 2003 13:12:58 -0500 (CDT)
+
+I'm sure that everyone who's interested in something like this has already
+come up with their own way to do this, but here's my solution:
+
+When I moved from smail to exim I built a program that took individual
+config pieces stripped all the comments and built a config file.  As a
+bonus, it also runs exim -C <testfile> -bV on the new file and reports any
+config errors before copying it over the old config.  In addition to just
+being familiar in general w/ all the files being broken up according to
+their major categories, I also got the benfit of being able to have config
+pieces that were easily updatable (just replace the whole file and rebuild
+the configure file).
+
+The script has some site-specific stuff hard coded, but it's easily
+fixable.  Essentially in my exim configd I have a directory called
+subconfigure, which can contain directories named \d\d.\w+.  Mine
+currently contains:
+10.general/  30.routers/     50.retry/    70.authenticators/
+20.acls/     40.transports/  60.rewrite/  80.local_scan/
+
+Each of these directories can contain files in the form \d\d.\w+.  For
+instance, my 30.routers contains:
+00.begin              80.l_user_delivery_normal   _50.l_mx
+10.r_forcepaths       _12.r_static_route_junk     _60.l_psp
+15.r_stalemail        _17.r_internal_route        _72.l_aliases_list
+33.r_mailrtrd_router  _20.r_conditionalforce      _74.l_aliases_isp
+40.r_standard         _31.r_mailrtrd_bypass_spam  _76.l_aliases_mer
+70.l_aliases          _39.r_smarthost             _80.l_user_delivery_isp
+
+those files prefixed by "_" will not be used to build the live configure
+file.  They are "turned off".  This allows me to keep a general list of
+configure pieces that are easily updatable but not necessarily every rule
+is used on every machine.  Not every file contains a single router - for
+instance 60.l_psp is our virtual hosting solution and contains 10 routers.
+They're just grouped by logical role.
+
+All of these sub pieces are built in to the configure file w/ a shell
+script called mkconfigure, inline below.  Again, my assumption is that
+anyone who wants a system like this built it for themselves, but it
+would be kind of fun to flesh this script out to be more generic.
+Maybe post it and some samples on a webpage.  Or no one responds to this
+and I shut up about it =).
+
+This system is way overkill for some people (for instance, my home machine
+uses a single configure file because I don't do that much special with
+it), but it's useful in a larger system role.
+
+--John
+
+mkconfigure:
+
+#!/bin/ksh
+
+# I have found that our custom set up of exim's configure file is overly
+# confusing.  To help alleviate this, I have broken the file out into its
+# core pieces (general, tansports, directors, routers, retry, rewrite, and
+# authentication), and then each of those into logical sub-pieces (SIS,
+# for instance.  This program is to take all of those sub pieces and put
+# them back together into the file that exim understands.
+
+# No one should every touch the 'configure' file from now on, one should
+# instead manipulate the files in the subconfigure directory and run this
+# program
+
+# jetmore 20011119
+
+EXIMD=$1
+CONFIGSUFF=$2
+
+if [ "X$EXIMD" == "X" ] ; then
+  EXIMD=/local/exim
+fi
+if [ ! -d "$EXIMD" ] ; then
+  echo "$EXIMD is not a directory" >&2
+  exit 1
+fi
+ETCD=$EXIMD/etc
+SUBCD=$ETCD/subconfigure$CONFIGSUFF
+CONFIGF=$ETCD/configure$CONFIGSUFF
+
+if [ ! -d $SUBCD ] ; then
+  echo "$SUBCD is not a directory" >&2
+  exit 1
+fi
+
+GREP=/bin/grep
+
+# initialize the temporary config file in case some trash got left around
+cat /dev/null > $CONFIGF.t
+
+# print the banner to the temp config file
+echo                                                             >> $CONFIGF.t
+echo "#########################################################" >> $CONFIGF.t
+echo "# DO NOT DIRECTLY MANIPULATE THIS FILE                   " >> $CONFIGF.t
+echo "#                                                        " >> $CONFIGF.t
+echo "# if you need to make configuration change, do so in     " >> $CONFIGF.t
+echo "# $SUBCD and run the mkconfigure"                          >> $CONFIGF.t
+echo "# command.  Changes made to this file will be lost       " >> $CONFIGF.t
+echo "#                                                        " >> $CONFIGF.t
+echo "# See jetmore w/ questions                               " >> $CONFIGF.t
+echo "#########################################################" >> $CONFIGF.t
+echo                                                             >> $CONFIGF.t
+
+# get the major categories
+for CAT in $SUBCD/[0-9]*
+do
+    # print which category we're in
+    echo                                                         >> $CONFIGF.t
+    echo "## major category $CAT"                                >> $CONFIGF.t
+    echo                                                         >> $CONFIGF.t
+
+    # get the subcategories
+    for SUBCAT in $CAT/[0-9]*
+    do
+        # print which sub category we're in
+        echo "## sub category $SUBCAT"                           >> $CONFIGF.t
+        echo                                                     >> $CONFIGF.t
+
+        # place the contents of any non-comment line into the configure file
+        $GREP -v "^ *#" $SUBCAT                                  >> $CONFIGF.t
+        echo                                                     >> $CONFIGF.t
+    done
+done
+
+# check and make sure there aren't any typos in the new config file
+$EXIMD/bin/exim -C $CONFIGF.t -bV > $CONFIGF.test 2>&1
+if [ "$?" -eq "1" ] ; then
+    #/bin/rm $CONFIGF.t
+    echo
+    echo "There is a problem with the configure file.  "
+    echo "moving paniclog to paniclog.mkfail"
+    echo "$CONFIGF.test has details:"
+    echo
+    echo #####################################################################
+    cat $CONFIGF.test
+    echo #####################################################################
+    echo
+    echo "$CONFIGF not changed!"
+    /bin/mv -f /log/exim/paniclog /log/exim/paniclog.mkfail
+    exit 1
+fi
+/bin/rm $CONFIGF.test
+
+/bin/mv $CONFIGF.t $CONFIGF
+echo "$CONFIGF updated successfully."
+echo "Don't forget to HUP the mail daemon"
+exit 0
+

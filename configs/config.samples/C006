@@ -1,0 +1,39 @@
+From: Kind@edb.uib.no
+Date: Sun, 2 Aug 1998 15:24:05 +0200
+
+[Syntax converted for Exim 4 by PH, 06-Dec-2001. Unchecked.]
+
+This is how I have configured a PP-inspired vacationnote, there is (was?)
+such a feature in PP. The user makes a file "tripnote" in his/her
+homedirectory, the message is passed to the sender once with a short
+leading text.
+
+############
+# TRANSPORT
+vacation_reply:
+  driver = autoreply
+  file = $home/tripnote
+  file_expand
+  log = $home/tripnote.log
+  once = $home/tripnote.db
+  from = vacation@yourdomain.org
+  to = $sender_address
+  subject = "Re: $h_subject"
+  text = "\
+  Dear $h_from:\n\n\
+  This is an automatic reply.  Feel free to send additional\n\
+  mail, as only this one notice will be generated.  The following\n\
+  is a prerecorded message, sent for $local_part@yourdomain.org:\n\
+  ====================================================\n\n\
+  "
+
+# ROUTER
+user_vacation:
+  driver = accept
+  check_local_user 
+  require_files = $local_part:$home/tripnote
+  no_verify
+  senders = !^.*-request@.* : !^owner-.*@.* : !^postmaster@.* : \
+            ! ^listmaster@.* : !^mailer-daemon@.*
+  transport = vacation_reply
+  unseen

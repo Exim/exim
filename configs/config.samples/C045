@@ -1,0 +1,48 @@
+Date: Tue, 20 Aug 2002 07:33:36 -0700
+From: "Kevin P. Fleming" <kpfleming@cox.net>
+
+Here it is, for Exim 4.10 and Cyrus IMAPD 2.1.5 using db3/db4-format
+mailbox database. This configuration delivers the messages to Cyrus
+IMAPD using LMTP over a TCP/IP socket, so the cyrus.conf file needs to
+start lmtpd as "lmtpd -a" so the connection will be pre-authenticated
+(given that, it is also important that the cyrus.conf file restrict
+lmtpd to listening on 127.0.0.1 _only_, otherwise random users could
+submit messages directly to lmtpd).
+
+
+routers:
+
+# look in the Cyrus IMAPD mailboxes.db file for local_domains local
+# parts to be verified
+local_user_verify:
+   driver = accept
+   domains = +local_domains
+   local_part_suffix = +*
+   local_part_suffix_optional
+   condition = ${lookup{user.${local_part}} dbmnz {/storage/imap/mailboxes.db} {yes}{no}}
+   verify_only
+
+# rewrite local_domains local parts to be all lowercase
+lowercase_local:
+   driver = redirect
+   redirect_router = local_user
+   domains = +local_domains
+   data = ${lc:${local_part}}
+
+# deliver local_domains messages
+local_user:
+   driver = accept
+   domains = +local_domains
+   transport = local_delivery
+
+
+transport:
+
+# deliver messages to Cyrus IMAPD using LMTP over TCP/IP on the loopback
+interface
+local_delivery:
+   driver = smtp
+   protocol = lmtp
+   allow_localhost = yes
+   hosts = 127.0.0.1
+

@@ -1,0 +1,68 @@
+Date: Wed, 14 Jan 1998 15:07:22 +0200
+From: Vladimir Litovka <doka@grunt.vl.net.ua>
+
+[Syntax converted for Exim 4 by PH, 06-Dec-2001. Unchecked.]
+
+Although exim not intended for use in UUCP environment (it doesn't know
+anything about bang!path addresses), I'm successfully using it for delivering
+mail to UUCP clients. For this purposes I'm using two rewrite rules:
+
+#--------------------- REWRITE CONFIGURATION ------------------------#
+
+# system!system.domain.net!user
+\N^([^!]+)!((\w+)(\.\w+)+)!(.*)@your\.domain\N \
+	"${if eq {$1}{$3}{$5@$2}{$2!$5@$1}}"	Tbcrtq
+
+# system*!user
+\N^([^!]+)!(.*)@your\.domain\N	    $2@$1   Tbcrtq
+
+#--------------------------------------------------------------------#
+
+The first rule check
+  if destination address in form:
+    uuname!system.some.domain!user
+  and
+    uuname == system
+  it rewrites address to user@system.some.domain
+  else it rewrites it to system.some.domain!user@uuname
+  and QUIT.
+
+The second rule check
+  if destination address in form:
+    uuname1!uuname2!FQDN!...!uunameN!user
+  it rewrites it to
+    uuname2!FQDN!...!uunameN!user@uuname1
+  and QUIT.
+
+For successfully delivering mail to uucp domain you must create such
+transport:
+
+#-------------------------------------------------------------------#
+uux:
+  driver = pipe;
+  command = /usr/bin/uux - -r $host!rmail ($local_part@$domain)
+  path = /usr/local/bin:/usr/bin:/bin
+  return_fail_output
+  user = uucp
+#-------------------------------------------------------------------#
+
+and such router:
+
+#-------------------------------------------------------------------#
+force_uucp:
+  driver = manualroute
+  route_data = partial-lsearch;/etc/exim/maps/force.uucp
+#-------------------------------------------------------------------#
+
+and use something similar to this force.uucp:
+
+# Domain		Relay			Options
+# ------		-----			-------
+system1			system1			uux
+system1.domain		system1			uux
+#
+system2			system2			uux
+system2.domain		system2			uux
+
+(!) Note, that you need unqualified names (system1, system2) because
+second rewrite rule don't do qualification (it known nothing about this).

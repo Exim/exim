@@ -1,0 +1,124 @@
+From: David Woodhouse <dwmw2@infradead.org> 
+Date: Thu, 18 Dec 2003 14:25:47 +0000                                          
+
+Given a domain in DNS of the form...
+
+$ORIGIN vdns.infradead.org.mailtarget.
+fish		604800	IN	TXT	dwmw2@infradead.org
+
+(It doesn't _have_ to be in private namespace; you can put it anywhere but I
+prefer to have it private)
+
+The following routers use it to implement a virtual domain. You could of course
+omit the first and just make sure you have postmaster in all the zones you use
+this way...
+
+Rather than hardcoding the DNS domain to use in the router, we can put it into
+a flat file with the list of domains for which we should be doing this.
+
+We put this into /etc/exim/dns-virtual-domains:
+
+	vdns.infradead.org: vdns.infradead.org.mailtarget
+
+In the main section of the configuration file we have:
+
+domainlist dns_virtual_domains = lsearch;CONFDIR/dns-virtual-domains
+
+The following routers handle unqualified addresses, multiple TXT records, and
+entries of the form '@domain'. Also if we're not primary MX for the virtual
+domain in question we'll fall back to forwarding to a higher-priority MX host
+if the DNS isn't talking to us....
+
+virtual_postmaster:
+  driver = redirect
+  domains = +dns_virtual_domains
+  local_parts = postmaster:root:abuse:mailer-daemon
+  data = postmaster@$primary_hostname
+
+  # For virtual domains, look up the target in DNS and rewrite...
+
+dns_virtual_domains:
+  driver = redirect
+  domains = +dns_virtual_domains
+  check_ancestor
+  repeat_use
+  one_time
+  allow_defer
+  allow_fail
+  forbid_file
+  forbid_pipe
+  retry_use_local_part
+  qualify_preserve_domain
+
+   # Stash the lookup domain root for use in the next router.
+  address_data = ${lookup{$domain}lsearch{CONFDIR/dns-virtual-domains}}
+
+  # The lookup failure won't distinguish between absent record, absent
+  # domain, or other temporary failures. So we make this router just
+  # give up, and sort out the various failure modes later.
+
+  # The ${sg...} bits turn multiple TXT records (which Exim gives us
+  # separated by \n) into a comma-separated list, and also rewrite
+  # any element of that list of the form '@domain' (i.e. without a
+  # local part) to $local_part@domain, using the original local part
+  # from the address being routed, at the newly-provided domain.
+
+  # Addresses containing _only_ a localpart are qualified at the
+  # same domain as is being looked up, by qualify_preserve_domain
+  # above.
+  data = ${sg{\
+	    ${sg{\
+	       ${lookup dnsdb{txt=$local_part.$address_data}{$value}fail}\
+	    }{\n}{,}}\
+	 }{(,|^)[ ]*@}{\$1\$local_part@}}
+
+dns_virtual_failed:
+  driver = redirect
+  domains = +dns_virtual_domains
+  allow_fail
+  allow_defer
+  data = ${lookup dnsdb{ns=$address_data}\
+	# If NS lookup succeeded, the domain exists and we can find it.
+	# Therefore, the above lookup failure meant that the user
+        # just doesn't exist. Fail appropriately:
+	{:fail:Unknown user at virtual domain}\
+	# NS lookup failed. This means there's a DNS problem -- so we
+	# shouldn't fail the delivery; let the following routers handle
+	# it... Note "fail" not "{:fail:}". It means 'pass'. :)
+	fail}
+
+
+  # We have DNS problems. If we're actually _delivering_, then try to
+  # deliver to a higher-priority MX if one exists. Otherwise, we defer and
+  # let it stay on the queue until the problem is fixed.
+  # You may prefer to freeze or bounce in this situation; I don't.
+dns_virtual_relay:
+  driver = dnslookup
+  domains = +dns_virtual_domains
+  transport = remote_smtp
+  self = defer
+  no_verify
+  no_more
+
+  # On the other hand, if there's a DNS problem and we're only _verifying_,
+  # as we do when accepting incoming mail, then accept it for now and
+  # it'll get queued for when the DNS works again.
+dns_virtual_verify_fallback:
+  driver = accept
+  domains = +dns_virtual_domains
+  verify_only
+  no_more
+
+> Now I just need to investigate DDNS and see if it'll let individual
+> users update the TXT records for their own aliases in the DNS... :)
+
+This is remarkably simple to set up -- Google is your friend. I'm now
+able to set up HMAC-MD5 keys to 'own' certain mail domains, and the
+owners of those virtual mail domains can happily change the TXT records
+to their hearts content, without bugging me to make changes and roll out
+new alias files to all the MX hosts.
+
+A setuid app which is able to read the key file, and which will update
+the alias only for the user it's invoked by, is also fairly trivial to
+implement -- inspired by the 'cammail' alias system.
+

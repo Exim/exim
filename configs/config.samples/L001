@@ -1,0 +1,185 @@
+/*
+ * uvscan local_scan() function for Exim (requires at least Exim v4.14)
+ * known to work with VirusScan for Linux v4.16.0 (Scan engine v4.2.40)
+ * but should be OK with other platforms
+ *
+ * this file is free software (license=GNU GPLv2) and comes with no
+ * guarantees--if it breaks, you get to keep the pieces (maybe not the mail)!
+ *
+ * by (ie patches / flames to): mb/local_scan@dcs.qmul.ac.uk, 2003-05-02
+ * (original version on 2002-05-25)
+ */
+
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <fcntl.h>
+#include <string.h>
+#include "local_scan.h"
+
+/*
+ * remember to set LOCAL_SCAN_HAS_OPTIONS=yes in Local/Makefile
+ * otherwise you get stuck with the compile-time defaults
+ */
+
+static uschar *uvscan_binary = US"/usr/local/uvscan/uvscan";
+static uschar *data_directory = US"/usr/local/uvscan";
+
+optionlist local_scan_options[] = { /* alphabetical order */
+	{ "data_directory", opt_stringptr, &data_directory },
+	{ "uvscan_binary", opt_stringptr, &uvscan_binary }
+};
+
+int local_scan_options_count = sizeof(local_scan_options)/sizeof(optionlist);
+
+/* log headers in rejectlog or not? */
+
+//#define VIRUS_IN_MAIL LOCAL_SCAN_REJECT
+#define VIRUS_IN_MAIL LOCAL_SCAN_REJECT_NOLOGHDR
+
+/*
+ * buffer is used both for file copying and catching uvscan's output
+ * BUFSIZE = 1024 should always be fine
+ */
+
+#define BUFSIZE 1024
+
+/* some number which uvscan doesn't return */
+#define MAGIC 123
+
+/*
+ * some macros to make the main function more obvious
+ * NB bailing out might leave tempfiles hanging around
+ * (and open fds, but no need to be worried about that)
+ */
+
+#define BAIL(btext) { log_write(0, LOG_MAIN, "UVSCAN ERROR: "btext); \
+	*return_text = "local scanning problem: please try again later"; \
+	return LOCAL_SCAN_TEMPREJECT; }
+
+#define DEBUG(dtext) if ((debug_selector & D_local_scan) != 0) \
+		{ debug_printf(dtext); sleep(1); }
+	/* sleep useful for running exim -d */
+
+#define RESULT(rtext) header_add(32, \
+	"X-uvscan-result: "rtext" (%s)\n", message_id);
+
+#define FREEZE(ftext) { header_add(32, \
+	"X-uvscan-warning: frozen for manual attention (%s)\n", message_id); \
+	RESULT(ftext); *return_text = ftext; return LOCAL_SCAN_ACCEPT_FREEZE; }
+
+/* OK, enough waffle. On with the show! */
+
+int local_scan(int fd, uschar **return_text)
+{
+	char tf[] = "/tmp/local_scan.XXXXXX"; /* should this be tunable? */
+	int tmpfd, bytesin, bytesout, pid, status, pipe_fd[2];
+	fd_set fds; 
+	static uschar buffer[BUFSIZE];
+
+	DEBUG("entered uvscan local_scan() function");
+
+	/*
+	 * I set majordomo to resend using -oMr lsmtp
+         * (and yes, I know majordomo isn't actually using SMTP..)
+	 * no point in scanning these beasties twice
+	 */
+
+	if(!strcmp(received_protocol, "lsmtp"))
+		return LOCAL_SCAN_ACCEPT;
+
+	/* create a file to copy the data into */
+
+	if ((tmpfd = mkstemp(tf)) == -1)
+		BAIL("mkstemp failed");
+
+	DEBUG("made tmp file");
+
+	/* copy said file BUFSIZE at a time */
+
+	while ((bytesin = read(fd, buffer, BUFSIZE)) > 0) {
+		bytesout = write(tmpfd, buffer, bytesin);
+		if (bytesout < 1)
+			BAIL("writing to tmp file");
+	}
+	if (bytesin < 0)
+		BAIL("reading from spool file");
+
+	close(tmpfd);
+
+	if(pipe(pipe_fd) == -1)
+		BAIL("making pipe");
+
+	/* fork and scan */	
+
+	if((pid = fork()) == -1)
+		BAIL("couldn't fork");
+
+	if(pid == 0) {
+		close(1); /* close stdout */
+		if(dup2(pipe_fd[1],1) == -1) /* duplicate write as stdout */
+			BAIL("dup2 (stdout) failed");
+		if(fcntl(1,F_SETFD,0) == -1) /* fd to NOT close on exec() */
+			BAIL("fcntl (stdout) failed");
+
+		execl(uvscan_binary, uvscan_binary, "--mime", "--secure",
+			"-d", data_directory, tf, NULL);
+		DEBUG("execl failed");
+		_exit(MAGIC);
+	}
+
+	if(waitpid(pid, &status, 0) < 1)
+		BAIL("couldn't wait for child");
+	
+	DEBUG("about to unlink");
+
+	if(unlink(tf) == -1)
+		FREEZE("couldn't unlink tmp file");
+
+	DEBUG("unlinked :)");
+
+	/*
+	 * choose what to do based on the return code of uvscan
+	 * RESULT() or FREEZE() according to personal taste
+	 */
+
+	if(WIFEXITED(status) != 0)
+		switch(WEXITSTATUS(status)) {
+		case 0: RESULT("clean"); break;
+		case 2: RESULT("driver integrity check failed"); break;
+		case 6: FREEZE("general problem occurred"); break;
+		case 8: RESULT("could not find a driver"); break;
+		case 12: FREEZE("failed to clean file"); break;
+		case 13:
+			// RESULT("virus detected"); /* were we to accept */
+			DEBUG("about to read from uvscan process");
+			FD_ZERO(&fds);
+			FD_SET(pipe_fd[0], &fds);
+			if(select(pipe_fd[0]+1, &fds, NULL, NULL, NULL)) {
+				/* last NULL above means wait forever! */
+				DEBUG("select returned non-zero");
+				if((bytesin = read(pipe_fd[0], buffer,
+						BUFSIZE - 1)) > 0) {
+					buffer[bytesin] = (uschar)0;
+					*return_text = buffer + 22;
+					/* 22 was empirically found ;) */
+					return VIRUS_IN_MAIL;
+				} else
+					BAIL("reading from uvscan process");
+			}
+			break;
+		case 15: FREEZE("self-check failed"); break;
+		case 19: FREEZE("virus detected and cleaned"); break;
+		case MAGIC: RESULT("couldn't run uvscan"); break;
+		default:
+			RESULT("unknown error code");
+			header_add(32, "X-uvscan-status: %d\n",
+				WEXITSTATUS(status));
+			break;
+		}
+	else
+		BAIL("child exited abnormally");
+
+	return LOCAL_SCAN_ACCEPT;
+}

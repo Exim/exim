@@ -1,0 +1,89 @@
+From: Oliver Egginger <Oliver.Egginger@dvz.fh-giessen.de>
+Date: 21 May 2003 10:11:16 +0200
+
+Hi there,
+
+download the spamassassin package. See
+http://au.spamassassin.org/downloads.html
+
+Define a router in your Exim configuration file.
+For Exim 4 it could look like this:
+
+# Spam Assassin
+spamcheck_router:
+  no_verify
+  check_local_user
+  # When to scan a message :
+  #   -   it isn't already flagged as spam
+  #   -   it isn't already scanned
+  #   -   comes from ABC.DEF.GHI.JKL or MNO.PQR.STU.VWX
+  #   -   .spamcheck exists for this user
+  condition = \
+  "${if and { {!def:h_X-Spam-Flag:} \
+              {!eq {$received_protocol}{spam-scanned}} \
+              {or { {eq {$sender_host_address}{ABC.DEF.GHI.JKL}} \
+                    {eq {$sender_host_address}{MNO.PQR.STU.VWX}} \
+                  }\
+              }\
+            }\
+            {1}{0}\
+    }"
+  require_files = $home/.spamcheck
+  driver = accept
+  transport = spamcheck
+
+
+This router has two advantages (for us):
+
+1. You can define the sender host addresses from which you will scan the spam.
+In my example there are ABC.DEF.GHI.JKL and MNO.PQR.STU.VWX (you have to
+substiute this by your real IP-Adresses).
+
+2. The spamcheck router only runs in dependency of the existence of the
+.spamcheck file. So your users can decide whether or not they wont to use 
+Spamassassin. Thats important for protection of privacy in germany.
+
+If you don't need this you can simplify the router, for example:
+
+# Spam Assassin
+spamcheck_router:
+  no_verify
+  check_local_user
+  # When to scan a message :
+  #   -   it isn't already flagged as spam
+  #   -   it isn't already scanned
+  condition = \
+  "${if and { {!def:h_X-Spam-Flag:} \
+              {!eq {$received_protocol}{spam-scanned}} \
+            }\
+            {1}{0}\
+    }"
+  driver = accept
+  transport = spamcheck
+
+
+In the end you will need a spamcheck transport. This one works well for us:
+
+# Spam Assassin
+spamcheck:
+    driver = pipe
+    command =  /usr/exim/bin/exim -oMr spam-scanned -bS
+    use_bsmtp = true
+    transport_filter = /usr/bin/spamc
+    home_directory = "/tmp"
+    current_directory = "/tmp"
+    # must use a privileged user to set $received_protocol on the way
+    # back in!
+    user = mail
+    group = mail
+    log_output = true
+    return_fail_output = true
+    return_path_add = false
+    message_prefix =
+    message_suffix =
+
+
+Put the router and the transport on the right places in your exim conf and send
+the daemon a HUP signal. Thats all.
+
+- oliver
