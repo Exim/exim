@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.53 2004/12/21 12:21:46 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.54 2004/12/21 13:59:15 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -238,6 +238,8 @@ Exim version 4.50
     keys for these records are domain names, not reversed IP addresses. The
     dnsdb lookup now tests whether it's key is an IP address. If not, it leaves
     it alone. Component reversal etc. now happens only for IP addresses.
+
+56. Improve error message when ldap_search() fails in OpenLDAP or Solaris LDAP.
 
 
 Exim version 4.43

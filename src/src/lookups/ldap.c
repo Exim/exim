@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.5 2004/12/21 12:00:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.6 2004/12/21 13:59:15 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -560,7 +560,16 @@ msgid = ldap_search(lcp->ld, ludp->lud_dn, ludp->lud_scope, ludp->lud_filter,
 
 if (msgid == -1)
   {
-  *errmsg = string_sprintf("ldap search initiation failed");
+  #if defined LDAP_LIB_SOLARIS || defined LDAP_LIB_OPENLDAP2
+  int err;
+  ldap_get_option(lcp->ld, LDAP_OPT_ERROR_NUMBER, &err);
+  *errmsg = string_sprintf("ldap_search failed: %d, %s", err, 
+    ldap_err2string(err));
+      
+  #else    
+  *errmsg = string_sprintf("ldap_search failed");
+  #endif
+ 
   goto RETURN_ERROR;
   }
 
