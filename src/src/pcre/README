@@ -1,0 +1,20 @@
+$Cambridge: exim/src/src/pcre/README,v 1.1 2004/10/07 13:04:13 ph10 Exp $
+
+PCRE for use in Exim
+--------------------
+
+This directory contains a subset of the files from the PCRE distribution, 
+enough to supply regular expression support for Exim, plus the pcretest test 
+program. Do not start from here if you want to install PCRE as a free-standing 
+library for use by other programs. Get the full PCRE distribution, which can be
+obtained from
+
+ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-x.x.tar.gz
+
+where x.x is the version number. This contains support for a POSIX interface to
+PCRE, a "grep" program that uses PCRE, and the means to build PCRE as a shared
+library. It is configured by autoconf, and has "make install" support in the 
+conventional way.
+
+Philip Hazel <ph10@cam.ac.uk>
+February 2000
