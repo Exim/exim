@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.20 2004/11/10 14:15:20 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.21 2004/11/10 15:21:16 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -73,6 +73,9 @@ Exim version 4.44
 20. Incorporated Michael Haardt's patch to ldap.c for improving the way it
     handles timeouts, both on the server side and network timeouts. Renamed the
     CONNECT parameter as NETTIMEOUT (but kept the old name for compatibility).
+
+21. The rare case of EHLO->STARTTLS->HELO was setting the protocol to "smtp".
+    It is now set to "smtps".
 
 
 Exim version 4.43

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.4 2004/11/04 12:19:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.5 2004/11/10 15:21:16 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -167,17 +167,18 @@ static smtp_cmd_list *cmd_list_end =
 #define CMD_LIST_STARTTLS  4
 
 static uschar *protocols[] = {
-  US"local-smtp",
-  US"local-esmtp",
-  US"local-esmtpa",
-  US"local-esmtps",
-  US"local-esmtpsa"
+  US"local-smtp",        /* HELO */
+  US"local-smtps",       /* The rare case EHLO->STARTTLS->HELO */
+  US"local-esmtp",       /* EHLO */
+  US"local-esmtps",      /* EHLO->STARTTLS->EHLO */
+  US"local-esmtpa",      /* EHLO->AUTH */
+  US"local-esmtpsa"      /* EHLO->STARTTLS->EHLO->AUTH */
   };
 
 #define pnormal  0
-#define pextend  1
-#define pauthed  1  /* added to pextend */
-#define pcrpted  2  /* added to pextend */
+#define pextend  2
+#define pcrpted  1  /* added to pextend or pnormal */
+#define pauthed  2  /* added to pextend */
 #define pnlocal  6  /* offset to remove "local" */
 
 /* When reading SMTP from a remote host, we have to use our own versions of the
@@ -2362,7 +2363,7 @@ while (done <= 0)
         ((sender_host_authenticated != NULL)? pauthed : 0) +
         ((tls_active >= 0)? pcrpted : 0)]
       :
-      protocols[pnormal])
+      protocols[pnormal + ((tls_active >= 0)? pcrpted : 0)])
       +
       ((sender_host_address != NULL)? pnlocal : 0);
 
@@ -3182,7 +3183,7 @@ while (done <= 0)
         protocols[pextend + pcrpted +
           ((sender_host_authenticated != NULL)? pauthed : 0)]
         :
-        protocols[pnormal])
+        protocols[pnormal + pcrpted])
         +
         ((sender_host_address != NULL)? pnlocal : 0);
 
