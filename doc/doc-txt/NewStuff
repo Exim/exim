@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.22 2004/12/21 12:21:46 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.23 2004/12/22 12:05:45 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -237,6 +237,15 @@ Version 4.50
 20. If the key for a dnsdb lookup is not an IP address, it is used verbatim,
     without component reversal and without the addition of in-addr.arpa or
     ip6.arpa.
+
+21. Two changes related to the smtp_active_hostname option:
+
+      (1) $smtp_active_hostname is now available as a variable. Its value
+          sticks with the message and is therefore available in routers and
+          transports at delivery time.
+
+      (2) The default for smtp_banner uses $smtp_active_hostname instead
+          of $primary_hostname.
 
 
 Version 4.43

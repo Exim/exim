@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.56 2004/12/21 16:26:31 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.57 2004/12/22 12:05:45 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -246,6 +246,12 @@ Exim version 4.50
 
 58. The exicyclog utility now does better if the number of log files to keep
     exceeds 99. In this case, it numbers them 001, 002 ... instead of 01, 02...
+
+59. Two changes related to the smtp_active_hostname option:
+
+      (1) $smtp_active_hostname is now available as a variable.
+      (2) The default for smtp_banner uses $smtp_active_hostname instead
+          of $primary_hostname.
 
 
 Exim version 4.43

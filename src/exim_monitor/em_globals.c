@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.2 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.3 2004/12/22 12:05:45 ph10 Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -189,6 +189,7 @@ int     sender_host_port       = 0;
 uschar *sender_ident           = NULL;
 BOOL    sender_local           = FALSE;
 BOOL    sender_set_untrusted   = FALSE;
+uschar *smtp_active_hostname   = NULL;
 
 BOOL    split_spool_directory  = FALSE;
 uschar *spool_directory        = US SPOOL_DIRECTORY;

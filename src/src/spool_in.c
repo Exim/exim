@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.2 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.3 2004/12/22 12:05:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -269,6 +269,7 @@ sender_host_authenticated = NULL;
 sender_ident = NULL;
 sender_local = FALSE;
 sender_set_untrusted = FALSE;
+smtp_active_hostname = primary_hostname;
 tree_nonrecipients = NULL;
 
 #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -438,6 +439,8 @@ for (;;)
     interface_address = string_copy(big_buffer + 19);
     }
 
+  else if (Ustrncmp(big_buffer, "-active_hostname", 16) == 0)
+    smtp_active_hostname = string_copy(big_buffer + 17);  
   else if (Ustrncmp(big_buffer, "-host_auth", 10) == 0)
     sender_host_authenticated = string_copy(big_buffer + 11);
   else if (Ustrncmp(big_buffer, "-host_name", 10) == 0)

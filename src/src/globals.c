@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.10 2004/12/17 14:52:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.11 2004/12/22 12:05:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -974,7 +974,7 @@ int     smtp_accept_queue_per_connection = 10;
 int     smtp_accept_reserve    = 0;
 uschar *smtp_active_hostname   = NULL;
 BOOL    smtp_authenticated     = FALSE;
-uschar *smtp_banner            = US"$primary_hostname ESMTP "
+uschar *smtp_banner            = US"$smtp_active_hostname ESMTP "
                              "Exim $version_number $tod_full"
                              "\0<---------------Space to patch smtp_banner->";
 BOOL    smtp_batched_input     = FALSE;
