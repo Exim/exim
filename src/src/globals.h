@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.7 2004/11/25 13:54:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.6.2.1 2004/11/26 16:04:26 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -106,6 +106,9 @@ extern uschar *acl_smtp_expn;          /* ACL run for EXPN */
 extern uschar *acl_smtp_helo;          /* ACL run for HELO/EHLO */
 extern uschar *acl_smtp_mail;          /* ACL run for MAIL */
 extern uschar *acl_smtp_mailauth;      /* ACL run for MAIL AUTH */
+#ifdef WITH_CONTENT_SCAN
+extern uschar *acl_smtp_mime;          /* ACL run after DATA, before acl_smtp_data, for each MIME part */
+#endif
 extern uschar *acl_smtp_predata;       /* ACL run for DATA command */
 extern uschar *acl_smtp_quit;          /* ACL run for QUIT */
 extern uschar *acl_smtp_rcpt;          /* ACL run for RCPT */
@@ -144,6 +147,9 @@ extern auth_instance auth_defaults;    /* Default values */
 extern uschar *auth_defer_msg;         /* Error message for log */
 extern uschar *auth_defer_user_msg;    /* Error message for user */
 extern int     auto_thaw;              /* Auto-thaw interval */
+#ifdef WITH_CONTENT_SCAN
+extern uschar *av_scanner;             /* AntiVirus scanner to use for the malware condition */
+#endif
 
 extern BOOL    background_daemon;      /* Set FALSE to keep in foreground */
 extern uschar *base62_chars;           /* Table of base-62 characters */
@@ -272,12 +278,13 @@ extern BOOL    expand_string_forcedfail; /* TRUE if failure was "expected" */
 extern BOOL    extract_addresses_remove_arguments; /* Controls -t behaviour */
 extern uschar *extra_local_interfaces; /* Local, non-listen interfaces */
 
+#ifdef WITH_CONTENT_SCAN
+extern BOOL    fake_reject;            /* TRUE if fake reject is to be given */
+#endif
 extern int     filter_n[FILTER_VARIABLE_COUNT]; /* filter variables */
 extern BOOL    filter_running;         /* TRUE while running a filter */
 extern int     filter_sn[FILTER_VARIABLE_COUNT]; /* variables set by system filter */
-extern int     filter_test;            /* Filter test type */
-extern uschar *filter_test_sfile;      /* System filter test file */
-extern uschar *filter_test_ufile;      /* User filter test file */
+extern uschar *filter_test;            /* Run as a filter tester on this file */
 extern uschar *filter_thisaddress;     /* For address looping */
 extern int     finduser_retries;       /* Retry count for getpwnam() */
 extern uid_t   fixed_never_users[];    /* Can't be overridden */
@@ -360,6 +367,9 @@ extern uschar *lookup_value;           /* Value looked up from file */
 
 extern macro_item *macros;             /* Configuration macros */
 extern uschar *mailstore_basename;     /* For mailstore deliveries */
+#ifdef WITH_CONTENT_SCAN
+extern uschar *malware_name;           /* Name of virus or malware ("W32/Klez-H") */
+#endif
 extern int     max_username_length;    /* For systems with broken getpwnam() */
 extern int     message_age;            /* In seconds */
 extern uschar *message_body;           /* Start of message body for filter */
@@ -379,9 +389,33 @@ extern int     message_size;           /* Size of message */
 extern uschar *message_size_limit;     /* As it says */
 extern uschar  message_subdir[];       /* Subdirectory for messages */
 extern uschar *message_reference;      /* Reference for error messages */
+
+/* MIME ACL expandables */
+#ifdef WITH_CONTENT_SCAN
+extern uschar *mime_anomaly_level;
+extern uschar *mime_anomaly_text;
+extern uschar *mime_boundary;
+extern uschar *mime_charset;
+extern uschar *mime_content_description;
+extern uschar *mime_content_disposition;
+extern uschar *mime_content_id;
+extern unsigned int mime_content_size;
+extern uschar *mime_content_transfer_encoding;
+extern uschar *mime_content_type;
+extern uschar *mime_decoded_filename;
+extern uschar *mime_filename;
+extern int     mime_is_multipart;
+extern int     mime_is_coverletter;
+extern int     mime_is_rfc822;
+extern int     mime_part_count;
+#endif
+
 extern BOOL    mua_wrapper;            /* TRUE when Exim is wrapping an MUA */
 
 extern uid_t  *never_users;            /* List of uids never to be used */
+#ifdef WITH_CONTENT_SCAN
+extern BOOL    no_mbox_unspool;        /* don't unlink files in /scan directory */
+#endif
 extern BOOL    no_multiline_responses; /* For broken clients */
 
 extern optionlist optionlist_auths[];      /* These option lists are made */
@@ -467,6 +501,9 @@ extern const pcre  *regex_From;        /* For recognizing "From_" lines */
 extern const pcre  *regex_PIPELINING;  /* For recognizing PIPELINING */
 extern const pcre  *regex_SIZE;        /* For recognizing SIZE settings */
 extern const pcre  *regex_ismsgid;     /* Compiled r.e. for message it */
+#ifdef WITH_CONTENT_SCAN
+extern uschar *regex_match_string;     /* regex that matched a line (regex ACL condition) */
+#endif
 extern int     remote_delivery_count;  /* Number of remote addresses */
 extern int     remote_max_parallel;    /* Maximum parallel delivery */
 extern uschar *remote_sort_domains;    /* Remote domain sorting order */
@@ -558,6 +595,15 @@ extern int     smtp_rlr_limit;         /* Max delay */
 extern int     smtp_rlr_threshold;     /* Threshold for RCPT rate limit */
 extern BOOL    smtp_use_pipelining;    /* Global for passed connections */
 extern BOOL    smtp_use_size;          /* Global for passed connections */
+
+#ifdef WITH_CONTENT_SCAN
+extern uschar *spamd_address;          /* address for the spamassassin daemon */
+extern uschar *spam_bar;               /* the spam "bar" (textual representation of spam_score) */
+extern uschar *spam_report;            /* the spamd report (multiline) */
+extern uschar *spam_score;             /* the spam score (float) */
+extern uschar *spam_score_int;         /* spam_score * 10 (int) */
+#endif
+
 extern BOOL    split_spool_directory;  /* TRUE to use multiple subdirs */
 extern uschar *spool_directory;        /* Name of spool directory */
 extern int     string_datestamp_offset;/* After insertion by string_format */

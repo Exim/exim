@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.6.2.1 2004/11/25 15:33:55 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.6.2.2 2004/11/26 16:04:26 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -164,6 +164,9 @@ uschar *acl_smtp_expn          = NULL;
 uschar *acl_smtp_helo          = NULL;
 uschar *acl_smtp_mail          = NULL;
 uschar *acl_smtp_mailauth      = NULL;
+#ifdef WITH_CONTENT_SCAN
+uschar *acl_smtp_mime          = NULL;
+#endif
 uschar *acl_smtp_predata       = NULL;
 uschar *acl_smtp_quit          = NULL;
 uschar *acl_smtp_rcpt          = NULL;
@@ -315,6 +318,9 @@ auth_instance auth_defaults    = {
 uschar *auth_defer_msg         = US"reason not recorded";
 uschar *auth_defer_user_msg    = US"";
 int     auto_thaw              = 0;
+#ifdef WITH_CONTENT_SCAN
+uschar *av_scanner             = US"sophie:/var/run/sophie";  /* AV scanner */
+#endif
 
 BOOL    background_daemon      = TRUE;
 uschar *base62_chars=
@@ -479,6 +485,9 @@ uschar *expand_string_message;
 BOOL    extract_addresses_remove_arguments = TRUE;
 uschar *extra_local_interfaces = NULL;
 
+#ifdef WITH_CONTENT_SCAN
+BOOL    fake_reject            = FALSE;
+#endif
 int     filter_n[FILTER_VARIABLE_COUNT];
 BOOL    filter_running         = FALSE;
 int     filter_sn[FILTER_VARIABLE_COUNT];
@@ -639,6 +648,9 @@ uschar *lookup_value           = NULL;
 
 macro_item  *macros            = NULL;
 uschar *mailstore_basename     = NULL;
+#ifdef WITH_CONTENT_SCAN
+uschar *malware_name           = NULL;  /* Virus Name */
+#endif
 int     max_username_length    = 0;
 int     message_age            = 0;
 uschar *message_body           = NULL;
@@ -659,9 +671,33 @@ int     message_size           = 0;
 uschar *message_size_limit     = US"50M";
 uschar  message_subdir[2]      = { 0, 0 };
 uschar *message_reference      = NULL;
+
+/* MIME ACL expandables */
+#ifdef WITH_CONTENT_SCAN
+uschar *mime_anomaly_level     = NULL;
+uschar *mime_anomaly_text      = NULL;
+uschar *mime_boundary          = NULL;
+uschar *mime_charset           = NULL;
+uschar *mime_content_description = NULL;
+uschar *mime_content_disposition = NULL;
+uschar *mime_content_id        = NULL;
+unsigned int mime_content_size = 0;
+uschar *mime_content_transfer_encoding = NULL;
+uschar *mime_content_type      = NULL;
+uschar *mime_decoded_filename  = NULL;
+uschar *mime_filename          = NULL;
+int     mime_is_multipart      = 0;
+int     mime_is_coverletter    = 0;
+int     mime_is_rfc822         = 0;
+int     mime_part_count        = -1;
+#endif
+
 BOOL    mua_wrapper            = FALSE;
 
 uid_t  *never_users            = NULL;
+#ifdef WITH_CONTENT_SCAN
+BOOL    no_mbox_unspool        = FALSE;
+#endif
 BOOL    no_multiline_responses = FALSE;
 
 uid_t   original_euid;
@@ -762,6 +798,9 @@ const pcre *regex_From         = NULL;
 const pcre *regex_PIPELINING   = NULL;
 const pcre *regex_SIZE         = NULL;
 const pcre *regex_ismsgid      = NULL;
+#ifdef WITH_CONTENT_SCAN
+uschar *regex_match_string     = NULL;
+#endif
 int     remote_delivery_count  = 0;
 int     remote_max_parallel    = 2;
 uschar *remote_sort_domains    = NULL;
@@ -942,6 +981,15 @@ int     smtp_rlr_limit         = 0;
 int     smtp_rlr_threshold     = INT_MAX;
 BOOL    smtp_use_pipelining    = FALSE;
 BOOL    smtp_use_size          = FALSE;
+
+#ifdef WITH_CONTENT_SCAN
+uschar *spamd_address          = US"127.0.0.1 783";
+uschar *spam_bar               = NULL;
+uschar *spam_report            = NULL;
+uschar *spam_score             = NULL;
+uschar *spam_score_int         = NULL;
+#endif
+
 BOOL    split_spool_directory  = FALSE;
 uschar *spool_directory        = US SPOOL_DIRECTORY
                            "\0<--------------Space to patch spool_directory->";

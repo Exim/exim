@@ -1,11 +1,10 @@
-/* $Cambridge: exim/src/src/mime.h,v 1.1.2.1 2004/11/26 09:13:34 tom Exp $ */
+/* $Cambridge: exim/src/src/mime.h,v 1.1.2.2 2004/11/26 16:04:26 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* This file is part of the exiscan-acl content scanner
-patch. It is NOT part of the standard exim distribution. */
+#ifdef WITH_CONTENT_SCAN
 
 /* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004 */
 /* License: GPL */
@@ -77,3 +76,5 @@ static unsigned char mime_b64[256]={
 /* 224 */  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,
 /* 240 */  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,  128,  128 
 };
+
+#endif

@@ -1,11 +1,10 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.1.2.1 2004/11/26 09:13:34 tom Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.1.2.2 2004/11/26 16:04:26 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* This file is part of the exiscan-acl content scanner
-patch. It is NOT part of the standard exim distribution. */
+#ifdef WITH_CONTENT_SCAN
 
 /* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003-???? */
 /* License: GPL */
@@ -17,9 +16,10 @@ sub directory of exim's spool directory. */
 
 /* externals, we must reset them on unspooling */
 extern int demime_ok;
+extern struct file_extension *file_extensions;
+
 extern int malware_ok;
 extern int spam_ok;
-extern struct file_extension *file_extensions;
 
 int spool_mbox_ok = 0;
 uschar spooled_message_id[17];
@@ -35,11 +35,6 @@ FILE *spool_mbox(unsigned long long *mbox_file_size) {
   header_line *my_headerlist;
   struct stat statbuf;
   int i,j;
-  
-  /*
-  uschar *received;
-  uschar *timestamp;
-  */
   
   if (!spool_mbox_ok) {
     /* create scan directory, if not present */
@@ -63,31 +58,6 @@ FILE *spool_mbox(unsigned long long *mbox_file_size) {
       debug_printf("unable to open file for writing: %s\n", mbox_path);
       return NULL;
     };
-    
-    /* Generate a preliminary Received: header and put it in the file.
-       We need to do this so SA can do DNS list checks */
-       
-    /* removed for 4.34
-    
-    timestamp = expand_string(US"${tod_full}");
-    received = expand_string(received_header_text);
-    if (received != NULL) {
-      uschar *my_received;
-      if (received[0] == 0) {
-        my_received = string_sprintf("Received: ; %s\n", timestamp);
-      }
-      else {
-        my_received = string_sprintf("%s; %s\n", received, timestamp);
-      }
-      i = fwrite(my_received, 1, Ustrlen(my_received), mbox_file);
-      if (i != Ustrlen(my_received)) {
-        debug_printf("error/short write on writing in: %s", mbox_path);
-        fclose(mbox_file);
-        return NULL;
-      };
-    };
-    
-    */
     
     /* write all header lines to mbox file */
     my_headerlist = header_list;
@@ -196,3 +166,5 @@ void unspool_mbox(void) {
     };
   };
 }
+
+#endif
