@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.51 2004/12/21 11:28:38 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.52 2004/12/21 12:00:59 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -222,6 +222,17 @@ Exim version 4.50
     the queue_time_overall log selector is set), a one-byte patch to exigrep
     was needed to allow it to recognize "Completed" as not the last thing in
     the line.
+
+54. The LDAP lookup was not handling a return of LDAP_RES_SEARCH_REFERENCE. A
+    patch that reportedly fixes this has been added. I am not expert enough to
+    create a test for it. This is what the patch creator wrote:
+
+      "I found a little strange behaviour of ldap code when working with
+      Windows 2003 AD Domain, where users was placed in more than one
+      Organization Units. When I tried to give exim partial DN, the exit code
+      of ldap_search was unknown to exim because of LDAP_RES_SEARCH_REFERENCE.
+      But simultaneously result of request was absolutely normal ldap result,
+      so I produce this patch..."
 
 
 Exim version 4.43

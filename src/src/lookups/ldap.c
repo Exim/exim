@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.4 2004/11/17 16:31:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.5 2004/12/21 12:00:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -167,7 +167,7 @@ uschar *matched = NULL;  /* partially matched DN */
 int    attr_count = 0;
 int    error_yield = DEFER;
 int    msgid;
-int    rc;
+int    rc, ldap_rc, ldap_parse_rc;
 int    port;
 int    ptr = 0;
 int    rescount = 0;
@@ -779,10 +779,10 @@ if (rc == -1 || result == NULL)
   }
 
 /* A return code that isn't -1 doesn't necessarily mean there were no problems
-with the search. The message must be an LDAP_RES_SEARCH_RESULT or else it's
-something we can't handle. */
+with the search. The message must be an LDAP_RES_SEARCH_RESULT or 
+LDAP_RES_SEARCH_REFERENCE or else it's something we can't handle. */
 
-if (rc != LDAP_RES_SEARCH_RESULT)
+if (rc != LDAP_RES_SEARCH_RESULT && rc != LDAP_RES_SEARCH_REFERENCE)
   {
   *errmsg = string_sprintf("ldap_result returned unexpected code %d", rc);
   goto RETURN_ERROR;
@@ -791,11 +791,16 @@ if (rc != LDAP_RES_SEARCH_RESULT)
 /* We have a result message from the server. This doesn't yet mean all is well.
 We need to parse the message to find out exactly what's happened. */
 
-  #if defined LDAP_LIB_SOLARIS || defined LDAP_LIB_OPENLDAP2
-  if (ldap_parse_result(lcp->ld, result, &rc, CSS &matched, CSS &error2, NULL,
-      NULL, 0) < 0)
+#if defined LDAP_LIB_SOLARIS || defined LDAP_LIB_OPENLDAP2
+  ldap_rc = rc;
+  ldap_parse_rc = ldap_parse_result(lcp->ld, result, &rc, CSS &matched, 
+    CSS &error2, NULL, NULL, 0);
+  DEBUG(D_lookup) debug_printf("ldap_parse_result: %d\n", ldap_parse_rc);
+  if (ldap_parse_rc < 0 && 
+      (ldap_parse_rc != LDAP_NO_RESULTS_RETURNED ||
+       ldap_rc != LDAP_RES_SEARCH_REFERENCE))
     {
-    *errmsg = US"ldap_parse_result failed";
+    *errmsg = string_sprintf("ldap_parse_result failed %d", ldap_parse_rc);
     goto RETURN_ERROR;
     }
   error1 = US ldap_err2string(rc);

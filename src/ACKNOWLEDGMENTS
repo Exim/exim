@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.9 2004/12/20 15:24:28 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.10 2004/12/21 12:00:59 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  20 December 2004
+Last updated:  21 December 2004
 
 
 THE OLD LIST
@@ -172,6 +172,7 @@ Marc Merlin               Many suggestions and patches for callouts and
 Andreas Metzler           Patch for message_id_header_domain
                           Suggested patch for multi-config files in scripts bug
 Alex Miller               Suggested readline() patch                           
+                          Patch for LDAP_RES_SEARCH_REFERENCE handling
 Andreas Mueller           Patch for logging uncompleted SMTP transactions
 Pete Naylor               Patch for LDAP TCP connect timeout setting
 Marcin Owsiany            Diagnosis of a tricky timeout failure bug
