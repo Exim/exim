@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.3 2004/10/19 11:04:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.4 2004/10/21 15:24:42 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -19,6 +19,14 @@ Version 4.44
  2. The "control=submission" facility has a new option /retain_sender. This
     has the effect of setting local_sender_retain true and local_from_check
     false for the incoming message in which it is encountered.
+
+ 3. $recipients is now available in the predata ACL (oversight).
+
+ 4. The value of address_data from a sender verification is now available in
+    $sender_address_data in subsequent conditions in the ACL statement. Note:
+    this is just like $address_data. The value does not persist after the end
+    of the current ACL statement. If you want to preserve it, you can use one
+    of the ACL variables.
 
 
 Version 4.43
