@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.21 2004/11/10 15:21:16 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.22 2004/11/11 11:40:36 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -76,6 +76,15 @@ Exim version 4.44
 
 21. The rare case of EHLO->STARTTLS->HELO was setting the protocol to "smtp".
     It is now set to "smtps".
+
+22. $host_address is now set to the target address during the checking of
+    ignore_target_hosts.
+
+23. When checking ignore_target_hosts for an ipliteral router, no host name was
+    being passed; this would have caused $sender_host_name to have been used if
+    matching the list had actually called for a host name (not very likely,
+    since this list is usually IP addresses). A host name is now passed as
+    "[x.x.x.x]".
 
 
 Exim version 4.43

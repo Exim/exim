@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/ipliteral.c,v 1.1 2004/10/07 13:10:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/ipliteral.c,v 1.2 2004/11/11 11:40:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -127,7 +127,7 @@ if (!string_is_ip_address(domain+1, NULL))
 /* It seems unlikely that ignore_target_hosts will be used with this router,
 but if it is set, it should probably work. */
 
-if (verify_check_this_host(&(rblock->ignore_target_hosts), NULL, NULL,
+if (verify_check_this_host(&(rblock->ignore_target_hosts), NULL, domain,
       domain + 1, NULL) == OK)
   {
   DEBUG(D_route)

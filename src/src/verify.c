@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.3 2004/11/05 16:53:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.4 2004/11/11 11:40:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2050,7 +2050,9 @@ int
 verify_check_this_host(uschar **listptr, unsigned int *cache_bits,
   uschar *host_name, uschar *host_address, uschar **valueptr)
 {
+int rc;
 unsigned int *local_cache_bits = cache_bits;
+uschar *save_host_address = deliver_host_address;
 check_host_block cb;
 cb.host_name = host_name;
 cb.host_address = host_address;
@@ -2064,9 +2066,26 @@ addresses. */
 cb.host_ipv4 = (Ustrncmp(host_address, "::ffff:", 7) == 0)?
   host_address + 7 : host_address;
 
-return match_check_list(listptr, 0, &hostlist_anchor, &local_cache_bits,
-  check_host, &cb, MCL_HOST,
-  (host_address == sender_host_address)? US"host" : host_address, valueptr);
+/* During the running of the check, put the IP address into $host_address. In 
+the case of calls from the smtp transport, it will already be there. However, 
+in other calls (e.g. when testing ignore_target_hosts), it won't. Just to be on 
+the safe side, any existing setting is preserved, though as I write this
+(November 2004) I can't see any cases where it is actually needed. */
+
+deliver_host_address = host_address;
+rc = match_check_list(
+       listptr,                                /* the list */
+       0,                                      /* separator character */
+       &hostlist_anchor,                       /* anchor pointer */
+       &local_cache_bits,                      /* cache pointer */
+       check_host,                             /* function for testing */
+       &cb,                                    /* argument for function */
+       MCL_HOST,                               /* type of check */
+       (host_address == sender_host_address)? 
+         US"host" : host_address,              /* text for debugging */
+       valueptr);                              /* where to pass back data */
+deliver_host_address = save_host_address;
+return rc; 
 }
 
 
