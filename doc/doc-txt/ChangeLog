@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.2 2004/10/11 09:49:43 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -7,7 +7,10 @@ Change log file for Exim from version 4.21
 Exim version 4.44
 -----------------
 
-1.  Minor wording change to the doc/README.SIEVE file.
+ 1. Minor wording change to the doc/README.SIEVE file.
+
+ 2. Change 4.43/35 introduced a bug: if quota_filecount was set, the 
+    computation of the current number of files was incorrect.
 
 
 Exim version 4.43

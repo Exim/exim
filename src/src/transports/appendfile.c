@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.1 2004/10/07 13:10:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.2 2004/10/11 09:49:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2294,7 +2294,8 @@ else
   if ((mailbox_size < 0 || mailbox_filecount < 0) &&
       (ob->quota_value > 0 || THRESHOLD_CHECK))
     {
-    int size, filecount;
+    int size;
+    int filecount = 0;
     DEBUG(D_transport)
       debug_printf("quota checks on directory %s\n", check_path);
     size = check_dir_size(check_path, &filecount, regex);
