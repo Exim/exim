@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.27 2004/11/12 15:03:40 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.28 2004/11/12 16:54:55 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -112,6 +112,10 @@ Exim version 4.44
     lookups. However, all the other forms of pattern expect the subject to
     contain a local part and a domain, and therefore, for them, an empty
     address still always fails if the pattern is not itself empty.
+
+30. Exim went into a mad DNS loop when attempting to do a callout where the
+    host was specified on an smtp transport, and looking it up yielded more
+    than one IP address.
 
 
 Exim version 4.43

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.2 2004/11/12 16:54:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -86,6 +86,48 @@ if (random_seed == 0)
   }
 random_seed = 1103515245 * random_seed + 12345;
 return (unsigned int)(random_seed >> 16) % limit;
+}
+
+
+
+/*************************************************
+*         Sort addresses when testing            *
+*************************************************/
+
+/* This function is called only when running in the test harness. It sorts a
+number of multihomed host IP addresses into the order, so as to get
+repeatability. This doesn't have to be efficient. But don't interchange IPv4
+and IPv6 addresses!
+
+Arguments:
+  host        -> the first host item
+  last        -> the last host item
+  
+Returns:      nothing
+*/  
+
+static void
+sort_addresses(host_item *host, host_item *last)
+{
+BOOL done = FALSE;
+while (!done)
+  {
+  host_item *h;
+  done = TRUE;
+  for (h = host; h != last; h = h->next)
+    {
+    if ((Ustrchr(h->address, ':') == NULL) !=
+        (Ustrchr(h->next->address, ':') == NULL))
+      continue;
+    if (Ustrcmp(h->address, h->next->address) > 0)
+      {
+      uschar *temp = h->address;
+      h->address = h->next->address;
+      h->next->address = temp;
+      done = FALSE;
+      }
+    }
+  }
 }
 
 
@@ -1791,31 +1833,9 @@ yield = local_host_check?
   host_scan_for_local_hosts(host, &last, NULL) : HOST_FOUND;
 
 /* When running in the test harness, sort into the order of addresses so as to
-get repeatability. This doesn't have to be efficient. But don't interchange
-IPv4 and IPv6 addresses! */
+get repeatability. */
 
-if (running_in_test_harness)
-  {
-  BOOL done = FALSE;
-  while (!done)
-    {
-    host_item *h;
-    done = TRUE;
-    for (h = host; h != last; h = h->next)
-      {
-      if ((Ustrchr(h->address, ':') == NULL) !=
-          (Ustrchr(h->next->address, ':') == NULL))
-        continue;
-      if (Ustrcmp(h->address, h->next->address) > 0)
-        {
-        uschar *temp = h->address;
-        h->address = h->next->address;
-        h->next->address = temp;
-        done = FALSE;
-        }
-      }
-    }
-  }
+if (running_in_test_harness) sort_addresses(host, last);
 
 HDEBUG(D_host_lookup)
   {
@@ -1954,7 +1974,7 @@ for (; i >= 0; i--)
   fails or times out, but not if another one succeeds. (In the early
   IPv6 days there are name servers that always fail on AAAA, but are happy
   to give out an A record. We want to proceed with that A record.) */
-
+  
   if (rc != DNS_SUCCEED)
     {
     if (i == 0)  /* Just tried for an A record, i.e. end of loop */
@@ -2241,6 +2261,11 @@ if (rc != DNS_SUCCEED)
     rc = host_scan_for_local_hosts(host, &last, removed);
   else
     if (rc == HOST_IGNORED) rc = HOST_FIND_FAILED;  /* No special action */
+
+  /* When running in the test harness, sort into the order of addresses so as
+  to get repeatability. */
+  
+  if (running_in_test_harness) sort_addresses(host, last);
 
   DEBUG(D_host_lookup)
     {

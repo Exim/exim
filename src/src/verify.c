@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.4 2004/11/11 11:40:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.5 2004/11/12 16:54:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1037,14 +1037,18 @@ while (addr_new != NULL)
           else
             {
             uschar *canonical_name;
-            host_item *host;
+            host_item *host, *nexthost;
             host_build_hostlist(&host_list, s, tf.hosts_randomize);
 
             /* Just ignore failures to find a host address. If we don't manage
-            to find any addresses, the callout will defer. */
+            to find any addresses, the callout will defer. Note that more than 
+            one address may be found for a single host, which will result in 
+            additional host items being inserted into the chain. Hence we must 
+            save the next host first. */
 
-            for (host = host_list; host != NULL; host = host->next)
+            for (host = host_list; host != NULL; host = nexthost)
               {
+              nexthost = host->next;
               if (tf.gethostbyname || string_is_ip_address(host->name, NULL))
                 (void)host_find_byname(host, NULL, &canonical_name, TRUE);
               else
