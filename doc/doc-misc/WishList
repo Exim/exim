@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.21 2005/02/25 14:10:18 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.22 2005/03/02 09:23:14 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1859,6 +1859,9 @@ trivial because we probably should retain it in the cache as well.
 
 At least try to catch some of the exit routes from the daemon and either delete
 or empty the pid file.
+------------------------------------------------------------------------------
+
+(318) 02-Mar-06 S Add current connection count to daemon's exiwhat output
 ------------------------------------------------------------------------------
 --- HWM 317 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
