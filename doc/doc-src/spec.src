@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-src/spec.src,v 1.6 2005/01/27 15:00:38 ph10 Exp $
+. $Cambridge: exim/doc/doc-src/spec.src,v 1.7 2005/02/16 16:09:00 ph10 Exp $
 .
 .set version "4.50"
 .set previousversion "4.40"
@@ -3276,9 +3276,11 @@ name of the run time configuration file that is in use.
 .em
 As part of its operation, \-bV-\ causes Exim to read and syntax check its 
 configuration file. However, this is a static check only. It cannot check
-values that to be expanded. You cannot rely on \-bV-\ alone to discover (for 
-example) all the typos in the configuration; some realistic testing is needed.
-The \-bh-\ and \-N-\ options provide more dynamic testing facilities.
+values that are to be expanded. For example, although a misspelt ACL verb is
+detected, an error in the verb's arguments is not. You cannot rely on \-bV-\
+alone to discover (for example) all the typos in the configuration; some
+realistic testing is needed. The \-bh-\ and \-N-\ options provide more dynamic
+testing facilities.
 .nem
 
 
@@ -5957,7 +5959,7 @@ whereas for \%nwildlsearch%\, no expansion takes place.
 Like \%lsearch%\, the testing is done case-insensitively. The following forms
 of wildcard are recognized:
 .numberpars "$*$"
-The string may begin with an asterisk to mean `begins with'. For example:
+The string may begin with an asterisk to mean `ends with'. For example:
 .display asis
 *.a.b.c       data for anything.a.b.c
 *fish         data for anythingfish
@@ -9633,9 +9635,14 @@ compilations of the same version of the program.
 
 .em
 .tempindent 0
-\$demime@_$\\*xxx*\: Two variables whose names start with \$demime$\ are
-available when Exim is compiled with the content-scanning extension and the
-obsolete \demime\ condition. For details, see section ~~SECTdemimecond.
+\$demime@_errorlevel$\: This variable is available when Exim is compiled with
+the content-scanning extension and the obsolete \demime\ condition. For
+details, see section ~~SECTdemimecond.
+
+.tempindent 0
+\$demime@_reason$\: This variable is available when Exim is compiled with the
+content-scanning extension and the obsolete \demime\ condition. For details,
+see section ~~SECTdemimecond.
 .nem
 
 .index black list (DNS)
@@ -10037,10 +10044,9 @@ if no size was given. The value may not, of course, be truthful.
 
 .em
 .tempindent 0
-\$mime@_$\\*xxx*\:
-A number of variables whose names start with \$mime$\ are available when Exim
-is compiled with the content-scanning extension. For details, see section
-~~SECTscanmimepart.
+\$mime@_$\\*xxx*\: A number of variables whose names start with \$mime$\ are
+available when Exim is compiled with the content-scanning extension. For
+details, see section ~~SECTscanmimepart.
 .nem
 
 .tempindent 0
@@ -10171,10 +10177,12 @@ authenticated. Thus, for example, if the protocol is set to `esmtpsa', the
 message was received over an encrypted SMTP connection and the client was
 successfully authenticated.
 
-Exim also uses the protocol name `smtps' for the rare situation where the 
-client initially used \\EHLO\\, set up an encrypted connection using
-\\STARTTLS\\, and then used \\HELO\\ afterwards to initiate the encrypted 
-session.
+Exim uses the protocol name `smtps' for the case when encryption is
+automatically set up on connection without the use of \\STARTTLS\\ (see
+\tls@_on@_connect@_ports\), and the client uses \\HELO\\ to initiate the
+encrypted SMTP session. The name `smtps' is also used for the rare situation
+where the client initially uses \\EHLO\\, sets up an encrypted connection using
+\\STARTTLS\\, and then uses \\HELO\\ afterwards.
 
 The \-oMr-\ option provides a way of specifying a custom protocol name for 
 messages that are injected locally by trusted callers. This is commonly used to 
@@ -10849,15 +10857,17 @@ value of \daemon@_smtp@_ports\ is no longer relevant in this example.)
 
 
 .em
-.section Support for the obsolete SSMTP protocol
+.section Support for the obsolete SSMTP (or SMTPS) protocol
 .rset SECTsupobssmt "~~chapter.~~section"
 .index ssmtp protocol
+.index smtps protocol
 .index SMTP||ssmtp protocol
-Exim supports the obsolete SSMTP protocol that was used before the \\STARTTLS\\ 
-command was standardized for SMTP. Some legacy clients still use this protocol.
-If the \tls@_on@_connect@_ports\ option is set to a list of port numbers, 
-connections to those ports must use SSMTP. The most common use of this option
-is expected to be
+.index SMTP||smtps protocol
+Exim supports the obsolete SSMTP protocol (also known as SMTPS) that was used
+before the \\STARTTLS\\ command was standardized for SMTP. Some legacy clients
+still use this protocol. If the \tls@_on@_connect@_ports\ option is set to a
+list of port numbers, connections to those ports must use SSMTP. The most
+common use of this option is expected to be
 .display asis
 tls_on_connect_ports = 465
 .endd
@@ -11216,7 +11226,7 @@ listed in more than one group.
 \tls@_dhparam\                          $t$rm{DH parameters for server}
 .newline
 .em
-\tls@_on@_connect@_ports\               $t$rm{specify SSMTP ports}
+\tls@_on@_connect@_ports\               $t$rm{specify SSMTP (SMTPS) ports}
 .nem
 .newline
 \tls@_privatekey\                       $t$rm{location of server private key}
@@ -11407,16 +11417,16 @@ Consequently, this option is turned off by default.
 This option defines the ACL that is run when a non-SMTP message is on the point
 of being accepted. See chapter ~~CHAPACL for further details.
 
-.index ~~ACL||on SMTP connection
-.conf acl@_smtp@_connect string$**$ unset
-This option defines the ACL that is run when an SMTP connection is received.
-See chapter ~~CHAPACL for further details.
-
 .index ~~ACL||setting up for SMTP commands
 .index \\AUTH\\||ACL for
 .conf acl@_smtp@_auth string$**$ unset
 This option defines the ACL that is run when an SMTP \\AUTH\\ command is
 received. See chapter ~~CHAPACL for further details.
+
+.index ~~ACL||on SMTP connection
+.conf acl@_smtp@_connect string$**$ unset
+This option defines the ACL that is run when an SMTP connection is received.
+See chapter ~~CHAPACL for further details.
 
 .index \\DATA\\, ACL for
 .conf acl@_smtp@_data string$**$ unset
@@ -12811,13 +12821,18 @@ override; they are accepted, but ignored.
 .index queue runner||processing messages in order
 If this option is set, queue runs happen in order of message arrival instead of
 in an arbitrary order. For this to happen, a complete list of the entire queue
-must be set up before the deliveries start. When the queue is all in a single
-directory (the default), this happens anyway, but if \split@_spool@_directory\
-is set it does not -- for delivery in random order, the sub-directories are
-processed one at a time (in random order), to avoid setting up one huge list.
-Thus, setting \queue@_run@_in@_order\ with \split@_spool@_directory\ may
-degrade performance when the queue is large. In most situations,
-\queue@_run@_in@_order\ should not be set.
+must be set up before the deliveries start. When the queue is all held in a
+single directory (the default),
+.em
+a single list is created for both the ordered and the non-ordered cases.
+However, if \split@_spool@_directory\ is set, a single list is not created when
+\queue@_run@_in@_order\ is false. In this case, the sub-directories are
+processed one at a time (in a random order), and this avoids setting up one
+huge list for the whole queue. Thus, setting \queue@_run@_in@_order\ with
+\split@_spool@_directory\ may degrade performance when the queue is large,
+because of the extra work in setting up the single, large list. In most
+situations, \queue@_run@_in@_order\ should not be set.
+.nem
 
 .conf queue@_run@_max integer 5
 .index queue runner||maximum number of
@@ -13162,6 +13177,7 @@ expanded and used instead of the value of \$primary@_hostname$\ in SMTP
 responses. For example, it is used as domain name in the response to an
 incoming \\HELO\\ or \\EHLO\\ command. 
 .em
+It is also used in \\HELO\\ commands for callout verification.
 The active hostname is placed in the \$smtp__active__hostname$\ variable, which 
 is saved with any messages that are received. It is therefore available for use 
 in routers and transports when the message is later delivered.
@@ -13639,10 +13655,10 @@ ignored. See section ~~SECTopenvsgnu for further details.
 
 .em
 .conf tls@_on@_connect@_ports "string list" unset
-This option specifies a list of incoming SSMTP ports that should operate the 
-obsolete SSMTP protocol, where a TLS session is immediately set up without 
-waiting for the client to issue a \\STARTTLS\\ command. For further details,
-see section ~~SECTsupobssmt.
+This option specifies a list of incoming SSMTP (aka SMTPS) ports that should
+operate the obsolete SSMTP (SMTPS) protocol, where a TLS session is immediately
+set up without waiting for the client to issue a \\STARTTLS\\ command. For
+further details, see section ~~SECTsupobssmt.
 .nem
 
 .conf tls@_privatekey string$**$ unset
@@ -16113,12 +16129,20 @@ text associated with the failure. For example, an alias file might contain:
 X.Employee:  :fail: Gone away, no forwarding address
 .endd
 In the case of an address that is being verified from an ACL or as the subject
-of a \\VRFY\\ command, the text is included in the SMTP error response by
-default. In an ACL, an explicitly provided message overrides the default, but
-the default message is available in the variable \$acl@_verify@_message$\ and
-can therefore be included in a custom message if this is desired. Exim sends a
-451 SMTP code for a :::defer::, and 550 for :::fail::. In non-SMTP cases the
-text is included in the error message that Exim generates.
+of a 
+.index \\VRFY\\||error text, display of
+\\VRFY\\ command, the text is included in the SMTP error response by
+default. 
+.em
+.index \\EXPN\\||error text, display of
+The text is not included in the response to an \\EXPN\\ command.
+.nem
+
+In an ACL, an explicitly provided message overrides the default, but the
+default message is available in the variable \$acl@_verify@_message$\ and can
+therefore be included in a custom message if this is desired. Exim sends a 451
+SMTP code for a :::defer::, and 550 for :::fail::. In non-SMTP cases the text
+is included in the error message that Exim generates.
 
 
 
@@ -18798,10 +18822,18 @@ If this option is set, and the command returns any output, and also ends with a
 return code that is neither zero nor one of the return codes listed in
 \temp@_errors\ (that is, the delivery failed), the first line of output is
 written to the main log.
+.em
+This option and \log@_output\ are mutually exclusive. Only one of them may be 
+set.
+.nem
 
 .conf log@_output boolean false
 If this option is set and the command returns any output, the first line of
 output is written to the main log, whatever the return code.
+.em
+This option and \log@_fail@_output\ are mutually exclusive. Only one of them
+may be set.
+.nem
 
 .conf max@_output integer 20K
 This specifies the maximum amount of output that the command may produce on its
@@ -18866,6 +18898,10 @@ return code other than zero or one of the codes listed in \temp@_errors\ (that
 is, the delivery failed), the output is returned in the bounce message.
 However, if the message has a null sender (that is, it is itself a bounce
 message), output from the command is discarded.
+.em
+This option and \return@_output\ are mutually exclusive. Only one of them may
+be set.
+.nem
 
 .conf return@_output boolean false
 If this option is true, and the command produced any output, the delivery is
@@ -18874,6 +18910,10 @@ is returned in the bounce message. Otherwise, the output is just discarded.
 However, if the message has a null sender (that is, it is a bounce message),
 output from the command is always discarded, whatever the setting of this
 option.
+.em
+This option and \return@_fail@_output\ are mutually exclusive. Only one of them
+may be set.
+.nem
 
 .conf temp@_errors "string list" "see below"
 .index \%pipe%\ transport||temporary failure
@@ -21210,6 +21250,8 @@ The \%cyrus@_sasl%\ authenticator provides server support for the Cyrus SASL
 library implementation of the RFC 2222 (`Simple Authentication and Security
 Layer'). This library supports a number of authentication mechanisms, including
 PLAIN and LOGIN, but also several others that Exim does not support directly.
+In particular, there is support for Kerberos authentication.
+
 The \%cyrus@_sasl%\ authenticator provides a gatewaying mechanism directly to
 the Cyrus interface, so if your Cyrus library can do, for example, CRAM-MD5,
 then so can the \%cyrus@_sasl%\ authenticator. By default it uses the public
@@ -21405,14 +21447,16 @@ in order to get TLS to work.
 
 
 .em
-.section Support for the legacy `ssmtp' protocol
+.section Support for the legacy `ssmtp' (aka `smtps') protocol
 .index ssmtp protocol
+.index smtps protocol
 .index SMTP||ssmtp protocol
+.index SMTP||smtps protocol
 Early implementations of encrypted SMTP used a different TCP port from normal
 SMTP, and expected an encryption negotiation to start immediately, instead of 
 waiting for a \\STARTTLS\\ command from the client using the standard SMTP 
-port. The protocol was called `ssmtp' and port 465 was allocated for this
-purpose. 
+port. The protocol was called `ssmtp' or `smtps', and port 465 was allocated
+for this purpose.
 
 This approach was abandoned when encrypted SMTP was standardised, but there are
 still some legacy clients that use it. Exim supports these clients by means of
@@ -23215,7 +23259,7 @@ Details of verification are given later, starting at section
 ~~SECTaddressverification. Exim caches the result of sender verification, to
 avoid doing it more than once per message.
 
-.item "verify = sender=address/<<options>>"
+.item "verify = sender=<<address>>/<<options>>"
 .index \verify\, ACL condition
 This is a variation of the previous option, in which a modified address is
 verified as a sender.
