@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.2 2004/10/14 11:21:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -196,7 +196,10 @@ os_non_restarting_signal(SIGALRM, sigalrm_handler);
 
 /* This function is called by millisleep() and exim_wait_tick() to wait for a
 period of time that may include a fraction of a second. The coding is somewhat
-tedious...
+tedious. We do not expect setitimer() ever to fail, but if it does, the process 
+will wait for ever, so we panic in this instance. (There was a case of this 
+when a bug in a function that calls milliwait() caused it to pass invalid data. 
+That's when I added the check. :-)
 
 Argument:  an itimerval structure containing the interval
 Returns:   nothing
@@ -210,7 +213,9 @@ sigset_t old_sigmask;
 (void)sigemptyset(&sigmask);                           /* Empty mask */
 (void)sigaddset(&sigmask, SIGALRM);                    /* Add SIGALRM */
 (void)sigprocmask(SIG_BLOCK, &sigmask, &old_sigmask);  /* Block SIGALRM */
-(void)setitimer(ITIMER_REAL, itval, NULL);             /* Start timer */
+if (setitimer(ITIMER_REAL, itval, NULL) < 0)           /* Start timer */
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, 
+    "setitimer() failed: %s", strerror(errno)); 
 (void)sigfillset(&sigmask);                            /* All signals */
 (void)sigdelset(&sigmask, SIGALRM);                    /* Remove SIGALRM */
 (void)sigsuspend(&sigmask);                            /* Until SIGALRM */

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.3 2004/10/11 13:24:19 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.4 2004/10/14 11:21:02 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -11,6 +11,10 @@ Exim version 4.44
 
  2. Change 4.43/35 introduced a bug: if quota_filecount was set, the
     computation of the current number of files was incorrect.
+
+ 3. Closing a stable door: arrange to panic-die if setitimer() ever fails. The
+    bug fixed in 4.43/37 would have been diagnosed quickly if this had been in
+    place.
 
 
 Exim version 4.43
