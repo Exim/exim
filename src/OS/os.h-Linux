@@ -1,11 +1,11 @@
-/* $Cambridge: exim/src/OS/os.h-Linux,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.h-Linux,v 1.2 2004/11/12 11:39:34 ph10 Exp $ */
 
 /* Exim: OS-specific C header file for Linux */
 
 #define CRYPT_H
 #define GLIBC_IP_OPTIONS
 #define HAVE_MMAP
-#define HAVE_SYS_VFS_H
+#define HAVE_SYS_STATVFS_H
 #define NO_IP_VAR_H
 #define SIOCGIFCONF_GIVES_ADDR
 #define SIG_IGN_WORKS
