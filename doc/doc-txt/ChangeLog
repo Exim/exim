@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.100 2005/03/29 09:49:49 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.101 2005/03/29 10:56:48 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -10,7 +10,7 @@ Exim version 4.51
 TK/01 Added Yahoo DomainKeys support via libdomainkeys. See
       doc/experimental-spec.txt for details. (http://domainkeys.sf.net)
 
-TK/02 Fix ACL "control" statment not being available in MIME ACL.
+TK/02 Fix ACL "control" statement not being available in MIME ACL.
 
 TK/03 Fix ACL "regex" condition not being available in MIME ACL.
 
@@ -81,6 +81,12 @@ PH/14 Modified the default configuration to add an acl_smtp_data ACL, with
       commented out examples of how to interface to a virus scanner and to
       SpamAssassin. Also added commented examples of av_scanner and
       spamd_address settings.
+
+PH/15 Further to TK/02 and TK/03 above, tidied up the tables of what conditions
+      and controls are allowed in which ACLs. There were a couple of minor
+      errors. Some of the entries in the conditions table (which is a table of
+      where they are NOT allowed) were getting very unwieldy; rewrote them as a
+      negation of where the condition IS allowed.
 
 
 A note about Exim versions 4.44 and 4.50
