@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.72 2005/01/14 11:06:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.73 2005/01/14 13:20:10 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -260,6 +260,7 @@ Exim version 4.50
     keys for these records are domain names, not reversed IP addresses. The
     dnsdb PTR lookup now tests whether its key is an IP address. If not, it
     leaves it alone. Component reversal etc. now happens only for IP addresses.
+    CAN-2005-0021
 
 56. Improve error message when ldap_search() fails in OpenLDAP or Solaris LDAP.
 
@@ -289,10 +290,12 @@ Exim version 4.50
     exim, but did not say which command line option was involved. All I could
     find was the use of -be with a bad dnsdb PTR lookup, and in that case it is
     running as the user.
+    CAN-2005-0021
 
 61. There was a buffer overflow vulnerability in the SPA authentication code
     (which came originally from the Samba project). I have added a test to the
     spa_base64_to_bits() function which I hope fixes it.
+    CAN-2005-0022
 
 62. Configuration update for GNU/Hurd and variations. Updated Makefile-GNU and
     os.h-GNU, and added configuration files for GNUkFreeBSD and GNUkNetBSD.
@@ -419,7 +422,7 @@ Exim version 4.44
 17. Added HAVE_SYS_STATVFS_H to the os.h file for Linux, as it has had this
     support for a long time. Removed HAVE_SYS_VFS_H.
 
-18. Updated exipick to current release
+18. Updated exipick to current release from John Jetmore.
 
 19. Allow an empty sender to be matched against a lookup in an address list.
     Previously the only cases considered were a regular expression, or an
@@ -429,10 +432,16 @@ Exim version 4.44
     host was specified on the transport, if the DNS lookup yielded more than
     one IP address.
 
-21. Respect the 75-character limit for "encoded words" when doing RFC 2047
-    encoding, and increase the buffer size for ${rfc2047: expansion.
+21. The RFC2047 encoding function was originally intended for short strings
+    such as real names; it was not keeping to the 75-character limit for
+    encoded words that the RFC imposes. It now respects the limit, and
+    generates multiple encoded words if necessary. To be on the safe side, I
+    have increased the buffer size for the ${rfc2047: expansion operator from
+    1024 to 2048 bytes.
 
-22. errors_to on a router was being ignored for bounce messages.
+22. Failure to deliver a bounce message always caused it to be frozen, even if
+    there was an errors_to setting on the router. The errors_to setting is now
+    respected.
 
 23. If an IPv6 address is given for -bh or -bhc, it is now converted to the
     canonical form (fully expanded) before being placed in
@@ -440,45 +449,89 @@ Exim version 4.44
 
 24. Updated eximstats to version 1.33
 
-25. Expand error message when GnuTLS has problems setting up cert/key files.
+25. Include certificate and key file names in error message when GnuTLS fails
+    to set them up, because the GnuTLS error message doesn't include the name
+    of the failing file when there is a problem reading it.
 
 26. Expand error message when OpenSSL has problems setting up cert/key files.
+    As per change 25.
 
-27. Reset locale after calling embedded Perl, in case it was changed.
+27. Reset the locale to "C" after calling embedded Perl, in case it was changed
+    (this can affect the format of dates).
 
-28. When checking for a message's continued existence, exim_tidydb was not
-    looking in the split spool subdirectories.
+28. exim_tidydb, when checking for the continued existence of a message for
+    which it has found a message-specific retry record, was not finding
+    messages that were in split spool directories. Consequently, it was
+    deleting retry records that should have stayed in existence.
 
 29. eximstats updated to version 1.35
     1.34 - allow eximstats to parse syslog lines as well as mainlog lines
     1.35 - bugfix such that pie charts by volume are generated correctly
 
-30. A forced expansion failure in the SPA authenticator is now treated the
-    same as in other authenticators (it moves to the next authenticator).
+30. The SPA authentication driver was not abandoning authentication and moving
+    on to the next authenticator when an expansion was forced to fail,
+    contradicting the general specification for all authenticators. Instead it
+    was generating a temporary error. It now behaves as specified.
 
-31. Fixed the cipher preference order for GnuTLS client usage.
+31. The default ordering of permitted cipher suites for GnuTLS was pessimal
+    (the order specifies the preference for clients). The order is now AES256,
+    AES128, 3DES, ARCFOUR128.
 
-31. Fixed Sieve buglet: now it explicitly sets From: when generating
-    an autoreply.
+31. Small patch to Sieve code - explicitly set From: when generating an
+    autoreply.
 
-32. More robust handling of very large SMTP responses.
+32. Exim crashed if a remote delivery caused a very long error message to be
+    recorded - for instance if somebody sent an entire SpamAssassin report back
+    as a large number of 550 error lines. This bug was coincidentally fixed by
+    increasing the size of one of Exim's internal buffers (big_buffer) that
+    happened as part of the Exiscan merge. However, to be on the safe side, I
+    have made the code more robust (and fixed the comments that describe what
+    is going on).
 
-33. Check dnsdb PTR key for IP address before reversing.
+33. Some experimental protocols are using DNS PTR records for new purposes. The
+    keys for these records are domain names, not reversed IP addresses. The
+    dnsdb PTR lookup now tests whether its key is an IP address. If not, it
+    leaves it alone. Component reversal etc. now happens only for IP addresses.
     CAN-2005-0021
 
-34. Put a check in host_aton() to protect against buffer overrun
+34. The host_aton() function is supposed to be passed a string that is known
+    to be a valid IP address. However, in the case of IPv6 addresses, it was
+    not checking this. This is a hostage to fortune. Exim now panics and dies
+    if the condition is not met. A case was found where this could be provoked
+    from a dnsdb PTR lookup with an IPv6 address that had more than 8
+    components; fortuitously, this particular loophole had already been fixed
+    by change 4.50/55 or 4.44/33 above.
+
+    If there are any other similar loopholes, the new check in host_aton()
+    itself should stop them being exploited. The report I received stated that
+    data on the command line could provoke the exploit when Exim was running as
+    exim, but did not say which command line option was involved. All I could
+    find was the use of -be with a bad dnsdb PTR lookup, and in that case it is
+    running as the user.
     CAN-2005-0021
 
-35. Fix buffer overflow vulnerability in spa_base64_to_bits() function.
+35. There was a buffer overflow vulnerability in the SPA authentication code
+    (which came originally from the Samba project). I have added a test to the
+    spa_base64_to_bits() function which I hope fixes it.
     CAN-2005-0022
 
-36. Need to initialize getloadavg() as root in the daemon when
-    deliver_drop_privilege is set, for the benefit of the queue runner.
+36. The daemon start-up calls getloadavg() while still root for those OS that
+    need the first call to be done as root, but it missed one case: when
+    deliver_queue_load_max is set with deliver_drop_privilege. This is
+    necessary for the benefit of the queue runner, because there is no re-exec
+    when deliver_drop_privilege is set.
 
-37. Data saved for $host_data after a lookup involving a named host list was
-    corrupted if there was more than one message in an SMTP session.
+37. Caching of lookup data for "hosts =" ACL conditions, when a named host list
+    was in use, was not putting the data itself into the right store pool;
+    consequently, it could be overwritten for a subsequent message in the same
+    SMTP connection. (Fix 4.40/11 dealt with the non-cache case, but overlooked
+    the caching.)
 
-38. Fixed a very old bug that sometimes lost the final 221 message after QUIT.
+38. Sometimes the final signoff response after QUIT could fail to get
+    transmitted in the non-TLS case. Testing !tls_active instead of tls_active
+    < 0 before doing a fflush(). This bug looks as though it goes back to the
+    introduction of TLS in release 3.20, but "sometimes" must have been rare
+    because the tests only now provoked it.
 
 
 Exim version 4.43
