@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Cambridge: exim/src/scripts/MakeLinks,v 1.1.2.1 2004/11/26 09:20:46 tom Exp $
+# $Cambridge: exim/src/scripts/MakeLinks,v 1.1.2.2 2004/11/26 09:24:54 tom Exp $
 
 # Script to build links for all the exim source files from the system-
 # specific build directory. It should be run from within that directory.
@@ -236,6 +236,9 @@ ln -s ../src/queue.c           queue.c
 ln -s ../src/rda.c             rda.c
 ln -s ../src/readconf.c        readconf.c
 ln -s ../src/receive.c         receive.c
+# WITH_CONTENT_SCAN
+ln -s ../src/regex.c           regex.c   
+#
 ln -s ../src/retry.c           retry.c
 ln -s ../src/rewrite.c         rewrite.c
 ln -s ../src/rfc2047.c         rfc2047.c
