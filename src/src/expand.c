@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.16 2005/03/09 08:27:51 tom Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.17 2005/03/22 14:11:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -48,6 +48,7 @@ static uschar *expand_string_internal(uschar *, BOOL, uschar **, BOOL);
 alphabetical order. */
 
 static uschar *item_table[] = {
+  US"dlfunc",
   US"extract",
   US"hash",
   US"hmac",
@@ -55,9 +56,7 @@ static uschar *item_table[] = {
   US"length",
   US"lookup",
   US"nhash",
-  #ifdef EXIM_PERL
-    US"perl",
-  #endif
+  US"perl",
   US"readfile",
   US"readsocket",
   US"run",
@@ -66,6 +65,7 @@ static uschar *item_table[] = {
   US"tr" };
 
 enum {
+  EITEM_DLFUNC,
   EITEM_EXTRACT,
   EITEM_HASH,
   EITEM_HMAC,
@@ -73,9 +73,7 @@ enum {
   EITEM_LENGTH,
   EITEM_LOOKUP,
   EITEM_NHASH,
-  #ifdef EXIM_PERL
-    EITEM_PERL,
-  #endif
+  EITEM_PERL,
   EITEM_READFILE,
   EITEM_READSOCK,
   EITEM_RUN,
@@ -3072,10 +3070,15 @@ while (*s != 0)
     or ${perl{sub}{arg1}{arg2}} or up to a maximum of EXIM_PERL_MAX_ARGS
     arguments (defined below). */
 
-    #ifdef EXIM_PERL
     #define EXIM_PERL_MAX_ARGS 8
 
     case EITEM_PERL:
+    #ifndef EXIM_PERL
+    expand_string_message = US"\"${perl\" encountered, but this facility "
+      "is not included in this binary";
+    goto EXPAND_FAILED;
+
+    #else   /* EXIM_PERL */
       {
       uschar *sub_arg[EXIM_PERL_MAX_ARGS + 2];
       uschar *new_yield;
@@ -3847,6 +3850,106 @@ while (*s != 0)
 
       continue;
       }
+
+
+    /* If ${dlfunc support is configured, handle calling dynamically-loaded
+    functions, unless locked out at this time. Syntax is ${dlfunc{file}{func}}
+    or ${dlfunc{file}{func}{arg}} or ${dlfunc{file}{func}{arg1}{arg2}} or up to
+    a maximum of EXPAND_DLFUNC_MAX_ARGS arguments (defined below). */
+
+    #define EXPAND_DLFUNC_MAX_ARGS 8
+
+    case EITEM_DLFUNC:
+    #ifndef EXPAND_DLFUNC
+    expand_string_message = US"\"${dlfunc\" encountered, but this facility "
+      "is not included in this binary";
+    goto EXPAND_FAILED;
+
+    #else   /* EXPAND_DLFUNC */
+      {
+      tree_node *t;
+      exim_dlfunc_t *func;
+      uschar *result;
+      int status, argc;
+      uschar *argv[EXPAND_DLFUNC_MAX_ARGS + 3];
+
+      if ((expand_forbid & RDO_DLFUNC) != 0)
+        {
+        expand_string_message =
+          US"dynamically-loaded functions are not permitted";
+        goto EXPAND_FAILED;
+        }
+
+      switch(read_subs(argv, EXPAND_DLFUNC_MAX_ARGS + 2, 2, &s, skipping,
+           TRUE, US"dlfunc"))
+        {
+        case 1: goto EXPAND_FAILED_CURLY;
+        case 2:
+        case 3: goto EXPAND_FAILED;
+        }
+
+      /* If skipping, we don't actually do anything */
+
+      if (skipping) continue;
+
+      /* Look up the dynamically loaded object handle in the tree. If it isn't
+      found, dlopen() the file and put the handle in the tree for next time. */
+
+      t = tree_search(dlobj_anchor, argv[0]);
+      if (t == NULL)
+        {
+        void *handle = dlopen(CS argv[0], RTLD_LAZY);
+        if (handle == NULL)
+          {
+          expand_string_message = string_sprintf("dlopen \"%s\" failed: %s",
+            argv[0], dlerror());
+          log_write(0, LOG_MAIN|LOG_PANIC, "%s", expand_string_message);
+          goto EXPAND_FAILED;
+          }
+        t = store_get_perm(sizeof(tree_node) + Ustrlen(argv[0]));
+        Ustrcpy(t->name, argv[0]);
+        t->data.ptr = handle;
+        (void)tree_insertnode(&dlobj_anchor, t);
+        }
+
+      /* Having obtained the dynamically loaded object handle, look up the
+      function pointer. */
+
+      func = (exim_dlfunc_t *)dlsym(t->data.ptr, CS argv[1]);
+      if (func == NULL)
+        {
+        expand_string_message = string_sprintf("dlsym \"%s\" in \"%s\" failed: "
+          "%s", argv[1], argv[0], dlerror());
+       log_write(0, LOG_MAIN|LOG_PANIC, "%s", expand_string_message);
+        goto EXPAND_FAILED;
+        }
+
+      /* Call the function and work out what to do with the result. If it
+      returns OK, we have a replacement string; if it returns DEFER then
+      expansion has failed in a non-forced manner; if it returns FAIL then
+      failure was forced; if it returns ERROR or any other value there's a
+      problem, so panic slightly. */
+
+      result = NULL;
+      for (argc = 0; argv[argc] != NULL; argc++);
+      status = func(&result, argc - 2, &argv[2]);
+      if(status == OK)
+        {
+        if (result == NULL) result = US"";
+        yield = string_cat(yield, &size, &ptr, result, Ustrlen(result));
+        continue;
+        }
+      else
+        {
+        expand_string_message = result == NULL ? US"(no message)" : result;
+        if(status == FAIL_FORCED) expand_string_forcedfail = TRUE;
+          else if(status != FAIL)
+            log_write(0, LOG_MAIN|LOG_PANIC, "dlfunc{%s}{%s} failed (%d): %s",
+              argv[0], argv[1], status, expand_string_message);
+        goto EXPAND_FAILED;
+        }
+      }
+    #endif /* EXPAND_DLFUNC */
     }
 
   /* Control reaches here if the name is not recognized as one of the more

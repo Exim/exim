@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.12 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.13 2005/03/22 14:11:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -24,6 +24,10 @@ extern int h_errno;
 extern uschar *opt_perl_startup;       /* Startup code for Perl interpreter */
 extern BOOL    opt_perl_at_start;      /* Start Perl interpreter at start */
 extern BOOL    opt_perl_started;       /* Set once interpreter started */
+#endif
+
+#ifdef EXPAND_DLFUNC
+extern tree_node *dlobj_anchor;        /* Tree of dynamically-loaded objects */
 #endif
 
 #ifdef LOOKUP_IBASE

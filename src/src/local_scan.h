@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/local_scan.h,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/local_scan.h,v 1.4 2005/03/22 14:11:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -9,7 +9,9 @@
 
 /* This file is the header that is the only Exim header to be included in the
 source for the local_scan.c() function. It contains definitions that are made
-available for use in that function, and which are documented. */
+available for use in that function, and which are documented.
+
+This API is also used for functions called by the ${dlfunc expansion item. */
 
 
 /* Some basic types that make some things easier, and the store functions. */
@@ -34,12 +36,26 @@ enum {
 };
 
 
-/* Return codes from the support functions lss_match_xxx(). */
+/* Functions called by ${dlfunc{file}{func}{arg}...} return one of the five
+status codes defined immediately below. The function's first argument is either
+the result of expansion, or the error message in case of failure. The second
+and third arguments are standard argument count and vector, comprising the
+{arg} values specified in the expansion item. */
+
+typedef int exim_dlfunc_t(uschar **yield, int argc, uschar *argv[]);
+
+
+/* Return codes from the support functions lss_match_xxx(). These are also the
+codes that dynamically-loaded ${dlfunc functions must return. */
 
 #define  OK            0          /* Successful match */
 #define  DEFER         1          /* Defer - some problem */
 #define  FAIL          2          /* Matching failed */
 #define  ERROR         3          /* Internal or config error */
+
+/* Extra return code for ${dlfunc functions */
+
+#define  FAIL_FORCED   4          /* "Forced" failure */
 
 
 /* Available logging destinations */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.10 2005/03/10 08:56:03 tom Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.11 2005/03/22 14:11:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -237,27 +237,29 @@ enum {
 apply to all of them). Some other functions also use these convenient values,
 and some additional values are used only by non-driver functions.
 
-OK, FAIL, DEFER, and ERROR are also declared in local_scan.h for use in the
-local_scan() function. Do not change them unilaterally. */
+OK, FAIL, DEFER, ERROR, and FAIL_FORCED are also declared in local_scan.h for
+use in the local_scan() function and in ${dlfunc loaded functions. Do not
+change them unilaterally. */
 
 #define  OK            0    /* Successful match */
 #define  DEFER         1    /* Defer - some problem */
 #define  FAIL          2    /* Matching failed */
 #define  ERROR         3    /* Internal or config error */
+#define  FAIL_FORCED   4    /* "Forced" failure */
 /***********/
-#define DECLINE        4    /* Declined to handle the address, pass to next
+#define DECLINE        5    /* Declined to handle the address, pass to next
                                  router unless no_more is set */
-#define PASS           5    /* Pass to next driver, or to pass_router,
+#define PASS           6    /* Pass to next driver, or to pass_router,
                                  even if no_more is set */
-#define DISCARD        6    /* Address routed to :blackhole: or "seen finish" */
-#define SKIP           7    /* Skip this router (used in route_address only) */
-#define REROUTED       8    /* Address was changed and child created*/
-#define PANIC          9    /* Hard failed with internal error */
-#define BAD64         10    /* Bad base64 data (auth) */
-#define UNEXPECTED    11    /* Unexpected initial auth data */
-#define CANCELLED     12    /* Authentication cancelled */
-#define FAIL_SEND     13    /* send() failed in authenticator */
-#define FAIL_DROP     14    /* Fail and drop connection (used in ACL) */
+#define DISCARD        7    /* Address routed to :blackhole: or "seen finish" */
+#define SKIP           8    /* Skip this router (used in route_address only) */
+#define REROUTED       9    /* Address was changed and child created*/
+#define PANIC         10    /* Hard failed with internal error */
+#define BAD64         11    /* Bad base64 data (auth) */
+#define UNEXPECTED    12    /* Unexpected initial auth data */
+#define CANCELLED     13    /* Authentication cancelled */
+#define FAIL_SEND     14    /* send() failed in authenticator */
+#define FAIL_DROP     15    /* Fail and drop connection (used in ACL) */
 
 /* Returns from the deliver_message() function */
 
@@ -489,15 +491,16 @@ router, which were chosen to represent the standard situation for users'
 #define RDO_READFILE     0x00001000  /* Forbid "readfile" in exp in filter */
 #define RDO_READSOCK     0x00002000  /* Forbid "readsocket" in exp in filter */
 #define RDO_RUN          0x00004000  /* Forbid "run" in expansion in filter */
-#define RDO_REALLOG      0x00008000  /* Really do log (not testing/verifying) */
-#define RDO_REWRITE      0x00010000  /* Rewrite generated addresses */
-#define RDO_EXIM_FILTER  0x00020000  /* Forbid Exim filters */
-#define RDO_SIEVE_FILTER 0x00040000  /* Forbid Sieve filters */
+#define RDO_DLFUNC       0x00008000  /* Forbid "dlfunc" in expansion in filter */
+#define RDO_REALLOG      0x00010000  /* Really do log (not testing/verifying) */
+#define RDO_REWRITE      0x00020000  /* Rewrite generated addresses */
+#define RDO_EXIM_FILTER  0x00040000  /* Forbid Exim filters */
+#define RDO_SIEVE_FILTER 0x00080000  /* Forbid Sieve filters */
 
 /* This is the set that apply to expansions in filters */
 
 #define RDO_FILTER_EXPANSIONS \
-  (RDO_EXISTS|RDO_LOOKUP|RDO_PERL|RDO_READFILE|RDO_READSOCK|RDO_RUN)
+  (RDO_EXISTS|RDO_LOOKUP|RDO_PERL|RDO_READFILE|RDO_READSOCK|RDO_RUN|RDO_DLFUNC)
 
 /* As well as the RDO bits themselves, we need the bit numbers in order to
 access (most of) the individual bits as separate options. This could be
@@ -505,7 +508,7 @@ automated, but I haven't bothered. Keep this list in step with the above! */
 
 enum { RDON_BLACKHOLE, RDON_DEFER, RDON_EACCES, RDON_ENOTDIR, RDON_EXISTS,
   RDON_FAIL, RDON_FILTER, RDON_FREEZE, RDON_INCLUDE, RDON_LOG, RDON_LOOKUP,
-  RDON_PERL, RDON_READFILE, RDON_READSOCK, RDON_RUN, RDON_REALLOG,
+  RDON_PERL, RDON_READFILE, RDON_READSOCK, RDON_RUN, RDON_DLFUNC, RDON_REALLOG,
   RDON_REWRITE, RDON_EXIM_FILTER, RDON_SIEVE_FILTER };
 
 /* Results of filter or forward file processing. Some are only from a filter;

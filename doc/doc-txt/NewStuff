@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.27 2005/03/08 11:38:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.28 2005/03/22 14:11:54 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -12,32 +12,72 @@ file contains a listing of all changes, including bug fixes.
 Version 4.51
 ------------
 
-PH/01. The format in which GnuTLS parameters are written to the gnutls-param
-       file in the spool directory has been changed. This change has been made
-       to alleviate problems that some people had with the generation of the
-       parameters by Exim when /dev/random was exhausted. In this situation,
-       Exim would hang until /dev/random acquired some more entropy.
+PH/01 The format in which GnuTLS parameters are written to the gnutls-param
+      file in the spool directory has been changed. This change has been made
+      to alleviate problems that some people had with the generation of the
+      parameters by Exim when /dev/random was exhausted. In this situation,
+      Exim would hang until /dev/random acquired some more entropy.
 
-       The new code exports and imports the DH and RSA parameters in PEM
-       format. This means that the parameters can be generated externally using
-       the certtool command that is part of GnuTLS.
+      The new code exports and imports the DH and RSA parameters in PEM
+      format. This means that the parameters can be generated externally using
+      the certtool command that is part of GnuTLS.
 
-       To replace the parameters with new ones, instead of deleting the file
-       and letting Exim re-create it, you can generate new parameters using
-       certtool and, when this has been done, replace Exim's cache file by
-       renaming. The relevant commands are something like this:
+      To replace the parameters with new ones, instead of deleting the file
+      and letting Exim re-create it, you can generate new parameters using
+      certtool and, when this has been done, replace Exim's cache file by
+      renaming. The relevant commands are something like this:
 
-         # rm -f new.params
-         # touch new.params
-         # chown exim:exim new.params
-         # chmod 0400 new.params
-         # certtool --generate-privkey --bits 512 >new.params
-         # echo "" >>new.params
-         # certtool --generate-dh-params --bits 1024 >> new.params
-         # mv new.params params
+        # rm -f new.params
+        # touch new.params
+        # chown exim:exim new.params
+        # chmod 0400 new.params
+        # certtool --generate-privkey --bits 512 >new.params
+        # echo "" >>new.params
+        # certtool --generate-dh-params --bits 1024 >> new.params
+        # mv new.params params
 
-       If Exim never has to generate the parameters itself, the possibility of
-       stalling is removed.
+      If Exim never has to generate the parameters itself, the possibility of
+      stalling is removed.
+
+PH/02 A new expansion item for dynamically loading and calling a locally-
+      written C function is now provided, if Exim is compiled with
+
+        EXPAND_DLFUNC=yes
+
+      set in Local/Makefile. The facility is not included by default (a
+      suitable error is given if you try to use it when it is not there.)
+      You load and call the function like this:
+
+        ${dlfunc{/some/file}{function}{arg1}{arg2}...}
+
+      Once loaded, Exim remembers it so that it doesn't reload it in the same
+      Exim process (but of course Exim does start new processes frequently).
+
+      There may be from zero to eight arguments to the function. When compiling
+      a local function that is to be called in this way, local_scan.h should be
+      included. The Exim variables and functions that are defined by that API
+      are also available for dynamically loaded functions. The function itself
+      must have the following type:
+
+        int dlfunction(uschar **yield, int argc, uschar *argv[])
+
+      Where "uschar" is a typedef for "unsigned char" in local_scan.h. The
+      function should return one of the following values:
+
+      OK            Success. The string that is placed in "yield" is put into
+                    the expanded string that is being built.
+
+      FAIL          A non-forced expansion failure occurs, with the error
+                    message taken from "yield", if it is set.
+
+      FAIL_FORCED   A forced expansion failure occurs, with the error message
+                    taken from "yield" if it is set.
+
+      ERROR         Same as FAIL, except that a panic log entry is written.
+
+      When compiling a function that is to be used in this way with gcc,
+      you need to add -shared to the gcc command. Also, in the Exim build-time
+      configuration, you must add -export-dynamic to EXTRALIBS.
 
 
 Version 4.50

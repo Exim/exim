@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.8 2005/02/17 11:58:25 ph10 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.9 2005/03/22 14:11:54 ph10 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -687,6 +687,15 @@ ZCAT_COMMAND=/usr/bin/zcat
 # Perl costs quite a lot of resources. Only do this if you really need it.
 
 # EXIM_PERL=perl.o
+
+
+#------------------------------------------------------------------------------
+# Support for dynamically-loaded string expansion functions via ${dlfunc. If
+# you are using gcc the dynamically-loaded object must be compiled with the
+# -shared option, and you will need to add -export-dynamic to EXTRALIBS so
+# that the local_scan API is made available by the linker.
+
+# EXPAND_DLFUNC=yes
 
 
 #------------------------------------------------------------------------------

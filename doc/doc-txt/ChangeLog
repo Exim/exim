@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.93 2005/03/22 10:11:42 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.94 2005/03/22 14:11:54 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -7,53 +7,59 @@ Change log file for Exim from version 4.21
 Exim version 4.51
 -----------------
 
-TK/01. Added Yahoo DomainKeys support via libdomainkeys. See
-       doc/experimental-spec.txt for details. (http://domainkeys.sf.net)
+TK/01 Added Yahoo DomainKeys support via libdomainkeys. See
+      doc/experimental-spec.txt for details. (http://domainkeys.sf.net)
 
-TK/02. Fix ACL "control" statment not being available in MIME ACL.
+TK/02 Fix ACL "control" statment not being available in MIME ACL.
 
-TK/03. Fix ACL "regex" condition not being available in MIME ACL.
+TK/03 Fix ACL "regex" condition not being available in MIME ACL.
 
-PH/01. Installed a patch from the Sieve maintainer that allows -bf to be used
-       to test Sieve filters that use "vacation".
+PH/01 Installed a patch from the Sieve maintainer that allows -bf to be used
+      to test Sieve filters that use "vacation".
 
-PH/02. Installed a slightly modified version of Nikos Mavrogiannopoulos' patch
-       that changes the way the GnuTLS parameters are stored in the cache file.
-       The new format can be generated externally. For backward compatibility,
-       if the data in the cache doesn't make sense, Exim assumes it has read an
-       old-format file, and it generates new data and writes a new file. This
-       means that you can't go back to an older release without removing the
-       file.
+PH/02 Installed a slightly modified version of Nikos Mavrogiannopoulos' patch
+      that changes the way the GnuTLS parameters are stored in the cache file.
+      The new format can be generated externally. For backward compatibility,
+      if the data in the cache doesn't make sense, Exim assumes it has read an
+      old-format file, and it generates new data and writes a new file. This
+      means that you can't go back to an older release without removing the
+      file.
 
-PH/03. A redirect router that has both "unseen" and "one_time" set does not
-       work if there are any delivery delays because "one_time" forces the
-       parent to be marked "delivered", so its unseen clone is never tried
-       again. For this reason, Exim now forbids the simultaneous setting of
-       these two options.
+PH/03 A redirect router that has both "unseen" and "one_time" set does not
+      work if there are any delivery delays because "one_time" forces the
+      parent to be marked "delivered", so its unseen clone is never tried
+      again. For this reason, Exim now forbids the simultaneous setting of
+      these two options.
 
-PH/04. Change 4.11/85 fixed an obscure bug concerned with addresses that are
-       redirected to themselves ("homonym" addresses). Read the long ChangeLog
-       entry if you want to know the details. The fix, however, neglected to
-       consider the case when local delivery batching is involved. The test for
-       "previously delivered" was not happening when checking to see if an
-       address could be batched with a previous (undelivered) one; under
-       certain circumstances this could lead to multiple deliveries to the same
-       address. A one-line patch to add the appropriate test fixes the bug.
+PH/04 Change 4.11/85 fixed an obscure bug concerned with addresses that are
+      redirected to themselves ("homonym" addresses). Read the long ChangeLog
+      entry if you want to know the details. The fix, however, neglected to
+      consider the case when local delivery batching is involved. The test for
+      "previously delivered" was not happening when checking to see if an
+      address could be batched with a previous (undelivered) one; under
+      certain circumstances this could lead to multiple deliveries to the same
+      address. A one-line patch to add the appropriate test fixes the bug.
 
-PH/05. Renamed the macro SOCKLEN_T as EXIM_SOCKLEN_T because AIX uses SOCKLEN_T
-       in its include files, and this causes problems building Exim.
+PH/05 Renamed the macro SOCKLEN_T as EXIM_SOCKLEN_T because AIX uses SOCKLEN_T
+      in its include files, and this causes problems building Exim.
 
-PH/06. A number of "verify =" ACL conditions have no options (e.g. verify =
-       header_syntax) but Exim was just ignoring anything given after a slash.
-       In particular, this caused confusion with an attempt to use "verify =
-       reverse_host_lookup/defer_ok". An error is now given when options are
-       supplied for verify items that do not have them. (Maybe reverse_host_
-       lookup should have a defer_ok option, but that's a different point.)
+PH/06 A number of "verify =" ACL conditions have no options (e.g. verify =
+      header_syntax) but Exim was just ignoring anything given after a slash.
+      In particular, this caused confusion with an attempt to use "verify =
+      reverse_host_lookup/defer_ok". An error is now given when options are
+      supplied for verify items that do not have them. (Maybe reverse_host_
+      lookup should have a defer_ok option, but that's a different point.)
 
-PH/07. Increase the size of the buffer for incoming SMTP commands from 512 (as
-       defined by RFC 821) to 2048, because there were problems with some AUTH
-       commands, and RFC 1869 says the size should be increased for extended
-       SMTP commands that take arguments.
+PH/07 Increase the size of the buffer for incoming SMTP commands from 512 (as
+      defined by RFC 821) to 2048, because there were problems with some AUTH
+      commands, and RFC 1869 says the size should be increased for extended
+      SMTP commands that take arguments.
+
+PH/08 Added ${dlfunc dynamically loaded function for expansion (code from Tony
+      Finch).
+
+PH/09 Previously, an attempt to use ${perl when it wasn't compiled gave an
+      "unknown" error; now it says that the functionality isn't in the binary.
 
 
 A note about Exim versions 4.44 and 4.50

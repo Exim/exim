@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.9 2005/03/15 14:09:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.10 2005/03/22 14:11:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -60,7 +60,7 @@ making unique names. */
 /* Unix includes */
 
 #include <errno.h>
-#if	defined(__svr4__) && defined(__sparc) && ! defined(__EXTENSIONS__)
+#if defined(__svr4__) && defined(__sparc) && ! defined(__EXTENSIONS__)
 #define __EXTENSIONS__  /* so that SunOS 5 gets NGROUPS_MAX */
 #include <limits.h>
 #undef  __EXTENSIONS__
@@ -207,7 +207,7 @@ or a macro with entries f_frsize and f_bsize. */
 #endif
 
 
-#ifndef  SIOCGIFCONF	 /* HACK for SunOS 5 */
+#ifndef  SIOCGIFCONF   /* HACK for SunOS 5 */
 #include <sys/sockio.h>
 #endif
 
@@ -414,7 +414,7 @@ requires various things that are set therein. */
 #include <iconv.h>
 #endif
 
-#ifdef USE_READLINE
+#if defined(USE_READLINE) || defined(EXPAND_DLFUNC)
 #include <dlfcn.h>
 #endif
 

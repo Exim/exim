@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.16 2005/03/15 14:09:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.17 2005/03/22 14:11:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -828,6 +828,9 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXIM_PERL
   fprintf(f, " Perl");
+#endif
+#ifdef EXPAND_DLFUNC
+  fprintf(f, " Expand_dlfunc");
 #endif
 #ifdef USE_TCP_WRAPPERS
   fprintf(f, " TCPwrappers");

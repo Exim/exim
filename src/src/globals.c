@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.19 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.20 2005/03/22 14:11:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -60,6 +60,10 @@ duplicate them here... */
 uschar *opt_perl_startup       = NULL;
 BOOL    opt_perl_at_start      = FALSE;
 BOOL    opt_perl_started       = FALSE;
+#endif
+
+#ifdef EXPAND_DLFUNC
+tree_node *dlobj_anchor        = NULL;
 #endif
 
 #ifdef LOOKUP_IBASE
