@@ -1,5 +1,5 @@
 #! /usr/bin/perl -w
-# $Cambridge: exim/doc/doc-scripts/g2h,v 1.2 2005/01/27 10:25:35 ph10 Exp $
+# $Cambridge: exim/doc/doc-scripts/g2h,v 1.3 2005/02/17 12:17:09 ph10 Exp $
 
 # This is a script that turns the SGCAL source of Exim's documentation into
 # HTML. It can be used for both the filter document and the main Exim
@@ -655,20 +655,20 @@ elsif (/^\.display\b/)
       {
       print OUT "<br>\n";
       }
-      
+
     # Some displays have emphasis inside them
-    
+
     elsif (/^\.em\b/)
       {
       print OUT "<font color=green>" if ! $inem;
       $inem = 1;
-      }    
+      }
 
     elsif (/^\.nem\b/)
       {
       print OUT "</font>" if $inem;
       $inem = 0;
-      }    
+      }
 
     # There are occasional instances of .if [!]~~sys.fancy inside displays.
     # In both cases we want the non-fancy alternative. (The only thing that
@@ -690,10 +690,10 @@ elsif (/^\.display\b/)
     # Ignore .newline and .linelength
 
     elsif (/^\.newline\b/ || /^\.linelength\b/) {}
-    
+
     # Ignore comments
-    
-    elsif (/^\.(\s|$)/) {}  
+
+    elsif (/^\.(\s|$)/) {}
 
     # There shouldn't be any other directives inside displays
 
@@ -756,9 +756,9 @@ elsif (/^\.display\b/)
 
 # Handle configuration option definitions
 
-elsif (/^\.startconf\s+(.*)/) 
+elsif (/^\.startconf\s+(.*)/)
   {
-  $confuse = $1; 
+  $confuse = &handle_text($1);
   }
 
 elsif (/^\.conf\b/)
@@ -785,7 +785,7 @@ elsif (/^\.conf\b/)
   &setpar(0);
   &handle_index($option, 0);
   print OUT "<h3>$option</h3>\n" .
-            "<i>Use:</i>&nbsp; $confuse<br>" . 
+            "<i>Use:</i>&nbsp; $confuse<br>" .
             "<i>Type:</i>&nbsp; $type<br><i>Default:</i>&nbsp; $default<br>\n";
   }
 
@@ -987,7 +987,7 @@ open (IN, $source_file) || die "Can't open $source_file (2nd pass)\n";
 $_ = <IN>;
 
 # Skip on till we hit the start of the first chapter, but note if we
-# pass ".set chapter -1", which is used to indicate no chapter numbering for 
+# pass ".set chapter -1", which is used to indicate no chapter numbering for
 # the first chapter (we number is 0). Keep track of whether we are in macro
 # definitions or not, and when not, notice occurrences of .index, because this
 # are the "x see y" type entries.
@@ -1010,7 +1010,7 @@ while (!/^\.chapter/)
     }
   $_ = <IN>;
   }
-  
+
 # Open the TOC file
 
 open (TOC, ">$html/${file_base}_toc.html") ||
@@ -1029,7 +1029,7 @@ print TOC "<h1>$doctitle</h1><hr>\n<ul>\n";
 # Loop for handling chapters. At the start of this loop, $_ is either EOF,
 # or contains a .chapter line.
 
-$firstchapter = $thischapter + 1; 
+$firstchapter = $thischapter + 1;
 
 while ($_)
   {
@@ -1080,8 +1080,8 @@ while ($_)
       print TOC "<ul>\n" if !$insection;
       $insection = 1;
 
-      my($title) = (($thischapter > 0)? "$thischapter." : "") .
-        "$thissection. " . &handle_text($1, 0);
+      my($title) = (($thischapter > 0)? "$thischapter.$thissection " : 
+                   "$thissection. ") . &handle_text($1, 0);
 
       if ($sectsplit)
         {
@@ -1127,7 +1127,7 @@ while ($_)
           print OUT "<font color=green>" if ! $inem;
           $inem = 1;
           # Used to handle it here - but that fails if it is .section.
-          # Just let the next iteration of the loop handle it.  
+          # Just let the next iteration of the loop handle it.
           # &handle_directive();
           }
 
@@ -1323,13 +1323,13 @@ print INDEX "<p>\n";
 
 foreach $key (sort
       {
-      my($aa) = $a; 
-      my($bb) = $b; 
-       
+      my($aa) = $a;
+      my($bb) = $b;
+
       $aa =~ s/^\x93//;   # Seems like the actual char values are
       $bb =~ s/^\x93//;   # set by this time, not "&#147;"
- 
-      return ("\L$aa" eq "\L$bb")? ("$aa" cmp "$bb") : ("\L$aa" cmp "\L$bb"); 
+
+      return ("\L$aa" eq "\L$bb")? ("$aa" cmp "$bb") : ("\L$aa" cmp "\L$bb");
       }
     keys %$hash)
   {
