@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.7 2004/12/17 14:52:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.8 2004/12/29 16:00:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1651,7 +1651,6 @@ for (; cb != NULL; cb = cb->next)
       no_multiline_responses = TRUE;
       break;
 
-#ifdef WITH_CONTENT_SCAN
       case CONTROL_FAKEREJECT:
       fake_reject = TRUE;
       if (*p == '/')
@@ -1667,7 +1666,6 @@ for (; cb != NULL; cb = cb->next)
         fake_reject_text = US"Your message has been rejected but is being kept for evaluation.\nIf it was a legit message, it may still be delivered to the target recipient(s).";
         }
       break;
-#endif
 
       case CONTROL_FREEZE:
       deliver_freeze = TRUE;

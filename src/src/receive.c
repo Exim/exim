@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.7 2004/12/17 14:52:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.8 2004/12/29 16:00:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3394,29 +3394,21 @@ if (smtp_input)
     {
     if (smtp_reply == NULL)
       {
-#ifndef WITH_CONTENT_SCAN
-      smtp_printf("250 OK id=%s\r\n", message_id);
-#else      
-        if (fake_reject)
-          smtp_respond(550,TRUE,fake_reject_text);
-        else  
-          smtp_printf("250 OK id=%s\r\n", message_id);      
-#endif     
+      if (fake_reject)
+        smtp_respond(550,TRUE,fake_reject_text);
+      else  
+        smtp_printf("250 OK id=%s\r\n", message_id);      
       if (host_checking)
         fprintf(stdout,
           "\n**** SMTP testing: that is not a real message id!\n\n");
       }
-#ifndef WITH_CONTENT_SCAN
-    else if (smtp_reply[0] != 0) smtp_printf("%.1024s\r\n", smtp_reply);
-#else
     else if (smtp_reply[0] != 0)
       {
-        if (fake_reject && (smtp_reply[0] == '2'))
-          smtp_respond(550,TRUE,fake_reject_text);
-        else 
-          smtp_printf("%.1024s\r\n", smtp_reply);
-      };
-#endif
+      if (fake_reject && (smtp_reply[0] == '2'))
+        smtp_respond(550,TRUE,fake_reject_text);
+      else 
+        smtp_printf("%.1024s\r\n", smtp_reply);
+      }
     }
 
   /* For batched SMTP, generate an error message on failure, and do
