@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.27 2005/03/30 08:23:11 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.28 2005/04/04 08:27:28 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1895,5 +1895,10 @@ This is yet another problem caused by duplicating the SMTP code between the
 transport and the callout verification. See item 294 above. Merging the
 transport and the callout code could prevent this kind of thing from happening.
 ------------------------------------------------------------------------------
---- HWM 323 ------------------------------------------------------------------
+
+(324) 04-Apr-05 ? Make -bP show ACLs
+
+This is in the Bugzilla as #10.
+------------------------------------------------------------------------------
+--- HWM 324 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
