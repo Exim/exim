@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/doc/doc-scripts/BuildFAQ,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+# $Cambridge: exim/doc/doc-scripts/BuildFAQ,v 1.2 2004/10/15 13:20:28 ph10 Exp $
 
 # Script to build the Exim FAQ in text and HTML formats.
 
@@ -48,11 +48,11 @@ echo "FAQ.txt.bz2 made"
 
 # Configuration samples
 
-tar cf config.samples.tar config.samples
+tar -chf config.samples.tar config.samples
 gzip config.samples.tar
 echo "config.samples.tar.gz made"
 
-tar cf config.samples.tar config.samples
+tar -chf config.samples.tar config.samples
 bzip2 -9 config.samples.tar
 echo "config.samples.tar.bz2 made"
 
