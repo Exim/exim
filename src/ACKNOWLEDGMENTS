@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.12 2005/01/11 15:17:52 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.13 2005/01/13 10:09:36 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -189,6 +189,7 @@ Larry Rosenman            OpenUNIX config files
 Alexander Sabourenkov     Patch to add saslauthd daemon support
                           Patch for MySQL non-data queries
 David Saez                Suggested patch for $sender_hostname lookup if needed
+                          Support for the clamd virus scanner
 Peter Savitch             Diagnosis of FPE bug when statvfs() fails on spool
 Harald Schueler           Patch for dn_expand() failure on truncated data
 Heiko Schlichting         Diagnosis of intermittent daemon crash bug

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.10 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.11 2005/01/13 10:09:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1379,14 +1379,14 @@ while (last > first)
       {
       int inodes;
       sprintf(CS var_buffer, "%d", 
-        receive_statvfs((BOOL)(var_table[middle].value), &inodes));  
+        receive_statvfs(var_table[middle].value == (void *)TRUE, &inodes));  
       }
     return var_buffer;
     
     case vtype_pinodes:
       {
       int inodes;
-      (void) receive_statvfs((BOOL)(var_table[middle].value), &inodes);  
+      (void) receive_statvfs(var_table[middle].value == (void *)TRUE, &inodes);  
       sprintf(CS var_buffer, "%d", inodes);
       }
     return var_buffer;
