@@ -1,4 +1,4 @@
-## $Cambridge: exim/doc/doc-src/FAQ.src,v 1.5 2004/11/12 15:03:40 ph10 Exp $
+## $Cambridge: exim/doc/doc-src/FAQ.src,v 1.6 2005/02/15 09:27:45 ph10 Exp $
 ##
 ## This file is processed by Perl scripts to produce an ASCII and an HTML
 ## version. Lines starting with ## are omitted. The markup used with paragraphs
@@ -4403,7 +4403,7 @@ A0710: Set up a file (or database) containing the messages, keyed by the
 ==>      deny message   = ${lookup{$sender_address=>$local_part@$domain}\
                           lsearch{/that/file}}
               condition = ${lookup{$sender_address=>$local_part@$domain}\
-                          lsearch{/that/file}}{yes}{no}}
+                          lsearch{/that/file}{yes}{no}}
 
        The condition is tested first. If the lookup succeeds, the condition
        succeeds so access is denied. The message is then expanded, but the
