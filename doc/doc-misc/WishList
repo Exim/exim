@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.13 2004/12/06 14:14:14 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.14 2004/12/07 14:23:56 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1818,5 +1818,13 @@ often would this actually matter in practice?
 The idea is to save the email address that actually was found in the message
 in a variable so it can be used (e.g. as the From: address in an autoreply).
 ------------------------------------------------------------------------------
---- HWM 310 ------------------------------------------------------------------
+
+(311) 07-Dec-04 ? More flexible SMTP response codes
+
+The requestor wanted to be able to specify, for example, 551 in an ACL deny
+instead of 550, and also vary the defer code. The first digit, however, should
+remain fixed. In addition to main codes, enhanced status codes (RFC 2034) were
+requested. (As far as I can tell, they have never been highly popular.)
+------------------------------------------------------------------------------
+--- HWM 311 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
