@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.6 2004/11/25 13:54:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.5.2.1 2004/11/30 15:18:58 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -92,7 +92,7 @@ extern int     expand_string_integer(uschar *);
 
 extern int     filter_interpret(uschar *, int, address_item **, uschar **);
 extern BOOL    filter_personal(string_item *, BOOL);
-extern BOOL    filter_runtest(int, uschar *, BOOL, BOOL);
+extern BOOL    filter_runtest(int, BOOL, BOOL);
 extern BOOL    filter_system_interpret(address_item **, uschar **);
 
 extern void    header_add(int, char *, ...);
@@ -126,6 +126,9 @@ extern int     ip_socket(int, int);
 extern uschar *local_part_quote(uschar *lpart);
 extern void    log_close_all(void);
 
+#ifdef WITH_CONTENT_SCAN
+extern int     malware(uschar **);
+#endif
 extern int     match_address_list(uschar *, BOOL, BOOL, uschar **,
                  unsigned int *, int, int, uschar **);
 extern int     match_check_list(uschar **, int, tree_node **, unsigned int **,
@@ -139,6 +142,13 @@ extern void    md5_end(md5 *, const uschar *, int, uschar *);
 extern void    md5_mid(md5 *, const uschar *);
 extern void    md5_start(md5 *);
 extern void    millisleep(int);
+#ifdef WITH_CONTENT_SCAN
+struct mime_boundary_context;
+extern int     mime_acl_check(FILE *f, struct mime_boundary_context *,
+                              uschar **, uschar **);
+extern int     mime_decode(uschar **);
+extern int     mime_regex(uschar **);
+#endif
 extern uschar *moan_check_errorcopy(uschar *);
 extern BOOL    moan_skipped_syntax_errors(uschar *, error_block *, uschar *,
                  BOOL, uschar *);
@@ -183,6 +193,9 @@ extern BOOL    receive_check_set_sender(uschar *);
 extern BOOL    receive_msg(BOOL);
 extern int     receive_statvfs(BOOL, int *); 
 extern void    receive_swallow_smtp(void);
+#ifdef WITH_CONTENT_SCAN
+extern int     regex(uschar **);
+#endif
 extern BOOL    regex_match_and_setup(const pcre *, uschar *, int, int);
 extern const pcre *regex_must_compile(uschar *, BOOL, BOOL);
 extern void    retry_add_item(address_item *, uschar *, int);
@@ -243,6 +256,10 @@ extern int     smtp_setup_msg(void);
 extern BOOL    smtp_start_session(void);
 extern int     smtp_ungetc(int);
 extern int     smtp_write_command(smtp_outblock *, BOOL, char *, ...);
+#ifdef WITH_CONTENT_SCAN
+extern int     spam(uschar **);
+extern FILE   *spool_mbox(unsigned long long *);
+#endif
 extern BOOL    spool_move_message(uschar *, uschar *, uschar *, uschar *);
 extern BOOL    spool_open_datafile(uschar *);
 extern int     spool_open_temp(uschar *);
@@ -293,6 +310,10 @@ extern void    tree_add_unusable(host_item *);
 extern int     tree_insertnode(tree_node **, tree_node *);
 extern tree_node *tree_search(tree_node *, uschar *);
 extern void    tree_write(tree_node *, FILE *);
+
+#ifdef WITH_CONTENT_SCAN
+extern void    unspool_mbox(void);
+#endif
 
 extern int     verify_address(address_item *, FILE *, int, int, int, int,
                  uschar *, uschar *, BOOL *);

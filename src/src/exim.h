@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.3 2004/11/24 15:43:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.2.2.1 2004/11/30 15:18:58 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -279,11 +279,9 @@ header files. I don't suppose they have T_SRV either. */
 #endif
 
 /* We use the private type T_ZNS for retrieving the nameservers for the
-enclosing zone of a domain, and the private type T_MXH for retrieving
-the MX hostnames only (without their priorities). */
+enclosing zone of a domain. */
 
 #define T_ZNS (-1)
-#define T_MXH (-2)
 
 /* The resolv.h header defines __P(x) on some Solaris 2.5.1 systems (without
 checking that it is already defined, in fact). This conflicts with other
@@ -383,8 +381,8 @@ extern int ferror(FILE *);
 mytypes.h and store.h, so we don't need to mention them explicitly. */
 
 #include "local_scan.h"
-#include "macros.h"
 #include "config.h"
+#include "macros.h"
 #include "dbstuff.h"
 #include "structs.h"
 #include "globals.h"

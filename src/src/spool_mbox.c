@@ -1,10 +1,8 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.1.2.2 2004/11/26 16:04:26 tom Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.1.2.3 2004/11/30 15:18:58 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
-
-#ifdef WITH_CONTENT_SCAN
 
 /* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2003-???? */
 /* License: GPL */
@@ -13,10 +11,13 @@
 sub directory of exim's spool directory. */
 
 #include "exim.h"
+#ifdef WITH_CONTENT_SCAN
 
 /* externals, we must reset them on unspooling */
+#ifdef WITH_OLD_DEMIME
 extern int demime_ok;
 extern struct file_extension *file_extensions;
+#endif
 
 extern int malware_ok;
 extern int spam_ok;
@@ -126,10 +127,13 @@ FILE *spool_mbox(unsigned long long *mbox_file_size) {
 void unspool_mbox(void) {
 
   /* reset all exiscan state variables */
+  #ifdef WITH_OLD_DEMIME
   demime_ok = 0;
   demime_errorlevel = 0;
   demime_reason = NULL;
   file_extensions = NULL;
+  #endif
+  
   spam_ok = 0;
   malware_ok = 0;
   

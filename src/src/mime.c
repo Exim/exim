@@ -1,15 +1,14 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.1.2.2 2004/11/26 16:04:26 tom Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.1.2.3 2004/11/30 15:18:58 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-#ifdef WITH_CONTENT_SCAN
-
 /* Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004 */
 /* License: GPL */
 
 #include "exim.h"
+#ifdef WITH_CONTENT_SCAN
 #include "mime.h"
 #include <sys/stat.h>
 

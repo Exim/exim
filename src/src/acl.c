@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.5.2.1 2004/11/25 15:33:55 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.5.2.2 2004/11/30 15:18:58 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -49,7 +49,7 @@ enum { ACLC_ACL, ACLC_AUTHENTICATED, ACLC_CONDITION, ACLC_CONTROL,
 #endif
        ACLC_RECIPIENTS,
 #ifdef WITH_CONTENT_SCAN
-       ACLC_REGEX
+       ACLC_REGEX,
 #endif
        ACLC_SENDER_DOMAINS, ACLC_SENDERS, ACLC_SET,
 #ifdef WITH_CONTENT_SCAN
@@ -1384,6 +1384,9 @@ uschar *user_message = NULL;
 uschar *log_message = NULL;
 uschar *p;
 int rc = OK;
+#ifdef WITH_CONTENT_SCAN
+int sep = '/';
+#endif
 
 for (; cb != NULL; cb = cb->next)
   {

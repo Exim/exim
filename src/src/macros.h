@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.2.2.1 2004/11/25 15:33:55 tom Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.2.2.2 2004/11/30 15:18:58 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -733,6 +733,8 @@ ordered to make it easy to implement tests for certain ACLs when processing
 "control" modifiers, by means of a maximum "where" value. Do not modify this
 order without checking carefully! Furthermore, remember to keep these in step
 with the tables of names and response codes in globals.c. */
+
+/* FIXME: the #ifdef below does not work here. Why? */
 
 enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_MAIL,       /* )                                           */
