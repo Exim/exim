@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.7 2005/02/16 16:28:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.8 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -338,7 +338,7 @@ while (p > big_buffer && isdigit(p[-1])) p--;
 uid = Uatoi(p);
 if (p <= big_buffer || *(--p) != ' ') goto SPOOL_FORMAT_ERROR;
 *p = 0;
- 
+
 originator_login = string_copy(big_buffer);
 originator_uid = (uid_t)uid;
 originator_gid = (gid_t)gid;
@@ -392,9 +392,9 @@ for (;;)
     local_error_message = TRUE;
   else if (Ustrncmp(big_buffer, "-local_scan ", 12) == 0)
     local_scan_data = string_copy(big_buffer + 12);
-#ifdef WITH_CONTENT_SCAN    
+#ifdef WITH_CONTENT_SCAN
   else if (Ustrncmp(big_buffer, "-spam_score_int ", 16) == 0)
-    spam_score_int = string_copy(big_buffer + 16);  
+    spam_score_int = string_copy(big_buffer + 16);
 #endif
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   else if (Ustrncmp(big_buffer, "-bmi_verdicts ", 14) == 0)
@@ -454,7 +454,7 @@ for (;;)
     }
 
   else if (Ustrncmp(big_buffer, "-active_hostname", 16) == 0)
-    smtp_active_hostname = string_copy(big_buffer + 17);  
+    smtp_active_hostname = string_copy(big_buffer + 17);
   else if (Ustrncmp(big_buffer, "-host_auth", 10) == 0)
     sender_host_authenticated = string_copy(big_buffer + 11);
   else if (Ustrncmp(big_buffer, "-host_name", 10) == 0)

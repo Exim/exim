@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.6 2005/02/17 09:49:08 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.7 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2101,7 +2101,7 @@ if (*filter->pc=='{')
     }
   else
     {
-    filter->errmsg=CUS "expecting command or closing brace"; 
+    filter->errmsg=CUS "expecting command or closing brace";
     return -1;
     }
   }
@@ -2373,7 +2373,7 @@ while (*filter->pc)
 
     int m;
     unsigned long days;
-    struct String *addresses=(struct String*)0;
+    struct String *addresses;
     struct String subject;
     int reason_is_mime;
     string_item *aliases;
@@ -2394,6 +2394,7 @@ while (*filter->pc)
       filter->vacation_ran=1;
       }
     days=VACATION_MIN_DAYS>7 ? VACATION_MIN_DAYS : 7;
+    addresses=(struct String*)0;
     subject.character=(uschar*)0;
     subject.length=-1;
     aliases=NULL;
@@ -2458,6 +2459,7 @@ while (*filter->pc)
       uschar *buffer;
       int buffer_capacity;
       struct String key;
+      struct String *a;
       md5 base;
       uschar digest[16];
       uschar hexdigest[33];
@@ -2479,6 +2481,11 @@ while (*filter->pc)
         if (subject.length!=-1) key.character=string_cat(key.character,&capacity,&key.length,subject.character,subject.length);
         key.character=string_cat(key.character,&capacity,&key.length,reason_is_mime?US"1":US"0",1);
         key.character=string_cat(key.character,&capacity,&key.length,reason.character,reason.length);
+        if (addresses!=(struct String*)0) for (a=addresses; a->length!=-1; ++a)
+          {
+          key.character=string_cat(key.character,&capacity,&key.length,US":",1);
+          key.character=string_cat(key.character,&capacity,&key.length,a->character,a->length);
+          }
         md5_start(&base);
         md5_end(&base, key.character, key.length, digest);
         for (i = 0; i < 16; i++) sprintf(CS (hexdigest+2*i), "%02X", digest[i]);
@@ -2514,7 +2521,7 @@ while (*filter->pc)
         addr->reply = store_get(sizeof(reply_item));
         memset(addr->reply,0,sizeof(reply_item)); /* XXX */
         addr->reply->to = string_copy(sender_address);
-        addr->reply->from = expand_string(US"$local_part@$domain"); 
+        addr->reply->from = expand_string(US"$local_part@$domain");
         /* Allocation is larger than neccessary, but enough even for split MIME words */
         buffer_capacity=16+4*subject.length;
         buffer=store_get(buffer_capacity);

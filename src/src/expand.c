@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.12 2005/01/25 14:16:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.13 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -285,7 +285,7 @@ enum {
   vtype_host_lookup,    /* value not used; get host name */
   vtype_load_avg,       /* value not used; result is int from os_getloadavg */
   vtype_pspace,         /* partition space; value is T/F for spool/log */
-  vtype_pinodes         /* partition inodes; value is T/F for spool/log */  
+  vtype_pinodes         /* partition inodes; value is T/F for spool/log */
   };
 
 /* This table must be kept in alphabetical order. */
@@ -346,7 +346,7 @@ static var_entry var_table[] = {
   { "exim_uid",            vtype_uid,         &exim_uid },
 #ifdef WITH_OLD_DEMIME
   { "found_extension",     vtype_stringptr,   &found_extension },
-#endif 
+#endif
   { "home",                vtype_stringptr,   &deliver_home },
   { "host",                vtype_stringptr,   &deliver_host },
   { "host_address",        vtype_stringptr,   &deliver_host_address },
@@ -369,7 +369,7 @@ static var_entry var_table[] = {
   { "local_user_uid",      vtype_uid,         &local_user_uid },
   { "localhost_number",    vtype_int,         &host_number },
   { "log_inodes",          vtype_pinodes,     (void *)FALSE },
-  { "log_space",           vtype_pspace,      (void *)FALSE },  
+  { "log_space",           vtype_pspace,      (void *)FALSE },
   { "mailstore_basename",  vtype_stringptr,   &mailstore_basename },
 #ifdef WITH_CONTENT_SCAN
   { "malware_name",        vtype_stringptr,   &malware_name },
@@ -426,7 +426,7 @@ static var_entry var_table[] = {
   { "received_for",        vtype_stringptr,   &received_for },
   { "received_protocol",   vtype_stringptr,   &received_protocol },
   { "recipient_data",      vtype_stringptr,   &recipient_data },
-  { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure }, 
+  { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure },
   { "recipients",          vtype_recipients,  NULL },
   { "recipients_count",    vtype_int,         &recipients_count },
 #ifdef WITH_CONTENT_SCAN
@@ -450,8 +450,8 @@ static var_entry var_table[] = {
   { "sender_host_port",    vtype_int,         &sender_host_port },
   { "sender_ident",        vtype_stringptr,   &sender_ident },
   { "sender_rcvhost",      vtype_stringptr,   &sender_rcvhost },
-  { "sender_verify_failure",vtype_stringptr,  &sender_verify_failure }, 
-  { "smtp_active_hostname", vtype_stringptr,  &smtp_active_hostname }, 
+  { "sender_verify_failure",vtype_stringptr,  &sender_verify_failure },
+  { "smtp_active_hostname", vtype_stringptr,  &smtp_active_hostname },
   { "smtp_command_argument", vtype_stringptr, &smtp_command_argument },
   { "sn0",                 vtype_filter_int,  &filter_sn[0] },
   { "sn1",                 vtype_filter_int,  &filter_sn[1] },
@@ -477,7 +477,7 @@ static var_entry var_table[] = {
 #endif
   { "spool_directory",     vtype_stringptr,   &spool_directory },
   { "spool_inodes",        vtype_pinodes,     (void *)TRUE },
-  { "spool_space",         vtype_pspace,      (void *)TRUE },  
+  { "spool_space",         vtype_pspace,      (void *)TRUE },
 #ifdef EXPERIMENTAL_SRS
   { "srs_db_address",      vtype_stringptr,   &srs_db_address },
   { "srs_db_key",          vtype_stringptr,   &srs_db_key },
@@ -1375,19 +1375,19 @@ while (last > first)
       s[ptr] = 0;     /* string_cat() leaves room */
       }
     return s;
-    
+
     case vtype_pspace:
       {
       int inodes;
-      sprintf(CS var_buffer, "%d", 
-        receive_statvfs(var_table[middle].value == (void *)TRUE, &inodes));  
+      sprintf(CS var_buffer, "%d",
+        receive_statvfs(var_table[middle].value == (void *)TRUE, &inodes));
       }
     return var_buffer;
-    
+
     case vtype_pinodes:
       {
       int inodes;
-      (void) receive_statvfs(var_table[middle].value == (void *)TRUE, &inodes);  
+      (void) receive_statvfs(var_table[middle].value == (void *)TRUE, &inodes);
       sprintf(CS var_buffer, "%d", inodes);
       }
     return var_buffer;
@@ -2235,7 +2235,7 @@ uschar *sub1, *sub2;
 
 /* If there are no following strings, we substitute the contents of $value for
 lookups and for extractions in the success case. For the ${if item, the string
-"true" is substituted. In the fail case, nothing is substituted for all three 
+"true" is substituted. In the fail case, nothing is substituted for all three
 items. */
 
 while (isspace(*s)) s++;
@@ -2243,10 +2243,10 @@ if (*s == '}')
   {
   if (type[0] == 'i')
     {
-    if (yes) *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, US"true", 4); 
+    if (yes) *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, US"true", 4);
     }
   else
-    {      
+    {
     if (yes && lookup_value != NULL)
       *yieldptr = string_cat(*yieldptr, sizeptr, ptrptr, lookup_value,
         Ustrlen(lookup_value));

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.16 2005/02/16 16:28:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.17 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -205,7 +205,7 @@ int     acl_wherecodes[]       = { 550,     /* RCPT */
                                    550,     /* PREDATA */
 #ifdef WITH_CONTENT_SCAN
                                    550,     /* MIME */
-#endif                                   
+#endif
                                    550,     /* DATA */
                                    0,       /* not SMTP; not relevant */
                                    503,     /* AUTH */
@@ -218,7 +218,7 @@ int     acl_wherecodes[]       = { 550,     /* RCPT */
                                    550,     /* STARTTLS */
                                    252      /* VRFY */
                                  };
-                                 
+
 BOOL    active_local_from_check = FALSE;
 BOOL    active_local_sender_retain = FALSE;
 BOOL    accept_8bitmime        = FALSE;
@@ -847,7 +847,7 @@ router_instance  router_defaults = {
     NULL,                      /* address_data */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
     NULL,                      /* bmi_rule */
-#endif    
+#endif
     NULL,                      /* cannot_route_message */
     NULL,                      /* condition */
     NULL,                      /* current_directory */
@@ -1035,7 +1035,7 @@ uschar *srs_orig_recipient     = NULL;
 uschar *srs_orig_sender        = NULL;
 uschar *srs_recipient          = NULL;
 uschar *srs_status             = NULL;
-#endif      
+#endif
 int     string_datestamp_offset= -1;
 BOOL    strip_excess_angle_brackets = FALSE;
 BOOL    strip_trailing_dot     = FALSE;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/srs.c,v 1.3 2004/12/17 14:52:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/srs.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -21,7 +21,7 @@ uschar   *srs_db_reverse        = NULL;
 
 /* srs_init just initialises libsrs and creates (if necessary)
    an srs object to use for all srs calls in this instance */
-   
+
 int eximsrs_init()
 {
   int co;
@@ -32,7 +32,7 @@ int eximsrs_init()
   char *sbufp;
   int hashlen, maxage;
 
-  
+
   if(!srs)
   {
     /* Check config */
@@ -42,7 +42,7 @@ int eximsrs_init()
           "SRS Configuration Error");
       return DEFER;
     }
-    
+
     /* Get config */
     co = 0;
     if((secret = string_nextinlist(&list, &co, secret_buf,
@@ -52,7 +52,7 @@ int eximsrs_init()
           "SRS Configuration Error: No secret specified");
       return DEFER;
     }
-    
+
     if((sbufp = string_nextinlist(&list, &co, sbuf, sizeof(sbuf))) == NULL)
       maxage = 31;
     else
@@ -74,8 +74,8 @@ int eximsrs_init()
           "SRS Configuration Error: Invalid hash length");
       return DEFER;
     }
-    
-    
+
+
     if((srs = srs_open(secret, strnlen(secret, SRS_MAX_SECRET_LENGTH),
                       maxage, hashlen, hashlen)) == NULL)
     {
@@ -87,7 +87,7 @@ int eximsrs_init()
 
     if((sbufp = string_nextinlist(&list, &co, sbuf, sizeof(sbuf))) != NULL)
       srs_set_option(srs, SRS_OPTION_USETIMESTAMP, atoi(sbuf));
-    
+
     if((sbufp = string_nextinlist(&list, &co, sbuf, sizeof(sbuf))) != NULL)
       srs_set_option(srs, SRS_OPTION_USEHASH, atoi(sbuf));
 
@@ -103,7 +103,7 @@ int eximsrs_done()
 {
   if(srs)
     srs_close(srs);
-  
+
   srs = NULL;
 
   return OK;
@@ -154,10 +154,10 @@ int eximsrs_db_set(BOOL reverse, uschar *srs_db)
     srs_db_reverse = string_copy(srs_db);
   else
     srs_db_forward = string_copy(srs_db);
-    
+
   if(srs_set_db_functions(srs, eximsrs_db_insert, eximsrs_db_lookup) * SRS_RESULT_FAIL)
     return DEFER;
-  
+
   return OK;
 }
 
@@ -170,15 +170,15 @@ srs_result eximsrs_db_insert(srs_t *srs, char *data, uint data_len, char *result
   srs_db_address = string_copyn(data, data_len);
   if(srs_generate_unique_id(srs, srs_db_address, buf, 64) & SRS_RESULT_FAIL)
     return DEFER;
-  
+
   srs_db_key = string_copyn(buf, 16);
-  
+
   if((res = expand_string(srs_db_forward)) == NULL)
     return SRS_RESULT_DBERROR;
-  
+
   if(result_len < 17)
     return SRS_RESULT_DBERROR;
-    
+
   strncpy(result, srs_db_key, result_len);
 
   return SRS_RESULT_OK;
@@ -192,10 +192,10 @@ srs_result eximsrs_db_lookup(srs_t *srs, char *data, uint data_len, char *result
   srs_db_key = string_copyn(data, data_len);
   if((res = expand_string(srs_db_reverse)) == NULL)
     return SRS_RESULT_DBERROR;
-  
+
   if(Ustrlen(res) >= result_len)
     return SRS_RESULT_ADDRESSTOOLONG;
-    
+
   strncpy(result, res, result_len);
 
   return SRS_RESULT_OK;

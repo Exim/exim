@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.8 2005/02/16 15:24:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.9 2005/02/17 11:58:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -362,7 +362,7 @@ if (pid == 0)
   int i;
   int queue_only_reason = 0;
   int old_pool = store_pool;
-  int save_debug_selector = debug_selector; 
+  int save_debug_selector = debug_selector;
   BOOL local_queue_only;
   #ifdef SA_NOCLDWAIT
   struct sigaction act;
@@ -433,16 +433,16 @@ if (pid == 0)
   /* Attempt to get an id from the sending machine via the RFC 1413
   protocol. We do this in the sub-process in order not to hold up the
   main process if there is any delay. Then set up the fullhost information
-  in case there is no HELO/EHLO. 
-  
-  If debugging is enabled only for the daemon, we must turn if off while 
-  finding the id, but turn it on again afterwards so that information about the 
+  in case there is no HELO/EHLO.
+
+  If debugging is enabled only for the daemon, we must turn if off while
+  finding the id, but turn it on again afterwards so that information about the
   incoming connection is output. */
-  
+
   if (debug_daemon) debug_selector = 0;
   verify_get_ident(IDENT_PORT);
   host_build_sender_fullhost();
-  debug_selector = save_debug_selector; 
+  debug_selector = save_debug_selector;
 
   DEBUG(D_any)
     debug_printf("Process %d is handling incoming connection from %s\n",
@@ -801,7 +801,7 @@ while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
   DEBUG(D_any) debug_printf("child %d ended: status=0x%x\n", (int)pid,
     status);
 
-  /* If it's a listening daemon for which we are keeping track of individual 
+  /* If it's a listening daemon for which we are keeping track of individual
   subprocesses, deal with an accepting process that has terminated. */
 
   if (smtp_slots != NULL)
@@ -965,7 +965,7 @@ if (daemon_listen)
 
   #ifdef LOAD_AVG_NEEDS_ROOT
   if (queue_only_load >= 0 || smtp_load_reserve >= 0 ||
-       (deliver_queue_load_max >= 0 && deliver_drop_privilege)) 
+       (deliver_queue_load_max >= 0 && deliver_drop_privilege))
     (void)os_getloadavg();
   #endif
 
@@ -1211,11 +1211,11 @@ if (background_daemon)
   close(0);           /* Get rid of stdin/stdout/stderr */
   close(1);
   close(2);
-  exim_nullstd();     /* Connect stdin/stdout/stderr to /dev/null */ 
+  exim_nullstd();     /* Connect stdin/stdout/stderr to /dev/null */
   log_stderr = NULL;  /* So no attempt to copy paniclog output */
 
   /* If the parent process of this one has pid == 1, we are re-initializing the
-  daemon as the result of a SIGHUP. In this case, there is no need to do 
+  daemon as the result of a SIGHUP. In this case, there is no need to do
   anything, because the controlling terminal has long gone. Otherwise, fork, in
   case current process is a process group leader (see 'man setsid' for an
   explanation) before calling setsid(). */
@@ -1599,16 +1599,16 @@ for (;;)
       if ((pid = fork()) == 0)
         {
         int sk;
-        
+
         DEBUG(D_any) debug_printf("Starting queue-runner: pid %d\n",
           (int)getpid());
 
         /* Disable debugging if it's required only for the daemon process. We
-        leave the above message, because it ties up with the "child ended" 
+        leave the above message, because it ties up with the "child ended"
         debugging messages. */
 
         if (debug_daemon) debug_selector = 0;
- 
+
         /* Close any open listening sockets in the child */
 
         for (sk = 0; sk < listen_socket_count; sk++) close(listen_sockets[sk]);
@@ -1700,42 +1700,42 @@ for (;;)
       }
 
     DEBUG(D_any) debug_printf("Listening...\n");
-    
-    /* In rare cases we may have had a SIGCHLD signal in the time between 
-    setting the handler (below) and getting back here. If so, pretend that the 
+
+    /* In rare cases we may have had a SIGCHLD signal in the time between
+    setting the handler (below) and getting back here. If so, pretend that the
     select() was interrupted so that we reap the child. This might still leave
-    a small window when a SIGCHLD could get lost. However, since we use SIGCHLD 
+    a small window when a SIGCHLD could get lost. However, since we use SIGCHLD
     only to do the reaping more quickly, it shouldn't result in anything other
     than a delay until something else causes a wake-up. */
 
     if (sigchld_seen)
       {
       lcount = -1;
-      errno = EINTR;  
+      errno = EINTR;
       }
     else
-      {      
+      {
       lcount = select(max_socket + 1, (SELECT_ARG2_TYPE *)&select_listen,
         NULL, NULL, NULL);
-      }   
+      }
 
     if (lcount < 0)
       {
       select_failed = TRUE;
       lcount = 1;
       }
-      
-    /* Clean up any subprocesses that may have terminated. We need to do this 
-    here so that smtp_accept_max_per_host works when a connection to that host 
-    has completed, and we are about to accept a new one. When this code was 
-    later in the sequence, a new connection could be rejected, even though an 
-    old one had just finished. Preserve the errno from any select() failure for 
+
+    /* Clean up any subprocesses that may have terminated. We need to do this
+    here so that smtp_accept_max_per_host works when a connection to that host
+    has completed, and we are about to accept a new one. When this code was
+    later in the sequence, a new connection could be rejected, even though an
+    old one had just finished. Preserve the errno from any select() failure for
     the use of the common select/accept error processing below. */
-    
+
     select_errno = errno;
     handle_ending_processes();
-    errno = select_errno; 
-      
+    errno = select_errno;
+
     /* Loop for all the sockets that are currently ready to go. If select
     actually failed, we have set the count to 1 and select_failed=TRUE, so as
     to use the common error code for select/accept below. */
@@ -1830,7 +1830,7 @@ for (;;)
     tv.tv_sec = queue_interval;
     tv.tv_usec = 0;
     select(0, NULL, NULL, NULL, &tv);
-    handle_ending_processes(); 
+    handle_ending_processes();
     }
 
   /* Re-enable the SIGCHLD handler if it has been run. It can't do it

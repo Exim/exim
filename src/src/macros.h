@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.8 2005/01/12 12:51:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.9 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -231,7 +231,7 @@ enum {
 
 #define FTEST_NONE     0    /* Not filter testing */
 #define FTEST_USER     1    /* Testing user filter */
-#define FTEST_SYSTEM   2    /* Testing system filter */ 
+#define FTEST_SYSTEM   2    /* Testing system filter */
 
 /* Returns from the routing, transport and authentication functions (not all
 apply to all of them). Some other functions also use these convenient values,

@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exicyclog.src,v 1.2 2004/12/21 16:26:31 ph10 Exp $
+# $Cambridge: exim/src/src/exicyclog.src,v 1.3 2005/02/17 11:58:26 ph10 Exp $
 
 # Copyright (c) 2004 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -24,9 +24,9 @@
 # This is a shell script for cycling exim main and reject log files. Each time
 # it is run, the files get "shuffled down" by one, the current one (e.g.
 # mainlog) becoming mainlog.01, the previous mainlog.01 becoming mainlog.02,
-# and so on, up to the limit configured here. When the number to keep is 
-# greater than 99 (not common, but some people do it), three digits are used 
-# (e.g. mainlog.001). The same shuffling happens to the reject logs. All 
+# and so on, up to the limit configured here. When the number to keep is
+# greater than 99 (not common, but some people do it), three digits are used
+# (e.g. mainlog.001). The same shuffling happens to the reject logs. All
 # renamed files with numbers greater than 1 are compressed.
 
 # This script should be called regularly (e.g. daily) by a root crontab
@@ -209,13 +209,13 @@ if [ $count -lt 10 ]; then countt=0$count; else countt=$count; fi
 while [ $count -gt 1 ]; do
   old=`expr $count - 1`
   if [ $keep -gt 99 ]; then
-    if   [ $old -lt 10 ]; then oldt=00$old 
+    if   [ $old -lt 10 ]; then oldt=00$old
     elif [ $old -lt 100 ]; then oldt=0$old
     else oldt=$old
-    fi   
-  else 
+    fi
+  else
     if [ $old -lt 10 ]; then oldt=0$old; else oldt=$old; fi;
-  fi   
+  fi
   if [ -f $mainlog.$oldt ]; then
     $mv $mainlog.$oldt $mainlog.$countt
   elif [ -f $mainlog.$oldt.$suffix ]; then
@@ -254,10 +254,10 @@ while [ $count -le $keep ]; do
     if   [ $count -lt 10 ]; then countt=00$count
     elif [ $count -lt 100 ]; then countt=0$count
     else countt=$count
-    fi    
-  else 
+    fi
+  else
     if [ $count -lt 10 ]; then countt=0$count; else countt=$count; fi
-  fi   
+  fi
   if [ -f $mainlog.$countt ]; then $compress $mainlog.$countt; fi
   if [ -f $mainlog.$countt.$suffix ]; then
     $chown $user:$group $mainlog.$countt.$suffix

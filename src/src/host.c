@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.8 2005/01/25 14:16:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.9 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -102,9 +102,9 @@ and IPv6 addresses!
 Arguments:
   host        -> the first host item
   last        -> the last host item
-  
+
 Returns:      nothing
-*/  
+*/
 
 static void
 sort_addresses(host_item *host, host_item *last)
@@ -735,7 +735,7 @@ host_aton(uschar *address, int *bin)
 int x[4];
 int v4offset = 0;
 
-/* Handle IPv6 address, which may end with an IPv4 address. It may also end 
+/* Handle IPv6 address, which may end with an IPv4 address. It may also end
 with a "scope", introduced by a percent sign. This code is NOT enclosed in #if
 HAVE_IPV6 in order that IPv6 addresses are recognized even if IPv6 is not
 supported. */
@@ -752,21 +752,21 @@ if (Ustrchr(address, ':') != NULL)
 
   /* If the address starts with a colon, it will start with two colons.
   Just lose the first one, which will leave a null first component. */
-  
+
   if (*p == ':') p++;
 
-  /* Split the address into components separated by colons. The input address 
-  is supposed to be checked for syntax. There was a case where this was 
-  overlooked; to guard against that happening again, check here and crash if 
+  /* Split the address into components separated by colons. The input address
+  is supposed to be checked for syntax. There was a case where this was
+  overlooked; to guard against that happening again, check here and crash if
   there are too many components. */
 
   while (*p != 0 && *p != '%')
     {
     int len = Ustrcspn(p, ":%");
     if (len == 0) nulloffset = ci;
-    if (ci > 7) log_write(0, LOG_MAIN|LOG_PANIC_DIE, 
+    if (ci > 7) log_write(0, LOG_MAIN|LOG_PANIC_DIE,
       "Internal error: invalid IPv6 address \"%s\" passed to host_aton()",
-      address);  
+      address);
     component[ci++] = p;
     p += len;
     if (*p == ':') p++;
@@ -865,7 +865,7 @@ byte order, and these are the result of host_aton(), which puts them in ints in
 host byte order. Also, we really want IPv6 addresses to be in a canonical
 format, so we output them with no abbreviation. In a number of cases we can't
 use the normal colon separator in them because it terminates keys in lsearch
-files, so we want to use dot instead. There's an argument that specifies what 
+files, so we want to use dot instead. There's an argument that specifies what
 to use for IPv6 addresses.
 
 Arguments:
@@ -873,7 +873,7 @@ Arguments:
   binary      points to the ints
   mask        mask value; if < 0 don't add to result
   buffer      big enough to hold the result
-  sep         component separator character for IPv6 addresses 
+  sep         component separator character for IPv6 addresses
 
 Returns:      the number of characters placed in buffer, not counting
               the final nul.
@@ -1336,7 +1336,7 @@ Returns:      OK on success, the answer being placed in the global variable
 
 The variable host_lookup_msg is set to an empty string on sucess, or to a
 reason for the failure otherwise, in a form suitable for tagging onto an error
-message, and also host_lookup_failed is set TRUE if the lookup failed. If there 
+message, and also host_lookup_failed is set TRUE if the lookup failed. If there
 was a defer, host_lookup_deferred is set TRUE.
 
 Any dynamically constructed string for host_lookup_msg must be in permanent
@@ -1370,7 +1370,7 @@ if (running_in_test_harness &&
   {
   HDEBUG(D_host_lookup)
     debug_printf("Test harness: host name lookup returns DEFER\n");
-  host_lookup_deferred = TRUE;   
+  host_lookup_deferred = TRUE;
   return DEFER;
   }
 
@@ -1460,7 +1460,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
       {
       HDEBUG(D_host_lookup)
         debug_printf("IP address PTR lookup gave temporary error\n");
-      host_lookup_deferred = TRUE;   
+      host_lookup_deferred = TRUE;
       return DEFER;
       }
     }
@@ -1472,11 +1472,11 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
     HDEBUG(D_host_lookup)
       debug_printf("IP address lookup using gethostbyaddr()\n");
     rc = host_name_lookup_byaddr();
-    if (rc == DEFER) 
+    if (rc == DEFER)
       {
-      host_lookup_deferred = TRUE;   
+      host_lookup_deferred = TRUE;
       return rc;                       /* Can't carry on */
-      } 
+      }
     if (rc == OK) break;               /* Found a name */
     }
   }      /* Loop for bydns/byaddr scanning */
@@ -1578,7 +1578,7 @@ for (hname = sender_host_name; hname != NULL; hname = *aliases++)
   else if (rc == HOST_FIND_AGAIN)
     {
     HDEBUG(D_host_lookup) debug_printf("temporary error for host name lookup\n");
-    host_lookup_deferred = TRUE;   
+    host_lookup_deferred = TRUE;
     return DEFER;
     }
   else
@@ -1684,7 +1684,7 @@ if (running_in_test_harness)
   uschar *endname = host->name + Ustrlen(host->name);
   if (Ustrcmp(endname - 14, "test.again.dns") == 0)
     return HOST_FIND_AGAIN;
-  }   
+  }
 
 /* In an IPv6 world, we need to scan for both kinds of address, so go round the
 loop twice. Note that we have ensured that AF_INET6 is defined even in an IPv4
@@ -2002,7 +2002,7 @@ for (; i >= 0; i--)
   fails or times out, but not if another one succeeds. (In the early
   IPv6 days there are name servers that always fail on AAAA, but are happy
   to give out an A record. We want to proceed with that A record.) */
-  
+
   if (rc != DNS_SUCCEED)
     {
     if (i == 0)  /* Just tried for an A record, i.e. end of loop */
@@ -2292,7 +2292,7 @@ if (rc != DNS_SUCCEED)
 
   /* When running in the test harness, sort into the order of addresses so as
   to get repeatability. */
-  
+
   if (running_in_test_harness) sort_addresses(host, last);
 
   DEBUG(D_host_lookup)

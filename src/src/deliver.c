@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.6 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.7 2005/02/17 11:58:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2598,8 +2598,8 @@ completed.
 
 Each separate item is written to the pipe in a single write(), and as they are
 all short items, the writes will all be atomic and we should never find
-ourselves in the position of having read an incomplete item. "Short" in this 
-case can mean up to about 1K in the case when there is a long error message 
+ourselves in the position of having read an incomplete item. "Short" in this
+case can mean up to about 1K in the case when there is a long error message
 associated with an address. */
 
 DEBUG(D_deliver) debug_printf("reading pipe for subprocess %d (%s)\n",
@@ -6337,7 +6337,7 @@ if (addr_defer == NULL)
     }
 
   /* Remove the two message files. */
-  
+
   sprintf(CS spoolname, "%s/input/%s/%s-D", spool_directory, message_subdir, id);
   if (Uunlink(spoolname) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s", spoolname);
@@ -6348,7 +6348,7 @@ if (addr_defer == NULL)
   /* Log the end of this message, with queue time if requested. */
 
   if ((log_extra_selector & LX_queue_time_overall) != 0)
-    log_write(0, LOG_MAIN, "Completed QT=%s", 
+    log_write(0, LOG_MAIN, "Completed QT=%s",
       readconf_printtime(time(NULL) - received_time));
   else
     log_write(0, LOG_MAIN, "Completed");

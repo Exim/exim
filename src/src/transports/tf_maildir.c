@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.3 2005/01/04 10:00:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.4 2005/02/17 11:58:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -436,13 +436,13 @@ values is negative. */
 
 if (*endptr == 0)
   {
-  if (size < 0 || filecount < 0) 
+  if (size < 0 || filecount < 0)
     {
     DEBUG(D_transport) debug_printf("negative value in maildirsize "
-      "(size=%d count=%d): recalculating\n", size, filecount); 
-    goto RECALCULATE; 
-    } 
- 
+      "(size=%d count=%d): recalculating\n", size, filecount);
+    goto RECALCULATE;
+    }
+
   if (ob->quota_value > 0 &&
       (size + (ob->quota_is_inclusive? message_size : 0) > ob->quota_value ||
         (ob->quota_filecount_value > 0 &&

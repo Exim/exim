@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.5 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.6 2005/02/17 11:58:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -480,9 +480,9 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
   if (strcmp(name, "CONFIGURE_OWNER") == 0 ||
       strcmp(name, "CONFIGURE_GROUP") == 0)
     {
-    int isgroup = name[10] == 'G'; 
+    int isgroup = name[10] == 'G';
     uid_t uid = 0;
-    gid_t gid = 0; 
+    gid_t gid = 0;
     char *s;
     char *username = NULL;
     char *user = getenv(name);
@@ -512,7 +512,7 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
       {
       if (isgroup)
         gid = (gid_t)atoi(user);
-      else    
+      else
         uid = (uid_t)atoi(user);
       }
 
@@ -560,13 +560,13 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
       {
       if (isgroup)
         fprintf(new, "#define CONFIGURE_GROUPNAME         \"%s\"\n", username);
-      else 
+      else
         fprintf(new, "#define CONFIGURE_OWNERNAME         \"%s\"\n", username);
       }
-    
+
     if (isgroup)
       fprintf(new, "#define CONFIGURE_GROUP              %d\n", (int)gid);
-    else   
+    else
       fprintf(new, "#define CONFIGURE_OWNER              %d\n", (int)uid);
     continue;
     }
@@ -595,16 +595,16 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
       for (i = 1, j = 0; i <= count; list++, i++)
         {
         char name[64];
-         
+
         p = list;
         while (*list != 0 && *list != ':') list++;
         strncpy(name, p, list-p);
         name[list-p] = 0;
-        
+
         if (name[0] == 0)
           {
-          continue; 
-          }  
+          continue;
+          }
         else if (name[strspn(name, "0123456789")] == 0)
           {
           vector[j++] = (uid_t)atoi(name);
@@ -629,8 +629,8 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
     continue;
     }
 
-  /* WITH_CONTENT_SCAN is another special case: it must be set if either it or 
-  WITH_OLD_DEMIME is set. */  
+  /* WITH_CONTENT_SCAN is another special case: it must be set if either it or
+  WITH_OLD_DEMIME is set. */
 
   if (strcmp(name, "WITH_CONTENT_SCAN") == 0)
     {
@@ -640,7 +640,7 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
       fprintf(new, "#define WITH_CONTENT_SCAN     yes\n");
     else fprintf(new, "/* WITH_CONTENT_SCAN not set */\n");
     continue;
-    } 
+    }
 
   /* Otherwise, check whether a value exists in the environment. Remember if
   it is an AUTH setting or SUPPORT_CRYPTEQ. */

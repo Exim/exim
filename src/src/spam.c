@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.3 2004/12/17 14:52:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -59,17 +59,17 @@ int spam(uschar **listptr) {
     override = 1;
   };
 
-  /* if we scanned for this username last time, just return */ 
+  /* if we scanned for this username last time, just return */
   if ( spam_ok && ( Ustrcmp(prev_user_name, user_name) == 0 ) ) {
     if (override)
       return OK;
     else
       return spam_rc;
   };
-  
+
   /* make sure the eml mbox file is spooled up */
   mbox_file = spool_mbox(&mbox_size);
-  
+
   if (mbox_file == NULL) {
     /* error while spooling */
     log_write(0, LOG_MAIN|LOG_PANIC,
@@ -93,23 +93,23 @@ int spam(uschar **listptr) {
     while ((address = string_nextinlist(&spamd_address_list_ptr, &sep,
                                         address_buffer,
                                         sizeof(address_buffer))) != NULL) {
-      
+
       spamd_address_container *this_spamd =
         (spamd_address_container *)store_get(sizeof(spamd_address_container));
-      
+
       /* grok spamd address and port */
       if( sscanf(CS address, "%s %u", this_spamd->tcp_addr, &(this_spamd->tcp_port)) != 2 ) {
         log_write(0, LOG_MAIN,
           "spam acl condition: warning - invalid spamd address: '%s'", address);
         continue;
       };
-      
+
       spamd_address_vector[num_servers] = this_spamd;
       num_servers++;
       if (num_servers > 31)
         break;
     };
-    
+
     /* check if we have at least one server */
     if (!num_servers) {
       log_write(0, LOG_MAIN|LOG_PANIC,
@@ -121,19 +121,19 @@ int spam(uschar **listptr) {
     current_server = start_server = (int)now % num_servers;
 
     while (1) {
-      
+
       debug_printf("trying server %s, port %u\n",
                    spamd_address_vector[current_server]->tcp_addr,
                    spamd_address_vector[current_server]->tcp_port);
-      
+
       /* contact a spamd */
       if ( (spamd_sock = ip_socket(SOCK_STREAM, AF_INET)) < 0) {
         log_write(0, LOG_MAIN|LOG_PANIC,
            "spam acl condition: error creating IP socket for spamd");
         fclose(mbox_file);
-        return DEFER; 
+        return DEFER;
       };
-      
+
       if (ip_connect( spamd_sock,
                       AF_INET,
                       spamd_address_vector[current_server]->tcp_addr,
@@ -142,7 +142,7 @@ int spam(uschar **listptr) {
         /* connection OK */
         break;
       };
-      
+
       log_write(0, LOG_MAIN|LOG_PANIC,
          "spam acl condition: warning - spamd connection to %s, port %u failed: %s",
          spamd_address_vector[current_server]->tcp_addr,
@@ -222,7 +222,7 @@ int spam(uschar **listptr) {
 
   /* we're done sending, close socket for writing */
   shutdown(spamd_sock,SHUT_WR);
-  
+
   /* read spamd response */
   memset(spamd_buffer, 0, sizeof(spamd_buffer));
   offset = 0;
@@ -247,7 +247,7 @@ int spam(uschar **listptr) {
   /* dig in the spamd output and put the report in a multiline header, if requested */
   if( sscanf(CS spamd_buffer,"SPAMD/%s 0 EX_OK\r\nContent-length: %*u\r\n\r\n%lf/%lf\r\n%n",
              spamd_version,&spamd_score,&spamd_threshold,&spamd_report_offset) != 3 ) {
-              
+
     /* try to fall back to pre-2.50 spamd output */
     if( sscanf(CS spamd_buffer,"SPAMD/%s 0 EX_OK\r\nSpam: %*s ; %lf / %lf\r\n\r\n%n",
                spamd_version,&spamd_score,&spamd_threshold,&spamd_report_offset) != 3 ) {
@@ -323,11 +323,11 @@ int spam(uschar **listptr) {
     /* not spam */
     spam_rc = FAIL;
   };
-  
+
   /* remember user name and "been here" for it */
   Ustrcpy(prev_user_name, user_name);
   spam_ok = 1;
-  
+
   if (override) {
     /* always return OK, no matter what the score */
     return OK;

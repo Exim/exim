@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.10 2005/01/13 16:22:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.11 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -826,7 +826,7 @@ bmi_verdicts = NULL;
 #ifdef EXPERIMENTAL_SPF
 spf_header_comment = NULL;
 spf_received = NULL;
-spf_result = NULL;  
+spf_result = NULL;
 spf_smtp_comment = NULL;
 #endif
 body_linecount = body_zerocount = 0;
@@ -1121,11 +1121,11 @@ int size = 256;
 int i, ptr;
 uschar *p, *s, *ss;
 
-/* If we are running in the test harness, and the incoming call is from 
-127.0.0.2 (sic), have a short delay. This makes it possible to test handling of 
+/* If we are running in the test harness, and the incoming call is from
+127.0.0.2 (sic), have a short delay. This makes it possible to test handling of
 input sent too soon (before the banner is output). */
 
-if (running_in_test_harness && 
+if (running_in_test_harness &&
     sender_host_address != NULL &&
     Ustrcmp(sender_host_address, "127.0.0.2") == 0)
   sleep(1);
@@ -1611,7 +1611,7 @@ if (smtp_enforce_sync && sender_host_address != NULL && !sender_host_notsocket)
     {
     int rc = read(fileno(smtp_in), smtp_inbuffer, in_buffer_size);
     if (rc > 150) rc = 150;
-    smtp_inbuffer[rc] = 0; 
+    smtp_inbuffer[rc] = 0;
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol violation: "
       "synchronization error (input sent without waiting for greeting): "
       "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
@@ -1805,7 +1805,7 @@ uschar *sender_info = US"";
 uschar *what = (where == ACL_WHERE_PREDATA)? US"DATA" :
 #ifdef WITH_CONTENT_SCAN
                (where == ACL_WHERE_MIME)? US"during MIME ACL checks" :
-#endif  
+#endif
                (where == ACL_WHERE_DATA)? US"after DATA" :
   string_sprintf("%s %s", acl_wherenames[where], smtp_data);
 
@@ -3075,11 +3075,11 @@ while (done <= 0)
       smtp_printf("554 Too many recipients\r\n");
       break;
       }
-      
+
     if (acl_smtp_predata == NULL) rc = OK; else
-      { 
+      {
       enable_dollar_recipients = TRUE;
-      rc = acl_check(ACL_WHERE_PREDATA, NULL, acl_smtp_predata, &user_msg, 
+      rc = acl_check(ACL_WHERE_PREDATA, NULL, acl_smtp_predata, &user_msg,
         &log_msg);
       enable_dollar_recipients = FALSE;
       }
@@ -3157,7 +3157,7 @@ while (done <= 0)
       BOOL save_log_testing_mode = log_testing_mode;
       address_test_mode = log_testing_mode = TRUE;
       (void) verify_address(deliver_make_addr(smtp_data, FALSE), smtp_out,
-        vopt_is_recipient | vopt_qualify | vopt_expn, -1, -1, -1, NULL, NULL, 
+        vopt_is_recipient | vopt_qualify | vopt_expn, -1, -1, -1, NULL, NULL,
         NULL);
       address_test_mode = FALSE;
       log_testing_mode = save_log_testing_mode;    /* true for -bh */

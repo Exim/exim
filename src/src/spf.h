@@ -1,9 +1,9 @@
-/* $Cambridge: exim/src/src/spf.h,v 1.2 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/spf.h,v 1.3 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
- 
+
 /* Experimental SPF support.
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004
    License: GPL */

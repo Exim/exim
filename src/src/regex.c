@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/regex.c,v 1.3 2004/12/17 14:52:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/regex.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -41,10 +41,10 @@ int regex(uschar **listptr) {
   int pcre_erroffset;
   uschar *linebuffer;
   long f_pos = 0;
-  
+
   /* reset expansion variable */
   regex_match_string = NULL;
-  
+
   if (mime_stream == NULL) {
     /* We are in the DATA ACL */
     mbox_file = spool_mbox(&mbox_size);
@@ -59,19 +59,19 @@ int regex(uschar **listptr) {
     f_pos = ftell(mime_stream);
     mbox_file = mime_stream;
   };
-  
+
   /* precompile our regexes */
   while ((regex_string = string_nextinlist(&list, &sep,
                                            regex_string_buffer,
                                            sizeof(regex_string_buffer))) != NULL) {
-    
+
     /* parse option */
-    if ( (strcmpic(regex_string,US"false") == 0) || 
+    if ( (strcmpic(regex_string,US"false") == 0) ||
          (Ustrcmp(regex_string,"0") == 0) ) {
       /* explicitly no matching */
       continue;
     };
-    
+
     /* compile our regular expression */
     re = pcre_compile( CS regex_string,
                        0,
@@ -92,15 +92,15 @@ int regex(uschar **listptr) {
       re_list_head = re_list_item;
     };
   };
-  
+
   /* no regexes -> nothing to do */
   if (re_list_head == NULL) {
     return FAIL;
   };
-  
+
   /* match each line against all regexes */
   linebuffer = store_get(32767);
-  while (fgets(CS linebuffer, 32767, mbox_file) != NULL) {  
+  while (fgets(CS linebuffer, 32767, mbox_file) != NULL) {
     if ( (mime_stream != NULL) && (mime_current_boundary != NULL) ) {
       /* check boundary */
       if (Ustrncmp(linebuffer,"--",2) == 0) {
@@ -127,14 +127,14 @@ int regex(uschar **listptr) {
       re_list_item = re_list_item->next;
     } while (re_list_item != NULL);
   };
-  
+
   if (mime_stream == NULL)
     fclose(mbox_file);
   else {
     clearerr(mime_stream);
     fseek(mime_stream,f_pos,SEEK_SET);
   };
-    
+
   /* no matches ... */
   return FAIL;
 }
@@ -161,14 +161,14 @@ int mime_regex(uschar **listptr) {
   while ((regex_string = string_nextinlist(&list, &sep,
                                            regex_string_buffer,
                                            sizeof(regex_string_buffer))) != NULL) {
-    
+
     /* parse option */
-    if ( (strcmpic(regex_string,US"false") == 0) || 
+    if ( (strcmpic(regex_string,US"false") == 0) ||
          (Ustrcmp(regex_string,"0") == 0) ) {
       /* explicitly no matching */
       continue;
     };
-    
+
     /* compile our regular expression */
     re = pcre_compile( CS regex_string,
                        0,
@@ -189,12 +189,12 @@ int mime_regex(uschar **listptr) {
       re_list_head = re_list_item;
     };
   };
-  
+
   /* no regexes -> nothing to do */
   if (re_list_head == NULL) {
     return FAIL;
   };
-  
+
   /* check if the file is already decoded */
   if (mime_decoded_filename == NULL) {
     uschar *empty = US"";
@@ -217,13 +217,13 @@ int mime_regex(uschar **listptr) {
          "mime_regex acl condition warning - can't open '%s' for reading.", mime_decoded_filename);
     return DEFER;
   };
-  
+
   /* get 32k memory */
   mime_subject = (uschar *)store_get(32767);
-  
+
   /* read max 32k chars from file */
   mime_subject_len = fread(mime_subject, 1, 32766, f);
-  
+
   re_list_item = re_list_head;
   do {
     /* try matcher on the mmapped file */
@@ -239,7 +239,7 @@ int mime_regex(uschar **listptr) {
   } while (re_list_item != NULL);
 
   fclose(f);
-  
+
   /* no matches ... */
   return FAIL;
 }

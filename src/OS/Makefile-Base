@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.2 2004/12/16 15:11:47 tom Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.3 2005/02/17 11:58:25 ph10 Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -304,7 +304,7 @@ OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
         store.o string.o tls.o tod.o transport.o tree.o verify.o \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
-        $(OBJ_WITH_OLD_DEMIME) $(OBJ_EXPERIMENTAL) 
+        $(OBJ_WITH_OLD_DEMIME) $(OBJ_EXPERIMENTAL)
 
 exim:   pcre/libpcre.a lookups/lookups.a auths/auths.a \
         routers/routers.a transports/transports.a \

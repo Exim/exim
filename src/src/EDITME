@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.7 2005/01/25 14:16:33 ph10 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.8 2005/02/17 11:58:25 ph10 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -396,7 +396,7 @@ FIXED_NEVER_USERS=root
 # CONFIGURE_OWNER=
 
 # If the configuration file is group-writeable, Exim insists by default that it
-# is owned by root or the Exim user. You can specify one additional permitted 
+# is owned by root or the Exim user. You can specify one additional permitted
 # group owner here.
 
 # CONFIGURE_GROUP=

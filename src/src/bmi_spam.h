@@ -1,9 +1,9 @@
-/* $Cambridge: exim/src/src/bmi_spam.h,v 1.2 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/bmi_spam.h,v 1.3 2005/02/17 11:58:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
- 
+
 /* Code for calling Brightmail AntiSpam.
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004
    License: GPL */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.18 2005/01/27 10:26:14 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.19 2005/02/17 11:58:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -45,7 +45,7 @@ ACLC_CONDITION, ACLC_CONTROL,
        ACLC_DELAY,
 #ifdef WITH_OLD_DEMIME
        ACLC_DEMIME,
-#endif        
+#endif
        ACLC_DNSLISTS, ACLC_DOMAINS, ACLC_ENCRYPTED, ACLC_ENDPASS,
        ACLC_HOSTS, ACLC_LOCAL_PARTS, ACLC_LOG_MESSAGE, ACLC_LOGWRITE,
 #ifdef WITH_CONTENT_SCAN
@@ -61,7 +61,7 @@ ACLC_CONDITION, ACLC_CONTROL,
 #endif
        ACLC_SENDER_DOMAINS, ACLC_SENDERS, ACLC_SET,
 #ifdef WITH_CONTENT_SCAN
-       ACLC_SPAM,       
+       ACLC_SPAM,
 #endif
 #ifdef EXPERIMENTAL_SPF
        ACLC_SPF,
@@ -77,7 +77,7 @@ static uschar *conditions[] = { US"acl", US"authenticated",
   US"bmi_optin",
 #endif
   US"condition",
-  US"control", 
+  US"control",
 #ifdef WITH_CONTENT_SCAN
   US"decode",
 #endif
@@ -106,12 +106,12 @@ static uschar *conditions[] = { US"acl", US"authenticated",
   US"spf",
 #endif
   US"verify" };
-  
+
 /* ACL control names */
 
 static uschar *controls[] = { US"error", US"caseful_local_part",
   US"caselower_local_part", US"enforce_sync", US"no_enforce_sync", US"freeze",
-  US"queue_only", US"submission", US"no_multiline"}; 
+  US"queue_only", US"submission", US"no_multiline"};
 
 /* Flags to indicate for which conditions /modifiers a string expansion is done
 at the outer level. In the other cases, expansion already occurs in the
@@ -122,7 +122,7 @@ static uschar cond_expand_at_top[] = {
   FALSE,   /* authenticated */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   TRUE,    /* bmi_optin */
-#endif  
+#endif
   TRUE,    /* condition */
   TRUE,    /* control */
 #ifdef WITH_CONTENT_SCAN
@@ -170,7 +170,7 @@ static uschar cond_modifiers[] = {
   FALSE,   /* authenticated */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   TRUE,    /* bmi_optin */
-#endif  
+#endif
   FALSE,   /* condition */
   TRUE,    /* control */
 #ifdef WITH_CONTENT_SCAN
@@ -216,27 +216,27 @@ each condition, there's a bitmap of dis-allowed times. */
 
 static unsigned int cond_forbids[] = {
   0,                                               /* acl */
-   
+
   (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_CONNECT)|   /* authenticated */
     (1<<ACL_WHERE_HELO),
-  
+
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   (1<<ACL_WHERE_AUTH)|                             /* bmi_optin */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_MIME)|
-    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|                                       
+    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
     (1<<ACL_WHERE_MAILAUTH)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_PREDATA),
 #endif
-  
+
   0,                                               /* condition */
-  
+
   /* Certain types of control are always allowed, so we let it through
   always and check in the control processing itself */
-  
+
   0,                                               /* control */
-  
+
 #ifdef WITH_CONTENT_SCAN
   (1<<ACL_WHERE_AUTH)|                             /* decode */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
@@ -248,7 +248,7 @@ static unsigned int cond_forbids[] = {
 #endif
 
   0,                                               /* delay */
-  
+
 #ifdef WITH_OLD_DEMIME
   (1<<ACL_WHERE_AUTH)|                             /* demime */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
@@ -258,7 +258,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_MIME),
 #endif
-  
+
   (1<<ACL_WHERE_NOTSMTP),                          /* dnslists */
 
   (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* domains */
@@ -271,9 +271,9 @@ static unsigned int cond_forbids[] = {
 
   (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_CONNECT)|   /* encrypted */
     (1<<ACL_WHERE_HELO),
-     
+
   0,                                               /* endpass */
-   
+
   (1<<ACL_WHERE_NOTSMTP),                          /* hosts */
 
   (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* local_parts */
@@ -285,9 +285,9 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_VRFY),
 
   0,                                               /* log_message */
-   
+
   0,                                               /* logwrite */
-  
+
 #ifdef WITH_CONTENT_SCAN
   (1<<ACL_WHERE_AUTH)|                             /* malware */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
@@ -369,15 +369,15 @@ static unsigned int cond_forbids[] = {
 
 /* Return values from decode_control() */
 
-enum { 
+enum {
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   CONTROL_BMI_RUN,
-#endif  
+#endif
   CONTROL_ERROR, CONTROL_CASEFUL_LOCAL_PART, CONTROL_CASELOWER_LOCAL_PART,
   CONTROL_ENFORCE_SYNC, CONTROL_NO_ENFORCE_SYNC, CONTROL_FREEZE,
   CONTROL_QUEUE_ONLY, CONTROL_SUBMISSION,
 #ifdef WITH_CONTENT_SCAN
-  CONTROL_NO_MBOX_UNSPOOL, 
+  CONTROL_NO_MBOX_UNSPOOL,
 #endif
   CONTROL_FAKEREJECT, CONTROL_NO_MULTILINE };
 
@@ -391,38 +391,38 @@ static unsigned int control_forbids[] = {
 #endif
 
   0,                                               /* error */
-  
-  (unsigned int) 
+
+  (unsigned int)
   ~(1<<ACL_WHERE_RCPT),                            /* caseful_local_part */
-   
-  (unsigned int) 
+
+  (unsigned int)
   ~(1<<ACL_WHERE_RCPT),                            /* caselower_local_part */
-   
+
   (1<<ACL_WHERE_NOTSMTP),                          /* enforce_sync */
-   
+
   (1<<ACL_WHERE_NOTSMTP),                          /* no_enforce_sync */
-   
-  (unsigned int) 
+
+  (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* freeze */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
     (1<<ACL_WHERE_NOTSMTP)),
-     
-  (unsigned int) 
+
+  (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* queue_only */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
     (1<<ACL_WHERE_NOTSMTP)),
-     
-  (unsigned int) 
+
+  (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* submission */
-    (1<<ACL_WHERE_PREDATA)),                       
+    (1<<ACL_WHERE_PREDATA)),
 
 #ifdef WITH_CONTENT_SCAN
-  (unsigned int) 
+  (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* no_mbox_unspool */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)),
 #endif
 
-  (unsigned int) 
+  (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakereject */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)),
 
@@ -781,7 +781,7 @@ if (hlen > 0)
         {
         newtype = htype_add_rfc;
         p += 14;
-        }        
+        }
       else if (strncmpic(p, US":at_start:", 10) == 0)
         {
         newtype = htype_add_top;
@@ -1071,11 +1071,11 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
         uschar *opt;
         uschar buffer[256];
         while (isspace(*ss)) ss++;
-        
-        /* This callout option handling code has become a mess as new options 
-        have been added in an ad hoc manner. It should be tidied up into some 
+
+        /* This callout option handling code has become a mess as new options
+        have been added in an ad hoc manner. It should be tidied up into some
         kind of table-driven thing. */
- 
+
         while ((opt = string_nextinlist(&ss, &optsep, buffer, sizeof(buffer)))
               != NULL)
           {
@@ -1207,12 +1207,12 @@ message if giving out verification details. */
 
 if (verify_header_sender)
   {
-  int verrno; 
+  int verrno;
   rc = verify_check_header_address(user_msgptr, log_msgptr, callout,
     callout_overall, callout_connect, se_mailfrom, pm_mailfrom, verify_options,
     &verrno);
   if (rc != OK)
-    { 
+    {
     *basic_errno = verrno;
     if (smtp_return_error_details)
       {
@@ -1220,7 +1220,7 @@ if (verify_header_sender)
         *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
       if (rc == DEFER) acl_temp_details = TRUE;
       }
-    }   
+    }
   }
 
 /* Handle a sender address. The default is to verify *the* sender address, but
@@ -1279,7 +1279,7 @@ else if (verify_sender_address != NULL)
     {
     BOOL routed = TRUE;
     uschar *save_address_data = deliver_address_data;
-      
+
     sender_vaddr = deliver_make_addr(verify_sender_address, TRUE);
     if (no_details) setflag(sender_vaddr, af_sverify_told);
     if (verify_sender_address[0] != 0)
@@ -1325,16 +1325,16 @@ else if (verify_sender_address != NULL)
     sender_vaddr->special_action = rc;
     sender_vaddr->next = sender_verified_list;
     sender_verified_list = sender_vaddr;
-    
-    /* Restore the recipient address data, which might have been clobbered by 
+
+    /* Restore the recipient address data, which might have been clobbered by
     the sender verification. */
-  
+
     deliver_address_data = save_address_data;
     }
-    
+
   /* Put the sender address_data value into $sender_address_data */
 
-  sender_address_data = sender_vaddr->p.address_data; 
+  sender_address_data = sender_vaddr->p.address_data;
   }
 
 /* A recipient address just gets a straightforward verify; again we must handle
@@ -1351,9 +1351,9 @@ else
   rc = verify_address(&addr2, NULL, verify_options|vopt_is_recipient, callout,
     callout_overall, callout_connect, se_mailfrom, pm_mailfrom, NULL);
   HDEBUG(D_acl) debug_printf("----------- end verify ------------\n");
-  
+
   *log_msgptr = addr2.message;
-  *user_msgptr = (addr2.user_message != NULL)? 
+  *user_msgptr = (addr2.user_message != NULL)?
     addr2.user_message : addr2.message;
   *basic_errno = addr2.basic_errno;
 
@@ -1503,7 +1503,7 @@ int sep = '/';
 for (; cb != NULL; cb = cb->next)
   {
   uschar *arg;
-  int control_type; 
+  int control_type;
 
   /* The message and log_message items set up messages to be used in
   case of rejection. They are expanded later. */
@@ -1639,7 +1639,7 @@ for (; cb != NULL; cb = cb->next)
       *log_msgptr = string_sprintf("cannot use \"control=%s\" in %s ACL",
         controls[control_type], acl_wherenames[where]);
       return ERROR;
-      }                                                     
+      }
 
     switch(control_type)
       {
@@ -1648,7 +1648,7 @@ for (; cb != NULL; cb = cb->next)
       bmi_run = 1;
       break;
 #endif
-      
+
       case CONTROL_ERROR:
       return ERROR;
 
@@ -1681,9 +1681,9 @@ for (; cb != NULL; cb = cb->next)
       case CONTROL_FAKEREJECT:
       fake_reject = TRUE;
       if (*p == '/')
-        { 
+        {
         uschar *pp = p + 1;
-        while (*pp != 0) pp++; 
+        while (*pp != 0) pp++;
         fake_reject_text = expand_string(string_copyn(p+1, pp-p));
         p = pp;
         }
@@ -1706,22 +1706,22 @@ for (; cb != NULL; cb = cb->next)
       case CONTROL_SUBMISSION:
       submission_mode = TRUE;
       while (*p == '/')
-        { 
+        {
         if (Ustrncmp(p, "/sender_retain", 14) == 0)
           {
           p += 14;
           active_local_sender_retain = TRUE;
-          active_local_from_check = FALSE;   
-          }  
+          active_local_from_check = FALSE;
+          }
         else if (Ustrncmp(p, "/domain=", 8) == 0)
           {
           uschar *pp = p + 8;
-          while (*pp != 0 && *pp != '/') pp++; 
+          while (*pp != 0 && *pp != '/') pp++;
           submission_domain = string_copyn(p+8, pp-p);
-          p = pp; 
+          p = pp;
           }
-        else break;   
-        }   
+        else break;
+        }
       if (*p != 0)
         {
         *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
@@ -1755,10 +1755,10 @@ for (; cb != NULL; cb = cb->next)
           HDEBUG(D_acl)
             debug_printf("delay skipped in -bh checking mode\n");
           }
-        else 
+        else
           {
           while (delay > 0) delay = sleep(delay);
-          } 
+          }
         }
       }
     break;
@@ -1848,7 +1848,7 @@ for (; cb != NULL; cb = cb->next)
       log_write(0, logbits, "%s", string_printing(s));
       }
     break;
-    
+
 #ifdef WITH_CONTENT_SCAN
     case ACLC_MALWARE:
       {

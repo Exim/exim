@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.13 2005/01/11 15:51:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.14 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -599,7 +599,7 @@ static int
 check_port(uschar *address)
 {
 int port = host_extract_port(address);
-if (string_is_ip_address(address, NULL) == 0) 
+if (string_is_ip_address(address, NULL) == 0)
   {
   fprintf(stderr, "exim abandoned: \"%s\" is not an IP address\n", address);
   exit(EXIT_FAILURE);
@@ -1890,7 +1890,7 @@ for (i = 1; i < argc; i++)
     break;
 
     /* -d: Set debug level (see also -v below) or set the drop_cr option.
-    The latter is now a no-op, retained for compatibility only. If -dd is used, 
+    The latter is now a no-op, retained for compatibility only. If -dd is used,
     debugging subprocesses of the daemon is disabled. */
 
     case 'd':
@@ -4132,17 +4132,17 @@ call to find the ident for. */
 
 if (host_checking)
   {
-  int x[4]; 
+  int x[4];
   int size;
-    
+
   sender_ident = NULL;
   if (running_in_test_harness && sender_host_port != 0 &&
       interface_address != NULL && interface_port != 0)
     verify_get_ident(1413);
-    
+
   /* In case the given address is a non-canonical IPv6 address, canonicize
   it. The code works for both IPv4 and IPv6, as it happens. */
-  
+
   size = host_aton(sender_host_address, x);
   sender_host_address = store_get(48);  /* large enough for full IPv6 */
   (void)host_nmtoa(size, x, -1, sender_host_address, ':');
@@ -4601,26 +4601,26 @@ while (more)
     if (ftest_suffix != NULL) printf("Suffix    = %s\n", ftest_suffix);
 
     chdir("/");   /* Get away from wherever the user is running this from */
-    
-    /* Now we run either a system filter test, or a user filter test, or both. 
-    In the latter case, headers added by the system filter will persist and be 
-    available to the user filter. We need to copy the filter variables 
+
+    /* Now we run either a system filter test, or a user filter test, or both.
+    In the latter case, headers added by the system filter will persist and be
+    available to the user filter. We need to copy the filter variables
     explicitly. */
-    
+
     if ((filter_test & FTEST_SYSTEM) != 0)
       {
       if (!filter_runtest(filter_sfd, filter_test_sfile, TRUE, more))
         exim_exit(EXIT_FAILURE);
-      }      
-      
+      }
+
     memcpy(filter_sn, filter_n, sizeof(filter_sn));
-      
+
     if ((filter_test & FTEST_USER) != 0)
       {
       if (!filter_runtest(filter_ufd, filter_test_ufile, FALSE, more))
         exim_exit(EXIT_FAILURE);
-      }      
-      
+      }
+
     exim_exit(EXIT_SUCCESS);
     }
 

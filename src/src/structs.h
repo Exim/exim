@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/structs.h,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/structs.h,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -223,7 +223,7 @@ typedef struct router_instance {
   uschar *address_data;           /* Arbitrary data */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   uschar *bmi_rule;               /* Brightmail AntiSpam rule checking */
-#endif  
+#endif
   uschar *cannot_route_message;   /* Used when routing fails */
   uschar *condition;              /* General condition */
   uschar *current_directory;      /* For use during delivery */

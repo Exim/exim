@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_out.c,v 1.5 2005/01/25 14:16:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_out.c,v 1.6 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -175,9 +175,9 @@ if (sender_host_address != NULL)
 
 if (interface_address != NULL)
   fprintf(f, "-interface_address %s.%d\n", interface_address, interface_port);
-  
+
 if (smtp_active_hostname != primary_hostname)
-  fprintf(f, "-active_hostname %s\n", smtp_active_hostname); 
+  fprintf(f, "-active_hostname %s\n", smtp_active_hostname);
 
 /* Likewise for any ident information; for local messages this is
 likely to be the same as originator_login, but will be different if

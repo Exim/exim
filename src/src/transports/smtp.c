@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.5 2005/01/11 15:51:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.6 2005/02/17 11:58:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -140,7 +140,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   10*60,               /* final timeout */
   1024,                /* size_addition */
   5,                   /* hosts_max_try */
-  50,                  /* hosts_max_try_hardlimit */ 
+  50,                  /* hosts_max_try_hardlimit */
   FALSE,               /* allow_localhost */
   FALSE,               /* gethostbyname */
   TRUE,                /* dns_qualify_single */
@@ -393,7 +393,7 @@ end the DATA. */
 if (*errno_value == ERRNO_FILTER_FAIL)
   {
   *message = US string_sprintf("transport filter process failed (%d)%s",
-    more_errno, 
+    more_errno,
     (more_errno == EX_EXECFAILED)? ": unable to execute command" : "");
   return FALSE;
   }
@@ -1929,7 +1929,7 @@ int hosts_looked_up = 0;
 int hosts_retry = 0;
 int hosts_serial = 0;
 int hosts_total = 0;
-int total_hosts_tried = 0; 
+int total_hosts_tried = 0;
 address_item *addr;
 BOOL expired = TRUE;
 BOOL continuing = continue_hostname != NULL;
@@ -2096,8 +2096,8 @@ if (Ustrcmp(pistring, ":25") == 0) pistring = US"";
 .  If there are any addresses whose status is still DEFER, carry on to the
    next host/IPaddress, unless we have tried the number of hosts given
    by hosts_max_try or hosts_max_try_hardlimit; otherwise return. Note that
-   there is some fancy logic for hosts_max_try that means its limit can be 
-   overstepped in some circumstances. 
+   there is some fancy logic for hosts_max_try that means its limit can be
+   overstepped in some circumstances.
 
 If we get to the end of the list, all hosts have deferred at least one address,
 or not reached their retry times. If delay_after_cutoff is unset, it requests a
@@ -2114,7 +2114,7 @@ for (cutoff_retry = 0; expired &&
   int unexpired_hosts_tried = 0;
 
   for (host = hostlist;
-       host != NULL && 
+       host != NULL &&
          unexpired_hosts_tried < ob->hosts_max_try &&
          total_hosts_tried < ob->hosts_max_try_hardlimit;
        host = nexthost)
@@ -2421,9 +2421,9 @@ for (cutoff_retry = 0; expired &&
 
     /* This is for real. If the host is expired, we don't count it for
     hosts_max_retry. This ensures that all hosts must expire before an address
-    is timed out, unless hosts_max_try_hardlimit (which protects against 
+    is timed out, unless hosts_max_try_hardlimit (which protects against
     lunatic DNS configurations) is reached.
-    
+
     If the host is not expired and we are about to hit the hosts_max_retry
     limit, check to see if there is a subsequent hosts with a different MX
     value. If so, make that the next host, and don't count this one. This is a
@@ -2686,7 +2686,7 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
   because of hosts_max_try or hosts_max_try_hardlimit. In the former case, this
   means we need to behave as if some hosts were skipped because their retry
   time had not come. Specifically, this prevents the address from timing out.
-  However, if we have hit hosts_max_try_hardlimit, we want to behave as if all 
+  However, if we have hit hosts_max_try_hardlimit, we want to behave as if all
   hosts were tried. */
 
   if (host != NULL)
@@ -2698,11 +2698,11 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
           "hosts were tried\n");
       }
     else
-      {       
+      {
       DEBUG(D_transport)
         debug_printf("hosts_max_try limit caused some hosts to be skipped\n");
       setflag(addr, af_retry_skipped);
-      } 
+      }
     }
 
   if (queue_smtp)    /* no deliveries attempted */

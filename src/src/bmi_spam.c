@@ -1,9 +1,9 @@
-/* $Cambridge: exim/src/src/bmi_spam.c,v 1.2 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/bmi_spam.c,v 1.3 2005/02/17 11:58:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
- 
+
 /* Code for calling Brightmail AntiSpam.
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004
    License: GPL */
@@ -28,7 +28,7 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
   uschar *host_address;
   uschar *verdicts = NULL;
   int i,j;
-  
+
   err = bmiInitSystem(BMI_VERSION, (char *)bmi_config_file, &system);
   if (bmiErrorIsFatal(err) == BMI_TRUE) {
     err_loc = bmiErrorGetLocation(err);
@@ -80,7 +80,7 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
   for(i=0;i<recipients_count;i++) {
     recipient_item *r = recipients_list + i;
     BmiOptin *optin = NULL;
-    
+
     /* create optin object if optin string is given */
     if ((r->bmi_optin != NULL) && (Ustrlen(r->bmi_optin) > 1)) {
       debug_printf("passing bmiOptin string: %s\n", r->bmi_optin);
@@ -94,12 +94,12 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
         optin = NULL;
       };
     };
-    
+
     err = bmiAccumulateTO((char *)r->address, optin, message);
-    
+
     if (optin != NULL)
       bmiOptinFree(optin);
-    
+
     if (bmiErrorIsFatal(err) == BMI_TRUE) {
       err_loc = bmiErrorGetLocation(err);
       err_type = bmiErrorGetType(err);
@@ -120,7 +120,7 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
     bmiFreeSystem(system);
     return NULL;
   };
-  
+
   /* Send message headers */
   while (header_list != NULL) {
     /* skip deleted headers */
@@ -150,7 +150,7 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
     bmiFreeSystem(system);
     return NULL;
   };
-  
+
   /* Send body */
   data_file = fdopen(data_fd,"r");
   do {
@@ -178,8 +178,8 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
     bmiFreeSystem(system);
     return NULL;
   };
-  
-  
+
+
   /* End message */
   err = bmiEndMessage(message);
   if (bmiErrorIsFatal(err) == BMI_TRUE) {
@@ -191,11 +191,11 @@ uschar *bmi_process_message(header_line *header_list, int data_fd) {
     bmiFreeSystem(system);
     return NULL;
   };
-  
+
   /* get store for the verdict string */
   verdicts = store_get(1);
   *verdicts = '\0';
-  
+
   for ( err = bmiAccessFirstVerdict(message, &verdict);
         verdict != NULL;
         err = bmiAccessNextVerdict(message, verdict, &verdict) ) {
@@ -227,7 +227,7 @@ int bmi_get_delivery_status(uschar *base64_verdict) {
   BmiErrorType err_type;
   BmiVerdict *verdict = NULL;
   int rc = 1;   /* deliver by default */
-  
+
   /* always deliver when there is no verdict */
   if (base64_verdict == NULL)
     return 1;
@@ -249,7 +249,7 @@ int bmi_get_delivery_status(uschar *base64_verdict) {
   }
   else if (bmiVerdictDestinationIsDefault(verdict) == BMI_TRUE) {
     /* deliver normally */
-    rc = 1;    
+    rc = 1;
   }
   else if (bmiVerdictAccessDestination(verdict) == NULL) {
     /* do not deliver */
@@ -259,7 +259,7 @@ int bmi_get_delivery_status(uschar *base64_verdict) {
     /* deliver to alternate location */
     rc = 1;
   };
-  
+
   bmiFreeVerdict(verdict);
   return rc;
 }
@@ -271,7 +271,7 @@ uschar *bmi_get_alt_location(uschar *base64_verdict) {
   BmiErrorType err_type;
   BmiVerdict *verdict = NULL;
   uschar *rc = NULL;
-  
+
   /* always deliver when there is no verdict */
   if (base64_verdict == NULL)
     return NULL;
@@ -285,7 +285,7 @@ uschar *bmi_get_alt_location(uschar *base64_verdict) {
                "bmi error [loc %d type %d]: bmiCreateVerdictFromStr() failed. [%s]", (int)err_loc, (int)err_type, base64_verdict);
     return NULL;
   };
-  
+
   err = bmiVerdictError(verdict);
   if (bmiErrorIsFatal(err) == BMI_TRUE) {
     /* deliver normally due to error */
@@ -293,7 +293,7 @@ uschar *bmi_get_alt_location(uschar *base64_verdict) {
   }
   else if (bmiVerdictDestinationIsDefault(verdict) == BMI_TRUE) {
     /* deliver normally */
-    rc = NULL; 
+    rc = NULL;
   }
   else if (bmiVerdictAccessDestination(verdict) == NULL) {
     /* do not deliver */
@@ -305,7 +305,7 @@ uschar *bmi_get_alt_location(uschar *base64_verdict) {
     Ustrcpy(rc, bmiVerdictAccessDestination(verdict));
     rc[strlen(bmiVerdictAccessDestination(verdict))] = '\0';
   };
-  
+
   bmiFreeVerdict(verdict);
   return rc;
 }
@@ -320,20 +320,20 @@ uschar *bmi_get_base64_verdict(uschar *bmi_local_part, uschar *bmi_domain) {
   uschar *verdict_ptr;
   uschar *verdict_buffer = NULL;
   int sep = 0;
-  
+
   /* return nothing if there are no verdicts available */
   if (bmi_verdicts == NULL)
     return NULL;
-  
+
   /* allocate room for the b64 verdict string */
   verdict_buffer = store_get(Ustrlen(bmi_verdicts)+1);
-  
+
   /* loop through verdicts */
   verdict_ptr = bmi_verdicts;
   while ((verdict_str = (const char *)string_nextinlist(&verdict_ptr, &sep,
                                           verdict_buffer,
                                           Ustrlen(bmi_verdicts)+1)) != NULL) {
-    
+
     /* create verdict from base64 string */
     err = bmiCreateVerdictFromStr(verdict_str, &verdict);
     if (bmiErrorIsFatal(err) == BMI_TRUE) {
@@ -343,14 +343,14 @@ uschar *bmi_get_base64_verdict(uschar *bmi_local_part, uschar *bmi_domain) {
                  "bmi error [loc %d type %d]: bmiCreateVerdictFromStr() failed. [%s]", (int)err_loc, (int)err_type, verdict_str);
       return NULL;
     };
-    
+
     /* loop through rcpts for this verdict */
     for ( recipient = bmiVerdictAccessFirstRecipient(verdict);
           recipient != NULL;
           recipient = bmiVerdictAccessNextRecipient(verdict, recipient)) {
       uschar *rcpt_local_part;
       uschar *rcpt_domain;
-      
+
       /* compare address against our subject */
       rcpt_local_part = (unsigned char *)bmiRecipientAccessAddress(recipient);
       rcpt_domain = Ustrchr(rcpt_local_part,'@');
@@ -367,12 +367,12 @@ uschar *bmi_get_base64_verdict(uschar *bmi_local_part, uschar *bmi_domain) {
         /* found verdict */
         bmiFreeVerdict(verdict);
         return (uschar *)verdict_str;
-      };   
+      };
     };
-  
+
     bmiFreeVerdict(verdict);
   };
-  
+
   return NULL;
 }
 
@@ -383,7 +383,7 @@ uschar *bmi_get_base64_tracker_verdict(uschar *base64_verdict) {
   BmiErrorType err_type;
   BmiVerdict *verdict = NULL;
   uschar *rc = NULL;
-  
+
   /* always deliver when there is no verdict */
   if (base64_verdict == NULL)
     return NULL;
@@ -397,7 +397,7 @@ uschar *bmi_get_base64_tracker_verdict(uschar *base64_verdict) {
                "bmi error [loc %d type %d]: bmiCreateVerdictFromStr() failed. [%s]", (int)err_loc, (int)err_type, base64_verdict);
     return NULL;
   };
-  
+
   /* create old tracker string from verdict */
   err = bmiCreateOldStrFromVerdict(verdict, &rc);
   if (bmiErrorIsFatal(err) == BMI_TRUE) {
@@ -407,7 +407,7 @@ uschar *bmi_get_base64_tracker_verdict(uschar *base64_verdict) {
                "bmi error [loc %d type %d]: bmiCreateOldStrFromVerdict() failed. [%s]", (int)err_loc, (int)err_type, base64_verdict);
     return NULL;
   };
-  
+
   bmiFreeVerdict(verdict);
   return rc;
 }
@@ -423,12 +423,12 @@ int bmi_check_rule(uschar *base64_verdict, uschar *option_list) {
   uschar *rule_ptr;
   uschar rule_buffer[32];
   int sep = 0;
-  
-  
+
+
   /* no verdict -> no rule fired */
   if (base64_verdict == NULL)
     return 0;
-  
+
   /* create verdict from base64 string */
   err = bmiCreateVerdictFromStr(CS base64_verdict, &verdict);
   if (bmiErrorIsFatal(err) == BMI_TRUE) {
@@ -438,20 +438,20 @@ int bmi_check_rule(uschar *base64_verdict, uschar *option_list) {
                "bmi error [loc %d type %d]: bmiCreateVerdictFromStr() failed. [%s]", (int)err_loc, (int)err_type, base64_verdict);
     return 0;
   };
-  
+
   err = bmiVerdictError(verdict);
   if (bmiErrorIsFatal(err) == BMI_TRUE) {
     /* error -> no rule fired */
     bmiFreeVerdict(verdict);
     return 0;
   }
-  
+
   /* loop through numbers */
   rule_ptr = option_list;
   while ((rule_num = string_nextinlist(&rule_ptr, &sep,
                                        rule_buffer, 32)) != NULL) {
     int rule_int = -1;
-    
+
     /* try to translate to int */
     sscanf(rule_num, "%d", &rule_int);
     if (rule_int > 0) {

@@ -1,5 +1,5 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.2 2004/11/12 12:01:52 ph10 Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.3 2005/02/17 11:58:26 ph10 Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
@@ -316,7 +316,7 @@ sub _reset {
 
 sub parse_message {
   my $self = shift;
-  
+
   $self->_reset();
   $self->{_message} = shift || return(0);
   return(0) if (!$self->{_spool_dir});
@@ -490,7 +490,7 @@ sub _parse_header {
     }
   }
 
-  # when we drop out of the while loop, we have the first line of the 
+  # when we drop out of the while loop, we have the first line of the
   # delivered tree in $_
   do {
     if ($_ eq 'XX') {
@@ -591,7 +591,7 @@ sub _parse_header {
   }
 
   return(1);
-}  
+}
 
 # mimic exim's host_extract_port function - receive a ref to a scalar,
 # strip it of port, return port
@@ -622,7 +622,7 @@ sub print_message {
     print $fh $self->{_message}, "\n";
     return;
   }
-  
+
   if ($self->{_output_long} || $self->{_output_flatq}) {
     my $i = int($self->{_vars}{message_age} / 60);
     if ($i > 90) {
@@ -647,7 +647,7 @@ sub print_message {
   if ($self->{_output_long}) {
     print $fh " ($self->{_vars}{originator_login})"
         if ($self->{_vars}{sender_set_untrusted});
-  
+
     # XXX exim contains code here to print spool format errors
     print $fh " *** frozen ***" if ($self->{_vars}{deliver_freeze});
     print $fh "\n";
@@ -655,7 +655,7 @@ sub print_message {
     foreach my $v (keys(%{$self->{_show_vars}})) {
       printf $fh "  %25s = '%s'\n", $v, $self->get_var($v);
     }
-  
+
     foreach my $r (keys %{$self->{_recips}}) {
       next if ($self->{_del_tree}{$r} && $self->{_undelivered_only});
       printf $fh "        %s %s\n", $self->{_del_tree}{$r} ? "D" : " ", $r;

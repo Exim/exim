@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_out.c,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_out.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -223,13 +223,13 @@ else if (ip_connect(sock, host_af, host->address, port, timeout) < 0)
 
 if (save_errno != 0)
   {
-  HDEBUG(D_transport|D_acl|D_v) 
+  HDEBUG(D_transport|D_acl|D_v)
     {
     debug_printf("failed: %s", CUstrerror(save_errno));
-    if (save_errno == ETIMEDOUT) 
+    if (save_errno == ETIMEDOUT)
       debug_printf(" (timeout=%s)", readconf_printtime(timeout));
-    debug_printf("\n");   
-    } 
+    debug_printf("\n");
+    }
   close(sock);
   errno = save_errno;
   return -1;

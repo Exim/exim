@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.4 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.5 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -266,7 +266,7 @@ switch(t)
   case T_PTR:   return US"PTR";
   case T_SRV:   return US"SRV";
   case T_NS:    return US"NS";
-  case T_CNAME: return US"CNAME";  
+  case T_CNAME: return US"CNAME";
   default:      return US"?";
   }
 }
@@ -626,8 +626,8 @@ return DNS_FAIL;
 *    Do a DNS lookup and handle virtual types   *
 ************************************************/
 
-/* This function handles some invented "lookup types" that synthesize feature 
-not available in the basic types. The special types all have negative values. 
+/* This function handles some invented "lookup types" that synthesize feature
+not available in the basic types. The special types all have negative values.
 Positive type values are passed straight on to dns_lookup().
 
 Arguments:
@@ -645,7 +645,7 @@ Returns:                DNS_SUCCEED   successful lookup
 */
 
 int
-dns_special_lookup(dns_answer *dnsa, uschar *name, int type, 
+dns_special_lookup(dns_answer *dnsa, uschar *name, int type,
   uschar **fully_qualified_name)
 {
 if (type >= 0) return dns_lookup(dnsa, name, type, fully_qualified_name);
@@ -654,7 +654,7 @@ if (type >= 0) return dns_lookup(dnsa, name, type, fully_qualified_name);
 
 if (type == T_MXH) return dns_lookup(dnsa, name, T_MX, fully_qualified_name);
 
-/* Find nameservers for the domain or the nearest enclosing zone, excluding the 
+/* Find nameservers for the domain or the nearest enclosing zone, excluding the
 root servers. */
 
 if (type == T_ZNS)
@@ -665,10 +665,10 @@ if (type == T_ZNS)
     int rc = dns_lookup(dnsa, d, T_NS, fully_qualified_name);
     if (rc != DNS_NOMATCH && rc != DNS_NODATA) return rc;
     while (*d != 0 && *d != '.') d++;
-    if (*d++ == 0) break; 
+    if (*d++ == 0) break;
     }
-  return DNS_NOMATCH;     
-  } 
+  return DNS_NOMATCH;
+  }
 
 /* Control should never reach here */
 

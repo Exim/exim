@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/pipe.c,v 1.3 2005/01/04 10:00:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/pipe.c,v 1.4 2005/02/17 11:58:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -800,7 +800,7 @@ if (!written_ok)
     }
   else
     {
-    addr->transport_return = PANIC; 
+    addr->transport_return = PANIC;
     addr->basic_errno = errno;
     if (errno == ERRNO_CHHEADER_FAIL)
       addr->message =

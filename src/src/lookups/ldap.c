@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.8 2005/01/13 11:12:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.9 2005/02/17 11:58:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -395,7 +395,7 @@ if (lcp == NULL)
   #ifdef LDAP_OPT_NETWORK_TIMEOUT
   if (tcplimit > 0)
     ldap_set_option(ld, LDAP_OPT_NETWORK_TIMEOUT, (void *)timeoutptr);
-  #endif 
+  #endif
 
   /* I could not get TLS to work until I set the version to 3. That version
   seems to be the default nowadays. The RFC is dated 1997, so I would hope
@@ -486,7 +486,7 @@ if (!lcp->bound ||
   if ((rc = ldap_result( lcp->ld, msgid, 1, timeoutptr, &result )) <= 0)
     {
     *errmsg = string_sprintf("failed to bind the LDAP connection to server "
-      "%s%s - LDAP error: %s", host, porttext, 
+      "%s%s - LDAP error: %s", host, porttext,
       rc == -1 ? "result retrieval failed" : "timeout" );
     result = NULL;
     goto RETURN_ERROR;
@@ -563,13 +563,13 @@ if (msgid == -1)
   #if defined LDAP_LIB_SOLARIS || defined LDAP_LIB_OPENLDAP2
   int err;
   ldap_get_option(lcp->ld, LDAP_OPT_ERROR_NUMBER, &err);
-  *errmsg = string_sprintf("ldap_search failed: %d, %s", err, 
+  *errmsg = string_sprintf("ldap_search failed: %d, %s", err,
     ldap_err2string(err));
-      
-  #else    
+
+  #else
   *errmsg = string_sprintf("ldap_search failed");
   #endif
- 
+
   goto RETURN_ERROR;
   }
 
@@ -788,15 +788,15 @@ if (rc == -1 || result == NULL)
   }
 
 /* A return code that isn't -1 doesn't necessarily mean there were no problems
-with the search. The message must be an LDAP_RES_SEARCH_RESULT or 
-LDAP_RES_SEARCH_REFERENCE or else it's something we can't handle. Some versions 
-of LDAP do not define LDAP_RES_SEARCH_REFERENCE (LDAP v1 is one, it seems). So 
+with the search. The message must be an LDAP_RES_SEARCH_RESULT or
+LDAP_RES_SEARCH_REFERENCE or else it's something we can't handle. Some versions
+of LDAP do not define LDAP_RES_SEARCH_REFERENCE (LDAP v1 is one, it seems). So
 we don't provide that functionality when we can't. :-) */
 
-if (rc != LDAP_RES_SEARCH_RESULT 
+if (rc != LDAP_RES_SEARCH_RESULT
 #ifdef LDAP_RES_SEARCH_REFERENCE
     && rc != LDAP_RES_SEARCH_REFERENCE
-#endif     
+#endif
    )
   {
   *errmsg = string_sprintf("ldap_result returned unexpected code %d", rc);
@@ -808,14 +808,14 @@ We need to parse the message to find out exactly what's happened. */
 
 #if defined LDAP_LIB_SOLARIS || defined LDAP_LIB_OPENLDAP2
   ldap_rc = rc;
-  ldap_parse_rc = ldap_parse_result(lcp->ld, result, &rc, CSS &matched, 
+  ldap_parse_rc = ldap_parse_result(lcp->ld, result, &rc, CSS &matched,
     CSS &error2, NULL, NULL, 0);
   DEBUG(D_lookup) debug_printf("ldap_parse_result: %d\n", ldap_parse_rc);
-  if (ldap_parse_rc < 0 && 
+  if (ldap_parse_rc < 0 &&
       (ldap_parse_rc != LDAP_NO_RESULTS_RETURNED
-      #ifdef LDAP_RES_SEARCH_REFERENCE 
+      #ifdef LDAP_RES_SEARCH_REFERENCE
       || ldap_rc != LDAP_RES_SEARCH_REFERENCE
-      #endif  
+      #endif
      ))
     {
     *errmsg = string_sprintf("ldap_parse_result failed %d", ldap_parse_rc);

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.4 2005/01/04 13:31:41 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.5 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -934,7 +934,7 @@ error = error;  /* Keep clever compilers from complaining */
 DEBUG(D_lists) debug_printf("address match: subject=%s pattern=%s\n",
   subject, pattern);
 
-/* Handle a regular expression, which must match the entire incoming address. 
+/* Handle a regular expression, which must match the entire incoming address.
 This may be the empty address. */
 
 if (*pattern == '^')
@@ -949,7 +949,7 @@ for (s = pattern; isalnum(*s) || *s == '-'; s++);
 if (*s == '*') s++;
 if (*s == '@') s++;
 
-/* If it is a straight lookup, do a lookup for the whole address. This may be 
+/* If it is a straight lookup, do a lookup for the whole address. This may be
 the empty address. Partial matching doesn't make sense here, so we ignore it,
 but write a panic log entry. However, *@ matching will be honoured. */
 
@@ -962,8 +962,8 @@ if (*s == ';')
     valueptr);
   }
 
-/* For the remaining cases, an empty subject matches only an empty pattern, 
-because other patterns expect to have a local part and a domain to match 
+/* For the remaining cases, an empty subject matches only an empty pattern,
+because other patterns expect to have a local part and a domain to match
 against. */
 
 if (*subject == 0) return (*pattern == 0)? OK : FAIL;

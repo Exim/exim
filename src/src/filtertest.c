@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filtertest.c,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filtertest.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -26,15 +26,15 @@ keep that function as efficient as possible. Handling message_body_end is
 somewhat more tedious. Pile it all into a circular buffer and sort out at the
 end.
 
-Arguments:   
+Arguments:
   dot_ended   TRUE if message already terminated by '.'
 
 Returns:      nothing
 */
- 
+
 static void
 read_message_body(dot_ended)
-{ 
+{
 register int ch;
 int body_len, body_end_len, header_size;
 uschar *s;
@@ -154,7 +154,7 @@ twice if both system and user filters are being tested.
 
 Argument:
   fd          an fd containing the filter file
-  filename    the name of the filter file 
+  filename    the name of the filter file
   is_system   TRUE if testing is to be as a system filter
   dot_ended   TRUE if message already terminated by '.'
 
@@ -248,7 +248,7 @@ if (filter_type == FILTER_FORWARD)
   return TRUE;
   }
 
-/* For a filter, set up the message_body variables and the message size if this 
+/* For a filter, set up the message_body variables and the message size if this
 is the first time this function has been called. */
 
 if (message_body == NULL) read_message_body(dot_ended);

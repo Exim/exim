@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.10 2005/01/27 15:57:51 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.11 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -95,28 +95,28 @@ return
 *          Read space info for a partition       *
 *************************************************/
 
-/* This function is called by receive_check_fs() below, and also by string 
-expansion for variables such as $spool_space. The field names for the statvfs 
+/* This function is called by receive_check_fs() below, and also by string
+expansion for variables such as $spool_space. The field names for the statvfs
 structure are macros, because not all OS have F_FAVAIL and it seems tidier to
 have macros for F_BAVAIL and F_FILES as well. Some kinds of file system do not
 have inodes, and they return -1 for the number available.
 
 Later: It turns out that some file systems that do not have the concept of
 inodes return 0 rather than -1. Such systems should also return 0 for the total
-number of inodes, so we require that to be greater than zero before returning 
+number of inodes, so we require that to be greater than zero before returning
 an inode count.
 
 Arguments:
   isspool       TRUE for spool partition, FALSE for log partition
   inodeptr      address of int to receive inode count; -1 if there isn't one
-  
+
 Returns:        available on-root space, in kilobytes
-                -1 for log partition if there isn't one  
-                
-All values are -1 if the STATFS functions are not available. 
+                -1 for log partition if there isn't one
+
+All values are -1 if the STATFS functions are not available.
 */
 
-int 
+int
 receive_statvfs(BOOL isspool, int *inodeptr)
 {
 #ifdef HAVE_STATFS
@@ -129,10 +129,10 @@ uschar buffer[1024];
 
 if (isspool)
   {
-  path = spool_directory; 
-  name = US"spool"; 
-  } 
-  
+  path = spool_directory;
+  name = US"spool";
+  }
+
 /* Need to cut down the log file path to the directory, and to ignore any
 appearance of "syslog" in it. */
 
@@ -140,7 +140,7 @@ else
   {
   int sep = ':';              /* Not variable - outside scripts use */
   uschar *p = log_file_path;
-  name = US"log"; 
+  name = US"log";
 
   /* An empty log_file_path means "use the default". This is the same as an
   empty item in a list. */
@@ -153,26 +153,26 @@ else
 
   if (path == NULL)  /* No log files */
     {
-    *inodeptr = -1; 
-    return -1;       
-    } 
+    *inodeptr = -1;
+    return -1;
+    }
 
-  /* An empty string means use the default, which is in the spool directory. 
-  But don't just use the spool directory, as it is possible that the log 
+  /* An empty string means use the default, which is in the spool directory.
+  But don't just use the spool directory, as it is possible that the log
   subdirectory has been symbolically linked elsewhere. */
 
-  if (path[0] == 0) 
+  if (path[0] == 0)
     {
     sprintf(CS buffer, CS"%s/log", CS spool_directory);
     path = buffer;
-    }  
-  else 
+    }
+  else
     {
-    uschar *cp; 
+    uschar *cp;
     if ((cp = Ustrrchr(path, '/')) != NULL) *cp = 0;
-    } 
+    }
   }
-  
+
 /* We now have the patch; do the business */
 
 memset(&statbuf, 0, sizeof(statbuf));
@@ -184,11 +184,11 @@ if (STATVFS(CS path, &statbuf) != 0)
   smtp_closedown(US"spool or log directory problem");
   exim_exit(EXIT_FAILURE);
   }
-  
+
 *inodeptr = (statbuf.F_FILES > 0)? statbuf.F_FAVAIL : -1;
 
 /* Disks are getting huge. Take care with computing the size in kilobytes. */
- 
+
 return (int)(((double)statbuf.F_BAVAIL * (double)statbuf.F_FRSIZE)/1024.0);
 
 /* Unable to find partition sizes in this environment. */
@@ -228,16 +228,16 @@ int space, inodes;
 
 if (check_spool_space > 0 || msg_size > 0 || check_spool_inodes > 0)
   {
-  space = receive_statvfs(TRUE, &inodes); 
-  
+  space = receive_statvfs(TRUE, &inodes);
+
   DEBUG(D_receive)
     debug_printf("spool directory space = %dK inodes = %d "
       "check_space = %dK inodes = %d msg_size = %d\n",
       space, inodes, check_spool_space, check_spool_inodes, msg_size);
-  
-  if ((space >= 0 && space < check_spool_space) || 
+
+  if ((space >= 0 && space < check_spool_space) ||
       (inodes >= 0 && inodes < check_spool_inodes))
-    {   
+    {
     log_write(0, LOG_MAIN, "spool directory space check failed: space=%d "
       "inodes=%d", space, inodes);
     return FALSE;
@@ -246,22 +246,22 @@ if (check_spool_space > 0 || msg_size > 0 || check_spool_inodes > 0)
 
 if (check_log_space > 0 || check_log_inodes > 0)
   {
-  space = receive_statvfs(FALSE, &inodes); 
-  
+  space = receive_statvfs(FALSE, &inodes);
+
   DEBUG(D_receive)
     debug_printf("log directory space = %dK inodes = %d "
       "check_space = %dK inodes = %d\n",
       space, inodes, check_log_space, check_log_inodes);
-  
-  if ((space >= 0 && space < check_log_space) || 
+
+  if ((space >= 0 && space < check_log_space) ||
       (inodes >= 0 && inodes < check_log_inodes))
-    {   
+    {
     log_write(0, LOG_MAIN, "log directory space check failed: space=%d "
       "inodes=%d", space, inodes);
     return FALSE;
     }
-  }   
-  
+  }
+
 return TRUE;
 }
 
@@ -935,7 +935,7 @@ for (h = acl_warn_headers; h != NULL; h = next)
        of all headers. Our current header must follow it. */
     h->next = last_received->next;
     last_received->next = h;
-    DEBUG(D_receive|D_acl) debug_printf("  (before any non-Received: or Resent-*: header)");        
+    DEBUG(D_receive|D_acl) debug_printf("  (before any non-Received: or Resent-*: header)");
     break;
 
     default:
@@ -2748,9 +2748,9 @@ else
       header_line *my_headerlist;
       uschar *user_msg, *log_msg;
       int mime_part_count_buffer = -1;
-      
+
       memset(CS rfc822_file_path,0,2048);
-      
+
       /* check if it is a MIME message */
       my_headerlist = header_list;
       while (my_headerlist != NULL) {
@@ -2765,10 +2765,10 @@ else
         };
         my_headerlist = my_headerlist->next;
       };
-      
+
       DEBUG(D_receive) debug_printf("No Content-Type: header - presumably not a MIME message.\n");
       goto NO_MIME_ACL;
-      
+
       DO_MIME_ACL:
       /* make sure the eml mbox file is spooled up */
       mbox_file = spool_mbox(&mbox_size);
@@ -2777,37 +2777,37 @@ else
         log_write(0, LOG_MAIN|LOG_PANIC,
                "acl_smtp_mime: error while creating mbox spool file, message temporarily rejected.");
         Uunlink(spool_name);
-        unspool_mbox(); 
+        unspool_mbox();
         smtp_respond(451, TRUE, US"temporary local problem");
         message_id[0] = 0;            /* Indicate no message accepted */
         smtp_reply = US"";            /* Indicate reply already sent */
         goto TIDYUP;                  /* Skip to end of function */
       };
-      
+
       mime_is_rfc822 = 0;
 
       MIME_ACL_CHECK:
       mime_part_count = -1;
       rc = mime_acl_check(mbox_file, NULL, &user_msg, &log_msg);
       fclose(mbox_file);
-      
+
       if (Ustrlen(rfc822_file_path) > 0) {
         mime_part_count = mime_part_count_buffer;
-        
+
         if (unlink(CS rfc822_file_path) == -1) {
           log_write(0, LOG_PANIC,
                "acl_smtp_mime: can't unlink RFC822 spool file, skipping.");
             goto END_MIME_ACL;
         };
       };
-      
+
       /* check if we must check any message/rfc822 attachments */
       if (rc == OK) {
         uschar temp_path[1024];
         int n;
         struct dirent *entry;
         DIR *tempdir;
- 
+
         snprintf(CS temp_path, 1024, "%s/scan/%s", spool_directory, message_id);
 
        tempdir = opendir(CS temp_path);
@@ -2819,10 +2819,10 @@ else
             snprintf(CS rfc822_file_path, 2048,"%s/scan/%s/%s", spool_directory, message_id, entry->d_name);
            debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n", rfc822_file_path);
            break;
-          }; 
+          };
        } while (1);
        closedir(tempdir);
-        
+
         if (entry != NULL) {
           mbox_file = Ufopen(rfc822_file_path,"r");
           if (mbox_file == NULL) {
@@ -2837,10 +2837,10 @@ else
           goto MIME_ACL_CHECK;
         };
       };
-      
+
       END_MIME_ACL:
       add_acl_headers(US"MIME");
-      if (rc == DISCARD)      
+      if (rc == DISCARD)
         {
         recipients_count = 0;
         blackholed_by = US"MIME ACL";
@@ -2854,10 +2854,10 @@ else
         smtp_reply = US"";       /* Indicate reply already sent */
         message_id[0] = 0;       /* Indicate no message accepted */
         goto TIDYUP;             /* Skip to end of function */
-        }; 
+        };
       }
- 
-    NO_MIME_ACL:      
+
+    NO_MIME_ACL:
 #endif /* WITH_CONTENT_SCAN */
 
 
@@ -2870,8 +2870,8 @@ else
         {
         recipients_count = 0;
         blackholed_by = US"DATA ACL";
-        if (log_msg != NULL) 
-          blackhole_log_msg = string_sprintf(": %s", log_msg); 
+        if (log_msg != NULL)
+          blackhole_log_msg = string_sprintf(": %s", log_msg);
         }
       else if (rc != OK)
         {
@@ -2899,14 +2899,14 @@ else
       {
       recipients_count = 0;
       blackholed_by = US"non-SMTP ACL";
-      if (log_msg != NULL) blackhole_log_msg = string_sprintf(": %s", log_msg); 
+      if (log_msg != NULL) blackhole_log_msg = string_sprintf(": %s", log_msg);
       }
     else if (rc != OK)
       {
       Uunlink(spool_name);
       log_write(0, LOG_MAIN|LOG_REJECT, "F=<%s> rejected by non-SMTP ACL: %s",
         sender_address, log_msg);
-      if (user_msg == NULL) user_msg = US"local configuration problem";   
+      if (user_msg == NULL) user_msg = US"local configuration problem";
       if (smtp_batched_input)
         {
         moan_smtp_batch(NULL, "%d %s", 550, user_msg);
@@ -3400,8 +3400,8 @@ if (smtp_input)
       {
       if (fake_reject)
         smtp_respond(550,TRUE,fake_reject_text);
-      else  
-        smtp_printf("250 OK id=%s\r\n", message_id);      
+      else
+        smtp_printf("250 OK id=%s\r\n", message_id);
       if (host_checking)
         fprintf(stdout,
           "\n**** SMTP testing: that is not a real message id!\n\n");
@@ -3410,7 +3410,7 @@ if (smtp_input)
       {
       if (fake_reject && (smtp_reply[0] == '2'))
         smtp_respond(550,TRUE,fake_reject_text);
-      else 
+      else
         smtp_printf("%.1024s\r\n", smtp_reply);
       }
     }

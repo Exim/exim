@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.3 2004/12/17 14:52:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -56,10 +56,10 @@ uschar *mime_decode_qp_char(uschar *qp_p,int *c) {
   uschar hex[] = {0,0,0};
   int nan = 0;
   uschar *initial_pos = qp_p;
-  
+
   /* advance one char */
   qp_p++;
-  
+
   REPEAT_FIRST:
   if ( (*qp_p == '\t') || (*qp_p == ' ') || (*qp_p == '\r') )  {
     /* tab or whitespace may follow
@@ -82,7 +82,7 @@ uschar *mime_decode_qp_char(uschar *qp_p,int *c) {
       qp_p++;
     };
   }
-  else if (*qp_p == '\n') {    
+  else if (*qp_p == '\n') {
     /* hit soft line break already, continue */
     *c = -1;
     return qp_p;
@@ -92,7 +92,7 @@ uschar *mime_decode_qp_char(uschar *qp_p,int *c) {
     *c = -2;
     return initial_pos;
   };
-  
+
   if ( (('0' <= *qp_p) && (*qp_p <= '9')) || (('A' <= *qp_p) && (*qp_p <= 'F')) || (('a' <= *qp_p) && (*qp_p <= 'f')) ) {
     if (hex[0] > 0) {
       hex[1] = *qp_p;
@@ -104,13 +104,13 @@ uschar *mime_decode_qp_char(uschar *qp_p,int *c) {
     else {
       /* huh ? */
       *c = -2;
-      return initial_pos;  
+      return initial_pos;
     };
   }
   else {
     /* illegal char */
     *c = -2;
-    return initial_pos;  
+    return initial_pos;
   };
 }
 
@@ -131,7 +131,7 @@ uschar *mime_parse_line(uschar *buffer, uschar *encoding, int *num_decoded) {
   else if (Ustrcmp(encoding,"base64") == 0) {
     uschar *p = buffer;
     int offset = 0;
-    
+
     /* ----- BASE64 ---------------------------------------------------- */
     /* NULL out '\r' and '\n' chars */
     while (Ustrrchr(p,'\r') != NULL) {
@@ -153,13 +153,13 @@ uschar *mime_parse_line(uschar *buffer, uschar *encoding, int *num_decoded) {
       };
     };
     *p = 255;
-   
+
     /* line is translated, start bit shifting */
     p = buffer;
-    *num_decoded = 0;  
+    *num_decoded = 0;
     while(*p != 255) {
       uschar tmp_c;
-      
+
       /* byte 0 ---------------------- */
       if (*(p+1) == 255) {
         mime_set_anomaly(MIME_ANOMALY_BROKEN_BASE64);
@@ -191,10 +191,10 @@ uschar *mime_parse_line(uschar *buffer, uschar *encoding, int *num_decoded) {
       }
       data[(*num_decoded)] = *p;
       data[(*num_decoded)] <<= 6;
-      data[(*num_decoded)] |= *(p+1); 
+      data[(*num_decoded)] |= *(p+1);
       (*num_decoded)++;
       p+=2;
-      
+
     };
     return data;
     /* ----------------------------------------------------------------- */
@@ -207,9 +207,9 @@ uschar *mime_parse_line(uschar *buffer, uschar *encoding, int *num_decoded) {
     while (*p != 0) {
       if (*p == '=') {
         int decode_qp_result;
-        
+
         p = mime_decode_qp_char(p,&decode_qp_result);
-              
+
         if (decode_qp_result == -2) {
           /* Error from decoder. p is unchanged. */
           mime_set_anomaly(MIME_ANOMALY_BROKEN_QP);
@@ -242,9 +242,9 @@ uschar *mime_parse_line(uschar *buffer, uschar *encoding, int *num_decoded) {
 FILE *mime_get_decode_file(uschar *pname, uschar *fname) {
   FILE *f = NULL;
   uschar *filename;
-  
+
   filename = (uschar *)malloc(2048);
-  
+
   if ((pname != NULL) && (fname != NULL)) {
     snprintf(CS filename, 2048, "%s/%s", pname, fname);
     f = fopen(CS filename,"w+");
@@ -269,10 +269,10 @@ FILE *mime_get_decode_file(uschar *pname, uschar *fname) {
     while(result != -1);
     f = fopen(CS filename,"w+");
   };
-  
+
   /* set expansion variable */
   mime_decoded_filename = filename;
-  
+
   return f;
 }
 
@@ -290,12 +290,12 @@ int mime_decode(uschar **listptr) {
 
   if (mime_stream == NULL)
     return FAIL;
-  
+
   f_pos = ftell(mime_stream);
-  
+
   /* build default decode path (will exist since MBOX must be spooled up) */
   snprintf(CS decode_path,1024,"%s/scan/%s",spool_directory,message_id);
-  
+
   /* reserve a line buffer to work in */
   buffer = (uschar *)malloc(MIME_MAX_LINE_LENGTH+1);
   if (buffer == NULL) {
@@ -303,28 +303,28 @@ int mime_decode(uschar **listptr) {
                  "decode ACL condition: can't allocate %d bytes of memory.", MIME_MAX_LINE_LENGTH+1);
     return DEFER;
   };
-  
+
   /* try to find 1st option */
   if ((option = string_nextinlist(&list, &sep,
                                   option_buffer,
                                   sizeof(option_buffer))) != NULL) {
-    
+
     /* parse 1st option */
     if ( (Ustrcmp(option,"false") == 0) || (Ustrcmp(option,"0") == 0) ) {
       /* explicitly no decoding */
       return FAIL;
     };
-    
+
     if (Ustrcmp(option,"default") == 0) {
       /* explicit default path + file names */
       goto DEFAULT_PATH;
     };
-    
+
     if (option[0] == '/') {
       struct stat statbuf;
 
       memset(&statbuf,0,sizeof(statbuf));
-      
+
       /* assume either path or path+file name */
       if ( (stat(CS option, &statbuf) == 0) && S_ISDIR(statbuf.st_mode) )
         /* is directory, use it as decode_path */
@@ -340,16 +340,16 @@ int mime_decode(uschar **listptr) {
   else
     /* no option? patch default path */
     DEFAULT_PATH: decode_file = mime_get_decode_file(decode_path, NULL);
-  
+
   if (decode_file == NULL)
     return DEFER;
-  
+
   /* read data linewise and dump it to the file,
      while looking for the current boundary */
   while(fgets(CS buffer, MIME_MAX_LINE_LENGTH, mime_stream) != NULL) {
     uschar *decoded_line = NULL;
     int decoded_line_length = 0;
-    
+
     if (mime_current_boundary != NULL) {
       /* boundary line must start with 2 dashes */
       if (Ustrncmp(buffer,"--",2) == 0) {
@@ -357,7 +357,7 @@ int mime_decode(uschar **listptr) {
           break;
       };
     };
-  
+
     decoded_line = mime_parse_line(buffer, mime_content_transfer_encoding, &decoded_line_length);
     /* write line to decode file */
     if (fwrite(decoded_line, 1, decoded_line_length, decode_file) < decoded_line_length) {
@@ -367,28 +367,28 @@ int mime_decode(uschar **listptr) {
       return DEFER;
     };
     size_counter += decoded_line_length;
-    
-    if (size_counter > 1023) { 
+
+    if (size_counter > 1023) {
       if ((mime_content_size + (size_counter / 1024)) < 65535)
         mime_content_size += (size_counter / 1024);
-      else 
+      else
         mime_content_size = 65535;
       size_counter = (size_counter % 1024);
     };
-    
+
     free(decoded_line);
   }
-  
+
   fclose(decode_file);
-  
+
   clearerr(mime_stream);
   fseek(mime_stream,f_pos,SEEK_SET);
-  
+
   /* round up remaining size bytes to one k */
   if (size_counter) {
     mime_content_size++;
   };
-  
+
   return OK;
 }
 
@@ -398,15 +398,15 @@ int mime_get_header(FILE *f, uschar *header) {
   int header_value_mode = 0;
   int header_open_brackets = 0;
   int num_copied = 0;
-  
+
   while(!done) {
-    
+
     c = fgetc(f);
     if (c == EOF) break;
-   
+
     /* always skip CRs */
     if (c == '\r') continue;
-    
+
     if (c == '\n') {
       if (num_copied > 0) {
         /* look if next char is '\t' or ' ' */
@@ -419,7 +419,7 @@ int mime_get_header(FILE *f, uschar *header) {
       c = ';';
       done = 1;
     };
-  
+
     /* skip control characters */
     if (c < 32) continue;
 
@@ -428,13 +428,13 @@ int mime_get_header(FILE *f, uschar *header) {
       /* skip leading whitespace */
       if ( ((c == '\t') || (c == ' ')) && (header_value_mode == 1) )
         continue;
-      
+
       /* we have hit a non-whitespace char, start copying value data */
       header_value_mode = 2;
-      
+
       /* skip quotes */
       if (c == '"') continue;
-      
+
       /* leave value mode on ';' */
       if (c == ';') {
         header_value_mode = 0;
@@ -464,18 +464,18 @@ int mime_get_header(FILE *f, uschar *header) {
         /* enter value mode */
         header_value_mode = 1;
       };
-      
+
       /* skip chars while we are in a comment */
       if (header_open_brackets > 0)
         continue;
       /* -------------------------------- */
     };
-    
+
     /* copy the char to the buffer */
     header[num_copied] = (uschar)c;
     /* raise counter */
     num_copied++;
-    
+
     /* break if header buffer is full */
     if (num_copied > MIME_MAX_HEADER_SIZE-1) {
       done = 1;
@@ -488,7 +488,7 @@ int mime_get_header(FILE *f, uschar *header) {
 
   /* 0-terminate */
   header[num_copied] = '\0';
-  
+
   /* return 0 for EOF or empty line */
   if ((c == EOF) || (num_copied == 1))
     return 0;
@@ -497,7 +497,7 @@ int mime_get_header(FILE *f, uschar *header) {
 }
 
 
-int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar 
+int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
                    **user_msgptr, uschar **log_msgptr) {
   int rc = OK;
   uschar *header = NULL;
@@ -517,7 +517,7 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
 
   /* loop through parts */
   while(1) {
-  
+
     /* reset all per-part mime variables */
     mime_anomaly_level     = 0;
     mime_anomaly_text      = NULL;
@@ -532,19 +532,19 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
     mime_content_type      = NULL;
     mime_is_multipart      = 0;
     mime_content_size      = 0;
-  
+
     /*
     If boundary is null, we assume that *f is positioned on the start of headers (for example,
     at the very beginning of a message.
     If a boundary is given, we must first advance to it to reach the start of the next header
     block.
     */
-    
+
     /* NOTE -- there's an error here -- RFC2046 specifically says to
      * check for outer boundaries.  This code doesn't do that, and
      * I haven't fixed this.
      *
-     * (I have moved partway towards adding support, however, by adding 
+     * (I have moved partway towards adding support, however, by adding
      * a "parent" field to my new boundary-context structure.)
      */
     if (context != NULL) {
@@ -570,7 +570,7 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
       debug_printf("Hit EOF ...\n");
       return rc;
     };
-  
+
     DECODE_HEADERS:
     /* parse headers, set up expansion variables */
     while(mime_get_header(f,header)) {
@@ -579,7 +579,7 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
       for (i = 0; i < mime_header_list_size; i++) {
         uschar *header_value = NULL;
         int header_value_len = 0;
-        
+
         /* found an interesting header? */
         if (strncmpic(mime_header_list[i].name,header,mime_header_list[i].namelen) == 0) {
           uschar *p = header + mime_header_list[i].namelen;
@@ -596,17 +596,17 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
           Ustrncpy(header_value, p, header_value_len);
           debug_printf("Found %s MIME header, value is '%s'\n", mime_header_list[i].name, header_value);
           *((uschar **)(mime_header_list[i].value)) = header_value;
-          
+
           /* make p point to the next character after the closing ';' */
           p += (header_value_len+1);
-          
+
           /* grab all param=value tags on the remaining line, check if they are interesting */
           NEXT_PARAM_SEARCH: while (*p != 0) {
             int j;
             for (j = 0; j < mime_parameter_list_size; j++) {
               uschar *param_value = NULL;
               int param_value_len = 0;
-              
+
               /* found an interesting parameter? */
               if (strncmpic(mime_parameter_list[j].name,p,mime_parameter_list[j].namelen) == 0) {
                 uschar *q = p + mime_parameter_list[j].namelen;
@@ -632,35 +632,35 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
         };
       };
     };
-    
+
     /* set additional flag variables (easier access) */
     if ( (mime_content_type != NULL) &&
          (Ustrncmp(mime_content_type,"multipart",9) == 0) )
       mime_is_multipart = 1;
-    
+
     /* Make a copy of the boundary pointer.
        Required since mime_boundary is global
        and can be overwritten further down in recursion */
     nested_context.boundary = mime_boundary;
-    
+
     /* raise global counter */
     mime_part_count++;
-    
+
     /* copy current file handle to global variable */
     mime_stream = f;
     mime_current_boundary = context ? context->boundary : 0;
 
     /* Note the context */
     mime_is_coverletter = !(context && context->context == MBC_ATTACHMENT);
-    
+
     /* call ACL handling function */
     rc = acl_check(ACL_WHERE_MIME, NULL, acl_smtp_mime, user_msgptr, log_msgptr);
-    
+
     mime_stream = NULL;
     mime_current_boundary = NULL;
-    
+
     if (rc != OK) break;
-    
+
     /* If we have a multipart entity and a boundary, go recursive */
     if ( (mime_content_type != NULL) &&
          (nested_context.boundary != NULL) &&
@@ -684,7 +684,7 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
       uschar filename[2048];
       int file_nr = 0;
       int result = 0;
-      
+
       /* must find first free sequential filename */
       do {
         struct stat mystat;
@@ -696,9 +696,9 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
         result = stat(CS filename,&mystat);
       }
       while(result != -1);
-      
+
       rfc822name = filename;
-      
+
       /* decode RFC822 attachment */
       mime_decoded_filename = NULL;
       mime_stream = f;
@@ -714,14 +714,14 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
       };
       mime_decoded_filename = NULL;
     };
-    
+
     NO_RFC822:
     /* If the boundary of this instance is NULL, we are finished here */
     if (context == NULL) break;
 
     if (context->context == MBC_COVERLETTER_ONESHOT)
       context->context = MBC_ATTACHMENT;
-  
+
   };
 
   return rc;

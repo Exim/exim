@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.4 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.5 2005/02/17 11:58:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -548,16 +548,16 @@ if (!ugid.gid_set && pw != NULL)
   if(ob->srs != NULL)
   {
     BOOL usesrs = TRUE;
-    
+
     if(ob->srs_condition != NULL)
       usesrs = expand_check_condition(ob->srs_condition, "srs_condition expansion failed", NULL);
-    
+
     if(usesrs)
       if(Ustrcmp(ob->srs, "reverse") == 0 || Ustrcmp(ob->srs, "reverseandforward") == 0)
       {
         uschar *res;
         int n_srs;
-    
+
         srs_orig_recipient = addr->address;
         eximsrs_init();
         if(ob->srs_db)
@@ -800,17 +800,17 @@ else
   if(ob->srs != NULL)
   {
     BOOL usesrs = TRUE;
-    
+
     if(ob->srs_condition != NULL)
       usesrs = expand_check_condition(ob->srs_condition, "srs_condition expansion failed", NULL);
-    
+
     if(usesrs)
       if((Ustrcmp(ob->srs, "forward") == 0 || Ustrcmp(ob->srs, "reverseandforward") == 0) && !verify)
       {
         uschar *res;
         uschar *usedomain;
         int n_srs;
-      
+
         srs_orig_sender = sender_address;
         eximsrs_init();
         if(ob->srs_db)
@@ -818,7 +818,7 @@ else
 
         if(ob->srs_alias != NULL ? (usedomain = expand_string(ob->srs_alias)) == NULL : 1)
           usedomain = deliver_domain;
-                
+
         if((n_srs = eximsrs_forward(&res, sender_address, usedomain)) != OK)
           return n_srs;
         sender_address = res;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/parse.c,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/parse.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -847,9 +847,9 @@ If the only characters that strictly need quoting are spaces, we return the
 original string, unmodified. If a quoted string is too long for the buffer, it
 is truncated. (This shouldn't happen: this is normally handling short strings.)
 
-Hmmph. As always, things get perverted for other uses. This function was 
-originally for the "phrase" part of addresses. Now it is being used for much 
-longer texts in ACLs and via the ${rfc2047: expansion item. This means we have 
+Hmmph. As always, things get perverted for other uses. This function was
+originally for the "phrase" part of addresses. Now it is being used for much
+longer texts in ACLs and via the ${rfc2047: expansion item. This means we have
 to check for overlong "encoded-word"s and split them. November 2004.
 
 Arguments:
@@ -890,7 +890,7 @@ for (; len > 0; len--)
   {
   int ch = *s++;
   if (t > buffer + buffer_size - hlen - 8) break;
-  
+
   if (t - p > 70)
     {
     *t++ = '?';
@@ -899,8 +899,8 @@ for (; len > 0; len--)
     p = t;
     Ustrncpy(p, buffer, hlen);
     t += hlen;
-    }      
- 
+    }
+
   if (ch < 33 || ch > 126 ||
       Ustrchr("?=()<>@,;:\\\".[]_", ch) != NULL)
     {
@@ -913,11 +913,11 @@ for (; len > 0; len--)
     }
   else *t++ = ch;
   }
-   
+
 *t++ = '?';
-*t++ = '=';  
+*t++ = '=';
 *t = 0;
- 
+
 return coded? buffer : string;
 }
 

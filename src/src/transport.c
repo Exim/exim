@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1095,7 +1095,7 @@ if (filter_pid > 0 && (rc = child_close(filter_pid, 30)) != 0 && yield)
   }
 
 /* Wait for the writing process to complete. If it ends successfully,
-read the results from its pipe, provided we haven't already had a filter 
+read the results from its pipe, provided we haven't already had a filter
 process failure. */
 
 DEBUG(D_transport) debug_printf("waiting for writing process\n");
@@ -1104,7 +1104,7 @@ if (write_pid > 0)
   rc = child_close(write_pid, 30);
   if (yield)
     {
-    if (rc == 0)   
+    if (rc == 0)
       {
       BOOL ok;
       read(pfd[pipe_read], (void *)&ok, sizeof(BOOL));
@@ -1122,7 +1122,7 @@ if (write_pid > 0)
       addr->more_errno = rc;
       DEBUG(D_transport) debug_printf("writing process returned %d\n", rc);
       }
-    }   
+    }
   }
 close(pfd[pipe_read]);
 

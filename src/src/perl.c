@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/perl.c,v 1.3 2005/01/27 15:00:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/perl.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -113,17 +113,17 @@ init_perl(uschar *startup_code)
     /*********************************************************************/
     /* These lines by PH added to make "warn" output go to the Exim log; I
     hope this doesn't break anything. */
-     
+
     sv = newSVpv(
       "$SIG{__WARN__} = sub { my($s) = $_[0];"
-      "$s =~ s/\\n$//;" 
+      "$s =~ s/\\n$//;"
       "Exim::log_write($s) };", 0);
     PUSHMARK(SP);
     perl_eval_sv(sv, G_SCALAR|G_DISCARD|G_KEEPERR);
     SvREFCNT_dec(sv);
     if (SvTRUE(ERRSV)) return US SvPV(ERRSV, len);
     /*********************************************************************/
- 
+
     sv = newSVpv(CS startup_code, 0);
     PUSHMARK(SP);
     perl_eval_sv(sv, G_SCALAR|G_DISCARD|G_KEEPERR);
@@ -182,7 +182,7 @@ call_perl_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
   yield = string_cat(yield, sizep, ptrp, str, (int)len);
   FREETMPS;
   LEAVE;
-  
+
   setlocale(LC_ALL, "C");    /* In case it got changed */
   return yield;
 }

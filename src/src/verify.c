@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.14 2005/01/27 10:26:14 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.15 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -139,7 +139,7 @@ Returns:            OK/FAIL/DEFER
 
 static int
 do_callout(address_item *addr, host_item *host_list, transport_feedback *tf,
-  int callout, int callout_overall, int callout_connect, int options, 
+  int callout, int callout_overall, int callout_connect, int options,
   uschar *se_mailfrom, uschar *pm_mailfrom)
 {
 BOOL is_recipient = (options & vopt_is_recipient) != 0;
@@ -151,7 +151,7 @@ BOOL done = FALSE;
 uschar *address_key;
 uschar *from_address;
 uschar *random_local_part = NULL;
-uschar **failure_ptr = is_recipient? 
+uschar **failure_ptr = is_recipient?
   &recipient_verify_failure : &sender_verify_failure;
 open_db dbblock;
 open_db *dbm_file = NULL;
@@ -238,7 +238,7 @@ if (dbm_file != NULL)
       setflag(addr, af_verify_nsfail);
       addr->user_message = US"(result of an earlier callout reused).";
       yield = FAIL;
-      *failure_ptr = US"mail"; 
+      *failure_ptr = US"mail";
       goto END_CALLOUT;
       }
 
@@ -285,7 +285,7 @@ if (dbm_file != NULL)
           debug_printf("callout cache: domain does not accept "
             "RCPT TO:<postmaster@domain>\n");
         yield = FAIL;
-        *failure_ptr = US"postmaster"; 
+        *failure_ptr = US"postmaster";
         setflag(addr, af_verify_pmfail);
         addr->user_message = US"(result of earlier verification reused).";
         goto END_CALLOUT;
@@ -334,7 +334,7 @@ if (dbm_file != NULL)
       HDEBUG(D_verify)
         debug_printf("callout cache: address record is negative\n");
       addr->user_message = US"Previous (cached) callout verification failure";
-      *failure_ptr = US"recipient"; 
+      *failure_ptr = US"recipient";
       yield = FAIL;
       }
     goto END_CALLOUT;
@@ -377,7 +377,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
   smtp_outblock outblock;
   int host_af;
   int port = 25;
-  BOOL send_quit = TRUE; 
+  BOOL send_quit = TRUE;
   uschar *helo = US"HELO";
   uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
   uschar inbuffer[4096];
@@ -482,7 +482,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
 
   if (!done)
     {
-    *failure_ptr = US"mail"; 
+    *failure_ptr = US"mail";
     if (errno == 0 && responsebuffer[0] == '5')
       {
       setflag(addr, af_verify_nsfail);
@@ -558,9 +558,9 @@ for (host = host_list; host != NULL && !done; host = host->next)
         new_address_record.result = ccache_accept;
       else if (errno == 0 && responsebuffer[0] == '5')
         {
-        *failure_ptr = US"recipient";  
+        *failure_ptr = US"recipient";
         new_address_record.result = ccache_reject;
-        } 
+        }
 
       /* Do postmaster check if requested */
 
@@ -587,7 +587,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
           new_domain_record.postmaster_result = ccache_accept;
         else if (errno == 0 && responsebuffer[0] == '5')
           {
-          *failure_ptr = US"postmaster"; 
+          *failure_ptr = US"postmaster";
           setflag(addr, af_verify_pmfail);
           new_domain_record.postmaster_result = ccache_reject;
           }
@@ -610,7 +610,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
     if (errno == ETIMEDOUT)
       {
       HDEBUG(D_verify) debug_printf("SMTP timeout\n");
-      send_quit = FALSE; 
+      send_quit = FALSE;
       }
     else if (errno == 0)
       {
@@ -799,7 +799,7 @@ Arguments:
                      for individual commands
   callout_overall  if > 0, gives overall timeout for the callout function;
                    if < 0, a default is used (see do_callout())
-  callout_connect  the connection timeout for callouts                  
+  callout_connect  the connection timeout for callouts
   se_mailfrom      when callout is requested to verify a sender, use this
                      in MAIL FROM; NULL => ""
   pm_mailfrom      when callout is requested, if non-NULL, do the postmaster
@@ -815,7 +815,7 @@ Returns:           OK      address verified
 
 int
 verify_address(address_item *vaddr, FILE *f, int options, int callout,
-  int callout_overall, int callout_connect, uschar *se_mailfrom, 
+  int callout_overall, int callout_connect, uschar *se_mailfrom,
   uschar *pm_mailfrom, BOOL *routed)
 {
 BOOL allok = TRUE;
@@ -832,7 +832,7 @@ address_item *addr_new = NULL;
 address_item *addr_remote = NULL;
 address_item *addr_local = NULL;
 address_item *addr_succeed = NULL;
-uschar **failure_ptr = is_recipient? 
+uschar **failure_ptr = is_recipient?
   &recipient_verify_failure : &sender_verify_failure;
 uschar *ko_prefix, *cr;
 uschar *address = vaddr->address;
@@ -863,7 +863,7 @@ if (parse_find_at(address) == NULL)
     if (f != NULL)
       fprintf(f, "%sA domain is required for \"%s\"%s\n", ko_prefix, address,
         cr);
-    *failure_ptr = US"qualify";     
+    *failure_ptr = US"qualify";
     return FAIL;
     }
   address = rewrite_address_qualify(address, is_recipient);
@@ -1043,15 +1043,15 @@ while (addr_new != NULL)
             host_build_hostlist(&host_list, s, tf.hosts_randomize);
 
             /* Just ignore failures to find a host address. If we don't manage
-            to find any addresses, the callout will defer. Note that more than 
-            one address may be found for a single host, which will result in 
-            additional host items being inserted into the chain. Hence we must 
+            to find any addresses, the callout will defer. Note that more than
+            one address may be found for a single host, which will result in
+            additional host items being inserted into the chain. Hence we must
             save the next host first. */
 
             for (host = host_list; host != NULL; host = nexthost)
               {
               nexthost = host->next;
-              if (tf.gethostbyname || 
+              if (tf.gethostbyname ||
                   string_is_ip_address(host->name, NULL) > 0)
                 (void)host_find_byname(host, NULL, &canonical_name, TRUE);
               else
@@ -1067,7 +1067,7 @@ while (addr_new != NULL)
           }
         }
 
-      /* Can only do a callout if we have at least one host! If the callout 
+      /* Can only do a callout if we have at least one host! If the callout
       fails, it will have set ${sender,recipient}_verify_failure. */
 
       if (host_list != NULL)
@@ -1092,17 +1092,17 @@ while (addr_new != NULL)
         }
       }
     }
-    
+
   /* Otherwise, any failure is a routing failure */
-  
-  else *failure_ptr = US"route"; 
+
+  else *failure_ptr = US"route";
 
   /* A router may return REROUTED if it has set up a child address as a result
   of a change of domain name (typically from widening). In this case we always
   want to continue to verify the new child. */
 
   if (rc == REROUTED) continue;
-  
+
   /* Handle hard failures */
 
   if (rc == FAIL)
@@ -1283,10 +1283,10 @@ else for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
     }
   }
 
-/* Will be DEFER or FAIL if any one address has, only for full_info (which is 
+/* Will be DEFER or FAIL if any one address has, only for full_info (which is
 the -bv or -bt case). */
 
-return yield;  
+return yield;
 }
 
 
@@ -1461,11 +1461,11 @@ Arguments:
   log_msgptr       points to where to put a log error message
   callout          timeout for callout check (passed to verify_address())
   callout_overall  overall callout timeout (ditto)
-  callout_connect  connect callout timeout (ditto) 
+  callout_connect  connect callout timeout (ditto)
   se_mailfrom      mailfrom for verify; NULL => ""
   pm_mailfrom      sender for pm callout check (passed to verify_address())
   options          callout options (passed to verify_address())
-  verrno           where to put the address basic_errno 
+  verrno           where to put the address basic_errno
 
 If log_msgptr is set to something without setting user_msgptr, the caller
 normally uses log_msgptr for both things.
@@ -1476,7 +1476,7 @@ Returns:           result of the verification attempt: OK, FAIL, or DEFER;
 
 int
 verify_check_header_address(uschar **user_msgptr, uschar **log_msgptr,
-  int callout, int callout_overall, int callout_connect, uschar *se_mailfrom, 
+  int callout, int callout_overall, int callout_connect, uschar *se_mailfrom,
   uschar *pm_mailfrom, int options, int *verrno)
 {
 static int header_types[] = { htype_sender, htype_reply_to, htype_from };
@@ -1566,7 +1566,7 @@ for (i = 0; i < 3; i++)
           {
           vaddr = deliver_make_addr(address, FALSE);
           new_ok = verify_address(vaddr, NULL, options | vopt_fake_sender,
-            callout, callout_overall, callout_connect, se_mailfrom, 
+            callout, callout_overall, callout_connect, se_mailfrom,
             pm_mailfrom, NULL);
           }
         }
@@ -1578,14 +1578,14 @@ for (i = 0; i < 3; i++)
 
       if (new_ok != OK)
         {
-        *verrno = vaddr->basic_errno; 
+        *verrno = vaddr->basic_errno;
         if (smtp_return_error_details)
           {
           *user_msgptr = string_sprintf("Rejected after DATA: "
             "could not verify \"%.*s\" header address\n%s: %s",
             endname - h->text, h->text, vaddr->address, vaddr->message);
           }
-        }   
+        }
 
       /* Success or defer */
 
@@ -1874,7 +1874,7 @@ if (Ustrncmp(ss, "net", 3) == 0 && (semicolon = Ustrchr(ss, ';')) != NULL)
     /* Adjust parameters for the type of lookup. For a query-style
     lookup, there is no file name, and the "key" is just the query. For
     a single-key lookup, the key is the current IP address, masked
-    appropriately, and reconverted to text form, with the mask appended. 
+    appropriately, and reconverted to text form, with the mask appended.
     For IPv6 addresses, specify dot separators instead of colons. */
 
     if (mac_islookup(search_type, lookup_querystyle))
@@ -2079,9 +2079,9 @@ addresses. */
 cb.host_ipv4 = (Ustrncmp(host_address, "::ffff:", 7) == 0)?
   host_address + 7 : host_address;
 
-/* During the running of the check, put the IP address into $host_address. In 
-the case of calls from the smtp transport, it will already be there. However, 
-in other calls (e.g. when testing ignore_target_hosts), it won't. Just to be on 
+/* During the running of the check, put the IP address into $host_address. In
+the case of calls from the smtp transport, it will already be there. However,
+in other calls (e.g. when testing ignore_target_hosts), it won't. Just to be on
 the safe side, any existing setting is preserved, though as I write this
 (November 2004) I can't see any cases where it is actually needed. */
 
@@ -2094,11 +2094,11 @@ rc = match_check_list(
        check_host,                             /* function for testing */
        &cb,                                    /* argument for function */
        MCL_HOST,                               /* type of check */
-       (host_address == sender_host_address)? 
+       (host_address == sender_host_address)?
          US"host" : host_address,              /* text for debugging */
        valueptr);                              /* where to pass back data */
 deliver_host_address = save_host_address;
-return rc; 
+return rc;
 }
 
 
@@ -2199,21 +2199,21 @@ else
 
 Arguments:
   domain         the outer dnsbl domain (for debug message)
-  keydomain      the current keydomain (for debug message) 
+  keydomain      the current keydomain (for debug message)
   query          the domain to be looked up
-  iplist         the list of matching IP addresses 
-  bitmask        true if bitmask matching is wanted 
-  invert_result  true if result to be inverted 
-  defer_return   what to return for a defer 
+  iplist         the list of matching IP addresses
+  bitmask        true if bitmask matching is wanted
+  invert_result  true if result to be inverted
+  defer_return   what to return for a defer
 
 Returns:         OK if lookup succeeded
                  FAIL if not
 */
 
 static int
-one_check_dnsbl(uschar *domain, uschar *keydomain, uschar *query, 
+one_check_dnsbl(uschar *domain, uschar *keydomain, uschar *query,
   uschar *iplist, BOOL bitmask, BOOL invert_result, int defer_return)
-{                
+{
 dns_answer dnsa;
 dns_scan dnss;
 tree_node *t;
@@ -2379,7 +2379,7 @@ if (cb->rc == DNS_SUCCEED)
         debug_printf("=> there was %s match for %c%s\n",
           invert_result? "an exclude":"no", bitmask? '&' : '=', iplist);
         }
-      return FAIL; 
+      return FAIL;
       }
     }
 
@@ -2566,56 +2566,56 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
       }
     }
 
-  /* If there is no key string, construct the query by adding the domain name 
+  /* If there is no key string, construct the query by adding the domain name
   onto the inverted host address, and perform a single DNS lookup. */
-  
+
   if (key == NULL)
     {
     if (sender_host_address == NULL) return FAIL;    /* can never match */
     if (revadd[0] == 0) invert_address(revadd, sender_host_address);
     frc = string_format(query, sizeof(query), "%s%s", revadd, domain);
-    
+
     if (!frc)
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "dnslist query is too long "
         "(ignored): %s...", query);
       continue;
       }
-      
-    rc = one_check_dnsbl(domain, sender_host_address, query, iplist, bitmask, 
+
+    rc = one_check_dnsbl(domain, sender_host_address, query, iplist, bitmask,
       invert_result, defer_return);
-       
+
     if (rc == OK)
       {
       dnslist_domain = string_copy(domain);
-      HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n", 
+      HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n",
         sender_host_address, domain);
       }
-       
+
     if (rc != FAIL) return rc;     /* OK or DEFER */
     }
-    
-  /* If there is a key string, it can be a list of domains or IP addresses to 
+
+  /* If there is a key string, it can be a list of domains or IP addresses to
   be concatenated with the main domain. */
- 
+
   else
     {
     int keysep = 0;
-    BOOL defer = FALSE; 
-    uschar *keydomain; 
+    BOOL defer = FALSE;
+    uschar *keydomain;
     uschar keybuffer[256];
-  
-    while ((keydomain = string_nextinlist(&key, &keysep, keybuffer, 
+
+    while ((keydomain = string_nextinlist(&key, &keysep, keybuffer,
             sizeof(keybuffer))) != NULL)
-      {       
+      {
       if (string_is_ip_address(keydomain, NULL) > 0)
         {
         uschar keyrevadd[128];
         invert_address(keyrevadd, keydomain);
-        frc = string_format(query, sizeof(query), "%s%s", keyrevadd, domain); 
+        frc = string_format(query, sizeof(query), "%s%s", keyrevadd, domain);
         }
       else
-        { 
+        {
         frc = string_format(query, sizeof(query), "%s.%s", keydomain, domain);
         }
 
@@ -2625,18 +2625,18 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
           "(ignored): %s...", query);
         continue;
         }
-        
-      rc = one_check_dnsbl(domain, keydomain, query, iplist, bitmask, 
+
+      rc = one_check_dnsbl(domain, keydomain, query, iplist, bitmask,
         invert_result, defer_return);
-         
+
       if (rc == OK)
         {
         dnslist_domain = string_copy(domain);
-        HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n", 
+        HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n",
           keydomain, domain);
-        return OK;   
+        return OK;
         }
-         
+
       /* If the lookup deferred, remember this fact. We keep trying the rest
       of the list to see if we get a useful result, and if we don't, we return
       DEFER at the end. */
@@ -2645,7 +2645,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
       }    /* continue with next keystring domain/address */
 
     if (defer) return DEFER;
-    }  
+    }
   }        /* continue with next dnsdb outer domain */
 
 return FAIL;

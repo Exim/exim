@@ -1,13 +1,13 @@
-/* $Cambridge: exim/src/src/spf.c,v 1.2 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/spf.c,v 1.3 2005/02/17 11:58:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
- 
+
 /* Experimental SPF support.
    Copyright (c) Tom Kistner <tom@duncanthrax.net> 2004
    License: GPL */
-   
+
 /* Code for calling spf checks via libspf-alt. Called from acl.c. */
 
 #include "exim.h"
@@ -23,15 +23,15 @@ SPF_dns_config_t    spfdcid = NULL;
 /* spf_init sets up a context that can be re-used for several
    messages on the same SMTP connection (that come from the
    same host with the same HELO string) */
-   
+
 int spf_init(uschar *spf_helo_domain, uschar *spf_remote_addr) {
   uschar *p;
-  
+
   /* paranoia */
   spfcid = NULL;
   spfdcid_resolv = NULL;
   spfdcid = NULL;
-  
+
   spfcid = SPF_create_config();
   if ( spfcid == NULL ) {
     debug_printf("spf: SPF_create_config() failed.\n");
@@ -62,7 +62,7 @@ int spf_init(uschar *spf_helo_domain, uschar *spf_remote_addr) {
     spfdcid_resolv = NULL;
 	  return 0;
   }
-  
+
   return 1;
 }
 
@@ -78,7 +78,7 @@ int spf_process(uschar **listptr, uschar *spf_envelope_sender) {
   uschar spf_result_id_buffer[128];
   SPF_output_t spf_output;
   int rc = SPF_RESULT_ERROR;
- 
+
   if (!(spfcid && spfdcid)) {
     /* no global context, assume temp error and skip to evaluation */
     rc = SPF_RESULT_ERROR;
@@ -89,7 +89,7 @@ int spf_process(uschar **listptr, uschar *spf_envelope_sender) {
     /* Invalid sender address. This should be a real rare occurence */
     rc = SPF_RESULT_ERROR;
     goto SPF_EVALUATE;
-  } 
+  }
 
   /* get SPF result */
   spf_output = SPF_result(spfcid, spfdcid);

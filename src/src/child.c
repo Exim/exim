@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/child.c,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/child.c,v 1.4 2005/02/17 11:58:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -263,7 +263,7 @@ Arguments:
                 process is placed
   wd          if not NULL, a path to be handed to chdir() in the new process
   make_leader if TRUE, make the new process a process group leader
-  
+
 Returns:      the pid of the created process or -1 if anything has gone wrong
 */
 

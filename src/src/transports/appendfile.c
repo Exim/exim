@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.4 2005/01/04 10:00:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.5 2005/02/17 11:58:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2858,12 +2858,12 @@ if (yield != OK)
   from child_close() is in more_errno. */
 
   else if (errno == ERRNO_FILTER_FAIL)
-    { 
+    {
     yield = PANIC;
     addr->message = string_sprintf("transport filter process failed (%d) "
       "while writing to %s%s", addr->more_errno, dataname,
       (addr->more_errno == EX_EXECFAILED)? ": unable to execute command" : "");
-    }   
+    }
 
   /* Handle failure to expand header changes */
 

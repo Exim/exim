@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-src/spec.src,v 1.7 2005/02/16 16:09:00 ph10 Exp $
+. $Cambridge: exim/doc/doc-src/spec.src,v 1.8 2005/02/17 11:58:25 ph10 Exp $
 .
 .set version "4.50"
 .set previousversion "4.40"
@@ -477,12 +477,15 @@ tips, and know-how for the benefit of others.
 
 .section Mailing lists
 .index mailing lists||for Exim users
-The following are the two main Exim mailing lists:
+.em
+The following are the three main Exim mailing lists:
 .display rm
 .tabs 28
 $it{exim-users@@exim.org}          $t general discussion list
+$it{exim-dev@@exim.org}            $t discussion of bugs, enhancements, etc.
 $it{exim-announce@@exim.org}       $t moderated, low volume announcements list
 .endd
+.nem
 You can subscribe to these lists, change your existing subscriptions, and view
 or search the archives via the
 .if ~~html
@@ -24253,7 +24256,7 @@ contributing the code for this scanner.
 .index virus scanners||command line interface
 \cmdline\: This is the keyword for the generic command line scanner interface.
 It can be used to attach virus scanners that are invoked from the shell. This
-scanner type takes 3 mantadory options:
+scanner type takes 3 mandatory options:
 .numberpars
 The full path and name of the scanner binary, with all command line options,
 and a placeholder (%s) for the directory to scan.
