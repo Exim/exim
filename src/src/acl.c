@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.12 2005/01/04 11:01:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.13 2005/01/12 12:24:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -405,7 +405,9 @@ static unsigned int control_forbids[] = {
 #ifdef WITH_CONTENT_SCAN
   (1<<ACL_WHERE_NOTSMTP),                          /* no_mbox_unspool */
 #endif
-  (1<<ACL_WHERE_NOTSMTP),                          /* fakereject */
+
+  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakereject */
+    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)),
 
   (1<<ACL_WHERE_NOTSMTP)                           /* no_multiline */
 };

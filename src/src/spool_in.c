@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.4 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.5 2005/01/12 12:24:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -284,7 +284,6 @@ tls_peerdn = NULL;
 #endif
 
 #ifdef WITH_CONTENT_SCAN
-fake_reject = FALSE;
 spam_score_int = NULL;
 #endif
 
