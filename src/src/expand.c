@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.7.2.1 2004/12/02 09:15:11 tom Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.7.2.2 2004/12/10 14:59:08 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -318,6 +318,12 @@ static var_entry var_table[] = {
   { "authenticated_id",    vtype_stringptr,   &authenticated_id },
   { "authenticated_sender",vtype_stringptr,   &authenticated_sender },
   { "authentication_failed",vtype_int,        &authentication_failed },
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  { "bmi_alt_location",    vtype_stringptr,   &bmi_alt_location },
+  { "bmi_base64_tracker_verdict", vtype_stringptr, &bmi_base64_tracker_verdict },
+  { "bmi_base64_verdict",  vtype_stringptr,   &bmi_base64_verdict },
+  { "bmi_deliver",         vtype_int,         &bmi_deliver },
+#endif
   { "body_linecount",      vtype_int,         &body_linecount },
   { "body_zerocount",      vtype_int,         &body_zerocount },
   { "bounce_recipient",    vtype_stringptr,   &bounce_recipient },
@@ -461,9 +467,23 @@ static var_entry var_table[] = {
   { "spam_score",          vtype_stringptr,   &spam_score },
   { "spam_score_int",      vtype_stringptr,   &spam_score_int },
 #endif
+#ifdef EXPERIMENTAL_SPF
+  { "spf_header_comment",  vtype_stringptr,   &spf_header_comment },
+  { "spf_received",        vtype_stringptr,   &spf_received },
+  { "spf_result",          vtype_stringptr,   &spf_result },
+  { "spf_smtp_comment",    vtype_stringptr,   &spf_smtp_comment },
+#endif
   { "spool_directory",     vtype_stringptr,   &spool_directory },
   { "spool_inodes",        vtype_pinodes,     (void *)TRUE },
   { "spool_space",         vtype_pspace,      (void *)TRUE },  
+#ifdef EXPERIMENTAL_SRS
+  { "srs_db_address",      vtype_stringptr,   &srs_db_address },
+  { "srs_db_key",          vtype_stringptr,   &srs_db_key },
+  { "srs_orig_recipient",  vtype_stringptr,   &srs_orig_recipient },
+  { "srs_orig_sender",     vtype_stringptr,   &srs_orig_sender },
+  { "srs_recipient",       vtype_stringptr,   &srs_recipient },
+  { "srs_status",          vtype_stringptr,   &srs_status },
+#endif
   { "thisaddress",         vtype_stringptr,   &filter_thisaddress },
   { "tls_certificate_verified", vtype_int,    &tls_certificate_verified },
   { "tls_cipher",          vtype_stringptr,   &tls_cipher },

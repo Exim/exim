@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.6.2.4 2004/12/10 09:24:38 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.6.2.5 2004/12/10 14:59:08 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -328,6 +328,15 @@ uschar *base62_chars=
 uschar *bi_command             = NULL;
 uschar *big_buffer             = NULL;
 int     big_buffer_size        = BIG_BUFFER_SIZE;
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+uschar *bmi_alt_location       = NULL;
+uschar *bmi_base64_tracker_verdict = NULL;
+uschar *bmi_base64_verdict     = NULL;
+uschar *bmi_config_file        = US"/opt/brightmail/etc/brightmail.cfg";
+int     bmi_deliver            = 1;
+int     bmi_run                = 0;
+uschar *bmi_verdicts           = NULL;
+#endif
 int     body_linecount         = 0;
 int     body_zerocount         = 0;
 uschar *bounce_message_file    = NULL;
@@ -834,6 +843,9 @@ router_instance  router_defaults = {
     NULL,                      /* driver name */
 
     NULL,                      /* address_data */
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+    NULL,                      /* bmi_rule */
+#endif    
     NULL,                      /* cannot_route_message */
     NULL,                      /* condition */
     NULL,                      /* current_directory */
@@ -862,6 +874,11 @@ router_instance  router_defaults = {
     NULL,                      /* transport_name */
 
     TRUE,                      /* address_test */
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+    FALSE,                     /* bmi_deliver_alternate */
+    FALSE,                     /* bmi_deliver_default */
+    FALSE,                     /* bmi_dont_deliver */
+#endif
     TRUE,                      /* expn */
     FALSE,                     /* caseful_local_part */
     FALSE,                     /* check_local_user */
@@ -998,10 +1015,25 @@ uschar *spam_report            = NULL;
 uschar *spam_score             = NULL;
 uschar *spam_score_int         = NULL;
 #endif
+#ifdef EXPERIMENTAL_SPF
+uschar *spf_header_comment     = NULL;
+uschar *spf_received           = NULL;
+uschar *spf_result             = NULL;
+uschar *spf_smtp_comment       = NULL;
+#endif
 
 BOOL    split_spool_directory  = FALSE;
 uschar *spool_directory        = US SPOOL_DIRECTORY
                            "\0<--------------Space to patch spool_directory->";
+#ifdef EXPERIMENTAL_SRS
+uschar *srs_config             = NULL;
+uschar *srs_db_address         = NULL;
+uschar *srs_db_key             = NULL;
+uschar *srs_orig_recipient     = NULL;
+uschar *srs_orig_sender        = NULL;
+uschar *srs_recipient          = NULL;
+uschar *srs_status             = NULL;
+#endif      
 int     string_datestamp_offset= -1;
 BOOL    strip_excess_angle_brackets = FALSE;
 BOOL    strip_trailing_dot     = FALSE;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.h,v 1.1 2004/10/07 13:10:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.h,v 1.1.2.1 2004/12/10 14:59:08 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -32,6 +32,13 @@ typedef struct {
 
   uid_t  *owners;
   gid_t  *owngroups;
+
+#ifdef EXPERIMENTAL_SRS
+  uschar *srs;
+  uschar *srs_condition;
+  uschar *srs_db;
+  uschar *srs_alias;
+#endif
 
   int   modemask;
   int   bit_options;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/local_scan.h,v 1.1.2.1 2004/12/02 09:15:11 tom Exp $ */
+/* $Cambridge: exim/src/src/local_scan.h,v 1.1.2.2 2004/12/10 14:59:08 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -109,6 +109,9 @@ typedef struct recipient_item {
   uschar *address;              /* the recipient address */
   int     pno;                  /* parent number for "one_time" alias, or -1 */
   uschar *errors_to;            /* the errors_to address or NULL */
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  uschar *bmi_optin;
+#endif
 } recipient_item;
 
 

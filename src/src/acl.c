@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.5.2.4 2004/12/10 09:24:38 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.5.2.5 2004/12/10 14:59:08 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -34,7 +34,11 @@ static int msgcond[] = { FAIL, OK, OK, FAIL, OK, FAIL, OK };
 /* ACL condition and modifier codes - keep in step with the table that
 follows. */
 
-enum { ACLC_ACL, ACLC_AUTHENTICATED, ACLC_CONDITION, ACLC_CONTROL,
+enum { ACLC_ACL, ACLC_AUTHENTICATED,
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+       ACLC_BMI_OPTIN,
+#endif
+ACLC_CONDITION, ACLC_CONTROL,
 #ifdef WITH_CONTENT_SCAN
        ACLC_DECODE,
 #endif
@@ -59,13 +63,20 @@ enum { ACLC_ACL, ACLC_AUTHENTICATED, ACLC_CONDITION, ACLC_CONTROL,
 #ifdef WITH_CONTENT_SCAN
        ACLC_SPAM,       
 #endif
+#ifdef EXPERIMENTAL_SPF
+       ACLC_SPF,
+#endif
        ACLC_VERIFY };
 
 /* ACL conditions/modifiers: "delay", "control", "endpass", "message",
 "log_message", "logwrite", and "set" are modifiers that look like conditions
 but always return TRUE. They are used for their side effects. */
 
-static uschar *conditions[] = { US"acl", US"authenticated", US"condition",
+static uschar *conditions[] = { US"acl", US"authenticated",
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  US"bmi_optin",
+#endif
+  US"condition",
   US"control", 
 #ifdef WITH_CONTENT_SCAN
   US"decode",
@@ -91,6 +102,9 @@ static uschar *conditions[] = { US"acl", US"authenticated", US"condition",
 #ifdef WITH_CONTENT_SCAN
   US"spam",
 #endif
+#ifdef EXPERIMENTAL_SPF
+  US"spf",
+#endif
   US"verify" };
   
 /* ACL control names */
@@ -106,6 +120,9 @@ checking functions. */
 static uschar cond_expand_at_top[] = {
   TRUE,    /* acl */
   FALSE,   /* authenticated */
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  TRUE,    /* bmi_optin */
+#endif  
   TRUE,    /* condition */
   TRUE,    /* control */
 #ifdef WITH_CONTENT_SCAN
@@ -140,6 +157,9 @@ static uschar cond_expand_at_top[] = {
 #ifdef WITH_CONTENT_SCAN
   TRUE,    /* spam */
 #endif
+#ifdef EXPERIMENTAL_SPF
+  TRUE,    /* spf */
+#endif
   TRUE     /* verify */
 };
 
@@ -148,6 +168,9 @@ static uschar cond_expand_at_top[] = {
 static uschar cond_modifiers[] = {
   FALSE,   /* acl */
   FALSE,   /* authenticated */
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  TRUE,    /* bmi_optin */
+#endif  
   FALSE,   /* condition */
   TRUE,    /* control */
 #ifdef WITH_CONTENT_SCAN
@@ -182,6 +205,9 @@ static uschar cond_modifiers[] = {
 #ifdef WITH_CONTENT_SCAN
   FALSE,   /* spam */
 #endif
+#ifdef EXPERIMENTAL_SPF
+  FALSE,   /* spf */
+#endif
   FALSE    /* verify */
 };
 
@@ -192,13 +218,24 @@ static unsigned int cond_forbids[] = {
   0,                                               /* acl */
   (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_CONNECT)|   /* authenticated */
     (1<<ACL_WHERE_HELO),
+  
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* bmi_optin */
+    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
+    (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_MIME)|
+    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|                                       
+    (1<<ACL_WHERE_MAILAUTH)|
+    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_PREDATA),
+#endif
+  
   0,                                               /* condition */
-
+  
   /* Certain types of control are always allowed, so we let it through
   always and check in the control processing itself */
-
+  
   0,                                               /* control */
-
+  
 #ifdef WITH_CONTENT_SCAN
   (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* decode */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
@@ -311,6 +348,14 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_MIME),
 #endif
 
+#ifdef EXPERIMENTAL_SPF
+  (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|      /* spf */
+    (1<<ACL_WHERE_HELO)|
+    (1<<ACL_WHERE_MAILAUTH)|
+    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+    (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY),
+#endif
+
   /* Certain types of verify are always allowed, so we let it through
   always and check in the verify function itself */
 
@@ -320,7 +365,11 @@ static unsigned int cond_forbids[] = {
 
 /* Return values from decode_control() */
 
-enum { CONTROL_ERROR, CONTROL_CASEFUL_LOCAL_PART, CONTROL_CASELOWER_LOCAL_PART,
+enum { 
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  CONTROL_BMI_RUN,
+#endif  
+  CONTROL_ERROR, CONTROL_CASEFUL_LOCAL_PART, CONTROL_CASELOWER_LOCAL_PART,
   CONTROL_ENFORCE_SYNC, CONTROL_NO_ENFORCE_SYNC, CONTROL_FREEZE,
   CONTROL_QUEUE_ONLY, CONTROL_SUBMISSION,
 #ifdef WITH_CONTENT_SCAN
@@ -333,6 +382,9 @@ each control, there's a bitmap of dis-allowed times. For some, it is easier to
 specify the negation of a small number of allowed times. */
 
 static unsigned int control_forbids[] = {
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  0,                                               /* bmi_run */
+#endif
   0,                                               /* error */
   ~(1<<ACL_WHERE_RCPT),                            /* caseful_local_part */
   ~(1<<ACL_WHERE_RCPT),                            /* caselower_local_part */
@@ -367,6 +419,9 @@ typedef struct control_def {
 } control_def;
 
 static control_def controls_list[] = {
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  { US"bmi_run",                CONTROL_BMI_RUN, FALSE},
+#endif
   { US"caseful_local_part",     CONTROL_CASEFUL_LOCAL_PART, FALSE},
   { US"caselower_local_part",   CONTROL_CASELOWER_LOCAL_PART, FALSE},
   { US"enforce_sync",           CONTROL_ENFORCE_SYNC, FALSE},
@@ -703,6 +758,11 @@ if (hlen > 0)
         newtype = htype_add_rec;
         p += 16;
         }
+      else if (strncmpic(p, US":at_start_rfc:", 14) == 0)
+        {
+        newtype = htype_add_rfc;
+        p += 14;
+        }        
       else if (strncmpic(p, US":at_start:", 10) == 0)
         {
         newtype = htype_add_top;
@@ -1519,6 +1579,17 @@ for (; cb != NULL; cb = cb->next)
         TRUE, NULL);
     break;
 
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+    case ACLC_BMI_OPTIN:
+      {
+      int old_pool = store_pool;
+      store_pool = POOL_PERM;
+      bmi_current_optin = string_copy(arg);
+      store_pool = old_pool;
+      }
+    break;
+#endif
+
     case ACLC_CONDITION:
     if (Ustrspn(arg, "0123456789") == Ustrlen(arg))     /* Digits, or empty */
       rc = (Uatoi(arg) == 0)? FAIL : OK;
@@ -1534,7 +1605,7 @@ for (; cb != NULL; cb = cb->next)
     case ACLC_CONTROL:
     control_type = decode_control(arg, &p, where, log_msgptr);
 
-    /* Check this control makes sense at this time */
+    /* Check if this control makes sense at this time */
 
     if ((control_forbids[control_type] & (1 << where)) != 0)
       {
@@ -1545,6 +1616,12 @@ for (; cb != NULL; cb = cb->next)
 
     switch(control_type)
       {
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+      case CONTROL_BMI_RUN:
+      bmi_run = 1;
+      break;
+#endif
+      
       case CONTROL_ERROR:
       return ERROR;
 
@@ -1822,6 +1899,12 @@ for (; cb != NULL; cb = cb->next)
           }
         }
       }
+    break;
+#endif
+
+#ifdef EXPERIMENTAL_SPF
+    case ACLC_SPF:
+      rc = spf_process(&arg, sender_address);
     break;
 #endif
 

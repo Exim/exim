@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.6.2.3 2004/12/10 09:24:38 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.6.2.4 2004/12/10 14:59:08 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -156,6 +156,15 @@ extern uschar *base62_chars;           /* Table of base-62 characters */
 extern uschar *bi_command;             /* Command for -bi option */
 extern uschar *big_buffer;             /* Used for various temp things */
 extern int     big_buffer_size;        /* Current size (can expand) */
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+extern uschar *bmi_alt_location;       /* expansion variable that contains the alternate location for the rcpt (available during routing) */
+extern uschar *bmi_base64_tracker_verdict; /* expansion variable with base-64 encoded OLD verdict string (available during routing) */
+extern uschar *bmi_base64_verdict;     /* expansion variable with base-64 encoded verdict string (available during routing) */
+extern uschar *bmi_config_file;        /* Brightmail config file */
+extern int     bmi_deliver;            /* Flag that determines if the message should be delivered to the rcpt (available during routing) */
+extern int     bmi_run;                /* Flag that determines if message should be run through Brightmail server */
+extern uschar *bmi_verdicts;           /* BASE64-encoded verdicts with recipient lists */
+#endif
 extern int     body_linecount;         /* Line count in body */
 extern int     body_zerocount;         /* Binary zero count in body */
 extern uschar *bounce_message_file;    /* Template file */
@@ -612,9 +621,23 @@ extern uschar *spam_report;            /* the spamd report (multiline) */
 extern uschar *spam_score;             /* the spam score (float) */
 extern uschar *spam_score_int;         /* spam_score * 10 (int) */
 #endif
-
+#ifdef EXPERIMENTAL_SPF
+extern uschar *spf_header_comment;     /* spf header comment */
+extern uschar *spf_received;           /* SPF-Received: header */
+extern uschar *spf_result;             /* spf result in string form */
+extern uschar *spf_smtp_comment;       /* spf comment to include in SMTP reply */
+#endif
 extern BOOL    split_spool_directory;  /* TRUE to use multiple subdirs */
 extern uschar *spool_directory;        /* Name of spool directory */
+#ifdef EXPERIMENTAL_SRS
+extern uschar *srs_config;             /* SRS config secret:max age:hash length:use timestamp:use hash */
+extern uschar *srs_db_address;         /* SRS db address */
+extern uschar *srs_db_key;             /* SRS db key */
+extern uschar *srs_orig_sender;        /* SRS original sender */
+extern uschar *srs_orig_recipient;     /* SRS original recipient */
+extern uschar *srs_recipient;          /* SRS recipient */
+extern uschar *srs_status;             /* SRS staus */
+#endif
 extern int     string_datestamp_offset;/* After insertion by string_format */
 extern BOOL    strip_excess_angle_brackets; /* Surrounding route-addrs */
 extern BOOL    strip_trailing_dot;     /* Remove dots at ends of domains */

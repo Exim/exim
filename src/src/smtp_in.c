@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.5.2.2 2004/12/02 16:33:30 tom Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.5.2.3 2004/12/10 14:59:08 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -819,6 +819,16 @@ sender_verified_list = NULL;        /* No senders verified */
 memset(sender_address_cache, 0, sizeof(sender_address_cache));
 memset(sender_domain_cache, 0, sizeof(sender_domain_cache));
 authenticated_sender = NULL;
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+bmi_run = 0;
+bmi_verdicts = NULL;
+#endif
+#ifdef EXPERIMENTAL_SPF
+spf_header_comment = NULL;
+spf_received = NULL;
+spf_result = NULL;  
+spf_smtp_comment = NULL;
+#endif
 body_linecount = body_zerocount = 0;
 
 for (i = 0; i < ACL_M_MAX; i++) acl_var[ACL_C_MAX + i] = NULL;
@@ -2350,6 +2360,11 @@ while (done <= 0)
           }
         }
       }
+
+#ifdef EXPERIMENTAL_SPF
+    /* set up SPF context */
+    spf_init(sender_helo_name, sender_host_address);
+#endif
 
     /* Apply an ACL check if one is defined */
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_out.c,v 1.1.2.1 2004/12/02 09:15:11 tom Exp $ */
+/* $Cambridge: exim/src/src/spool_out.c,v 1.1.2.2 2004/12/10 14:59:08 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -221,6 +221,10 @@ if (spam_score_int != NULL) fprintf(f,"-spam_score_int %s\n", spam_score_int);
 #endif
 if (deliver_manual_thaw) fprintf(f, "-manual_thaw\n");
 if (sender_set_untrusted) fprintf(f, "-sender_set_untrusted\n");
+
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+if (bmi_verdicts != NULL) fprintf(f, "-bmi_verdicts %s\n", bmi_verdicts);
+#endif
 
 #ifdef SUPPORT_TLS
 if (tls_certificate_verified) fprintf(f, "-tls_certificate_verified\n");

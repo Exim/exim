@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.2.2.2 2004/12/02 16:33:30 tom Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.2.2.3 2004/12/10 14:59:08 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -395,6 +395,16 @@ scanning dependencies. */
 #include "functions.h"
 #include "dbfunctions.h"
 #include "osfunctions.h"
+
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+#include "bmi_spam.h"
+#endif
+#ifdef EXPERIMENTAL_SPF
+#include "spf.h"
+#endif
+#ifdef EXPERIMENTAL_SRS
+#include "srs.h"
+#endif
 
 /* The following stuff must follow the inclusion of config.h because it
 requires various things that are set therein. */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.3 2004/11/24 14:38:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.2.2.1 2004/12/10 14:59:08 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -156,6 +156,13 @@ deliver_localpart_data = addr->p.localpart_data;
 deliver_domain = addr->domain;
 self_hostname = addr->self_hostname;
 
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+bmi_deliver = 1;    /* deliver by default */
+bmi_alt_location = NULL;
+bmi_base64_verdict = NULL;
+bmi_base64_tracker_verdict = NULL;
+#endif
+
 /* If there's only one address we can set everything. */
 
 if (addr->next == NULL)
@@ -205,6 +212,19 @@ if (addr->next == NULL)
       deliver_localpart_suffix = addr->parent->suffix;
       }
     }
+
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+    /* Set expansion variables related to Brightmail AntiSpam */
+    bmi_base64_verdict = bmi_get_base64_verdict(deliver_localpart_orig, deliver_domain_orig);
+    bmi_base64_tracker_verdict = bmi_get_base64_tracker_verdict(bmi_base64_verdict);
+    /* get message delivery status (0 - don't deliver | 1 - deliver) */
+    bmi_deliver = bmi_get_delivery_status(bmi_base64_verdict);
+    /* if message is to be delivered, get eventual alternate location */
+    if (bmi_deliver == 1) {
+      bmi_alt_location = bmi_get_alt_location(bmi_base64_verdict);
+    };
+#endif
+
   }
 
 /* For multiple addresses, don't set local part, and leave the domain and
@@ -6315,21 +6335,14 @@ if (addr_defer == NULL)
     }
 
   /* Remove the two message files. */
-  
+
   sprintf(CS spoolname, "%s/input/%s/%s-D", spool_directory, message_subdir, id);
   if (Uunlink(spoolname) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s", spoolname);
   sprintf(CS spoolname, "%s/input/%s/%s-H", spool_directory, message_subdir, id);
   if (Uunlink(spoolname) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s", spoolname);
-
-  /* Log the end of this message, with queue time if requested. */
-
-  if ((log_extra_selector & LX_queue_time_overall) != 0)
-    log_write(0, LOG_MAIN, "Completed QT=%s", 
-      readconf_printtime(time(NULL) - received_time));
-  else
-    log_write(0, LOG_MAIN, "Completed");
+  log_write(0, LOG_MAIN, "Completed");
   }
 
 /* If there are deferred addresses, we are keeping this message because it is

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.2.2.1 2004/12/02 09:15:11 tom Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.2.2.2 2004/12/10 14:59:08 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -163,6 +163,9 @@ static optionlist optionlist_config[] = {
   { "av_scanner",               opt_stringptr,   &av_scanner },
 #endif
   { "bi_command",               opt_stringptr,   &bi_command },
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  { "bmi_config_file",          opt_stringptr,   &bmi_config_file },
+#endif
   { "bounce_message_file",      opt_stringptr,   &bounce_message_file },
   { "bounce_message_text",      opt_stringptr,   &bounce_message_text },
   { "bounce_return_body",       opt_bool,        &bounce_return_body },
@@ -329,6 +332,9 @@ static optionlist optionlist_config[] = {
 #endif
   { "split_spool_directory",    opt_bool,        &split_spool_directory },
   { "spool_directory",          opt_stringptr,   &spool_directory },
+#ifdef EXPERIMENTAL_SRS
+  { "srs_config",               opt_stringptr,   &srs_config },
+#endif
   { "strip_excess_angle_brackets", opt_bool,     &strip_excess_angle_brackets },
   { "strip_trailing_dot",       opt_bool,        &strip_trailing_dot },
   { "syslog_duplication",       opt_bool,        &syslog_duplication },
