@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.17 2005/01/21 14:19:40 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.18 2005/02/15 15:49:06 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1837,5 +1837,11 @@ runners must be startable for the different "queues". Don't forget that the
 "msglog" directory is also involved. Perhaps add a new level of indirection:
 /var/spool/exim/queue1/{input,msglog}, /var/spool/exim/queue2/....
 ------------------------------------------------------------------------------
---- HWM 313 ------------------------------------------------------------------
+
+(314) 15-Feb-05 M Multiple headers_{add,remove} for routers
+
+If headers_{add,remove} could be specified multiple times, it would be easier
+for those people that construct configs using .ifdef or .include, etc.
+------------------------------------------------------------------------------
+--- HWM 314 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
