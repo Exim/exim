@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/os-type,v 1.1 2004/10/06 15:07:40 ph10 Exp $
+# $Cambridge: exim/src/scripts/os-type,v 1.2 2005/02/17 10:04:41 ph10 Exp $
 
 # Shell script to determine the operating system type. Some of the heuristics
 # herein have accumulated over the years and may not strictly be needed now,
@@ -20,6 +20,10 @@ case "$EXIM_OSTYPE" in ?*) os="$EXIM_OSTYPE";; esac
 # option just in case there are any systems where -s is not the default.
 
 case "$os" in '') os=`uname -s`;; esac
+
+# Identify Glibc systems under different names.
+
+case "$os" in GNU|GNU/*|Linux) os=Linux;; esac
 
 # It is believed that all systems respond to uname -s, but just in case
 # there is one that doesn't, use the shell's $OSTYPE variable. It is known

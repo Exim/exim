@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.82 2005/02/17 09:49:08 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.83 2005/02/17 10:04:40 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -388,6 +388,9 @@ Exim version 4.50
 
 83. Patch from Sieve maintainer to fix unterminated string problem in
     "vacation" handling.
+
+84. Some minor changes to the Linux configuration files to help with other
+    OS variants using glibc.
 
 
 ----------------------------------------------------

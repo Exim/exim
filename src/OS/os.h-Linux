@@ -1,14 +1,27 @@
-/* $Cambridge: exim/src/OS/os.h-Linux,v 1.2 2004/11/12 11:39:34 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.h-Linux,v 1.3 2005/02/17 10:04:41 ph10 Exp $ */
 
 /* Exim: OS-specific C header file for Linux */
 
 #define CRYPT_H
 #define GLIBC_IP_OPTIONS
 #define HAVE_MMAP
+#define HAVE_BSD_GETLOADAVG
 #define HAVE_SYS_STATVFS_H
 #define NO_IP_VAR_H
-#define SIOCGIFCONF_GIVES_ADDR
 #define SIG_IGN_WORKS
+
+#define F_FREESP     O_TRUNC
+typedef struct flock flock_t;
+
+#define os_strsignal strsignal
+#define OS_STRSIGNAL
+
+#if defined(__linux__) || defined(__FreeBSD_kernel__) || defined(__NetBSD_kernel__)
+#define SIOCGIFCONF_GIVES_ADDR
+#define HAVE_SYS_MOUNT_H
+#endif
+
+#if defined(__linux__)
 
 /* Some versions of Linux need explicit sync-ing of directories as well as
 files. This setting requests that. If the directory is on NFS, it may not
@@ -22,12 +35,6 @@ storage" as quickly as Exim thinks they are. */
 /* Other OS have "const" in here */
 #define ICONV_ARG2_TYPE char **
 
-#define F_FREESP     O_TRUNC
-typedef struct flock flock_t;
-
-#define os_strsignal strsignal
-#define OS_STRSIGNAL
-
 #define os_find_running_interfaces os_find_running_interfaces_linux
 
 /* Need a prototype for the Linux-specific function. The structure hasn't
@@ -35,5 +42,7 @@ been defined yet, so we need to pre-declare it. */
 
 struct ip_address_item;
 extern struct ip_address_item *os_find_running_interfaces_linux(void);
+
+#endif /* __linux__ */
 
 /* End */
