@@ -1,9 +1,9 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.5 2005/01/04 16:36:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.6 2005/03/03 08:54:59 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
 
-This file contains complete lists of three kinds of Exim option:
+This file contains complete lists of four kinds of Exim option:
 
   1. Those that can appear in the run time configuration file;
   2. Those that can be used on the command line;
@@ -11,7 +11,7 @@ This file contains complete lists of three kinds of Exim option:
   4. Those that can appear in the build time configuration for the Exim monitor
      (Local/eximon.conf).
 
-This file was last updated for Exim release 4.40.
+This file was last updated for Exim release 4.50.
 
 
 1. RUN TIME OPTIONS
