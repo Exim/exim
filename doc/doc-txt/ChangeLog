@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.16 2004/11/05 12:33:59 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.17 2004/11/05 14:59:12 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -61,6 +61,9 @@ Exim version 4.44
 
 16. If FIXED_NEVER_USERS was defined, but empty, Exim was assuming the uid 0
     was its contents. (It was OK if the option was not defined at all.)
+
+17. A "Completed" log line is now written for messages that are removed from
+    the spool by the -Mrm option.
 
 
 Exim version 4.43

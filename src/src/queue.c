@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/queue.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/queue.c,v 1.2 2004/11/05 14:59:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1190,7 +1190,11 @@ switch(action)
 
   if (deliver_datafile >= 0) printf("has been removed\n");
     else printf("has been removed or did not exist\n");
-  if (removed) log_write(0, LOG_MAIN, "removed by %s", username);
+  if (removed) 
+    {
+    log_write(0, LOG_MAIN, "removed by %s", username);
+    log_write(0, LOG_MAIN, "Completed"); 
+    } 
   break;
 
 
