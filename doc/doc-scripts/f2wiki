@@ -2,7 +2,7 @@
 #
 # Script to convert Exim FAQ into wiki markup - moin flavour
 #
-# $Cambridge: exim/doc/doc-scripts/f2wiki,v 1.1 2004/11/12 14:48:08 nm4 Exp $
+# $Cambridge: exim/doc/doc-scripts/f2wiki,v 1.2 2004/11/12 15:25:39 nm4 Exp $
 #
 use strict;
 use integer;
@@ -276,7 +276,9 @@ sub build_tocs ($) {
     my $meta = shift;
 
     my $tfh = IO::File->new('FAQ', 'w');
-    foreach my $sect (values %{$meta->{sections}}) {
+    my @sections = sort { $a->{num} <=> $b->{num} }
+      values %{$meta->{sections}};
+    foreach my $sect (@sections) {
 	my $fh = IO::File->new($sect->{wikifile}, 'w');
 	$fh->print(join("\n",
 			'##language:en',
