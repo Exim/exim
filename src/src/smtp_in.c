@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.13 2005/03/15 14:09:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.14 2005/03/22 10:11:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -34,9 +34,12 @@ int deny_severity  = LOG_NOTICE;
 #endif
 
 
-/* Size of buffer for reading SMTP commands */
+/* Size of buffer for reading SMTP commands. We used to use 512, as defined
+by RFC 821. However, RFC 1869 specifies that this must be increased for SMTP
+commands that accept arguments, and this in particular applies to AUTH, where
+the data can be quite long. */
 
-#define cmd_buffer_size  512      /* Ref. RFC 821 */
+#define cmd_buffer_size  2048
 
 /* Size of buffer for reading SMTP incoming packets */
 

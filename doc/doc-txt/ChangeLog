@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.92 2005/03/15 15:36:41 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.93 2005/03/22 10:11:42 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -49,6 +49,11 @@ PH/06. A number of "verify =" ACL conditions have no options (e.g. verify =
        reverse_host_lookup/defer_ok". An error is now given when options are
        supplied for verify items that do not have them. (Maybe reverse_host_
        lookup should have a defer_ok option, but that's a different point.)
+
+PH/07. Increase the size of the buffer for incoming SMTP commands from 512 (as
+       defined by RFC 821) to 2048, because there were problems with some AUTH
+       commands, and RFC 1869 says the size should be increased for extended
+       SMTP commands that take arguments.
 
 
 A note about Exim versions 4.44 and 4.50
