@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/OS/os.c-Linux,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.c-Linux,v 1.2 2005/04/06 14:09:17 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -20,7 +20,7 @@ a unique function here, and define OS_LOAD_AVERAGE to stop src/os.c trying to
 provide the function. However, when compiling os.c for utilities, we may not
 want this at all, so check that it isn't set first. */
 
-#ifndef OS_LOAD_AVERAGE
+#if !defined(OS_LOAD_AVERAGE) && defined(__linux__)
 #define OS_LOAD_AVERAGE
 
 /* Linux has 2 ways of returning load average:
@@ -114,9 +114,9 @@ last = yield;
 if (last != NULL) while (last->next != NULL) last = last->next;
 
 while (fscanf(f, "%4s%4s%4s%4s%4s%4s%4s%4s %02x %02x %02x %02x %20s\n",
-	     addr6p[0], addr6p[1], addr6p[2], addr6p[3],
-	     addr6p[4], addr6p[5], addr6p[6], addr6p[7],
-	     &if_idx, &plen, &scope, &dad_status, devname) != EOF)
+             addr6p[0], addr6p[1], addr6p[2], addr6p[3],
+             addr6p[4], addr6p[5], addr6p[6], addr6p[7],
+             &if_idx, &plen, &scope, &dad_status, devname) != EOF)
   {
   struct sockaddr_in6 addr;
 
@@ -126,8 +126,8 @@ while (fscanf(f, "%4s%4s%4s%4s%4s%4s%4s%4s %02x %02x %02x %02x %20s\n",
   next->next = NULL;
   next->port = 0;
   sprintf(CS next->address, "%s:%s:%s:%s:%s:%s:%s:%s",
-	 addr6p[0], addr6p[1], addr6p[2], addr6p[3],
-	 addr6p[4], addr6p[5], addr6p[6], addr6p[7]);
+         addr6p[0], addr6p[1], addr6p[2], addr6p[3],
+         addr6p[4], addr6p[5], addr6p[6], addr6p[7]);
 
   /* Normalize the representation */
 

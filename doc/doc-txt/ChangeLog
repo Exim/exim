@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.114 2005/04/06 14:03:53 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.115 2005/04/06 14:09:17 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -167,6 +167,15 @@ PH/27 $acl_verify_message is now set immediately after the failure of a
 
       Previously, $acl_verify_message was set only while expanding "message"
       and "log_message" when a very denied access.
+
+PH/28 Modified OS/os.c-Linux with
+
+        -#ifndef OS_LOAD_AVERAGE
+        +#if !defined(OS_LOAD_AVERAGE) && defined(__linux__)
+
+      to make Exim compile on kfreebsd-gnu. (I'm totally confused about the
+      nomenclature these days.)
+
 
 
 A note about Exim versions 4.44 and 4.50
