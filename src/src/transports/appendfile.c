@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.3 2004/10/14 14:52:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.4 2005/01/04 10:00:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2004 */
+/* Copyright (c) University of Cambridge 1995 - 2005 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

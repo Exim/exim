@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.2 2004/11/12 11:28:15 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.3 2005/01/04 10:00:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2004 */
+/* Copyright (c) University of Cambridge 1995 - 2005 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions in support of the use of maildirsize files for handling quotas in

@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.5 2004/12/21 11:12:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.6 2005/01/04 10:00:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2004 */
+/* Copyright (c) University of Cambridge 1995 - 2005 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* The main code for delivering a message. */

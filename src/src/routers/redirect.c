@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.3 2004/12/16 15:11:48 tom Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.4 2005/01/04 10:00:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2004 */
+/* Copyright (c) University of Cambridge 1995 - 2005 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 
@@ -567,7 +567,7 @@ if (!ugid.gid_set && pw != NULL)
         srs_recipient = res;
         eximsrs_done();
         DEBUG(D_any)
-          debug_printf("SRS: Recipient '%s' rewriteen to '%s'\n", srs_orig_recipient, srs_recipient);
+          debug_printf("SRS: Recipient '%s' rewritten to '%s'\n", srs_orig_recipient, srs_recipient);
       }
   }
 #endif

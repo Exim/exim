@@ -1,9 +1,9 @@
-$Cambridge: exim/src/README,v 1.1 2004/10/06 14:12:40 ph10 Exp $
+$Cambridge: exim/src/README,v 1.2 2005/01/04 10:00:42 ph10 Exp $
 
 THE EXIM MAIL TRANSFER AGENT VERSION 4
 --------------------------------------
 
-Copyright (c) 1995 - 2004 University of Cambridge.
+Copyright (c) 1995 - 2005 University of Cambridge.
 See the file NOTICE for conditions of use and distribution.
 
 There is a book about Exim by Philip Hazel called "The Exim SMTP Mail Server",

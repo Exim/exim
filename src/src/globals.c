@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.12 2004/12/29 16:00:58 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.13 2005/01/04 10:00:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2004 */
+/* Copyright (c) University of Cambridge 1995 - 2005 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* All the global variables are defined together in this one module, so

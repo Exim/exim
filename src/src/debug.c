@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/debug.c,v 1.2 2004/12/21 14:38:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/debug.c,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2004 */
+/* Copyright (c) University of Cambridge 1995 - 2005 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

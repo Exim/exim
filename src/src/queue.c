@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/queue.c,v 1.3 2004/11/24 16:14:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/queue.c,v 1.4 2005/01/04 10:00:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2004 */
+/* Copyright (c) University of Cambridge 1995 - 2005 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions that operate on the input queue. */
