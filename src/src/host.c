@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.2 2004/11/12 16:54:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.3 2004/11/18 11:17:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -856,22 +856,24 @@ for (i = 0; i < count; i++)
 /* We can't use host_ntoa() because it assumes the binary values are in network
 byte order, and these are the result of host_aton(), which puts them in ints in
 host byte order. Also, we really want IPv6 addresses to be in a canonical
-format, so we output them with no abbreviation. However, we can't use the
-normal colon separator in them because it terminates keys in lsearch files, so
-use dot instead.
+format, so we output them with no abbreviation. In a number of cases we can't
+use the normal colon separator in them because it terminates keys in lsearch
+files, so we want to use dot instead. There's an argument that specifies what 
+to use for IPv6 addresses.
 
 Arguments:
   count       1 or 4 (number of ints)
   binary      points to the ints
   mask        mask value; if < 0 don't add to result
   buffer      big enough to hold the result
+  sep         component separator character for IPv6 addresses 
 
 Returns:      the number of characters placed in buffer, not counting
               the final nul.
 */
 
 int
-host_nmtoa(int count, int *binary, int mask, uschar *buffer)
+host_nmtoa(int count, int *binary, int mask, uschar *buffer, int sep)
 {
 int i, j;
 uschar *tt = buffer;
@@ -890,12 +892,12 @@ else
   for (i = 0; i < 4; i++)
     {
     j = binary[i];
-    sprintf(CS tt, "%04x.%04x.", (j >> 16) & 0xffff, j & 0xffff);
+    sprintf(CS tt, "%04x%c%04x%c", (j >> 16) & 0xffff, sep, j & 0xffff, sep);
     while (*tt) tt++;
     }
   }
 
-tt--;   /* lose final . */
+tt--;   /* lose final separator */
 
 if (mask < 0)
   *tt = 0;

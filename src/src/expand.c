@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.6 2004/11/17 16:12:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.7 2004/11/18 11:17:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3958,7 +3958,7 @@ while (*s != 0)
         /* Convert to masked textual format and add to output. */
 
         yield = string_cat(yield, &size, &ptr, buffer,
-          host_nmtoa(count, binary, mask, buffer));
+          host_nmtoa(count, binary, mask, buffer, '.'));
         continue;
         }
 

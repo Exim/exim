@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.32 2004/11/18 10:35:18 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.33 2004/11/18 11:17:33 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -137,6 +137,10 @@ Exim version 4.44
 34. Failure to deliver a bounce message always caused it to be frozen, even if
     there was an errors_to setting on the router. The errors_to setting is now
     respected.
+
+35. If an IPv6 address is given for -bh or -bhc, it is now converted to the
+    canonical form (fully expanded) before being placed in
+    $sender_host_address.
 
 
 Exim version 4.43

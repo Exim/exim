@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.8 2004/11/10 10:29:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.9 2004/11/18 11:17:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4094,10 +4094,22 @@ call to find the ident for. */
 
 if (host_checking)
   {
+  int x[4]; 
+  int size;
+    
   sender_ident = NULL;
   if (running_in_test_harness && sender_host_port != 0 &&
       interface_address != NULL && interface_port != 0)
     verify_get_ident(1413);
+    
+  /* In case the given address is a non-canonical IPv6 address, canonicize
+  it. The code works for both IPv4 and IPv6, as it happens. */
+  
+  size = host_aton(sender_host_address, x);
+  sender_host_address = store_get(48);  /* large enough for full IPv6 */
+  (void)host_nmtoa(size, x, -1, sender_host_address, ':');
+
+  /* Now set up for testing */
 
   host_build_sender_fullhost();
   smtp_input = TRUE;

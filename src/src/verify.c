@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.5 2004/11/12 16:54:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.6 2004/11/18 11:17:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1866,7 +1866,8 @@ if (Ustrncmp(ss, "net", 3) == 0 && (semicolon = Ustrchr(ss, ';')) != NULL)
     /* Adjust parameters for the type of lookup. For a query-style
     lookup, there is no file name, and the "key" is just the query. For
     a single-key lookup, the key is the current IP address, masked
-    appropriately, and reconverted to text form, with the mask appended. */
+    appropriately, and reconverted to text form, with the mask appended. 
+    For IPv6 addresses, specify dot separators instead of colons. */
 
     if (mac_islookup(search_type, lookup_querystyle))
       {
@@ -1877,7 +1878,7 @@ if (Ustrncmp(ss, "net", 3) == 0 && (semicolon = Ustrchr(ss, ';')) != NULL)
       {
       insize = host_aton(cb->host_address, incoming);
       host_mask(insize, incoming, mlen);
-      (void)host_nmtoa(insize, incoming, mlen, buffer);
+      (void)host_nmtoa(insize, incoming, mlen, buffer, '.');
       key = buffer;
       filename = semicolon + 1;
       }
