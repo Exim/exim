@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.7 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.8 2005/01/12 12:51:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -742,18 +742,15 @@ ordered to make it easy to implement tests for certain ACLs when processing
 order without checking carefully! Furthermore, remember to keep these in step
 with the tables of names and response codes in globals.c. */
 
-/* FIXME: the #ifdef below does not work here. Why? */
-
 enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_MAIL,       /* )                                           */
        ACL_WHERE_PREDATA,    /* ) There are several tests for "in message", */
                              /* ) implemented by <= WHERE_NOTSMTP           */
-                             /* )                                           */
-#ifdef WITH_CONTENT_SCAN
-       ACL_WHERE_MIME,       
-#endif
-       ACL_WHERE_DATA,       
-       ACL_WHERE_NOTSMTP,    
+#ifdef WITH_CONTENT_SCAN     /* )                                           */
+       ACL_WHERE_MIME,       /* )                                           */
+#endif                       /* )                                           */
+       ACL_WHERE_DATA,       /* )                                           */
+       ACL_WHERE_NOTSMTP,    /* )                                           */
 
        ACL_WHERE_AUTH,       /* These remaining ones are not currently    */
        ACL_WHERE_CONNECT,    /* required to be in a special order so they */
