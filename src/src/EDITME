@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.4 2004/11/05 12:33:59 ph10 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.4.2.1 2004/11/25 15:33:54 tom Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -314,7 +314,14 @@ LOOKUP_LSEARCH=yes
 
 EXIM_MONITOR=eximon.bin
 
+#------------------------------------------------------------------------------
+# Compiling Exim with content scanning support: If you want to compile Exim
+# with support for message body content scanning, set WITH_CONTENT_SCAN to
+# the value "yes". This will give you malware and spam scanning in the DATA ACL,
+# and the MIME ACL. Please read the documentation to learn more about these
+# features.
 
+#WITH_CONTENT_SCAN=yes
 
 ###############################################################################
 #                 THESE ARE THINGS YOU MIGHT WANT TO SPECIFY                  #

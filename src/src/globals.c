@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.8 2004/11/25 13:54:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.6.2.1 2004/11/25 15:33:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -181,6 +181,9 @@ error codes - keep in step with definitions of ACL_WHERE_xxxx in macros.h. */
 uschar *acl_wherenames[]       = { US"RCPT",
                                    US"MAIL",
                                    US"PREDATA",
+#ifdef WITH_CONTENT_SCAN
+                                   US"MIME",
+#endif
                                    US"DATA",
                                    US"non-SMTP",
                                    US"AUTH",
@@ -197,6 +200,9 @@ uschar *acl_wherenames[]       = { US"RCPT",
 int     acl_wherecodes[]       = { 550,     /* RCPT */
                                    550,     /* MAIL */
                                    550,     /* PREDATA */
+#ifdef WITH_CONTENT_SCAN
+                                   550,     /* MIME */
+#endif                                   
                                    550,     /* DATA */
                                    0,       /* not SMTP; not relevant */
                                    503,     /* AUTH */
@@ -476,9 +482,7 @@ uschar *extra_local_interfaces = NULL;
 int     filter_n[FILTER_VARIABLE_COUNT];
 BOOL    filter_running         = FALSE;
 int     filter_sn[FILTER_VARIABLE_COUNT];
-int     filter_test            = FTEST_NONE;
-uschar *filter_test_sfile      = NULL;
-uschar *filter_test_ufile      = NULL;
+uschar *filter_test            = NULL;
 uschar *filter_thisaddress     = NULL;
 int     finduser_retries       = 0;
 uid_t   fixed_never_users[]    = { FIXED_NEVER_USERS };
@@ -603,7 +607,6 @@ bit_table log_options[]        = {
   { US"outgoing_port",                LX_outgoing_port },
   { US"queue_run",                    L_queue_run },
   { US"queue_time",                   LX_queue_time },
-  { US"queue_time_overall",           LX_queue_time_overall },
   { US"received_recipients",          LX_received_recipients },
   { US"received_sender",              LX_received_sender },
   { US"rejected_header",              LX_rejected_header },

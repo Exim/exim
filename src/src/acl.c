@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.5 2004/11/04 12:19:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.5.2.1 2004/11/25 15:33:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -34,19 +34,55 @@ static int msgcond[] = { FAIL, OK, OK, FAIL, OK, FAIL, OK };
 /* ACL condition and modifier codes - keep in step with the table that
 follows. */
 
-enum { ACLC_ACL, ACLC_AUTHENTICATED, ACLC_CONDITION, ACLC_CONTROL, ACLC_DELAY,
-  ACLC_DNSLISTS, ACLC_DOMAINS, ACLC_ENCRYPTED, ACLC_ENDPASS, ACLC_HOSTS,
-  ACLC_LOCAL_PARTS, ACLC_LOG_MESSAGE, ACLC_LOGWRITE, ACLC_MESSAGE,
-  ACLC_RECIPIENTS, ACLC_SENDER_DOMAINS, ACLC_SENDERS, ACLC_SET, ACLC_VERIFY };
+enum { ACLC_ACL, ACLC_AUTHENTICATED, ACLC_CONDITION, ACLC_CONTROL,
+#ifdef WITH_CONTENT_SCAN
+       ACLC_DECODE,
+#endif
+       ACLC_DELAY, ACLC_DNSLISTS, ACLC_DOMAINS, ACLC_ENCRYPTED, ACLC_ENDPASS,
+       ACLC_HOSTS, ACLC_LOCAL_PARTS, ACLC_LOG_MESSAGE, ACLC_LOGWRITE,
+#ifdef WITH_CONTENT_SCAN
+       ACLC_MALWARE,
+#endif
+       ACLC_MESSAGE,
+#ifdef WITH_CONTENT_SCAN
+       ACLC_MIME_REGEX,
+#endif
+       ACLC_RECIPIENTS,
+#ifdef WITH_CONTENT_SCAN
+       ACLC_REGEX
+#endif
+       ACLC_SENDER_DOMAINS, ACLC_SENDERS, ACLC_SET,
+#ifdef WITH_CONTENT_SCAN
+       ACLC_SPAM,       
+#endif
+       ACLC_VERIFY };
 
 /* ACL conditions/modifiers: "delay", "control", "endpass", "message",
 "log_message", "logwrite", and "set" are modifiers that look like conditions
 but always return TRUE. They are used for their side effects. */
 
 static uschar *conditions[] = { US"acl", US"authenticated", US"condition",
-  US"control", US"delay", US"dnslists", US"domains", US"encrypted",
+  US"control", 
+#ifdef WITH_CONTENT_SCAN
+  US"decode",
+#endif
+  US"delay", US"dnslists", US"domains", US"encrypted",
   US"endpass", US"hosts", US"local_parts", US"log_message", US"logwrite",
-  US"message", US"recipients", US"sender_domains", US"senders", US"set",
+#ifdef WITH_CONTENT_SCAN
+  US"malware",
+#endif
+  US"message",
+#ifdef WITH_CONTENT_SCAN
+  US"mime_regex",
+#endif
+  US"recipients",
+#ifdef WITH_CONTENT_SCAN
+  US"regex",
+#endif
+  US"sender_domains", US"senders", US"set",
+#ifdef WITH_CONTENT_SCAN
+  US"spam",
+#endif
   US"verify" };
   
 /* ACL control names */
@@ -64,6 +100,9 @@ static uschar cond_expand_at_top[] = {
   FALSE,   /* authenticated */
   TRUE,    /* condition */
   TRUE,    /* control */
+#ifdef WITH_CONTENT_SCAN
+  TRUE,    /* decode */
+#endif
   TRUE,    /* delay */
   TRUE,    /* dnslists */
   FALSE,   /* domains */
@@ -73,11 +112,23 @@ static uschar cond_expand_at_top[] = {
   FALSE,   /* local_parts */
   TRUE,    /* log_message */
   TRUE,    /* logwrite */
+#ifdef WITH_CONTENT_SCAN
+  TRUE,    /* malware */
+#endif
   TRUE,    /* message */
+#ifdef WITH_CONTENT_SCAN
+  TRUE,    /* mime_regex */
+#endif
   FALSE,   /* recipients */
+#ifdef WITH_CONTENT_SCAN
+  TRUE,    /* regex */
+#endif
   FALSE,   /* sender_domains */
   FALSE,   /* senders */
   TRUE,    /* set */
+#ifdef WITH_CONTENT_SCAN
+  TRUE,    /* spam */
+#endif
   TRUE     /* verify */
 };
 
@@ -88,6 +139,9 @@ static uschar cond_modifiers[] = {
   FALSE,   /* authenticated */
   FALSE,   /* condition */
   TRUE,    /* control */
+#ifdef WITH_CONTENT_SCAN
+  FALSE,   /* decode */
+#endif
   TRUE,    /* delay */
   FALSE,   /* dnslists */
   FALSE,   /* domains */
@@ -96,12 +150,24 @@ static uschar cond_modifiers[] = {
   FALSE,   /* hosts */
   FALSE,   /* local_parts */
   TRUE,    /* log_message */
-  TRUE,    /* log_write */
+  TRUE,    /* logwrite */
+#ifdef WITH_CONTENT_SCAN
+  FALSE,   /* malware */
+#endif
   TRUE,    /* message */
+#ifdef WITH_CONTENT_SCAN
+  FALSE,   /* mime_regex */
+#endif
   FALSE,   /* recipients */
+#ifdef WITH_CONTENT_SCAN
+  FALSE,   /* regex */
+#endif
   FALSE,   /* sender_domains */
   FALSE,   /* senders */
   TRUE,    /* set */
+#ifdef WITH_CONTENT_SCAN
+  FALSE,   /* spam */
+#endif
   FALSE    /* verify */
 };
 
@@ -118,6 +184,17 @@ static unsigned int cond_forbids[] = {
   always and check in the control processing itself */
 
   0,                                               /* control */
+
+#ifdef WITH_CONTENT_SCAN
+  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* decode */
+    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
+    (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_PREDATA)|
+    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
+    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_RCPT),
+#endif
+
   0,                                               /* delay */
   (1<<ACL_WHERE_NOTSMTP),                          /* dnslists */
 
@@ -144,7 +221,28 @@ static unsigned int cond_forbids[] = {
 
   0,                                               /* log_message */
   0,                                               /* logwrite */
+  
+#ifdef WITH_CONTENT_SCAN
+  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* malware */
+    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
+    (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
+    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
+    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_MIME),
+#endif
+
   0,                                               /* message */
+
+#ifdef WITH_CONTENT_SCAN
+  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* mime_regex */
+    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
+    (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_PREDATA)|
+    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
+    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_RCPT),
+#endif
 
   (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* recipients */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
@@ -153,6 +251,16 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY),
+
+#ifdef WITH_CONTENT_SCAN
+  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* regex */
+    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
+    (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
+    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
+    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_MIME),
+#endif
 
   (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|      /* sender_domains */
     (1<<ACL_WHERE_HELO)|
@@ -168,6 +276,16 @@ static unsigned int cond_forbids[] = {
 
   0,                                               /* set */
 
+#ifdef WITH_CONTENT_SCAN
+  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* spam */
+    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
+    (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
+    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
+    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_MIME),
+#endif
+
   /* Certain types of verify are always allowed, so we let it through
   always and check in the verify function itself */
 
@@ -179,7 +297,11 @@ static unsigned int cond_forbids[] = {
 
 enum { CONTROL_ERROR, CONTROL_CASEFUL_LOCAL_PART, CONTROL_CASELOWER_LOCAL_PART,
   CONTROL_ENFORCE_SYNC, CONTROL_NO_ENFORCE_SYNC, CONTROL_FREEZE,
-  CONTROL_QUEUE_ONLY, CONTROL_SUBMISSION, CONTROL_NO_MULTILINE };
+  CONTROL_QUEUE_ONLY, CONTROL_SUBMISSION,
+#ifdef WITH_CONTENT_SCAN
+  CONTROL_NO_MBOX_UNSPOOL, CONTROL_FAKEREJECT,
+#endif
+  CONTROL_NO_MULTILINE };
 
 /* Bit map vector of which controls are not allowed at certain times. For
 each control, there's a bitmap of dis-allowed times. For some, it is easier to
@@ -202,7 +324,12 @@ static unsigned int control_forbids[] = {
      
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* submission */
     (1<<ACL_WHERE_PREDATA)),                       
-     
+
+#ifdef WITH_CONTENT_SCAN
+  (1<<ACL_WHERE_NOTSMTP),                          /* no_mbox_unspool */
+  (1<<ACL_WHERE_NOTSMTP),                          /* fakereject */
+#endif
+
   (1<<ACL_WHERE_NOTSMTP)                           /* no_multiline */
 };
 
@@ -222,6 +349,10 @@ static control_def controls_list[] = {
   { US"no_enforce_sync",        CONTROL_NO_ENFORCE_SYNC, FALSE},
   { US"no_multiline_responses", CONTROL_NO_MULTILINE, FALSE},
   { US"queue_only",             CONTROL_QUEUE_ONLY, FALSE},
+#ifdef WITH_CONTENT_SCAN
+  { US"no_mbox_unspool",        CONTROL_NO_MBOX_UNSPOOL, FALSE},
+  { US"fakereject",             CONTROL_FAKEREJECT, TRUE},
+#endif
   { US"submission",             CONTROL_SUBMISSION, TRUE}
   };
 
@@ -1405,9 +1536,21 @@ for (; cb != NULL; cb = cb->next)
       smtp_enforce_sync = FALSE;
       break;
 
+#ifdef WITH_CONTENT_SCAN
+      case CONTROL_NO_MBOX_UNSPOOL:
+      no_mbox_unspool = TRUE;
+      break;
+#endif
+
       case CONTROL_NO_MULTILINE:
       no_multiline_responses = TRUE;
       break;
+
+#ifdef WITH_CONTENT_SCAN
+      case CONTROL_FAKEREJECT:
+      fake_reject = TRUE;
+      break;
+#endif
 
       case CONTROL_FREEZE:
       deliver_freeze = TRUE;
@@ -1445,6 +1588,12 @@ for (; cb != NULL; cb = cb->next)
       break;
       }
     break;
+
+#ifdef WITH_CONTENT_SCAN
+    case ACLC_DECODE:
+    rc = mime_decode(&arg);
+    break;
+#endif
 
     case ACLC_DELAY:
       {
@@ -1548,11 +1697,41 @@ for (; cb != NULL; cb = cb->next)
       log_write(0, logbits, "%s", string_printing(s));
       }
     break;
+    
+#ifdef WITH_CONTENT_SCAN
+    case ACLC_MALWARE:
+      {
+      /* Seperate the regular expression and any optional parameters. */
+      uschar *ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size);
+      /* Run the malware backend. */
+      rc = malware(&ss);
+      /* Modify return code based upon the existance of options. */
+      while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
+            != NULL) {
+        if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
+          {
+          /* FAIL so that the message is passed to the next ACL */
+          rc = FAIL;
+          }
+        }
+      }
+    break;
+
+    case ACLC_MIME_REGEX:
+      rc = mime_regex(&arg);
+    break;
+#endif
 
     case ACLC_RECIPIENTS:
     rc = match_address_list(addr->address, TRUE, TRUE, &arg, NULL, -1, 0,
       &recipient_data);
     break;
+
+#ifdef WITH_CONTENT_SCAN
+   case ACLC_REGEX:
+      rc = regex(&arg);
+    break;
+#endif
 
     case ACLC_SENDER_DOMAINS:
       {
@@ -1579,6 +1758,26 @@ for (; cb != NULL; cb = cb->next)
       store_pool = old_pool;
       }
     break;
+
+#ifdef WITH_CONTENT_SCAN
+    case ACLC_SPAM:
+      {
+      /* Seperate the regular expression and any optional parameters. */
+      uschar *ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size);
+      /* Run the spam backend. */
+      rc = spam(&ss);
+      /* Modify return code based upon the existance of options. */
+      while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
+            != NULL) {
+        if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
+          {
+          /* FAIL so that the message is passed to the next ACL */
+          rc = FAIL;
+          }
+        }
+      }
+    break;
+#endif
 
     /* If the verb is WARN, discard any user message from verification, because
     such messages are SMTP responses, not header additions. The latter come

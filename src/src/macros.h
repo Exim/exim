@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.4 2004/11/25 13:54:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.2.2.1 2004/11/25 15:33:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -227,12 +227,6 @@ enum {
   CEE_EXEC_PANIC            /* Panic-die if exec fails */
 };
 
-/* Bit values for filter_test */
-
-#define FTEST_NONE     0    /* Not filter testing */
-#define FTEST_USER     1    /* Testing user filter */
-#define FTEST_SYSTEM   2    /* Testing system filter */ 
-
 /* Returns from the routing, transport and authentication functions (not all
 apply to all of them). Some other functions also use these convenient values,
 and some additional values are used only by non-driver functions.
@@ -240,10 +234,10 @@ and some additional values are used only by non-driver functions.
 OK, FAIL, DEFER, and ERROR are also declared in local_scan.h for use in the
 local_scan() function. Do not change them unilaterally. */
 
-#define  OK            0    /* Successful match */
-#define  DEFER         1    /* Defer - some problem */
-#define  FAIL          2    /* Matching failed */
-#define  ERROR         3    /* Internal or config error */
+#define  OK            0     /* Successful match */
+#define  DEFER         1     /* Defer - some problem */
+#define  FAIL          2     /* Matching failed */
+#define  ERROR         3     /* Internal or config error */
 /***********/
 #define DECLINE        4    /* Declined to handle the address, pass to next
                                  router unless no_more is set */
@@ -367,17 +361,16 @@ only in the name table to set all options in both bit maps. */
 #define LX_incoming_port               0x80000020
 #define LX_outgoing_port               0x80000040
 #define LX_queue_time                  0x80000080
-#define LX_queue_time_overall          0x80000100
-#define LX_received_sender             0x80000200
-#define LX_received_recipients         0x80000400
-#define LX_rejected_header             0x80000800
-#define LX_return_path_on_delivery     0x80001000
-#define LX_sender_on_delivery          0x80002000
-#define LX_smtp_confirmation           0x80004000
-#define LX_subject                     0x80008000
-#define LX_tls_certificate_verified    0x80010000
-#define LX_tls_cipher                  0x80020000
-#define LX_tls_peerdn                  0x80040000
+#define LX_received_sender             0x80000100
+#define LX_received_recipients         0x80000200
+#define LX_rejected_header             0x80000400
+#define LX_return_path_on_delivery     0x80000800
+#define LX_sender_on_delivery          0x80001000
+#define LX_smtp_confirmation           0x80002000
+#define LX_subject                     0x80004000
+#define LX_tls_certificate_verified    0x80008000
+#define LX_tls_cipher                  0x80010000
+#define LX_tls_peerdn                  0x80020000
 
 #define L_default     (L_connection_reject        | \
                        L_delay_delivery           | \
@@ -744,8 +737,13 @@ with the tables of names and response codes in globals.c. */
 enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_MAIL,       /* )                                           */
        ACL_WHERE_PREDATA,    /* ) There are several tests for "in message", */
-       ACL_WHERE_DATA,       /* ) implemented by <= WHERE_NOTSMTP           */
-       ACL_WHERE_NOTSMTP,    /* )                                           */
+                             /* ) implemented by <= WHERE_NOTSMTP           */
+                             /* )                                           */
+#ifdef WITH_CONTENT_SCAN
+       ACL_WHERE_MIME,       
+#endif
+       ACL_WHERE_DATA,       
+       ACL_WHERE_NOTSMTP,    
 
        ACL_WHERE_AUTH,       /* These remaining ones are not currently    */
        ACL_WHERE_CONNECT,    /* required to be in a special order so they */
