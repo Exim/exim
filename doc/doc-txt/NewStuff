@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.23 2004/12/22 12:05:45 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.24 2004/12/29 10:16:52 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -234,9 +234,9 @@ Version 4.50
 19. The Exiscan patch is now merged into the main source. See src/EDITME for
     parameters for the build.
 
-20. If the key for a dnsdb lookup is not an IP address, it is used verbatim,
-    without component reversal and without the addition of in-addr.arpa or
-    ip6.arpa.
+20. If the key for a dnsdb PTR lookup is not an IP address, it is used
+    verbatim, without component reversal and without the addition of
+    in-addr.arpa or ip6.arpa.
 
 21. Two changes related to the smtp_active_hostname option:
 

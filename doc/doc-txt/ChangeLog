@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.57 2004/12/22 12:05:45 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.58 2004/12/29 10:16:52 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -236,8 +236,8 @@ Exim version 4.50
 
 55. Some experimental protocols are using DNS PTR records for new purposes. The
     keys for these records are domain names, not reversed IP addresses. The
-    dnsdb lookup now tests whether it's key is an IP address. If not, it leaves
-    it alone. Component reversal etc. now happens only for IP addresses.
+    dnsdb PTR lookup now tests whether its key is an IP address. If not, it
+    leaves it alone. Component reversal etc. now happens only for IP addresses.
 
 56. Improve error message when ldap_search() fails in OpenLDAP or Solaris LDAP.
 
@@ -252,6 +252,14 @@ Exim version 4.50
       (1) $smtp_active_hostname is now available as a variable.
       (2) The default for smtp_banner uses $smtp_active_hostname instead
           of $primary_hostname.
+
+60. The host_aton() function is supposed to be passed a string that is known
+    to be a valid IP address. However, in the case of IPv6 addresses, it was
+    not checking this. This is a hostage to fortune. Exim now panics and dies
+    if the condition is not met. A case was found where this could be provoked
+    from a dnsdb lookup; fortuitously, this particular loophole had already
+    been fixed by change 4.50/55 above. If there are any other similar
+    loopholes, the new check should stop them being exploited.
 
 
 Exim version 4.43

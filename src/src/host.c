@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.3 2004/11/18 11:17:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.4 2004/12/29 10:16:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -754,12 +754,18 @@ if (Ustrchr(address, ':') != NULL)
 
   if (*p == ':') p++;
 
-  /* Split the address into components separated by colons. */
+  /* Split the address into components separated by colons. The input address 
+  is supposed to be checked for syntax. There was a case where this was 
+  overlooked; to guard against that happening again, check here and crash if 
+  there is a violation. */
 
   while (*p != 0)
     {
     int len = Ustrcspn(p, ":");
     if (len == 0) nulloffset = ci;
+    if (ci > 7) log_write(0, LOG_MAIN|LOG_PANIC_DIE, 
+      "Internal error: invalid IPv6 address \"%s\" passed to host_aton()",
+      address);  
     component[ci++] = p;
     p += len;
     if (*p == ':') p++;
