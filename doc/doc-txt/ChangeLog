@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.94 2005/03/22 14:11:54 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.95 2005/03/22 14:50:10 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -60,6 +60,11 @@ PH/08 Added ${dlfunc dynamically loaded function for expansion (code from Tony
 
 PH/09 Previously, an attempt to use ${perl when it wasn't compiled gave an
       "unknown" error; now it says that the functionality isn't in the binary.
+
+PH/10 Added a nasty fudge to try to recognize and flatten LDAP passwords in
+      an address' error message when a string expansion fails (syntax or
+      whatever). Otherwise not only does the password appear in the log, it may
+      also be put in a bounce message.
 
 
 A note about Exim versions 4.44 and 4.50

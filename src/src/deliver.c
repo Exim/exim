@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.8 2005/03/15 12:27:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.9 2005/03/22 14:50:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -729,9 +729,27 @@ else if (driver_type == DTYPE_ROUTER)
 
 /* If there's an error message set, ensure that it contains only printing
 characters - it should, but occasionally things slip in and this at least
-stops the log format from getting wrecked. */
+stops the log format from getting wrecked. We also scan the message for an LDAP
+expansion item that has a password setting, and flatten the password. This is a
+fudge, but I don't know a cleaner way of doing this. (If the item is badly
+malformed, it won't ever have gone near LDAP.) */
 
-if (addr->message != NULL) addr->message = string_printing(addr->message);
+if (addr->message != NULL)
+  {
+  addr->message = string_printing(addr->message);
+  if (Ustrstr(addr->message, "failed to expand") != NULL &&
+      (Ustrstr(addr->message, "ldap:") != NULL ||
+       Ustrstr(addr->message, "ldapdn:") != NULL ||
+       Ustrstr(addr->message, "ldapm:") != NULL))
+    {
+    uschar *p = Ustrstr(addr->message, "pass=");
+    if (p != NULL)
+      {
+      p += 5;
+      while (*p != 0 && !isspace(*p)) *p++ = 'x';
+      }
+    }
+  }
 
 /* If we used a transport that has one of the "return_output" options set, and
 if it did in fact generate some output, then for return_output we treat the
