@@ -1,4 +1,4 @@
-## $Cambridge: exim/doc/doc-src/FAQ.src,v 1.4 2004/11/12 14:42:04 nm4 Exp $
+## $Cambridge: exim/doc/doc-src/FAQ.src,v 1.5 2004/11/12 15:03:40 ph10 Exp $
 ##
 ## This file is processed by Perl scripts to produce an ASCII and an HTML
 ## version. Lines starting with ## are omitted. The markup used with paragraphs
@@ -2756,7 +2756,7 @@ A0413: Setting \skip_syntax_errors\ on the redirect router causes syntax
            driver = accept
            check_local_user
            transport = local_delivery
-           prefix = real-
+           local_part_prefix = real-
 
        before the \%redirect%\ router that handles \(.forward)\ files. This will
        do an ordinary local delivery without \(.forward)\ processing, if the

@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.4 2004/11/10 14:15:20 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.5 2004/11/12 15:03:40 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -90,8 +90,9 @@ John Dalbec               Patch for quota_warn_threshold bug
 Vivek Dasmohapatra        Suggested patch for CRL support
 Andrew Doran              Patch for NetBSD configuration files
                           Patch for ifreq alignment and size problems
-Michael Deutschman        Suggested patch for treating bind() failure like connect()
+Michael Deutschmann       Suggested patch for treating bind() failure like connect()
                           Patch for $sender_data and $recipient_data
+                          Suggested patch for null address match lookup bug 
 Oliver Eikemeier          Patch to skip Received: if expansion is empty
                           Patch for "eqi"
 Nico Erfurth              Fix for bug in ${readfile}

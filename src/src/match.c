@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.2 2004/11/12 15:03:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -932,32 +932,24 @@ error = error;  /* Keep clever compilers from complaining */
 DEBUG(D_lists) debug_printf("address match: subject=%s pattern=%s\n",
   subject, pattern);
 
-/* Handle a regular expression, which must match the entire incoming address. */
+/* Handle a regular expression, which must match the entire incoming address. 
+This may be the empty address. */
 
 if (*pattern == '^')
   return match_check_string(subject, pattern, cb->expand_setup, TRUE,
     cb->caseless, FALSE, NULL);
 
-/* If the subject is the empty string, the only pattern it can match (other
-than a regular expression) is the empty pattern. */
-
-if (*subject == 0) return (*pattern == 0)? OK : FAIL;
-
-/* Find the domain in the subject */
-
-sdomain = Ustrrchr(subject, '@');
-
-/* Handle the case of a pattern that is just a lookup. Skip over possible
-lookup names (letters, digits, hyphens). Skip over a possible * or *@ at
-the end. Then we must have a semicolon for it to be a lookup. */
+/* Handle a pattern that is just a lookup. Skip over possible lookup names
+(letters, digits, hyphens). Skip over a possible * or *@ at the end. Then we
+must have a semicolon for it to be a lookup. */
 
 for (s = pattern; isalnum(*s) || *s == '-'; s++);
 if (*s == '*') s++;
 if (*s == '@') s++;
 
-/* If it is a straight lookup, do a lookup for the whole address. Partial
-matching doesn't make sense here, so we ignore it, but write a panic log entry.
-However, *@ matching will be honoured. */
+/* If it is a straight lookup, do a lookup for the whole address. This may be 
+the empty address. Partial matching doesn't make sense here, so we ignore it,
+but write a panic log entry. However, *@ matching will be honoured. */
 
 if (*s == ';')
   {
@@ -967,6 +959,16 @@ if (*s == ';')
   return match_check_string(subject, pattern, -1, FALSE, cb->caseless, FALSE,
     valueptr);
   }
+
+/* For the remaining cases, an empty subject matches only an empty pattern, 
+because other patterns expect to have a local part and a domain to match 
+against. */
+
+if (*subject == 0) return (*pattern == 0)? OK : FAIL;
+
+/* Find the subject's domain */
+
+sdomain = Ustrrchr(subject, '@');
 
 /* If the pattern starts with "@@" we have a split lookup, where the domain is
 looked up to obtain a list of local parts. If the subject's local part is just
