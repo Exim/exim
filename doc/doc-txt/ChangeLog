@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.60 2005/01/04 10:25:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.61 2005/01/04 10:37:55 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -274,6 +274,12 @@ Exim version 4.50
 
 62. Configuration update for GNU/Hurd and variations. Updated Makefile-GNU and
     os.h-GNU, and added configuration files for GNUkFreeBSD and GNUkNetBSD.
+
+63. The daemon start-up calls getloadavg() while still root for those OS that
+    need the first call to be done as root, but it missed one case: when
+    deliver_queue_load_max is set with deliver_drop_privilege. This is
+    necessary for the benefit of the queue runner, because there is no re-exec
+    when deliver_drop_privilege is set.
 
 
 Exim version 4.43

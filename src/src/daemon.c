@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.4 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.5 2005/01/04 10:37:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -898,7 +898,9 @@ if (daemon_listen)
   order to perform an "open" on the kernel memory file). */
 
   #ifdef LOAD_AVG_NEEDS_ROOT
-  if (queue_only_load >= 0 || smtp_load_reserve >= 0) (void)os_getloadavg();
+  if (queue_only_load >= 0 || smtp_load_reserve >= 0 ||
+       (deliver_queue_load_max >= 0 && deliver_drop_privilege)) 
+    (void)os_getloadavg();
   #endif
 
   /* If -oX was used, disable the writing of a pid file unless -oP was
