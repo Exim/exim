@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.5 2004/12/21 09:40:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.6 2004/12/29 16:24:03 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -383,13 +383,6 @@ extern int ferror(FILE *);
 mytypes.h and store.h, so we don't need to mention them explicitly. */
 
 #include "config.h"
-
-/* Before including the rest of the Exim headers, let's clear up some content
-scanning dependencies. */
-
-#ifdef WITH_OLD_DEMIME
-#define WITH_CONTENT_SCAN
-#endif
 
 #include "local_scan.h"
 #include "macros.h"

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/demime.c,v 1.2 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/demime.c,v 1.3 2004/12/29 16:24:03 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -22,7 +22,7 @@ int demime(uschar **listptr) {
   uschar *list = *listptr;
   uschar *option;
   uschar option_buffer[64];
-  unsigned long long mbox_size;
+  unsigned long mbox_size;
   FILE *mbox_file;
   uschar defer_error_buffer[1024];
   int demime_rc = 0;

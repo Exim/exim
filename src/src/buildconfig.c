@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.3 2004/11/05 12:33:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.4 2004/12/29 16:24:03 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -628,6 +628,19 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
       }
     continue;
     }
+
+  /* WITH_CONTENT_SCAN is another special case: it must be set if either it or 
+  WITH_OLD_DEMIME is set. */  
+
+  if (strcmp(name, "WITH_CONTENT_SCAN") == 0)
+    {
+    char *wcs = getenv("WITH_CONTENT_SCAN");
+    char *wod = getenv("WITH_OLD_DEMIME");
+    if (wcs != NULL || wod != NULL)
+      fprintf(new, "#define WITH_CONTENT_SCAN     yes\n");
+    else fprintf(new, "/* WITH_CONTENT_SCAN not set */\n");
+    continue;
+    } 
 
   /* Otherwise, check whether a value exists in the environment. Remember if
   it is an AUTH setting or SUPPORT_CRYPTEQ. */

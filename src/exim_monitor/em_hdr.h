@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_hdr.h,v 1.2 2004/10/07 10:48:02 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_hdr.h,v 1.3 2004/12/29 16:24:03 ph10 Exp $ */
 
 /*************************************************
 *                 Exim Monitor                   *
@@ -95,9 +95,9 @@ that this kind of kludge isn't needed. */
 
 #define MAXPACKET 1024
 
+#include "config.h"
 #include "mytypes.h"
 #include "macros.h"
-#include "config.h"
 
 #include "local_scan.h"
 #include "structs.h"
