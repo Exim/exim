@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.6.2.4 2004/12/10 14:59:08 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.6.2.5 2004/12/15 11:51:09 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -410,7 +410,7 @@ extern uschar *message_reference;      /* Reference for error messages */
 
 /* MIME ACL expandables */
 #ifdef WITH_CONTENT_SCAN
-extern uschar *mime_anomaly_level;
+extern int     mime_anomaly_level;
 extern uschar *mime_anomaly_text;
 extern uschar *mime_boundary;
 extern uschar *mime_charset;

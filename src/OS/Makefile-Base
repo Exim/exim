@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.1.2.4 2004/12/10 09:24:38 tom Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.1.2.5 2004/12/15 11:51:08 tom Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -320,7 +320,7 @@ exim:   pcre/libpcre.a lookups/lookups.a auths/auths.a \
 	  auths/auths.a \
 	  $(LIBRESOLV) $(LIBS) $(LIBS_EXIM) $(IPV6_LIBS) $(EXTRALIBS) \
 	  $(EXTRALIBS_EXIM) $(DBMLIB) $(LOOKUP_LIBS) $(AUTH_LIBS) \
-	  $(PERL_LIBS) $(TLS_LIBS)
+	  $(PERL_LIBS) $(TLS_LIBS) $(LDFLAGS)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim; \
 	  $(STRIP_COMMAND) exim; \

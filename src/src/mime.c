@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.1.2.3 2004/11/30 15:18:58 tom Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.1.2.4 2004/12/15 11:51:09 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -14,6 +14,19 @@
 
 FILE *mime_stream = NULL;
 uschar *mime_current_boundary = NULL;
+
+/*************************************************
+* set MIME anomaly level + text                  *
+*************************************************/
+
+/* Small wrapper to set the two expandables which
+   give info on detected "problems" in MIME
+   encodings. Those are defined in mime.h. */
+
+void mime_set_anomaly(int level, char *text) {
+  mime_anomaly_level = level;
+  mime_anomaly_text = text;
+};
 
 
 /*************************************************
@@ -131,6 +144,7 @@ uschar *mime_parse_line(uschar *buffer, uschar *encoding, int *num_decoded) {
     while (*(p+offset) != '\0') {
       /* hit illegal char ? */
       if (mime_b64[*(p+offset)] == 128) {
+        mime_set_anomaly(MIME_ANOMALY_BROKEN_BASE64);
         offset++;
       }
       else {
@@ -148,6 +162,7 @@ uschar *mime_parse_line(uschar *buffer, uschar *encoding, int *num_decoded) {
       
       /* byte 0 ---------------------- */
       if (*(p+1) == 255) {
+        mime_set_anomaly(MIME_ANOMALY_BROKEN_BASE64);
         break;
       }
       data[(*num_decoded)] = *p;
@@ -159,6 +174,7 @@ uschar *mime_parse_line(uschar *buffer, uschar *encoding, int *num_decoded) {
       p++;
       /* byte 1 ---------------------- */
       if (*(p+1) == 255) {
+        mime_set_anomaly(MIME_ANOMALY_BROKEN_BASE64);
         break;
       }
       data[(*num_decoded)] = *p;
@@ -170,6 +186,7 @@ uschar *mime_parse_line(uschar *buffer, uschar *encoding, int *num_decoded) {
       p++;
       /* byte 2 ---------------------- */
       if (*(p+1) == 255) {
+        mime_set_anomaly(MIME_ANOMALY_BROKEN_BASE64);
         break;
       }
       data[(*num_decoded)] = *p;
@@ -195,6 +212,7 @@ uschar *mime_parse_line(uschar *buffer, uschar *encoding, int *num_decoded) {
               
         if (decode_qp_result == -2) {
           /* Error from decoder. p is unchanged. */
+          mime_set_anomaly(MIME_ANOMALY_BROKEN_QP);
           data[(*num_decoded)] = '=';
           (*num_decoded)++;
           p++;

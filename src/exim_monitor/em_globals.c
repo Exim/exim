@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.1.2.1 2004/12/02 09:15:11 tom Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.1.2.2 2004/12/15 11:51:09 tom Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -43,6 +43,11 @@ int     action_queue_update = TRUE;
 uschar  actioned_message[24];
 uschar *action_required;
 uschar *alternate_config = NULL;
+
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+int     bmi_run                = 0;
+uschar *bmi_verdicts           = NULL;
+#endif
 
 int     body_max = 20000;
 

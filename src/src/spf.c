@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spf.c,v 1.1.2.1 2004/12/10 09:24:38 tom Exp $ */
+/* $Cambridge: exim/src/src/spf.c,v 1.1.2.2 2004/12/15 11:51:09 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -13,7 +13,7 @@
 #include "exim.h"
 #ifdef EXPERIMENTAL_SPF
 
-#include "spf.h"
+/* #include "spf.h" */
 
 SPF_config_t        spfcid = NULL;
 SPF_dns_config_t    spfdcid_resolv = NULL;

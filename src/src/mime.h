@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.h,v 1.1.2.3 2004/11/30 15:18:58 tom Exp $ */
+/* $Cambridge: exim/src/src/mime.h,v 1.1.2.4 2004/12/15 11:51:09 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -55,6 +55,12 @@ static mime_parameter mime_parameter_list[] = {
 };
 
 static int mime_parameter_list_size = sizeof(mime_parameter_list)/sizeof(mime_parameter);
+
+
+/* MIME Anomaly list */
+#define MIME_ANOMALY_BROKEN_BASE64    2, "Broken BASE64 encoding detected"
+#define MIME_ANOMALY_BROKEN_QP        1, "Broken Quoted-Printable encoding detected"
+
 
 /* BASE64 decoder matrix */
 static unsigned char mime_b64[256]={
