@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.116 2005/04/06 14:40:23 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.117 2005/04/06 15:26:52 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -179,6 +179,16 @@ PH/28 Modified OS/os.c-Linux with
 PH/29 Installed patch from the Sieve maintainer that adds the options
       sieve_useraddress and sieve_subaddress to the redirect router.
 
+PH/30 In these circumstances:
+        . Two addresses routed to the same list of hosts;
+        . First host does not offer TLS;
+        . First host accepts first address;
+        . First host gives temporary error to second address;
+        . Second host offers TLS and a TLS session is established;
+        . Second host accepts second address.
+      Exim incorrectly logged both deliveries with the TLS parameters (cipher
+      and peerdn, if requested) that were in fact used only for the second
+      address.
 
 
 A note about Exim versions 4.44 and 4.50

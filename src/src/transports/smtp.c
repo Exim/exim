@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.8 2005/03/22 15:45:35 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.9 2005/04/06 15:26:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1020,8 +1020,11 @@ if (tls_offered && !suppress_tls &&
 
     for (addr = addrlist; addr != NULL; addr = addr->next)
       {
-      addr->cipher = tls_cipher;
-      addr->peerdn = tls_peerdn;
+      if (addr->transport_return == PENDING_DEFER)
+        {
+        addr->cipher = tls_cipher;
+        addr->peerdn = tls_peerdn;
+        }
       }
     }
   }
