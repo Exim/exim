@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.10 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.11 2005/01/25 14:16:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -331,6 +331,7 @@ extern BOOL    host_find_failed_syntax;/* DNS syntax check failure */
 extern BOOL    host_checking_callout;  /* TRUE if real callout wanted */
 extern uschar *host_data;              /* Obtained from lookup in ACL */
 extern uschar *host_lookup;            /* For which IP addresses are always looked up */
+extern BOOL    host_lookup_deferred;   /* TRUE if lookup deferred */
 extern BOOL    host_lookup_failed;     /* TRUE if lookup failed */
 extern uschar *host_lookup_order;      /* Order of host lookup types */
 extern uschar *host_lookup_msg;        /* Text for why it failed */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.7 2005/01/12 12:17:41 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.8 2005/01/25 14:16:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1336,9 +1336,11 @@ Returns:      OK on success, the answer being placed in the global variable
 
 The variable host_lookup_msg is set to an empty string on sucess, or to a
 reason for the failure otherwise, in a form suitable for tagging onto an error
-message, and also host_lookup_failed is set TRUE if the lookup failed. Any
-dynamically constructed string for host_lookup_msg must be in permanent store,
-because it might be used for several incoming messages on the same SMTP
+message, and also host_lookup_failed is set TRUE if the lookup failed. If there 
+was a defer, host_lookup_deferred is set TRUE.
+
+Any dynamically constructed string for host_lookup_msg must be in permanent
+store, because it might be used for several incoming messages on the same SMTP
 connection. */
 
 int
@@ -1355,6 +1357,8 @@ dns_record *rr;
 dns_answer dnsa;
 dns_scan dnss;
 
+host_lookup_deferred = host_lookup_failed = FALSE;
+
 HDEBUG(D_host_lookup)
   debug_printf("looking up host name for %s\n", sender_host_address);
 
@@ -1366,6 +1370,7 @@ if (running_in_test_harness &&
   {
   HDEBUG(D_host_lookup)
     debug_printf("Test harness: host name lookup returns DEFER\n");
+  host_lookup_deferred = TRUE;   
   return DEFER;
   }
 
@@ -1455,6 +1460,7 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
       {
       HDEBUG(D_host_lookup)
         debug_printf("IP address PTR lookup gave temporary error\n");
+      host_lookup_deferred = TRUE;   
       return DEFER;
       }
     }
@@ -1465,9 +1471,12 @@ while ((ordername = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
     {
     HDEBUG(D_host_lookup)
       debug_printf("IP address lookup using gethostbyaddr()\n");
-
     rc = host_name_lookup_byaddr();
-    if (rc == DEFER) return rc;        /* Can't carry on */
+    if (rc == DEFER) 
+      {
+      host_lookup_deferred = TRUE;   
+      return rc;                       /* Can't carry on */
+      } 
     if (rc == OK) break;               /* Found a name */
     }
   }      /* Loop for bydns/byaddr scanning */
@@ -1481,8 +1490,7 @@ if (sender_host_name == NULL)
     log_write(L_host_lookup_failed, LOG_MAIN, "no host name found for IP "
       "address %s", sender_host_address);
   host_lookup_msg = US" (failed to find host name from IP address)";
-
-host_lookup_failed = TRUE;
+  host_lookup_failed = TRUE;
   return FAIL;
   }
 
@@ -1570,6 +1578,7 @@ for (hname = sender_host_name; hname != NULL; hname = *aliases++)
   else if (rc == HOST_FIND_AGAIN)
     {
     HDEBUG(D_host_lookup) debug_printf("temporary error for host name lookup\n");
+    host_lookup_deferred = TRUE;   
     return DEFER;
     }
   else
@@ -1614,7 +1623,6 @@ store_pool = POOL_PERM;
 host_lookup_msg = string_sprintf(" (%s does not match any IP address for %s)",
   sender_host_address, save_hostname);
 store_pool = old_pool;
-
 host_lookup_failed = TRUE;
 return FAIL;
 }
@@ -1664,6 +1672,19 @@ int i, yield, times;
 uschar **addrlist;
 host_item *last = NULL;
 BOOL temp_error = FALSE;
+#if HAVE_IPV6
+int af;
+#endif
+
+/* If we are in the test harness, a name ending in .test.again.dns always
+forces a temporary error response. */
+
+if (running_in_test_harness)
+  {
+  uschar *endname = host->name + Ustrlen(host->name);
+  if (Ustrcmp(endname - 14, "test.again.dns") == 0)
+    return HOST_FIND_AGAIN;
+  }   
 
 /* In an IPv6 world, we need to scan for both kinds of address, so go round the
 loop twice. Note that we have ensured that AF_INET6 is defined even in an IPv4
@@ -1672,8 +1693,6 @@ matches the domain, we also just do IPv4 lookups here (except when testing
 standalone). */
 
 #if HAVE_IPV6
-  int af;
-
   #ifndef STAND_ALONE
   if (dns_ipv4_lookup != NULL &&
         match_isinlist(host->name, &dns_ipv4_lookup, 0, NULL, NULL, MCL_DOMAIN,

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.14 2005/01/12 14:41:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.15 2005/01/25 14:16:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -559,6 +559,7 @@ BOOL    host_checking_callout  = FALSE;
 uschar *host_data              = NULL;
 BOOL    host_find_failed_syntax= FALSE;
 uschar *host_lookup            = NULL;
+BOOL    host_lookup_deferred   = FALSE;
 BOOL    host_lookup_failed     = FALSE;
 uschar *host_lookup_order      = US"bydns:byaddr";
 uschar *host_lookup_msg        = US"";

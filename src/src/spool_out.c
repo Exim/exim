@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_out.c,v 1.4 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_out.c,v 1.5 2005/01/25 14:16:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -215,6 +215,7 @@ if (allow_unqualified_sender) fprintf(f, "-allow_unqualified_sender\n");
 if (deliver_firsttime) fprintf(f, "-deliver_firsttime\n");
 if (deliver_freeze) fprintf(f, "-frozen %d\n", deliver_frozen_at);
 if (dont_deliver) fprintf(f, "-N\n");
+if (host_lookup_deferred) fprintf(f, "-host_lookup_deferred\n");
 if (host_lookup_failed) fprintf(f, "-host_lookup_failed\n");
 if (sender_local) fprintf(f, "-local\n");
 if (local_error_message) fprintf(f, "-localerror\n");

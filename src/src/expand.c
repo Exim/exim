@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.11 2005/01/13 10:09:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.12 2005/01/25 14:16:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -351,6 +351,7 @@ static var_entry var_table[] = {
   { "host",                vtype_stringptr,   &deliver_host },
   { "host_address",        vtype_stringptr,   &deliver_host_address },
   { "host_data",           vtype_stringptr,   &host_data },
+  { "host_lookup_deferred",vtype_int,         &host_lookup_deferred },
   { "host_lookup_failed",  vtype_int,         &host_lookup_failed },
   { "inode",               vtype_ino,         &deliver_inode },
   { "interface_address",   vtype_stringptr,   &interface_address },

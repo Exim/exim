@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.4 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.5 2005/01/25 14:16:33 ph10 Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -144,6 +144,7 @@ BOOL   fake_reject             = FALSE;
 header_line *header_last       = NULL;
 header_line *header_list       = NULL;
 
+BOOL    host_lookup_deferred   = FALSE;
 BOOL    host_lookup_failed     = FALSE;
 uschar *interface_address      = NULL;
 int     interface_port         = 0;

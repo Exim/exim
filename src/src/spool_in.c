@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.5 2005/01/12 12:24:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.6 2005/01/25 14:16:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -250,6 +250,7 @@ deliver_frozen_at = 0;
 deliver_manual_thaw = FALSE;
 /* dont_deliver must NOT be reset */
 header_list = header_last = NULL;
+host_lookup_deferred = FALSE;
 host_lookup_failed = FALSE;
 interface_address = NULL;
 interface_port = 0;
@@ -387,6 +388,8 @@ for (;;)
   else if (Ustrncmp(big_buffer, "-bmi_verdicts ", 14) == 0)
     bmi_verdicts = string_copy(big_buffer + 14);
 #endif
+  else if (Ustrcmp(big_buffer, "-host_lookup_deferred") == 0)
+    host_lookup_deferred = TRUE;
   else if (Ustrcmp(big_buffer, "-host_lookup_failed") == 0)
     host_lookup_failed = TRUE;
   else if (Ustrncmp(big_buffer, "-body_linecount", 15) == 0)
