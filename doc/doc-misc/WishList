@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.16 2004/12/22 15:31:47 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.17 2005/01/21 14:19:40 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1825,5 +1825,17 @@ Unless a lot of work is done, this would be restricted to another remote
 transport. A similar effect could therefore be achieved with "shadow_hosts"
 which are like fallback_hosts but which operate on success.
 ------------------------------------------------------------------------------
---- HWM 312 ------------------------------------------------------------------
+
+(313) 21-Jan-05 ? Multiple queues
+
+Exim runs poorly if its queue gets too big. Various ways round this are all
+to some extent kludges. There has been a suggestion of using multiple
+directories instead of just "input". (Originally it was for a whole set of
+spool directories, but that introduces complications with the hint files.)
+On message arrival, somehow a selection of "input" must be made. Then queue
+runners must be startable for the different "queues". Don't forget that the
+"msglog" directory is also involved. Perhaps add a new level of indirection:
+/var/spool/exim/queue1/{input,msglog}, /var/spool/exim/queue2/....
+------------------------------------------------------------------------------
+--- HWM 313 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
