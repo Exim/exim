@@ -1,0 +1,433 @@
+$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.1 2005/01/11 10:51:15 ph10 Exp $
+
+From time to time, experimental features may be added to Exim. 
+While a feature is experimental, there will be a build-time 
+option whose name starts "EXPERIMENTAL_" that must be set in
+order to include the feature. This file contains information
+about experimenatal features, all of which are unstable and
+liable to incompatibile change.
+
+
+1. Brighmail AntiSpam (BMI) suppport
+--------------------------------------------------------------
+
+Brightmail  AntiSpam  is  a  commercial  package.  Please  see
+http://www.brightmail.com    for    more    information     on
+the product. For  the sake of  clarity, we'll refer  to it  as
+"BMI" from now on.
+
+
+0) BMI concept and implementation overview
+
+In  contrast  to   how  spam-scanning  with   SpamAssassin  is
+implemented  in  exiscan-acl,  BMI  is  more  suited  for  per
+-recipient  scanning of  messages. However,  each messages  is
+scanned  only  once,  but  multiple  "verdicts"  for  multiple
+recipients can be  returned from the  BMI server. The  exiscan
+implementation  passes  the  message to  the  BMI  server just
+before accepting it.  It then adds  the retrieved verdicts  to
+the messages header file in the spool. These verdicts can then
+be  queried  in  routers,  where  operation  is  per-recipient
+instead  of per-message.  To use  BMI, you  need to  take the
+following steps:
+
+  1) Compile Exim with BMI support
+  2) Set up main BMI options (top section of exim config file)
+  3) Set up ACL control statement (ACL section of the config
+     file)
+  4) Set up your routers to use BMI verdicts (routers section
+     of the config file).
+  5) (Optional) Set up per-recipient opt-in information.
+
+These four steps are explained in more details below. 
+
+1) Adding support for BMI at compile time
+
+  To compile with BMI support,  you need to link Exim  against
+  the   Brighmail  client   SDK,  consisting   of  a   library
+  (libbmiclient_single.so)  and  a  header  file  (bmi_api.h).
+  You'll also need to explicitly set a flag in the Makefile to
+  include BMI support in the Exim binary. Both can be achieved
+  with  these lines in Local/Makefile:
+
+  EXPERIMENTAL_BRIGHTMAIL=yes
+  CFLAGS=-DBRIGHTMAIL -I/path/to/the/dir/with/the/includefile
+  EXTRALIBS_EXIM=-L/path/to/the/dir/with/the/library -lbmiclient_single
+  
+  If  you use  other CFLAGS  or EXTRALIBS_EXIM  settings then
+  merge the content of these lines with them.
+
+  Note for BMI6.x users: You'll also have to add -lxml2_single
+  to the EXTRALIBS_EXIM line. Users of 5.5x do not need to  do
+  this.
+  
+  You    should     also    include     the    location     of
+  libbmiclient_single.so in your dynamic linker  configuration
+  file   (usually   /etc/ld.so.conf)   and   run    "ldconfig"
+  afterwards, or  else the  produced Exim  binary will  not be
+  able to find the library file.
+
+
+2) Setting up BMI support in the exim main configuration
+
+  To enable BMI  support in the  main exim configuration,  you
+  should set the path to the main BMI configuration file  with
+  the "bmi_config_file" option, like this:
+  
+  bmi_config_file = /opt/brightmail/etc/brightmail.cfg
+  
+  This must go into section 1 of exims configuration file (You
+  can  put it  right on  top). If  you omit  this option,  it
+  defaults to /opt/brightmail/etc/brightmail.cfg.
+
+  Note for BMI6.x users: This  file is in XML format  in V6.xx
+  and its  name is  /opt/brightmail/etc/bmiconfig.xml. So  BMI
+  6.x users MUST set the bmi_config_file option.
+  
+
+3) Set up ACL control statement
+
+  To  optimize performance,  it makes  sense only  to process
+  messages coming from remote, untrusted sources with the  BMI
+  server.  To set  up a  messages for  processing by  the BMI
+  server, you MUST set the "bmi_run" control statement in  any
+  ACL for an incoming message.  You will typically do this  in
+  an "accept"  block in  the "acl_check_rcpt"  ACL. You should
+  use the "accept" block(s)  that accept messages from  remote
+  servers for your own domain(s). Here is an example that uses
+  the "accept" blocks from exims default configuration file:
+  
+
+  accept  domains       = +local_domains
+          endpass
+          verify        = recipient
+          control       = bmi_run
+
+  accept  domains       = +relay_to_domains
+          endpass
+          verify        = recipient
+          control       = bmi_run
+  
+  If bmi_run  is not  set in  any ACL  during reception of the
+  message, it will NOT be passed to the BMI server.
+
+
+4) Setting up routers to use BMI verdicts
+
+  When a message has been  run through the BMI server,  one or
+  more "verdicts" are  present. Different recipients  can have
+  different verdicts. Each  recipient is treated  individually
+  during routing, so you  can query the verdicts  by recipient
+  at  that stage.  From Exims  view, a  verdict can  have the
+  following outcomes:
+  
+  o deliver the message normally
+  o deliver the message to an alternate location
+  o do not deliver the message
+  
+  To query  the verdict  for a  recipient, the  implementation
+  offers the following tools:
+  
+  
+  - Boolean router  preconditions. These  can be  used in  any
+    router. For a simple  implementation of BMI, these  may be
+    all  that  you  need.  The  following  preconditions   are
+    available:
+    
+    o bmi_deliver_default
+    
+      This  precondition  is  TRUE  if  the  verdict  for  the
+      recipient is  to deliver  the message  normally. If  the
+      message has not been  processed by the BMI  server, this
+      variable defaults to TRUE.
+      
+    o bmi_deliver_alternate
+    
+      This  precondition  is  TRUE  if  the  verdict  for  the
+      recipient  is to  deliver the  message to  an alternate
+      location.  You  can  get the  location  string  from the
+      $bmi_alt_location expansion variable if you need it. See
+      further below. If the message has not been processed  by
+      the BMI server, this variable defaults to FALSE.
+      
+    o bmi_dont_deliver
+    
+      This  precondition  is  TRUE  if  the  verdict  for  the
+      recipient  is  NOT  to   deliver  the  message  to   the
+      recipient. You will typically use this precondition in a
+      top-level blackhole router, like this:
+      
+        # don't deliver messages handled by the BMI server
+        bmi_blackhole:
+          driver = redirect
+          bmi_dont_deliver
+          data = :blackhole:
+      
+      This router should be on top of all others, so  messages
+      that should not be delivered do not reach other  routers
+      at all. If   the  message  has  not  been  processed  by
+      the  BMI server, this variable defaults to FALSE.
+      
+      
+  - A list router  precondition to query  if rules "fired"  on
+    the message for the recipient. Its name is "bmi_rule". You
+    use  it  by  passing it  a  colon-separated  list of  rule
+    numbers. You can use this condition to route messages that
+    matched specific rules. Here is an example:
+    
+      # special router for BMI rule #5, #8 and #11
+      bmi_rule_redirect:
+        driver = redirect
+        bmi_rule = 5:8:11
+        data = postmaster@mydomain.com
+      
+  
+  - Expansion variables. Several  expansion variables are  set
+    during  routing.  You  can  use  them  in  custom   router
+    conditions,  for  example.  The  following  variables  are
+    available:
+    
+    o $bmi_base64_verdict
+    
+      This variable  will contain  the BASE64  encoded verdict
+      for the recipient being routed. You can use it to add  a
+      header to messages for tracking purposes, for example:
+      
+      localuser:
+        driver = accept
+        check_local_user
+        headers_add = X-Brightmail-Verdict: $bmi_base64_verdict
+        transport = local_delivery
+      
+      If there is no verdict available for the recipient being
+      routed, this variable contains the empty string.
+    
+    o $bmi_base64_tracker_verdict
+    
+      This variable  will contain  a BASE64  encoded subset of
+      the  verdict  information  concerning  the  "rules" that
+      fired  on the  message. You  can add  this string  to a
+      header, commonly named "X-Brightmail-Tracker". Example:
+      
+      localuser:
+        driver = accept
+        check_local_user
+        headers_add = X-Brightmail-Tracker: $bmi_base64_tracker_verdict
+        transport = local_delivery
+        
+      If there is no verdict available for the recipient being
+      routed, this variable contains the empty string.
+      
+    o $bmi_alt_location
+    
+      If  the  verdict  is  to  redirect  the  message  to  an
+      alternate  location,  this  variable  will  contain  the
+      alternate location string returned by the BMI server. In
+      its default configuration, this is a header-like  string
+      that can be added to the message with "headers_add".  If
+      there is  no verdict  available for  the recipient being
+      routed, or if the  message is to be  delivered normally,
+      this variable contains the empty string.
+      
+    o $bmi_deliver
+    
+      This is an additional integer variable that can be  used
+      to query if the message should be delivered at all.  You
+      should use router preconditions instead if possible.
+      
+      $bmi_deliver is '0': the message should NOT be delivered.
+      $bmi_deliver is '1': the message should be delivered.
+      
+   
+  IMPORTANT NOTE: Verdict inheritance.
+  The  message  is passed  to  the BMI  server  during message
+  reception,  using the  target addresses  from the  RCPT TO:
+  commands in the SMTP transaction. If recipients get expanded
+  or re-written (for example by aliasing), the new address(es)
+  inherit the  verdict from  the original  address. This means
+  that verdicts also apply to all "child" addresses  generated
+  from top-level addresses that were sent to the BMI server.
+  
+  
+5) Using per-recipient opt-in information (Optional)
+
+  The  BMI server  features multiple  scanning "profiles"  for
+  individual recipients.  These are  usually stored  in a LDAP
+  server and are  queried by the  BMI server itself.  However,
+  you can also  pass opt-in data  for each recipient  from the
+  MTA to the  BMI server. This  is particularly useful  if you
+  already look  up recipient  data in  exim anyway  (which can
+  also be  stored in  a SQL  database or  other source).  This
+  implementation enables you  to pass opt-in  data to the  BMI
+  server  in  the  RCPT   ACL.  This  works  by   setting  the
+  'bmi_optin' modifier in  a block of  that ACL. If  should be
+  set to a list  of comma-separated strings that  identify the
+  features which the BMI server should use for that particular
+  recipient. Ideally, you  would use the  'bmi_optin' modifier
+  in the same  ACL block where  you set the  'bmi_run' control
+  flag. Here is an example that will pull opt-in data for each
+  recipient      from       a      flat       file      called
+  '/etc/exim/bmi_optin_data'.
+  
+  The file format:
+  
+    user1@mydomain.com: <OPTIN STRING1>:<OPTIN STRING2>
+    user2@thatdomain.com: <OPTIN STRING3>
+    
+    
+  The example:
+  
+    accept  domains       = +relay_to_domains
+            endpass
+            verify        = recipient
+            bmi_optin     = ${lookup{$local_part@$domain}lsearch{/etc/exim/bmi_optin_data}}
+            control       = bmi_run  
+  
+  Of course,  you can  also use  any other  lookup method that
+  exim supports, including LDAP, Postgres, MySQL, Oracle etc.,
+  as long as  the result is  a list of  colon-separated opt-in
+  strings.
+  
+  For a list of available opt-in strings, please contact  your
+  Brightmail representative.
+  
+  
+
+  
+2. Sender Policy Framework (SPF) support
+--------------------------------------------------------------
+
+To learn  more  about  SPF, visit   http://spf.pobox.com. This
+document does   not explain  the SPF  fundamentals, you should
+read and understand the implications of deploying SPF on  your
+system before doing so.
+
+SPF support is added via the libspf2 library. Visit 
+
+  http://www.libspf2.org/
+  
+to obtain  a copy,  then compile  and install  it. By default,
+this will  put headers  in /usr/local/include  and the  static
+library in /usr/local/lib.
+
+To compile exim with SPF support, set these additional flags in
+Local/Makefile:
+
+EXPERIMENTAL_SPF=yes
+CFLAGS=-DSPF -I/usr/local/include
+EXTRALIBS_EXIM=-L/usr/local/lib -lspf2
+
+This assumes   that the   libspf2 files   are installed  in
+their default locations.
+
+You can now run SPF checks in incoming SMTP by using the "spf"
+ACL condition  in either  the MAIL,  RCPT or  DATA ACLs.  When
+using it in the RCPT ACL, you can make the checks dependend on
+the RCPT  address (or  domain), so  you can  check SPF records
+only  for   certain  target   domains.  This   gives  you  the
+possibility  to opt-out  certain customers  that do  not want
+their mail to be subject to SPF checking.
+
+The spf condition  takes a list  of strings on  its right-hand
+side. These strings describe the outcome of the SPF check  for
+which the spf condition should succeed. Valid strings are:
+
+  o pass      The SPF check passed, the sending host
+              is positively verified by SPF.
+  o fail      The SPF check failed, the sending host
+              is NOT allowed to send mail for the domain
+              in the envelope-from address.
+  o softfail  The SPF check failed, but the queried
+              domain can't absolutely confirm that this
+              is a forgery.
+  o none      The queried domain does not publish SPF
+              records.
+  o neutral   The SPF check returned a "neutral" state.
+              This means the queried domain has published
+              a SPF record, but wants to allow outside
+              servers to send mail under its domain as well.
+  o err_perm  This indicates a syntax error in the SPF
+              record of the queried domain. This should be
+              treated like "none".
+  o err_temp  This indicates a temporary error during all
+              processing, including exim's SPF processing.
+              You may defer messages when this occurs.
+              
+You can prefix each string with an exclamation mark to  invert
+is meaning,  for example  "!fail" will  match all  results but
+"fail".  The  string  list is  evaluated  left-to-right,  in a
+short-circuit fashion.  When a  string matches  the outcome of
+the SPF check, the condition  succeeds. If none of the  listed
+strings matches the  outcome of the  SPF check, the  condition
+fails.
+
+Here is a simple example to fail forgery attempts from domains
+that publish SPF records:
+
+/* -----------------
+deny message = $sender_host_address is not allowed to send mail from $sender_address_domain
+     spf = fail
+--------------------- */
+
+You can also give special treatment to specific domains:
+
+/* -----------------
+deny message = AOL sender, but not from AOL-approved relay.
+     sender_domains = aol.com
+     spf = fail:neutral
+--------------------- */
+
+Explanation: AOL  publishes SPF  records, but  is liberal  and
+still allows  non-approved relays  to send  mail from aol.com.
+This will result in a "neutral" state, while mail from genuine
+AOL servers  will result  in "pass".  The example  above takes
+this into account and  treats "neutral" like "fail",  but only
+for aol.com. Please note that this violates the SPF draft.
+
+When the spf condition has run, it sets up several expansion
+variables.
+
+  $spf_header_comment
+  This contains a human-readable string describing the outcome
+  of the SPF check. You can add it to a custom header or use
+  it for logging purposes.
+  
+  $spf_received
+  This contains a complete SPF-Received: header that can be
+  added to the message. Please note that according to the SPF
+  draft, this header must be added at the top of the header
+  list. Please see section 10 on how you can do this.
+  
+  $spf_result
+  This contains the outcome of the SPF check in string form,
+  one of pass, fail, softfail, none, neutral, err_perm or
+  err_temp.
+  
+  $spf_smtp_comment
+  This contains a string that can be used in a SMTP response
+  to the calling party. Useful for "fail".
+  
+  
+
+3. SRS (Sender Rewriting Scheme) Support
+--------------------------------------------------------------
+
+Exiscan  currently  includes SRS  support  via Miles  Wilton's
+libsrs_alt library. The current version of the supported 
+library is 0.5.
+
+In order to  use SRS, you  must get a  copy of libsrs_alt from
+
+http://srs.mirtol.com/
+
+Unpack the tarball, then refer to MTAs/README.EXIM
+to proceed. You need to set
+
+EXPERIMENTAL_SRS=yes
+
+in your Local/Makefile.
+
+
+--------------------------------------------------------------
+End of file
+--------------------------------------------------------------
