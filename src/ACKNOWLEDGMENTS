@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.1 2004/10/06 11:36:51 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.2 2004/10/19 11:40:52 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  04 October 2004
+Last updated:  19 October 2004
 
 
 THE OLD LIST
@@ -189,6 +189,7 @@ William Thompson          Suggested patch for acl_smtp_helo
                           Suggested patch for continuation lines in file ACLs
                           Patch for != support in DNS lists
 Adam Thornton             Patch for SMTP port expansion
+Rein Tollevik             Patch to fix search cache missing tidyup
 Stefan Traby              Threaded Perl support
 Samuli Tuomola            OS files for QNX 6.2.0
 Dave Turner               Suggested patch for sender rewriting brokenness

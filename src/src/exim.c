@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.5 2004/10/19 11:04:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.6 2004/10/19 11:40:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -196,9 +196,9 @@ os_non_restarting_signal(SIGALRM, sigalrm_handler);
 
 /* This function is called by millisleep() and exim_wait_tick() to wait for a
 period of time that may include a fraction of a second. The coding is somewhat
-tedious. We do not expect setitimer() ever to fail, but if it does, the process 
-will wait for ever, so we panic in this instance. (There was a case of this 
-when a bug in a function that calls milliwait() caused it to pass invalid data. 
+tedious. We do not expect setitimer() ever to fail, but if it does, the process
+will wait for ever, so we panic in this instance. (There was a case of this
+when a bug in a function that calls milliwait() caused it to pass invalid data.
 That's when I added the check. :-)
 
 Argument:  an itimerval structure containing the interval
@@ -214,8 +214,8 @@ sigset_t old_sigmask;
 (void)sigaddset(&sigmask, SIGALRM);                    /* Add SIGALRM */
 (void)sigprocmask(SIG_BLOCK, &sigmask, &old_sigmask);  /* Block SIGALRM */
 if (setitimer(ITIMER_REAL, itval, NULL) < 0)           /* Start timer */
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, 
-    "setitimer() failed: %s", strerror(errno)); 
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+    "setitimer() failed: %s", strerror(errno));
 (void)sigfillset(&sigmask);                            /* All signals */
 (void)sigdelset(&sigmask, SIGALRM);                    /* Remove SIGALRM */
 (void)sigsuspend(&sigmask);                            /* Until SIGALRM */
@@ -2837,21 +2837,21 @@ else
       strerror(errno));
     rlp.rlim_cur = rlp.rlim_max = 0;
     }
-    
-  /* I originally chose 1000 as a nice big number that was unlikely to 
+
+  /* I originally chose 1000 as a nice big number that was unlikely to
   be exceeded. It turns out that some older OS have a fixed upper limit of
   256. */
-     
+
   if (rlp.rlim_cur < 1000)
     {
     rlp.rlim_cur = rlp.rlim_max = 1000;
     if (setrlimit(RLIMIT_NOFILE, &rlp) < 0)
-      { 
+      {
       rlp.rlim_cur = rlp.rlim_max = 256;
       if (setrlimit(RLIMIT_NOFILE, &rlp) < 0)
         log_write(0, LOG_MAIN|LOG_PANIC, "setrlimit(RLIMIT_NOFILE) failed: %s",
           strerror(errno));
-      } 
+      }
     }
   #endif
 
@@ -4393,11 +4393,11 @@ while (more)
     int rcount = 0;
     int count = argc - recipients_arg;
     uschar **list = argv + recipients_arg;
-    
+
     /* These options cannot be changed dynamically for non-SMTP messages */
-    
+
     active_local_sender_retain = local_sender_retain;
-    active_local_from_check = local_from_check;   
+    active_local_from_check = local_from_check;
 
     /* Save before any rewriting */
 
@@ -4602,11 +4602,16 @@ while (more)
   /* Else do the delivery unless the ACL or local_scan() called for queue only
   or froze the message. Always deliver in a separate process. A fork failure is
   not a disaster, as the delivery will eventually happen on a subsequent queue
-  run. */
+  run. The search cache must be tidied before the fork, as the parent will
+  do it before exiting. The child will trigger a lookup failure and
+  thereby defer the delivery if it tries to use (for example) a cached ldap
+  connection that the parent has called unbind on. */
 
   else if (!queue_only_policy && !deliver_freeze)
     {
     pid_t pid;
+    search_tidyup();
+
     if ((pid = fork()) == 0)
       {
       int rc;
