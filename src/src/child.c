@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/child.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/child.c,v 1.2 2004/10/15 13:21:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -247,7 +247,9 @@ them to the caller. The standard error is cloned to the output. If there are
 any file descriptors "in the way" in the new process, they are closed. A new
 umask is supplied for the process, and an optional new uid and gid are also
 available. These are used by the queryprogram router to set an unprivileged id.
-The function returns the pid of the new process, or -1 if things go wrong.
+SIGUSR1 is always disabled in the new process, as it is not going to be running
+Exim (the function child_open_exim() is provided for that). This function
+returns the pid of the new process, or -1 if things go wrong.
 
 Arguments:
   argv        the argv for exec in the new process
@@ -261,7 +263,7 @@ Arguments:
                 process is placed
   wd          if not NULL, a path to be handed to chdir() in the new process
   make_leader if TRUE, make the new process a process group leader
-
+  
 Returns:      the pid of the created process or -1 if anything has gone wrong
 */
 
@@ -308,16 +310,11 @@ if (pid == 0)
   close(2);
   dup2(1, 2);
 
-  /* Set the required environment. If changing uid, ensure that
-  SIGUSR1 is ignored, as the process won't have the privilege to
-  write to the process log. */
+  /* Set the required environment. */
 
+  signal(SIGUSR1, SIG_IGN);
   if (newgid != NULL && setgid(*newgid) < 0) goto CHILD_FAILED;
-  if (newuid != NULL)
-    {
-    signal(SIGUSR1, SIG_IGN);
-    if (setuid(*newuid) < 0) goto CHILD_FAILED;
-    }
+  if (newuid != NULL && setuid(*newuid) < 0) goto CHILD_FAILED;
   (void)umask(newumask);
 
   /* Set the working directory if required */
@@ -369,9 +366,9 @@ return (pid_t)(-1);
 *************************************************/
 
 /* This function is a wrapper for child_open_uid() that doesn't have the uid,
-gid, and working directory changing arguments. It is provided so as to have a
-clean interface for use from local_scan(), but also saves writing NULL
-arguments in other calls.
+gid and working directory changing arguments. The function is provided so as to
+have a clean interface for use from local_scan(), but also saves writing NULL
+arguments several calls that would otherwise use child_open_uid().
 
 Arguments:
   argv        the argv for exec in the new process
