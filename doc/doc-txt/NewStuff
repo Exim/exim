@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.32 2005/04/04 10:33:49 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.33 2005/04/05 13:58:34 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -99,6 +99,36 @@ PH/03 There is a new value for RADIUS_LIB_TYPE that can be set in
 PH/04 There is a new option called acl_not_smtp_mime that allows you to scan
       MIME parts in non-SMTP messages. It operates in exactly the same way as
       acl_smtp_mime
+
+PH/05 It is now possible to redefine a macro within the configuration file.
+      The macro must have been previously defined within the configuration (or
+      an included file). A definition on the command line using the -D option
+      causes all definitions and redefinitions within the file to be ignored.
+      In other words, -D overrides any values that are set in the file.
+      Redefinition is specified by using '==' instead of '='. For example:
+
+        MAC1 =  initial value
+        ...
+        MAC1 == updated value
+
+      Redefinition does not alter the order in which the macros are applied to
+      the subsequent lines of the configuration file. It is still the same
+      order in which the macros were originally defined. All that changes is
+      the macro's value. Redefinition makes it possible to accumulate values.
+      For example:
+
+        MAC1 =  initial value
+        ...
+        MAC1 == MAC1 and something added
+
+      This can be helpful in situations where the configuration file is built
+      from a number of other files.
+
+PH/06 Macros may now be defined or redefined between router, transport,
+      authenticator, or ACL definitions, as well as in the main part of the
+      configuration. They may not, however, be changed within an individual
+      driver or ACL, or in the local_scan, retry, or rewrite sections of the
+      configuration.
 
 
 Version 4.50

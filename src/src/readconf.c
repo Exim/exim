@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.6 2005/04/04 10:33:49 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.7 2005/04/05 13:58:35 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -430,6 +430,122 @@ for (t = transports; t != NULL; t = t->next)
   }
 
 return US"";
+}
+
+
+
+
+/*************************************************
+*       Deal with an assignment to a macro       *
+*************************************************/
+
+/* This function is called when a line that starts with an upper case letter is
+encountered. The argument "line" should contain a complete logical line, and
+start with the first letter of the macro name. The macro name and the
+replacement text are extracted and stored. Redefinition of existing,
+non-command line, macros is permitted using '==' instead of '='.
+
+Arguments:
+  s            points to the start of the logical line
+
+Returns:       nothing
+*/
+
+static void
+read_macro_assignment(uschar *s)
+{
+uschar name[64];
+int namelen = 0;
+BOOL redef = FALSE;
+macro_item *m;
+macro_item *mlast = NULL;
+
+while (isalnum(*s) || *s == '_')
+  {
+  if (namelen >= sizeof(name) - 1)
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+      "macro name too long (maximum is %d characters)", sizeof(name) - 1);
+  name[namelen++] = *s++;
+  }
+name[namelen] = 0;
+
+while (isspace(*s)) s++;
+if (*s++ != '=')
+  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "malformed macro definition");
+
+if (*s == '=')
+  {
+  redef = TRUE;
+  s++;
+  }
+while (isspace(*s)) s++;
+
+/* If an existing macro of the same name was defined on the command line, we
+just skip this definition. It's an error to attempt to redefine a macro without
+redef set to TRUE, or to redefine a macro when it hasn't been defined earlier.
+It is also an error to define a macro whose name begins with the name of a
+previously defined macro. Note: it is documented that the other way round
+works. */
+
+for (m = macros; m != NULL; m = m->next)
+  {
+  int len = Ustrlen(m->name);
+
+  if (Ustrcmp(m->name, name) == 0)
+    {
+    if (!m->command_line && !redef)
+      log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "macro \"%s\" is already "
+       "defined (use \"==\" if you want to redefine it", name);
+    break;
+    }
+
+  if (len < namelen && Ustrstr(name, m->name) != NULL)
+    log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "\"%s\" cannot be defined as "
+      "a macro because previously defined macro \"%s\" is a substring",
+      name, m->name);
+
+  /* We cannot have this test, because it is documented that a substring
+  macro is permitted (there is even an example).
+  *
+  * if (len > namelen && Ustrstr(m->name, name) != NULL)
+  *   log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "\"%s\" cannot be defined as "
+  *     "a macro because it is a substring of previously defined macro \"%s\"",
+  *     name, m->name);
+  */
+
+  mlast = m;
+  }
+
+/* Check for an overriding command-line definition. */
+
+if (m != NULL && m->command_line) return;
+
+/* Redefinition must refer to an existing macro. */
+
+if (redef)
+  {
+  if (m == NULL)
+    log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "can't redefine an undefined macro "
+      "\"%s\"", name);
+  }
+
+/* We have a new definition. The macro_item structure includes a final vector
+called "name" which is one byte long. Thus, adding "namelen" gives us enough
+room to store the "name" string. */
+
+else
+  {
+  m = store_get(sizeof(macro_item) + namelen);
+  if (macros == NULL) macros = m; else mlast->next = m;
+  Ustrncpy(m->name, name, namelen);
+  m->name[namelen] = 0;
+  m->next = NULL;
+  m->command_line = FALSE;
+  }
+
+/* Set the value of the new or redefined macro */
+
+m->replacement = string_copy(s);
 }
 
 
@@ -2631,65 +2747,7 @@ a macro definition. */
 
 while ((s = get_config_line()) != NULL)
   {
-  if (isupper(s[0]))
-    {
-    macro_item *m;
-    macro_item *mlast = NULL;
-    uschar name[64];
-    int namelen = 0;
-
-    while (isalnum(*s) || *s == '_')
-      {
-      if (namelen >= sizeof(name) - 1)
-        log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-          "macro name too long (maximum is %d characters)", sizeof(name) - 1);
-      name[namelen++] = *s++;
-      }
-    name[namelen] = 0;
-    while (isspace(*s)) s++;
-    if (*s++ != '=') log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-      "malformed macro definition");
-    while (isspace(*s)) s++;
-
-    /* If an existing macro of the same name was defined on the command line,
-    we just skip this definition. Otherwise it's an error to attempt to
-    redefine a macro. It is also an error to define a macro whose name begins
-    with the name of a previously-defined macro. */
-
-    for (m = macros; m != NULL; m = m->next)
-      {
-      int len = Ustrlen(m->name);
-
-      if (Ustrcmp(m->name, name) == 0)
-        {
-        if (m->command_line) break;
-        log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "macro \"%s\" is already "
-          "defined", name);
-        }
-
-      if (len < namelen && Ustrstr(name, m->name) != NULL)
-        log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "\"%s\" cannot be defined as "
-          "a macro because previously defined macro \"%s\" is a substring",
-          name, m->name);
-
-      mlast = m;
-      }
-    if (m != NULL) continue;   /* Found an overriding command-line definition */
-
-    m = store_get(sizeof(macro_item) + namelen);
-    m->next = NULL;
-    m->command_line = FALSE;
-    if (mlast == NULL) macros = m; else mlast->next = m;
-
-    /* This use of strcpy() is OK because we have obtained a block of store
-    whose size is based on the length of "name". The definition of the
-    macro_item structure includes a final vector called "name" which is one
-    byte long. Thus, adding "namelen" gives us enough room to store the "name"
-    string. */
-
-    Ustrcpy(m->name, name);
-    m->replacement = string_copy(s);
-    }
+  if (isupper(s[0])) read_macro_assignment(s);
 
   else if (Ustrncmp(s, "domainlist", 10) == 0)
     read_named_list(&domainlist_anchor, &domainlist_count,
@@ -3071,16 +3129,33 @@ driver_instance **p = anchor;
 driver_instance *d = NULL;
 uschar *buffer;
 
-/* Now process the configuration lines */
-
 while ((buffer = get_config_line()) != NULL)
   {
   uschar name[64];
+  uschar *s;
 
-  /* Read the first name on the line and test for the start of a new driver.
-  If this isn't the start of a new driver, the line will be re-read. */
+  /* Read the first name on the line and test for the start of a new driver. A
+  macro definition indicates the end of the previous driver. If this isn't the
+  start of a new driver, the line will be re-read. */
 
-  uschar *s = readconf_readname(name, sizeof(name), buffer);
+  s = readconf_readname(name, sizeof(name), buffer);
+
+  /* Handle macro definition, first finishing off the initialization of the
+  previous driver, if any. */
+
+  if (isupper(*name) && *s == '=')
+    {
+    if (d != NULL)
+      {
+      if (d->driver_name == NULL)
+        log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+          "no driver defined for %s \"%s\"", class, d->name);
+      (d->info->init)(d);
+      d = NULL;
+      }
+    read_macro_assignment(buffer);
+    continue;
+    }
 
   /* If the line starts with a name terminated by a colon, we are at the
   start of the definition of a new driver. The rest of the line must be
@@ -3128,7 +3203,8 @@ while ((buffer = get_config_line()) != NULL)
     continue;
     }
 
-  /* Give an error if we have not set up a current driver yet. */
+  /* Not the start of a new driver. Give an error if we have not set up a
+  current driver yet. */
 
   if (d == NULL) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
     "%s name missing", class);
@@ -3582,7 +3658,8 @@ if (skip)
   return;
   }
 
-/* Read each ACL and add it into the tree */
+/* Read each ACL and add it into the tree. Macro (re)definitions are allowed
+between ACLs. */
 
 acl_line = get_config_line();
 
@@ -3593,8 +3670,15 @@ while(acl_line != NULL)
   uschar *error;
 
   p = readconf_readname(name, sizeof(name), acl_line);
-  if (*p != ':')
-    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "missing ACL name");
+  if (isupper(*name) && *p == '=')
+    {
+    read_macro_assignment(acl_line);
+    acl_line = get_config_line();
+    continue;
+    }
+
+  if (*p != ':' || name[0] == 0)
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "missing or malformed ACL name");
 
   node = store_get(sizeof(tree_node) + Ustrlen(name));
   Ustrcpy(node->name, name);

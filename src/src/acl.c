@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.26 2005/03/29 10:56:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.27 2005/04/05 13:58:35 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -589,18 +589,11 @@ while ((s = (*func)()) != NULL)
     s++;
     }
 
-  /* Read the name of a verb or a condition, or the start of a new ACL */
+  /* Read the name of a verb or a condition, or the start of a new ACL, which
+  can be started by a name, or by a macro definition. */
 
   s = readconf_readname(name, sizeof(name), s);
-  if (*s == ':')
-    {
-    if (negated || name[0] == 0)
-      {
-      *error = string_sprintf("malformed ACL name in \"%s\"", saveline);
-      return NULL;
-      }
-    break;
-    }
+  if (*s == ':' || isupper(name[0] && *s == '=')) return yield;
 
   /* If a verb is unrecognized, it may be another condition or modifier that
   continues the previous verb. */

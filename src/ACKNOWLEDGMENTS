@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.18 2005/03/29 14:53:09 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.19 2005/04/05 13:58:35 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  29 March 2005
+Last updated:  05 April 2005
 
 
 THE OLD LIST
@@ -41,6 +41,7 @@ Yann Golanski             Numerical hash function
 Jason Gunthorpe           IPv6 support (Linux)
 Michael Haardt            LDAP support enhancement
 Steve Haslam              First code for TLS
+Kjetil Torgrim Homme      Suggested patch for macro extensions
 John Horne                Proof-reading documentation (repeatedly)
 Pierre Humblet            Cygwin support
 Paul Kelly                MySQL interface

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.107 2005/04/04 10:33:49 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.108 2005/04/05 13:58:34 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -118,6 +118,9 @@ PH/20 When checking for unexpected SMTP input at connect time (before writing
       "input=".
 
 PH/21 Added acl_not_smtp_mime to allow for MIME scanning for non-SMTP messages.
+
+PH/22 Added support for macro redefinition, and (re)definition in between
+      driver and ACL definitions.
 
 
 A note about Exim versions 4.44 and 4.50
