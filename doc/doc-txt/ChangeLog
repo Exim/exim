@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.31 2004/11/17 16:12:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.32 2004/11/18 10:35:18 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -133,6 +133,10 @@ Exim version 4.44
     condition is true, the result is "true". As before, when the second string
     is omitted, a false condition yields an empty string. This makes it less
     cumbersome to write custom ACL and router conditions.
+
+34. Failure to deliver a bounce message always caused it to be frozen, even if
+    there was an errors_to setting on the router. The errors_to setting is now
+    respected.
 
 
 Exim version 4.43

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.2 2004/11/18 10:35:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1046,12 +1046,15 @@ else
     setflag(addr, af_ignore_error);
 
   /* Freeze the message if requested, or if this is a bounce message (or other
-  message with null sender). However, don't freeze if errors are being ignored.
-  The actual code to ignore occurs later, instead of sending a message. Logging
-  of freezing occurs later, just before writing the -H file. */
+  message with null sender) and this address does not have its own errors
+  address. However, don't freeze if errors are being ignored. The actual code
+  to ignore occurs later, instead of sending a message. Logging of freezing
+  occurs later, just before writing the -H file. */
 
   if (!testflag(addr, af_ignore_error) &&
-      (addr->special_action == SPECIAL_FREEZE || sender_address[0] == 0))
+      (addr->special_action == SPECIAL_FREEZE ||
+        (sender_address[0] == 0 && addr->p.errors_address == NULL)
+      ))
     {
     frozen_info = (addr->special_action == SPECIAL_FREEZE)? US"" :
       (sender_local && !local_error_message)?
