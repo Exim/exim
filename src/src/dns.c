@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.2 2004/11/19 09:45:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -258,14 +258,16 @@ dns_text_type(int t)
 {
 switch(t)
   {
-  case T_A:    return US"A";
-  case T_MX:   return US"MX";
-  case T_AAAA: return US"AAAA";
-  case T_A6:   return US"A6";
-  case T_TXT:  return US"TXT";
-  case T_PTR:  return US"PTR";
-  case T_SRV:  return US"SRV";
-  default:     return US"?";
+  case T_A:     return US"A";
+  case T_MX:    return US"MX";
+  case T_AAAA:  return US"AAAA";
+  case T_A6:    return US"A6";
+  case T_TXT:   return US"TXT";
+  case T_PTR:   return US"PTR";
+  case T_SRV:   return US"SRV";
+  case T_NS:    return US"NS";
+  case T_CNAME: return US"CNAME";  
+  default:      return US"?";
   }
 }
 
@@ -612,6 +614,60 @@ for (i = 0; i < 10; i++)
 right... */
 
 log_write(0, LOG_MAIN, "CNAME loop for %s encountered", orig_name);
+return DNS_FAIL;
+}
+
+
+
+
+
+
+/************************************************
+*    Do a DNS lookup and handle virtual types   *
+************************************************/
+
+/* This function handles some invented "lookup types" that synthesize feature 
+not available in the basic types. The special types all have negative values. 
+Positive type values are passed straight on to dns_lookup().
+
+Arguments:
+  dnsa                  pointer to dns_answer structure
+  name                  domain name to look up
+  type                  DNS record type (T_A, T_MX, etc or a "special")
+  fully_qualified_name  if not NULL, return the returned name here if its
+                          contents are different (i.e. it must be preset)
+
+Returns:                DNS_SUCCEED   successful lookup
+                        DNS_NOMATCH   name not found
+                        DNS_NODATA    no data found
+                        DNS_AGAIN     soft failure, try again later
+                        DNS_FAIL      DNS failure
+*/
+
+int
+dns_special_lookup(dns_answer *dnsa, uschar *name, int type, 
+  uschar **fully_qualified_name)
+{
+if (type >= 0) return dns_lookup(dnsa, name, type, fully_qualified_name);
+
+/* Find nameservers for the domain or the nearest enclosing zone, excluding the 
+root servers. */
+
+if (type == T_ZNS)
+  {
+  uschar *d = name;
+  while (d != 0)
+    {
+    int rc = dns_lookup(dnsa, d, T_NS, fully_qualified_name);
+    if (rc != DNS_NOMATCH && rc != DNS_NODATA) return rc;
+    while (*d != 0 && *d != '.') d++;
+    if (*d++ == 0) break; 
+    }
+  return DNS_NOMATCH;     
+  } 
+
+/* Control should never reach here */
+
 return DNS_FAIL;
 }
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.4 2004/11/18 11:17:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.5 2004/11/19 09:45:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -74,6 +74,7 @@ extern void    dns_build_reverse(uschar *, uschar *);
 extern void    dns_init(BOOL, BOOL);
 extern int     dns_basic_lookup(dns_answer *, uschar *, int);
 extern int     dns_lookup(dns_answer *, uschar *, int, uschar **);
+extern int     dns_special_lookup(dns_answer *, uschar *, int, uschar **);
 extern dns_record *dns_next_rr(dns_answer *, dns_scan *, int);
 extern uschar *dns_text_type(int);
 

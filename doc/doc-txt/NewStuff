@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.11 2004/11/17 16:12:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.12 2004/11/19 09:45:54 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -107,6 +107,27 @@ Version 4.44
       condition = ${if eq {$acl_m4}{1}}
 
     Previously this was a syntax error.
+
+12. There is now a new "record type" that can be specified in dnsdb lookups. It
+    is "zns" (for "zone NS"). It performs a lookup for NS records on the given
+    domain, but if none are found, it removes the first component of the domain
+    name, and tries again. This process continues until NS records are found
+    or there are no more components left (or there's a DNS error). In other
+    words, it may return the name servers for a top-level domain, but it never
+    returns the root name servers. If there are no NS records for the top-level
+    domain, the lookup fails.
+
+    For example, ${lookup dnsdb{zns=xxx.quercite.com}} returns the name
+    servers for quercite.com, whereas ${lookup dnsdb{zns=xxx.edu}} returns
+    the name servers for edu, assuming in each case that there are no NS
+    records for the full domain name.
+
+    You should be careful about how you use this lookup because, unless the
+    top-level domain does not exist, the lookup will always return some host
+    names. The sort of use to which this might be put is for seeing if the name
+    servers for a given domain are on a blacklist. You can probably assume that
+    the name servers for the high-level domains such as .com or .co.uk are not
+    going to be on such a list.
 
 
 Version 4.43

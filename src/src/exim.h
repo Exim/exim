@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.2 2004/11/19 09:45:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -277,6 +277,11 @@ header files. I don't suppose they have T_SRV either. */
 #ifndef T_SRV
 #define T_SRV 33
 #endif
+
+/* We use the private type T_ZNS for retrieving the nameservers for the
+enclosing zone of a domain. */
+
+#define T_ZNS (-1)
 
 /* The resolv.h header defines __P(x) on some Solaris 2.5.1 systems (without
 checking that it is already defined, in fact). This conflicts with other

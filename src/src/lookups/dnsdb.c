@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.1 2004/10/07 13:10:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.2 2004/11/19 09:45:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -35,7 +35,9 @@ static char *type_names[] = {
   "ns",
   "ptr",
   "srv",
-  "txt" };
+  "txt",
+  "zns" 
+};
 
 static int type_values[] = {
   T_A,
@@ -50,7 +52,9 @@ static int type_values[] = {
   T_NS,
   T_PTR,
   T_SRV,
-  T_TXT };
+  T_TXT,
+  T_ZNS      /* Private type for "zone nameservers" */
+};
 
 
 /*************************************************
@@ -139,11 +143,15 @@ DEBUG(D_lookup) debug_printf("dnsdb key: %s\n", keystring);
 in this run. Then do the lookup and sort out the result. */
 
 dns_init(FALSE, FALSE);
-rc = dns_lookup(&dnsa, keystring, type, NULL);
+rc = dns_special_lookup(&dnsa, keystring, type, NULL);
 
 if (rc == DNS_NOMATCH || rc == DNS_NODATA) return FAIL;
 if (rc != DNS_SUCCEED) return DEFER;
 
+/* If the lookup was a pseudo-type, change it to the correct type for searching 
+the returned records; then search for them. */
+
+if (type == T_ZNS) type = T_NS;
 for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
      rr != NULL;
      rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
