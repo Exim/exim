@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.20 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.21 2005/03/08 16:57:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -299,7 +299,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY),
-    
+
   (1<<ACL_WHERE_AUTH)|
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
@@ -307,7 +307,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY),
-  
+
   (1<<ACL_WHERE_AUTH)|
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
@@ -315,7 +315,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY),
-    
+
   (1<<ACL_WHERE_AUTH)|
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
@@ -323,7 +323,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY),
-    
+
   (1<<ACL_WHERE_AUTH)|
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
@@ -331,7 +331,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY),
-    
+
   (1<<ACL_WHERE_AUTH)|
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dk.c,v 1.1 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/dk.c,v 1.2 2005/03/08 16:57:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -34,7 +34,7 @@ int dkbuff[6] = {256,256,256,256,256,256};
 int dk_receive_getc(void) {
   int i;
   int c = receive_getc();
-  
+
   if (dk_context != NULL) {
     /* Send oldest byte */
     if ((dkbuff[0] < 256) && (dk_internal_status == DK_STAT_OK)) {
@@ -55,7 +55,7 @@ int dk_receive_getc(void) {
       dkbuff[3] = 256;
       dkbuff[4] = 256;
       dkbuff[5] = 256;
-    } 
+    }
     if ( (dkbuff[2] == '\r') &&
          (dkbuff[3] == '\n') &&
          (dkbuff[4] == '.') &&
@@ -80,15 +80,15 @@ int dk_receive_ungetc(int c) {
 }
 
 
-void dk_exim_verify_init(void) { 
+void dk_exim_verify_init(void) {
   int old_pool = store_pool;
   store_pool = POOL_PERM;
-  
+
   /* Reset DK state in any case. */
   dk_context = NULL;
   dk_lib = NULL;
   dk_verify_block = NULL;
-  
+
   /* Set up DK context if DK was requested and input is SMTP. */
   if (smtp_input && !smtp_batched_input && dk_do_verify) {
     /* initialize library */
@@ -127,9 +127,9 @@ void dk_exim_verify_finish(void) {
   /* Bail out if context could not be set up earlier. */
   if (dk_context == NULL)
     return;
-  
+
   store_pool = POOL_PERM;
-  
+
   /* Send remaining bytes from input which are still in the buffer. */
   for (i=0;i<6;i++)
     if (dkbuff[i] < 256)
@@ -137,7 +137,7 @@ void dk_exim_verify_finish(void) {
 
   /* Flag end-of-message. */
   dk_internal_status = dk_end(dk_context, NULL);
-  
+
   /* Grab address/domain information. */
   p = dk_address(dk_context);
   if (p != NULL) {
@@ -170,7 +170,7 @@ void dk_exim_verify_finish(void) {
   if (dk_flags & DK_FLAG_SET) {
     if (dk_flags & DK_FLAG_TESTING)
       dk_verify_block->testing = TRUE;
-    if (dk_flags & DK_FLAG_SIGNSALL) 
+    if (dk_flags & DK_FLAG_SIGNSALL)
       dk_verify_block->signsall = TRUE;
   }
 
@@ -212,14 +212,14 @@ void dk_exim_verify_finish(void) {
     /* This is missing DK_EXIM_RESULT_NON_PARTICIPANT. The lib does not
        report such a status. */
     }
-  
+
   /* Set up human readable result string. */
   dk_verify_block->result_string = string_copy((uschar *)DK_STAT_to_string(dk_internal_status));
-  
+
   /* All done, reset dk_context. */
   dk_free(dk_context);
   dk_context = NULL;
-  
+
   store_pool = old_pool;
 }
 
@@ -238,7 +238,7 @@ uschar *dk_exim_sign(int dk_fd,
   int sread;
   int old_pool = store_pool;
   store_pool = POOL_PERM;
-  
+
   dk_lib = dk_init(&dk_internal_status);
   if (dk_internal_status != DK_STAT_OK) {
     debug_printf("DK: %s\n", DK_STAT_to_string(dk_internal_status));
@@ -250,17 +250,17 @@ uschar *dk_exim_sign(int dk_fd,
      we must do this BEFORE knowing which domain we sign for. */
   if ((dk_canon != NULL) && (Ustrcmp(dk_canon, "nofws") == 0)) dk_canon_int = DK_CANON_NOFWS;
   else dk_canon = "simple";
-  
+
   /* Initialize signing context. */
   dk_context = dk_sign(dk_lib, &dk_internal_status, dk_canon_int);
   if (dk_internal_status != DK_STAT_OK) {
-    debug_printf("DK: %s\n", DK_STAT_to_string(dk_internal_status));  
+    debug_printf("DK: %s\n", DK_STAT_to_string(dk_internal_status));
     dk_context = NULL;
     goto CLEANUP;
   }
-  
+
   while((sread = read(dk_fd,&c,1)) > 0) {
-    
+
     if ((c == '.') && seen_lfdot) {
       /* escaped dot, write "\n.", continue */
       dk_message(dk_context, "\n.", 2);
@@ -268,7 +268,7 @@ uschar *dk_exim_sign(int dk_fd,
       seen_lfdot = 0;
       continue;
     }
-    
+
     if (seen_lfdot) {
       /* EOM, write "\n" and break */
       dk_message(dk_context, "\n", 1);
@@ -279,22 +279,22 @@ uschar *dk_exim_sign(int dk_fd,
       seen_lfdot = 1;
       continue;
     }
-    
+
     if (seen_lf) {
       /* normal lf, just send it */
       dk_message(dk_context, "\n", 1);
       seen_lf = 0;
     }
-    
+
     if (c == '\n') {
       seen_lf = 1;
       continue;
     }
-    
+
     /* write the char */
     dk_message(dk_context, &c, 1);
   }
-  
+
   /* Handle failed read above. */
   if (sread == -1) {
     debug_printf("DK: Error reading -K file.\n");
@@ -302,12 +302,12 @@ uschar *dk_exim_sign(int dk_fd,
     rc = NULL;
     goto CLEANUP;
   }
-  
+
   /* Flag end-of-message. */
   dk_internal_status = dk_end(dk_context, NULL);
   /* TODO: check status */
-  
-  
+
+
   /* Get domain to use, unless overridden. */
   if (dk_domain == NULL) {
     dk_domain = dk_address(dk_context);
@@ -321,12 +321,12 @@ uschar *dk_exim_sign(int dk_fd,
           uschar *p;
           dk_domain++;
           p = dk_domain;
-          while (*p != 0) { *p = tolower(*p); p++; } 
+          while (*p != 0) { *p = tolower(*p); p++; }
         }
       break;
     }
     if (dk_domain == NULL) {
-      debug_printf("DK: Could not determine domain to use for signing from message headers.\n");  
+      debug_printf("DK: Could not determine domain to use for signing from message headers.\n");
       /* In this case, we return "OK" by sending up an empty string as the
          DomainKey-Signature header. If there is no domain to sign for, we
          can send the message anyway since the recipient has no policy to
@@ -342,10 +342,10 @@ uschar *dk_exim_sign(int dk_fd,
       debug_printf("DK: Error while expanding dk_domain option.\n");
       rc = NULL;
       goto CLEANUP;
-    }  
+    }
   }
-  
-  /* Set up $dk_domain expansion variable. */ 
+
+  /* Set up $dk_domain expansion variable. */
   dk_signing_domain = dk_domain;
 
   /* Get selector to use. */
@@ -356,10 +356,10 @@ uschar *dk_exim_sign(int dk_fd,
     rc = NULL;
     goto CLEANUP;
   }
-  
+
   /* Set up $dk_selector expansion variable. */
   dk_signing_selector = dk_selector;
-  
+
   /* Get private key to use. */
   dk_private_key = expand_string(dk_private_key);
   if (dk_private_key == NULL) {
@@ -368,7 +368,7 @@ uschar *dk_exim_sign(int dk_fd,
     rc = NULL;
     goto CLEANUP;
   }
-  
+
   if ( (Ustrlen(dk_private_key) == 0) ||
        (Ustrcmp(dk_private_key,"0") == 0) ||
        (Ustrcmp(dk_private_key,"false") == 0) ) {
@@ -376,7 +376,7 @@ uschar *dk_exim_sign(int dk_fd,
     rc = "";
     goto CLEANUP;
   }
-      
+
   if (dk_private_key[0] == '/') {
     int privkey_fd = 0;
     /* Looks like a filename, load the private key. */
@@ -386,23 +386,23 @@ uschar *dk_exim_sign(int dk_fd,
     close(privkey_fd);
     dk_private_key = big_buffer;
   }
-  
+
   /* Get the signature. */
   dk_internal_status = dk_getsig(dk_context, dk_private_key, sig, 8192);
 
   /* Check for unuseable key */
   if (dk_internal_status != DK_STAT_OK) {
-    debug_printf("DK: %s\n", DK_STAT_to_string(dk_internal_status));  
+    debug_printf("DK: %s\n", DK_STAT_to_string(dk_internal_status));
     rc = NULL;
     goto CLEANUP;
   }
-  
+
   rc = store_get(1024);
   /* Build DomainKey-Signature header to return. */
   snprintf(rc, 1024, "DomainKey-Signature: a=rsa-sha1; q=dns; c=%s;\r\n"
-                     "\ts=%s; d=%s;\r\n"                                
+                     "\ts=%s; d=%s;\r\n"
                      "\tb=%s;\r\n", dk_canon, dk_selector, dk_domain, sig);
-                     
+
   log_write(0, LOG_MAIN, "DK: message signed using a=rsa-sha1; q=dns; c=%s; s=%s; d=%s;", dk_canon, dk_selector, dk_domain);
 
   CLEANUP:

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.5 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.6 2005/03/08 16:57:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -920,7 +920,7 @@ return (len = chunk_ptr - deliver_out_buffer) <= 0 ||
    signed message down the original fd (or TLS fd).
 
 Arguments:     as for internal_transport_write_message() above, with additional
-               arguments: 
+               arguments:
                uschar *dk_private_key         The private key to use (filename or plain data)
                uschar *dk_domain              Override domain (normally NULL)
                uschar *dk_selector            The selector to use.
@@ -948,7 +948,7 @@ dk_transport_write_message(address_item *addr, int fd, int options,
   int sread = 0;
   int wwritten = 0;
   uschar *dk_signature = NULL;
-  
+
   snprintf(CS dk_spool_name, 256, "%s/input/%s/%s-K",
           spool_directory, message_subdir, message_id);
   dk_fd = Uopen(dk_spool_name, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE);
@@ -959,13 +959,13 @@ dk_transport_write_message(address_item *addr, int fd, int options,
     save_errno = errno;
     goto CLEANUP;
     }
-  
+
   /* Call original function */
   rc = transport_write_message(addr, dk_fd, options,
     size_limit, add_headers, remove_headers,
     check_string, escape_string, rewrite_rules,
     rewrite_existflags);
-  
+
   /* Save error state. We must clean up before returning. */
   if (!rc)
     {
@@ -980,7 +980,7 @@ dk_transport_write_message(address_item *addr, int fd, int options,
                               dk_domain,
                               dk_selector,
                               dk_canon);
-    
+
   if (dk_signature != NULL)
     {
     /* Send the signature first */
@@ -1017,9 +1017,9 @@ dk_transport_write_message(address_item *addr, int fd, int options,
       }
     }
 
-  /* Rewind file and send it down the original fd. */ 
+  /* Rewind file and send it down the original fd. */
   lseek(dk_fd, 0, SEEK_SET);
-  
+
   while((sread = read(dk_fd,sbuf,2048)) > 0)
     {
     char *p = sbuf;
@@ -1044,7 +1044,7 @@ dk_transport_write_message(address_item *addr, int fd, int options,
       goto DK_WRITE;
       }
     }
-    
+
   if (sread == -1)
     {
     save_errno = errno;

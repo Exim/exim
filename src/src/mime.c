@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.5 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.6 2005/03/08 16:57:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -116,7 +116,7 @@ uschar *mime_decode_qp_char(uschar *qp_p,int *c) {
 
 
 uschar *mime_parse_line(uschar *buffer, uschar *data, uschar *encoding, int *num_decoded) {
- 
+
   if (encoding == NULL) {
     /* no encoding type at all */
     NO_DECODING:

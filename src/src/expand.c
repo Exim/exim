@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.14 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.15 2005/03/08 16:57:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -288,7 +288,7 @@ enum {
   vtype_pinodes         /* partition inodes; value is T/F for spool/log */
 #ifdef EXPERIMENTAL_DOMAINKEYS
  ,vtype_dk_verify       /* Serve request out of DomainKeys verification structure */
-#endif  
+#endif
   };
 
 /* This table must be kept in alphabetical order. */
@@ -1266,7 +1266,7 @@ while (last > first)
       s = dk_verify_block->domain;
     if (Ustrcmp(var_table[middle].name, "dk_sender_local_part") == 0)
       s = dk_verify_block->local_part;
-    
+
     if (Ustrcmp(var_table[middle].name, "dk_sender_source") == 0)
       switch(dk_verify_block->address_source) {
         case DK_EXIM_ADDRESS_NONE: s = "0"; break;
@@ -1285,16 +1285,16 @@ while (last > first)
         case DK_EXIM_RESULT_GOOD: s = "good"; break;
         case DK_EXIM_RESULT_BAD: s = "bad"; break;
       }
-    
+
     if (Ustrcmp(var_table[middle].name, "dk_signsall") == 0)
       s = (dk_verify_block->signsall)? "1" : "0";
-    
+
     if (Ustrcmp(var_table[middle].name, "dk_testing") == 0)
       s = (dk_verify_block->testing)? "1" : "0";
-      
+
     if (Ustrcmp(var_table[middle].name, "dk_is_signed") == 0)
       s = (dk_verify_block->is_signed)? "1" : "0";
-    
+
     return (s == NULL)? US"" : s;
 #endif
 
