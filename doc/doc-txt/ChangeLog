@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.86 2005/03/08 11:38:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.87 2005/03/08 15:35:46 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -6,6 +6,9 @@ Change log file for Exim from version 4.21
 
 Exim version 4.51
 -----------------
+
+TK/01. Added Yahoo DomainKeys support via libdomainkeys. See
+       doc/experimental-spec.txt for details. (http://domainkeys.sf.net)
 
 PH/01. Installed a patch from the Sieve maintainer that allows -bf to be used
        to test Sieve filters that use "vacation".
