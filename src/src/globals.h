@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.6 2004/11/10 10:29:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.7 2004/11/25 13:54:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -275,7 +275,9 @@ extern uschar *extra_local_interfaces; /* Local, non-listen interfaces */
 extern int     filter_n[FILTER_VARIABLE_COUNT]; /* filter variables */
 extern BOOL    filter_running;         /* TRUE while running a filter */
 extern int     filter_sn[FILTER_VARIABLE_COUNT]; /* variables set by system filter */
-extern uschar *filter_test;            /* Run as a filter tester on this file */
+extern int     filter_test;            /* Filter test type */
+extern uschar *filter_test_sfile;      /* System filter test file */
+extern uschar *filter_test_ufile;      /* User filter test file */
 extern uschar *filter_thisaddress;     /* For address looping */
 extern int     finduser_retries;       /* Retry count for getpwnam() */
 extern uid_t   fixed_never_users[];    /* Can't be overridden */

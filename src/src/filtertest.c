@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filtertest.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filtertest.c,v 1.2 2004/11/25 13:54:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -15,118 +15,29 @@
 
 
 /*************************************************
-*            Test a mail filter                  *
+*    Read message and set body/size variables    *
 *************************************************/
 
-/* This is called when exim is run with the -bf option. The name
-of the filter file is in filter_test, and we are running under an
-unprivileged uid/gid. A test message's headers have been read into
-store, and the body of the message is still accessible on the
-standard input.
-
-Argument:
-  fd          the standard input fd, containing the message body
-  is_system   TRUE if testing is to be as a system filter
-  dot_ended   TRUE if message already terminated by '.'
-
-Returns:      TRUE if no errors
-*/
-
-BOOL
-filter_runtest(int fd, BOOL is_system, BOOL dot_ended)
-{
-int rc, body_len, body_end_len, filter_type, header_size;
-register int ch;
-BOOL yield;
-struct stat statbuf;
-address_item *generated = NULL;
-uschar *error, *filebuf, *s;
-
-/* Read the filter file into store as will be done by the router in a real
-case. */
-
-if (fstat(fd, &statbuf) != 0)
-  {
-  printf("exim: failed to get size of %s: %s\n", filter_test, strerror(errno));
-  return FALSE;
-  }
-
-filebuf = store_get(statbuf.st_size + 1);
-rc = read(fd, filebuf, statbuf.st_size);
-close(fd);
-
-if (rc != statbuf.st_size)
-  {
-  printf("exim: error while reading %s: %s\n", filter_test, strerror(errno));
-  return FALSE;
-  }
-
-filebuf[statbuf.st_size] = 0;
-
-/* Check the filter type. User filters start with "# Exim filter" or "# Sieve
-filter". If the filter type is not recognized, the file is treated as an
-ordinary .forward file. System filters do not need the "# Exim filter" in order
-to be recognized as Exim filters. */
-
-filter_type = rda_is_filter(filebuf);
-if (is_system && filter_type == FILTER_FORWARD) filter_type = FILTER_EXIM;
-
-printf("Testing %s file \"%s\"\n\n",
-  (filter_type == FILTER_EXIM)? "Exim filter" :
-  (filter_type == FILTER_SIEVE)? "Sieve filter" :
-  "forward file",
-  filter_test);
-
-/* Handle a plain .forward file */
-
-if (filter_type == FILTER_FORWARD)
-  {
-  yield = parse_forward_list(filebuf,
-    RDO_REWRITE,
-    &generated,                     /* for generated addresses */
-    &error,                         /* for errors */
-    deliver_domain,                 /* incoming domain for \name */
-    NULL,                           /* no check on includes */
-    NULL);                          /* fail on syntax errors */
-
-  switch(yield)
-    {
-    case FF_FAIL:
-    printf("exim: forward file contains \":fail:\"\n");
-    break;
-
-    case FF_BLACKHOLE:
-    printf("exim: forwardfile contains \":blackhole:\"\n");
-    break;
-
-    case FF_ERROR:
-    printf("exim: error in forward file: %s\n", error);
-    return FALSE;
-    }
-
-  if (generated == NULL)
-    printf("exim: no addresses generated from forward file\n");
-
-  else
-    {
-    printf("exim: forward file generated:\n");
-    while (generated != NULL)
-      {
-      printf("  %s\n", generated->address);
-      generated = generated->next;
-      }
-    }
-
-  return TRUE;
-  }
-
-/* For a filter, we have to read the remainder of the message in order to find
-its size, so we might as well set up the message_body variable at the same time
-(when *really* filtering this is not read unless needed). The reading code is
+/* We have to read the remainder of the message in order to find its size, so
+we can set up the message_body variables at the same time (in normal use, the
+message_body variables are not set up unless needed). The reading code is
 written out here rather than having options in read_message_data, in order to
 keep that function as efficient as possible. Handling message_body_end is
 somewhat more tedious. Pile it all into a circular buffer and sort out at the
-end. */
+end.
+
+Arguments:   
+  dot_ended   TRUE if message already terminated by '.'
+
+Returns:      nothing
+*/
+ 
+static void
+read_message_body(dot_ended)
+{ 
+register int ch;
+int body_len, body_end_len, header_size;
+uschar *s;
 
 message_body = store_malloc(message_body_visible + 1);
 message_body_end = store_malloc(message_body_visible + 1);
@@ -227,13 +138,125 @@ while (body_end_len > 0)
       message_body_end[body_end_len] == 0)
     message_body_end[body_end_len] = ' ';
   }
+}
+
+
+
+/*************************************************
+*            Test a mail filter                  *
+*************************************************/
+
+/* This is called when exim is run with the -bf option. At this point it is
+running under an unprivileged uid/gid. A test message's headers have been read
+into store, and the body of the message is still accessible on the standard
+input if this is the first time this function has been called. It may be called
+twice if both system and user filters are being tested.
+
+Argument:
+  fd          an fd containing the filter file
+  filename    the name of the filter file 
+  is_system   TRUE if testing is to be as a system filter
+  dot_ended   TRUE if message already terminated by '.'
+
+Returns:      TRUE if no errors
+*/
+
+BOOL
+filter_runtest(int fd, uschar *filename, BOOL is_system, BOOL dot_ended)
+{
+int rc, filter_type;
+BOOL yield;
+struct stat statbuf;
+address_item *generated = NULL;
+uschar *error, *filebuf;
+
+/* Read the filter file into store as will be done by the router in a real
+case. */
+
+if (fstat(fd, &statbuf) != 0)
+  {
+  printf("exim: failed to get size of %s: %s\n", filename, strerror(errno));
+  return FALSE;
+  }
+
+filebuf = store_get(statbuf.st_size + 1);
+rc = read(fd, filebuf, statbuf.st_size);
+close(fd);
+
+if (rc != statbuf.st_size)
+  {
+  printf("exim: error while reading %s: %s\n", filename, strerror(errno));
+  return FALSE;
+  }
+
+filebuf[statbuf.st_size] = 0;
+
+/* Check the filter type. User filters start with "# Exim filter" or "# Sieve
+filter". If the filter type is not recognized, the file is treated as an
+ordinary .forward file. System filters do not need the "# Exim filter" in order
+to be recognized as Exim filters. */
+
+filter_type = rda_is_filter(filebuf);
+if (is_system && filter_type == FILTER_FORWARD) filter_type = FILTER_EXIM;
+
+printf("Testing %s file \"%s\"\n\n",
+  (filter_type == FILTER_EXIM)? "Exim filter" :
+  (filter_type == FILTER_SIEVE)? "Sieve filter" :
+  "forward file",
+  filename);
+
+/* Handle a plain .forward file */
+
+if (filter_type == FILTER_FORWARD)
+  {
+  yield = parse_forward_list(filebuf,
+    RDO_REWRITE,
+    &generated,                     /* for generated addresses */
+    &error,                         /* for errors */
+    deliver_domain,                 /* incoming domain for \name */
+    NULL,                           /* no check on includes */
+    NULL);                          /* fail on syntax errors */
+
+  switch(yield)
+    {
+    case FF_FAIL:
+    printf("exim: forward file contains \":fail:\"\n");
+    break;
+
+    case FF_BLACKHOLE:
+    printf("exim: forwardfile contains \":blackhole:\"\n");
+    break;
+
+    case FF_ERROR:
+    printf("exim: error in forward file: %s\n", error);
+    return FALSE;
+    }
+
+  if (generated == NULL)
+    printf("exim: no addresses generated from forward file\n");
+
+  else
+    {
+    printf("exim: forward file generated:\n");
+    while (generated != NULL)
+      {
+      printf("  %s\n", generated->address);
+      generated = generated->next;
+      }
+    }
+
+  return TRUE;
+  }
+
+/* For a filter, set up the message_body variables and the message size if this 
+is the first time this function has been called. */
+
+if (message_body == NULL) read_message_body(dot_ended);
 
 /* Now pass the filter file to the function that interprets it. Because
-filter_test is not NULL, the interpreter will output comments about what
-it is doing, but an error message will have to be output here. No need to
-clean up store. The last argument is 0 because Exim has given up root privilege
-when running a filter test, and in any case, as it is a test, is isn't going to
-try writing any files. */
+filter_test is not FILTER_NONE, the interpreter will output comments about what
+it is doing. No need to clean up store. Indeed, we must not, because we may be
+testing a system filter that is going to be followed by a user filter test. */
 
 if (is_system)
   {

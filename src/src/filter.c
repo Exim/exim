@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filter.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filter.c,v 1.2 2004/11/25 13:54:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1462,7 +1462,7 @@ switch (c->type)
   and filter testing and verification. */
 
   case cond_firsttime:
-  yield = filter_test != NULL || message_id[0] == 0 || deliver_firsttime;
+  yield = filter_test != FTEST_NONE || message_id[0] == 0 || deliver_firsttime;
   break;
 
   /* Only TRUE if a message is actually being processed; FALSE for address
@@ -1503,7 +1503,7 @@ switch (c->type)
 
     if (filter_thisaddress != NULL)
       {
-      if ((filter_test != NULL && debug_selector != 0) ||
+      if ((filter_test != FTEST_NONE && debug_selector != 0) ||
           (debug_selector & D_filter) != 0)
         {
         indent();
@@ -1578,7 +1578,7 @@ switch (c->type)
 
     case cond_matches:
     case cond_MATCHES:
-    if ((filter_test != NULL && debug_selector != 0) ||
+    if ((filter_test != FTEST_NONE && debug_selector != 0) ||
         (debug_selector & D_filter) != 0)
       {
       debug_printf("Match expanded arguments:\n");
@@ -1621,7 +1621,7 @@ switch (c->type)
   break;
   }
 
-if ((filter_test != NULL && debug_selector != 0) ||
+if ((filter_test != FTEST_NONE && debug_selector != 0) ||
     (debug_selector & D_filter) != 0)
   {
   indent();
@@ -1729,7 +1729,7 @@ while (commands != NULL)
       }
 
     filter_n[n[1]] += n[0];
-    if (filter_test != NULL) printf("Add %d to n%d\n", n[0], n[1]);
+    if (filter_test != FTEST_NONE) printf("Add %d to n%d\n", n[0], n[1]);
     break;
 
     /* A deliver command's argument must be a valid address. Its optional
@@ -1777,7 +1777,7 @@ while (commands != NULL)
 
     /* Test case: report what would happen */
 
-    if (filter_test != NULL)
+    if (filter_test != FTEST_NONE)
       {
       indent();
       printf("%seliver message to: %s%s%s%s\n",
@@ -1818,7 +1818,7 @@ while (commands != NULL)
 
     /* Test case: report what would happen */
 
-    if (filter_test != NULL)
+    if (filter_test != FTEST_NONE)
       {
       indent();
       if (mode < 0)
@@ -1855,7 +1855,7 @@ while (commands != NULL)
 
     case pipe_command:
     s = string_copy(commands->args[0].u);
-    if (filter_test != NULL)
+    if (filter_test != FTEST_NONE)
       {
       indent();
       printf("%sipe message to: %s%s\n", (commands->seen)?
@@ -1911,7 +1911,7 @@ while (commands != NULL)
       log_fd = -1;
       }
     log_filename = expargs[0];
-    if (filter_test != NULL)
+    if (filter_test != FTEST_NONE)
       {
       indent();
       printf("%sogfile %s\n", (commands->seen)? "Seen l" : "L", log_filename);
@@ -1921,7 +1921,7 @@ while (commands != NULL)
     case logwrite_command:
     s = expargs[0];
 
-    if (filter_test != NULL)
+    if (filter_test != FTEST_NONE)
       {
       indent();
       printf("%sogwrite \"%s\"\n", (commands->seen)? "Seen l" : "L",
@@ -1983,7 +1983,7 @@ while (commands != NULL)
       int subtype = commands->args[1].i;
       s = expargs[0];
 
-      if (filter_test != NULL)
+      if (filter_test != FTEST_NONE)
         printf("Headers %s \"%s\"\n", (subtype == TRUE)? "add" :
           (subtype == FALSE)? "remove" : "charset", string_printing(s));
 
@@ -2042,7 +2042,7 @@ while (commands != NULL)
     fmsg = string_printing(fmsg);
     *error_pointer = fmsg;
 
-    if (filter_test != NULL)
+    if (filter_test != FTEST_NONE)
       {
       indent();
       printf("%c%s text \"%s\"\n", toupper(ff_name[0]), ff_name+1, fmsg);
@@ -2051,7 +2051,7 @@ while (commands != NULL)
     return ff_ret;
 
     case finish_command:
-    if (filter_test != NULL)
+    if (filter_test != FTEST_NONE)
       {
       indent();
       printf("%sinish\n", (commands->seen)? "Seen f" : "F");
@@ -2091,7 +2091,7 @@ while (commands != NULL)
     case vacation_command:
     if (return_path == NULL || return_path[0] == 0)
       {
-      if (filter_test != NULL)
+      if (filter_test != FTEST_NONE)
         printf("%s command ignored because return_path is empty\n",
           command_list[commands->command]);
       else DEBUG(D_filter) debug_printf("%s command ignored because return_path "
@@ -2180,7 +2180,7 @@ while (commands != NULL)
 
     /* Proceed with mail or vacation command */
 
-    if (filter_test != NULL)
+    if (filter_test != FTEST_NONE)
       {
       uschar *to = commands->args[mailarg_index_to].u;
       indent();
@@ -2278,10 +2278,10 @@ while (commands != NULL)
     break;
 
     case testprint_command:
-    if (filter_test != NULL || (debug_selector & D_filter) != 0)
+    if (filter_test != FTEST_NONE || (debug_selector & D_filter) != 0)
       {
       uschar *s = string_printing(expargs[0]);
-      if (filter_test == NULL)
+      if (filter_test == FTEST_NONE)
         debug_printf("Filter: testprint: %s\n", s);
       else
         printf("Testprint: %s\n", s);
@@ -2460,7 +2460,7 @@ ptr = nextsigchar(ptr, TRUE);
 if (read_command_list(&ptr, &lastcmdptr, FALSE))
   yield = interpret_commands(commands, generated);
 
-if (filter_test != NULL || (debug_selector & D_filter) != 0)
+if (filter_test != FTEST_NONE || (debug_selector & D_filter) != 0)
   {
   uschar *s = US"";
   switch(yield)
@@ -2493,7 +2493,7 @@ if (filter_test != NULL || (debug_selector & D_filter) != 0)
     break;
     }
 
-  if (filter_test != NULL) printf("%s\n", CS s);
+  if (filter_test != FTEST_NONE) printf("%s\n", CS s);
     else debug_printf("%s\n", s);
   }
 

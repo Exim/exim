@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.7 2004/11/24 14:38:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.8 2004/11/25 13:54:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -476,7 +476,9 @@ uschar *extra_local_interfaces = NULL;
 int     filter_n[FILTER_VARIABLE_COUNT];
 BOOL    filter_running         = FALSE;
 int     filter_sn[FILTER_VARIABLE_COUNT];
-uschar *filter_test            = NULL;
+int     filter_test            = FTEST_NONE;
+uschar *filter_test_sfile      = NULL;
+uschar *filter_test_ufile      = NULL;
 uschar *filter_thisaddress     = NULL;
 int     finduser_retries       = 0;
 uid_t   fixed_never_users[]    = { FIXED_NEVER_USERS };

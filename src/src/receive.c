@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.4 2004/11/17 14:32:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.5 2004/11/25 13:54:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -427,7 +427,7 @@ if (smtp_input)
   }
 else
   {
-  if (filter_test == NULL)
+  if (filter_test == FTEST_NONE)
     {
     fprintf(stderr, "\nexim: %s received - message abandoned\n",
       (sig == SIGTERM)? "SIGTERM" : "SIGINT");
@@ -1508,18 +1508,18 @@ for (;;)
           if (domain == 0 && newsender[0] != 0)
             newsender = rewrite_address_qualify(newsender, FALSE);
 
-          if (filter_test != NULL || receive_check_set_sender(newsender))
+          if (filter_test != FTEST_NONE || receive_check_set_sender(newsender))
             {
             sender_address = newsender;
 
-            if (trusted_caller || filter_test != NULL)
+            if (trusted_caller || filter_test != FTEST_NONE)
               {
               authenticated_sender = NULL;
               originator_name = US"";
               sender_local = FALSE;
               }
 
-            if (filter_test != NULL)
+            if (filter_test != FTEST_NONE)
               printf("Sender taken from \"From \" line\n");
             }
           }
@@ -1659,7 +1659,7 @@ if (smtp_input && (receive_feof)())
 /* If this is a filter test run and no headers were read, output a warning
 in case there is a mistake in the test message. */
 
-if (filter_test != NULL && header_list->next == NULL)
+if (filter_test != FTEST_NONE && header_list->next == NULL)
   printf("Warning: no message headers read\n");
 
 
@@ -1781,7 +1781,7 @@ for (h = header_list->next; h != NULL; h = h->next)
     otherwise set. However, remove any <> that surround the address
     because the variable doesn't have these. */
 
-    if (filter_test != NULL)
+    if (filter_test != FTEST_NONE)
       {
       uschar *start = h->text + 12;
       uschar *end = start + Ustrlen(start);
@@ -2378,7 +2378,7 @@ DEBUG(D_receive)
 testing mode, that is all this function does. Return TRUE if the message
 ended with a dot. */
 
-if (filter_test != NULL)
+if (filter_test != FTEST_NONE)
   {
   process_info[process_info_len] = 0;
   return message_ended == END_DOT;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.5 2004/11/19 09:45:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.6 2004/11/25 13:54:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -92,7 +92,7 @@ extern int     expand_string_integer(uschar *);
 
 extern int     filter_interpret(uschar *, int, address_item **, uschar **);
 extern BOOL    filter_personal(string_item *, BOOL);
-extern BOOL    filter_runtest(int, BOOL, BOOL);
+extern BOOL    filter_runtest(int, uschar *, BOOL, BOOL);
 extern BOOL    filter_system_interpret(address_item **, uschar **);
 
 extern void    header_add(int, char *, ...);

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.9 2004/11/18 11:17:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.10 2004/11/25 13:54:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1169,7 +1169,8 @@ uschar **argv = USS cargv;
 int  arg_receive_timeout = -1;
 int  arg_smtp_receive_timeout = -1;
 int  arg_error_handling = error_handling;
-int  filter_fd = -1;
+int  filter_sfd = -1;
+int  filter_ufd = -1;
 int  group_count;
 int  i;
 int  list_queue_option = 0;
@@ -1215,7 +1216,6 @@ uschar *ftest_prefix = NULL;
 uschar *ftest_suffix = NULL;
 uschar *real_sender_address;
 uschar *originator_home = US"/";
-BOOL ftest_system = FALSE;
 void *reset_point;
 
 struct passwd *pw;
@@ -1581,20 +1581,32 @@ for (i = 1; i < argc; i++)
     else if (*argrest == 'e')
       expansion_test = checking = TRUE;
 
-    /* -bf:  Run in mail filter testing mode
-       -bF:  Ditto, but for system filters
+    /* -bF:  Run system filter test */
+
+    else if (*argrest == 'F')
+      {
+      filter_test |= FTEST_SYSTEM;
+      if (*(++argrest) != 0) { badarg = TRUE; break; }
+      if (++i < argc) filter_test_sfile = argv[i]; else
+        {
+        fprintf(stderr, "exim: file name expected after %s\n", argv[i-1]);
+        exit(EXIT_FAILURE);
+        }
+      }
+
+    /* -bf:  Run user filter test
        -bfd: Set domain for filter testing
        -bfl: Set local part for filter testing
        -bfp: Set prefix for filter testing
        -bfs: Set suffix for filter testing
     */
 
-    else if (*argrest == 'f' || *argrest == 'F')
+    else if (*argrest == 'f')
       {
-      ftest_system = *argrest++ == 'F';
-      if (*argrest == 0)
+      if (*(++argrest) == 0)
         {
-        if(++i < argc) filter_test = argv[i]; else
+        filter_test |= FTEST_USER;
+        if (++i < argc) filter_test_ufile = argv[i]; else
           {
           fprintf(stderr, "exim: file name expected after %s\n", argv[i-1]);
           exit(EXIT_FAILURE);
@@ -2761,7 +2773,7 @@ if ((
     (smtp_input || extract_recipients || recipients_arg < argc) &&
     (daemon_listen || queue_interval >= 0 || bi_option ||
       test_retry_arg >= 0 || test_rewrite_arg >= 0 ||
-      filter_test != NULL || (msg_action_arg > 0 && !one_msg_action))
+      filter_test != FTEST_NONE || (msg_action_arg > 0 && !one_msg_action))
     ) ||
     (
     msg_action_arg > 0 &&
@@ -2779,19 +2791,19 @@ if ((
     (
     list_options &&
     (checking || smtp_input || extract_recipients ||
-      filter_test != NULL || bi_option)
+      filter_test != FTEST_NONE || bi_option)
     ) ||
     (
     verify_address_mode &&
     (address_test_mode || smtp_input || extract_recipients ||
-      filter_test != NULL || bi_option)
+      filter_test != FTEST_NONE || bi_option)
     ) ||
     (
     address_test_mode && (smtp_input || extract_recipients ||
-      filter_test != NULL || bi_option)
+      filter_test != FTEST_NONE || bi_option)
     ) ||
     (
-    smtp_input && (sender_address != NULL || filter_test != NULL ||
+    smtp_input && (sender_address != NULL || filter_test != FTEST_NONE ||
       extract_recipients)
     ) ||
     (
@@ -2951,7 +2963,7 @@ if ((                                            /* EITHER */
     ) ||                                         /*   OR   */
     expansion_test                               /* expansion testing */
     ||                                           /*   OR   */
-    filter_test != NULL)                         /* Filter testing */
+    filter_test != FTEST_NONE)                   /* Filter testing */
   {
   setgroups(group_count, group_list);
   exim_setugid(real_uid, real_gid, FALSE,
@@ -2974,15 +2986,26 @@ privileged user. */
 
 else exim_setugid(geteuid(), getegid(), FALSE, US"forcing real = effective");
 
-/* If testing a filter, open the file now, before wasting time doing other
+/* If testing a filter, open the file(s) now, before wasting time doing other
 setups and reading the message. */
 
-if (filter_test != NULL)
+if ((filter_test & FTEST_SYSTEM) != 0)
   {
-  filter_fd = Uopen(filter_test, O_RDONLY,0);
-  if (filter_fd < 0)
+  filter_sfd = Uopen(filter_test_sfile, O_RDONLY, 0);
+  if (filter_sfd < 0)
     {
-    fprintf(stderr, "exim: failed to open %s: %s\n", filter_test,
+    fprintf(stderr, "exim: failed to open %s: %s\n", filter_test_sfile,
+      strerror(errno));
+    return EXIT_FAILURE;
+    }
+  }
+
+if ((filter_test & FTEST_USER) != 0)
+  {
+  filter_ufd = Uopen(filter_test_ufile, O_RDONLY, 0);
+  if (filter_ufd < 0)
+    {
+    fprintf(stderr, "exim: failed to open %s: %s\n", filter_test_ufile,
       strerror(errno));
     return EXIT_FAILURE;
     }
@@ -3377,11 +3400,11 @@ if (real_uid != root_uid && real_uid != exim_uid &&
   }
 
 /* If the caller is not trusted, certain arguments are ignored when running for
-real, but are permitted when checking things (-be, -bv, -bt, -bh, -bf). Note
-that authority for performing certain actions on messages is tested in the
+real, but are permitted when checking things (-be, -bv, -bt, -bh, -bf, -bF).
+Note that authority for performing certain actions on messages is tested in the
 queue_action() function. */
 
-if (!trusted_caller && !checking && filter_test == NULL)
+if (!trusted_caller && !checking && filter_test == FTEST_NONE)
   {
   sender_host_name = sender_host_address = interface_address =
     sender_ident = received_protocol = NULL;
@@ -3778,7 +3801,7 @@ for (i = 0;;)
     if (originator_name == NULL)
       {
       if (sender_address == NULL ||
-           (!trusted_caller && filter_test == NULL))
+           (!trusted_caller && filter_test == FTEST_NONE))
         {
         uschar *name = US pw->pw_gecos;
         uschar *amp = Ustrchr(name, '&');
@@ -3912,7 +3935,7 @@ unless a trusted caller supplies a sender address with -f, or is passing in the
 message via SMTP (inetd invocation or otherwise). */
 
 if ((sender_address == NULL && !smtp_input) ||
-    (!trusted_caller && filter_test == NULL))
+    (!trusted_caller && filter_test == FTEST_NONE))
   {
   sender_local = TRUE;
 
@@ -3943,7 +3966,7 @@ if ((!smtp_input && sender_address == NULL) ||
        ||                                /*         OR            */
        (sender_address[0] != 0 &&        /* Non-empty sender address, AND */
        !checking &&                      /* Not running tests, AND */
-       filter_test == NULL))             /* Not testing a filter */
+       filter_test == FTEST_NONE))       /* Not testing a filter */
     {
     sender_address = originator_login;
     sender_address_forced = FALSE;
@@ -4153,7 +4176,7 @@ if (recipients_arg >= argc && !extract_recipients && !smtp_input)
     printf("Configuration file is %s\n", config_main_filename);
     return EXIT_SUCCESS;
     }
-  if (filter_test == NULL)
+  if (filter_test == FTEST_NONE)
     {
     fprintf(stderr,
 "Exim is a Mail Transfer Agent. It is normally called by Mail User Agents,\n"
@@ -4507,9 +4530,9 @@ while (more)
         }
       }
 
-    /* Read the data for the message. If filter_test is true, this will
-    just read the headers for the message, and not write anything onto
-    the spool. */
+    /* Read the data for the message. If filter_test is not FTEST_NONE, this
+    will just read the headers for the message, and not write anything onto the
+    spool. */
 
     message_ended = END_NOTENDED;
     more = receive_msg(extract_recipients);
@@ -4528,7 +4551,7 @@ while (more)
   unless specified. The the return path is set to to the sender unless it has
   already been set from a return-path header in the message. */
 
-  if (filter_test != NULL)
+  if (filter_test != FTEST_NONE)
     {
     deliver_domain = (ftest_domain != NULL)?
       ftest_domain : qualify_domain_recipient;
@@ -4563,8 +4586,27 @@ while (more)
     if (ftest_suffix != NULL) printf("Suffix    = %s\n", ftest_suffix);
 
     chdir("/");   /* Get away from wherever the user is running this from */
-    exim_exit(filter_runtest(filter_fd, ftest_system, more)?
-      EXIT_SUCCESS : EXIT_FAILURE);
+    
+    /* Now we run either a system filter test, or a user filter test, or both. 
+    In the latter case, headers added by the system filter will persist and be 
+    available to the user filter. We need to copy the filter variables 
+    explicitly. */
+    
+    if ((filter_test & FTEST_SYSTEM) != 0)
+      {
+      if (!filter_runtest(filter_sfd, filter_test_sfile, TRUE, more))
+        exim_exit(EXIT_FAILURE);
+      }      
+      
+    memcpy(filter_sn, filter_n, sizeof(filter_sn));
+      
+    if ((filter_test & FTEST_USER) != 0)
+      {
+      if (!filter_runtest(filter_ufd, filter_test_ufile, FALSE, more))
+        exim_exit(EXIT_FAILURE);
+      }      
+      
+    exim_exit(EXIT_SUCCESS);
     }
 
   /* Else act on the result of message reception. We should not get here unless

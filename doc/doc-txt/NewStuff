@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.17 2004/11/24 16:36:19 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.18 2004/11/25 13:54:31 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -205,6 +205,14 @@ Version 4.44
     puts the queue time on individual delivery lines), the time is tagged with
     "QT=", and it is measured from the time that the message starts to be
     received, so it includes the reception time.
+
+18. It is now possible to use both -bF and -bf on the same command, in order to
+    test a system filter and a user filter in the same run. For example:
+
+      exim -bF /system/filter -bf /user/filter </test/message
+
+    This is helpful when the system filter adds header lines or sets filter
+    variables that are used by the user filter.
 
 
 Version 4.43

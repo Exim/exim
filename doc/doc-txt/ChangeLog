@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.40 2004/11/25 10:26:04 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.41 2004/11/25 13:54:31 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -175,6 +175,8 @@ Exim version 4.44
 41. Include certificate and key file names in error message when GnuTLS fails
     to set them up, because the GnuTLS error message doesn't include the name
     of the failing file when there is a problem reading it.
+
+42. Allow both -bf and -bF in the same test run.
 
 
 Exim version 4.43

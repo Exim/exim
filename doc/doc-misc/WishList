@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.10 2004/11/25 11:03:37 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.11 2004/11/25 13:54:30 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1601,14 +1601,6 @@ A modifier that sets a delay between lines for multiline responses.
 (268) 25-May-04 S? Add a PID to every log line
 
 Given that pids are reused non-cyclically these days, is this actually useful?
-------------------------------------------------------------------------------
-
-(269) 26-May-04 U Run both a system and a user filter in test mode
-
-    exim -bF systemfilter -bf userfilter -f sender@dom < message
-
-This would allow testing the way the userfilter handles the system
-variables set by the systemfilter.
 ------------------------------------------------------------------------------
 
 (270) 01-Jun-04 M Add headers at top and middle

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.2 2004/11/25 13:54:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -631,7 +631,7 @@ static int compare(struct Sieve *filter, const struct String *needle, const stru
 {
 int r=0;
 
-if ((filter_test != NULL && debug_selector != 0) ||
+if ((filter_test != FTEST_NONE && debug_selector != 0) ||
   (debug_selector & D_filter) != 0)
   {
   debug_printf("String comparison (match ");
@@ -728,7 +728,7 @@ switch (mt)
     break;
     }
   }
-if ((filter_test != NULL && debug_selector != 0) ||
+if ((filter_test != FTEST_NONE && debug_selector != 0) ||
   (debug_selector & D_filter) != 0)
   debug_printf("  Result %s\n",r?"true":"false");
 return r;
@@ -852,7 +852,7 @@ for (new_addr=*generated; new_addr; new_addr=new_addr->next)
   {
   if (Ustrcmp(new_addr->address,addr)==0 && (file ? testflag(new_addr, af_pfr|af_file) : 1))
     {
-    if ((filter_test != NULL && debug_selector != 0) || (debug_selector & D_filter) != 0)
+    if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
       {
       debug_printf("Repeated %s `%s' ignored.\n",file ? "fileinto" : "redirect", addr);
       }
@@ -860,7 +860,7 @@ for (new_addr=*generated; new_addr; new_addr=new_addr->next)
     }
   }
 
-if ((filter_test != NULL && debug_selector != 0) || (debug_selector & D_filter) != 0)
+if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
   {
   debug_printf("%s `%s'\n",file ? "fileinto" : "redirect", addr);
   }
@@ -2771,7 +2771,7 @@ else
   }
 
 #ifndef COMPILE_SYNTAX_CHECKER
-if (filter_test != NULL) printf("%s\n", (const char*) msg);
+if (filter_test != FTEST_NONE) printf("%s\n", (const char*) msg);
   else debug_printf("%s\n", msg);
 #endif
 

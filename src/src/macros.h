@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.3 2004/11/24 14:38:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.4 2004/11/25 13:54:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -227,6 +227,12 @@ enum {
   CEE_EXEC_PANIC            /* Panic-die if exec fails */
 };
 
+/* Bit values for filter_test */
+
+#define FTEST_NONE     0    /* Not filter testing */
+#define FTEST_USER     1    /* Testing user filter */
+#define FTEST_SYSTEM   2    /* Testing system filter */ 
+
 /* Returns from the routing, transport and authentication functions (not all
 apply to all of them). Some other functions also use these convenient values,
 and some additional values are used only by non-driver functions.
@@ -234,10 +240,10 @@ and some additional values are used only by non-driver functions.
 OK, FAIL, DEFER, and ERROR are also declared in local_scan.h for use in the
 local_scan() function. Do not change them unilaterally. */
 
-#define  OK            0     /* Successful match */
-#define  DEFER         1     /* Defer - some problem */
-#define  FAIL          2     /* Matching failed */
-#define  ERROR         3     /* Internal or config error */
+#define  OK            0    /* Successful match */
+#define  DEFER         1    /* Defer - some problem */
+#define  FAIL          2    /* Matching failed */
+#define  ERROR         3    /* Internal or config error */
 /***********/
 #define DECLINE        4    /* Declined to handle the address, pass to next
                                  router unless no_more is set */
