@@ -1,4 +1,4 @@
-$Cambridge: exim/src/README.UPDATING,v 1.5 2005/03/08 11:38:21 ph10 Exp $
+$Cambridge: exim/src/README.UPDATING,v 1.6 2005/04/06 16:26:42 ph10 Exp $
 
 This document contains detailed information about incompatibilities that might
 be encountered when upgrading from one release of Exim to another. The
@@ -31,8 +31,8 @@ that might affect a running system.
 Version 4.51
 ------------
 
-The format in which GnuTLS parameters are cached (in the file gnutls-params in
-the spool directory) has been changed. The new format can also be generated
+1. The format in which GnuTLS parameters are cached (in the file gnutls-params
+in the spool directory) has been changed. The new format can also be generated
 externally, so it is now possible to update the values from outside Exim. This
 has been implemented in an upwards, BUT NOT downwards, compatible manner.
 Upgrading should be seamless: when Exim finds that it cannot understand an
@@ -40,6 +40,15 @@ existing cache file, it generates new parameters and writes them to the cache
 in the new format. If, however, you downgrade from 4.51 to a previous release,
 you MUST delete the gnutls-params file in the spool directory, because the
 older Exim will not recognize the new format.
+
+2. When doing a callout as part of verifying an address, Exim was not paying
+attention to any local part prefix or suffix that was matched by the router
+that accepted the address. It now behaves in the same way as it does for
+delivery: the affixes are removed from the local part unless
+rcpt_include_affixes is set on the transport. If you have a configuration that
+uses prefixes or suffixes on addresses that could be used for callouts, and you
+want the affixes to be retained, you must make sure that rcpt_include_affixes
+is set on the transport.
 
 
 Version 4.50

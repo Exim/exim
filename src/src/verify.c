@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.15 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.16 2005/04/06 16:26:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -550,7 +550,8 @@ for (host = host_list; host != NULL && !done; host = host->next)
       {
       done =
         smtp_write_command(&outblock, FALSE, "RCPT TO:<%.1000s>\r\n",
-          addr->address) >= 0 &&
+          transport_rcpt_address(addr,
+            addr->transport->rcpt_include_affixes)) >= 0 &&
         smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
           '2', callout);
 

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.117 2005/04/06 15:26:52 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.118 2005/04/06 16:26:42 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -189,6 +189,13 @@ PH/30 In these circumstances:
       Exim incorrectly logged both deliveries with the TLS parameters (cipher
       and peerdn, if requested) that were in fact used only for the second
       address.
+
+PH/31 When doing a callout as part of verifying an address, Exim was not paying
+      attention to any local part prefix or suffix that was matched by the
+      router that accepted the address. It now behaves in the same way as it
+      does for delivery: the affixes are removed from the local part unless
+      rcpt_include_affixes is set on the transport.
+
 
 
 A note about Exim versions 4.44 and 4.50
