@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-src/spec.src,v 1.5 2005/01/27 10:25:35 ph10 Exp $
+. $Cambridge: exim/doc/doc-src/spec.src,v 1.6 2005/01/27 15:00:38 ph10 Exp $
 .
 .set version "4.50"
 .set previousversion "4.40"
@@ -10673,21 +10673,29 @@ terminating newline.
 
 .em
 .section Use of standard output and error by Perl
+.index Perl||standard output and error
 You should not write to the standard error or output streams from within your 
-Perl code, as it is not defined how these are set up. In versions of Exim up to 
-at least 4.50, it is possible for the standard output or error to refer to the 
-SMTP connection during message reception. Writing to this stream is likely to 
-cause chaos. Something may be done about this in later releases.
+Perl code, as it is not defined how these are set up. In versions of Exim  
+before 4.50, it is possible for the standard output or error to refer to the 
+SMTP connection during message reception via the daemon. Writing to this stream
+is certain to cause chaos. From Exim 4.50 onwards, the standard output and
+error streams are connected to \(/dev/null)\ in the daemon. The chaos is 
+avoided, but the output is lost.
 
-Unfortunately, the Perl \warn\ statment writes to the standard error stream, 
-and this may be embedded in Perl modules that you use, but over which you have 
-no control. One way round this is to ensure that the following Perl magic is 
-obeyed before \warn\ is used:
+.index Perl||\warn\, use of
+The Perl \warn\ statement writes to the standard error stream by default. Calls 
+to \warn\ may be embedded in Perl modules that you use, but over which you have
+no control. When Exim starts up the Perl interpreter, it arranges for output
+from the \warn\ statement to be written to the Exim main log. You can change 
+this by including appropriate Perl magic somewhere in your Perl code. For 
+example, to discard \warn\ output completely, you need this:
 .display asis
-$SIG{__WARN__} = sub { Exim::log_write($_[0]) };
+$SIG{__WARN__} = sub { };
 .endd
-This causes the output of the \warn\ statement to be written to Exim's log 
-file.
+Whenever a \warn\ is obeyed, the anonymous subroutine is called. In this 
+example, the code for the subroutine is empty, so it does nothing, but you can
+include any Perl code that you like. The text of the \warn\ message is passed
+as the first subroutine argument.
 .nem
 
 

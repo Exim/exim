@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/perl.c,v 1.2 2004/12/20 11:46:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/perl.c,v 1.3 2005/01/27 15:00:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -109,6 +109,21 @@ init_perl(uschar *startup_code)
   perl_run(interp_perl);
     {
     dSP;
+
+    /*********************************************************************/
+    /* These lines by PH added to make "warn" output go to the Exim log; I
+    hope this doesn't break anything. */
+     
+    sv = newSVpv(
+      "$SIG{__WARN__} = sub { my($s) = $_[0];"
+      "$s =~ s/\\n$//;" 
+      "Exim::log_write($s) };", 0);
+    PUSHMARK(SP);
+    perl_eval_sv(sv, G_SCALAR|G_DISCARD|G_KEEPERR);
+    SvREFCNT_dec(sv);
+    if (SvTRUE(ERRSV)) return US SvPV(ERRSV, len);
+    /*********************************************************************/
+ 
     sv = newSVpv(CS startup_code, 0);
     PUSHMARK(SP);
     perl_eval_sv(sv, G_SCALAR|G_DISCARD|G_KEEPERR);

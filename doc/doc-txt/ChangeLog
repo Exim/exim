@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.75 2005/01/27 10:26:14 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.76 2005/01/27 15:00:39 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -350,6 +350,16 @@ Exim version 4.50
     when verifying addresses in header lines, that is, for this case:
 
       verify = header_sender/callout=defer_ok
+
+75. A backgrounded daemon closed stdin/stdout/stderr on entry; this meant that
+    those file descriptors could be used for SMTP connections. If anything
+    wrote to stderr (the example that came up was "warn" in embedded Perl), it
+    could be sent to the SMTP client, causing chaos. The daemon now opens
+    stdin, stdout, and stderr to /dev/null when it puts itself into the
+    background.
+
+76. Arrange for output from Perl's "warn" command to be written to Exim's main
+    log by default. The user can override this with suitable Perl magic.
 
 
 ----------------------------------------------------

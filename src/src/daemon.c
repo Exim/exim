@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.5 2005/01/04 10:37:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.6 2005/01/27 15:00:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1124,26 +1124,35 @@ if (daemon_listen)
     }
   }
 
-/* We now close all open file descriptors that we know about, and disconnect
-from the controlling terminal, unless background_daemon is unset. This is
-always unset when debugging, but can also be forced. Most modern Unixes seem to
-have setsid() for getting rid of the controlling terminal. For any OS that
-doesn't, setsid() can be #defined as a no-op, or as something else. */
+/* The variable background_daemon is always false when debugging, but
+can also be forced false in order to keep a non-debugging daemon in the
+foreground. If background_daemon is true, close all open file descriptors that
+we know about, but then re-open stdin, stdout, and stderr to /dev/null.
+
+This is protection against any called functions (in libraries, or in
+Perl, or whatever) that think they can write to stderr (or stdout). Before this
+was added, it was quite likely that an SMTP connection would use one of these
+file descriptors, in which case writing random stuff to it caused chaos.
+
+Then disconnect from the controlling terminal, Most modern Unixes seem to have
+setsid() for getting rid of the controlling terminal. For any OS that doesn't,
+setsid() can be #defined as a no-op, or as something else. */
 
 if (background_daemon)
   {
-  log_close_all();  /* Just in case anything was logged earlier */
-  search_tidyup();  /* Just in case any were used in reading the config. */
-  close(0);         /* Get rid of stdin/stdout/stderr */
+  log_close_all();    /* Just in case anything was logged earlier */
+  search_tidyup();    /* Just in case any were used in reading the config. */
+  close(0);           /* Get rid of stdin/stdout/stderr */
   close(1);
   close(2);
+  exim_nullstd();     /* Connect stdin/stdout/stderr to /dev/null */ 
   log_stderr = NULL;  /* So no attempt to copy paniclog output */
 
   /* If the parent process of this one has pid == 1, we are re-initializing the
-  daemon as the result of a SIGHUP. In this case, there is no need to do any
-  forking, because the controlling terminal has long gone. Otherwise, fork,
-  in case current process is a process group leader (see 'man setsid' for an
-  explanation). */
+  daemon as the result of a SIGHUP. In this case, there is no need to do 
+  anything, because the controlling terminal has long gone. Otherwise, fork, in
+  case current process is a process group leader (see 'man setsid' for an
+  explanation) before calling setsid(). */
 
   if (getppid() != 1)
     {
