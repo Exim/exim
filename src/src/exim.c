@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.17 2005/03/22 14:11:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.18 2005/04/06 10:06:14 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3237,8 +3237,8 @@ a debugging feature for finding out what arguments certain MUAs actually use.
 Don't attempt it if logging is disabled, or if listing variables or if
 verifying/testing addresses or expansions. */
 
-if ((log_extra_selector & LX_arguments) != 0 && really_exim
-     && !list_options && !checking)
+if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
+      && really_exim && !list_options && !checking)
   {
   int i;
   uschar *p = big_buffer;
@@ -3270,7 +3270,11 @@ if ((log_extra_selector & LX_arguments) != 0 && really_exim
       (p - big_buffer) - 4), printing, quote);
     while (*p) p++;
     }
-  log_write(0, LOG_MAIN, "%s", big_buffer);
+
+  if ((log_extra_selector & LX_arguments) != 0)
+    log_write(0, LOG_MAIN, "%s", big_buffer);
+  else
+    debug_printf("%s\n", big_buffer);
   }
 
 /* Set the working directory to be the top-level spool directory. We don't rely

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.111 2005/04/05 15:47:50 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.112 2005/04/06 10:06:14 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -149,6 +149,10 @@ PH/24 The cyrus_sasl authenticator was advertising mechanisms for which it
       I've just tested the patch: Authentication still works fine,
       unavailable mechs specified in the exim configuration are still
       caught, and the auth.log warnings about OTP are gone."
+
+PH/25 When debugging is enabled, the contents of the command line are added
+      to the debugging output, even when log_selector=+arguments is not
+      specified.
 
 
 A note about Exim versions 4.44 and 4.50
