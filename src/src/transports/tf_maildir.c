@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.1 2004/10/07 13:10:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.2 2004/11/12 11:28:15 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -430,10 +430,19 @@ while (*endptr++ == '\n')
 /* If *endptr is zero, we have successfully parsed the file, and we now have
 the size of the mailbox as cached in the file. The "rules" say that if this
 value indicates that the mailbox is over quota, we must recalculate if there is
-more than one entry in the file, or if the file is older than 15 minutes. */
+more than one entry in the file, or if the file is older than 15 minutes. Also,
+just in case there are weird values in the file, recalculate if either of the
+values is negative. */
 
 if (*endptr == 0)
   {
+  if (size < 0 || filecount < 0) 
+    {
+    DEBUG(D_transport) debug_printf("negative value in maildirsize "
+      "(size=%d count=%d): recalculating\n", size, filecount); 
+    goto RECALCULATE; 
+    } 
+ 
   if (ob->quota_value > 0 &&
       (size + (ob->quota_is_inclusive? message_size : 0) > ob->quota_value ||
         (ob->quota_filecount_value > 0 &&
@@ -444,7 +453,7 @@ if (*endptr == 0)
     struct stat statbuf;
     if (linecount > 1)
       {
-      DEBUG(D_transport) debug_printf("over quota and maildirsizefile has "
+      DEBUG(D_transport) debug_printf("over quota and maildirsize has "
         "more than 1 entry: recalculating\n");
       goto RECALCULATE;
       }

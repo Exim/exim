@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.23 2004/11/11 16:03:47 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.24 2004/11/12 11:28:15 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -93,6 +93,11 @@ Exim version 4.44
 25. Narrowed the window for a race in the daemon that could cause it to ignore
     SIGCHLD signals. This is not a major problem, because they are used only to
     wake it up if nothing else does.
+
+26. A malformed maildirsize file could cause Exim to calculate negative values
+    for the mailbox size or file count. Odd effects could occur as a result.
+    The maildirsize information is now recalculated if the size or filecount
+    end up negative.
 
 
 Exim version 4.43
