@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.9 2005/01/13 16:15:53 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.10 2005/01/13 16:22:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1125,7 +1125,9 @@ uschar *p, *s, *ss;
 127.0.0.2 (sic), have a short delay. This makes it possible to test handling of 
 input sent too soon (before the banner is output). */
 
-if (running_in_test_harness && Ustrcmp(sender_host_address, "127.0.0.2") == 0)
+if (running_in_test_harness && 
+    sender_host_address != NULL &&
+    Ustrcmp(sender_host_address, "127.0.0.2") == 0)
   sleep(1);
 
 /* Default values for certain variables */
