@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.48 2004/12/21 09:26:31 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.49 2004/12/21 09:40:01 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -206,6 +206,9 @@ Exim version 4.50
 50. The default ordering of permitted cipher suites for GnuTLS was pessimal
     (the order specifies the preference for clients). The order is now AES256,
     AES128, 3DES, ARCFOUR128.
+
+51. Small patch to Sieve code - explicitly set From: when generating an
+    autoreply.
 
 
 Exim version 4.43

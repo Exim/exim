@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.2 2004/11/25 13:54:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.3 2004/12/21 09:40:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2514,6 +2514,7 @@ while (*filter->pc)
         addr->reply = store_get(sizeof(reply_item));
         memset(addr->reply,0,sizeof(reply_item)); /* XXX */
         addr->reply->to = string_copy(sender_address);
+        addr->reply->from = expand_string(US"$local_part@$domain"); 
         /* Allocation is larger than neccessary, but enough even for split MIME words */
         buffer_capacity=16+4*subject.length;
         buffer=store_get(buffer_capacity);
