@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.4 2005/03/29 14:53:09 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -526,34 +526,51 @@ if (expcerts != NULL)
 
   #if OPENSSL_VERSION_NUMBER > 0x00907000L
 
+  /* This bit of code is now the version supplied by Lars Mainka. (I have
+   * merely reformatted it into the Exim code style.)
+
+   * "From here I changed the code to add support for multiple crl's
+   * in pem format in one file or to support hashed directory entries in
+   * pem format instead of a file. This method now uses the library function
+   * X509_STORE_load_locations to add the CRL location to the SSL context.
+   * OpenSSL will then handle the verify against CA certs and CRLs by
+   * itself in the verify callback." */
+
   if (!expand_check(crl, US"tls_crl", &expcrl)) return DEFER;
   if (expcrl != NULL && *expcrl != 0)
     {
-    BIO *crl_bio;
-    X509_CRL *crl_x509;
-    X509_STORE *cvstore;
-
-    cvstore = SSL_CTX_get_cert_store(ctx);  /* cert validation store */
-
-    crl_bio = BIO_new(BIO_s_file_internal());
-    if (crl_bio != NULL)
+    struct stat statbufcrl;
+    if (Ustat(expcrl, &statbufcrl) < 0)
       {
-      if (BIO_read_filename(crl_bio, expcrl))
+      log_write(0, LOG_MAIN|LOG_PANIC,
+        "failed to stat %s for certificates revocation lists", expcrl);
+      return DEFER;
+      }
+    else
+      {
+      /* is it a file or directory? */
+      uschar *file, *dir;
+      X509_STORE *cvstore = SSL_CTX_get_cert_store(ctx);
+      if ((statbufcrl.st_mode & S_IFMT) == S_IFDIR)
         {
-        crl_x509 = PEM_read_bio_X509_CRL(crl_bio, NULL, NULL, NULL);
-        BIO_free(crl_bio);
-        X509_STORE_add_crl(cvstore, crl_x509);
-        X509_CRL_free(crl_x509);
-        X509_STORE_set_flags(cvstore,
-          X509_V_FLAG_CRL_CHECK|X509_V_FLAG_CRL_CHECK_ALL);
+        file = NULL;
+        dir = expcrl;
+        DEBUG(D_tls) debug_printf("SSL CRL value is a directory %s\n", dir);
         }
       else
         {
-        BIO_free(crl_bio);
-        return tls_error(US"BIO_read_filename", host);
+        file = expcrl;
+        dir = NULL;
+        DEBUG(D_tls) debug_printf("SSL CRL value is a file %s\n", file);
         }
+      if (X509_STORE_load_locations(cvstore, CS file, CS dir) == 0)
+        return tls_error(US"X509_STORE_load_locations", host);
+
+      /* setting the flags to check against the complete crl chain */
+
+      X509_STORE_set_flags(cvstore,
+        X509_V_FLAG_CRL_CHECK|X509_V_FLAG_CRL_CHECK_ALL);
       }
-    else return tls_error(US"BIO_new", host);
     }
 
   #endif  /* OPENSSL_VERSION_NUMBER > 0x00907000L */
