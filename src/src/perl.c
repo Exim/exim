@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/perl.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/perl.c,v 1.2 2004/12/20 11:46:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -167,7 +167,8 @@ call_perl_cat(uschar *yield, int *sizep, int *ptrp, uschar **errstrp,
   yield = string_cat(yield, sizep, ptrp, str, (int)len);
   FREETMPS;
   LEAVE;
-
+  
+  setlocale(LC_ALL, "C");    /* In case it got changed */
   return yield;
 }
 

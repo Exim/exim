@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.43 2004/12/17 14:52:44 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.44 2004/12/20 11:46:21 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -186,6 +186,9 @@ Exim version 4.50
     < 0 before doing a fflush(). This bug looks as though it goes back to the
     introduction of TLS in release 3.20, but "sometimes" must have been rare
     because the tests only now provoked it.
+
+46. Reset the locale to "C" after calling embedded Perl, in case it was changed
+    (this can affect the format of dates).
 
 
 Exim version 4.43
