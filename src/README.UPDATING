@@ -1,0 +1,369 @@
+$Cambridge: exim/src/README.UPDATING,v 1.1 2004/10/06 14:12:40 ph10 Exp $
+
+This document contains detailed information about incompatibilities that might
+be encountered when upgrading from one release of Exim to another. The
+information is in reverse order of release numbers. Mostly these are relatively
+small points, and the configuration file is normally upwards compatible, but
+there have been two big upheavals...
+
+
+**************************************************************************
+* There was a big reworking of the way mail routing works for release    *
+* 4.00. Previously used "directors" were abolished, and all routing is   *
+* now done by routers. Policy controls for incoming mail are now done by *
+* Access Control Lists instead of separate options. All this means that  *
+* pre-4.00 configuration files have to be massively converted. If you    *
+* are coming from a 3.xx release, please read the document in the file   *
+* doc/Exim4.upgrade, and allow some time to complete the upgrade.        *
+*                                                                        *
+* There was a big reworking of the way domain/host/net/address lists are *
+* handled at release 3.00. If you are coming from a pre-3.00 release, it *
+* might be easier to start again from a default configuration. Otherwise *
+* you need to read doc/Exim3.upgrade and do a double conversion of your  *
+* configuration file.                                                    *
+**************************************************************************
+
+
+The rest of this document contains information about changes in 4.xx releases
+that might affect a running system.
+
+
+Version 4.42
+------------
+
+RFC 3848 specifies standard names for the "with" phrase in Received: header
+lines when AUTH and/or TLS are in use. This is the "received protocol"
+field. Exim used to use "asmtp" for authenticated SMTP, without any
+indication (in the protocol name) for TLS use. Now it follows the RFC and
+uses "esmtpa" if the connection is authenticated, "esmtps" if it is
+encrypted, and "esmtpsa" if it is both encrypted and authenticated. These names
+appear in log lines as well as in Received: header lines.
+
+
+Version 4.34
+------------
+
+Change 4.31/2 gave problems to data ACLs and local_scan() functions that
+expected to see a Received: header. I have changed to yet another scheme. The
+Received: header is now generated after the body is received, but before the
+ACL or local_scan() is called. After they have run, the timestamp in the
+Received: header is updated.
+
+Thus, change (a) of 4.31/2 has been reversed, but change (b) is still true,
+which is lucky, since I decided it was a bug fix.
+
+
+Version 4.33
+------------
+
+If an expansion in a condition on a "warn" statement fails because a lookup
+defers, the "warn" statement is abandoned, and the next ACL statement is
+processed. Previously this caused the whole ACL to be aborted.
+
+
+Version 4.32
+------------
+
+Change 4.31/2 has been reversed, as it proved contentious. Recipient callout
+verification now uses <> in the MAIL command by default, as it did before. A
+new callout option, "use_sender", has been added to request the other
+behaviour.
+
+
+Version 4.31
+------------
+
+1. If you compile Exim to use GnuTLS, it now requires the use of release 1.0.0
+   or greater. The interface to the obsolete 0.8.x releases is no longer
+   supported. There is one externally visible change: the format for the
+   display of Distinguished Names now uses commas as a separator rather than a
+   slash. This is to comply with RFC 2253.
+
+2. When a message is received, the Received: header line is now generated when
+   reception is complete, instead of at the start of reception. For messages
+   that take a long time to come in, this changes the meaning of the timestamp.
+   There are several side-effects of this change:
+
+    (a) If a message is rejected by a DATA or non-SMTP ACL, or by local_scan(),
+        the logged header lines no longer include the local Received: line,
+        because it has not yet been created. If the message is a non-SMTP one,
+        and the error is processed by sending a message to the sender, the copy
+        of the original message that is returned does not have an added
+        Received: line.
+
+    (b) When a filter file is tested using -bf, no additional Received: header
+        is added to the test message. After some thought, I decided that this
+        is a bug fix.
+
+    The contents of $received_for are not affected by this change. This
+    variable still contains the single recipient of a message, copied after
+    addresses have been rewritten, but before local_scan() is run.
+
+2. Recipient callout verification, like sender verification, was using <> in
+   the MAIL FROM command. This isn't really the right thing, since the actual
+   sender may affect whether the remote host accepts the recipient or not. I
+   have changed it to use the actual sender in the callout; this means that
+   the cache record is now keyed on a recipient/sender pair, not just the
+   recipient address. There doesn't seem to be a real danger of callout loops,
+   since a callout by the remote host to check the sender would use <>.
+
+
+Version 4.30
+------------
+
+1. I have abolished timeout_DNS as an error that can be detected in retry
+   rules, because it has never worked. Despite the fact that it has been
+   documented since at least release 1.62, there was no code to support it.
+   If you have used it in your retry rules, you will now get a warning message
+   to the log and panic log. It is now treated as plain "timeout".
+
+2. After discussion on the mailing list, Exim no longer adds From:, Date:, or
+   Message-Id: header lines to messages that do not originate locally, that is,
+   messages that have an associated sending host address.
+
+3. When looking up a host name from an IP address, Exim now tries the DNS
+   first, and only if that fails does it use gethostbyaddr() (or equivalent).
+   This change was made because on some OS, not all the names are given for
+   addresses with multiple PTR records via the gethostbyaddr() interface. The
+   order of lookup can be changed by setting host_lookup_order.
+
+
+Version 4.23
+------------
+
+1. The new FIXED_NEVER_USERS build-time option creates a list of "never users"
+   that cannot be overridden. The default in the distributed EDITME is "root".
+   If for some reason you were (against advice) running deliveries as root, you
+   will have to ensure that FIXED_NEVER_USERS is not set in your
+   Local/Makefile.
+
+2. The ${quote: operator now quotes an empty string, which it did not before.
+
+3. Version 4.23 saves the contents of the ACL variables with the message, so
+   that they can be used later. If one of these variables contains a newline,
+   there will be a newline character in the spool that will not be interpreted
+   correctely by a previous version of Exim. (Exim ignores keyed spool file
+   items that it doesn't understand - precisely for this kind of problem - but
+   it expects them all to be on one line.)
+
+   So the bottom line is: if you have newlines in your ACL variables, you
+   cannot retreat from 4.23.
+
+
+Version 4.21
+------------
+
+1. The idea of the "warn" ACL verb is that it adds a header or writes to the
+   log only when "message" or "log_message" are set. However, if one of the
+   conditions was an address verification, or a call to a nested ACL, the
+   messages generated by the underlying test were being passed through. This
+   no longer happens. The underlying message is available in $acl_verify_
+   message for both "message" and "log_message" expansions, so it can be
+   passed through if needed.
+
+2. The way that the $h_ (and $header_) expansions work has been changed by the
+   addition of RFC 2047 decoding. See the main documentation (the NewStuff file
+   until release 4.30, then the manual) for full details. Briefly, there are
+   now three forms:
+
+     $rh_xxx: and $rheader_xxx: give the original content of the header
+       line(s), with no processing at all.
+
+     $bh_xxx: and $bheader_xxx: remove leading and trailing white space, and
+       then decode base64 or quoted-printable "words" within the header text,
+       but do not do charset translation.
+
+     $h_xxx: and $header_xxx: attempt to translate the $bh_ string to a
+       standard character set.
+
+   If you have previously been using $h_ expansions to access the raw
+   characters, you should change to $rh_ instead.
+
+3. When Exim creates an RFC 2047 encoded word in a header line, it labels it
+   with the default character set from the headers_charset option instead of
+   always using iso-8859-1.
+
+4. If TMPDIR is defined in Local/Makefile (default in src/EDITME is
+   TMPDIR="/tmp"), Exim checks for the presence of an environment variable
+   called TMPDIR, and if it finds it is different, it changes its value.
+
+5. Following a discussion on the list, the rules by which Exim recognises line
+   endings on incoming messages have been changed. The -dropcr and drop_cr
+   options are now no-ops, retained only for backwards compatibility. The
+   following line terminators are recognized: LF CRLF CR. However, special
+   processing applies to CR:
+
+   (i)  The sequence CR . CR does *not* terminate an incoming SMTP message,
+        nor a local message in the state where . is a terminator.
+
+   (ii) If a bare CR is encountered in a header line, an extra space is added
+        after the line terminator so as not to end the header. The reasoning
+        behind this is that bare CRs in header lines are most likely either
+        to be mistakes, or people trying to play silly games.
+
+6. The code for using daemon_smtp_port, local_interfaces, and the -oX options
+   has been reorganized. It is supposed to be backwards compatible, but it is
+   mentioned here just in case I've screwed up.
+
+
+
+Version 4.20
+------------
+
+1. I have tidied and re-organized the code that uses alarm() for imposing time
+   limits on various things. It shouldn't affect anything, but if you notice
+   processes getting stuck, it may be that I've broken something.
+
+2. The "arguments" log selector now also logs the current working directory
+   when Exim is called.
+
+3. An incompatible change has been made to the appendfile transport. This
+   affects the case when it is used for file deliveries that are set up by
+   .forward and filter files. Previously, any settings of the "file" or
+   "directory" options were ignored. It is hoped that, like the address_file
+   transport in the default configuration, these options were never in fact set
+   on such transports, because they were of no use.
+
+   Now, if either of these options is set, it is used. The path that is passed
+   by the router is in $address_file (this is not new), so it can be used as
+   part of a longer path, or modified in any other way that expansion permits.
+
+   If neither "file" nor "directory" is set, the behaviour is unchanged.
+
+4. Related to the above: in a filter, if a "save" command specifies a non-
+   absolute path, the value of $home/ is pre-pended. This no longer happens if
+   $home is unset or is set to an empty string.
+
+5. Multiple file deliveries from a filter or .forward file can never be
+   batched; the value of batch_max on the transport is ignored for file
+   deliveries. I'm assuming that nobody ever actually set batch_max on the
+   address_file transport - it would have had odd effects previously.
+
+6. DESTDIR is the more common variable that ROOT for use when installing
+   software under a different root filing system. The Exim install script now
+   recognizes DESTDIR first; if it is not set, ROOT is used.
+
+7. If DESTDIR is set when installing Exim, it no longer prepends its value to
+   the path of the system aliases file that appears in the default
+   configuration (when a default configuration is installed). If an aliases
+   file is actually created, its name *does* use the prefix.
+
+
+Version 4.14
+------------
+
+1. The default for the maximum number of unknown SMTP commands that Exim will
+accept before dropping a connection has been reduced from 5 to 3. However, you
+can now change the value by setting smtp_max_unknown_commands.
+
+2. The ${quote: operator has been changed so that it turns newline and carriage
+return characters into \n and \r, respectively.
+
+3. The file names used for maildir messages now include the microsecond time
+fraction as well as the time in seconds, to cope with systems where the process
+id can be re-used within the same second. The format is now
+
+  <time>.H<microsec>P<pid>.<host>
+
+This should be a compatible change, but is noted here just in case.
+
+4. The rules for creating message ids have changed, to cope with systems where
+the process id can be re-used within the same second. The format, however, is
+unchanged, so this should not cause any problems, except as noted in the next
+item.
+
+5. The maximum value for localhost_number has been reduced from 255 to 16, in
+order to implement the new message id rules. For operating systems that have
+case-insensitive file systems (Cygwin and Darwin), the limit is 10.
+
+6. verify = header_syntax was allowing unqualified addresses in all cases. Now
+it allows them only for locally generated messages and from hosts that match
+sender_unqualified_hosts or recipient_unqualified_hosts, respectively.
+
+7. For reasons lost in the mists of time, when a pipe transport was run, the
+environment variable MESSAGE_ID was set to the message ID preceded by 'E' (the
+form used in Message-ID: header lines). The 'E' has been removed.
+
+
+Version 4.11
+------------
+
+1. The handling of lines in the configuration file has changed. Previously,
+macro expansion was applied to logical lines, after continuations had been
+joined on. This meant that it could not be used in .include lines, which are
+handled as physical rather than logical lines. Macro expansion is now done on
+physical lines rather than logical lines. This means there are two
+incompatibilities:
+
+  (a) A macro that expands to # to turn a line into a comment now applies only
+      to the physical line where it appears. Previously, it would have caused
+      any following continuations also to be ignored.
+
+  (b) A macro name can no longer be split over the boundary between a line and
+      its continuation. Actually, this is more of a bug fix. :-)
+
+2. The -D command line option must now all be within one command line item.
+This makes it possible to use -D to set a macro to the empty string by commands
+such as
+
+  exim -DABC  ...
+  exim -DABC= ...
+
+Previously, these items would have moved on to the next item on the command
+line. To include spaces in a macro definition item, quotes must be used, in
+which case you can also have spaces after -D and surrounding the equals. For
+example:
+
+  exim '-D ABC = something' ...
+
+3. The way that addresses that redirect to themselves are handled has been
+changed, in order to fix an obscure bug. This should not cause any problems
+except in the case of wanting to go back from a 4.11 (or later) release to an
+earlier release. If there are undelivered messages on the spool that contain
+addresses which redirect to themselves, and the redirected addresses have
+already been delivered, you might get a duplicate delivery if you revert to an
+earlier Exim.
+
+4. The default way of looking up IP addresses for hosts in the manualroute and
+queryprogram routers has been changed. If "byname" or "bydns" is explicitly
+specified, there is no change, but if no method is specified, Exim now behaves
+as follows:
+
+  First, a DNS lookup is done. If this yields anything other than
+  HOST_NOT_FOUND, that result is used. Otherwise, Exim goes on to try a call to
+  getipnodebyname() (or gethostbyname() on older systems) and the result of the
+  lookup is the result of that call.
+
+This change has been made because it has been discovered that on some systems,
+if a DNS lookup called via getipnodebyname() times out, HOST_NOT_FOUND is
+returned instead of TRY_AGAIN. Thus, it is safest to try a DNS lookup directly
+first, and only if that gives a definite "no such host" to try the local
+function.
+
+5. In fixing the minor security problem with pid_file_path, I have removed some
+backwards-compatible (undocumented) code which was present to ease conversion
+from Exim 3. In Exim 4, pid_file_path is a literal; in Exim 3 it was allowed to
+contain "%s", which was replaced by the port number for daemons listening on
+non-standard ports. In Exim 4, such daemons do not write a pid file. The
+backwards compatibility feature was to replace "%s" by nothing if it occurred
+in an Exim 4 setting of pid_file_path. The bug was in this code. I have solved
+the problem by removing the backwards compatibility feature. Thus, if you still
+have "%s" somewhere in a setting of pid_file_path, you should remove it.
+
+6. There has been an extension to lsearch files. The keys in these files may
+now be quoted in order to allow for whitespace and colons in them. This means
+that if you were previously using keys that began with a doublequote, you will
+now have to wrap them with extra quotes and escape the internal quotes. The
+possibility that anybody is actually doing this seems extremely remote, but it
+is documented just in case.
+
+
+Version 4.10
+------------
+
+The build-time parameter EXIWHAT_KILL_ARG has been renamed EXIWHAT_KILL_SIGNAL
+to better reflect its function. The OS-specific files have been updated. Only
+if you have explicitly set this in your Makefile (highly unlikely) do you need
+to change anything.
+
+****
