@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.8 2004/11/24 15:04:11 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.9 2004/11/24 16:32:34 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1796,5 +1796,12 @@ That is, try the local part and * at each of the partial domain values.
 This could be added to "verify=header_syntax" or, if the incompatibility is
 felt to be too great, an additional condition, or a sub-option, could be added.
 ------------------------------------------------------------------------------
---- HWM 307 ------------------------------------------------------------------
+
+(308) 24-Nov-04 S Add $body_longlinecount and $header_longlinecount
+
+These variables would hold the number of physical lines in the body and header
+that were longer than 998 bytes. This would be fiddly to implement because of
+the way Exim currently reads the input. It isn't just a trivial patch.
+------------------------------------------------------------------------------
+--- HWM 308 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
