@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.4.2.3 2004/12/10 14:59:08 tom Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.4.2.4 2004/12/15 14:07:20 tom Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -337,23 +337,26 @@ EXIM_MONITOR=eximon.bin
 
 # Uncomment the following lines to add SPF support. You need to have libspf2
 # installed on your system (www.libspf2.org). Depending on where it is installed
-# you may have to edit the EXPERIMENTAL_CFLAGS line.
+# you may have to edit the CFLAGS and LDFLAGS lines.
 #EXPERIMENTAL_SPF=yes
-#EXPERIMENTAL_CFLAGS=$EXPERIMENTAL_CFLAGS -lspf2 -I/usr/local/include
+#CFLAGS  += -I/usr/local/include
+#LDFLAGS += -lspf2
 
 # Uncommend the following lines to add SRS (Sender rewriting scheme) support.
 # You need to have libsrs_alt installed on your system (srs.mirtol.com).
-# Depending on where it is installed you may have to edit the EXPERIMENTAL_CFLAGS
-# line.
+# Depending on where it is installed you may have to edit the CFLAGS and
+# LDFLAGS lines.
 #EXPERIMENTAL_SRS=yes
-#EXPERIMENTAL_CFLAGS=$EXPERIMENTAL_CFLAGS -lsrs_alt -I/usr/local/include
+#CFLAGS  += -I/usr/local/include
+#LDFLAGS += -lsrs_alt
 
 # Uncommend the following lines to add Brightmail AntiSpam support. You need
 # to have the Brightmail client SDK installed. Please check the experimental
-# documentation for implementation details. You need to edit the EXPERIMENTAL_CFLAGS
-# line.
+# documentation for implementation details. You need to edit the CFLAGS and
+# LDFLAGS lines.
 #EXPERIMENTAL_BRIGHTMAIL=yes
-#EXPERIMENTAL_CFLAGS=$EXPERIMENTAL_CFLAGS -lxml2 -lbmiclient_single -I/path/to/include -L/path/to/lib
+#CFLAGS  += -I/opt/brightmail/bsdk-6.0/include
+#LDFLAGS += -lxml2 -lbmiclient_single -L/opt/brightmail/bsdk-6.0/lib
 
 
 
