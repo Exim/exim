@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.4 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.5 2004/12/21 11:12:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2556,13 +2556,13 @@ also by optional retry data.
 
 Read in large chunks into the big buffer and then scan through, interpreting
 the data therein. In most cases, only a single read will be necessary. No
-individual item will ever be anywhere near 500 bytes in length, so by ensuring
-that we read the next chunk when there is less than 500 bytes left in the
-non-final chunk, we can assume each item is complete in store before handling
-it. Actually, each item is written using a single write(), which is atomic for
-small items (less than PIPE_BUF, which seems to be at least 512 in any Unix) so
-even if we are reading while the subprocess is still going, we should never
-have only a partial item in the buffer.
+individual item will ever be anywhere near 2500 bytes in length, so by ensuring
+that we read the next chunk when there is less than 2500 bytes left in the
+non-final chunk, we can assume each item is complete in the buffer before
+handling it. Each item is written using a single write(), which is atomic for
+small items (less than PIPE_BUF, which seems to be at least 512 in any Unix and
+often bigger) so even if we are reading while the subprocess is still going, we
+should never have only a partial item in the buffer.
 
 Argument:
   poffset     the offset of the parlist item
@@ -2598,7 +2598,9 @@ completed.
 
 Each separate item is written to the pipe in a single write(), and as they are
 all short items, the writes will all be atomic and we should never find
-ourselves in the position of having read an incomplete item. */
+ourselves in the position of having read an incomplete item. "Short" in this 
+case can mean up to about 1K in the case when there is a long error message 
+associated with an address. */
 
 DEBUG(D_deliver) debug_printf("reading pipe for subprocess %d (%s)\n",
   (int)p->pid, eop? "ended" : "not ended");
@@ -2612,7 +2614,7 @@ while (!done)
   There will be only one read if we get all the available data (i.e. don't
   fill the buffer completely). */
 
-  if (remaining < 500 && unfinished)
+  if (remaining < 2500 && unfinished)
     {
     int len;
     int available = big_buffer_size - remaining;

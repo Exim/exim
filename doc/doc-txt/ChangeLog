@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.49 2004/12/21 09:40:01 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.50 2004/12/21 11:12:13 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -209,6 +209,14 @@ Exim version 4.50
 
 51. Small patch to Sieve code - explicitly set From: when generating an
     autoreply.
+
+52. Exim crashed if a remote delivery caused a very long error message to be
+    recorded - for instance if somebody sent an entire SpamAssassin report back
+    as a large number of 550 error lines. This bug was coincidentally fixed by
+    increasing the size of one of Exim's internal buffers (big_buffer) that
+    happened as part of the Exiscan merge. However, to be on the safe side, I
+    have made the code more robust (and fixed the comments that describe what
+    is going on).
 
 
 Exim version 4.43
