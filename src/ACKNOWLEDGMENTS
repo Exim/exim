@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.7 2004/11/24 15:43:36 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.8 2004/12/20 14:57:05 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  24 November 2004
+Last updated:  20 December 2004
 
 
 THE OLD LIST
@@ -158,6 +158,7 @@ Chris Liddiard            Fix for bug in exiqsumm
 Chris Lightfoot           Patch for -restore-times in exim_lock
 Edgar Lovecraft           Patch for ${str2b64:
 Torsten Luettgert         Suggested patch for proper integer overflow detection
+David Madole              Patch for SPA forced expansion failure bug
 Lionel Elie Mamane        Patch for IPv4/IPv6 listen() problem on USAGI Linux
                           Patch for recognizing IPv6 "scoped addresses"
                           Patch for callout caching bug

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/spa.c,v 1.1 2004/10/07 13:10:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/spa.c,v 1.2 2004/12/20 14:57:05 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -258,19 +258,12 @@ auth_spa_client(
        char *domain = NULL;
        char *username, *password;
 
-    if (smtp_write_command(outblock, FALSE, "AUTH %s\r\n",
-         ablock->public_name) < 0)
-               return FAIL_SEND;
-
-       /* wait for the 3XX OK message */
-       if (!smtp_read_response(inblock, (uschar *)buffer, buffsize, '3', timeout))
-               return FAIL;
-
        /* Code added by PH to expand the options */
 
        username = CS expand_string(ob->spa_username);
        if (username == NULL)
          {
+         if (expand_string_forcedfail) return CANCELLED;
          string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
            "authenticator: %s", ob->spa_username, ablock->name,
            expand_string_message);
@@ -280,6 +273,7 @@ auth_spa_client(
        password = CS expand_string(ob->spa_password);
        if (password == NULL)
          {
+         if (expand_string_forcedfail) return CANCELLED;
          string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
            "authenticator: %s", ob->spa_password, ablock->name,
            expand_string_message);
@@ -291,6 +285,7 @@ auth_spa_client(
          domain = CS expand_string(ob->spa_domain);
          if (domain == NULL)
            {
+           if (expand_string_forcedfail) return CANCELLED;
            string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
              "authenticator: %s", ob->spa_domain, ablock->name,
              expand_string_message);
@@ -299,6 +294,14 @@ auth_spa_client(
          }
 
        /* Original code */
+
+    if (smtp_write_command(outblock, FALSE, "AUTH %s\r\n",
+         ablock->public_name) < 0)
+               return FAIL_SEND;
+
+       /* wait for the 3XX OK message */
+       if (!smtp_read_response(inblock, (uschar *)buffer, buffsize, '3', timeout))
+               return FAIL;
 
        DSPA("\n\n%s authenticator: using domain %s\n\n",
                ablock->name, domain);

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.45 2004/12/20 12:29:10 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.46 2004/12/20 14:57:05 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -194,6 +194,13 @@ Exim version 4.50
     which it has found a message-specific retry record, was not finding
     messages that were in split spool directories. Consequently, it was
     deleting retry records that should have stayed in existence.
+
+48. Steve fixed some bugs in eximstats.
+
+49. The SPA authentication driver was not abandoning authentication and moving
+    on to the next authenticator when an expansion was forced to fail,
+    contradicting the general specification for all authenticators. Instead it
+    was generating a temporary error. It now behaves as specified.
 
 
 Exim version 4.43
