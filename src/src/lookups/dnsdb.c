@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.6 2004/12/20 15:24:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.7 2004/12/21 12:21:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -231,10 +231,12 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
   int searchtype = (type == T_ZNS)? T_NS :          /* record type we want */
                    (type == T_MXH)? T_MX : type; 
 
-  /* If the type is PTR, we have to construct the relevant magic lookup
-  key. This code is now in a separate function. */
+  /* If the type is PTR, we have to construct the relevant magic lookup key if
+  the original is an IP address (some experimental protocols are using PTR
+  records for different purposes where the key string is a host name). This
+  code for doing the reversal is now in a separate function. */
   
-  if (type == T_PTR)
+  if (type == T_PTR && string_is_ip_address(domain, NULL)) 
     {
     dns_build_reverse(domain, rbuffer);
     domain = rbuffer;

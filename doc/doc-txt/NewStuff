@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.21 2004/12/20 15:24:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.22 2004/12/21 12:21:46 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -233,6 +233,10 @@ Version 4.50
 
 19. The Exiscan patch is now merged into the main source. See src/EDITME for
     parameters for the build.
+
+20. If the key for a dnsdb lookup is not an IP address, it is used verbatim,
+    without component reversal and without the addition of in-addr.arpa or
+    ip6.arpa.
 
 
 Version 4.43
