@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.18 2004/11/25 13:54:31 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.19 2004/11/25 14:31:28 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -151,9 +151,10 @@ Version 4.44
     default - see 14 below), in the same way that multiple DNS records for a
     single item are handled.
 
-    The lookup fails only if all the DNS lookups fail. As long as at least one
-    of them yields some data, the lookup succeeds. However, if there is a
-    temporary DNS error for any of them, the lookup defers.
+    The dnsdb lookup fails only if all the DNS lookups fail. If there is a
+    temporary DNS error for any of them, the remaining lookups are still done,
+    and only if none of them succeed does the dnsdb lookup defer. As long as at
+    least one of the DNS lookups yields some data, the dnsdb lookup succeeds.
 
 15. It is now possible to specify the character to be used as a separator when
     a dnsdb lookup returns data from more than one DNS record. The default is a
@@ -198,7 +199,11 @@ Version 4.44
        2.1.168.192.black.list.tld  and  a.domain.black.list.tld
 
     Once a DNS record has been found (that matches a specific IP return
-    address, if specified), no further lookups are done.
+    address, if specified), no further lookups are done. If there is a
+    temporary DNS error, the rest of the sublist of domains or IP addresses is
+    tried. The dnslists item itself defers only if none of the other DNS
+    lookups in this sublist succeeds. In other words, a successful lookup for
+    any of the items in the sublist overrides a defer for a previous item.
 
 17. The log selector queue_time_overall causes Exim to output the time spent on
     the queue as an addition to the "Completed" message. Like queue_time (which

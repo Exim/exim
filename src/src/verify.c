@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.7 2004/11/22 11:30:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.8 2004/11/25 14:31:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2593,6 +2593,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
   else
     {
     int keysep = 0;
+    BOOL defer = FALSE; 
     uschar *keydomain; 
     uschar keybuffer[256];
   
@@ -2625,11 +2626,17 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
         dnslist_domain = string_copy(domain);
         HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n", 
           keydomain, domain);
+        return OK;   
         }
          
-      if (rc != FAIL) return rc;   /* OK or DEFER */
+      /* If the lookup deferred, remember this fact. We keep trying the rest
+      of the list to see if we get a useful result, and if we don't, we return
+      DEFER at the end. */
 
+      if (rc == DEFER) defer = TRUE;
       }    /* continue with next keystring domain/address */
+
+    if (defer) return DEFER;
     }  
   }        /* continue with next dnsdb outer domain */
 

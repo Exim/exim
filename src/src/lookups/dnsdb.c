@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.4 2004/11/24 15:43:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.5 2004/11/25 14:31:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -103,6 +103,7 @@ int size = 256;
 int ptr = 0;
 int sep = 0;
 int type = T_TXT;
+int failrc = FAIL;
 uschar *outsep = US"\n";
 uschar *equals, *domain;
 uschar buffer[256];
@@ -205,12 +206,17 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
   lookup function so that the facility could be used from other parts of the
   Exim code. The latter affects only what happens later on in this function,
   but for tidiness it is handled in a similar way. If the lookup fails,
-  continue with the next domain. */
+  continue with the next domain. In the case of DEFER, adjust the final 
+  "nothing found" result, but carry on to the next domain. */
   
   rc = dns_special_lookup(&dnsa, domain, type, NULL);
   
   if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
-  if (rc != DNS_SUCCEED) return DEFER;
+  if (rc != DNS_SUCCEED)
+    {
+    failrc = DEFER;
+    continue;
+    }
   
   /* Search the returned records */
 
@@ -301,7 +307,7 @@ store_reset(yield + ptr + 1);
 /* If ptr == 0 we have not found anything. Otherwise, insert the terminating 
 zero and return the result. */
 
-if (ptr == 0) return FAIL;
+if (ptr == 0) return failrc;
 yield[ptr] = 0;
 *result = yield;
 return OK;
