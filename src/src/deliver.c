@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.9 2005/03/22 14:50:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.10 2005/04/05 15:47:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1449,18 +1449,21 @@ return rc;
 *************************************************/
 
 /* Check that this base address hasn't previously been delivered to its routed
-transport. The check is necessary at delivery time in order to handle homonymic
-addresses correctly in cases where the pattern of redirection changes between
-delivery attempts (so the unique fields change). Non-homonymic previous
-delivery is detected earlier, at routing time (which saves unnecessary
-routing).
+transport. If it has been delivered, mark it done. The check is necessary at
+delivery time in order to handle homonymic addresses correctly in cases where
+the pattern of redirection changes between delivery attempts (so the unique
+fields change). Non-homonymic previous delivery is detected earlier, at routing
+time (which saves unnecessary routing).
 
-Argument:   the address item
+Arguments:
+  addr      the address item
+  testing   TRUE if testing wanted only, without side effects
+
 Returns:    TRUE if previously delivered by the transport
 */
 
 static BOOL
-previously_transported(address_item *addr)
+previously_transported(address_item *addr, BOOL testing)
 {
 (void)string_format(big_buffer, big_buffer_size, "%s/%s",
   addr->unique + (testflag(addr, af_homonym)? 3:0), addr->transport->name);
@@ -1470,7 +1473,7 @@ if (tree_search(tree_nonrecipients, big_buffer) != 0)
   DEBUG(D_deliver|D_route|D_transport)
     debug_printf("%s was previously delivered (%s transport): discarded\n",
     addr->address, addr->transport->name);
-  child_done(addr, tod_stamp(tod_log));
+  if (!testing) child_done(addr, tod_stamp(tod_log));
   return TRUE;
   }
 
@@ -2057,7 +2060,7 @@ while (addr_local != NULL)
   attempts. Non-homonymic previous delivery is detected earlier, at routing
   time. */
 
-  if (previously_transported(addr)) continue;
+  if (previously_transported(addr, FALSE)) continue;
 
   /* There are weird cases where logging is disabled */
 
@@ -2112,7 +2115,7 @@ while (addr_local != NULL)
       {
       BOOL ok =
         tp == next->transport &&
-        !previously_transported(next) &&
+        !previously_transported(next, TRUE) &&
         (!uses_lp  || Ustrcmp(next->local_part, addr->local_part) == 0) &&
         (!uses_dom || Ustrcmp(next->domain, addr->domain) == 0) &&
         same_strings(next->p.errors_address, addr->p.errors_address) &&
@@ -3390,7 +3393,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
   attempts. Non-homonymic previous delivery is detected earlier, at routing
   time. */
 
-  if (previously_transported(addr)) continue;
+  if (previously_transported(addr, FALSE)) continue;
 
   /* Force failure if the message is too big. */
 

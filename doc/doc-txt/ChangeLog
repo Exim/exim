@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.110 2005/04/05 14:33:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.111 2005/04/05 15:47:50 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -38,7 +38,7 @@ PH/04 Change 4.11/85 fixed an obscure bug concerned with addresses that are
       "previously delivered" was not happening when checking to see if an
       address could be batched with a previous (undelivered) one; under
       certain circumstances this could lead to multiple deliveries to the same
-      address. A one-line patch to add the appropriate test fixes the bug.
+      address.
 
 PH/05 Renamed the macro SOCKLEN_T as EXIM_SOCKLEN_T because AIX uses SOCKLEN_T
       in its include files, and this causes problems building Exim.
