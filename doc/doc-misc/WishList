@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.23 2005/03/03 09:04:26 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.24 2005/03/07 09:36:43 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1879,5 +1879,10 @@ solutions with a similar requirement."
 Currently the daemon tries 10 times at 30-second intervals to listen on an IP
 address. The wish is for options to control these numbers.
 ------------------------------------------------------------------------------
---- HWM 320 ------------------------------------------------------------------
+
+(321) 07-Mar-05 S Run an ACL on a sync error
+
+... and possibly "accept" or "deny" it.
+------------------------------------------------------------------------------
+--- HWM 321 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
