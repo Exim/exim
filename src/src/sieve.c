@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.7 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.8 2005/03/01 10:21:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2468,11 +2468,12 @@ while (*filter->pc)
 
       if (filter_personal(aliases,TRUE))
         {
+        if (filter_test == FTEST_NONE)
+          {
+          /* ensure oncelog directory exists; failure will be detected later */
 
-        /* ensure oncelog directory exists; failure will be detected later */
-
-        (void)directory_make(NULL, filter->vacation_directory, 0700, FALSE);
-
+          (void)directory_make(NULL, filter->vacation_directory, 0700, FALSE);
+          }
         /* build oncelog filename */
 
         key.character=(uschar*)0;
@@ -2489,91 +2490,102 @@ while (*filter->pc)
         md5_start(&base);
         md5_end(&base, key.character, key.length, digest);
         for (i = 0; i < 16; i++) sprintf(CS (hexdigest+2*i), "%02X", digest[i]);
-        capacity=Ustrlen(filter->vacation_directory);
-        start=capacity;
-        once=string_cat(filter->vacation_directory,&capacity,&start,US"/",1);
-        once=string_cat(once,&capacity,&start,hexdigest,33);
-        once[start] = '\0';
-
-        /* process subject */
-
-        if (subject.length==-1)
+        if (filter_test != FTEST_NONE)
           {
-          expand_header(&subject,&str_subject);
-          while (subject.length>=4 && Ustrncmp(subject.character,"Re: ",4)==0)
-          {
-            subject.character+=4;
-            subject.length-=4;
-          }
-          capacity=6;
-          start=6;
-          subject.character=string_cat(US"Auto: ",&capacity,&start,subject.character,subject.length);
-          subject.length=start;
-          }
-
-        /* add address to list of generated addresses */
-
-        addr = deliver_make_addr(string_sprintf(">%.256s", sender_address), FALSE);
-        setflag(addr, af_pfr);
-        setflag(addr, af_ignore_error);
-        addr->next = *generated;
-        *generated = addr;
-        addr->reply = store_get(sizeof(reply_item));
-        memset(addr->reply,0,sizeof(reply_item)); /* XXX */
-        addr->reply->to = string_copy(sender_address);
-        addr->reply->from = expand_string(US"$local_part@$domain");
-        /* Allocation is larger than neccessary, but enough even for split MIME words */
-        buffer_capacity=16+4*subject.length;
-        buffer=store_get(buffer_capacity);
-        addr->reply->subject=parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity);
-        addr->reply->oncelog=once;
-        addr->reply->once_repeat=days*86400;
-
-        /* build body and MIME headers */
-
-        if (reason_is_mime)
-          {
-          uschar *mime_body,*reason_end;
-#ifdef RFC_EOL
-          static const uschar nlnl[]="\r\n\r\n";
-#else
-          static const uschar nlnl[]="\n\n";
-#endif
-
-          for
-            (
-            mime_body=reason.character,reason_end=reason.character+reason.length;
-            mime_body<(reason_end-sizeof(nlnl)-1) && memcmp(mime_body,nlnl,sizeof(nlnl)-1);
-            ++mime_body
-            );
-          capacity = 0;
-          start = 0;
-          addr->reply->headers = string_cat(NULL,&capacity,&start,reason.character,mime_body-reason.character);
-          addr->reply->headers[start] = '\0';
-          capacity = 0;
-          start = 0;
-          if (mime_body+(sizeof(nlnl)-1)<reason_end) mime_body+=sizeof(nlnl)-1;
-          else mime_body=reason_end-1;
-          addr->reply->text = string_cat(NULL,&capacity,&start,mime_body,reason_end-mime_body);
-          addr->reply->text[start] = '\0';
+          debug_printf("Sieve: mail was personal, vacation file basename: %s\n", hexdigest);
           }
         else
           {
-          struct String qp;
+          capacity=Ustrlen(filter->vacation_directory);
+          start=capacity;
+          once=string_cat(filter->vacation_directory,&capacity,&start,US"/",1);
+          once=string_cat(once,&capacity,&start,hexdigest,33);
+          once[start] = '\0';
 
-          capacity = 0;
-          start = reason.length;
-          addr->reply->headers = US"MIME-Version: 1.0\n"
-                                 "Content-Type: text/plain;\n"
-                                 "\tcharset=\"utf-8\"\n"
-                                 "Content-Transfer-Encoding: quoted-printable";
-          addr->reply->text = quoted_printable_encode(&reason,&qp)->character;
+          /* process subject */
+
+          if (subject.length==-1)
+            {
+            expand_header(&subject,&str_subject);
+            while (subject.length>=4 && Ustrncmp(subject.character,"Re: ",4)==0)
+            {
+              subject.character+=4;
+              subject.length-=4;
+            }
+            capacity=6;
+            start=6;
+            subject.character=string_cat(US"Auto: ",&capacity,&start,subject.character,subject.length);
+            subject.length=start;
+            }
+
+          /* add address to list of generated addresses */
+
+          addr = deliver_make_addr(string_sprintf(">%.256s", sender_address), FALSE);
+          setflag(addr, af_pfr);
+          setflag(addr, af_ignore_error);
+          addr->next = *generated;
+          *generated = addr;
+          addr->reply = store_get(sizeof(reply_item));
+          memset(addr->reply,0,sizeof(reply_item)); /* XXX */
+          addr->reply->to = string_copy(sender_address);
+          addr->reply->from = expand_string(US"$local_part@$domain");
+          /* Allocation is larger than neccessary, but enough even for split MIME words */
+          buffer_capacity=16+4*subject.length;
+          buffer=store_get(buffer_capacity);
+          addr->reply->subject=parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity);
+          addr->reply->oncelog=once;
+          addr->reply->once_repeat=days*86400;
+
+          /* build body and MIME headers */
+
+          if (reason_is_mime)
+            {
+            uschar *mime_body,*reason_end;
+#ifdef RFC_EOL
+            static const uschar nlnl[]="\r\n\r\n";
+#else
+            static const uschar nlnl[]="\n\n";
+#endif
+
+            for
+              (
+              mime_body=reason.character,reason_end=reason.character+reason.length;
+              mime_body<(reason_end-sizeof(nlnl)-1) && memcmp(mime_body,nlnl,sizeof(nlnl)-1);
+              ++mime_body
+              );
+            capacity = 0;
+            start = 0;
+            addr->reply->headers = string_cat(NULL,&capacity,&start,reason.character,mime_body-reason.character);
+            addr->reply->headers[start] = '\0';
+            capacity = 0;
+            start = 0;
+            if (mime_body+(sizeof(nlnl)-1)<reason_end) mime_body+=sizeof(nlnl)-1;
+            else mime_body=reason_end-1;
+            addr->reply->text = string_cat(NULL,&capacity,&start,mime_body,reason_end-mime_body);
+            addr->reply->text[start] = '\0';
+            }
+          else
+            {
+            struct String qp;
+
+            capacity = 0;
+            start = reason.length;
+            addr->reply->headers = US"MIME-Version: 1.0\n"
+                                   "Content-Type: text/plain;\n"
+                                   "\tcharset=\"utf-8\"\n"
+                                   "Content-Transfer-Encoding: quoted-printable";
+            addr->reply->text = quoted_printable_encode(&reason,&qp)->character;
+            }
           }
         }
+        else if (filter_test != FTEST_NONE)
+          {
+          debug_printf("Sieve: mail was not personal, vacation would ignore it\n");
+          }
       }
     }
+    else break;
 #endif
-  else break;
   }
 return 1;
 }
@@ -2613,7 +2625,7 @@ filter->require_iascii_numeric=0;
 
 if (parse_white(filter)==-1) return -1;
 
-if (exec && filter->vacation_directory != NULL)   /* 2nd test added by PH */
+if (exec && filter->vacation_directory != NULL && filter_test == FTEST_NONE)
   {
   DIR *oncelogdir;
   struct dirent *oncelog;
@@ -2672,7 +2684,7 @@ while (parse_identifier(filter,CUS "require"))
 #ifdef VACATION
     else if (eq_asciicase(check,&str_vacation,0))
       {
-      if (filter->vacation_directory == NULL)
+      if (filter_test == FTEST_NONE && filter->vacation_directory == NULL)
         {
         filter->errmsg=CUS "vacation disabled";
         return -1;

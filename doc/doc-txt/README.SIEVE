@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.2 2005/03/01 10:21:43 ph10 Exp $
 
               Notes on the Sieve implementation for Exim
 
@@ -363,12 +363,6 @@ is not required by the vacation draft, which does not specify how
 the UTF-8 reason is processed to compose the resulting message.
 
 
-Envelope Sender
-
-The vacation draft does not specify the envelope sender.  This
-implementation uses the empty envelope sender to prevent mail loops.
-
-
 Default Subject
 
 The draft specifies that the default message subject is "Re: "
@@ -388,25 +382,10 @@ the current draft concerning automatic mail responses.
 
 Rate Limiting Responses
 
-The draft says:
-
-     Vacation responses are not just per address, but are per address
-     per vacation command.
-
-This is badly worded, because commands are not enumerated.  It meant
-to say:
-
-     Vacation responses are not just per address, but are per address
-     per reason string and per specified subject and ":mime" option.
-
-Existing implementations work that way and it makes more sense, too.
-Including the ":mime" option is mostly for correctness, as the reason
-strings with and without this option are rarely equal.
-
-This implementation hashes the reason, specified subject and ":mime"
-option and uses the hex string representation as filename within the
-"sieve_vacation_directory" to store the recipient addresses for this
-vacation parameter set.
+This implementation hashes the reason, specified subject, ":mime"
+option and ":addresses" option and uses the hex string representation
+as filename within the "sieve_vacation_directory" to store the recipient
+addresses for this vacation parameter set.
 
 The draft specifies that sites may define a minimum ":days" value than 1.
 This implementation uses 1.  The maximum value MUST greater than 7,
