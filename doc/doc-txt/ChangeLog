@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.47 2004/12/20 15:24:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.48 2004/12/21 09:26:31 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -202,6 +202,10 @@ Exim version 4.50
     on to the next authenticator when an expansion was forced to fail,
     contradicting the general specification for all authenticators. Instead it
     was generating a temporary error. It now behaves as specified.
+
+50. The default ordering of permitted cipher suites for GnuTLS was pessimal
+    (the order specifies the preference for clients). The order is now AES256,
+    AES128, 3DES, ARCFOUR128.
 
 
 Exim version 4.43

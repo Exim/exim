@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.2 2004/11/25 10:26:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.3 2004/12/21 09:26:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -59,10 +59,10 @@ static const int kx_priority[16] = {
   0 };
 
 static int default_cipher_priority[16] = {
-  GNUTLS_CIPHER_ARCFOUR_128,
+  GNUTLS_CIPHER_AES_256_CBC,
   GNUTLS_CIPHER_AES_128_CBC,
   GNUTLS_CIPHER_3DES_CBC,
-  GNUTLS_CIPHER_ARCFOUR_40,
+  GNUTLS_CIPHER_ARCFOUR_128,
   0 };
 
 static int cipher_priority[16];
