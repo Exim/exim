@@ -1,5 +1,5 @@
 #! /usr/bin/perl -w
-# $Cambridge: exim/doc/doc-scripts/fc2k,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+# $Cambridge: exim/doc/doc-scripts/fc2k,v 1.2 2004/10/14 09:53:11 ph10 Exp $
 
 # Script to read the HTML table of contents for the Exim FAQ and create an
 # HTML KWIC index out of it.
@@ -11,12 +11,14 @@
 
 $ignore_list = "
 
-a ability able about address addresses addressed affect affected
-after against all allow allowed allows already also although always am an and
-and/or any anybody anyone anything anywhere are aren't arrange arrive as at
+a ability able about absence access according actual address addresses addressed
+affect affected after against aka all allow allowed allows along already also
+although always am amount an ancient and and/or annoying another any anybody
+anyone anything anywhere apparent apparently are aren't around arrange arrive
+arrives as at
 
 back bad based basically be because been behave behaviour being best between
-bob both bug build builds built busy but by
+bob both box bug build builds built busy but by
 
 call called calls can can't cannot causes causing central certain code comes
 coming command commands complain complaining complains configure configured
@@ -26,12 +28,13 @@ currently customer
 day days defined deliver delivers delivered delivery deliveries did do does
 doesn't doing don't down during
 
-e-mail e-mails each easy else email emails entirely entries entry especially
-etc even ever every example exim exim's experiencing
+e-mail e-mails each easy either else email emails entirely entries entry
+especially etc even ever every example exim exim's experiencing
 
-far few file files find fine fly following for form found from fully
+far few file files find finds fine fix fixed fly following for form found from
+fully
 
-get gets getting given gives giving go goes going got
+generate generated get gets getting given gives giving go goes going got
 
 handle handles handled handling happen happens has have haven't having helpful
 him host hosts how however
@@ -44,8 +47,8 @@ keep keeps know knows
 
 like line lines look looked looking lot
 
-machine machines machine's mail mails main make me mean means message messages
-might more must my myself
+m machine machines machine's mail mails main make me mean means message messages
+might more much must my myself
 
 near need neither no nor not now
 
@@ -58,12 +61,12 @@ quite
 
 raised rather really reason rid right round run runs
 
-same say saying see seeing seem seems seen sees set setting she should so some
-somehow something sometimes stand state statement still strange such supposed
-system systems
+same say saying see seeing seem seems seen sees set setting she should simply
+sit so some somehow something sometimes stand state statement still strange such
+supposed system systems
 
-take takes than that the their them then there these they things think this
-those to try though to/for told too tried tries trying
+take takes tell than that the their them then there these they things think this
+those thought to try though to/for told too tried tries trying
 
 under until up use uses used using usually
 

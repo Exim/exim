@@ -1,4 +1,4 @@
-## $Cambridge: exim/doc/doc-src/FAQ.src,v 1.2 2004/10/12 09:54:44 ph10 Exp $
+## $Cambridge: exim/doc/doc-src/FAQ.src,v 1.3 2004/10/14 09:53:12 ph10 Exp $
 ##
 ## This file is processed by Perl scripts to produce an ASCII and an HTML
 ## version. Lines starting with ## are omitted. The markup used with paragraphs
@@ -44,11 +44,7 @@ people who provided the original information. This file would be amazingly
 cluttered if I tried to list them all. Suggestions for corrections,
 improvements, and additions are always welcome.
 
-This version of the FAQ applies to Exim 4.00 and later releases. It has been
-extensively revised, and material that was relevant only to earlier releases
-has been removed. As this caused some whole sections to disappear, I've taken
-the opportunity to re-arrange the sections and renumber everything except the
-configuration samples.
+This version of the FAQ applies to Exim 4.43 and later releases.
 
 References of the form Cnnn, Fnnn, Lnnn, and Snnn are to the sample
 configuration, filter, \^^local_scan()^^\, and ``useful script'' files. These
@@ -62,7 +58,7 @@ location is
 There are brief descriptions of these files at the end of this document.
 
 Philip Hazel
-Last update: 12-October-2004
+Last update: 14-October-2004
 
 
 The FAQ is divided into the following sections:
@@ -109,7 +105,7 @@ A0001: Exim should never crash. The author is always keen to know about
        release of Exim, in case the problem has already been fixed. The
        techniques described below can also be useful in trying to pin down
        exactly which circumstances caused the crash and what Exim was trying to
-       do at the time. If the crash is reproducable (by a particular message,
+       do at the time. If the crash is reproducible (by a particular message,
        say) keep a copy of that message.
 
 
@@ -152,17 +148,16 @@ A0002: Exactly how is it not working? Check the more specific questions in the
 
 
 Q0003: What does the error \*Child process of address_pipe transport returned
-       69 from command xxx*\ mean?
+       127 from command xxx*\ mean?
 
 A0003: It means that when a transport called \%address_pipe%\ was run to pass an
        email message by means of a pipe to another process running the command
-       xxx, the return code from that command was 69, which indicates some kind
+       xxx, the return code from that command was 127, which indicates some kind
        of error (the success return code is 0).
 
-       The most common meaning of exit code 69 is ``unavailable'', and this often
-       means that when Exim tried to run the command \(xxx)\, it failed. One
-       cause of this might be incorrect permissions on the file containing the
-       command. See also Q0026.
+       The most common meaning of exit code 127 is that when Exim tried to run
+       the command \(xxx)\, it failed. One cause of this might be incorrect
+       permissions on the file containing the command. See also Q0026.
 
 
 Q0004: My virtual domain setup isn't working. How can I debug it?
@@ -563,8 +558,8 @@ A0025: You need some internal quoting in there. Exim expands each individual
 
 
 Q0026: I'm trying to get Exim to connect an alias to a pipe, but it always
-       gives error code 69, with the comment \*(could mean service or program
-       unavailable)*\.
+       gives error code 127, with the comment \*(could mean unable to exec
+       or command does not exist)*\.
 
 A0026: If your alias entry looks like this:
 
@@ -600,17 +595,32 @@ Q0029: I can't seem to figure out why PAM support doesn't work correctly.
 
 A0029: There is a problem using PAM with shadow passwords when the calling
        program is not running as \/root/\. Exim is normally running as the
-       Exim user when authenticating a remote host. See this posting for one
-       way round the problem:
+       Exim user when authenticating a remote host.
 
-       \?http://www.exim.org/mailman/htdig/exim-users/Week-of-Mon-20010917/030371.html?\
+       (1) One solution can be found at \?http://www.e-admin.de/pam_exim/?\.
 
-       Another solution can be found at \?http://www.e-admin.de/pam_exim/?\.
+       (2) PAM 0.72 allows authorization as non-\/root/\, using setuid helper
+           programs. Furthermore, in \(/etc/pam.d/exim)\ you can explicitly
+           specify that this authorization (using setuid helpers) is only
+           permitted for certain users and groups.
 
-       PAM 0.72 allows authorization as non-\/root/\, using setuid helper programs.
-       Furthermore, in \(/etc/pam.d/exim)\ you can explicitelly specify that
-       this authorization (using setuid helpers) is only permitted for certain
-       users and groups.
+       (3) Another approach is to authenticate using the \^saslauthd^\ daemon,
+           which has its own interface to PAM. The daemon runs as root, so
+           there is no access problem.
+
+       (4) One suggested solution was to set
+
+==>          exim_group=shadow
+
+           in the configuration file, or the equivalent at build time. This is
+           very strongly discouraged. Do not do it! It works, but it's a
+           potential security exposure.  Exim is intended to run as a
+           non-privileged user for much of the time. This setting gives it have
+           privileged access to crucial security information all of the time,
+           simply for the purposes of authentication (which Exim will only
+           spend a tiny part of its total time doing). The result is that a
+           successful compromise of the Exim system can give someone direct
+           access to the system passwords.
 
 
 Q0030: I'm trying to use a query-style lookup for hosts that are allowed to
@@ -762,14 +772,19 @@ Q0039: I have installed Exim, but now I can't mail to \/root/\ any more. Why is
 A0039: Most people set up \/root/\ as an alias for the manager of the host. If
        you haven't done this, Exim will attempt to deliver to \/root/\ as if it
        were a normal user. This isn't really a good idea because the delivery
-       process would run as \/root/\. Exim has a trigger guard in the option
+       process would run as \/root/\. Exim has two trigger guards that stop
+       deliveries running as root. In the build-time configuration, there is a
+       setting called FIXED_NEVER_USERS, which defaults to \"root"\. This
+       setting cannot be overridden. In addition, the default runtime
+       configuration contains the option
 
 ==>      never_users = root
 
-       in the default configuration file. This prevents it from running as \/root/\
-       when doing any deliveries. If you really want to run local deliveries as
-       \/root/\, remove this line, but it would be better to create an alias for
-       \/root/\ instead.
+       just to be on the safe side. If you really want to run local deliveries
+       as \/root/\, you must use a version of Exim that was built without the
+       FIXED_NEVER_USERS option, and remove the above line from the runtime
+       configuration, but it would be better to create an alias for \/root/\
+       instead.
 
 
 Q0040: How can I stop undeliverable bounce messages (e.g. to routeable, but
@@ -931,9 +946,8 @@ Q0050: I am getting complaints from a customer who uses my Exim server for
 A0050: See \smtp_accept_max\, \smep_accept_max_per_host\ and \smtp_accept_reserve\.
 
 
-Q0051: When I try \"exim -bf"\ to test a system filter, I received the following
-       error message: \*Filter error: unavailable filtering command "fail" near
-       line 8 of filter file*\.
+Q0051: When I test my system filter with \-bf-\, I get the error \*filtering
+       command "fail" is disabled*\. Why is this?
 
 A0051: Use the \-bF-\ option to test system filters. This gives you access to the
        freeze and fail actions.
@@ -944,7 +958,7 @@ Q0052: What does \*ridiculously long message header*\ in an error report mean?
 A0052: There has to be some limit to the length of a message's header lines,
        because otherwise a malefactor could open an SMTP channel to your host,
        start a message, and then just send characters continuously until your
-       host ran out of memory. (Exim stores all the header lines in main
+       host runs out of memory. (Exim stores all the header lines in main
        memory while processing a message). For this reason a limit is imposed
        on the total amount of memory that can be used for header lines. The
        default is 1MB, but this can be changed by setting \\HEADER_MAXSIZE\\ in
@@ -1001,13 +1015,11 @@ A0056: You need to include \/apache/\ in the \trusted_users\ configuration optio
 Q0057: We've got people complaining about attachments that don't show up
        as attachments, but are included in the body of the message.
 
-A0057: These symptoms can be seen when some software passes a CRLF line
-       terminated message via the command line to an MTA that expects lines to
-       be terminated by LF only, and so preserves the CRs as data. If you can
-       identify the software that is doing this, try setting the \-dropcr-\
-       option on the command it uses to call Exim. Alternatively, you can set
-       \drop_cr\ in the configuration file, but then that will apply to all
-       input.
+A0057: In the past, these symptoms could be seen when some software passed a
+       CRLF line terminated message via the command line, because Exim expected
+       lines to be terminated by LF only, and so it preserved the CRs as data.
+       Modern versions of Exim (4.21 or later) use heuristics to try to do the
+       right thing with line endings.
 
 
 Q0058: What does the error \*failed to open DB file \(/var/spool/exim/db/retry)\:
@@ -1055,9 +1067,10 @@ Q0060: Why am I getting the error \*failed to expand \"/data/lists/lists/${lc"\
 
 ==>      require_files = MAILMAN_HOME/lists/${lc:$local_part}/config.db
 
-A0060: The value of \"require_files"\ is a \*list*\ in which each item is
-       separately expanded. You need either to double the colon, or switch to
-       a different list separator.
+A0060: The value of \"require_files"\ is a list in which each item is
+       separately expanded. In other words, the splitting into items happens
+       before the string expansion. You need either to double the colon, or
+       switch to a different list separator.
 
 
 Q0061: What does the error \*Too many ``Received'' headers - suspected mail
@@ -1076,17 +1089,27 @@ A0061: Whenever a message passes through an MTA, a ::Received:: header gets
        copies of all messages to be delivered on both of them.
 
 
-Q0062: When I try to start an Exim daemon it crashes. I ran a debugger and
-       discovered that the crash is happening in the function \^^getservbyname()^^\.
-       What's going on?
+Q0062: When I try to start an Exim daemon with \-bd-\ it crashes. I ran a
+       debugger and discovered that the crash is happening in the function
+       \^^getservbyname()^^\. What's going on?
 
 A0062: What have you got in the file \(/etc/nsswitch.conf)\? If it contains this
        line:
 
 ==>      services:       db files
 
-       try removing the \"db"\. (Your system is trying to look in some kind of
-       database before searching the file \(/etc/services)\.)
+       try removing the \"db"\. Your system is trying to look in some kind of
+       database before searching the file \(/etc/services)\, and there is an
+       incompatibility the is causing the function \^^getservbyname()^^\ crash.
+       This is an OS problem. See, for instance:
+
+       \?http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=129025?\
+
+       Another workaround in Exim is to set
+
+==>      daemon_smtp_port = 25
+
+       in the configuration, to stop Exim calling \^^getservbyname()^^\.
 
 
 Q0063: When I try to start an Exim daemon, nothing happens. There is no
@@ -1301,7 +1324,8 @@ A0076: You are probably putting your reject items into the main log as well;
 
 ==>	 logger -p mail.notice test
 
-       and seeing which logs it goes into.
+       and seeing which logs it goes into. From Exim release 4.31 it is
+       possible to disable the rejectlog by setting \write_rejectlog\ false.
 
 
 Q0077: I've installed Exim and it is delivering mail just fine. However, when I
@@ -1423,7 +1447,7 @@ A0083: The only thing you can do in Exim is to set the
 
 ==>      user_pref("mail.suppress_sender_header", true);
 
-       Netscape \*must*\ be shutdown while doing this.
+       Netscape must be shut down while doing this.
 
 
 Q0084: I want to set up an alias that pipes a message to \^gpg^\ and then pipes
@@ -1463,14 +1487,13 @@ A0086: SMTP is a ``lock-step'' protocol, which means that, at certain points in
        malefactious clients who send a bunch of SMTP commands (usually to
        transmit spam) without waiting for any replies.
 
-       This error is also provoked if the client is trying to start up a TLS
-       session immediately on connection, without using the STARTTLS command.
-       See Q1707 for a discussion of this case.
+       This error is also provoked if a client unexpectedly tries to start up a
+       TLS session immediately on connection, without using the STARTTLS
+       command. See Q1707 for a discussion of this case.
 
 
 Q0087: What does \*rejected after DATA: malformed address: xx@yy may not follow
-       <xx@yy> : failing address in "from" header*\ mean? (I've obscured the
-       real email addresses.)
+       <xx@yy> : failing address in "from" header*\ mean?
 
 A0087: Your DATA ACL contains
 
@@ -1517,9 +1540,9 @@ A0088: Exim 4 sets an obscure TCP/IP parameter called TCP_NODELAY. This
 Q0089: What does the error \*kernel: application bug: exim(12099) has SIGCHLD
        set to SIG_IGN but calls wait()*\ mean?
 
-A0089: This was a bad interaction between a relatively recent change to the
-       Linux kernel and some ``belt and braces'' programming in Exim. The
-       following explanation is taken from Exim's change log:
+A0089: This was a bad interaction between a change to the Linux kernel and some
+       ``belt and braces'' programming in Exim. The following explanation is
+       taken from Exim's change log:
 
        When Exim is receiving multiple messages on a single connection, and
        spinning off delivery processess, it sets the SIGCHLD signal handling to
@@ -1550,31 +1573,16 @@ Q0091: Why is Exim giving the error \*Failed to send message from address_reply
 A0091: See Q0065.
 
 
-Q0092: Exim crashes when I try to start the daemon, but works fine otherwise.
-
-A0092: There was a known problem (a db incompatibility) that made the function
-       \^^getservbyname()^^\ crash in some operating systems. See, for 
-       instance:
-       
-       \?http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=129025?\ 
-       
-       The workaround in Exim is to set
-       
-==>      daemon_smtp_port = 25
-
-       in the configuration, to stop Exim calling the failing function. 
-       
-
-Q0093: The error message \*Program received signal SIGINT, Interrupt.*\ occurs 
+Q0092: The error message \*Program received signal SIGINT, Interrupt.*\ occurs
        when I try to use Exim with PostgreSQL.
-       
-A0093: Check that you have not set
+
+A0092: Check that you have not set
 
 ==>      log_statement=true
 
-       in the PostgreSQL configuration file. It seems that this causes 
-       PostgreSQL to return logging information as the first row in a query 
-       result, which totally confuses Exim. 
+       in the PostgreSQL configuration file. It seems that this causes
+       PostgreSQL to return logging information as the first row in a query
+       result, which totally confuses Exim.
 
 
 
@@ -1644,6 +1652,11 @@ A0104: It depends on where you are coming from.
        compatible with old spool files and hints databases, so that upgrading
        can be done on a running system. All that should be necessary is to
        install a new binary and then HUP the daemon.
+
+       \**Warning**\: If you have changed the release of your DBM library, so
+       that your new Exim is linked with a different release than the old one,
+       you may encounter errors when Exim attempts to access the old hints
+       databases. See Q0055.
 
 
 Q0105: What does the error \*install-info: command not found*\ mean?
@@ -1810,11 +1823,11 @@ A0116: One common problem, especially when you have several different versions
        of BDB installed on the same host, is that the header files and library
        files for BDB are not in a standard place. You therefore need to tell
        Exim where they are, by setting INCLUDE and DBMLIB in your
-       \(Local/Makefile)\. For example, I use this on my workstation when
-       I want to build with DB 4.1:
+       \(Local/Makefile)\. For example, you could use this when you want to
+       build with DB 4.1:
 
-==>      INCLUDE=-I/opt/local/include/db-4.1
-         DBMLIB=/opt/local/lib/db-4.1/libdb.a
+==>      INCLUDE=-I/usr/local/include/db-4.1
+         DBMLIB=/usr/local/lib/db-4.1/libdb.a
 
        Specifying the complete library file like this will cause it to be
        statically linked with Exim. You'll have to check to see where these
@@ -1898,7 +1911,7 @@ A0117: Here! This is a contribution from a RedHat user, somewhat edited. On
 
 ==>      make install
 
-       You \*must*\ be \/root/\ to do this. You do not have to be root for any of
+       You must be \/root/\ to do this. You do not have to be root for any of
        the previous building activity.
 
        (6) Run some tests on Exim; see if it will do local and remote
@@ -1947,6 +1960,12 @@ A0119: Exiscan is at \?http://duncanthrax.net/exiscan-acl/?\.
 [[br]]
        A mini-HOWTO (PDF file) about scanning and virus scanning, and some RPMs
        can be found at \?http://www.timj.co.uk/linux/exim.php?\.
+
+
+Q0120: I'm trying to compile with LOOKUP_WHOSON, but I keep getting \*In
+       function `whoson_find': undefined reference to `wso_query'*\.
+
+A0120: Try adding \"-lwhoson"\ to your LOOKUP_LIBS setting in \(Local/Makefile)\.
 
 
 
@@ -2067,6 +2086,20 @@ A0207: Because \caseful_local_part\ is not set (in the default configuration)
        for the \%dnslookup%\ router. This does not matter because the local
        part takes no part in the routing, and the actual local part that is
        sent out in the RCPT command is always the original local part.
+
+
+Q0208: I can't get a lookup to work in a domain list. I'm trying this:
+
+==>      domainlist local_domains = @:localhost:${lookup pgsql{SELECT ...
+
+A0208: Does the lookup return a colon separated list of domains? If not, you
+       are using the wrong kind of lookup. The most common way of using a
+       lookup in a domain list is something like this:
+
+==>      domainlist local_domains = @:localhost:pgsql;SELECT ...
+
+       Using that syntax, if the query succeeds, the domain is considered to be
+       in the list. The value that is returned is not relevant.
 
 
 
@@ -2218,7 +2251,7 @@ A0307: The first thing in a \route_list\ item is a single pattern, not a list of
 ==>      route_list = foo $domain; bar $domain
 
        Note the semicolon separator. This is because the second thing in each
-       item can itself be a list - of hosts.
+       item can itself be a colon-separated list of hosts.
 
 
 Q0308: I have a domain for which some local parts must be delivered locally,
@@ -2235,7 +2268,7 @@ A0308: One possible way of doing this is as follows: Assuming you are using a
            ignore_target_hosts = 127.0.0.0/8
            no_more
 
-       Then add a second router which handles the local parts that are not to
+       Then add a second router to handle the local parts that are not to
        be delivered locally:
 
 ==>      special_remote:
@@ -3229,22 +3262,22 @@ A0432: Exim doesn't know that you are using NIS; it just calls the \^^getpwnam()
        This should be placed before any router that makes any use of NIS,
        typically at the start of your local routers. How does it work? If
        your NIS server is reachable, the lookup will take place, and whether it
-       succeeds or fails, the result is an empty strting. This causes the
+       succeeds or fails, the result is an empty string. This causes the
        router to decline, and the address is passed to the following routers.
        If your NIS server is down, the lookup defers, and this causes the
        router to defer. A verification of an incoming address gets a temporary
        rejection, and a delivery is deferred till later.
 
 
-Q0433: How can I arrange for a single address to be processed by \*both*\
-       \%redirect%\ \*and*\ \%accept%\?
+Q0433: How can I arrange for a single address to be processed by both
+       \%redirect%\ and \%accept%\?
 
 A0433: Check out the \unseen\ option.
 
 
 Q0434: How can I redirect all local parts that are not in my system aliases to
        a single address? I tried using an asterisk in the system alias file
-       with an \"lsearch*"\ lookup, but that send \*all*\ messages to the
+       with an \"lsearch*"\ lookup, but that sent all messages to the
        default address.
 
 A0434: If your alias file generates addresses in the local domain, they are
@@ -3439,7 +3472,7 @@ A0511: The system filter runs as \/root/\ in Exim 4, unless you set
        ``delivery'') the transport runs as the same user, unless it has a
        \user\ setting of its own. Normally, deliveries are not allowed to run
        as \/root/\ as a security precaution; this is implemented by the
-       \never_users\ option.
+       \never_users\ option (see Q0039).
 
        The easiest solution is to add this to your configuration:
 
@@ -3989,7 +4022,8 @@ A0626: You need to rewrite the local part to the correct case before running
 
        The setting of \redirect_router\ causes processing of the rewritten
        address to start at the next router, instead of the first router. See
-       also Q0630, and C045 for a more complete Cyrus configuration.
+       also Q0630 and Q0414, and see C045 for a more complete Cyrus
+       configuration.
 
 
 Q0627: Is there a command I can send to Exim to retry all queued messages
@@ -4010,10 +4044,8 @@ A0628: See Q0615 and Q0620.
 Q0629: I'm having trouble with quotas and Courier, because Exim is not handling
        maildirsize files.
 
-A0629: You will do better to move the quota handling to Courier. Use \^maildrop^\
-       as your MDA rather than direct Exim delivery.  This also has the
-       advantage that if you give web access to the mail spool (over \^sqwebmail^\)
-       you can then use the web front end to edit \^maildrop^\ filter files.
+A0629: You must be using an old version of Exim; it has supported maildirsize
+       files since release 4.30.
 
 
 Q0630: How can I configure Exim to deliver to a Cyrus message store?
@@ -4048,9 +4080,22 @@ A0630: (1) The reference manual contains an example that uses pipe delivery.
 Q0631: I would like to choose a retry rule based on on the sender rather than
        the recipient address. Is this possible?
 
-A0631: Yes. The address part of a retry rule is matched as a single-item
-       address list. Such lists are always expanded, so you can use something
-       like this:
+A0631: Yes. In release 4.43 and later releases, you can do this directly by
+       adding a third item to a retry rule of the form "senders=<address
+       list>". The retry timings themselves then become the fourth item. For
+       example:
+
+==>      *   *   senders=:   F,1h,30m
+
+       would match all bounce messages. If the address list contains white
+       space, it must be enclosed in quotes. For example:
+
+==>      a.domain  timeout  senders="x@b.dom : y@c.dom"  G,8h,10m,1.5
+
+       If you are using an earlier release of Exim, you can still achieve the
+       effect, but in a more complicated way. The address part of a retry rule
+       is matched as a single-item address list. Such lists are always
+       expanded, so you can use something like this:
 
 ==>      "${if eq{$sender_address}{xxx}{*@*}{no@no}}" quota F,1h,10m; ...
 
@@ -4142,7 +4187,7 @@ A0702: Wherever possible, inspection and rejection is best done automatically
        If, after inspection, you decide not to deliver the message, it is
        safest to discard it, using the \-Mrm-\ option. Use of the \-Mg-\ option
        to force a bounce carries the risk of ``collateral spam'' if the sender
-       address is faked.
+       address is faked (as it usually is in spam).
 
 
 Q0703: How can I test that my spam blocks are working?
@@ -4165,8 +4210,8 @@ A0703: The \-bh-\ option allows you to run a testing SMTP session as if from a
        bounce message).
 
 
-Q0704: How can I test that Exim is correctly configured to use the Realtime
-       Blackhole List (RBL)?
+Q0704: How can I test that Exim is correctly configured to use a DNS black list
+       such as the Realtime Blackhole List (RBL)?
 
 A0704: The \-bh-\ option allows you to run a testing SMTP session as if from a
        given address. The \^exim_checkaccess^\ utility provides a more packaged
@@ -4236,7 +4281,11 @@ A0705: Exim's own control facilities can do all that tcpwrappers can do.
 Q0706: How can I get POP-auth-before-relay (aka POP-before-SMTP) support in
        Exim?
 
-A0706: Exim 4 supports the ``whoson'' (\?http://whoson.sourceforge.net?\)
+A0706: A cleaner way of authentication is to use the SMTP AUTH facility, which
+       does not require a prior use of POP. However, it is possible to do what
+       you have asked for:
+
+       Exim 4 supports the ``whoson'' (\?http://whoson.sourceforge.net?\)
        facility for doing this. If you set this up, you can do the check in an
        Exim ACL by a statement like this:
 
@@ -4423,16 +4472,21 @@ A0713: One way of achieving this is to deliver all messages via a pipe to a
                                 {eq {$sender_host_address}{127.0.0.1}}}\
                                 {0}{1}}
 
-       One problem is that this approach scans the message for each recipient,
-       not just once per message.
+       One problem is that this approach, by default, scans the message for
+       each recipient, not just once per message. However, you can set the
+       \batch_max\ option on the transport to allow it to send a single copy
+       for multiple recipients.
 
        The virus_scan transport should be set up to pipe the message to a
        suitable checking program or script which runs as a trusted user. This
        can then re-submit the message to Exim, using \-oMr-\ to set the received
-       protocol to \"scanned-ok"\, and the \-f-\ option to set the correct envelope
-       sender address. \**Warning:**\ If you forget to make the resubmitting process
-       run as a trusted user, the received protocol does not get set, and you
-       are likely to generate a loop.
+       protocol to \"scanned-ok"\. It is probably easiest to use the Batch SMTP
+       (BSMTP) facilities for passing the sender address and the recipient
+       addresses to the checker and then back to Exim (using the \-bS-\
+       command line option). \**Warning:**\ If you forget to make the
+       resubmitting process run as a trusted user, the sender address will be
+       incorrect and what is worse, the received protocol does not get set, and
+       you are likely to generate a loop.
 
 
 Q0714: Is there a way to configure Exim to reject mail to a certain local host?
@@ -4564,10 +4618,10 @@ A0723: You need to have this setting in your PLAIN authenticator:
 
 ==>      server_prompts = :
 
-       This is missing in the examples in all but the most recent Exim
-       documentation, because it was not realized that PLAIN authentication
-       could be requested by a client without sending the data with the
-       request. If the data is not sent, an empty prompt is expected.
+       This is missing in the examples in early Exim documentation, because it
+       was not realized that PLAIN authentication could be requested by a
+       client without sending the data with the request. If the data is not
+       sent, an empty prompt is expected.
 
 
 Q0724: I have used \":fail:"\ in some aliases; when one of these addresses is
@@ -4802,6 +4856,79 @@ Q0739: Does Exim support SPF?
 A0739: An Exim ACL can be used. See \?http://spf.pobox.com/downloads.html?\.
 
 
+Q0740: How can I change the MAIL FROM address that is used for callouts?
+
+A0740: It depends on which type of callout you are using.
+
+       (1) For envelope sender verification callouts, you cannot make any
+           change. My view is that an envelope sender verification is testing
+           whether Exim could send a bounce to that address. Therefore, it must
+           use \"MAIL FROM:<>"\ because that is what it would do if it were
+           sending a bounce message. If \"MAIL FROM:<>"\ is rejected, it means
+           Exim could not send a bounce. Therefore the callout fails.
+
+       (2) For verifying addresses in the ::From::, ::Sender::, or ::Reply-to::
+           header lines (the \"verify = header_sender"\ condition), it is
+           possible to make a change, on the grounds that these addresses are
+           not necessarily ones that must accept bounce messages. You can do
+           this by adding a \"mailfrom"\ option, like this:
+
+==>          require  verify = header_sender/callout=mailfrom=abcd@x.y.z
+
+       (3) It is also possible to make a change for the postmaster verification
+           option, also on the grounds that a postmaster address need not
+           accept bounces if it is never used as an envelope sender. Instead of
+           just \"postmaster"\, \"postmaster_mailfrom"\ is used, like this:
+
+==>          require  verify = sender/callout=postmaster_mailfrom=abcd@x.y.z
+
+       (4) For recipient verification, there are three possibilities. The
+           default is to use \"MAIL FROM:<>"\. If the \use_postmaster\ option
+           is given, for example:
+
+==>          require  verify = recipient/callout=use_postmaster
+
+           then the address for MAIL FROM is made up from the local part
+           \"postmaster"\ and the contents of \$qualify_domain$\.
+
+           Alternatively, if the \use_sender\ option is given, the sender
+           address of the incoming message is used. You should use this option
+           only when you know that the receiving host makes use of the sender
+           address when verifying. The reason is that the callout cache is much
+           less effective in this case, causing many more callouts to be
+           performed.
+
+       In all cases when you configure Exim to use a non-empty address in MAIL
+       FROM during callout processing, you should think carefully about what
+       might happen if this causes the called host to make its own callout back
+       to your host. Make sure that callout loops cannot happen.
+
+
+Q0741: How can I get Outlook Express to use TLS when authenticating?
+
+A0741: If you check \"auth required"\ in OE, it will authenticate as soon as
+       it sees AUTH LOGIN, in preference to STARTTLS. The trick is to
+       advertise things to OE in a certain order. The first EHLO should
+       advertise STARTTLS but not AUTH, and only the second EHLO (after TLS
+       starts) should advert AUTH. One way of achieving this is to put, in
+       the main section of your Exim configuration:
+
+==>      auth_advertise_hosts = ${if eq{$tls_cipher}{}{127.0.0.1}{*}}
+
+       This means that the only host to which AUTH is advertised is 127.0.0.1
+       when the session is not encrypted (that is, before TLS has started). The
+       idea here is that there's no need for encryption for anything coming via
+       the loopback interface. For an encrypted session, however, AUTH is
+       advertised to all hosts.
+
+       You can also block the AUTH command itself for unencrypted connections,
+       by creating an ACL for \acl_smtp_auth\ that is something like this:
+
+==>      accept  encrypted = *
+         accept  hosts = 127.0.0.1
+         deny    message = TLS encryption required before AUTH
+
+
 
 8. REWRITING ADDRESSES
 
@@ -4999,7 +5126,7 @@ A1001: Splitting the spool directory has most benefit if there are times when
        delivered very quickly, and the queue is always less than, say, a few
        hundred messages, there isn't any need to do this. With larger queues,
        there is a definite performance benefit to splitting the spool. It shows
-       up earlier on some types of filing system, compared with others.
+       up earlier on some types of file system, compared with others.
 
        Exim was not designed for handling large queues. If you are in an
        enviroment where lots of messages remain on the queue for long periods
@@ -5709,11 +5836,19 @@ Q1703: I have some legacy clients that don't use STARTTLS, but which expect to
        negotiate a TLS session automatically on connection to the ssmtp port
        (465). Can Exim handle this?
 
-A1703: The \-tls-on-connect-\ option is available to handle this. You need to
-       run two instances of an Exim listener, listening on different ports, one
-       of which is started with \-tls-on-connect-\. You can either use two
-       daemons, or a single daemon, with the other listenever using \^inetd^\.
-       For example, here are commands to start two daemons:
+A1703: If you are using release 4.43 or later, you can set
+
+==>      tls_on_connect_ports = 465
+
+       and then arrange for your daemon to listen on both port 25 and port 465
+       by setting \daemon_smtp_ports\ or \local_interfaces\ or the \-X-\
+       command line option. Or use \(inetd)\ to listen on port 465.
+
+       If you are using an earlier release of Exim, you need to run two
+       Exim listeners, on different ports, one of which is started with the
+       \-tls-on-connect-\ option (which makes all ports act this way). You can
+       either use two daemons, or a single daemon, with the other listener
+       using \^inetd^\. For example, here are commands to start two daemons:
 
 ==>      exim -bd -q15m
          exim -bd -oX '[0.0.0.0]::465' -tls-on-connect
@@ -5753,15 +5888,8 @@ Q1707: I am trying to use TLS with Evolution as a client, and keep seeing this
 A1707: See Q0086 for a general explanation of the error. In this case, it
        probably means that Evolution is trying to negotiate a TLS session
        immediately it connects, without first using the STARTTLS command. This
-       was an older way of starting up TLS, before STARTTLS was defined. You
-       will have to run a separate instance of Exim using the
-       \-tls-on-connect-\ command line option to cater for this usage, and
-       listening on a different port. For example:
-
-==>      exim -bd -oX 465 -tls-on-connect
-
-       465 is the ``smtps'' port which is an unofficial standard for this kind
-       of SMTP server.
+       was an older way of starting up TLS, before STARTTLS was defined. See
+       Q1703 for how to deal with this.
 
 
 Q1708: I trying to use TLS with Outlook as a client on a box that is running
@@ -5905,7 +6033,7 @@ A5005: This seems to be an effect of using \^ghostview^\. Although the PostScrip
 Q5006: Why aren't there any man pages for Exim? I don't always carry my printed
        documentation.
 
-A5006: A single man page which lists the command line options is provided in
+A5006: A single man page that lists the command line options is provided in
        file \(doc/exim.8)\ in the Exim distribution. Several other forms of
        online documentation are available. As well as plain ASCII text, the
        there are two forms - Texinfo and HTML - which have a certain amount of
@@ -6108,8 +6236,7 @@ Q5021: What does Exim use for POP and IMAP as a default?  Do I have to install
 A5021: Yes. Exim provides MTA functionality. That is, it delivers mail. POP and
        IMAP are two of several ways of reading previously-delivered mail. Exim
        does not provide that functionality. You need to install POP and/or IMAP
-       daemons; there are several to choose from. There is a mailing list at
-       //pop-imap@exim.org// for the discussion of POP/IMAP issues.
+       daemons; there are several to choose from.
 
 
 Q5022: Is there an easy way of removing all queued messages at once in a safe
@@ -6301,6 +6428,14 @@ A5034: There is no direct way of doing this. However, you can achieve the
 ==>      warn  control = queue_only
 
        You can add other conditions as well, of course.
+
+
+Q5035: Does Exim run with different permissions between \-bt-\ and \-bh-\, or
+       between verifying and actual sending?
+
+A5035: Yes. For \-bt-\ it runs as root, as it would when delivering a message.
+       For \-bh-\, \-bv-\, and when actually receiving a message, it runs as
+       the Exim user.
 
 
 
@@ -6528,7 +6663,7 @@ A9606: The Debian Exim 4 package uses a quite uncommon, but elegant,
 
        This fits very well into the Debian system of configuration file
        management and is a great ease for the automatic configuration with
-       Debconf. However, it is \*very*\ different from the normal way Exim 4 is
+       Debconf. However, it is very different from the normal way Exim 4 is
        configured. Non-Debian users on the Exim mailing list will probably have
        difficulty in trying to answer specific questions about it. You may have
        to find a Debian expert.
@@ -6549,7 +6684,7 @@ A9608: A user who did this, using the Debian Exim 4 package, reported as
        (1) The exim4 package installs easily, and the exim (3.38) package
        uninstalls at the same time.
 
-       (2) Exim runs from \^inetd^\. Exim4 runs from \^/etc/init.d^\. \*Much*\ nicer!
+       (2) Exim runs from \^inetd^\. Exim4 runs from \^/etc/init.d^\. Much nicer!
 
        (3) The exim conffile lives in \(/etc/exim/exim.conf)\. The exim4 conffile
        lives in \(/var/lib/exim4/config.autogenerated)\. It is, as the name
@@ -6572,7 +6707,7 @@ A9608: A user who did this, using the Debian Exim 4 package, reported as
        which does the rebuild and also tells Exim to reread the changed
        configuration.]
 
-       (6) In my experience, you need to \*carefully*\ check the generated
+       (6) In my experience, you need to carefully check the generated
        configs. eg, it did not generate a system filter file reference in the
        \(config.autogenerated)\. I didn't bother too much, since this is a home
        setup.
@@ -6610,24 +6745,30 @@ A9609: If you are sure this isn't a policy issue (that is, your box isn't
 
 Q9701: Exim builds fine with \^gcc^\ on SunOS 4 but crashes inside \^^sscanf()^^\.
 
-A9701: Make sure you are liking with the GNU \^ld^\ linker and not the system
+A9701: Make sure you are linking with the GNU \^ld^\ linker and not the system
        version of \^ld^\.
 
 
-Q9702: How can I get rid of spurious \"^M"\ characters in messages sent from
-       CDE \^dtmail^\?
+Q9702: How can I get rid of spurious \"^M"\ (carriage return) characters in
+       messages sent from CDE \^dtmail^\?
 
 A9702: CDE \^dtmail^\ passes messages to Exim via the command line interface with
-       lines terminated by CRLF, instead of the Unix convention of just LF. As
-       Exim is an 8-bit clean program it treats the CR as just another data
-       character. Exim has a command line option called \-dropcr-\ which causes
-       it to ignore all CR characters in an incoming non-SMTP message. You
-       should configure \^dtmail^\ to add this option to the command it uses to
-       call Exim (using the path \(/usr/lib/sendmail)\). However, it has been
-       reported that it isn't possible to change this call from \^dtmail^\ by any
-       official means. An alternative approach is to replace \(/usr/lib/sendmail)\
-       by a filtering script which removes the spurious CRs from the input
-       before passing it to Exim.
+       lines terminated by CRLF, instead of the Unix convention of just LF.
+       This should not be a problem if you are using Exim release 4.21 or
+       later, as changes were made to detect CRLF line endings.
+
+       In earlier versions of Exim, CR would be treated as just another data
+       character. There was, however, a command line option called
+       \-dropcr-\ which caused Exim to ignore all CR characters in an incoming
+       non-SMTP message. (This option is a no-op in current releases.)
+
+       If you are using a pre-4.21 version of Exim, you should configure
+       \^dtmail^\ to add this option to the command it uses to call Exim (using
+       the path \(/usr/lib/sendmail)\). However, it has been reported that it
+       isn't possible to change this call from \^dtmail^\ by any official
+       means. An alternative approach is to replace \(/usr/lib/sendmail)\ by a
+       filtering script that removes the spurious CRs from the input before
+       passing it to Exim.
 
 
 Q9703: On SunOS 4 Exim crashes when looking up domains in the DNS that have
@@ -6713,7 +6854,7 @@ A9709: Look in the Exim file \(OS/os.h-SunOS5.h)\ for the line
 ==>      #define LOAD_AVG_FIELD          value.ui32
 
        and change \"ui32"\ to \"ul"\ (that's u followed by the letter ell, not
-       the digit one). Solaris 2.5.1 is getting \*very*\ old now...
+       the digit one). Solaris 2.5.1 is getting very old now...
 
 
 
@@ -6943,7 +7084,7 @@ A9812: You cannot do this in a single lookup, because you need separate lookups
            ${lookup{${mask:$sender_host_address/24}}lsearch*{/path/to/file}}\
            }}
 
-       Note that the first lookup does \*not*\ have an asterisk on the search
+       Note that the first lookup does not have an asterisk on the search
        type. If you have blocks of different sizes (/24, /26, etc) you have to
        configure it to do a separate lookup for each size, with just the final
        one using a default.
