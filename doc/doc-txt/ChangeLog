@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.17 2004/11/05 14:59:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.18 2004/11/05 16:53:28 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -64,6 +64,9 @@ Exim version 4.44
 
 17. A "Completed" log line is now written for messages that are removed from
     the spool by the -Mrm option.
+
+18. New variables $sender_verify_failure and $recipient_verify_failure contain
+    information about exactly what failed.
 
 
 Exim version 4.43

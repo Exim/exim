@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.4 2004/10/19 13:40:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.5 2004/11/05 16:53:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -453,6 +453,7 @@ extern int     received_headers_max;   /* Max count of Received: headers */
 extern int     received_time;          /* Time the message was received */
 extern uschar *recipient_data;         /* lookup data for recipients */
 extern uschar *recipient_unqualified_hosts; /* Permitted unqualified recipients */
+extern uschar *recipient_verify_failure; /* What went wrong */
 extern BOOL    recipients_discarded;   /* By an ACL */
 extern int     recipients_list_max;    /* Maximum number fitting in list */
 extern int     recipients_max;         /* Max permitted */
@@ -505,6 +506,7 @@ extern BOOL    sender_local;           /* TRUE for local senders */
 extern uschar *sender_rcvhost;         /* Host data for Received: */
 extern BOOL    sender_set_untrusted;   /* Sender set by untrusted caller */
 extern uschar *sender_unqualified_hosts; /* Permitted unqualified senders */
+extern uschar *sender_verify_failure;  /* What went wrong */
 extern address_item *sender_verified_list; /* Saved chain of sender verifies */
 extern address_item *sender_verified_failed; /* The one that caused denial */
 extern volatile BOOL sigalrm_seen;     /* Flag for sigalrm_handler */

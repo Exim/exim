@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.2 2004/10/19 13:40:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.3 2004/11/05 16:53:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -387,6 +387,7 @@ static var_entry var_table[] = {
   { "received_for",        vtype_stringptr,   &received_for },
   { "received_protocol",   vtype_stringptr,   &received_protocol },
   { "recipient_data",      vtype_stringptr,   &recipient_data },
+  { "recipient_verify_failure",vtype_stringptr,&recipient_verify_failure }, 
   { "recipients",          vtype_recipients,  NULL },
   { "recipients_count",    vtype_int,         &recipients_count },
   { "reply_address",       vtype_reply,       NULL },
@@ -407,6 +408,7 @@ static var_entry var_table[] = {
   { "sender_host_port",    vtype_int,         &sender_host_port },
   { "sender_ident",        vtype_stringptr,   &sender_ident },
   { "sender_rcvhost",      vtype_stringptr,   &sender_rcvhost },
+  { "sender_verify_failure",vtype_stringptr,  &sender_verify_failure }, 
   { "smtp_command_argument", vtype_stringptr, &smtp_command_argument },
   { "sn0",                 vtype_filter_int,  &filter_sn[0] },
   { "sn1",                 vtype_filter_int,  &filter_sn[1] },

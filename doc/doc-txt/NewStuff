@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.6 2004/11/04 12:19:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.7 2004/11/05 16:53:28 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -40,6 +40,27 @@ Version 4.44
        verify = sender/callout=5s,connect=1s
 
     If not specified, it defaults to the general timeout value.
+
+ 7. The new variables $sender_verify_failure and $recipient_verify_failure
+    contain information about exactly what failed. In an ACL, after one of
+    these failures, the relevant variable contains one of the following words:
+
+      qualify       the address was unqualified (no domain), and the message
+                    was neither local nor came from an exempted host;
+
+      route         routing failed;
+
+      mail          routing succeeded, and a callout was attempted; rejection
+                    occurred at or before the MAIL command (that is, on initial
+                    connection, HELO, or MAIL);
+
+      recipient     the RCPT command in a callout was rejected;
+
+      postmaster    the postmaster check in a callout was rejected.
+
+    The main use of these variables is expected to be to distinguish between
+    rejections of MAIL and rejections of RCPT.
+
 
 
 Version 4.43

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.2 2004/11/04 12:19:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.3 2004/11/05 16:53:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -151,6 +151,8 @@ BOOL done = FALSE;
 uschar *address_key;
 uschar *from_address;
 uschar *random_local_part = NULL;
+uschar **failure_ptr = is_recipient? 
+  &recipient_verify_failure : &sender_verify_failure;
 open_db dbblock;
 open_db *dbm_file = NULL;
 dbdata_callout_cache new_domain_record;
@@ -236,6 +238,7 @@ if (dbm_file != NULL)
       setflag(addr, af_verify_nsfail);
       addr->user_message = US"(result of an earlier callout reused).";
       yield = FAIL;
+      *failure_ptr = US"mail"; 
       goto END_CALLOUT;
       }
 
@@ -282,6 +285,7 @@ if (dbm_file != NULL)
           debug_printf("callout cache: domain does not accept "
             "RCPT TO:<postmaster@domain>\n");
         yield = FAIL;
+        *failure_ptr = US"postmaster"; 
         setflag(addr, af_verify_pmfail);
         addr->user_message = US"(result of earlier verification reused).";
         goto END_CALLOUT;
@@ -330,6 +334,7 @@ if (dbm_file != NULL)
       HDEBUG(D_verify)
         debug_printf("callout cache: address record is negative\n");
       addr->user_message = US"Previous (cached) callout verification failure";
+      *failure_ptr = US"recipient"; 
       yield = FAIL;
       }
     goto END_CALLOUT;
@@ -476,6 +481,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
 
   if (!done)
     {
+    *failure_ptr = US"mail"; 
     if (errno == 0 && responsebuffer[0] == '5')
       {
       setflag(addr, af_verify_nsfail);
@@ -550,7 +556,10 @@ for (host = host_list; host != NULL && !done; host = host->next)
       if (done)
         new_address_record.result = ccache_accept;
       else if (errno == 0 && responsebuffer[0] == '5')
+        {
+        *failure_ptr = US"recipient";  
         new_address_record.result = ccache_reject;
+        } 
 
       /* Do postmaster check if requested */
 
@@ -577,6 +586,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
           new_domain_record.postmaster_result = ccache_accept;
         else if (errno == 0 && responsebuffer[0] == '5')
           {
+          *failure_ptr = US"postmaster"; 
           setflag(addr, af_verify_pmfail);
           new_domain_record.postmaster_result = ccache_reject;
           }
@@ -810,7 +820,6 @@ BOOL allok = TRUE;
 BOOL full_info = (f == NULL)? FALSE : (debug_selector != 0);
 BOOL is_recipient = (options & vopt_is_recipient) != 0;
 BOOL expn         = (options & vopt_expn) != 0;
-
 int i;
 int yield = OK;
 int verify_type = expn? v_expn :
@@ -821,10 +830,16 @@ address_item *addr_new = NULL;
 address_item *addr_remote = NULL;
 address_item *addr_local = NULL;
 address_item *addr_succeed = NULL;
+uschar **failure_ptr = is_recipient? 
+  &recipient_verify_failure : &sender_verify_failure;
 uschar *ko_prefix, *cr;
 uschar *address = vaddr->address;
 uschar *save_sender;
 uschar null_sender[] = { 0 };             /* Ensure writeable memory */
+
+/* Clear, just in case */
+
+*failure_ptr = NULL;
 
 /* Set up a prefix and suffix for error message which allow us to use the same
 output statements both in EXPN mode (where an SMTP response is needed) and when
@@ -846,6 +861,7 @@ if (parse_find_at(address) == NULL)
     if (f != NULL)
       fprintf(f, "%sA domain is required for \"%s\"%s\n", ko_prefix, address,
         cr);
+    *failure_ptr = US"qualify";     
     return FAIL;
     }
   address = rewrite_address_qualify(address, is_recipient);
@@ -1044,7 +1060,8 @@ while (addr_new != NULL)
           }
         }
 
-      /* Can only do a callout if we have at least one host! */
+      /* Can only do a callout if we have at least one host! If the callout 
+      fails, it will have set ${sender,recipient}_verify_failure. */
 
       if (host_list != NULL)
         {
@@ -1068,6 +1085,10 @@ while (addr_new != NULL)
         }
       }
     }
+    
+  /* Otherwise, any failure is a routing failure */
+  
+  else *failure_ptr = US"route"; 
 
   /* A router may return REROUTED if it has set up a child address as a result
   of a change of domain name (typically from widening). In this case we always
@@ -1255,7 +1276,10 @@ else for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
     }
   }
 
-return yield;  /* Will be DEFER or FAIL if any one address has */
+/* Will be DEFER or FAIL if any one address has, only for full_info (which is 
+the -bv or -bt case). */
+
+return yield;  
 }
 
 

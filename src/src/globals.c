@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.4 2004/10/19 13:40:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.5 2004/11/05 16:53:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -742,6 +742,7 @@ uschar *received_protocol      = NULL;
 int     received_time          = 0;
 uschar *recipient_data         = NULL;
 uschar *recipient_unqualified_hosts = NULL;
+uschar *recipient_verify_failure = NULL;
 int     recipients_count       = 0;
 BOOL    recipients_discarded   = FALSE;
 recipient_item  *recipients_list = NULL;
@@ -879,6 +880,7 @@ BOOL    sender_local           = FALSE;
 uschar *sender_rcvhost         = NULL;
 BOOL    sender_set_untrusted   = FALSE;
 uschar *sender_unqualified_hosts = NULL;
+uschar *sender_verify_failure = NULL;
 address_item *sender_verified_list  = NULL;
 address_item *sender_verified_failed = NULL;
 int     sender_verified_rc     = -1;
