@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.13 2005/01/14 10:25:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.14 2005/01/27 10:26:14 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1465,6 +1465,7 @@ Arguments:
   se_mailfrom      mailfrom for verify; NULL => ""
   pm_mailfrom      sender for pm callout check (passed to verify_address())
   options          callout options (passed to verify_address())
+  verrno           where to put the address basic_errno 
 
 If log_msgptr is set to something without setting user_msgptr, the caller
 normally uses log_msgptr for both things.
@@ -1476,7 +1477,7 @@ Returns:           result of the verification attempt: OK, FAIL, or DEFER;
 int
 verify_check_header_address(uschar **user_msgptr, uschar **log_msgptr,
   int callout, int callout_overall, int callout_connect, uschar *se_mailfrom, 
-  uschar *pm_mailfrom, int options)
+  uschar *pm_mailfrom, int options, int *verrno)
 {
 static int header_types[] = { htype_sender, htype_reply_to, htype_from };
 int yield = FAIL;
@@ -1575,12 +1576,16 @@ for (i = 0; i < 3; i++)
       last of these will be returned to the user if all three fail. We do not
       set a log message - the generic one below will be used. */
 
-      if (new_ok != OK && smtp_return_error_details)
+      if (new_ok != OK)
         {
-        *user_msgptr = string_sprintf("Rejected after DATA: "
-          "could not verify \"%.*s\" header address\n%s: %s",
-          endname - h->text, h->text, vaddr->address, vaddr->message);
-        }
+        *verrno = vaddr->basic_errno; 
+        if (smtp_return_error_details)
+          {
+          *user_msgptr = string_sprintf("Rejected after DATA: "
+            "could not verify \"%.*s\" header address\n%s: %s",
+            endname - h->text, h->text, vaddr->address, vaddr->message);
+          }
+        }   
 
       /* Success or defer */
 

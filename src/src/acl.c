@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.17 2005/01/12 15:41:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.18 2005/01/27 10:26:14 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1207,14 +1207,20 @@ message if giving out verification details. */
 
 if (verify_header_sender)
   {
+  int verrno; 
   rc = verify_check_header_address(user_msgptr, log_msgptr, callout,
-    callout_overall, callout_connect, se_mailfrom, pm_mailfrom, verify_options);
-  if (smtp_return_error_details)
-    {
-    if (*user_msgptr == NULL && *log_msgptr != NULL)
-      *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
-    if (rc == DEFER) acl_temp_details = TRUE;
-    }
+    callout_overall, callout_connect, se_mailfrom, pm_mailfrom, verify_options,
+    &verrno);
+  if (rc != OK)
+    { 
+    *basic_errno = verrno;
+    if (smtp_return_error_details)
+      {
+      if (*user_msgptr == NULL && *log_msgptr != NULL)
+        *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
+      if (rc == DEFER) acl_temp_details = TRUE;
+      }
+    }   
   }
 
 /* Handle a sender address. The default is to verify *the* sender address, but

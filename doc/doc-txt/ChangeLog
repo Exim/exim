@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.74 2005/01/26 14:52:08 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.75 2005/01/27 10:26:14 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -345,6 +345,11 @@ Exim version 4.50
 
 73. $host_lookup_deferred has been added, to make it easier to detect DEFERs
     during host lookups.
+
+74. The defer_ok option of callout verification was not working if it was used
+    when verifying addresses in header lines, that is, for this case:
+
+      verify = header_sender/callout=defer_ok
 
 
 ----------------------------------------------------
