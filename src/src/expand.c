@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.2 2004/10/19 13:40:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -395,6 +395,7 @@ static var_entry var_table[] = {
   { "runrc",               vtype_int,         &runrc },
   { "self_hostname",       vtype_stringptr,   &self_hostname },
   { "sender_address",      vtype_stringptr,   &sender_address },
+  { "sender_address_data", vtype_stringptr,   &sender_address_data },
   { "sender_address_domain", vtype_domain,    &sender_address },
   { "sender_address_local_part", vtype_localpart, &sender_address },
   { "sender_data",         vtype_stringptr,   &sender_data },

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.12 2004/10/19 11:40:52 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.13 2004/10/19 13:40:39 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -46,6 +46,13 @@ Exim version 4.44
     received from the command line. Otherwise the child will trigger a lookup
     failure and thereby defer the delivery if it tries to use (for example) a
     cached ldap connection that the parent has called unbind on.
+
+12. If verify=recipient was followed by verify=sender in a RCPT ACL, the value
+    of $address_data from the recipient verification was clobbered by the
+    sender verification.
+
+13. The value of address_data from a sender verification is now available in
+    $sender_address_data in subsequent conditions in the ACL statement.
 
 
 Exim version 4.43

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.3 2004/10/19 11:04:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.4 2004/10/19 13:40:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -489,6 +489,7 @@ extern uschar *search_error_message;   /* Details of lookup problem */
 extern BOOL    search_find_defer;      /* Set TRUE if lookup deferred */
 extern uschar *self_hostname;          /* Self host after routing->directors */
 extern unsigned int sender_address_cache[(MAX_NAMED_LIST * 2)/32]; /* Cache bits for sender */
+extern uschar *sender_address_data;    /* address_data from sender verify */
 extern BOOL    sender_address_forced;  /* Set by -f */
 extern uschar *sender_address_unrewritten; /* Set if rewritten by verify */
 extern uschar *sender_data;            /* lookup result for senders */

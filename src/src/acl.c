@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.3 2004/10/19 11:04:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.4 2004/10/19 13:40:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1012,6 +1012,8 @@ else if (verify_sender_address != NULL)
   else
     {
     BOOL routed = TRUE;
+    uschar *save_address_data = deliver_address_data;
+      
     sender_vaddr = deliver_make_addr(verify_sender_address, TRUE);
     if (no_details) setflag(sender_vaddr, af_sverify_told);
     if (verify_sender_address[0] != 0)
@@ -1057,7 +1059,16 @@ else if (verify_sender_address != NULL)
     sender_vaddr->special_action = rc;
     sender_vaddr->next = sender_verified_list;
     sender_verified_list = sender_vaddr;
+    
+    /* Restore the recipient address data, which might have been clobbered by 
+    the sender verification. */
+  
+    deliver_address_data = save_address_data;
     }
+    
+  /* Put the sender address_data value into $sender_address_data */
+
+  sender_address_data = sender_vaddr->p.address_data; 
   }
 
 /* A recipient address just gets a straightforward verify; again we must handle
@@ -2109,7 +2120,7 @@ else
 rc = acl_check_internal(where, addr, s, 0, user_msgptr, log_msgptr);
 
 smtp_command_argument = deliver_domain =
-  deliver_localpart = deliver_address_data = NULL;
+  deliver_localpart = deliver_address_data = sender_address_data = NULL;
 
 /* A DISCARD response is permitted only for message ACLs, excluding the PREDATA
 ACL, which is really in the middle of an SMTP command. */

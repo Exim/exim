@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.3 2004/10/19 11:04:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.4 2004/10/19 13:40:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -859,6 +859,7 @@ BOOL    search_find_defer      = FALSE;
 uschar *self_hostname          = NULL;
 uschar *sender_address         = NULL;
 unsigned int sender_address_cache[(MAX_NAMED_LIST * 2)/32];
+uschar *sender_address_data    = NULL;
 BOOL    sender_address_forced  = FALSE;
 uschar *sender_address_unrewritten = NULL;
 uschar *sender_data            = NULL;
