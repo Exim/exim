@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.11 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.12 2005/03/08 15:32:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -9,10 +9,15 @@
 
 /* Code for receiving a message and setting up spool files. */
 
-
 #include "exim.h"
 
-
+#ifdef EXPERIMENTAL_DOMAINKEYS
+#define RECEIVE_GETC dk_receive_getc
+#define RECEIVE_UNGETC dk_receive_ungetc
+#else
+#define RECEIVE_GETC receive_getc
+#define RECEIVE_UNGETC receive_ungetc
+#endif
 
 /*************************************************
 *                Local static variables          *
@@ -565,7 +570,7 @@ if (!dot_ends)
   {
   register int last_ch = '\n';
 
-  for (; (ch = (receive_getc)()) != EOF; last_ch = ch)
+  for (; (ch = (RECEIVE_GETC)()) != EOF; last_ch = ch)
     {
     if (ch == 0) body_zerocount++;
     if (last_ch == '\r' && ch != '\n')
@@ -595,7 +600,7 @@ if (!dot_ends)
 
 ch_state = 1;
 
-while ((ch = (receive_getc)()) != EOF)
+while ((ch = (RECEIVE_GETC)()) != EOF)
   {
   if (ch == 0) body_zerocount++;
   switch (ch_state)
@@ -696,7 +701,7 @@ read_message_data_smtp(FILE *fout)
 int ch_state = 0;
 register int ch;
 
-while ((ch = (receive_getc)()) != EOF)
+while ((ch = (RECEIVE_GETC)()) != EOF)
   {
   if (ch == 0) body_zerocount++;
   switch (ch_state)
@@ -1197,6 +1202,12 @@ from the spool for delivery. */
 
 body_linecount = body_zerocount = 0;
 
+#ifdef EXPERIMENTAL_DOMAINKEYS
+/* Call into DK to set up the context. Check if DK is to be run are carried out
+   inside dk_exim_verify_init(). */
+dk_exim_verify_init();
+#endif
+
 /* Remember the time of reception. Exim uses time+pid for uniqueness of message
 ids, and fractions of a second are required. See the comments that precede the
 message id creation below. */
@@ -1245,7 +1256,7 @@ next->text. */
 
 for (;;)
   {
-  int ch = (receive_getc)();
+  int ch = (RECEIVE_GETC)();
 
   /* If we hit EOF on a SMTP connection, it's an error, since incoming
   SMTP must have a correct "." terminator. */
@@ -1309,7 +1320,7 @@ for (;;)
   if (ch == '\n')
     {
     if (first_line_ended_crlf == TRUE_UNSET) first_line_ended_crlf = FALSE;
-      else if (first_line_ended_crlf) receive_ungetc(' ');
+      else if (first_line_ended_crlf) RECEIVE_UNGETC(' ');
     goto EOL;
     }
 
@@ -1324,13 +1335,13 @@ for (;;)
 
   if (ptr == 0 && ch == '.' && (smtp_input || dot_ends))
     {
-    ch = (receive_getc)();
+    ch = (RECEIVE_GETC)();
     if (ch == '\r')
       {
-      ch = (receive_getc)();
+      ch = (RECEIVE_GETC)();
       if (ch != '\n')
         {
-        receive_ungetc(ch);
+        RECEIVE_UNGETC(ch);
         ch = '\r';              /* Revert to CR */
         }
       }
@@ -1358,7 +1369,7 @@ for (;;)
 
   if (ch == '\r')
     {
-    ch = (receive_getc)();
+    ch = (RECEIVE_GETC)();
     if (ch == '\n')
       {
       if (first_line_ended_crlf == TRUE_UNSET) first_line_ended_crlf = TRUE;
@@ -1368,7 +1379,7 @@ for (;;)
     /* Otherwise, put back the character after CR, and turn the bare CR
     into LF SP. */
 
-    ch = (receive_ungetc)(ch);
+    ch = (RECEIVE_UNGETC)(ch);
     next->text[ptr++] = '\n';
     message_size++;
     ch = ' ';
@@ -1443,14 +1454,14 @@ for (;;)
 
   if (ch != EOF)
     {
-    int nextch = (receive_getc)();
+    int nextch = (RECEIVE_GETC)();
     if (nextch == ' ' || nextch == '\t')
       {
       next->text[ptr++] = nextch;
       message_size++;
       continue;                      /* Iterate the loop */
       }
-    else if (nextch != EOF) (receive_ungetc)(nextch);   /* For next time */
+    else if (nextch != EOF) (RECEIVE_UNGETC)(nextch);   /* For next time */
     else ch = EOF;                   /* Cause main loop to exit at end */
     }
 
@@ -2737,6 +2748,10 @@ else
 
   if (smtp_input && !smtp_batched_input)
     {
+
+#ifdef EXPERIMENTAL_DOMAINKEYS
+    dk_exim_verify_finish();
+#endif
 
 #ifdef WITH_CONTENT_SCAN
      /* MIME ACL hook */

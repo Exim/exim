@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.11 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.12 2005/03/08 15:32:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -822,6 +822,9 @@ authenticated_sender = NULL;
 #ifdef EXPERIMENTAL_BRIGHTMAIL
 bmi_run = 0;
 bmi_verdicts = NULL;
+#endif
+#ifdef EXPERIMENTAL_DOMAINKEYS
+dk_do_verify = 0;
 #endif
 #ifdef EXPERIMENTAL_SPF
 spf_header_comment = NULL;

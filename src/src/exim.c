@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.14 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.15 2005/03/08 15:32:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -853,6 +853,9 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   fprintf(f, " Experimental_Brightmail");
+#endif
+#ifdef EXPERIMENTAL_DOMAINKEYS
+  fprintf(f, " Experimental_DomainKeys");
 #endif
 fprintf(f, "\n");
 

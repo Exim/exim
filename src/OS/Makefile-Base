@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.3 2005/02/17 11:58:25 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.4 2005/03/08 15:32:02 tom Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -290,7 +290,7 @@ convert4r4: Makefile ../src/convert4r4.src
 
 OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
 OBJ_WITH_OLD_DEMIME = demime.o
-OBJ_EXPERIMENTAL = bmi_spam.o spf.o srs.o
+OBJ_EXPERIMENTAL = bmi_spam.o spf.o srs.o dk.o
 
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
@@ -455,7 +455,7 @@ dummies.o:       dummies.c
 # Compile instructions for perl.o for when EXIM_PERL is set
 
 perl.o:          $(HDRS) perl.c
-	$(PERL_CC) $(PERL_CCOPTS) $(INCLUDE) -c perl.c
+	$(PERL_CC) $(PERL_CCOPTS) $(CFLAGS) $(INCLUDE) -c perl.c
 
 # Compile instructions for the database utility modules
 
@@ -575,7 +575,7 @@ demime.o:        $(HDRS) demime.c
 bmi_spam.o:      $(HDRS) bmi_spam.c
 spf.o:           $(HDRS) spf.c
 srs.o:           $(HDRS) srs.c
-
+dk.o:            $(HDRS) dk.c
 
 # The module containing tables of available lookups, routers, auths, and
 # transports must be rebuilt if any of them are. However, because the makefiles

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.5 2005/03/08 15:32:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -115,11 +115,8 @@ uschar *mime_decode_qp_char(uschar *qp_p,int *c) {
 }
 
 
-uschar *mime_parse_line(uschar *buffer, uschar *encoding, int *num_decoded) {
-  uschar *data = NULL;
-
-  data = (uschar *)malloc(Ustrlen(buffer)+2);
-
+uschar *mime_parse_line(uschar *buffer, uschar *data, uschar *encoding, int *num_decoded) {
+ 
   if (encoding == NULL) {
     /* no encoding type at all */
     NO_DECODING:
@@ -285,6 +282,7 @@ int mime_decode(uschar **listptr) {
   uschar decode_path[1024];
   FILE *decode_file = NULL;
   uschar *buffer = NULL;
+  uschar *decode_buffer = NULL;
   long f_pos = 0;
   unsigned int size_counter = 0;
 
@@ -296,9 +294,16 @@ int mime_decode(uschar **listptr) {
   /* build default decode path (will exist since MBOX must be spooled up) */
   snprintf(CS decode_path,1024,"%s/scan/%s",spool_directory,message_id);
 
-  /* reserve a line buffer to work in */
+  /* reserve a line and decoder buffer to work in */
   buffer = (uschar *)malloc(MIME_MAX_LINE_LENGTH+1);
   if (buffer == NULL) {
+    log_write(0, LOG_PANIC,
+                 "decode ACL condition: can't allocate %d bytes of memory.", MIME_MAX_LINE_LENGTH+1);
+    return DEFER;
+  };
+
+  decode_buffer = (uschar *)malloc(MIME_MAX_LINE_LENGTH+1);
+  if (decode_buffer == NULL) {
     log_write(0, LOG_PANIC,
                  "decode ACL condition: can't allocate %d bytes of memory.", MIME_MAX_LINE_LENGTH+1);
     return DEFER;
@@ -358,7 +363,8 @@ int mime_decode(uschar **listptr) {
       };
     };
 
-    decoded_line = mime_parse_line(buffer, mime_content_transfer_encoding, &decoded_line_length);
+    decoded_line = mime_parse_line(buffer, decode_buffer, mime_content_transfer_encoding, &decoded_line_length);
+
     /* write line to decode file */
     if (fwrite(decoded_line, 1, decoded_line_length, decode_file) < decoded_line_length) {
       /* error/short write */
@@ -376,7 +382,6 @@ int mime_decode(uschar **listptr) {
       size_counter = (size_counter % 1024);
     };
 
-    free(decoded_line);
   }
 
   fclose(decode_file);

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.11 2005/01/25 14:16:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.12 2005/03/08 15:32:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -256,6 +256,12 @@ extern int     demime_ok;              /* Nonzero if message has been demimed */
 extern uschar *demime_reason;          /* Reason for broken MIME container */
 #endif
 extern BOOL    disable_logging;        /* Disables log writing when TRUE */
+
+#ifdef EXPERIMENTAL_DOMAINKEYS
+extern uschar *dk_signing_domain;      /* Domain used for signing a message. */
+extern uschar *dk_signing_selector;    /* Selector used for signing a message. */
+extern int     dk_do_verify;           /* DK verification switch. Set with ACL control statement. */
+#endif
 
 extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */
 extern uschar *dns_ipv4_lookup;        /* For these domains, don't look for AAAA (or A6) */

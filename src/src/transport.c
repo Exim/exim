@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.5 2005/03/08 15:32:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -903,6 +903,164 @@ return (len = chunk_ptr - deliver_out_buffer) <= 0 ||
 }
 
 
+#ifdef EXPERIMENTAL_DOMAINKEYS
+
+/**********************************************************************************
+*    External interface to write the message, while signing it with domainkeys    *
+**********************************************************************************/
+
+/* This function is a wrapper around transport_write_message(). It is only called
+   from the smtp transport if
+   (1) Domainkeys support is compiled in.
+   (2) The dk_private_key option on the smtp transport is set.
+   The function sets up a replacement fd into a -K file, then calls the normal
+   function. This way, the exact bits that exim would have put "on the wire" will
+   end up in the file (except for TLS encapsulation, which is the very
+   very last thing). When we are done signing the file, send the
+   signed message down the original fd (or TLS fd).
+
+Arguments:     as for internal_transport_write_message() above, with additional
+               arguments: 
+               uschar *dk_private_key         The private key to use (filename or plain data)
+               uschar *dk_domain              Override domain (normally NULL)
+               uschar *dk_selector            The selector to use.
+               uschar *dk_canon               The canonalization scheme to use, "simple" or "nofws"
+               uschar *dk_headers             Colon-separated header list to include in the signing
+                                              process.
+               uschar *dk_strict              What to do if signing fails: 1/true  => throw error
+                                                                           0/false => send anyway
+
+Returns:       TRUE on success; FALSE (with errno) for any failure
+*/
+
+BOOL
+dk_transport_write_message(address_item *addr, int fd, int options,
+  int size_limit, uschar *add_headers, uschar *remove_headers,
+  uschar *check_string, uschar *escape_string, rewrite_rule *rewrite_rules,
+  int rewrite_existflags, uschar *dk_private_key, uschar *dk_domain,
+  uschar *dk_selector, uschar *dk_canon, uschar *dk_headers, uschar *dk_strict)
+{
+  int dk_fd;
+  int save_errno = 0;
+  BOOL rc;
+  uschar dk_spool_name[256];
+  char sbuf[2048];
+  int sread = 0;
+  int wwritten = 0;
+  uschar *dk_signature = NULL;
+  
+  snprintf(CS dk_spool_name, 256, "%s/input/%s/%s-K",
+          spool_directory, message_subdir, message_id);
+  dk_fd = Uopen(dk_spool_name, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE);
+  if (dk_fd < 0)
+    {
+    /* Can't create spool file. Ugh. */
+    rc = FALSE;
+    save_errno = errno;
+    goto CLEANUP;
+    }
+  
+  /* Call original function */
+  rc = transport_write_message(addr, dk_fd, options,
+    size_limit, add_headers, remove_headers,
+    check_string, escape_string, rewrite_rules,
+    rewrite_existflags);
+  
+  /* Save error state. We must clean up before returning. */
+  if (!rc)
+    {
+    save_errno = errno;
+    goto CLEANUP;
+    }
+
+  /* Rewind file and feed it to the goats^W DK lib */
+  lseek(dk_fd, 0, SEEK_SET);
+  dk_signature = dk_exim_sign(dk_fd,
+                              dk_private_key,
+                              dk_domain,
+                              dk_selector,
+                              dk_canon);
+    
+  if (dk_signature != NULL)
+    {
+    /* Send the signature first */
+    int siglen = Ustrlen(dk_signature);
+    while(siglen > 0)
+      {
+      #ifdef SUPPORT_TLS
+      if (tls_active == fd) wwritten = tls_write(dk_signature, siglen); else
+      #endif
+      wwritten = write(fd,dk_signature,siglen);
+      if (wwritten == -1)
+        {
+        /* error, bail out */
+        save_errno = errno;
+        rc = FALSE;
+        goto CLEANUP;
+        }
+      siglen -= wwritten;
+      dk_signature += wwritten;
+      }
+    }
+  else if (dk_strict != NULL)
+    {
+    uschar *dk_strict_result = expand_string(dk_strict);
+    if (dk_strict_result != NULL)
+      {
+      if ( (strcmpic(dk_strict,"1") == 0) ||
+           (strcmpic(dk_strict,"true") == 0) )
+        {
+        save_errno = errno;
+        rc = FALSE;
+        goto CLEANUP;
+        }
+      }
+    }
+
+  /* Rewind file and send it down the original fd. */ 
+  lseek(dk_fd, 0, SEEK_SET);
+  
+  while((sread = read(dk_fd,sbuf,2048)) > 0)
+    {
+    char *p = sbuf;
+    /* write the chunk */
+    DK_WRITE:
+    #ifdef SUPPORT_TLS
+    if (tls_active == fd) wwritten = tls_write(p, sread); else
+    #endif
+    wwritten = write(fd,p,sread);
+    if (wwritten == -1)
+      {
+      /* error, bail out */
+      save_errno = errno;
+      rc = FALSE;
+      goto CLEANUP;
+      }
+    if (wwritten < sread)
+      {
+      /* short write, try again */
+      p += wwritten;
+      sread -= wwritten;
+      goto DK_WRITE;
+      }
+    }
+    
+  if (sread == -1)
+    {
+    save_errno = errno;
+    rc = FALSE;
+    goto CLEANUP;
+    }
+
+
+  CLEANUP:
+  /* unlink -K file */
+  close(dk_fd);
+  Uunlink(dk_spool_name);
+  errno = save_errno;
+  return rc;
+}
+#endif
 
 
 /*************************************************

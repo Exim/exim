@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.6 2005/02/17 11:58:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.7 2005/03/08 15:32:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -35,6 +35,20 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, data_timeout) },
   { "delay_after_cutoff", opt_bool,
       (void *)offsetof(smtp_transport_options_block, delay_after_cutoff) },
+#ifdef EXPERIMENTAL_DOMAINKEYS
+  { "dk_canon", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dk_canon) },
+  { "dk_domain", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dk_domain) },
+  { "dk_headers", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dk_headers) },
+  { "dk_private_key", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dk_private_key) },
+  { "dk_selector", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dk_selector) },
+  { "dk_strict", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dk_strict) },
+#endif
   { "dns_qualify_single",   opt_bool,
       (void *)offsetof(smtp_transport_options_block, dns_qualify_single) },
   { "dns_search_parents",   opt_bool,
@@ -157,6 +171,14 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* tls_require_ciphers */
   NULL,                /* tls_verify_certificates */
   TRUE                 /* tls_tempfail_tryclear */
+  #endif
+  #ifdef EXPERIMENTAL_DOMAINKEYS
+ ,NULL,                /* dk_canon */
+  NULL,                /* dk_domain */
+  NULL,                /* dk_headers */
+  NULL,                /* dk_private_key */
+  NULL,                /* dk_selector */
+  NULL                 /* dk_strict */
   #endif
 };
 
@@ -1394,6 +1416,23 @@ if (!ok) ok = TRUE; else
   DEBUG(D_transport|D_v)
     debug_printf("  SMTP>> writing message and terminating \".\"\n");
   transport_count = 0;
+#ifdef EXPERIMENTAL_DOMAINKEYS
+  if ( (ob->dk_private_key != NULL) && (ob->dk_selector != NULL) )
+    ok = dk_transport_write_message(addrlist, inblock.sock,
+      topt_use_crlf | topt_end_dot | topt_escape_headers |
+        (tblock->body_only? topt_no_headers : 0) |
+        (tblock->headers_only? topt_no_body : 0) |
+        (tblock->return_path_add? topt_add_return_path : 0) |
+        (tblock->delivery_date_add? topt_add_delivery_date : 0) |
+        (tblock->envelope_to_add? topt_add_envelope_to : 0),
+      0,            /* No size limit */
+      tblock->add_headers, tblock->remove_headers,
+      US".", US"..",    /* Escaping strings */
+      tblock->rewrite_rules, tblock->rewrite_existflags,
+      ob->dk_private_key, ob->dk_domain, ob->dk_selector,
+      ob->dk_canon, ob->dk_headers, ob->dk_strict);
+  else
+#endif
   ok = transport_write_message(addrlist, inblock.sock,
     topt_use_crlf | topt_end_dot | topt_escape_headers |
       (tblock->body_only? topt_no_headers : 0) |
