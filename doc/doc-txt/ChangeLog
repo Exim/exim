@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.25 2004/11/12 11:39:34 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.26 2004/11/12 12:01:52 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -101,6 +101,8 @@ Exim version 4.44
 
 27. Added HAVE_SYS_STATVFS_H to the os.h file for Linux, as it has had this
     support for a long time. Removed HAVE_SYS_VFS_H.
+
+28. Installed the latest version of exipick from John Jetmore.
 
 
 Exim version 4.43

@@ -1,5 +1,5 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.1 2004/10/07 10:39:01 ph10 Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.2 2004/11/12 12:01:52 ph10 Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
@@ -8,7 +8,7 @@ use strict;
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
-my $p_version = "20040725.0";
+my $p_version = "20041110.0";
 my $p_usage   = "Usage: $p_name [--help|--version] (see --help for details)";
 my $p_cp      = <<EOM;
         Copyright (c) 2003-2004 John Jetmore <jj33\@pobox.com>
@@ -53,6 +53,8 @@ GetOptions(
   'i'       => \$G::qgrep_i,    # message ids only
   'b'       => \$G::qgrep_b,    # brief format
   'flatq'   => \$G::flatq,      # brief format
+  'caseful' => \$G::caseful,    # in '=' criteria, respect case
+  'caseless'=> \$G::caseless,   #   ...ignore case (default)
   'show-vars:s' => \$G::show_vars, # display the contents of these vars
   'show-rules' => \$G::show_rules # display compiled match rules
 ) || exit(1);
@@ -65,6 +67,8 @@ push(@ARGV, "\$deliver_freeze")                  if ($G::qgrep_z);
 push(@ARGV, "!\$deliver_freeze")                 if ($G::qgrep_x);
 $G::mailq_bp   = $G::mailq_bp; # shut up -w
 $G::and        = $G::and;      # shut up -w
+$G::msg_ids    = {};
+$G::caseless   = $G::caseful ? 0 : 1; # nocase by default, case if both used
 $spool         = $G::spool if ($G::spool);
 my $count_only = 1 if ($G::mailq_bpc || $G::qgrep_c);
 my $unsorted   = 1 if ($G::mailq_bpr || $G::mailq_bpra || $G::mailq_bpru);
@@ -84,6 +88,8 @@ $e->set_show_vars($G::show_vars) if ($G::show_vars);
 
 MSG:
 foreach my $m (@$msg) {
+  next if (scalar(keys(%$G::msg_ids)) && !$G::or
+                                      && !$G::msg_ids->{$m->{message}});
   if (!$e->parse_message($m->{message})) {
     warn "Couldn't parse $m->{message}: ".$e->error()."\n";
     next(MSG);
@@ -152,10 +158,16 @@ sub process_criteria {
       push(@c, { var => lc($1), cmp => "(\"\$var\" $2 $3) ? 1 : 0" });
     } elsif (/^(.*?)\s+=\s+(.*)$/) {
       #print STDERR "found as bare string regexp\n";
-      push(@c, { var => lc($1), cmp => "(\"\$var\" =~ /$2/) ? 1 : 0" });
+      my $case = $G::caseful ? '' : 'i';
+      push(@c, { var => lc($1), cmp => "(\"\$var\" =~ /$2/$case) ? 1 : 0" });
     } elsif (/^(.*?)\s+(eq|ne)\s+(.*)$/) {
       #print STDERR "found as string cmp\n";
-      push(@c, { var => lc($1), cmp => "(\"\$var\" $2 \"$3\") ? 1 : 0" });
+      my $var = lc($1); my $op = $2; my $val = $3;
+      push(@c, { var => $var, cmp => "(\"\$var\" $op \"$val\") ? 1 : 0" });
+      if ($var eq 'message_id' && $op eq "eq") {
+        #print STDERR "short circuit @c[-1]->{cmp} $val\n";
+        $G::msg_ids->{$val} = 1;
+      }
     } elsif (/^(!)?(\S+)$/) {
       #print STDERR "found as boolean\n";
       push(@c, { var => lc($2), cmp => "($1\$var) ? 1 : 0" });
@@ -304,7 +316,7 @@ sub _reset {
 
 sub parse_message {
   my $self = shift;
-
+  
   $self->_reset();
   $self->{_message} = shift || return(0);
   return(0) if (!$self->{_spool_dir});
@@ -478,7 +490,7 @@ sub _parse_header {
     }
   }
 
-  # when we drop out of the while loop, we have the first line of the
+  # when we drop out of the while loop, we have the first line of the 
   # delivered tree in $_
   do {
     if ($_ eq 'XX') {
@@ -520,9 +532,15 @@ sub _parse_header {
     }
     $self->{_udel_tree}{$addr} = 1 if (!$self->{_del_tree}{$addr});
   }
-  $self->{_vars}{recipients} = join(', ', keys(%{$self->{_recips}}));
-  $self->{_vars}{recipients_del} = join(', ', keys(%{$self->{_del_tree}}));
-  $self->{_vars}{recipients_undel} = join(', ', keys(%{$self->{_udel_tree}}));
+  $self->{_vars}{recipients}         = join(', ', keys(%{$self->{_recips}}));
+  $self->{_vars}{recipients_del}     = join(', ', keys(%{$self->{_del_tree}}));
+  $self->{_vars}{recipients_undel}   = join(', ', keys(%{$self->{_udel_tree}}));
+  $self->{_vars}{recipients_undel_count} = scalar(keys(%{$self->{_udel_tree}}));
+  $self->{_vars}{recipients_del_count}   = 0;
+  foreach my $r (keys %{$self->{_del_tree}}) {
+    next if (!$self->{_recips}{$r});
+    $self->{_vars}{recipients_del_count}++;
+  }
 
   # blank line
   $_ = <I>;
@@ -573,7 +591,7 @@ sub _parse_header {
   }
 
   return(1);
-}
+}  
 
 # mimic exim's host_extract_port function - receive a ref to a scalar,
 # strip it of port, return port
@@ -604,7 +622,7 @@ sub print_message {
     print $fh $self->{_message}, "\n";
     return;
   }
-
+  
   if ($self->{_output_long} || $self->{_output_flatq}) {
     my $i = int($self->{_vars}{message_age} / 60);
     if ($i > 90) {
@@ -629,7 +647,7 @@ sub print_message {
   if ($self->{_output_long}) {
     print $fh " ($self->{_vars}{originator_login})"
         if ($self->{_vars}{sender_set_untrusted});
-
+  
     # XXX exim contains code here to print spool format errors
     print $fh " *** frozen ***" if ($self->{_vars}{deliver_freeze});
     print $fh "\n";
@@ -637,7 +655,7 @@ sub print_message {
     foreach my $v (keys(%{$self->{_show_vars}})) {
       printf $fh "  %25s = '%s'\n", $v, $self->get_var($v);
     }
-
+  
     foreach my $r (keys %{$self->{_recips}}) {
       next if ($self->{_del_tree}{$r} && $self->{_undelivered_only});
       printf $fh "        %s %s\n", $self->{_del_tree}{$r} ? "D" : " ", $r;
@@ -739,6 +757,10 @@ A message will be displayed only if it matches all of the specified criteria.  T
 
 A message will be displayed if it matches any of the specified criteria.
 
+=item --caseful
+
+By default criteria using the '=' operator are caseless.  Specifying this option make them respect case.
+
 =item The -bp* options all control how much information is displayed and in what manner.  They all match the functionality of the options of the same name in Exim.  Briefly:
 
 =item -bp   display the matching messages in 'mailq' format.
@@ -819,7 +841,7 @@ Variables of the boolean type are very easy to use in criteria.  The format is e
 
 String variables are basically defined as those that are neither numeric nor boolean and can contain any data.  There are several types of comparisons that can be made against string variables.  With the exception of '=', the operators all match the functionality of the like-named perl operators.
 
-The simplest form is a bare string regular expression, represented by the operator '='.  The value used for the comparison will be evaluated as a regular expression and can be as simple or as complex as desired.  For instance 'sender_helo_name = example' on the simple end or 'sender_helo_name = ^aol\.com$' on the more complex end.
+The simplest form is a bare string regular expression, represented by the operator '='.  The value used for the comparison will be evaluated as a regular expression and can be as simple or as complex as desired.  For instance 'sender_helo_name = example' on the simple end or 'sender_helo_name = ^aol\.com$' on the more complex end.  This comparison is caseless by default.  See --caseful option.
 
 Slightly more complex is the string comparison with the operators 'eq' and 'ne' for equal and not equal, respectively.  'sender_helo_name eq hotmail.com' is true for messages with the exact helo string "hotmail.com", while 'sender_helo_name ne hotmail.com' is true for any message any helo string other than hotmail.com.
 
@@ -933,7 +955,15 @@ The epoch time at which the message was received.
 
 =item . recipients_count
 
-The number of envelope recipients that came with the message.
+The number of envelope recipients for the message.
+
+=item + recipients_del_count
+
+The number of envelope recipients for the message which have already been delivered.  Note that this is the count of original recipients to which the message has been delivered.  It does not include generated addresses so it is possible that this number will be less than the number of addresses in the recipients_del string.
+
+=item + recipients_undel_count
+
+The number of envelope recipients for the message which have not yet been delivered.
 
 =item . sender_host_port
 
@@ -999,7 +1029,7 @@ The list of envelope recipients for a message.  Unlike Exim's version, this vari
 
 =item + recipients_del
 
-The list of delivered envelope recipients for a message.  This non-standard variable is in the same format as recipients and contains the list of already-delivered recipients.
+The list of delivered envelope recipients for a message.  This non-standard variable is in the same format as recipients and contains the list of already-delivered recipients including any generated addresses.
 
 =item + recipients_undel
 
