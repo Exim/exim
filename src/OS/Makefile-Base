@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.1.2.1 2004/11/26 14:17:33 tom Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -287,6 +287,8 @@ convert4r4: Makefile ../src/convert4r4.src
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
 
+OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool-mbox.o
+
 OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
         filtertest.o globals.o \
@@ -295,7 +297,7 @@ OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
         store.o string.o tls.o tod.o transport.o tree.o verify.o \
-        local_scan.o $(EXIM_PERL)
+        local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN)
 
 exim:   pcre/libpcre.a lookups/lookups.a auths/auths.a \
         routers/routers.a transports/transports.a \
@@ -545,6 +547,16 @@ tod.o:           $(HDRS) tod.c
 transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c
 verify.o:        $(HDRS) verify.c
+
+
+# Dependencies for WITH_CONTENT_SCAN modules
+
+malware.o:       $(HDRS) malware.c
+mime.o:          $(HDRS) mime.c
+regex.o:         $(HDRS) regex.c
+spam.o:          $(HDRS) spam.c
+spool-mbox.o:    $(HDRS) spool_mbox.c
+
 
 # The module containing tables of available lookups, routers, auths, and
 # transports must be rebuilt if any of them are. However, because the makefiles
