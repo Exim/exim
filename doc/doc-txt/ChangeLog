@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.106 2005/03/29 15:53:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.107 2005/04/04 10:33:49 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -116,6 +116,8 @@ PH/20 When checking for unexpected SMTP input at connect time (before writing
       (an event I could not check), uninitialized data bytes were printed.
       There were reports of junk text (parts of files, etc) appearing after
       "input=".
+
+PH/21 Added acl_not_smtp_mime to allow for MIME scanning for non-SMTP messages.
 
 
 A note about Exim versions 4.44 and 4.50

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.6 2005/03/03 08:54:59 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.7 2005/04/04 10:33:49 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -52,6 +52,7 @@ in fact some of them were inherited from earlier versions.
 -----------------------------------------------------------------------------------------
 accept_8bitmime                      boolean         false         main              1.60
 acl_not_smtp                         string*         unset         main              4.11
+acl_not_smtp_mime                    string*         unset         main              4.51 with content scan
 acl_smtp_auth                        string*         unset         main              4.00
 acl_smtp_connect                     string*         unset         main              4.11
 acl_smtp_data                        string*         unset         main              4.00
@@ -60,6 +61,7 @@ acl_smtp_expn                        string*         unset         main         
 acl_smtp_helo                        string*         unset         main              4.20
 acl_smtp_mail                        string*         unset         main              4.11
 acl_smtp_mailauth                    string*         unset         main              4.21
+acl_smtp_mime                        string*         unset         main              4.50 with content scan
 acl_smtp_predata                     string*         unset         main              4.43
 acl_smtp_quit                        string*         unset         main              4.43
 acl_smtp_rcpt                        string*         unset         main              4.00
@@ -83,6 +85,7 @@ auth_advertise_hosts                 host list       "*"           main         
 authenticated_sender                 string*         unset         smtp              4.14
 authenticate_hosts                   host list       unset         smtp              3.13
 auto_thaw                            time            0s            main
+av_scanner                           string*         +             main              4.50 with content scan
 batch_id                             string          unset         appendfile        4.00
                                                      unset         lmtp              4.00
                                                      unset         pipe              4.00
@@ -466,6 +469,7 @@ smtp_receive_timeout                 time            5m            main
 smtp_reserve_hosts                   host list       unset         main
 smtp_return_error_details            boolean         false         main              4.11
 socket                               string*         unset         lmtp              4.11
+spamd_address                        string          +             main              4.50 with content scan
 split_spool_directory                boolean         false         main              1.70
 spool_directory                      string          ++            main
 srv_fail_domains                     domain list     unset         dnslookup         4.43

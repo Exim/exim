@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.12 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.13 2005/04/04 10:33:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -510,7 +510,7 @@ for (count = 0; count < recipients_count; count++)
     {
     if ((--recipients_count - count) > 0)
       memmove(recipients_list + count, recipients_list + count + 1,
-	       (recipients_count - count)*sizeof(recipient_item));
+        (recipients_count - count)*sizeof(recipient_item));
     return TRUE;
     }
   }
@@ -1005,6 +1005,146 @@ if (received_protocol != NULL)
 return s;
 }
 
+
+
+
+/*************************************************
+*       Run the MIME ACL on a message            *
+*************************************************/
+
+/* This code is in a subroutine so that it can be used for both SMTP
+and non-SMTP messages. It is called with a non-NULL ACL pointer.
+
+Arguments:
+  acl                The ACL to run (acl_smtp_mime or acl_not_smtp_mime)
+  smtp_yield_ptr     Set FALSE to kill messages after dropped connection
+  smtp_reply_ptr     Where SMTP reply is being built
+  blackholed_by_ptr  Where "blackholed by" message is being built
+
+Returns:             TRUE to carry on; FALSE to abandon the message
+*/
+
+static BOOL
+run_mime_acl(uschar *acl, BOOL *smtp_yield_ptr, uschar **smtp_reply_ptr,
+  uschar **blackholed_by_ptr)
+{
+FILE *mbox_file;
+uschar rfc822_file_path[2048];
+unsigned long mbox_size;
+header_line *my_headerlist;
+uschar *user_msg, *log_msg;
+int mime_part_count_buffer = -1;
+int rc;
+
+memset(CS rfc822_file_path,0,2048);
+
+/* check if it is a MIME message */
+my_headerlist = header_list;
+while (my_headerlist != NULL) {
+  /* skip deleted headers */
+  if (my_headerlist->type == '*') {
+    my_headerlist = my_headerlist->next;
+    continue;
+  };
+  if (strncmpic(my_headerlist->text, US"Content-Type:", 13) == 0) {
+    DEBUG(D_receive) debug_printf("Found Content-Type: header - executing acl_smtp_mime.\n");
+    goto DO_MIME_ACL;
+  };
+  my_headerlist = my_headerlist->next;
+};
+
+DEBUG(D_receive) debug_printf("No Content-Type: header - presumably not a MIME message.\n");
+return TRUE;
+
+DO_MIME_ACL:
+/* make sure the eml mbox file is spooled up */
+mbox_file = spool_mbox(&mbox_size);
+if (mbox_file == NULL) {
+  /* error while spooling */
+  log_write(0, LOG_MAIN|LOG_PANIC,
+         "acl_smtp_mime: error while creating mbox spool file, message temporarily rejected.");
+  Uunlink(spool_name);
+  unspool_mbox();
+  smtp_respond(451, TRUE, US"temporary local problem");
+  message_id[0] = 0;            /* Indicate no message accepted */
+  *smtp_reply_ptr = US"";       /* Indicate reply already sent */
+  return FALSE;                 /* Indicate skip to end of receive function */
+};
+
+mime_is_rfc822 = 0;
+
+MIME_ACL_CHECK:
+mime_part_count = -1;
+rc = mime_acl_check(acl, mbox_file, NULL, &user_msg, &log_msg);
+fclose(mbox_file);
+
+if (Ustrlen(rfc822_file_path) > 0) {
+  mime_part_count = mime_part_count_buffer;
+
+  if (unlink(CS rfc822_file_path) == -1) {
+    log_write(0, LOG_PANIC,
+         "acl_smtp_mime: can't unlink RFC822 spool file, skipping.");
+      goto END_MIME_ACL;
+  };
+};
+
+/* check if we must check any message/rfc822 attachments */
+if (rc == OK) {
+  uschar temp_path[1024];
+  int n;
+  struct dirent *entry;
+  DIR *tempdir;
+
+  snprintf(CS temp_path, 1024, "%s/scan/%s", spool_directory, message_id);
+
+ tempdir = opendir(CS temp_path);
+ n = 0;
+ do {
+   entry = readdir(tempdir);
+   if (entry == NULL) break;
+    if (strncmpic(US entry->d_name,US"__rfc822_",9) == 0) {
+      snprintf(CS rfc822_file_path, 2048,"%s/scan/%s/%s", spool_directory, message_id, entry->d_name);
+     debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n", rfc822_file_path);
+     break;
+    };
+ } while (1);
+ closedir(tempdir);
+
+  if (entry != NULL) {
+    mbox_file = Ufopen(rfc822_file_path,"r");
+    if (mbox_file == NULL) {
+      log_write(0, LOG_PANIC,
+         "acl_smtp_mime: can't open RFC822 spool file, skipping.");
+      unlink(CS rfc822_file_path);
+      goto END_MIME_ACL;
+    };
+    /* set RFC822 expansion variable */
+    mime_is_rfc822 = 1;
+    mime_part_count_buffer = mime_part_count;
+    goto MIME_ACL_CHECK;
+  };
+};
+
+END_MIME_ACL:
+add_acl_headers(US"MIME");
+if (rc == DISCARD)
+  {
+  recipients_count = 0;
+  *blackholed_by_ptr = US"MIME ACL";
+  }
+else if (rc != OK)
+  {
+  Uunlink(spool_name);
+  unspool_mbox();
+  if (smtp_handle_acl_fail(ACL_WHERE_MIME, rc, user_msg, log_msg) != 0)
+    *smtp_yield_ptr = FALSE;    /* No more messsages after dropped connection */
+  *smtp_reply_ptr = US"";       /* Indicate reply already sent */
+  message_id[0] = 0;            /* Indicate no message accepted */
+  return FALSE;                 /* Cause skip to end of receive function */
+  };
+
+return TRUE;
+}
 
 
 
@@ -2754,127 +2894,13 @@ else
 #endif
 
 #ifdef WITH_CONTENT_SCAN
-     /* MIME ACL hook */
-    if (acl_smtp_mime != NULL && recipients_count > 0)
-      {
-      FILE *mbox_file;
-      uschar rfc822_file_path[2048];
-      unsigned long mbox_size;
-      header_line *my_headerlist;
-      uschar *user_msg, *log_msg;
-      int mime_part_count_buffer = -1;
-
-      memset(CS rfc822_file_path,0,2048);
-
-      /* check if it is a MIME message */
-      my_headerlist = header_list;
-      while (my_headerlist != NULL) {
-        /* skip deleted headers */
-        if (my_headerlist->type == '*') {
-          my_headerlist = my_headerlist->next;
-          continue;
-        };
-        if (strncmpic(my_headerlist->text, US"Content-Type:", 13) == 0) {
-          DEBUG(D_receive) debug_printf("Found Content-Type: header - executing acl_smtp_mime.\n");
-          goto DO_MIME_ACL;
-        };
-        my_headerlist = my_headerlist->next;
-      };
-
-      DEBUG(D_receive) debug_printf("No Content-Type: header - presumably not a MIME message.\n");
-      goto NO_MIME_ACL;
-
-      DO_MIME_ACL:
-      /* make sure the eml mbox file is spooled up */
-      mbox_file = spool_mbox(&mbox_size);
-      if (mbox_file == NULL) {
-        /* error while spooling */
-        log_write(0, LOG_MAIN|LOG_PANIC,
-               "acl_smtp_mime: error while creating mbox spool file, message temporarily rejected.");
-        Uunlink(spool_name);
-        unspool_mbox();
-        smtp_respond(451, TRUE, US"temporary local problem");
-        message_id[0] = 0;            /* Indicate no message accepted */
-        smtp_reply = US"";            /* Indicate reply already sent */
-        goto TIDYUP;                  /* Skip to end of function */
-      };
-
-      mime_is_rfc822 = 0;
-
-      MIME_ACL_CHECK:
-      mime_part_count = -1;
-      rc = mime_acl_check(mbox_file, NULL, &user_msg, &log_msg);
-      fclose(mbox_file);
-
-      if (Ustrlen(rfc822_file_path) > 0) {
-        mime_part_count = mime_part_count_buffer;
-
-        if (unlink(CS rfc822_file_path) == -1) {
-          log_write(0, LOG_PANIC,
-               "acl_smtp_mime: can't unlink RFC822 spool file, skipping.");
-            goto END_MIME_ACL;
-        };
-      };
-
-      /* check if we must check any message/rfc822 attachments */
-      if (rc == OK) {
-        uschar temp_path[1024];
-        int n;
-        struct dirent *entry;
-        DIR *tempdir;
-
-        snprintf(CS temp_path, 1024, "%s/scan/%s", spool_directory, message_id);
-
-       tempdir = opendir(CS temp_path);
-       n = 0;
-       do {
-         entry = readdir(tempdir);
-         if (entry == NULL) break;
-          if (strncmpic(US entry->d_name,US"__rfc822_",9) == 0) {
-            snprintf(CS rfc822_file_path, 2048,"%s/scan/%s/%s", spool_directory, message_id, entry->d_name);
-           debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n", rfc822_file_path);
-           break;
-          };
-       } while (1);
-       closedir(tempdir);
-
-        if (entry != NULL) {
-          mbox_file = Ufopen(rfc822_file_path,"r");
-          if (mbox_file == NULL) {
-            log_write(0, LOG_PANIC,
-               "acl_smtp_mime: can't open RFC822 spool file, skipping.");
-            unlink(CS rfc822_file_path);
-            goto END_MIME_ACL;
-          };
-          /* set RFC822 expansion variable */
-          mime_is_rfc822 = 1;
-          mime_part_count_buffer = mime_part_count;
-          goto MIME_ACL_CHECK;
-        };
-      };
-
-      END_MIME_ACL:
-      add_acl_headers(US"MIME");
-      if (rc == DISCARD)
-        {
-        recipients_count = 0;
-        blackholed_by = US"MIME ACL";
-        }
-      else if (rc != OK)
-        {
-        Uunlink(spool_name);
-        unspool_mbox();
-        if (smtp_handle_acl_fail(ACL_WHERE_MIME, rc, user_msg, log_msg) != 0)
-          smtp_yield = FALSE;    /* No more messsages after dropped connection */
-        smtp_reply = US"";       /* Indicate reply already sent */
-        message_id[0] = 0;       /* Indicate no message accepted */
-        goto TIDYUP;             /* Skip to end of function */
-        };
-      }
-
-    NO_MIME_ACL:
+    if (acl_smtp_mime != NULL &&
+        !run_mime_acl(acl_smtp_mime, &smtp_yield, &smtp_reply, &blackholed_by))
+      goto TIDYUP;
 #endif /* WITH_CONTENT_SCAN */
 
+    /* Check the recipients count again, as the MIME ACL might have changed
+    them. */
 
     if (acl_smtp_data != NULL && recipients_count > 0)
       {
@@ -2906,38 +2932,55 @@ else
   /* Handle non-SMTP and batch SMTP (i.e. non-interactive) messages. Note that
   we cannot take different actions for permanent and temporary rejections. */
 
-  else if (acl_not_smtp != NULL)
+  else
     {
-    uschar *user_msg, *log_msg;
-    rc = acl_check(ACL_WHERE_NOTSMTP, NULL, acl_not_smtp, &user_msg, &log_msg);
-    if (rc == DISCARD)
+
+#ifdef WITH_CONTENT_SCAN
+    if (acl_not_smtp_mime != NULL &&
+        !run_mime_acl(acl_not_smtp_mime, &smtp_yield, &smtp_reply,
+          &blackholed_by))
+      goto TIDYUP;
+#endif /* WITH_CONTENT_SCAN */
+
+    if (acl_not_smtp != NULL)
       {
-      recipients_count = 0;
-      blackholed_by = US"non-SMTP ACL";
-      if (log_msg != NULL) blackhole_log_msg = string_sprintf(": %s", log_msg);
-      }
-    else if (rc != OK)
-      {
-      Uunlink(spool_name);
-      log_write(0, LOG_MAIN|LOG_REJECT, "F=<%s> rejected by non-SMTP ACL: %s",
-        sender_address, log_msg);
-      if (user_msg == NULL) user_msg = US"local configuration problem";
-      if (smtp_batched_input)
+      uschar *user_msg, *log_msg;
+      rc = acl_check(ACL_WHERE_NOTSMTP, NULL, acl_not_smtp, &user_msg, &log_msg);
+      if (rc == DISCARD)
         {
-        moan_smtp_batch(NULL, "%d %s", 550, user_msg);
-        /* Does not return */
+        recipients_count = 0;
+        blackholed_by = US"non-SMTP ACL";
+        if (log_msg != NULL)
+          blackhole_log_msg = string_sprintf(": %s", log_msg);
         }
-      else
+      else if (rc != OK)
         {
-        fseek(data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
-        give_local_error(ERRMESS_LOCAL_ACL, user_msg,
-          US"message rejected by non-SMTP ACL: ", error_rc, data_file,
-            header_list);
-        /* Does not return */
+        Uunlink(spool_name);
+#ifdef WITH_CONTENT_SCAN
+        unspool_mbox();
+#endif
+        log_write(0, LOG_MAIN|LOG_REJECT, "F=<%s> rejected by non-SMTP ACL: %s",
+          sender_address, log_msg);
+        if (user_msg == NULL) user_msg = US"local configuration problem";
+        if (smtp_batched_input)
+          {
+          moan_smtp_batch(NULL, "%d %s", 550, user_msg);
+          /* Does not return */
+          }
+        else
+          {
+          fseek(data_file, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
+          give_local_error(ERRMESS_LOCAL_ACL, user_msg,
+            US"message rejected by non-SMTP ACL: ", error_rc, data_file,
+              header_list);
+          /* Does not return */
+          }
         }
+      add_acl_headers(US"non-SMTP");
       }
-    add_acl_headers(US"non-SMTP");
     }
+
+  /* The applicable ACLs have been run */
 
   if (deliver_freeze) frozen_by = US"ACL";     /* for later logging */
   if (queue_only_policy) queued_by = US"ACL";

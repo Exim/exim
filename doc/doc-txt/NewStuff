@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.31 2005/03/29 14:19:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.32 2005/04/04 10:33:49 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -95,6 +95,10 @@ PH/03 There is a new value for RADIUS_LIB_TYPE that can be set in
       Local/Makefile. It is RADIUSCLIENTNEW, and it requests that the new API,
       in use from radiusclient 0.4.0 onwards, be used. It does not appear to be
       possible to detect the different versions automatically.
+
+PH/04 There is a new option called acl_not_smtp_mime that allows you to scan
+      MIME parts in non-SMTP messages. It operates in exactly the same way as
+      acl_smtp_mime
 
 
 Version 4.50

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.12 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.13 2005/04/04 10:33:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -152,8 +152,8 @@ extern void    md5_start(md5 *);
 extern void    millisleep(int);
 #ifdef WITH_CONTENT_SCAN
 struct mime_boundary_context;
-extern int     mime_acl_check(FILE *f, struct mime_boundary_context *,
-                              uschar **, uschar **);
+extern int     mime_acl_check(uschar *acl, FILE *f,
+                 struct mime_boundary_context *, uschar **, uschar **);
 extern int     mime_decode(uschar **);
 extern int     mime_regex(uschar **);
 #endif

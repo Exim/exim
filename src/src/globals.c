@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.20 2005/03/22 14:11:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.21 2005/04/04 10:33:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -160,6 +160,9 @@ int address_expansions_count = sizeof(address_expansions)/sizeof(uschar **);
 
 tree_node *acl_anchor          = NULL;
 uschar *acl_not_smtp           = NULL;
+#ifdef WITH_CONTENT_SCAN
+uschar *acl_not_smtp_mime      = NULL;
+#endif
 uschar *acl_smtp_auth          = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;

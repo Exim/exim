@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.13 2005/03/22 14:11:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.14 2005/04/04 10:33:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -102,6 +102,9 @@ extern uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT];
 extern BOOL    accept_8bitmime;        /* Allow *BITMIME incoming */
 extern tree_node *acl_anchor;          /* Tree of named ACLs */
 extern uschar *acl_not_smtp;           /* ACL run for non-SMTP messages */
+#ifdef WITH_CONTENT_SCAN
+extern uschar *acl_not_smtp_mime;      /* For MIME parts of ditto */
+#endif
 extern uschar *acl_smtp_auth;          /* ACL run for AUTH */
 extern uschar *acl_smtp_connect;       /* ACL run on SMTP connection */
 extern uschar *acl_smtp_data;          /* ACL run after DATA received */

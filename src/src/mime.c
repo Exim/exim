@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.6 2005/03/08 16:57:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.7 2005/04/04 10:33:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -502,8 +502,8 @@ int mime_get_header(FILE *f, uschar *header) {
 }
 
 
-int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
-                   **user_msgptr, uschar **log_msgptr) {
+int mime_acl_check(uschar *acl, FILE *f, struct mime_boundary_context *context,
+                   uschar **user_msgptr, uschar **log_msgptr) {
   int rc = OK;
   uschar *header = NULL;
   struct mime_boundary_context nested_context;
@@ -512,7 +512,7 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
   header = (uschar *)malloc(MIME_MAX_HEADER_SIZE+1);
   if (header == NULL) {
     log_write(0, LOG_PANIC,
-                 "acl_smtp_mime: can't allocate %d bytes of memory.", MIME_MAX_HEADER_SIZE+1);
+                 "MIME ACL: can't allocate %d bytes of memory.", MIME_MAX_HEADER_SIZE+1);
     return DEFER;
   };
 
@@ -659,7 +659,7 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
     mime_is_coverletter = !(context && context->context == MBC_ATTACHMENT);
 
     /* call ACL handling function */
-    rc = acl_check(ACL_WHERE_MIME, NULL, acl_smtp_mime, user_msgptr, log_msgptr);
+    rc = acl_check(ACL_WHERE_MIME, NULL, acl, user_msgptr, log_msgptr);
 
     mime_stream = NULL;
     mime_current_boundary = NULL;
@@ -680,7 +680,7 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
       else
         nested_context.context = MBC_COVERLETTER_ONESHOT;
 
-      rc = mime_acl_check(f, &nested_context, user_msgptr, log_msgptr);
+      rc = mime_acl_check(acl, f, &nested_context, user_msgptr, log_msgptr);
       if (rc != OK) break;
     }
     else if ( (mime_content_type != NULL) &&

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.5 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.6 2005/04/04 10:33:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -135,6 +135,9 @@ static optionlist optionlist_config[] = {
   { "*set_system_filter_user",  opt_bool|opt_hidden, &system_filter_uid_set },
   { "accept_8bitmime",          opt_bool,        &accept_8bitmime },
   { "acl_not_smtp",             opt_stringptr,   &acl_not_smtp },
+#ifdef WITH_CONTENT_SCAN
+  { "acl_not_smtp_mime",        opt_stringptr,   &acl_not_smtp_mime },
+#endif
   { "acl_smtp_auth",            opt_stringptr,   &acl_smtp_auth },
   { "acl_smtp_connect",         opt_stringptr,   &acl_smtp_connect },
   { "acl_smtp_data",            opt_stringptr,   &acl_smtp_data },
