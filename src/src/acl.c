@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.11 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.12 2005/01/04 11:01:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1728,7 +1728,10 @@ for (; cb != NULL; cb = cb->next)
           HDEBUG(D_acl)
             debug_printf("delay skipped in -bh checking mode\n");
           }
-        else sleep(delay);
+        else 
+          {
+          while (delay > 0) delay = sleep(delay);
+          } 
         }
       }
     break;

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.61 2005/01/04 10:37:55 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.62 2005/01/04 11:01:33 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -280,6 +280,9 @@ Exim version 4.50
     deliver_queue_load_max is set with deliver_drop_privilege. This is
     necessary for the benefit of the queue runner, because there is no re-exec
     when deliver_drop_privilege is set.
+
+64. A call to exiwhat cut short delays set up by "delay" modifiers in ACLs.
+    This has been fixed.
 
 
 Exim version 4.43
