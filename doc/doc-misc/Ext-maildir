@@ -1,0 +1,109 @@
+The following information is from the maildir man page of qmail.
+
+INTRODUCTION
+       maildir  is  a  structure for directories of incoming mail
+       messages.  It solves the reliability problems that  plague
+       mbox files and mh folders.
+
+RELIABILITY ISSUES
+       A machine may crash while it is delivering a message.  For
+       both mbox files and mh folders this means that the message
+       will  be silently truncated.  Even worse: for mbox format,
+       if the message is truncated in the middle of  a  line,  it
+       will  be  silently  joined  to the next message.  The mail
+       transport agent will try again later to deliver  the  mes-
+       sage,  but  it  is  unacceptable  that a corrupted message
+       should show up at all.  In maildir, every message is guar-
+       anteed complete upon delivery.
+
+       A  machine may have two programs simultaneously delivering
+       mail to the same user.  The mbox and  mh  formats  require
+       the programs to update a single central file.  If the pro-
+       grams do not use some locking mechanism, the central  file
+       will  be corrupted.  There are several mbox and mh locking
+       mechanisms, none of which work portably and reliably.   In
+       contrast,  in  maildir, no locks are ever necessary.  Dif-
+       ferent delivery processes never touch the same file.
+
+       A user may try to delete messages from his mailbox at  the
+       same  moment that the machine delivers a new message.  For
+       mbox and mh formats, the user's mail-reading program  must
+       know  what  locking  mechanism  the mail-delivery programs
+       use.  In contrast, in maildir, any delivered  message  can
+       be safely updated or deleted by a mail-reading program.
+
+       Many sites use Sun's Network Failure System (NFS), presum-
+       ably because the operating system vendor  does  not  offer
+       anything else.  NFS exacerbates all of the above problems.
+       Some NFS implementations don't provide any reliable  lock-
+       ing  mechanism.  With mbox and mh formats, if two machines
+       deliver mail to the same user, or if  a  user  reads  mail
+       anywhere  except  the delivery machine, the user's mail is
+       at risk.  maildir works without trouble over NFS.
+
+THE MAILDIR STRUCTURE
+       A directory in maildir format  has  three  subdirectories,
+       all on the same filesystem: tmp, new, and cur.
+
+       Each  file  in new is a newly delivered mail message.  The
+       modification time of the file is the delivery date of  the
+       message.   The message is delivered without an extra UUCP-
+       style From_ line, without any >From quoting,  and  without
+       an  extra  blank line at the end.  The message is normally
+       in RFC 822 format, starting with a Return-Path line and  a
+       Delivered-To  line,  but it could contain arbitrary binary
+       data.  It might not even end with a newline.
+
+       Files in cur are just like files in new.  The big  differ-
+       ence  is  that  files  in cur are no longer new mail: they
+       have been seen by the user's mail-reading program.
+
+HOW A MESSAGE IS DELIVERED
+       The tmp directory is used to ensure reliable delivery,  as
+       discussed here.
+
+       A program delivers a mail message in six steps.  First, it
+       chdir()s to the maildir directory.  Second, it stat()s the
+       name  tmp/time.pid.host,  where time is the number of sec-
+       onds since the beginning of 1970 GMT, pid is the program's
+       process  ID,  and host is the host name.  Third, if stat()
+       returned anything other than ENOENT,  the  program  sleeps
+       for two seconds, updates time, and tries the stat() again,
+       a limited number of times.  Fourth,  the  program  creates
+       tmp/time.pid.host.  Fifth, the program NFS-writes the mes-
+       sage to the file.  Sixth, the program link()s the file  to
+       new/time.pid.host.   At  that instant the message has been
+       successfully delivered.
+
+       The delivery program is required to start a 24-hour  timer
+       before creating tmp/time.pid.host, and to abort the deliv-
+       ery if the timer expires.  Upon error, timeout, or  normal
+       completion,  the  delivery program may attempt to unlink()
+       tmp/time.pid.host.
+
+       NFS-writing means (1) as usual,  checking  the  number  of
+       bytes returned from each write() call; (2) calling fsync()
+       and checking its return value;  (3)  calling  close()  and
+       checking  its return value.  (Standard NFS implementations
+       handle fsync() incorrectly but make up for it  by  abusing
+       close().)
+
+HOW A MESSAGE IS READ
+       A mail reader operates as follows.
+
+       It  looks through the new directory for new messages.  Say
+       there is a new message, new/unique.  The reader may freely
+       display  the contents of new/unique, delete new/unique, or
+       rename     new/unique     as     cur/unique:info.      See
+       http://pobox.com/~djb/maildir.html   for  the  meaning  of
+       info.
+
+       The reader is also expected to look through the tmp direc-
+       tory and to clean up any old files found there.  A file in
+       tmp may be safely removed if it has not been  accessed  in
+       36 hours.
+
+       It is a good idea for readers to skip all filenames in new
+       and cur starting with a dot.   Other  than  this,  readers
+       should not attempt to parse filenames.
+###

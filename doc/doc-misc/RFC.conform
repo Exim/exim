@@ -1,0 +1,401 @@
+$Cambridge: exim/doc/doc-misc/RFC.conform,v 1.1 2004/10/08 10:38:47 ph10 Exp $
+
+Conformance with RFCs
+---------------------
+
+Exim is written to follow the rules laid down in the RFCs. However, there are
+some circumstances where it either extends what is specified, or chooses not to
+follow them strictly, for various reasons. Sometimes variations are controlled
+by an option, which may default on or off. This document lists the variations
+from the latest email RFCs, and discusses their background and implications.
+
+Last Updated: 25 January 1999
+
+
+1. RFC 822
+----------
+
+The original specification of the format of Internet mail messages is RFC 822,
+later clarified and modified by RFC 1123. At the time of writing (January 1999)
+a new RFC (currently known as draft-ietf-drums-msg-fmt-07) which updates and
+consolidates all the material related to the message format is at a late stage
+of drafting, and is expected to become an Internet Standard in due course.
+
+The following is (I hope) a complete list of major variations from the draft
+RFC. References in square brackets are to the -07 draft.
+
+
+1.1 Line termination [2.1, 2.3]
+-------------------------------
+
+[Lines are terminated by CRLF; isolated CR and LF are not permitted.]
+
+The CRLF requirement has to be interpreted carefully, because the RFC also says
+that it does not cover the internal format "used by sites". Exim keeps messages
+on its spool in Unix format, using only LF as the line terminator, and also
+does local deliveries using only LF. I believe this is compliant with the RFC,
+as these are both "internal formats".
+
+Messages sent out by SMTP have CRLF line terminators. However, isolated CR
+characters are treated as any other data characters, because Exim is eight-bit
+clean (see 1.2 below).
+
+See 2.1 below for a discussion of line terminators in incoming messages.
+
+
+1.2 Eight-bit characters [2.1]
+------------------------------
+
+[Messages consist of 7-bit characters.]
+
+Exim is eight-bit clean. It does not do any processing of the characters in the
+body of a message.
+
+
+1.3 Maximum line length [2.1, 2.3]
+----------------------------------
+
+[The maximum length of a line is 998 characters.]
+
+Exim does not enforce any limit on line length.
+
+
+1.4 The "phrase" part of an address [3.4]
+-----------------------------------------
+
+[The phrase is a sequence of "words"; a word is an "atom" or a quoted string.]
+
+The characters that can be used in an "atom" do not include the full stop
+(dot, period). Thus a header line such as
+
+  To: John Q. Public <jqp@anywhere.org>
+
+is syntactically invalid under a strict interpretation of the RFC because the
+dot in the phrase part is not quoted. However, many MTAs do not enforce this
+restriction, so Exim was changed to be relaxed about it as well. In fact, the
+draft RFC is moving towards allowing this. In section [4.1], which is defining
+"obsolete" syntax that programs must accept (but not generate), it says this:
+
+  The period character is added to obs-phrase.
+
+  Note: The period character in obs-phrase is not a form that was allowed
+  in earlier versions of this or any other standard. Period (nor any other
+  character from specials) was not allowed in phrase because it introduced
+  a parsing difficulty distinguishing between phrases and portions of an
+  addr-spec (see section 4.4). It appears here because the period
+  character is currently used in many messages in the display-name portion
+  of addresses, especially for initials in names, and therefore must be
+  interpreted properly. In the future, period may appear in the regular
+  syntax of phrase.
+
+
+1.5 Source routed addresses [4.4]
+---------------------------------
+
+[Source routed addresses are always enclosed in <>.]
+
+Source routed addresses are declared obsolete in the draft RFC, but MTAs are
+still required to handle them. Strictly, a source-routed address must be
+enclosed in <> characters, so a header such as
+
+  From: @a,@b:c@d
+
+is syntactally invalid. Exim does not enforce this restriction.
+
+
+1.6 Local parts [3.4.1]
+-----------------------
+
+[Dots in unquoted local parts may not be consecutive or at either end.]
+
+Exim allows unquoted local parts to begin or end with a dot (period, full
+stop), and it also permits two consecutive dots in a local part.
+
+
+
+2. RFC 821
+----------
+
+The original specification of SMTP is RFC 821, later clarified and modified by
+RFC 1123. Domain name system requirements and their implications for mail are
+covered in RFCs 1035 and 974. A scheme for extending the SMTP protocol is
+described in RFC 1869, and there are subsequent RFCs specifying particular
+extensions.
+
+At the time of writing (January 1999) a new RFC (currently known as
+draft-ietf-drums-smtpupd-09) which updates and consolidates all the material
+connected with SMTP message transmission is at a late stage of drafting, and is
+expected to become an Internet Standard in due course.
+
+The new draft is written using the terms MUST, SHOULD, and MAY, which, when
+written in capital letters, have precise meanings. To quote from the draft:
+
+  "MUST" or "MUST NOT" identify absolute requirements for conformance to
+  this specification. Implementations that do not conform to them lie
+  outside the scope of this specification and often will not
+  interoperate properly with SMTP implementations that do conform.
+  Implementations that are fully conforming also adhere to all "SHOULD"
+  and "SHOULD NOT" requirements. Implementations that adhere to all
+  "MUST" ("MUST NOT") but not to all of these are considered to be
+  partially conforming. Such implementations may interoperate properly
+  with fully conforming ones and with each other, but this will
+  typically be the case only if great care is taken. Consequently, an
+  implementation should violate "SHOULD" ("SHOULD NOT") requirements
+  only under exceptional and well-understood circumstances.
+
+The implementation of Exim is intended to conform to the spirit of this
+paragraph. The following is (I hope) a complete list of major variations
+from the draft RFC. In addition to the items listed here, there are other minor
+extensions such as the tolerance of white space in places where it is not
+strictly permitted by the RFC. References in square brackets are to the -09
+draft sections, and brief summaries of the RFC requirement are also given in
+square brackets.
+
+
+2.1 Line termination [2.3.7, 4.1.1.4]
+-------------------------------------
+
+[SMTP lines are terminated by CRLF.]
+
+Exim recognizes LF without CR as a line terminator in all forms of input. For
+SMTP input, any preceding CR is discarded. An early version of Exim followed
+the RFC strictly, and did not recognize LF without CR in SMTP input. However,
+it seems that sites on the net send out messages with just LF terminators,
+despite the warnings in the RFCs, and other MTAs handle this, so Exim was
+changed. However, there is a compile time macro called STRICT_CRLF which can be
+set to restore the strict behaviour, though this is undocumented.
+
+
+2.2 Eight-bit characters [2.4.1]
+--------------------------------
+
+[SMTP transmits only 7-bit characters.]
+
+Exim is eight-bit clean, and makes no attempt to modify the data in a message
+in any way. In particular, for messages containing characters with the top bit
+set, it neither tries to negotiate 8-bit transmission, nor converts such
+characters into an encoded form. In other words, it adopts the "just send 8"
+strategy. It can be configured to send out 8BITMIME in its response to EHLO
+(which it does not do by default), and it recognizes the 8BITMIME keyword on
+incoming messages, but neither of these affect its handling of message data.
+"Just send 8" is the strategy of a number of MTAs; it is argued that it
+achieves what the user wants more often than other strategies.
+
+
+2.3 Use of EHLO/HELO [3.2]
+--------------------------
+
+[Client MTAs should always start with EHLO, not HELO.]
+
+Exim sends EHLO only when it finds the string "ESMTP" in an SMTP greeting
+message. If EHLO is refused with a 5xx return code, it then reverts to HELO as
+required, but it does not contain logic for converting to HELO on other errors
+such as loss of connection or timeout after EHLO. That is one reason why it
+doesn't always send EHLO; there are reported to be ancient SMTP servers out
+there which collapse on receiving EHLO. (There is also at least one server
+whose banner reads "<host name> ignores ESMTP", but it is RFC 821 compliant in
+that it responds with 5O0 to EHLO, so Exim successfully reverts to HELO.)
+
+
+2.4 Closing the connection [4.1.1.10]
+-------------------------------------
+
+[Client must wait for response to QUIT before closing the connection.]
+
+Exim closes the connection immediately after sending QUIT, without waiting for
+the reply. There was a lot of discussion about this on one of the mailing
+lists. The conclusion was that this behaviour is fine on Unix systems, which
+have TCP/IP implementations that close down the underlying channel tidily even
+when the associated process has terminated. Indeed, not waiting may be
+beneficial, as it moves the TIME_WAIT state (waiting to ensure there's no more
+data in transit) from the server to the client system. On some other operating
+systems (I understand) it is a disaster to terminate the sending process
+without waiting for the QUIT response, because all the data about the
+connection lives in the client's process space, and is therefore thrown away
+before the response arrives. The subsequent arrival of the response then causes
+bad behaviour.
+
+
+2.5 IPv6 address literals [4.1.2]
+---------------------------------
+
+[IPv6 address literals are introduced by "IPv6".]
+
+Exim recognizes IPv6 literals as just the colon-separated hexadecimal form of
+an IPv6 address, for example 1080:0:0:0:8:800:200C:417A, without the need for a
+prefix. At present, it does not even recognize the prefix. When IPv6 becomes
+more widespread, Exim will follow whatever the common usage is.
+
+
+2.6 Underscores in domain names [4.1.2]
+---------------------------------------
+
+[Underscores are not legal in domain names.]
+
+RFC 822 allows all characters except specials, space, and controls in domain
+names, but the SMTP RFCs are stricter, allowing only letters, digits, and
+hyphen. Exim is compliant when checking incoming addresses in SMTP commands,
+but it is more relaxed by default when checking domain names that are supplied
+by EHLO or HELO commands, because many client workstations get set up with
+underscores in their names. There is an option that can be set to cause Exim to
+refuse underscores. (There are also options to specify certain hosts from which
+it will accept any old junk after EHLO or HELO. Such is the woeful state of
+some SMTP clients.)
+
+
+2.7 Removal of return-path headers [4.4]
+----------------------------------------
+
+[Relaying MTAs should not remove return-path.]
+
+Exim removes Return-Path: headers from all messages, if return_path_remove is
+set (the default). It does not attempt to determine if it is being a relay or
+not. Indeed, for some messages it might be both a relay and a final destination
+MTA for the same message.
+
+
+2.8 Randomizing the order of addresses of multihomed hosts [5]
+--------------------------------------------------------------
+
+[Multihomed host addresses should not be randomized.]
+
+Exim does randomize a list of several addresses for a single host, because
+caching in resolvers will defeat the round-robinning that many namerservers
+use. (Note: this is not the same as randomizing equal-valued MX records. That
+is required by the RFC.)
+
+
+2.9 Handling "MX points to self" [5]
+------------------------------------
+
+[MX points to self must be treated as an error.]
+
+The RFC doesn't allow for the possibility of special-purpose routing in the
+case when the lowest numbered MX record points to the local host. The default
+Exim configuration is compliant, but it is possible to configure Exim to behave
+differently, and there are several situations where this can be useful.
+
+
+2.10 Source routing [6.1]
+-------------------------
+
+[Source routes should be stripped.]
+
+The new RFC has moved forward in deprecating source-routed email addresses.
+Exim does not strip them down by default, but can be made to do so by setting
+collapse_source_routes. However, even when it is not stripping them down, it
+does not add host routing to reverse-paths when processing a source-routed
+forward-path.
+
+
+2.11 Loop detection [6.2]
+-------------------------
+
+[Loop count for Received: headers should be at least 100.]
+
+Exim's default setting of the received_headers_max option is 30. Most messages
+these days seem to accumulate less than half a dozen Received: headers, and
+even a couple of forwardings don't bring this anywhere near 30.
+
+
+2.12 Addition of missing headers [6.3]
+--------------------------------------
+
+[Missing headers may be added, and domains qualified, only if client is
+identified.]
+
+Exim always adds Message-Id: and Date: headers if these are missing, whatever
+the source of the message, and likewise when it expands non-fully-qualified
+domains, it does so independently of the message's source.
+
+
+2.13 Syntax of MAIL and RCPT commands [4.1.1.2, 4.1.1.3]
+--------------------------------------------------------
+
+Exim is more relaxed than the RFC requires:
+
+(1) Trailing white space is ignored.
+
+(2) It permits white space after the "FROM" and "TO" keywords.
+
+(3) It does not insist on the address being enclosed in <> characters. In fact,
+    it recognizes addresses in RFC 822 format here, except that domain
+    components are restricted to containing only letters, digits, and hyphens.
+
+(4) Local parts are permitted to contain null components, that is, may start or
+    end with an unquoted full stop (period) or contain two consecutive
+    unquoted full stops.
+
+
+2.14 Non-fully-qualified domains [2.3.5]
+----------------------------------------
+
+[All domains must be fully qualified.]
+
+A domain that is not fully qualified has some of its trailing components
+missing, and is normally a local alias of some sort, for example, just a
+single-component host name.
+
+Exim can be configured to "widen" non-fully-qualified domains, either by using
+the facilities of the DNS resolver, or by an explicit list of widening strings.
+When this is done, it applies to addresses received by SMTP from other hosts,
+as well as to locally-originated addresses. Address re-writing could also be
+used for this purpose.
+
+
+2.15 Unqualified addresses [4.1.2]
+----------------------------------
+
+[Addresses in SMTP commands must include domains.]
+
+An unqualified address consists of a local part without a domain. Do not
+confuse "qualified address" and "qualified domain". A qualified address may
+include a non-fully-qualified domain.
+
+There is one exception to the RFC rule: it is required that the unqualified
+address "<postmaster>" always be accepted. Apart from this, Exim rejects
+domainless addresses in SMTP commands by default, but it can be configured with
+a list of hosts and/or networks that are permitted to send addresses without
+domains in SMTP commands. Any such address that is accepted (including
+<postmaster>) is qualified by adding the value of the qualify_domain option.
+
+
+2.16 VRFY and EXPN [3.5.1, 3.5.2, 3.5.3, 7.3]
+---------------------------------------------
+
+[VRFY and EXPN should be supported.]
+
+Exim does not support VRFY and EXPN by default, but a list of hosts and
+networks for which they are permitted can be given.
+
+
+2.17 Checking of EHLO/HELO commands [4.1.4]
+-------------------------------------------
+
+[Client must send EHLO. Server must not refuse message if EHLO/HELO check
+fails.]
+
+Exim, as a client, always sends EHLO or HELO (see 2.3 above). As a server, it
+does not insist on there having been a valid EHLO or HELO command before the
+start of a message transaction. Any EHLO or HELO command that is received is
+rejected only if it contains a syntax error. That is, it is never rejected on
+the basis of any validation checking that may be performed on the data it
+contains.
+
+However, Exim can be configured to insist that (a) there is valid EHLO/HELO
+command before any message transaction and (b) the domain in that command
+matches the domain obtained by looking up the IP address of the sending host.
+It is possible to specify exception lists of hosts and/or networks for which
+this check does not apply.
+
+
+2.18 Format of delivery error messages [3.7]
+--------------------------------------------
+
+[Standard report formats should be used if possible.]
+
+Exim's delivery failure reports do not conform to the format described in RFC
+1894.
+
+
+## End ##

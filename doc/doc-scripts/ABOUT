@@ -1,0 +1,9 @@
+$Cambridge: exim/doc/doc-scripts/ABOUT,v 1.1 2004/10/08 10:38:48 ph10 Exp $
+
+CVS directory exim/exim-doc/doc-scripts
+---------------------------------------
+
+This directory contains various scripts that are used to build the distributed 
+documentation from its source files.
+
+End

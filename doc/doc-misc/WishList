@@ -1,0 +1,1727 @@
+$Cambridge: exim/doc/doc-misc/WishList,v 1.1 2004/10/08 10:38:47 ph10 Exp $
+
+EXIM 4 WISH LIST
+----------------
+
+Even when it was first released, Exim 4 had a Wish List because not all the
+things suggested for it were implemented. The list has not stopped growing...
+
+Another reason it is so long is that I have retained some items from the Exim 3
+Wish List that never got implemented, but which seem reasonable possibilities
+for later addition to Exim 4.
+
+I have guessed at the amount of work involved, and categorized the items as
+Tiny, Small, Medium, Large, or Unknown. The guesses are not based on any
+detailed investigation, so must be taken as very rough.
+
+
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+-----                Retained from the Exim 3 Wish List                 ------
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+
+(10) 13-Jul-98  M  more flexibility for pipe returns
+Ben Smithurst
+
+The ability to specify more precisely what happens concerning the return code
+from the pipe and the presence/absence of STDOUT/STDERR is requested. The
+particular configuration that was requested was:
+
+> if the command exited EX_OK, *and* produced nothing on STDOUT or
+> STDERR, it succeeded...
+> if the command exited EX_TEMPFAIL, defer, regardless of
+> STDOUT/STDERR...
+> otherwise freeze the message (this will get my attention by way of
+> freeze_tell_mailmaster)...
+------------------------------------------------------------------------------
+
+(11) 17-Jul-98  G  support for DSN
+Andy Mell
+
+It is unclear to me how this should work in the presence of aliases and
+forwarding. Local deliveries would have to explicitly configured as deliveries
+or relaying or whatever. A substantial amount of code is probably needed.
+
+Jeffrey Goldberg
+I have nothing to add except to say that for many of the reasons you've
+stated, I don't think that DSN is coherent enough to be worth the effort
+to implement.
+
+Another comment:
+
+  I thought the RFC was pretty clear on this. In a nutshell, if the
+  delivery rewrites the envelope from address, it's considered a
+  terminal delivery (i.e. delivery to a mailing list exploder), otherwise
+  treat it as a forwarding operation (the /etc/aliases case). I would
+  treat a .forward expansion as a final delivery event (it got to the
+  user as far as the MTA is concerned).
+
+  Yes, we need the DSN syntax. We also require the complete semantics of
+  NOTIFY=SUCCESS,FAILURE for our application to work.
+
+  Electronic Bill Presentment is really going to push the need for
+  DSN support in MTAs. We just don't want to get stuck in a situation
+  where we're faced with a non-DSN-aware MTA when we go to install
+  our bill/statement engine, thus our interest in what the MTA vendors
+  are planning to do about DSN.
+------------------------------------------------------------------------------
+
+(41) 14-Oct-98  M  Find a way of modifying header lines
+Oliver Smith
+
+The problem with header_remove followed by header_add is that you can't refer
+to the previous value of the header when adding a replacement. This could be
+solved with a replace_header option.
+------------------------------------------------------------------------------
+
+(43) 15-Oct-98  M  Sender rewrite *after* SMTP incoming checks
+Andreas Edler
+
+The anti-relaying check happens after the sender has been rewritten; there are
+times when it would be helpful to do the check on the original sender, not on
+the rewritten one. Quite how to configure this I'm not sure.
+
+A related suggestion (from Steve Sargent) is to retain the original sender
+address and make it accessible somehow.
+------------------------------------------------------------------------------
+
+(46) 20-Oct-98  L  SMTP protocol hooks
+Malcolm Ray
+
+"But there are enough broken SMTP implementations to make me wonder whether
+there isn't a case for providing hooks for tweaking the SMTP transport's
+protocol exchange. Something which would allow me to say things like 'if, when
+talking to lame.example.com, you get a 251 response to a MAIL command, rewrite
+the response to 501 before continuing'."
+------------------------------------------------------------------------------
+
+(50) 13-Nov-98  M  A "Focus" option for eximon
+Frank Elsner
+
+This is the opposite of "Hide"; it just displays a certain subset. Hmm. Could
+something clever be done with regular expressions?
+------------------------------------------------------------------------------
+
+(61) 22-Dec-98  M  Send failed error messages to somebody
+Harald Meland
+
+With sendmail, the failed error message is made into a error message,
+with both envelope sender and recipient set to MAILER-DAEMON.  The
+original, bogus-envelope-sender message is then available to whoever
+receives MAILER-DAEMON's mail. A more flexible approach would be to
+specify a specific recipient.
+------------------------------------------------------------------------------
+
+(81) 01-Mar-99  M  Addition of Content-MD5 support
+Martin Hamilton
+
+Martin supplied a suggested patch at
+http://www.net.lut.ac.uk/~martin/antispam/exim-hacks/
+------------------------------------------------------------------------------
+
+(85) 15-Mar-99  M  ability to rewrite addresses in non-standard headers
+Dave Lewney
+John Holman
+
+Such as "return-receipt-to". See also 41.
+------------------------------------------------------------------------------
+
+(90) 21-Apr-99  M  change wild prefix/suffix greediness
+Ben Smithurst
+
+Currently, when prefix or suffix containing * is set on a director, and the
+fixed part occurs more than once in a local part, the length of the prefix or
+suffix is maximized. For example, with suffix = -* and a local part of
+foo-bar-baz the suffix is taken as bar-baz, leaving the local part as foo.
+An option is proposed to invert this rule.
+------------------------------------------------------------------------------
+
+(91) 26-Apr-99  S  make queue_run_in_order to newest first
+"Andreas M. Kirchwitz"
+
+The tidiest thing would be to have queue_run_order={random,oldest,newest},
+and make queue_run_in_order obsolete.
+------------------------------------------------------------------------------
+
+(93) 04-May-1999  L  fallback_transport
+
+This would be a generic transport option, specifying a different transport to
+be used if the first one failed. Failed hard, or failed soft? Or an option?
+And if failed hard, is a bounce message sent as well, or not? There are uid
+issues. Remote delivery would have to be done always in a subprocess so that
+the main process could retain privilege in case the fallback transport was
+local. That could be conditional. That's why this is labelled "Large". Some of
+the things people want to do with this can be done by variations in the
+routers, e.g. use $message_age to switch routers.
+------------------------------------------------------------------------------
+
+(94) 13-May-1999  M  message to go with -Mg
+Dave Holland
+Alan Thew
+
+So the admin can pass back a reason.
+------------------------------------------------------------------------------
+
+(99) 28-May-1999  M  header to list failures for syntax_errors_to
+mark david mcCreary
+
+"I use the syntax_errors_to feature to email a copy of the error message.
+It would be helpful to have the X-Failed-Receipients header in there,
+identifying which addreses(s) are the problem, so that I don't have to
+parse the body of the email message to figure out which addresses."
+------------------------------------------------------------------------------
+
+(100) 04-Jun-1999  S  admin_users option, like trusted_users
+Paul Mansfield
+------------------------------------------------------------------------------
+
+(102) 21-Jun-1999  M  expanded basic variables
+Julian King
+
+Oh, and a wishlist entry, qualify_domain, and preferably other variables
+can be set with a $lookup in the first part of the exim configuration
+file, perhaps by an equivalent to backticks in shell script ("`command`")?
+------------------------------------------------------------------------------
+
+(105) 28-Jun-1999  M  MIME-format bounce messages
+Paul Makepeace
+
+"Is there any work going/gone on/planned to enable exim to report delivery
+status notifications using RFC1892 multipart/report MIME messages? It would be
+great to have errors reported in a message/rfc822 attachment."
+
+Jeffrey Goldberg
+"I like plain bounces, so would hope that if you do this, that it be
+configurable. I think that even for those who want it, it shouldn't be very
+high on the wish list priority."
+
+Other suggestions: toggle for bounces/warnings; override max_return for
+certain addresses; use plain text if original not MIME. See Paul's hack
+for background of what to do.
+
+Nigel suggests using a specially named autoreply transport to generate bounces;
+people could then replace this with another transport (e.g. pipe) if they want
+to customize it themselves.
+
+Eli Chen posted an unconditional patch for 3.32 that does some of this work.
+That could form a basis.
+------------------------------------------------------------------------------
+
+(107) 12-Jul-1999  S  defer transport at given load level
+Marc Haber
+
+------------------------------------------------------------------------------
+
+(108) 16-Jul-1999  S  remote sort by numbers of recipients
+mark david mcCreary
+
+In the absence of remote_sort, sort remote domains by the number of recipients
+in each.
+------------------------------------------------------------------------------
+
+(114) 11-Nov-1999 S  List of possible outgoing interfaces
+
+Allow the smtp "interface" option to be a list: try them in turn until one
+is found to work. Also allow masks to specify a range of addresses.
+------------------------------------------------------------------------------
+
+(123) 23-Dec-1999 L  Use AUTH + TURN for dial-in hosts
+Andrew Tverdokhleb
+
+The way to do this would be to have Exim deliver messages into per-host
+directories in, say, BSMTP format. Accept TURN if authenticated, and cause it
+to run a helper program that is passed the socket in order to deliver the mail.
+Provide a helper program!
+------------------------------------------------------------------------------
+
+(125) 04-Jan-2000 L  Use shared memory segment for queue list
+Theo Schlossnagle
+
+The idea is that a queue-runner that finds no existing shared segment should
+create one (if configured - possibly some fixed size) and all Exim processes
+should maintain a list of messages in it, thereby saving on directory scans
+when there are lots of messages. This needs a lot of careful thought to try to
+eliminate any possibility of data loss. The interlocking could be quite tricky.
+Further posters suggested using a db file to hold the list. See also 127.
+------------------------------------------------------------------------------
+
+(129) 14-Jan-2000 L  Dynamically loadable lookup modules
+Steve Haslam
+
+Suggested patch provided.
+------------------------------------------------------------------------------
+
+(131) 17-Jan-2000 T  Facility for assuming existence for EACCES
+Peter Radcliffe
+
+The opposite option for "+" in require_files: assume existence if cannot
+peer into the directory (+ assumes non-existence).
+------------------------------------------------------------------------------
+
+(131) 29-Feb-2000 M? Control total number of outgoing SMTP calls
+Brian White
+
+This is for hosts with slow connections. Could some modification of
+serialize_hosts be used for this? Or maybe use a semaphore? They seem to
+be quite widely available.
+------------------------------------------------------------------------------
+
+(132) 01-Mar-2000 S  Lookup host name from outgoing interface
+Vadim Vygonets
+
+Instead of primary_hostname, look up the name for the interface that is being
+used for sending. Suggested patch supplied, but this should be an option of the
+smtp transport.
+------------------------------------------------------------------------------
+
+(133) 06-Mar-2000 S  Filter option not to log "previously sent"
+Bruce Bowler
+
+This is when using the "log" option of the autoreply driver.
+------------------------------------------------------------------------------
+
+(134) 09-Mar-2000 S  Option to remove attachments when bouncing
+------------------------------------------------------------------------------
+
+(136) 13-Mar-2000 S/M Option for aliasfile to suppress "me too"
+
+Could be tricky determining who "me" is.
+------------------------------------------------------------------------------
+
+(143) 08-May-2000 S  Make quota_warn_threshold into a list
+David Carter
+
+So several warnings could be generated as the mailbox got bigger and bigger.
+------------------------------------------------------------------------------
+
+(146) 15-May-2000 M  Allow SMTP error codes in retry rules
+
+This would allow special handling of certain errors from certain hosts. In
+particular, it would allow failing of certain 4xx codes.
+
+This is now available for 4xx responses to RCPT commands. Is anything more
+needed?
+------------------------------------------------------------------------------
+
+(148) 15-May-2000 S  Warn recipient if message rejected for quota excession.
+Heinz Ekker
+
+Maybe not all that small, because the possibility of retrying must be taken
+into account.
+------------------------------------------------------------------------------
+
+(149) 19-May-2000 L  Make added headers visible in filters and other places
+Hans Morten Kind
+
+Headers added by directors/routers are not visible in subsequent processing.
+This is a request to make them visible. What about removed headers? This could
+be tricky to specify, hence the L.
+
+A separate but related issue is the effect of headers added by "unseen"
+directors. These are documented in chapter 19 as not being accumulated. Should
+any change be made?
+------------------------------------------------------------------------------
+
+(155) 16-Jun-2000 M  Special handling for certain hosts
+mark david mcCreary
+
+A means of changing the transport depending on the host name/IP of the most
+preferred MX record so that all domains that route to certain hosts can be
+handled specially. Maybe this could be a variable that is available in the
+expansion of the "transport" option.
+------------------------------------------------------------------------------
+
+(158) 29-Jun-2000 S  Configure "From" in bounces
+Ben Parker
+
+Cf Reply-To.
+------------------------------------------------------------------------------
+
+(159) 07-Jul-2000 M  Keep messages for fixed time
+Gary Palmer
+
+An option to keep messages on the queue for a specified time, even if all their
+destination hosts have timed out.
+------------------------------------------------------------------------------
+
+(164) 17-Aug-2000 S  sender_unqualified_auth_hosts
+
+To allow authenticated hosts to send unqualified addresses. Presumably it
+needs received_... as well.
+------------------------------------------------------------------------------
+
+(167) 05-Sep-2000 L  Support for ODBC
+
+This would allow access to databases that don't have native support built into
+Exim. See http://www.openlinksw.com/info/docs/rel3doc/unix/odbcsdk.htm
+------------------------------------------------------------------------------
+
+(168) 06-Sep-2000 M  Deliver messages that alias to nothing to a given address
+Dr ZP Han
+
+If other people are managing alias lists, and one is empty, bounce that
+delivery to a given address rather than freezing the message. Use the errors_to
+address?
+------------------------------------------------------------------------------
+
+(172)  11-Sep-2000 S  Allow file/directory in appendfile to override
+"Michael J. Tubby"
+
+When appendfile is called from forward or filter files, it ignores file or
+directory settings. Maybe they should override. The path set by the forward or
+filter is available in $address_file these days, so it could be used to create
+a longer path.
+------------------------------------------------------------------------------
+
+(173)  18-Sep-2000 S  A way of doing lsearches with EOL terminated keys
+Jason Robertson
+
+This is for looking up things like subject contents. Probably need an option to
+exim_dbmbuild to make them into DBM files.
+------------------------------------------------------------------------------
+
+(174)  19-Sep-2000 S  A way of using a different port for fallback hosts.
+Dean Brooks
+------------------------------------------------------------------------------
+
+(181)  10-Nov-2000 S  Compile-time options for ignoring Sendmail options
+
+So that new ones could be accommodated easily.
+------------------------------------------------------------------------------
+
+(183)  04-Dec-2000 L  dns_means_nonexist_after
+Dave C.
+
+In other words, wait a bit before giving up. This needs a mechanism for
+remembering, which is not currently available. To be borne in mind for the
+future.
+------------------------------------------------------------------------------
+
+(184)  04-Dec-2000 M  Log more details of local caller
+J. Nick Koston
+
+"I was wondering if it was possible for exim to log the parent pid's cwd and
+exe when it is called from a script/invoked by actually running /usr/sbin/exim
+or /usr/sbin/sendmail."  Question: is this information actually/easily
+available to Exim? Needs investigation.
+------------------------------------------------------------------------------
+
+(186)  19-Dec-2000 S  A simple utility to reset a retry time
+Marc Haber
+
+Basically, to do what exim_fixdb "delete" can do, but straightforwardly. There
+could be an interface from eximon.
+------------------------------------------------------------------------------
+
+(187)  02-Jan-2001 M  Wildcarding in headers_remove
+Tamas TEVESZ
+
+What I'd like to see is it to handle globs (or regexps, but i'm not sure this
+latter would worth the hassle), in a way like:
+
+        headers_remove = "X-*:Additional-header"
+------------------------------------------------------------------------------
+
+(188)  02-Jan-2001 S  Make pipe timeout a temporary error
+Georg v.Zezschwitz
+
+A way to make a timeout into a temporary error.
+------------------------------------------------------------------------------
+
+(190)  03-Jan-2001 M  Multiple message operations in eximon
+------------------------------------------------------------------------------
+
+(195)  19-Mar-2001 T TCP window size
+
+TCP window size for receiving/sending, SMTP client/server.
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+
+
+
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+-----            Things that didn't make it into Exim 4                 ------
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+
+. An option to send messages to postmaster when ignore_errmsg_errors_after
+times out.
+
+. When an address is being routed, its constituents are in $local_part and
+$domain, but there is currently no variable that contains the whole thing. It
+could be put into $recipient, but that risks confusion with $recipients
+(which is available in system filters). Maybe $address could be used?
+
+. The ability to relay to host X without knowing all the domains that host X
+might have. At ACL time, one would need to verify the recipient, and determine
+that it routed to host X.
+
+. A new lookup library that operates on a specially prepared file of IP
+addresses and masks so that a single "lookup" yields a yes/no answer. This
+should be a freestanding thing - needs a utility to build the file from a list.
+
+. People want to change the wording of messages; can we find an efficient way
+of allowing this? (Maybe put all messages into a separate module?) The problem
+is not in the messages themselves, but in the values that get inserted into
+messages. Would have to invent a new kind of function that used identified
+values rather than positional ones. Use GNU gettext?
+
+. Invent lf_hosts for those that may use LF without CR. Any other RFC
+things we need to worry about?
+
+. A user would really like to see something similar, perhaps with
+"ID=$authenticated_id", similar to "helo=" and "ident=" in the default received
+header. BUT there are security issues. Maybe give it as a commented out option
+in the default configuration?
+
+. Consider expanding further options that take integer values. What about
+smtp_xxx options for different limits at different times of day (for example)?
+What about tls_advertise_hosts (so can look at incoming IP/port)?
+
+. How about a "hold hosts" option (cf hold_domains) to hold delivery to certain
+hosts?
+
+. Allow user filters to use "headers add", but probably not remove. Or maybe
+just implement "allow" options for both of these features.
+
+. Have the return from pipe in a variable, so that (e.g. error_message_file)
+can make use of it.
+
+. Implement randomize for ldap/sql servers.
+
+. Add an option for ETRN that says "wait for the command to finish, and use its
+stdout as the SMTP response."
+
+. -odsomething for "ignore retry when doing immediate delivery".
+
+. Add an option to the smtp transport to make it treat 5xx on connection as if
+it were 4xx. Or possible add a sophisticated "after command X, treat xxx as
+yyy".
+
+. A way of rewriting addresses in non-standard header lines such as
+Mail-Followup-To.
+
+. Global option to enable initgroups() for exim uid. Default off.
+
+. When verifying a sender, should it be rewritten with any T rewrites, because
+it would be so rewritten if it actually was a recipient in a message?
+
+. Sean Witham wants a way of defining macros that are not privileged, and a
+sort of #ifdef structure that allows for different configurations in the same
+file.
+
+. Allow :fail: to specify that 551 be used instead of 550. Maybe allow a code
+at the start, optionally? What about :defer:?
+
+. SMTP timeout in middle of receiving message: log sender address if known, and
+possibly message_id if known.
+
+. Make -brw show rewrites for transports too.
+
+. Have the MTA log destinations that have timed-out on a ident request and
+no longer send rfc1413_queries to them. Add an option for how not to cache
+these entries.
+
+. Options and/or a utility to enable non-privileged users to view the queue
+(e.g. -bpp), manipulate their own messages, etc.
+
+. Specify a port along with a host in a route_list.
+
+. A generalized "From" escaping scheme that also escapes >From so that the
+whole thing can be reversed.
+
+. There was a request for the \dns_again_means_nonexist\ option not to be
+instantaneous, but to operate only after the DNS has been giving "try again"
+for some time. Use the misc hints database.
+
+
+
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+-----                     The Exim 4 Wish List                          ------
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+
+(1)  01-Jan-02  U  Use of dynamically loaded libraries.
+
+People want Exim to use dynamically loaded modules for a variety of reasons.
+When I started to create Exim, I never expected anything other than source
+distribution; the RPMs and inclusions in OS distributions caught me by
+surprise. I know very little about the mechanics of dynamic loading, but I'm
+aware that not all operating systems support it. I'm also aware that not all
+people support it!
+
+Furthermore, a way round this might be to supply more hooks along the lines of
+local_scan(). Then people can write their own dynamic loaders if they want.
+------------------------------------------------------------------------------
+
+(3)  01-Jan-02  U  Test for over-quota at SMTP time
+
+This is a hard one, because the only way to test for over quota is to try to
+deliver a message, certainly if system quotas are being used. And also, the
+only available size at RCPT time is the SIZE option, though of course the test
+could be run at DATA time. I think maybe we leave this one to an external
+program, and require people to use ${run} to access the data. Let someone else
+figure out how to extract the current mailbox size!
+
+One suggestion is to implement
+
+  ${file_size:/path/to/file}
+  ${directory_size:/path/to/directory}
+
+so that explicit checks can be done. It may be necessary to have four
+operators, two being based on the block count, and two showing the "visible"
+size. Directory scanning is expensive; is there any scope for caching? It would
+seem not (you don't often get two addresses to the same user).
+------------------------------------------------------------------------------
+
+(4)  01-Jan-02  S  Option to reject if no From: or Date: header line
+
+Exim, in common with many other MTAs, inserts a From: or Date: header line if
+one is missing. (It also inserts a blank Bcc:, but that is no longer needed by
+RFC 2822 - it was by 822.) The suggestion is an option to give an error
+instead. This could be done by making it possible to detect these insertions in
+the acl_smtp_data ACL.
+------------------------------------------------------------------------------
+
+(6)  01-Jan-02  S  Option to disable the use of -t
+Dave C.
+
+Would require work so that Exim itself doesn't use -t.
+------------------------------------------------------------------------------
+
+(7)  01-Jan-02  M  Avoid showing LDAP passwords in log lines for LDAP errors
+John W Baxter
+
+May be tricky, because at the higher levels, the format of the query is not
+understood.
+------------------------------------------------------------------------------
+
+(8)  01-Jan-02  S  Expand once_repeat in autoreply
+John Jetmore
+------------------------------------------------------------------------------
+
+(9)  01-Jan-02  S  Headers as well as body in file for autoreply
+Florian Laws
+------------------------------------------------------------------------------
+
+(10) 01-Jan-02  T  Make "true" and "false" valid expansion conditions
+
+This might help with "and" and "or" when one of the sub-conditions is, for
+example, a lookup.
+------------------------------------------------------------------------------
+
+(11) 01-Jan-02  S  Allow a filter to include another file.
+------------------------------------------------------------------------------
+
+(12) 01-Jan-02  M  Support for different SQL servers per query
+
+In other words, the global mysql_servers etc. is too restrictive.
+------------------------------------------------------------------------------
+
+(14) 01-Jan-02  M? Support for Sendmail milters
+
+This could perhaps be done by extending the local_scan() idea and providing a
+"standard" module which interfaced to milter.
+------------------------------------------------------------------------------
+
+(15) 01-Jan-02  M  More hooks like local_scan()
+
+One request has been for a similar hook at logging time. For other SMTP
+interactions, maybe a hook into the ACL? See also 79 and 218.
+------------------------------------------------------------------------------
+
+(17) 11-Jan-02  M  The construction of config.h needs refactoring
+
+This has been hacked about substantially since the original implementation.
+Given that there is a program (buildconfig), the messing around with the
+environment could be abolished. Also, the distinction between "yes" and "no"
+isn't always properly made (tests for #ifdef don't care about the value).
+------------------------------------------------------------------------------
+
+(18) 24-Jan-02  S  Make $value retain its value after a top-level expansion
+
+This was specifically for use in filter files. Currently it reverts to empty
+as a consequence of save/restore for every lookup. It might be confusing to
+do otherwise, however.
+------------------------------------------------------------------------------
+
+(19) 29-Jan-02  L  Use of multiple DBM libraries
+
+The problem is how to handle conflicting function names. Much research is
+needed.
+------------------------------------------------------------------------------
+
+(20) 29-Jan-02  S  Make system filter refreeze after manual thaw
+
+Currently, a "freeze" in a system filter doesn't freeze after a manual thaw.
+------------------------------------------------------------------------------
+
+(21) 12-Feb-02  S  Expand return_size_limit
+Joachim Wieland
+
+Is this really worth it? A per-transport value is also suggested - that would
+mean remembering the value with each failed address and taking a minimum or
+a maximimum (which?).
+------------------------------------------------------------------------------
+
+(24)  21-Feb-02 ?  A way of testing TLS using -bh
+------------------------------------------------------------------------------
+
+(27)  06-Mar-02 M  Distinguishing between different temporary callout errors
+
+The request was to distinguish between a 4xx error and a failure to connect.
+Problem is: how to cope when there is more than one host? Maybe only if ALL
+fail to connect. An option like /callout_no_connect_ok.
+------------------------------------------------------------------------------
+
+(30)  12-Mar-02 S  Add "recipients" precondition to routers.
+
+This would avoid having to use "condition". (See also requirement for $address
+mentioned above.) However, it would also require adding a caching feature, and
+probably $recipient_data (cf $domain_data).
+------------------------------------------------------------------------------
+
+(31)  21-Mar-02 S  Variables that indicate 8-bit message and 8-bit host, and
+                   a way of using them to suppress a transport filter
+
+A variable that is set if the message contains 8-bit characters, and another
+that is set during the smtp transport if the host supports 8-bit. Then we also
+need a condition that's expanded in the transport to control whether the filter
+is run or not (e.g. transport_filter_condition).
+------------------------------------------------------------------------------
+
+(32)  22-Mar-02 M  More info about callout fails for header sender verify
+
+When there's a callout failure for an envelope address, the error message
+contains details (by default) of the callout commands. This doesn't happen
+for addresses in the header because there may be more than one of them, and
+deciding how to give that information is tricky. Can we do better?
+------------------------------------------------------------------------------
+
+(33)  25-Mar-02 S  Option to assume nomatch in dnslist lookups that time out
+
+Currently this causes a DEFER.
+------------------------------------------------------------------------------
+
+(34)  26-Mar-02 S  Access to DNS lookup functions via local_scan() API
+
+This would make local_scan() writers lives easier for DNS usage.
+------------------------------------------------------------------------------
+
+(36)  02-Apr-02 ?  A way of throttling, but allowing, relaying that would
+                   otherwise be denied
+
+This was suggested in connection with anonymizing messages. The "wait" command
+in ACLs goes some way towards this. Is it enough?
+------------------------------------------------------------------------------
+
+(41)  17-Apr-02 T  Make config.samples available as a directory for ftp
+
+This is so that people can browse individual samples directly.
+------------------------------------------------------------------------------
+
+(42)  23-Apr-02 T  An option not to flatten newlines in $message_body.
+
+Or maybe better to provide $message_body_nl so as to have both.
+------------------------------------------------------------------------------
+
+(43)  23-Apr-02 T  An option to treat 4xx as 5xx from STARTTLS
+
+This would make Exim retry in clear unless the host is in hosts_require_tls.
+------------------------------------------------------------------------------
+
+(44)  24-Apr-02 ?  Use errors_to for timeouts after redirect syntax errors
+
+A syntax error in redirection data (with skip_syntax_errors false) causes a
+defer. Eventually, the address may time out. This suggestion is that, when it
+does, the bounce is sent to errors_to rather than to the sender.
+------------------------------------------------------------------------------
+
+(45)  13-May-02 T  smtp_etrn_serialize_id = ....
+
+The default behaviour would be equivalent to
+
+  smtp_etrn_serialize_id = $smtp_command_argument
+------------------------------------------------------------------------------
+
+(47)  16-May-02 S  Access to all addresses in batched local delivery
+Miquel van Smoorenburg
+
+In a batched local delivery with more than one recipient, there's no way to
+access the list of recipients for doing custom things, such as stuffing them
+all into a header. (BSMTP is the only approach; not everybody can use it.)
+Suggested patch supplied.
+------------------------------------------------------------------------------
+
+(48)  21-May-02 M  Support for ATRN (server and client)
+Brian Candler
+
+Server: If Exim had the ability to accept an ATRN command and then simply
+invoke an external program, passing the SMTP stream on stdin and stdout and
+the authenticated id as a parameter, that would do the job nicely.
+
+Client: We need a variant of 'exim -bs' which would connect to a specified
+host, send AUTH/ATRN, and then accept incoming messages as usual.
+------------------------------------------------------------------------------
+
+(50)  22-May-02 T  Add comment (duplicate address) to Envelope-To:
+
+This is just to minimize the confusion some people have.
+------------------------------------------------------------------------------
+
+(51)  07-Jun-02 S  Option to use another address in callout MAIL FROM
+
+This would be an address to try if MAIL FROM:<> failed. Is this actually going
+to be helpful? See also 101.
+------------------------------------------------------------------------------
+
+(53)  11-Jun-02 S  Make local_scan() dynamically loadable
+
+David Woodhouse sent a patch. There's a more sophisticated one from Marc
+Merlin. (See also Peter Benie's comments.) But should the base Exim have all
+this in it?
+------------------------------------------------------------------------------
+
+(54)  11-Jun-02 S  Ignore -Ac if called as mailq
+
+I am not sure if this makes sense. This flag requests a listing of a different
+mail queue, but Exim doesn't work like that. Is is not better for people to be
+aware of this?
+------------------------------------------------------------------------------
+
+(55)  13-Jun-02 M  Rewriting whole header lines
+Dave C.
+
+Current rewriting rules apply to individual addresses in header lines. This
+feature would use a regex to match whole lines and replace them. It could be
+useful for patching up syntactically invalid lines from crappy clients, before
+the syntax check kicks in. (It might also be useful for hiding local host names
+in Received: headers.)
+------------------------------------------------------------------------------
+
+(58)  26-Jun-02 ?  Extend PAM support
+
+Apparently PAM can do challenge-response authentication. The Exim interface
+can't handle this. Investigate and think about how to do this.
+------------------------------------------------------------------------------
+
+(59)  26-Jun-02 M  A "custom" authenticator
+
+... that is simply a front end to external code. For example, there may be
+an external API that hides the user password and does CRAM-MD5 when passed the
+details of the challenge and response.
+------------------------------------------------------------------------------
+
+(60)  27-Jun-02 S  Make trusted_users a local part list
+
+So that it can use lsearch etc.
+------------------------------------------------------------------------------
+
+(62)  28-Jun-02 S  Remove headers before DATA ACL
+Patrice Fournier
+
+"I'd like to be able to give Exim a list of headers that must be removed
+from the message at arrival, before data_acl processing (and before the
+rcpt_acl warn headers are added to the message)."
+------------------------------------------------------------------------------
+
+(63)  28-Jun-02 S  Access to ACL-added headers in ACLs
+Patrice Fournier
+
+"I'd like also to be able to look at the already added headers by a
+rcpt_acl when still checking rcpt_acl (either later in the acl for the same
+RCPT TO or for another RCPT TO)."
+------------------------------------------------------------------------------
+
+(65)  28-Jun-02 M  Expand fallback hosts
+
+See also 174 of the Exim 3 list.
+------------------------------------------------------------------------------
+
+(66)  01-Jul-02 M  Use Berkeley DB 4 concurrent access features
+
+This might give better performance on very busy sites by reducing the
+contention for access to hints databases. Rob Butler points out that this could
+also be useful to allow updates of other DB files used by Exim to happen
+concurrently. Another thing to think about with BDB is the possible use of
+B-trees.
+------------------------------------------------------------------------------
+
+(68)  01-Jul-02 S  Add sender host to delivery line
+
+"Would it be possible to have a "sending_host_on_delivery" option that
+logs the IP of the sending host in the => line?" Also requested was amount of
+data transmitted for a non-delivery attempt.
+------------------------------------------------------------------------------
+
+(69)  03-Jul-02 T  Log selector to log whoson checs
+Matt Bernstein
+
+"I'd quite like a log_selector option which could spot you'd done a whoson
+lookup in your DATA ACL and maybe log it as W=user."
+------------------------------------------------------------------------------
+
+(70)  09-Jul-02 S  A way of changing the RCPT address in an accept router
+
+So as to avoid duplication problems when sending multiple addresses in multiple
+copies to the same address.
+------------------------------------------------------------------------------
+
+(73)  17-Jul-02 M  Match a list from within a condition
+
+e.g.  ${if matchdomain {$domain}{+domainlist} ...
+      ${if matchhost {$sender_host_address}{1.2.3.4/10:2.3.4.5/16}...
+
+Thought needed about how to handle host names. This may be too messy to specify
+cleanly.
+
+22-Apr-04: Implemented for domains, addresses, and local parts. Hosts are
+too messy!
+------------------------------------------------------------------------------
+
+(74)  22-Jul-02 M  Extend -bV to do more semantic checking
+
+For example, diagnose "local_hosts" that should probably be "+local_hosts".
+------------------------------------------------------------------------------
+
+(75)  23-Jul-02 S  Reference option on command line
+
+The idea here is that a spam scanner that re-injects a message can supply a
+reference on the command line that gets logged with R=.
+------------------------------------------------------------------------------
+
+(78)  30-Jul-02 S  Expand queue_only (and/or queue_only_file)
+
+The requirement is to make it possible to queue messages if certain conditions
+are met (e.g. messages from certain local users). See also 93.
+
+This control can now be achieved in the ACL - is this still needed?
+------------------------------------------------------------------------------
+
+(79)  31-Jul-02 S  Additional info for log lines
+
+An option to set an expanded string to be added to <= lines. And also for the
+other delivery lines? See also 15.
+------------------------------------------------------------------------------
+
+(84)  09-Aug-02 S  Make interfaces available in a variable
+
+Something like $local_interfaces. Maybe limit the max length.
+------------------------------------------------------------------------------
+
+(85)  12-Aug-02 S/M  Notice database connection failures
+
+The small version of this just removes a server from the list within a single
+Exim process when a connection to it fails. The bigger project would use the
+retry database - but that has implications for bottlenecking and may not be
+helpful. See also item 109. Another suggestion is to randomize the order in
+which database servers are tried (randomize_database_servers). And another is
+to measure response times and remember which server is fastest.
+------------------------------------------------------------------------------
+
+(87)  12-Aug-02 M  Partial lookups for query-style lookups
+
+The suggestion is to allow the lookup to contain a keystring (same syntax as
+single-key lookups) which is then permuted and place in a suitable variable
+each time - $permuted_key or something.
+------------------------------------------------------------------------------
+
+(88)  20-Aug-02 S  Allow special retrying for forced defer
+
+See also 146 in Exim 3 wish list above.
+------------------------------------------------------------------------------
+
+(89)  20-Aug-02 S  Also allow retry rules on routers and transports
+------------------------------------------------------------------------------
+
+(90)  23-Aug-02 M  Macros with arguments, a la C
+
+I don't like this, because of the cost of frequent interpretation.
+------------------------------------------------------------------------------
+
+(93)  27-Aug-02 S  queue_only_condition
+Peter A. Savitch
+
+queue_only_condition global option, expanded string. This contain
+condition, which if evaluated to `no' or `false' or `0', behaves like
+queue_only (queue_only_load ?). Don't know what to do is the string
+expansion fails with DEFER (either force queueing or continue with
+immediate delivery). Another option can control Exim behaviour if the
+expansion fails. Don't know how the name for it ;-) See also 78.
+
+This control can now be achieved in the ACL - is the new feature now needed?
+------------------------------------------------------------------------------
+
+(95)  27-Aug-02 S  Log all parents as a router option
+
+So that specific addresses can be logged like this. Should there be more log
+selector options per router? Per transport?
+------------------------------------------------------------------------------
+
+(99)  28-Aug-02 L  Test pre-conditions in order given
+
+This would get round certain problems with require_files. However, it is
+totally incompatible, and therefore an "Exim 5" wish.
+------------------------------------------------------------------------------
+
+(101) 02-Oct-02 M  Callout and <> rejections
+
+Some people don't want to fail the callout if the MAIL FROM:<> command is
+rejected. Think of a way of handling this tidily. See also 51.
+------------------------------------------------------------------------------
+
+(102) 03-Oct-02 M  Log option to suppress message-id logging
+
+M because it would involve a change to eximstats.
+------------------------------------------------------------------------------
+
+(106) 09-Oct-02 S  Appendfile to create directory not as user
+
+Arrange for the setup entry to appendfile to create the directory under some
+other uid (and with given owners/permissions?)
+------------------------------------------------------------------------------
+
+(109) 15-Oct-02 M  Remember when LDAP (etc) servers are down
+
+The idea would be to use some kind of retry rule, just like for hosts.
+See also 85.
+------------------------------------------------------------------------------
+
+(110) 18-Oct-02 M  errors_to for pipe command in filter
+
+To work in the same was as errors_to for deliver commands.
+------------------------------------------------------------------------------
+
+(113) 15-Nov-02 M  support for XMLRPC
+
+Patch supplied for 4.10 by Joel Vandal.
+------------------------------------------------------------------------------
+
+(114) 04-Dec-02 M  local_scan: return message on accept
+
+(This actually dates from earlier.) The problem with this is that the string
+currently passes into $local_scan_data. Thus, an incompatible change of some
+sort would be required. Possibly a global that local_scan can set?
+------------------------------------------------------------------------------
+
+(118) 10-Dec-02 S  access to Perl from local_scan
+------------------------------------------------------------------------------
+
+(119) 12-Dec-02 M  ability to specify additional headers in an autoreply
+
+This is so that vacation messages etc can have MIME headers that specify, for
+example, the character set.
+------------------------------------------------------------------------------
+
+(125) 02-Jan-03 M  Per-host daemon logging
+
+"So what I would like is an option like debug_hosts, that allows to specify
+an hostlist, and if the current incoming/outgoing hosts matches, creates a
+logfile like $hostname_(in|out).log in my logdirectory."
+------------------------------------------------------------------------------
+
+(127) 06-Jan-03 M  Different messages for different callout failures
+
+The real requirement here is to detect when a callout "MAIL FROM:<>" failed, so
+that a specific warning about that can be sent, different to the message when a
+callout "RCPT TO:" fails. I think this is in fact now mostly done.
+------------------------------------------------------------------------------
+
+(129) 09-Jan-03 M  Keep track of DNSBL timeouts, and refrain from calling
+
+If so configured, keep track of DNSBL timeouts in a hints record, and don't
+retry that DNSBL for a while after (a sufficient number of) timeouts. It is
+effectively disabled for a while. Log enable/disable, of course. Another
+thought is an option not to apply +defer_unknown unless *all* DNSBL lookups in
+a list defer.
+------------------------------------------------------------------------------
+
+(130) 09-Jan-03 M  A number of LDAP-related things
+Peter A. Savitch
+
+OpenLDAP 2.1 is going to be more popular (2.1.9 is available with many
+bug fixes). TLS-enabled LDAP is an interesting and usefull thing.
+I can try to implement some things and send the patches, like with
+ldapi.
+
+How do You see:
+
+1) The propagation of TLS options (key, certificate, CA certificate)
+   to the OpenLDAP library.
+
+2) (was dereferencing; done in 4.23).
+------------------------------------------------------------------------------
+
+(131) 09-Jan-03 S  Additional variables
+Peter A. Savitch
+
+$root_uid    Why?
+
+(Some that were previously here are done)
+
+$smtp_accept_count    -- used for acl_smtp_connect
+
+$queue_runners        -- children of the listening daemon could use this
+                         value for controlling the number of queue runners
+
+I don't like either of these because they cannot be real-time values. They
+would be snapshots of the values at the time the process was forked from the
+daemon, and I fear they would just be confusing. For processes that were not
+forked from the daemon they couldn't be set at all.
+------------------------------------------------------------------------------
+
+(131) 09-Jan-03 S  Additional options
+Peter A. Savitch
+
+exim_processes_max
+exim_file_descriptors_max
+queue_run_condition   -- to deprecate queue_run_max, better system
+                         load control
+
+Given Exim's distributed nature, I'm not at all sure how the first two of these
+can usefully be implemented.
+------------------------------------------------------------------------------
+
+(132) 16-Jan-03 M  Option for when a transport filter fails (crashes)
+
+Freezing is one obvious option. Currently, Exim just retries. Another user
+wanted to retry without the filter, but that is much harder.
+------------------------------------------------------------------------------
+
+(136) 24-Jan-03 M  Make "personal" available as a condition for use in routers
+------------------------------------------------------------------------------
+
+(138) 28-Jan-03 M  A variable containing what was matched in a host list
+
+Or, presumably, other lists. This is so that ACL messages can say things like
+"your host name matches xxxx". Note: not the same as $domain_data. Also, this
+could be tricky with lookups and things that match in files.
+------------------------------------------------------------------------------
+
+(143) 06-Mar-03 L  Ability to have multiple authenticators of same type
+
+For example, to have two PLAIN authenticators; if the first fails, try the
+second.
+------------------------------------------------------------------------------
+
+(144) 07-Mar-03 T  ACL control = local_scan_skip to skip the local scan
+
+A bigger project would be control = local_scan <xxx> where xxx could select
+different local_scan functions (possibly by dynamic loading).
+
+This can now be simulated using the fact that ACL variables are preserved,
+so it doesn't look as it once did.
+------------------------------------------------------------------------------
+
+(145) 07-Mar-03 T  Export string_cat() to local_scan()
+------------------------------------------------------------------------------
+
+(147) 17-Mar-03 T  Option to treat 5xx as 4xx if received on initial connection
+
+This issue is controversial. That may be a good reason for not changing
+anything.
+------------------------------------------------------------------------------
+
+(153) 25-Apr-03 S  A way of making log_as_local apply to the smtp transport
+
+Either an option on the transport, or log_remote_as_local for the router.
+Messy, either way. Maybe log_local_as_local and log_remote_as_local, and
+deprecate log_as_local?
+------------------------------------------------------------------------------
+
+(154) 01-May-03 M  Teergrubing at the CR/LF level
+
+It is believed that the most effective way to teergrube is to insert a delay
+between transmitting CR and LF in the SMTP response. Furthermore, this is also
+the best place to test for bad synchronization (i.e. at the last possible
+time).
+------------------------------------------------------------------------------
+
+(155) 01-May-03 S  "control=no_pipelining" for connect and EHLO ACLs
+
+Yet more flexibility! Maybe this should be a more general control for what is
+sent in response to EHLO.
+------------------------------------------------------------------------------
+
+(156) 06-May-02 M  Finer-grained synchronisation checking
+
+On operating systems that can be asked whether any sent bytes have not yet been
+ACK'd at the TCP/IP level, a finer-grained check for proper synchronisation can
+be done. All bytes must have been ACK'd if the client has received the previous
+response before sending the next command. See also 293.
+------------------------------------------------------------------------------
+
+(157) 07-May-03 M  Newline as a list item separator
+
+This will make life easier for lists obtained form databases where the
+separator is naturally a newline.
+------------------------------------------------------------------------------
+
+(158) 13-May-03 M  Ability to add to OK message for SMTP commands
+
+For sending reasons for slow response, etc.
+------------------------------------------------------------------------------
+
+(160) 19-May-03 M  Remove headers using wild cards
+------------------------------------------------------------------------------
+
+(162) 28-May-03 M/L Use of real numbers in filters, expansions, and options
+
+The motivation for this is for handling spam scores that are real numbers. The
+questions are (a) how widely should it spread and (b) whether floating point or
+fixed point representations should be used. And what about the eval operator?
+------------------------------------------------------------------------------
+
+(164) 02-Jun-03 S  Set variables for interface and port in smtp transport
+
+These could be useful for varying HELO data etc. See also several other
+items about interfaces above.
+------------------------------------------------------------------------------
+
+(166) 18-Jun-03 S  CN verification in client TLS code
+
+A tls_verify_cn option is suggested by Sven Geggus.
+------------------------------------------------------------------------------
+
+(168) 19-Jun-03 S  Ability to add a header recording envelope rewrites
+
+Current code adds a deleted header with only some information. Maybe what is
+needed is a flag for a rewrite rule.
+------------------------------------------------------------------------------
+
+(169) 19-Jun-03 M  A way of detecting timeouts in callout returns
+
+------------------------------------------------------------------------------
+
+(170) 23-Jun-03 S  Option to accept rather than defer after local scan timeout
+
+Suggested patch supplied.
+------------------------------------------------------------------------------
+
+(171) 23-Jun-03 S  Option to make timeout a soft failure on pipe transport
+
+------------------------------------------------------------------------------
+
+(172) 23-Jun-03 M  Option to make SQL query to specific server
+
+------------------------------------------------------------------------------
+
+(175) 04-Jul-03 S  show_all_ancestors_in_errmsg for the redirect router
+
+This is the opposite of hide_child_in_errmsg in effect.
+------------------------------------------------------------------------------
+
+(180) 14-Jul-03 M  Extend never_users to be more flexible
+
+e.g. never_users = ! mailnull : ! cyrus : !mailman : 0-100
+------------------------------------------------------------------------------
+
+(183) 16-Jul-03 S  freeze_tell_text to add custom text to the message
+
+------------------------------------------------------------------------------
+
+(185) 24-Jul-03 S  An expansion operator that decodes RFC 2047 strings
+
+------------------------------------------------------------------------------
+
+(188) 13-Aug-03 T  batch_max=0 to mean unlimited
+
+------------------------------------------------------------------------------
+
+(189) 22-Aug-03 S  Allow filter "logwrite" to write to syslog
+
+I feel this is a dangerous facility, and also of very minority interest, at
+least for user's filters. Allowing a system filter to write to mainlog or
+syslog may be different. However, writing the main log would only be possible
+if the filter runs as root or exim.
+------------------------------------------------------------------------------
+
+(190) 22-Aug-03 S  A way of testing "forced delivery" in filter and routers
+------------------------------------------------------------------------------
+
+(191) 26-Aug-03 M  Preserve $address_data for a verified recipient
+
+The idea is to preserve it in the recipients data structure so that local_scan
+can have access to it. The value could also be used as the initial value of
+$address_data while routing.
+------------------------------------------------------------------------------
+
+(192) 05-Sep-03 M  Better handling of TXT records for dnslists
+
+When multiple lists are accessible via a merged lookup, handling TXT records
+is difficult. An option for doing the TXT lookup in a sub-list has been
+suggested, with syntax such as
+
+        dnslists = list.example.org=127.0.0.2%dialups \
+                                   ,127.0.0.3%relays \
+                                   ,127.0.0.5%spews
+------------------------------------------------------------------------------
+
+(194) 10-Sep-03 M  $addresslist_data to be like $host_data/$domain_data
+
+------------------------------------------------------------------------------
+
+(195) 29-Sep-03 M  A variable containing the error for verify = header_syntax
+
+Maybe there should always be a variable with the error message for all the
+different kinds of verify failure.
+------------------------------------------------------------------------------
+
+(196) 30-Sep-03 S  A way of detecting whether it was HELO or EHLO in the ACL
+
+$received_protocol isn't reset until after the command is accepted (which
+seems right), and $smtp_data shows only the arguments. Maybe $smtp_command?
+------------------------------------------------------------------------------
+
+(197) 30-Sep-03 S  MACROS_DROP_PRIVS and ALT_CONFIG_DROP_PRIVS
+
+Now that alternative configurations can be restricted to certain directories,
+some more flexibility can be allowed. Not by default, though.
+------------------------------------------------------------------------------
+
+(198) 01-Oct-03 M  Accept mail after local_scan() crash instead of defer
+
+This may not be as easy to implement as it sounds; one is never sure of the
+environment after a crash. Is is actually a good idea? The crashing local_scan
+may have wrecked the memory in arbitrary ways; for example, screwing up the
+recipients list...
+------------------------------------------------------------------------------
+
+(199) 01-Oct-03 M  ${pipe which will pipe the message to a script ...
+
+... and otherwise behave as ${run. Probably needs to have locking out features
+so that it can be turned off for users .forwards if the sysadmin so desires.
+------------------------------------------------------------------------------
+
+(200) 07-Oct-03 L  Alternative ways of storing hints
+
+People want to store hints in databases. Some assert that SQL databases can
+be made to perform satisfactorily. If a general interface could be worked on,
+people could at least try different strategies. See also 66 above, which is
+specifically concerned with Berkeley DB. Another possible option is a switch to
+disable smtp-wait hints - to avoid contention problems.
+------------------------------------------------------------------------------
+
+(201) 07-Oct-03 M  A "soft bounce" feature
+
+This is an option that turns all hard bounces into soft bounces. The idea is
+that it can be used as a safety-net while testing configurations. Instead of a
+local bounce, the message stays on the queue; instead of 5xx SMTP responses,
+4xx ones are given.
+
+The ability to do the opposite - turn 4xx into 5xx under certain circumstances
+might also be useful (e.g. after a certain time). This might best be done by
+extending the retry logic to recognize 4xx as a special error. (This is now
+done.)
+------------------------------------------------------------------------------
+
+(202) 10-Oct-03 S  -bvsomething to do a callout after the verify
+------------------------------------------------------------------------------
+
+(203) 14-Oct-03 S  verify=something to easily check for header presence
+
+This is purely cosmetic; "condition" can already be used.
+------------------------------------------------------------------------------
+
+(204) 27-Oct-03 S  an inverted queue_only_file
+
+That is, queue if a file does NOT exist.
+------------------------------------------------------------------------------
+
+(205) 27-Oct-03 S  expand smtp_accept_queue_per_connection
+
+------------------------------------------------------------------------------
+
+(206) 27-Oct-03 S  appendfile: a variable containing the maildir base name
+
+------------------------------------------------------------------------------
+
+(207) 29-Oct-03 S  ability to keep trusted users in a file - expand it.
+------------------------------------------------------------------------------
+
+(208) 31-Oct-03 M  cache temporary verification errors and fail after a time
+
+This request was for a way of turning temporary verification failures into
+permanent ones after some fixed time.
+------------------------------------------------------------------------------
+
+(209) 31-Oct-03 S  a way of making crashes in pipe commands temporary errors
+
+------------------------------------------------------------------------------
+
+(210) 31-Oct-03 S  runtime option to change the daemon name used for tcprwappers
+
+A patch for compile time was supplied, but this seems better as a runtime
+option, for use with multiple Exim daemons.
+------------------------------------------------------------------------------
+
+(211) 31-Oct-03 S  ability to disable debugging output from -bh & -bhc
+------------------------------------------------------------------------------
+
+(212) 31-Oct-03 M  specify headers lines in HELO ACL to be added to all msgs
+------------------------------------------------------------------------------
+
+(214) 05-Nov-03 S  Put the wild part of local part prefix/suffx in variables
+
+Unfortunately, this isn't quite as trivial as it seems.
+------------------------------------------------------------------------------
+
+(215) 14-Nov-03 S  A way of turning off message-submission fix-ups
+
+Globally, and perhaps also via an ACL control so that it can be done on a
+per-message basis.
+------------------------------------------------------------------------------
+
+(215) 26-Nov-03 M/L Conversion of IDNA domain names for logging
+
+IDNA (RFCs 3490-3492) converts domains names containing non-ASCII characters
+into ASCII strings of a special form. Exim will of course handle these.
+However, it might be nice to convert them to a local code for logging. This
+might be quite a big project: there's also output from -bp and eximon queue
+display and no doubt other places as well. (Utilities that process the logs,
+e.g. exigrep, eximstats, will be automatically handled if the logs are
+changed.)
+------------------------------------------------------------------------------
+
+(216) 27-Nov-03 S  Option to bounce if required TLS doesn't happen
+
+This is for the smtp transport with hosts_require_tls set. Currently, it
+defers. Possibly the best approach is to make the error one that can be seen by
+the retry logic.
+------------------------------------------------------------------------------
+
+(217) 27-Nov-03 M  A function to pass back variables from Perl
+
+This is a function that can be called from Perl, to take a name and a value and
+put that value into an Exim variable.
+------------------------------------------------------------------------------
+
+(218) 01-Dec-03 M  A local_scan-like hook at system filter time
+
+That is, make a C API available for custom filtering at this point.
+------------------------------------------------------------------------------
+
+(221) 18-Dec-03 U  Merge routers and ACLs - or at least make more similar
+
+"It will be very useful to be able to use most of the ACL conditions
+(authenticated, hosts, senders, sender_domains, ... ) in routers and also the
+possibility to have multiple conditions in routers. It will be great to also
+be able to set variables in routers like in acl's." This is effectively a
+radical suggestion for a complete re-design, and is therefore BIG.
+------------------------------------------------------------------------------
+
+(222) 19-Dec-03 S  Iterative option for dnsdb
+
+A way of getting a dnsdb lookup to chop off components until something is
+found: e.g. ${lookup dndsb-i{ns=a.b.c.d}} would look for nameservers for
+a.b.c.d, then b.c.d, etc.
+------------------------------------------------------------------------------
+
+(223) 22-Dec-03 S  Support SOA lookup in dnsdb lookups
+------------------------------------------------------------------------------
+
+(225) 22-Dec-03 M  Add acl= to routers
+
+This would use an ACL to "control access" to a router, opening up a number
+of interesting possibilities. Details of possible limitations need to be
+investigated.
+------------------------------------------------------------------------------
+
+(226) 23-Dec-03 S  A way of treating DEFER as fail in dnsdb lookups
+
+(i.e. the dnsdb lookup failed, so accept the message)
+------------------------------------------------------------------------------
+
+(227) 30-Jan-04 M  A configuration .if facility
+
+"Second with the .ifdef and such, it would be nice to have a base .if,
+so I could do something like
+.if DEFINED_DATA == xyz
+configuration here
+.elseif DEFINED_DATA == abc
+configuration here
+.else
+configuration here
+.endif
+also this would be nice at least in my case in the system filters, but
+isn't required but you could pass the defined data to the system, in
+variables."
+------------------------------------------------------------------------------
+
+(229) 30-Jan-04 M  New expansion mechanism: {list ...}
+
+"Proposed syntax: {list {separator}{item}{item}...}
+This first expands the contents of {separator} and all of the {item}s,
+then constructs a separator-delimited list. The twist is: if an {item}
+generates the empty string, no separator will be generated for it.
+The entire construct will fail is {separator} fails, or all {item}s
+fail. If just some {item}s fail, they will be treated as if they
+generated empty strings.
+Examples:
+   {list {,}{aaaaaa}{bbbbbb}{cccccc}} -> aaaaaa,bbbbbb,cccccc
+   {list {,}{:fail:}{bbbbbb}{cccccc}} -> bbbbbb,cccccc
+   {list {,}{aaaaaa}{:fail:}{cccccc}} -> aaaaaa,cccccc
+   {list { }{aaaaaa}{bbbbbb}{}}       -> aaaaaa bbbbbb
+   {list { }{:fail:}{:fail:}{:fail:}} -> :fail:
+   {list {:fail:}{aaaaa}{bbbb}{cccc}} -> :fail:
+See particularly examples 2-4, which handle the case of a missing first
+and last item with ease; doing this using {if ...} would be quite difficult!"
+------------------------------------------------------------------------------
+
+(230) 30-Jan-04 M  Find IP addresses of a domain's nameservers
+
+This needs some way of processing a list of things in a similar way, which
+should perhaps be a more general facility.
+------------------------------------------------------------------------------
+
+(231) 30-Jan-04 ?  -C has a number of problems when used for real
+
+-C was intended for testing; people are using it for "alternate"
+configurations, and it doesn't work too well. Can a better way of doing this be
+invented?
+------------------------------------------------------------------------------
+
+(232) 02-Feb-04 ?  Make parts of the code loadable
+
+The idea being that drivers, etc. could be compiled separately. There are, of
+course, security issues. This is not something I want to go into at present.
+------------------------------------------------------------------------------
+
+(235) 02-Feb-04 T  Make smtp_accept_count available as a variable
+
+This is for use in ACLs. Of course, it is a snapshot of the count at the
+start of the receiving process.
+------------------------------------------------------------------------------
+
+(236) 02-Feb-04 S  String in local_scan that's added to the binary version string
+------------------------------------------------------------------------------
+
+(237) 02-Feb-04 M  Add_header in ACLs because "message" is overloaded
+
+This would be useful for verbs where "message" is an error message.
+------------------------------------------------------------------------------
+
+(238) 05-Feb-04 S  ${address to handle multiple addresses
+
+At present, ${address expects to see just one address. An extension would let
+it handle header lines with multiple addresses, just retaining the actual
+addresses. Or perhaps a new operator is needed?
+------------------------------------------------------------------------------
+
+(239) 23-Feb-04 ?  Expansion items for encryption/decryption
+
+Perhaps for some kind of cookie handling? This would need an external crypto
+library, because there's no crypto code in Exim itself.
+------------------------------------------------------------------------------
+
+(240) 23-Feb-04 ? Some way to know if a ip is a mx for a given domain
+
+Some kind of iterative operation for dnsdb might be a general way of providing
+this.
+------------------------------------------------------------------------------
+
+(242) 01-Mar-04 ? Run a filter from an expansion condition
+
+This would add a lot of power to ACLs, but its implementation might be tricky
+because of the possibility of recursion.
+------------------------------------------------------------------------------
+
+(243) 01-Mar-04 ? Run an ACL from an expansion condition
+
+The problem here is knowing what data is available at an arbitrary time.
+------------------------------------------------------------------------------
+
+(244) 01-Mar-04 ? Add an on-success event to transports
+
+This could just be an expansion string, whose value is either ignored or
+logged, but it could be used to run SQL updates or run programs etc.
+However, what is "success" when a transport has multiple recipients?
+------------------------------------------------------------------------------
+
+(245) 01-Mar-04 M Add all the string expansion conditions to filters
+
+Some thought would be needed on how to design the syntax for this.
+------------------------------------------------------------------------------
+
+(247) 09-Mar-04 S IP addresses that are never looked up
+
+It would be nice if we could prevent this for certain IP addresses for
+which we _know_ we'll never get a valid PTR record, like 2002::/16.
+So a new option might reasonably default to:
+
+        hosts_never_lookup = <; 2002::/16
+------------------------------------------------------------------------------
+
+(253) 05-Apr-04 M Use ESMTP and TLS for recipient callout verification
+
+The best way to do this would involve quite a bit of refactoring so as to
+abstract some of the code from the smtp transport into subroutines that could
+also be used from the callout code. The tls parameters should probably be
+taken from the transport. That might also require some substantial code
+refactoring. See also 294.
+------------------------------------------------------------------------------
+
+(260) 30-Apr-04 S Respect +tls_cipher +tls_peerdn in rejectlog entries
+
+------------------------------------------------------------------------------
+
+(261) 05-May-04 S Add a "required_version" option
+
+So that configurations can insist on a specific Exim version.
+------------------------------------------------------------------------------
+
+(262) 10-May-04 S Add "scratch" ACL variables
+
+The idea is for variables that are flushed at the start of each ACL. I'm not
+really convinced that these are worth implementing.
+------------------------------------------------------------------------------
+
+(263) 10-May-04 S Add variable $router_name $transport_name
+
+These could be used in debug_print settings, which are output during -bt, and
+thus don't need the privilege to run with -d.
+------------------------------------------------------------------------------
+
+(265) 25-May-04 M An init.d script for exim is needed
+
+The old sendmail script used to "just work" because it just did -bd -q 20m or
+whatever. Newer versions start more than one sendmail daemon, so do not work.
+------------------------------------------------------------------------------
+
+(267) 25-May-04 S tarpitting delay option
+
+A modifier that sets a delay between lines for multiline responses.
+------------------------------------------------------------------------------
+
+(268) 25-May-04 S? Add a PID to every log line
+
+Given that pids are reused non-cyclically these days, is this actually useful?
+------------------------------------------------------------------------------
+
+(269) 26-May-04 U Run both a system and a user filter in test mode
+
+    exim -bF systemfilter -bf userfilter -f sender@dom < message
+
+This would allow testing the way the userfilter handles the system
+variables set by the systemfilter.
+------------------------------------------------------------------------------
+
+(270) 01-Jun-04 M Add headers at top and middle
+
+Various initiatives like SPF and DomainKeys require header lines to be added
+above or in the middle of existing headers. Exim always adds at the bottom.
+When these requirements are more standard and clearer, some way of controlling
+where header lines are added will probably become necessary. Some new syntax
+will be required.
+
+This can now be done fairly generally from local_scan(), and at the start and
+after the Received: block from an ACL. Is anything more needed?
+------------------------------------------------------------------------------
+
+(271) 02-Jun-04 L Callouts at routing time
+
+From a user's message:
+
+> I would like to be able to:
+>[...]
+> 2) Forcing callouts as address verification at router level
+> [ check_callout just like check_local_user ]
+>
+> I would like to redirect messages in some domain to "domain with callout
+> verification" and to "domain without callout verification"
+>
+> e.g.
+> userA@domain.in -> userX@doamin.out-verify (use callout to verify)
+> userB@domain.in -> userY@doamin.out-noverify (do not use callout verify)
+>
+> [both out-* domains delivered via "callout ready" transports]
+
+Other versions of the wish:
+* limiting callouts in acls to specific transport
+      verify = recipient/callout=5s,transport:intranet_smtp
+* adding "select transport" to ACL conditions
+      accept domains = +local_domains
+             transport = cyrus_ltcp
+             verify = recipient/callout=5s
+------------------------------------------------------------------------------
+
+(272) 07-Jun-04 S Expand hosts_randomize
+
+It occurs in manualroute and in smtp.
+------------------------------------------------------------------------------
+
+(278) 21-Jun-04 M quota_warn_message_file option
+
+Similar to the bounce and delivery warn message files.
+------------------------------------------------------------------------------
+
+(280) 23-Jun-04 M A way of adding a header line after callout defer_ok
+
+This would record that, e.g., a sender domain verified, but the callout
+could not be done.
+------------------------------------------------------------------------------
+
+(285) 16-Jul-04 M Separate and independent log_selector for rejectlog
+
+For example: mainlog_selector and rejectlog_selector, with log_selector setting
+both of them.
+------------------------------------------------------------------------------
+
+(286) 21-Jul-04 M Distinguishing a larger number of errors
+
+For instance, detecting "connection reset by peer" (ENETRESET or ECONNRESET)
+might be useful.
+------------------------------------------------------------------------------
+
+(288) 10-Aug-04 M Option for verify to require MX
+
+e.g. verify=sender/require_mx
+I'm not too keen because this is rather special purpose, and of course could
+only apply if the verification happened to hit a dnslookup router.
+------------------------------------------------------------------------------
+
+(289) 10-Aug-04 L Option to treat defers in database lookups as "not found"
+
+This is so that alternatives can be coded for when databases are down. A
+suggested patch has been sent, but it just catches all instances of "defer"
+from a lookup in an expansion string. These can occur for a number of different
+reasons, not just connection failures. I think that we need a specific
+"connection failed" indicator. Also, what about lookups in lists?
+------------------------------------------------------------------------------
+
+(291) 13-Aug-04 M An ACL or "local_scan()" to be run on size excession
+
+The idea is to give something a chance to look at the data so far received when
+more than message_size_limit (or some other limit) has arrived. I am not sure
+how useful this would actually be in practice.
+------------------------------------------------------------------------------
+
+(292) 13-Aug-04 M Overall timeout for message reception
+
+A client could in priciple keep an SMTP connection open for a very long time by
+trickling in data very slowly. Also, after message_size_limit is exceeded, Exim
+continues to swallow the data (though it does not write it to disk) until the
+end is reached. Again, the connection could be held open for a very long time.
+Some kind of overall time limit for an SMTP connection, possibly reset at the
+start of each message, might be helpful in these situations.
+------------------------------------------------------------------------------
+
+(294) 23-Aug-04 L Callouts and AUTH and LMTP
+
+People want to do callouts using LMTP as well as SMTP, and that would also
+include sockets as well as TCP/IP connections. Also, people want to make use of
+AUTH during the callout checking, on all types of connection. I suppose that
+means making TLS available as well. This probably means a rewrite of the code
+that actually does the callout. Should we use the relevant transport in a new
+"callout" mode instead of keeping things separate? See also 253.
+------------------------------------------------------------------------------
+
+(296) 09-Sep-04 S Make deliver_time work for == lines as well as =>
+
+What about ** lines?
+------------------------------------------------------------------------------
+--- HWM 297 ------------------------------------------------------------------
+---------------------------- End of WishList ---------------------------------

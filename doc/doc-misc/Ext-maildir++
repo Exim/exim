@@ -1,0 +1,394 @@
+                                   Maildir++
+
+   In this document:
+     * HOWTO.maildirquota
+     * Mission statement
+     * Definitions and goals
+     * Contents of a maildirsize
+     * Calculating maildirsize
+     * Calculating the quota for a Maildir++
+     * Delivering to a Maildir++
+     * Reading from a Maildir++
+     * Bugs
+
+HOWTO.maildirquota
+
+   The remaining portion of this document is a technical description of
+   the maildir quota extension. This section is a brief overview of this
+   extension.
+
+  What is a maildirquota?
+
+   If you would like to have a quota on your maildir mailboxes, the best
+   solution is to always use filesystem-based quotas: per-user usage
+   quotas that is enforced by the operating system.
+
+   This is the best solution when the default Maildir is located in each
+   account's home directory. This solution will NOT work if Maildirs are
+   stored elsewhere, or if you have a large virtual domain setup where a
+   single userid is used to hold many individual Maildirs, one for each
+   virtual user.
+
+   This extension to the maildir format allows a "voluntary" maildir
+   quota implementation that does not rely on filesystem-based quotas.
+
+  When maildirquota will not work.
+
+   For this quota mechanism to work, all software that accesses a maildir
+   must observe this quota protocol. It follows that this quota mechanism
+   can be easily circumvented if users have direct (shell) access to the
+   filesystem containing the users' maildirs.
+
+   Furthermore, this quota mechanism is not 100% effective. It is
+   possible to have a situation where someone may go over quota. This
+   quota implementation uses a deliverate trade-off. It is necessary to
+   use some form of locking in order to have a complete bulletproof quota
+   enforcement, but maildirs mail stores were explicitly designed to
+   avoid any kind of locking. This quota approach does not use locking,
+   and the tradeoff is that sometimes it is possible for a few extra
+   messages to be delivered to the maildir, before the door is
+   permanently shot.
+
+   For best performance, all maildir clients should support this quota
+   extension, however there's a wide degree of tolerance here. As long as
+   the mail delivery agent that puts new messages into a Maildir uses
+   this extension, the quota will be enforced without excessive
+   degradation.
+
+   In the worst case scenario, quotas are automatically recalculated
+   every fifteen minutes. If a maildir goes over quota, and a mail client
+   that does not support this quota extension removes enough mail from
+   the maildir, the mail delivery agent will not be immediately informed
+   that the maildir is now under quota. However, eventually the correct
+   quota will be recalculated and mail delivery will resume.
+
+   Mail user agents sometimes put messages into the maildir themselves.
+   Messages added to a maildir by a mail user agent that does not
+   understand the quota extension will not be immediately counted towards
+   the overall quota, and may not be counted for an extensive period of
+   time. Additionally, if there are a lot of messages that have been
+   added to a maildir from these mail user agents, quota recalculation
+   may impose non-trivial load on the system, as the quota recalculator
+   will have to issue the stat system call for each message.
+
+  How to implement the quota
+
+   The best way to do that is to modify your mail server to implement the
+   protocol defined by this document. Not everyone, of course, has this
+   ability. Therefore, an alternate approach is available.
+
+   This package creates a very short utility called "deliverquota". It
+   will NOT be installed anywhere by default, unless this maildir quota
+   implementation is a part of a larger package, in which case the parent
+   package may install this utility somewhere. If you obtained the
+   maildir package separately, you will need to compile it by running the
+   configure script, then by running make.
+
+   deliverquota takes two arguments. deliverquota reads the message from
+   standard input, then delivers it to the maildir specified by the first
+   argument to deliverquota. The second argument specifies the actual
+   quota for this maildir, as defined elsewhere in this document.
+   deliverquota will deliver the message to the maildir, making a best
+   effort not to exceed the stated quota. If the maildir is over quota,
+   deliverquota terminates with exit code 77. Otherwise, it delivers the
+   message, updates the quota, and terminates with exit code 0.
+
+   Therefore, proceed as follows:
+     * Copy deliverquota to some convenient location, say /usr/local/bin.
+     * Configure your mail server to use deliverquota. For example, if
+       you use Qmail and your maildirs are all located in $HOME/Maildir,
+       replace the './Maildir/' argument to qmail-start with the
+       following:
+'| /usr/local/bin/deliverquota ./Maildir 1000000S'
+
+
+
+
+       This sets a one million byte limit on all Maildirs. As I
+       mentioned, this is meaningless if login access is available,
+       because the individual account owner can create his own
+       $HOME/.qmail file, and ignore deliverquota. Note that in this
+       case, you MUST use apostrophes on the qmail-start command line, in
+       order to quote this as one argument.
+
+   If you would like to use different quotas for different users, you
+   will have to put together a separate process or a script that looks up
+   the appropriate quota for the recipient, and runs deliverquota
+   specifying the quota. If no login access to the mail server is
+   available, you can simply create a separate $HOME/.qmail for every
+   recipient.
+
+   That's pretty much it. If you handle a moderate amount of mail, I have
+   one more suggestion. For the first couple of weeks, run deliverquota
+   setting the second argument to an empty string. This disables quota
+   enforcement, however it still activates certain optimizations that
+   permit very fast quota recalculation. Messages delivered by
+   deliverquota have their message size encoded in their filename; this
+   makes it possible to avoid stat-ing the message in the Maildir, when
+   recalculating the quota. Then, after most messages in your maildirs
+   have been delivered by deliverquota, activate the quotas!!!
+
+  maildirquota-enhanced applications
+
+   This is a list of applications that have been enhanced to support the
+   maildirquota extension:
+     * maildrop - mail delivery agent/mail filter.
+     * SqWebmail - webmail CGI binary.
+
+   These applications fall into two classes:
+     * Mail delivery agents. These applications read some externally
+       defined table of mail recipients and their maildir quota.
+     * Mail clients. These applications read maildir quota information
+       that has been defined by the mail delivery agent.
+
+   Mail clients generally do not need any additional setup in order to
+   use the maildirquota extension. They will automatically read and
+   implement any quota specification set by the mail delivery agent.
+
+   On the other hand, mail delivery agents will require some kind of
+   configuration in order to activate the maildirquota extension for some
+   or all recipients. The instructions for doing that depends upon the
+   mail delivery agent. The documentation for the mail delivery agent
+   should be consulted for additional information.
+     _________________________________________________________________
+
+Mission statement
+
+   Maildir++ is a mail storage structure that's based on the Maildir
+   structure, first used in the Qmail mail server. Actually, Maildir++ is
+   just a minor extension to the standard Maildir structure.
+
+   For more information, see http://www.qmail.org/man/man5/maildir.html.
+   I am not going to include the definition of a Maildir in this
+   document. Consider it included right here. This document only
+   describes the differences.
+
+   Maildir++ adds a couple of things to a standard Maildir: folders and
+   quotas.
+
+   Quotas enforce a maximum allowable size of a Maildir. In many
+   situations, using the quota mechanism of the underlying filesystem
+   won't work very well. If a filesystem quota mechanism is used, then
+   when a Maildir goes over quota, Qmail does not bounce additional mail,
+   but keeps it queued, changing one bad situation into another bad
+   situation. Not only know you have an account that's backed up, but now
+   your queue starts to back up too.
+
+Definitions, and goals
+
+   Maildir++ and Maildir shall be completely interchangeable. A Maildir++
+   client will be able to use a standard Maildir, automatically
+   "upgrading" it in the process. A Maildir client will be able to use a
+   Maildir++ just like a regular Maildir. Of course, a plain Maildir
+   client won't be able to enforce a quota, and won't be able to access
+   messages stored in folders.
+
+   Folders are created as subdirectories under the main Maildir. The name
+   of the subdirectory always starts with a period. For example, a folder
+   named "Important" will be a subdirectory called ".Important". You
+   can't have subdirectories that start with two periods.
+
+   A Maildir++ client ignores anything in the main Maildir that starts
+   with a period, but is not a subdirectory.
+
+   Each subdirectory is a fully-fledged Maildir of its own, that is you
+   have .Important/tmp, .Important/new, and .Important/cur. Everything
+   that applies to the main Maildir applies equally well to the
+   subdirectory, including automatically cleaning up old files in tmp. A
+   Maildir++ enhancement is that a message can be moved between folders
+   and/or the main Maildir simply by moving/renaming the file (into the
+   cur subdirectory of the destination folder). Therefore, the entire
+   Maildir++ must reside on the same filesystem.
+
+   Within each subdirectory there's an empty file, maildirfolder. Its
+   existence tells the mail delivery agent that this Maildir is a really
+   a folder underneath a parent Maildir++.
+
+   Only one special folder is reserved: Trash (subdirectory .Trash).
+   Instead of marking deleted messages with the D flag, Maildir++ clients
+   move the message into the Trash folder. Maildir++ readers are
+   responsible for expunging messages from Trash after a system-defined
+   retention interval.
+
+   When a Maildir++ reader sees a message marked with a D flag it may at
+   its option: remove the message immediately, move it into Trash, or
+   ignore it.
+
+   Can folders have subfolders, defined in a recursive fashion? The
+   answer is no. If you want to have a client with a hierarchy of
+   folders, emulate it. Pick a hierarchy separator character, say ":".
+   Then, folder foo/bar is subdirectory .foo:bar.
+
+   This is all that there's to say about folders. The rest of this
+   document deals with quotas.
+
+   The purpose of quotas is to temporarily disable a Maildir, if it goes
+   over the quota. There is one and only major goal that this quota
+   implementation tries to achieve:
+     * Place as little overhead as possible on the mail system that's
+       delivering to the Maildir++
+
+   That's it. To achieve that goal, certain compromises are made:
+     * Mail delivery will stop as soon as possible after Maildir++'s size
+       goes over quota. Certain race conditions may happen with Maildir++
+       going a lot over quota, in rare circumstances. That is taken into
+       account, and the situation will eventually resolve itself, but you
+       should not simply take your systemwide quota, multiply it by the
+       number of mail accounts, and allocate that much disk space. Always
+       leave room to spare.
+     * How well the quota mechanism will work will depend on whether or
+       not everything that accesses the Maildir++ is a Maildir++ client.
+       You can have a transition period where some of your mail clients
+       are just Maildir clients, and things should run more or less well.
+       There will be some additional load because the size of the Maildir
+       will be recalculated more often, but the additional load shouldn't
+       be noticeable.
+
+   This won't be a perfect solution, but it will hopefully be good
+   enough. Maildirs are simply designed to rely on the filesystem to
+   enforce individual quotas. If a filesystem-based quota works for you,
+   use it.
+
+   A Maildir++ may contain the following additional file: maildirsize.
+
+Contents of maildirsize
+
+   maildirsize contains two or more lines terminated by newline
+   characters.
+
+   The first line contains a copy of the quota definition as used by the
+   system's mail server. Each application that uses the maildir must know
+   what it's quota is. Instead of configuring each application with the
+   quota logic, and making sure that every application's quota definition
+   for the same maildir is exactly the same, the quota specification used
+   by the system mail server is saved as the first line of the
+   maildirsize file. All other application that enforce the maildir quota
+   simply read the first line of maildirsize.
+
+   The quota definition is a list, separate by commas. Each member of the
+   list consists of an integer followed by a letter, specifying the
+   nature of the quota. Currently defined quota types are 'S' - total
+   size of all messages, and 'C' - the maximum count of messages in the
+   maildir. For example, 10000000S,1000C specifies a quota of 10,000,000
+   bytes or 1,000 messages, whichever comes first.
+
+   All remaining lines all contain two integers separated by a single
+   space. The first integer is interpreted as a byte count. The second
+   integer is interpreted as a file count. A Maildir++ writer can add up
+   all byte counts and file counts from maildirsize and enforce a quota
+   based either on number of messages or the total size of all the
+   messages.
+
+Calculating maildirsize
+
+   In most cases, changes to maildirsize are recorded by appending an
+   additional line. Under some conditions maildirsize has to be
+   recalculated from scratch. These conditions are defined later. This is
+   the procedure that's used to recalculate maildirsize:
+    1. If we find a maildirfolder within the directory, we're delivering
+       to a folder, so back up to the parent directory, and start again.
+    2. Read the contents of the new and cur subdirectories. Also, read
+       the contents of the new and cur subdirectories in each Maildir++
+       folder, except Trash. Before reading each subdirectory, stat() the
+       subdirectory itself, and keep track of the latest timestamp you
+       get.
+    3. If the filename of each message is of the form xxxxx,S=nnnnn or
+       xxxxx,S=nnnnn:xxxxx where "xxxxx" represents arbitrary text, then
+       use nnnnn as the size of the file (which will be conveniently
+       recorded in the filename by a Maildir++ writer, within the
+       conventions of filename naming in a Maildir). If the message was
+       not written by a Maildir++ writer, stat() it to obtain the message
+       size. If stat() fails, a race condition removed the file, so just
+       ignore it and move on to the next one.
+    4. When done, you have the grand total of the number of messages and
+       their total size. Create a new maildirsize by: creating the file
+       in the tmp subdirectory, observing the conventions for writing to
+       a Maildir. Then rename the file as maildirsize.Afterwards, stat
+       all new and cur subdirectories again. If you find a timestamp
+       later than the saved timestamp, REMOVE maildirsize.
+    5. Before running this calculation procedure, the Maildir++ user
+       wanted to know the size of the Maildir++, so return the calculated
+       values. This is done even if maildirsize was removed.
+
+Calculating the quota for a Maildir++
+
+   This is the procedure for reading the contents of maildirsize for the
+   purpose of determine if the Maildir++ is over quota.
+    1. If maildirsize does not exist, or if its size is at least 5120
+       bytes, recalculate it using the procedure defined above, and use
+       the recalculated numbers. Otherwise, read the contents of
+       maildirsize, and add up the totals.
+    2. The most efficient way of doing this is to: open maildirsize, then
+       start reading it into a 5120 byte buffer (some broken NFS
+       implementations may return less than 5120 bytes read even before
+       reaching the end of the file). If we fill it, which, in most
+       cases, will happen with one read, close it, and run the
+       recalculation procedure.
+    3. In many cases the quota calculation is for the purpose of adding
+       or removing messages from a Maildir++, so keep the file descriptor
+       to maildirsize open. A file descriptor will not be available if
+       quota recalculation ended up removing maildirsize due to a race
+       condition, so the caller may or may not get a file descriptor
+       together with the Maildir++ size.
+    4. If the numbers we got indicated that the Maidlir++ is over quota,
+       some additional logic is in order: if we did not recalculate
+       maildirsize, if the numbers in maildirsize indicated that we are
+       over quota, then if maildirsize was more than one line long, or if
+       the timestamp on maildirsize indicated that it's at least 15
+       minutes old, throw out the totals, and recalculate maildirsize
+       from scratch.
+
+   Eventually the 5120 byte limitation will always cause maildirsize to
+   be recalculated, which will compensate for any race conditions which
+   previously threw off the totals. Each time a message is delivered or
+   removed from a Maildir++, one line is added to maildirsize (this is
+   described below in greater detail). Most messages are less than 10K
+   long, so each line appended to maildirsize will be either between
+   seven and nine bytes long (four bytes for message count, space, digit
+   1, newline, optional minus sign in front of both counts if the message
+   was removed). This results in about 640 Maildir++ operations before a
+   recalculation is forced. Since most messages are added once and
+   removed once from a Maildir, expect recalculation to happen
+   approximately every 320 messages, keeping the overhead of a
+   recalculation to a minimum. Even if most messages include large
+   attachments, most attachments are less than 100K long, which brings
+   down the average recalculation frequency to about 150 messages.
+
+   Also, the effect of having non-Maildir++ clients accessing the
+   Maildir++ is reduced by forcing a recalculation when we're potentially
+   over quota. Even if non-Maildir++ clients are used to remove messages
+   from the Maildir, the fact that the Maildir++ is still over quota will
+   be verified every 15 minutes.
+
+Delivering to a Maildir++
+
+   Delivering to a Maildir++ is like delivering to a Maildir, with the
+   following exceptions:
+    1. Follow the usual Maildir conventions for naming the filename used
+       to store the message, except that append ,S=nnnnn to the name of
+       the file, where nnnnn is the size of the file. This eliminates the
+       need to stat() most messages when calculating the quota. If the
+       size of the message is not known at the beginning, append ,S=nnnnn
+       when renaming the message from tmp to new.
+    2. As soon as the size of the message is known (hopefully before it
+       is written into tmp), calculate Maildir++'s quota, using the
+       procedure defined previously. If the message is over quota, back
+       out, cleaning up anything that was created in tmp.
+    3. If a file descriptor to maildirsize was opened for us, after
+       moving the file from tmp to new append a line to the file
+       containing the message size, and "1".
+
+Reading from a Maildir++
+
+   Maildir++ readers should mind the following additional tasks:
+    1. Make sure to create the maildirfolder file in any new folders
+       created within the Maildir++.
+    2. When moving a message to the Trash folder, append a line to
+       maildirsize, containing a negative message size and a '-1'.
+    3. When moving a message from the Trash folder, follow the steps
+       described in "Delivering to Maildir++", as far as quota logic
+       goes. That is, refuse to move messages out of Trash if the
+       Maildir++ is over quota.
+    4. Moving a message between other folders carries no additional
+       requirements.
+

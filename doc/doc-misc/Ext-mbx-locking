@@ -1,0 +1,400 @@
+	 UNIX Advisory File Locking Implications on c-client
+		    Mark Crispin, 28 November 1995
+
+
+	THIS DOCUMENT HAS BEEN UPDATED TO REFLECT THE CODE IN THE
+	IMAP-4 TOOLKIT AS OF NOVEMBER 28, 1995.  SOME STATEMENTS
+	IN THIS DOCUMENT DO NOT APPLY TO EARLIER VERSIONS OF THE
+	IMAP TOOLKIT.
+
+INTRODUCTION
+
+     Advisory locking is a mechanism by which cooperating processes
+can signal to each other their usage of a resource and whether or not
+that usage is critical.  It is not a mechanism to protect against
+processes which do not cooperate in the locking.
+
+     The most basic form of locking involves a counter.  This counter
+is -1 when the resource is available.  If a process wants the lock, it
+executes an atomic increment-and-test-if-zero.  If the value is zero,
+the process has the lock and can execute the critical code that needs
+exclusive usage of a resource.  When it is finished, it sets the lock
+back to -1.  In C terms:
+
+  while (++lock)		/* try to get lock */
+    invoke_other_threads ();	/* failed, try again */
+   .
+   .	/* critical code  here */
+   .
+  lock = -1;			/* release lock */
+
+     This particular form of locking appears most commonly in
+multi-threaded applications such as operating system kernels.  It
+makes several presumptions:
+ (1) it is alright to keep testing the lock (no overflow)
+ (2) the critical resource is single-access only
+ (3) there is shared writeable memory between the two threads
+ (4) the threads can be trusted to release the lock when finished
+
+     In applications programming on multi-user systems, most commonly
+the other threads are in an entirely different process, which may even
+be logged in as a different user.  Few operating systems offer shared
+writeable memory between such processes.
+
+     A means of communicating this is by use of a file with a mutually
+agreed upon name.  A binary semaphore can be passed by means of the
+existance or non-existance of that file, provided that there is an
+atomic means to create a file if and only if that file does not exist.
+In C terms:
+
+				/* try to get lock */
+  while ((fd = open ("lockfile",O_WRONLY|O_CREAT|O_EXCL,0666)) < 0)
+    sleep (1);			/* failed, try again */
+  close (fd);			/* got the lock */
+   .
+   .	/* critical code  here */
+   .
+  unlink ("lockfile");		/* release lock */
+
+     This form of locking makes fewer presumptions, but it still is
+guilty of presumptions (2) and (4) above.  Presumption (2) limits the
+ability to have processes sharing a resource in a non-conflicting
+fashion (e.g. reading from a file).  Presumption (4) leads to
+deadlocks should the process crash while it has a resource locked.
+
+     Most modern operating systems provide a resource locking system
+call that has none of these presumptions.  In particular, a mechanism
+is provided for identifying shared locks as opposed to exclusive
+locks.  A shared lock permits other processes to obtain a shared lock,
+but denies exclusive locks.  In other words:
+
+	current state		want shared	want exclusive
+	-------------		-----------	--------------
+	 unlocked		 YES		 YES
+	 locked shared		 YES		 NO
+	 locked exclusive	 NO		 NO
+
+     Furthermore, the operating system automatically relinquishes all
+locks held by that process when it terminates.
+
+     A useful operation is the ability to upgrade a shared lock to
+exclusive (provided there are no other shared users of the lock) and
+to downgrade an exclusive lock to shared.  It is important that at no
+time is the lock ever removed; a process upgrading to exclusive must
+not relenquish its shared lock.
+
+     Most commonly, the resources being locked are files.  Shared
+locks are particularly important with files; multiple simultaneous
+processes can read from a file, but only one can safely write at a
+time.  Some writes may be safer than others; an append to the end of
+the file is safer than changing existing file data.  In turn, changing
+a file record in place is safer than rewriting the file with an
+entirely different structure.
+
+
+FILE LOCKING ON UNIX
+
+     In the oldest versions of UNIX, the use of a semaphore lockfile
+was the only available form of locking.  Advisory locking system calls
+were not added to UNIX until after the BSD vs. System V split.  Both
+of these system calls deal with file resources only.
+
+     Most systems only have one or the other form of locking.  AIX
+emulates the BSD form of locking as a jacket into the System V form.
+Ultrix and OSF/1 implement both forms.
+
+BSD
+
+     BSD added the flock() system call.  It offers capabilities to
+acquire shared lock, acquire exclusive lock, and unlock.  Optionally,
+the process can request an immediate error return instead of blocking
+when the lock is unavailable.
+
+
+FLOCK() BUGS
+
+     flock() advertises that it permits upgrading of shared locks to
+exclusive and downgrading of exclusive locks to shared, but it does so
+by releasing the former lock and then trying to acquire the new lock.
+This creates a window of vulnerability in which another process can
+grab the exclusive lock.  Therefore, this capability is not useful,
+although many programmers have been deluded by incautious reading of
+the flock() man page to believe otherwise.  This problem can be
+programmed around, once the programmer is aware of it.
+
+     flock() always returns as if it succeeded on NFS files, when in
+fact it is a no-op.  There is no way around this.
+
+     Leaving aside these two problems, flock() works remarkably well,
+and has shown itself to be robust and trustworthy.
+
+SYSTEM V/POSIX
+
+     System V added new functions to the fnctl() system call, and a
+simple interface through the lockf() subroutine.  This was
+subsequently included in POSIX.  Both offer the facility to apply the
+lock to a particular region of the file instead of to the entire file.
+lockf() only supports exclusive locks, and calls fcntl() internally;
+hence it won't be discussed further.
+
+     Functionally, fcntl() locking is a superset of flock(); it is
+possible to implement a flock() emulator using fcntl(), with one minor
+exception: it is not possible to acquire an exclusive lock if the file
+is not open for write.
+
+     The fcntl() locking functions are: query lock station of a file
+region, lock/unlock a region, and lock/unlock a region and block until
+have the lock.  The locks may be shared or exclusive.  By means of the
+statd and lockd daemons, fcntl() locking is available on NFS files.
+
+     When statd is started at system boot, it reads its /etc/state
+file (which contains the number of times it has been invoked) and
+/etc/sm directory (which contains a list of all remote sites which are
+client or server locking with this site), and notifies the statd on
+each of these systems that it has been restarted.  Each statd then
+notifies the local lockd of the restart of that system.
+
+     lockd receives fcntl() requests for NFS files.  It communicates
+with the lockd at the server and requests it to apply the lock, and
+with the statd to request it for notification when the server goes
+down.  It blocks until all these requests are completed.
+
+     There is quite a mythos about fcntl() locking.
+
+     One religion holds that fcntl() locking is the best thing since
+sliced bread, and that programs which use flock() should be converted
+to fcntl() so that NFS locking will work.  However, as noted above,
+very few systems support both calls, so such an exercise is pointless
+except on Ultrix and OSF/1.
+
+     Another religion, which I adhere to, has the opposite viewpoint.
+
+
+FCNTL() BUGS
+
+     For all of the hairy code to do individual section locking of a
+file, it's clear that the designers of fcntl() locking never
+considered some very basic locking operations.  It's as if all they
+knew about locking they got out of some CS textbook with not
+investigation of real-world needs.
+
+     It is not possible to acquire an exclusive lock unless the file
+is open for write.  You could have append with shared read, and thus
+you could have a case in which a read-only access may need to go
+exclusive.  This problem can be programmed around once the programmer
+is aware of it.
+
+     If the file is opened on another file designator in the same
+process, the file is unlocked even if no attempt is made to do any
+form of locking on the second designator.  This is a very bad bug.  It
+means that an application must keep track of all the files that it has
+opened and locked.
+
+     If there is no statd/lockd on the NFS server, fcntl() will hang
+forever waiting for them to appear.  This is a bad bug.  It means that
+any attempt to lock on a server that doesn't run these daemons will
+hang.  There is no way for an application to request flock() style
+``try to lock, but no-op if the mechanism ain't there''.
+
+     There is a rumor to the effect that fcntl() will hang forever on
+local files too if there is no local statd/lockd.  These daemons are
+running on mailer.u, although they appear not to have much CPU time.
+A useful experiment would be to kill them and see if imapd is affected
+in any way, but I decline to do so without an OK from UCS!  ;-) If
+killing statd/lockd can be done without breaking fcntl() on local
+files, this would become one of the primary means of dealing with this
+problem.
+
+     The statd and lockd daemons have quite a reputation for extreme
+fragility.  There have been numerous reports about the locking
+mechanism being wedged on a systemwide or even clusterwide basis,
+requiring a reboot to clear.  It is rumored that this wedge, once it
+happens, also blocks local locking.  Presumably killing and restarting
+statd would suffice to clear the wedge, but I haven't verified this.
+
+     There appears to be a limit to how many locks may be in use at a
+time on the system, although the documentation only mentions it in
+passing.  On some of their systems, UCS has increased lockd's ``size
+of the socket buffer'', whatever that means.
+
+C-CLIENT USAGE
+
+     c-client uses flock().  On System V systems, flock() is simulated
+by an emulator that calls fcntl().  This emulator is provided by some
+systems (e.g. AIX), or uses c-client's flock.c module.
+
+
+BEZERK AND MMDF
+
+     Locking in the traditional UNIX formats was largely dictated by
+the status quo in other applications; however, additional protection
+is added against inadvertantly running multiple instances of a
+c-client application on the same mail file.
+
+     (1) c-client attempts to create a .lock file (mail file name with
+``.lock'' appended) whenever it reads from, or writes to, the mail
+file.  This is an exclusive lock, and is held only for short periods
+of time while c-client is actually doing the I/O.  There is a 5-minute
+timeout for this lock, after which it is broken on the presumption
+that it is a stale lock.  If it can not create the .lock file due to
+an EACCES (protection failure) error, it once silently proceeded
+without this lock; this was for systems which protect /usr/spool/mail
+from unprivileged processes creating files.  Today, c-client reports
+an error unless it is built otherwise.  The purpose of this lock is to
+prevent against unfavorable interactions with mail delivery.
+
+     (2) c-client applies a shared flock() to the mail file whenever
+it reads from the mail file, and an exclusive flock() whenever it
+writes to the mail file.  This lock is freed as soon as it finishes
+reading.  The purpose of this lock is to prevent against unfavorable
+interactions with mail delivery.
+
+     (3) c-client applies an exclusive flock() to a file on /tmp
+(whose name represents the device and inode number of the file) when
+it opens the mail file.  This lock is maintained throughout the
+session, although c-client has a feature (called ``kiss of death'')
+which permits c-client to forcibly and irreversibly seize the lock
+from a cooperating c-client application that surrenders the lock on
+demand.  The purpose of this lock is to prevent against unfavorable
+interactions with other instances of c-client (rewriting the mail
+file).
+
+     Mail delivery daemons use lock (1), (2), or both.  Lock (1) works
+over NFS; lock (2) is the only one that works on sites that protect
+/usr/spool/mail against unprivileged file creation.  Prudent mail
+delivery daemons use both forms of locking, and of course so does
+c-client.
+
+     If only lock (2) is used, then multiple processes can read from
+the mail file simultaneously, although in real life this doesn't
+really change things.  The normal state of locks (1) and (2) is
+unlocked except for very brief periods.
+
+
+TENEX AND MTX
+
+     The design of the locking mechanism of these formats was
+motivated by a design to enable multiple simultaneous read/write
+access.  It is almost the reverse of how locking works with
+bezerk/mmdf.
+
+     (1) c-client applies a shared flock() to the mail file when it
+opens the mail file.  It upgrades this lock to exclusive whenever it
+tries to expunge the mail file.  Because of the flock() bug that
+upgrading a lock actually releases it, it will not do so until it has
+acquired an exclusive lock (2) first.  The purpose of this lock is to
+prevent against expunge taking place while some other c-client has the
+mail file open (and thus knows where all the messages are).
+
+     (2) c-client applies a shared flock() to a file on /tmp (whose
+name represents the device and inode number of the file) when it
+parses the mail file.  It applies an exclusive flock() to this file
+when it appends new mail to the mail file, as well as before it
+attempts to upgrade lock (1) to exclusive.  The purpose of this lock
+is to prevent against data being appended while some other c-client is
+parsing mail in the file (to prevent reading of incomplete messages).
+It also protects against the lock-releasing timing race on lock (1).
+
+OBSERVATIONS
+
+     In a perfect world, locking works.  You are protected against
+unfavorable interactions with the mailer and against your own mistake
+by running more than one instance of your mail reader.  In tenex/mtx
+formats, you have the additional benefit that multiple simultaneous
+read/write access works, with the sole restriction being that you
+can't expunge if there are any sharers of the mail file.
+
+     If the mail file is NFS-mounted, then flock() locking is a silent
+no-op.  This is the way BSD implements flock(), and c-client's
+emulation of flock() through fcntl() tests for NFS files and
+duplicates this functionality.  There is no locking protection for
+tenex/mtx mail files at all, and only protection against the mailer
+for bezerk/mmdf mail files.  This has been the accepted state of
+affairs on UNIX for many sad years.
+
+     If you can not create .lock files, it should not affect locking,
+since the flock() locks suffice for all protection.  This is, however,
+not true if the mailer does not check for flock() locking, or if the
+the mail file is NFS-mounted.
+
+     What this means is that there is *no* locking protection at all
+in the case of a client using an NFS-mounted /usr/spool/mail that does
+not permit file creation by unprivileged programs.  It is impossible,
+under these circumstances, for an unprivileged program to do anything
+about it.  Worse, if EACCES errors on .lock file creation are no-op'ed
+, the user won't even know about it.  This is arguably a site
+configuration error.
+
+     The problem with not being able to create .lock files exists on
+System V as well, but the failure modes for flock() -- which is
+implemented via fcntl() -- are different.
+
+     On System V, if the mail file is NFS-mounted and either the
+client or the server lacks a functioning statd/lockd pair, then the
+lock attempt would have hung forever if it weren't for the fact that
+c-client tests for NFS and no-ops the flock() emulator in this case.
+Systemwide or clusterwide failures of statd/lockd have been known to
+occur which cause all locks in all processes to hang (including
+local?).  Without the special NFS test made by c-client, there would
+be no way to request BSD-style no-op behavior, nor is there any way to
+determine that this is happening other than the system being hung.
+
+     The additional locking introduced by c-client was shown to cause
+much more stress on the System V locking mechanism than has
+traditionally been placed upon it.  If it was stressed too far, all
+hell broke loose.  Fortunately, this is now past history.
+
+TRADEOFFS
+
+     c-client based applications have a reasonable chance of winning
+as long as you don't use NFS for remote access to mail files.  That's
+what IMAP is for, after all.  It is, however, very important to
+realize that you can *not* use the lock-upgrade feature by itself
+because it releases the lock as an interim step -- you need to have
+lock-upgrading guarded by another lock.
+
+     If you have the misfortune of using System V, you are likely to
+run into problems sooner or later having to do with statd/lockd.  You
+basically end up with one of three unsatisfactory choices:
+	1) Grit your teeth and live with it.
+	2) Try to make it work:
+	   a) avoid NFS access so as not to stress statd/lockd.
+	   b) try to understand the code in statd/lockd and hack it
+	      to be more robust.
+	   c) hunt out the system limit of locks, if there is one,
+	      and increase it.	Figure on at least two locks per
+	      simultaneous imapd process and four locks per Pine
+	      process.	Better yet, make the limit be 10 times the
+	      maximum number of processes.
+	   d) increase the socket buffer (-S switch to lockd) if
+	      it is offered.  I don't know what this actually does,
+	      but giving lockd more resources to do its work can't
+	      hurt.  Maybe.
+	3) Decide that it can't possibly work, and turn off the
+	   fcntl() calls in your program.
+	4) If nuking statd/lockd can be done without breaking local
+	   locking, then do so.  This would make SVR4 have the same
+	   limitations as BSD locking, with a couple of additional
+	   bugs.
+	5) Check for NFS, and don't do the fcntl() in the NFS case.
+	   This is what c-client does.
+
+     Note that if you are going to use NFS to access files on a server
+which does not have statd/lockd running, your only choice is (3), (4),
+or (5).  Here again, IMAP can bail you out.
+
+     These problems aren't unique to c-client applications; they have
+also been reported with Elm, Mediamail, and other email tools.
+
+     Of the other two SVR4 locking bugs:
+
+     Programmer awareness is necessary to deal with the bug that you
+can not get an exclusive lock unless the file is open for write.  I
+believe that c-client has fixed all of these cases.
+
+     The problem about opening a second designator smashing any
+current locks on the file has not been addressed satisfactorily yet.
+This is not an easy problem to deal with, especially in c-client which
+really doesn't know what other files/streams may be open by Pine.
+
+     Aren't you so happy that you bought an System V system?

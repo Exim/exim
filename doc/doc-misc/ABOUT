@@ -1,0 +1,11 @@
+$Cambridge: exim/doc/doc-misc/ABOUT,v 1.1 2004/10/08 10:38:47 ph10 Exp $
+
+CVS directory exim/exim-doc/doc-misc
+------------------------------------
+
+This directory contains some miscellaneous documentation files that do not form 
+part of Exim distributions, but are related to its maintenance and development.
+Those whose names start with "Ext-" are external documents that won't be 
+modified (and hence have no local CVS Ids).
+
+End

@@ -1,0 +1,193 @@
+$Cambridge: exim/doc/doc-misc/TexiNotes,v 1.1 2004/10/08 10:38:47 ph10 Exp $
+
+Notes for conversion of sgcal input into Texinfo input
+------------------------------------------------------
+
+(Dated 6 August 1996)
+
+The escape character is @. Only @ and curly brackets are sensitive. Get them in
+by @@ @{ and @} if required.
+
+@: after a dot that is not a sentence end.
+
+@. instead of . if sentence ends with capital letter
+
+@copyright{}   for copyright
+
+@minus{}  is a slighly longer minus sign
+
+Input file ends with .texinfo usually.
+
+MUST start the file with
+
+  \input texinfo
+  @c %**start of header
+  @setfilename INFO-FILE-NAME
+  @settitle NAME_OF_MANUAL
+  $c %**end of header
+
+Then, typically
+
+  @ifinfo
+  summary and copyright
+  @end ifinfo
+
+Followed by
+
+  @titlepage
+  title and copyright
+  @end titlepage
+
+Then the top node and master menu - for info file only
+
+  @node       Top,       First Chapter, (dir),   (dir)
+  @comment    node-name  next,          previous,   up
+  @top
+
+  @menu
+  * First Chapter::       The first chapter is the
+                          only chapter in the sample
+  * Concept Index::       An index
+  @end menu
+
+
+Then the body
+
+  @node    First Chapter,  Concept Index,  Top,    Top
+  @comment  node-name       next,         previous, up
+  @chapter First Chapter
+  @cindex Sample index entry
+
+  This is the contents of the first chapter
+  @cindex Another sample index
+
+
+Then stuff about indexes and tables of contents
+
+  @node    Concept Index,     ,  First Chapter,   Top
+  @unnumbered Concept Index
+
+  @printindex cp
+
+  @contents
+
+MUST end the file with
+
+  @bye
+
+
+. NEWLINE AND NO-FILL MODE
+
+  @page for new page
+  @* forces a line break
+
+
+. LINE CENTERING
+
+  @center stuff
+
+
+. ROMAN, ITALIC, BOLD ITALIC, SMALL CAPS
+
+  @code{...} for 'code' =>  `...'  in info
+  @file{...} for file names => `...' in info
+  @samp{...} for sample text => `...' in info
+  @var{...}  for variable => caps in info
+  @dfn{...} defining a term => double quotes in info
+  @emph{...} produces italic
+  @strong{...} produces bold
+  @sc{...} small caps  but with letters in lower case.
+  @i   italic  )
+  @b   bold    ) no effect on info file
+  @r   roman   )
+
+
+. TABBING
+
+. CHAPTERS & SECTIONS
+
+  @chapter <title>
+  @unnumbered <title> is an unnumbered chapter
+  @section
+
+
+
+. SECTION
+
+. FANCY VS PLAIN
+
+  @iftex   ...  @end iftex   for printed only; likewise @ifinfo   ... @end ifinfo
+
+
+. LEAVING BLANK SPACE
+
+  @sp 10
+
+
+. EM & NEM
+
+  no can no
+
+. DISPLAY ASIS
+
+  @example  ...  @end example
+  @display  ...  @end display     no change of font => rm
+
+
+. COMMENTS
+
+  @comment or @c introduces comment lines
+
+
+. NUMBERED LISTS
+
+  @enumerate
+  @item
+  first item
+
+  @item
+  second
+  @end enumerate
+
+
+
+. BULLETED LISTS
+
+  @itemize @bullet
+  ...
+
+
+
+. CROSS REFERENCES
+
+  @xref   start sentence
+  @ref{name}
+  @pxref (parenthesized)
+
+  5 args: node name (required), cross-ref name, topic description, name of
+  info file, name of printed manual.
+
+
+
+. TABLES
+
+  @table   for two-column tables
+  @table @asis
+
+  @item  first column
+  second column
+
+  @item ...
+
+
+
+. INDEX
+
+  @cindex    concept index
+  @findex    function index
+  @vindex    variable index
+  @kindex    key index
+  @pindex    program index
+  @tindex    data type index
+
+***

@@ -1,0 +1,11 @@
+$Cambridge: exim/doc/doc-src/ABOUT,v 1.1 2004/10/08 10:38:48 ph10 Exp $
+
+CVS directory exim/exim-doc/doc-src
+-----------------------------------
+
+This directory contains documentation files that are processed in some way in 
+order to make the documentation files that form part of Exim distributions. A 
+non-standard document processor is currently in use (October 2004), but in the 
+long term something more standard will have to take over.
+
+End
