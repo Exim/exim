@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.6 2004/11/18 11:17:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.7 2004/11/22 11:30:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2184,6 +2184,254 @@ else
 
 
 /*************************************************
+*          Perform a single dnsbl lookup         *
+*************************************************/
+
+/* This function is called from verify_check_dnsbl() below.
+
+Arguments:
+  domain         the outer dnsbl domain (for debug message)
+  keydomain      the current keydomain (for debug message) 
+  query          the domain to be looked up
+  iplist         the list of matching IP addresses 
+  bitmask        true if bitmask matching is wanted 
+  invert_result  true if result to be inverted 
+  defer_return   what to return for a defer 
+
+Returns:         OK if lookup succeeded
+                 FAIL if not
+*/
+
+static int
+one_check_dnsbl(uschar *domain, uschar *keydomain, uschar *query, 
+  uschar *iplist, BOOL bitmask, BOOL invert_result, int defer_return)
+{                
+dns_answer dnsa;
+dns_scan dnss;
+tree_node *t;
+dnsbl_cache_block *cb;
+int old_pool = store_pool;
+
+/* Look for this query in the cache. */
+
+t = tree_search(dnsbl_cache, query);
+
+/* If not cached from a previous lookup, we must do a DNS lookup, and
+cache the result in permanent memory. */
+
+if (t == NULL)
+  {
+  store_pool = POOL_PERM;
+
+  /* Set up a tree entry to cache the lookup */
+
+  t = store_get(sizeof(tree_node) + Ustrlen(query));
+  Ustrcpy(t->name, query);
+  t->data.ptr = cb = store_get(sizeof(dnsbl_cache_block));
+  (void)tree_insertnode(&dnsbl_cache, t);
+
+  /* Do the DNS loopup . */
+
+  HDEBUG(D_dnsbl) debug_printf("new DNS lookup for %s\n", query);
+  cb->rc = dns_basic_lookup(&dnsa, query, T_A);
+  cb->text_set = FALSE;
+  cb->text = NULL;
+  cb->rhs = NULL;
+
+  /* If the lookup succeeded, cache the RHS address. The code allows for
+  more than one address - this was for complete generality and the possible
+  use of A6 records. However, A6 records have been reduced to experimental
+  status (August 2001) and may die out. So they may never get used at all,
+  let alone in dnsbl records. However, leave the code here, just in case.
+
+  Quite apart from one A6 RR generating multiple addresses, there are DNS
+  lists that return more than one A record, so we must handle multiple
+  addresses generated in that way as well. */
+
+  if (cb->rc == DNS_SUCCEED)
+    {
+    dns_record *rr;
+    dns_address **addrp = &(cb->rhs);
+    for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+         rr != NULL;
+         rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+      {
+      if (rr->type == T_A)
+        {
+        dns_address *da = dns_address_from_rr(&dnsa, rr);
+        if (da != NULL)
+          {
+          *addrp = da;
+          while (da->next != NULL) da = da->next;
+          addrp = &(da->next);
+          }
+        }
+      }
+
+    /* If we didn't find any A records, change the return code. This can
+    happen when there is a CNAME record but there are no A records for what
+    it points to. */
+
+    if (cb->rhs == NULL) cb->rc = DNS_NODATA;
+    }
+
+  store_pool = old_pool;
+  }
+
+/* Previous lookup was cached */
+
+else
+  {
+  HDEBUG(D_dnsbl) debug_printf("using result of previous DNS lookup\n");
+  cb = t->data.ptr;
+  }
+
+/* We now have the result of the DNS lookup, either newly done, or cached
+from a previous call. If the lookup succeeded, check against the address
+list if there is one. This may be a positive equality list (introduced by
+"="), a negative equality list (introduced by "!="), a positive bitmask
+list (introduced by "&"), or a negative bitmask list (introduced by "!&").*/
+
+if (cb->rc == DNS_SUCCEED)
+  {
+  dns_address *da = NULL;
+  uschar *addlist = cb->rhs->address;
+
+  /* For A and AAAA records, there may be multiple addresses from multiple
+  records. For A6 records (currently not expected to be used) there may be
+  multiple addresses from a single record. */
+
+  for (da = cb->rhs->next; da != NULL; da = da->next)
+    addlist = string_sprintf("%s, %s", addlist, da->address);
+
+  HDEBUG(D_dnsbl) debug_printf("DNS lookup for %s succeeded (yielding %s)\n",
+    query, addlist);
+
+  /* Address list check; this can be either for equality, or via a bitmask.
+  In the latter case, all the bits must match. */
+
+  if (iplist != NULL)
+    {
+    int ipsep = ',';
+    uschar ip[46];
+    uschar *ptr = iplist;
+
+    while (string_nextinlist(&ptr, &ipsep, ip, sizeof(ip)) != NULL)
+      {
+      /* Handle exact matching */
+      if (!bitmask)
+        {
+        for (da = cb->rhs; da != NULL; da = da->next)
+          {
+          if (Ustrcmp(CS da->address, ip) == 0) break;
+          }
+        }
+      /* Handle bitmask matching */
+      else
+        {
+        int address[4];
+        int mask = 0;
+
+        /* At present, all known DNS blocking lists use A records, with
+        IPv4 addresses on the RHS encoding the information they return. I
+        wonder if this will linger on as the last vestige of IPv4 when IPv6
+        is ubiquitous? Anyway, for now we use paranoia code to completely
+        ignore IPv6 addresses. The default mask is 0, which always matches.
+        We change this only for IPv4 addresses in the list. */
+
+        if (host_aton(ip, address) == 1) mask = address[0];
+
+        /* Scan the returned addresses, skipping any that are IPv6 */
+
+        for (da = cb->rhs; da != NULL; da = da->next)
+          {
+          if (host_aton(da->address, address) != 1) continue;
+          if ((address[0] & mask) == mask) break;
+          }
+        }
+
+      /* Break out if a match has been found */
+
+      if (da != NULL) break;
+      }
+
+    /* If either
+
+       (a) No IP address in a positive list matched, or
+       (b) An IP address in a negative list did match
+
+    then behave as if the DNSBL lookup had not succeeded, i.e. the host is
+    not on the list. */
+
+    if (invert_result != (da == NULL))
+      {
+      HDEBUG(D_dnsbl)
+        {
+        debug_printf("=> but we are not accepting this block class because\n");
+        debug_printf("=> there was %s match for %c%s\n",
+          invert_result? "an exclude":"no", bitmask? '&' : '=', iplist);
+        }
+      return FAIL; 
+      }
+    }
+
+  /* Either there was no IP list, or the record matched. Look up a TXT record
+  if it hasn't previously been done. */
+
+  if (!cb->text_set)
+    {
+    cb->text_set = TRUE;
+    if (dns_basic_lookup(&dnsa, query, T_TXT) == DNS_SUCCEED)
+      {
+      dns_record *rr;
+      for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+           rr != NULL;
+           rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+        if (rr->type == T_TXT) break;
+      if (rr != NULL)
+        {
+        int len = (rr->data)[0];
+        if (len > 511) len = 127;
+        store_pool = POOL_PERM;
+        cb->text = string_sprintf("%.*s", len, (const uschar *)(rr->data+1));
+        store_pool = old_pool;
+        }
+      }
+    }
+
+  dnslist_value = addlist;
+  dnslist_text = cb->text;
+  return OK;
+  }
+
+/* There was a problem with the DNS lookup */
+
+if (cb->rc != DNS_NOMATCH && cb->rc != DNS_NODATA)
+  {
+  log_write(L_dnslist_defer, LOG_MAIN,
+    "DNS list lookup defer (probably timeout) for %s: %s", query,
+    (defer_return == OK)?   US"assumed in list" :
+    (defer_return == FAIL)? US"assumed not in list" :
+                            US"returned DEFER");
+  return defer_return;
+  }
+
+/* No entry was found in the DNS; continue for next domain */
+
+HDEBUG(D_dnsbl)
+  {
+  debug_printf("DNS lookup for %s failed\n", query);
+  debug_printf("=> that means %s is not listed at %s\n",
+     keydomain, domain);
+  }
+
+return FAIL;
+}
+
+
+
+
+/*************************************************
 *        Check host against DNS black lists      *
 *************************************************/
 
@@ -2227,7 +2475,6 @@ verify_check_dnsbl(uschar **listptr)
 {
 int sep = 0;
 int defer_return = FAIL;
-int old_pool = store_pool;
 BOOL invert_result = FALSE;
 uschar *list = *listptr;
 uschar *domain;
@@ -2240,18 +2487,19 @@ uschar revadd[128];        /* Long enough for IPv6 address */
 
 revadd[0] = 0;
 
+/* In case this is the first time the DNS resolver is being used. */
+
+dns_init(FALSE, FALSE);
+
 /* Loop through all the domains supplied, until something matches */
 
 while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
   {
+  int rc;
   BOOL frc;
   BOOL bitmask = FALSE;
-  dns_answer dnsa;
-  dns_scan dnss;
   uschar *iplist;
   uschar *key;
-  tree_node *t;
-  dnsbl_cache_block *cb;
 
   HDEBUG(D_dnsbl) debug_printf("DNS list check: %s\n", domain);
 
@@ -2310,251 +2558,80 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
       }
     }
 
-  /* Construct the query by adding the domain onto either the sending host
-  address, or the given key string. */
-
+  /* If there is no key string, construct the query by adding the domain name 
+  onto the inverted host address, and perform a single DNS lookup. */
+  
   if (key == NULL)
     {
     if (sender_host_address == NULL) return FAIL;    /* can never match */
     if (revadd[0] == 0) invert_address(revadd, sender_host_address);
     frc = string_format(query, sizeof(query), "%s%s", revadd, domain);
+    
+    if (!frc)
+      {
+      log_write(0, LOG_MAIN|LOG_PANIC, "dnslist query is too long "
+        "(ignored): %s...", query);
+      continue;
+      }
+      
+    rc = one_check_dnsbl(domain, sender_host_address, query, iplist, bitmask, 
+      invert_result, defer_return);
+       
+    if (rc == OK)
+      {
+      dnslist_domain = string_copy(domain);
+      HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n", 
+        sender_host_address, domain);
+      }
+       
+    if (rc != FAIL) return rc;     /* OK or DEFER */
     }
+    
+  /* If there is a key string, it can be a list of domains or IP addresses to 
+  be concatenated with the main domain. */
+ 
   else
     {
-    frc = string_format(query, sizeof(query), "%s.%s", key, domain);
-    }
-
-  if (!frc)
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC, "dnslist query is too long "
-      "(ignored): %s...", query);
-    continue;
-    }
-
-  /* Look for this query in the cache. */
-
-  t = tree_search(dnsbl_cache, query);
-
-  /* If not cached from a previous lookup, we must do a DNS lookup, and
-  cache the result in permanent memory. */
-
-  if (t == NULL)
-    {
-    store_pool = POOL_PERM;
-
-    /* In case this is the first time the DNS resolver is being used. */
-
-    dns_init(FALSE, FALSE);
-
-    /* Set up a tree entry to cache the lookup */
-
-    t = store_get(sizeof(tree_node) + Ustrlen(query));
-    Ustrcpy(t->name, query);
-    t->data.ptr = cb = store_get(sizeof(dnsbl_cache_block));
-    (void)tree_insertnode(&dnsbl_cache, t);
-
-    /* Do the DNS loopup . */
-
-    HDEBUG(D_dnsbl) debug_printf("new DNS lookup for %s\n", query);
-    cb->rc = dns_basic_lookup(&dnsa, query, T_A);
-    cb->text_set = FALSE;
-    cb->text = NULL;
-    cb->rhs = NULL;
-
-    /* If the lookup succeeded, cache the RHS address. The code allows for
-    more than one address - this was for complete generality and the possible
-    use of A6 records. However, A6 records have been reduced to experimental
-    status (August 2001) and may die out. So they may never get used at all,
-    let alone in dnsbl records. However, leave the code here, just in case.
-
-    Quite apart from one A6 RR generating multiple addresses, there are DNS
-    lists that return more than one A record, so we must handle multiple
-    addresses generated in that way as well. */
-
-    if (cb->rc == DNS_SUCCEED)
-      {
-      dns_record *rr;
-      dns_address **addrp = &(cb->rhs);
-      for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-           rr != NULL;
-           rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+    int keysep = 0;
+    uschar *keydomain; 
+    uschar keybuffer[256];
+  
+    while ((keydomain = string_nextinlist(&key, &keysep, keybuffer, 
+            sizeof(keybuffer))) != NULL)
+      {       
+      if (string_is_ip_address(keydomain, NULL))
         {
-        if (rr->type == T_A)
-          {
-          dns_address *da = dns_address_from_rr(&dnsa, rr);
-          if (da != NULL)
-            {
-            *addrp = da;
-            while (da->next != NULL) da = da->next;
-            addrp = &(da->next);
-            }
-          }
+        uschar keyrevadd[128];
+        invert_address(keyrevadd, keydomain);
+        frc = string_format(query, sizeof(query), "%s%s", keyrevadd, domain); 
+        }
+      else
+        { 
+        frc = string_format(query, sizeof(query), "%s.%s", keydomain, domain);
         }
 
-      /* If we didn't find any A records, change the return code. This can
-      happen when there is a CNAME record but there are no A records for what
-      it points to. */
-
-      if (cb->rhs == NULL) cb->rc = DNS_NODATA;
-      }
-
-    store_pool = old_pool;
-    }
-
-  /* Previous lookup was cached */
-
-  else
-    {
-    HDEBUG(D_dnsbl) debug_printf("using result of previous DNS lookup\n");
-    cb = t->data.ptr;
-    }
-
-  /* We now have the result of the DNS lookup, either newly done, or cached
-  from a previous call. If the lookup succeeded, check against the address
-  list if there is one. This may be a positive equality list (introduced by
-  "="), a negative equality list (introduced by "!="), a positive bitmask
-  list (introduced by "&"), or a negative bitmask list (introduced by "!&").*/
-
-  if (cb->rc == DNS_SUCCEED)
-    {
-    dns_address *da = NULL;
-    uschar *addlist = cb->rhs->address;
-
-    /* For A and AAAA records, there may be multiple addresses from multiple
-    records. For A6 records (currently not expected to be used) there may be
-    multiple addresses from a single record. */
-
-    for (da = cb->rhs->next; da != NULL; da = da->next)
-      addlist = string_sprintf("%s, %s", addlist, da->address);
-
-    HDEBUG(D_dnsbl) debug_printf("DNS lookup for %s succeeded (yielding %s)\n",
-      query, addlist);
-
-    /* Address list check; this can be either for equality, or via a bitmask.
-    In the latter case, all the bits must match. */
-
-    if (iplist != NULL)
-      {
-      int ipsep = ',';
-      uschar ip[46];
-      uschar *ptr = iplist;
-
-      while (string_nextinlist(&ptr, &ipsep, ip, sizeof(ip)) != NULL)
+      if (!frc)
         {
-        /* Handle exact matching */
-        if (!bitmask)
-          {
-          for (da = cb->rhs; da != NULL; da = da->next)
-            {
-            if (Ustrcmp(CS da->address, ip) == 0) break;
-            }
-          }
-        /* Handle bitmask matching */
-        else
-          {
-          int address[4];
-          int mask = 0;
-
-          /* At present, all known DNS blocking lists use A records, with
-          IPv4 addresses on the RHS encoding the information they return. I
-          wonder if this will linger on as the last vestige of IPv4 when IPv6
-          is ubiquitous? Anyway, for now we use paranoia code to completely
-          ignore IPv6 addresses. The default mask is 0, which always matches.
-          We change this only for IPv4 addresses in the list. */
-
-          if (host_aton(ip, address) == 1) mask = address[0];
-
-          /* Scan the returned addresses, skipping any that are IPv6 */
-
-          for (da = cb->rhs; da != NULL; da = da->next)
-            {
-            if (host_aton(da->address, address) != 1) continue;
-            if ((address[0] & mask) == mask) break;
-            }
-          }
-
-        /* Break out if a match has been found */
-
-        if (da != NULL) break;
+        log_write(0, LOG_MAIN|LOG_PANIC, "dnslist query is too long "
+          "(ignored): %s...", query);
+        continue;
         }
-
-      /* If either
-
-         (a) No IP address in a positive list matched, or
-         (b) An IP address in a negative list did match
-
-      then behave as if the DNSBL lookup had not succeeded, i.e. the host is
-      not on the list. */
-
-      if (invert_result != (da == NULL))
+        
+      rc = one_check_dnsbl(domain, keydomain, query, iplist, bitmask, 
+        invert_result, defer_return);
+         
+      if (rc == OK)
         {
-        HDEBUG(D_dnsbl)
-          {
-          debug_printf("=> but we are not accepting this block class because\n");
-          debug_printf("=> there was %s match for %c%s\n",
-            invert_result? "an exclude":"no", bitmask? '&' : '=', iplist);
-          }
-        continue;   /* With next DNSBL domain */
+        dnslist_domain = string_copy(domain);
+        HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n", 
+          keydomain, domain);
         }
-      }
+         
+      if (rc != FAIL) return rc;   /* OK or DEFER */
 
-  /* Either there was no IP list, or the record matched. Look up a TXT record
-    if it hasn't previously been done. */
-
-    if (!cb->text_set)
-      {
-      cb->text_set = TRUE;
-      if (dns_basic_lookup(&dnsa, query, T_TXT) == DNS_SUCCEED)
-        {
-        dns_record *rr;
-        for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
-             rr != NULL;
-             rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
-          if (rr->type == T_TXT) break;
-        if (rr != NULL)
-          {
-          int len = (rr->data)[0];
-          if (len > 511) len = 127;
-          store_pool = POOL_PERM;
-          cb->text = string_sprintf("%.*s", len, (const uschar *)(rr->data+1));
-          store_pool = old_pool;
-          }
-        }
-      }
-
-    HDEBUG(D_dnsbl)
-      {
-      debug_printf("=> that means %s is listed at %s\n",
-        (key == NULL)? sender_host_address : key, domain);
-      }
-
-    dnslist_domain = string_copy(domain);
-    dnslist_value = addlist;
-    dnslist_text = cb->text;
-    return OK;
-    }
-
-  /* There was a problem with the DNS lookup */
-
-  if (cb->rc != DNS_NOMATCH && cb->rc != DNS_NODATA)
-    {
-    log_write(L_dnslist_defer, LOG_MAIN,
-      "DNS list lookup defer (probably timeout) for %s: %s", query,
-      (defer_return == OK)?   US"assumed in list" :
-      (defer_return == FAIL)? US"assumed not in list" :
-                              US"returned DEFER");
-    return defer_return;
-    }
-
-  /* No entry was found in the DNS; continue for next domain */
-
-  HDEBUG(D_dnsbl)
-    {
-    debug_printf("DNS lookup for %s failed\n", query);
-    debug_printf("=> that means %s is not listed at %s\n",
-      (key == NULL)? sender_host_address : key, domain);
-    }
-  }      /* Continue with next domain */
+      }    /* continue with next keystring domain/address */
+    }  
+  }        /* continue with next dnsdb outer domain */
 
 return FAIL;
 }

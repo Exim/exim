@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.13 2004/11/19 15:18:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.14 2004/11/22 11:30:03 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -165,6 +165,36 @@ Version 4.44
 
     The same effect could be achieved by wrapping the lookup in ${tr...}; this
     feature is just a syntactic simplification.
+
+15. It is now possible to supply a list of domains and/or IP addresses to be
+    lookup up in a DNS blacklist. Previously, only a single domain name could
+    be given, for example:
+
+      dnslists = black.list.tld/$sender_host_name
+
+    What follows the slash can now be a list. As with all lists, the default
+    separator is a colon. However, because this is a sublist within the list of
+    DNS blacklist domains, it is necessary either to double the separators like
+    this:
+
+      dnslists = black.list.tld/name.1::name.2
+
+    or to change the separator character, like this:
+
+      dnslists = black.list.tld/<;name.1;name.2
+
+    If an item in the list is an IP address, it is inverted before the DNS
+    blacklist domain is appended. If it is not an IP address, no inversion
+    occurs. Consider this condition:
+
+       dnslists = black.list.tls/<;192.168.1.2;a.domain
+
+    The DNS lookups that occur are for
+
+       2.1.168.192.black.list.tld  and  a.domain.black.list.tld
+
+    Once a DNS record has been found (that matches a specific IP return
+    address, if specified), no further lookups are done.
 
 
 Version 4.43

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.35 2004/11/19 15:18:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.36 2004/11/22 11:30:03 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -159,6 +159,10 @@ Exim version 4.44
 
     (3) It is now possible to specify the separator character for use when
         multiple records are returned.
+
+38. The dnslists ACL condition has been extended: it is now possible to supply
+    a list of IP addresses and/or domains to be looked up in a particular DNS
+    domain.
 
 
 Exim version 4.43
