@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.80 2005/02/16 16:28:36 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.81 2005/02/16 16:40:22 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -383,6 +383,8 @@ Exim version 4.50
 
 81. Included the latest eximstats from Steve (adds average sizes to HTML Top
     tables).
+
+82. Updated OS/Makefile-AIX as per message from Mike Meredith.
 
 
 ----------------------------------------------------
