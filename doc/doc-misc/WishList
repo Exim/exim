@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.4 2004/10/27 10:47:33 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.5 2004/11/02 09:39:44 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1754,5 +1754,34 @@ This idea was for ACL syntax to be able to "accept" or "deny" individual log
 lines. This would make it possible to have, for example, per-host logging for
 certain things. See also 15 above.
 ------------------------------------------------------------------------------
---- HWM 301 ------------------------------------------------------------------
+
+(302) 28-Oct-04 M Expand pass_router and redirect_router
+
+Doing this would mean postponing the validity checks till the router was
+actually used instead of doing them at start up. It does not seem to be a
+facility that will be widely used.
+------------------------------------------------------------------------------
+
+(303) 28-Oct-04 M Support SQL relay
+
+This would make it easier for packagers to support "generic SQL" without having
+to choose which one. It can be slotted in using a MySQL interface without
+modifying Exim, but native support would be nice.
+------------------------------------------------------------------------------
+
+(304) 02-Nov-04 M A way of seeing the whole message in Perl or ${run
+
+At present, the headers are available in $message_headers, but only part of
+the body is visible. The only way to pass the whole body would be as a file
+descriptor because it can be very large. See also (42).
+------------------------------------------------------------------------------
+
+(305) 02-Nov-04 M A Perl transport
+
+The suggestion here is that an embedded Perl function takes responsibility for
+doing the delivery. I am not at all keen on this. One way of doing it would be
+to implement (244), which provides an "on success" string expansion. Then
+anyone who wants this could run that on a transport that does nothing.
+------------------------------------------------------------------------------
+--- HWM 305 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
