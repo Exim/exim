@@ -1,7 +1,25 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.71 2005/01/14 10:25:33 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.72 2005/01/14 11:06:58 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+
+A note about Exim versions 4.44 and 4.50
+----------------------------------------
+
+Exim 4.50 was meant to be the next release after 4.43. It contains a lot of
+changes of various kinds. As a consequence, a big documentation update was
+needed. This delayed the release for rather longer than seemed good, especially
+in the light of a couple of (minor) security issues. Therefore, the changes
+that fixed bugs were backported into 4.43, to create a 4.44 maintenance
+release. So 4.44 and 4.50 are in effect two different branches that both start
+from 4.43.
+
+I have left the 4.50 change log unchanged; it contains all the changes since
+4.43. The change log for 4.44 is below; many of its items are identical to
+those for 4.50. This seems to be the most sensible way to preserve the
+historical information.
+
 
 Exim version 4.50
 -----------------
@@ -321,6 +339,146 @@ Exim version 4.50
     This is wrong and can cause the other end to generate a synchronization
     error if it is another Exim or anything else that does the synchronization
     check. A QUIT command is no longer sent after a timeout.
+
+
+----------------------------------------------------
+See the note above about the 4.44 and 4.50 releases.
+----------------------------------------------------
+
+
+Exim version 4.44
+-----------------
+
+ 1. Change 4.43/35 introduced a bug that caused file counts to be
+    incorrectly computed when quota_filecount was set in an appendfile
+    transport
+
+ 2. Closing a stable door: arrange to panic-die if setitimer() ever fails. The
+    bug fixed in 4.43/37 would have been diagnosed quickly if this had been in
+    place.
+
+ 3. Give more explanation in the error message when the command for a transport
+    filter fails to execute.
+
+ 4. There are several places where Exim runs a non-Exim command in a
+    subprocess. The SIGUSR1 signal should be disabled for these processes. This
+    was being done only for the command run by the queryprogram router. It is
+    now done for all such subprocesses. The other cases are: ${run, transport
+    filters, and the commands run by the lmtp and pipe transports.
+
+ 5. Some older OS have a limit of 256 on the maximum number of file
+    descriptors. Exim was using setrlimit() to set 1000 as a large value
+    unlikely to be exceeded. Change 4.43/17 caused a lot of logging on these
+    systems. I've change it so that if it can't get 1000, it tries for 256.
+
+ 6. "control=submission" was allowed, but had no effect, in a DATA ACL. This
+    was an oversight, and furthermore, ever since the addition of extra
+    controls (e.g. 4.43/32), the checks on when to allow different forms of
+    "control" were broken. There should now be diagnostics for all cases when a
+    control that does not make sense is encountered.
+
+ 7. $recipients is now available in the predata ACL (oversight).
+
+ 8. Tidy the search cache before the fork to do a delivery from a message
+    received from the command line. Otherwise the child will trigger a lookup
+    failure and thereby defer the delivery if it tries to use (for example) a
+    cached ldap connection that the parent has called unbind on.
+
+ 9. If verify=recipient was followed by verify=sender in a RCPT ACL, the value
+    of $address_data from the recipient verification was clobbered by the
+    sender verification.
+
+10. If FIXED_NEVER_USERS was defined, but empty, Exim was assuming the uid 0
+    was its contents. (It was OK if the option was not defined at all.)
+
+11. A "Completed" log line is now written for messages that are removed from
+    the spool by the -Mrm option.
+
+12. $host_address is now set to the target address during the checking of
+    ignore_target_hosts.
+
+13. When checking ignore_target_hosts for an ipliteral router, no host name was
+    being passed; this would have caused $sender_host_name to have been used if
+    matching the list had actually called for a host name (not very likely,
+    since this list is usually IP addresses). A host name is now passed as
+    "[x.x.x.x]".
+
+14. Changed the calls that set up the SIGCHLD handler in the daemon to use the
+    code that specifies a non-restarting handler (typically sigaction() in
+    modern systems) in an attempt to fix a rare and obscure crash bug.
+
+15. Narrowed the window for a race in the daemon that could cause it to ignore
+    SIGCHLD signals. This is not a major problem, because they are used only to
+    wake it up if nothing else does.
+
+16. A malformed maildirsize file could cause Exim to calculate negative values
+    for the mailbox size or file count. Odd effects could occur as a result.
+    The maildirsize information is now recalculated if the size or filecount
+    end up negative.
+
+17. Added HAVE_SYS_STATVFS_H to the os.h file for Linux, as it has had this
+    support for a long time. Removed HAVE_SYS_VFS_H.
+
+18. Updated exipick to current release
+
+19. Allow an empty sender to be matched against a lookup in an address list.
+    Previously the only cases considered were a regular expression, or an
+    empty pattern.
+
+20. Exim went into a mad DNS lookup loop when doing a callout where the
+    host was specified on the transport, if the DNS lookup yielded more than
+    one IP address.
+
+21. Respect the 75-character limit for "encoded words" when doing RFC 2047
+    encoding, and increase the buffer size for ${rfc2047: expansion.
+
+22. errors_to on a router was being ignored for bounce messages.
+
+23. If an IPv6 address is given for -bh or -bhc, it is now converted to the
+    canonical form (fully expanded) before being placed in
+    $sender_host_address.
+
+24. Updated eximstats to version 1.33
+
+25. Expand error message when GnuTLS has problems setting up cert/key files.
+
+26. Expand error message when OpenSSL has problems setting up cert/key files.
+
+27. Reset locale after calling embedded Perl, in case it was changed.
+
+28. When checking for a message's continued existence, exim_tidydb was not
+    looking in the split spool subdirectories.
+
+29. eximstats updated to version 1.35
+    1.34 - allow eximstats to parse syslog lines as well as mainlog lines
+    1.35 - bugfix such that pie charts by volume are generated correctly
+
+30. A forced expansion failure in the SPA authenticator is now treated the
+    same as in other authenticators (it moves to the next authenticator).
+
+31. Fixed the cipher preference order for GnuTLS client usage.
+
+31. Fixed Sieve buglet: now it explicitly sets From: when generating
+    an autoreply.
+
+32. More robust handling of very large SMTP responses.
+
+33. Check dnsdb PTR key for IP address before reversing.
+    CAN-2005-0021
+
+34. Put a check in host_aton() to protect against buffer overrun
+    CAN-2005-0021
+
+35. Fix buffer overflow vulnerability in spa_base64_to_bits() function.
+    CAN-2005-0022
+
+36. Need to initialize getloadavg() as root in the daemon when
+    deliver_drop_privilege is set, for the benefit of the queue runner.
+
+37. Data saved for $host_data after a lookup involving a named host list was
+    corrupted if there was more than one message in an SMTP session.
+
+38. Fixed a very old bug that sometimes lost the final 221 message after QUIT.
 
 
 Exim version 4.43
