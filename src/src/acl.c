@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.2 2004/10/18 11:36:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.3 2004/10/19 11:04:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1384,14 +1384,26 @@ for (; cb != NULL; cb = cb->next)
 
       case CONTROL_SUBMISSION:
       submission_mode = TRUE;
-      if (Ustrncmp(p, "/domain=", 8) == 0)
+      while (*p == '/')
+        { 
+        if (Ustrncmp(p, "/sender_retain", 14) == 0)
+          {
+          p += 14;
+          active_local_sender_retain = TRUE;
+          active_local_from_check = FALSE;   
+          }  
+        else if (Ustrncmp(p, "/domain=", 8) == 0)
+          {
+          uschar *pp = p + 8;
+          while (*pp != 0 && *pp != '/') pp++; 
+          submission_domain = string_copyn(p+8, pp-p);
+          p = pp; 
+          }
+        else break;   
+        }   
+      if (*p != 0)
         {
-        submission_domain = string_copy(p+8);
-        }
-      else if (*p != 0)
-        {
-        *log_msgptr = string_sprintf("syntax error in argument for "
-          "\"control\" modifier \"%s\"", arg);
+        *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
         return ERROR;
         }
       break;

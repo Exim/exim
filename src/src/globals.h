@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.2 2004/10/18 09:16:57 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.3 2004/10/19 11:04:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -118,6 +118,8 @@ extern header_line *acl_warn_headers;  /* Warning headers added by ACL */
 extern string_item *acl_warn_logged;   /* Logged lines */
 extern int     acl_wherecodes[];       /* Response codes for ACL fails */
 extern uschar *acl_wherenames[];       /* Names for messages */
+extern BOOL    active_local_from_check;/* For adding Sender: (switchable) */
+extern BOOL    active_local_sender_retain; /* For keeping Sender: (switchable) */
 extern address_item *addr_duplicate;   /* Duplicate address list */
 extern address_item address_defaults;  /* Default data for address item */
 extern uschar *address_file;           /* Name of file when delivering to one */
@@ -324,7 +326,7 @@ extern int     keep_malformed;         /* Time to keep malformed messages */
 extern uschar *eldap_dn;               /* Where LDAP DNs are left */
 extern int     load_average;           /* Most recently read load average */
 extern BOOL    local_error_message;    /* True if handling one of these */
-extern BOOL    local_from_check;       /* For adding Sender: */
+extern BOOL    local_from_check;       /* For adding Sender: (global value) */
 extern uschar *local_from_prefix;      /* Permitted prefixes */
 extern uschar *local_from_suffix;      /* Permitted suffixes */
 extern uschar *local_interfaces;       /* For forcing specific interfaces */

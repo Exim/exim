@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.2 2004/10/18 09:16:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.3 2004/10/19 11:04:26 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -15,6 +15,10 @@ Version 4.44
  1. There is a new build-time option called CONFIGURE_GROUP which works like
     CONFIGURE_OWNER. It specifies one additional group that is permitted for
     the runtime configuration file when the group write permission is set.
+
+ 2. The "control=submission" facility has a new option /retain_sender. This
+    has the effect of setting local_sender_retain true and local_from_check
+    false for the incoming message in which it is encountered.
 
 
 Version 4.43

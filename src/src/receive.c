@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.2 2004/10/18 11:36:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.3 2004/10/19 11:04:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -971,8 +971,9 @@ The general actions of this function are:
     blocks.
 
   . If there is a "sender:" header and the message is locally originated,
-    throw it away, unless the caller is trusted, or unless local_sender_retain
-    is set - which can only happen if local_from_check is false.
+    throw it away, unless the caller is trusted, or unless
+    active_local_sender_retain is set - which can only happen if
+    active_local_from_check is false.
 
   . If recipients are to be extracted from the message, build the
     recipients list from the headers, removing any that were on the
@@ -997,7 +998,7 @@ The general actions of this function are:
 
   . If the sender is local, check that from: is correct, and if not, generate
     a Sender: header, unless message comes from a trusted caller, or this
-    feature is disabled by no_local_from_check.
+    feature is disabled by active_local_from_check being false.
 
   . If there is no "date" header, generate one, for locally-originated
     or submission mode messages only.
@@ -1767,17 +1768,16 @@ for (h = header_list->next; h != NULL; h = h->next)
     /* If there is a "Sender:" header and the message is locally originated,
     and from an untrusted caller, or if we are in submission mode for a remote
     message, mark it "old" so that it will not be transmitted with the message,
-    unless local_sender_retain is set. (This can only be true if
-    local_from_check is false.) If there are any resent- headers in the
+    unless active_local_sender_retain is set. (This can only be true if
+    active_local_from_check is false.) If there are any resent- headers in the
     message, apply this rule to Resent-Sender: instead of Sender:. Messages
     with multiple resent- header sets cannot be tidily handled. (For this
     reason, at least one MUA - Pine - turns old resent- headers into X-resent-
     headers when resending, leaving just one set.) */
 
     case htype_sender:
-    h->type = ((
-               (sender_local && !trusted_caller && !local_sender_retain) ||
-               submission_mode
+    h->type = ((!active_local_sender_retain &&
+                ((sender_local && !trusted_caller) || submission_mode)
                ) &&
                (!resents_exist||is_resent))?
       htype_old : htype_sender;
@@ -2194,9 +2194,9 @@ more than one address, then the call to parse_extract_address fails, and a
 Sender: header is inserted, as required. */
 
 if (from_header != NULL &&
-     (
-      (sender_local && local_from_check && !trusted_caller) ||
-      (submission_mode && authenticated_id != NULL)
+     (active_local_from_check &&
+       ((sender_local && !trusted_caller) ||
+        (submission_mode && authenticated_id != NULL))
      ))
   {
   BOOL make_sender = TRUE;

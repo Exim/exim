@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.4 2004/10/18 09:26:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.5 2004/10/19 11:04:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4393,6 +4393,11 @@ while (more)
     int rcount = 0;
     int count = argc - recipients_arg;
     uschar **list = argv + recipients_arg;
+    
+    /* These options cannot be changed dynamically for non-SMTP messages */
+    
+    active_local_sender_retain = local_sender_retain;
+    active_local_from_check = local_from_check;   
 
     /* Save before any rewriting */
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.2 2004/10/19 11:04:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -803,8 +803,10 @@ rcpt_count = rcpt_defer_count = rcpt_fail_count =
 message_size = -1;
 acl_warn_headers = NULL;
 queue_only_policy = FALSE;
-deliver_freeze = FALSE;             /* Can be set by ACL */
-submission_mode = FALSE;            /* Can be set by ACL */
+deliver_freeze = FALSE;                              /* Can be set by ACL */
+submission_mode = FALSE;                             /* Can be set by ACL */
+active_local_from_check = local_from_check;          /* Can be set by ACL */
+active_local_sender_retain = local_sender_retain;    /* Can be set by ACL */
 sender_address = NULL;
 raw_sender = NULL;                  /* After SMTP rewrite, before qualifying */
 sender_address_unrewritten = NULL;  /* Set only after verify rewrite */

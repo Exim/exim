@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.2 2004/10/18 09:16:57 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.3 2004/10/19 11:04:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -209,7 +209,9 @@ int     acl_wherecodes[]       = { 550,     /* RCPT */
                                    550,     /* STARTTLS */
                                    252      /* VRFY */
                                  };
-
+                                 
+BOOL    active_local_from_check = FALSE;
+BOOL    active_local_sender_retain = FALSE;
 BOOL    accept_8bitmime        = FALSE;
 address_item  *addr_duplicate  = NULL;
 
