@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.15 2004/12/17 14:52:43 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.16 2004/12/22 15:31:47 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -577,15 +577,6 @@ size. Directory scanning is expensive; is there any scope for caching? It would
 seem not (you don't often get two addresses to the same user).
 ------------------------------------------------------------------------------
 
-(4)  01-Jan-02  S  Option to reject if no From: or Date: header line
-
-Exim, in common with many other MTAs, inserts a From: or Date: header line if
-one is missing. (It also inserts a blank Bcc:, but that is no longer needed by
-RFC 2822 - it was by 822.) The suggestion is an option to give an error
-instead. This could be done by making it possible to detect these insertions in
-the acl_smtp_data ACL.
-------------------------------------------------------------------------------
-
 (6)  01-Jan-02  S  Option to disable the use of -t
 Dave C.
 
@@ -767,9 +758,11 @@ Client: We need a variant of 'exim -bs' which would connect to a specified
 host, send AUTH/ATRN, and then accept incoming messages as usual.
 ------------------------------------------------------------------------------
 
-(50)  22-May-02 T  Add comment (duplicate address) to Envelope-To:
+(50)  22-May-02 S?  Add comment (duplicate address) to Envelope-To:
 
-This is just to minimize the confusion some people have.
+This is just to minimize the confusion some people have. However, it is not
+trivially easy to decide which to label as duplicates because of complications
+with redirection. I'm not convinced it will actually reduce confusion.
 ------------------------------------------------------------------------------
 
 (51)  07-Jun-02 S  Option to use another address in callout MAIL FROM
@@ -884,7 +877,8 @@ too messy!
 The only sensible approach seems to be to allow IP address arguments only.
 Anything else should be diagnosed as an error. However, if a name appears in
 the list, a PTR lookup should be done. This may require a lot of refactoring
-in the code.
+in the code, because of the current assumption that were are (almost) always
+dealing with THE sending host.
 ------------------------------------------------------------------------------
 
 (74)  22-Jul-02 M  Extend -bV to do more semantic checking
@@ -1481,7 +1475,8 @@ and last item with ease; doing this using {if ...} would be quite difficult!"
 (230) 30-Jan-04 M  Find IP addresses of a domain's nameservers
 
 This needs some way of processing a list of things in a similar way, which
-should perhaps be a more general facility.
+should perhaps be a more general facility. // This can now be done using the
+list facilities of dnsdb; verbose, but it can be done. //
 ------------------------------------------------------------------------------
 
 (231) 30-Jan-04 ?  -C has a number of problems when used for real
@@ -1500,7 +1495,9 @@ course, security issues. This is not something I want to go into at present.
 (235) 02-Feb-04 T  Make smtp_accept_count available as a variable
 
 This is for use in ACLs. Of course, it is a snapshot of the count at the
-start of the receiving process.
+start of the receiving process. As such, it could be confusing because if a
+connection lasts a long time, the "true" value could be very different. For
+this reason, I don't really like this idea.
 ------------------------------------------------------------------------------
 
 (236) 02-Feb-04 S  String in local_scan that's added to the binary version string
@@ -1527,7 +1524,8 @@ library, because there's no crypto code in Exim itself.
 (240) 23-Feb-04 ? Some way to know if a ip is a mx for a given domain
 
 Some kind of iterative operation for dnsdb might be a general way of providing
-this.
+this. // This can now be done using the list facilities of dnsdb; verbose, but
+it can be done. //
 ------------------------------------------------------------------------------
 
 (242) 01-Mar-04 ? Run a filter from an expansion condition
@@ -1731,21 +1729,10 @@ callout cache in time for the sender's next attempt."
 What about ** lines?
 ------------------------------------------------------------------------------
 
-(298) 25-Oct-04 S Debugging the daemon process only
-
-When there are daemon problems (e.g. it dies) it would be helpful to be able to
-turn on debugging that did not get passed on to any subprocesses.
-------------------------------------------------------------------------------
-
 (299) 25-Oct-04 S Options to make Sieve "keep" pass to next router
 
 Currently, "keep" saves in the mailbox. Probably need two options, for implicit
 and explicit keep commands.
-------------------------------------------------------------------------------
-
-(300) 25-Oct-04 S Option to lock out Sieve or Exim filter
-
-Currently, if allow_filter is set, either kind of filter is permitted.
 ------------------------------------------------------------------------------
 
 (301) 27-Oct-04 M Use an "ACL" to filter logging
