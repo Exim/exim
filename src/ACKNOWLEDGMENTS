@@ -1,0 +1,204 @@
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.1 2004/10/06 11:36:51 ph10 Exp $
+
+EXIM ACKNOWLEDGEMENTS
+
+I have not been very good at keeping a proper record of all the people who have
+sent in patches and other contributions to Exim. I am going to try to do better
+in the future by keeping a record in this file. First, I'll put a list of all
+those I can recover from the past; then I'll create a new list to which I'll
+add new contributors in future. Some regular contributors may appear in both.
+
+I'm going to record people who send in actual patches or who help in detailed
+ways. I'm not going to list people who just make a suggestion or report a
+bug. I hope that is a reasonable approach.
+
+If you should be on one of these lists and are not, please accept my apologies,
+and let me know! Any omissions are solely due to my incompetence. In
+particular, the "past" list has certainly lost the names of people who sent in
+relatively small patches.
+
+Philip Hazel
+
+Lists created: 20 November 2002
+Last updated:  04 October 2004
+
+
+THE OLD LIST
+
+Alan Barratt              First code for relay checking
+Malcolm Beattie           Interface to embedded Perl
+Philip Blundell           First support for IPv6
+Piete Brooks              Running the first live version
+                            Implementing multiple-system compilation
+Matthew Byng-Maddick      First code for dsearch lookup
+Steve Campbell            Extensions to eximstats
+                            Steve is now the maintainer of eximstats
+Brian Candler             LDAP support enhancement
+Petr Cech                 PostgreSQL interface
+Steve Clarke              Best way to find the load average in Linux
+Energis Ltd               Resources for the exim.org site
+Yann Golanski             Numerical hash function
+Jason Gunthorpe           IPv6 support (Linux)
+Michael Haardt            LDAP support enhancement
+Steve Haslam              First code for TLS
+John Horne                Proof-reading documentation (repeatedly)
+Pierre Humblet            Cygwin support
+Paul Kelly                MySQL interface
+                            First code for Oracle interface
+Ian Kirk                  Radius support
+Stuart Levy               Replacement for broken inet_ntoa() on IRIX
+Stuart Lynne              First code for LDAP
+Nigel Metheringham        Setting up the web site and mailing list
+                            Managing the web site and mailing list
+                            Interface to Berkeley DB
+                            Support for cdb
+                            Support for maildir
+Barry Pederson            LDAP support enhancement
+Marc Prud'hommeaux        SPA client authentication
+Alexander Sabourenkov     pwcheck daemon support
+Peter Savitch             LDAP support enhancement
+Robert Wal                whoson lookup
+Joachim Wieland           Researching strace and stolen subprocesses in Linux
+
+
+THE NEW LIST
+
+Alexander Alekseev        Use of function attribute checks in gcc
+Justo Alonso              Suggested patch for maildir++ maildirsize file support
+Anton Altaparmakov        Patches to get cyrus_sasl fully working
+Claus Assmann             Example code for OpenSSL CRL support
+Ian Bell                  Analysis of a bug and an infelicity in clock tick code
+                          Patch for ${quote_local_part
+Peter Benie               A number mistakes found by analysing the code
+Matt Bernstein            LMTP over socket
+                          Suggested patch for dnslists '&' feature
+Mike Bethune              Help with debugging an elusive ALRM signal bug
+Ard Biesheuvel            Lookup code for accessing an Interbase database
+Richard Birkett           Fix for empty -f address crash
+Nick Burrett              Patch for CONFIGURE_FILE_USE_EUID in exicyclog
+Matthew Byng-Maddick      Patch for qualify_domain in redirect router
+                          Patch for ignore_target_hosts in ipliteral router
+                          The cyrus_sasl authenticator 
+Steve Campbell            eximstats extensions and continued maintenance
+Brian Candler             Use h_errno for gethostbyname()
+                          Suggested patch for .ifdef etc
+                          Several minor fixes and suggestions
+Oliver Cook               Suggested patch for exigrep & rejected messages
+                            Patch to add sender/host info to local_scan() rejects
+Jennifer Corley           Designing the new Exim logo
+John Dalbec               Patch for quota_warn_threshold bug
+Vivek Dasmohapatra        Suggested patch for CRL support
+Andrew Doran              Patch for NetBSD configuration files
+                          Patch for ifreq alignment and size problems
+Michael Deutschman        Suggested patch for treating bind() failure like connect()
+                          Patch for $sender_data and $recipient_data
+Oliver Eikemeier          Patch to skip Received: if expansion is empty
+                          Patch for "eqi"
+Nico Erfurth              Fix for bug in ${readfile}
+                            Patch for router_home_directory
+                            Patch for ACL crash (try to test sender after ETRN)
+                            Suggested patch for lookup search bug
+                            Suggested patch for advertise_condition
+                            Patch for missing HELO in checkaccess
+                            Patch for raw headers
+                            Patch for lsearch lookups tidying
+                            Patch for .include_if_exists
+                            Patch for partial- not recognized in host list
+                            Lots more patches for bug fixes, enhancements, and
+                              code refactorings - too many to record details!
+Jochen Erwied             Fix for BDB 4.1 API
+Stefan Esser              Fix for DNS RR parsing bug
+Peter Evans               Suggested using modification time of "new" for time
+                            of "mailbox last read" for maildir
+Michael Fischer
+  v. Mollard              Suggested patch for exigrep -t option
+Kevin Fleming             Callout cache code
+                            Patch for authenticated_sender
+Tony Finch                Expansion extensions
+                            Timezone addition to log timestamps
+                            A number of useful code criticisms
+                            Timezone patch for exiwhat
+                            Patch for more daemon exiwhat information
+Giuliano Gavazzi          Patches for OSX compilation
+Dominic Germain           Patch for exiqgrep MacOS X bug
+Oliver Gorwits            $load_average patch
+                          Patch for additional syslog facilities
+James Grinter             Suggested patches for header manipulation functions
+                            and recipient remove for local_scan() use
+Lukasz Grochal            Patch for saslauthd buglet
+Pavel Gulchouck           Diagnosis of return_path_on_delivery crash
+Michael Haardt            Tidies to make the code stricter
+                          Refactoring to allow for other filter types
+                          Suggested patch for appendfile "folder" extension
+                          Module to support Sieve (RFC 3028) filters and
+                            continued maintenance of same
+                          Patch for faster sort algorithm in queue.c
+Thomas Hager              Patch for saslauthd crash bug
+Richard Hall              Fix for file descriptor leak in redirection
+Steve Haslam              Lots of stuff, including
+                            HMAC computations
+                            Better error messages for BDB
+Sheldon Hearn             Suggested patch for smtp_accept_max_nonmail_hosts
+Kjetil Torgrim Homme      Patch for require_files problem on NFS file systems
+Tom Hughes                Suggested patch for $n bug in pipe command from filter
+Pierre Humblet            Continued Cygwin support
+Peter Ilieve              Suggested patch for lookup search bug
+John Jetmore              Writing and maintaining the 'exipick' utility
+Christian Kellner         Patch for LDAP dereferencing
+Alex Kiernan              Patch for libradius
+                          Diagnosis of milliwait clock-backwards bug
+Tom Kistner               SPA server code
+Friso Kuipers             Patch for GDBM problem
+Chris Liddiard            Fix for bug in exiqsumm
+Chris Lightfoot           Patch for -restore-times in exim_lock
+Edgar Lovecraft           Patch for ${str2b64:
+Torsten Luettgert         Suggested patch for proper integer overflow detection
+Lionel Elie Mamane        Patch for IPv4/IPv6 listen() problem on USAGI Linux
+                          Patch for recognizing IPv6 "scoped addresses"
+                          Patch for callout caching bug
+Everton da Silva Marques  Suggested patch for SRV handling
+                          Suggested patch for SRV/MX lookup retry option
+Nikos Mavroyanopoulos     GnuTLS proof of concept code
+Andy Mell                 Fix for rejectlog regeneration bug
+Marc Merlin               Many suggestions and patches for callouts and
+                            SMTP error message features
+Andreas Metzler           Patch for message_id_header_domain
+                          Suggested patch for multi-config files in scripts bug
+Alex Miller               Suggested readline() patch                           
+Andreas Mueller           Patch for logging uncompleted SMTP transactions
+Pete Naylor               Patch for LDAP TCP connect timeout setting
+Marcin Owsiany            Diagnosis of a tricky timeout failure bug
+Eric Parusel              Patch for tls_remember_esmtp
+Gaige Paulsen             Amended Darwin config files
+Richard Premdas           Patch for PAM buglet
+Jason Pyeron              Suggested patch for ignoring Sendmail's -O option
+Mark Rigby-Jones          Patch for race condition during MBX locking
+Robert Roselius           Patch for OpenSSL workaround for bad clients
+Larry Rosenman            OpenUNIX config files
+Alexander Sabourenkov     Patch to add saslauthd daemon support
+                          Patch for MySQL non-data queries
+David Saez                Suggested patch for $sender_hostname lookup if needed
+Peter Savitch             Diagnosis of FPE bug when statvfs() fails on spool
+Harald Schueler           Patch for dn_expand() failure on truncated data
+Heiko Schlichting         Diagnosis of intermittent daemon crash bug
+Tony Sheen                Log files with datestamped names and auto rollover
+Martin Sluka              Patch for exigrep to include non-message lines
+Tamas Tevesz              Patch for crypt16() support
+William Thompson          Suggested patch for acl_smtp_helo
+                          Suggested patch for nested ACL "drop" bug
+                          Suggested patch for continuation lines in file ACLs
+                          Patch for != support in DNS lists
+Adam Thornton             Patch for SMTP port expansion
+Stefan Traby              Threaded Perl support
+Samuli Tuomola            OS files for QNX 6.2.0
+Dave Turner               Suggested patch for sender rewriting brokenness
+Carlos Villegas           Suggested patch for "headers" in filter files
+Matthias Waffenschmidt    Patch for build-time Perl bug in configure script
+Norihisa Washitake        Suggested patch for RFC 2047 header decoding
+Florian Weimer            Patch for minor format string issue
+Joachim Wieland           Patches for PostgreSQL socket support and other
+                            PostgreSQL functionality
+                          Patch for hosts_avoid_esmtp
+Stephen Wilcox            Patch for ignore_enotdir problem
+
+****
