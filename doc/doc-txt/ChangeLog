@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.41 2004/11/25 13:54:31 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.42 2004/11/25 15:29:36 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -177,6 +177,8 @@ Exim version 4.44
     of the failing file when there is a problem reading it.
 
 42. Allow both -bf and -bF in the same test run.
+
+43. Did the same fix as 41 above for OpenSSL, which had the same infelicity.
 
 
 Exim version 4.43

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.2 2004/11/25 15:29:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -381,7 +381,8 @@ if (certificate != NULL)
     {
     DEBUG(D_tls) debug_printf("tls_certificate file %s\n", expanded);
     if (!SSL_CTX_use_certificate_chain_file(ctx, CS expanded))
-      return tls_error(US"SSL_CTX_use_certificate_chain_file", host);
+      return tls_error(string_sprintf(
+        "SSL_CTX_use_certificate_chain_file file=%s", expanded), host);
     }
 
   if (privatekey != NULL &&
@@ -392,7 +393,8 @@ if (certificate != NULL)
     {
     DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
     if (!SSL_CTX_use_PrivateKey_file(ctx, CS expanded, SSL_FILETYPE_PEM))
-      return tls_error(US"SSL_CTX_use_PrivateKey_file", host);
+      return tls_error(string_sprintf(
+        "SSL_CTX_use_PrivateKey_file file=%s", expanded), host);
     }
   }
 
