@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/cyrus_sasl.c,v 1.1 2004/10/07 13:10:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/cyrus_sasl.c,v 1.2 2005/04/05 14:02:30 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -190,8 +190,9 @@ if (rc != SASL_OK)
   return DEFER;
   }
 
-rc=sasl_server_new(CS ob->server_service, CS ob->server_hostname,
-                   CS ob->server_realm, NULL, NULL, NULL, 0, &conn);
+rc=sasl_server_new(CS ob->server_service, CS hname, CS ob->server_realm, NULL,
+  NULL, NULL, 0, &conn);
+
 if( rc != SASL_OK )
   {
   auth_defer_msg = US"couldn't initialise Cyrus SASL connection";

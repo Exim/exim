@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.108 2005/04/05 13:58:34 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.109 2005/04/05 14:02:30 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -121,6 +121,9 @@ PH/21 Added acl_not_smtp_mime to allow for MIME scanning for non-SMTP messages.
 
 PH/22 Added support for macro redefinition, and (re)definition in between
       driver and ACL definitions.
+
+PH/23 The cyrus_sasl authenticator was expanding server_hostname, but then
+      forgetting to use the resulting value; it was using the unexpanded value.
 
 
 A note about Exim versions 4.44 and 4.50
