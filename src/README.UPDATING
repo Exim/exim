@@ -1,4 +1,4 @@
-$Cambridge: exim/src/README.UPDATING,v 1.1 2004/10/06 14:12:40 ph10 Exp $
+$Cambridge: exim/src/README.UPDATING,v 1.2 2005/01/11 15:15:33 ph10 Exp $
 
 This document contains detailed information about incompatibilities that might
 be encountered when upgrading from one release of Exim to another. The
@@ -26,6 +26,36 @@ there have been two big upheavals...
 
 The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
+
+
+Version 4.50
+------------
+
+The exicyclog script has been updated to use three-digit numbers in rotated log 
+files if the maximum number to keep is greater than 99. If you are already 
+keeping more than 99, there will be an incompatible change when you upgrade. 
+You will probably want to rename your old log files to the new form before 
+running the new exicyclog. The following script, by Mick Swisher, can do this 
+for you:
+
+# Begin conversion
+# Rename all the old files by adding additional leading zeros.
+count=99
+while [ $count -gt 0 ]; do
+if [ $count -lt 100 ]; then newt=0$count; oldt=$count; fi
+if [ $count -lt 10 ]; then newt=00$count; oldt=0$count; fi
+if [ -f $mainlog.$oldt ]; then
+  $mv $mainlog.$oldt $mainlog.$newt
+elif [ -f $mainlog.$oldt.$suffix ]; then
+  $mv $mainlog.$oldt.$suffix $mainlog.$newt.$suffix
+fi
+if [ -f $rejectlog.$oldt ]; then
+  $mv $rejectlog.$oldt $rejectlog.$newt
+elif [ -f $rejectlog.$oldt.$suffix ]; then
+  $mv $rejectlog.$oldt.$suffix $rejectlog.$newt.$suffix
+fi
+count=`expr $count - 1`
+done
 
 
 Version 4.42
