@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.2 2004/11/10 10:29:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.3 2004/11/11 16:03:47 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -84,8 +84,8 @@ static void
 main_sigchld_handler(int sig)
 {
 sig = sig;    /* Keep picky compilers happy */
+os_non_restarting_signal(SIGCHLD, SIG_DFL);
 sigchld_seen = TRUE;
-signal(SIGCHLD, SIG_DFL);
 }
 
 
@@ -1377,7 +1377,7 @@ if (queue_interval > 0 && queue_run_max > 0)
 /* Set up the handler for termination of child processes. */
 
 sigchld_seen = FALSE;
-signal(SIGCHLD, main_sigchld_handler);
+os_non_restarting_signal(SIGCHLD, main_sigchld_handler);
 
 /* If we are to run the queue periodically, pretend the alarm has just gone
 off. This will cause the first queue-runner to get kicked off straight away. */
@@ -1624,17 +1624,34 @@ for (;;)
       }
 
     DEBUG(D_any) debug_printf("Listening...\n");
+    
+    /* In rare cases we may have had a SIGCHLD signal in the time between 
+    setting the handler (below) and getting back here. If so, pretend that the 
+    select() was interrupted so that we reap the child. This might still leave
+    a small window when a SIGCHLD could get lost. However, since we use SIGCHLD 
+    only to do the reaping more quickly, it shouldn't result in anything other
+    than a delay until something else causes a wake-up. */
 
-    if ((lcount = select(max_socket + 1, (SELECT_ARG2_TYPE *)&select_listen,
-         NULL, NULL, NULL)) < 0)
+    if (sigchld_seen)
+      {
+      lcount = -1;
+      errno = EINTR;  
+      }
+    else
+      {      
+      lcount = select(max_socket + 1, (SELECT_ARG2_TYPE *)&select_listen,
+        NULL, NULL, NULL);
+      }   
+
+    if (lcount < 0)
       {
       select_failed = TRUE;
       lcount = 1;
       }
-
+      
     /* Loop for all the sockets that are currently ready to go. If select
-    actually failed, we have set the count to 1 and a flag, so as to use the
-    common error code for select/accept below. */
+    actually failed, we have set the count to 1 and select_failed=TRUE, so as
+    to use the common error code for select/accept below. */
 
     while (lcount-- > 0)
       {
@@ -1785,7 +1802,7 @@ for (;;)
   if (sigchld_seen)
     {
     sigchld_seen = FALSE;
-    signal(SIGCHLD, main_sigchld_handler);
+    os_non_restarting_signal(SIGCHLD, main_sigchld_handler);
     }
 
   /* Handle being woken by SIGHUP. We know at this point that the result
