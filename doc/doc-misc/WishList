@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.5 2004/11/02 09:39:44 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.6 2004/11/09 09:32:58 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1783,5 +1783,19 @@ doing the delivery. I am not at all keen on this. One way of doing it would be
 to implement (244), which provides an "on success" string expansion. Then
 anyone who wants this could run that on a transport that does nothing.
 ------------------------------------------------------------------------------
---- HWM 305 ------------------------------------------------------------------
+
+(306) 09-Nov-04 M Make the search type partial-lsearch*@ be useful
+
+At present, it treats the whole key as a domain for the partial search, then
+does the *@ thing. A more sensible plan would be something like:
+
+  user@company.com
+  *@company.com
+  user@*.company.com
+  *@*.company.com
+  *
+
+That is, try the local part and * at each of the partial domain values.
+------------------------------------------------------------------------------
+--- HWM 306 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
