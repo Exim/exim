@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.24 2004/12/29 10:16:52 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.25 2005/01/04 16:36:27 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -246,6 +246,14 @@ Version 4.50
 
       (2) The default for smtp_banner uses $smtp_active_hostname instead
           of $primary_hostname.
+
+22. The hosts_max_try_hardlimit option (default 50) is added to the smtp
+    transport. Exim will never try more than this number of IP addresses; if it
+    hits this limit and they are all timed out, the message is bounced, even
+    though not all IP addresses may have been tried. Compare hosts_max_try,
+    which is a "soft" limit, because Exim will exceed it when hosts time out.
+    The new limit is a protection against lunatic DNS configurations with
+    hundreds of IP addresses.
 
 
 Version 4.43
