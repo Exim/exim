@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.69 2005/01/13 11:12:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.70 2005/01/13 16:15:52 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -312,6 +312,10 @@ Exim version 4.50
     user-specific message (i.e. there was only a "system" message), nothing was
     put in $acl_verify_message. In this situation, it now puts the system
     message there.
+
+71. Change 4.23/11 added synchronization checking at the start of an SMTP
+    session; change 4.31/43 added the unwanted input to the log line - except
+    that it did not do this in the start of session case. It now does.
 
 
 Exim version 4.43

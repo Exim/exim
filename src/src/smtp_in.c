@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.8 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.9 2005/01/13 16:15:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1121,6 +1121,15 @@ int size = 256;
 int i, ptr;
 uschar *p, *s, *ss;
 
+/* If we are running in the test harness, and the incoming call is from 
+127.0.0.2 (sic), have a short delay. This makes it possible to test handling of 
+input sent too soon (before the banner is output). */
+
+if (running_in_test_harness && Ustrcmp(sender_host_address, "127.0.0.2") == 0)
+  sleep(1);
+
+/* Default values for certain variables */
+
 helo_seen = esmtp = helo_accept_junk = FALSE;
 count_nonmail = TRUE_UNSET;
 synprot_error_count = unknown_command_count = nonmail_command_count = 0;
@@ -1598,9 +1607,13 @@ if (smtp_enforce_sync && sender_host_address != NULL && !sender_host_notsocket)
   if (select(fileno(smtp_in) + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL,
       &tzero) > 0)
     {
+    int rc = read(fileno(smtp_in), smtp_inbuffer, in_buffer_size);
+    if (rc > 150) rc = 150;
+    smtp_inbuffer[rc] = 0; 
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol violation: "
       "synchronization error (input sent without waiting for greeting): "
-      "rejected connection from %s", host_and_ident(TRUE));
+      "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
+      string_printing(smtp_inbuffer));
     smtp_printf("554 SMTP synchronization error\r\n");
     return FALSE;
     }
