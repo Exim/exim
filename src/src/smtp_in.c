@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.14 2005/03/22 10:11:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.15 2005/03/29 15:53:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1616,14 +1616,17 @@ if (smtp_enforce_sync && sender_host_address != NULL && !sender_host_notsocket)
       &tzero) > 0)
     {
     int rc = read(fileno(smtp_in), smtp_inbuffer, in_buffer_size);
-    if (rc > 150) rc = 150;
-    smtp_inbuffer[rc] = 0;
-    log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol violation: "
-      "synchronization error (input sent without waiting for greeting): "
-      "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
-      string_printing(smtp_inbuffer));
-    smtp_printf("554 SMTP synchronization error\r\n");
-    return FALSE;
+    if (rc > 0)
+      {
+      if (rc > 150) rc = 150;
+      smtp_inbuffer[rc] = 0;
+      log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol violation: "
+        "synchronization error (input sent without waiting for greeting): "
+        "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
+        string_printing(smtp_inbuffer));
+      smtp_printf("554 SMTP synchronization error\r\n");
+      return FALSE;
+      }
     }
   }
 

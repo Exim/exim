@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.105 2005/03/29 15:19:25 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.106 2005/03/29 15:53:12 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -107,6 +107,15 @@ PH/19 When an Exim process that is running as root has to create an Exim log
       for a non-existent subprocess. Forks do occasionally fail when resources
       run out. I reviewed all the other calls to fork(); they all seem to check
       for failure.
+
+PH/20 When checking for unexpected SMTP input at connect time (before writing
+      the banner), Exim was not dealing correctly with a non-positive return
+      from the read() function. If the client had disconnected by this time,
+      the result was a log entry for a synchronization error with an empty
+      string after "input=" when read() returned zero. If read() returned -1
+      (an event I could not check), uninitialized data bytes were printed.
+      There were reports of junk text (parts of files, etc) appearing after
+      "input=".
 
 
 A note about Exim versions 4.44 and 4.50
