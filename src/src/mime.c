@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.2 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.3 2004/12/17 14:52:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -25,8 +25,8 @@ uschar *mime_current_boundary = NULL;
 
 void mime_set_anomaly(int level, char *text) {
   mime_anomaly_level = level;
-  mime_anomaly_text = text;
-};
+  mime_anomaly_text = US text;
+}
 
 
 /*************************************************
@@ -240,7 +240,7 @@ uschar *mime_parse_line(uschar *buffer, uschar *encoding, int *num_decoded) {
 
 
 FILE *mime_get_decode_file(uschar *pname, uschar *fname) {
-  FILE *f;
+  FILE *f = NULL;
   uschar *filename;
   
   filename = (uschar *)malloc(2048);
@@ -519,7 +519,7 @@ int mime_acl_check(FILE *f, struct mime_boundary_context *context, uschar
   while(1) {
   
     /* reset all per-part mime variables */
-    mime_anomaly_level     = NULL;
+    mime_anomaly_level     = 0;
     mime_anomaly_text      = NULL;
     mime_boundary          = NULL;
     mime_charset           = NULL;

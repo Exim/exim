@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.14 2004/12/07 14:23:56 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.15 2004/12/17 14:52:43 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -880,6 +880,11 @@ cleanly.
 
 22-Apr-04: Implemented for domains, addresses, and local parts. Hosts are
 too messy!
+
+The only sensible approach seems to be to allow IP address arguments only.
+Anything else should be diagnosed as an error. However, if a name appears in
+the list, a PTR lookup should be done. This may require a lot of refactoring
+in the code.
 ------------------------------------------------------------------------------
 
 (74)  22-Jul-02 M  Extend -bV to do more semantic checking
@@ -1826,5 +1831,12 @@ instead of 550, and also vary the defer code. The first digit, however, should
 remain fixed. In addition to main codes, enhanced status codes (RFC 2034) were
 requested. (As far as I can tell, they have never been highly popular.)
 ------------------------------------------------------------------------------
---- HWM 311 ------------------------------------------------------------------
+
+(312) 10-Dec-04 ? Shadow remote transports
+
+Unless a lot of work is done, this would be restricted to another remote
+transport. A similar effect could therefore be achieved with "shadow_hosts"
+which are like fallback_hosts but which operate on success.
+------------------------------------------------------------------------------
+--- HWM 312 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------

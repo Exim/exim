@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.6 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.7 2004/12/17 14:52:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -248,7 +248,7 @@ static unsigned int cond_forbids[] = {
 
   0,                                               /* delay */
   
-#ifdef WITH_CONTENT_SCAN
+#ifdef WITH_OLD_DEMIME
   (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_AUTH)|      /* demime */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|

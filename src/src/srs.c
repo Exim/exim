@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/srs.c,v 1.2 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/srs.c,v 1.3 2004/12/17 14:52:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -35,7 +35,7 @@ int eximsrs_init()
   
   if(!srs)
   {
-    // Check config
+    /* Check config */
     if(!srs_config)
     {
       log_write(0, LOG_MAIN | LOG_PANIC,
@@ -43,7 +43,7 @@ int eximsrs_init()
       return DEFER;
     }
     
-    // Get config
+    /* Get config */
     co = 0;
     if((secret = string_nextinlist(&list, &co, secret_buf,
                                    SRS_MAX_SECRET_LENGTH)) == NULL)

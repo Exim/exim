@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.6 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.7 2004/12/17 14:52:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2743,7 +2743,7 @@ else
       {
       FILE *mbox_file;
       uschar rfc822_file_path[2048];
-      unsigned long long mbox_size;
+      unsigned long mbox_size;
       header_line *my_headerlist;
       uschar *user_msg, *log_msg;
       int mime_part_count_buffer = -1;

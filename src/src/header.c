@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/header.c,v 1.2 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/header.c,v 1.3 2004/12/17 14:52:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -48,7 +48,6 @@ return *tt == ':';
 BOOL
 header_testname_incomplete(header_line *h, uschar *name, int len, BOOL notdel)
 {
-uschar *tt;
 if (h->type == '*' && notdel) return FALSE;
 if (h->text == NULL || strncmpic(h->text, name, len) != 0) return FALSE;
 return TRUE;

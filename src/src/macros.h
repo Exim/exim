@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.5 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.6 2004/12/17 14:52:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -72,7 +72,7 @@ as unsigned. */
 a no-op once an SSL session is in progress. */
 
 #ifdef SUPPORT_TLS
-#define mac_smtp_fflush() if (!tls_active) fflush(smtp_out);
+#define mac_smtp_fflush() if (tls_active < 0) fflush(smtp_out);
 #else
 #define mac_smtp_fflush() fflush(smtp_out);
 #endif

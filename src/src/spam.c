@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.2 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.3 2004/12/17 14:52:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -26,7 +26,7 @@ int spam(uschar **listptr) {
   uschar *list = *listptr;
   uschar *user_name;
   uschar user_name_buffer[128];
-  unsigned long long mbox_size;
+  unsigned long mbox_size;
   FILE *mbox_file;
   int spamd_sock;
   uschar spamd_buffer[32600];
@@ -188,7 +188,7 @@ int spam(uschar **listptr) {
   /* now we are connected to spamd on spamd_sock */
   snprintf(CS spamd_buffer,
            sizeof(spamd_buffer),
-           "REPORT SPAMC/1.2\r\nUser: %s\r\nContent-length: %lld\r\n\r\n",
+           "REPORT SPAMC/1.2\r\nUser: %s\r\nContent-length: %ld\r\n\r\n",
            user_name,
            mbox_size);
 

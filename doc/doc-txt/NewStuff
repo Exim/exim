@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.19 2004/11/25 14:31:28 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.20 2004/12/17 14:52:44 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -9,7 +9,7 @@ updated when there is a relatively large batch of changes). The doc/ChangeLog
 file contains a listing of all changes, including bug fixes.
 
 
-Version 4.44
+Version 4.50
 ------------
 
  1. There is a new build-time option called CONFIGURE_GROUP which works like
@@ -218,6 +218,9 @@ Version 4.44
 
     This is helpful when the system filter adds header lines or sets filter
     variables that are used by the user filter.
+
+19. The Exiscan patch is now merged into the main source. See src/EDITME for
+    parameters for the build.
 
 
 Version 4.43
