@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.122 2005/04/07 10:54:54 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.123 2005/04/07 15:37:13 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -211,6 +211,24 @@ PH/35 ACL_WHERE_MIME is now declared unconditionally, to avoid too much code
       overlooked.
 
 PH/36 The change PH/12 above was broken. Fixed it.
+
+PH/37 Exim used to check for duplicate addresses in the middle of routing, on
+      the grounds that routing the same address twice would always produce the
+      same answer. This might have been true once, but it is certainly no
+      longer true now. Routing a child address may depend on the previous
+      routing that produced that child. Some complicated redirection strategies
+      went wrong when messages had multiple recipients, and made Exim's
+      behaviour dependent on the order in which the addresses were given.
+
+      I have moved the duplicate checking until after the routing is complete.
+      Exim scans the addresses that are assigned to local and remote
+      transports, and removes any duplicates. This means that more work will be
+      done, as duplicates will always all be routed, but duplicates are
+      presumably rare, so I don't expect this is of any significance.
+
+      For deliveries to pipes, files, and autoreplies, the duplicate checking
+      still happens during the routing process, since they are not going to be
+      routed further.
 
 
 A note about Exim versions 4.44 and 4.50
