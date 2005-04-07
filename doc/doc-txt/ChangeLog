@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.119 2005/04/06 16:43:59 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.120 2005/04/07 10:02:02 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -199,6 +199,8 @@ PH/31 When doing a callout as part of verifying an address, Exim was not paying
 PH/32 Add the sender address, as F=<...>, to the log line when logging a
       timeout during the DATA phase of an incoming message.
 
+PH/33 Sieve envelope tests were broken for match types other than :is. I have
+      applied a patch sanctioned by the Sieve maintainer.
 
 
 A note about Exim versions 4.44 and 4.50

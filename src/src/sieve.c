@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.9 2005/04/06 14:40:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.10 2005/04/07 10:02:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2054,7 +2054,7 @@ else if (parse_identifier(filter,CUS "envelope"))
 
         envelopeStr.character=envelope;
         envelopeStr.length=Ustrlen(envelope);
-        *cond=compare(filter,&envelopeStr,k,comparator,matchType);
+        *cond=compare(filter,k,&envelopeStr,comparator,matchType);
         if (*cond==-1) return -1;
         if (*cond) break;
         }
