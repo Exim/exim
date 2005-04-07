@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.14 2005/04/06 16:43:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.15 2005/04/07 15:40:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1008,6 +1008,7 @@ return s;
 
 
 
+#ifdef WITH_CONTENT_SCAN
 
 /*************************************************
 *       Run the MIME ACL on a message            *
@@ -1147,6 +1148,7 @@ else if (rc != OK)
 return TRUE;
 }
 
+#endif  /* WITH_CONTENT_SCAN */
 
 
 /*************************************************

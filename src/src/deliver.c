@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.12 2005/04/07 15:37:14 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.13 2005/04/07 15:40:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -5351,7 +5351,7 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
     them different redirect_router values, but there are other cases too.
     Therefore, tests for duplicates now take place when routing is complete.
     This is the old code, kept for a while for the record, and in case this
-    radical change has to be backed out for some reason.
+    radical change has to be backed out for some reason. */
 
     #ifdef NEVER
     /* If it's a duplicate, remember what it's a duplicate of */
