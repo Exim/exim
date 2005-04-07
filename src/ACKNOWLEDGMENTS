@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.21 2005/04/07 10:02:02 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.22 2005/04/07 10:10:01 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -154,6 +154,7 @@ Pierre Humblet            Continued Cygwin support
 Peter Ilieve              Suggested patch for lookup search bug
 John Jetmore              Writing and maintaining the 'exipick' utility
 Bob Johannessen           Patch for Sieve envelope tests bug
+                          Patch for negative uid/gid bug
 Christian Kellner         Patch for LDAP dereferencing
 Alex Kiernan              Patch for libradius
                           Diagnosis of milliwait clock-backwards bug

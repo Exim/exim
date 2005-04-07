@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.9 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.10 2005/04/07 10:10:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -323,9 +323,10 @@ if (Ustrlen(big_buffer) != MESSAGE_ID_LENGTH + 3 ||
 
 /* The next three lines in the header file are in a fixed format. The first
 contains the login, uid, and gid of the user who caused the file to be written.
-The second contains the mail address of the message's sender, enclosed in <>.
-The third contains the time the message was received, and the number of warning
-messages for delivery delays that have been sent. */
+There are known cases where a negative gid is used, so we allow for both
+negative uids and gids. The second contains the mail address of the message's
+sender, enclosed in <>. The third contains the time the message was received,
+and the number of warning messages for delivery delays that have been sent. */
 
 if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
 
@@ -333,12 +334,12 @@ p = big_buffer + Ustrlen(big_buffer);
 while (p > big_buffer && isspace(p[-1])) p--;
 *p = 0;
 if (!isdigit(p[-1])) goto SPOOL_FORMAT_ERROR;
-while (p > big_buffer && isdigit(p[-1])) p--;
+while (p > big_buffer && (isdigit(p[-1]) || '-' == p[-1])) p--;
 gid = Uatoi(p);
 if (p <= big_buffer || *(--p) != ' ') goto SPOOL_FORMAT_ERROR;
 *p = 0;
 if (!isdigit(p[-1])) goto SPOOL_FORMAT_ERROR;
-while (p > big_buffer && isdigit(p[-1])) p--;
+while (p > big_buffer && (isdigit(p[-1]) || '-' == p[-1])) p--;
 uid = Uatoi(p);
 if (p <= big_buffer || *(--p) != ' ') goto SPOOL_FORMAT_ERROR;
 *p = 0;
