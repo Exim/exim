@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.121 2005/04/07 10:10:01 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.122 2005/04/07 10:54:54 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -205,6 +205,12 @@ PH/33 Sieve envelope tests were broken for match types other than :is. I have
 PH/34 Change 4.50/80 broke Exim in that it could no longer handle cases where
       the uid or gid is negative. A case of a negative gid caused this to be
       noticed. The fix allows for either to be negative.
+
+PH/35 ACL_WHERE_MIME is now declared unconditionally, to avoid too much code
+      clutter, but the tables that are indexed by ACL_WHERE_xxx values had been
+      overlooked.
+
+PH/36 The change PH/12 above was broken. Fixed it.
 
 
 A note about Exim versions 4.44 and 4.50

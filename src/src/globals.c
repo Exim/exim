@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.21 2005/04/04 10:33:49 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.22 2005/04/07 10:54:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -191,9 +191,7 @@ error codes - keep in step with definitions of ACL_WHERE_xxxx in macros.h. */
 uschar *acl_wherenames[]       = { US"RCPT",
                                    US"MAIL",
                                    US"PREDATA",
-#ifdef WITH_CONTENT_SCAN
                                    US"MIME",
-#endif
                                    US"DATA",
                                    US"non-SMTP",
                                    US"AUTH",
@@ -210,9 +208,7 @@ uschar *acl_wherenames[]       = { US"RCPT",
 int     acl_wherecodes[]       = { 550,     /* RCPT */
                                    550,     /* MAIL */
                                    550,     /* PREDATA */
-#ifdef WITH_CONTENT_SCAN
                                    550,     /* MIME */
-#endif
                                    550,     /* DATA */
                                    0,       /* not SMTP; not relevant */
                                    503,     /* AUTH */

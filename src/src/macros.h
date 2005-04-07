@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.11 2005/03/22 14:11:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.12 2005/04/07 10:54:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -742,18 +742,18 @@ enum { MCL_STRING, MCL_DOMAIN, MCL_HOST, MCL_ADDRESS, MCL_LOCALPART };
 /* Codes for the places from which ACLs can be called. These are cunningly
 ordered to make it easy to implement tests for certain ACLs when processing
 "control" modifiers, by means of a maximum "where" value. Do not modify this
-order without checking carefully! Furthermore, remember to keep these in step
-with the tables of names and response codes in globals.c. */
+order without checking carefully!
+
+**** IMPORTANT***
+****   Furthermore, remember to keep these in step with the tables
+****   of names and response codes in globals.c.
+**** IMPORTANT ****
+*/
 
 enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_MAIL,       /* )                                           */
        ACL_WHERE_PREDATA,    /* ) There are several tests for "in message", */
-                             /* ) implemented by <= WHERE_NOTSMTP           */
-
-/* Remove next line in case of removeing WITH_CONTENT_SCAN.
-   ACL_WHERE_MIME is defined unconditionally to avoid clutter in acl.c */
-       ACL_WHERE_MIME,       /* )                                           */
-
+       ACL_WHERE_MIME,       /* ) implemented by <= WHERE_NOTSMTP           */
        ACL_WHERE_DATA,       /* )                                           */
        ACL_WHERE_NOTSMTP,    /* )                                           */
 
