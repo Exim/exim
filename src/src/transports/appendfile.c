@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.5 2005/02/17 11:58:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.6 2005/04/27 10:06:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -286,12 +286,13 @@ for (i = 0; i < 5; i++)
 
     d = Ustrtod(s, &rest);
 
-    /* Handle following characters K, M, %, the latter being permitted
+    /* Handle following characters K, M, G, %, the latter being permitted
     for quota_warn_threshold only. A threshold with no quota setting is
     just ignored. */
 
     if (tolower(*rest) == 'k') { d *= 1024.0; rest++; }
     else if (tolower(*rest) == 'm') { d *= 1024.0*1024.0; rest++; }
+    else if (tolower(*rest) == 'g') { d *= 1024.0*1024.0*1024.0; rest++; }
     else if (*rest == '%' && i == 2)
       {
       if (ob->quota_value <= 0 && !ob->maildir_use_size_file) d = 0;

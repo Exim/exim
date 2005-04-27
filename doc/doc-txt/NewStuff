@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.35 2005/04/06 14:40:23 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.36 2005/04/27 10:06:00 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -146,6 +146,8 @@ PH/08 The redirect router has two new options, sieve_useraddress and
       However, when a Sieve filter is run, if sieve_useraddress is unset, the
       entire original local part (including any prefix or suffix) is used for
       :user. An unset subaddress is treated as an empty subaddress.
+
+PH/09 Quota values can be followed by G as well as K and M.
 
 
 Version 4.50
