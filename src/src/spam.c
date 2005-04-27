@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.5 2005/04/27 10:00:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -30,14 +30,17 @@ int spam(uschar **listptr) {
   FILE *mbox_file;
   int spamd_sock;
   uschar spamd_buffer[32600];
-  int i, j, offset;
+  int i, j, offset, result;
   uschar spamd_version[8];
   uschar spamd_score_char;
   double spamd_threshold, spamd_score;
   int spamd_report_offset;
   uschar *p,*q;
   int override = 0;
+  time_t start;
+  size_t read, wrote;
   struct sockaddr_un server;
+  struct pollfd pollfd;
 
   /* find the username from the option list */
   if ((user_name = string_nextinlist(&list, &sep,
@@ -77,6 +80,7 @@ int spam(uschar **listptr) {
     return DEFER;
   };
 
+  start = time(NULL);
   /* socket does not start with '/' -> network socket */
   if (*spamd_address != '/') {
     time_t now = time(NULL);
@@ -203,33 +207,67 @@ int spam(uschar **listptr) {
   };
 
   /* now send the file */
+  /* spamd sometimes accepts conections but doesn't read data off
+   * the connection.  We make the file descriptor non-blocking so
+   * that the write will only write sufficient data without blocking
+   * and we poll the desciptor to make sure that we can write without
+   * blocking.  Short writes are gracefully handled and if the whole
+   * trasaction takes too long it is aborted.
+   */
+  pollfd.fd = spamd_sock;
+  pollfd.events = POLLOUT;
+  fcntl(spamd_sock, F_SETFL, O_NONBLOCK);
   do {
-    j = fread(spamd_buffer,1,sizeof(spamd_buffer),mbox_file);
-    if (j > 0) {
-      i = send(spamd_sock,spamd_buffer,j,0);
-      if (i != j) {
-        log_write(0, LOG_MAIN|LOG_PANIC,
-          "spam acl condition: error/short send to spamd");
+    read = fread(spamd_buffer,1,sizeof(spamd_buffer),mbox_file);
+    if (read > 0) {
+      offset = 0;
+again:
+      result = poll(&pollfd, 1, 1000);
+      if (result == -1 && errno == EINTR)
+        continue;
+      else if (result < 1) {
+        if (result == -1)
+          log_write(0, LOG_MAIN|LOG_PANIC,
+            "spam acl condition: %s on spamd socket", strerror(errno));
+        else {
+          if (time(NULL) - start < SPAMD_TIMEOUT)
+          goto again;
+          log_write(0, LOG_MAIN|LOG_PANIC,
+            "spam acl condition: timed out writing spamd socket");
+        }
         close(spamd_sock);
         fclose(mbox_file);
         return DEFER;
-      };
-    };
+      }
+      wrote = send(spamd_sock,spamd_buffer + offset,read - offset,0);
+      if (offset + wrote != read) {
+        offset += wrote;
+        goto again;
+      }
+    }
   }
-  while (j > 0);
+  while (!feof(mbox_file) && !ferror(mbox_file));
+  if (ferror(mbox_file)) {
+    log_write(0, LOG_MAIN|LOG_PANIC,
+      "spam acl condition: error reading spool file: %s", strerror(errno));
+    close(spamd_sock);
+    fclose(mbox_file);
+    return DEFER;
+  }
 
   fclose(mbox_file);
 
   /* we're done sending, close socket for writing */
   shutdown(spamd_sock,SHUT_WR);
 
-  /* read spamd response */
+  /* read spamd response using what's left of the timeout.
+   */
   memset(spamd_buffer, 0, sizeof(spamd_buffer));
   offset = 0;
   while((i = ip_recv(spamd_sock,
                      spamd_buffer + offset,
                      sizeof(spamd_buffer) - offset - 1,
-                     SPAMD_READ_TIMEOUT)) > 0 ) {
+                     SPAMD_TIMEOUT - time(NULL) + start)) > 0 ) {
     offset += i;
   }
 

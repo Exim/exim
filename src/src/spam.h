@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.h,v 1.2 2004/12/16 15:11:47 tom Exp $ */
+/* $Cambridge: exim/src/src/spam.h,v 1.3 2005/04/27 10:00:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -11,8 +11,8 @@
 
 #ifdef WITH_CONTENT_SCAN
 
-/* timeout for reading from spamd */
-#define SPAMD_READ_TIMEOUT 3600
+/* timeout for reading and writing spamd */
+#define SPAMD_TIMEOUT 120
 
 /* maximum length of the spam bar */
 #define MAX_SPAM_BAR_CHARS 50

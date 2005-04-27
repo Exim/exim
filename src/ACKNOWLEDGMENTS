@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.22 2005/04/07 10:10:01 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.23 2005/04/27 10:00:18 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  07 April 2005
+Last updated:  27 April 2005
 
 
 THE OLD LIST
@@ -127,6 +127,7 @@ Tony Finch                Expansion extensions
                             Patch for mxh lookup type in dnsdb
                             Patch for defer_foo in dndsb
                             Patch for ${dlfunc
+Ian Freislich             Patch for spamd timeout problem
 Giuliano Gavazzi          Patches for OSX compilation
 Dominic Germain           Patch for exiqgrep MacOS X bug
 Oliver Gorwits            $load_average patch
