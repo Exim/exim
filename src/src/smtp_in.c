@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.16 2005/04/27 10:55:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.17 2005/04/27 13:29:32 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -804,6 +804,7 @@ store_reset(reset_point);
 recipients_list = NULL;
 rcpt_count = rcpt_defer_count = rcpt_fail_count =
   raw_recipients_count = recipients_count = recipients_list_max = 0;
+message_linecount = 0;
 message_size = -1;
 acl_warn_headers = NULL;
 queue_only_policy = FALSE;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.15 2005/04/07 15:40:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.16 2005/04/27 13:29:32 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1339,11 +1339,9 @@ received_count = 1;     /* For the one we will add */
 
 if (thismessage_size_limit <= 0) thismessage_size_limit = INT_MAX;
 
-/* While reading the message, body_linecount and body_zerocount is computed.
-The full message_ linecount is set up only when the headers are read back in
-from the spool for delivery. */
+/* While reading the message, the following counts are computed. */
 
-body_linecount = body_zerocount = 0;
+message_linecount = body_linecount = body_zerocount = 0;
 
 #ifdef EXPERIMENTAL_DOMAINKEYS
 /* Call into DK to set up the context. Check if DK is to be run are carried out
@@ -1573,7 +1571,11 @@ for (;;)
   /* End of header line reached */
 
   EOL:
-  receive_linecount++;          /* For BSMTP errors */
+
+  /* Keep track of lines for BSMTP errors and overall message_linecount. */
+
+  receive_linecount++;
+  message_linecount++;
 
   /* Now put in the terminating newline. There is always space for
   at least two more characters. */
@@ -2633,6 +2635,7 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
   else message_ended = read_message_data(data_file);
 
   receive_linecount += body_linecount;  /* For BSMTP errors mainly */
+  message_linecount += body_linecount;
 
   /* Handle premature termination of SMTP */
 

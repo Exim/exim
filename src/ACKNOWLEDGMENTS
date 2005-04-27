@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.23 2005/04/27 10:00:18 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.24 2005/04/27 13:29:32 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -127,6 +127,7 @@ Tony Finch                Expansion extensions
                             Patch for mxh lookup type in dnsdb
                             Patch for defer_foo in dndsb
                             Patch for ${dlfunc
+                            Patch for $message_linecount
 Ian Freislich             Patch for spamd timeout problem
 Giuliano Gavazzi          Patches for OSX compilation
 Dominic Germain           Patch for exiqgrep MacOS X bug
