@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.15 2005/03/29 15:53:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.16 2005/04/27 10:55:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2112,6 +2112,14 @@ while (done <= 0)
     c = (au->info->servercode)(au, smtp_data);
     if (au->set_id != NULL) set_id = expand_string(au->set_id);
     expand_nmax = -1;        /* Reset numeric variables */
+
+    /* The value of authenticated_id is stored in the spool file and printed in
+    log lines. It must not contain binary zeros or newline characters. In
+    normal use, it never will, but when playing around or testing, this error
+    can (did) happen. To guard against this, ensure that the id contains only
+    printing characters. */
+
+    if (set_id != NULL) set_id = string_printing(set_id);
 
     /* For the non-OK cases, set up additional logging data if set_id
     is not empty. */

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.125 2005/04/27 10:06:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.126 2005/04/27 10:55:20 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -238,6 +238,12 @@ PH/38 Installed a patch from Ian Freislich, with the agreement of Tom Kistner.
       blindly assumes that writes won't block so it may never time out."
 
 PH/39 Allow G after quota size as well as K and M.
+
+PH/40 The value set for $authenticated_id in an authenticator may not contain
+      binary zeroes or newlines because the value is written to log lines and
+      to spool files. There was no check on this. Now the value is run through
+      the string_printing() function so that such characters are converted to
+      printable escape sequences.
 
 
 A note about Exim versions 4.44 and 4.50
