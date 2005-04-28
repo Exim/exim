@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.19 2005/04/27 13:29:32 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.20 2005/04/28 13:29:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2333,8 +2333,8 @@ if (yes)
 
 /* If this is called from a lookup or an extract, we want to restore $value to
 what it was at the start of the item, so that it has this value during the
-second string expansion. For the call from "if" to this function, save_lookup
-is set to lookup_value, so that this statement does nothing. */
+second string expansion. For the call from "if" or "run" to this function,
+save_lookup is set to lookup_value, so that this statement does nothing. */
 
 lookup_value = save_lookup;
 
@@ -3330,7 +3330,6 @@ while (*s != 0)
     case EITEM_RUN:
       {
       FILE *f;
-      uschar *old_lookup_value = NULL;
       uschar *arg;
       uschar **argv;
       pid_t pid;
@@ -3410,18 +3409,17 @@ while (*s != 0)
         in lookup_value). */
 
         f = fdopen(fd_out, "rb");
-        old_lookup_value = lookup_value;
         lookup_value = NULL;
         lookup_value = cat_file(f, lookup_value, &lsize, &lptr, NULL);
         fclose(f);
         }
 
-      /* Process the yes/no strings */
+      /* Process the yes/no strings; $value may be useful in both cases */
 
       switch(process_yesno(
                skipping,                     /* were previously skipping */
                runrc == 0,                   /* success/failure indicator */
-               old_lookup_value,             /* value to reset for string2 */
+               lookup_value,                 /* value to reset for string2 */
                &s,                           /* input pointer */
                &yield,                       /* output pointer */
                &size,                        /* output size */

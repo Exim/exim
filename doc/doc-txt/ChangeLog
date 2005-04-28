@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.128 2005/04/28 13:06:32 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.129 2005/04/28 13:29:27 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -262,6 +262,8 @@ PH/42 Exim no longer gives details of delivery errors for specific addresses in
       In these cases only, Exim does include the error details in bounce and
       warning messages. There are also a few cases where bland messages such
       as "unrouteable address" or "local delivery error" are given.
+
+PH/43 $value is now also set for the "else" part of a ${run expansion.
 
 
 A note about Exim versions 4.44 and 4.50

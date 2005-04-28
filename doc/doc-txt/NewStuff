@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.37 2005/04/27 13:29:32 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.38 2005/04/28 13:29:27 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -166,6 +166,9 @@ PH/10 $message_linecount is a new variable that contains the total number of
 
       In the MAIL and RCPT ACLs, the value is zero because at that stage the
       message has not yet been received.
+
+PH/11 In a ${run expansion, the variable $value (which contains the standard
+      output) is now also usable in the "else" string.
 
 
 Version 4.50
