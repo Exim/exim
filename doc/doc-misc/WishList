@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.28 2005/04/04 08:27:28 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.29 2005/04/28 13:12:24 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1900,5 +1900,10 @@ transport and the callout code could prevent this kind of thing from happening.
 
 This is in the Bugzilla as #10.
 ------------------------------------------------------------------------------
---- HWM 324 ------------------------------------------------------------------
+
+(325) 28-Apr-05 ? Support for quotas over 2G in appendfile.
+
+Things get bigger far more quickly than I ever imagine...
+------------------------------------------------------------------------------
+--- HWM 325 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
