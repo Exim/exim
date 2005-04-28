@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.127 2005/04/27 13:29:32 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.128 2005/04/28 13:06:32 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -248,6 +248,20 @@ PH/40 The value set for $authenticated_id in an authenticator may not contain
 PH/41 $message_linecount is a new variable that contains the total number of
       lines in the message. Compare $body_linecount, which is the count for the
       body only.
+
+PH/42 Exim no longer gives details of delivery errors for specific addresses in
+      bounce and delay warning messages, except in certain special cases, which
+      are as follows:
+
+      (a) An SMTP error message from a remote host;
+      (b) A message specified in a :fail: redirection;
+      (c) A message specified in a "fail" command in a system filter;
+      (d) A message specified in a FAIL return from the queryprogram router;
+      (e) A message specified by the cannot_route_message router option.
+
+      In these cases only, Exim does include the error details in bounce and
+      warning messages. There are also a few cases where bland messages such
+      as "unrouteable address" or "local delivery error" are given.
 
 
 A note about Exim versions 4.44 and 4.50

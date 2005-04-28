@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/structs.h,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/structs.h,v 1.5 2005/04/28 13:06:32 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -498,6 +498,7 @@ typedef struct address_item_propagated {
 #define af_verify_callout      0x00400000 /* for cached sender verify: callout was specified */
 #define af_include_affixes     0x00800000 /* delivered with affixes in RCPT */
 #define af_cert_verified       0x01000000 /* delivered with verified TLS cert */
+#define af_pass_message        0x02000000 /* pass message in bounces */
 
 /* These flags must be propagated when a child is created */
 

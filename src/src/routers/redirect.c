@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.9 2005/04/06 14:40:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.10 2005/04/28 13:06:32 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -655,8 +655,13 @@ switch (frc)
   if ((xrc = sort_errors_and_headers(rblock, addr, verify, &addr_prop)) != OK)
     return xrc;
   add_generated(rblock, addr_new, addr, generated, &addr_prop, &ugid, pw);
-  if (addr->message == NULL) addr->message = US"forced rejection";
-    else addr->user_message = addr->message;
+  if (addr->message == NULL)
+    addr->message = US"forced rejection";
+  else
+    {
+    addr->user_message = addr->message;
+    setflag(addr, af_pass_message);
+    }
   return FAIL;
 
   /* As in the case of a system filter, a freeze does not happen after a manual

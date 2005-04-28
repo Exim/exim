@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.10 2005/04/07 10:54:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.11 2005/04/28 13:06:32 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -313,10 +313,11 @@ host_build_hostlist(&(ob->fallback_hostlist), ob->fallback_hosts, FALSE);
 status means that an address is not currently being processed.
 
 Arguments:
-  addrlist     points to a chain of addresses
-  errno_value  to put in each address's errno field
-  msg          to put in each address's message field
-  rc           to put in each address's transport_return field
+  addrlist       points to a chain of addresses
+  errno_value    to put in each address's errno field
+  msg            to put in each address's message field
+  rc             to put in each address's transport_return field
+  pass_message   if TRUE, set the "pass message" flag in the address
 
 If errno_value has the special value ERRNO_CONNECTTIMEOUT, ETIMEDOUT is put in
 the errno field, and RTEF_CTOUT is ORed into the more_errno field, to indicate
@@ -326,7 +327,8 @@ Returns:       nothing
 */
 
 static
-void set_errno(address_item *addrlist, int errno_value, uschar *msg, int rc)
+void set_errno(address_item *addrlist, int errno_value, uschar *msg, int rc,
+  BOOL pass_message)
 {
 address_item *addr;
 int orvalue = 0;
@@ -340,7 +342,11 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
   if (addr->transport_return < PENDING) continue;
   addr->basic_errno = errno_value;
   addr->more_errno |= orvalue;
-  if (msg != NULL) addr->message = msg;
+  if (msg != NULL)
+    {
+    addr->message = msg;
+    if (pass_message) setflag(addr, af_pass_message);
+    }
   addr->transport_return = rc;
   }
 }
@@ -358,18 +364,19 @@ the yield variable. If no response was actually read, a suitable digit is
 chosen.
 
 Arguments:
-  host         the current host, to get its name for messages
-  errno_value  pointer to the errno value
-  more_errno   from the top address for use with ERRNO_FILTER_FAIL
-  buffer       the SMTP response buffer
-  yield        where to put a one-digit SMTP response code
-  message      where to put an errror message
+  host           the current host, to get its name for messages
+  errno_value    pointer to the errno value
+  more_errno     from the top address for use with ERRNO_FILTER_FAIL
+  buffer         the SMTP response buffer
+  yield          where to put a one-digit SMTP response code
+  message        where to put an errror message
+  pass_message   set TRUE if message is an SMTP response
 
-Returns:       TRUE if an SMTP "QUIT" command should be sent, else FALSE
+Returns:         TRUE if an SMTP "QUIT" command should be sent, else FALSE
 */
 
 static BOOL check_response(host_item *host, int *errno_value, int more_errno,
-  uschar *buffer, int *yield, uschar **message)
+  uschar *buffer, int *yield, uschar **message, BOOL *pass_message)
 {
 uschar *pl = US"";
 
@@ -444,8 +451,9 @@ if (*errno_value == ERRNO_WRITEINCOMPLETE)
 if (buffer[0] != 0)
   {
   uschar *s = string_printing(buffer);
-  *message = US string_sprintf("SMTP error from remote mailer after %s%s: "
+  *message = US string_sprintf("SMTP error from remote mail server after %s%s: "
     "host %s [%s]: %s", pl, smtp_command, host->name, host->address, s);
+  *pass_message = TRUE;
   *yield = buffer[0];
   return TRUE;
   }
@@ -623,7 +631,7 @@ while (count-- > 0)
     uschar *message = string_sprintf("SMTP timeout while connected to %s [%s] "
       "after RCPT TO:<%s>", host->name, host->address,
       transport_rcpt_address(addr, include_affixes));
-    set_errno(addrlist, save_errno, message, DEFER);
+    set_errno(addrlist, save_errno, message, DEFER, FALSE);
     retry_add_item(addr, addr->address_retry_key, 0);
     host->update_waiting = FALSE;
     return -1;
@@ -646,9 +654,10 @@ while (count-- > 0)
   else
     {
     addr->message =
-      string_sprintf("SMTP error from remote mailer after RCPT TO:<%s>: "
+      string_sprintf("SMTP error from remote mail server after RCPT TO:<%s>: "
         "host %s [%s]: %s", transport_rcpt_address(addr, include_affixes),
         host->name, host->address, string_printing(buffer));
+    setflag(addr, af_pass_message);
     deliver_msglog("%s %s\n", tod_stamp(tod_log), addr->message);
 
     /* The response was 5xx */
@@ -699,8 +708,9 @@ if (pending_DATA != 0 &&
   {
   int code;
   uschar *msg;
+  BOOL pass_message;
   if (pending_DATA > 0 || (yield & 1) != 0) return -3;
-  (void)check_response(host, &errno, 0, buffer, &code, &msg);
+  (void)check_response(host, &errno, 0, buffer, &code, &msg, &pass_message);
   DEBUG(D_transport) debug_printf("%s\nerror for DATA ignored: pipelining "
     "is in use and there were no good recipients\n", msg);
   }
@@ -782,6 +792,7 @@ BOOL setting_up = TRUE;
 BOOL completed_address = FALSE;
 BOOL esmtp = TRUE;
 BOOL pending_MAIL;
+BOOL pass_message = FALSE;
 smtp_inblock inblock;
 smtp_outblock outblock;
 int max_rcpt = tblock->max_addresses;
@@ -822,7 +833,7 @@ if (helo_data == NULL)
   {
   uschar *message = string_sprintf("failed to expand helo_data: %s",
     expand_string_message);
-  set_errno(addrlist, 0, message, DEFER);
+  set_errno(addrlist, 0, message, DEFER, FALSE);
   return ERROR;
   }
 
@@ -842,7 +853,7 @@ if (ob->authenticated_sender != NULL)
       {
       uschar *message = string_sprintf("failed to expand "
         "authenticated_sender: %s", expand_string_message);
-      set_errno(addrlist, 0, message, DEFER);
+      set_errno(addrlist, 0, message, DEFER, FALSE);
       return ERROR;
       }
     }
@@ -861,7 +872,7 @@ if (continue_hostname == NULL)
   if (inblock.sock < 0)
     {
     set_errno(addrlist, (errno == ETIMEDOUT)? ERRNO_CONNECTTIMEOUT : errno,
-      NULL, DEFER);
+      NULL, DEFER, FALSE);
     return DEFER;
     }
 
@@ -1186,7 +1197,7 @@ if (continue_hostname == NULL
 
             case ERROR:
             yield = ERROR;
-            set_errno(addrlist, 0, string_copy(buffer), DEFER);
+            set_errno(addrlist, 0, string_copy(buffer), DEFER, FALSE);
             goto SEND_QUIT;
             }
 
@@ -1202,7 +1213,8 @@ if (continue_hostname == NULL
     {
     yield = DEFER;
     set_errno(addrlist, ERRNO_AUTHFAIL,
-      string_sprintf("authentication required but %s", fail_reason), DEFER);
+      string_sprintf("authentication required but %s", fail_reason), DEFER,
+      FALSE);
     goto SEND_QUIT;
     }
   }
@@ -1228,7 +1240,8 @@ if (tblock->filter_command != NULL)
 
   if (!rc)
     {
-    set_errno(addrlist->next, addrlist->basic_errno, addrlist->message, DEFER);
+    set_errno(addrlist->next, addrlist->basic_errno, addrlist->message, DEFER,
+      FALSE);
     yield = ERROR;
     goto SEND_QUIT;
     }
@@ -1368,7 +1381,8 @@ if (mua_wrapper)
     }
   if (badaddr != NULL)
     {
-    set_errno(addrlist, 0, badaddr->message, FAIL);
+    set_errno(addrlist, 0, badaddr->message, FAIL,
+      testflag(badaddr, af_pass_message));
     ok = FALSE;
     }
   }
@@ -1597,7 +1611,7 @@ if (!ok)
   save_errno = errno;
   message = NULL;
   send_quit = check_response(host, &save_errno, addrlist->more_errno,
-    buffer, &code, &message);
+    buffer, &code, &message, &pass_message);
   goto FAILED;
 
   SEND_FAILED:
@@ -1632,11 +1646,11 @@ if (!ok)
     {
     if (code == '5')
       {
-      set_errno(addrlist, save_errno, message, FAIL);
+      set_errno(addrlist, save_errno, message, FAIL, pass_message);
       }
     else
       {
-      set_errno(addrlist, save_errno, message, DEFER);
+      set_errno(addrlist, save_errno, message, DEFER, pass_message);
       yield = DEFER;
       }
     }
@@ -1662,7 +1676,7 @@ if (!ok)
     {
     yield = (save_errno == ERRNO_CHHEADER_FAIL ||
              save_errno == ERRNO_FILTER_FAIL)? ERROR : DEFER;
-    set_errno(addrlist, save_errno, message, DEFER);
+    set_errno(addrlist, save_errno, message, DEFER, pass_message);
     }
 
   /* Otherwise we have a message-specific error response from the remote
@@ -1683,7 +1697,8 @@ if (!ok)
     {
     if (mua_wrapper) code = '5';  /* Force hard failure in wrapper mode */
 
-    set_errno(addrlist, save_errno, message, (code == '5')? FAIL : DEFER);
+    set_errno(addrlist, save_errno, message, (code == '5')? FAIL : DEFER,
+      pass_message);
 
     /* If there's an errno, the message contains just the identity of
     the host. */
@@ -1747,6 +1762,7 @@ if (completed_address && ok && send_quit)
         ))
     {
     uschar *msg;
+    BOOL pass_message;
 
     if (send_rset)
       {
@@ -1760,7 +1776,8 @@ if (completed_address && ok && send_quit)
                   ob->command_timeout)))
         {
         int code;
-        send_quit = check_response(host, &errno, 0, buffer, &code, &msg);
+        send_quit = check_response(host, &errno, 0, buffer, &code, &msg,
+          &pass_message);
         if (!send_quit)
           {
           DEBUG(D_transport) debug_printf("%s\n", msg);
@@ -1806,7 +1823,7 @@ if (completed_address && ok && send_quit)
 
     /* If RSET failed and there are addresses left, they get deferred. */
 
-    else set_errno(first_addr, errno, msg, DEFER);
+    else set_errno(first_addr, errno, msg, DEFER, FALSE);
     }
   }
 
@@ -2449,7 +2466,7 @@ for (cutoff_retry = 0; expired &&
     if (dont_deliver)
       {
       host_item *host2;
-      set_errno(addrlist, 0, NULL, OK);
+      set_errno(addrlist, 0, NULL, OK, FALSE);
       for (addr = addrlist; addr != NULL; addr = addr->next)
         {
         addr->host_used = host;

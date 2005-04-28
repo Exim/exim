@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.13 2005/04/07 15:40:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.14 2005/04/28 13:06:32 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4180,7 +4180,6 @@ if (addr->parent != NULL && testflag(addr, af_hide_child))
   printed = US"an undisclosed address";
   yield = FALSE;
   }
-
 else if (!testflag(addr, af_pfr) || addr->parent == NULL)
   printed = addr->address;
 
@@ -4217,7 +4216,6 @@ return yield;
 
 
 
-
 /*************************************************
 *         Print error for an address             *
 *************************************************/
@@ -4227,50 +4225,59 @@ a bounce or a warning message. It tries to format the message reasonably by
 introducing newlines. All lines are indented by 4; the initial printing
 position must be set before calling.
 
+This function used always to print the error. Nowadays we want to restrict it
+to cases such as SMTP errors from a remote host, and errors from :fail: and
+filter "fail". We no longer pass other information willy-nilly in bounce and
+warning messages. Text in user_message is always output; text in message only
+if the af_pass_message flag is set.
+
 Arguments:
-  addr         points to the address
+  addr         the address
   f            the FILE to print on
+  s            some leading text
 
 Returns:       nothing
 */
 
 static void
-print_address_error(address_item *addr, FILE *f)
+print_address_error(address_item *addr, FILE *f, uschar *t)
 {
+int count = Ustrlen(t);
 uschar *s = (addr->user_message != NULL)? addr->user_message : addr->message;
-if (addr->basic_errno > 0)
-  {
-  fprintf(f, "%s%s", strerror(addr->basic_errno),
-    (s == NULL)? "" : ":\n    ");
-  }
-if (s == NULL)
-  {
-  if (addr->basic_errno <= 0) fprintf(f, "unknown error");
-  }
+
+if (addr->user_message != NULL)
+  s = addr->user_message;
 else
   {
-  int count = 0;
-  while (*s != 0)
+  if (!testflag(addr, af_pass_message) || addr->message == NULL) return;
+  s = addr->message;
+  }
+
+fprintf(f, "\n    %s", t);
+
+while (*s != 0)
+  {
+  if (*s == '\\' && s[1] == 'n')
     {
-    if (*s == '\\' && s[1] == 'n')
+    fprintf(f, "\n    ");
+    s += 2;
+    count = 0;
+    }
+  else
+    {
+    fputc(*s, f);
+    count++;
+    if (*s++ == ':' && isspace(*s) && count > 45)
       {
-      fprintf(f, "\n    ");
-      s += 2;
+      fprintf(f, "\n   ");  /* sic (because space follows) */
       count = 0;
-      }
-    else
-      {
-      fputc(*s, f);
-      count++;
-      if (*s++ == ':' && isspace(*s) && count > 45)
-        {
-        fprintf(f, "\n   ");  /* sic (because space follows) */
-        count = 0;
-        }
       }
     }
   }
 }
+
+
+
 
 
 
@@ -4994,6 +5001,7 @@ if (process_recipients != RECIP_IGNORE)
         case RECIP_FAIL_FILTER:
         new->message =
           (filter_message == NULL)? US"delivery cancelled" : filter_message;
+        setflag(new, af_pass_message);
         goto RECIP_QUEUE_FAILED;   /* below */
 
 
@@ -6182,26 +6190,15 @@ wording. */
 
       /* Process the addresses, leaving them on the msgchain if they have a
       file name for a return message. (There has already been a check in
-      post_process_one() for the existence of data in the message file.) */
+      post_process_one() for the existence of data in the message file.) A TRUE
+      return from print_address_information() means that the address is not
+      hidden. */
 
       paddr = &msgchain;
       for (addr = msgchain; addr != NULL; addr = *paddr)
         {
         if (print_address_information(addr, f, US"  ", US"\n    ", US""))
-          {
-          /* A TRUE return from print_address_information() means that the
-          address is not hidden. If there is a return file, it has already
-          been checked to ensure it is not empty. Omit the bland "return
-          message generated" error, but otherwise include error information. */
-
-          if (addr->return_file < 0 ||
-              addr->message == NULL ||
-              Ustrcmp(addr->message, "return message generated") != 0)
-            {
-            fprintf(f, "\n    ");
-            print_address_error(addr, f);
-            }
-          }
+          print_address_error(addr, f, US"");
 
         /* End the final line for the address */
 
@@ -6703,21 +6700,15 @@ else if (addr_defer != (address_item *)(+1))
             (addr_defer->next == NULL)? "is": "are");
           }
 
-        /* List the addresses. For any that are hidden, don't give the delay
-        reason, because it might expose that which is hidden. Also, do not give
-        "retry time not reached" because that isn't helpful. */
+        /* List the addresses, with error information if allowed */
 
         fprintf(f, "\n");
         while (addr_defer != NULL)
           {
           address_item *addr = addr_defer;
           addr_defer = addr->next;
-          if (print_address_information(addr, f, US"  ", US"\n    ", US"") &&
-              addr->basic_errno > ERRNO_RETRY_BASE)
-            {
-            fprintf(f, "\n    Delay reason: ");
-            print_address_error(addr, f);
-            }
+          if (print_address_information(addr, f, US"  ", US"\n    ", US""))
+            print_address_error(addr, f, US"Delay reason: ");
           fprintf(f, "\n");
           }
         fprintf(f, "\n");

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/queryprogram.c,v 1.3 2005/04/06 14:40:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/queryprogram.c,v 1.4 2005/04/28 13:06:32 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -416,7 +416,11 @@ if (strcmpic(rword, US"accept") != 0)
   if (strcmpic(rword, US"decline") == 0) return DECLINE;
   if (strcmpic(rword, US"pass") == 0) return PASS;
   addr->message = string_copy(rdata);                /* data is a message */
-  if (strcmpic(rword, US"fail") == 0) return FAIL;
+  if (strcmpic(rword, US"fail") == 0)
+    {
+    setflag(addr, af_pass_message);
+    return FAIL;
+    }
   if (strcmpic(rword, US"freeze") == 0) addr->special_action = SPECIAL_FREEZE;
   else if (strcmpic(rword, US"defer") != 0)
     {
