@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.5 2005/01/25 14:16:33 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.6 2005/04/29 11:54:23 tom Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -52,7 +52,7 @@ uschar *bmi_verdicts           = NULL;
 int     body_max = 20000;
 
 uschar *exim_path              = US BIN_DIRECTORY "/exim"
-			"\0<---------------Space to patch exim_path->";
+                        "\0<---------------Space to patch exim_path->";
 
 int     eximon_initialized = FALSE;
 
@@ -135,6 +135,13 @@ BOOL    deliver_firsttime      = FALSE;
 BOOL    deliver_freeze         = FALSE;
 int     deliver_frozen_at      = 0;
 BOOL    deliver_manual_thaw    = FALSE;
+
+#ifdef EXPERIMENTAL_DOMAINKEYS
+uschar *dk_signing_domain      = NULL;
+uschar *dk_signing_selector    = NULL;
+int     dk_do_verify           = 0;
+#endif
+
 BOOL    dont_deliver           = FALSE;
 
 #ifdef WITH_CONTENT_SCAN
