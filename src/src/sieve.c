@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.10 2005/04/07 10:02:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.11 2005/05/03 10:02:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2364,17 +2364,21 @@ while (*filter->pc)
     /*
     vacation-command =  "vacation" { vacation-options } <reason: string> ";"
     vacation-options =  [":days" number]
-                        [":addresses" string-list]
                         [":subject" string]
+                        [":from" string]
+                        [":addresses" string-list]
                         [":mime"]
+                        [":handle" string]
     */
 
     int m;
     unsigned long days;
-    struct String *addresses;
     struct String subject;
+    struct String from;
+    struct String *addresses;
     int reason_is_mime;
     string_item *aliases;
+    struct String handle;
     struct String reason;
 
     if (!filter->require_vacation)
@@ -2392,11 +2396,15 @@ while (*filter->pc)
       filter->vacation_ran=1;
       }
     days=VACATION_MIN_DAYS>7 ? VACATION_MIN_DAYS : 7;
-    addresses=(struct String*)0;
     subject.character=(uschar*)0;
     subject.length=-1;
+    from.character=(uschar*)0;
+    from.length=-1;
+    addresses=(struct String*)0;
     aliases=NULL;
     reason_is_mime=0;
+    handle.character=(uschar*)0;
+    handle.length=-1;
     for (;;)
       {
       if (parse_white(filter)==-1) return -1;
@@ -2406,6 +2414,43 @@ while (*filter->pc)
         if (parse_number(filter,&days)==-1) return -1;
         if (days<VACATION_MIN_DAYS) days=VACATION_MIN_DAYS;
         else if (days>VACATION_MAX_DAYS) days=VACATION_MAX_DAYS;
+        }
+      else if (parse_identifier(filter,CUS ":subject")==1)
+        {
+        if (parse_white(filter)==-1) return -1;
+        if ((m=parse_string(filter,&subject))!=1)
+          {
+          if (m==0) filter->errmsg=CUS "subject string expected";
+          return -1;
+          }
+        }
+      else if (parse_identifier(filter,CUS ":from")==1)
+        {
+        int start, end, domain;
+        uschar *error,*ss;
+
+        if (parse_white(filter)==-1) return -1;
+        if ((m=parse_string(filter,&from))!=1)
+          {
+          if (m==0) filter->errmsg=CUS "from string expected";
+          return -1;
+          }
+        if (from.length>0)
+          {
+          ss = parse_extract_address(from.character, &error, &start, &end, &domain,
+            FALSE);
+          if (ss == NULL)
+            {
+            filter->errmsg=string_sprintf("malformed address \"%s\" in "
+              "Sieve filter: %s", from.character, error);
+            return -1;
+            }
+          }
+        else
+          {
+          filter->errmsg=CUS "empty :from address in Sieve filter";
+          return -1;
+          }
         }
       else if (parse_identifier(filter,CUS ":addresses")==1)
         {
@@ -2429,17 +2474,17 @@ while (*filter->pc)
           aliases=new;
           }
         }
-      else if (parse_identifier(filter,CUS ":subject")==1)
+      else if (parse_identifier(filter,CUS ":mime")==1)
+        reason_is_mime=1;
+      else if (parse_identifier(filter,CUS ":handle")==1)
         {
         if (parse_white(filter)==-1) return -1;
-        if ((m=parse_string(filter,&subject))!=1)
+        if ((m=parse_string(filter,&from))!=1)
           {
-          if (m==0) filter->errmsg=CUS "subject string expected";
+          if (m==0) filter->errmsg=CUS "handle string expected";
           return -1;
           }
         }
-      else if (parse_identifier(filter,CUS ":mime")==1)
-        reason_is_mime=1;
       else break;
       }
     if (parse_white(filter)==-1) return -1;
@@ -2457,7 +2502,6 @@ while (*filter->pc)
       uschar *buffer;
       int buffer_capacity;
       struct String key;
-      struct String *a;
       md5 base;
       uschar digest[16];
       uschar hexdigest[33];
@@ -2477,14 +2521,15 @@ while (*filter->pc)
         key.character=(uschar*)0;
         key.length=0;
         capacity=0;
-        if (subject.length!=-1) key.character=string_cat(key.character,&capacity,&key.length,subject.character,subject.length);
-        key.character=string_cat(key.character,&capacity,&key.length,reason_is_mime?US"1":US"0",1);
-        key.character=string_cat(key.character,&capacity,&key.length,reason.character,reason.length);
-        if (addresses!=(struct String*)0) for (a=addresses; a->length!=-1; ++a)
+        if (handle.length==-1)
           {
-          key.character=string_cat(key.character,&capacity,&key.length,US":",1);
-          key.character=string_cat(key.character,&capacity,&key.length,a->character,a->length);
+          if (subject.length!=-1) key.character=string_cat(key.character,&capacity,&key.length,subject.character,subject.length);
+          if (from.length!=-1) key.character=string_cat(key.character,&capacity,&key.length,from.character,from.length);
+          key.character=string_cat(key.character,&capacity,&key.length,reason_is_mime?US"1":US"0",1);
+          key.character=string_cat(key.character,&capacity,&key.length,reason.character,reason.length);
           }
+        else
+          key=handle;
         md5_start(&base);
         md5_end(&base, key.character, key.length, digest);
         for (i = 0; i < 16; i++) sprintf(CS (hexdigest+2*i), "%02X", digest[i]);
@@ -2526,7 +2571,10 @@ while (*filter->pc)
           addr->reply = store_get(sizeof(reply_item));
           memset(addr->reply,0,sizeof(reply_item)); /* XXX */
           addr->reply->to = string_copy(sender_address);
-          addr->reply->from = expand_string(US"$local_part@$domain");
+          if (from.length==-1)
+            addr->reply->from = expand_string(US"$local_part@$domain");
+          else
+            addr->reply->from = from.character;
           /* Allocation is larger than neccessary, but enough even for split MIME words */
           buffer_capacity=16+4*subject.length;
           buffer=store_get(buffer_capacity);

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.3 2005/03/29 15:21:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.4 2005/05/03 10:02:27 ph10 Exp $
 
               Notes on the Sieve implementation for Exim
 
@@ -22,7 +22,7 @@ Exim Implementation
 
 The Exim Sieve implementation offers the core as defined by RFC 3028, the
 "envelope" (RFC 3028), the "fileinto" (RFC 3028), the "copy" (RFC 3894)
-and the "vacation" (draft-showalter-sieve-vacation-05.txt) extension,
+and the "vacation" (draft-ietf-sieve-vacation-01.txt) extension,
 the "i;ascii-numeric" comparator, but not the "reject" extension.
 Exim does not support MDMs, so adding it just to the sieve filter makes
 little sense.
@@ -338,22 +338,23 @@ extension.
 
   vacation-command =  "vacation" { vacation-options } <reason: string>
   vacation-options =  [":days" number]
-                      [":addresses" string-list]
                       [":subject" string]
+                      [":from" string]
+                      [":addresses" string-list]
                       [":mime"]
+                      [":handle" string]
   command          =/ vacation-command
 
 
 Semantics Of ":mime"
 
-RFC 3028 does not specify how strings using MIME parts are used to compose
-messages.  The vacation draft refers to RFC 3028 and does not specify it
-either.  As a result, different implementations generate different mails.
-The Exim Sieve implementation splits the reason into header and body.
-It adds the header to the mail header and uses the body as mail body.
-Be aware, that other imlementations compose a multipart structure with
-the reason as only part.  Both conform to the specification (or lack
-thereof).
+The draft does not specify how strings using MIME entities are used
+to compose messages.  As a result, different implementations generate
+different mails.  The Exim Sieve implementation splits the reason into
+header and body.  It adds the header to the mail header and uses the body
+as mail body.  Be aware, that other imlementations compose a multipart
+structure with the reason as only part.  Both conform to the specification
+(or lack thereof).
 
 
 Semantics Of Not Using ":mime"
@@ -378,15 +379,15 @@ to subscribe a third party to any mailing list, either to annoy
 the user or to declare spam as legitimate mail by proving to
 use opt-in.  The draft specifies to use "Re: " in front of the
 subject, but this implementation uses "Auto: ", as suggested in
-the current draft concerning automatic mail responses.
+RFC 3834, section 3.1.5.
 
 
 Rate Limiting Responses
 
-This implementation hashes the reason, specified subject, ":mime"
-option and ":addresses" option and uses the hex string representation
-as filename within the "sieve_vacation_directory" to store the recipient
-addresses for this vacation parameter set.
+In absence of a handle, this implementation hashes the reason,
+":subject" option, ":mime" option and ":from" option and uses the hex
+string representation as filename within the "sieve_vacation_directory"
+to store the recipient addresses for this vacation parameter set.
 
 The draft specifies that sites may define a minimum ":days" value than 1.
 This implementation uses 1.  The maximum value MUST greater than 7,
