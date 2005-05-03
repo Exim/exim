@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.29 2005/04/28 13:12:24 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.30 2005/05/03 08:38:13 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1905,5 +1905,11 @@ This is in the Bugzilla as #10.
 
 Things get bigger far more quickly than I ever imagine...
 ------------------------------------------------------------------------------
---- HWM 325 ------------------------------------------------------------------
+
+(326) 03-May-05 ? Queue-only on memory shortage
+
+This is bugzilla #17. The idea is to have something like queue_only_load that
+triggers on a shortage of main memory.
+------------------------------------------------------------------------------
+--- HWM 326 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------

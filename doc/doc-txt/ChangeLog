@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.129 2005/04/28 13:29:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.130 2005/05/03 08:38:13 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -63,8 +63,9 @@ PH/09 Previously, an attempt to use ${perl when it wasn't compiled gave an
 
 PH/10 Added a nasty fudge to try to recognize and flatten LDAP passwords in
       an address' error message when a string expansion fails (syntax or
-      whatever). Otherwise not only does the password appear in the log, it may
-      also be put in a bounce message.
+      whatever). Otherwise the password may appear in the log. Following change
+      PH/42 below, there is no longer a chance of it appearing in a bounce
+      message.
 
 PH/11 Installed exipick version 20050225.0 from John Jetmore.
 
