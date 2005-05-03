@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.22 2005/04/07 10:54:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.23 2005/05/03 14:20:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1130,6 +1130,7 @@ transport_instance  transport_defaults = {
 int     transport_count;
 uschar **transport_filter_argv  = NULL;
 int     transport_filter_timeout;
+BOOL    transport_filter_timed_out = FALSE;
 int     transport_write_timeout= 0;
 
 tree_node  *tree_dns_fails     = NULL;

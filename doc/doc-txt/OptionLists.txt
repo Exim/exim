@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.7 2005/04/04 10:33:49 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.8 2005/05/03 14:20:00 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -11,7 +11,7 @@ This file contains complete lists of four kinds of Exim option:
   4. Those that can appear in the build time configuration for the Exim monitor
      (Local/eximon.conf).
 
-This file was last updated for Exim release 4.50.
+This file was last updated for Exim release 4.51.
 
 
 1. RUN TIME OPTIONS
@@ -497,6 +497,7 @@ timeout                              time            5m            lmtp         
                                                      1h            pipe
                                                      1h            queryprogram      4.00
                                                      5s            iplookup          4.00
+timeout_defer                        boolean         false         pipe              4.51
 timeout_frozen_after                 time            0s            main              3.20
 timezone                             string          +             main              3.15
 tls_advertise_hosts                  host list       *             main              3.20

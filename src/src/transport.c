@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.7 2005/03/22 16:44:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.8 2005/05/03 14:20:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1099,6 +1099,8 @@ int rc, len, yield, fd_read, fd_write, save_errno;
 int pfd[2];
 pid_t filter_pid, write_pid;
 
+transport_filter_timed_out = FALSE;
+
 /* If there is no filter command set up, call the internal function that does
 the actual work, passing it the incoming fd, and return its result. */
 
@@ -1211,6 +1213,7 @@ for (;;)
   if (sigalrm_seen)
     {
     errno = ETIMEDOUT;
+    transport_filter_timed_out = TRUE;
     goto TIDY_UP;
     }
 

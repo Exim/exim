@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.131 2005/05/03 10:02:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.132 2005/05/03 14:20:00 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -269,6 +269,17 @@ PH/43 $value is now also set for the "else" part of a ${run expansion.
 PH/44 Applied patch from the Sieve maintainer: "The vacation draft is still
       being worked on, but at least Exim now implements the latest version to
       play with."
+
+PH/45 In a pipe transport, although a timeout while waiting for the pipe
+      process to complete was treated as a delivery failure, a timeout while
+      writing the message to the pipe was logged, but erroneously treated as a
+      successful delivery. Such timeouts include transport filter timeouts. For
+      consistency with the overall process timeout, these timeouts are now
+      treated as errors, giving rise to delivery failures by default. However,
+      there is now a new Boolean option for the pipe transport called
+      timeout_defer, which, if set TRUE, converts the failures into defers for
+      both kinds of timeout. A transport filter timeout is now identified in
+      the log output.
 
 
 A note about Exim versions 4.44 and 4.50

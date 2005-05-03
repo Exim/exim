@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/pipe.c,v 1.4 2005/02/17 11:58:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/pipe.c,v 1.5 2005/05/03 14:20:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -65,6 +65,8 @@ optionlist pipe_transport_options[] = {
       (void *)offsetof(pipe_transport_options_block, temp_errors) },
   { "timeout",           opt_time,
       (void *)offsetof(pipe_transport_options_block, timeout) },
+  { "timeout_defer",     opt_bool,
+      (void *)offsetof(pipe_transport_options_block, timeout_defer) },
   { "umask",             opt_octint,
       (void *)offsetof(pipe_transport_options_block, umask) },
   { "use_bsmtp",         opt_bool,
@@ -101,6 +103,7 @@ pipe_transport_options_block pipe_transport_option_defaults = {
   FALSE,          /* freeze_exec_fail */
   FALSE,          /* ignore_status */
   FALSE,          /* restrict_to_path */
+  FALSE,          /* timeout_defer */
   FALSE,          /* use_shell */
   FALSE,          /* use_bsmtp */
   FALSE           /* use_crlf */
@@ -786,17 +789,20 @@ the child process to 1 second. If the process at the far end of the pipe died
 without reading all of it, we expect an EPIPE error, which should be ignored.
 We used also to ignore WRITEINCOMPLETE but the writing function is now cleverer
 at handling OS where the death of a pipe doesn't give EPIPE immediately. See
-comments therein. This change made 04-Sep-98. Clean up this code in a year or
-so. */
+comments therein. */
 
 if (!written_ok)
   {
   if (errno == ETIMEDOUT)
-    timeout = 1;
-  else if (errno == EPIPE /* || errno == ERRNO_WRITEINCOMPLETE */ )
     {
-    debug_printf("transport error %s ignored\n",
-      (errno == EPIPE)? "EPIPE" : "WRITEINCOMPLETE");
+    addr->message = string_sprintf("%stimeout while writing to pipe",
+      transport_filter_timed_out? "transport filter " : "");
+    addr->transport_return = ob->timeout_defer? DEFER : FAIL;
+    timeout = 1;
+    }
+  else if (errno == EPIPE)
+    {
+    debug_printf("transport error EPIPE ignored\n");
     }
   else
     {
@@ -834,7 +840,7 @@ if ((rc = child_close(pid, timeout)) != 0)
     {
     killpg(pid, SIGKILL);
     kill(outpid, SIGKILL);
-    addr->transport_return = FAIL;
+    addr->transport_return = ob->timeout_defer? DEFER : FAIL;
     addr->message = string_sprintf("pipe delivery process timed out");
     }
 

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.38 2005/04/28 13:29:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.39 2005/05/03 14:20:00 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -169,6 +169,17 @@ PH/10 $message_linecount is a new variable that contains the total number of
 
 PH/11 In a ${run expansion, the variable $value (which contains the standard
       output) is now also usable in the "else" string.
+
+PH/12 In a pipe transport, although a timeout while waiting for the pipe
+      process to complete was treated as a delivery failure, a timeout while
+      writing the message to the pipe was logged, but erroneously treated as a
+      successful delivery. Such timeouts include transport filter timeouts. For
+      consistency with the overall process timeout, these timeouts are now
+      treated as errors, giving rise to delivery failures by default. However,
+      there is now a new Boolean option for the pipe transport called
+      timeout_defer, which, if set TRUE, converts the failures into defers for
+      both kinds of timeout. A transport filter timeout is now identified in
+      the log output.
 
 
 Version 4.50

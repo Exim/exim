@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.14 2005/04/04 10:33:49 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.15 2005/05/03 14:20:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -682,6 +682,7 @@ extern BOOL    timestamps_utc;         /* Use UTC for all times */
 extern int     transport_count;        /* Count of bytes transported */
 extern uschar **transport_filter_argv; /* For on-the-fly filtering */
 extern int     transport_filter_timeout; /* Timeout for same */
+extern BOOL    transport_filter_timed_out; /* True if it did */
 
 extern transport_info transports_available[]; /* Vector of available transports */
 extern transport_instance *transports; /* Chain of instantiated transports */

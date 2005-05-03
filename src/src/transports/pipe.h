@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/pipe.h,v 1.2 2005/01/04 10:00:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/pipe.h,v 1.3 2005/05/03 14:20:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -26,6 +26,7 @@ typedef struct {
   BOOL  freeze_exec_fail;
   BOOL  ignore_status;
   BOOL  restrict_to_path;
+  BOOL  timeout_defer;
   BOOL  use_shell;
   BOOL  use_bsmtp;
   BOOL  use_crlf;

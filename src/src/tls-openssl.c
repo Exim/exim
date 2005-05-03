@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.4 2005/03/29 14:53:09 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.5 2005/05/03 14:20:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -181,9 +181,6 @@ else
     verify_callback_called? "" : " authenticated", txt);
   tls_peerdn = txt;
   }
-
-
-debug_printf("+++verify_callback_called=%d\n", verify_callback_called);
 
 if (!verify_callback_called) tls_certificate_verified = TRUE;
 verify_callback_called = TRUE;

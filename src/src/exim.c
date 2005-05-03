@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.18 2005/04/06 10:06:14 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.19 2005/05/03 14:20:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4702,6 +4702,12 @@ while (more)
       int rc;
       close_unwanted();      /* Close unwanted file descriptors and TLS */
       exim_nullstd();        /* Ensure std{in,out,err} exist */
+
+      /* Occasionally in the test harness we don't have synchronous delivery
+      set (can happen with bounces). In that case, let the old process finish
+      before continuing, to keep the debug output the same. */
+
+      if (running_in_test_harness && !synchronous_delivery) millisleep(100);
 
       /* Re-exec Exim if we need to regain privilege (note: in mua_wrapper
       mode, deliver_drop_privilege is forced TRUE). */
