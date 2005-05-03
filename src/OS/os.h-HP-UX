@@ -1,6 +1,9 @@
-/* $Cambridge: exim/src/OS/os.h-HP-UX,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.h-HP-UX,v 1.2 2005/05/03 14:22:12 ph10 Exp $ */
 
 /* Exim: OS-specific C header file for HP-UX versions greater than 9 */
+
+#define ICONV_ARG2_TYPE char **
+#define EXIM_SOCKLEN_T size_t
 
 #define LOAD_AVG_NEEDS_ROOT
 #define HAVE_DEV_KMEM
