@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.4 2005/03/08 15:32:02 tom Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.5 2005/05/04 10:17:29 ph10 Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -81,7 +81,7 @@ os.c:   ../src/os.c
 # Build the config.h file.
 
 config.h: Makefile buildconfig ../src/config.h.defaults $(EDITME)
-	$(SHELL) $(SCRIPTS)/Configure-config.h
+	$(SHELL) $(SCRIPTS)/Configure-config.h "$(MAKE)"
 
 
 # This target is recognized specially by GNU make. It records those targets

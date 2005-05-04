@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/Configure-config.h,v 1.1 2004/10/06 15:07:40 ph10 Exp $
+# $Cambridge: exim/src/scripts/Configure-config.h,v 1.2 2005/05/04 10:17:29 ph10 Exp $
 
 # Build the config.h file, using the buildconfig program, first ensuring that
 # it exists.
@@ -18,7 +18,13 @@
 # space. Oddly, the pattern previously read ^\([A-Z which didn't seem to
 # cause a problem (but did when the new bit was put in).
 
-make buildconfig || exit 1
+# 04-May-2005: if $1 is set, copy it into $MAKE, and then use $MAKE, if set,
+# instead of "make" so that if gmake is used, it is used consistently.
+
+if [ "$1" != "" ] ; then MAKE=$1 ; fi
+if [ "$MAKE" = "" ] ; then MAKE=make ; fi
+
+$MAKE buildconfig || exit 1
 
 # BEWARE: tab characters needed in the following sed command. They have had
 # a nasty tendency to get lost in the past, causing a problem if a tab has

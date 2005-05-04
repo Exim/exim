@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.132 2005/05/03 14:20:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.133 2005/05/04 10:17:28 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -280,6 +280,12 @@ PH/45 In a pipe transport, although a timeout while waiting for the pipe
       timeout_defer, which, if set TRUE, converts the failures into defers for
       both kinds of timeout. A transport filter timeout is now identified in
       the log output.
+
+PH/46 The "scripts/Configure-config.h" script calls "make" at one point. On
+      systems where "make" and "gmake" are different, calling "gmake" at top
+      level broke things. I've arranged for the value of $(MAKE) to be passed
+      from the Makefile to this script so that it can call the same version of
+      "make".
 
 
 A note about Exim versions 4.44 and 4.50
