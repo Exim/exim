@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.30 2005/05/03 08:38:13 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.31 2005/05/06 08:28:16 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1911,5 +1911,11 @@ Things get bigger far more quickly than I ever imagine...
 This is bugzilla #17. The idea is to have something like queue_only_load that
 triggers on a shortage of main memory.
 ------------------------------------------------------------------------------
---- HWM 326 ------------------------------------------------------------------
+
+(327) 06-May-05 ? Break delay if connection drops
+
+Currently, "delay=5m" (e.g.) waits for 5 minutes. If we can detect that the
+connection has died in the meantime, it would make sense to break the delay.
+------------------------------------------------------------------------------
+--- HWM 327 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------

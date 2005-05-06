@@ -1,4 +1,4 @@
-## $Cambridge: exim/doc/doc-src/FAQ.src,v 1.6 2005/02/15 09:27:45 ph10 Exp $
+## $Cambridge: exim/doc/doc-src/FAQ.src,v 1.7 2005/05/06 08:28:16 ph10 Exp $
 ##
 ## This file is processed by Perl scripts to produce an ASCII and an HTML
 ## version. Lines starting with ## are omitted. The markup used with paragraphs
@@ -371,11 +371,11 @@ A0017: \*Broken pipe*\ is the error you get on some OS when the remote host just
 
        You can test the link using pings of large packets and see what works:
 
-==>	 ping -s host 2048
+==>      ping -s host 2048
 
        Try reducing the MTU on the sending host:
 
-==>	 ifconfig le0 mtu 1300
+==>      ifconfig le0 mtu 1300
 
        Alternatively, you can reduce the size of the buffer Exim uses for SMTP
        output by putting something like
@@ -743,7 +743,7 @@ A0036: Your configuration specifies that local mailboxes are all held in
            second solution is used, users can empty their mailboxes by updating
            them, but cannot delete them.
 
-       If your problem involves mail to \/root/\, see also Q0507.
+       If your problem involves mail to \/root/\, see also Q0039.
 
 
 Q0037: I am experiencing mailbox locking problems with Sun's \"mailtool"\ used
@@ -1322,7 +1322,7 @@ A0076: You are probably putting your reject items into the main log as well;
        by a \"mail.info"\ descriptor).
        Test this by running the command:
 
-==>	 logger -p mail.notice test
+==>      logger -p mail.notice test
 
        and seeing which logs it goes into. From Exim release 4.31 it is
        possible to disable the rejectlog by setting \write_rejectlog\ false.
@@ -1811,9 +1811,9 @@ A0115: You are using FreeBSD, or another OS that has a \^make^\ command which
        ensure that this happens throughout the build, it's best to export it in
        your environment:
 
-==>	 MAKEFLAGS='-B'
-	 export MAKEFLAGS
-	 make
+==>      MAKEFLAGS='-B'
+         export MAKEFLAGS
+          make
 
 
 Q0116: I have tried to build Exim with Berkeley DB 3 and 4, but I always get
@@ -2478,25 +2478,25 @@ A0319: The admin in question is an idiot. Exim will always freeze such messages
 ==>      # Don't allow domains whose single MX (or A) record is a
          # "special-use IPv4 address", as listed in RFC 3330.
          ignore_target_hosts = \
-	       # Hosts on "this network"; RFC 1700 (page 4) states that these
-	       # are only allowed as source addresses
-	       0.0.0.0/8 : \
-	       # Private networks, RFC 1918
-	       10.0.0.0/8 : 172.16.0.0/12 : 192.168.0.0/16 : \
-	       # Internet host loopback address, RFC 1700 (page 5)
-	       127.0.0.0/8 : \
-	       # "Link local" block
-	       169.254.0.0/16 : \
-	       # "TEST-NET" - should not appear on the public Internet
-	       192.0.2.0/24 : \
-	       # 6to4 relay anycast addresses, RFC 3068
-	       192.88.99.0/24 : \
-	       # Network interconnect device benchmark testing, RFC 2544
-	       198.18.0.0/15 : \
-	       # Multicast addresses, RFC 3171
-	       224.0.0.0/4 : \
-	       # Reserved for future use, RFC 1700 (page 4)
-	       240.0.0.0/4
+         # Hosts on "this network"; RFC 1700 (page 4) states that these
+         # are only allowed as source addresses
+         0.0.0.0/8 : \
+         # Private networks, RFC 1918
+         10.0.0.0/8 : 172.16.0.0/12 : 192.168.0.0/16 : \
+         # Internet host loopback address, RFC 1700 (page 5)
+         127.0.0.0/8 : \
+         # "Link local" block
+         169.254.0.0/16 : \
+         # "TEST-NET" - should not appear on the public Internet
+         192.0.2.0/24 : \
+         # 6to4 relay anycast addresses, RFC 3068
+         192.88.99.0/24 : \
+         # Network interconnect device benchmark testing, RFC 2544
+         198.18.0.0/15 : \
+         # Multicast addresses, RFC 3171
+         224.0.0.0/4 : \
+         # Reserved for future use, RFC 1700 (page 4)
+         240.0.0.0/4
 
 
 Q0320: How can I arrange for all mail to \*user@some.domain*\ to be forwarded
@@ -3672,10 +3672,10 @@ A0606: You need to unset the \mesage_prefix\ option, or change it so that its
        transport could be:
 
 ==>      local_delivery_mbx:
-	   driver = pipe
-	   command = /usr/local/bin/tmail $local_part
-	   user = exim
-	   current_directory = /
+           driver = pipe
+           command = /usr/local/bin/tmail $local_part
+           user = exim
+           current_directory = /
            use_crlf
            message_prefix =
 
@@ -4807,10 +4807,10 @@ A0735: Many workstation clients send single-component names; take care that you
        do not block legitimate mail. With that proviso, you can do it using
        something like this in an ACL:
 
-==>	 drop  message = HELO doesn't look like a hostname
-	       log_message = Not a hostname
-	       condition = ${if match{$sender_helo_name} \
-				{\N^[^.].*\.[^.]+$\N}{no}{yes}}
+==>      drop  message = HELO doesn't look like a hostname
+               log_message = Not a hostname
+               condition = ${if match{$sender_helo_name} \
+                           {\N^[^.].*\.[^.]+$\N}{no}{yes}}
 
        This means: Drop the HELO unless it contains a dot somewhere in the HELO
        string, but the string may not begin or end with a dot. Thus, the
@@ -5003,8 +5003,8 @@ Q0804: I'm using this rewriting rule to change login names into ``friendly''
        names, but if mail comes in for an upper case login name, it doesn't
        get rewritten.
 
-==>	 *@my.domain	 ${lookup{$1}dbm{/usr/lib/exim/longforms}\
-			 {$value}fail}@my.domain bcfrtFT
+==>      *@my.domain   ${lookup{$1}dbm{/usr/lib/exim/longforms}\
+                        {$value}fail}@my.domain bcfrtFT
 
        The longforms database has entries of the form:
 
@@ -5020,11 +5020,11 @@ A0805: It depends on what you mean by ``fail a message'' and what addresses you
        are rewriting. If you are rewriting recipient addresses for your local
        domain, you can do:
 
-==>	 *@dom.ain  ${lookup{$1}dbm{/wher/ever}{$value}{failaddr}}  Ehq
+==>      *@dom.ain  ${lookup{$1}dbm{/wher/ever}{$value}{failaddr}}  Ehq
 
        and in your alias file put something like
 
-==>	 failaddr:   :fail: Rewriting failed
+==>      failaddr:   :fail: Rewriting failed
 
        This fails a single recipient - others are processed independently.
 
@@ -5773,8 +5773,8 @@ A1701: It seems that some clients require that the certificate presented by
            encrypt the user/site/leaf certificate. If this isn't acceptable,
            you seem to be able to strip out the passphrase as follows:
 
-==>	     openssl rsa -in user.key -our user.key.new
-	     mv user.key.new
+==>          openssl rsa -in user.key -our user.key.new
+             mv user.key.new
 
            This should be done immediately after \(user.key)\ is created.
 
@@ -6625,13 +6625,13 @@ A9604: The problem appears to be the number of open files the system can
 ==>      # Now System is up, Modify kernel parameters for max open etc.
 
 ==>      if [ -f /proc/sys/kernel/file-max ]; then
-		 echo 16384 >> /proc/sys/kernel/file-max
+           echo 16384 >> /proc/sys/kernel/file-max
          fi
          if [ -f /proc/sys/kernel/inode-max ]; then
-		 echo 24576 >> /proc/sys/kernel/inode-max
+           echo 24576 >> /proc/sys/kernel/inode-max
          fi
          if [ -f /proc/sys/kernel/file-nr ]; then
-		 echo 2160 >> /proc/sys/kernel/file-nr
+           echo 2160 >> /proc/sys/kernel/file-nr
          fi
 
        By echoing the value you want for file-max to the file \(file-max)\ etc.,
