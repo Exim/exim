@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/OS/os.h-Darwin,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.h-Darwin,v 1.2 2005/05/10 22:39:20 tom Exp $ */
 
 /* Exim: OS-specific C header file for Darwin (Mac OS X) */
 
@@ -8,6 +8,9 @@
 #define HAVE_SYS_MOUNT_H
 #define PAM_H_IN_PAM
 #define SIOCGIFCONF_GIVES_ADDR
+
+/* OSX 10.2 does not have poll.h, 10.3 does emulate it badly. */
+#define NO_POLL_H
 
 #define F_FREESP     O_TRUNC
 typedef struct flock flock_t;

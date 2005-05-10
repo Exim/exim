@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.5 2005/04/27 10:00:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.6 2005/05/10 22:39:20 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -40,7 +40,9 @@ int spam(uschar **listptr) {
   time_t start;
   size_t read, wrote;
   struct sockaddr_un server;
+#ifndef NO_POLL_H
   struct pollfd pollfd;
+#endif
 
   /* find the username from the option list */
   if ((user_name = string_nextinlist(&list, &sep,
@@ -213,15 +215,19 @@ int spam(uschar **listptr) {
    * and we poll the desciptor to make sure that we can write without
    * blocking.  Short writes are gracefully handled and if the whole
    * trasaction takes too long it is aborted.
+   * Note: poll() is not supported in OSX 10.2.
    */
+#ifndef NO_POLL_H
   pollfd.fd = spamd_sock;
   pollfd.events = POLLOUT;
+#endif
   fcntl(spamd_sock, F_SETFL, O_NONBLOCK);
   do {
     read = fread(spamd_buffer,1,sizeof(spamd_buffer),mbox_file);
     if (read > 0) {
       offset = 0;
 again:
+#ifndef NO_POLL_H
       result = poll(&pollfd, 1, 1000);
       if (result == -1 && errno == EINTR)
         continue;
@@ -239,6 +245,7 @@ again:
         fclose(mbox_file);
         return DEFER;
       }
+#endif
       wrote = send(spamd_sock,spamd_buffer + offset,read - offset,0);
       if (offset + wrote != read) {
         offset += wrote;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.12 2005/05/10 10:19:11 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.13 2005/05/10 22:39:20 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -92,7 +92,9 @@ making unique names. */
 #include <sys/file.h>
 #include <dirent.h>
 #include <netdb.h>
+#ifndef NO_POLL_H
 #include <poll.h>
+#endif
 #include <pwd.h>
 #include <grp.h>
 #include <syslog.h>
