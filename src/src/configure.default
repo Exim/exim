@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/configure.default,v 1.2 2005/03/29 09:49:49 ph10 Exp $
+# $Cambridge: exim/src/src/configure.default,v 1.3 2005/05/10 14:48:07 ph10 Exp $
 
 ######################################################################
 #                  Runtime configuration file for Exim               #
@@ -322,6 +322,17 @@ acl_check_rcpt:
   # warn    message       = X-Warning: $sender_host_address is in a black list at $dnslist_domain
   #         log_message   = found in $dnslist_domain
   #         dnslists      = black.list.example
+  #############################################################################
+
+  #############################################################################
+  # This check is commented out because it is recognized that not every
+  # sysadmin will want to do it. If you enable it, the check performs
+  # Client SMTP Authorization (csa) checks on the sending host. These checks
+  # do DNS lookups for SRV records. The CSA proposal is currently (May 2005)
+  # an Internet draft. You can, of course, add additional conditions to this
+  # ACL statement to restrict the CSA checks to certain hosts only.
+  #
+  # require verify = csa
   #############################################################################
 
   # Accept if the address is in a local domain, but only if the recipient can
