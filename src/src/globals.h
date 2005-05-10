@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.15 2005/05/03 14:20:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.16 2005/05/10 10:19:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -214,6 +214,8 @@ extern BOOL    continue_more;          /* Flag more addresses waiting */
 extern int     continue_sequence;      /* Sequence num for continued delivery */
 extern uschar *continue_transport;     /* Transport for continued delivery */
 
+extern uschar *csa_status;             /* Client SMTP Authorization result */
+
 extern BOOL    daemon_listen;          /* True if listening required */
 extern uschar *daemon_smtp_port;       /* Can be a list of ports */
 extern BOOL    debug_daemon;           /* Debug the daemon process only */
@@ -271,6 +273,8 @@ extern int     dk_do_verify;           /* DK verification switch. Set with ACL c
 #endif
 
 extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */
+extern int     dns_csa_search_limit;   /* How deep to search for CSA SRV records */
+extern BOOL    dns_csa_use_reverse;    /* Check CSA in reverse DNS? (non-standard) */
 extern uschar *dns_ipv4_lookup;        /* For these domains, don't look for AAAA (or A6) */
 extern int     dns_retrans;            /* Retransmission time setting */
 extern int     dns_retry;              /* Number of retries */

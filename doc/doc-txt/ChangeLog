@@ -1,7 +1,13 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.133 2005/05/04 10:17:28 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.134 2005/05/10 10:19:11 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+
+Exim version 4.52
+-----------------
+
+TF/01 Added support for Client SMTP Authorization. See NewStuff for details.
 
 
 Exim version 4.51

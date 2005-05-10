@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.7 2005/04/05 13:58:35 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.8 2005/05/10 10:19:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -193,6 +193,8 @@ static optionlist optionlist_config[] = {
   { "delivery_date_remove",     opt_bool,        &delivery_date_remove },
   { "dns_again_means_nonexist", opt_stringptr,   &dns_again_means_nonexist },
   { "dns_check_names_pattern",  opt_stringptr,   &check_dns_names_pattern },
+  { "dns_csa_search_limit",     opt_int,         &dns_csa_search_limit },
+  { "dns_csa_use_reverse",      opt_bool,        &dns_csa_use_reverse },
   { "dns_ipv4_lookup",          opt_stringptr,   &dns_ipv4_lookup },
   { "dns_retrans",              opt_time,        &dns_retrans },
   { "dns_retry",                opt_int,         &dns_retry },

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.23 2005/05/03 14:20:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.24 2005/05/10 10:19:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -385,6 +385,8 @@ BOOL    continue_more          = FALSE;
 int     continue_sequence      = 1;
 uschar *continue_transport     = NULL;
 
+uschar *csa_status             = NULL;
+
 BOOL    daemon_listen          = FALSE;
 uschar *daemon_smtp_port       = US"smtp";
 BOOL    debug_daemon           = FALSE;
@@ -473,6 +475,8 @@ int     dk_do_verify           = 0;
 #endif
 
 uschar *dns_again_means_nonexist = NULL;
+int     dns_csa_search_limit   = 5;
+BOOL    dns_csa_use_reverse    = TRUE;
 uschar *dns_ipv4_lookup        = NULL;
 int     dns_retrans            = 0;
 int     dns_retry              = 0;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.28 2005/04/06 14:03:53 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.29 2005/05/10 10:19:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -505,6 +505,45 @@ static control_def controls_list[] = {
   { US"submission",             CONTROL_SUBMISSION, TRUE}
   };
 
+/* Support data structures for Client SMTP Authorization. acl_verify_csa()
+caches its result in a tree to avoid repeated DNS queries. The result is an
+integer code which is used as an index into the following tables of
+explanatory strings and verification return codes. */
+
+static tree_node *csa_cache = NULL;
+
+enum { CSA_UNKNOWN, CSA_OK, CSA_DEFER_SRV, CSA_DEFER_ADDR,
+ CSA_FAIL_EXPLICIT, CSA_FAIL_DOMAIN, CSA_FAIL_NOADDR, CSA_FAIL_MISMATCH };
+
+/* The acl_verify_csa() return code is translated into an acl_verify() return
+code using the following table. It is OK unless the client is definitely not
+authorized. This is because CSA is supposed to be optional for sending sites,
+so recipients should not be too strict about checking it - especially because
+DNS problems are quite likely to occur. It's possible to use $csa_status in
+further ACL conditions to distinguish ok, unknown, and defer if required, but
+the aim is to make the usual configuration simple. */
+
+static int csa_return_code[] = {
+  OK, OK, OK, OK,
+  FAIL, FAIL, FAIL, FAIL
+};
+
+static uschar *csa_status_string[] = {
+  US"unknown", US"ok", US"defer", US"defer",
+  US"fail", US"fail", US"fail", US"fail"
+};
+
+static uschar *csa_reason_string[] = {
+  US"unknown",
+  US"ok",
+  US"deferred (SRV lookup failed)",
+  US"deferred (target address lookup failed)",
+  US"failed (explicit authorization required)",
+  US"failed (host name not authorized)",
+  US"failed (no authorized addresses)",
+  US"failed (client address mismatch)"
+};
+
 /* Enable recursion between acl_check_internal() and acl_check_condition() */
 
 static int acl_check_internal(int, address_item *, uschar *, int, uschar **,
@@ -938,6 +977,303 @@ return OK;
 
 
 /*************************************************
+*   Check client IP address matches CSA target   *
+*************************************************/
+
+/* Called from acl_verify_csa() below. This routine scans a section of a DNS
+response for address records belonging to the CSA target hostname. The section
+is specified by the reset argument, either RESET_ADDITIONAL or RESET_ANSWERS.
+If one of the addresses matches the client's IP address, then the client is
+authorized by CSA. If there are target IP addresses but none of them match
+then the client is using an unauthorized IP address. If there are no target IP
+addresses then the client cannot be using an authorized IP address. (This is
+an odd configuration - why didn't the SRV record have a weight of 1 instead?)
+
+Arguments:
+  dnsa       the DNS answer block
+  dnss       a DNS scan block for us to use
+  reset      option specifing what portion to scan, as described above
+  target     the target hostname to use for matching RR names
+
+Returns:     CSA_OK             successfully authorized
+             CSA_FAIL_MISMATCH  addresses found but none matched
+             CSA_FAIL_NOADDR    no target addresses found
+*/
+
+static int
+acl_verify_csa_address(dns_answer *dnsa, dns_scan *dnss, int reset,
+                       uschar *target)
+{
+dns_record *rr;
+dns_address *da;
+
+BOOL target_found = FALSE;
+
+for (rr = dns_next_rr(dnsa, dnss, reset);
+     rr != NULL;
+     rr = dns_next_rr(dnsa, dnss, RESET_NEXT))
+  {
+  /* Check this is an address RR for the target hostname. */
+
+  if (rr->type != T_A
+    #if HAVE_IPV6
+      && rr->type != T_AAAA
+      #ifdef SUPPORT_A6
+        && rr->type != T_A6
+      #endif
+    #endif
+  ) continue;
+
+  if (strcmpic(target, rr->name) != 0) continue;
+
+  target_found = TRUE;
+
+  /* Turn the target address RR into a list of textual IP addresses and scan
+  the list. There may be more than one if it is an A6 RR. */
+
+  for (da = dns_address_from_rr(dnsa, rr); da != NULL; da = da->next)
+    {
+    /* If the client IP address matches the target IP address, it's good! */
+
+    DEBUG(D_acl) debug_printf("CSA target address is %s\n", da->address);
+
+    if (strcmpic(sender_host_address, da->address) == 0) return CSA_OK;
+    }
+  }
+
+/* If we found some target addresses but none of them matched, the client is
+using an unauthorized IP address, otherwise the target has no authorized IP
+addresses. */
+
+if (target_found) return CSA_FAIL_MISMATCH;
+else return CSA_FAIL_NOADDR;
+}
+
+
+
+/*************************************************
+*       Verify Client SMTP Authorization         *
+*************************************************/
+
+/* Called from acl_verify() below. This routine calls dns_lookup_special()
+to find the CSA SRV record corresponding to the domain argument, or
+$sender_helo_name if no argument is provided. It then checks that the
+client is authorized, and that its IP address corresponds to the SRV
+target's address by calling acl_verify_csa_address() above. The address
+should have been returned in the DNS response's ADDITIONAL section, but if
+not we perform another DNS lookup to get it.
+
+Arguments:
+  domain    pointer to optional parameter following verify = csa
+
+Returns:    CSA_UNKNOWN    no valid CSA record found
+            CSA_OK         successfully authorized
+            CSA_FAIL_*     client is definitely not authorized
+            CSA_DEFER_*    there was a DNS problem
+*/
+
+static int
+acl_verify_csa(uschar *domain)
+{
+tree_node *t;
+uschar *found, *p;
+int priority, weight, port;
+dns_answer dnsa;
+dns_scan dnss;
+dns_record *rr;
+int rc, type;
+uschar target[256];
+
+/* Work out the domain we are using for the CSA lookup. The default is the
+client's HELO domain. If the client has not said HELO, use its IP address
+instead. If it's a local client (exim -bs), CSA isn't applicable. */
+
+while (isspace(*domain) && *domain != '\0') ++domain;
+if (*domain == '\0') domain = sender_helo_name;
+if (domain == NULL) domain = sender_host_address;
+if (sender_host_address == NULL) return CSA_UNKNOWN;
+
+/* If we have an address literal, strip off the framing ready for turning it
+into a domain. The framing consists of matched square brackets possibly
+containing a keyword and a colon before the actual IP address. */
+
+if (domain[0] == '[')
+  {
+  uschar *start = Ustrchr(domain, ':');
+  if (start == NULL) start = domain;
+  domain = string_copyn(start + 1, Ustrlen(start) - 2);
+  }
+
+/* Turn domains that look like bare IP addresses into domains in the reverse
+DNS. This code also deals with address literals and $sender_host_address. It's
+not quite kosher to treat bare domains such as EHLO 192.0.2.57 the same as
+address literals, but it's probably the most friendly thing to do. This is an
+extension to CSA, so we allow it to be turned off for proper conformance. */
+
+if (string_is_ip_address(domain, NULL))
+  {
+  if (!dns_csa_use_reverse) return CSA_UNKNOWN;
+  dns_build_reverse(domain, target);
+  domain = target;
+  }
+
+/* Find out if we've already done the CSA check for this domain. If we have,
+return the same result again. Otherwise build a new cached result structure
+for this domain. The name is filled in now, and the value is filled in when
+we return from this function. */
+
+t = tree_search(csa_cache, domain);
+if (t != NULL) return t->data.val;
+
+t = store_get_perm(sizeof(tree_node) + Ustrlen(domain));
+Ustrcpy(t->name, domain);
+(void)tree_insertnode(&csa_cache, t);
+
+/* Now we are ready to do the actual DNS lookup(s). */
+
+switch (dns_special_lookup(&dnsa, domain, T_CSA, &found))
+  {
+  /* If something bad happened (most commonly DNS_AGAIN), defer. */
+
+  default:
+  return t->data.val = CSA_DEFER_SRV;
+
+  /* If we found nothing, the client's authorization is unknown. */
+
+  case DNS_NOMATCH:
+  case DNS_NODATA:
+  return t->data.val = CSA_UNKNOWN;
+
+  /* We got something! Go on to look at the reply in more detail. */
+
+  case DNS_SUCCEED:
+  break;
+  }
+
+/* Scan the reply for well-formed CSA SRV records. */
+
+for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+     rr != NULL;
+     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+  {
+  if (rr->type != T_SRV) continue;
+
+  /* Extract the numerical SRV fields (p is incremented) */
+
+  p = rr->data;
+  GETSHORT(priority, p);
+  GETSHORT(weight, p);
+  GETSHORT(port, p);
+
+  DEBUG(D_acl)
+    debug_printf("CSA priority=%d weight=%d port=%d\n", priority, weight, port);
+
+  /* Check the CSA version number */
+
+  if (priority != 1) continue;
+
+  /* If the domain does not have a CSA SRV record of its own (i.e. the domain
+  found by dns_special_lookup() is a parent of the one we asked for), we check
+  the subdomain assertions in the port field. At the moment there's only one
+  assertion: legitimate SMTP clients are all explicitly authorized with CSA
+  SRV records of their own. */
+
+  if (found != domain)
+    {
+    if (port & 1)
+      return t->data.val = CSA_FAIL_EXPLICIT;
+    else
+      return t->data.val = CSA_UNKNOWN;
+    }
+
+  /* This CSA SRV record refers directly to our domain, so we check the value
+  in the weight field to work out the domain's authorization. 0 and 1 are
+  unauthorized; 3 means the client is authorized but we can't check the IP
+  address in order to authenticate it, so we treat it as unknown; values
+  greater than 3 are undefined. */
+
+  if (weight < 2) return t->data.val = CSA_FAIL_DOMAIN;
+
+  if (weight > 2) continue;
+
+  /* Weight == 2, which means the domain is authorized. We must check that the
+  client's IP address is listed as one of the SRV target addresses. Save the
+  target hostname then break to scan the additional data for its addresses. */
+
+  (void)dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
+    (DN_EXPAND_ARG4_TYPE)target, sizeof(target));
+
+  DEBUG(D_acl) debug_printf("CSA target is %s\n", target);
+
+  break;
+  }
+
+/* If we didn't break the loop then no appropriate records were found. */
+
+if (rr == NULL) return t->data.val = CSA_UNKNOWN;
+
+/* Do not check addresses if the target is ".", in accordance with RFC 2782.
+A target of "." indicates there are no valid addresses, so the client cannot
+be authorized. (This is an odd configuration because weight=2 target=. is
+equivalent to weight=1, but we check for it in order to keep load off the
+root name servers.) Note that dn_expand() turns "." into "". */
+
+if (Ustrcmp(target, "") == 0) return t->data.val = CSA_FAIL_NOADDR;
+
+/* Scan the additional section of the CSA SRV reply for addresses belonging
+to the target. If the name server didn't return any additional data (e.g.
+because it does not fully support SRV records), we need to do another lookup
+to obtain the target addresses; otherwise we have a definitive result. */
+
+rc = acl_verify_csa_address(&dnsa, &dnss, RESET_ADDITIONAL, target);
+if (rc != CSA_FAIL_NOADDR) return t->data.val = rc;
+
+/* The DNS lookup type corresponds to the IP version used by the client. */
+
+#if HAVE_IPV6
+if (Ustrchr(sender_host_address, ':') != NULL)
+  type = T_AAAA;
+else
+#endif /* HAVE_IPV6 */
+  type = T_A;
+
+
+#if HAVE_IPV6 && defined(SUPPORT_A6)
+DNS_LOOKUP_AGAIN:
+#endif
+
+switch (dns_lookup(&dnsa, target, type, NULL))
+  {
+  /* If something bad happened (most commonly DNS_AGAIN), defer. */
+
+  default:
+  return t->data.val = CSA_DEFER_ADDR;
+
+  /* If the query succeeded, scan the addresses and return the result. */
+
+  case DNS_SUCCEED:
+  rc = acl_verify_csa_address(&dnsa, &dnss, RESET_ANSWERS, target);
+  if (rc != CSA_FAIL_NOADDR) return t->data.val = rc;
+  /* else fall through */
+
+  /* If the target has no IP addresses, the client cannot have an authorized
+  IP address. However, if the target site uses A6 records (not AAAA records)
+  we have to do yet another lookup in order to check them. */
+
+  case DNS_NOMATCH:
+  case DNS_NODATA:
+
+  #if HAVE_IPV6 && defined(SUPPORT_A6)
+  if (type == T_AAAA) { type = T_A6; goto DNS_LOOKUP_AGAIN; }
+  #endif
+
+  return t->data.val = CSA_FAIL_NOADDR;
+  }
+}
+
+
+
+/*************************************************
 *     Handle verification (address & other)      *
 *************************************************/
 
@@ -1017,6 +1353,19 @@ if (strcmpic(ss, US"helo") == 0)
   {
   if (slash != NULL) goto NO_OPTIONS;
   return helo_verified? OK : FAIL;
+  }
+
+/* Do Client SMTP Authorization checks in a separate function, and turn the
+result code into user-friendly strings. */
+
+if (strcmpic(ss, US"csa") == 0)
+  {
+  rc = acl_verify_csa(list);
+  *log_msgptr = *user_msgptr = string_sprintf("client SMTP authorization %s",
+                                              csa_reason_string[rc]);
+  csa_status = csa_status_string[rc];
+  DEBUG(D_acl) debug_printf("CSA result %s\n", csa_status);
+  return csa_return_code[rc];
   }
 
 /* Check that all relevant header lines have the correct syntax. If there is

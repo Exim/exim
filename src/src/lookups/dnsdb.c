@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.10 2005/02/17 11:58:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.11 2005/05/10 10:19:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -31,6 +31,7 @@ static char *type_names[] = {
   #endif
 #endif
   "cname",
+  "csa",
   "mx",
   "mxh",
   "ns",
@@ -49,6 +50,7 @@ static int type_values[] = {
   #endif
 #endif
   T_CNAME,
+  T_CSA,     /* Private type for "Client SMTP Authorization". */
   T_MX,
   T_MXH,     /* Private type for "MX hostnames" */
   T_NS,
@@ -112,7 +114,7 @@ int defer_mode = PASS;
 int type = T_TXT;
 int failrc = FAIL;
 uschar *outsep = US"\n";
-uschar *equals, *domain;
+uschar *equals, *domain, *found;
 uschar buffer[256];
 
 /* Because we're the working in the search pool, we try to reclaim as much
@@ -228,15 +230,18 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
         != NULL)
   {
   uschar rbuffer[256];
-  int searchtype = (type == T_ZNS)? T_NS :          /* record type we want */
-                   (type == T_MXH)? T_MX : type;
+  int searchtype = (type == T_CSA)? T_SRV :         /* record type we want */
+                   (type == T_MXH)? T_MX :
+                   (type == T_ZNS)? T_NS : type;
 
-  /* If the type is PTR, we have to construct the relevant magic lookup key if
-  the original is an IP address (some experimental protocols are using PTR
-  records for different purposes where the key string is a host name). This
-  code for doing the reversal is now in a separate function. */
+  /* If the type is PTR or CSA, we have to construct the relevant magic lookup
+  key if the original is an IP address (some experimental protocols are using
+  PTR records for different purposes where the key string is a host name, and
+  Exim's extended CSA can be keyed by domains or IP addresses). This code for
+  doing the reversal is now in a separate function. */
 
-  if (type == T_PTR && string_is_ip_address(domain, NULL) > 0)
+  if ((type == T_PTR || type == T_CSA) &&
+      string_is_ip_address(domain, NULL) > 0)
     {
     dns_build_reverse(domain, rbuffer);
     domain = rbuffer;
@@ -252,7 +257,8 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
   continue with the next domain. In the case of DEFER, adjust the final
   "nothing found" result, but carry on to the next domain. */
 
-  rc = dns_special_lookup(&dnsa, domain, type, NULL);
+  found = domain;
+  rc = dns_special_lookup(&dnsa, domain, type, &found);
 
   if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
   if (rc != DNS_SUCCEED)
@@ -300,32 +306,63 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
       yield = string_cat(yield, &size, &ptr, (uschar *)(rr->data+1),
         (rr->data)[0]);
       }
-    else   /* T_CNAME, T_MX, T_MXH, T_NS, T_SRV, T_PTR */
+    else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SRV */
       {
-      int num;
+      int priority, weight, port;
       uschar s[264];
       uschar *p = (uschar *)(rr->data);
 
       if (type == T_MXH)
         {
         /* mxh ignores the priority number and includes only the hostnames */
-        GETSHORT(num, p);            /* pointer is advanced */
+        GETSHORT(priority, p);
         }
       else if (type == T_MX)
         {
-        GETSHORT(num, p);            /* pointer is advanced */
-        sprintf(CS s, "%d ", num);
+        GETSHORT(priority, p);
+        sprintf(CS s, "%d ", priority);
         yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         }
       else if (type == T_SRV)
         {
-        int weight, port;
-        GETSHORT(num, p);            /* pointer is advanced */
+        GETSHORT(priority, p);
         GETSHORT(weight, p);
         GETSHORT(port, p);
-        sprintf(CS s, "%d %d %d ", num, weight, port);
+        sprintf(CS s, "%d %d %d ", priority, weight, port);
         yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         }
+      else if (type == T_CSA)
+        {
+        /* See acl_verify_csa() for more comments about CSA. */
+
+        GETSHORT(priority, p);
+        GETSHORT(weight, p);
+        GETSHORT(port, p);
+
+        if (priority != 1) continue;      /* CSA version must be 1 */
+
+        /* If the CSA record we found is not the one we asked for, analyse
+        the subdomain assertions in the port field, else analyse the direct
+        authorization status in the weight field. */
+
+        if (found != domain)
+          {
+          if (port & 1) *s = 'X';         /* explicit authorization required */
+          else *s = '?';                  /* no subdomain assertions here */
+          }
+        else
+          {
+          if (weight < 2) *s = 'N';       /* not authorized */
+          else if (weight == 2) *s = 'Y'; /* authorized */
+          else if (weight == 3) *s = '?'; /* unauthorizable */
+          else continue;                  /* invalid */
+          }
+
+        s[1] = ' ';
+        yield = string_cat(yield, &size, &ptr, s, 2);
+        }
+
+      /* GETSHORT() has advanced the pointer to the target domain. */
 
       rc = dn_expand(dnsa.answer, dnsa.answer + dnsa.answerlen, p,
         (DN_EXPAND_ARG4_TYPE)(s), sizeof(s));

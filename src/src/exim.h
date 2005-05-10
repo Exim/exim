@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.11 2005/04/27 10:00:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.12 2005/05/10 10:19:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -280,12 +280,19 @@ header files. I don't suppose they have T_SRV either. */
 #define T_SRV 33
 #endif
 
-/* We use the private type T_ZNS for retrieving the nameservers for the
-enclosing zone of a domain, and the private type T_MXH for retrieving
-the MX hostnames only (without their priorities). */
+/* We define a few private types for special DNS lookups:
+
+ . T_ZNS gets the nameservers of the enclosing zone of a domain
+
+ . T_MXH gets the MX hostnames only (without their priorities)
+
+ . T_CSA gets the domain's Client SMTP Authorization SRV record
+
+*/
 
 #define T_ZNS (-1)
 #define T_MXH (-2)
+#define T_CSA (-3)
 
 /* The resolv.h header defines __P(x) on some Solaris 2.5.1 systems (without
 checking that it is already defined, in fact). This conflicts with other

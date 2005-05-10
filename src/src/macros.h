@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.12 2005/04/07 10:54:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.13 2005/05/10 10:19:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -178,7 +178,7 @@ record. */
 
 /* Options for dns_next_rr */
 
-enum { RESET_NEXT, RESET_ANSWERS, RESET_ADDITIONAL };
+enum { RESET_NEXT, RESET_ANSWERS, RESET_AUTHORITY, RESET_ADDITIONAL };
 
 /* Argument values for the time-of-day function */
 

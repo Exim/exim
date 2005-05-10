@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.20 2005/04/28 13:29:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.21 2005/05/10 10:19:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -333,6 +333,7 @@ static var_entry var_table[] = {
   { "caller_uid",          vtype_uid,         &real_uid },
   { "compile_date",        vtype_stringptr,   &version_date },
   { "compile_number",      vtype_stringptr,   &version_cnumber },
+  { "csa_status",          vtype_stringptr,   &csa_status },
 #ifdef WITH_OLD_DEMIME
   { "demime_errorlevel",   vtype_int,         &demime_errorlevel },
   { "demime_reason",       vtype_stringptr,   &demime_reason },

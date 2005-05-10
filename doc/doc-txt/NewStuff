@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.39 2005/05/03 14:20:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.40 2005/05/10 10:19:11 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -7,6 +7,66 @@ This file contains descriptions of new features that have been added to Exim,
 but have not yet made it into the main manual (which is most conveniently
 updated when there is a relatively large batch of changes). The doc/ChangeLog
 file contains a listing of all changes, including bug fixes.
+
+
+Exim version 4.52
+-----------------
+
+TF/01 Support for checking Client SMTP Authorization has been added. CSA is a
+      system which allows a site to advertise which machines are and are not
+      permitted to send email. This is done by placing special SRV records in
+      the DNS, which are looked up using the client's HELO domain. At this
+      time CSA is still an Internet-Draft.
+
+      Client SMTP Authorization checks are performed by the ACL condition
+      verify=csa. This will fail if the client is not authorized. If there is
+      a DNS problem, or if no valid CSA SRV record is found, or if the client
+      is authorized, the condition succeeds. These three cases can be
+      distinguished using the expansion variable $csa_status, which can take
+      one of the values "fail", "defer", "unknown", or "ok". The condition
+      does not itself defer because that would be likely to cause problems
+      for legitimate email.
+
+      The error messages produced by the CSA code include slightly more
+      detail. If $csa_status is "defer" this may be because of problems
+      looking up the CSA SRV record, or problems looking up the CSA target
+      address record. There are four reasons for $csa_status being "fail":
+      the client's host name is explicitly not authorized; the client's IP
+      address does not match any of the CSA target IP addresses; the client's
+      host name is authorized but it has no valid target IP addresses (e.g.
+      the target's addresses are IPv6 and the client is using IPv4); or the
+      client's host name has no CSA SRV record but a parent domain has
+      asserted that all subdomains must be explicitly authorized.
+
+      The verify=csa condition can take an argument which is the domain to
+      use for the DNS query. The default is verify=csa/$sender_helo_name.
+
+      This implementation includes an extension to CSA. If the query domain
+      is an address literal such as [192.0.2.95], or if it is a bare IP
+      address, Exim will search for CSA SRV records in the reverse DNS as if
+      the HELO domain was e.g. 95.2.0.192.in-addr.arpa. Therefore it is
+      meaningful to say, for example, verify=csa/$sender_host_address - in
+      fact, this is the check that Exim performs if the client does not say
+      HELO. This extension can be turned off by setting the main
+      configuration option dns_csa_use_reverse = false.
+
+      If a CSA SRV record is not found for the domain itself, then a search
+      is performed through its parent domains for a record which might be
+      making assertions about subdomains. The maximum depth of this search is
+      limited using the main configuration option dns_csa_search_limit, which
+      takes the value 5 by default. Exim does not look for CSA SRV records in
+      a top level domain, so the default settings handle HELO domains as long
+      as seven (hostname.five.four.three.two.one.com) which encompasses the
+      vast majority of legitimate HELO domains.
+
+      The dnsdb lookup also has support for CSA. Although dnsdb already
+      supports SRV lookups, this is not sufficient because of the extra
+      parent domain search behaviour of CSA, and (as with PTR lookups)
+      dnsdb also turns IP addresses into lookups in the reverse DNS space.
+      The result of ${lookup dnsdb {csa=$sender_helo_name} } has two
+      space-separated fields: an authorization code and a target host name.
+      The authorization code can be "Y" for yes, "N" for no, "X" for explicit
+      authorization required but absent, or "?" for unknown.
 
 
 Version 4.51
