@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.134 2005/05/10 10:19:11 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.135 2005/05/10 11:13:09 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -8,6 +8,11 @@ Exim version 4.52
 -----------------
 
 TF/01 Added support for Client SMTP Authorization. See NewStuff for details.
+
+PH/01 When a transport filter timed out in a pipe delivery, and the pipe
+      command itself ended in error, the underlying message about the transport
+      filter timeout was being overwritten with the pipe command error. Now the
+      underlying error message should be appended to the second error message.
 
 
 Exim version 4.51

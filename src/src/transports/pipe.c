@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/pipe.c,v 1.5 2005/05/03 14:20:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/pipe.c,v 1.6 2005/05/10 11:13:09 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -830,6 +830,9 @@ above timed out. */
 
 if ((rc = child_close(pid, timeout)) != 0)
   {
+  uschar *tmsg = (addr->message == NULL)? US"" :
+    string_sprintf(" (preceded by %s)", addr->message);
+
   /* The process did not complete in time; kill its process group and fail
   the delivery. It appears to be necessary to kill the output process too, as
   otherwise it hangs on for some time if the actual pipe process is sleeping.
@@ -841,7 +844,7 @@ if ((rc = child_close(pid, timeout)) != 0)
     killpg(pid, SIGKILL);
     kill(outpid, SIGKILL);
     addr->transport_return = ob->timeout_defer? DEFER : FAIL;
-    addr->message = string_sprintf("pipe delivery process timed out");
+    addr->message = string_sprintf("pipe delivery process timed out%s", tmsg);
     }
 
   /* Wait() failed. */
@@ -850,7 +853,7 @@ if ((rc = child_close(pid, timeout)) != 0)
     {
     addr->transport_return = PANIC;
     addr->message = string_sprintf("Wait() failed for child process of %s "
-      "transport: %s", tblock->name, strerror(errno));
+      "transport: %s%s", tblock->name, strerror(errno), tmsg);
     }
 
   /* Either the process completed, but yielded a non-zero (necessarily
@@ -864,8 +867,8 @@ if ((rc = child_close(pid, timeout)) != 0)
       {
       addr->transport_return = FAIL;
       addr->message = string_sprintf("Child process of %s transport (running "
-        "command \"%s\") was terminated by signal %d (%s)", tblock->name, cmd,
-        -rc, os_strsignal(-rc));
+        "command \"%s\") was terminated by signal %d (%s)%s", tblock->name, cmd,
+        -rc, os_strsignal(-rc), tmsg);
       }
     }
 
@@ -917,8 +920,8 @@ if ((rc = child_close(pid, timeout)) != 0)
       {
       addr->transport_return = DEFER;
       addr->special_action = SPECIAL_FREEZE;
-      addr->message = string_sprintf("pipe process failed to exec \"%s\"",
-        cmd);
+      addr->message = string_sprintf("pipe process failed to exec \"%s\"%s",
+        cmd, tmsg);
       }
 
     /* Otherwise take action only if not ignoring status */
@@ -992,6 +995,13 @@ if ((rc = child_close(pid, timeout)) != 0)
         if (quote)
           addr->message = string_cat(addr->message, &size, &ptr, US"\"", 1);
         }
+
+      /* Add previous filter timeout message, if present. */
+
+      if (*tmsg != 0)
+        addr->message = string_cat(addr->message, &size, &ptr, tmsg,
+          Ustrlen(tmsg));
+
       addr->message[ptr] = 0;  /* Ensure concatenated string terminated */
       }
     }
