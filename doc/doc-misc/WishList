@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.31 2005/05/06 08:28:16 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.32 2005/05/10 14:34:21 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1917,5 +1917,14 @@ triggers on a shortage of main memory.
 Currently, "delay=5m" (e.g.) waits for 5 minutes. If we can detect that the
 connection has died in the meantime, it would make sense to break the delay.
 ------------------------------------------------------------------------------
---- HWM 327 ------------------------------------------------------------------
+
+(338) 10-May-05 S After "unseen" routing, pass on header additions/deletions
+
+Currently, when an "unseen" router accepts an address, header additions and
+deletions stick with that address, and the "clone" address that continues to be
+routed starts off without any additions or removals. This request is for an
+option to select other actions: retain header actions with the clone only, or
+pass them on to both addresses.
+------------------------------------------------------------------------------
+--- HWM 328 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
