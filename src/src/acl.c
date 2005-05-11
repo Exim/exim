@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.29 2005/05/10 10:19:11 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.30 2005/05/11 09:26:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2178,6 +2178,22 @@ for (; cb != NULL; cb = cb->next)
           HDEBUG(D_acl)
             debug_printf("delay skipped in -bh checking mode\n");
           }
+
+        /* It appears to be impossible to detect that a TCP/IP connection has
+        gone away without reading from it. This means that we cannot shorten
+        the delay below if the client goes away, because we cannot discover
+        that the client has closed its end of the connection. (The connection
+        is actually in a half-closed state, waiting for the server to close its
+        end.) It would be nice to be able to detect this state, so that the
+        Exim process is not held up unnecessarily. However, it seems that we
+        can't. The poll() function does not do the right thing, and in any case
+        it is not always available.
+
+        NOTE: If ever this state of affairs changes, remember that we may be
+        dealing with stdin/stdout here, in addition to TCP/IP connections.
+        Whatever is done must work in both cases. To detected the stdin/stdout
+        case, check for smtp_in or smtp_out being NULL. */
+
         else
           {
           while (delay > 0) delay = sleep(delay);
