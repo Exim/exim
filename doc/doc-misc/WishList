@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.32 2005/05/10 14:34:21 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.33 2005/05/12 08:26:09 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1918,7 +1918,7 @@ Currently, "delay=5m" (e.g.) waits for 5 minutes. If we can detect that the
 connection has died in the meantime, it would make sense to break the delay.
 ------------------------------------------------------------------------------
 
-(338) 10-May-05 S After "unseen" routing, pass on header additions/deletions
+(328) 10-May-05 S After "unseen" routing, pass on header additions/deletions
 
 Currently, when an "unseen" router accepts an address, header additions and
 deletions stick with that address, and the "clone" address that continues to be
@@ -1926,5 +1926,14 @@ routed starts off without any additions or removals. This request is for an
 option to select other actions: retain header actions with the clone only, or
 pass them on to both addresses.
 ------------------------------------------------------------------------------
---- HWM 328 ------------------------------------------------------------------
+
+(329) 12-May-05 S Create message ID at MAIL FROM time
+
+Currently, the ID is created only when Exim is about to create the data (-D)
+file for an incoming message. In other words, after it knows it really is going
+to accept the message. Creating the ID earlier would mean that rejection
+messages in the log would be tagged with an ID, and this is seen as desirable
+by some people.
+------------------------------------------------------------------------------
+--- HWM 329 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
