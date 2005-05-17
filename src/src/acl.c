@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.31 2005/05/17 11:20:32 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.32 2005/05/17 15:00:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2107,7 +2107,7 @@ for (; cb != NULL; cb = cb->next)
         {
         uschar *pp = p + 1;
         while (*pp != 0) pp++;
-        fake_reject_text = expand_string(string_copyn(p+1, pp-p));
+        fake_reject_text = expand_string(string_copyn(p+1, pp-p-1));
         p = pp;
         }
        else
@@ -2127,6 +2127,7 @@ for (; cb != NULL; cb = cb->next)
       break;
 
       case CONTROL_SUBMISSION:
+      originator_name = US"";
       submission_mode = TRUE;
       while (*p == '/')
         {
@@ -2140,7 +2141,15 @@ for (; cb != NULL; cb = cb->next)
           {
           uschar *pp = p + 8;
           while (*pp != 0 && *pp != '/') pp++;
-          submission_domain = string_copyn(p+8, pp-p);
+          submission_domain = string_copyn(p+8, pp-p-8);
+          p = pp;
+          }
+        else if (Ustrncmp(p, "/name=", 6) == 0)
+          {
+          uschar *pp = p + 6;
+          while (*pp != 0 && *pp != '/') pp++;
+          originator_name = string_copy(parse_fix_phrase(p+6, pp-p-6,
+            big_buffer, big_buffer_size));
           p = pp;
           }
         else break;

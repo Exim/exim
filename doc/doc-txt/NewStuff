@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.41 2005/05/17 09:53:34 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.42 2005/05/17 15:00:04 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -80,6 +80,15 @@ PH/01 The amount of output produced by the "make" process has been reduced,
       The value of FULLECHO defaults to "@", the flag character that suppresses
       command reflection in "make". When you ask for the full output, it is
       given in addition to the the short output.
+
+PH/02 There have been two changes concerned with submission mode:
+
+      (a) A new option, /name=value, makes it possible to supply a user name
+          to be inserted into any created Sender: header line. Typically, this
+          would be looked up from $authenticated_id.
+
+      (b) The envelope sender address is forced to be the same as the
+          submission mode sender address.
 
 
 Version 4.51

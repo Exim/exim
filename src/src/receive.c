@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.16 2005/04/27 13:29:32 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.17 2005/05/17 15:00:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2341,31 +2341,36 @@ if (from_header == NULL && (sender_host_address == NULL || submission_mode))
 
   if (sender_address[0] == 0)
     {
+    uschar *fromstart, *fromend;
+
+    fromstart = string_sprintf("%sFrom: %s%s", resent_prefix,
+      originator_name, (originator_name[0] == 0)? "" : " <");
+    fromend = (originator_name[0] == 0)? US"" : US">";
+
     if (sender_local || local_error_message)
       {
-      header_add(htype_from, "%sFrom: %s%s%s@%s%s\n", resent_prefix,
-        originator_name,
-        (originator_name[0] == 0)? "" : " <",
-        local_part_quote(originator_login),
-        qualify_domain_sender,
-        (originator_name[0] == 0)? "" : ">");
+      header_add(htype_from, "%s%s@%s%s\n", fromstart,
+        local_part_quote(originator_login), qualify_domain_sender,
+        fromend);
       }
     else if (submission_mode && authenticated_id != NULL)
       {
       if (submission_domain == NULL)
         {
-        header_add(htype_from, "%sFrom: %s@%s\n", resent_prefix,
-          local_part_quote(authenticated_id), qualify_domain_sender);
+        header_add(htype_from, "%s%s@%s%s\n", fromstart,
+          local_part_quote(authenticated_id), qualify_domain_sender,
+          fromend);
         }
       else if (submission_domain[0] == 0)  /* empty => whole address set */
         {
-        header_add(htype_from, "%sFrom: %s\n", resent_prefix,
-          authenticated_id);
+        header_add(htype_from, "%s%s%s\n", fromstart, authenticated_id,
+          fromend);
         }
       else
         {
-        header_add(htype_from, "%sFrom: %s@%s\n", resent_prefix,
-          local_part_quote(authenticated_id), submission_domain);
+        header_add(htype_from, "%s%s@%s%s\n", fromstart,
+          local_part_quote(authenticated_id), submission_domain,
+          fromend);
         }
       from_header = header_last;    /* To get it checked for Sender: */
       }
@@ -2377,15 +2382,12 @@ if (from_header == NULL && (sender_host_address == NULL || submission_mode))
 
   else
     {
-    if (!smtp_input || sender_local)
-      header_add(htype_from, "%sFrom: %s%s%s%s\n",
-        resent_prefix, originator_name,
-        (originator_name[0] == 0)? "" : " <",
-        (sender_address_unrewritten == NULL)?
-          sender_address : sender_address_unrewritten,
-        (originator_name[0] == 0)? "" : ">");
-    else
-      header_add(htype_from, "%sFrom: %s\n", resent_prefix, sender_address);
+    header_add(htype_from, "%sFrom: %s%s%s%s\n", resent_prefix,
+      originator_name,
+      (originator_name[0] == 0)? "" : " <",
+      (sender_address_unrewritten == NULL)?
+        sender_address : sender_address_unrewritten,
+      (originator_name[0] == 0)? "" : ">");
 
     from_header = header_last;    /* To get it checked for Sender: */
     }
@@ -2466,12 +2468,25 @@ if (from_header != NULL &&
 
   if (make_sender)
     {
-    if (submission_mode)
+    if (submission_mode && originator_name[0] == 0)
       header_add(htype_sender, "%sSender: %s\n", resent_prefix,
         generated_sender_address);
     else
       header_add(htype_sender, "%sSender: %s <%s>\n",
         resent_prefix, originator_name, generated_sender_address);
+    }
+
+  /* Ensure that a non-null envelope sender address corresponds to the
+  submission mode sender address. */
+
+  if (submission_mode && sender_address[0] != 0)
+    {
+    if (sender_address_unrewritten == NULL)
+      sender_address_unrewritten = sender_address;
+    sender_address = generated_sender_address;
+    log_write(L_address_rewrite, LOG_MAIN,
+      "\"%s\" from env-from rewritten as \"%s\" by submission mode",
+      sender_address_unrewritten, generated_sender_address);
     }
   }
 
