@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.137 2005/05/17 09:53:34 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.138 2005/05/17 11:20:32 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -18,6 +18,11 @@ TK/01 Fix poll() being unavailable on Mac OSX 10.2.
 
 PH/02 Reduce the amount of output that "make" produces by default. Full output
       can still be requested.
+
+PH/03 The warning log line about a condition test deferring for a "warn" verb
+      was being output only once per connection, rather than after each
+      occurrence (because it was using the same function as for successful
+      "warn" verbs). This seems wrong, so I have changed it.
 
 
 Exim version 4.51

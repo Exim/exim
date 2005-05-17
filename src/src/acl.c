@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.30 2005/05/11 09:26:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.31 2005/05/17 11:20:32 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -788,8 +788,8 @@ if (log_message != NULL && log_message != user_message)
       strcmpic(log_message, US"sender verify failed") == 0)
     text = string_sprintf("%s: %s", text, sender_verified_failed->message);
 
-  /* Search previously logged warnings. They are kept in malloc store so they
-  can be freed at the start of a new message. */
+  /* Search previously logged warnings. They are kept in malloc
+  store so they can be freed at the start of a new message. */
 
   for (logged = acl_warn_logged; logged != NULL; logged = logged->next)
     if (Ustrcmp(logged->text, text) == 0) break;
@@ -2950,9 +2950,10 @@ while (acl != NULL)
     if (cond == OK)
       acl_warn(where, *user_msgptr, *log_msgptr);
     else if (cond == DEFER)
-      acl_warn(where, NULL, string_sprintf("ACL \"warn\" statement skipped: "
-        "condition test deferred: %s",
-        (*log_msgptr == NULL)? US"" : *log_msgptr));
+      log_write(0, LOG_MAIN, "%s Warning: ACL \"warn\" statement skipped: "
+        "condition test deferred%s%s", host_and_ident(TRUE),
+        (*log_msgptr == NULL)? US"" : US": ",
+        (*log_msgptr == NULL)? US"" : *log_msgptr);
     *log_msgptr = *user_msgptr = NULL;  /* In case implicit DENY follows */
     break;
 
