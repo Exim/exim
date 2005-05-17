@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.5 2005/05/04 10:17:29 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.6 2005/05/17 09:53:34 ph10 Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -18,6 +18,13 @@ EXIMON_EDITME = ../Local/eximon.conf
 
 LNCC = $(CC)
 
+# The compile commands can be very long. To make the output look better,
+# they are not normally echoed in full. To get full echoing, the caller
+# must set FULLECHO='' on the command line and call make with -e. We default
+# FULLECHO to '@' to suppress the full echo. Then define an abbreviation.
+
+FULLECHO = @
+FE       = $(FULLECHO)
 
 # The default target double-checks the existence of $(EDITME) and then arranges
 # to touch it if it exists and any of the optional configuration files, which
@@ -107,13 +114,14 @@ allexim: config.h buildpcre $(EXIM_MONITOR) exicyclog exinext exiwhat \
 
 # Targets for special-purpose configuration header builders
 buildconfig: buildconfig.c
-	$(CC) $(CFLAGS) $(INCLUDE) -o buildconfig buildconfig.c $(LIBS)
+	@echo "$(CC) buildconfig.c"
+	$(FE)$(CC) $(CFLAGS) $(INCLUDE) -o buildconfig buildconfig.c $(LIBS)
 
 
 # Target for the exicyclog utility script
 exicyclog: Makefile config.h ../src/exicyclog.src
 	@rm -f exicyclog
-	sed \
+	@sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -131,12 +139,12 @@ exicyclog: Makefile config.h ../src/exicyclog.src
 	  ../src/exicyclog.src > exicyclog-t
 	@mv exicyclog-t exicyclog
 	@chmod a+x exicyclog
-	@echo ">>> exicyclog script built"; echo ""
+	@echo ">>> exicyclog script built"
 
 # Target for the exinext utility script
 exinext: Makefile config.h ../src/exinext.src
 	@rm -f exinext
-	sed \
+	@sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -146,12 +154,12 @@ exinext: Makefile config.h ../src/exinext.src
 	  ../src/exinext.src > exinext-t
 	@mv exinext-t exinext
 	@chmod a+x exinext
-	@echo ">>> exinext script built"; echo ""
+	@echo ">>> exinext script built"
 
 # Target for the exiwhat utility script
 exiwhat: Makefile config.h ../src/exiwhat.src
 	@rm -f exiwhat
-	sed \
+	@sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -167,12 +175,12 @@ exiwhat: Makefile config.h ../src/exiwhat.src
 	  ../src/exiwhat.src > exiwhat-t
 	@mv exiwhat-t exiwhat
 	@chmod a+x exiwhat
-	@echo ">>> exiwhat script built"; echo ""
+	@echo ">>> exiwhat script built"
 
 # Target for the exim_checkaccess utility script
 exim_checkaccess: Makefile config.h ../src/exim_checkaccess.src
 	@rm -f exim_checkaccess
-	sed \
+	@sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -190,7 +198,7 @@ eximon: Makefile config.h ../src/eximon.src ../OS/eximon.conf-Default \
           ../Local/eximon.conf
 	@rm -f eximon
 	$(SHELL) $(SCRIPTS)/Configure-eximon
-	sed \
+	@sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -208,7 +216,7 @@ eximon: Makefile config.h ../src/eximon.src ../OS/eximon.conf-Default \
 
 exigrep: Makefile ../src/exigrep.src
 	@rm -f exigrep
-	sed \
+	@sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -218,20 +226,20 @@ exigrep: Makefile ../src/exigrep.src
 	  ../src/exigrep.src > exigrep-t
 	@mv exigrep-t exigrep
 	@chmod a+x exigrep
-	@echo ">>> exigrep script built"; echo ""
+	@echo ">>> exigrep script built"
 
 eximstats: Makefile ../src/eximstats.src
 	@rm -f eximstats
-	sed \
+	@sed \
 	  -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  ../src/eximstats.src > eximstats-t
 	@mv eximstats-t eximstats
 	@chmod a+x eximstats
-	@echo ">>> eximstats script built"; echo ""
+	@echo ">>> eximstats script built"
 
 exiqgrep: Makefile ../src/exiqgrep.src
 	@rm -f exiqgrep
-	sed \
+	@sed \
 	  -e "s?PROCESSED_FLAG?This file has been so processed.?"\
 	  -e "/^# /p" \
 	  -e "/^# /d" \
@@ -240,48 +248,48 @@ exiqgrep: Makefile ../src/exiqgrep.src
 	  ../src/exiqgrep.src > exiqgrep-t
 	@mv exiqgrep-t exiqgrep
 	@chmod a+x exiqgrep
-	@echo ">>> exiqgrep script built"; echo ""
+	@echo ">>> exiqgrep script built"
 
 exiqsumm: Makefile ../src/exiqsumm.src
 	@rm -f exiqsumm
-	sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	@sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  ../src/exiqsumm.src > exiqsumm-t
 	@mv exiqsumm-t exiqsumm
 	@chmod a+x exiqsumm
-	@echo ">>> exiqsumm script built"; echo ""
+	@echo ">>> exiqsumm script built"
 
 exipick: Makefile ../src/exipick.src
 	@rm -f exipick
-	sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	@sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  -e "s?SPOOL_DIRECTORY?$(SPOOL_DIRECTORY)?" \
 	  ../src/exipick.src > exipick-t
 	@mv exipick-t exipick
 	@chmod a+x exipick
-	@echo ">>> exipick script built"; echo ""
+	@echo ">>> exipick script built"
 
 transport-filter.pl: Makefile ../src/transport-filter.src
 	@rm -f transport-filter.pl
-	sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	@sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  ../src/transport-filter.src > transport-filter.pl-t
 	@mv transport-filter.pl-t transport-filter.pl
 	@chmod a+x transport-filter.pl
-	@echo ">>> transport-filter.pl script built"; echo ""
+	@echo ">>> transport-filter.pl script built"
 
 convert4r3: Makefile ../src/convert4r3.src
 	@rm -f convert4r3
-	sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	@sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  ../src/convert4r3.src > convert4r3-t
 	@mv convert4r3-t convert4r3
 	@chmod a+x convert4r3
-	@echo ">>> convert4r3 script built"; echo ""
+	@echo ">>> convert4r3 script built"
 
 convert4r4: Makefile ../src/convert4r4.src
 	@rm -f convert4r4
-	sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
+	@sed -e "s?PERL_COMMAND?$(PERL_COMMAND)?" \
 	  ../src/convert4r4.src > convert4r4-t
 	@mv convert4r4-t convert4r4
 	@chmod a+x convert4r4
-	@echo ">>> convert4r4 script built"; echo ""
+	@echo ">>> convert4r4 script built"
 
 
 # These are objects of optional features. They are always compiled, but
@@ -312,9 +320,11 @@ exim:   pcre/libpcre.a lookups/lookups.a auths/auths.a \
 	@echo " "
 	awk '{ print ($$1+1) }' cnumber.h > cnumber.temp
 	rm -f cnumber.h; mv cnumber.temp cnumber.h
-	$(CC) -c $(CFLAGS) $(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) version.c
+	@echo "$(CC) version.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) version.c
 	rm -f exim
-	$(PURIFY) $(LNCC) -o exim $(LFLAGS) $(OBJ_EXIM) version.o \
+	@echo "$(LNCC) -o exim"
+	$(FE)$(PURIFY) $(LNCC) -o exim $(LFLAGS) $(OBJ_EXIM) version.o \
 	  pcre/libpcre.a \
 	  routers/routers.a transports/transports.a lookups/lookups.a \
 	  auths/auths.a \
@@ -335,13 +345,13 @@ exim:   pcre/libpcre.a lookups/lookups.a auths/auths.a \
 OBJ_DUMPDB = exim_dumpdb.o util-os.o util-store.o
 
 exim_dumpdb: $(OBJ_DUMPDB)
-	$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_dumpdb $(LFLAGS) $(OBJ_DUMPDB) \
+	@echo "$(LNCC) -o exim_dumpdb"
+	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_dumpdb $(LFLAGS) $(OBJ_DUMPDB) \
 	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_dumpdb; \
 	  $(STRIP_COMMAND) exim_dumpdb; \
 	fi
-	@echo " "
 	@echo ">>> exim_dumpdb utility built"
 	@echo " "
 
@@ -350,13 +360,13 @@ exim_dumpdb: $(OBJ_DUMPDB)
 OBJ_FIXDB = exim_fixdb.o util-os.o util-store.o
 
 exim_fixdb:  $(OBJ_FIXDB)
-	$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_fixdb $(LFLAGS) $(OBJ_FIXDB) \
+	@echo "$(LNCC) -o exim_fixdb"
+	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_fixdb $(LFLAGS) $(OBJ_FIXDB) \
 	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_fixdb; \
 	  $(STRIP_COMMAND) exim_fixdb; \
 	fi
-	@echo " "
 	@echo ">>> exim_fixdb utility built"
 	@echo " "
 
@@ -365,40 +375,41 @@ exim_fixdb:  $(OBJ_FIXDB)
 OBJ_TIDYDB = exim_tidydb.o util-os.o util-store.o
 
 exim_tidydb: $(OBJ_TIDYDB)
-	$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_tidydb $(LFLAGS) $(OBJ_TIDYDB) \
+	@echo "$(LNCC) -o exim_tidydb"
+	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_tidydb $(LFLAGS) $(OBJ_TIDYDB) \
 	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_tidydb; \
 	  $(STRIP_COMMAND) exim_tidydb; \
 	fi
-	@echo " "
 	@echo ">>> exim_tidydb utility built"
 	@echo " "
 
 # The utility for building dbm files
 
 exim_dbmbuild: exim_dbmbuild.o
-	$(LNCC) -o exim_dbmbuild $(LFLAGS) exim_dbmbuild.o \
+	@echo "$(LNCC) -o exim_dbmbuild"
+	$(FE)$(LNCC) -o exim_dbmbuild $(LFLAGS) exim_dbmbuild.o \
 	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_dbmbuild; \
 	  $(STRIP_COMMAND) exim_dbmbuild; \
 	fi
-	@echo " "
 	@echo ">>> exim_dbmbuild utility built"
 	@echo " "
 
 # The utility for locking a mailbox while messing around with it
 
 exim_lock: exim_lock.c
-	$(CC) -c $(CFLAGS) $(INCLUDE) exim_lock.c
-	$(LNCC) -o exim_lock $(LFLAGS) exim_lock.o  \
+	@echo "$(CC) exim_lock.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) exim_lock.c
+	@echo "$(LNCC) -o exim_lock"
+	$(FE)$(LNCC) -o exim_lock $(LFLAGS) exim_lock.o  \
 	  $(LIBS) $(EXTRALIBS)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_lock; \
 	  $(STRIP_COMMAND) exim_lock; \
 	fi
-	@echo " "
 	@echo ">>> exim_lock utility built"
 	@echo " "
 
@@ -420,16 +431,17 @@ OBJ_MONBIN = util-spool_in.o util-store.o util-string.o tod.o tree.o $(MONBIN)
 
 eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) pcre/libpcre.a \
             ../exim_monitor/em_version.c
-	$(CC) -o em_version.o -c \
+	@echo "$(CC) exim_monitor/em_version.c"
+	$(FE)$(CC) -o em_version.o -c \
 	  $(CFLAGS) $(XINCLUDE) -I. ../exim_monitor/em_version.c
-	$(PURIFY) $(LNCC) -o eximon.bin em_version.o $(LFLAGS) $(XLFLAGS) \
+	@echo "$(LNCC) -o eximon.bin"
+	$(FE)$(PURIFY) $(LNCC) -o eximon.bin em_version.o $(LFLAGS) $(XLFLAGS) \
 	$(OBJ_MONBIN) -lXaw -lXmu -lXt -lXext -lX11 pcre/libpcre.a \
 	  $(LIBS) $(LIBS_EXIMON) $(EXTRALIBS) $(EXTRALIBS_EXIMON) -lc
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) eximon.bin; \
 	  $(STRIP_COMMAND) eximon.bin; \
 	fi
-	@echo " "
 	@echo ">>> exim monitor binary built"
 	@echo " "
 
@@ -444,7 +456,8 @@ HDRS  =    config.h    dbfunctions.h    dbstuff.h    exim.h    functions.h    gl
 PHDRS = ../config.h ../dbfunctions.h ../dbstuff.h ../exim.h ../functions.h ../globals.h ../local_scan.h ../macros.h ../mytypes.h ../structs.h
 
 .SUFFIXES: .o .c
-.c.o:; $(CC) -c $(CFLAGS) -I. $(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) $*.c
+.c.o:;  @echo "$(CC) $*.c"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) $*.c
 
 # This is the dummy module for use by test compiles of individual modules. It
 # contains functions such as log_write() that may be called from bits of Exim
@@ -455,24 +468,28 @@ dummies.o:       dummies.c
 # Compile instructions for perl.o for when EXIM_PERL is set
 
 perl.o:          $(HDRS) perl.c
-	$(PERL_CC) $(PERL_CCOPTS) $(CFLAGS) $(INCLUDE) -c perl.c
+	@echo "$(PERL_CC) perl.c"
+	$(FE)$(PERL_CC) $(PERL_CCOPTS) $(CFLAGS) $(INCLUDE) -c perl.c
 
 # Compile instructions for the database utility modules
 
 exim_dumpdb.o:   $(HDRS) exim_dbutil.c
-	$(CC) -c $(CFLAGS) $(INCLUDE) \
+	@echo "$(CC) -DEXIM_DUMPDB exim_dbutil.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) \
 				      -DCOMPILE_UTILITY \
 				      -DEXIM_DUMPDB \
 				      -o exim_dumpdb.o exim_dbutil.c
 
 exim_fixdb.o:    $(HDRS) exim_dbutil.c
-	$(CC) -c $(CFLAGS) $(INCLUDE) \
+	@echo "$(CC) -DEXIM_FIXDB exim_dbutil.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) \
 				      -DCOMPILE_UTILITY \
 				      -DEXIM_FIXDB \
 				      -o exim_fixdb.o exim_dbutil.c
 
 exim_tidydb.o:   $(HDRS) exim_dbutil.c
-	$(CC) -c $(CFLAGS) $(INCLUDE) \
+	@echo "$(CC) -DEXIM_TIDYDB exim_dbutil.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) \
 				      -DCOMPILE_UTILITY \
 				      -DEXIM_TIDYDB \
 				      -o exim_tidydb.o exim_dbutil.c
@@ -480,22 +497,27 @@ exim_tidydb.o:   $(HDRS) exim_dbutil.c
 # Compile instructions for exim_dbmbuild
 
 exim_dbmbuild.o: $(HDRS) exim_dbmbuild.c
-	$(CC) -c $(CFLAGS) $(INCLUDE) -o exim_dbmbuild.o exim_dbmbuild.c
+	@echo "$(CC) exim_dbmbuild.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -o exim_dbmbuild.o exim_dbmbuild.c
 
 # Utilities use special versions of some modules - typically with debugging
 # calls cut out.
 
 util-spool_in.o: $(HDRS) spool_in.c
-	$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-spool_in.o spool_in.c
+	@echo "$(CC) -DCOMPILE_UTILITY spool_in.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-spool_in.o spool_in.c
 
 util-store.o:    $(HDRS) store.c
-	$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-store.o store.c
+	@echo "$(CC) -DCOMPILE_UTILITY store.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-store.o store.c
 
 util-string.o:   $(HDRS) string.c
-	$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-string.o string.c
+	@echo "$(CC) -DCOMPILE_UTILITY string.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) -DCOMPILE_UTILITY -o util-string.o string.c
 
 util-os.o:       $(HDRS) os.c
-	$(CC) -c $(CFLAGS) $(INCLUDE) \
+	@echo "$(CC) -DCOMPILE_UTILITY os.c"
+	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) \
 				      -DCOMPILE_UTILITY \
 				      -DOS_LOAD_AVERAGE \
 				      -DFIND_RUNNING_INTERFACES \
@@ -505,7 +527,8 @@ util-os.o:       $(HDRS) os.c
 # from a source whose location is set by configuration.
 
 local_scan.o:    Makefile local_scan.h ../$(LOCAL_SCAN_SOURCE)
-	$(CC) -c $(CFLAGS) -I. $(INCLUDE) -o local_scan.o ../$(LOCAL_SCAN_SOURCE)
+	@echo "$(CC) local_scan.c"
+	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) -o local_scan.o ../$(LOCAL_SCAN_SOURCE)
 
 # Dependencies for the "ordinary" exim modules
 
@@ -605,7 +628,8 @@ em_text.o:       ../exim_monitor/em_text.c    ../exim_monitor/em_hdr.h
 em_xs.o:         ../exim_monitor/em_xs.c      ../exim_monitor/em_hdr.h
 em_version.o:    ../exim_monitor/em_version.c ../exim_monitor/em_hdr.h
 $(MONBIN): $(HDRS)
-		 $(CC) -o $@ -c $(CFLAGS) -I. -I../exim_monitor $(INCLUDE) $(XINCLUDE) \
+		 @echo "$(CC) exim_monitor/`echo $@ | sed 's/o$$/c/'`"
+		 $(FE)$(CC) -o $@ -c $(CFLAGS) -I. -I../exim_monitor $(INCLUDE) $(XINCLUDE) \
 		   ../exim_monitor/`echo $@ | sed 's/o$$/c/'`
 
 
@@ -630,17 +654,18 @@ $(MONBIN): $(HDRS)
 
 buildpcre:
 	 @(cd pcre; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" \
-	   CFLAGS="$(CFLAGS) $(PCRE_CFLAGS)" \
+	   FE="$(FE)" CFLAGS="$(CFLAGS) $(PCRE_CFLAGS)" \
 	   RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)")
 	 @if $(SHELL) $(SCRIPTS)/newer pcre/libpcre.a exim; then \
 	   rm -f exim eximon.bin; fi
+	 @echo " "
 
 # The lookups library.
 
 buildlookups:
 	 @cd lookups; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
-	   RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
+	   FE="$(FE)" RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) $(LOOKUP_INCLUDE)"; \
 	 echo " "
 
@@ -648,7 +673,7 @@ buildlookups:
 
 buildrouters:
 	 @cd routers; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
-	   RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
+	   FE="$(FE)" RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"; \
 	 echo " "
 
@@ -656,7 +681,7 @@ buildrouters:
 
 buildtransports:
 	 @cd transports; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
-	   RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
+	   FE="$(FE)" RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"; \
 	 echo " "
 
@@ -664,7 +689,7 @@ buildtransports:
 
 buildauths:
 	 @cd auths; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
-	   RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
+	   FE="$(FE)" RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"; \
 	 echo " "
 

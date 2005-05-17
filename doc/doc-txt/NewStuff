@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.40 2005/05/10 10:19:11 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.41 2005/05/17 09:53:34 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -67,6 +67,19 @@ TF/01 Support for checking Client SMTP Authorization has been added. CSA is a
       space-separated fields: an authorization code and a target host name.
       The authorization code can be "Y" for yes, "N" for no, "X" for explicit
       authorization required but absent, or "?" for unknown.
+
+PH/01 The amount of output produced by the "make" process has been reduced,
+      because the compile lines are often rather long, making it all pretty
+      unreadable. The new style is along the lines of the 2.6 Linux kernel:
+      just a short line for each module that is being compiled or linked.
+      However, it is still possible to get the full output, by calling "make"
+      like this:
+
+        FULLECHO='' make -e
+
+      The value of FULLECHO defaults to "@", the flag character that suppresses
+      command reflection in "make". When you ask for the full output, it is
+      given in addition to the the short output.
 
 
 Version 4.51

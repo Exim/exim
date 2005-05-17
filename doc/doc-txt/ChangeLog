@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.136 2005/05/11 08:05:10 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.137 2005/05/17 09:53:34 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -15,6 +15,9 @@ PH/01 When a transport filter timed out in a pipe delivery, and the pipe
       underlying error message should be appended to the second error message.
 
 TK/01 Fix poll() being unavailable on Mac OSX 10.2.
+
+PH/02 Reduce the amount of output that "make" produces by default. Full output
+      can still be requested.
 
 
 Exim version 4.51
