@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.43 2005/05/23 15:28:37 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.44 2005/05/23 15:44:06 fanf2 Exp $
 
 New Features in Exim
 --------------------
@@ -81,16 +81,40 @@ PH/01 The amount of output produced by the "make" process has been reduced,
       command reflection in "make". When you ask for the full output, it is
       given in addition to the the short output.
 
-PH/02 There have been two changes concerned with submission mode:
+TF/02 There have been two changes concerned with submission mode:
 
-      (a) A new option, /name=value, makes it possible to supply a user name
-          to be inserted into any created Sender: header line. Typically, this
-          would be looked up from $authenticated_id.
+      Until now submission mode always left the return path alone, whereas
+      locally-submitted messages from untrusted users have the return path
+      fixed to the user's email address. Submission mode now fixes the return
+      path to the same address as is used to create the Sender: header. If
+      /sender_retain is specified then both the Sender: header and the return
+      path are left alone.
 
-      (b) The envelope sender address is forced to be the same as the
-          submission mode sender address.
+      Note that the changes caused by submission mode take effect after the
+      predata ACL. This means that any sender checks performed before the
+      fix-ups will use the untrusted sender address specified by the user, not
+      the trusted sender address specified by submission mode. Although this
+      might be slightly unexpected, it does mean that you can configure ACL
+      checks to spot that a user is trying to spoof another's address, for
+      example.
 
-TF/02 The control = fakereject ACL modifier now has a fakedefer counterpart,
+      There is also a new /name= option for submission mode which allows you
+      to specify the user's full name to be included in the Sender: header.
+      For example:
+
+        accept authenticated = *
+               control = submission/name=${lookup {$authenticated_id} \
+                                           lsearch {/etc/exim/namelist} }
+
+      The namelist file contains entries like
+
+        fanf: Tony Finch
+
+      And the resulting Sender: header looks like
+
+        Sender: Tony Finch <fanf@exim.org>
+
+TF/03 The control = fakereject ACL modifier now has a fakedefer counterpart,
       which works in exactly the same way except it causes a fake SMTP 450
       response after the message data instead of a fake SMTP 550 response.
       You must take care when using fakedefer because it will cause messages
