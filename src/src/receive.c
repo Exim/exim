@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.17 2005/05/17 15:00:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.18 2005/05/23 15:28:38 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3477,8 +3477,9 @@ if (smtp_input)
     {
     if (smtp_reply == NULL)
       {
-      if (fake_reject)
-        smtp_respond(550,TRUE,fake_reject_text);
+      if (fake_response != OK)
+        smtp_respond(fake_response == DEFER ? 450 : 550,
+                     TRUE, fake_response_text);
       else
         smtp_printf("250 OK id=%s\r\n", message_id);
       if (host_checking)
@@ -3487,8 +3488,9 @@ if (smtp_input)
       }
     else if (smtp_reply[0] != 0)
       {
-      if (fake_reject && (smtp_reply[0] == '2'))
-        smtp_respond(550,TRUE,fake_reject_text);
+      if (fake_response != OK && (smtp_reply[0] == '2'))
+        smtp_respond(fake_response == DEFER ? 450 : 550,
+                     TRUE, fake_response_text);
       else
         smtp_printf("%.1024s\r\n", smtp_reply);
       }

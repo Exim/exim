@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.17 2005/04/27 13:29:32 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.18 2005/05/23 15:28:38 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -809,7 +809,7 @@ message_size = -1;
 acl_warn_headers = NULL;
 queue_only_policy = FALSE;
 deliver_freeze = FALSE;                              /* Can be set by ACL */
-fake_reject = FALSE;                                 /* Can be set by ACL */
+fake_response = OK;                                  /* Can be set by ACL */
 #ifdef WITH_CONTENT_SCAN
 no_mbox_unspool = FALSE;                             /* Can be set by ACL */
 #endif

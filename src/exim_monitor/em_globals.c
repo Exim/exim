@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.6 2005/04/29 11:54:23 tom Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.7 2005/05/23 15:28:38 fanf2 Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -145,7 +145,7 @@ int     dk_do_verify           = 0;
 BOOL    dont_deliver           = FALSE;
 
 #ifdef WITH_CONTENT_SCAN
-BOOL   fake_reject             = FALSE;
+int     fake_response          = OK;
 #endif
 
 header_line *header_last       = NULL;

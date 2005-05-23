@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.32 2005/05/17 15:00:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.33 2005/05/23 15:28:38 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -421,7 +421,7 @@ enum {
 #ifdef WITH_CONTENT_SCAN
   CONTROL_NO_MBOX_UNSPOOL,
 #endif
-  CONTROL_FAKEREJECT, CONTROL_NO_MULTILINE };
+  CONTROL_FAKEDEFER, CONTROL_FAKEREJECT, CONTROL_NO_MULTILINE };
 
 /* Bit map vector of which controls are not allowed at certain times. For
 each control, there's a bitmap of dis-allowed times. For some, it is easier to
@@ -469,6 +469,11 @@ static unsigned int control_forbids[] = {
 #endif
 
   (unsigned int)
+  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakedefer */
+    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+    (1<<ACL_WHERE_MIME)),
+
+  (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakereject */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
     (1<<ACL_WHERE_MIME)),
@@ -501,6 +506,7 @@ static control_def controls_list[] = {
 #ifdef WITH_CONTENT_SCAN
   { US"no_mbox_unspool",        CONTROL_NO_MBOX_UNSPOOL, FALSE},
 #endif
+  { US"fakedefer",              CONTROL_FAKEDEFER, TRUE},
   { US"fakereject",             CONTROL_FAKEREJECT, TRUE},
   { US"submission",             CONTROL_SUBMISSION, TRUE}
   };
@@ -2101,19 +2107,20 @@ for (; cb != NULL; cb = cb->next)
       no_multiline_responses = TRUE;
       break;
 
+      case CONTROL_FAKEDEFER:
       case CONTROL_FAKEREJECT:
-      fake_reject = TRUE;
+      fake_response = (control_type == CONTROL_FAKEDEFER) ? DEFER : FAIL;
       if (*p == '/')
         {
         uschar *pp = p + 1;
         while (*pp != 0) pp++;
-        fake_reject_text = expand_string(string_copyn(p+1, pp-p-1));
+        fake_response_text = expand_string(string_copyn(p+1, pp-p-1));
         p = pp;
         }
        else
         {
         /* Explicitly reset to default string */
-        fake_reject_text = US"Your message has been rejected but is being kept for evaluation.\nIf it was a legitimate message, it may still be delivered to the target recipient(s).";
+        fake_response_text = US"Your message has been rejected but is being kept for evaluation.\nIf it was a legitimate message, it may still be delivered to the target recipient(s).";
         }
       break;
 

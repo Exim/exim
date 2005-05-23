@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.139 2005/05/17 15:00:04 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.140 2005/05/23 15:28:37 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -32,6 +32,8 @@ PH/04 Installed a modified version of Tony Finch's patch to make submission
       mode fix the return path as well as the Sender: header line, and to
       add a /name= option so that you can make the user's friendly name appear
       in the header line.
+
+TF/03 Added the control = fakedefer ACL modifier.
 
 
 Exim version 4.51

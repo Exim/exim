@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.42 2005/05/17 15:00:04 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.43 2005/05/23 15:28:37 fanf2 Exp $
 
 New Features in Exim
 --------------------
@@ -89,6 +89,13 @@ PH/02 There have been two changes concerned with submission mode:
 
       (b) The envelope sender address is forced to be the same as the
           submission mode sender address.
+
+TF/02 The control = fakereject ACL modifier now has a fakedefer counterpart,
+      which works in exactly the same way except it causes a fake SMTP 450
+      response after the message data instead of a fake SMTP 550 response.
+      You must take care when using fakedefer because it will cause messages
+      to be duplicated when the sender retries. Therefore you should not use
+      fakedefer if the message will be delivered normally.
 
 
 Version 4.51
