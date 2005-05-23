@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.4 2005/05/23 16:58:56 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -63,10 +63,11 @@ not too much extra baggage. */
 
 /* Identifiers for the different database types. */
 
-#define type_retry   1
-#define type_wait    2
-#define type_misc    3
-#define type_callout 4
+#define type_retry     1
+#define type_wait      2
+#define type_misc      3
+#define type_callout   4
+#define type_ratelimit 5
 
 
 
@@ -113,7 +114,7 @@ static void
 usage(uschar *name, uschar *options)
 {
 printf("Usage: exim_%s%s  <spool-directory> <database-name>\n", name, options);
-printf("       <database-name> = retry | misc | wait-<transport-name> | callout\n");
+printf("  <database-name> = retry | misc | wait-<transport-name> | callout | ratelimit\n");
 exit(1);
 }
 
@@ -135,6 +136,7 @@ if (argc == 3)
   if (Ustrcmp(argv[2], "misc") == 0) return type_misc;
   if (Ustrncmp(argv[2], "wait-", 5) == 0) return type_wait;
   if (Ustrcmp(argv[2], "callout") == 0) return type_callout;
+  if (Ustrcmp(argv[2], "ratelimit") == 0) return type_ratelimit;
   }
 usage(name, options);
 return -1;              /* Never obeyed */
@@ -536,6 +538,7 @@ while (key != NULL)
   dbdata_retry *retry;
   dbdata_wait *wait;
   dbdata_callout_cache *callout;
+  dbdata_ratelimit *ratelimit;
   int count_bad = 0;
   int i, length;
   uschar *t;
@@ -662,6 +665,15 @@ while (key != NULL)
         }
 
       break;
+
+      case type_ratelimit:
+      ratelimit = (dbdata_ratelimit *)value;
+
+      printf("%s.%06d rate: %10.3f key: %s\n",
+        print_time(ratelimit->time_stamp), ratelimit->time_usec,
+        ratelimit->rate, keybuffer);
+
+      break;
       }
     store_reset(value);
     }
@@ -733,6 +745,7 @@ for(;;)
   dbdata_retry *retry;
   dbdata_wait *wait;
   dbdata_callout_cache *callout;
+  dbdata_ratelimit *ratelimit;
   int i, oldlength;
   uschar *t;
   uschar field[256], value[256];
@@ -873,6 +886,29 @@ for(;;)
               break;
               }
             break;
+
+            case type_ratelimit:
+            ratelimit = (dbdata_ratelimit *)value;
+            switch(fieldno)
+              {
+              case 0:
+              if ((tt = read_time(value)) > 0) ratelimit->time_stamp = tt;
+                else printf("bad time value\n");
+              break;
+
+              case 1:
+              ratelimit->time_usec = Uatoi(value);
+
+              case 2:
+              ratelimit->rate = Ustrtod(value, NULL);
+              break;
+
+              default:
+              printf("unknown field number\n");
+              verify = 0;
+              break;
+              }
+            break;
             }
 
           dbfn_write(dbm, name, record, length);
@@ -969,6 +1005,13 @@ for(;;)
         printf("2 random:     %s (%d)\n", print_cache(callout->random_result),
             callout->random_result);
         }
+      break;
+
+      case type_ratelimit:
+      ratelimit = (dbdata_ratelimit *)value;
+      printf("0 time stamp:  %s\n", print_time(ratelimit->time_stamp));
+      printf("1 fract. time: .%06d\n", ratelimit->time_usec);
+      printf("2 sender rate: % .3f\n", ratelimit->rate);
       break;
       }
     }

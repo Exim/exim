@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-QNX,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-QNX,v 1.2 2005/05/23 16:58:55 fanf2 Exp $
 
 # Exim: OS-specific makefile for QNX
 
@@ -21,7 +21,7 @@ LIBIDENTCFLAGS=
 RANLIB=@true
 DBMLIB=-ldb
 USE_DB=yes
-LIBS=-lsocket
+LIBS=-lsocket -lm
 
 X11=/usr/X11R6
 XINCLUDE=-I$(X11)/include

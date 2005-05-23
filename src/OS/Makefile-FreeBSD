@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-FreeBSD,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-FreeBSD,v 1.2 2005/05/23 16:58:55 fanf2 Exp $
 
 # Exim: OS-specific make file for FreeBSD
 # There's no setting of CFLAGS here, to allow the system default
@@ -11,7 +11,7 @@ CHOWN_COMMAND=/usr/sbin/chown
 HAVE_SA_LEN=YES
 
 # crypt() is in a separate library
-LIBS=-lcrypt
+LIBS=-lcrypt -lm
 
 # FreeBSD always ships with Berkeley DB
 USE_DB=yes

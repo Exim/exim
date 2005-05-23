@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.140 2005/05/23 15:28:37 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.141 2005/05/23 16:58:55 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -34,6 +34,8 @@ PH/04 Installed a modified version of Tony Finch's patch to make submission
       in the header line.
 
 TF/03 Added the control = fakedefer ACL modifier.
+
+TF/04 Added the ratelimit ACL condition. See NewStuff for details.
 
 
 Exim version 4.51

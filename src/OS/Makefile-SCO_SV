@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-SCO_SV,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-SCO_SV,v 1.2 2005/05/23 16:58:55 fanf2 Exp $
 
 # Exim: OS-specific make file for SCO_SV release 5 (tested on 5.0.5 & 5.0.5)
 #       (see the UNIX_SV files for SCO 4.2)
@@ -11,7 +11,7 @@
 
 CFLAGS=-melf -O3 -m486
 LFLAGS=-L/lib -L/usr/lib -L/usr/local/lib
-LIBS=-ltinfo -lm -lsocket
+LIBS=-ltinfo -lsocket -lm
 
 HAVE_ICONV=yes
 

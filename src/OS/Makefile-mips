@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-mips,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-mips,v 1.2 2005/05/23 16:58:55 fanf2 Exp $
 
 # Exim: OS-specific make file for RiscOS4bsd
 
@@ -6,7 +6,7 @@ HOSTNAME_COMMAND=/usr/ucb/hostname
 EXIT_FAILURE=1
 EXIT_SUCCESS=0
 LIBRESOLV=-lresolv
-LIBS=-liberty
+LIBS=-liberty -lm
 XINCLUDE=-I/usr/X11R6/include
 
 CFLAGS=-O

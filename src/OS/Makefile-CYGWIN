@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-CYGWIN,v 1.2 2004/11/10 10:36:48 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-CYGWIN,v 1.3 2005/05/23 16:58:55 fanf2 Exp $
 
 # OS-specific file for Cygwin.
 
@@ -6,7 +6,7 @@
 
 HAVE_ICONV = yes
 CFLAGS= -g -Wall -O2
-LIBS= -lcrypt -lresolv
+LIBS= -lcrypt -lresolv -lm
 LIBS_EXIM= -liconv
 EXIWHAT_PS_ARG=-as
 EXIWHAT_KILL_SIGNAL=-USR1

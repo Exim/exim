@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.18 2005/05/23 15:28:38 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.19 2005/05/23 16:58:56 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -837,6 +837,10 @@ spf_result = NULL;
 spf_smtp_comment = NULL;
 #endif
 body_linecount = body_zerocount = 0;
+
+sender_rate = sender_rate_limit = sender_rate_period = NULL;
+ratelimiters_mail = NULL;           /* Updated by ratelimit ACL condition */
+                   /* Note that ratelimiters_conn persists across resets. */
 
 for (i = 0; i < ACL_M_MAX; i++) acl_var[ACL_C_MAX + i] = NULL;
 

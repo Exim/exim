@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-SunOS5,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-SunOS5,v 1.2 2005/05/23 16:58:55 fanf2 Exp $
 
 # Exim: OS-specific make file for SunOS5
 
@@ -10,7 +10,7 @@ BASENAME_COMMAND=look_for_it
 HOSTNAME_COMMAND=look_for_it
 
 RANLIB=@true
-LIBS=-lsocket -lnsl -lkstat
+LIBS=-lsocket -lnsl -lkstat -lm
 LIBRESOLV=-lresolv
 
 EXIWHAT_MULTIKILL_CMD=pkill

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.33 2005/05/23 15:28:38 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.34 2005/05/23 16:58:56 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -63,6 +63,7 @@ ACLC_CONDITION, ACLC_CONTROL,
 #ifdef WITH_CONTENT_SCAN
        ACLC_MIME_REGEX,
 #endif
+       ACLC_RATELIMIT,
        ACLC_RECIPIENTS,
 #ifdef WITH_CONTENT_SCAN
        ACLC_REGEX,
@@ -110,6 +111,7 @@ static uschar *conditions[] = { US"acl", US"authenticated",
 #ifdef WITH_CONTENT_SCAN
   US"mime_regex",
 #endif
+  US"ratelimit",
   US"recipients",
 #ifdef WITH_CONTENT_SCAN
   US"regex",
@@ -171,6 +173,7 @@ static uschar cond_expand_at_top[] = {
 #ifdef WITH_CONTENT_SCAN
   TRUE,    /* mime_regex */
 #endif
+  TRUE,    /* ratelimit */
   FALSE,   /* recipients */
 #ifdef WITH_CONTENT_SCAN
   TRUE,    /* regex */
@@ -227,6 +230,7 @@ static uschar cond_modifiers[] = {
 #ifdef WITH_CONTENT_SCAN
   FALSE,   /* mime_regex */
 #endif
+  FALSE,   /* ratelimit */
   FALSE,   /* recipients */
 #ifdef WITH_CONTENT_SCAN
   FALSE,   /* regex */
@@ -362,6 +366,8 @@ static unsigned int cond_forbids[] = {
   (unsigned int)
   ~(1<<ACL_WHERE_MIME),                            /* mime_regex */
 #endif
+
+  0,                                               /* ratelimit */
 
   (unsigned int)
   ~(1<<ACL_WHERE_RCPT),                            /* recipients */
@@ -1884,6 +1890,283 @@ return d->value;
 
 
 /*************************************************
+*            Handle rate limiting                *
+*************************************************/
+
+/* Called by acl_check_condition() below to calculate the result
+of the ACL ratelimit condition.
+
+Note that the return value might be slightly unexpected: if the
+sender's rate is above the limit then the result is OK. This is
+similar to the dnslists condition, and is so that you can write
+ACL clauses like: defer ratelimit = 15 / 1h
+
+Arguments:
+  arg         the option string for ratelimit=
+  log_msgptr  for error messages
+
+Returns:       OK        - Sender's rate is above limit
+               FAIL      - Sender's rate is below limit
+               DEFER     - Problem opening ratelimit database
+               ERROR     - Syntax error in options.
+*/
+
+static int
+acl_ratelimit(uschar *arg, uschar **log_msgptr)
+{
+double limit, period;
+uschar *ss, *key = arg;
+int sep = '/';
+BOOL have_key = FALSE, leaky = FALSE, strict = FALSE;
+BOOL per_byte = FALSE, per_cmd = FALSE, per_conn = FALSE, per_mail = FALSE;
+int old_pool, rc;
+tree_node **anchor, *t;
+open_db dbblock, *dbm;
+dbdata_ratelimit *dbd;
+struct timeval tv;
+
+/* Parse the first two options and record their values in expansion
+variables. These variables allow the configuration to have informative
+error messages based on rate limits obtained from a table lookup. */
+
+/* First is the maximum number of messages per period and maximum burst
+size, which must be greater than or equal to zero. Zero is useful for
+rate measurement as opposed to rate limiting. */
+
+sender_rate_limit = string_nextinlist(&arg, &sep, NULL, 0);
+if (sender_rate_limit == NULL)
+  limit = -1.0;
+else
+  {
+  limit = Ustrtod(sender_rate_limit, &ss);
+  if (tolower(*ss) == 'k') { limit *= 1024.0; ss++; }
+  else if (tolower(*ss) == 'm') { limit *= 1024.0*1024.0; ss++; }
+  else if (tolower(*ss) == 'g') { limit *= 1024.0*1024.0*1024.0; ss++; }
+  }
+if (limit < 0.0 || *ss != 0)
+  {
+  *log_msgptr = string_sprintf("syntax error in argument for "
+    "\"ratelimit\" condition: \"%s\" is not a positive number",
+    sender_rate_limit);
+  return ERROR;
+  }
+
+/* Second is the rate measurement period and exponential smoothing time
+constant. This must be strictly greater than zero, because zero leads to
+run-time division errors. */
+
+sender_rate_period = string_nextinlist(&arg, &sep, NULL, 0);
+if (sender_rate_period == NULL) period = -1.0;
+else period = readconf_readtime(sender_rate_period, 0, FALSE);
+if (period <= 0.0)
+  {
+  *log_msgptr = string_sprintf("syntax error in argument for "
+    "\"ratelimit\" condition: \"%s\" is not a time value",
+    sender_rate_period);
+  return ERROR;
+  }
+
+/* Parse the other options. Should we check if the per_* options are being
+used in ACLs where they don't make sense, e.g. per_mail in the connect ACL? */
+
+while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
+       != NULL)
+  {
+  if (strcmpic(ss, US"leaky") == 0) leaky = TRUE;
+  else if (strcmpic(ss, US"strict") == 0) strict = TRUE;
+  else if (strcmpic(ss, US"per_byte") == 0) per_byte = TRUE;
+  else if (strcmpic(ss, US"per_cmd") == 0) per_cmd = TRUE;
+  else if (strcmpic(ss, US"per_conn") == 0) per_conn = TRUE;
+  else if (strcmpic(ss, US"per_mail") == 0) per_mail = TRUE;
+  else if (strcmpic(ss, US"per_rcpt") == 0) per_cmd = TRUE; /* alias */
+  else have_key = TRUE;
+  }
+if (leaky + strict > 1 || per_byte + per_cmd + per_conn + per_mail > 1)
+  {
+  *log_msgptr = US"conflicting options for \"ratelimit\" condition";
+  return ERROR;
+  }
+
+/* Default option values */
+if (!strict) leaky = TRUE;
+if (!per_byte && !per_cmd && !per_conn) per_mail = TRUE;
+
+/* We use the whole of the argument list as the lookup key, because it doesn't
+make sense to use the same stored data if any of the arguments are different.
+If there is no explicit key, use the sender_host_address. If there is no
+sender_host_address (e.g. -bs or acl_not_smtp) then we simply omit it. */
+
+if (!have_key && sender_host_address != NULL)
+  key = string_sprintf("%s / %s", key, sender_host_address);
+
+HDEBUG(D_acl) debug_printf("ratelimit condition limit=%.0f period=%.0f key=%s\n",
+  limit, period, key);
+
+/* If we are dealing with rate limits per connection, per message, or per byte,
+see if we have already computed the rate by looking in the relevant tree. For
+per-connection rate limiting, store tree nodes and dbdata in the permanent pool
+so that they survive across resets. */
+
+anchor = NULL;
+old_pool = store_pool;
+
+if (per_conn)
+  {
+  anchor = &ratelimiters_conn;
+  store_pool = POOL_PERM;
+  }
+if (per_mail || per_byte)
+  anchor = &ratelimiters_mail;
+
+if (anchor != NULL && (t = tree_search(*anchor, key)) != NULL)
+  {
+  dbd = t->data.ptr;
+  /* The following few lines duplicate some of the code below. */
+  if (dbd->rate > limit) rc = OK;
+    else rc = FAIL;
+  store_pool = old_pool;
+  sender_rate = string_sprintf("%.1f", dbd->rate);
+  HDEBUG(D_acl)
+    debug_printf("ratelimit found pre-computed rate %s\n", sender_rate);
+  return rc;
+  }
+
+/* We aren't using a pre-computed rate, so get a previously recorded
+rate from the database, update it, and write it back. If there's no
+previous rate for this key, create one. */
+
+dbm = dbfn_open(US"ratelimit", O_RDWR, &dbblock, TRUE);
+if (dbm == NULL)
+  {
+  store_pool = old_pool;
+  sender_rate = NULL;
+  HDEBUG(D_acl) debug_printf("ratelimit database not available\n");
+  *log_msgptr = US"ratelimit database not available";
+  return DEFER;
+  }
+dbd = dbfn_read(dbm, key);
+
+gettimeofday(&tv, NULL);
+
+if (dbd == NULL)
+  {
+  HDEBUG(D_acl) debug_printf("ratelimit initializing new key's data\n");
+  dbd = store_get(sizeof(dbdata_ratelimit));
+  dbd->time_stamp = tv.tv_sec;
+  dbd->time_usec = tv.tv_usec;
+  dbd->rate = 0.0;
+  }
+else
+  {
+  /* The smoothed rate is computed using an exponentially weighted moving
+  average adjusted for variable sampling intervals. The standard EWMA for
+  a fixed sampling interval is:  f'(t) = (1 - a) * f(t) + a * f'(t - 1)
+  where f() is the measured value and f'() is the smoothed value.
+
+  Old data decays out of the smoothed value exponentially, such that data n
+  samples old is multiplied by a^n. The exponential decay time constant p
+  is defined such that data p samples old is multiplied by 1/e, which means
+  that a = exp(-1/p). We can maintain the same time constant for a variable
+  sampling interval i by using a = exp(-i/p).
+
+  The rate we are measuring is messages per period, suitable for directly
+  comparing with the limit. The average rate between now and the previous
+  message is period / interval, which we feed into the EWMA as the sample.
+
+  It turns out that the number of messages required for the smoothed rate
+  to reach the limit when they are sent in a burst is equal to the limit.
+  This can be seen by analysing the value of the smoothed rate after N
+  messages sent at even intervals. Let k = (1 - a) * p/i
+
+    rate_1 = (1 - a) * p/i + a * rate_0
+           = k + a * rate_0
+    rate_2 = k + a * rate_1
+           = k + a * k + a^2 * rate_0
+    rate_3 = k + a * k + a^2 * k + a^3 * rate_0
+    rate_N = rate_0 * a^N + k * SUM(x=0..N-1)(a^x)
+           = rate_0 * a^N + k * (1 - a^N) / (1 - a)
+           = rate_0 * a^N + p/i * (1 - a^N)
+
+  When N is large, a^N -> 0 so rate_N -> p/i as desired.
+
+    rate_N = p/i + (rate_0 - p/i) * a^N
+    a^N = (rate_N - p/i) / (rate_0 - p/i)
+    N * -i/p = log((rate_N - p/i) / (rate_0 - p/i))
+    N = p/i * log((rate_0 - p/i) / (rate_N - p/i))
+
+  Numerical analysis of the above equation, setting the computed rate to
+  increase from rate_0 = 0 to rate_N = limit, shows that for large sending
+  rates, p/i, the number of messages N = limit. So limit serves as both the
+  maximum rate measured in messages per period, and the maximum number of
+  messages that can be sent in a fast burst. */
+
+  double this_time = (double)tv.tv_sec
+                   + (double)tv.tv_usec / 1000000.0;
+  double prev_time = (double)dbd->time_stamp
+                   + (double)dbd->time_usec / 1000000.0;
+  double interval = this_time - prev_time;
+
+  double i_over_p = interval / period;
+  double a = exp(-i_over_p);
+
+  /* We must avoid division by zero, and deal gracefully with the clock going
+  backwards. If we blunder ahead when time is in reverse then the computed
+  rate will become bogusly huge. Clamp i/p to a very small number instead. */
+
+  if (i_over_p <= 0.0) i_over_p = 1e-9;
+
+  dbd->time_stamp = tv.tv_sec;
+  dbd->time_usec = tv.tv_usec;
+
+  /* If we are measuring the rate in bytes per period, multiply the
+  measured rate by the message size. If we don't know the message size
+  then it's safe to just use a value of zero and let the recorded rate
+  decay as if nothing happened. */
+
+  if (per_byte)
+    dbd->rate = (message_size < 0 ? 0.0 : (double)message_size)
+              * (1 - a) / i_over_p + a * dbd->rate;
+  else
+    dbd->rate = (1 - a) / i_over_p + a * dbd->rate;
+  }
+
+if (dbd->rate > limit) rc = OK;
+  else rc = FAIL;
+
+/* Update the state if the rate is low or if we are being strict. If we
+are in leaky mode and the sender's rate is too high, we do not update
+the recorded rate in order to avoid an over-aggressive sender's retry
+rate preventing them from getting any email through. */
+
+if (rc == FAIL || !leaky)
+  dbfn_write(dbm, key, dbd, sizeof(dbdata_ratelimit));
+dbfn_close(dbm);
+
+/* Store the result in the tree for future reference, if necessary. */
+
+if (anchor != NULL)
+  {
+  t = store_get(sizeof(tree_node) + Ustrlen(key));
+  t->data.ptr = dbd;
+  Ustrcpy(t->name, key);
+  (void)tree_insertnode(anchor, t);
+  }
+
+/* We create the formatted version of the sender's rate very late in
+order to ensure that it is done using the correct storage pool. */
+
+store_pool = old_pool;
+sender_rate = string_sprintf("%.1f", dbd->rate);
+
+HDEBUG(D_acl)
+  debug_printf("ratelimit computed rate %s\n", sender_rate);
+
+return rc;
+}
+
+
+
+/*************************************************
 *   Handle conditions/modifiers on an ACL item   *
 *************************************************/
 
@@ -2414,6 +2697,10 @@ for (; cb != NULL; cb = cb->next)
       rc = mime_regex(&arg);
     break;
 #endif
+
+    case ACLC_RATELIMIT:
+      rc = acl_ratelimit(arg, log_msgptr);
+    break;
 
     case ACLC_RECIPIENTS:
     rc = match_address_list(addr->address, TRUE, TRUE, &arg, NULL, -1, 0,

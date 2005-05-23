@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.17 2005/05/23 15:28:38 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.18 2005/05/23 16:58:56 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -505,6 +505,8 @@ extern BOOL    queue_smtp;             /* Disable all immediate STMP (-odqs)*/
 extern uschar *queue_smtp_domains;     /* Ditto, for these domains */
 
 extern unsigned int random_seed;       /* Seed for random numbers */
+extern tree_node *ratelimiters_conn;   /* Results of connection ratelimit checks */
+extern tree_node *ratelimiters_mail;   /* Results of per-mail ratelimit checks */
 extern uschar *raw_active_hostname;    /* Pre-expansion */
 extern uschar *raw_sender;             /* Before rewriting */
 extern uschar **raw_recipients;        /* Before rewriting */
@@ -579,6 +581,9 @@ extern BOOL    sender_host_notsocket;  /* Set for -bs and -bS */
 extern BOOL    sender_host_unknown;    /* TRUE for -bs and -bS except inetd */
 extern uschar *sender_ident;           /* Sender identity via RFC 1413 */
 extern BOOL    sender_local;           /* TRUE for local senders */
+extern uschar *sender_rate;            /* Sender rate computed by ACL */
+extern uschar *sender_rate_limit;      /* Configured rate limit */
+extern uschar *sender_rate_period;     /* Configured smoothing period */
 extern uschar *sender_rcvhost;         /* Host data for Received: */
 extern BOOL    sender_set_untrusted;   /* Sender set by untrusted caller */
 extern uschar *sender_unqualified_hosts; /* Permitted unqualified senders */

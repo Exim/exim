@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dbstuff.h,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dbstuff.h,v 1.3 2005/05/23 16:58:56 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -363,8 +363,8 @@ after reading data. */
 
 /* Basic DB type */
 typedef struct {
-       GDBM_FILE gdbm;	/* Database */
-       datum lkey;	/* Last key, for scans */
+       GDBM_FILE gdbm;  /* Database */
+       datum lkey;      /* Last key, for scans */
 } EXIM_DB;
 
 /* Cursor type, not used with gdbm: just set up a dummy */
@@ -629,6 +629,17 @@ typedef struct {
   /*************/
   int    count;           /* Reserved for possible connection count */
 } dbdata_serialize;
+
+
+/* This structure records the information required for the ratelimit
+ACL condition. */
+
+typedef struct {
+  time_t time_stamp;
+  /*************/
+  int    time_usec;       /* Fractional part of time, from gettimeofday() */
+  double rate;            /* Smoothed sending rate at that time */
+} dbdata_ratelimit;
 
 
 /* End of dbstuff.h */

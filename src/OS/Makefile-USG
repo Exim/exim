@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-USG,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-USG,v 1.2 2005/05/23 16:58:55 fanf2 Exp $
 
 # Exim: OS-specific make file for Unixware 2.x
 #
@@ -25,7 +25,7 @@ RANLIB=@true
 DBMLIB=-ldb -L/usr/local/lib
 USE_DB=YES
 ERRNO_QUOTA=0
-LIBS=-lsocket -lelf -lgen -lnsl -lresolv
+LIBS=-lsocket -lelf -lgen -lnsl -lresolv -lm
 
 X11=/usr/lib/X11
 XINCLUDE=-I/usr/include/X11

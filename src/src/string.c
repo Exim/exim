@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/string.c,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/string.c,v 1.3 2005/05/23 16:58:56 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1070,9 +1070,11 @@ while (*fp != 0)
     break;
 
     /* %f format is inherently insecure if the numbers that it may be
-    handed are unknown (e.g. 1e300). However, in Exim, the only use of %f
-    is for printing load averages, and these are actually stored as integers
-    (load average * 1000) so the size of the numbers is constrained. */
+    handed are unknown (e.g. 1e300). However, in Exim, %f is used for
+    printing load averages, and these are actually stored as integers
+    (load average * 1000) so the size of the numbers is constrained.
+    It is also used for formatting sending rates, where the simplicity
+    of the format prevents overflow. */
 
     case 'f':
     case 'e':

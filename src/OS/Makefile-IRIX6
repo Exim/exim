@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-IRIX6,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-IRIX6,v 1.2 2005/05/23 16:58:55 fanf2 Exp $
 
 # Exim: OS-specific make file for IRIX6 on 64-bit systems
 
@@ -6,7 +6,7 @@ HAVE_ICONV=yes
 HOSTNAME_COMMAND=/usr/bsd/hostname
 CFLAGS=-O2 -n32 -OPT:Olimit=4000
 LFLAGS=-n32
-LIBS=-lelf
+LIBS=-lelf -lm
 XINCLUDE=-I/usr/include/X11
 XLFLAGS=
 vfork=fork

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.25 2005/05/23 15:28:38 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.26 2005/05/23 16:58:56 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -777,6 +777,8 @@ BOOL    queue_smtp             = FALSE;
 uschar *queue_smtp_domains     = NULL;
 
 unsigned int random_seed       = 0;
+tree_node *ratelimiters_conn   = NULL;
+tree_node *ratelimiters_mail   = NULL;
 uschar *raw_active_hostname    = NULL;
 uschar *raw_sender             = NULL;
 uschar **raw_recipients        = NULL;
@@ -964,6 +966,9 @@ BOOL    sender_host_notsocket  = FALSE;
 BOOL    sender_host_unknown    = FALSE;
 uschar *sender_ident           = NULL;
 BOOL    sender_local           = FALSE;
+uschar *sender_rate            = NULL;
+uschar *sender_rate_limit      = NULL;
+uschar *sender_rate_period     = NULL;
 uschar *sender_rcvhost         = NULL;
 BOOL    sender_set_untrusted   = FALSE;
 uschar *sender_unqualified_hosts = NULL;

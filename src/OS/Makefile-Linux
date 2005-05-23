@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Linux,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-Linux,v 1.2 2005/05/23 16:58:55 fanf2 Exp $
 
 # Exim: OS-specific make file for Linux. This is for modern Linuxes,
 # which use libc6.
@@ -14,7 +14,7 @@ CFLAGS=-O -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 DBMLIB = -ldb
 USE_DB = yes
 
-LIBS = -lnsl -lcrypt
+LIBS = -lnsl -lcrypt -lm
 LIBRESOLV = -lresolv
 
 X11=/usr/X11R6

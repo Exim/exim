@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-BSDI,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-BSDI,v 1.2 2005/05/23 16:58:55 fanf2 Exp $
 
 # Exim: OS-specific make file for BSDI. Its antique link editor
 # cannot handle the TextPop overriding.
@@ -13,7 +13,7 @@ XINCLUDE=-I$(X11)/include
 XLFLAGS=-L$(X11)/lib
 X11_LD_LIB=$(X11)/lib
 
-LIBS_EXIMON=-lSM -lICE -lipc
+LIBS_EXIMON=-lSM -lICE -lipc -lm
 EXIMON_TEXTPOP=
 
 EXIWHAT_PS_ARG=-ax

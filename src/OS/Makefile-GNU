@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-GNU,v 1.3 2005/01/12 12:25:56 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-GNU,v 1.4 2005/05/23 16:58:55 fanf2 Exp $
 
 # Exim: OS-specific make file for GNU and variants.
 
@@ -13,7 +13,7 @@ CFLAGS ?= -O -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 DBMLIB = -ldb
 USE_DB = yes
 
-LIBS = -lnsl -lcrypt
+LIBS = -lnsl -lcrypt -lm
 LIBRESOLV = -lresolv
 
 X11=/usr/X11R6

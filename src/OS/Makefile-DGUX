@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-DGUX,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-DGUX,v 1.2 2005/05/23 16:58:55 fanf2 Exp $
 
 # Exim: OS-specific make file for DGUX
 #
@@ -25,7 +25,7 @@ PERL_COMMAND=/usr/local/bin/perl
 CFLAGS=-O2
 
 RANLIB=@true
-LIBS=-lsocket -lnsl
+LIBS=-lsocket -lnsl -lm
 LIBRESOLV=-lresolv
 DBMLIB=-ldbm
 

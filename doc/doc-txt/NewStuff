@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.44 2005/05/23 15:44:06 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.45 2005/05/23 16:58:55 fanf2 Exp $
 
 New Features in Exim
 --------------------
@@ -120,6 +120,120 @@ TF/03 The control = fakereject ACL modifier now has a fakedefer counterpart,
       You must take care when using fakedefer because it will cause messages
       to be duplicated when the sender retries. Therefore you should not use
       fakedefer if the message will be delivered normally.
+
+TF/04 There is a new ratelimit ACL condition which can be used to measure
+      and control the rate at which clients can send email. This is more
+      powerful than the existing smtp_ratelimit_* options, because those
+      options only control the rate of commands in a single SMTP session,
+      whereas the new ratelimit condition works across all connections
+      (concurrent and sequential) to the same host.
+
+      The syntax of the ratelimit condition is:
+
+        ratelimit = <m> / <p> / <options> / <key>
+
+      If the average client sending rate is greater than m messages per time
+      period p then the condition is true, otherwise it is false.
+
+      The parameter p is the smoothing time constant, in the form of an Exim
+      time interval e.g. 8h for eight hours. A larger time constant means it
+      takes Exim longer to forget a client's past behaviour. The parameter m is
+      the maximum number of messages that a client can send in a fast burst. By
+      increasing both m and p but keeping m/p constant, you can allow a client
+      to send more messages in a burst without changing its overall sending
+      rate limit. Conversely, if m and p are both small then messages must be
+      sent at an even rate.
+
+      The key is used to look up the data used to calcluate the client's
+      average sending rate. This data is stored in a database maintained by
+      Exim in its spool directory alongside the retry database etc. For
+      example, you can limit the sending rate of each authenticated user,
+      independent of the computer they are sending from, by setting the key
+      to $authenticated_id. The default key is $sender_host_address.
+
+      Each ratelimit condition can have up to two options. The first option
+      specifies what Exim measures the rate of, and the second specifies how
+      Exim handles excessively fast clients.
+
+      The per_mail option means that it measures the client's rate of sending
+      messages. This is the default if none of the per_* options is specified.
+
+      The per_conn option means that it measures the client's connection rate.
+
+      The per_byte option limits the sender's email bandwidth. Note that it
+      is best to use this option in the DATA ACL; if it is used in an earlier
+      ACL it relies on the SIZE parameter on the MAIL command, which may be
+      inaccurate or completely missing. You can follow the limit m in the
+      configuration with K, M, or G to specify limits in kilobytes,
+      megabytes, or gigabytes respectively.
+
+      The per_cmd option means that Exim recomputes the rate every time the
+      condition is processed, which can be used to limit the SMTP command rate.
+      The alias per_rcpt is provided for use in the RCPT ACL instead of per_cmd
+      to make it clear that the effect is to limit the rate at which recipients
+      are accepted. Note that in this case the rate limiting engine will see a
+      message with many recipients as a large high-speed burst.
+
+      If a client's average rate is greater than the maximum, the rate
+      limiting engine can react in two possible ways, depending on the
+      presence of the strict or leaky options. This is independent of the
+      other counter-measures (e.g. rejecting the message) that may be
+      specified by the rest of the ACL. The default mode is leaky, which
+      avoids a sender's over-aggressive retry rate preventing it from getting
+      any email through.
+
+      The strict option means that the client's recorded rate is always
+      updated. The effect of this is that Exim measures the client's average
+      rate of attempts to send email, which can be much higher than the
+      maximum. If the client is over the limit it will be subjected to
+      counter-measures until it slows down below the maximum rate.
+
+      The leaky option means that the client's recorded rate is not updated
+      if it is above the limit. The effect of this is that Exim measures the
+      client's average rate of successfully sent email, which cannot be
+      greater than the maximum. If the client is over the limit it will
+      suffer some counter-measures, but it will still be able to send email
+      at the configured maximum rate, whatever the rate of its attempts.
+
+      As a side-effect, the ratelimit condition will set the expansion
+      variables $sender_rate containing the client's computed rate,
+      $sender_rate_limit containing the configured value of m, and
+      $sender_rate_period containing the configured value of p.
+
+      Exim's other ACL facilities are used to define what counter-measures
+      are taken when the rate limit is exceeded. This might be anything from
+      logging a warning (e.g. while measuring existing sending rates in order
+      to define our policy), through time delays to slow down fast senders,
+      up to rejecting the message. For example,
+
+        # Log all senders' rates
+        warn
+          ratelimit = 0 / 1h / strict
+          log_message = \
+            Sender rate $sender_rate > $sender_rate_limit / $sender_rate_period
+
+        # Slow down fast senders
+        warn
+          ratelimit = 100 / 1h / per_rcpt / strict
+          delay     = ${eval: 10 * ($sender_rate - $sender_rate_limit) }
+
+        # Keep authenticated users under control
+        deny
+          ratelimit = 100 / 1d / strict / $authenticated_id
+
+        # System-wide rate limit
+        defer
+          message = Sorry, too busy. Try again later.
+          ratelimit = 10 / 1s / $primary_hostname
+
+        # Restrict incoming rate from each host, with a default rate limit
+        # set using a macro and special cases looked up in a table.
+        defer
+          message = Sender rate $sender_rate exceeds \
+                    $sender_rate_limit messages per $sender_rate_period
+          ratelimit = ${lookup {$sender_host_address} \
+                        cdb {DB/ratelimits.cdb} \
+                        {$value} {RATELIMIT} }
 
 
 Version 4.51
