@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spf.h,v 1.3 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spf.h,v 1.4 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -10,9 +10,14 @@
 
 #ifdef EXPERIMENTAL_SPF
 
+/* Yes, we do have ns_type. spf.h redefines it if we don't set this. Doh */
+#define HAVE_NS_TYPE
 #include <spf2/spf.h>
+
+
 #include <spf2/spf_dns_resolv.h>
 #include <spf2/spf_dns_cache.h>
+
 
 typedef struct spf_result_id {
   uschar *name;

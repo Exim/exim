@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/OS/os.h-cygwin,v 1.1 2004/10/06 15:07:39 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.h-cygwin,v 1.2 2005/05/24 08:15:01 tom Exp $ */
 
 /* Exim: OS-specific C header file for Cygwin */
 
@@ -27,7 +27,7 @@ int cygwin_setgid(gid_t gid );
 extern unsigned int cygwin_WinVersion;
 
 #define BASE_62 36  /* Windows aliases lower and upper cases in filenames.
-		       Consider reducing MAX_LOCALHOST_NUMBER */
+           Consider reducing MAX_LOCALHOST_NUMBER */
 #define CRYPT_H
 #define HAVE_MMAP
 #define HAVE_SYS_VFS_H

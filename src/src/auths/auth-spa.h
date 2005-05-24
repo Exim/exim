@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/auth-spa.h,v 1.3 2005/02/17 11:58:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/auth-spa.h,v 1.4 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -32,49 +32,49 @@ typedef unsigned char  uint8x;
 
 typedef struct
 {
-       uint16x	       len;
-       uint16x	       maxlen;
-       uint32x	       offset;
+       uint16x         len;
+       uint16x         maxlen;
+       uint32x         offset;
 } SPAStrHeader;
 
 typedef struct
 {
-       char	       ident[8];
-       uint32x	       msgType;
+       char         ident[8];
+       uint32x         msgType;
        SPAStrHeader    uDomain;
-       uint32x	       flags;
-       uint8x	       challengeData[8];
-       uint8x	       reserved[8];
+       uint32x         flags;
+       uint8x         challengeData[8];
+       uint8x         reserved[8];
        SPAStrHeader    emptyString;
-       uint8x	       buffer[1024];
-       uint32x	       bufIndex;
+       uint8x         buffer[1024];
+       uint32x         bufIndex;
 } SPAAuthChallenge;
 
 
 typedef struct
 {
-       char	       ident[8];
-       uint32x	       msgType;
-       uint32x	       flags;
+       char         ident[8];
+       uint32x         msgType;
+       uint32x         flags;
        SPAStrHeader    user;
        SPAStrHeader    domain;
-       uint8x	       buffer[1024];
-       uint32x	       bufIndex;
+       uint8x         buffer[1024];
+       uint32x         bufIndex;
 } SPAAuthRequest;
 
 typedef struct
 {
-       char	       ident[8];
-       uint32x	       msgType;
+       char         ident[8];
+       uint32x         msgType;
        SPAStrHeader    lmResponse;
        SPAStrHeader    ntResponse;
        SPAStrHeader    uDomain;
        SPAStrHeader    uUser;
        SPAStrHeader    uWks;
        SPAStrHeader    sessionKey;
-       uint32x	       flags;
-       uint8x	       buffer[1024];
-       uint32x	       bufIndex;
+       uint32x         flags;
+       uint8x         buffer[1024];
+       uint32x         bufIndex;
 } SPAAuthResponse;
 
 #define spa_request_length(ptr) (((ptr)->buffer - (uint8x*)(ptr)) + (ptr)->bufIndex)

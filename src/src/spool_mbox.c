@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.5 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -150,23 +150,23 @@ void unspool_mbox(void) {
 
       snprintf(CS mbox_path, 1024, "%s/scan/%s", spool_directory, spooled_message_id);
 
-	tempdir = opendir(CS mbox_path);
-	/* loop thru dir & delete entries */
-	n = 0;
-	do {
-	  entry = readdir(tempdir);
-	  if (entry == NULL) break;
-	  snprintf(CS file_path, 1024,"%s/scan/%s/%s", spool_directory, spooled_message_id, entry->d_name);
-	  if ( (Ustrcmp(entry->d_name,"..") != 0) && (Ustrcmp(entry->d_name,".") != 0) ) {
-	    debug_printf("unspool_mbox(): unlinking '%s'\n", file_path);
+  tempdir = opendir(CS mbox_path);
+  /* loop thru dir & delete entries */
+  n = 0;
+  do {
+    entry = readdir(tempdir);
+    if (entry == NULL) break;
+    snprintf(CS file_path, 1024,"%s/scan/%s/%s", spool_directory, spooled_message_id, entry->d_name);
+    if ( (Ustrcmp(entry->d_name,"..") != 0) && (Ustrcmp(entry->d_name,".") != 0) ) {
+      debug_printf("unspool_mbox(): unlinking '%s'\n", file_path);
               n = unlink(CS file_path);
             };
-	} while (n > -1);
+  } while (n > -1);
 
-	closedir(tempdir);
+  closedir(tempdir);
 
-	/* remove directory */
-	n = rmdir(CS mbox_path);
+  /* remove directory */
+  n = rmdir(CS mbox_path);
     };
   };
 }

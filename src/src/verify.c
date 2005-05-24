@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.16 2005/04/06 16:26:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.17 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1229,6 +1229,10 @@ else for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
     addr_list = addr->next;
 
     fprintf(f, "%s", CS addr->address);
+#ifdef EXPERIMENTAL_SRS
+    if(addr->p.srs_sender)
+      fprintf(f, "    [srs = %s]", addr->p.srs_sender);
+#endif
     while (p != NULL)
       {
       fprintf(f, "\n    <-- %s", p->address);

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/drtables.c,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/drtables.c,v 1.3 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -536,7 +536,7 @@ auth_info auths_available[] = {
 
 #ifdef AUTH_CYRUS_SASL
   {
-  US"cyrus_sasl",			     /* lookup name */
+  US"cyrus_sasl",           /* lookup name */
   auth_cyrus_sasl_options,
   &auth_cyrus_sasl_options_count,
   &auth_cyrus_sasl_option_defaults,

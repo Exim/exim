@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.18 2005/05/23 16:58:56 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.19 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -656,10 +656,16 @@ extern uschar *spool_directory;        /* Name of spool directory */
 extern uschar *srs_config;             /* SRS config secret:max age:hash length:use timestamp:use hash */
 extern uschar *srs_db_address;         /* SRS db address */
 extern uschar *srs_db_key;             /* SRS db key */
+extern int     srs_hashlength;         /* SRS hash length */
+extern int     srs_hashmin;            /* SRS minimum hash length */
+extern int     srs_maxage;             /* SRS max age */
 extern uschar *srs_orig_sender;        /* SRS original sender */
 extern uschar *srs_orig_recipient;     /* SRS original recipient */
 extern uschar *srs_recipient;          /* SRS recipient */
+extern uschar *srs_secrets;            /* SRS secrets list */
 extern uschar *srs_status;             /* SRS staus */
+extern BOOL    srs_usehash;            /* SRS use hash flag */
+extern BOOL    srs_usetimestamp;       /* SRS use timestamp flag */
 #endif
 extern int     string_datestamp_offset;/* After insertion by string_format */
 extern BOOL    strip_excess_angle_brackets; /* Surrounding route-addrs */

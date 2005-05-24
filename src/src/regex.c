@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/regex.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/regex.c,v 1.5 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -113,7 +113,7 @@ int regex(uschar **listptr) {
     do {
       /* try matcher on the line */
       if (pcre_exec(re_list_item->re, NULL, CS linebuffer,
-			(int)Ustrlen(linebuffer), 0, 0, NULL, 0) >= 0) {
+      (int)Ustrlen(linebuffer), 0, 0, NULL, 0) >= 0) {
         Ustrncpy(regex_match_string_buffer, re_list_item->pcre_text, 1023);
         regex_match_string = regex_match_string_buffer;
         if (mime_stream == NULL)

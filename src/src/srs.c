@@ -1,11 +1,14 @@
-/* $Cambridge: exim/src/src/srs.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/srs.c,v 1.5 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
 /* SRS - Sender rewriting scheme support
-  ©2004 Miles Wilton <miles@mirtol.com>
+  (C)2004 Miles Wilton <miles@mirtol.com>
+
+  SRS Support Version: 1.0a
+
   License: GPL */
 
 #include "exim.h"
@@ -24,72 +27,87 @@ uschar   *srs_db_reverse        = NULL;
 
 int eximsrs_init()
 {
-  int co;
   uschar *list = srs_config;
-  char secret_buf[SRS_MAX_SECRET_LENGTH];
-  char *secret;
-  char sbuf[4];
-  char *sbufp;
-  int hashlen, maxage;
+  uschar secret_buf[SRS_MAX_SECRET_LENGTH];
+  uschar *secret;
+  uschar sbuf[4];
+  uschar *sbufp;
 
-
-  if(!srs)
+  // Check if this instance of Exim has not initialized SRS
+  if(srs == NULL)
   {
-    /* Check config */
-    if(!srs_config)
-    {
-      log_write(0, LOG_MAIN | LOG_PANIC,
-          "SRS Configuration Error");
-      return DEFER;
-    }
+    int co = 0;
+    int hashlen, maxage;
+    BOOL usetimestamp, usehash;
 
-    /* Get config */
+    /* Copy config vars */
+    hashlen = srs_hashlength;
+    maxage = srs_maxage;
+    usetimestamp = srs_usetimestamp;
+    usehash = srs_usehash;
+
+    /* Pass srs_config var (overrides new config vars) */
     co = 0;
-    if((secret = string_nextinlist(&list, &co, secret_buf,
-                                   SRS_MAX_SECRET_LENGTH)) == NULL)
+    if(srs_config != NULL)
     {
-      log_write(0, LOG_MAIN | LOG_PANIC,
-          "SRS Configuration Error: No secret specified");
-      return DEFER;
+      secret = string_nextinlist(&list, &co, secret_buf, SRS_MAX_SECRET_LENGTH);
+
+      if((sbufp = string_nextinlist(&list, &co, sbuf, sizeof(sbuf))) != NULL)
+        maxage = atoi(sbuf);
+
+      if((sbufp = string_nextinlist(&list, &co, sbuf, sizeof(sbuf))) != NULL)
+        hashlen = atoi(sbuf);
+
+      if((sbufp = string_nextinlist(&list, &co, sbuf, sizeof(sbuf))) != NULL)
+        usetimestamp = atoi(sbuf);
+
+      if((sbufp = string_nextinlist(&list, &co, sbuf, sizeof(sbuf))) != NULL)
+        usehash = atoi(sbuf);
     }
 
-    if((sbufp = string_nextinlist(&list, &co, sbuf, sizeof(sbuf))) == NULL)
-      maxage = 31;
-    else
-      maxage = atoi(sbuf);
+    if(srs_hashmin == -1)
+      srs_hashmin = hashlen;
+
+    /* First secret specified in secrets? */
+    co = 0;
+    list = srs_secrets;
+    if(secret == NULL)
+    {
+      if((secret = string_nextinlist(&list, &co, secret_buf, SRS_MAX_SECRET_LENGTH)) == NULL)
+      {
+        log_write(0, LOG_MAIN | LOG_PANIC,
+            "SRS Configuration Error: No secret specified");
+        return DEFER;
+      }
+    }
+
+    /* Check config */
     if(maxage < 0 || maxage > 365)
     {
       log_write(0, LOG_MAIN | LOG_PANIC,
           "SRS Configuration Error: Invalid maximum timestamp age");
       return DEFER;
     }
-
-    if((sbufp = string_nextinlist(&list, &co, sbuf, sizeof(sbuf))) == NULL)
-      hashlen = 6;
-    else
-      hashlen = atoi(sbuf);
-    if(hashlen < 1 || hashlen > 20)
+    if(hashlen < 1 || hashlen > 20 || srs_hashmin < 1 || srs_hashmin > 20)
     {
       log_write(0, LOG_MAIN | LOG_PANIC,
           "SRS Configuration Error: Invalid hash length");
       return DEFER;
     }
 
-
-    if((srs = srs_open(secret, strnlen(secret, SRS_MAX_SECRET_LENGTH),
-                      maxage, hashlen, hashlen)) == NULL)
+    if((srs = srs_open(secret, Ustrlen(secret), maxage, hashlen, srs_hashmin)) == NULL)
     {
       log_write(0, LOG_MAIN | LOG_PANIC,
           "Failed to allocate SRS memory");
       return DEFER;
     }
 
+    srs_set_option(srs, SRS_OPTION_USETIMESTAMP, usetimestamp);
+    srs_set_option(srs, SRS_OPTION_USEHASH, usehash);
 
-    if((sbufp = string_nextinlist(&list, &co, sbuf, sizeof(sbuf))) != NULL)
-      srs_set_option(srs, SRS_OPTION_USETIMESTAMP, atoi(sbuf));
-
-    if((sbufp = string_nextinlist(&list, &co, sbuf, sizeof(sbuf))) != NULL)
-      srs_set_option(srs, SRS_OPTION_USEHASH, atoi(sbuf));
+    /* Extra secrets? */
+    while((secret = string_nextinlist(&list, &co, secret_buf, SRS_MAX_SECRET_LENGTH)) != NULL)
+        srs_add_secret(srs, secret, strnlen(secret, SRS_MAX_SECRET_LENGTH));
 
     DEBUG(D_any)
       debug_printf("SRS initialized\n");
@@ -101,7 +119,7 @@ int eximsrs_init()
 
 int eximsrs_done()
 {
-  if(srs)
+  if(srs != NULL)
     srs_close(srs);
 
   srs = NULL;
@@ -151,11 +169,12 @@ int eximsrs_reverse(uschar **result, uschar *address)
 int eximsrs_db_set(BOOL reverse, uschar *srs_db)
 {
   if(reverse)
-    srs_db_reverse = string_copy(srs_db);
+    srs_db_reverse = (srs_db == NULL ? NULL : string_copy(srs_db));
   else
-    srs_db_forward = string_copy(srs_db);
+    srs_db_forward = (srs_db == NULL ? NULL : string_copy(srs_db));
 
-  if(srs_set_db_functions(srs, eximsrs_db_insert, eximsrs_db_lookup) * SRS_RESULT_FAIL)
+  if(srs_set_db_functions(srs, (srs_db_forward ? eximsrs_db_insert : NULL),
+                               (srs_db_reverse ? eximsrs_db_lookup : NULL)) & SRS_RESULT_FAIL)
     return DEFER;
 
   return OK;
@@ -165,11 +184,14 @@ int eximsrs_db_set(BOOL reverse, uschar *srs_db)
 srs_result eximsrs_db_insert(srs_t *srs, char *data, uint data_len, char *result, uint result_len)
 {
   uschar *res;
-  char buf[64];
+  uschar buf[64];
+
+  if(srs_db_forward == NULL)
+    return SRS_RESULT_DBERROR;
 
   srs_db_address = string_copyn(data, data_len);
   if(srs_generate_unique_id(srs, srs_db_address, buf, 64) & SRS_RESULT_FAIL)
-    return DEFER;
+    return SRS_RESULT_DBERROR;
 
   srs_db_key = string_copyn(buf, 16);
 
@@ -179,7 +201,7 @@ srs_result eximsrs_db_insert(srs_t *srs, char *data, uint data_len, char *result
   if(result_len < 17)
     return SRS_RESULT_DBERROR;
 
-  strncpy(result, srs_db_key, result_len);
+  Ustrncpy(result, srs_db_key, result_len);
 
   return SRS_RESULT_OK;
 }
@@ -188,6 +210,9 @@ srs_result eximsrs_db_insert(srs_t *srs, char *data, uint data_len, char *result
 srs_result eximsrs_db_lookup(srs_t *srs, char *data, uint data_len, char *result, uint result_len)
 {
   uschar *res;
+
+  if(srs_db_reverse == NULL)
+    return SRS_RESULT_DBERROR;
 
   srs_db_key = string_copyn(data, data_len);
   if((res = expand_string(srs_db_reverse)) == NULL)

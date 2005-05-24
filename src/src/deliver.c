@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.14 2005/04/28 13:06:32 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.15 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -878,6 +878,11 @@ if (result == OK)
   if ((log_extra_selector & LX_sender_on_delivery) != 0)
     s = string_append(s, &size, &ptr, 3, US" F=<", sender_address, US">");
 
+  #ifdef EXPERIMENTAL_SRS
+  if(addr->p.srs_sender)
+    s = string_append(s, &size, &ptr, 3, US" SRS=<", addr->p.srs_sender, US">");
+  #endif
+
   /* You might think that the return path must always be set for a successful
   delivery; indeed, I did for some time, until this statement crashed. The case
   when it is not set is for a delivery to /dev/null which is optimised by not
@@ -1537,8 +1542,14 @@ transport_instance *tp = addr->transport;
 /* Set up the return path from the errors or sender address. If the transport
 has its own return path setting, expand it and replace the existing value. */
 
-return_path = (addr->p.errors_address != NULL)?
-  addr->p.errors_address : sender_address;
+if(addr->p.errors_address != NULL)
+  return_path = addr->p.errors_address;
+#ifdef EXPERIMENTAL_SRS
+else if(addr->p.srs_sender != NULL)
+  return_path = addr->p.srs_sender;
+#endif
+else
+  return_path = sender_address;
 
 if (tp->return_path != NULL)
   {
@@ -3528,8 +3539,14 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
   /* Compute the return path, expanding a new one if required. The old one
   must be set first, as it might be referred to in the expansion. */
 
-  return_path = (addr->p.errors_address != NULL)?
-    addr->p.errors_address : sender_address;
+  if(addr->p.errors_address != NULL)
+    return_path = addr->p.errors_address;
+#ifdef EXPERIMENTAL_SRS
+  else if(addr->p.srs_sender != NULL)
+    return_path = addr->p.srs_sender;
+#endif
+  else
+    return_path = sender_address;
 
   if (tp->return_path != NULL)
     {

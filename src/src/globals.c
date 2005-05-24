@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.26 2005/05/23 16:58:56 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.27 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -282,6 +282,9 @@ address_item address_defaults = {
     NULL,               /* errors_address */
     NULL,               /* extra_headers */
     NULL,               /* remove_headers */
+#ifdef EXPERIMENTAL_SRS
+    NULL,               /* srs_sender */
+#endif
   }
 };
 
@@ -1049,10 +1052,16 @@ uschar *spool_directory        = US SPOOL_DIRECTORY
 uschar *srs_config             = NULL;
 uschar *srs_db_address         = NULL;
 uschar *srs_db_key             = NULL;
+int     srs_hashlength         = 6;
+int     srs_hashmin            = -1;
+int     srs_maxage             = 31;
 uschar *srs_orig_recipient     = NULL;
 uschar *srs_orig_sender        = NULL;
 uschar *srs_recipient          = NULL;
+uschar *srs_secrets            = NULL;
 uschar *srs_status             = NULL;
+BOOL    srs_usehash            = TRUE;
+BOOL    srs_usetimestamp       = TRUE;
 #endif
 int     string_datestamp_offset= -1;
 BOOL    strip_excess_angle_brackets = FALSE;

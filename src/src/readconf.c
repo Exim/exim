@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.8 2005/05/10 10:19:11 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.9 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -339,6 +339,12 @@ static optionlist optionlist_config[] = {
   { "spool_directory",          opt_stringptr,   &spool_directory },
 #ifdef EXPERIMENTAL_SRS
   { "srs_config",               opt_stringptr,   &srs_config },
+  { "srs_hashlength",           opt_int,         &srs_hashlength },
+  { "srs_hashmin",              opt_int,         &srs_hashmin },
+  { "srs_maxage",               opt_int,         &srs_maxage },
+  { "srs_secrets",              opt_stringptr,   &srs_secrets },
+  { "srs_usehash",              opt_bool,        &srs_usehash },
+  { "srs_usetimestamp",         opt_bool,        &srs_usetimestamp },
 #endif
   { "strip_excess_angle_brackets", opt_bool,     &strip_excess_angle_brackets },
   { "strip_trailing_dot",       opt_bool,        &strip_trailing_dot },

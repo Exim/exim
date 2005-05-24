@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/structs.h,v 1.5 2005/04/28 13:06:32 ph10 Exp $ */
+/* $Cambridge: exim/src/src/structs.h,v 1.6 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -469,6 +469,10 @@ typedef struct address_item_propagated {
   uschar *errors_address;         /* where to send errors (NULL => sender) */
   header_line *extra_headers;     /* additional headers */
   uschar *remove_headers;         /* list of those to remove */
+
+  #ifdef EXPERIMENTAL_SRS
+  uschar *srs_sender;             /* Change return path when delivering */
+  #endif
 } address_item_propagated;
 
 /* Bits for the flags field below */

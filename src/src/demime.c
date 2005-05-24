@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/demime.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/demime.c,v 1.5 2005/05/24 08:15:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -452,7 +452,7 @@ int mime_check_boundary(uschar *line, struct boundary *boundaries) {
     for (i = 2; i < Ustrlen(line); i++) {
       if ((line[i] != ' ') && (line[i] != '\t')) {
         workbuf[j] = line[i];
-	      j++;
+        j++;
       };
     };
     workbuf[j+1]='\0';
