@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.143 2005/05/24 10:57:10 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.144 2005/05/24 14:56:26 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -47,6 +47,13 @@ PH/05 There's a shambles in IRIX6 - it defines EX_OK in unistd.h which conflicts
       preserve the sysexits.h value, by assumimg that macro definitions were
       scanned for macro replacements. I have been disabused of this notion,
       so now the code just undefines EX_OK before #including unistd.h.
+
+PH/06 There is a timeout for writing blocks of data, set by, e.g. data_timeout
+      in the smtp transport. When a block could not be written in a single
+      write() function, the timeout was being re-applied to each part-write.
+      This seems wrong - if the receiver was accepting one byte at a time it
+      would take for ever. The timeout is now adjusted when this happens. It
+      doesn't have to be particularly precise.
 
 
 Exim version 4.51

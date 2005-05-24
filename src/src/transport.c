@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.8 2005/05/03 14:20:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.9 2005/05/24 14:56:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -199,26 +199,42 @@ BOOL
 transport_write_block(int fd, uschar *block, int len)
 {
 int i, rc, save_errno;
+int local_timeout = transport_write_timeout;
+
+/* This loop is for handling incomplete writes and other retries. In most
+normal cases, it is only ever executed once. */
 
 for (i = 0; i < 100; i++)
   {
   DEBUG(D_transport)
     debug_printf("writing data block fd=%d size=%d timeout=%d\n",
-      fd, len, transport_write_timeout);
-  if (transport_write_timeout > 0) alarm(transport_write_timeout);
+      fd, len, local_timeout);
 
-  #ifdef SUPPORT_TLS
-  if (tls_active == fd) rc = tls_write(block, len); else
-  #endif
+  /* This code makes use of alarm() in order to implement the timeout. This
+  isn't a very tidy way of doing things. Using non-blocking I/O with select()
+  provides a neater approach. However, I don't know how to do this when TLS is
+  in use. */
 
-  rc = write(fd, block, len);
-  save_errno = errno;
-
-  /* Cancel the alarm and deal with a timeout */
-
-  if (transport_write_timeout > 0)
+  if (transport_write_timeout <= 0)   /* No timeout wanted */
     {
-    alarm(0);
+    #ifdef SUPPORT_TLS
+    if (tls_active == fd) rc = tls_write(block, len); else
+    #endif
+    rc = write(fd, block, len);
+    save_errno = errno;
+    }
+
+  /* Timeout wanted. */
+
+  else
+    {
+    alarm(local_timeout);
+    #ifdef SUPPORT_TLS
+    if (tls_active == fd) rc = tls_write(block, len); else
+    #endif
+    rc = write(fd, block, len);
+    save_errno = errno;
+    local_timeout = alarm(0);
     if (sigalrm_seen)
       {
       errno = ETIMEDOUT;
@@ -230,7 +246,8 @@ for (i = 0; i < 100; i++)
 
   if (rc == len) { transport_count += len; return TRUE; }
 
-  /* A non-negative return code is an incomplete write. Try again. */
+  /* A non-negative return code is an incomplete write. Try again for the rest
+  of the block. If we have exactly hit the timeout, give up. */
 
   if (rc >= 0)
     {
@@ -238,7 +255,7 @@ for (i = 0; i < 100; i++)
     block += rc;
     transport_count += rc;
     DEBUG(D_transport) debug_printf("write incomplete (%d)\n", rc);
-    continue;
+    goto CHECK_TIMEOUT;   /* A few lines below */
     }
 
   /* A negative return code with an EINTR error is another form of
@@ -248,7 +265,7 @@ for (i = 0; i < 100; i++)
     {
     DEBUG(D_transport)
       debug_printf("write interrupted before anything written\n");
-    continue;
+    goto CHECK_TIMEOUT;   /* A few lines below */
     }
 
   /* A response of EAGAIN from write() is likely only in the case of writing
@@ -259,6 +276,16 @@ for (i = 0; i < 100; i++)
     DEBUG(D_transport)
       debug_printf("write temporarily locked out, waiting 1 sec\n");
     sleep(1);
+
+    /* Before continuing to try another write, check that we haven't run out of
+    time. */
+
+    CHECK_TIMEOUT:
+    if (transport_write_timeout > 0 && local_timeout <= 0)
+      {
+      errno = ETIMEDOUT;
+      return FALSE;
+      }
     continue;
     }
 
