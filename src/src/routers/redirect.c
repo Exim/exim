@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.11 2005/05/24 08:15:02 tom Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.12 2005/05/24 08:50:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -598,9 +598,10 @@ if (!ugid.gid_set && pw != NULL)
         eximsrs_init();
         if(ob->srs_dbselect)
           eximsrs_db_set(TRUE, ob->srs_dbselect);
-// Comment this out for now...
+/* Comment this out for now...
 //        else
 //          eximsrs_db_set(TRUE, NULL);
+*/
 
         if((n_srs = eximsrs_reverse(&res, addr->address)) == OK)
         {
@@ -624,9 +625,10 @@ if (!ugid.gid_set && pw != NULL)
         eximsrs_init();
         if(ob->srs_dbinsert)
           eximsrs_db_set(FALSE, ob->srs_dbinsert);
-// Comment this out for now...
+/* Comment this out for now...
 //        else
 //          eximsrs_db_set(FALSE, NULL);
+*/
 
         if(ob->srs_alias != NULL ? (usedomain = expand_string(ob->srs_alias)) == NULL : 1)
           usedomain = deliver_domain;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/srs.c,v 1.5 2005/05/24 08:15:02 tom Exp $ */
+/* $Cambridge: exim/src/src/srs.c,v 1.6 2005/05/24 08:50:35 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -33,7 +33,7 @@ int eximsrs_init()
   uschar sbuf[4];
   uschar *sbufp;
 
-  // Check if this instance of Exim has not initialized SRS
+  /* Check if this instance of Exim has not initialized SRS */
   if(srs == NULL)
   {
     int co = 0;
