@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.142 2005/05/24 08:28:58 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.143 2005/05/24 10:57:10 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -41,6 +41,12 @@ TK/02 Rewrote SPF support to work with libspf2 versions >1.2.0.
 
 TK/03 Merged latest SRS patch from Miles Wilton.
 
+PH/05 There's a shambles in IRIX6 - it defines EX_OK in unistd.h which conflicts
+      with the definition in sysexits.h (which is #included earlier).
+      Fortunately, Exim does not actually use EX_OK. The code used to try to
+      preserve the sysexits.h value, by assumimg that macro definitions were
+      scanned for macro replacements. I have been disabused of this notion,
+      so now the code just undefines EX_OK before #including unistd.h.
 
 
 Exim version 4.51

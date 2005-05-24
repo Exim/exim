@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.14 2005/05/23 16:58:56 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.15 2005/05/24 10:57:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -221,22 +221,18 @@ or a macro with entries f_frsize and f_bsize. */
 #include <fcntl.h>
 
 /* There's a shambles in IRIX6 - it defines EX_OK in unistd.h which conflicts
-with the definition in sysexits.h. Arrange to preserve it, even though at
-present Exim doesn't actually use it. */
+with the definition in sysexits.h. Exim does not actually use this macro, so we
+just undefine it. It would be nice to be able to re-instate the definition from
+sysexits.h if there is no definition in unistd.h, but I do not think there is a
+way to do this in C because macro definitions are not scanned for other macros
+at definition time. [The code here used to assume they were, until I was
+disabused of the notion. Luckily, since EX_OK is not used, it didn't matter.] */
 
 #ifdef EX_OK
-#define SAVE_EX_OK EX_OK
 #undef EX_OK
 #endif
 
 #include <unistd.h>
-
-#ifdef SAVE_EX_OK
-#ifdef EX_OK
-#undef EX_OK
-#endif
-#define EX_OK SAVE_EX_OK
-#endif
 
 #include <utime.h>
 #ifndef NO_NET_IF_H
