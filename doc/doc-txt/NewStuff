@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.46 2005/05/25 09:58:16 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.47 2005/05/25 20:33:28 tom Exp $
 
 New Features in Exim
 --------------------
@@ -234,6 +234,18 @@ TF/04 There is a new ratelimit ACL condition which can be used to measure
           ratelimit = ${lookup {$sender_host_address} \
                         cdb {DB/ratelimits.cdb} \
                         {$value} {RATELIMIT} }
+
+TK/01 Added an 'spf' lookup type that will return an SPF result for a given
+      email address (the key) and an IP address (the database):
+
+      ${lookup {tom@duncanthrax.net} spf{217.115.139.137}}
+
+      The lookup will return the same result strings as they can appear in
+      $spf_result (pass,fail,softfail,neutral,none,err_perm,err_temp). The
+      lookup is armored in EXPERIMENTAL_SPF. Currently, only IPv4 addresses
+      are supported.
+
+      Patch submitted by Chris Webb <chris@arachsys.com>.
 
 
 Version 4.51
