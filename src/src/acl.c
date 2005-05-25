@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.34 2005/05/23 16:58:56 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.35 2005/05/25 09:58:16 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2022,8 +2022,8 @@ if (anchor != NULL && (t = tree_search(*anchor, key)) != NULL)
   {
   dbd = t->data.ptr;
   /* The following few lines duplicate some of the code below. */
-  if (dbd->rate > limit) rc = OK;
-    else rc = FAIL;
+  if (dbd->rate < limit) rc = FAIL;
+    else rc = OK;
   store_pool = old_pool;
   sender_rate = string_sprintf("%.1f", dbd->rate);
   HDEBUG(D_acl)
@@ -2130,8 +2130,13 @@ else
     dbd->rate = (1 - a) / i_over_p + a * dbd->rate;
   }
 
-if (dbd->rate > limit) rc = OK;
-  else rc = FAIL;
+/* Clients sending at the limit are considered to be over the limit. This
+matters for edge cases such the first message sent by a client (which gets
+the initial rate of 0.0) when the rate limit is zero (i.e. the client should
+be completely blocked). */
+
+if (dbd->rate < limit) rc = FAIL;
+  else rc = OK;
 
 /* Update the state if the rate is low or if we are being strict. If we
 are in leaky mode and the sender's rate is too high, we do not update

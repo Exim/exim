@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.45 2005/05/23 16:58:55 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.46 2005/05/25 09:58:16 fanf2 Exp $
 
 New Features in Exim
 --------------------
@@ -132,8 +132,8 @@ TF/04 There is a new ratelimit ACL condition which can be used to measure
 
         ratelimit = <m> / <p> / <options> / <key>
 
-      If the average client sending rate is greater than m messages per time
-      period p then the condition is true, otherwise it is false.
+      If the average client sending rate is less than m messages per time
+      period p then the condition is false, otherwise it is true.
 
       The parameter p is the smoothing time constant, in the form of an Exim
       time interval e.g. 8h for eight hours. A larger time constant means it
