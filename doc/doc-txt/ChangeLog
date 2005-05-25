@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.144 2005/05/24 14:56:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.145 2005/05/25 20:32:44 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -54,6 +54,9 @@ PH/06 There is a timeout for writing blocks of data, set by, e.g. data_timeout
       This seems wrong - if the receiver was accepting one byte at a time it
       would take for ever. The timeout is now adjusted when this happens. It
       doesn't have to be particularly precise.
+
+TK/04 Added simple SPF lookup method in EXPERIMENTAL_SPF. See NewStuff for
+      details. Thanks to Chris Webb <chris@arachsys.com> for the patch!
 
 
 Exim version 4.51
