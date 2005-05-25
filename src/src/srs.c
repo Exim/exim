@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/srs.c,v 1.6 2005/05/24 08:50:35 ph10 Exp $ */
+/* $Cambridge: exim/src/src/srs.c,v 1.7 2005/05/25 17:50:33 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -71,7 +71,7 @@ int eximsrs_init()
     /* First secret specified in secrets? */
     co = 0;
     list = srs_secrets;
-    if(secret == NULL)
+    if(secret == NULL || *secret == NULL)
     {
       if((secret = string_nextinlist(&list, &co, secret_buf, SRS_MAX_SECRET_LENGTH)) == NULL)
       {
