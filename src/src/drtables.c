@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/drtables.c,v 1.3 2005/05/24 08:15:02 tom Exp $ */
+/* $Cambridge: exim/src/src/drtables.c,v 1.4 2005/05/25 20:07:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -87,6 +87,10 @@ be NULL for methods that don't need them. */
 
 #ifdef LOOKUP_PGSQL
 #include "lookups/pgsql.h"
+#endif
+
+#ifdef EXPERIMENTAL_SPF
+#include "lookups/spf.h"
 #endif
 
 #ifdef LOOKUP_TESTDB
@@ -434,6 +438,23 @@ Shares many functions with lsearch. */
   pgsql_quote                    /* quoting function */
 #else
   NULL, NULL, NULL, NULL, NULL, NULL   /* lookup not present */
+#endif
+  },
+
+/* SPF lookup */
+
+  {
+  US"spf",                       /* lookup name */
+  0,                             /* not absfile, not query style */
+#ifdef EXPERIMENTAL_SPF
+  spf_open,                      /* open function */
+  NULL,                          /* no check function */
+  spf_find,                      /* find function */
+  spf_close,                     /* close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+#else
+  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
 #endif
   },
 

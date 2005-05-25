@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spf.c,v 1.4 2005/05/24 08:15:02 tom Exp $ */
+/* $Cambridge: exim/src/src/spf.c,v 1.5 2005/05/25 20:07:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -25,7 +25,7 @@ SPF_response_t  *spf_response_2mx = NULL;
 int spf_init(uschar *spf_helo_domain, uschar *spf_remote_addr) {
   uschar *p;
 
-  spf_server = SPF_server_new(SPF_DNS_CACHE, 1);
+  spf_server = SPF_server_new(SPF_DNS_CACHE, 0);
 
   if ( spf_server == NULL ) {
     debug_printf("spf: SPF_server_new() failed.\n");
