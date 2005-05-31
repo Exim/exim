@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.17 2005/05/24 08:15:02 tom Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.18 2005/05/31 10:58:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -128,6 +128,7 @@ Arguments:
   options           the verification options - these bits are used:
                       vopt_is_recipient => this is a recipient address
                       vopt_callout_no_cache => don't use callout cache
+                      vopt_callout_fullpm => if postmaster check, do full one
                       vopt_callout_random => do the "random" thing
                       vopt_callout_recipsender => use real sender for recipient
                       vopt_callout_recippmaster => use postmaster for recipient
@@ -563,7 +564,8 @@ for (host = host_list; host != NULL && !done; host = host->next)
         new_address_record.result = ccache_reject;
         }
 
-      /* Do postmaster check if requested */
+      /* Do postmaster check if requested; if a full check is required, we
+      check for RCPT TO:<postmaster> (no domain) in accordance with RFC 821. */
 
       if (done && pm_mailfrom != NULL)
         {
@@ -577,10 +579,29 @@ for (host = host_list; host != NULL && !done; host = host->next)
           smtp_read_response(&inblock, responsebuffer,
             sizeof(responsebuffer), '2', callout) &&
 
+          /* First try using the current domain */
+
+          ((
           smtp_write_command(&outblock, FALSE,
             "RCPT TO:<postmaster@%.1000s>\r\n", addr->domain) >= 0 &&
           smtp_read_response(&inblock, responsebuffer,
-            sizeof(responsebuffer), '2', callout);
+            sizeof(responsebuffer), '2', callout)
+          )
+
+          ||
+
+          /* If that doesn't work, and a full check is requested,
+          try without the domain. */
+
+          (
+          (options & vopt_callout_fullpm) != 0 &&
+          smtp_write_command(&outblock, FALSE,
+            "RCPT TO:<postmaster>\r\n") >= 0 &&
+          smtp_read_response(&inblock, responsebuffer,
+            sizeof(responsebuffer), '2', callout)
+          ));
+
+        /* Sort out the cache record */
 
         new_domain_record.postmaster_stamp = time(NULL);
 
@@ -791,6 +812,7 @@ Arguments:
                      These ones are used by do_callout() -- the options variable
                        is passed to it.
 
+                     vopt_callout_fullpm => if postmaster check, do full one
                      vopt_callout_no_cache => don't use callout cache
                      vopt_callout_random => do the "random" thing
                      vopt_callout_recipsender => use real sender for recipient

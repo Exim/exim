@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.47 2005/05/25 20:33:28 tom Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.48 2005/05/31 10:58:18 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -246,6 +246,11 @@ TK/01 Added an 'spf' lookup type that will return an SPF result for a given
       are supported.
 
       Patch submitted by Chris Webb <chris@arachsys.com>.
+
+PH/02 There's a new verify callout option, "fullpostmaster", which first acts
+      as "postmaster" and checks the recipient <postmaster@domain>. If that
+      fails, it tries just <postmaster>, without a domain, in accordance with
+      the specification in RFC 2821.
 
 
 Version 4.51

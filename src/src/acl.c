@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.35 2005/05/25 09:58:16 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.36 2005/05/31 10:58:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1512,6 +1512,11 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
           else if (strcmpic(opt, US"use_postmaster") == 0)
              verify_options |= vopt_callout_recippmaster;
           else if (strcmpic(opt, US"postmaster") == 0) pm_mailfrom = US"";
+          else if (strcmpic(opt, US"fullpostmaster") == 0)
+            {
+            pm_mailfrom = US"";
+            verify_options |= vopt_callout_fullpm;
+            }
 
           else if (strncmpic(opt, US"mailfrom", 8) == 0)
             {

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.145 2005/05/25 20:32:44 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.146 2005/05/31 10:58:18 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -57,6 +57,9 @@ PH/06 There is a timeout for writing blocks of data, set by, e.g. data_timeout
 
 TK/04 Added simple SPF lookup method in EXPERIMENTAL_SPF. See NewStuff for
       details. Thanks to Chris Webb <chris@arachsys.com> for the patch!
+
+PH/07 Added "fullpostmaster" verify option, which does a check to <postmaster>
+      without a domain if the check to <postmaster@domain> fails.
 
 
 Exim version 4.51
