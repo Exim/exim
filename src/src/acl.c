@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.36 2005/05/31 10:58:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.37 2005/05/31 17:07:39 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1920,7 +1920,7 @@ static int
 acl_ratelimit(uschar *arg, uschar **log_msgptr)
 {
 double limit, period;
-uschar *ss, *key = arg;
+uschar *ss, *key;
 int sep = '/';
 BOOL have_key = FALSE, leaky = FALSE, strict = FALSE;
 BOOL per_byte = FALSE, per_cmd = FALSE, per_conn = FALSE, per_mail = FALSE;
@@ -1955,6 +1955,12 @@ if (limit < 0.0 || *ss != 0)
     sender_rate_limit);
   return ERROR;
   }
+
+/* We use the rest of the argument list following the limit as the
+lookup key, because it doesn't make sense to use the same stored data
+if the period or options are different. */
+
+key = arg;
 
 /* Second is the rate measurement period and exponential smoothing time
 constant. This must be strictly greater than zero, because zero leads to
@@ -1996,9 +2002,7 @@ if (leaky + strict > 1 || per_byte + per_cmd + per_conn + per_mail > 1)
 if (!strict) leaky = TRUE;
 if (!per_byte && !per_cmd && !per_conn) per_mail = TRUE;
 
-/* We use the whole of the argument list as the lookup key, because it doesn't
-make sense to use the same stored data if any of the arguments are different.
-If there is no explicit key, use the sender_host_address. If there is no
+/* If there is no explicit key, use the sender_host_address. If there is no
 sender_host_address (e.g. -bs or acl_not_smtp) then we simply omit it. */
 
 if (!have_key && sender_host_address != NULL)
