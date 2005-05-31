@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.19 2005/05/03 14:20:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.20 2005/05/31 11:10:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -586,7 +586,8 @@ exit(rc);
 *************************************************/
 
 /* Called to extract the port from the values given to -oMa and -oMi.
-It also checks the syntax of the address.
+It also checks the syntax of the address, and terminates it before the
+port data when a port is extracted.
 
 Argument:
   address   the address, with possible port on the end
