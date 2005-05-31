@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.33 2005/05/12 08:26:09 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.34 2005/05/31 11:31:30 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1916,6 +1916,8 @@ triggers on a shortage of main memory.
 
 Currently, "delay=5m" (e.g.) waits for 5 minutes. If we can detect that the
 connection has died in the meantime, it would make sense to break the delay.
+However, it doesn't seem possible to detect a dropped connection without trying
+to read from it.
 ------------------------------------------------------------------------------
 
 (328) 10-May-05 S After "unseen" routing, pass on header additions/deletions
@@ -1935,5 +1937,28 @@ to accept the message. Creating the ID earlier would mean that rejection
 messages in the log would be tagged with an ID, and this is seen as desirable
 by some people.
 ------------------------------------------------------------------------------
---- HWM 329 ------------------------------------------------------------------
+
+(330) 31-May-05 ? Default interface for -bh and default port for -oMi
+
+I do not think it worth putting effort in here for these reasons: If a host has
+multiple interfaces, there's no easy way to choose one to be the default for
+$interface_address when -bh is used. If the host does not have multiple
+interfaces, chances are the configuration won't be looking at
+$interface_address anyway. If you are setting -oMi, and care about the port, it
+isn't much effort to tack on a port number, though in this case, I suppose a
+default of 25 is "obvious".
+------------------------------------------------------------------------------
+
+(331) 31-May-05 M More than one retry time per host
+
+Consider this example: an attempt to start a TLS connection to a host gets a
+temporary error. This stops *all* connections, both for TLS and otherwise.
+Different retry times for different circumstances are needed to get round this.
+What are the circumstances? TLS/not-TLS is clearly one, but sometimes you don't
+know if you are going to try TLS until you have connected. So this makes sense
+only if require_tls is used. Perhaps the multiple retry times should just be
+per-transport, to avoid these difficulties. If we made all retry keys depend on
+the transport, this would happen automatically.
+------------------------------------------------------------------------------
+--- HWM 331 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
