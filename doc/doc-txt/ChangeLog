@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.146 2005/05/31 10:58:18 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.147 2005/06/03 14:37:20 steve Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -60,6 +60,21 @@ TK/04 Added simple SPF lookup method in EXPERIMENTAL_SPF. See NewStuff for
 
 PH/07 Added "fullpostmaster" verify option, which does a check to <postmaster>
       without a domain if the check to <postmaster@domain> fails.
+
+SC/01 Eximstats: added -xls and the ability to specify output files
+     (patch written by Frank Heydlauf).
+
+SC/02 Eximstats: use FileHandles for outputing results.
+
+SC/03 Eximstats: allow any combination of xls, txt, and html output.
+
+SC/04 Eximstats: fixed display of large numbers with -nvr option
+
+SC/05 Eximstats: fixed merging of reports with empty tables.
+
+SC/06 Eximstats: added the -include_original_destination flag
+
+SC/07 Eximstats: removed tabs and trailing whitespace.
 
 
 Exim version 4.51
