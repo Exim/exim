@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.147 2005/06/03 14:37:20 steve Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.148 2005/06/06 19:23:03 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -75,6 +75,17 @@ SC/05 Eximstats: fixed merging of reports with empty tables.
 SC/06 Eximstats: added the -include_original_destination flag
 
 SC/07 Eximstats: removed tabs and trailing whitespace.
+
+TK/05 Malware: Improve on aveserver error handling. Patch from Alex Miller.
+
+TK/06 MBOX spool code: Add real "From " MBOX separator line
+      so the .eml file is really in mbox format (even though
+      most programs do not really care). Patch from Alex Miller.
+
+TK/07 MBOX spool code: Add X-Envelope-From: and X-Envelope-To: headers.
+      The latter is generated from $received_to and is only set if the
+      message has one envelope recipient. SA can use these headers,
+      obviously out-of-the-box. Patch from Alex Miller.
 
 
 Exim version 4.51
