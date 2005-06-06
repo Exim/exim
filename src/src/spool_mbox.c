@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.5 2005/05/24 08:15:02 tom Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.6 2005/06/06 18:49:35 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -36,6 +36,9 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
   header_line *my_headerlist;
   struct stat statbuf;
   int i,j;
+  uschar *mbox_delimiter;
+  uschar *envelope_from;
+  uschar *envelope_to;
 
   if (!spool_mbox_ok) {
     /* create scan directory, if not present */
@@ -58,6 +61,47 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
     if (mbox_file == NULL) {
       debug_printf("unable to open file for writing: %s\n", mbox_path);
       return NULL;
+    };
+
+    /* Generate mailbox delimiter */
+    mbox_delimiter = expand_string(US"From ${sender_address} ${tod_bsdinbox}\n");
+    if (mbox_delimiter != NULL) {
+      if (mbox_delimiter[0] != 0) {
+        i = fwrite(mbox_delimiter, 1, Ustrlen(mbox_delimiter), mbox_file);
+        if (i != Ustrlen(mbox_delimiter)) {
+          debug_printf("error/short write on writing in: %s", mbox_path);
+          fclose(mbox_file);
+          return NULL;
+        };
+      };
+    };
+    /* Generate X-Envelope-From header */
+    envelope_from = expand_string(US"${sender_address}");
+    if (envelope_from != NULL) {
+      if (envelope_from[0] != 0) {
+        uschar *my_envelope_from;
+        my_envelope_from = string_sprintf("X-Envelope-From: <%s>\n", envelope_from);
+        i = fwrite(my_envelope_from, 1, Ustrlen(my_envelope_from), mbox_file);
+        if (i != Ustrlen(my_envelope_from)) {
+          debug_printf("error/short write on writing in: %s", mbox_path);
+          fclose(mbox_file);
+          return NULL;
+        };
+      };
+    };
+    /* Generate X-Envelope-To header */
+    envelope_to = expand_string(US"${if def:received_for{$received_for}}");
+    if (envelope_to != NULL) {
+      if (envelope_to[0] != 0) {
+        uschar *my_envelope_to;
+        my_envelope_to = string_sprintf("X-Envelope-To: <%s>\n", envelope_to);
+        i = fwrite(my_envelope_to, 1, Ustrlen(my_envelope_to), mbox_file);
+        if (i != Ustrlen(my_envelope_to)) {
+          debug_printf("error/short write on writing in: %s", mbox_path);
+          fclose(mbox_file);
+          return NULL;
+        };
+      };
     };
 
     /* write all header lines to mbox file */
