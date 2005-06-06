@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.35 2005/06/03 13:45:15 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.36 2005/06/06 08:37:17 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -72,7 +72,7 @@ Oliver Smith
 
 The problem with header_remove followed by header_add is that you can't refer
 to the previous value of the header when adding a replacement. This could be
-solved with a replace_header option.
+solved with a replace_header option. See also Exim 4/333.
 ------------------------------------------------------------------------------
 
 (43) 15-Oct-98  M  Sender rewrite *after* SMTP incoming checks
@@ -124,7 +124,7 @@ http://www.net.lut.ac.uk/~martin/antispam/exim-hacks/
 Dave Lewney
 John Holman
 
-Such as "return-receipt-to". See also 41.
+Such as "return-receipt-to". See also 41. See also Exim 4/333.
 ------------------------------------------------------------------------------
 
 (90) 21-Apr-99  M  change wild prefix/suffix greediness
@@ -321,7 +321,7 @@ be tricky to specify, hence the L.
 
 A separate but related issue is the effect of headers added by "unseen"
 directors. These are documented in chapter 19 as not being accumulated. Should
-any change be made?
+any change be made? See also Exim 4/333.
 ------------------------------------------------------------------------------
 
 (155) 16-Jun-2000 M  Special handling for certain hosts
@@ -793,7 +793,7 @@ Current rewriting rules apply to individual addresses in header lines. This
 feature would use a regex to match whole lines and replace them. It could be
 useful for patching up syntactically invalid lines from crappy clients, before
 the syntax check kicks in. (It might also be useful for hiding local host names
-in Received: headers.)
+in Received: headers.) See also 333.
 ------------------------------------------------------------------------------
 
 (58)  26-Jun-02 ?  Extend PAM support
@@ -819,7 +819,7 @@ Patrice Fournier
 
 "I'd like to be able to give Exim a list of headers that must be removed
 from the message at arrival, before data_acl processing (and before the
-rcpt_acl warn headers are added to the message)."
+rcpt_acl warn headers are added to the message)." See also 333.
 ------------------------------------------------------------------------------
 
 (63)  28-Jun-02 S  Access to ACL-added headers in ACLs
@@ -827,7 +827,7 @@ Patrice Fournier
 
 "I'd like also to be able to look at the already added headers by a
 rcpt_acl when still checking rcpt_acl (either later in the acl for the same
-RCPT TO or for another RCPT TO)."
+RCPT TO or for another RCPT TO)." See also 333.
 ------------------------------------------------------------------------------
 
 (65)  28-Jun-02 M  Expand fallback hosts
@@ -1166,6 +1166,8 @@ For sending reasons for slow response, etc.
 ------------------------------------------------------------------------------
 
 (160) 19-May-03 M  Remove headers using wild cards
+
+See also 333.
 ------------------------------------------------------------------------------
 
 (162) 28-May-03 M/L Use of real numbers in filters, expansions, and options
@@ -1366,6 +1368,8 @@ option, for use with multiple Exim daemons.
 ------------------------------------------------------------------------------
 
 (212) 31-Oct-03 M  specify headers lines in HELO ACL to be added to all msgs
+
+See also 333.
 ------------------------------------------------------------------------------
 
 (214) 05-Nov-03 S  Put the wild part of local part prefix/suffx in variables
@@ -1506,7 +1510,8 @@ this reason, I don't really like this idea.
 
 (237) 02-Feb-04 M  Add_header in ACLs because "message" is overloaded
 
-This would be useful for verbs where "message" is an error message.
+This would be useful for verbs where "message" is an error message. See also
+333.
 ------------------------------------------------------------------------------
 
 (238) 05-Feb-04 S  ${address to handle multiple addresses
@@ -1616,7 +1621,7 @@ where header lines are added will probably become necessary. Some new syntax
 will be required.
 
 This can now be done fairly generally from local_scan(), and at the start and
-after the Received: block from an ACL. Is anything more needed?
+after the Received: block from an ACL. Is anything more needed? See also 333.
 ------------------------------------------------------------------------------
 
 (271) 02-Jun-04 L Callouts at routing time
@@ -1842,7 +1847,8 @@ runners must be startable for the different "queues". Don't forget that the
 (314) 15-Feb-05 M Multiple headers_{add,remove} for routers
 
 If headers_{add,remove} could be specified multiple times, it would be easier
-for those people that construct configs using .ifdef or .include, etc.
+for those people that construct configs using .ifdef or .include, etc. See also
+333.
 ------------------------------------------------------------------------------
 
 (315) 15-Feb-05 M String variables for use in filters.
@@ -1926,7 +1932,7 @@ Currently, when an "unseen" router accepts an address, header additions and
 deletions stick with that address, and the "clone" address that continues to be
 routed starts off without any additions or removals. This request is for an
 option to select other actions: retain header actions with the clone only, or
-pass them on to both addresses.
+pass them on to both addresses. See also 333.
 ------------------------------------------------------------------------------
 
 (329) 12-May-05 S Create message ID at MAIL FROM time
@@ -1966,5 +1972,17 @@ the transport, this would happen automatically.
 This suggestion is to at an RT= item to the <= line, giving the time it
 actually took to receive the message.
 ------------------------------------------------------------------------------
---- HWM 332 ------------------------------------------------------------------
+
+(333) 06-Jun-05 L Re-think and re-implement header handling
+
+There are a number of items related to headers above. Better facilities for
+handling headers at ACL time are needed. The whole way in which Exim handles
+headers should be re-planned and re-implemented in a more consistent manner.
+
+These are the main previous items:
+
+Exim 3 Wish List: 41, 85, 149, 187.
+Exim 4 Wish List: 55, 62, 63, 160, 212, 237, 270, 314, 328.
+------------------------------------------------------------------------------
+--- HWM 333 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
