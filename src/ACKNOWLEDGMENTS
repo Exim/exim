@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.24 2005/04/27 13:29:32 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.25 2005/06/06 19:30:18 tom Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -221,6 +221,7 @@ Dave Turner               Suggested patch for sender rewriting brokenness
 Carlos Villegas           Suggested patch for "headers" in filter files
 Matthias Waffenschmidt    Patch for build-time Perl bug in configure script
 Norihisa Washitake        Suggested patch for RFC 2047 header decoding
+Chris Webb                Patch for support of an SPF lookup method.
 Florian Weimer            Patch for minor format string issue
 Joachim Wieland           Patches for PostgreSQL socket support and other
                             PostgreSQL functionality
