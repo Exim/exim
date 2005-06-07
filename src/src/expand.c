@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.22 2005/05/23 16:58:56 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.23 2005/06/07 10:41:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1596,8 +1596,8 @@ if (name[0] == 0)
 cond_type = chop_match(name, cond_table, sizeof(cond_table)/sizeof(uschar *));
 switch(cond_type)
   {
-  /* def: tests for a non-zero or non-NULL variable, or for an existing
-  header */
+  /* def: tests for a non-empty variable, or for the existence of a header. If
+  yield == NULL we are in a skipping state, and don't care about the answer. */
 
   case ECOND_DEF:
   if (*s != ':')
@@ -1622,8 +1622,8 @@ switch(cond_type)
       (find_header(name, TRUE, NULL, FALSE, NULL) != NULL) == testfor;
     }
 
-  /* Test for a variable's having a non-empty value. If yield == NULL we
-  are in a skipping state, and don't care about the answer. */
+  /* Test for a variable's having a non-empty value. A non-existent variable
+  causes an expansion failure. */
 
   else
     {
@@ -1635,8 +1635,7 @@ switch(cond_type)
         string_sprintf("unknown variable \"%s\" after \"def:\"", name);
       return NULL;
       }
-    if (yield != NULL)
-      *yield = (value[0] != 0 && Ustrcmp(value, "0") != 0) == testfor;
+    if (yield != NULL) *yield = (value[0] != 0) == testfor;
     }
 
   return s;
@@ -2321,11 +2320,15 @@ if (*s == '}')
   goto RETURN;
   }
 
+/* The first following string must be braced. */
+
+if (*s++ != '{') goto FAILED_CURLY;
+
 /* Expand the first substring. Forced failures are noticed only if we actually
 want this string. Set skipping in the call in the fail case (this will always
 be the case if we were already skipping). */
 
-sub1 = expand_string_internal(s+1, TRUE, &s, !yes);
+sub1 = expand_string_internal(s, TRUE, &s, !yes);
 if (sub1 == NULL && (yes || !expand_string_forcedfail)) goto FAILED;
 expand_string_forcedfail = FALSE;
 if (*s++ != '}') goto FAILED_CURLY;
