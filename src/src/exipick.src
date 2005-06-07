@@ -1,5 +1,5 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.4 2005/03/22 15:07:42 ph10 Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.5 2005/06/07 09:15:04 ph10 Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
@@ -8,7 +8,7 @@ use strict;
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
-my $p_version = "20050225.0";
+my $p_version = "20050604.1";
 my $p_usage   = "Usage: $p_name [--help|--version] (see --help for details)";
 my $p_cp      = <<EOM;
         Copyright (c) 2003-2005 John Jetmore <jj33\@pobox.com>
@@ -45,7 +45,7 @@ GetOptions(
   'or'          => \$G::or,         # 'or' the criteria
   'f:s'         => \$G::qgrep_f,    # from regexp
   'r:s'         => \$G::qgrep_r,    # recipient regexp
-  #'s:s'         => \$G::qgrep_s,    # match against size field
+  's:s'         => \$G::qgrep_s,    # match against size field
   'y:s'         => \$G::qgrep_y,    # message younger than (secs)
   'o:s'         => \$G::qgrep_o,    # message older than (secs)
   'z'           => \$G::qgrep_z,    # frozen only
@@ -62,12 +62,13 @@ GetOptions(
   'show-tests'  => \$G::show_tests  # display tests as applied to each message
 ) || exit(1);
 
-push(@ARGV, "\$sender_address =~ /$G::qgrep_f/") if ($G::qgrep_f);
-push(@ARGV, "\$recipients =~ /$G::qgrep_r/")     if ($G::qgrep_r);
-push(@ARGV, "\$message_age < $G::qgrep_y")       if ($G::qgrep_y);
-push(@ARGV, "\$message_age > $G::qgrep_o")       if ($G::qgrep_o);
-push(@ARGV, "\$deliver_freeze")                  if ($G::qgrep_z);
-push(@ARGV, "!\$deliver_freeze")                 if ($G::qgrep_x);
+push(@ARGV, "\$sender_address     =~ /$G::qgrep_f/") if ($G::qgrep_f);
+push(@ARGV, "\$recipients         =~ /$G::qgrep_r/") if ($G::qgrep_r);
+push(@ARGV, "\$shown_message_size eq $G::qgrep_s")   if ($G::qgrep_s);
+push(@ARGV, "\$message_age        <  $G::qgrep_y")   if ($G::qgrep_y);
+push(@ARGV, "\$message_age        >  $G::qgrep_o")   if ($G::qgrep_o);
+push(@ARGV, "\$deliver_freeze")                      if ($G::qgrep_z);
+push(@ARGV, "!\$deliver_freeze")                     if ($G::qgrep_x);
 $G::mailq_bp        = $G::mailq_bp;        # shut up -w
 $G::and             = $G::and;             # shut up -w
 $G::msg_ids         = {};
@@ -179,6 +180,7 @@ sub process_criteria {
     } elsif (/^(.*?)\s+(eq|ne)\s+(.*)$/) {
       #print STDERR "found as string cmp\n";
       my $var = lc($1); my $op = $2; my $val = $3;
+      $val =~ s|^(['"])(.*)\1$|$2|;
       push(@c, { var => $var, cmp => "(\"\$var\" $op \"$val\") ? 1 : 0" });
       if ($var eq 'message_id' && $op eq "eq") {
         #print STDERR "short circuit @c[-1]->{cmp} $val\n";
@@ -248,7 +250,7 @@ sub new {
   $self->{_output_idonly}    = 0;
   $self->{_output_brief}     = 0;
   $self->{_output_flatq}     = 0;
-  $self->{_show_vars}        = {};
+  $self->{_show_vars}        = [];
 
   $self->_reset();
   return($self);
@@ -295,7 +297,7 @@ sub set_show_vars {
   my $s    = shift;
 
   foreach my $v (split(/\s*,\s*/, $s)) {
-    $self->{_show_vars}{$v}++;
+    push(@{$self->{_show_vars}}, $v);
   }
 }
 
@@ -413,7 +415,7 @@ sub _parse_header {
 
   # line 2
   chomp($_ = <I>);
-  return(0) if (!/^(.+)\s(\d+)\s(\d+)$/);
+  return(0) if (!/^(.+)\s(\-?\d+)\s(\-?\d+)$/);
   $self->{_vars}{originator_login} = $1;
   $self->{_vars}{originator_uid}   = $2;
   $self->{_vars}{originator_gid}   = $3;
@@ -593,6 +595,7 @@ sub _parse_header {
     my $bytes = $_;
     return(0) if (read(I, $_, $bytes) != $bytes);
     chomp(); # may regret this later
+    $self->{_vars}{message_linecount} += scalar(split(/\n/)) if ($t ne '*');
     # build the $header_ variable, following exim's rules (sort of)
     if (/^([^ :]+):(.*)$/s) {
       my $v = "header_" . lc($1);
@@ -621,6 +624,17 @@ sub _parse_header {
   } else {
     $self->{_vars}{message_size} += $self->{_vars}{message_body_size} + 1;
   }
+
+  $self->{_vars}{message_linecount} += $self->{_vars}{body_linecount};
+
+  my $i = $self->{_vars}{message_size};
+  if ($i == 0)              { $i = ""; }
+  elsif ($i < 1024)         { $i = sprintf("%d", $i); }
+  elsif ($i < 10*1024)      { $i = sprintf("%.1fK", $i / 1024); }
+  elsif ($i < 1024*1024)    { $i = sprintf("%dK", ($i+512)/1024); }
+  elsif ($i < 10*1024*1024) { $i = sprintf("%.1fM", $i/(1024*1024)); }
+  else { $i = sprintf("%dM", ($i + 512 * 1024)/(1024*1024)); }
+  $self->{_vars}{shown_message_size} = $i;
 
   return(1);
 }
@@ -651,7 +665,11 @@ sub print_message {
   return if ($self->{_delivered});
 
   if ($self->{_output_idonly}) {
-    print $fh $self->{_message}, "\n";
+    print $fh $self->{_message};
+    foreach my $v (@{$self->{_show_vars}}) {
+      print $fh " $v='", $self->get_var($v), "'";
+    }
+    print $fh "\n";
     return;
   }
 
@@ -663,14 +681,15 @@ sub print_message {
       else { printf $fh "%2dh ", $i; }
     } else { printf $fh "%2dm ", $i; }
 
-    $i = $self->{_vars}{message_size};
-    if ($i == 0)              { $i = "     "; }
-    elsif ($i < 1024)         { $i = sprintf("%5d", $i); }
-    elsif ($i < 10*1024)      { $i = sprintf("%4.1fK", $i / 1024); }
-    elsif ($i < 1024*1024)    { $i = sprintf("%4dK", ($i+512)/1024); }
-    elsif ($i < 10*1024*1024) { $i = sprintf("%4.1fM", $i/(1024*1024)); }
-    else { $i = sprintf("%4dM", ($i + 512 * 1024)/(1024*1024)); }
-    print $fh "$i ";
+    if ($self->{_output_flatq} && $self->{_show_vars}) {
+        print $fh join(';',
+                       map { "$_='".$self->get_var($_)."'" }
+                           (@{$self->{_show_vars}})
+                      );
+    } else {
+      printf $fh "%5s", $self->{_vars}{shown_message_size};
+    }
+    print $fh " ";
   }
   print $fh "$self->{_message} ";
   print $fh "From: " if ($self->{_output_brief});
@@ -684,7 +703,7 @@ sub print_message {
     print $fh " *** frozen ***" if ($self->{_vars}{deliver_freeze});
     print $fh "\n";
 
-    foreach my $v (keys(%{$self->{_show_vars}})) {
+    foreach my $v (@{$self->{_show_vars}}) {
       printf $fh "  %25s = '%s'\n", $v, $self->get_var($v);
     }
 
@@ -705,6 +724,12 @@ sub print_message {
       push(@r, $r);
     }
     print $fh " To: ", join(';', @r);
+    if ($self->{_show_vars}) {
+      print $fh " Vars: ", join(';',
+                                map { "$_='".$self->get_var($_)."'" }
+                                    (@{$self->{_show_vars}})
+                               );
+    }
   } elsif ($self->{_output_flatq}) {
     print $fh " *** frozen ***" if ($self->{_vars}{deliver_freeze});
     my @r = ();
@@ -793,6 +818,22 @@ A message will be displayed if it matches any of the specified criteria.
 
 By default criteria using the '=' operator are caseless.  Specifying this option make them respect case.
 
+=item --show-vars <variable>[,<variable>...]
+
+Cause the value of each specified variable to be displayed for every message dispayed.  For instance, the command "exipick --show-vars '$sender_ident' 'sender_host_address eq 127.0.01'" will show the ident string for every message submitted via localhost.  How exactly the variable value is diplayed changes according to what output format you specify.
+
+=item --show-rules
+
+If specified the internal representation of each message criteria is shown.  This is primarily used for debugging purposes.
+
+==item --show-tests
+
+If specified, for every message (regardless of matching criteria) the criteria's actual value is shown and the compiled internal eval is shown.  This is used primarily for debugging purposes.
+
+=item --flatq
+
+Change format of output so that every message is on a single line.  Useful for parsing with tools such as sed, awk, cut, etc.
+
 =item The -bp* options all control how much information is displayed and in what manner.  They all match the functionality of the options of the same name in Exim.  Briefly:
 
 =item -bp   display the matching messages in 'mailq' format.
@@ -816,6 +857,8 @@ Please see Exim's spec.txt for details on the format and information displayed w
 =item -f <regexp>  Same as '$sender_address = <regexp>'
 
 =item -r <regexp>  Same as '$recipients = <regexp>'
+
+=item -s <string>  Same as '$shown_message_size eq <string>'
 
 =item -y <seconds> Same as '$message_age < <seconds>'
 
@@ -969,6 +1012,10 @@ The number of seconds since the message was received.
 
 The size of the body in bytes.
 
+=item . $message_linecount
+
+The number of lines in the entire message (body and headers).
+
 =item . $message_size
 
 The size of the message in bytes.
@@ -985,7 +1032,7 @@ The user id under which the process that called Exim was running as when the mes
 
 The number of Received: header lines in the message.
 
-=item + $received_time
+=item . $received_time
 
 The epoch time at which the message was received.
 
@@ -1122,6 +1169,10 @@ The remote host's name as obtained by looking up its IP address.
 =item . $sender_ident
 
 The identification received in response to an RFC 1413 request for remote messages, the login name of the user that called Exim for locally generated messages.
+
+=item + $shown_message_size
+
+This non-standard variable contains the formatted size string.  That is, for a message whose $message_size is 66566 bytes, $shown_message_size is 65K.
 
 =item . $smtp_active_hostname
 
