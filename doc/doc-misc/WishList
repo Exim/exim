@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.36 2005/06/06 08:37:17 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.37 2005/06/07 15:36:47 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1907,11 +1907,6 @@ transport and the callout code could prevent this kind of thing from happening.
 This is in the Bugzilla as #10.
 ------------------------------------------------------------------------------
 
-(325) 28-Apr-05 ? Support for quotas over 2G in appendfile.
-
-Things get bigger far more quickly than I ever imagine...
-------------------------------------------------------------------------------
-
 (326) 03-May-05 ? Queue-only on memory shortage
 
 This is bugzilla #17. The idea is to have something like queue_only_load that
@@ -1984,5 +1979,11 @@ These are the main previous items:
 Exim 3 Wish List: 41, 85, 149, 187.
 Exim 4 Wish List: 55, 62, 63, 160, 212, 237, 270, 314, 328.
 ------------------------------------------------------------------------------
---- HWM 333 ------------------------------------------------------------------
+
+(334) 07-Jun-05 M Support for messages larger than 2G
+
+This is probably a longish-term thing at the moment. Quotas over 2G are now
+supported, but not individual messages; no doubt one day this will be wanted.
+------------------------------------------------------------------------------
+--- HWM 334 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
