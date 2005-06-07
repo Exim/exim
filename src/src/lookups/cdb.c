@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/cdb.c,v 1.1 2004/10/07 13:10:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/cdb.c,v 1.2 2005/06/07 15:20:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -167,7 +167,7 @@ cdb_open(uschar *filename,
     if (statbuf.st_size < CDB_HASH_TABLE) {
       int save_errno = errno;
       *errmsg = string_open_failed(errno,
-                                  "%s to short for cdb lookup",
+                                  "%s too short for cdb lookup",
                                   filename);
       errno = save_errno;
       return NULL;

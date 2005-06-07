@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.4 2005/02/17 11:58:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.5 2005/06/07 15:20:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -198,12 +198,12 @@ Arguments:
 Returns:      the sum of the sizes of the messages
 */
 
-int
+off_t
 maildir_compute_size(uschar *path, int *filecount, time_t *latest,
   const pcre *regex, const pcre *dir_regex, BOOL timestamp_only)
 {
 DIR *dir;
-int sum = 0;
+off_t sum = 0;
 struct dirent *ent;
 struct stat statbuf;
 
@@ -282,8 +282,8 @@ DEBUG(D_transport)
     debug_printf("maildir_compute_size (timestamp_only): %ld\n",
     (long int) *latest);
   else
-    debug_printf("maildir_compute_size: path=%s\n  sum=%d filecount=%d "
-      "timestamp=%ld\n", path, sum, *filecount, (long int) *latest);
+    debug_printf("maildir_compute_size: path=%s\n  sum=%.30g filecount=%d "
+      "timestamp=%ld\n", path, (double)sum, *filecount, (long int) *latest);
   }
 return sum;
 }
@@ -320,15 +320,15 @@ Returns:           >=0  a file descriptor for an open maildirsize file
 
 int
 maildir_ensure_sizefile(uschar *path, appendfile_transport_options_block *ob,
-  const pcre *regex, const pcre *dir_regex, int *returned_size,
+  const pcre *regex, const pcre *dir_regex, off_t *returned_size,
   int *returned_filecount)
 {
 int count, fd;
-int cached_quota = 0;
+off_t cached_quota = 0;
 int cached_quota_filecount = 0;
-int size = 0;
 int filecount = 0;
 int linecount = 0;
+off_t size = 0;
 uschar *filename;
 uschar buffer[MAX_FILE_SIZE];
 uschar *ptr = buffer;
@@ -369,14 +369,14 @@ DEBUG(D_transport)
 
 for (;;)
   {
-  long int n = Ustrtol(ptr, &endptr, 10);
+  off_t n = (off_t)Ustrtod(ptr, &endptr);
 
   /* Only two data items are currently defined; ignore any others that
   may be present. The spec is for a number followed by a letter. Anything
   else we reject and recalculate. */
 
   if (*endptr == 'S') cached_quota = n;
-    else if (*endptr == 'C') cached_quota_filecount = n;
+    else if (*endptr == 'C') cached_quota_filecount = (int)n;
   if (!isalpha(*endptr++))
     {
     DEBUG(D_transport)
@@ -404,9 +404,9 @@ if (cached_quota != ob->quota_value ||
   {
   DEBUG(D_transport)
     debug_printf("cached quota is out of date: recalculating\n"
-      "  quota=%d cached_quota=%d filecount_quota=%d "
-      "cached_quota_filecount=%d\n", ob->quota_value, cached_quota,
-      ob->quota_filecount_value, cached_quota_filecount);
+      "  quota=%.30g cached_quota=%.30g filecount_quota=%d "
+      "cached_quota_filecount=%d\n", (double)ob->quota_value,
+      (double)cached_quota, ob->quota_filecount_value, cached_quota_filecount);
   goto RECALCULATE;
   }
 
@@ -421,7 +421,7 @@ while (*endptr++ == '\n')
   if (*endptr == 0) break;
   linecount++;
   ptr = endptr;
-  size += Ustrtol(ptr, &endptr, 10);
+  size += (off_t)Ustrtod(ptr, &endptr);
   if (*endptr != ' ') break;
   ptr = endptr + 1;
   filecount += Ustrtol(ptr, &endptr, 10);
@@ -439,7 +439,7 @@ if (*endptr == 0)
   if (size < 0 || filecount < 0)
     {
     DEBUG(D_transport) debug_printf("negative value in maildirsize "
-      "(size=%d count=%d): recalculating\n", size, filecount);
+      "(size=%.30g count=%d): recalculating\n", (double)size, filecount);
     goto RECALCULATE;
     }
 
@@ -510,8 +510,8 @@ else
   fd = Uopen(tempname, O_RDWR|O_CREAT|O_EXCL, 0600);
   if (fd >= 0)
     {
-    (void)sprintf(CS buffer, "%dS,%dC\n%d %d\n", ob->quota_value,
-      ob->quota_filecount_value, size, filecount);
+    (void)sprintf(CS buffer, "%.30gS,%dC\n%.30g %d\n", (double)ob->quota_value,
+      ob->quota_filecount_value, (double)size, filecount);
     len = Ustrlen(buffer);
     if (write(fd, buffer, len) != len || Urename(tempname, filename) < 0)
       {
@@ -538,8 +538,8 @@ else
 
 /* Return the sizes and the file descriptor, if any */
 
-DEBUG(D_transport) debug_printf("returning maildir size=%d filecount=%d\n",
-  size, filecount);
+DEBUG(D_transport) debug_printf("returning maildir size=%.30g filecount=%d\n",
+  (double)size, filecount);
 *returned_size = size;
 *returned_filecount = filecount;
 return fd;

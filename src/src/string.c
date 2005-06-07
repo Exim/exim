@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/string.c,v 1.3 2005/05/23 16:58:56 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/string.c,v 1.4 2005/06/07 15:20:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -944,9 +944,9 @@ on whether the variable length list of data arguments are given explicitly or
 as a va_list item.
 
 The formats are the usual printf() ones, with some omissions (never used) and
-two additions for strings: %S forces lower case, %#s or %#S prints nothing for
-a NULL string. Without the # "NULL" is printed (useful in debugging). There is
-also the addition of %D, which inserts the date in the form used for
+two additions for strings: %S forces lower case, and %#s or %#S prints nothing
+for a NULL string. Without the # "NULL" is printed (useful in debugging). There
+is also the addition of %D, which inserts the date in the form used for
 datestamped log files.
 
 Arguments:

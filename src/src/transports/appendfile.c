@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.6 2005/04/27 10:06:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.7 2005/06/07 15:20:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -189,11 +189,11 @@ appendfile_transport_options_block appendfile_transport_option_defaults = {
   NULL,           /* check_string (default changed for non-bsmtp file)*/
   NULL,           /* escape_string (ditto) */
   NULL,           /* file_format */
+  0,              /* quota_value */
+  0,              /* quota_warn_threshold_value */
   -1,             /* mailbox_size_value */
   -1,             /* mailbox_filecount_value */
-  0,              /* quota_value */
   0,              /* quota_filecount_value */
-  0,              /* quota_warn_threshold_value */
   APPENDFILE_MODE,           /* mode */
   APPENDFILE_DIRECTORY_MODE, /* dirmode */
   APPENDFILE_LOCKFILE_MODE,  /* lockfile_mode */
@@ -259,8 +259,7 @@ appendfile_transport_setup(transport_instance *tblock, address_item *addrlist,
 appendfile_transport_options_block *ob =
   (appendfile_transport_options_block *)(tblock->options_block);
 uschar *q = ob->quota;
-int *v = &(ob->quota_value);
-int default_value = 0;
+double default_value = 0.0;
 int i;
 
 addrlist = addrlist;    /* Keep picky compilers happy */
@@ -271,9 +270,10 @@ mailbox_filecount */
 
 for (i = 0; i < 5; i++)
   {
-  if (q == NULL) *v = default_value; else
+  double d;
+
+  if (q == NULL) d = default_value; else
     {
-    double d;
     uschar *rest;
     uschar *s = expand_string(q);
 
@@ -314,31 +314,33 @@ for (i = 0; i < 5; i++)
         "in %s transport", s, q, tblock->name);
       return FAIL;
       }
-
-    *v = (int)d;
     }
 
   switch (i)
     {
     case 0:
+    ob->quota_value = (off_t)d;
     q = ob->quota_filecount;
-    v = &(ob->quota_filecount_value);
     break;
 
     case 1:
+    ob->quota_filecount_value = (int)d;
     q = ob->quota_warn_threshold;
-    v = &(ob->quota_warn_threshold_value);
     break;
 
     case 2:
+    ob->quota_warn_threshold_value = (off_t)d;
     q = ob->mailbox_size_string;
-    v = &(ob->mailbox_size_value);
-    default_value = -1;
+    default_value = -1.0;
     break;
 
     case 3:
+    ob->mailbox_size_value = (off_t)d;
     q = ob->mailbox_filecount_string;
-    v = &(ob->mailbox_filecount_value);
+    break;
+
+    case 4:
+    ob->mailbox_filecount_value = (int)d;
     break;
     }
   }
@@ -548,7 +550,7 @@ Returns:     nothing
 */
 
 static void
-notify_comsat(uschar *user, int offset)
+notify_comsat(uschar *user, off_t offset)
 {
 struct servent *sp;
 host_item host;
@@ -557,7 +559,7 @@ uschar buffer[256];
 
 DEBUG(D_transport) debug_printf("notify_comsat called\n");
 
-sprintf(CS buffer, "%.200s@%d\n", user, offset);
+sprintf(CS buffer, "%.200s@%.30g\n", user, (double)offset);
 
 if ((sp = getservbyname("biff", "udp")) == NULL)
   {
@@ -705,11 +707,11 @@ Returns:        the sum of the sizes of the stattable files
                 zero if the directory cannot be opened
 */
 
-int
+off_t
 check_dir_size(uschar *dirname, int *countptr, const pcre *regex)
 {
 DIR *dir;
-int sum = 0;
+off_t sum = 0;
 int count = *countptr;
 struct dirent *ent;
 struct stat statbuf;
@@ -734,12 +736,13 @@ while ((ent = readdir(dir)) != NULL)
     if (pcre_exec(regex, NULL, CS name, Ustrlen(name), 0, 0, ovector,6) >= 2)
       {
       uschar *endptr;
-      int size = Ustrtol(name + ovector[2], &endptr, 10);
+      off_t size = (off_t)Ustrtod(name + ovector[2], &endptr);
       if (endptr == name + ovector[3])
         {
         sum += size;
         DEBUG(D_transport)
-          debug_printf("check_dir_size: size from %s is %d\n", name, size);
+          debug_printf("check_dir_size: size from %s is %.30g\n", name,
+            (double)size);
         continue;
         }
       }
@@ -773,7 +776,9 @@ while ((ent = readdir(dir)) != NULL)
 
 closedir(dir);
 DEBUG(D_transport)
-  debug_printf("check_dir_size: dir=%s sum=%d count=%d\n", dirname, sum, count);
+  debug_printf("check_dir_size: dir=%s sum=%.30g count=%d\n", dirname,
+    (double)sum, count);
+
 *countptr = count;
 return sum;
 }
@@ -875,9 +880,10 @@ Returns:       OK if all went well, DEFER otherwise, with errno preserved
 #define MBX_NUSERFLAGS           30
 
 static int
-copy_mbx_message(int to_fd, int from_fd, int saved_size)
+copy_mbx_message(int to_fd, int from_fd, off_t saved_size)
 {
-int used, size;
+int used;
+off_t size;
 struct stat statbuf;
 
 /* If the current mailbox size is zero, write a header block */
@@ -903,8 +909,8 @@ size, including CRLFs, which is the size of the input (temporary) file. */
 if (fstat(from_fd, &statbuf) < 0) return DEFER;
 size = statbuf.st_size;
 
-sprintf (CS deliver_out_buffer, "%s,%lu;%08lx%04x-%08x\015\012",
-  tod_stamp(tod_mbx), (long unsigned int)size, 0L, 0, 0);
+sprintf (CS deliver_out_buffer, "%s,%.30g;%08lx%04x-%08x\015\012",
+  tod_stamp(tod_mbx), (double)size, 0L, 0, 0);
 used = Ustrlen(deliver_out_buffer);
 
 /* Rewind the temporary file, and copy it over in chunks. */
@@ -1206,8 +1212,8 @@ uid_t uid = geteuid();     /* See note above */
 gid_t gid = getegid();
 int mbformat;
 int mode = (addr->mode > 0)? addr->mode : ob->mode;
-int saved_size = -1;
-int mailbox_size = ob->mailbox_size_value;
+off_t saved_size = -1;
+off_t mailbox_size = ob->mailbox_size_value;
 int mailbox_filecount = ob->mailbox_filecount_value;
 int hd = -1;
 int fd = -1;
@@ -1336,10 +1342,12 @@ else
 
 DEBUG(D_transport)
   {
-  debug_printf("appendfile: mode=%o notify_comsat=%d quota=%d warning=%d%s\n"
+  debug_printf("appendfile: mode=%o notify_comsat=%d quota=%.30g "
+    "warning=%.30g%s\n"
     "  %s=%s format=%s\n  message_prefix=%s\n  message_suffix=%s\n  "
     "maildir_use_size_file=%s\n",
-    mode, ob->notify_comsat, ob->quota_value, ob->quota_warn_threshold_value,
+    mode, ob->notify_comsat, (double)ob->quota_value,
+    (double)ob->quota_warn_threshold_value,
     ob->quota_warn_threshold_is_percent? "%" : "",
     isdirectory? "directory" : "file",
     path, mailbox_formats[mbformat],
@@ -2254,7 +2262,8 @@ else
 /*  if (???? || ob->quota_value > 0) */
 
       {
-      int size, filecount;
+      off_t size;
+      int filecount;
 
       maildirsize_fd = maildir_ensure_sizefile(check_path, ob, regex, dir_regex,
         &size, &filecount);
@@ -2295,7 +2304,7 @@ else
   if ((mailbox_size < 0 || mailbox_filecount < 0) &&
       (ob->quota_value > 0 || THRESHOLD_CHECK))
     {
-    int size;
+    off_t size;
     int filecount = 0;
     DEBUG(D_transport)
       debug_printf("quota checks on directory %s\n", check_path);
@@ -2573,9 +2582,9 @@ if (ob->quota_value > 0)
   {
   DEBUG(D_transport)
     {
-    debug_printf("Exim quota = %d old size = %d this message = %d "
-      "(%sincluded)\n", ob->quota_value, mailbox_size, message_size,
-      ob->quota_is_inclusive? "" : "not ");
+    debug_printf("Exim quota = %.30g old size = %.30g this message = %d "
+      "(%sincluded)\n", (double)ob->quota_value, (double)mailbox_size,
+      message_size, ob->quota_is_inclusive? "" : "not ");
     debug_printf("  file count quota = %d count = %d\n",
       ob->quota_filecount_value, mailbox_filecount);
     }
@@ -2755,12 +2764,14 @@ to be sent. */
 
 if (THRESHOLD_CHECK)
   {
-  int threshold = ob->quota_warn_threshold_value;
+  off_t threshold = ob->quota_warn_threshold_value;
   if (ob->quota_warn_threshold_is_percent)
-    threshold = (int)(((double)ob->quota_value * threshold) / 100);
+    threshold = (off_t)(((double)ob->quota_value * threshold) / 100);
   DEBUG(D_transport)
-    debug_printf("quota = %d threshold = %d old size = %d message size = %d\n",
-      ob->quota_value, threshold, mailbox_size, message_size);
+    debug_printf("quota = %.30g threshold = %.30g old size = %.30g "
+      "message size = %d\n",
+      (double)ob->quota_value, (double)threshold, (double)mailbox_size,
+      message_size);
   if (mailbox_size <= threshold && mailbox_size + message_size > threshold)
     addr->special_action = SPECIAL_WARN;
 

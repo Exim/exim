@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.23 2005/06/07 10:41:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.24 2005/06/07 15:20:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1364,7 +1364,7 @@ while (last > first)
     if (*ss == NULL && deliver_datafile >= 0)  /* Read body when needed */
       {
       uschar *body;
-      int start_offset = SPOOL_DATA_START_OFFSET;
+      off_t start_offset = SPOOL_DATA_START_OFFSET;
       int len = message_body_visible;
       if (len > message_size) len = message_size;
       *ss = body = store_malloc(len+1);
@@ -4540,10 +4540,10 @@ while (*s != 0)
 
         smode[10] = 0;
         s = string_sprintf("mode=%04lo smode=%s inode=%ld device=%ld links=%ld "
-          "uid=%ld gid=%ld size=%ld atime=%ld mtime=%ld ctime=%ld",
+          "uid=%ld gid=%ld size=%.30g atime=%ld mtime=%ld ctime=%ld",
           (long)(st.st_mode & 077777), smode, (long)st.st_ino,
           (long)st.st_dev, (long)st.st_nlink, (long)st.st_uid,
-          (long)st.st_gid, (long)st.st_size, (long)st.st_atime,
+          (long)st.st_gid, (double)st.st_size, (long)st.st_atime,
           (long)st.st_mtime, (long)st.st_ctime);
         yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         continue;

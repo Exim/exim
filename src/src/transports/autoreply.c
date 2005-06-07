@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/autoreply.c,v 1.2 2005/01/04 10:00:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/autoreply.c,v 1.3 2005/06/07 15:20:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -641,11 +641,11 @@ if (return_message)
       DELIVER_IN_BUFFER_SIZE;
     if (fstat(deliver_datafile, &statbuf) == 0 && statbuf.st_size > max)
       {
-      int size = statbuf.st_size;  /* Because might be a long */
       fprintf(f, "\n"
 "------ This is a copy of the message, including all the headers.\n"
-"------ The body of the message is %d characters long; only the first\n"
-"------ %d or so are included here.\n\n", size, (max/1000)*1000);
+"------ The body of the message is %.30g characters long; only the first\n"
+"------ %d or so are included here.\n\n", (double)statbuf.st_size,
+        (max/1000)*1000);
       }
     else fprintf(f, "\n"
 "------ This is a copy of the message, including all the headers. ------\n\n");

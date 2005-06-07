@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.h,v 1.2 2005/01/04 10:00:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.h,v 1.3 2005/06/07 15:20:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -30,11 +30,11 @@ typedef struct {
   uschar *check_string;
   uschar *escape_string;
   uschar *file_format;
-  int   mailbox_size_value;
+  off_t quota_value;
+  off_t quota_warn_threshold_value;
+  off_t mailbox_size_value;
   int   mailbox_filecount_value;
-  int   quota_value;
   int   quota_filecount_value;
-  int   quota_warn_threshold_value;
   int   mode;
   int   dirmode;
   int   lockfile_mode;
@@ -92,6 +92,6 @@ extern void appendfile_transport_init(transport_instance *);
 
 /* Function that is shared with tf_maildir.c */
 
-extern int  check_dir_size(uschar *, int *, const pcre *);
+extern off_t  check_dir_size(uschar *, int *, const pcre *);
 
 /* End of transports/appendfile.h */

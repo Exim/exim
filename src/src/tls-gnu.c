@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.6 2005/03/08 11:38:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.7 2005/06/07 15:20:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -499,8 +499,8 @@ if (cas != NULL)
     return DEFER;
     }
 
-  DEBUG(D_tls) debug_printf("verify certificates = %s size=%d\n",
-    cas_expanded, (int)statbuf.st_size);
+  DEBUG(D_tls) debug_printf("verify certificates = %s size=%.30g\n",
+    cas_expanded, (double)statbuf.st_size);
 
   /* If the cert file is empty, there's no point in loading the CRL file. */
 

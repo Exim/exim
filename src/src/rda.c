@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/rda.c,v 1.5 2005/04/06 14:40:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/rda.c,v 1.6 2005/06/07 15:20:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -299,14 +299,8 @@ if (fread(filebuf, 1, statbuf.st_size, fwd) != statbuf.st_size)
   }
 filebuf[statbuf.st_size] = 0;
 
-/* Don't pass statbuf.st_size directly to debug_printf. On some systems it
-is a long, which may not be the same as an int. */
-
 DEBUG(D_route)
-  {
-  int size = (int)statbuf.st_size;
-  debug_printf("%d bytes read from %s\n", size, filename);
-  }
+  debug_printf("%.30g bytes read from %s\n", (double)statbuf.st_size, filename);
 
 fclose(fwd);
 return filebuf;

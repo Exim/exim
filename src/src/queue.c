@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/queue.c,v 1.5 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/queue.c,v 1.6 2005/06/07 15:20:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -895,10 +895,8 @@ for (; f != NULL; f = f->next)
       sprintf(CS big_buffer, "%s/input/%s/%s", spool_directory, message_subdir,
         f->text);
       if (Ustat(big_buffer, &statbuf) == 0)
-        {
-        int size = statbuf.st_size;    /* Because might be a long */
-        printf("*** spool format error: size=%d ***", size);
-        }
+        printf("*** spool format error: size=%.30g ***",
+          (double)statbuf.st_size);
       else printf("*** spool format error ***");
       }
     else printf("*** spool read error: %s ***", strerror(save_errno));

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.15 2005/05/24 08:15:02 tom Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.16 2005/06/07 15:20:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4482,11 +4482,8 @@ if ((rc = spool_read_header(spoolname, TRUE, TRUE)) != spool_read_OK)
     sprintf(CS big_buffer, "%s/input/%s/%s", spool_directory, message_subdir,
       spoolname);
     if (Ustat(big_buffer, &statbuf) == 0)
-      {
-      int size = statbuf.st_size;   /* Because might be a long */
-      log_write(0, LOG_MAIN, "Format error in spool file %s: size=%d",
-        spoolname, size);
-      }
+      log_write(0, LOG_MAIN, "Format error in spool file %s: size=%.30g",
+        spoolname, (double)statbuf.st_size);
     else log_write(0, LOG_MAIN, "Format error in spool file %s", spoolname);
     }
   else
@@ -6343,8 +6340,8 @@ wording. */
             if (emf_text != NULL) fprintf(f, "%s", CS emf_text); else
               {
               fprintf(f,
-"------ The body of the message is %d characters long; only the first\n"
-"------ %d or so are included here.\n", (int)statbuf.st_size, max);
+"------ The body of the message is %.30g characters long; only the first\n"
+"------ %d or so are included here.\n", (double)statbuf.st_size, max);
               }
             }
           }

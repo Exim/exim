@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.149 2005/06/07 10:41:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.150 2005/06/07 15:20:55 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -95,6 +95,14 @@ PH/09 The syntax error of a character other than { following "${if
       def:variable_name" (after optional whitespace) was not being diagnosed.
       An expansion such as ${if def:sender_ident:{xxx}{yyy}} in which an
       accidental colon was present, for example, could give incorrect results.
+
+PH/10 Tidied the code in a number of places where the st_size field of a stat()
+      result is used (not including appendfile, where other changes are about
+      to be made).
+
+PH/11 Upgraded appendfile so that quotas larger than 2G are now supported.
+      This involved changing a lot of size variables from int to off_t. It
+      should work with maildirs and everything.
 
 
 Exim version 4.51
