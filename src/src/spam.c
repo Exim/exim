@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.6 2005/05/10 22:39:20 tom Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.7 2005/06/10 13:29:36 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -247,6 +247,14 @@ again:
       }
 #endif
       wrote = send(spamd_sock,spamd_buffer + offset,read - offset,0);
+      if (wrote == -1)
+      {
+          log_write(0, LOG_MAIN|LOG_PANIC,
+            "spam acl condition: %s on spamd socket", strerror(errno));
+        close(spamd_sock);
+        fclose(mbox_file);
+        return DEFER;
+      }
       if (offset + wrote != read) {
         offset += wrote;
         goto again;

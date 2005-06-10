@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.6 2005/05/10 10:19:11 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.7 2005/06/10 13:29:36 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -555,6 +555,8 @@ for (i = 0; i < 10; i++)
   name, but avoid scanning more than necessary. Note that we must copy the
   contents of any rr blocks returned by dns_next_rr() as they use the same
   area in the dnsa block. */
+
+  DEBUG(D_dns) debug_printf("Back in dns_lookup()\n");
 
   cname_rr.data = type_rr.data = NULL;
   for (rr = dns_next_rr(dnsa, &dnss, RESET_ANSWERS);
