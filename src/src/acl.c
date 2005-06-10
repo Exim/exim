@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.37 2005/05/31 17:07:39 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.38 2005/06/10 18:59:34 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1143,6 +1143,7 @@ Ustrcpy(t->name, domain);
 
 /* Now we are ready to do the actual DNS lookup(s). */
 
+found = domain;
 switch (dns_special_lookup(&dnsa, domain, T_CSA, &found))
   {
   /* If something bad happened (most commonly DNS_AGAIN), defer. */

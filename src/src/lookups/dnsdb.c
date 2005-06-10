@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.13 2005/06/10 13:38:06 tom Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.14 2005/06/10 18:59:35 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -249,13 +249,13 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
 
   DEBUG(D_lookup) debug_printf("dnsdb key: %s\n", domain);
 
-  /* Do the lookup and sort out the result. There are two special types that
-  are handled specially: T_ZNS and T_MXH. The former is handled in a special
-  lookup function so that the facility could be used from other parts of the
-  Exim code. The latter affects only what happens later on in this function,
-  but for tidiness it is handled in a similar way. If the lookup fails,
-  continue with the next domain. In the case of DEFER, adjust the final
-  "nothing found" result, but carry on to the next domain. */
+  /* Do the lookup and sort out the result. There are three special types that
+  are handled specially: T_CSA, T_ZNS and T_MXH. The former two are handled in
+  a special lookup function so that the facility could be used from other
+  parts of the Exim code. The latter affects only what happens later on in
+  this function, but for tidiness it is handled in a similar way. If the
+  lookup fails, continue with the next domain. In the case of DEFER, adjust
+  the final "nothing found" result, but carry on to the next domain. */
 
   found = domain;
   rc = dns_special_lookup(&dnsa, domain, type, &found);
