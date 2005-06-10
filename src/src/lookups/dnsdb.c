@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.12 2005/06/10 13:29:36 tom Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.13 2005/06/10 13:38:06 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -259,8 +259,6 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
 
   found = domain;
   rc = dns_special_lookup(&dnsa, domain, type, &found);
-
-  DEBUG(D_lookup) debug_printf("Back in dnsdb_find\n");
 
   if (rc == DNS_NOMATCH || rc == DNS_NODATA) continue;
   if (rc != DNS_SUCCEED)
