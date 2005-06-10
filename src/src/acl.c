@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.38 2005/06/10 18:59:34 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.39 2005/06/10 19:27:05 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2012,8 +2012,7 @@ if (!have_key && sender_host_address != NULL)
 HDEBUG(D_acl) debug_printf("ratelimit condition limit=%.0f period=%.0f key=%s\n",
   limit, period, key);
 
-/* If we are dealing with rate limits per connection, per message, or per byte,
-see if we have already computed the rate by looking in the relevant tree. For
+/* See if we have already computed the rate by looking in the relevant tree. For
 per-connection rate limiting, store tree nodes and dbdata in the permanent pool
 so that they survive across resets. */
 
@@ -2025,8 +2024,10 @@ if (per_conn)
   anchor = &ratelimiters_conn;
   store_pool = POOL_PERM;
   }
-if (per_mail || per_byte)
+else if (per_mail || per_byte)
   anchor = &ratelimiters_mail;
+else if (per_cmd)
+  anchor = &ratelimiters_cmd;
 
 if (anchor != NULL && (t = tree_search(*anchor, key)) != NULL)
   {
@@ -3326,6 +3327,7 @@ address_item *addr;
 
 *user_msgptr = *log_msgptr = NULL;
 sender_verified_failed = NULL;
+ratelimiters_cmd = NULL;
 
 if (where == ACL_WHERE_RCPT)
   {

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.19 2005/05/24 08:15:02 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.20 2005/06/10 19:27:05 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -505,6 +505,7 @@ extern BOOL    queue_smtp;             /* Disable all immediate STMP (-odqs)*/
 extern uschar *queue_smtp_domains;     /* Ditto, for these domains */
 
 extern unsigned int random_seed;       /* Seed for random numbers */
+extern tree_node *ratelimiters_cmd;    /* Results of command ratelimit checks */
 extern tree_node *ratelimiters_conn;   /* Results of connection ratelimit checks */
 extern tree_node *ratelimiters_mail;   /* Results of per-mail ratelimit checks */
 extern uschar *raw_active_hostname;    /* Pre-expansion */

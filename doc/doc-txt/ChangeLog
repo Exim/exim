@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.151 2005/06/10 13:39:52 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.152 2005/06/10 19:27:05 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -35,7 +35,8 @@ PH/04 Installed a modified version of Tony Finch's patch to make submission
 
 TF/03 Added the control = fakedefer ACL modifier.
 
-TF/04 Added the ratelimit ACL condition. See NewStuff for details.
+TF/04 Added the ratelimit ACL condition. See NewStuff for details. Thanks to
+      Mark Lowes for thorough testing.
 
 TK/02 Rewrote SPF support to work with libspf2 versions >1.2.0.
 
