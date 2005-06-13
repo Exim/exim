@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.24 2005/06/07 15:20:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.25 2005/06/13 13:37:39 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3804,8 +3804,8 @@ while (*s != 0)
 
             if (*p == 0)
               {
-              expand_string_message = US"first argument of \"expand\" must not "
-                "be empty";
+              expand_string_message = US"first argument of \"extract\" must "
+                "not be empty";
               goto EXPAND_FAILED;
               }
 

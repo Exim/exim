@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.152 2005/06/10 19:27:05 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.153 2005/06/13 13:37:39 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -107,6 +107,9 @@ PH/11 Upgraded appendfile so that quotas larger than 2G are now supported.
 
 TK/08 Apply fix provided by Michael Haardt to prevent deadlock in case of
       spamd dying while we are connected to it.
+
+TF/05 Fixed a ${extract error message typo reported by Jeremy Harris
+      <jgh@wizmail.org>
 
 
 Exim version 4.51
