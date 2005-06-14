@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.48 2005/05/31 10:58:18 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.49 2005/06/14 13:48:40 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -251,6 +251,9 @@ PH/02 There's a new verify callout option, "fullpostmaster", which first acts
       as "postmaster" and checks the recipient <postmaster@domain>. If that
       fails, it tries just <postmaster>, without a domain, in accordance with
       the specification in RFC 2821.
+
+PH/03 The action of the auto_thaw option has been changed. It no longer applies
+      to frozen bounce messages.
 
 
 Version 4.51

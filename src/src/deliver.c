@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.16 2005/06/07 15:20:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.17 2005/06/14 13:48:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4601,17 +4601,22 @@ if (deliver_freeze)
     log_write(0, LOG_MAIN, "Unfrozen by errmsg timer");
     }
 
-  /* If there's no auto thaw, or we haven't reached the auto thaw time yet, and
-  this delivery is not forced by an admin user, do not attempt delivery of this
-  message. Note that forced is set for continuing messages down the same
-  channel, in order to skip load checking and ignore hold domains, but we
-  don't want unfreezing in that case. */
+  /* If this is a bounce message, or there's no auto thaw, or we haven't
+  reached the auto thaw time yet, and this delivery is not forced by an admin
+  user, do not attempt delivery of this message. Note that forced is set for
+  continuing messages down the same channel, in order to skip load checking and
+  ignore hold domains, but we don't want unfreezing in that case. */
 
   else
     {
-    if ((auto_thaw <= 0 || now <= deliver_frozen_at + auto_thaw) &&
-      (!forced || !deliver_force_thaw || !admin_user ||
-        continue_hostname != NULL))
+    if ((sender_address[0] == 0 ||
+         auto_thaw <= 0 ||
+         now <= deliver_frozen_at + auto_thaw
+        )
+        &&
+        (!forced || !deliver_force_thaw || !admin_user ||
+          continue_hostname != NULL
+        ))
       {
       close(deliver_datafile);
       deliver_datafile = -1;
