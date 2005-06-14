@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.25 2005/06/06 19:30:18 tom Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.26 2005/06/14 10:32:01 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  27 April 2005
+Last updated:  14 June 2005
 
 
 THE OLD LIST
@@ -160,6 +160,7 @@ Bob Johannessen           Patch for Sieve envelope tests bug
 Christian Kellner         Patch for LDAP dereferencing
 Alex Kiernan              Patch for libradius
                           Diagnosis of milliwait clock-backwards bug
+                          Patch for BDB 4.3 API change
 Tom Kistner               SPA server code
                           Writing and maintaining the content scanning
                             extension (exiscan)

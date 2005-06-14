@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dbfunctions.h,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dbfunctions.h,v 1.3 2005/06/14 10:32:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -21,10 +21,15 @@ int      dbfn_write(open_db *, uschar *, void *, int);
 
 #define  dbfn_read(a, b) dbfn_read_with_length(a, b, NULL)
 
-/* Berkeley DB uses a callback function to pass back error details. */
+/* Berkeley DB uses a callback function to pass back error details. Its API
+changed at release 4.3. */
 
 #if defined(USE_DB) && defined(DB_VERSION_STRING)
+#if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
+void     dbfn_bdb_error_callback(const DB_ENV *, const char *, const char *);
+#else
 void     dbfn_bdb_error_callback(const char *, char *);
+#endif
 #endif
 
 /* End of dbfunctions.h */

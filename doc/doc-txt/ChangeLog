@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.153 2005/06/13 13:37:39 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.154 2005/06/14 10:32:01 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -110,6 +110,9 @@ TK/08 Apply fix provided by Michael Haardt to prevent deadlock in case of
 
 TF/05 Fixed a ${extract error message typo reported by Jeremy Harris
       <jgh@wizmail.org>
+
+PH/12 Applied Alex Kiernan's patch for the API change for the error callback
+      function for BDB 4.3.
 
 
 Exim version 4.51

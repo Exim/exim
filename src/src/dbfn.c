@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dbfn.c,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dbfn.c,v 1.3 2005/06/14 10:32:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -40,12 +40,19 @@ arrange to hold the locks for the bare minimum of time. */
 
 /* For Berkeley DB >= 2, we can define a function to be called in case of DB
 errors. This should help with debugging strange DB problems, e.g. getting "File
-exists" when you try to open a db file. */
+exists" when you try to open a db file. The API for this function was changed
+at DB release 4.3. */
 
 #if defined(USE_DB) && defined(DB_VERSION_STRING)
 void
+#if DB_VERSION_MAJOR > 4 || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
+dbfn_bdb_error_callback(const DB_ENV *dbenv, const char *pfx, const char *msg)
+{
+dbenv = dbenv;
+#else
 dbfn_bdb_error_callback(const char *pfx, char *msg)
 {
+#endif
 pfx = pfx;
 log_write(0, LOG_MAIN, "Berkeley DB error: %s", msg);
 }
