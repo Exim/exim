@@ -1,16 +1,14 @@
-/* $Cambridge: exim/src/src/pcre/maketables.c,v 1.2 2005/06/15 08:57:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_maketables.c,v 1.1 2005/06/15 08:57:10 ph10 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
 *************************************************/
 
-/*
-PCRE is a library of functions to support regular expressions whose syntax
+/* PCRE is a library of functions to support regular expressions whose syntax
 and semantics are as close as possible to those of the Perl 5 language.
 
-Written by: Philip Hazel <ph10@cam.ac.uk>
-
-           Copyright (c) 1997-2003 University of Cambridge
+                       Written by Philip Hazel
+           Copyright (c) 1997-2005 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -42,14 +40,15 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-/* This file is compiled on its own as part of the PCRE library. However,
-it is also included in the compilation of dftables.c, in which case the macro
-DFTABLES is defined. */
+/* This module contains the external function pcre_maketables(), which builds
+character tables for PCRE in the current locale. The file is compiled on its
+own as part of the PCRE library. However, it is also included in the
+compilation of dftables.c, in which case the macro DFTABLES is defined. */
+
 
 #ifndef DFTABLES
-#include "internal.h"
+#include "pcre_internal.h"
 #endif
-
 
 
 /*************************************************
@@ -145,4 +144,4 @@ for (i = 0; i < 256; i++)
 return yield;
 }
 
-/* End of maketables.c */
+/* End of pcre_maketables.c */

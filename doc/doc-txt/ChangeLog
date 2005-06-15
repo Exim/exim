@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.155 2005/06/14 13:48:40 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.156 2005/06/15 08:57:10 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -115,6 +115,10 @@ PH/12 Applied Alex Kiernan's patch for the API change for the error callback
       function for BDB 4.3.
 
 PH/13 Changed auto_thaw such that it does not apply to bounce messages.
+
+PH/14 Imported PCRE 6.0; this was more than just a trivial operation because
+      the sources for PCRE have been re-arranged and more files are now
+      involved.
 
 
 Exim version 4.51

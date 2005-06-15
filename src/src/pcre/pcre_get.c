@@ -1,17 +1,14 @@
-/* $Cambridge: exim/src/src/pcre/get.c,v 1.2 2005/06/15 08:57:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_get.c,v 1.1 2005/06/15 08:57:10 ph10 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
 *************************************************/
 
-/*
-This is a library of functions to support regular expressions whose syntax
-and semantics are as close as possible to those of the Perl 5 language. See
-the file Tech.Notes for some information on the internals.
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
 
-Written by: Philip Hazel <ph10@cam.ac.uk>
-
-           Copyright (c) 1997-2003 University of Cambridge
+                       Written by Philip Hazel
+           Copyright (c) 1997-2005 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -42,15 +39,13 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
+
 /* This module contains some convenience functions for extracting substrings
 from the subject string after a regex match has succeeded. The original idea
 for these functions came from Scott Wimer. */
 
 
-/* Include the internals header, which itself includes Standard C headers plus
-the external pcre header. */
-
-#include "internal.h"
+#include "pcre_internal.h"
 
 
 /*************************************************
@@ -356,4 +351,4 @@ pcre_free_substring(const char *pointer)
 (pcre_free)((void *)pointer);
 }
 
-/* End of get.c */
+/* End of pcre_get.c */

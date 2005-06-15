@@ -1,17 +1,16 @@
-This file contains the PCRE man page that describes the regular expressions 
-supported by PCRE version 5.0. Note that not all of the features are relevant 
+This file contains the PCRE man page that describes the regular expressions
+supported by PCRE version 6.0. Note that not all of the features are relevant
 in the context of Exim. In particular, the version of PCRE that is compiled
 with Exim does not include UTF-8 support, there is no mechanism for changing
 the options with which the PCRE functions are called, and features such as
 callout are not accessible.
 -----------------------------------------------------------------------------
 
-PCRE(3)                                                                PCRE(3)
-
 
 
 NAME
        PCRE - Perl-compatible regular expressions
+
 
 PCRE REGULAR EXPRESSION DETAILS
 
@@ -30,6 +29,14 @@ PCRE REGULAR EXPRESSION DETAILS
        of  UTF-8  features  in  the  section on UTF-8 support in the main pcre
        page.
 
+       The remainder of this document discusses the  patterns  that  are  sup-
+       ported  by  PCRE when its main matching function, pcre_exec(), is used.
+       From  release  6.0,   PCRE   offers   a   second   matching   function,
+       pcre_dfa_exec(),  which matches using a different algorithm that is not
+       Perl-compatible. The advantages and disadvantages  of  the  alternative
+       function, and how it differs from the normal function, are discussed in
+       the pcrematching page.
+
        A regular expression is a pattern that is  matched  against  a  subject
        string  from  left  to right. Most characters stand for themselves in a
        pattern, and match the corresponding characters in the  subject.  As  a
@@ -37,15 +44,24 @@ PCRE REGULAR EXPRESSION DETAILS
 
          The quick brown fox
 
-       matches  a portion of a subject string that is identical to itself. The
-       power of regular expressions comes from the ability to include alterna-
-       tives  and repetitions in the pattern. These are encoded in the pattern
-       by the use of metacharacters, which do not  stand  for  themselves  but
-       instead are interpreted in some special way.
+       matches a portion of a subject string that is identical to itself. When
+       caseless matching is specified (the PCRE_CASELESS option), letters  are
+       matched  independently  of case. In UTF-8 mode, PCRE always understands
+       the concept of case for characters whose values are less than  128,  so
+       caseless  matching  is always possible. For characters with higher val-
+       ues, the concept of case is supported if PCRE is compiled with  Unicode
+       property  support,  but  not  otherwise.   If  you want to use caseless
+       matching for characters 128 and above, you must  ensure  that  PCRE  is
+       compiled with Unicode property support as well as with UTF-8 support.
 
-       There  are  two different sets of metacharacters: those that are recog-
-       nized anywhere in the pattern except within square brackets, and  those
-       that  are  recognized  in square brackets. Outside square brackets, the
+       The  power  of  regular  expressions  comes from the ability to include
+       alternatives and repetitions in the pattern. These are encoded  in  the
+       pattern by the use of metacharacters, which do not stand for themselves
+       but instead are interpreted in some special way.
+
+       There are two different sets of metacharacters: those that  are  recog-
+       nized  anywhere in the pattern except within square brackets, and those
+       that are recognized in square brackets. Outside  square  brackets,  the
        metacharacters are as follows:
 
          \      general escape character with several uses
@@ -64,7 +80,7 @@ PCRE REGULAR EXPRESSION DETAILS
                 also "possessive quantifier"
          {      start min/max quantifier
 
-       Part of a pattern that is in square brackets  is  called  a  "character
+       Part  of  a  pattern  that is in square brackets is called a "character
        class". In a character class the only metacharacters are:
 
          \      general escape character
@@ -74,33 +90,33 @@ PCRE REGULAR EXPRESSION DETAILS
                   syntax)
          ]      terminates the character class
 
-       The  following sections describe the use of each of the metacharacters.
+       The following sections describe the use of each of the  metacharacters.
 
 
 BACKSLASH
 
        The backslash character has several uses. Firstly, if it is followed by
-       a  non-alphanumeric  character,  it takes away any special meaning that
-       character may have. This  use  of  backslash  as  an  escape  character
+       a non-alphanumeric character, it takes away any  special  meaning  that
+       character  may  have.  This  use  of  backslash  as an escape character
        applies both inside and outside character classes.
 
-       For  example,  if  you want to match a * character, you write \* in the
-       pattern.  This escaping action applies whether  or  not  the  following
-       character  would  otherwise be interpreted as a metacharacter, so it is
-       always safe to precede a non-alphanumeric  with  backslash  to  specify
-       that  it stands for itself. In particular, if you want to match a back-
+       For example, if you want to match a * character, you write  \*  in  the
+       pattern.   This  escaping  action  applies whether or not the following
+       character would otherwise be interpreted as a metacharacter, so  it  is
+       always  safe  to  precede  a non-alphanumeric with backslash to specify
+       that it stands for itself. In particular, if you want to match a  back-
        slash, you write \\.
 
-       If a pattern is compiled with the PCRE_EXTENDED option,  whitespace  in
-       the  pattern (other than in a character class) and characters between a
+       If  a  pattern is compiled with the PCRE_EXTENDED option, whitespace in
+       the pattern (other than in a character class) and characters between  a
        # outside a character class and the next newline character are ignored.
-       An  escaping backslash can be used to include a whitespace or # charac-
+       An escaping backslash can be used to include a whitespace or #  charac-
        ter as part of the pattern.
 
-       If you want to remove the special meaning from a  sequence  of  charac-
-       ters,  you can do so by putting them between \Q and \E. This is differ-
-       ent from Perl in that $ and  @  are  handled  as  literals  in  \Q...\E
-       sequences  in  PCRE, whereas in Perl, $ and @ cause variable interpola-
+       If  you  want  to remove the special meaning from a sequence of charac-
+       ters, you can do so by putting them between \Q and \E. This is  differ-
+       ent  from  Perl  in  that  $  and  @ are handled as literals in \Q...\E
+       sequences in PCRE, whereas in Perl, $ and @ cause  variable  interpola-
        tion. Note the following examples:
 
          Pattern            PCRE matches   Perl matches
@@ -110,16 +126,16 @@ BACKSLASH
          \Qabc\$xyz\E       abc\$xyz       abc\$xyz
          \Qabc\E\$\Qxyz\E   abc$xyz        abc$xyz
 
-       The \Q...\E sequence is recognized both inside  and  outside  character
+       The  \Q...\E  sequence  is recognized both inside and outside character
        classes.
 
    Non-printing characters
 
        A second use of backslash provides a way of encoding non-printing char-
-       acters in patterns in a visible manner. There is no restriction on  the
-       appearance  of non-printing characters, apart from the binary zero that
-       terminates a pattern, but when a pattern  is  being  prepared  by  text
-       editing,  it  is  usually  easier  to  use  one of the following escape
+       acters  in patterns in a visible manner. There is no restriction on the
+       appearance of non-printing characters, apart from the binary zero  that
+       terminates  a  pattern,  but  when  a pattern is being prepared by text
+       editing, it is usually easier  to  use  one  of  the  following  escape
        sequences than the binary character it represents:
 
          \a        alarm, that is, the BEL character (hex 07)
@@ -133,44 +149,44 @@ BACKSLASH
          \xhh      character with hex code hh
          \x{hhh..} character with hex code hhh... (UTF-8 mode only)
 
-       The precise effect of \cx is as follows: if x is a lower  case  letter,
-       it  is converted to upper case. Then bit 6 of the character (hex 40) is
-       inverted.  Thus \cz becomes hex 1A, but \c{ becomes hex 3B,  while  \c;
+       The  precise  effect of \cx is as follows: if x is a lower case letter,
+       it is converted to upper case. Then bit 6 of the character (hex 40)  is
+       inverted.   Thus  \cz becomes hex 1A, but \c{ becomes hex 3B, while \c;
        becomes hex 7B.
 
-       After  \x, from zero to two hexadecimal digits are read (letters can be
-       in upper or lower case). In UTF-8 mode, any number of hexadecimal  dig-
-       its  may  appear between \x{ and }, but the value of the character code
-       must be less than 2**31 (that is,  the  maximum  hexadecimal  value  is
-       7FFFFFFF).  If  characters other than hexadecimal digits appear between
-       \x{ and }, or if there is no terminating }, this form of escape is  not
-       recognized. Instead, the initial \x will be interpreted as a basic hex-
-       adecimal escape, with no following digits,  giving  a  character  whose
+       After \x, from zero to two hexadecimal digits are read (letters can  be
+       in  upper or lower case). In UTF-8 mode, any number of hexadecimal dig-
+       its may appear between \x{ and }, but the value of the  character  code
+       must  be  less  than  2**31  (that is, the maximum hexadecimal value is
+       7FFFFFFF). If characters other than hexadecimal digits  appear  between
+       \x{  and }, or if there is no terminating }, this form of escape is not
+       recognized. Instead, the initial \x will  be  interpreted  as  a  basic
+       hexadecimal  escape, with no following digits, giving a character whose
        value is zero.
 
        Characters whose value is less than 256 can be defined by either of the
-       two syntaxes for \x when PCRE is in UTF-8 mode. There is no  difference
-       in  the  way they are handled. For example, \xdc is exactly the same as
+       two  syntaxes for \x when PCRE is in UTF-8 mode. There is no difference
+       in the way they are handled. For example, \xdc is exactly the  same  as
        \x{dc}.
 
-       After \0 up to two further octal digits are read.  In  both  cases,  if
-       there  are fewer than two digits, just those that are present are used.
-       Thus the sequence \0\x\07 specifies two binary zeros followed by a  BEL
-       character  (code  value  7).  Make sure you supply two digits after the
-       initial zero if the pattern character that follows is itself  an  octal
+       After  \0  up  to  two further octal digits are read. In both cases, if
+       there are fewer than two digits, just those that are present are  used.
+       Thus  the sequence \0\x\07 specifies two binary zeros followed by a BEL
+       character (code value 7). Make sure you supply  two  digits  after  the
+       initial  zero  if the pattern character that follows is itself an octal
        digit.
 
        The handling of a backslash followed by a digit other than 0 is compli-
        cated.  Outside a character class, PCRE reads it and any following dig-
-       its  as  a  decimal  number. If the number is less than 10, or if there
+       its as a decimal number. If the number is less than  10,  or  if  there
        have been at least that many previous capturing left parentheses in the
-       expression,  the  entire  sequence  is  taken  as  a  back reference. A
-       description of how this works is given later, following the  discussion
+       expression, the entire  sequence  is  taken  as  a  back  reference.  A
+       description  of how this works is given later, following the discussion
        of parenthesized subpatterns.
 
-       Inside  a  character  class, or if the decimal number is greater than 9
-       and there have not been that many capturing subpatterns, PCRE  re-reads
-       up  to three octal digits following the backslash, and generates a sin-
+       Inside a character class, or if the decimal number is  greater  than  9
+       and  there have not been that many capturing subpatterns, PCRE re-reads
+       up to three octal digits following the backslash, and generates a  sin-
        gle byte from the least significant 8 bits of the value. Any subsequent
        digits stand for themselves.  For example:
 
@@ -189,19 +205,19 @@ BACKSLASH
          \81    is either a back reference, or a binary zero
                    followed by the two characters "8" and "1"
 
-       Note  that  octal  values of 100 or greater must not be introduced by a
+       Note that octal values of 100 or greater must not be  introduced  by  a
        leading zero, because no more than three octal digits are ever read.
 
-       All the sequences that define a single byte value  or  a  single  UTF-8
+       All  the  sequences  that  define a single byte value or a single UTF-8
        character (in UTF-8 mode) can be used both inside and outside character
-       classes. In addition, inside a character  class,  the  sequence  \b  is
+       classes.  In  addition,  inside  a  character class, the sequence \b is
        interpreted as the backspace character (hex 08), and the sequence \X is
-       interpreted as the character "X".  Outside  a  character  class,  these
+       interpreted  as  the  character  "X".  Outside a character class, these
        sequences have different meanings (see below).
 
    Generic character types
 
-       The  third  use of backslash is for specifying generic character types.
+       The third use of backslash is for specifying generic  character  types.
        The following are always recognized:
 
          \d     any decimal digit
@@ -212,48 +228,48 @@ BACKSLASH
          \W     any "non-word" character
 
        Each pair of escape sequences partitions the complete set of characters
-       into  two disjoint sets. Any given character matches one, and only one,
+       into two disjoint sets. Any given character matches one, and only  one,
        of each pair.
 
        These character type sequences can appear both inside and outside char-
-       acter  classes.  They each match one character of the appropriate type.
-       If the current matching point is at the end of the subject string,  all
+       acter classes. They each match one character of the  appropriate  type.
+       If  the current matching point is at the end of the subject string, all
        of them fail, since there is no character to match.
 
-       For  compatibility  with Perl, \s does not match the VT character (code
-       11).  This makes it different from the the POSIX "space" class. The  \s
+       For compatibility with Perl, \s does not match the VT  character  (code
+       11).   This makes it different from the the POSIX "space" class. The \s
        characters are HT (9), LF (10), FF (12), CR (13), and space (32).
 
        A "word" character is an underscore or any character less than 256 that
-       is a letter or digit. The definition of  letters  and  digits  is  con-
-       trolled  by PCRE's low-valued character tables, and may vary if locale-
-       specific matching is taking place (see "Locale support" in the  pcreapi
-       page).  For  example,  in  the  "fr_FR" (French) locale, some character
-       codes greater than 128 are used for accented  letters,  and  these  are
+       is  a  letter  or  digit.  The definition of letters and digits is con-
+       trolled by PCRE's low-valued character tables, and may vary if  locale-
+       specific  matching is taking place (see "Locale support" in the pcreapi
+       page). For example, in the  "fr_FR"  (French)  locale,  some  character
+       codes  greater  than  128  are used for accented letters, and these are
        matched by \w.
 
-       In  UTF-8 mode, characters with values greater than 128 never match \d,
+       In UTF-8 mode, characters with values greater than 128 never match  \d,
        \s, or \w, and always match \D, \S, and \W. This is true even when Uni-
        code character property support is available.
 
    Unicode character properties
 
        When PCRE is built with Unicode character property support, three addi-
-       tional escape sequences to match generic character types are  available
+       tional  escape sequences to match generic character types are available
        when UTF-8 mode is selected. They are:
 
         \p{xx}   a character with the xx property
         \P{xx}   a character without the xx property
         \X       an extended Unicode sequence
 
-       The  property  names represented by xx above are limited to the Unicode
-       general category properties. Each character has exactly one such  prop-
-       erty,  specified  by  a two-letter abbreviation. For compatibility with
-       Perl, negation can be specified by including a circumflex  between  the
-       opening  brace  and the property name. For example, \p{^Lu} is the same
+       The property names represented by xx above are limited to  the  Unicode
+       general  category properties. Each character has exactly one such prop-
+       erty, specified by a two-letter abbreviation.  For  compatibility  with
+       Perl,  negation  can be specified by including a circumflex between the
+       opening brace and the property name. For example, \p{^Lu} is  the  same
        as \P{Lu}.
 
-       If only one letter is specified with \p or  \P,  it  includes  all  the
+       If  only  one  letter  is  specified with \p or \P, it includes all the
        properties that start with that letter. In this case, in the absence of
        negation, the curly brackets in the escape sequence are optional; these
        two examples have the same effect:
@@ -307,33 +323,33 @@ BACKSLASH
          Zp    Paragraph separator
          Zs    Space separator
 
-       Extended  properties such as "Greek" or "InMusicalSymbols" are not sup-
+       Extended properties such as "Greek" or "InMusicalSymbols" are not  sup-
        ported by PCRE.
 
-       Specifying caseless matching does not affect  these  escape  sequences.
+       Specifying  caseless  matching  does not affect these escape sequences.
        For example, \p{Lu} always matches only upper case letters.
 
-       The  \X  escape  matches  any number of Unicode characters that form an
+       The \X escape matches any number of Unicode  characters  that  form  an
        extended Unicode sequence. \X is equivalent to
 
          (?>\PM\pM*)
 
-       That is, it matches a character without the "mark"  property,  followed
-       by  zero  or  more  characters with the "mark" property, and treats the
-       sequence as an atomic group (see below).  Characters  with  the  "mark"
+       That  is,  it matches a character without the "mark" property, followed
+       by zero or more characters with the "mark"  property,  and  treats  the
+       sequence  as  an  atomic group (see below).  Characters with the "mark"
        property are typically accents that affect the preceding character.
 
-       Matching  characters  by Unicode property is not fast, because PCRE has
-       to search a structure that contains  data  for  over  fifteen  thousand
+       Matching characters by Unicode property is not fast, because  PCRE  has
+       to  search  a  structure  that  contains data for over fifteen thousand
        characters. That is why the traditional escape sequences such as \d and
        \w do not use Unicode properties in PCRE.
 
    Simple assertions
 
        The fourth use of backslash is for certain simple assertions. An asser-
-       tion  specifies a condition that has to be met at a particular point in
-       a match, without consuming any characters from the subject string.  The
-       use  of subpatterns for more complicated assertions is described below.
+       tion specifies a condition that has to be met at a particular point  in
+       a  match, without consuming any characters from the subject string. The
+       use of subpatterns for more complicated assertions is described  below.
        The backslashed assertions are:
 
          \b     matches at a word boundary
@@ -343,42 +359,42 @@ BACKSLASH
          \z     matches at end of subject
          \G     matches at first matching position in subject
 
-       These assertions may not appear in character classes (but note that  \b
+       These  assertions may not appear in character classes (but note that \b
        has a different meaning, namely the backspace character, inside a char-
        acter class).
 
-       A word boundary is a position in the subject string where  the  current
-       character  and  the previous character do not both match \w or \W (i.e.
-       one matches \w and the other matches \W), or the start or  end  of  the
+       A  word  boundary is a position in the subject string where the current
+       character and the previous character do not both match \w or  \W  (i.e.
+       one  matches  \w  and the other matches \W), or the start or end of the
        string if the first or last character matches \w, respectively.
 
-       The  \A,  \Z,  and \z assertions differ from the traditional circumflex
+       The \A, \Z, and \z assertions differ from  the  traditional  circumflex
        and dollar (described in the next section) in that they only ever match
-       at  the  very start and end of the subject string, whatever options are
-       set. Thus, they are independent of multiline mode. These  three  asser-
+       at the very start and end of the subject string, whatever  options  are
+       set.  Thus,  they are independent of multiline mode. These three asser-
        tions are not affected by the PCRE_NOTBOL or PCRE_NOTEOL options, which
-       affect only the behaviour of the circumflex and dollar  metacharacters.
-       However,  if the startoffset argument of pcre_exec() is non-zero, indi-
+       affect  only the behaviour of the circumflex and dollar metacharacters.
+       However, if the startoffset argument of pcre_exec() is non-zero,  indi-
        cating that matching is to start at a point other than the beginning of
-       the  subject,  \A  can never match. The difference between \Z and \z is
-       that \Z matches before a newline that is  the  last  character  of  the
-       string  as well as at the end of the string, whereas \z matches only at
+       the subject, \A can never match. The difference between \Z  and  \z  is
+       that  \Z  matches  before  a  newline that is the last character of the
+       string as well as at the end of the string, whereas \z matches only  at
        the end.
 
-       The \G assertion is true only when the current matching position is  at
-       the  start point of the match, as specified by the startoffset argument
-       of pcre_exec(). It differs from \A when the  value  of  startoffset  is
-       non-zero.  By calling pcre_exec() multiple times with appropriate argu-
+       The  \G assertion is true only when the current matching position is at
+       the start point of the match, as specified by the startoffset  argument
+       of  pcre_exec().  It  differs  from \A when the value of startoffset is
+       non-zero. By calling pcre_exec() multiple times with appropriate  argu-
        ments, you can mimic Perl's /g option, and it is in this kind of imple-
        mentation where \G can be useful.
 
-       Note,  however,  that  PCRE's interpretation of \G, as the start of the
+       Note, however, that PCRE's interpretation of \G, as the  start  of  the
        current match, is subtly different from Perl's, which defines it as the
-       end  of  the  previous  match. In Perl, these can be different when the
-       previously matched string was empty. Because PCRE does just  one  match
+       end of the previous match. In Perl, these can  be  different  when  the
+       previously  matched  string was empty. Because PCRE does just one match
        at a time, it cannot reproduce this behaviour.
 
-       If  all  the alternatives of a pattern begin with \G, the expression is
+       If all the alternatives of a pattern begin with \G, the  expression  is
        anchored to the starting match position, and the "anchored" flag is set
        in the compiled regular expression.
 
@@ -386,73 +402,73 @@ BACKSLASH
 CIRCUMFLEX AND DOLLAR
 
        Outside a character class, in the default matching mode, the circumflex
-       character is an assertion that is true only  if  the  current  matching
-       point  is  at the start of the subject string. If the startoffset argu-
-       ment of pcre_exec() is non-zero, circumflex  can  never  match  if  the
-       PCRE_MULTILINE  option  is  unset. Inside a character class, circumflex
+       character  is  an  assertion  that is true only if the current matching
+       point is at the start of the subject string. If the  startoffset  argu-
+       ment  of  pcre_exec()  is  non-zero,  circumflex can never match if the
+       PCRE_MULTILINE option is unset. Inside a  character  class,  circumflex
        has an entirely different meaning (see below).
 
-       Circumflex need not be the first character of the pattern if  a  number
-       of  alternatives are involved, but it should be the first thing in each
-       alternative in which it appears if the pattern is ever  to  match  that
-       branch.  If all possible alternatives start with a circumflex, that is,
-       if the pattern is constrained to match only at the start  of  the  sub-
-       ject,  it  is  said  to be an "anchored" pattern. (There are also other
+       Circumflex  need  not be the first character of the pattern if a number
+       of alternatives are involved, but it should be the first thing in  each
+       alternative  in  which  it appears if the pattern is ever to match that
+       branch. If all possible alternatives start with a circumflex, that  is,
+       if  the  pattern  is constrained to match only at the start of the sub-
+       ject, it is said to be an "anchored" pattern.  (There  are  also  other
        constructs that can cause a pattern to be anchored.)
 
-       A dollar character is an assertion that is true  only  if  the  current
-       matching  point  is  at  the  end of the subject string, or immediately
+       A  dollar  character  is  an assertion that is true only if the current
+       matching point is at the end of  the  subject  string,  or  immediately
        before a newline character that is the last character in the string (by
-       default).  Dollar  need  not  be the last character of the pattern if a
-       number of alternatives are involved, but it should be the last item  in
-       any  branch  in  which  it appears.  Dollar has no special meaning in a
+       default). Dollar need not be the last character of  the  pattern  if  a
+       number  of alternatives are involved, but it should be the last item in
+       any branch in which it appears.  Dollar has no  special  meaning  in  a
        character class.
 
-       The meaning of dollar can be changed so that it  matches  only  at  the
-       very  end  of  the string, by setting the PCRE_DOLLAR_ENDONLY option at
+       The  meaning  of  dollar  can be changed so that it matches only at the
+       very end of the string, by setting the  PCRE_DOLLAR_ENDONLY  option  at
        compile time. This does not affect the \Z assertion.
 
        The meanings of the circumflex and dollar characters are changed if the
        PCRE_MULTILINE option is set. When this is the case, they match immedi-
-       ately after and  immediately  before  an  internal  newline  character,
-       respectively,  in addition to matching at the start and end of the sub-
-       ject string. For example,  the  pattern  /^abc$/  matches  the  subject
-       string  "def\nabc"  (where \n represents a newline character) in multi-
+       ately  after  and  immediately  before  an  internal newline character,
+       respectively, in addition to matching at the start and end of the  sub-
+       ject  string.  For  example,  the  pattern  /^abc$/ matches the subject
+       string "def\nabc" (where \n represents a newline character)  in  multi-
        line mode, but not otherwise.  Consequently, patterns that are anchored
-       in  single line mode because all branches start with ^ are not anchored
-       in multiline mode, and a match for  circumflex  is  possible  when  the
-       startoffset   argument   of  pcre_exec()  is  non-zero.  The  PCRE_DOL-
+       in single line mode because all branches start with ^ are not  anchored
+       in  multiline  mode,  and  a  match for circumflex is possible when the
+       startoffset  argument  of  pcre_exec()  is  non-zero.   The   PCRE_DOL-
        LAR_ENDONLY option is ignored if PCRE_MULTILINE is set.
 
-       Note that the sequences \A, \Z, and \z can be used to match  the  start
-       and  end of the subject in both modes, and if all branches of a pattern
-       start with \A it is always anchored, whether PCRE_MULTILINE is  set  or
+       Note  that  the sequences \A, \Z, and \z can be used to match the start
+       and end of the subject in both modes, and if all branches of a  pattern
+       start  with  \A it is always anchored, whether PCRE_MULTILINE is set or
        not.
 
 
 FULL STOP (PERIOD, DOT)
 
        Outside a character class, a dot in the pattern matches any one charac-
-       ter in the subject, including a non-printing  character,  but  not  (by
-       default)  newline.   In  UTF-8 mode, a dot matches any UTF-8 character,
+       ter  in  the  subject,  including a non-printing character, but not (by
+       default) newline.  In UTF-8 mode, a dot matches  any  UTF-8  character,
        which might be more than one byte long, except (by default) newline. If
-       the  PCRE_DOTALL  option  is set, dots match newlines as well. The han-
-       dling of dot is entirely independent of the handling of circumflex  and
-       dollar,  the  only  relationship  being  that they both involve newline
+       the PCRE_DOTALL option is set, dots match newlines as  well.  The  han-
+       dling  of dot is entirely independent of the handling of circumflex and
+       dollar, the only relationship being  that  they  both  involve  newline
        characters. Dot has no special meaning in a character class.
 
 
 MATCHING A SINGLE BYTE
 
        Outside a character class, the escape sequence \C matches any one byte,
-       both  in  and  out of UTF-8 mode. Unlike a dot, it can match a newline.
-       The feature is provided in Perl in order to match individual  bytes  in
-       UTF-8  mode.  Because  it  breaks  up  UTF-8 characters into individual
-       bytes, what remains in the string may be a malformed UTF-8 string.  For
+       both in and out of UTF-8 mode. Unlike a dot, it can  match  a  newline.
+       The  feature  is provided in Perl in order to match individual bytes in
+       UTF-8 mode. Because it  breaks  up  UTF-8  characters  into  individual
+       bytes,  what remains in the string may be a malformed UTF-8 string. For
        this reason, the \C escape sequence is best avoided.
 
-       PCRE  does  not  allow \C to appear in lookbehind assertions (described
-       below), because in UTF-8 mode this would make it impossible  to  calcu-
+       PCRE does not allow \C to appear in  lookbehind  assertions  (described
+       below),  because  in UTF-8 mode this would make it impossible to calcu-
        late the length of the lookbehind.
 
 
@@ -461,35 +477,40 @@ SQUARE BRACKETS AND CHARACTER CLASSES
        An opening square bracket introduces a character class, terminated by a
        closing square bracket. A closing square bracket on its own is not spe-
        cial. If a closing square bracket is required as a member of the class,
-       it should be the first data character in the class  (after  an  initial
+       it  should  be  the first data character in the class (after an initial
        circumflex, if present) or escaped with a backslash.
 
-       A  character  class matches a single character in the subject. In UTF-8
-       mode, the character may occupy more than one byte. A matched  character
+       A character class matches a single character in the subject.  In  UTF-8
+       mode,  the character may occupy more than one byte. A matched character
        must be in the set of characters defined by the class, unless the first
-       character in the class definition is a circumflex, in  which  case  the
-       subject  character  must  not  be in the set defined by the class. If a
-       circumflex is actually required as a member of the class, ensure it  is
+       character  in  the  class definition is a circumflex, in which case the
+       subject character must not be in the set defined by  the  class.  If  a
+       circumflex  is actually required as a member of the class, ensure it is
        not the first character, or escape it with a backslash.
 
-       For  example, the character class [aeiou] matches any lower case vowel,
-       while [^aeiou] matches any character that is not a  lower  case  vowel.
+       For example, the character class [aeiou] matches any lower case  vowel,
+       while  [^aeiou]  matches  any character that is not a lower case vowel.
        Note that a circumflex is just a convenient notation for specifying the
-       characters that are in the class by enumerating those that are  not.  A
-       class  that starts with a circumflex is not an assertion: it still con-
-       sumes a character from the subject string, and therefore  it  fails  if
+       characters  that  are in the class by enumerating those that are not. A
+       class that starts with a circumflex is not an assertion: it still  con-
+       sumes  a  character  from the subject string, and therefore it fails if
        the current pointer is at the end of the string.
 
-       In  UTF-8 mode, characters with values greater than 255 can be included
-       in a class as a literal string of bytes, or by using the  \x{  escaping
+       In UTF-8 mode, characters with values greater than 255 can be  included
+       in  a  class as a literal string of bytes, or by using the \x{ escaping
        mechanism.
 
-       When  caseless  matching  is set, any letters in a class represent both
-       their upper case and lower case versions, so for  example,  a  caseless
-       [aeiou]  matches  "A"  as well as "a", and a caseless [^aeiou] does not
-       match "A", whereas a caseful version would. When running in UTF-8 mode,
-       PCRE  supports  the  concept of case for characters with values greater
-       than 128 only when it is compiled with Unicode property support.
+       When caseless matching is set, any letters in a  class  represent  both
+       their  upper  case  and lower case versions, so for example, a caseless
+       [aeiou] matches "A" as well as "a", and a caseless  [^aeiou]  does  not
+       match  "A", whereas a caseful version would. In UTF-8 mode, PCRE always
+       understands the concept of case for characters whose  values  are  less
+       than  128, so caseless matching is always possible. For characters with
+       higher values, the concept of case is supported  if  PCRE  is  compiled
+       with  Unicode  property support, but not otherwise.  If you want to use
+       caseless matching for characters 128 and above, you  must  ensure  that
+       PCRE  is  compiled  with Unicode property support as well as with UTF-8
+       support.
 
        The newline character is never treated in any special way in  character
        classes,  whatever  the  setting  of  the PCRE_DOTALL or PCRE_MULTILINE
@@ -1409,5 +1430,5 @@ CALLOUTS
        gether. A complete description of the interface to the callout function
        is given in the pcrecallout documentation.
 
-Last updated: 09 September 2004
-Copyright (c) 1997-2004 University of Cambridge.
+Last updated: 28 February 2005
+Copyright (c) 1997-2005 University of Cambridge.

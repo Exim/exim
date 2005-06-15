@@ -1,17 +1,14 @@
-/* $Cambridge: exim/src/src/pcre/printint.c,v 1.2 2005/06/15 08:57:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_printint.c,v 1.1 2005/06/15 08:57:10 ph10 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
 *************************************************/
 
-/*
-This is a library of functions to support regular expressions whose syntax
-and semantics are as close as possible to those of the Perl 5 language. See
-the file Tech.Notes for some information on the internals.
+/* PCRE is a library of functions to support regular expressions whose syntax
+and semantics are as close as possible to those of the Perl 5 language.
 
-Written by: Philip Hazel <ph10@cam.ac.uk>
-
-           Copyright (c) 1997-2004 University of Cambridge
+                       Written by Philip Hazel
+           Copyright (c) 1997-2005 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -43,10 +40,12 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 
-/* This module contains a debugging function for printing out the internal form
-of a compiled regular expression. It is kept in a separate file so that it can
-be #included both in the pcretest program, and in the library itself when
-compiled with the debugging switch. */
+/* This module contains an PCRE private debugging function for printing out the
+internal form of a compiled regular expression, along with some supporting
+local functions. */
+
+
+#include "pcre_internal.h"
 
 
 static const char *OP_names[] = { OP_NAME_LIST };
@@ -55,18 +54,6 @@ static const char *OP_names[] = { OP_NAME_LIST };
 /*************************************************
 *       Print single- or multi-byte character    *
 *************************************************/
-
-/* These tables are actually copies of ones in pcre.c. If we compile the
-library with debugging, they are included twice, but that isn't really a
-problem - compiling with debugging is pretty rare and these are very small. */
-
-static const int utf8_t3[] = { 0xff, 0x1f, 0x0f, 0x07, 0x03, 0x01};
-
-static const uschar utf8_t4[] = {
-  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-  1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-  2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-  3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5 };
 
 static int
 print_char(FILE *f, uschar *ptr, BOOL utf8)
@@ -81,9 +68,9 @@ if (!utf8 || (c & 0xc0) != 0xc0)
 else
   {
   int i;
-  int a = utf8_t4[c & 0x3f];  /* Number of additional bytes */
+  int a = _pcre_utf8_table4[c & 0x3f];  /* Number of additional bytes */
   int s = 6*a;
-  c = (c & utf8_t3[a]) << s;
+  c = (c & _pcre_utf8_table3[a]) << s;
   for (i = 1; i <= a; i++)
     {
     /* This is a check for malformed UTF-8; it should only occur if the sanity
@@ -108,7 +95,6 @@ else
 
 
 
-
 /*************************************************
 *          Find Unicode property name            *
 *************************************************/
@@ -118,11 +104,11 @@ get_ucpname(int property)
 {
 #ifdef SUPPORT_UCP
 int i;
-for (i = sizeof(utt)/sizeof(ucp_type_table); i >= 0; i--)
+for (i = _pcre_utt_size; i >= 0; i--)
   {
-  if (property == utt[i].value) break;
+  if (property == _pcre_utt[i].value) break;
   }
-return (i >= 0)? utt[i].name : "??";
+return (i >= 0)? _pcre_utt[i].name : "??";
 #else
 return "??";
 #endif
@@ -137,8 +123,8 @@ return "??";
 /* Make this function work for a regex with integers either byte order.
 However, we assume that what we are passed is a compiled regex. */
 
-static void
-print_internals(pcre *external_re, FILE *f)
+EXPORT void
+_pcre_printint(pcre *external_re, FILE *f)
 {
 real_pcre *re = (real_pcre *)external_re;
 uschar *codestart, *code;
@@ -177,7 +163,7 @@ for(;;)
       fprintf(f, "%3d Bra extra\n", GET(code, 1));
     else
       fprintf(f, "%3d Bra %d\n", GET(code, 1), *code - OP_BRA);
-    code += OP_lengths[OP_BRA];
+    code += _pcre_OP_lengths[OP_BRA];
     continue;
     }
 
@@ -318,7 +304,7 @@ for(;;)
     case OP_NOTMINUPTO:
     if (isprint(c = code[3])) fprintf(f, "    [^%c]{", c);
       else fprintf(f, "    [^\\x%02x]{", c);
-    if (*code != OP_NOTEXACT) fprintf(f, ",");
+    if (*code != OP_NOTEXACT) fprintf(f, "0,");
     fprintf(f, "%d}", GET2(code,1));
     if (*code == OP_NOTMINUPTO) fprintf(f, "?");
     break;
@@ -329,7 +315,7 @@ for(;;)
 
     case OP_REF:
     fprintf(f, "    \\%d", GET2(code,1));
-    ccode = code + OP_lengths[*code];
+    ccode = code + _pcre_OP_lengths[*code];
     goto CLASS_REF_REPEAT;
 
     case OP_CALLOUT:
@@ -436,7 +422,7 @@ for(;;)
         case OP_CRQUERY:
         case OP_CRMINQUERY:
         fprintf(f, "%s", OP_names[*ccode]);
-        extra += OP_lengths[*ccode];
+        extra += _pcre_OP_lengths[*ccode];
         break;
 
         case OP_CRRANGE:
@@ -446,7 +432,7 @@ for(;;)
         if (max == 0) fprintf(f, "{%d,}", min);
         else fprintf(f, "{%d,%d}", min, max);
         if (*ccode == OP_CRMINRANGE) fprintf(f, "?");
-        extra += OP_lengths[*ccode];
+        extra += _pcre_OP_lengths[*ccode];
         break;
         }
       }
@@ -459,9 +445,9 @@ for(;;)
     break;
     }
 
-  code += OP_lengths[*code] + extra;
+  code += _pcre_OP_lengths[*code] + extra;
   fprintf(f, "\n");
   }
 }
 
-/* End of printint.c */
+/* End of pcre_printint.c */
