@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.10 2005/03/29 14:19:21 ph10 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.11 2005/06/15 14:12:49 fanf2 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -693,7 +693,8 @@ ZCAT_COMMAND=/usr/bin/zcat
 # Support for dynamically-loaded string expansion functions via ${dlfunc. If
 # you are using gcc the dynamically-loaded object must be compiled with the
 # -shared option, and you will need to add -export-dynamic to EXTRALIBS so
-# that the local_scan API is made available by the linker.
+# that the local_scan API is made available by the linker. You may also need
+# to add -ldl to EXTRALIMS so that dlopen() is available to Exim.
 
 # EXPAND_DLFUNC=yes
 
