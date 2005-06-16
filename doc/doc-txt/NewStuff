@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.49 2005/06/14 13:48:40 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.50 2005/06/16 20:03:43 tom Exp $
 
 New Features in Exim
 --------------------
@@ -254,6 +254,94 @@ PH/02 There's a new verify callout option, "fullpostmaster", which first acts
 
 PH/03 The action of the auto_thaw option has been changed. It no longer applies
       to frozen bounce messages.
+
+TK/02 There are two new expansion items to help with the implementation of
+      the BATV "prvs" scheme in an Exim configuration:
+
+
+      ${prvs {<ADDRESS>}{<KEY>}{[KEYNUM]}}
+
+      The "prvs" expansion item takes three arguments: A qualified RFC2821
+      email address, a key and an (optional) key number. All arguments are
+      expanded before being used, so it is easily possible to lookup a key
+      and key number using the address as the lookup key. The key number is
+      optional and defaults to "0". The item will expand to a "prvs"-signed
+      email address, to be typically used with the "return_path" option on
+      a smtp transport. The decision if BATV should be used with a given
+      sender/recipient pair should be done on router level, to avoid having
+      to set "max_rcpt = 1" on the transport.
+
+
+      ${prvscheck {<ADDRESS>}{<SECRET>}{<RETURN_STRING>}}
+
+      The "prvscheck" expansion item takes three arguments. Argument 1 is
+      expanded first. When the expansion does not yield a SYNTACTICALLY
+      valid "prvs"-scheme address, the whole "prvscheck" item expands to
+      the empty string. If <ADDRESS> is a "prvs"-encoded address after
+      expansion, two expansion variables are set up:
+
+        $prvscheck_address   Contains the "prvs"-decoded version of
+                             the address from argument 1.
+
+        $prvscheck_keynum    Contains the key number extracted from
+                             the "prvs"-address in argument 1.
+
+      These two variables can be used in the expansion code of argument 2
+      to retrieve the <SECRET>. The VALIDITY of the "prvs"-signed address
+      is then checked. The result is stored in yet another expansion
+      variable:
+
+        $prvscheck_result    Contains the result of a "prvscheck"
+                             expansion: Unset (the empty string) for
+                             failure, "1" for success.
+
+      The "prvscheck" expansion expands to the empty string if <ADDRESS>
+      is not a SYNTACTICALLY valid "prvs"-scheme address. Otherwise,
+      argument 3 defines what "prvscheck" expands to: If argument 3
+      is the empty string, "prvscheck" expands to the decoded version
+      of the address (no matter if it is CRYPTOGRAPHICALLY valid or not).
+      If argument 3 expands to a non-empty string, "prvscheck" expands
+      to that string.
+
+
+      Usage example
+      -------------
+
+      Macro:
+
+      PRVSCHECK_SQL = ${lookup mysql{SELECT secret FROM batv_prvs WHERE \
+                      sender='${quote_mysql:$prvscheck_address}'}{$value}}
+
+      RCPT ACL:
+
+      # Bounces: drop unsigned addresses for BATV senders
+      deny message = This address does not send an unsigned reverse path.
+           senders = :
+           recipients = +batv_recipients
+
+      # Bounces: In case of prvs-signed address, check signature.
+      deny message = Invalid reverse path signature.
+           senders = :
+           condition = ${prvscheck {$local_part@$domain}{PRVSCHECK_SQL}{1}}
+           !condition = $prvscheck_result
+
+      Top-Level Router:
+
+      batv_redirect:
+        driver = redirect
+        data = ${prvscheck {$local_part@$domain}{PRVSCHECK_SQL}{}}
+
+      Transport (referenced by router that makes decision if
+      BATV is applicable):
+
+        external_smtp_batv:
+          driver = smtp
+          return_path = ${prvs {$return_path} \
+                               {${lookup mysql{SELECT \
+                               secret FROM batv_prvs WHERE \
+                               sender='${quote_mysql:$sender_address}'} \
+                           {$value}fail}}}
+
 
 
 Version 4.51
