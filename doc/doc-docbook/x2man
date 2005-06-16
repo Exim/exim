@@ -1,0 +1,212 @@
+#! /usr/bin/perl -w
+
+# $Cambridge: exim/doc/doc-docbook/x2man,v 1.1 2005/06/16 10:32:31 ph10 Exp $
+
+# Script to find the command line options in the DocBook source of the Exim
+# spec, and turn them into a man page, because people like that.
+
+
+
+
+##################################################
+#              Main Program                      #
+##################################################
+
+open(IN, "spec.xml") || die "Can't open spec.xml\n";
+open(OUT, ">exim.8" ) || die "Can't open exim.8\n";
+
+print OUT <<End;
+.TH EXIM 8
+.SH NAME
+exim \\- a Mail Transfer Agent
+.SH SYNOPSIS
+.B exim [options] arguments ...
+.br
+.B mailq [options] arguments ...
+.br
+.B rsmtp [options] arguments ...
+.br
+.B rmail [options] arguments ...
+.br
+.B runq [options] arguments ...
+.br
+.B newaliases [options] arguments ...
+
+.SH DESCRIPTION
+.rs
+.sp
+Exim is a mail transfer agent (MTA) developed at the University of Cambridge.
+It is a large program with very many facilities. For a full specification, see
+the reference manual. This man page contains only a description of the command
+line options. It has been automatically generated from the reference manual
+source, hopefully without too much mangling.
+
+.SH SETTING OPTIONS BY PROGRAM NAME
+.rs
+.TP 10
+\\fBmailq\\fR
+Behave as if the option \\fB\\-bp\\fP were present before any other options.
+The \\fB\\-bp\\fP option requests a listing of the contents of the mail queue
+on the standard output.
+.TP
+\\fBrsmtp\\fR
+Behaves as if the option \\fB\\-bS\\fP were present before any other options,
+for compatibility with Smail. The \\fB\\-bS\\fP option is used for reading in a
+number of messages in batched SMTP format.
+.TP
+\\fBrmail\\fR
+Behave as if the \\fB\\-i\\fP and \\fB\\-oee\\fP options were present before
+any other options, for compatibility with Smail. The name \\fBrmail\\fR is used
+as an interface by some UUCP systems. The \\fB\\-i\\fP option specifies that a
+dot on a line by itself does not terminate a non\\-SMTP message; \\fB\\-oee\\fP
+requests that errors detected in non\\-SMTP messages be reported by emailing
+the sender.
+.TP
+\\fBrunq\\fR
+Behave as if the option \\fB\\-q\\fP were present before any other options, for
+compatibility with Smail. The \\fB\\-q\\fP option causes a single queue runner
+process to be started. It processes the queue once, then exits.
+.TP
+\\fBnewaliases\\fR
+Behave as if the option \\fB\\-bi\\fP were present before any other options,
+for compatibility with Sendmail. This option is used for rebuilding Sendmail's
+alias file. Exim does not have the concept of a single alias file, but can be
+configured to run a specified command if called with the \\fB\\-bi\\fP option.
+
+.SH OPTIONS
+.rs
+End
+
+while (<IN>) { last if /^<!-- === Start of command line options === -->\s*$/; }
+die "Can't find start of options\n" if ! defined $_;
+
+$optstart = 0;
+$indent = "";
+
+# Loop for each individual option
+
+$next = <IN>;
+
+while ($next)
+  {
+  $_ = $next;
+  $next = <IN>;
+
+  last if /^<!-- === End of command line options === -->\s*$/;
+
+  # Start of new option
+
+  if (/^<term>$/)
+    {
+    print OUT ".TP 10\n";
+    $optstart = 1;
+    next;
+    }
+
+  # If a line contains text that is not in <>, read subsequent lines of the
+  # same form, so that we get whole sentences for matching on references.
+
+  if (/^ (?> (<[^>]+>)* ) \s*\S/x)
+    {
+    while ($next =~ /^ (?> (<[^>]+>)* ) \s*\S/x)
+      {
+      $_ .= $next;
+      $next = <IN>;
+      }
+    }
+
+  # Remove sentences or parenthetical comments that refer to chapters or
+  # sections. The order of these changes is very important:
+  #
+  # (1) Remove any parenthetical comments first.
+  # (2) Then remove any sentences that start after a full stop.
+  # (3) Then remove any sentences that start at the beginning or a newline.
+
+  s/\s?\(  [^()]+ <xref \s linkend="[^"]+" \/ > \)//xg;
+  s/\s?\.  [^.]+ <xref \s linkend="[^"]+" \/ > [^.]*? \././xg;
+  s/(^|\n) [^.]+ <xref \s linkend="[^"]+" \/ > [^.]*? \./$1/xg;
+
+  # Handle paragraph starts; skip the first one encountered for an option
+
+  if ($optstart && /<(sim)?para>/)
+    {
+    s/<(sim)?para>//;
+    $optstart = 0;
+    }
+
+  # Literal layout needs to be treated as a paragraph, and indented
+
+  if (/<literallayout/)
+    {
+    s/<literallayout[^>]*>/.P/;
+    $indent = "  ";
+    }
+
+  $indent = "" if (/<\/literallayout>/);
+
+  # Others get marked
+
+  s/<para>/.P/;
+  s/<simpara>/.P/;
+
+  # Skip index entries
+
+  s/<primary>.*?<\/primary>//g;
+  s/<secondary>.*?<\/secondary>//g;
+
+  # Convert all occurrences of backslash into \e
+
+  s/\\/\\e/g;
+
+  # Handle bold and italic
+
+  s/<emphasis>/\\fI/g;
+  s/<emphasis role="bold">/\\fB/g;
+  s/<\/emphasis>/\\fP/g;
+
+  s/<option>/\\fB/g;
+  s/<\/option>/\\fP/g;
+
+  s/<varname>/\\fI/g;
+  s/<\/varname>/\\fP/g;
+
+  # Handle quotes
+
+  s/<\/?quote>/"/g;
+
+  # Remove any remaining XML markup
+
+  s/<[^>]*>//g;
+
+  # If nothing left in the line, ignore.
+
+  next if /^\s*$/;
+
+  # It turns out that we don't actually want .P; a blank line is needed.
+  # But we can't set that above, because it will be discarded.
+
+  s/^\.P\s*$/\n/;
+
+  # We are going to output some data; sort out special characters
+
+  s/&lt;/</g;
+  s/&gt;/>/g;
+
+  s/&#x002d;/-/g;
+  s/&#x00a0;/ /g;
+  s/&#x2013;/-/g;
+  s/&#x2019;/'/g;
+  s/&#8230;/.../g;    # Sic - no x
+
+  # Escape hyphens to prevent unwanted hyphenation
+
+  s/-/\\-/g;
+
+  # Put in the indent, and write the line
+
+  s/^/$indent/mg;
+
+  print OUT;
+  }
+
+# End of g2man

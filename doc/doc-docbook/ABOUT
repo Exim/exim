@@ -1,0 +1,16 @@
+$Cambridge: exim/doc/doc-docbook/ABOUT,v 1.1 2005/06/16 10:32:31 ph10 Exp $
+
+CVS directory exim/exim-doc/doc-docbook
+---------------------------------------
+
+This directory contains the AsciiDoc and DocBook sources for the Exim
+specification and the filter description. It also contains a Makefile and all
+the scripts, stylesheets, etc. that are used to create the distributed
+renditions of the documents. This way of creating the documentation was
+introduced for release 4.60.
+
+The file HowItWorks.txt explains the processes by which the distributed
+renditions are created. It also contains a list of the files in this directory
+and what they all contain.
+
+End

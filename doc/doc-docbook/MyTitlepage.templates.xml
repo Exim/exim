@@ -1,0 +1,101 @@
+<!DOCTYPE t:templates [
+<!ENTITY hsize0 "10pt">
+<!ENTITY hsize1 "12pt">
+<!ENTITY hsize2 "14.4pt">
+<!ENTITY hsize3 "17.28pt">
+<!ENTITY hsize4 "20.736pt">
+<!ENTITY hsize5 "24.8832pt">
+<!ENTITY hsize0space "7.5pt"> <!-- 0.75 * hsize0 -->
+<!ENTITY hsize1space "9pt"> <!-- 0.75 * hsize1 -->
+<!ENTITY hsize2space "10.8pt"> <!-- 0.75 * hsize2 -->
+<!ENTITY hsize3space "12.96pt"> <!-- 0.75 * hsize3 -->
+<!ENTITY hsize4space "15.552pt"> <!-- 0.75 * hsize4 -->
+<!ENTITY hsize5space "18.6624pt"> <!-- 0.75 * hsize5 -->
+]>
+
+<!-- $Cambridge: exim/doc/doc-docbook/MyTitlepage.templates.xml,v 1.1 2005/06/16 10:32:31 ph10 Exp $ -->
+
+<!-- This document is copied from the DocBook XSL stylesheets, and modified to
+do what I want it to do for the Exim reference manual. Process this document
+with:
+
+xsltproc -output MyTitleStyle.xsl \
+  /usr/share/sgml/docbook/xsl-stylesheets-1.66.1/template/titlepage.xsl \
+  MyTitlepage.templates.xml
+
+in order to generate a style sheet called MyTitleStyle.xsl. That is then
+included in my customization stylesheet. What a lot of heavyweight apparatus we
+need to set up! -->
+
+
+<t:templates xmlns:t="http://nwalsh.com/docbook/xsl/template/1.0"
+             xmlns:param="http://nwalsh.com/docbook/xsl/template/1.0/param"
+             xmlns:fo="http://www.w3.org/1999/XSL/Format"
+             xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<!-- ********************************************************************
+     $Id: titlepage.templates.xml,v 1.23 2003/12/16 00:30:49 bobstayton Exp $
+     ********************************************************************
+
+     This file is part of the DocBook XSL Stylesheet distribution.
+     See ../README or http://docbook.sf.net/ for copyright
+     and other information.
+
+     ******************************************************************** -->
+
+<!-- ==================================================================== -->
+
+  <t:titlepage t:element="book" t:wrapper="fo:block">
+    <t:titlepage-content t:side="recto">
+      <title
+             t:named-template="division.title"
+             param:node="ancestor-or-self::book[1]"
+             text-align="center"
+             font-size="&hsize5;"
+             space-before="&hsize5space;"
+             font-weight="bold"
+             font-family="{$title.fontset}"/>
+      <subtitle
+                text-align="center"
+                font-size="&hsize4;"
+                space-before="&hsize4space;"
+                font-family="{$title.fontset}"/>
+      <corpauthor font-size="&hsize3;"
+                  keep-with-next="always"
+                  space-before="2in"/>
+      <authorgroup space-before="2in"/>
+      <author font-size="&hsize3;"
+              space-before="&hsize2space;"
+              keep-with-next="always"/>
+    </t:titlepage-content>
+
+  <t:titlepage-content t:side="verso">
+      <title
+             t:named-template="book.verso.title"
+             font-size="&hsize2;"
+             font-weight="bold"
+             font-family="{$title.fontset}"/>
+      <corpauthor/>
+      <authorgroup t:named-template="verso.authorgroup"/>
+      <author/>
+      <othercredit/>
+      <pubdate space-before="1em"/>
+      <abstract/>
+      <copyright/>
+      <legalnotice font-size="8pt"/>
+  </t:titlepage-content>
+
+<!-- This change stops it putting a blank page after the verso -->
+  <t:titlepage-separator>
+<!--      <fo:block break-after="page"/> -->
+  </t:titlepage-separator>
+
+  <t:titlepage-before t:side="recto">
+  </t:titlepage-before>
+
+  <t:titlepage-before t:side="verso">
+      <fo:block break-after="page"/>
+  </t:titlepage-before>
+</t:titlepage>
+
+</t:templates>

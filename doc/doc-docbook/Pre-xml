@@ -1,0 +1,173 @@
+#! /usr/bin/perl
+
+# $Cambridge: exim/doc/doc-docbook/Pre-xml,v 1.1 2005/06/16 10:32:31 ph10 Exp $
+
+# Script to pre-process XML input before processing it for various purposes.
+# Options specify which transformations are to be done. Monospaced literal
+# layout blocks are never touched.
+
+# Changes:
+
+# -abstract: Remove the <abstract> element
+
+# -ascii:    Replace &8230;   (sic, no x) with ...
+#            Replace &#x2019; by '
+#            Replace &#x201C; by "
+#            Replace &#x201D; by "
+#            Replace &#x2013; by -
+#            Replace &#x2020; by *
+#            Replace &#x2021; by **
+#            Replace &#x00a0; by a space
+#            Replace &#169;   by (c)
+#            Put quotes round <literal> text
+#            Put quotes round <quote> text
+
+# -bookinfo: Remove the <bookinfo> element from the file
+
+# -fi:       Replace "fi" by &#xFB01; except when it is in an XML element, or
+#            inside a <literal>.
+
+# -noindex   Remove the XML to generate a Concept and an Options index.
+# -oneindex  Ditto, but add XML to generate a single index.
+
+
+
+# The function that processes non-literal monospaced text
+
+sub process()
+{
+my($s) = $_[0];
+
+$s =~ s/fi(?![^<>]*>)/&#xFB01;/g if $ligatures;
+
+if ($ascii)
+  {
+  $s =~ s/&#8230;/.../g;
+  $s =~ s/&#x2019;/'/g;
+  $s =~ s/&#x201C;/"/g;
+  $s =~ s/&#x201D;/"/g;
+  $s =~ s/&#x2013;/-/g;
+  $s =~ s/&#x2020;/*/g;
+  $s =~ s/&#x2021;/**/g;
+  $s =~ s/&#x00a0;/ /g;
+  $s =~ s/&#x00a9;/(c)/g;
+  $s =~ s/<quote>/"/g;
+  $s =~ s/<\/quote>/"/g;
+  }
+
+$s;
+}
+
+
+# The main program
+
+$abstract  = 0;
+$ascii     = 0;
+$bookinfo  = 0;
+$inliteral = 0;
+$ligatures = 0;
+$madeindex = 0;
+$noindex   = 0;
+$oneindex  = 0;
+
+foreach $arg (@ARGV)
+  {
+  if    ($arg eq "-fi")       { $ligatures = 1; }
+  elsif ($arg eq "-abstract") { $abstract = 1; }
+  elsif ($arg eq "-ascii")    { $ascii = 1; }
+  elsif ($arg eq "-bookinfo") { $bookinfo = 1; }
+  elsif ($arg eq "-noindex")  { $noindex = 1; }
+  elsif ($arg eq "-oneindex") { $oneindex = 1; }
+  else  { die "** Pre-xml: Unknown option \"$arg\"\n"; }
+  }
+
+while (<STDIN>)
+  {
+  # Remove <abstract> if required
+
+  next if ($abstract && /^\s*<abstract>/);
+
+  # Remove <bookinfo> if required
+
+  if ($bookinfo && /^<bookinfo/)
+    {
+    while (<STDIN>) { last if /^<\/bookinfo/; }
+    next;
+    }
+
+  # Copy monospaced literallayout blocks
+
+  if (/^<literallayout class="monospaced">/)
+    {
+    print;
+    while (<STDIN>)
+      {
+      print;
+      last if /^<\/literallayout>/;
+      }
+    next;
+    }
+
+  # Adjust index-generation code if required
+
+  if (($noindex || $oneindex) && /^<index[\s>]/)
+    {
+    while (<STDIN>)
+      {
+      last if /^<\/index>/;
+      }
+
+    if ($oneindex && !$madeindex)
+      {
+      $madeindex = 1;
+      print "<index><title>Index</title></index>\n";
+      }
+
+    next;
+    }
+
+  # A line that is not in a monospaced literal block; keep track of which
+  # parts are in <literal> and which not. The latter get processed by the
+  # function above.
+
+  for (;;)
+    {
+    if ($inliteral)
+      {
+      if (/^(.*?)<\/literal>(.*)$/)
+        {
+        print $1;
+        print "\"" if $ascii;
+        print "</literal>";
+        $inliteral = 0;
+        $_ = "$2\n";
+        }
+      else
+        {
+        print;
+        last;
+        }
+      }
+
+    # Not in literal state
+
+    else
+      {
+      if (/^(.*?)<literal>(.*)$/)
+        {
+        print &process($1);
+        print "<literal>";
+        print "\"" if $ascii;
+        $inliteral = 1;
+        $_ = "$2\n";
+        }
+      else
+        {
+        print &process($_);
+        last;
+        }
+      }
+    }    # Loop for different parts of one line
+  }      # Loop for multiple lines
+
+# End

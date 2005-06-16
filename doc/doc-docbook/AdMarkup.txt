@@ -1,0 +1,434 @@
+$Cambridge: exim/doc/doc-docbook/AdMarkup.txt,v 1.1 2005/06/16 10:32:31 ph10 Exp $
+
+Asciidoc markup used in the Exim documentation
+----------------------------------------------
+
+This file contains a summary of the AsciiDoc markup that is used in the source
+files of the Exim documentation. The source files are in plain text that can be
+edited by any text editor. They are converted by the AsciiDoc application into
+DocBook XML for subsequent processing into the various output formats.
+
+This markup requires AsciiDoc release 6.0.3 or later.
+
+The advantage of using AsciiDoc format as a "back end" is that is uses
+relatively simple markup in the majority of the text, making it easier to read
+and edit. The disadvantage is that it is tricky to deal with complicated
+formatting - though that is probably true of any markup language - and there
+are a few gotchas.
+
+The Exim documentation uses the default AsciiDoc markup with some additions. I
+have created a special AsciiDoc configuration file for use with the Exim
+documentation. You must use this configuration if you want to get sensible
+results,
+
+
+SPECIAL CHARACTERS
+
+When typing paragraphs of text, the following character sequences are
+recognized as markup if they occur surrounding a "word phrase" within a
+paragraph. In the list below, ... represents the text that is enclosed.
+
+  '...'    single quotes        italic:
+                                  used for email addresses, domains, local
+                                  parts, header names, user names
+
+  *...*    asterisks            bold
+                                  used for things like "*Note:*"
+
+  `...`    backticks            monospaced text
+                                  used for literal quoting
+
+  $...$    dollar               Exim variable
+                                  maps to XML <varname> with leading $
+
+  %...%    percent              Exim option, command line option
+                                  maps to XML <option>
+
+  ^...^    circumflex           Exim driver name, Unix command, filter command
+                                 maps to XML <command>
+
+  ^^...^^  double circumflex    C function: maps to XML <function>
+
+  ^%...%^  circumflex percent   parameter: maps to XML <parameter>
+                                  Not currently used
+
+  _..._    underscore           file name: maps to XML <filename>
+
+  ``...''  backticks & quotes   put word in quotation marks
+
+For example,
+
+  This is an 'italic phrase'. This is a _filename_ and a $variable$.
+  This ``word'' is in quote marks.
+
+These quoting characters are recognized only if they are not flanked by
+alphanumeric characters. Thus, for instance, an apostrophe within a word can be
+represented as a single quote without any problem. Quoting can be nested, but
+not overlapped. However, the resulting XML from nested quotes is not always
+valid, so nesting is best avoided. (For example, `xxx'yyy'xxx` generates an
+<emphasis> item within a <literal> item, and the DocBook DTD doesn't allow
+that.) However, one combination that does work is <literal> within an
+<emphasis>, so that is what you have to use if you want a boldface monospaced
+font. That is, use *`bold mono`* and not `*bold mono*`. Sigh.
+
+There are also some character sequences that are translated into non-Ascii
+characters:
+
+  --     en-dash    (&#x2013;)
+  ---    em-dash    (&#x8212;)
+  ~      hard space (&#x00a0;)
+  !!     dagger     (&#x2020;}
+
+The two-character sequence ## is turned into nothing. It is useful for
+disambiguating markup. For example, something like
+
+  ``quoted ending in 'emphasized'''
+
+is ambiguous, and as AsciiDoc looks for the longest markup first, it doesn't do
+what you want. You have to code this as
+
+  ``quoted ending in 'emphasized'##''
+
+The dashes are recognized only when surrounded by white space. The special Exim
+AsciiDoc configuration also translates most apostrophes to a typographic
+apostrophe (&#x2019;). There are some cases where this doesn't work, for
+example, an apostrophe after a word in another font (because the quote
+character gets in the way). For this purpose, there is a named "attribute" that
+can be used. Named attributes are substituted inside curly braces.
+
+For example, in the filter document there is a reference to an imaginary user
+called lg303. User names are italicized, so this is always typed as 'lg303' but
+if an apostrophe-s is needed after it, you have to type
+
+  'lg303'{ap}s
+
+Another named attribute is {tl}, which turns into a tilde character, because a
+literal tilde becomes a hard space.
+
+A third named attribute is {hh}, which turns into two hyphens, because a
+literal "--" is converted into an en dash.
+
+A fourth named attributs is {pc}, which turns into a percent sign.
+
+
+ESCAPING SPECIAL CHARACTERS
+
+Use backslash if you need to escape a special character.
+
+***** GOTCHA *****
+Backslash is not special when it precedes any other character. Thus, you need
+to know which characters are special, which is a pain.
+
+
+COMMENTS
+
+You can include comments that will not be copied to the XML document by
+creating a comment block that is delimited by at least three slashes. For
+example:
+
+  ///
+  This is an AsciiDoc comment block.
+  ///
+
+
+URL REFERENCES
+
+To refer to a URL, just put it in the text, followed by some text in square
+brackets to define the displayed text. If that is empty, the URL itself is
+displayed. For example, here's a reference to http://www.exim.org/[exim home
+page]. In HTML output, all you see is the display text; in printed output you
+see something like "exim home page [http://www.exim.org/]". The URL is printed
+in whatever is the current font, so it can be made bold by putting it in
+asterisks (for example).
+
+
+FORMAL PARAGRAPHS
+
+A formal paragraph has a title. This is normally typeset in bold at the start
+of the paragraph, and is useful as an alternative to a vertical labelled list
+(see below). To create such a paragraph, you just put its title first, like
+this:
+
+  [title="the title"]
+  Now give the text of the paragraph as usual.
+
+
+CHAPTERS AND SECTIONS
+
+AsciiDoc recognizes chapter and sections by looking for underlined lines, with
+the underlining character used to determine the type of section.
+
+  This is a chapter title
+  -----------------------
+
+  This is a section title
+  ~~~~~~~~~~~~~~~~~~~~~~~
+
+Chapter titles are used for running feet in the PDF form of the manual.
+Sometimes they are too long, causing them to be split in an ugly way. The
+solution to this is to define a short title for the chapter, like this:
+
+  [titleabbrev="short title"]
+  This is a rather long chapter title
+  -----------------------------------
+
+
+DISPLAYS
+
+Displayed blocks in a monospaced font can just be indented:
+
+  # Exim filter
+  deliver baggins@rivendell.middle-earth.example
+
+However, it seems that if the first line in such a block starts with an
+asterisk or if any lines in the block end in a backslash (as is quite often the
+case in Exim configuration examples), you have to use a "listing block" or a
+"literal block" instead of a "literal paragraph". Otherwise an initial asterisk
+makes AsciiDoc think this is a list item, and a terminating backslash causes
+lines to be concatenated.
+
+Another time when you have to use an explicit block is when a display forms
+part of a list item. This is because you have to indent such displays more than
+usual, because the processors don't appear to do this automatically.
+
+Listing blocks are delimited by lines of at least three hyphens; literal blocks
+are delimited by lines of at least four dots. For example:
+
+....
+/usr/sbin/sendmail -bf myfilter \
+   -f islington@never.where <test-message
+....
+
+Such blocks are indented by an amount that is specified in the style sheet, but
+this amount is always the same, regardless of whether the block is inside a
+list item (which is itself indented) or not. So if the block is within a list
+item, it must be explicitly indented as well.
+
+Blocks that are between lines of ampersands (at least 3 in each line) are
+displayed (by default) in the normal font, but with the lines unchanged. Quotes
+can be used in the block to specify different fonts. For example:
+
+&&&&
+`\n`   is replaced by a newline
+`\r`   is replaced by a carriage return
+`\t`   is replaced by a tab
+&&&&
+
+When this kind of output is required within a list of any kind (see below), you
+must precede it with a line consisting of just a plus sign, because by default
+any kind of block terminates the list item.
+
+
+CROSS-REFERENCES
+
+To set a cross-reference point, enclose the name in double square brackets:
+
+  [[SECTexample]]
+
+To refer to a cross-reference point, enclose the name in double angle brackets:
+
+  <<SECTexample>>
+
+
+INDEX ENTRIES
+
+To create an index entry, include a line like one of these:
+
+  cindex:[primary text,secondary text]
+  oindex:[primary text,secondary text]
+
+at the appropriate point in the text. The first is for the "concept index" and
+the second is for the "options index". Not all forms of output distinguish
+between these - sometimes there is just one index.
+
+The index for the Exim reference manual has a number of "see also" entries.
+Rather than invent some fancy AsciiDoc way of doing this, I have just coded
+them in XML, using the AsciiDoc escape hatch that is described below under
+FUDGES.
+
+
+LISTS
+
+For a bulleted list, start each item in the list with a hyphen or an asterisk
+followed by a space:
+
+  - First item.
+  - Second item.
+
+For a numbered list, start each item with a dot followed by a space:
+
+  . First item.
+  . Second item.
+
+
+VERTICAL LABELLED LISTS
+
+These are used for Exim command line options and similar things. They map into
+XML <variablelist> items. Start the list with the item name, followed by two
+colons, on a line by itself. This is followed by the text for the list item.
+
+
+LISTS CONTAINING MORE THAN ONE PARAGRAPH
+
+If there is more than one paragraph in a list item, the second and subsequent
+ones must be preceded by a line containing just a single "+" character, as
+otherwise the list is terminated. Literal paragraphs can be included without
+any special markup. For example:
+
+  first item::
+  This is the pararaph that describes the item.
+
+    We can even have an indented display
+    within the item
+  +
+  but any more paragraphs must be preceded by a plus character
+  (otherwise they aren't included in the list, and won't be
+  properly indented).
+
+The "+" notation can also be used to include other kinds of block within a list
+item. It's needed for all block types except nested lists and literal
+paragraphs.
+
+An alternative approach to lists that contain multiple paragraphs or blocks
+within each item is to put a line containing just two hyphens immediately
+before and immediately after the list. For example:
+
+  --
+  . First item
+
+  Second paragraph of first item
+
+  . Second item
+
+  And so on
+  --
+
+This is particularly helpful for nested lists (see below).
+
+
+NESTED LISTS
+
+You can nest lists of different types. However, if you want to revert to an
+outer list item at the end of a nested list, you must use the "--" feature
+described above for the inner list, so that its end can be explicitly marked.
+For example:
+
+  . Outer list
+  +
+  Second paragraph in outer list
+  +
+  --
+  - Inner list item
+  - Inner list second item
+  --
+  +
+  Another paragraph in the outer list first item
+
+  . Next item in the outer list
+
+
+TABLES
+
+A fixed-width table is started by a line of hyphens that determines the width
+of the table, interspersed with the following column stop characters:
+
+  ` backtick   align left
+  ' quote      align right
+  . dot        align centre
+
+The data is then aligned with the stop characters. For example:
+
+  `---`---
+  1   2
+  3   4
+  --------
+
+Alternatively, if tildes are used instead of hyphens, the data fields are
+comma-separated. Columns can also be specified numerically instead of by
+pattern. This is usually used with CSV data. For example:
+
+  `10`20`30~
+  one, two, three
+  ~~~~~
+
+This format is useful when the data is full of markup so that its final length
+bears little relationship to the input (for example, when there are cross
+references).
+
+By default, tables will be rendered with a frame at the top and bottom, and no
+separators between rows and columns. You can use AsciiDoc "attributes" to
+change this. Attributes are set by a sequence of name=value items in square
+brackets, before the thing to which they apply. For example:
+
+  [frame="none"]
+  `-----`-----
+  11    22
+  33    44
+  ------------
+
+The values for "frame" are "topbot", "sides", "all", or "none". There is also a
+"grid" attribute, whose possible values are "none", "cols", "rows", or "all".
+For example:
+
+  [frame="sides", grid="cols"]
+
+The commas between the attribute settings are important; if they are omitted,
+AsciiDoc ignores the attribute settings.
+
+
+EXIM CONFIGURATION OPTION HEADINGS
+
+Each Exim configuration option is formatted with its name, usage, type, and
+default value on a single line, spread over the line so as to fill it
+completely. The only way I know of aligning text using DocBook is to use a
+table. A special table format has been created to handle this special case. For
+example:
+
+  `..'=
+  %keep_malformed%, Use: 'main', Type: 'boolean', Default: 'false'
+  ===
+
+The first line defines four colums using stop characters, followed by an equals
+character that defines the table's "ruler" character. There is no need to
+define column widths, because the style forces the columns to fill the page
+width. The data is comma-separated.
+
+
+CHANGE BARS
+
+I haven't yet found a way of doing changebars in the printed versions. However,
+it is possible to put a green background behind changed text in the HTML
+version, so the appropriate markup should be used. Before a changed paragraph,
+insert
+
+  [revisionflag="changed"]
+
+This should precede any index settings at the start of the paragraph. If you
+want to do this for a display, you must use the "&&&" block described above,
+because that's the only type that I have set up to support it.
+
+
+FUDGES
+
+The current release of "fop", a program for producing PostScript from
+"formatting objects" (fo) data, which is an intermediate output that can be
+generated from DocBook XML, is not very good at page layout. For example, it
+can place a section heading as the last line on a page. I have set up a style
+that provides a means of forcing a page break in order to get round this. (But
+in practice, it happens so often that I have given up trying to use it.)
+
+At the AsciiDoc level, the markup uses a "backend block", which provides a way
+of specifying DocBook output directly. Backend blocks are surrounded by lines
+of plusses, and this particular fudge looks like this:
+
+  ++++++++++++
+  <?hard-pagebreak?>
+  ++++++++++++
+
+Backend blocks are used to insert XML comments into the output, to mark the
+start and end of Exim's command line options. These are used by the x2man
+script that creates the man page.
+
+
+Philip Hazel
+Last updated: 10 June 2005

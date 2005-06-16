@@ -1,0 +1,541 @@
+$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.1 2005/06/16 10:32:31 ph10 Exp $
+
+CREATING THE EXIM DOCUMENTATION
+
+"You are lost in a maze of twisty little scripts."
+
+
+This document describes how the various versions of the Exim documentation, in
+different output formats, are created from DocBook XML, and also how the
+DocBook XML is itself created.
+
+
+BACKGROUND: THE OLD WAY
+
+From the start of Exim, in 1995, the specification was written in a local text
+formatting system known as SGCAL. This is capable of producing PostScript and
+plain text output from the same source file. Later, when the "ps2pdf" command
+became available with GhostScript, that was used to create a PDF version from
+the PostScript. (A few earlier versions were created by a helpful user who had
+bought the Adobe distiller software.)
+
+A demand for a version in "info" format led me to write a Perl script that
+converted the SGCAL input into a Texinfo file. Because of the somewhat
+restrictive requirements of Texinfo, this script has always needed a lot of
+maintenance, and has never been 100% satisfactory.
+
+The HTML version of the documentation was originally produced from the Texinfo
+version, but later I wrote another Perl script that produced it directly from
+the SGCAL input, which made it possible to produce better HTML.
+
+There were a small number of diagrams in the documentation. For the PostScript
+and PDF versions, these were created using Aspic, a local text-driven drawing
+program that interfaces directly to SGCAL. For the text and texinfo versions,
+alternative ascii-art diagrams were used. For the HTML version, screen shots of
+the PostScript output were turned into gifs.
+
+
+A MORE STANDARD APPROACH
+
+Although in principle SGCAL and Aspic could be generally released, they would
+be unlikely to receive much (if any) maintenance, especially after I retire.
+Furthermore, the old production method was only semi-automatic; I still did a
+certain amount of hand tweaking of spec.txt, for example. As the maintenance of
+Exim itself was being opened up to a larger group of people, it seemed sensible
+to move to a more standard way of producing the documentation, preferable fully
+automated. However, we wanted to use only non-commercial software to do this.
+
+At the time I was thinking about converting (early 2005), the "obvious"
+standard format in which to keep the documentation was DocBook XML. The use of
+XML in general, in many different applications, was increasing rapidly, and it
+seemed likely to remain a standard for some time to come. DocBook offered a
+particular form of XML suited to documents that were effectively "books".
+
+Maintaining an XML document by hand editing is a tedious, verbose, and
+error-prone process. A number of specialized XML text editors were available,
+but all the free ones were at a very primitive stage. I therefore decided to
+keep the master source in AsciiDoc format (described below), from which a
+secondary XML master could be automatically generated.
+
+All the output formats are generated from the XML file. If, in the future, a
+better way of maintaining the XML source becomes available, this can be adopted
+without changing any of the processing that produces the output documents.
+Equally, if better ways of processing the XML become available, they can be
+adopted without affecting the source maintenance.
+
+A number of issues arose while setting this all up, which are best summed up by
+the statement that a lot of the technology is (in 2005) still very immature. It
+is probable that trying to do this conversion any earlier would not have been
+anywhere near as successful. The main problems that still bother me are
+described in the penultimate section of this document.
+
+The following sections describe the processes by which the AsciiDoc files are
+transformed into the final output documents. In practice, the details are coded
+into a makefile that specifies the chain of commands for each output format.
+
+
+REQUIRED SOFTWARE
+
+Installing software to process XML puts lots and lots of stuff on your box. I
+run Gentoo Linux, and a lot of things have been installed as dependencies that
+I am not fully aware of. This is what I know about (version numbers are current
+at the time of writing):
+
+. AsciiDoc 6.0.3
+
+  This converts the master source file into a DocBook XML file, using a
+  customized AsciiDoc configuration file.
+
+. xmlto 0.0.18
+
+  This is a shell script that drives various XML processors. It is used to
+  produce "formatted objects" for PostScript and PDF output, and to produce
+  HTML output. It uses xsltproc, libxml, libxslt, libexslt, and possibly other
+  things that I have not figured out, to apply the DocBook XSLT stylesheets.
+
+. libxml 1.8.17
+  libxml2 2.6.17
+  libxslt 1.1.12
+
+  These are all installed on my box; I do not know which of libxml or libxml2
+  the various scripts are actually using.
+
+. xsl-stylesheets-1.66.1
+
+  These are the standard DocBook XSL stylesheets.
+
+. fop 0.20.5
+
+  FOP is a processor for "formatted objects". It is written in Java. The fop
+  command is a shell script that drives it.
+
+. w3m 0.5.1
+
+  This is a text-oriented web brower. It is used to produce the Ascii form of
+  the Exim documentation from a specially-created HTML format. It seems to do a
+  better job than lynx.
+
+. docbook2texi (part of docbook2X 0.8.5)
+
+  This is a wrapper script for a two-stage conversion process from DocBook to a
+  Texinfo file. It uses db2x_xsltproc and db2x_texixml. Unfortunately, there
+  are two versions of this command; the old one is based on an earlier fork of
+  docbook2X and does not work.
+
+. db2x_xsltproc and db2x_texixml (part of docbook2X 0.8.5)
+
+  More wrapping scripts (see previous item).
+
+. makeinfo 4.8
+
+  This is used to make a set of "info" files from a Texinfo file.
+
+In addition, there are some locally written Perl scripts. These are described
+below.
+
+
+ASCIIDOC
+
+AsciiDoc (http://www.methods.co.nz/asciidoc/) is a Python script that converts
+an input document in a more-or-less human-readable format into DocBook XML.
+For a document as complex as the Exim specification, the markup is quite
+complex - probably no simpler than the original SGCAL markup - but it is
+definitely easier to work with than XML itself.
+
+AsciiDoc is highly configurable. It comes with a default configuration, but I
+have extended this with an additional configuration file that must be used when
+processing the Exim documents. There is a separate document called AdMarkup.txt
+that describes the markup that is used in these documents. This includes the
+default AsciiDoc markup and the local additions.
+
+The author of AsciiDoc uses the extension .txt for input documents. I find
+this confusing, especially as some of the output files have .txt extensions.
+Therefore, I have used the extension .ascd for the sources.
+
+
+THE MAKEFILE
+
+The makefile supports a number of targets of the form x.y, where x is one of
+"filter", "spec", or "test", and y is one of "xml", "fo", "ps", "pdf", "html",
+"txt", or "info". The intermediate targets "x.xml" and "x.fo" are provided for
+testing purposes. The other five targets are production targets. For example:
+
+  make spec.pdf
+
+This runs the necessary tools in order to create the file spec.pdf from the
+original source spec.ascd. A number of intermediate files are created during
+this process, including the master DocBook source, called spec.xml. Of course,
+the usual features of "make" ensure that if this already exists and is
+up-to-date, it is not needlessly rebuilt.
+
+The "test" series of targets were created so that small tests could easily be
+run fairly quickly, because processing even the shortish filter document takes
+a bit of time, and processing the main specification takes ages.
+
+Another target is "exim.8". This runs a locally written Perl script called
+x2man, which extracts the list of command line options from the spec.xml file,
+and creates a man page. There are some XML comments in the spec.xml file to
+enable the script to find the start and end of the options list.
+
+There is also a "clean" target that deletes all the generated files.
+
+
+CREATING DOCBOOK XML FROM ASCIIDOC
+
+There is a single local AsciiDoc configuration file called MyAsciidoc.conf.
+Using this, one run of the asciidoc command creates a .xml file from a .ascd
+file. When this succeeds, there is no output.
+
+
+DOCBOOK PROCESSING
+
+Processing a .xml file into the five different output formats is not entirely
+straightforward. For a start, the same XML is not suitable for all the
+different output styles. When the final output is in a text format (.txt,
+.texinfo) for instance, all non-Ascii characters in the input must be converted
+to Ascii transliterations because the current processing tools do not do this
+correctly automatically.
+
+In order to cope with these issues in a flexible way, a Perl script called
+Pre-xml was written. This is used to preprocess the .xml files before they are
+handed to the main processors. Adding one more tool onto the front of the
+processing chain does at least seem to be in the spirit of XML processing.
+
+The XML processors themselves make use of style files, which can be overridden
+by local versions. There is one that applies to all styles, called MyStyle.xsl,
+and others for the different output formats. I have included comments in these
+style files to explain what changes I have made. Some of the changes are quite
+significant.
+
+
+THE PRE-XML SCRIPT
+
+The Pre-xml script copies a .xml file, making certain changes according to the
+options it is given. The currently available options are as follows:
+
+-abstract
+
+  This option causes the <abstract> element to be removed from the XML. The
+  source abuses the <abstract> element by using it to contain the author's
+  address so that it appears on the title page verso in the printed renditions.
+  This just gets in the way for the non-PostScript/PDF renditions.
+
+-ascii
+
+  This option is used for Ascii output formats. It makes the following
+  character replacements:
+
+    &8230;    =>  ...       (sic, no #x)
+    &#x2019;  =>  '         apostrophe
+    &#x201C;  =>  "         opening double quote
+    &#x201D;  =>  "         closing double quote
+    &#x2013;  =>  -         en dash
+    &#x2020;  =>  *         dagger
+    &#x2021;  =>  **        double dagger
+    &#x00a0;  =>  a space   hard space
+    &#x00a9;  =>  (c)       copyright
+
+  In addition, this option causes quotes to be put round <literal> text items,
+  and <quote> and </quote> to be replaced by Ascii quote marks. You would think
+  the stylesheet would cope with the latter, but it seems to generate non-Ascii
+  characters that w3m then turns into question marks.
+
+-bookinfo
+
+  This option causes the <bookinfo> element to be removed from the XML. It is
+  used for the PostScript/PDF forms of the filter document, in order to avoid
+  the generation of a full title page.
+
+-fi
+
+  Replace any occurrence of "fi" by the ligature &#xFB01; except when it is
+  inside an XML element, or inside a <literal> part of the text.
+
+  The use of ligatures would be nice for the PostScript and PDF formats. Sadly,
+  it turns out that fop cannot at present handle the FB01 character correctly.
+  The only format that does so is the HTML format, but when I used this in the
+  test version, people complained that it made searching for words difficult.
+  So at the moment, this option is not used. :-(
+
+-noindex
+
+  Remove the XML to generate a Concept Index and an Options index.
+
+-oneindex
+
+  Remove the XML to generate a Concept and an Options Index, and add XML to
+  generate a single index.
+
+The source document has two types of index entry, for a concept and an options
+index. However, no index is required for the .txt and .texinfo outputs.
+Furthermore, the only output processor that supports multiple indexes is the
+processor that produces "formatted objects" for PostScript and PDF output. The
+HTML processor ignores the XML settings for multiple indexes and just makes one
+unified index. Specifying two indexes gets you two copies of the same index, so
+this has to be changed.
+
+
+CREATING POSTSCRIPT AND PDF
+
+These two output formats are created in three stages. First, the XML is
+pre-processed. For the filter document, the <bookinfo> element is removed so
+that no title page is generated, but for the main specification, no changes are
+currently made.
+
+Second, the xmlto command is used to produce a "formatted objects" (.fo) file.
+This process uses the following stylesheets:
+
+  (1) Either MyStyle-filter-fo.xsl or MyStyle-spec-fo.xsl
+  (2) MyStyle-fo.xsl
+  (3) MyStyle.xsl
+  (4) MyTitleStyle.xsl
+
+The last of these is not used for the filter document, which does not have a
+title page. The first three stylesheets were created manually, either by typing
+directly, or by coping from the standard style sheet and editing.
+
+The final stylesheet has to be created from a template document, which is
+called MyTitlepage.templates.xml. This was copied from the standard styles and
+modified. The template is processed with xsltproc to produce the stylesheet.
+All this apparatus is appallingly heavyweight. The processing is also very slow
+in the case of the specification document. However, there should be no errors.
+
+In the third and final part of the processing, the .fo file that is produced by
+the xmlto command is processed by the fop command to generate either PostScript
+or PDF. This is also very slow, and you get a whole slew of errors, of which
+these are a sample:
+
+  [ERROR] property - "background-position-horizontal" is not implemented yet.
+
+  [ERROR] property - "background-position-vertical" is not implemented yet.
+
+  [INFO] JAI support was not installed (read: not present at build time).
+    Trying to use Jimi instead
+    Error creating background image: Error creating FopImage object (Error
+    creating FopImage object
+    (http://docbook.sourceforge.net/release/images/draft.png) :
+    org.apache.fop.image.JimiImage
+
+  [WARNING] table-layout=auto is not supported, using fixed!
+
+  [ERROR] Unknown enumerated value for property 'span': inherit
+
+  [ERROR] Error in span property value 'inherit':
+    org.apache.fop.fo.expr.PropertyException: No conversion defined
+
+  [ERROR] Areas pending, text probably lost in lineinclude parts matched in the
+    response by response_pattern by means of numeric variables such as
+
+The last one is particularly meaningless gobbledegook. Some of the errors and
+warnings are repeated many times. Nevertheless, it does eventually produce
+usable output, though I have a number of issues with it (see a later section of
+this document). Maybe one day there will be a new release of fop that does
+better. Maybe there will be some other means of producing PostScript and PDF
+from DocBook XML. Maybe porcine aeronautics will really happen.
+
+
+CREATING HTML
+
+Only two stages are needed to produce HTML, but the main specification is
+subsequently postprocessed. The Pre-xml script is called with the -abstract and
+-oneindex options to preprocess the XML. Then the xmlto command creates the
+HTML output directly. For the specification document, a directory of files is
+created, whereas the filter document is output as a single HTML page. The
+following stylesheets are used:
+
+  (1) Either MyStyle-chunk-html.xsl or MyStyle-nochunk-html.xsl
+  (2) MyStyle-html.xsl
+  (3) MyStyle.xsl
+
+The first stylesheet references the chunking or non-chunking standard
+stylesheet, as appropriate.
+
+The original HTML that I produced from the SGCAL input had hyperlinks back from
+chapter and section titles to the table of contents. These links are not
+generated by xmlto. One of the testers pointed out that the lack of these
+links, or simple self-referencing links for titles, makes it harder to copy a
+link name into, for example, a mailing list response.
+
+I could not find where to fiddle with the stylesheets to make such a change, if
+indeed the stylesheets are capable of it. Instead, I wrote a Perl script called
+TidyHTML-spec to do the job for the specification document. It updates the
+index.html file (which contains the the table of contents) setting up anchors,
+and then updates all the chapter files to insert appropriate links.
+
+The index.html file as built by xmlto contains the whole table of contents in a
+single line, which makes is hard to debug by hand. Since I was postprocessing
+it anyway, I arranged to insert newlines after every '>' character.
+
+The TidyHTML-spec script also takes the opportunity to postprocess the
+spec.html/ix01.html file, which contains the document index. Again, the index
+is generated as one single line, so it splits it up. Then it creates a list of
+letters at the top of the index and hyperlinks them both ways from the
+different letter portions of the index.
+
+People wanted similar postprocessing for the filter.html file, so that is now
+done using a similar script called TidyHTML-filter. It was easier to use a
+separate script because filter.html is a single file rather than a directory,
+so the logic is somewhat different.
+
+
+CREATING TEXT FILES
+
+This happens in four stages. The Pre-xml script is called with the -abstract,
+-ascii and -noindex options to remove the <abstract> element, convert the input
+to Ascii characters, and to disable the production of an index. Then the xmlto
+command converts the XML to a single HTML document, using these stylesheets:
+
+  (1) MyStyle-txt-html.xsl
+  (2) MyStyle-html.xsl
+  (3) MyStyle.xsl
+
+The MyStyle-txt-html.xsl stylesheet is the same as MyStyle-nochunk-html.xsl,
+except that it contains an addition item to ensure that a generated "copyright"
+symbol is output as "(c)" rather than the Unicode character. This is necessary
+because the stylesheet itself generates a copyright symbol as part of the
+document title; the character is not in the original input.
+
+The w3m command is used with the -dump option to turn the HTML file into Ascii
+text, but this contains multiple sequences of blank lines that make it look
+awkward, so, finally, a local Perl script called Tidytxt is used to convert
+sequences of blank lines into a single blank line.
+
+
+CREATING INFO FILES
+
+This process starts with the same Pre-xml call as for text files. The
+<abstract> element is deleted, non-ascii characters in the source are
+transliterated, and the <index> elements are removed. The docbook2texi script
+is then called to convert the XML file into a Texinfo file. However, this is
+not quite enough. The converted file ends up with "conceptindex" and
+"optionindex" items, which are not recognized by the makeinfo command. An
+in-line call to Perl in the Makefile changes these to "cindex" and "findex"
+respectively in the final .texinfo file. Finally, a call of makeinfo creates a
+set of .info files.
+
+There is one apparently unconfigurable feature of docbook2texi: it does not
+seem possible to give it a file name for its output. It chooses a name based on
+the title of the document. Thus, the main specification ends up in a file
+called the_exim_mta.texi and the filter document in exim_filtering.texi. These
+files are removed after their contents have been copied and modified by the
+inline Perl call, which makes a .texinfo file.
+
+
+CREATING THE MAN PAGE
+
+I wrote a Perl script called x2man to create the exim.8 man page from the
+DocBook XML source. I deliberately did NOT start from the AsciiDoc source,
+because it is the DocBook source that is the "standard". This comment line in
+the DocBook source marks the start of the command line options:
+
+  <!-- === Start of command line options === -->
+
+A similar line marks the end. If at some time in the future another way other
+than AsciiDoc is used to maintain the DocBook source, it needs to be capable of
+maintaining these comments.
+
+
+UNRESOLVED PROBLEMS
+
+There are a number of unresolved problems with producing the Exim documentation
+in the manner described above. I will describe them here in the hope that in
+future some way round them can be found.
+
+(1)  Errors in the toolchain
+
+     When a whole chain of tools is processing a file, an error somewhere in
+     the middle is often very hard to debug. For instance, an error in the
+     AsciiDoc might not show up until an XML processor throws a wobbly because
+     the generated XML is bad. You have to be able to read XML and figure out
+     what generated what. One of the reasons for creating the "test" series of
+     targets was to help in checking out these kinds of problem.
+
+(2)  There is a mechanism in XML for marking parts of the document as
+     "revised", and I have arranged for AsciiDoc markup to use it. However, at
+     the moment, the only output format that pays attention to this is the HTML
+     output, which sets a green background. There are therefore no revision
+     marks (change bars) in the PostScript, PDF, or text output formats as
+     there used to be. (There never were for Texinfo.)
+
+(3)  The index entries in the HTML format take you to the top of the section
+     that is referenced, instead of to the point in the section where the index
+     marker was set.
+
+(4)  The HTML output supports only a single index, so the concept and options
+     index entries have to be merged.
+
+(5)  The index for the PostScript/PDF output does not merge identical page
+     numbers, which makes some entries look ugly.
+
+(6)  None of the indexes (PostScript/PDF and HTML) make use of textual
+     markup; the text is all roman, without any italic or boldface.
+
+(7)  I turned off hyphenation in the PostScript/PDF output, because it was
+     being done so badly.
+
+     (a) It seems to force hyphenation if it is at all possible, without
+         regard to the "tightness" or "looseness" of the line. Decent
+         formatting software should attempt hyphenation only if the line is
+         over some "looseness" threshold; otherwise you get far too many
+         hyphenations, often for several lines in succession.
+
+     (b) It uses an algorithmic form of hyphenation that doesn't always produce
+         acceptable word breaks. (I prefer to use a hyphenation dictionary.)
+
+(8)  The PostScript/PDF output is badly paginated:
+
+     (a) There seems to be no attempt to avoid "widow" and "orphan" lines on
+         pages. A "widow" is the last line of a paragraph at the top of a page,
+         and an "orphan" is the first line of a paragraph at the bottom of a
+         page.
+
+     (b) There seems to be no attempt to prevent section headings being placed
+         last on a page, with no following text on the page.
+
+(9)  The fop processor does not support "fi" ligatures, not even if you put the
+     appropriate Unicode character into the source by hand.
+
+(10) There are no diagrams in the new documentation. This is something I could
+     work on. The previously-used Aspic command for creating line art from a
+     textual description can output Encapsulated PostScript or Scalar Vector
+     Graphics, which are two standard diagram representations. Aspic could be
+     formally released and used to generate output that could be included in at
+     least some of the output formats.
+
+The consequence of (7), (8), and (9) is that the PostScript/PDF output looks as
+if it comes from some of the very early attempts at text formatting of around
+20 years ago. We can only hope that 20 years' progress is not going to get
+lost, and that things will improve in this area.
+
+
+LIST OF FILES
+
+AdMarkup.txt                   Describes the AsciiDoc markup that is used
+HowItWorks.txt                 This document
+Makefile                       The makefile
+MyAsciidoc.conf                Localized AsciiDoc configuration
+MyStyle-chunk-html.xsl         Stylesheet for chunked HTML output
+MyStyle-filter-fo.xsl          Stylesheet for filter fo output
+MyStyle-fo.xsl                 Stylesheet for any fo output
+MyStyle-html.xsl               Stylesheet for any HTML output
+MyStyle-nochunk-html.xsl       Stylesheet for non-chunked HTML output
+MyStyle-spec-fo.xsl            Stylesheet for spec fo output
+MyStyle-txt-html.xsl           Stylesheet for HTML=>text output
+MyStyle.xsl                    Stylesheet for all output
+MyTitleStyle.xsl               Stylesheet for spec title page
+MyTitlepage.templates.xml      Template for creating MyTitleStyle.xsl
+Myhtml.css                     Experimental css stylesheet for HTML output
+Pre-xml                        Script to preprocess XML
+TidyHTML-filter                Script to tidy up the filter HTML output
+TidyHTML-spec                  Script to tidy up the spec HTML output
+Tidytxt                        Script to compact multiple blank lines
+filter.ascd                    AsciiDoc source of the filter document
+spec.ascd                      AsciiDoc source of the specification document
+x2man                          Script to make the Exim man page from the XML
+
+The file Myhtml.css was an experiment that was not followed through. It is
+mentioned in a comment in MyStyle-html.xsl, but is not at present in use.
+
+
+Philip Hazel
+Last updated: 10 June 2005
