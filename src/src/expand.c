@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.25 2005/06/13 13:37:39 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.26 2005/06/16 14:10:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4540,10 +4540,10 @@ while (*s != 0)
 
         smode[10] = 0;
         s = string_sprintf("mode=%04lo smode=%s inode=%ld device=%ld links=%ld "
-          "uid=%ld gid=%ld size=%.30g atime=%ld mtime=%ld ctime=%ld",
+          "uid=%ld gid=%ld size=" OFF_T_FMT " atime=%ld mtime=%ld ctime=%ld",
           (long)(st.st_mode & 077777), smode, (long)st.st_ino,
           (long)st.st_dev, (long)st.st_nlink, (long)st.st_uid,
-          (long)st.st_gid, (double)st.st_size, (long)st.st_atime,
+          (long)st.st_gid, st.st_size, (long)st.st_atime,
           (long)st.st_mtime, (long)st.st_ctime);
         yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         continue;

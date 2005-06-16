@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.7 2005/03/29 14:19:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.8 2005/06/16 14:10:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -15,8 +15,13 @@
 /* This auxiliary program builds the file config.h by the following
 process:
 
-First it reads Makefile, looking for certain OS-specific definitions which it
-uses to define macros. Then it reads the defaults file config.h.defaults.
+First, it determines the size of off_t variables, and generates macro code to
+define OFF_T_FMT as a suitable format, if it is not already defined in the
+system-specific header file.
+
+Then it reads Makefile, looking for certain OS-specific definitions which it
+uses to define some specific macros. Finally, it reads the defaults file
+config.h.defaults.
 
 The defaults file contains normal C #define statements for various macros; if
 the name of a macro is found in the environment, the environment value replaces
@@ -96,6 +101,7 @@ if (!OK)
 int
 main(int argc, char **argv)
 {
+off_t test_off_t = 0;
 FILE *base;
 FILE *new;
 int last_initial = 'A';
@@ -132,7 +138,24 @@ fprintf(new, "using values specified in the configuration file Local/Makefile.\n
 fprintf(new, "Do not edit it. Instead, edit Local/Makefile and "
   "rerun make. */\n\n");
 
-/* First, search the makefile for certain settings */
+/* First, deal with the printing format for off_t variables. We assume that if
+the size of off_t is greater than 4, "%lld" will be available as a format for
+printing long long variables, and there will be support for the long long type.
+This assumption is known to be OK for the common operating systems. */
+
+fprintf(new, "#ifndef OFF_T_FMT\n");
+if (sizeof(test_off_t) > 4)
+  {
+  fprintf(new, "#define OFF_T_FMT  \"%%lld\"\n");
+  fprintf(new, "#define ASSUME_LONG_LONG_SUPPORT\n");
+  }
+else
+  {
+  fprintf(new, "#define OFF_T_FMT  \"%%ld\"\n");
+  }
+fprintf(new, "#endif\n\n");
+
+/* Now search the makefile for certain settings */
 
 base = fopen("Makefile", "rb");
 if (base == NULL)

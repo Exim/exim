@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.7 2005/06/07 15:20:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.8 2005/06/16 14:10:14 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -559,7 +559,7 @@ uschar buffer[256];
 
 DEBUG(D_transport) debug_printf("notify_comsat called\n");
 
-sprintf(CS buffer, "%.200s@%.30g\n", user, (double)offset);
+sprintf(CS buffer, "%.200s@" OFF_T_FMT "\n", user, offset);
 
 if ((sp = getservbyname("biff", "udp")) == NULL)
   {
@@ -741,8 +741,8 @@ while ((ent = readdir(dir)) != NULL)
         {
         sum += size;
         DEBUG(D_transport)
-          debug_printf("check_dir_size: size from %s is %.30g\n", name,
-            (double)size);
+          debug_printf("check_dir_size: size from %s is " OFF_T_FMT "\n", name,
+            size);
         continue;
         }
       }
@@ -776,8 +776,8 @@ while ((ent = readdir(dir)) != NULL)
 
 closedir(dir);
 DEBUG(D_transport)
-  debug_printf("check_dir_size: dir=%s sum=%.30g count=%d\n", dirname,
-    (double)sum, count);
+  debug_printf("check_dir_size: dir=%s sum=" OFF_T_FMT " count=%d\n", dirname,
+    sum, count);
 
 *countptr = count;
 return sum;
@@ -909,8 +909,8 @@ size, including CRLFs, which is the size of the input (temporary) file. */
 if (fstat(from_fd, &statbuf) < 0) return DEFER;
 size = statbuf.st_size;
 
-sprintf (CS deliver_out_buffer, "%s,%.30g;%08lx%04x-%08x\015\012",
-  tod_stamp(tod_mbx), (double)size, 0L, 0, 0);
+sprintf (CS deliver_out_buffer, "%s," OFF_T_FMT ";%08lx%04x-%08x\015\012",
+  tod_stamp(tod_mbx), size, 0L, 0, 0);
 used = Ustrlen(deliver_out_buffer);
 
 /* Rewind the temporary file, and copy it over in chunks. */
@@ -1342,12 +1342,12 @@ else
 
 DEBUG(D_transport)
   {
-  debug_printf("appendfile: mode=%o notify_comsat=%d quota=%.30g "
-    "warning=%.30g%s\n"
+  debug_printf("appendfile: mode=%o notify_comsat=%d quota=" OFF_T_FMT
+    " warning=" OFF_T_FMT "%s\n"
     "  %s=%s format=%s\n  message_prefix=%s\n  message_suffix=%s\n  "
     "maildir_use_size_file=%s\n",
-    mode, ob->notify_comsat, (double)ob->quota_value,
-    (double)ob->quota_warn_threshold_value,
+    mode, ob->notify_comsat, ob->quota_value,
+    ob->quota_warn_threshold_value,
     ob->quota_warn_threshold_is_percent? "%" : "",
     isdirectory? "directory" : "file",
     path, mailbox_formats[mbformat],
@@ -2582,9 +2582,10 @@ if (ob->quota_value > 0)
   {
   DEBUG(D_transport)
     {
-    debug_printf("Exim quota = %.30g old size = %.30g this message = %d "
-      "(%sincluded)\n", (double)ob->quota_value, (double)mailbox_size,
-      message_size, ob->quota_is_inclusive? "" : "not ");
+    debug_printf("Exim quota = " OFF_T_FMT " old size = " OFF_T_FMT
+      " this message = %d (%sincluded)\n",
+      ob->quota_value, mailbox_size, message_size,
+      ob->quota_is_inclusive? "" : "not ");
     debug_printf("  file count quota = %d count = %d\n",
       ob->quota_filecount_value, mailbox_filecount);
     }
@@ -2768,9 +2769,11 @@ if (THRESHOLD_CHECK)
   if (ob->quota_warn_threshold_is_percent)
     threshold = (off_t)(((double)ob->quota_value * threshold) / 100);
   DEBUG(D_transport)
-    debug_printf("quota = %.30g threshold = %.30g old size = %.30g "
-      "message size = %d\n",
-      (double)ob->quota_value, (double)threshold, (double)mailbox_size,
+    debug_printf("quota = " OFF_T_FMT
+      " threshold = " OFF_T_FMT
+      " old size = " OFF_T_FMT
+      " message size = %d\n",
+      ob->quota_value, threshold, mailbox_size,
       message_size);
   if (mailbox_size <= threshold && mailbox_size + message_size > threshold)
     addr->special_action = SPECIAL_WARN;

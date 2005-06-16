@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.156 2005/06/15 08:57:10 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.157 2005/06/16 14:10:13 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -119,6 +119,13 @@ PH/13 Changed auto_thaw such that it does not apply to bounce messages.
 PH/14 Imported PCRE 6.0; this was more than just a trivial operation because
       the sources for PCRE have been re-arranged and more files are now
       involved.
+
+PH/15 The code I had for printing potentially long long variables in PH/11
+      above was not the best (it lost precision). The length of off_t variables
+      is now inspected at build time, and an appropriate printing format (%ld
+      or %lld) is chosen and #defined by OFF_T_FMT. We also define ASSUME_
+      LONG_LONG_SUPPORT if the length is greater than 4. This is needed for the
+      internal formatting function string_vformat().
 
 
 Exim version 4.51

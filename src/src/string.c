@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/string.c,v 1.4 2005/06/07 15:20:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/string.c,v 1.5 2005/06/16 14:10:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -973,6 +973,8 @@ return yield;
 BOOL
 string_vformat(uschar *buffer, int buflen, char *format, va_list ap)
 {
+enum { L_NORMAL, L_SHORT, L_LONG, L_LONGLONG, L_LONGDOUBLE };
+
 BOOL yield = TRUE;
 int width, precision;
 char *fp = format;             /* Deliberately not unsigned */
@@ -985,6 +987,7 @@ string_datestamp_offset = -1;  /* Datestamp not inserted */
 
 while (*fp != 0)
   {
+  int length = L_NORMAL;
   int *nptr;
   int slen;
   char *null = "NULL";         /* ) These variables */
@@ -1038,7 +1041,25 @@ while (*fp != 0)
       }
     }
 
-  if (strchr("hlL", *fp) != NULL) fp++;
+  /* Skip over 'h', 'L', 'l', and 'll', remembering the item length */
+
+  if (*fp == 'h')
+    { fp++; length = L_SHORT; }
+  else if (*fp == 'L')
+    { fp++; length = L_LONGDOUBLE; }
+  else if (*fp == 'l')
+    {
+    if (fp[1] == 'l')
+      {
+      fp += 2;
+      length = L_LONGLONG;
+      }
+    else
+      {
+      fp++;
+      length = L_LONG;
+      }
+    }
 
   /* Handle each specific format type. */
 
@@ -1054,10 +1075,24 @@ while (*fp != 0)
     case 'u':
     case 'x':
     case 'X':
-    if (p >= last - 12) { yield = FALSE; goto END_FORMAT; }
+    if (p >= last - 24) { yield = FALSE; goto END_FORMAT; }
     strncpy(newformat, item_start, fp - item_start);
     newformat[fp - item_start] = 0;
-    sprintf(CS p, newformat, va_arg(ap, int));
+
+    /* Short int is promoted to int when passing through ..., so we must use
+    int for va_arg(). */
+
+    switch(length)
+      {
+      case L_SHORT:
+      case L_NORMAL:   sprintf(CS p, newformat, va_arg(ap, int)); break;
+      case L_LONG:     sprintf(CS p, newformat, va_arg(ap, long int)); break;
+      #ifdef ASSUME_LONG_LONG_SUPPORT
+      case L_LONGLONG: sprintf(CS p, newformat, va_arg(ap, long long int)); break;
+      #else
+      case L_LONGLONG: sprintf(CS p, newformat, va_arg(ap, long long int)); break;
+      #endif
+      }
     while (*p) p++;
     break;
 
@@ -1085,7 +1120,10 @@ while (*fp != 0)
     if (p >= last - precision - 8) { yield = FALSE; goto END_FORMAT; }
     strncpy(newformat, item_start, fp - item_start);
     newformat[fp-item_start] = 0;
-    sprintf(CS p, newformat, va_arg(ap, double));
+    if (length == L_LONGDOUBLE)
+      sprintf(CS p, newformat, va_arg(ap, long double));
+    else
+      sprintf(CS p, newformat, va_arg(ap, double));
     while (*p) p++;
     break;
 

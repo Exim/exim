@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/rda.c,v 1.6 2005/06/07 15:20:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/rda.c,v 1.7 2005/06/16 14:10:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -300,7 +300,7 @@ if (fread(filebuf, 1, statbuf.st_size, fwd) != statbuf.st_size)
 filebuf[statbuf.st_size] = 0;
 
 DEBUG(D_route)
-  debug_printf("%.30g bytes read from %s\n", (double)statbuf.st_size, filename);
+  debug_printf(OFF_T_FMT " bytes read from %s\n", statbuf.st_size, filename);
 
 fclose(fwd);
 return filebuf;

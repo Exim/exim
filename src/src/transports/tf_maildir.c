@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.5 2005/06/07 15:20:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.6 2005/06/16 14:10:14 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -282,8 +282,9 @@ DEBUG(D_transport)
     debug_printf("maildir_compute_size (timestamp_only): %ld\n",
     (long int) *latest);
   else
-    debug_printf("maildir_compute_size: path=%s\n  sum=%.30g filecount=%d "
-      "timestamp=%ld\n", path, (double)sum, *filecount, (long int) *latest);
+    debug_printf("maildir_compute_size: path=%s\n  sum=" OFF_T_FMT
+      " filecount=%d timestamp=%ld\n",
+      path, sum, *filecount, (long int) *latest);
   }
 return sum;
 }
@@ -404,9 +405,9 @@ if (cached_quota != ob->quota_value ||
   {
   DEBUG(D_transport)
     debug_printf("cached quota is out of date: recalculating\n"
-      "  quota=%.30g cached_quota=%.30g filecount_quota=%d "
-      "cached_quota_filecount=%d\n", (double)ob->quota_value,
-      (double)cached_quota, ob->quota_filecount_value, cached_quota_filecount);
+      "  quota=" OFF_T_FMT " cached_quota=" OFF_T_FMT " filecount_quota=%d "
+      "cached_quota_filecount=%d\n", ob->quota_value,
+      cached_quota, ob->quota_filecount_value, cached_quota_filecount);
   goto RECALCULATE;
   }
 
@@ -439,7 +440,7 @@ if (*endptr == 0)
   if (size < 0 || filecount < 0)
     {
     DEBUG(D_transport) debug_printf("negative value in maildirsize "
-      "(size=%.30g count=%d): recalculating\n", (double)size, filecount);
+      "(size=" OFF_T_FMT " count=%d): recalculating\n", size, filecount);
     goto RECALCULATE;
     }
 
@@ -510,8 +511,8 @@ else
   fd = Uopen(tempname, O_RDWR|O_CREAT|O_EXCL, 0600);
   if (fd >= 0)
     {
-    (void)sprintf(CS buffer, "%.30gS,%dC\n%.30g %d\n", (double)ob->quota_value,
-      ob->quota_filecount_value, (double)size, filecount);
+    (void)sprintf(CS buffer, OFF_T_FMT "S,%dC\n" OFF_T_FMT " %d\n",
+      ob->quota_value, ob->quota_filecount_value, size, filecount);
     len = Ustrlen(buffer);
     if (write(fd, buffer, len) != len || Urename(tempname, filename) < 0)
       {
@@ -538,8 +539,8 @@ else
 
 /* Return the sizes and the file descriptor, if any */
 
-DEBUG(D_transport) debug_printf("returning maildir size=%.30g filecount=%d\n",
-  (double)size, filecount);
+DEBUG(D_transport) debug_printf("returning maildir size=" OFF_T_FMT
+  " filecount=%d\n", size, filecount);
 *returned_size = size;
 *returned_filecount = filecount;
 return fd;
