@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.20 2005/06/10 19:27:05 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.21 2005/06/16 20:01:29 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -480,6 +480,9 @@ extern BOOL    print_topbitchars;      /* Topbit chars are printing chars */
 extern uschar  process_info[];         /* For SIGUSR1 output */
 extern uschar *process_log_path;       /* Alternate path */
 extern BOOL    prod_requires_admin;    /* TRUE if prodding requires admin */
+extern uschar *prvscheck_address;      /* Set during prvscheck expansion item */
+extern uschar *prvscheck_keynum;       /* Set during prvscheck expansion item */
+extern uschar *prvscheck_result;       /* Set during prvscheck expansion item */
 
 extern uschar *qualify_domain_recipient; /* Domain to qualify recipients with */
 extern uschar *qualify_domain_sender;  /* Domain to qualify senders with */

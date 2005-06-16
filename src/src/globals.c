@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.28 2005/06/10 19:27:05 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.29 2005/06/16 20:01:29 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -756,6 +756,10 @@ BOOL    print_topbitchars      = FALSE;
 uschar  process_info[PROCESS_INFO_SIZE];
 uschar *process_log_path       = NULL;
 BOOL    prod_requires_admin    = TRUE;
+uschar *prvscheck_address      = NULL;
+uschar *prvscheck_keynum       = NULL;
+uschar *prvscheck_result       = NULL;
+
 
 uschar *qualify_domain_recipient = NULL;
 uschar *qualify_domain_sender  = NULL;

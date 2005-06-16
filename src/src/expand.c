@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.26 2005/06/16 14:10:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.27 2005/06/16 20:01:29 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -57,6 +57,8 @@ static uschar *item_table[] = {
   US"lookup",
   US"nhash",
   US"perl",
+  US"prvs",
+  US"prvscheck",
   US"readfile",
   US"readsocket",
   US"run",
@@ -74,6 +76,8 @@ enum {
   EITEM_LOOKUP,
   EITEM_NHASH,
   EITEM_PERL,
+  EITEM_PRVS,
+  EITEM_PRVSCHECK,
   EITEM_READFILE,
   EITEM_READSOCK,
   EITEM_RUN,
@@ -433,6 +437,9 @@ static var_entry var_table[] = {
   { "parent_local_part",   vtype_stringptr,   &deliver_localpart_parent },
   { "pid",                 vtype_pid,         NULL },
   { "primary_hostname",    vtype_stringptr,   &primary_hostname },
+  { "prvscheck_address",   vtype_stringptr,   &prvscheck_address },
+  { "prvscheck_keynum",    vtype_stringptr,   &prvscheck_keynum },
+  { "prvscheck_result",    vtype_stringptr,   &prvscheck_result },
   { "qualify_domain",      vtype_stringptr,   &qualify_domain_sender },
   { "qualify_recipient",   vtype_stringptr,   &qualify_domain_recipient },
   { "rcpt_count",          vtype_int,         &rcpt_count },
@@ -3163,6 +3170,172 @@ while (*s != 0)
       }
     #endif /* EXIM_PERL */
 
+    /* Transform email address to "prvs" scheme to use
+       as BATV-signed return path */
+
+    case EITEM_PRVS:
+      {
+      uschar *sub_arg[3];
+      uschar *p,*domain;
+
+      switch(read_subs(sub_arg, 3, 2, &s, skipping, TRUE, US"prvs"))
+        {
+        case 1: goto EXPAND_FAILED_CURLY;
+        case 2:
+        case 3: goto EXPAND_FAILED;
+        }
+
+      /* If skipping, we don't actually do anything */
+      if (skipping) continue;
+
+      /* sub_arg[0] is the address */
+      domain = Ustrrchr(sub_arg[0],'@');
+      if ( (domain == NULL) || (domain == sub_arg[0]) || (Ustrlen(domain) == 1) )
+        {
+        expand_string_message = US"first parameter must be a qualified email address";
+        goto EXPAND_FAILED;
+        }
+
+      /* Calculate the hash */
+      p = prvs_hmac_sha1(sub_arg[0],sub_arg[1],sub_arg[2],prvs_daystamp(7));
+      if (p == NULL)
+        {
+        expand_string_message = US"hmac-sha1 conversion failed";
+        goto EXPAND_FAILED;
+        }
+
+      /* Now separate the domain from the local part */
+      *domain++ = '\0';
+
+      yield = string_cat(yield,&size,&ptr,US"prvs=",5);
+      string_cat(yield,&size,&ptr,sub_arg[0],Ustrlen(sub_arg[0]));
+      string_cat(yield,&size,&ptr,US"/",1);
+      string_cat(yield,&size,&ptr,(sub_arg[2] != NULL) ? sub_arg[2] : US"0", 1);
+      string_cat(yield,&size,&ptr,prvs_daystamp(7),3);
+      string_cat(yield,&size,&ptr,p,6);
+      string_cat(yield,&size,&ptr,US"@",1);
+      string_cat(yield,&size,&ptr,domain,Ustrlen(domain));
+
+      continue;
+      }
+
+    /* Check a prvs-encoded address for validity */
+
+    case EITEM_PRVSCHECK:
+      {
+      uschar *sub_arg[3];
+      int mysize = 0, myptr = 0;
+      const pcre *re;
+      uschar *p;
+      /* Ugliness: We want to expand parameter 1 first, then set
+         up expansion variables that are used in the expansion of
+         parameter 2. So we clone the string for the first
+         expansion, where we only expand paramter 1. */
+      uschar *s_backup = string_copy(s);
+
+      /* Reset expansion variables */
+      prvscheck_result = NULL;
+      prvscheck_address = NULL;
+      prvscheck_keynum = NULL;
+
+      switch(read_subs(sub_arg, 1, 1, &s_backup, skipping, FALSE, US"prvs"))
+        {
+        case 1: goto EXPAND_FAILED_CURLY;
+        case 2:
+        case 3: goto EXPAND_FAILED;
+        }
+
+      re = regex_must_compile(US"^prvs\\=(.+)\\/([0-9])([0-9]{3})([A-F0-9]{6})\\@(.+)$",
+                              TRUE,FALSE);
+
+      if (regex_match_and_setup(re,sub_arg[0],0,-1)) {
+        uschar *local_part = string_copyn(expand_nstring[1],expand_nlength[1]);
+        uschar *key_num = string_copyn(expand_nstring[2],expand_nlength[2]);
+        uschar *daystamp = string_copyn(expand_nstring[3],expand_nlength[3]);
+        uschar *hash = string_copyn(expand_nstring[4],expand_nlength[4]);
+        uschar *domain = string_copyn(expand_nstring[5],expand_nlength[5]);
+
+        DEBUG(D_expand) debug_printf("prvscheck localpart: %s\n", local_part);
+        DEBUG(D_expand) debug_printf("prvscheck key number: %s\n", key_num);
+        DEBUG(D_expand) debug_printf("prvscheck daystamp: %s\n", daystamp);
+        DEBUG(D_expand) debug_printf("prvscheck hash: %s\n", hash);
+        DEBUG(D_expand) debug_printf("prvscheck domain: %s\n", domain);
+
+        /* Set up expansion variables */
+        prvscheck_address = string_cat(NULL, &mysize, &myptr, local_part, Ustrlen(local_part));
+        string_cat(prvscheck_address,&mysize,&myptr,"@",1);
+        string_cat(prvscheck_address,&mysize,&myptr,domain,Ustrlen(domain));
+        prvscheck_address[myptr] = '\0';
+        prvscheck_keynum = string_copy(key_num);
+
+        /* Now re-expand all arguments in the usual manner */
+        switch(read_subs(sub_arg, 3, 3, &s, skipping, TRUE, US"prvs"))
+          {
+          case 1: goto EXPAND_FAILED_CURLY;
+          case 2:
+          case 3: goto EXPAND_FAILED;
+          }
+
+        if (*sub_arg[2] == '\0')
+          yield = string_cat(yield,&size,&ptr,prvscheck_address,Ustrlen(prvscheck_address));
+        else
+          yield = string_cat(yield,&size,&ptr,sub_arg[2],Ustrlen(sub_arg[2]));
+
+        /* Now we have the key and can check the address. */
+        p = prvs_hmac_sha1(prvscheck_address, sub_arg[1], prvscheck_keynum, daystamp);
+        if (p == NULL)
+          {
+          expand_string_message = US"hmac-sha1 conversion failed";
+          goto EXPAND_FAILED;
+          }
+
+        DEBUG(D_expand) debug_printf("prvscheck: received hash is %s\n", hash);
+        DEBUG(D_expand) debug_printf("prvscheck:      own hash is %s\n", p);
+        if (Ustrcmp(p,hash) == 0)
+          {
+          /* Success, valid BATV address. Now check the expiry date. */
+          uschar *now = prvs_daystamp(0);
+          unsigned int inow = 0,iexpire = 1;
+
+          sscanf(now,"%u",&inow);
+          sscanf(daystamp,"%u",&iexpire);
+
+          /* When "iexpire" is < 7, a "flip" has occured.
+             Adjust "inow" accordingly. */
+          if ( (iexpire < 7) && (inow >= 993) ) inow = 0;
+
+          if (iexpire > inow)
+            {
+            prvscheck_result = US"1";
+            DEBUG(D_expand) debug_printf("prvscheck: success, $pvrs_result set to 1\n");
+            }
+            else
+            {
+            prvscheck_result = NULL;
+            DEBUG(D_expand) debug_printf("prvscheck: signature expired, $pvrs_result unset\n");
+            }
+          }
+        else
+          {
+          prvscheck_result = NULL;
+          DEBUG(D_expand) debug_printf("prvscheck: hash failure, $pvrs_result unset\n");
+          }
+      }
+      else
+        {
+        /* Does not look like a prvs encoded address, return the empty string.
+           We need to make sure all subs are expanded first. */
+        switch(read_subs(sub_arg, 3, 3, &s, skipping, TRUE, US"prvs"))
+          {
+          case 1: goto EXPAND_FAILED_CURLY;
+          case 2:
+          case 3: goto EXPAND_FAILED;
+          }
+        }
+
+      continue;
+      }
+
     /* Handle "readfile" to insert an entire file */
 
     case EITEM_READFILE:
@@ -4768,7 +4941,103 @@ expand_string_message = string_sprintf(CS msg, s);
 return -2;
 }
 
+/********************************************************
+* prvs: Get last three digits of days since Jan 1, 1970 *
+********************************************************/
 
+/* This is needed to implement the "prvs" BATV reverse
+   path signing scheme
+
+Argument: integer "days" offset to add or substract to
+          or from the current number of days.
+
+Returns:  pointer to string containing the last three
+          digits of the number of days since Jan 1, 1970,
+          modified by the offset argument, NULL if there
+          was an error in the conversion.
+
+*/
+
+uschar *
+prvs_daystamp(int day_offset)
+{
+uschar *days = store_get(10);
+snprintf(days, 9, "%lld", (((long long)time(NULL))+(day_offset*86400))/86400);
+return (Ustrlen(days) >= 3) ? &days[Ustrlen(days)-3] : NULL;
+}
+
+/********************************************************
+*   prvs: perform HMAC-SHA1 computation of prvs bits    *
+********************************************************/
+
+/* This is needed to implement the "prvs" BATV reverse
+   path signing scheme
+
+Arguments:
+  address RFC2821 Address to use
+      key The key to use (must be less than 64 characters
+          in size)
+  key_num Single-digit key number to use. Defaults to
+          '0' when NULL.
+
+Returns:  pointer to string containing the first three
+          bytes of the final hash in hex format, NULL if
+          there was an error in the process.
+*/
+
+uschar *
+prvs_hmac_sha1(uschar *address, uschar *key, uschar *key_num, uschar *daystamp)
+{
+uschar *hash_source, *p;
+int size = 0,offset = 0,i;
+sha1 sha1_base;
+void *use_base = &sha1_base;
+uschar innerhash[20];
+uschar finalhash[20];
+uschar innerkey[64];
+uschar outerkey[64];
+uschar *finalhash_hex = store_get(40);
+
+if (key_num == NULL)
+  key_num = US"0";
+
+if (Ustrlen(key) > 64)
+  return NULL;
+
+hash_source = string_cat(NULL,&size,&offset,key_num,1);
+string_cat(hash_source,&size,&offset,daystamp,3);
+string_cat(hash_source,&size,&offset,address,Ustrlen(address));
+hash_source[offset] = '\0';
+
+DEBUG(D_expand) debug_printf("prvs: hash source is '%s'\n", hash_source);
+
+memset(innerkey, 0x36, 64);
+memset(outerkey, 0x5c, 64);
+
+for (i = 0; i < Ustrlen(key); i++)
+  {
+  innerkey[i] ^= key[i];
+  outerkey[i] ^= key[i];
+  }
+
+chash_start(HMAC_SHA1, use_base);
+chash_mid(HMAC_SHA1, use_base, innerkey);
+chash_end(HMAC_SHA1, use_base, hash_source, offset, innerhash);
+
+chash_start(HMAC_SHA1, use_base);
+chash_mid(HMAC_SHA1, use_base, outerkey);
+chash_end(HMAC_SHA1, use_base, innerhash, 20, finalhash);
+
+p = finalhash_hex;
+for (i = 0; i < 3; i++)
+  {
+  *p++ = hex_digits[(finalhash[i] & 0xf0) >> 4];
+  *p++ = hex_digits[finalhash[i] & 0x0f];
+  }
+*p = '\0';
+
+return finalhash_hex;
+}
 
 /*************************************************
 **************************************************
