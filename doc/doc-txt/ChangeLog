@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.157 2005/06/16 14:10:13 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.158 2005/06/16 15:48:58 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -126,6 +126,15 @@ PH/15 The code I had for printing potentially long long variables in PH/11
       or %lld) is chosen and #defined by OFF_T_FMT. We also define ASSUME_
       LONG_LONG_SUPPORT if the length is greater than 4. This is needed for the
       internal formatting function string_vformat().
+
+PH/16 Applied Matthew Newton's patch to exicyclog: "If log_file_path is set in
+      the configuration file to be ":syslog", then the script "guesses" where
+      the logs files are, rather than using the compiled in default. In our
+      case the guess is not the same as the compiled default, so the script
+      suddenly stopped working when I started to use syslog. The patch checks
+      to see if log_file_path is "". If so, it attempts to read it from exim
+      with no configuration file to get the compiled in version, before it
+      falls back to the previous guessing code."
 
 
 Exim version 4.51

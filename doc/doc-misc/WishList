@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.38 2005/06/14 10:40:41 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.39 2005/06/16 15:48:58 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1993,5 +1993,15 @@ default configuration file. The relay_from_hosts and authenticated clauses
 would be better off before the dnslists examples. However, this should be left
 until a x.x0 release, because of the documentation implications.
 ------------------------------------------------------------------------------
---- HWM 335 ------------------------------------------------------------------
+
+(336) 16-Jun-05 M Show recipient(s) after header check failure
+
+The mainlog line for "There is no valid sender in any header line" shows the
+sending host and the envelope sender, but does not show any recipients. There
+has been a request to show recipients. Presumably this should be on some new
+log selector, and it must have a cutoff maximum number of recipients. NOTE: the
+data in the reject log does show the envelope recipients as part of its
+additional data.
+------------------------------------------------------------------------------
+--- HWM 336 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------

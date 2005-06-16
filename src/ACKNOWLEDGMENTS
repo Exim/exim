@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.26 2005/06/14 10:32:01 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.27 2005/06/16 15:48:58 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  14 June 2005
+Last updated:  16 June 2005
 
 
 THE OLD LIST
@@ -128,6 +128,7 @@ Tony Finch                Expansion extensions
                             Patch for defer_foo in dndsb
                             Patch for ${dlfunc
                             Patch for $message_linecount
+                            ... and many more
 Ian Freislich             Patch for spamd timeout problem
 Giuliano Gavazzi          Patches for OSX compilation
 Dominic Germain           Patch for exiqgrep MacOS X bug
@@ -189,6 +190,7 @@ Alex Miller               Suggested readline() patch
                           Support for the DrWeb content scanner
 Andreas Mueller           Patch for logging uncompleted SMTP transactions
 Pete Naylor               Patch for LDAP TCP connect timeout setting
+Matthew Newton            Patch for exicyclog log location problem
 Marcin Owsiany            Diagnosis of a tricky timeout failure bug
 Eric Parusel              Patch for tls_remember_esmtp
 Gaige Paulsen             Amended Darwin config files

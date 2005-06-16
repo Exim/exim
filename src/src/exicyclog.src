@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exicyclog.src,v 1.3 2005/02/17 11:58:26 ph10 Exp $
+# $Cambridge: exim/src/src/exicyclog.src,v 1.4 2005/06/16 15:48:58 ph10 Exp $
 
 # Copyright (c) 2004 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -139,10 +139,19 @@ fi
 log_file_path=`echo "$log_file_path" | \
   sed 's/^ *:\{0,1\} *syslog *:\{0,1\} *//;s/: *syslog *:/:/;s/: *syslog *$//'`
 
-# If log_file_path is empty, then the logs we are interested in are called
-# "mainlog" and "rejectlog" in the directory called "log" in the spool
-# directory. Otherwise we fish out the directory from the given path, and
-# also the names of the logs.
+# If log_file_path is empty, try and get the compiled in default by using
+# /dev/null as the configuration file.
+
+if [ "$log_file_path" = "" ]; then
+  log_file_path=`$exim_path -C /dev/null -bP log_file_path | sed 's/.*=[  ]*//'`
+  log_file_path=`echo "$log_file_path" | \
+    sed 's/^ *:\{0,1\} *syslog *:\{0,1\} *//;s/: *syslog *:/:/;s/: *syslog *$//'`
+fi
+
+# If log_file_path is still empty, the logs we are interested in are probably
+# called "mainlog" and "rejectlog" in the directory called "log" in the spool
+# directory. Otherwise we fish out the directory from the given path, and also
+# the names of the logs.
 
 if [ "$log_file_path" = "" ]; then
   logdir=$spool_directory/log
