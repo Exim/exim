@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.159 2005/06/16 20:02:42 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.160 2005/06/17 09:02:40 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -139,6 +139,9 @@ PH/16 Applied Matthew Newton's patch to exicyclog: "If log_file_path is set in
 TK/09 Added "prvs" and "prvscheck" expansion items. These help a lot with
       implementing BATV in an Exim configuration. See NewStuff for the gory
       details.
+
+PH/17 Applied Michael Haardt's patch for HP-UX, affecting only the os.h and
+      Makefile that are specific to HP-UX.
 
 
 Exim version 4.51

@@ -1,8 +1,13 @@
-# $Cambridge: exim/src/OS/Makefile-HP-UX,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-HP-UX,v 1.2 2005/06/17 09:02:40 ph10 Exp $
 
 # Exim: OS-specific make file for HP-UX later than 9
 
-CFLAGS=-O
+# HP ANSI C compiler
+#CC=cc
+#CFLAGS=+O1 +Onolimit -z -D_XOPEN_SOURCE_EXTENDED
+# gcc
+CFLAGS=-O -Wl,-z -D_XOPEN_SOURCE_EXTENDED
+
 BASENAME_COMMAND=/bin/basename
 HAVE_ICONV=yes
 HAVE_SETRESUID=YES
