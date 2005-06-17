@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.27 2005/06/16 20:01:29 tom Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.28 2005/06/17 08:23:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3263,7 +3263,7 @@ while (*s != 0)
 
         /* Set up expansion variables */
         prvscheck_address = string_cat(NULL, &mysize, &myptr, local_part, Ustrlen(local_part));
-        string_cat(prvscheck_address,&mysize,&myptr,"@",1);
+        string_cat(prvscheck_address,&mysize,&myptr,US"@",1);
         string_cat(prvscheck_address,&mysize,&myptr,domain,Ustrlen(domain));
         prvscheck_address[myptr] = '\0';
         prvscheck_keynum = string_copy(key_num);
@@ -3297,8 +3297,8 @@ while (*s != 0)
           uschar *now = prvs_daystamp(0);
           unsigned int inow = 0,iexpire = 1;
 
-          sscanf(now,"%u",&inow);
-          sscanf(daystamp,"%u",&iexpire);
+          sscanf(CS now,"%u",&inow);
+          sscanf(CS daystamp,"%u",&iexpire);
 
           /* When "iexpire" is < 7, a "flip" has occured.
              Adjust "inow" accordingly. */
@@ -4962,7 +4962,7 @@ uschar *
 prvs_daystamp(int day_offset)
 {
 uschar *days = store_get(10);
-snprintf(days, 9, "%lld", (((long long)time(NULL))+(day_offset*86400))/86400);
+snprintf(CS days, 9, "%lld", (((long long)time(NULL))+(day_offset*86400))/86400);
 return (Ustrlen(days) >= 3) ? &days[Ustrlen(days)-3] : NULL;
 }
 
