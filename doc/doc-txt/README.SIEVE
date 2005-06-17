@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.4 2005/05/03 10:02:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.5 2005/06/17 10:47:05 ph10 Exp $
 
               Notes on the Sieve implementation for Exim
 
@@ -20,9 +20,9 @@ then there is no way around it.
 
 Exim Implementation
 
-The Exim Sieve implementation offers the core as defined by RFC 3028, the
-"envelope" (RFC 3028), the "fileinto" (RFC 3028), the "copy" (RFC 3894)
-and the "vacation" (draft-ietf-sieve-vacation-01.txt) extension,
+The Exim Sieve implementation offers the core as defined by RFC 3028bis,
+the "envelope" (RFC 3028), the "fileinto" (RFC 3028), the "copy" (RFC
+3894) and the "vacation" (draft-ietf-sieve-vacation-02.txt) extension,
 the "i;ascii-numeric" comparator, but not the "reject" extension.
 Exim does not support MDMs, so adding it just to the sieve filter makes
 little sense.
@@ -141,17 +141,6 @@ This implementation treats them literally, as it does if the word is
 correct, but its character set can not be converted to UTF-8.
 
 
-Address Test For Multiple Addresses Per Header
-
-A header may contain multiple addresses.  RFC 3028 does not explicitly
-specify how to deal with them, but since the "address" test checks if
-anything matches anything else, matching one address suffices to
-satify the condition.  That makes it impossible to test if a header
-contains a certain set of addresses and no more, but it is more logical
-than letting the test fail if the header contains an additional address
-besides the one the test checks for.
-
-
 Semantics Of Keep
 
 The keep command is equivalent to fileinto "inbox": It saves the
@@ -180,19 +169,11 @@ virtual mail domains it is probably not what the user expects it to be.
 String Arguments
 
 There has been confusion if the string arguments to "require" are to be
-matched case-sensitive or not.  This implementation matches them with
-the match type ":is" (default, see section 2.7.1) and the comparator
-"i;ascii-casemap" (default, see section 2.7.3).  The RFC defines the
-command defaults clearly, so any different implementations violate RFC
-3028.  The same is valid for comparator names, also specified as strings.
-
-
-Number Units
-
-There is a mistake in RFC 3028: The suffix G denotes gibi-, not tebibyte.
-The mistake os obvious, because RFC 3028 specifies G to denote 2^30
-(which is gibi, not tebi), and that's what this implementation uses as
-scaling factor for the suffix G.
+matched case-sensitive or not.  The comparator default is case-insensitive
+comparison, but "require" does not allow to specify a comparator, so
+this default does not apply.  Lacking a clear specification, matching
+the strings exactly makes most sense.  The same is valid for comparator
+names, also specified as strings.
 
 
 Sieve Syntax and Semantics
@@ -367,19 +348,13 @@ the UTF-8 reason is processed to compose the resulting message.
 
 Default Subject
 
-The draft specifies that the default message subject is "Re: "
-plus the old subject, stripped by any leading "Re: " strings.
-This string is to be taken literally, unlike some software which
-matches a regular expression like "[rR][eE]: *".  Using this
-subject is dangerous, because many mailing lists verify addresses
-by sending a secret key in the subject of a message, asking to
-reply to the message for confirmation.  Using the default vacation
-subject confirms any subscription request of this kind, allowing
-to subscribe a third party to any mailing list, either to annoy
-the user or to declare spam as legitimate mail by proving to
-use opt-in.  The draft specifies to use "Re: " in front of the
-subject, but this implementation uses "Auto: ", as suggested in
-RFC 3834, section 3.1.5.
+The draft specifies that the default message subject is "Auto: " plus
+the old subject.  Using this subject is dangerous, because many mailing
+lists verify addresses by sending a secret key in the subject of a
+message, asking to reply to the message for confirmation.  Using the
+default vacation subject confirms any subscription request of this kind,
+allowing to subscribe a third party to any mailing list, either to annoy
+the user or to declare spam as legitimate mail by proving to use opt-in.
 
 
 Rate Limiting Responses
@@ -404,11 +379,3 @@ Global Reply Address Blacklist
 The draft requires that each implementation offers a global black list
 of addresses that will never be replied to.  Exim offers this as option
 "never_mail" in the autoreply transport.
-
-
-Interaction With Other Sieve Elements
-
-The draft describes the interaction with vacation, discard, keep,
-fileinto and redirect.  It MUST describe compatibility with other
-actions, but doesn't.  In this implementation, vacation is compatible
-with any other action.

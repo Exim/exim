@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.161 2005/06/17 10:20:30 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.162 2005/06/17 10:47:05 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -147,6 +147,13 @@ PH/18 If the "use_postmaster" option was set for a recipient callout together
       with the "random" option, the postmaster address was used as the MAIL
       FROM address for the random test, but not for the subsequent recipient
       test. It is now used for both.
+
+PH/19 Applied Michael Haardt's patch to update Sieve to RFC3028bis. "The
+      patch removes a few documentation additions to RFC 3028, because the
+      latest draft now contains them. It adds the new en;ascii-case comparator
+      and a new error check for 8bit text in MIME parts. Comparator and
+      require names are now matched exactly. I enabled the subaddress
+      extension, but it is not well tested yet (read: it works for me)."
 
 
 Exim version 4.51

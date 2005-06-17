@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.11 2005/05/03 10:02:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.12 2005/06/17 10:47:05 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -29,8 +29,7 @@
 #undef RFC_EOL
 
 /* Define this for development of the subaddress Sieve extension.   */
-/* The code is currently broken.                                    */
-#undef SUBADDRESS
+#define SUBADDRESS
 
 /* Define this for the vacation Sieve extension.                    */
 #define VACATION
@@ -67,7 +66,7 @@ struct Sieve
   int require_iascii_numeric;
   };
 
-enum Comparator { COMP_OCTET, COMP_ASCII_CASEMAP, COMP_ASCII_NUMERIC };
+enum Comparator { COMP_OCTET, COMP_EN_ASCII_CASEMAP, COMP_ASCII_NUMERIC };
 enum MatchType { MATCH_IS, MATCH_CONTAINS, MATCH_MATCHES };
 #ifdef SUBADDRESS
 enum AddressPart { ADDRPART_USER, ADDRPART_DETAIL, ADDRPART_LOCALPART, ADDRPART_DOMAIN, ADDRPART_ALL };
@@ -117,12 +116,16 @@ static uschar str_copy_c[]="copy";
 static const struct String str_copy={ str_copy_c, 4 };
 static uschar str_iascii_casemap_c[]="i;ascii-casemap";
 static const struct String str_iascii_casemap={ str_iascii_casemap_c, 15 };
+static uschar str_enascii_casemap_c[]="en;ascii-casemap";
+static const struct String str_enascii_casemap={ str_enascii_casemap_c, 16 };
 static uschar str_ioctet_c[]="i;octet";
 static const struct String str_ioctet={ str_ioctet_c, 7 };
 static uschar str_iascii_numeric_c[]="i;ascii-numeric";
 static const struct String str_iascii_numeric={ str_iascii_numeric_c, 15 };
 static uschar str_comparator_iascii_casemap_c[]="comparator-i;ascii-casemap";
 static const struct String str_comparator_iascii_casemap={ str_comparator_iascii_casemap_c, 26 };
+static uschar str_comparator_enascii_casemap_c[]="comparator-en;ascii-casemap";
+static const struct String str_comparator_enascii_casemap={ str_comparator_enascii_casemap_c, 27 };
 static uschar str_comparator_ioctet_c[]="comparator-i;octet";
 static const struct String str_comparator_ioctet={ str_comparator_ioctet_c, 18 };
 static uschar str_comparator_iascii_numeric_c[]="comparator-i;ascii-numeric";
@@ -646,7 +649,7 @@ if ((filter_test != FTEST_NONE && debug_selector != 0) ||
   switch (co)
     {
     case COMP_OCTET: debug_printf("i;octet"); break;
-    case COMP_ASCII_CASEMAP: debug_printf("i;ascii-casemap"); break;
+    case COMP_EN_ASCII_CASEMAP: debug_printf("en;ascii-casemap"); break;
     case COMP_ASCII_NUMERIC: debug_printf("i;ascii-numeric"); break;
     }
   debug_printf("\"):\n");
@@ -664,7 +667,7 @@ switch (mt)
         if (eq_octet(needle,haystack,0)) r=1;
         break;
         }
-      case COMP_ASCII_CASEMAP:
+      case COMP_EN_ASCII_CASEMAP:
         {
         if (eq_asciicase(needle,haystack,0)) r=1;
         break;
@@ -693,7 +696,7 @@ switch (mt)
         for (h=*haystack; h.length; ++h.character,--h.length) if (eq_octet(needle,&h,1)) { r=1; break; }
         break;
         }
-      case COMP_ASCII_CASEMAP:
+      case COMP_EN_ASCII_CASEMAP:
         {
         for (h=*haystack; h.length; ++h.character,--h.length) if (eq_asciicase(needle,&h,1)) { r=1; break; }
         break;
@@ -715,7 +718,7 @@ switch (mt)
         if (eq_octetglob(needle,haystack)) r=1;
         break;
         }
-      case COMP_ASCII_CASEMAP:
+      case COMP_EN_ASCII_CASEMAP:
         {
         if (eq_asciicaseglob(needle,haystack)) r=1;
         break;
@@ -1470,7 +1473,12 @@ switch (parse_string(filter,&comparator_name))
       }
     else if (eq_asciicase(&comparator_name,&str_iascii_casemap,0))
       {
-      *c=COMP_ASCII_CASEMAP;
+      *c=COMP_EN_ASCII_CASEMAP;
+      match=1;
+      }
+    else if (eq_asciicase(&comparator_name,&str_enascii_casemap,0))
+      {
+      *c=COMP_EN_ASCII_CASEMAP;
       match=1;
       }
     else if (eq_asciicase(&comparator_name,&str_iascii_numeric,0))
@@ -1610,7 +1618,7 @@ if (parse_identifier(filter,CUS "address"))
   */
 
   enum AddressPart addressPart=ADDRPART_ALL;
-  enum Comparator comparator=COMP_ASCII_CASEMAP;
+  enum Comparator comparator=COMP_EN_ASCII_CASEMAP;
   enum MatchType matchType=MATCH_IS;
   struct String *hdr,*h,*key,*k;
   int m;
@@ -1820,7 +1828,7 @@ else if (parse_identifier(filter,CUS "header"))
                 <header-names: string-list> <key-list: string-list>
   */
 
-  enum Comparator comparator=COMP_ASCII_CASEMAP;
+  enum Comparator comparator=COMP_EN_ASCII_CASEMAP;
   enum MatchType matchType=MATCH_IS;
   struct String *hdr,*h,*key,*k;
   int m;
@@ -1943,7 +1951,7 @@ else if (parse_identifier(filter,CUS "envelope"))
   envelope-part is case insensitive "from" or "to"
   */
 
-  enum Comparator comparator=COMP_ASCII_CASEMAP;
+  enum Comparator comparator=COMP_EN_ASCII_CASEMAP;
   enum AddressPart addressPart=ADDRPART_ALL;
   enum MatchType matchType=MATCH_IS;
   struct String *env,*e,*key,*k;
@@ -2304,7 +2312,7 @@ while (*filter->pc)
     fileinto-command =  "fileinto" { fileinto-options } string ";"
     fileinto-options =
     fileinto-options =) [ ":copy" ]
-    */
+   */
 
     struct String folder;
     uschar *s;
@@ -2493,6 +2501,17 @@ while (*filter->pc)
       if (m==0) filter->errmsg=CUS "missing reason string";
       return -1;
       }
+    if (reason_is_mime)
+      {
+      uschar *s,*end;
+
+      for (s=reason.character,end=reason.character+reason.length; s<end && (*s&0x80)==0; ++s);
+      if (s<end)
+        {
+        filter->errmsg=CUS "MIME reason string contains 8bit text";
+        return -1;
+        }
+      }
     if (parse_semicolon(filter)==-1) return -1;
 
     if (exec)
@@ -2550,11 +2569,6 @@ while (*filter->pc)
           if (subject.length==-1)
             {
             expand_header(&subject,&str_subject);
-            while (subject.length>=4 && Ustrncmp(subject.character,"Re: ",4)==0)
-            {
-              subject.character+=4;
-              subject.length-=4;
-            }
             capacity=6;
             start=6;
             subject.character=string_cat(US"Auto: ",&capacity,&start,subject.character,subject.length);
@@ -2722,13 +2736,13 @@ while (parse_identifier(filter,CUS "require"))
     }
   for (check=cap; check->character; ++check)
     {
-    if (eq_asciicase(check,&str_envelope,0)) filter->require_envelope=1;
-    else if (eq_asciicase(check,&str_fileinto,0)) filter->require_fileinto=1;
+    if (eq_octet(check,&str_envelope,0)) filter->require_envelope=1;
+    else if (eq_octet(check,&str_fileinto,0)) filter->require_fileinto=1;
 #ifdef SUBADDRESS
-    else if (eq_asciicase(check,&str_subaddress,0)) filter->require_subaddress=1;
+    else if (eq_octet(check,&str_subaddress,0)) filter->require_subaddress=1;
 #endif
 #ifdef VACATION
-    else if (eq_asciicase(check,&str_vacation,0))
+    else if (eq_octet(check,&str_vacation,0))
       {
       if (filter_test == FTEST_NONE && filter->vacation_directory == NULL)
         {
@@ -2738,10 +2752,11 @@ while (parse_identifier(filter,CUS "require"))
       filter->require_vacation=1;
       }
 #endif
-    else if (eq_asciicase(check,&str_copy,0)) filter->require_copy=1;
-    else if (eq_asciicase(check,&str_comparator_ioctet,0)) ;
-    else if (eq_asciicase(check,&str_comparator_iascii_casemap,0)) ;
-    else if (eq_asciicase(check,&str_comparator_iascii_numeric,0)) filter->require_iascii_numeric=1;
+    else if (eq_octet(check,&str_copy,0)) filter->require_copy=1;
+    else if (eq_octet(check,&str_comparator_ioctet,0)) ;
+    else if (eq_octet(check,&str_comparator_iascii_casemap,0)) ;
+    else if (eq_octet(check,&str_comparator_enascii_casemap,0)) ;
+    else if (eq_octet(check,&str_comparator_iascii_numeric,0)) filter->require_iascii_numeric=1;
     else
       {
       filter->errmsg=CUS "unknown capability";
