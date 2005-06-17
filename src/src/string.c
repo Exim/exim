@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/string.c,v 1.5 2005/06/16 14:10:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/string.c,v 1.6 2005/06/17 13:52:15 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1087,11 +1087,7 @@ while (*fp != 0)
       case L_SHORT:
       case L_NORMAL:   sprintf(CS p, newformat, va_arg(ap, int)); break;
       case L_LONG:     sprintf(CS p, newformat, va_arg(ap, long int)); break;
-      #ifdef ASSUME_LONG_LONG_SUPPORT
-      case L_LONGLONG: sprintf(CS p, newformat, va_arg(ap, long long int)); break;
-      #else
-      case L_LONGLONG: sprintf(CS p, newformat, va_arg(ap, long long int)); break;
-      #endif
+      case L_LONGLONG: sprintf(CS p, newformat, va_arg(ap, LONGLONG_T)); break;
       }
     while (*p) p++;
     break;

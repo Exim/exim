@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.28 2005/06/17 08:23:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.29 2005/06/17 13:52:15 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4962,7 +4962,8 @@ uschar *
 prvs_daystamp(int day_offset)
 {
 uschar *days = store_get(10);
-snprintf(CS days, 9, "%lld", (((long long)time(NULL))+(day_offset*86400))/86400);
+(void)string_format(days, 10, TIME_T_FMT,
+  (((LONGLONG_T)time(NULL))+(day_offset*86400))/86400);
 return (Ustrlen(days) >= 3) ? &days[Ustrlen(days)-3] : NULL;
 }
 

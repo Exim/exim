@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.8 2005/06/16 14:10:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.9 2005/06/17 13:52:15 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -15,9 +15,9 @@
 /* This auxiliary program builds the file config.h by the following
 process:
 
-First, it determines the size of off_t variables, and generates macro code to
-define OFF_T_FMT as a suitable format, if it is not already defined in the
-system-specific header file.
+First, it determines the size of off_t and time_t variables, and generates
+macro code to define OFF_T_FMT and TIME_T_FMT as suitable formats, if they are
+not already defined in the system-specific header file.
 
 Then it reads Makefile, looking for certain OS-specific definitions which it
 uses to define some specific macros. Finally, it reads the defaults file
@@ -102,6 +102,7 @@ int
 main(int argc, char **argv)
 {
 off_t test_off_t = 0;
+time_t test_time_t = 0;
 FILE *base;
 FILE *new;
 int last_initial = 'A';
@@ -147,11 +148,30 @@ fprintf(new, "#ifndef OFF_T_FMT\n");
 if (sizeof(test_off_t) > 4)
   {
   fprintf(new, "#define OFF_T_FMT  \"%%lld\"\n");
-  fprintf(new, "#define ASSUME_LONG_LONG_SUPPORT\n");
+  fprintf(new, "#define LONGLONG_T long long int\n");
   }
 else
   {
   fprintf(new, "#define OFF_T_FMT  \"%%ld\"\n");
+  fprintf(new, "#define LONGLONG_T long int\n");
+  }
+fprintf(new, "#endif\n\n");
+
+/* Now do the same thing for time_t variables. If the length is greater than
+4, we want to assume long long support (even if off_t was less than 4). If the
+length is 4 or less, we can leave LONGLONG_T to whatever was defined above for
+off_t. */
+
+fprintf(new, "#ifndef TIME_T_FMT\n");
+if (sizeof(test_time_t) > 4)
+  {
+  fprintf(new, "#define TIME_T_FMT  \"%%lld\"\n");
+  fprintf(new, "#undef  LONGLONG_T\n");
+  fprintf(new, "#define LONGLONG_T long long int\n");
+  }
+else
+  {
+  fprintf(new, "#define TIME_T_FMT  \"%%ld\"\n");
   }
 fprintf(new, "#endif\n\n");
 

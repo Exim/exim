@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.162 2005/06/17 10:47:05 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.163 2005/06/17 13:52:14 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -123,9 +123,9 @@ PH/14 Imported PCRE 6.0; this was more than just a trivial operation because
 PH/15 The code I had for printing potentially long long variables in PH/11
       above was not the best (it lost precision). The length of off_t variables
       is now inspected at build time, and an appropriate printing format (%ld
-      or %lld) is chosen and #defined by OFF_T_FMT. We also define ASSUME_
-      LONG_LONG_SUPPORT if the length is greater than 4. This is needed for the
-      internal formatting function string_vformat().
+      or %lld) is chosen and #defined by OFF_T_FMT. We also define LONGLONG_T
+      to be "long long int" or "long int". This is needed for the internal
+      formatting function string_vformat().
 
 PH/16 Applied Matthew Newton's patch to exicyclog: "If log_file_path is set in
       the configuration file to be ":syslog", then the script "guesses" where
@@ -154,6 +154,11 @@ PH/19 Applied Michael Haardt's patch to update Sieve to RFC3028bis. "The
       and a new error check for 8bit text in MIME parts. Comparator and
       require names are now matched exactly. I enabled the subaddress
       extension, but it is not well tested yet (read: it works for me)."
+
+PH/20 Added macros for time_t as for off_t (see PH/15 above) and used them to
+      rework some of the code of TK/09 above to avoid the hardwired use of
+      "%lld" and "long long". Replaced the call to snprintf() with a call to
+      string_vformat().
 
 
 Exim version 4.51
