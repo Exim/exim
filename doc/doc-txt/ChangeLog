@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.160 2005/06/17 09:02:40 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.161 2005/06/17 10:20:30 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -142,6 +142,11 @@ TK/09 Added "prvs" and "prvscheck" expansion items. These help a lot with
 
 PH/17 Applied Michael Haardt's patch for HP-UX, affecting only the os.h and
       Makefile that are specific to HP-UX.
+
+PH/18 If the "use_postmaster" option was set for a recipient callout together
+      with the "random" option, the postmaster address was used as the MAIL
+      FROM address for the random test, but not for the subsequent recipient
+      test. It is now used for both.
 
 
 Exim version 4.51

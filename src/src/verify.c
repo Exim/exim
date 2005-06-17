@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.18 2005/05/31 10:58:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.19 2005/06/17 10:20:30 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -537,7 +537,8 @@ for (host = host_list; host != NULL && !done; host = host->next)
           smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
             '2', callout) &&
 
-          smtp_write_command(&outblock, FALSE, "MAIL FROM:<>\r\n") >= 0 &&
+          smtp_write_command(&outblock, FALSE, "MAIL FROM:<%s>\r\n",
+            from_address) >= 0 &&
           smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
             '2', callout);
         }
@@ -615,7 +616,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
           }
         }
       }           /* Random not accepted */
-    }             /* MAIL FROM:<> accepted */
+    }             /* MAIL FROM: accepted */
 
   /* For any failure of the main check, other than a negative response, we just
   close the connection and carry on. We can identify a negative response by the
@@ -671,7 +672,7 @@ Otherwise, we looped through the hosts but couldn't complete the business.
 However, there may be domain-specific information to cache in both cases.
 
 The value of the result field in the new_domain record is ccache_unknown if
-there was an error before or with MAIL FROM:<>, and errno was not zero,
+there was an error before or with MAIL FROM:, and errno was not zero,
 implying some kind of I/O error. We don't want to write the cache in that case.
 Otherwise the value is ccache_accept or ccache_reject. */
 
