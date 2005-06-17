@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.3 2005/01/11 15:51:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.4 2005/06/17 14:20:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -300,6 +300,7 @@ for (;;)
 
   if (h.mx >= 0 && h.address == NULL)
     {
+    setflag(addr, af_pass_message);   /* This is not a security risk */
     if (h.name[0] == 0)
       addr->message = US"an SRV record indicated no SMTP service";
     else

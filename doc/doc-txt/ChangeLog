@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.163 2005/06/17 13:52:14 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.164 2005/06/17 14:20:48 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -159,6 +159,9 @@ PH/20 Added macros for time_t as for off_t (see PH/15 above) and used them to
       rework some of the code of TK/09 above to avoid the hardwired use of
       "%lld" and "long long". Replaced the call to snprintf() with a call to
       string_vformat().
+
+PH/21 Added another message to those in 4.51/PH/42, namely "All relevant MX
+      records point to non-existent hosts".
 
 
 Exim version 4.51
