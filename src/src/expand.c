@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.31 2005/06/20 10:28:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.32 2005/06/20 11:20:41 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1281,31 +1281,31 @@ while (last > first)
 
     if (Ustrcmp(var_table[middle].name, "dk_sender_source") == 0)
       switch(dk_verify_block->address_source) {
-        case DK_EXIM_ADDRESS_NONE: s = "0"; break;
-        case DK_EXIM_ADDRESS_FROM_FROM: s = "from"; break;
-        case DK_EXIM_ADDRESS_FROM_SENDER: s = "sender"; break;
+        case DK_EXIM_ADDRESS_NONE: s = US"0"; break;
+        case DK_EXIM_ADDRESS_FROM_FROM: s = US"from"; break;
+        case DK_EXIM_ADDRESS_FROM_SENDER: s = US"sender"; break;
       }
 
     if (Ustrcmp(var_table[middle].name, "dk_status") == 0)
       switch(dk_verify_block->result) {
-        case DK_EXIM_RESULT_ERR: s = "error"; break;
-        case DK_EXIM_RESULT_BAD_FORMAT: s = "bad format"; break;
-        case DK_EXIM_RESULT_NO_KEY: s = "no key"; break;
-        case DK_EXIM_RESULT_NO_SIGNATURE: s = "no signature"; break;
-        case DK_EXIM_RESULT_REVOKED: s = "revoked"; break;
-        case DK_EXIM_RESULT_NON_PARTICIPANT: s = "non-participant"; break;
-        case DK_EXIM_RESULT_GOOD: s = "good"; break;
-        case DK_EXIM_RESULT_BAD: s = "bad"; break;
+        case DK_EXIM_RESULT_ERR: s = US"error"; break;
+        case DK_EXIM_RESULT_BAD_FORMAT: s = US"bad format"; break;
+        case DK_EXIM_RESULT_NO_KEY: s = US"no key"; break;
+        case DK_EXIM_RESULT_NO_SIGNATURE: s = US"no signature"; break;
+        case DK_EXIM_RESULT_REVOKED: s = US"revoked"; break;
+        case DK_EXIM_RESULT_NON_PARTICIPANT: s = US"non-participant"; break;
+        case DK_EXIM_RESULT_GOOD: s = US"good"; break;
+        case DK_EXIM_RESULT_BAD: s = US"bad"; break;
       }
 
     if (Ustrcmp(var_table[middle].name, "dk_signsall") == 0)
-      s = (dk_verify_block->signsall)? "1" : "0";
+      s = (dk_verify_block->signsall)? US"1" : US"0";
 
     if (Ustrcmp(var_table[middle].name, "dk_testing") == 0)
-      s = (dk_verify_block->testing)? "1" : "0";
+      s = (dk_verify_block->testing)? US"1" : US"0";
 
     if (Ustrcmp(var_table[middle].name, "dk_is_signed") == 0)
-      s = (dk_verify_block->is_signed)? "1" : "0";
+      s = (dk_verify_block->is_signed)? US"1" : US"0";
 
     return (s == NULL)? US"" : s;
 #endif

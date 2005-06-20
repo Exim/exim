@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.9 2005/05/24 14:56:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.10 2005/06/20 11:20:41 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1042,8 +1042,8 @@ dk_transport_write_message(address_item *addr, int fd, int options,
     uschar *dk_strict_result = expand_string(dk_strict);
     if (dk_strict_result != NULL)
       {
-      if ( (strcmpic(dk_strict,"1") == 0) ||
-           (strcmpic(dk_strict,"true") == 0) )
+      if ( (strcmpic(dk_strict,US"1") == 0) ||
+           (strcmpic(dk_strict,US"true") == 0) )
         {
         save_errno = errno;
         rc = FALSE;
@@ -1061,7 +1061,7 @@ dk_transport_write_message(address_item *addr, int fd, int options,
     /* write the chunk */
     DK_WRITE:
     #ifdef SUPPORT_TLS
-    if (tls_active == fd) wwritten = tls_write(p, sread); else
+    if (tls_active == fd) wwritten = tls_write(US p, sread); else
     #endif
     wwritten = write(fd,p,sread);
     if (wwritten == -1)

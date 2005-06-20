@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dk.c,v 1.2 2005/03/08 16:57:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dk.c,v 1.3 2005/06/20 11:20:41 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -38,7 +38,7 @@ int dk_receive_getc(void) {
   if (dk_context != NULL) {
     /* Send oldest byte */
     if ((dkbuff[0] < 256) && (dk_internal_status == DK_STAT_OK)) {
-      dk_internal_status = dk_message(dk_context, (char *)&dkbuff[0], 1);
+      dk_internal_status = dk_message(dk_context, CUS &dkbuff[0], 1);
       if (dk_internal_status != DK_STAT_OK)
         DEBUG(D_receive) debug_printf("DK: %s\n", DK_STAT_to_string(dk_internal_status));
     }
@@ -133,7 +133,7 @@ void dk_exim_verify_finish(void) {
   /* Send remaining bytes from input which are still in the buffer. */
   for (i=0;i<6;i++)
     if (dkbuff[i] < 256)
-      dk_internal_status = dk_message(dk_context, (char *)&dkbuff[i], 1);
+      dk_internal_status = dk_message(dk_context, CUS &dkbuff[i], 1);
 
   /* Flag end-of-message. */
   dk_internal_status = dk_end(dk_context, NULL);
@@ -249,7 +249,7 @@ uschar *dk_exim_sign(int dk_fd,
   /* Figure out what canonicalization to use. Unfortunately
      we must do this BEFORE knowing which domain we sign for. */
   if ((dk_canon != NULL) && (Ustrcmp(dk_canon, "nofws") == 0)) dk_canon_int = DK_CANON_NOFWS;
-  else dk_canon = "simple";
+  else dk_canon = US "simple";
 
   /* Initialize signing context. */
   dk_context = dk_sign(dk_lib, &dk_internal_status, dk_canon_int);
@@ -263,7 +263,7 @@ uschar *dk_exim_sign(int dk_fd,
 
     if ((c == '.') && seen_lfdot) {
       /* escaped dot, write "\n.", continue */
-      dk_message(dk_context, "\n.", 2);
+      dk_message(dk_context, CUS "\n.", 2);
       seen_lf = 0;
       seen_lfdot = 0;
       continue;
@@ -271,7 +271,7 @@ uschar *dk_exim_sign(int dk_fd,
 
     if (seen_lfdot) {
       /* EOM, write "\n" and break */
-      dk_message(dk_context, "\n", 1);
+      dk_message(dk_context, CUS "\n", 1);
       break;
     }
 
@@ -282,7 +282,7 @@ uschar *dk_exim_sign(int dk_fd,
 
     if (seen_lf) {
       /* normal lf, just send it */
-      dk_message(dk_context, "\n", 1);
+      dk_message(dk_context, CUS "\n", 1);
       seen_lf = 0;
     }
 
@@ -292,7 +292,7 @@ uschar *dk_exim_sign(int dk_fd,
     }
 
     /* write the char */
-    dk_message(dk_context, &c, 1);
+    dk_message(dk_context, CUS &c, 1);
   }
 
   /* Handle failed read above. */
@@ -310,13 +310,13 @@ uschar *dk_exim_sign(int dk_fd,
 
   /* Get domain to use, unless overridden. */
   if (dk_domain == NULL) {
-    dk_domain = dk_address(dk_context);
+    dk_domain = US dk_address(dk_context);
     switch(dk_domain[0]) {
       case 'N': dk_domain = NULL; break;
       case 'F':
       case 'S':
         dk_domain++;
-        dk_domain = strrchr(dk_domain,'@');
+        dk_domain = Ustrrchr(dk_domain,'@');
         if (dk_domain != NULL) {
           uschar *p;
           dk_domain++;
@@ -331,7 +331,7 @@ uschar *dk_exim_sign(int dk_fd,
          DomainKey-Signature header. If there is no domain to sign for, we
          can send the message anyway since the recipient has no policy to
          apply ... */
-      rc = "";
+      rc = US"";
       goto CLEANUP;
     }
   }
@@ -373,7 +373,7 @@ uschar *dk_exim_sign(int dk_fd,
        (Ustrcmp(dk_private_key,"0") == 0) ||
        (Ustrcmp(dk_private_key,"false") == 0) ) {
     /* don't sign, but no error */
-    rc = "";
+    rc = US"";
     goto CLEANUP;
   }
 
@@ -381,7 +381,7 @@ uschar *dk_exim_sign(int dk_fd,
     int privkey_fd = 0;
     /* Looks like a filename, load the private key. */
     memset(big_buffer,0,big_buffer_size);
-    privkey_fd = open(dk_private_key,O_RDONLY);
+    privkey_fd = open(CS dk_private_key,O_RDONLY);
     read(privkey_fd,big_buffer,16383);
     close(privkey_fd);
     dk_private_key = big_buffer;
@@ -399,7 +399,7 @@ uschar *dk_exim_sign(int dk_fd,
 
   rc = store_get(1024);
   /* Build DomainKey-Signature header to return. */
-  snprintf(rc, 1024, "DomainKey-Signature: a=rsa-sha1; q=dns; c=%s;\r\n"
+  snprintf(CS rc, 1024, "DomainKey-Signature: a=rsa-sha1; q=dns; c=%s;\r\n"
                      "\ts=%s; d=%s;\r\n"
                      "\tb=%s;\r\n", dk_canon, dk_selector, dk_domain, sig);
 
