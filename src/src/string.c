@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/string.c,v 1.6 2005/06/17 13:52:15 ph10 Exp $ */
+/* $Cambridge: exim/src/src/string.c,v 1.7 2005/06/20 10:04:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1075,7 +1075,8 @@ while (*fp != 0)
     case 'u':
     case 'x':
     case 'X':
-    if (p >= last - 24) { yield = FALSE; goto END_FORMAT; }
+    if (p >= last - ((length > L_LONG)? 24 : 12))
+      { yield = FALSE; goto END_FORMAT; }
     strncpy(newformat, item_start, fp - item_start);
     newformat[fp - item_start] = 0;
 
