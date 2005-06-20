@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/OS/os.h-OSF1,v 1.2 2005/03/15 14:09:12 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.h-OSF1,v 1.3 2005/06/20 08:52:45 ph10 Exp $ */
 
 /* Exim: OS-specific C header file for OSF1 */
 
@@ -8,6 +8,14 @@
 typedef struct flock flock_t;
 #define F_FREESP     O_TRUNC
 
-#define EXIM_SOCKLEN_T    size_t
+/* This was here for some time, but it seems that now (June 2005) things have
+changed. */
+/* #define EXIM_SOCKLEN_T    size_t */
+
+/* Still not "socklen_t", which is the most common setting */
+#define EXIM_SOCKLEN_T       int
+
+/* The default for this is "const char **" */
+#define ICONV_ARG2_TYPE      char **
 
 /* End */
