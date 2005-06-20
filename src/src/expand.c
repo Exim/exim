@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.32 2005/06/20 11:20:41 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.33 2005/06/20 13:58:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1261,10 +1261,6 @@ while (last > first)
 
   switch (var_table[middle].type)
     {
-    case vtype_filter_int:
-    if (!filter_running) return NULL;
-    /* Fall through */
-
 #ifdef EXPERIMENTAL_DOMAINKEYS
 
     case vtype_dk_verify:
@@ -1310,6 +1306,10 @@ while (last > first)
     return (s == NULL)? US"" : s;
 #endif
 
+    case vtype_filter_int:
+    if (!filter_running) return NULL;
+    /* Fall through */
+    /* VVVVVVVVVVVV */
     case vtype_int:
     sprintf(CS var_buffer, "%d", *(int *)(var_table[middle].value)); /* Integer */
     return var_buffer;
@@ -1966,7 +1966,7 @@ switch(cond_type)
     rc = match_isinlist(sub[0], &(sub[1]), 0, &localpartlist_anchor, NULL,
       MCL_LOCALPART + MCL_NOEXPAND, TRUE, NULL);
     /* Fall through */
-
+    /* VVVVVVVVVVVV */
     MATCHED_SOMETHING:
     switch(rc)
       {

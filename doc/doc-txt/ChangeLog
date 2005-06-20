@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.164 2005/06/17 14:20:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.165 2005/06/20 13:58:22 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -162,6 +162,15 @@ PH/20 Added macros for time_t as for off_t (see PH/15 above) and used them to
 
 PH/21 Added another message to those in 4.51/PH/42, namely "All relevant MX
       records point to non-existent hosts".
+
+PH/22 Fixed some oversights/typos causing bugs when Exim is compiled with
+      experimental DomainKeys support:
+
+      (1) The filter variables $n0-$n9 and $sn0-$sn9 were broken.
+      (2) On an error such as an illegally used "control", the wrong name for
+          the control was given.
+
+      These problems did NOT occur unless DomainKeys support was compiled.
 
 
 Exim version 4.51

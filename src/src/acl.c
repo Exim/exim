@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.39 2005/06/10 19:27:05 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.40 2005/06/20 13:58:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -81,7 +81,9 @@ ACLC_CONDITION, ACLC_CONTROL,
 "log_message", "logwrite", and "set" are modifiers that look like conditions
 but always return TRUE. They are used for their side effects. */
 
-static uschar *conditions[] = { US"acl", US"authenticated",
+static uschar *conditions[] = {
+  US"acl",
+  US"authenticated",
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   US"bmi_optin",
 #endif
@@ -125,11 +127,41 @@ static uschar *conditions[] = { US"acl", US"authenticated",
 #endif
   US"verify" };
 
-/* ACL control names */
 
-static uschar *controls[] = { US"error", US"caseful_local_part",
+/* Return values from decode_control(); keep in step with the table of names
+that follows! */
+
+enum {
+#ifdef EXPERIMENTAL_BRIGHTMAIL
+  CONTROL_BMI_RUN,
+#endif
+#ifdef EXPERIMENTAL_DOMAINKEYS
+  CONTROL_DK_VERIFY,
+#endif
+  CONTROL_ERROR, CONTROL_CASEFUL_LOCAL_PART, CONTROL_CASELOWER_LOCAL_PART,
+  CONTROL_ENFORCE_SYNC, CONTROL_NO_ENFORCE_SYNC, CONTROL_FREEZE,
+  CONTROL_QUEUE_ONLY, CONTROL_SUBMISSION,
+#ifdef WITH_CONTENT_SCAN
+  CONTROL_NO_MBOX_UNSPOOL,
+#endif
+  CONTROL_FAKEDEFER, CONTROL_FAKEREJECT, CONTROL_NO_MULTILINE };
+
+/* ACL control names; keep in step with the table above! */
+
+static uschar *controls[] = {
+  #ifdef EXPERIMENTAL_BRIGHTMAIL
+  US"bmi_run",
+  #endif
+  #ifdef EXPERIMENTAL_DOMAINKEYS
+  US"dk_verify",
+  #endif
+  US"error", US"caseful_local_part",
   US"caselower_local_part", US"enforce_sync", US"no_enforce_sync", US"freeze",
-  US"queue_only", US"submission", US"no_multiline"};
+  US"queue_only", US"submission",
+  #ifdef WITH_CONTENT_SCAN
+  US"no_mbox_unspool",
+  #endif
+  US"no_multiline"};
 
 /* Flags to indicate for which conditions /modifiers a string expansion is done
 at the outer level. In the other cases, expansion already occurs in the
@@ -411,23 +443,6 @@ static unsigned int cond_forbids[] = {
   0                                                /* verify */
 };
 
-
-/* Return values from decode_control() */
-
-enum {
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  CONTROL_BMI_RUN,
-#endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
-  CONTROL_DK_VERIFY,
-#endif
-  CONTROL_ERROR, CONTROL_CASEFUL_LOCAL_PART, CONTROL_CASELOWER_LOCAL_PART,
-  CONTROL_ENFORCE_SYNC, CONTROL_NO_ENFORCE_SYNC, CONTROL_FREEZE,
-  CONTROL_QUEUE_ONLY, CONTROL_SUBMISSION,
-#ifdef WITH_CONTENT_SCAN
-  CONTROL_NO_MBOX_UNSPOOL,
-#endif
-  CONTROL_FAKEDEFER, CONTROL_FAKEREJECT, CONTROL_NO_MULTILINE };
 
 /* Bit map vector of which controls are not allowed at certain times. For
 each control, there's a bitmap of dis-allowed times. For some, it is easier to
