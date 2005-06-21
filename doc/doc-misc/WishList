@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.39 2005/06/16 15:48:58 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.40 2005/06/21 14:14:55 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1879,12 +1879,6 @@ specific file name instead of a directory. I think this would allow me to call
 Bogofilter at smtp time. Bogofilter requires a filename, not a directory. The
 file would contain the complete email. I suppose there may be other scanning
 solutions with a similar requirement."
-------------------------------------------------------------------------------
-
-(320) 03-Mar-05 T Options to control daemon retry binding
-
-Currently the daemon tries 10 times at 30-second intervals to listen on an IP
-address. The wish is for options to control these numbers.
 ------------------------------------------------------------------------------
 
 (321) 07-Mar-05 S Run an ACL on a sync error

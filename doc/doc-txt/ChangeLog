@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.165 2005/06/20 13:58:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.166 2005/06/21 14:14:55 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -171,6 +171,8 @@ PH/22 Fixed some oversights/typos causing bugs when Exim is compiled with
           the control was given.
 
       These problems did NOT occur unless DomainKeys support was compiled.
+
+PH/23 Added daemon_startup_retries and daemon_startup_sleep.
 
 
 Exim version 4.51

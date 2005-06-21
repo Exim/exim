@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.10 2005/03/15 14:09:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.11 2005/06/21 14:14:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1249,7 +1249,6 @@ if (daemon_listen)
     {
     BOOL wildcard;
     ip_address_item *ipa2;
-    int retries = 9;
     int af;
 
     if (Ustrchr(ipa->address, ':') != NULL)
@@ -1327,13 +1326,16 @@ if (daemon_listen)
       msg = US strerror(errno);
       addr = wildcard? ((af == AF_INET6)? US"(any IPv6)" : US"(any IPv4)") :
         ipa->address;
-      if (retries-- <= 0)
+      if (daemon_startup_retries <= 0)
         log_write(0, LOG_MAIN|LOG_PANIC_DIE,
           "socket bind() to port %d for address %s failed: %s: "
           "daemon abandoned", ipa->port, addr, msg);
       log_write(0, LOG_MAIN, "socket bind() to port %d for address %s "
-        "failed: %s: waiting before trying again", ipa->port, addr, msg);
-      sleep(30);
+        "failed: %s: waiting %s before trying again (%d more %s)",
+        ipa->port, addr, msg, readconf_printtime(daemon_startup_sleep),
+        daemon_startup_retries, (daemon_startup_retries > 1)? "tries" : "try");
+      daemon_startup_retries--;
+      sleep(daemon_startup_sleep);
       }
 
     DEBUG(D_any)

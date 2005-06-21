@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.50 2005/06/16 20:03:43 tom Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.51 2005/06/21 14:14:55 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -342,6 +342,12 @@ TK/02 There are two new expansion items to help with the implementation of
                                sender='${quote_mysql:$sender_address}'} \
                            {$value}fail}}}
 
+PH/04 There are two new options that control the retrying done by the daemon
+      at startup when it cannot immediately bind a socket (typically because
+      the socket is already in use). The default values reproduce what were
+      built-in constants previously: daemon_startup_retries defines the number
+      of retries after the first failure (default 9); daemon_startup_sleep
+      defines the length of time to wait between retries (default 30s).
 
 
 Version 4.51

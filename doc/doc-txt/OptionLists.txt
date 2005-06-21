@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.8 2005/05/03 14:20:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.9 2005/06/21 14:14:55 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -140,6 +140,8 @@ create_file                          string          "anywhere"    appendfile
 current_directory                    string          unset         transports        4.00
                                                      unset         queryprogram      4.00
 daemon_smtp_ports                    string          unset         main              1.75  pluralised in 4.21
+daemon_startup_retries               int             9             main              4.52
+daemon_startup_sleep                 time            30s           main              4.52
 data                                 string          unset         redirect          4.00
 data_timeout                         time            5m            smtp
 debug_print                          string*         unset         authenticators    4.00

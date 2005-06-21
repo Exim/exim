@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.21 2005/06/16 20:01:29 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.22 2005/06/21 14:14:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -218,6 +218,8 @@ extern uschar *csa_status;             /* Client SMTP Authorization result */
 
 extern BOOL    daemon_listen;          /* True if listening required */
 extern uschar *daemon_smtp_port;       /* Can be a list of ports */
+extern int     daemon_startup_retries; /* Number of times to retry */
+extern int     daemon_startup_sleep;   /* Sleep between retries */
 extern BOOL    debug_daemon;           /* Debug the daemon process only */
 extern int     debug_fd;               /* The fd for debug_file */
 extern FILE   *debug_file;             /* Where to write debugging info */
