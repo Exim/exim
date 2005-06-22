@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/directory.c,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/directory.c,v 1.3 2005/06/22 15:44:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -74,13 +74,13 @@ while (c != 0 && *p != 0)
 
     /* Set the ownership if necessary. */
 
-    if (use_chown) Uchown(buffer, exim_uid, exim_gid);
+    if (use_chown) (void)Uchown(buffer, exim_uid, exim_gid);
 
     /* It appears that any mode bits greater than 0777 are ignored by
     mkdir(), at least on some operating systems. Therefore, if the mode
     contains any such bits, do an explicit mode setting. */
 
-    if ((mode & 0777000) != 0) Uchmod(buffer, mode);
+    if ((mode & 0777000) != 0) (void)Uchmod(buffer, mode);
     }
   *p++ = c;
   }

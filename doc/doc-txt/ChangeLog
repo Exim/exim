@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.168 2005/06/22 14:45:05 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.169 2005/06/22 15:44:37 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -180,6 +180,12 @@ PH/25 Put debug statements on either side of calls to EXIM_DBOPEN() for hints
       databases so that it will be absolutely obvious if a crash occurs in the
       DB library. This is a regular occurrence (often caused by mis-matched
       db.h files).
+
+PH/26 Insert a lot of missing (void) casts for functions such as chown(),
+      chmod(), fcntl(), and sscanf(). These were picked up on a user's system
+      that detects such things. There doesn't seem to be a gcc warning option
+      for this - only an attribute that has to be put on the function's
+      prototype. I'm sure I haven't caught all of these, but it's a start.
 
 
 Exim version 4.51

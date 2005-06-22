@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/log.c,v 1.3 2005/03/29 15:19:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/log.c,v 1.4 2005/06/22 15:44:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -314,7 +314,7 @@ open, arrange for automatic closure on exec(), and then return. */
 
 if (*fd >= 0)
   {
-  fcntl(*fd, F_SETFD, fcntl(*fd, F_GETFD) | FD_CLOEXEC);
+  (void)fcntl(*fd, F_SETFD, fcntl(*fd, F_GETFD) | FD_CLOEXEC);
   return;
   }
 
@@ -367,7 +367,7 @@ else if (euid == root_uid)
 
 if (*fd >= 0)
   {
-  fcntl(*fd, F_SETFD, fcntl(*fd, F_GETFD) | FD_CLOEXEC);
+  (void)fcntl(*fd, F_SETFD, fcntl(*fd, F_GETFD) | FD_CLOEXEC);
   return;
   }
 

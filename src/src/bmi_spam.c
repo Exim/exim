@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/bmi_spam.c,v 1.3 2005/02/17 11:58:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/bmi_spam.c,v 1.4 2005/06/22 15:44:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -453,7 +453,7 @@ int bmi_check_rule(uschar *base64_verdict, uschar *option_list) {
     int rule_int = -1;
 
     /* try to translate to int */
-    sscanf(rule_num, "%d", &rule_int);
+    (void)sscanf(rule_num, "%d", &rule_int);
     if (rule_int > 0) {
       debug_printf("checking rule #%d\n", rule_int);
       /* check if rule fired on the message */

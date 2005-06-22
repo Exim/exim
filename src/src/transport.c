@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.10 2005/06/20 11:20:41 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.11 2005/06/22 15:44:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1164,10 +1164,10 @@ save_errno = 0;
 yield = FALSE;
 write_pid = (pid_t)(-1);
 
-fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+(void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
 filter_pid = child_open(transport_filter_argv, NULL, 077, &fd_write, &fd_read,
   FALSE);
-fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) & ~FD_CLOEXEC);
+(void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) & ~FD_CLOEXEC);
 if (filter_pid < 0) goto TIDY_UP;      /* errno set */
 
 DEBUG(D_transport)

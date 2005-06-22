@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_out.c,v 1.6 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_out.c,v 1.7 2005/06/22 15:44:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -96,8 +96,8 @@ automatically. */
 
 if (fd >= 0)
   {
-  fchown(fd, exim_uid, exim_gid);
-  fchmod(fd, SPOOL_MODE);
+  (void)fchown(fd, exim_uid, exim_gid);
+  (void)fchmod(fd, SPOOL_MODE);
   }
 
 return fd;

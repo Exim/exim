@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.7 2005/06/10 13:29:36 tom Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.8 2005/06/22 15:44:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -221,7 +221,7 @@ int spam(uschar **listptr) {
   pollfd.fd = spamd_sock;
   pollfd.events = POLLOUT;
 #endif
-  fcntl(spamd_sock, F_SETFL, O_NONBLOCK);
+  (void)fcntl(spamd_sock, F_SETFL, O_NONBLOCK);
   do {
     read = fread(spamd_buffer,1,sizeof(spamd_buffer),mbox_file);
     if (read > 0) {

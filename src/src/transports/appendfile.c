@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.8 2005/06/16 14:10:14 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.9 2005/06/22 15:44:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1734,8 +1734,8 @@ if (!isdirectory)
       /* We have successfully created and opened the file. Ensure that the group
       and the mode are correct. */
 
-      Uchown(filename, uid, gid);
-      Uchmod(filename, mode);
+      (void)Uchown(filename, uid, gid);
+      (void)Uchmod(filename, mode);
       }
 
 
@@ -2002,7 +2002,7 @@ if (!isdirectory)
           goto RETURN;
           }
 
-        Uchmod(mbx_lockname, 0600);
+        (void)Uchmod(mbx_lockname, 0600);
 
         if (apply_lock(mbx_lockfd, F_WRLCK, ob->use_fcntl,
             ob->lock_fcntl_timeout, ob->use_flock, ob->lock_flock_timeout) >= 0)
@@ -2415,8 +2415,8 @@ else
     /* Why are these here? Put in because they are present in the non-maildir
     directory case above. */
 
-    Uchown(filename, uid, gid);
-    Uchmod(filename, mode);
+    (void)Uchown(filename, uid, gid);
+    (void)Uchmod(filename, mode);
     }
 
   #endif  /* SUPPORT_MAILDIR */
@@ -2457,8 +2457,8 @@ else
     /* Why are these here? Put in because they are present in the non-maildir
     directory case above. */
 
-    Uchown(filename, uid, gid);
-    Uchmod(filename, mode);
+    (void)Uchown(filename, uid, gid);
+    (void)Uchmod(filename, mode);
 
     /* Built a C stream from the open file descriptor. */
 
@@ -2549,8 +2549,8 @@ else
       Uunlink(filename);
       return FALSE;
       }
-    Uchown(dataname, uid, gid);
-    Uchmod(dataname, mode);
+    (void)Uchown(dataname, uid, gid);
+    (void)Uchmod(dataname, mode);
     }
 
   #endif  /* SUPPORT_MAILSTORE */
@@ -2559,8 +2559,8 @@ else
   /* In all cases of writing to a new file, ensure that the file which is
   going to be renamed has the correct ownership and mode. */
 
-  Uchown(filename, uid, gid);
-  Uchmod(filename, mode);
+  (void)Uchown(filename, uid, gid);
+  (void)Uchmod(filename, mode);
   }
 
 
@@ -2919,7 +2919,7 @@ if (yield != OK)
   investigated so far have ftruncate(), whereas not all have the F_FREESP
   fcntl() call (BSDI & FreeBSD do not). */
 
-  if (!isdirectory) ftruncate(fd, saved_size);
+  if (!isdirectory) (void)ftruncate(fd, saved_size);
   }
 
 /* Handle successful writing - we want the modification time to be now for

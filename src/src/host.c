@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.9 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.10 2005/06/22 15:44:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -809,7 +809,7 @@ if (Ustrchr(address, ':') != NULL)
 
 /* Handle IPv4 address */
 
-sscanf(CS address, "%d.%d.%d.%d", x, x+1, x+2, x+3);
+(void)sscanf(CS address, "%d.%d.%d.%d", x, x+1, x+2, x+3);
 bin[v4offset] = (x[0] << 24) + (x[1] << 16) + (x[2] << 8) + x[3];
 return v4offset+1;
 }
@@ -2969,12 +2969,12 @@ while (Ufgets(buffer, 256, stdin) != NULL)
   else if (Ustrcmp(buffer, "no_search_parents") == 0) search_parents = FALSE;
   else if (Ustrncmp(buffer, "retrans", 7) == 0)
     {
-    sscanf(CS(buffer+8), "%d", &dns_retrans);
+    (void)sscanf(CS(buffer+8), "%d", &dns_retrans);
     _res.retrans = dns_retrans;
     }
   else if (Ustrncmp(buffer, "retry", 5) == 0)
     {
-    sscanf(CS(buffer+6), "%d", &dns_retry);
+    (void)sscanf(CS(buffer+6), "%d", &dns_retry);
     _res.retry = dns_retry;
     }
   else if (alldigits(buffer))

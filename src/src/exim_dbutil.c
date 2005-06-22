@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.5 2005/06/14 10:32:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.6 2005/06/22 15:44:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -775,12 +775,12 @@ for(;;)
       printf("No previous record name is set\n");
       continue;
       }
-    sscanf(CS buffer, "%s %s", field, value);
+    (void)sscanf(CS buffer, "%s %s", field, value);
     }
   else
     {
     name[0] = 0;
-    sscanf(CS buffer, "%s %s %s", name, field, value);
+    (void)sscanf(CS buffer, "%s %s %s", name, field, value);
     }
 
   /* Handle an update request */

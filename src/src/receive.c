@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.18 2005/05/23 15:28:38 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.19 2005/06/22 15:44:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2602,8 +2602,8 @@ if (data_fd < 0)
 /* Make sure the file's group is the Exim gid, and double-check the mode
 because the group setting doesn't always get set automatically. */
 
-fchown(data_fd, exim_uid, exim_gid);
-fchmod(data_fd, SPOOL_MODE);
+(void)fchown(data_fd, exim_uid, exim_gid);
+(void)fchmod(data_fd, SPOOL_MODE);
 
 /* We now have data file open. Build a stream for it and lock it. We lock only
 the first line of the file (containing the message ID) because otherwise there

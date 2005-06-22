@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.18 2005/06/16 14:10:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.19 2005/06/22 15:44:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -286,7 +286,7 @@ doesn't always get set automatically. */
 
 if (fd >= 0)
   {
-  fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+  (void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
   if (fchown(fd, exim_uid, exim_gid) < 0)
     {
     *error = US"chown";
@@ -1729,7 +1729,7 @@ if ((pid = fork()) == 0)
   gid/uid. */
 
   close(pfd[pipe_read]);
-  fcntl(pfd[pipe_write], F_SETFD, fcntl(pfd[pipe_write], F_GETFD) |
+  (void)fcntl(pfd[pipe_write], F_SETFD, fcntl(pfd[pipe_write], F_GETFD) |
     FD_CLOEXEC);
   exim_setugid(uid, gid, use_initgroups,
     string_sprintf("local delivery to %s <%s> transport=%s", addr->local_part,
@@ -3673,9 +3673,9 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     distinguishes between EOF and no-more-data. */
 
     #ifdef O_NONBLOCK
-    fcntl(pfd[pipe_read], F_SETFL, O_NONBLOCK);
+    (void)fcntl(pfd[pipe_read], F_SETFL, O_NONBLOCK);
     #else
-    fcntl(pfd[pipe_read], F_SETFL, O_NDELAY);
+    (void)fcntl(pfd[pipe_read], F_SETFL, O_NDELAY);
     #endif
 
     /* If the maximum number of subprocesses already exist, wait for a process
@@ -3748,7 +3748,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     a new process that may be forked to do another delivery down the same
     SMTP connection. */
 
-    fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
+    (void)fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
 
     /* Close open file descriptors for the pipes of other processes
     that are running in parallel. */
@@ -3775,7 +3775,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
     /* Set the close-on-exec flag */
 
-    fcntl(deliver_datafile, F_SETFD, fcntl(deliver_datafile, F_GETFD) |
+    (void)fcntl(deliver_datafile, F_SETFD, fcntl(deliver_datafile, F_GETFD) |
       FD_CLOEXEC);
 
     /* Set the uid/gid of this process; bombs out on failure. */
@@ -5845,9 +5845,9 @@ if (addr_local != NULL || addr_remote != NULL)
   that the mode is correct - the group setting doesn't always seem to get
   set automatically. */
 
-  fcntl(journal_fd, F_SETFD, fcntl(journal_fd, F_GETFD) | FD_CLOEXEC);
-  fchown(journal_fd, exim_uid, exim_gid);
-  fchmod(journal_fd, SPOOL_MODE);
+  (void)fcntl(journal_fd, F_SETFD, fcntl(journal_fd, F_GETFD) | FD_CLOEXEC);
+  (void)fchown(journal_fd, exim_uid, exim_gid);
+  (void)fchmod(journal_fd, SPOOL_MODE);
   }
 
 

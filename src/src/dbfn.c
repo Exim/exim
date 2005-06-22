@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dbfn.c,v 1.4 2005/06/22 14:45:05 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dbfn.c,v 1.5 2005/06/22 15:44:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -206,7 +206,7 @@ if (created && geteuid() == root_uid)
       if (Ustat(buffer, &statbuf) >= 0 && statbuf.st_uid != exim_uid)
         {
         DEBUG(D_hints_lookup) debug_printf("ensuring %s is owned by exim\n", buffer);
-        Uchown(buffer, exim_uid, exim_gid);
+        (void)Uchown(buffer, exim_uid, exim_gid);
         }
       }
     }

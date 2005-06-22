@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.10 2005/04/07 10:10:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.11 2005/06/22 15:44:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -76,7 +76,7 @@ an open file descriptor (at least, I think that's the Cygwin story). On real
 Unix systems it doesn't make any difference as long as Exim is consistent in
 what it locks. */
 
-fcntl(deliver_datafile, F_SETFD, fcntl(deliver_datafile, F_GETFD) |
+(void)fcntl(deliver_datafile, F_SETFD, fcntl(deliver_datafile, F_GETFD) |
   FD_CLOEXEC);
 
 lock_data.l_type = F_WRLCK;
@@ -581,7 +581,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
     if (*p == ' ')
       {
       *p++ = 0;
-      sscanf(CS p, "%d,%d", &dummy, &pno);
+      (void)sscanf(CS p, "%d,%d", &dummy, &pno);
       }
     }
 
@@ -590,7 +590,7 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
   else if (*p == ' ')
     {
     *p++ = 0;
-    sscanf(CS p, "%d", &pno);
+    (void)sscanf(CS p, "%d", &pno);
     }
 
   /* Handle current format Exim 4 spool files */
@@ -598,13 +598,13 @@ for (recipients_count = 0; recipients_count < rcount; recipients_count++)
   else if (*p == '#')
     {
     int flags;
-    sscanf(CS p+1, "%d", &flags);
+    (void)sscanf(CS p+1, "%d", &flags);
 
     if ((flags & 0x01) != 0)      /* one_time data exists */
       {
       int len;
       while (isdigit(*(--p)) || *p == ',' || *p == '-');
-      sscanf(CS p+1, "%d,%d", &len, &pno);
+      (void)sscanf(CS p+1, "%d,%d", &len, &pno);
       *p = 0;
       if (len > 0)
         {
@@ -640,8 +640,8 @@ while ((n = fgetc(f)) != EOF)
   int i;
 
   if (!isdigit(n)) goto SPOOL_FORMAT_ERROR;
-  ungetc(n, f);
-  fscanf(f, "%d%c ", &n, flag);
+  (void)ungetc(n, f);
+  (void)fscanf(f, "%d%c ", &n, flag);
   if (flag[0] != '*') message_size += n;  /* Omit non-transmitted headers */
 
   if (read_headers)

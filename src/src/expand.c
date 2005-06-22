@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.34 2005/06/22 10:17:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.35 2005/06/22 15:44:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3438,8 +3438,8 @@ while (*s != 0)
           uschar *now = prvs_daystamp(0);
           unsigned int inow = 0,iexpire = 1;
 
-          sscanf(CS now,"%u",&inow);
-          sscanf(CS daystamp,"%u",&iexpire);
+          (void)sscanf(CS now,"%u",&inow);
+          (void)sscanf(CS daystamp,"%u",&iexpire);
 
           /* When "iexpire" is < 7, a "flip" has occured.
              Adjust "inow" accordingly. */

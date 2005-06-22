@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim_lock.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim_lock.c,v 1.2 2005/06/22 15:44:38 ph10 Exp $ */
 
 /* A program to lock a file exactly as Exim would, for investigation of
 interlocking problems.
@@ -439,7 +439,7 @@ for (j = 0; j < lock_retries; j++)
       goto CLEAN_UP;
       }
 
-    chmod (tempname, 0600);
+    (void)chmod(tempname, 0600);
 
     if (apply_lock(md, F_WRLCK, use_fcntl, lock_fcntl_timeout, use_flock,
         lock_flock_timeout) >= 0)
@@ -551,12 +551,12 @@ if (restore_times)
   struct stat strestore;
   struct utimbuf ut;
   stat(filename, &strestore);
-  system(command);
+  (void)system(command);
   ut.actime = strestore.st_atime;
   ut.modtime = strestore.st_mtime;
   utime(filename, &ut);
   }
-else system(command);
+else (void)system(command);
 
 /* Remove the locks and exit. Unlink the /tmp file if we can get an exclusive
 lock on the mailbox. This should be a non-blocking lock call, as there is no
