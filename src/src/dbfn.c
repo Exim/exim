@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dbfn.c,v 1.3 2005/06/14 10:32:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dbfn.c,v 1.4 2005/06/22 14:45:05 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -152,10 +152,15 @@ DEBUG(D_hints_lookup) debug_printf("locked %s\n", buffer);
 exclusive access to the database, so we can go ahead and open it. If we are
 expected to create it, don't do so at first, again so that we can detect
 whether we need to change its ownership (see comments about the lock file
-above.) */
+above.) There have been regular reports of crashes while opening hints
+databases - often this is caused by non-matching db.h and the library. To make
+it easy to pin this down, there are now debug statements on either side of the
+open call. */
 
 sprintf(CS buffer, "%s/db/%s", spool_directory, name);
+DEBUG(D_hints_lookup) debug_printf("EXIM_DBOPEN(%s)\n", buffer);
 EXIM_DBOPEN(buffer, flags, EXIMDB_MODE, &(dbblock->dbptr));
+DEBUG(D_hints_lookup) debug_printf("returned from EXIM_DBOPEN\n");
 
 if (dbblock->dbptr == NULL && errno == ENOENT && flags == O_RDWR)
   {
@@ -163,6 +168,7 @@ if (dbblock->dbptr == NULL && errno == ENOENT && flags == O_RDWR)
     debug_printf("%s appears not to exist: trying to create\n", buffer);
   created = TRUE;
   EXIM_DBOPEN(buffer, flags|O_CREAT, EXIMDB_MODE, &(dbblock->dbptr));
+  DEBUG(D_hints_lookup) debug_printf("returned from EXIM_DBOPEN\n");
   }
 
 save_errno = errno;

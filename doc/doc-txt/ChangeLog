@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.167 2005/06/22 10:17:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.168 2005/06/22 14:45:05 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -175,6 +175,11 @@ PH/22 Fixed some oversights/typos causing bugs when Exim is compiled with
 PH/23 Added daemon_startup_retries and daemon_startup_sleep.
 
 PH/24 Added ${if match_ip condition.
+
+PH/25 Put debug statements on either side of calls to EXIM_DBOPEN() for hints
+      databases so that it will be absolutely obvious if a crash occurs in the
+      DB library. This is a regular occurrence (often caused by mis-matched
+      db.h files).
 
 
 Exim version 4.51
