@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.5 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.6 2005/06/22 10:17:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -697,8 +697,9 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
         case DEFER:
         goto DEFER_RETURN;
 
-        /* The ERROR return occurs only when checking hosts, when either a
-        forward or reverse lookup has failed. The error string gives details of
+        /* The ERROR return occurs when checking hosts, when either a forward
+        or reverse lookup has failed. It can also occur in a match_ip list if a
+        non-IP address item is encountered. The error string gives details of
         which it was. */
 
         case ERROR:

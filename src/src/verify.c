@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.19 2005/06/17 10:20:30 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.20 2005/06/22 10:17:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1816,25 +1816,34 @@ Arguments:
   error          for error message when returning ERROR
 
 The block contains:
-  host_name      the host name or NULL, implying use sender_host_name and
-                   sender_host_aliases, looking them up if required
+  host_name      (a) the host name, or
+                 (b) NULL, implying use sender_host_name and
+                       sender_host_aliases, looking them up if required, or
+                 (c) the empty string, meaning that only IP address matches
+                       are permitted
   host_address   the host address
   host_ipv4      the IPv4 address taken from an IPv6 one
 
 Returns:         OK      matched
                  FAIL    did not match
                  DEFER   lookup deferred
-                 ERROR   failed to find the host name or IP address
-                         unknown lookup type specified
+                 ERROR   (a) failed to find the host name or IP address, or
+                         (b) unknown lookup type specified, or
+                         (c) host name encountered when only IP addresses are
+                               being matched
 */
 
-static int
+int
 check_host(void *arg, uschar *ss, uschar **valueptr, uschar **error)
 {
 check_host_block *cb = (check_host_block *)arg;
+int mlen = -1;
 int maskoffset;
+BOOL iplookup = FALSE;
 BOOL isquery = FALSE;
-uschar *semicolon, *t;
+BOOL isiponly = cb->host_name != NULL && cb->host_name[0] == 0;
+uschar *t = ss;
+uschar *semicolon;
 uschar **aliases;
 
 /* Optimize for the special case when the pattern is "*". */
@@ -1848,12 +1857,17 @@ situation, the host address is the empty string. */
 if (cb->host_address[0] == 0) return (*ss == 0)? OK : FAIL;
 if (*ss == 0) return FAIL;
 
-/* If the pattern is precisely "@" then match against the primary host name;
-if it's "@[]" match against the local host's IP addresses. */
+/* If the pattern is precisely "@" then match against the primary host name,
+provided that host name matching is permitted; if it's "@[]" match against the
+local host's IP addresses. */
 
 if (*ss == '@')
   {
-  if (ss[1] == 0) ss = primary_hostname;
+  if (ss[1] == 0)
+    {
+    if (isiponly) return ERROR;
+    ss = primary_hostname;
+    }
   else if (Ustrcmp(ss, "@[]") == 0)
     {
     ip_address_item *ip;
@@ -1869,73 +1883,96 @@ a (possibly masked) comparision with the current IP address. */
 if (string_is_ip_address(ss, &maskoffset) > 0)
   return (host_is_in_net(cb->host_address, ss, maskoffset)? OK : FAIL);
 
-/* If the item is of the form net[n]-lookup;<file|query> then it is a lookup on
-a masked IP network, in textual form. The net- stuff really only applies to
-single-key lookups where the key is implicit. For query-style lookups the key
-is specified in the query. From release 4.30, the use of net- for query style
-is no longer needed, but we retain it for backward compatibility. */
+/* See if there is a semicolon in the pattern */
 
-if (Ustrncmp(ss, "net", 3) == 0 && (semicolon = Ustrchr(ss, ';')) != NULL)
+semicolon = Ustrchr(ss, ';');
+
+/* If we are doing an IP address only match, then all lookups must be IP
+address lookups. */
+
+if (isiponly)
   {
-  int mlen = 0;
+  iplookup = semicolon != NULL;
+  }
+
+/* Otherwise, if the item is of the form net[n]-lookup;<file|query> then it is
+a lookup on a masked IP network, in textual form. The net- stuff really only
+applies to single-key lookups where the key is implicit. For query-style
+lookups the key is specified in the query. From release 4.30, the use of net-
+for query style is no longer needed, but we retain it for backward
+compatibility. */
+
+else if (Ustrncmp(ss, "net", 3) == 0 && semicolon != NULL)
+  {
+  mlen = 0;
   for (t = ss + 3; isdigit(*t); t++) mlen = mlen * 10 + *t - '0';
-  if (*t++ == '-')
+  if (mlen == 0 && t == ss+3) mlen = -1;  /* No mask supplied */
+  iplookup = (*t++ == '-');
+  }
+
+/* Do the IP address lookup if that is indeed what we have */
+
+if (iplookup)
+  {
+  int insize;
+  int search_type;
+  int incoming[4];
+  void *handle;
+  uschar *filename, *key, *result;
+  uschar buffer[64];
+
+  /* Find the search type */
+
+  search_type = search_findtype(t, semicolon - t);
+
+  if (search_type < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
+    search_error_message);
+
+  /* Adjust parameters for the type of lookup. For a query-style
+  lookup, there is no file name, and the "key" is just the query. For
+  a single-key lookup, the key is the current IP address, masked
+  appropriately, and reconverted to text form, with the mask appended.
+  For IPv6 addresses, specify dot separators instead of colons. */
+
+  if (mac_islookup(search_type, lookup_querystyle))
     {
-    int insize;
-    int search_type;
-    int incoming[4];
-    void *handle;
-    uschar *filename, *key, *result;
-    uschar buffer[64];
-
-    /* If no mask was supplied, set a negative value */
-
-    if (mlen == 0 && t == ss+4) mlen = -1;
-
-    /* Find the search type */
-
-    search_type = search_findtype(t, semicolon - t);
-
-    if (search_type < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
-      search_error_message);
-
-    /* Adjust parameters for the type of lookup. For a query-style
-    lookup, there is no file name, and the "key" is just the query. For
-    a single-key lookup, the key is the current IP address, masked
-    appropriately, and reconverted to text form, with the mask appended.
-    For IPv6 addresses, specify dot separators instead of colons. */
-
-    if (mac_islookup(search_type, lookup_querystyle))
-      {
-      filename = NULL;
-      key = semicolon + 1;
-      }
-    else
-      {
-      insize = host_aton(cb->host_address, incoming);
-      host_mask(insize, incoming, mlen);
-      (void)host_nmtoa(insize, incoming, mlen, buffer, '.');
-      key = buffer;
-      filename = semicolon + 1;
-      }
-
-    /* Now do the actual lookup; note that there is no search_close() because
-    of the caching arrangements. */
-
-    handle = search_open(filename, search_type, 0, NULL, NULL);
-    if (handle == NULL) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
-      search_error_message);
-    result = search_find(handle, filename, key, -1, NULL, 0, 0, NULL);
-    if (valueptr != NULL) *valueptr = result;
-    return (result != NULL)? OK : search_find_defer? DEFER: FAIL;
+    filename = NULL;
+    key = semicolon + 1;
     }
+  else
+    {
+    insize = host_aton(cb->host_address, incoming);
+    host_mask(insize, incoming, mlen);
+    (void)host_nmtoa(insize, incoming, mlen, buffer, '.');
+    key = buffer;
+    filename = semicolon + 1;
+    }
+
+  /* Now do the actual lookup; note that there is no search_close() because
+  of the caching arrangements. */
+
+  handle = search_open(filename, search_type, 0, NULL, NULL);
+  if (handle == NULL) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
+    search_error_message);
+  result = search_find(handle, filename, key, -1, NULL, 0, 0, NULL);
+  if (valueptr != NULL) *valueptr = result;
+  return (result != NULL)? OK : search_find_defer? DEFER: FAIL;
   }
 
 /* The pattern is not an IP address or network reference of any kind. That is,
-it is a host name pattern. Check the characters of the pattern to see if they
-comprise only letters, digits, full stops, and hyphens (the constituents of
-domain names). Allow underscores, as they are all too commonly found. Sigh.
-Also, if allow_utf8_domains is set, allow top-bit characters. */
+it is a host name pattern. If this is an IP only match, there's an error in the
+host list. */
+
+if (isiponly)
+  {
+  *error = US"cannot match host name in match_ip list";
+  return ERROR;
+  }
+
+/* Check the characters of the pattern to see if they comprise only letters,
+digits, full stops, and hyphens (the constituents of domain names). Allow
+underscores, as they are all too commonly found. Sigh. Also, if
+allow_utf8_domains is set, allow top-bit characters. */
 
 for (t = ss; *t != 0; t++)
   if (!isalnum(*t) && *t != '.' && *t != '-' && *t != '_' &&

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.40 2005/06/21 14:14:55 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.41 2005/06/22 10:17:22 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -862,24 +862,6 @@ lookup in your DATA ACL and maybe log it as W=user."
 
 So as to avoid duplication problems when sending multiple addresses in multiple
 copies to the same address.
-------------------------------------------------------------------------------
-
-(73)  17-Jul-02 M  Match a list from within a condition
-
-e.g.  ${if matchdomain {$domain}{+domainlist} ...
-      ${if matchhost {$sender_host_address}{1.2.3.4/10:2.3.4.5/16}...
-
-Thought needed about how to handle host names. This may be too messy to specify
-cleanly.
-
-22-Apr-04: Implemented for domains, addresses, and local parts. Hosts are
-too messy!
-
-The only sensible approach seems to be to allow IP address arguments only.
-Anything else should be diagnosed as an error. However, if a name appears in
-the list, a PTR lookup should be done. This may require a lot of refactoring
-in the code, because of the current assumption that were are (almost) always
-dealing with THE sending host.
 ------------------------------------------------------------------------------
 
 (74)  22-Jul-02 M  Extend -bV to do more semantic checking

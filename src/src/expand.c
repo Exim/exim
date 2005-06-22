@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.33 2005/06/20 13:58:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.34 2005/06/22 10:17:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -195,6 +195,7 @@ static uschar *cond_table[] = {
   US"match",
   US"match_address",
   US"match_domain",
+  US"match_ip",
   US"match_local_part",
   US"or",
   US"pam",
@@ -233,6 +234,7 @@ enum {
   ECOND_MATCH,
   ECOND_MATCH_ADDRESS,
   ECOND_MATCH_DOMAIN,
+  ECOND_MATCH_IP,
   ECOND_MATCH_LOCAL_PART,
   ECOND_OR,
   ECOND_PAM,
@@ -1801,6 +1803,7 @@ switch(cond_type)
                        variables if it succeeds
   match_address:     matches in an address list
   match_domain:      matches in a domain list
+  match_ip:          matches a host list that is restricted to IP addresses
   match_local_part:  matches in a local part list
   crypteq:           encrypts plaintext and compares against an encrypted text,
                        using crypt(), crypt16(), MD5 or SHA-1
@@ -1809,6 +1812,7 @@ switch(cond_type)
   case ECOND_MATCH:
   case ECOND_MATCH_ADDRESS:
   case ECOND_MATCH_DOMAIN:
+  case ECOND_MATCH_IP:
   case ECOND_MATCH_LOCAL_PART:
   case ECOND_CRYPTEQ:
 
@@ -1960,6 +1964,41 @@ switch(cond_type)
     case ECOND_MATCH_DOMAIN:   /* Match in a domain list */
     rc = match_isinlist(sub[0], &(sub[1]), 0, &domainlist_anchor, NULL,
       MCL_DOMAIN + MCL_NOEXPAND, TRUE, NULL);
+    goto MATCHED_SOMETHING;
+
+    case ECOND_MATCH_IP:       /* Match IP address in a host list */
+    if (sub[0][0] != 0 && string_is_ip_address(sub[0], NULL) <= 0)
+      {
+      expand_string_message = string_sprintf("\"%s\" is not an IP address",
+        sub[0]);
+      return NULL;
+      }
+    else
+      {
+      unsigned int *nullcache = NULL;
+      check_host_block cb;
+
+      cb.host_name = US"";
+      cb.host_address = sub[0];
+
+      /* If the host address starts off ::ffff: it is an IPv6 address in
+      IPv4-compatible mode. Find the IPv4 part for checking against IPv4
+      addresses. */
+
+      cb.host_ipv4 = (Ustrncmp(cb.host_address, "::ffff:", 7) == 0)?
+        cb.host_address + 7 : cb.host_address;
+
+      rc = match_check_list(
+             &sub[1],                   /* the list */
+             0,                         /* separator character */
+             &hostlist_anchor,          /* anchor pointer */
+             &nullcache,                /* cache pointer */
+             check_host,                /* function for testing */
+             &cb,                       /* argument for function */
+             MCL_HOST,                  /* type of check */
+             sub[0],                    /* text for debugging */
+             NULL);                     /* where to pass back data */
+      }
     goto MATCHED_SOMETHING;
 
     case ECOND_MATCH_LOCAL_PART:

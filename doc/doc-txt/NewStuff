@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.51 2005/06/21 14:14:55 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.52 2005/06/22 10:17:22 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -348,6 +348,41 @@ PH/04 There are two new options that control the retrying done by the daemon
       built-in constants previously: daemon_startup_retries defines the number
       of retries after the first failure (default 9); daemon_startup_sleep
       defines the length of time to wait between retries (default 30s).
+
+PH/05 There is now a new ${if condition called "match_ip". It is similar to
+      match_domain, etc. It must be followed by two argument strings. The first
+      (after expansion) must be an IP address or an empty string. The second
+      (after expansion) is a restricted host list that can match only an IP
+      address, not a host name. For example:
+
+        ${if match_ip{$sender_host_address}{1.2.3.4:5.6.7.8}{...}{...}}
+
+      The specific types of host list item that are permitted in the list are
+      shown below. Consult the manual section on host lists for further
+      details.
+
+      . An IP address, optionally with a CIDR mask.
+
+      . A single asterisk matches any IP address.
+
+      . An empty item matches only if the IP address is empty. This could be
+        useful for testing for a locally submitted message or one from specific
+        hosts in a single test such as
+
+          ${if match_ip{$sender_host_address}{:4.3.2.1:...}{...}{...}}
+
+        where the first item in the list is the empty string.
+
+      . The item @[] matches any of the local host's interface addresses.
+
+      . Lookups are assumed to be "net-" style lookups, even if "net-" is not
+        specified. Thus, the following are equivalent:
+
+          ${if match_ip{$sender_host_address}{lsearch;/some/file}...
+          ${if match_ip{$sender_host_address}{net-lsearch;/some/file}...
+
+        You do need to specify the "net-" prefix if you want to specify a
+        specific address mask, for example, by using "net24-".
 
 
 Version 4.51
