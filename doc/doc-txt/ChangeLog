@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.169 2005/06/22 15:44:37 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.170 2005/06/23 10:02:13 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -186,6 +186,13 @@ PH/26 Insert a lot of missing (void) casts for functions such as chown(),
       that detects such things. There doesn't seem to be a gcc warning option
       for this - only an attribute that has to be put on the function's
       prototype. I'm sure I haven't caught all of these, but it's a start.
+
+PH/27 If a dnslookup or manualroute router is set with verify=only, it need not
+      specify a transport. However, if an address that was verified by such a
+      router was the subject of a callout, Exim crashed because it tried to
+      read the rcpt_include_affixes from the non-existent transport. Now it
+      just assumes that the setting of that option is false. This bug was
+      introduced by 4.51/PH/31.
 
 
 Exim version 4.51

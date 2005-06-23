@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.20 2005/06/22 10:17:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.21 2005/06/23 10:02:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -550,10 +550,14 @@ for (host = host_list; host != NULL && !done; host = host->next)
 
     if (new_domain_record.random_result != ccache_accept && done)
       {
+      /* Get the rcpt_include_affixes flag from the transport if there is one,
+      but assume FALSE if there is not. */
+
       done =
         smtp_write_command(&outblock, FALSE, "RCPT TO:<%.1000s>\r\n",
           transport_rcpt_address(addr,
-            addr->transport->rcpt_include_affixes)) >= 0 &&
+            (addr->transport == NULL)? FALSE :
+             addr->transport->rcpt_include_affixes)) >= 0 &&
         smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
           '2', callout);
 
