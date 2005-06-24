@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dk.c,v 1.3 2005/06/20 11:20:41 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dk.c,v 1.4 2005/06/24 08:23:21 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -136,7 +136,7 @@ void dk_exim_verify_finish(void) {
       dk_internal_status = dk_message(dk_context, CUS &dkbuff[i], 1);
 
   /* Flag end-of-message. */
-  dk_internal_status = dk_end(dk_context, NULL);
+  dk_internal_status = dk_end(dk_context, &dk_flags);
 
   /* Grab address/domain information. */
   p = dk_address(dk_context);
@@ -160,10 +160,12 @@ void dk_exim_verify_finish(void) {
         dk_verify_block->domain = string_copy((uschar *)(q+1));
         *q = '\0';
         dk_verify_block->local_part = string_copy((uschar *)p);
+        *q = '@';
       }
     }
   }
 
+  /* TODO: This call should be removed with lib version >= 0.67 */
   dk_flags = dk_policy(dk_context);
 
   /* Grab domain policy */
