@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/spf.c,v 1.1 2005/05/25 20:07:55 tom Exp $ */
+/* $Cambridge: exim/src/src/lookups/spf.c,v 1.2 2005/06/27 18:01:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -25,6 +25,9 @@ static void dummy(int x) { dummy(x-1); }
 
 #include "lf_functions.h"
 #include "spf.h"
+#ifndef HAVE_NS_TYPE
+#define HAVE_NS_TYPE
+#endif
 #include <spf2/spf.h>
 #include <spf2/spf_dns_resolv.h>
 #include <spf2/spf_dns_cache.h>
