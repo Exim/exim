@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spf.c,v 1.5 2005/05/25 20:07:55 tom Exp $ */
+/* $Cambridge: exim/src/src/spf.c,v 1.6 2005/06/27 15:28:45 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -13,6 +13,18 @@
 #include "exim.h"
 #ifdef EXPERIMENTAL_SPF
 
+/* must be kept in numeric order */
+static spf_result_id spf_result_id_list[] = {
+  { US"invalid", 0},
+  { US"neutral", 1 },
+  { US"pass", 2 },
+  { US"fail", 3 },
+  { US"softfail", 4 },
+  { US"none", 5 },
+  { US"err_temp", 6 },
+  { US"err_perm", 7 }
+};
+
 SPF_server_t    *spf_server = NULL;
 SPF_request_t   *spf_request = NULL;
 SPF_response_t  *spf_response = NULL;
@@ -23,7 +35,6 @@ SPF_response_t  *spf_response_2mx = NULL;
    same host with the same HELO string) */
 
 int spf_init(uschar *spf_helo_domain, uschar *spf_remote_addr) {
-  uschar *p;
 
   spf_server = SPF_server_new(SPF_DNS_CACHE, 0);
 
@@ -112,4 +123,3 @@ int spf_process(uschar **listptr, uschar *spf_envelope_sender) {
 }
 
 #endif
-
