@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.15 2005/05/24 10:57:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.16 2005/06/27 10:52:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -278,6 +278,31 @@ header files. I don't suppose they have T_SRV either. */
 #ifndef T_SRV
 #define T_SRV 33
 #endif
+
+/* It seems that some versions of arpa/nameser.h don't define *any* of the
+T_xxx macros, which seem to be non-standard nowadays. Just to be on the safe
+side, put in definitions for all the ones that Exim uses. */
+
+#ifndef T_A
+#define T_A 1
+#endif
+
+#ifndef T_CNAME
+#define T_CNAME 5
+#endif
+
+#ifndef T_MX
+#define T_MX 15
+#endif
+
+#ifndef T_NS
+#define T_NS 2
+#endif
+
+#ifndef T_PTR
+#define T_PTR 12
+#endif
+
 
 /* We define a few private types for special DNS lookups:
 

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.172 2005/06/27 10:40:14 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.173 2005/06/27 10:52:20 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -201,6 +201,12 @@ PH/28 Changed -d+all to exclude +memory, because that information is very
 PH/29 Removed support for the Linux-libc5 build, as it is obsolete and the
       code in os-type was giving problems when libc.so lives in lib64, like on
       x86_64 Fedora Core.
+
+PH/30 Exim's DNS code uses the original T_xxx names for DNS record times. These
+      aren't the modern standard, and it seems that some systems' include files
+      don't always have them. Exim was already checking for some of the newer
+      ones like T_AAAA, and defining it itself. I've added checks for all the
+      record types that Exim uses.
 
 
 
