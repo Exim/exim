@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.52 2005/06/22 10:17:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.53 2005/06/27 14:34:33 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -383,6 +383,13 @@ PH/05 There is now a new ${if condition called "match_ip". It is similar to
 
         You do need to specify the "net-" prefix if you want to specify a
         specific address mask, for example, by using "net24-".
+
+PH/06 The "+all" debug selector used to set the flags for all possible output;
+      it is something that people tend to use semi-automatically when
+      generating debug output for me or for the list. However, by including
+      "+memory", an awful lot of output that is very rarely of interest was
+      generated. I have changed this so that "+all" no longer includes
+      "+memory". However, "-all" still turns everything off.
 
 
 Version 4.51
