@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.174 2005/06/27 14:29:43 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.175 2005/06/27 18:34:35 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -209,6 +209,15 @@ PH/30 Exim's DNS code uses the original T_xxx names for DNS record times. These
       don't always have them. Exim was already checking for some of the newer
       ones like T_AAAA, and defining it itself. I've added checks for all the
       record types that Exim uses.
+
+TK/10 Domainkeys: Fix a bug in verification that caused a crash in conjunction
+      with a change in libdomainkeys > 0.64.
+
+TK/11 Domainkeys: Change the logic how the "testing" policy flag is retrieved
+      from DNS. If the selector record carries the flag, it now has
+      precedence over the domain-wide flag.
+
+TK/12 Cleared some compiler warnings related to SPF, SRS and DK code.
 
 
 
