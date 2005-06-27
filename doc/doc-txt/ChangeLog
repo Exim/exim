@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.171 2005/06/27 10:21:38 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.172 2005/06/27 10:40:14 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -197,6 +197,11 @@ PH/27 If a dnslookup or manualroute router is set with verify=only, it need not
 PH/28 Changed -d+all to exclude +memory, because that information is very
       rarely of interest, but it makes the output a lot bigger. People tend to
       do -d+all out of habit.
+
+PH/29 Removed support for the Linux-libc5 build, as it is obsolete and the
+      code in os-type was giving problems when libc.so lives in lib64, like on
+      x86_64 Fedora Core.
+
 
 
 Exim version 4.51
