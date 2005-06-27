@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.170 2005/06/23 10:02:13 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.171 2005/06/27 10:21:38 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -193,6 +193,10 @@ PH/27 If a dnslookup or manualroute router is set with verify=only, it need not
       read the rcpt_include_affixes from the non-existent transport. Now it
       just assumes that the setting of that option is false. This bug was
       introduced by 4.51/PH/31.
+
+PH/28 Changed -d+all to exclude +memory, because that information is very
+      rarely of interest, but it makes the output a lot bigger. People tend to
+      do -d+all out of habit.
 
 
 Exim version 4.51

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.14 2005/05/31 10:58:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.15 2005/06/27 10:21:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -318,14 +318,14 @@ for having to swallow the rest of an SMTP message is whether the value is
 #define D_uid                        0x20000000
 #define D_verify                     0x40000000
 
-#define D_all                        0xffffffff
+#define D_all                        (0xffffffff & ~D_memory)
 
 #define D_any                        (D_all & \
                                        ~(D_v           | \
                                          D_pid         | \
                                          D_timestamp)  )
 
-#define D_default                    (D_all & \
+#define D_default                    (0xffffffff & \
                                        ~(D_expand      | \
                                          D_filter      | \
                                          D_interface   | \
