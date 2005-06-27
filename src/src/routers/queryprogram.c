@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/queryprogram.c,v 1.4 2005/04/28 13:06:32 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/queryprogram.c,v 1.5 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -278,7 +278,7 @@ if (pid < 0)
 
 /* Nothing is written to the standard input. */
 
-close(fd_in);
+(void)close(fd_in);
 
 /* Wait for the process to finish, applying the timeout, and inspect its return
 code. */
@@ -310,7 +310,7 @@ if ((rc = child_close(pid, ob->timeout)) != 0)
 /* Read the pipe to get the command's output, and then close it. */
 
 len = read(fd_out, buffer, sizeof(buffer) - 1);
-close(fd_out);
+(void)close(fd_out);
 
 /* Failure to return any data is an error. */
 

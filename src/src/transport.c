@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.11 2005/06/22 15:44:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.12 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1090,7 +1090,7 @@ dk_transport_write_message(address_item *addr, int fd, int options,
 
   CLEANUP:
   /* unlink -K file */
-  close(dk_fd);
+  (void)close(dk_fd);
   Uunlink(dk_spool_name);
   errno = save_errno;
   return rc;
@@ -1182,25 +1182,25 @@ if (pipe(pfd) != 0) goto TIDY_UP;      /* errno set */
 if ((write_pid = fork()) == 0)
   {
   BOOL rc;
-  close(fd_read);
-  close(pfd[pipe_read]);
+  (void)close(fd_read);
+  (void)close(pfd[pipe_read]);
   nl_check_length = nl_escape_length = 0;
   rc = internal_transport_write_message(addr, fd_write,
     (options & ~(topt_use_crlf | topt_end_dot)),
     size_limit, add_headers, remove_headers, NULL, NULL,
     rewrite_rules, rewrite_existflags);
   save_errno = errno;
-  write(pfd[pipe_write], (void *)&rc, sizeof(BOOL));
-  write(pfd[pipe_write], (void *)&save_errno, sizeof(int));
-  write(pfd[pipe_write], (void *)&(addr->more_errno), sizeof(int));
+  (void)write(pfd[pipe_write], (void *)&rc, sizeof(BOOL));
+  (void)write(pfd[pipe_write], (void *)&save_errno, sizeof(int));
+  (void)write(pfd[pipe_write], (void *)&(addr->more_errno), sizeof(int));
   _exit(0);
   }
 save_errno = errno;
 
 /* Parent process: close our copy of the writing subprocess' pipes. */
 
-close(pfd[pipe_write]);
-close(fd_write);
+(void)close(pfd[pipe_write]);
+(void)close(fd_write);
 fd_write = -1;
 
 /* Writing process creation failed */
@@ -1270,8 +1270,8 @@ sure. Also apply a paranoia timeout. */
 TIDY_UP:
 save_errno = errno;
 
-close(fd_read);
-if (fd_write > 0) close(fd_write);
+(void)close(fd_read);
+if (fd_write > 0) (void)close(fd_write);
 
 if (!yield)
   {
@@ -1303,11 +1303,11 @@ if (write_pid > 0)
     if (rc == 0)
       {
       BOOL ok;
-      read(pfd[pipe_read], (void *)&ok, sizeof(BOOL));
+      (void)read(pfd[pipe_read], (void *)&ok, sizeof(BOOL));
       if (!ok)
         {
-        read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
-        read(pfd[pipe_read], (void *)&(addr->more_errno), sizeof(int));
+        (void)read(pfd[pipe_read], (void *)&save_errno, sizeof(int));
+        (void)read(pfd[pipe_read], (void *)&(addr->more_errno), sizeof(int));
         yield = FALSE;
         }
       }
@@ -1320,7 +1320,7 @@ if (write_pid > 0)
       }
     }
   }
-close(pfd[pipe_read]);
+(void)close(pfd[pipe_read]);
 
 /* If there have been no problems we can now add the terminating "." if this is
 SMTP output, turning off escaping beforehand. If the last character from the
@@ -1784,8 +1784,8 @@ if ((pid = fork()) == 0)
 
   if (socket_fd != 0)
     {
-    dup2(socket_fd, 0);
-    close(socket_fd);
+    (void)dup2(socket_fd, 0);
+    (void)close(socket_fd);
     }
 
   DEBUG(D_exec) debug_print_argv(argv);

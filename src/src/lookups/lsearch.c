@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/lsearch.c,v 1.3 2005/01/11 15:51:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/lsearch.c,v 1.4 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -395,7 +395,7 @@ else
 void
 lsearch_close(void *handle)
 {
-fclose((FILE *)handle);
+(void)fclose((FILE *)handle);
 }
 
 /* End of lookups/lsearch.c */

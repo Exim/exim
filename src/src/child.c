@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/child.c,v 1.4 2005/02/17 11:58:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/child.c,v 1.5 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -32,9 +32,9 @@ static void
 force_fd(int oldfd, int newfd)
 {
 if (oldfd == newfd) return;
-close(newfd);
-dup2(oldfd, newfd);
-close(oldfd);
+(void)close(newfd);
+(void)dup2(oldfd, newfd);
+(void)close(oldfd);
 }
 
 
@@ -201,7 +201,7 @@ Exim. Failure is signalled with EX_EXECFAILED, but this shouldn't occur! */
 if (pid == 0)
   {
   force_fd(pfd[pipe_read], 0);
-  close(pfd[pipe_write]);
+  (void)close(pfd[pipe_write]);
   if (debug_fd > 0) force_fd(debug_fd, 2);
   if (bounce_sender_authentication != NULL)
     child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 8,
@@ -217,7 +217,7 @@ if (pid == 0)
 pipe. */
 
 save_errno = errno;
-close(pfd[pipe_read]);
+(void)close(pfd[pipe_read]);
 
 /* Fork succeeded */
 
@@ -229,7 +229,7 @@ if (pid > 0)
 
 /* Fork failed */
 
-close(pfd[pipe_write]);
+(void)close(pfd[pipe_write]);
 errno = save_errno;
 return (pid_t)(-1);
 }
@@ -280,8 +280,8 @@ pid_t pid;
 if (pipe(inpfd) != 0) return (pid_t)(-1);
 if (pipe(outpfd) != 0)
   {
-  close(inpfd[pipe_read]);
-  close(inpfd[pipe_write]);
+  (void)close(inpfd[pipe_read]);
+  (void)close(inpfd[pipe_write]);
   return (pid_t)(-1);
   }
 
@@ -301,14 +301,14 @@ if (pid == 0)
   {
   if (make_leader && setpgid(0,0) < 0) goto CHILD_FAILED;
 
-  close(inpfd[pipe_write]);
+  (void)close(inpfd[pipe_write]);
   force_fd(inpfd[pipe_read], 0);
 
-  close(outpfd[pipe_read]);
+  (void)close(outpfd[pipe_read]);
   force_fd(outpfd[pipe_write], 1);
 
-  close(2);
-  dup2(1, 2);
+  (void)close(2);
+  (void)dup2(1, 2);
 
   /* Set the required environment. */
 
@@ -338,8 +338,8 @@ if (pid == 0)
 stdin pipe, and the writing end of the stdout pipe. */
 
 save_errno = errno;
-close(inpfd[pipe_read]);
-close(outpfd[pipe_write]);
+(void)close(inpfd[pipe_read]);
+(void)close(outpfd[pipe_write]);
 
 /* Fork succeeded; return the input/output pipes and the pid */
 
@@ -352,8 +352,8 @@ if (pid > 0)
 
 /* Fork failed; reset fork errno before returning */
 
-close(inpfd[pipe_write]);
-close(outpfd[pipe_read]);
+(void)close(inpfd[pipe_write]);
+(void)close(outpfd[pipe_read]);
 errno = save_errno;
 return (pid_t)(-1);
 }

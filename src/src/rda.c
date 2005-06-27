@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/rda.c,v 1.7 2005/06/16 14:10:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/rda.c,v 1.8 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -302,14 +302,14 @@ filebuf[statbuf.st_size] = 0;
 DEBUG(D_route)
   debug_printf(OFF_T_FMT " bytes read from %s\n", statbuf.st_size, filename);
 
-fclose(fwd);
+(void)fclose(fwd);
 return filebuf;
 
 /* Return an error: the string is already set up. */
 
 ERROR_RETURN:
 *yield = FF_ERROR;
-fclose(fwd);
+(void)fclose(fwd);
 return NULL;
 }
 
@@ -446,8 +446,8 @@ static void
 rda_write_string(int fd, uschar *s)
 {
 int len = (s == NULL)? 0 : Ustrlen(s) + 1;
-write(fd, &len, sizeof(int));
-if (s != NULL) write(fd, s, len);
+(void)write(fd, &len, sizeof(int));
+if (s != NULL) (void)write(fd, s, len);
 }
 
 
@@ -615,7 +615,7 @@ if ((pid = fork()) == 0)
   header_line *waslast = header_last;   /* Save last header */
 
   fd = pfd[pipe_write];
-  close(pfd[pipe_read]);
+  (void)close(pfd[pipe_read]);
   exim_setugid(ugid->uid, ugid->gid, FALSE, rname);
 
   /* Addresses can get rewritten in filters; if we are not root or the exim
@@ -638,8 +638,8 @@ if ((pid = fork()) == 0)
   /* Pass back whether it was a filter, and the return code and any overall
   error text via the pipe. */
 
-  write(fd, filtertype, sizeof(int));
-  write(fd, &yield, sizeof(int));
+  (void)write(fd, filtertype, sizeof(int));
+  (void)write(fd, &yield, sizeof(int));
   rda_write_string(fd, *error);
 
   /* Pass back the contents of any syntax error blocks if we have a pointer */
@@ -665,10 +665,10 @@ if ((pid = fork()) == 0)
     header_line *h;
     for (h = header_list; h != waslast->next; i++, h = h->next)
       {
-      if (h->type == htype_old) write(fd, &i, sizeof(i));
+      if (h->type == htype_old) (void)write(fd, &i, sizeof(i));
       }
     i = -1;
-    write(fd, &i, sizeof(i));
+    (void)write(fd, &i, sizeof(i));
 
     while (waslast != header_last)
       {
@@ -676,7 +676,7 @@ if ((pid = fork()) == 0)
       if (waslast->type != htype_old)
         {
         rda_write_string(fd, waslast->text);
-        write(fd, &(waslast->type), sizeof(waslast->type));
+        (void)write(fd, &(waslast->type), sizeof(waslast->type));
         }
       }
     rda_write_string(fd, NULL);    /* Indicates end of added headers */
@@ -684,7 +684,7 @@ if ((pid = fork()) == 0)
 
   /* Write the contents of the $n variables */
 
-  write(fd, filter_n, sizeof(filter_n));
+  (void)write(fd, filter_n, sizeof(filter_n));
 
   /* If the result was DELIVERED or NOTDELIVERED, we pass back the generated
   addresses, and their associated information, through the pipe. This is
@@ -701,8 +701,8 @@ if ((pid = fork()) == 0)
       int reply_options = 0;
 
       rda_write_string(fd, addr->address);
-      write(fd, &(addr->mode), sizeof(addr->mode));
-      write(fd, &(addr->flags), sizeof(addr->flags));
+      (void)write(fd, &(addr->mode), sizeof(addr->mode));
+      (void)write(fd, &(addr->flags), sizeof(addr->flags));
       rda_write_string(fd, addr->p.errors_address);
 
       if (addr->pipe_expandn != NULL)
@@ -714,15 +714,15 @@ if ((pid = fork()) == 0)
       rda_write_string(fd, NULL);
 
       if (addr->reply == NULL)
-        write(fd, &reply_options, sizeof(int));    /* 0 means no reply */
+        (void)write(fd, &reply_options, sizeof(int));    /* 0 means no reply */
       else
         {
         reply_options |= REPLY_EXISTS;
         if (addr->reply->file_expand) reply_options |= REPLY_EXPAND;
         if (addr->reply->return_message) reply_options |= REPLY_RETURN;
-        write(fd, &reply_options, sizeof(int));
-        write(fd, &(addr->reply->expand_forbid), sizeof(int));
-        write(fd, &(addr->reply->once_repeat), sizeof(time_t));
+        (void)write(fd, &reply_options, sizeof(int));
+        (void)write(fd, &(addr->reply->expand_forbid), sizeof(int));
+        (void)write(fd, &(addr->reply->once_repeat), sizeof(time_t));
         rda_write_string(fd, addr->reply->to);
         rda_write_string(fd, addr->reply->cc);
         rda_write_string(fd, addr->reply->bcc);
@@ -742,7 +742,7 @@ if ((pid = fork()) == 0)
 
   /* OK, this process is now done. Must use _exit() and not exit() !! */
 
-  close(fd);
+  (void)close(fd);
   _exit(0);
   }
 
@@ -755,7 +755,7 @@ if (pid < 0)
 writing end must be closed first, as otherwise read() won't return zero on an
 empty pipe. Afterwards, close the reading end. */
 
-close(pfd[pipe_write]);
+(void)close(pfd[pipe_write]);
 
 /* Read initial data, including yield and contents of *error */
 
@@ -940,7 +940,7 @@ else if (status != 0)
   }
 
 FINAL_EXIT:
-close(fd);
+(void)close(fd);
 signal(SIGCHLD, oldsignal);   /* restore */
 return yield;
 

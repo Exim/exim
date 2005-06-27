@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/demime.c,v 1.5 2005/05/24 08:15:02 tom Exp $ */
+/* $Cambridge: exim/src/src/demime.c,v 1.6 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -60,7 +60,7 @@ int demime(uschar **listptr) {
   if (!demime_ok)
     demime_rc = mime_demux(mbox_file, defer_error_buffer);
 
-  fclose(mbox_file);
+  (void)fclose(mbox_file);
 
   if (demime_rc == DEFER) {
     /* temporary failure (DEFER => DEFER) */
@@ -346,7 +346,7 @@ int mime_read_line(FILE *f, int mime_demux_mode, uschar *buffer, long *num_copie
           c = fgetc(f);
           if (c == EOF) break;
           if ( (c == '\t') || (c == ' ') ) continue;
-          ungetc(c,f);
+          (void)ungetc(c,f);
         };
         /* end of the header, terminate with ';' */
         c = ';';
@@ -1078,14 +1078,14 @@ int mime_demux(FILE *f, uschar *info) {
          if (data_len == -2) {
            /* temp error, turn off uudecode mode */
            if (uu_dump_file != NULL) {
-            fclose(uu_dump_file); uu_dump_file = NULL;
+            (void)fclose(uu_dump_file); uu_dump_file = NULL;
            };
            uu_mode = MIME_UU_MODE_OFF;
            return DEFER;
          }
          else if (data_len == -1) {
            if (uu_dump_file != NULL) {
-            fclose(uu_dump_file); uu_dump_file = NULL;
+            (void)fclose(uu_dump_file); uu_dump_file = NULL;
            };
            uu_mode = MIME_UU_MODE_OFF;
            data_len = 0;
@@ -1101,7 +1101,7 @@ int mime_demux(FILE *f, uschar *info) {
           check for single "end" tag on line */
           if ((strncmpic(line,US"end",3) == 0) && (line[3] < 32)) {
             if (uu_dump_file != NULL) {
-              fclose(uu_dump_file); uu_dump_file = NULL;
+              (void)fclose(uu_dump_file); uu_dump_file = NULL;
             };
             uu_mode = MIME_UU_MODE_OFF;
           }
@@ -1110,7 +1110,7 @@ int mime_demux(FILE *f, uschar *info) {
             if (data_len == -2) {
                /* temp error, turn off uudecode mode */
                if (uu_dump_file != NULL) {
-                 fclose(uu_dump_file); uu_dump_file = NULL;
+                 (void)fclose(uu_dump_file); uu_dump_file = NULL;
                };
                uu_mode = MIME_UU_MODE_OFF;
                return DEFER;
@@ -1152,7 +1152,7 @@ int mime_demux(FILE *f, uschar *info) {
               mime_demux(mime_dump_file,info);
             };
 
-            fclose(mime_dump_file); mime_dump_file = NULL;
+            (void)fclose(mime_dump_file); mime_dump_file = NULL;
           };
         }
         else if (tmp == 2) {
@@ -1167,7 +1167,7 @@ int mime_demux(FILE *f, uschar *info) {
               mime_demux(mime_dump_file,info);
             };
 
-            fclose(mime_dump_file); mime_dump_file = NULL;
+            (void)fclose(mime_dump_file); mime_dump_file = NULL;
           };
         }
         else {
@@ -1218,9 +1218,9 @@ int mime_demux(FILE *f, uschar *info) {
 
   /* close files, they could still be open */
   if (mime_dump_file != NULL)
-    fclose(mime_dump_file);
+    (void)fclose(mime_dump_file);
   if (uu_dump_file != NULL)
-    fclose(uu_dump_file);
+    (void)fclose(uu_dump_file);
 
   /* release line buffer */
   free(line);

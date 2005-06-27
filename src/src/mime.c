@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.7 2005/04/04 10:33:49 ph10 Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.8 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -384,7 +384,7 @@ int mime_decode(uschar **listptr) {
 
   }
 
-  fclose(decode_file);
+  (void)fclose(decode_file);
 
   clearerr(mime_stream);
   fseek(mime_stream,f_pos,SEEK_SET);
@@ -418,7 +418,7 @@ int mime_get_header(FILE *f, uschar *header) {
         c = fgetc(f);
         if (c == EOF) break;
         if ( (c == '\t') || (c == ' ') ) continue;
-        ungetc(c,f);
+        (void)ungetc(c,f);
       };
       /* end of the header, terminate with ';' */
       c = ';';

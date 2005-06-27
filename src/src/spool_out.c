@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_out.c,v 1.7 2005/06/22 15:44:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_out.c,v 1.8 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -48,7 +48,7 @@ uschar *msg = (where == SW_RECEIVING)?
     strerror(errno));
 
 if (temp_name != NULL) Uunlink(temp_name);
-if (f != NULL) fclose(f);
+if (f != NULL) (void)fclose(f);
 
 if (errmsg == NULL)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s", msg);

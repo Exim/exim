@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/log.c,v 1.4 2005/06/22 15:44:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/log.c,v 1.5 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -814,7 +814,7 @@ if ((flags & LOG_MAIN) != 0 &&
       uschar *nowstamp = tod_stamp(tod_log_datestamp);
       if (Ustrncmp (mainlog_datestamp, nowstamp, Ustrlen(nowstamp)) != 0)
         {
-        close(mainlogfd);             /* Close the file */
+        (void)close(mainlogfd);       /* Close the file */
         mainlogfd = -1;               /* Clear the file descriptor */
         mainlog_inode = 0;            /* Unset the inode */
         mainlog_datestamp = NULL;     /* Clear the datestamp */
@@ -830,7 +830,7 @@ if ((flags & LOG_MAIN) != 0 &&
       {
       if (Ustat(mainlog_name, &statbuf) < 0 || statbuf.st_ino != mainlog_inode)
         {
-        close(mainlogfd);
+        (void)close(mainlogfd);
         mainlogfd = -1;
         mainlog_inode = 0;
         }
@@ -936,7 +936,7 @@ if (write_rejectlog && (flags & LOG_REJECT) != 0)
       uschar *nowstamp = tod_stamp(tod_log_datestamp);
       if (Ustrncmp (rejectlog_datestamp, nowstamp, Ustrlen(nowstamp)) != 0)
         {
-        close(rejectlogfd);             /* Close the file */
+        (void)close(rejectlogfd);       /* Close the file */
         rejectlogfd = -1;               /* Clear the file descriptor */
         rejectlog_inode = 0;            /* Unset the inode */
         rejectlog_datestamp = NULL;     /* Clear the datestamp */
@@ -953,7 +953,7 @@ if (write_rejectlog && (flags & LOG_REJECT) != 0)
       if (Ustat(rejectlog_name, &statbuf) < 0 ||
            statbuf.st_ino != rejectlog_inode)
         {
-        close(rejectlogfd);
+        (void)close(rejectlogfd);
         rejectlogfd = -1;
         rejectlog_inode = 0;
         }
@@ -1031,7 +1031,7 @@ if ((flags & LOG_PANIC) != 0)
       flags |= LOG_PANIC_DIE;
       }
 
-    close(paniclogfd);
+    (void)close(paniclogfd);
     }
 
   /* Give up if the DIE flag is set */
@@ -1051,9 +1051,9 @@ void
 log_close_all(void)
 {
 if (mainlogfd >= 0)
-  { close(mainlogfd); mainlogfd = -1; }
+  { (void)close(mainlogfd); mainlogfd = -1; }
 if (rejectlogfd >= 0)
-  { close(rejectlogfd); rejectlogfd = -1; }
+  { (void)close(rejectlogfd); rejectlogfd = -1; }
 closelog();
 syslog_open = FALSE;
 }

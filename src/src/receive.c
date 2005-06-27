@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.19 2005/06/22 15:44:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.20 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -303,8 +303,8 @@ if (spool_name[0] != 0)
 
 /* Now close the file if it is open, either as a fd or a stream. */
 
-if (data_file != NULL) fclose(data_file);
-  else if (data_fd >= 0) close(data_fd);
+if (data_file != NULL) (void)fclose(data_file);
+  else if (data_fd >= 0) (void)close(data_fd);
 
 /* Attempt to close down an SMTP connection tidily. */
 
@@ -865,7 +865,7 @@ if (error_handling == ERRORS_SENDER)
     error_rc = EXIT_FAILURE;
   }
 else fprintf(stderr, "exim: %s%s\n", text2, text1);  /* Sic */
-fclose(f);
+(void)fclose(f);
 exim_exit(error_rc);
 }
 
@@ -1078,7 +1078,7 @@ mime_is_rfc822 = 0;
 MIME_ACL_CHECK:
 mime_part_count = -1;
 rc = mime_acl_check(acl, mbox_file, NULL, &user_msg, &log_msg);
-fclose(mbox_file);
+(void)fclose(mbox_file);
 
 if (Ustrlen(rfc822_file_path) > 0) {
   mime_part_count = mime_part_count_buffer;
@@ -2632,7 +2632,7 @@ if (next != NULL)
   {
   uschar *s = next->text;
   int len = next->slen;
-  fwrite(s, 1, len, data_file);
+  (void)fwrite(s, 1, len, data_file);
   body_linecount++;                 /* Assumes only 1 line */
   }
 
@@ -2823,7 +2823,7 @@ if (extract_recip && (bad_addresses != NULL || recipients_count == 0))
   if (recipients_count == 0 || error_handling == ERRORS_STDERR)
     {
     Uunlink(spool_name);
-    fclose(data_file);
+    (void)fclose(data_file);
     exim_exit(error_rc);
     }
   }
@@ -3409,7 +3409,7 @@ if (message_logs && blackholed_by == NULL)
       {
       log_write(0, LOG_MAIN|LOG_PANIC, "Couldn't fdopen message log %s: %s",
         spool_name, strerror(errno));
-      close(fd);
+      (void)close(fd);
       }
     else
       {
@@ -3419,7 +3419,7 @@ if (message_logs && blackholed_by == NULL)
         frozen_by);
       if (queue_only_policy) fprintf(message_log,
         "%s no immediate delivery: queued by %s\n", now, queued_by);
-      fclose(message_log);
+      (void)fclose(message_log);
       }
     }
   }
@@ -3451,8 +3451,8 @@ possible for fclose() to fail - but what to do? What has happened to the lock
 if this happens? */
 
 TIDYUP:
-process_info[process_info_len] = 0;          /* Remove message id */
-if (data_file != NULL) fclose(data_file);    /* Frees the lock */
+process_info[process_info_len] = 0;                /* Remove message id */
+if (data_file != NULL) (void)fclose(data_file);    /* Frees the lock */
 
 /* Now reset signal handlers to their defaults */
 

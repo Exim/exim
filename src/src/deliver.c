@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.19 2005/06/22 15:44:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.20 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -798,7 +798,7 @@ if (addr->return_file >= 0 && addr->return_filename != NULL)
           log_write(0, LOG_MAIN, "<%s>: %s transport output: %s",
             addr->address, tb->name, s);
           }
-        fclose(f);
+        (void)fclose(f);
         }
       }
 
@@ -829,7 +829,7 @@ if (addr->return_file >= 0 && addr->return_filename != NULL)
     addr->return_file = -1;
     }
 
-  close(addr->return_file);
+  (void)close(addr->return_file);
   }
 
 /* Create the address string for logging. Must not do this earlier, because
@@ -1728,7 +1728,7 @@ if ((pid = fork()) == 0)
   half - for transports that exec things (e.g. pipe). Then set the required
   gid/uid. */
 
-  close(pfd[pipe_read]);
+  (void)close(pfd[pipe_read]);
   (void)fcntl(pfd[pipe_write], F_SETFD, fcntl(pfd[pipe_write], F_GETFD) |
     FD_CLOEXEC);
   exim_setugid(uid, gid, use_initgroups,
@@ -1794,13 +1794,13 @@ if ((pid = fork()) == 0)
     int local_part_length = Ustrlen(addr2->local_part);
     uschar *s;
 
-    write(pfd[pipe_write], (void *)&(addr2->transport_return), sizeof(int));
-    write(pfd[pipe_write], (void *)&transport_count, sizeof(transport_count));
-    write(pfd[pipe_write], (void *)&(addr2->flags), sizeof(addr2->flags));
-    write(pfd[pipe_write], (void *)&(addr2->basic_errno), sizeof(int));
-    write(pfd[pipe_write], (void *)&(addr2->more_errno), sizeof(int));
-    write(pfd[pipe_write], (void *)&(addr2->special_action), sizeof(int));
-    write(pfd[pipe_write], (void *)&(addr2->transport),
+    (void)write(pfd[pipe_write], (void *)&(addr2->transport_return), sizeof(int));
+    (void)write(pfd[pipe_write], (void *)&transport_count, sizeof(transport_count));
+    (void)write(pfd[pipe_write], (void *)&(addr2->flags), sizeof(addr2->flags));
+    (void)write(pfd[pipe_write], (void *)&(addr2->basic_errno), sizeof(int));
+    (void)write(pfd[pipe_write], (void *)&(addr2->more_errno), sizeof(int));
+    (void)write(pfd[pipe_write], (void *)&(addr2->special_action), sizeof(int));
+    (void)write(pfd[pipe_write], (void *)&(addr2->transport),
       sizeof(transport_instance *));
 
     /* For a file delivery, pass back the local part, in case the original
@@ -1809,8 +1809,8 @@ if ((pid = fork()) == 0)
 
     if (testflag(addr2, af_file))
       {
-      write(pfd[pipe_write], (void *)&local_part_length, sizeof(int));
-      write(pfd[pipe_write], addr2->local_part, local_part_length);
+      (void)write(pfd[pipe_write], (void *)&local_part_length, sizeof(int));
+      (void)write(pfd[pipe_write], addr2->local_part, local_part_length);
       }
 
     /* Now any messages */
@@ -1818,15 +1818,15 @@ if ((pid = fork()) == 0)
     for (i = 0, s = addr2->message; i < 2; i++, s = addr2->user_message)
       {
       int message_length = (s == NULL)? 0 : Ustrlen(s) + 1;
-      write(pfd[pipe_write], (void *)&message_length, sizeof(int));
-      if (message_length > 0) write(pfd[pipe_write], s, message_length);
+      (void)write(pfd[pipe_write], (void *)&message_length, sizeof(int));
+      if (message_length > 0) (void)write(pfd[pipe_write], s, message_length);
       }
     }
 
   /* OK, this process is now done. Free any cached resources that it opened,
   and close the pipe we were writing down before exiting. */
 
-  close(pfd[pipe_write]);
+  (void)close(pfd[pipe_write]);
   search_tidyup();
   exit(EXIT_SUCCESS);
   }
@@ -1845,7 +1845,7 @@ on an empty pipe. We check that a status exists for each address before
 overwriting the address structure. If data is missing, the default DEFER status
 will remain. Afterwards, close the reading end. */
 
-close(pfd[pipe_write]);
+(void)close(pfd[pipe_write]);
 
 for (addr2 = addr; addr2 != NULL; addr2 = addr2->next)
   {
@@ -1895,7 +1895,7 @@ for (addr2 = addr; addr2 != NULL; addr2 = addr2->next)
     }
   }
 
-close(pfd[pipe_read]);
+(void)close(pfd[pipe_read]);
 
 /* Unless shadowing, write all successful addresses immediately to the journal
 file, to ensure they are recorded asap. For homonymic addresses, use the base
@@ -1998,7 +1998,7 @@ if (addr->special_action == SPECIAL_WARN &&
 
       /* Close and wait for child process to complete, without a timeout. */
 
-      fclose(f);
+      (void)fclose(f);
       (void)child_close(pid, 0);
       }
     }
@@ -2885,7 +2885,7 @@ if (!eop && !done)
 /* Close our end of the pipe, to prevent deadlock if the far end is still
 pushing stuff into it. */
 
-close(fd);
+(void)close(fd);
 p->fd = -1;
 
 /* If we have finished without error, but haven't had data for every address,
@@ -3707,8 +3707,8 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
   if (poffset >= remote_max_parallel)
     {
-    close(pfd[pipe_write]);
-    close(pfd[pipe_read]);
+    (void)close(pfd[pipe_write]);
+    (void)close(pfd[pipe_read]);
     remote_post_process(addr, LOG_MAIN|LOG_PANIC,
       US"Unexpectedly no free subprocess slot", fallback);
     continue;
@@ -3754,7 +3754,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     that are running in parallel. */
 
     for (poffset = 0; poffset < remote_max_parallel; poffset++)
-      if (parlist[poffset].pid != 0) close(parlist[poffset].fd);
+      if (parlist[poffset].pid != 0) (void)close(parlist[poffset].fd);
 
     /* This process has inherited a copy of the file descriptor
     for the data file, but its file pointer is shared with all the
@@ -3764,7 +3764,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     the parent process. There doesn't seem to be any way of doing
     a dup-with-new-file-pointer. */
 
-    close(deliver_datafile);
+    (void)close(deliver_datafile);
     sprintf(CS spoolname, "%s/input/%s/%s-D", spool_directory, message_subdir,
       message_id);
     deliver_datafile = Uopen(spoolname, O_RDWR | O_APPEND, 0);
@@ -3788,7 +3788,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     and run the transport. Afterwards, transport_count will contain the number
     of bytes written. */
 
-    close(pfd[pipe_read]);
+    (void)close(pfd[pipe_read]);
     set_process_info("delivering %s using %s", message_id, tp->name);
     debug_print_string(tp->debug_string);
     if (!(tp->info->code)(addr->transport, addr)) replicate_status(addr);
@@ -3817,7 +3817,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
       {
       if (h->address == NULL || h->status < hstatus_unusable) continue;
       sprintf(CS big_buffer, "H%c%c%s", h->status, h->why, h->address);
-      write(fd, big_buffer, Ustrlen(big_buffer+3) + 4);
+      (void)write(fd, big_buffer, Ustrlen(big_buffer+3) + 4);
       }
 
     /* The number of bytes written. This is the same for each address. Even
@@ -3827,7 +3827,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
     big_buffer[0] = 'S';
     memcpy(big_buffer+1, &transport_count, sizeof(transport_count));
-    write(fd, big_buffer, sizeof(transport_count) + 1);
+    (void)write(fd, big_buffer, sizeof(transport_count) + 1);
 
     /* Information about what happened to each address. Three item types are
     used: an optional 'X' item first, for TLS information, followed by 'R'
@@ -3857,7 +3857,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
           sprintf(CS ptr, "%.512s", addr->peerdn);
           while(*ptr++);
           }
-        write(fd, big_buffer, ptr - big_buffer);
+        (void)write(fd, big_buffer, ptr - big_buffer);
         }
       #endif
 
@@ -3877,7 +3877,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
           sprintf(CS ptr, "%.512s", r->message);
           while(*ptr++);
           }
-        write(fd, big_buffer, ptr - big_buffer);
+        (void)write(fd, big_buffer, ptr - big_buffer);
         }
 
       /* The rest of the information goes in an 'A' item. */
@@ -3913,7 +3913,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         memcpy(ptr, &(addr->host_used->port), sizeof(addr->host_used->port));
         ptr += sizeof(addr->host_used->port);
         }
-      write(fd, big_buffer, ptr - big_buffer);
+      (void)write(fd, big_buffer, ptr - big_buffer);
       }
 
     /* Add termination flag, close the pipe, and that's it. The character
@@ -3923,20 +3923,20 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
     big_buffer[0] = 'Z';
     big_buffer[1] = (continue_transport == NULL)? '0' : '1';
-    write(fd, big_buffer, 2);
-    close(fd);
+    (void)write(fd, big_buffer, 2);
+    (void)close(fd);
     exit(EXIT_SUCCESS);
     }
 
   /* Back in the mainline: close the unwanted half of the pipe. */
 
-  close(pfd[pipe_write]);
+  (void)close(pfd[pipe_write]);
 
   /* Fork failed; defer with error message */
 
   if (pid < 0)
     {
-    close(pfd[pipe_read]);
+    (void)close(pfd[pipe_read]);
     remote_post_process(addr, LOG_MAIN|LOG_PANIC,
       string_sprintf("fork failed for remote delivery to %s: %s",
         addr->domain, strerror(errno)), fallback);
@@ -4517,7 +4517,7 @@ if ((rc = spool_read_header(spoolname, TRUE, TRUE)) != spool_read_OK)
       readconf_printtime(keep_malformed));
     }
 
-  close(deliver_datafile);
+  (void)close(deliver_datafile);
   deliver_datafile = -1;
   return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
   }
@@ -4543,7 +4543,7 @@ if (jread != NULL)
     DEBUG(D_deliver) debug_printf("Previously delivered address %s taken from "
       "journal file\n", big_buffer);
     }
-  fclose(jread);
+  (void)fclose(jread);
   /* Panic-dies on error */
   (void)spool_write_header(message_id, SW_DELIVERING, NULL);
   }
@@ -4558,7 +4558,7 @@ else if (errno != ENOENT)
 
 if (recipients_list == NULL)
   {
-  close(deliver_datafile);
+  (void)close(deliver_datafile);
   deliver_datafile = -1;
   log_write(0, LOG_MAIN, "Spool error: no recipients for %s", spoolname);
   return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
@@ -4618,7 +4618,7 @@ if (deliver_freeze)
           continue_hostname != NULL
         ))
       {
-      close(deliver_datafile);
+      (void)close(deliver_datafile);
       deliver_datafile = -1;
       log_write(L_skip_delivery, LOG_MAIN, "Message is frozen");
       return continue_closedown();   /* yields DELIVER_NOT_ATTEMPTED */
@@ -4753,7 +4753,7 @@ else if (system_filter != NULL && process_recipients != RECIP_FAIL_TIMEOUT)
 
   if (rc == FF_ERROR || rc == FF_NONEXIST)
     {
-    close(deliver_datafile);
+    (void)close(deliver_datafile);
     deliver_datafile = -1;
     log_write(0, LOG_MAIN|LOG_PANIC, "Error in system filter: %s",
       string_printing(filter_message));
@@ -6292,7 +6292,7 @@ wording. */
           else
             {
             while ((ch = fgetc(fm)) != EOF) fputc(ch, f);
-            fclose(fm);
+            (void)fclose(fm);
             }
           Uunlink(addr->return_filename);
 
@@ -6365,13 +6365,13 @@ wording. */
         {
         emf_text = next_emf(emf, US"final");
         if (emf_text != NULL) fprintf(f, "%s", CS emf_text);
-        fclose(emf);
+        (void)fclose(emf);
         }
 
       /* Close the file, which should send an EOF to the child process
       that is receiving the message. Wait for it to finish. */
 
-      fclose(f);
+      (void)fclose(f);
       rc = child_close(pid, 0);     /* Waits for child to close, no timeout */
 
       /* In the test harness, let the child do it's thing first. */
@@ -6738,7 +6738,7 @@ else if (addr_defer != (address_item *)(+1))
           {
           wmf_text = next_emf(wmf, US"final");
           if (wmf_text != NULL) fprintf(f, "%s", CS wmf_text);
-          fclose(wmf);
+          (void)fclose(wmf);
           }
         else
           {
@@ -6752,7 +6752,7 @@ else if (addr_defer != (address_item *)(+1))
         /* Close and wait for child process to complete, without a timeout.
         If there's an error, don't update the count. */
 
-        fclose(f);
+        (void)fclose(f);
         if (child_close(pid, 0) == 0)
           {
           warning_count = count;
@@ -6835,7 +6835,7 @@ else if (addr_defer != (address_item *)(+1))
 /* Finished with the message log. If the message is complete, it will have
 been unlinked or renamed above. */
 
-if (message_logs) fclose(message_log);
+if (message_logs) (void)fclose(message_log);
 
 /* Now we can close and remove the journal file. Its only purpose is to record
 successfully completed deliveries asap so that this information doesn't get
@@ -6849,7 +6849,7 @@ the remove_journal flag. When the journal is left, we also don't move the
 message off the main spool if frozen and the option is set. It should get moved
 at the next attempt, after the journal has been inspected. */
 
-if (journal_fd >= 0) close(journal_fd);
+if (journal_fd >= 0) (void)close(journal_fd);
 
 if (remove_journal)
   {
@@ -6870,7 +6870,7 @@ if (remove_journal)
 will go away. Otherwise the message becomes available for another process
 to try delivery. */
 
-close(deliver_datafile);
+(void)close(deliver_datafile);
 deliver_datafile = -1;
 DEBUG(D_deliver) debug_printf("end delivery of %s\n", id);
 

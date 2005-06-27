@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/iplookup.c,v 1.2 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/iplookup.c,v 1.3 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -251,7 +251,7 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
     if (send(query_socket, query, query_len, 0) < 0)
       {
       DEBUG(D_route) debug_printf("send to %s failed\n", h->address);
-      close(query_socket);
+      (void)close(query_socket);
       continue;
       }
 
@@ -259,7 +259,7 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
     next IP address. */
 
     count = ip_recv(query_socket, reply, sizeof(reply) - 1, ob->timeout);
-    close(query_socket);
+    (void)close(query_socket);
     if (count <= 0)
       {
       DEBUG(D_route) debug_printf("%s from %s\n", (errno == ETIMEDOUT)?

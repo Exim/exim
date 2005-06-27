@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.6 2005/06/22 15:44:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.7 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -316,7 +316,7 @@ if (rc < 0)
   printf("** Failed to get %s lock for %s: %s",
     ((flags & O_RDONLY) != 0)? "read" : "write", buffer,
     (errno == ETIMEDOUT)? "timed out" : strerror(errno));
-  close(dbblock->lockfd);
+  (void)close(dbblock->lockfd);
   return NULL;
   }
 
@@ -336,7 +336,7 @@ if (dbblock->dbptr == NULL)
     ""
     #endif
     );
-  close(dbblock->lockfd);
+  (void)close(dbblock->lockfd);
   return NULL;
   }
 
@@ -361,7 +361,7 @@ static void
 dbfn_close(open_db *dbblock)
 {
 EXIM_DBCLOSE(dbblock->dbptr);
-close(dbblock->lockfd);
+(void)close(dbblock->lockfd);
 }
 
 

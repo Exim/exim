@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.11 2005/04/28 13:06:32 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.12 2005/06/27 14:29:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1866,7 +1866,7 @@ writing RSET might have failed, or there may be other addresses whose hosts are
 specified in the transports, and therefore not visible at top level, in which
 case continue_more won't get set. */
 
-close(inblock.sock);
+(void)close(inblock.sock);
 continue_transport = NULL;
 continue_hostname = NULL;
 return yield;
@@ -1919,7 +1919,7 @@ outblock.authenticating = FALSE;
 (void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
 (void)smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
   ob->command_timeout);
-close(inblock.sock);
+(void)close(inblock.sock);
 }
 
 

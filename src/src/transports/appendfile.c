@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.9 2005/06/22 15:44:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.10 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -602,7 +602,7 @@ for (h = &host; h != NULL; h = h->next)
 
   (void)ip_connect(sock, host_af, h->address, ntohs(sp->s_port), 0);
   rc = send(sock, buffer, Ustrlen(buffer) + 1, 0);
-  close(sock);
+  (void)close(sock);
 
   if (rc >= 0) break;
   DEBUG(D_transport)
@@ -1430,7 +1430,7 @@ if (!isdirectory)
     if (cfd >= 0)
       {
       transport_instance *tt = check_file_format(cfd, tblock, addr);
-      close(cfd);
+      (void)close(cfd);
 
       /* If another transport is indicated, call it and return; if no transport
       was found, just return - the error data will have been set up.*/
@@ -1622,7 +1622,7 @@ if (!isdirectory)
       sufficiently worried. */
 
       if ((rc = Ulink(hitchname, lockname)) != 0) fstat(hd, &statbuf);
-      close(hd);
+      (void)close(hd);
       Uunlink(hitchname);
       if (rc != 0 && statbuf.st_nlink != 2)
         {
@@ -2023,7 +2023,7 @@ if (!isdirectory)
 
         DEBUG(D_transport) debug_printf("failed to lock %s: %s\n", mbx_lockname,
           strerror(errno));
-        close(mbx_lockfd);
+        (void)close(mbx_lockfd);
         mbx_lockfd = -1;
         }
       else
@@ -2039,7 +2039,7 @@ if (!isdirectory)
     DEBUG(D_transport)
       debug_printf("fcntl(), flock(), or MBX locking failed - retrying\n");
 
-    close(fd);
+    (void)close(fd);
     fd = -1;
     use_lstat = TRUE;             /* Reset to use lstat first */
 
@@ -2468,7 +2468,7 @@ else
       addr->transport_return = PANIC;
       addr->message = string_sprintf("fdopen of %s ("
         "for %s transport) failed", filename, tblock->name);
-      close(fd);
+      (void)close(fd);
       Uunlink(filename);
       return FALSE;
       }
@@ -2486,7 +2486,7 @@ else
           addr->message = string_sprintf("Expansion of \"%s\" (mailstore "
             "prefix for %s transport) failed: %s", ob->mailstore_prefix,
             tblock->name, expand_string_message);
-          fclose(env_file);
+          (void)fclose(env_file);
           Uunlink(filename);
           return FALSE;
           }
@@ -2515,7 +2515,7 @@ else
           addr->message = string_sprintf("Expansion of \"%s\" (mailstore "
             "suffix for %s transport) failed: %s", ob->mailstore_suffix,
             tblock->name, expand_string_message);
-          fclose(env_file);
+          (void)fclose(env_file);
           Uunlink(filename);
           return FALSE;
           }
@@ -2732,7 +2732,7 @@ if (temp_file != NULL && ob->mbx_format)
   /* Preserve errno while closing the temporary file. */
 
   mbx_save_errno = errno;
-  fclose(temp_file);
+  (void)fclose(temp_file);
   errno = mbx_save_errno;
   }
 #endif  /* SUPPORT_MBX */
@@ -2755,7 +2755,7 @@ if (yield == OK && maildirsize_fd >= 0)
   maildir_record_length(maildirsize_fd, message_size);
 
 maildir_save_errno = errno;       /* Preserve errno while closing the file */
-close(maildirsize_fd);
+(void)close(maildirsize_fd);
 errno = maildir_save_errno;
 #endif  /* SUPPORT_MAILDIR */
 
@@ -3130,7 +3130,7 @@ if (mbx_lockfd >= 0)
       debug_printf("unlinking MBX lock file %s\n", mbx_lockname);
     Uunlink(mbx_lockname);
     }
-  close(mbx_lockfd);
+  (void)close(mbx_lockfd);
   }
 #endif  /* SUPPORT_MBX */
 

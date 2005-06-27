@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.10 2005/06/21 14:14:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.11 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -603,7 +603,7 @@ for (;;)
     {
     if (config_file_stack != NULL)    /* EOF inside .include */
       {
-      fclose(config_file);
+      (void)fclose(config_file);
       config_file = config_file_stack->file;
       config_filename = config_file_stack->filename;
       config_lineno = config_file_stack->lineno;
@@ -3811,7 +3811,7 @@ while(next_section[0] != 0)
     }
   }
 
-fclose(config_file);
+(void)fclose(config_file);
 }
 
 /* End of readconf.c */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.35 2005/06/22 15:44:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.36 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3511,7 +3511,7 @@ while (*s != 0)
         }
 
       yield = cat_file(f, yield, &size, &ptr, sub_arg[1]);
-      fclose(f);
+      (void)fclose(f);
       continue;
       }
 
@@ -3604,7 +3604,7 @@ while (*s != 0)
         alarm(timeout);
         yield = cat_file(f, yield, &size, &ptr, sub_arg[3]);
         alarm(0);
-        fclose(f);
+        (void)fclose(f);
 
         /* After a timeout, we restore the pointer in the result, that is,
         make sure we add nothing from the socket. */
@@ -3701,7 +3701,7 @@ while (*s != 0)
 
         /* Nothing is written to the standard input. */
 
-        close(fd_in);
+        (void)close(fd_in);
 
         /* Wait for the process to finish, applying the timeout, and inspect its
         return code for serious disasters. Simple non-zero returns are passed on.
@@ -3732,7 +3732,7 @@ while (*s != 0)
         f = fdopen(fd_out, "rb");
         lookup_value = NULL;
         lookup_value = cat_file(f, lookup_value, &lsize, &lptr, NULL);
-        fclose(f);
+        (void)fclose(f);
         }
 
       /* Process the yes/no strings; $value may be useful in both cases */

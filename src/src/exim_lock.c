@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim_lock.c,v 1.2 2005/06/22 15:44:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim_lock.c,v 1.3 2005/06/27 14:29:43 ph10 Exp $ */
 
 /* A program to lock a file exactly as Exim would, for investigation of
 interlocking problems.
@@ -329,7 +329,7 @@ for (j = 0; j < lock_retries; j++)
     /* Apply hitching post algorithm. */
 
     if ((rc = link(hitchname, lockname)) != 0) fstat(hd, &statbuf);
-    close(hd);
+    (void)close(hd);
     unlink(hitchname);
 
     if (rc != 0 && statbuf.st_nlink != 2)

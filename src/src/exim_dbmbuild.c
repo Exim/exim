@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim_dbmbuild.c,v 1.3 2005/06/14 10:32:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim_dbmbuild.c,v 1.4 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -207,7 +207,7 @@ if (d == NULL)
   {
   printf("exim_dbmbuild: unable to create %s: %s\n", temp_dbmname,
     strerror(errno));
-  fclose(f);
+  (void)fclose(f);
   exit(1);
   }
 
@@ -404,7 +404,7 @@ if (started)
 TIDYUP:
 
 EXIM_DBCLOSE(d);
-fclose(f);
+(void)fclose(f);
 
 /* If successful, output the number of entries and rename the temporary
 files. */

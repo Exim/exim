@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dbmdb.c,v 1.2 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dbmdb.c,v 1.3 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -58,17 +58,17 @@ rc = lf_check_file(-1, filename, S_IFREG, modemask, owners, owngroups,
 #else
   {
   uschar filebuffer[256];
-  sprintf(CS filebuffer, "%.250s.db", filename);
+  (void)sprintf(CS filebuffer, "%.250s.db", filename);
   rc = lf_check_file(-1, filebuffer, S_IFREG, modemask, owners, owngroups,
     "dbm", errmsg);
   if (rc < 0)        /* stat() failed */
     {
-    sprintf(CS filebuffer, "%.250s.dir", filename);
+    (void)sprintf(CS filebuffer, "%.250s.dir", filename);
     rc = lf_check_file(-1, filebuffer, S_IFREG, modemask, owners, owngroups,
       "dbm", errmsg);
     if (rc == 0)     /* x.dir was OK */
       {
-      sprintf(CS filebuffer, "%.250s.pag", filename);
+      (void)sprintf(CS filebuffer, "%.250s.pag", filename);
       rc = lf_check_file(-1, filebuffer, S_IFREG, modemask, owners, owngroups,
         "dbm", errmsg);
       }

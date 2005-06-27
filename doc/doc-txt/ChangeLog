@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.173 2005/06/27 10:52:20 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.174 2005/06/27 14:29:43 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -182,10 +182,12 @@ PH/25 Put debug statements on either side of calls to EXIM_DBOPEN() for hints
       db.h files).
 
 PH/26 Insert a lot of missing (void) casts for functions such as chown(),
-      chmod(), fcntl(), and sscanf(). These were picked up on a user's system
-      that detects such things. There doesn't seem to be a gcc warning option
-      for this - only an attribute that has to be put on the function's
-      prototype. I'm sure I haven't caught all of these, but it's a start.
+      chmod(), fcntl(), sscanf(), and other functions from stdio.h. These were
+      picked up on a user's system that detects such things. There doesn't seem
+      to be a gcc warning option for this - only an attribute that has to be
+      put on the function's prototype. It seems that in Fedora Core 4 they have
+      set this on a number of new functions. No doubt there will be more in due
+      course.
 
 PH/27 If a dnslookup or manualroute router is set with verify=only, it need not
       specify a transport. However, if an address that was verified by such a

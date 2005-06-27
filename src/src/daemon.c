@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.12 2005/06/22 15:44:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.13 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -419,7 +419,7 @@ if (pid == 0)
   extensive comment before the reception loop in exim.c for a fuller
   explanation of this logic. */
 
-  for (i = 0; i < listen_socket_count; i++) close(listen_sockets[i]);
+  for (i = 0; i < listen_socket_count; i++) (void)close(listen_sockets[i]);
 
   #ifdef SA_NOCLDWAIT
   act.sa_handler = SIG_IGN;
@@ -603,8 +603,8 @@ if (pid == 0)
 
       if ((dpid = fork()) == 0)
         {
-        fclose(smtp_in);
-        fclose(smtp_out);
+        (void)fclose(smtp_in);
+        (void)fclose(smtp_out);
 
         /* Don't ever molest the parent's SSL connection, but do clean up
         the data structures if necessary. */
@@ -691,7 +691,7 @@ if (smtp_out != NULL)
       strerror(errno));
   smtp_out = NULL;
   }
-else close(accept_socket);
+else (void)close(accept_socket);
 
 if (smtp_in != NULL)
   {
@@ -700,7 +700,7 @@ if (smtp_in != NULL)
       strerror(errno));
   smtp_in = NULL;
   }
-else close(dup_accept_socket);
+else (void)close(dup_accept_socket);
 
 /* Release any store used in this process, including the store used for holding
 the incoming host address and an expanded active_hostname. */
@@ -1208,9 +1208,9 @@ if (background_daemon)
   {
   log_close_all();    /* Just in case anything was logged earlier */
   search_tidyup();    /* Just in case any were used in reading the config. */
-  close(0);           /* Get rid of stdin/stdout/stderr */
-  close(1);
-  close(2);
+  (void)close(0);           /* Get rid of stdin/stdout/stderr */
+  (void)close(1);
+  (void)close(2);
   exim_nullstd();     /* Connect stdin/stdout/stderr to /dev/null */
   log_stderr = NULL;  /* So no attempt to copy paniclog output */
 
@@ -1320,7 +1320,7 @@ if (daemon_listen)
         {
         DEBUG(D_any) debug_printf("wildcard IPv4 bind() failed after IPv6 "
           "listen() success; EADDRINUSE ignored\n");
-        close(listen_sockets[sk]);
+        (void)close(listen_sockets[sk]);
         goto SKIP_SOCKET;
         }
       msg = US strerror(errno);
@@ -1366,7 +1366,7 @@ if (daemon_listen)
 
     DEBUG(D_any) debug_printf("wildcard IPv4 listen() failed after IPv6 "
       "listen() success; EADDRINUSE ignored\n");
-    close(listen_sockets[sk]);
+    (void)close(listen_sockets[sk]);
 
     /* Come here if there has been a problem with the socket which we
     are going to ignore. We remove the address from the chain, and back up the
@@ -1613,7 +1613,8 @@ for (;;)
 
         /* Close any open listening sockets in the child */
 
-        for (sk = 0; sk < listen_socket_count; sk++) close(listen_sockets[sk]);
+        for (sk = 0; sk < listen_socket_count; sk++)
+          (void)close(listen_sockets[sk]);
 
         /* Reset SIGHUP and SIGCHLD in the child in both cases. */
 
@@ -1857,7 +1858,8 @@ for (;;)
     int sk;
     log_write(0, LOG_MAIN, "pid %d: SIGHUP received: re-exec daemon",
       getpid());
-    for (sk = 0; sk < listen_socket_count; sk++) close(listen_sockets[sk]);
+    for (sk = 0; sk < listen_socket_count; sk++)
+      (void)close(listen_sockets[sk]);
     alarm(0);
     signal(SIGHUP, SIG_IGN);
     sighup_argv[0] = exim_path;

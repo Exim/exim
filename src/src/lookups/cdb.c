@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/cdb.c,v 1.2 2005/06/07 15:20:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/cdb.c,v 1.3 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -431,7 +431,7 @@ struct cdb_state * cdbp = handle;
  }
 #endif /* HAVE_MMAP */
 
- close(cdbp->fileno);
+ (void)close(cdbp->fileno);
 }
 
 /* End of lookups/cdb.c */

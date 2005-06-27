@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.9 2005/06/17 13:52:15 ph10 Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.10 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -181,7 +181,7 @@ base = fopen("Makefile", "rb");
 if (base == NULL)
   {
   printf("*** Buildconfig: failed to open Makefile\n");
-  fclose(new);
+  (void)fclose(new);
   exit(1);
   }
 
@@ -293,7 +293,7 @@ if (strcmp(cc, "gcc") == 0 && strstr(ostype, "IRIX") != NULL)
   }
 
 fprintf(new, "\n");
-fclose(base);
+(void)fclose(base);
 
 
 /* Now handle the macros listed in the defaults */
@@ -302,7 +302,7 @@ base = fopen("../src/config.h.defaults", "rb");
 if (base == NULL)
   {
   printf("*** Buildconfig: failed to open ../src/config.h.defaults\n");
-  fclose(new);
+  (void)fclose(new);
   exit(1);
   }
 
@@ -815,7 +815,7 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
     }
   }
 
-fclose(base);
+(void)fclose(base);
 
 /* If any AUTH macros were defined, ensure that SUPPORT_CRYPTEQ is also
 defined. */
@@ -829,7 +829,7 @@ if (have_auth)
 /* End off */
 
 fprintf(new, "\n/* End of config.h */\n");
-fclose(new);
+(void)fclose(new);
 return 0;
 }
 

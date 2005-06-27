@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.8 2005/06/22 15:44:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.9 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -120,7 +120,7 @@ int spam(uschar **listptr) {
     if (!num_servers) {
       log_write(0, LOG_MAIN|LOG_PANIC,
          "spam acl condition: no useable spamd server addresses in spamd_address configuration option.");
-      fclose(mbox_file);
+      (void)fclose(mbox_file);
       return DEFER;
     };
 
@@ -136,7 +136,7 @@ int spam(uschar **listptr) {
       if ( (spamd_sock = ip_socket(SOCK_STREAM, AF_INET)) < 0) {
         log_write(0, LOG_MAIN|LOG_PANIC,
            "spam acl condition: error creating IP socket for spamd");
-        fclose(mbox_file);
+        (void)fclose(mbox_file);
         return DEFER;
       };
 
@@ -159,8 +159,8 @@ int spam(uschar **listptr) {
         current_server = 0;
       if (current_server == start_server) {
         log_write(0, LOG_MAIN|LOG_PANIC, "spam acl condition: all spamd servers failed");
-        fclose(mbox_file);
-        close(spamd_sock);
+        (void)fclose(mbox_file);
+        (void)close(spamd_sock);
         return DEFER;
       };
     };
@@ -173,7 +173,7 @@ int spam(uschar **listptr) {
       log_write(0, LOG_MAIN|LOG_PANIC,
                 "malware acl condition: spamd: unable to acquire socket (%s)",
                 strerror(errno));
-      fclose(mbox_file);
+      (void)fclose(mbox_file);
       return DEFER;
     }
 
@@ -184,8 +184,8 @@ int spam(uschar **listptr) {
       log_write(0, LOG_MAIN|LOG_PANIC,
                 "malware acl condition: spamd: unable to connect to UNIX socket %s (%s)",
                 spamd_address, strerror(errno) );
-      fclose(mbox_file);
-      close(spamd_sock);
+      (void)fclose(mbox_file);
+      (void)close(spamd_sock);
       return DEFER;
     }
 
@@ -200,11 +200,11 @@ int spam(uschar **listptr) {
 
   /* send our request */
   if (send(spamd_sock, spamd_buffer, Ustrlen(spamd_buffer), 0) < 0) {
-    close(spamd_sock);
+    (void)close(spamd_sock);
     log_write(0, LOG_MAIN|LOG_PANIC,
          "spam acl condition: spamd send failed: %s", strerror(errno));
-    fclose(mbox_file);
-    close(spamd_sock);
+    (void)fclose(mbox_file);
+    (void)close(spamd_sock);
     return DEFER;
   };
 
@@ -241,8 +241,8 @@ again:
           log_write(0, LOG_MAIN|LOG_PANIC,
             "spam acl condition: timed out writing spamd socket");
         }
-        close(spamd_sock);
-        fclose(mbox_file);
+        (void)close(spamd_sock);
+        (void)fclose(mbox_file);
         return DEFER;
       }
 #endif
@@ -251,8 +251,8 @@ again:
       {
           log_write(0, LOG_MAIN|LOG_PANIC,
             "spam acl condition: %s on spamd socket", strerror(errno));
-        close(spamd_sock);
-        fclose(mbox_file);
+        (void)close(spamd_sock);
+        (void)fclose(mbox_file);
         return DEFER;
       }
       if (offset + wrote != read) {
@@ -265,12 +265,12 @@ again:
   if (ferror(mbox_file)) {
     log_write(0, LOG_MAIN|LOG_PANIC,
       "spam acl condition: error reading spool file: %s", strerror(errno));
-    close(spamd_sock);
-    fclose(mbox_file);
+    (void)close(spamd_sock);
+    (void)fclose(mbox_file);
     return DEFER;
   }
 
-  fclose(mbox_file);
+  (void)fclose(mbox_file);
 
   /* we're done sending, close socket for writing */
   shutdown(spamd_sock,SHUT_WR);
@@ -290,12 +290,12 @@ again:
   if((i <= 0) && (errno != 0)) {
     log_write(0, LOG_MAIN|LOG_PANIC,
          "spam acl condition: error reading from spamd socket: %s", strerror(errno));
-    close(spamd_sock);
+    (void)close(spamd_sock);
     return DEFER;
   }
 
   /* reading done */
-  close(spamd_sock);
+  (void)close(spamd_sock);
 
   /* dig in the spamd output and put the report in a multiline header, if requested */
   if( sscanf(CS spamd_buffer,"SPAMD/%s 0 EX_OK\r\nContent-length: %*u\r\n\r\n%lf/%lf\r\n%n",

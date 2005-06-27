@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/regex.c,v 1.5 2005/05/24 08:15:02 tom Exp $ */
+/* $Cambridge: exim/src/src/regex.c,v 1.6 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -117,7 +117,7 @@ int regex(uschar **listptr) {
         Ustrncpy(regex_match_string_buffer, re_list_item->pcre_text, 1023);
         regex_match_string = regex_match_string_buffer;
         if (mime_stream == NULL)
-          fclose(mbox_file);
+          (void)fclose(mbox_file);
         else {
           clearerr(mime_stream);
           fseek(mime_stream,f_pos,SEEK_SET);
@@ -129,7 +129,7 @@ int regex(uschar **listptr) {
   };
 
   if (mime_stream == NULL)
-    fclose(mbox_file);
+    (void)fclose(mbox_file);
   else {
     clearerr(mime_stream);
     fseek(mime_stream,f_pos,SEEK_SET);
@@ -232,13 +232,13 @@ int mime_regex(uschar **listptr) {
                   mime_subject_len, 0, 0, NULL, 0) >= 0) {
       Ustrncpy(regex_match_string_buffer, re_list_item->pcre_text, 1023);
       regex_match_string = regex_match_string_buffer;
-      fclose(f);
+      (void)fclose(f);
       return OK;
     };
     re_list_item = re_list_item->next;
   } while (re_list_item != NULL);
 
-  fclose(f);
+  (void)fclose(f);
 
   /* no matches ... */
   return FAIL;

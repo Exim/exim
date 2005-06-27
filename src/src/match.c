@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.6 2005/06/22 10:17:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.7 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -783,13 +783,13 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
       switch ((func)(arg, ss, valueptr, &error))
         {
         case OK:
-        fclose(f);
+        (void)fclose(f);
         HDEBUG(D_lists) debug_printf("%s %s (matched \"%s\" in %s)\n", ot,
           (yield == OK)? "yes" : "no", sss, filename);
         return file_yield;
 
         case DEFER:
-        fclose(f);
+        (void)fclose(f);
         goto DEFER_RETURN;
 
         case ERROR:          /* host name lookup failed - this can only */
@@ -802,7 +802,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
          {
           HDEBUG(D_lists) debug_printf("%s %s (%s)\n", ot,
             include_unknown? "yes":"no", error);
-          fclose(f);
+          (void)fclose(f);
           if (!include_unknown) return FAIL;
           log_write(0, LOG_MAIN, "%s: accepted by +include_unknown", error);
           return OK;
@@ -814,7 +814,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
     for the file, in case this is the last item in the list. */
 
     yield = file_yield;
-    fclose(f);
+    (void)fclose(f);
     }
   }    /* Loop for the next item on the top-level list */
 

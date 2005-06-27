@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/os.c,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/os.c,v 1.3 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -696,7 +696,7 @@ for (cp = buf; cp < buf + ifc.V_ifc_len; cp += len)
 
 /* Close the socket, and return the chain of data blocks. */
 
-close(vs);
+(void)close(vs);
 return yield;
 }
 

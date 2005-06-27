@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dbfn.c,v 1.5 2005/06/22 15:44:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dbfn.c,v 1.6 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -141,7 +141,7 @@ if (rc < 0)
   log_write(0, LOG_MAIN, "Failed to get %s lock for %s: %s",
     ((flags & O_RDONLY) != 0)? "read" : "write", buffer,
     (errno == ETIMEDOUT)? "timed out" : strerror(errno));
-  close(dbblock->lockfd);
+  (void)close(dbblock->lockfd);
   errno = 0;       /* Indicates locking failure */
   return NULL;
   }
@@ -229,7 +229,7 @@ if (dbblock->dbptr == NULL)
         debug_printf("%s", CS string_open_failed(save_errno, "DB file %s\n",
           buffer));
     }
-  close(dbblock->lockfd);
+  (void)close(dbblock->lockfd);
   errno = save_errno;
   return NULL;
   }
@@ -261,7 +261,7 @@ void
 dbfn_close(open_db *dbblock)
 {
 EXIM_DBCLOSE(dbblock->dbptr);
-close(dbblock->lockfd);
+(void)close(dbblock->lockfd);
 }
 
 

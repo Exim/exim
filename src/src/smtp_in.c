@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.19 2005/05/23 16:58:56 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.20 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2593,7 +2593,7 @@ while (done <= 0)
     if (tls_active >= 0) (void)tls_write(s, ptr); else
     #endif
 
-    fwrite(s, 1, ptr, smtp_out);
+    (void)fwrite(s, 1, ptr, smtp_out);
     DEBUG(D_receive) debug_printf("SMTP>> %s", s);
     helo_seen = TRUE;
     break;   /* HELO/EHLO */
@@ -3483,9 +3483,9 @@ while (done <= 0)
 
     if ((pid = fork()) == 0)
       {
-      smtp_input = FALSE;    /* This process is not associated with the */
-      fclose(smtp_in);       /* SMTP call any more. */
-      fclose(smtp_out);
+      smtp_input = FALSE;       /* This process is not associated with the */
+      (void)fclose(smtp_in);    /* SMTP call any more. */
+      (void)fclose(smtp_out);
 
       signal(SIGCHLD, SIG_DFL);      /* Want to catch child */
 

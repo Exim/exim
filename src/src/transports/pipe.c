@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/pipe.c,v 1.6 2005/05/10 11:13:09 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/pipe.c,v 1.7 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -640,8 +640,8 @@ if ((outpid = fork()) < 0)
   addr->message = string_sprintf(
     "Failed to create process for handling output in %s transport",
       tblock->name);
-  close(fd_in);
-  close(fd_out);
+  (void)close(fd_in);
+  (void)close(fd_out);
   return FALSE;
   }
 
@@ -654,7 +654,7 @@ the subprocess to fail. */
 if (outpid == 0)
   {
   int count = 0;
-  close(fd_in);
+  (void)close(fd_in);
   set_process_info("reading output from |%s", cmd);
   while ((rc = read(fd_out, big_buffer, big_buffer_size)) > 0)
     {
@@ -671,11 +671,11 @@ if (outpid == 0)
       break;
       }
     }
-  close(fd_out);
+  (void)close(fd_out);
   _exit(0);
   }
 
-close(fd_out);  /* Not used in this process */
+(void)close(fd_out);  /* Not used in this process */
 
 
 /* Carrying on now with the main parent process. Attempt to write the message

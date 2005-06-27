@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/ip.c,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/ip.c,v 1.3 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -249,7 +249,7 @@ if (rc >= 0) return 0;
 /* A failure whose error code is "Interrupted system call" is in fact
 an externally applied timeout if the signal handler has been run. */
 
-close(sock);
+(void)close(sock);
 errno = (save_errno == EINTR && sigalrm_seen)? ETIMEDOUT : save_errno;
 return -1;
 }

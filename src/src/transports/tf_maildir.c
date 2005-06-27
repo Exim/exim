@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.6 2005/06/16 14:10:14 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.7 2005/06/27 14:29:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -498,7 +498,7 @@ else
 
   RECALCULATE:
 
-  if (fd >= 0) close(fd);
+  if (fd >= 0) (void)close(fd);
   old_latest = 0;
   filecount = 0;
   size = maildir_compute_size(path, &filecount, &old_latest, regex, dir_regex,
@@ -516,7 +516,7 @@ else
     len = Ustrlen(buffer);
     if (write(fd, buffer, len) != len || Urename(tempname, filename) < 0)
       {
-      close(fd);
+      (void)close(fd);
       fd = -1;
       }
     }
@@ -532,7 +532,7 @@ else
     DEBUG(D_transport) debug_printf("abandoning maildirsize because of "
       "a later subdirectory modification\n");
     (void)Uunlink(filename);
-    close(fd);
+    (void)close(fd);
     fd = -1;
     }
   }

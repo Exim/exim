@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.21 2005/06/23 10:02:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.22 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -667,7 +667,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
   /* End the SMTP conversation and close the connection. */
 
   if (send_quit) (void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
-  close(inblock.sock);
+  (void)close(inblock.sock);
   }    /* Loop through all hosts, while !done */
 
 /* If we get here with done == TRUE, a successful callout happened, and yield
@@ -1797,7 +1797,7 @@ sender_ident = string_printing(string_copyn(p, 127));
 DEBUG(D_ident) debug_printf("sender_ident = %s\n", sender_ident);
 
 END_OFF:
-close(sock);
+(void)close(sock);
 return;
 }
 

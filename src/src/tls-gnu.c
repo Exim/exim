@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.8 2005/06/16 14:10:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.9 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -856,8 +856,8 @@ if (rc < 0)
 
   if (!sigalrm_seen)
     {
-    fclose(smtp_out);
-    fclose(smtp_in);
+    (void)fclose(smtp_out);
+    (void)fclose(smtp_in);
     }
 
   return FAIL;

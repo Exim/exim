@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filtertest.c,v 1.5 2005/04/06 14:40:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filtertest.c,v 1.6 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -181,7 +181,7 @@ if (fstat(fd, &statbuf) != 0)
 
 filebuf = store_get(statbuf.st_size + 1);
 rc = read(fd, filebuf, statbuf.st_size);
-close(fd);
+(void)close(fd);
 
 if (rc != statbuf.st_size)
   {

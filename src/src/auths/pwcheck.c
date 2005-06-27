@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/pwcheck.c,v 1.1 2004/10/07 13:10:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/pwcheck.c,v 1.2 2005/06/27 14:29:44 ph10 Exp $ */
 
 /* SASL server API implementation
  * Rob Siemborski
@@ -137,7 +137,7 @@ return PWCHECK_FAIL;
        start += n;
      }
 
-     close(s);
+     (void)close(s);
 
      if (start > 1 && !strncmp(response, "OK", 2)) {
        return PWCHECK_OK;
@@ -220,14 +220,14 @@ int saslauthd_verify_password(const uschar *userid,
     if ( write_string(s, userid, Ustrlen(userid)) < 0) {
         DEBUG(D_auth)
             debug_printf("Failed to send userid to saslauthd daemon \n");
-        close(s);
+        (void)close(s);
         return PWCHECK_FAIL;
     }
 
     if ( write_string(s, password, Ustrlen(password)) < 0) {
         DEBUG(D_auth)
             debug_printf("Failed to send password to saslauthd daemon \n");
-        close(s);
+        (void)close(s);
         return PWCHECK_FAIL;
     }
 
@@ -236,25 +236,25 @@ int saslauthd_verify_password(const uschar *userid,
     if ( write_string(s, service, Ustrlen(service)) < 0) {
         DEBUG(D_auth)
             debug_printf("Failed to send service name to saslauthd daemon \n");
-        close(s);
+        (void)close(s);
         return PWCHECK_FAIL;
     }
 
     if ( write_string(s, realm, Ustrlen(realm)) < 0) {
         DEBUG(D_auth)
             debug_printf("Failed to send realm to saslauthd daemon \n");
-        close(s);
+        (void)close(s);
         return PWCHECK_FAIL;
     }
 
     if ( read_string(s, &daemon_reply ) < 2) {
         DEBUG(D_auth)
             debug_printf("Corrupted answer '%s' received. \n", daemon_reply);
-        close(s);
+        (void)close(s);
         return PWCHECK_FAIL;
     }
 
-    close(s);
+    (void)close(s);
 
     DEBUG(D_auth)
         debug_printf("Answer '%s' received. \n", daemon_reply);

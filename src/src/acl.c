@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.40 2005/06/20 13:58:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.41 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3132,7 +3132,7 @@ if (Ustrchr(ss, ' ') == NULL)
       return ERROR;
       }
     acl_text[statbuf.st_size] = 0;
-    close(fd);
+    (void)close(fd);
 
     acl_name = string_sprintf("ACL \"%s\"", ss);
     HDEBUG(D_acl) debug_printf("read ACL from file %s\n", ss);

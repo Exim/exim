@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/parse.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/parse.c,v 1.5 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1475,7 +1475,7 @@ for (;;)
       {
       *error = string_sprintf("failed to stat included file %s: %s",
         filename, strerror(errno));
-      fclose(f);
+      (void)fclose(f);
       return FF_INCLUDEFAIL;
       }
 
@@ -1502,11 +1502,11 @@ for (;;)
       {
       *error = string_sprintf("error while reading included file %s: %s",
         filename, strerror(errno));
-      fclose(f);
+      (void)fclose(f);
       return FF_ERROR;
       }
     filebuf[statbuf.st_size] = 0;
-    fclose(f);
+    (void)fclose(f);
 
     addr = NULL;
     frc = parse_forward_list(filebuf, options, &addr,

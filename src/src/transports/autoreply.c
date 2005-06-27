@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/autoreply.c,v 1.4 2005/06/16 14:10:14 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/autoreply.c,v 1.5 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -530,8 +530,8 @@ if (oncelog != NULL && to != NULL)
       uschar *ptr = log_buffer;
       sprintf(CS ptr, "%s\n  previously sent to %.200s\n", tod_stamp(tod_log), to);
       while(*ptr) ptr++;
-      write(log_fd, log_buffer, ptr - log_buffer);
-      close(log_fd);
+      (void)write(log_fd, log_buffer, ptr - log_buffer);
+      (void)close(log_fd);
       }
     goto END_OFF;
     }
@@ -667,7 +667,7 @@ if (return_message)
 
 /* End the message and wait for the child process to end; no timeout. */
 
-fclose(f);
+(void)fclose(f);
 rc = child_close(pid, 0);
 
 /* Update the "sent to" log whatever the yield. This errs on the side of
@@ -702,7 +702,7 @@ if (cache_fd >= 0)
     }
 
   memcpy(cache_time, &now, sizeof(time_t));
-  write(cache_fd, from, size);
+  (void)write(cache_fd, from, size);
   }
 
 /* Update DBM file */
@@ -798,8 +798,8 @@ if (logfile != NULL)
         "  %s\n", headers);
       while(*ptr) ptr++;
       }
-    write(log_fd, log_buffer, ptr - log_buffer);
-    close(log_fd);
+    (void)write(log_fd, log_buffer, ptr - log_buffer);
+    (void)close(log_fd);
     }
   else DEBUG(D_transport) debug_printf("Failed to open log file %s for %s "
     "transport: %s\n", logfile, tblock->name, strerror(errno));
@@ -807,7 +807,7 @@ if (logfile != NULL)
 
 END_OFF:
 if (dbm_file != NULL) EXIM_DBCLOSE(dbm_file);
-if (cache_fd > 0) close(cache_fd);
+if (cache_fd > 0) (void)close(cache_fd);
 
 DEBUG(D_transport) debug_printf("%s transport succeeded\n", tblock->name);
 

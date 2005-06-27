@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.6 2005/06/06 18:49:35 tom Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.7 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -70,7 +70,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
         i = fwrite(mbox_delimiter, 1, Ustrlen(mbox_delimiter), mbox_file);
         if (i != Ustrlen(mbox_delimiter)) {
           debug_printf("error/short write on writing in: %s", mbox_path);
-          fclose(mbox_file);
+          (void)fclose(mbox_file);
           return NULL;
         };
       };
@@ -84,7 +84,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
         i = fwrite(my_envelope_from, 1, Ustrlen(my_envelope_from), mbox_file);
         if (i != Ustrlen(my_envelope_from)) {
           debug_printf("error/short write on writing in: %s", mbox_path);
-          fclose(mbox_file);
+          (void)fclose(mbox_file);
           return NULL;
         };
       };
@@ -98,7 +98,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
         i = fwrite(my_envelope_to, 1, Ustrlen(my_envelope_to), mbox_file);
         if (i != Ustrlen(my_envelope_to)) {
           debug_printf("error/short write on writing in: %s", mbox_path);
-          fclose(mbox_file);
+          (void)fclose(mbox_file);
           return NULL;
         };
       };
@@ -117,7 +117,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
       i = fwrite(my_headerlist->text, 1, my_headerlist->slen, mbox_file);
       if (i != my_headerlist->slen) {
         debug_printf("error/short write on writing in: %s", mbox_path);
-        fclose(mbox_file);
+        (void)fclose(mbox_file);
         return NULL;
       };
 
@@ -134,7 +134,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
         break;
     };
 
-    fread(data_buffer, 1, 18, data_file);
+    (void)fread(data_buffer, 1, 18, data_file);
 
     do {
       j = fread(data_buffer, 1, sizeof(data_buffer), data_file);
@@ -142,15 +142,15 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
         i = fwrite(data_buffer, 1, j, mbox_file);
         if (i != j) {
           debug_printf("error/short write on writing in: %s", mbox_path);
-          fclose(mbox_file);
-          fclose(data_file);
+          (void)fclose(mbox_file);
+          (void)fclose(data_file);
           return NULL;
         };
       };
     } while (j > 0);
 
-    fclose(data_file);
-    fclose(mbox_file);
+    (void)fclose(data_file);
+    (void)fclose(mbox_file);
     Ustrcpy(spooled_message_id, message_id);
     spool_mbox_ok = 1;
   };

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.11 2005/06/22 15:44:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.12 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -89,7 +89,7 @@ if (fcntl(deliver_datafile, F_SETLK, &lock_data) < 0)
   log_write(L_skip_delivery,
             LOG_MAIN,
             "Spool file is locked (another process is handling this message)");
-  close(deliver_datafile);
+  (void)close(deliver_datafile);
   deliver_datafile = -1;
   errno = 0;
   return FALSE;

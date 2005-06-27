@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_out.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_out.c,v 1.5 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -230,7 +230,7 @@ if (save_errno != 0)
       debug_printf(" (timeout=%s)", readconf_printtime(timeout));
     debug_printf("\n");
     }
-  close(sock);
+  (void)close(sock);
   errno = save_errno;
   return -1;
   }

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/moan.c,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/moan.c,v 1.3 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -248,7 +248,7 @@ if (message_file != NULL)
 /* Close the file, which should send an EOF to the child process
 that is receiving the message. Wait for it to finish, without a timeout. */
 
-fclose(f);
+(void)fclose(f);
 status = child_close(pid, 0);  /* Waits for child to close */
 if (status != 0)
   {
@@ -437,7 +437,7 @@ if (addr != NULL)
     }
   }
 
-fclose(f);
+(void)fclose(f);
 child_close(pid, 0);  /* Waits for child to close; no timeout */
 }
 
@@ -692,7 +692,7 @@ if (some)
 else
   fprintf(f, "No valid addresses were generated.\n");
 
-fclose(f);
+(void)fclose(f);
 child_close(pid, 0);  /* Waits for child to close; no timeout */
 
 return TRUE;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/lmtp.c,v 1.4 2005/02/17 11:58:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/lmtp.c,v 1.5 2005/06/27 14:29:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -740,8 +740,8 @@ RETURN:
 
 (void)child_close(pid, timeout);
 
-if (fd_in >= 0) (void) close(fd_in);
-if (fd_out >= 0) (void) fclose(out);
+if (fd_in >= 0) (void)close(fd_in);
+if (fd_out >= 0) (void)fclose(out);
 
 DEBUG(D_transport)
   debug_printf("%s transport yields %d\n", tblock->name, yield);

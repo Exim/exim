@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filter.c,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filter.c,v 1.4 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1907,7 +1907,7 @@ while (commands != NULL)
     if (log_mode == -1) log_mode = 0600;
     if (log_fd >= 0)
       {
-      close(log_fd);
+      (void)close(log_fd);
       log_fd = -1;
       }
     log_filename = expargs[0];
@@ -2500,7 +2500,7 @@ if (filter_test != FTEST_NONE || (debug_selector & D_filter) != 0)
 /* Close the log file if it was opened, and kill off any numerical variables
 before returning. Reset the header decoding charset. */
 
-if (log_fd >= 0) close(log_fd);
+if (log_fd >= 0) (void)close(log_fd);
 expand_nmax = -1;
 filter_running = FALSE;
 headers_charset = save_headers_charset;

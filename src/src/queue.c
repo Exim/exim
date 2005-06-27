@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/queue.c,v 1.7 2005/06/16 14:10:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/queue.c,v 1.8 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -594,7 +594,7 @@ for (i  = (queue_run_in_order? -1 : 0);
     if (queue_run_pipe == 0)
       {
       queue_run_pipe = dup(queue_run_pipe);
-      close(0);
+      (void)close(0);
       }
 
     /* Before forking to deliver the message, ensure any open and cached
@@ -627,7 +627,7 @@ for (i  = (queue_run_in_order? -1 : 0);
     /* Close the writing end of the synchronizing pipe in this process,
     then wait for the first level process to terminate. */
 
-    close(pfd[pipe_write]);
+    (void)close(pfd[pipe_write]);
     set_process_info("running queue: waiting for %s (%d)", f->text, pid);
     while (wait(&status) != pid);
 
@@ -873,7 +873,7 @@ for (; f != NULL; f = f->next)
         big_buffer[n-1] = 0;
         tree_add_nonrecipient(big_buffer);
         }
-      fclose(jread);
+      (void)fclose(jread);
       }
     }
 
@@ -1019,9 +1019,9 @@ if (action >= MSG_SHOW_BODY)
     }
 
   while((rc = read(fd, big_buffer, big_buffer_size)) > 0)
-    write(fileno(stdout), big_buffer, rc);
+    (void)write(fileno(stdout), big_buffer, rc);
 
-  close(fd);
+  (void)close(fd);
   return TRUE;
   }
 
@@ -1064,7 +1064,7 @@ if (spool_read_header(spoolname, TRUE, FALSE) != spool_read_OK)
     printf("Spool format error for %s\n", spoolname);
   if (action != MSG_REMOVE || !admin_user)
     {
-    close(deliver_datafile);
+    (void)close(deliver_datafile);
     deliver_datafile = -1;
     return FALSE;
     }
@@ -1079,7 +1079,7 @@ why we leave this check until after the headers are read. */
 if (!admin_user && (action != MSG_REMOVE || real_uid != originator_uid))
   {
   printf("Permission denied\n");
-  close(deliver_datafile);
+  (void)close(deliver_datafile);
   deliver_datafile = -1;
   return FALSE;
   }
@@ -1314,7 +1314,7 @@ switch(action)
 /* Closing the datafile releases the lock and permits other processes
 to operate on the message (if it still exists). */
 
-close(deliver_datafile);
+(void)close(deliver_datafile);
 deliver_datafile = -1;
 return yield;
 }

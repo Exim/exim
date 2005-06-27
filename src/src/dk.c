@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dk.c,v 1.4 2005/06/24 08:23:21 tom Exp $ */
+/* $Cambridge: exim/src/src/dk.c,v 1.5 2005/06/27 14:29:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -384,8 +384,8 @@ uschar *dk_exim_sign(int dk_fd,
     /* Looks like a filename, load the private key. */
     memset(big_buffer,0,big_buffer_size);
     privkey_fd = open(CS dk_private_key,O_RDONLY);
-    read(privkey_fd,big_buffer,16383);
-    close(privkey_fd);
+    (void)read(privkey_fd,big_buffer,16383);
+    (void)close(privkey_fd);
     dk_private_key = big_buffer;
   }
 
