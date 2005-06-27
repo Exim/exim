@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.12 2005/05/24 08:50:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.13 2005/06/27 15:11:04 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -573,7 +573,7 @@ if (!ugid.gid_set && pw != NULL)
 
     if(usesrs)
     {
-      int srs_action, n_srs;
+      int srs_action = 0, n_srs;
       uschar *res;
       uschar *usedomain;
 
