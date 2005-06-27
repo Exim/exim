@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.6 2005/05/17 09:53:34 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.7 2005/06/27 10:24:43 ph10 Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -596,9 +596,9 @@ demime.o:        $(HDRS) demime.c
 # Dependencies for EXPERIMENTAL_* modules
 
 bmi_spam.o:      $(HDRS) bmi_spam.c
-spf.o:           $(HDRS) spf.c
-srs.o:           $(HDRS) srs.c
-dk.o:            $(HDRS) dk.c
+spf.o:           $(HDRS) spf.h spf.c
+srs.o:           $(HDRS) srs.h srs.c
+dk.o:            $(HDRS) dk.h dk.c
 
 # The module containing tables of available lookups, routers, auths, and
 # transports must be rebuilt if any of them are. However, because the makefiles
