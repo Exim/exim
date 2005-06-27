@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dk.c,v 1.5 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dk.c,v 1.6 2005/06/27 15:11:59 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -138,6 +138,13 @@ void dk_exim_verify_finish(void) {
   /* Flag end-of-message. */
   dk_internal_status = dk_end(dk_context, &dk_flags);
 
+  /* dk_flags now has the selector flags (if there was one).
+     It seems that currently only the "t=" flag is supported
+     in selectors. */
+  if (dk_flags & DK_FLAG_SET)
+    if (dk_flags & DK_FLAG_TESTING)
+      dk_verify_block->testing = TRUE;
+
   /* Grab address/domain information. */
   p = dk_address(dk_context);
   if (p != NULL) {
@@ -165,12 +172,13 @@ void dk_exim_verify_finish(void) {
     }
   }
 
-  /* TODO: This call should be removed with lib version >= 0.67 */
+  /* Now grab the domain-wide DK policy */
   dk_flags = dk_policy(dk_context);
 
-  /* Grab domain policy */
   if (dk_flags & DK_FLAG_SET) {
-    if (dk_flags & DK_FLAG_TESTING)
+    /* Selector "t=" flag has precedence, don't overwrite it if
+       the selector has set it above. */
+    if ((dk_flags & DK_FLAG_TESTING) && !dk_verify_block->testing)
       dk_verify_block->testing = TRUE;
     if (dk_flags & DK_FLAG_SIGNSALL)
       dk_verify_block->signsall = TRUE;
