@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/srs.c,v 1.7 2005/05/25 17:50:33 tom Exp $ */
+/* $Cambridge: exim/src/src/srs.c,v 1.8 2005/06/27 18:10:30 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -29,7 +29,7 @@ int eximsrs_init()
 {
   uschar *list = srs_config;
   uschar secret_buf[SRS_MAX_SECRET_LENGTH];
-  uschar *secret;
+  uschar *secret = NULL;
   uschar sbuf[4];
   uschar *sbufp;
 
@@ -71,7 +71,7 @@ int eximsrs_init()
     /* First secret specified in secrets? */
     co = 0;
     list = srs_secrets;
-    if(secret == NULL || *secret == NULL)
+    if(secret == NULL || *secret == '\0')
     {
       if((secret = string_nextinlist(&list, &co, secret_buf, SRS_MAX_SECRET_LENGTH)) == NULL)
       {
@@ -107,7 +107,7 @@ int eximsrs_init()
 
     /* Extra secrets? */
     while((secret = string_nextinlist(&list, &co, secret_buf, SRS_MAX_SECRET_LENGTH)) != NULL)
-        srs_add_secret(srs, secret, strnlen(secret, SRS_MAX_SECRET_LENGTH));
+        srs_add_secret(srs, secret, (Ustrlen(secret) > SRS_MAX_SECRET_LENGTH) ? SRS_MAX_SECRET_LENGTH :  Ustrlen(secret));
 
     DEBUG(D_any)
       debug_printf("SRS initialized\n");
