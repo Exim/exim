@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.20 2005/05/31 11:10:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.21 2005/06/27 14:29:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -406,10 +406,10 @@ for (i = 0; i <= 2; i++)
     if (devnull < 0) devnull = open("/dev/null", O_RDWR);
     if (devnull < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
       string_open_failed(errno, "/dev/null"));
-    if (devnull != i) dup2(devnull, i);
+    if (devnull != i) (void)dup2(devnull, i);
     }
   }
-if (devnull > 2) close(devnull);
+if (devnull > 2) (void)close(devnull);
 }
 
 
@@ -459,19 +459,19 @@ if (smtp_input)
   #ifdef SUPPORT_TLS
   tls_close(FALSE);      /* Shut down the TLS library */
   #endif
-  close(fileno(smtp_in));
-  close(fileno(smtp_out));
+  (void)close(fileno(smtp_in));
+  (void)close(fileno(smtp_out));
   smtp_in = NULL;
   }
 else
   {
-  close(0);                                           /* stdin */
-  if ((debug_selector & D_resolver) == 0)  close(1);  /* stdout */
-  if (debug_selector == 0)                            /* stderr */
+  (void)close(0);                                          /* stdin */
+  if ((debug_selector & D_resolver) == 0) (void)close(1);  /* stdout */
+  if (debug_selector == 0)                                 /* stderr */
     {
     if (!synchronous_delivery)
       {
-      close(2);
+      (void)close(2);
       log_stderr = NULL;
       }
     (void)setsid();
@@ -663,6 +663,10 @@ The log options are held in two unsigned ints (because there became too many
 for one). The top bit in the table means "put in 2nd selector". This does not
 yet apply to debug options, so the "=" facility sets only the first selector.
 
+The "all" selector, which must be equal to 0xffffffff, is recognized specially.
+It sets all the bits in both selectors. However, there is a facility for then
+unsetting certain bits, because we want to turn off "memory" in the debug case.
+
 A bad value for a debug setting is treated as an unknown option - error message
 to stderr and die. For log settings, which come from the configuration file,
 we write to the log on the way out...
@@ -670,6 +674,8 @@ we write to the log on the way out...
 Arguments:
   selector1      address of the first bit string
   selector2      address of the second bit string, or NULL
+  notall1        bits to exclude from "all" for selector1
+  notall2        bits to exclude from "all" for selector2
   string         the configured string
   options        the table of option names
   count          size of table
@@ -679,8 +685,8 @@ Returns:         nothing on success - bomb out on failure
 */
 
 static void
-decode_bits(unsigned int *selector1, unsigned int *selector2, uschar *string,
-  bit_table *options, int count, uschar *which)
+decode_bits(unsigned int *selector1, unsigned int *selector2, int notall1,
+  int notall2, uschar *string, bit_table *options, int count, uschar *which)
 {
 uschar *errmsg;
 if (string == NULL) return;
@@ -733,14 +739,23 @@ else for(;;)
         unsigned int bit = middle->bit;
         unsigned int *selector;
 
-        /* The value with all bits set means "set all bits in both selectors"
+        /* The value with all bits set means "force all bits in both selectors"
         in the case where two are being handled. However, the top bit in the
-        second selector is never set. */
+        second selector is never set. When setting, some bits can be excluded.
+        */
 
         if (bit == 0xffffffff)
           {
-          *selector1 = adding? bit : 0;
-          if (selector2 != NULL) *selector2 = adding? 0x7fffffff : 0;
+          if (adding)
+            {
+            *selector1 = 0xffffffff ^ notall1;
+            if (selector2 != NULL) *selector2 = 0x7fffffff ^ notall2;
+            }
+          else
+            {
+            *selector1 = 0;
+            if (selector2 != NULL) *selector2 = 0;
+            }
           }
 
         /* Otherwise, the 0x80000000 bit means "this value, without the top
@@ -1920,7 +1935,7 @@ for (i = 1; i < argc; i++)
         argrest++;
         }
       if (*argrest != 0)
-        decode_bits(&selector, NULL, argrest, debug_options,
+        decode_bits(&selector, NULL, D_memory, 0, argrest, debug_options,
           debug_options_count, US"debug");
       debug_selector = selector;
       }
@@ -3041,7 +3056,7 @@ readconf_main();
 
 /* Handle the decoding of logging options. */
 
-decode_bits(&log_write_selector, &log_extra_selector, log_selector_string,
+decode_bits(&log_write_selector, &log_extra_selector, 0, 0, log_selector_string,
   log_options, log_options_count, US"log");
 
 DEBUG(D_any)
@@ -3298,7 +3313,7 @@ script. */
 
 if (bi_option)
   {
-  fclose(config_file);
+  (void)fclose(config_file);
   if (bi_command != NULL)
     {
     int i = 0;
@@ -4255,7 +4270,7 @@ sender_ident. */
 
 else if (is_inetd)
   {
-  fclose(stderr);
+  (void)fclose(stderr);
   exim_nullstd();                       /* Re-open to /dev/null */
   verify_get_ident(IDENT_PORT);
   host_build_sender_fullhost();
@@ -4285,7 +4300,7 @@ else if (!is_inetd) sender_host_unknown = TRUE;
 if exim is started from inetd. In this case fd 0 will be set to the socket,
 but fd 1 will not be set. This also happens for passed SMTP channels. */
 
-if (fstat(1, &statbuf) < 0) dup2(0, 1);
+if (fstat(1, &statbuf) < 0) (void)dup2(0, 1);
 
 /* Set up the incoming protocol name and the state of the program. Root
 is allowed to force received protocol via the -oMr option above, and if we are
@@ -4611,7 +4626,7 @@ while (more)
     if (ftest_prefix != NULL) printf("Prefix    = %s\n", ftest_prefix);
     if (ftest_suffix != NULL) printf("Suffix    = %s\n", ftest_suffix);
 
-    chdir("/");   /* Get away from wherever the user is running this from */
+    (void)chdir("/");   /* Get away from wherever the user is running this from */
 
     /* Now we run either a system filter test, or a user filter test, or both.
     In the latter case, headers added by the system filter will persist and be

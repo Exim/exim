@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.15 2005/06/27 10:21:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.16 2005/06/27 14:29:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -318,7 +318,13 @@ for having to swallow the rest of an SMTP message is whether the value is
 #define D_uid                        0x20000000
 #define D_verify                     0x40000000
 
-#define D_all                        (0xffffffff & ~D_memory)
+/* The D_all value must always have all bits set, as it is recognized specially
+by the function that decodes debug and log selectors. This is to enable it to
+set all the bits in a multi-word selector. Debug doesn't use this yet, but we
+are getting close. In fact, we want to omit "memory" for -d+all, but can't
+handle this here. It is fudged externally. */
+
+#define D_all                        0xffffffff
 
 #define D_any                        (D_all & \
                                        ~(D_v           | \
@@ -341,6 +347,10 @@ values < 0x80000000. They can be used in calls to log_write(). The others have
 values > 0x80000000 and are put into log_extra_selector (without the top bit).
 These are only ever tested independently. "All" is a magic value that is used
 only in the name table to set all options in both bit maps. */
+
+/* The L_all value must always have all bits set, as it is recognized specially
+by the function that decodes debug and log selectors. This is to enable it to
+set all the bits in a multi-word selector. */
 
 #define L_all                          0xffffffff
 
