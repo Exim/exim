@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.9 2005/06/27 14:29:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.10 2005/06/28 08:49:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -256,7 +256,7 @@ static int
 init_rsa_dh(host_item *host)
 {
 int fd;
-int ret = -1;
+int ret;
 gnutls_datum m;
 uschar filename[200];
 
@@ -299,6 +299,7 @@ if (fd >= 0)
   (void)close(fd);
 
   ret = gnutls_rsa_params_import_pkcs1(rsa_params, &m, GNUTLS_X509_FMT_PEM);
+
   if (ret < 0)
     {
     DEBUG(D_tls)
@@ -318,7 +319,13 @@ if (fd >= 0)
 /* If the file does not exist, fall through to compute new data and cache it.
 If there was any other opening error, it is serious. */
 
-else if (errno != ENOENT)
+else if (errno == ENOENT)
+  {
+  ret = -1;
+  DEBUG(D_tls)
+    debug_printf("parameter cache file %s does not exist\n", filename);
+  }
+else
   return tls_error(string_open_failed(errno, "%s for reading", filename),
     host, 0);
 
@@ -391,7 +398,8 @@ if (ret < 0)
     return tls_error(string_sprintf("failed to rename %s as %s: %s",
       tempfilename, filename, strerror(errno)), host, 0);
 
-  DEBUG(D_tls) debug_printf("wrote RSA and D-H parameters to file\n");
+  DEBUG(D_tls) debug_printf("wrote RSA and D-H parameters to file %s\n",
+    filename);
   }
 
 DEBUG(D_tls) debug_printf("initialized RSA and D-H parameters\n");

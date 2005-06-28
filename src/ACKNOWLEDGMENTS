@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.27 2005/06/16 15:48:58 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.28 2005/06/28 08:49:38 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  16 June 2005
+Last updated:  28 June 2005
 
 
 THE OLD LIST
@@ -185,6 +185,7 @@ Marc Merlin               Many suggestions and patches for callouts and
                             SMTP error message features
 Andreas Metzler           Patch for message_id_header_domain
                           Suggested patch for multi-config files in scripts bug
+                          GnuTLS non-existent parameter file bug fix
 Alex Miller               Suggested readline() patch
                           Patch for LDAP_RES_SEARCH_REFERENCE handling
                           Support for the DrWeb content scanner

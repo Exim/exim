@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.175 2005/06/27 18:34:35 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.176 2005/06/28 08:49:38 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -210,6 +210,12 @@ PH/30 Exim's DNS code uses the original T_xxx names for DNS record times. These
       ones like T_AAAA, and defining it itself. I've added checks for all the
       record types that Exim uses.
 
+PH/31 When using GnuTLS, if the parameters cache file did not exist, Exim was
+      not automatically generating a new one, as it is supposed to. This
+      prevented TLS from working. If the file did exist, but contained invalid
+      data, a new version was generated, as expected. It was only the case of a
+      non-existent file that was broken.
+
 TK/10 Domainkeys: Fix a bug in verification that caused a crash in conjunction
       with a change in libdomainkeys > 0.64.
 
@@ -218,7 +224,6 @@ TK/11 Domainkeys: Change the logic how the "testing" policy flag is retrieved
       precedence over the domain-wide flag.
 
 TK/12 Cleared some compiler warnings related to SPF, SRS and DK code.
-
 
 
 Exim version 4.51
