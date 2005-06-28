@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.177 2005/06/28 10:23:35 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.178 2005/06/28 20:50:56 steve Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -231,6 +231,17 @@ PH/32 In mua_wrapper mode, if an smtp transport configuration error (such as
       spool, instead of being failed because of the mua_wrapper setting. This
       is now fixed, and I tidied up some of the mua_wrapper messages at the
       same time.
+
+SC/08 Eximstats: whilst parsing the mainlog(s), store information about
+      the messages in a hash of arrays rather than using individual hashes.
+      This is a bit cleaner and results in dramatic memory savings, albeit
+      at a slight CPU cost.
+
+SC/09 Eximstats: added the -show_rt<list> and the -show_dt<list> flags
+      as requested by Marc Sherman.
+
+SC/10 Eximstats: added histograms for user specified patterns as requested
+      by Marc Sherman.
 
 
 Exim version 4.51
