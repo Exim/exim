@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.176 2005/06/28 08:49:38 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.177 2005/06/28 10:23:35 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -224,6 +224,13 @@ TK/11 Domainkeys: Change the logic how the "testing" policy flag is retrieved
       precedence over the domain-wide flag.
 
 TK/12 Cleared some compiler warnings related to SPF, SRS and DK code.
+
+PH/32 In mua_wrapper mode, if an smtp transport configuration error (such as
+      the use of a port name that isn't defined in /etc/services) occurred, the
+      message was deferred as in a normal delivery, and thus remained on the
+      spool, instead of being failed because of the mua_wrapper setting. This
+      is now fixed, and I tidied up some of the mua_wrapper messages at the
+      same time.
 
 
 Exim version 4.51

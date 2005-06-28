@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.20 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.21 2005/06/28 10:23:35 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -5952,11 +5952,29 @@ set_process_info("tidying up after delivering %s", message_id);
 signal(SIGTERM, SIG_IGN);
 
 /* When we are acting as an MUA wrapper, the smtp transport will either have
-succeeded for all addresses, or failed them all. We do not ever want to retry,
-nor do we want to send a bounce message. */
+succeeded for all addresses, or failed them all in normal cases. However, there
+are some setup situations (e.g. when a named port does not exist) that cause an
+immediate exit with deferral of all addresses. Convert those into failures. We
+do not ever want to retry, nor do we want to send a bounce message. */
 
 if (mua_wrapper)
   {
+  if (addr_defer != NULL)
+    {
+    address_item *addr, *nextaddr;
+    for (addr = addr_defer; addr != NULL; addr = nextaddr)
+      {
+      log_write(0, LOG_MAIN, "** %s mua_wrapper forced failure for deferred "
+        "delivery", addr->address);
+      nextaddr = addr->next;
+      addr->next = addr_failed;
+      addr_failed = addr;
+      }
+    addr_defer = NULL;
+    }
+
+  /* Now all should either have succeeded or failed. */
+
   if (addr_failed == NULL) final_yield = DELIVER_MUA_SUCCEEDED; else
     {
     uschar *s = (addr_failed->user_message != NULL)?

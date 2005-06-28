@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/log.c,v 1.5 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/log.c,v 1.6 2005/06/28 10:23:35 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -997,11 +997,11 @@ if ((flags & LOG_PROCESS) != 0)
 /* Handle the panic log, which is not kept open like the others. If it fails to
 open, there will be a recursive call to log_write(). We detect this above and
 attempt to write to the system log as a last-ditch try at telling somebody. In
-all cases, try to write to log_stderr. */
+all cases except mua_wrapper, try to write to log_stderr. */
 
 if ((flags & LOG_PANIC) != 0)
   {
-  if (log_stderr != NULL && log_stderr != debug_file)
+  if (log_stderr != NULL && log_stderr != debug_file && !mua_wrapper)
     fprintf(log_stderr, "%s", CS log_buffer);
 
   if ((logging_mode & LOG_MODE_SYSLOG) != 0)

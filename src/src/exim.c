@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.21 2005/06/27 14:29:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.22 2005/06/28 10:23:35 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3939,12 +3939,17 @@ DEBUG(D_receive) debug_printf("originator: uid=%d gid=%d login=%s name=%s\n",
 
 /* Run in daemon and/or queue-running mode. The function daemon_go() never
 returns. We leave this till here so that the originator_ fields are available
-for incoming messages via the daemon. */
+for incoming messages via the daemon. The daemon cannot be run in mua_wrapper
+mode. */
 
 if (daemon_listen || queue_interval > 0)
   {
-  if (mua_wrapper) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Daemon cannot be "
-    "run when mua_wrapper is set");
+  if (mua_wrapper)
+    {
+    fprintf(stderr, "Daemon cannot be run when mua_wrapper is set\n");
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Daemon cannot be run when "
+      "mua_wrapper is set");
+    }
   daemon_go();
   }
 
