@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.178 2005/06/28 20:50:56 steve Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.179 2005/06/29 14:17:01 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -160,8 +160,9 @@ PH/20 Added macros for time_t as for off_t (see PH/15 above) and used them to
       "%lld" and "long long". Replaced the call to snprintf() with a call to
       string_vformat().
 
-PH/21 Added another message to those in 4.51/PH/42, namely "All relevant MX
-      records point to non-existent hosts".
+PH/21 Added some other messages to those in 4.51/PH/42, namely "All relevant MX
+      records point to non-existent hosts", "retry timeout exceeded", and
+      "retry time not reached for any host after a long failure period".
 
 PH/22 Fixed some oversights/typos causing bugs when Exim is compiled with
       experimental DomainKeys support:

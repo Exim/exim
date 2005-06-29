@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/retry.c,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/retry.c,v 1.3 2005/06/29 14:17:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -842,6 +842,9 @@ for (i = 0; i < 3; i++)
           setflag(addr, af_retry_timedout);
           addr->message = (addr->message == NULL)? US"retry timeout exceeded" :
             string_sprintf("%s: retry timeout exceeded", addr->message);
+          addr->user_message = (addr->user_message == NULL)?
+            US"retry timeout exceeded" :
+            string_sprintf("%s: retry timeout exceeded", addr->user_message);
           log_write(0, LOG_MAIN, "** %s%s%s%s: retry timeout exceeded",
             addr->address,
            (addr->parent == NULL)? US"" : US" <",

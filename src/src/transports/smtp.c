@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.12 2005/06/27 14:29:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.13 2005/06/29 14:17:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2788,6 +2788,7 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
       }
     else if (expired)
       {
+      setflag(addr, af_pass_message);   /* This is not a security risk */
       addr->message = (ob->delay_after_cutoff)?
         US"retry time not reached for any host after a long failure period" :
         US"all hosts have been failing for a long time and were last tried "
