@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.8 2005/06/10 13:38:06 tom Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.9 2005/06/29 10:56:35 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -249,7 +249,8 @@ return &(dnss->srr);
 *            Turn DNS type into text             *
 *************************************************/
 
-/* Turn the coded record type into a string for printing.
+/* Turn the coded record type into a string for printing. All those that Exim
+uses should be included here.
 
 Argument:   record type
 Returns:    pointer to string
@@ -266,6 +267,7 @@ switch(t)
   case T_A6:    return US"A6";
   case T_TXT:   return US"TXT";
   case T_PTR:   return US"PTR";
+  case T_SOA:   return US"SOA";
   case T_SRV:   return US"SRV";
   case T_NS:    return US"NS";
   case T_CNAME: return US"CNAME";

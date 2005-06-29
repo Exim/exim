@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.16 2005/06/27 10:52:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.17 2005/06/29 10:56:35 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -289,6 +289,10 @@ side, put in definitions for all the ones that Exim uses. */
 
 #ifndef T_CNAME
 #define T_CNAME 5
+#endif
+
+#ifndef T_SOA
+#define T_SOA 6
 #endif
 
 #ifndef T_MX
