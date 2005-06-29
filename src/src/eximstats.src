@@ -1,5 +1,5 @@
 #!PERL_COMMAND -w
-# $Cambridge: exim/src/src/eximstats.src,v 1.7 2005/06/03 14:28:50 steve Exp $
+# $Cambridge: exim/src/src/eximstats.src,v 1.8 2005/06/29 15:35:09 steve Exp $
 
 # Copyright (c) 2001 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -210,6 +210,18 @@
 #             Added the -include_original_destination flag
 #             Removed tabs and trailing whitespace.
 #
+# 2005-06-03  V1.40 Steve Campbell
+#             Whilst parsing the mainlog(s), store information about
+#             the messages in a hash of arrays rather than using
+#             individual hashes. This is a bit cleaner and results in
+#             dramatic memory savings, albeit at a slight CPU cost.
+#
+# 2005-06-15  V1.41 Steve Campbell
+#             Added the -show_rt<list> flag.
+#             Added the -show_dt<list> flag.
+#
+# 2005-06-24  V1.42 Steve Campbell
+#             Added Histograms for user specified patterns.
 #
 #
 # For documentation on the logfile format, see
@@ -309,6 +321,30 @@ Include remote users in the top source/destination listings.
 Include the original destination email addresses rather than just
 using the final ones.
 Useful for finding out which of your mailing lists are receiving mail.
+
+=item B<-show_dt>I<list>
+
+Show the delivery times (B<DT>)for all the messages.
+
+Exim must have been configured to use the +delivery_time logging option
+for this option to work.
+
+I<list> is an optional list of times. Eg -show_dt1,2,4,8 will show
+the number of messages with delivery times under 1 second, 2 seconds, 4 seconds,
+8 seconds, and over 8 seconds.
+
+=item B<-show_rt>I<list>
+
+Show the receipt times for all the messages. The receipt time is
+defined as the Completed hh:mm:ss - queue_time_overall - the Receipt hh:mm:ss.
+These figures will be skewed by pipelined messages so might not be that useful.
+
+Exim must have been configured to use the +queue_time_overall logging option
+for this option to work.
+
+I<list> is an optional list of times. Eg -show_rt1,2,4,8 will show
+the number of messages with receipt times under 1 second, 2 seconds, 4 seconds,
+8 seconds, and over 8 seconds.
 
 =item B<-byhost>
 
@@ -465,6 +501,7 @@ $HAVE_Spreadsheet_WriteExcel = $@ ? 0 : 1;
 use vars qw(@tab62 @days_per_month $gig);
 use vars qw($VERSION);
 use vars qw($COLUMN_WIDTHS);
+use vars qw($WEEK $DAY $HOUR $MINUTE);
 
 
 @tab62 =
@@ -478,15 +515,19 @@ use vars qw($COLUMN_WIDTHS);
 
 @days_per_month = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
 $gig     = 1024 * 1024 * 1024;
-$VERSION = '1.39';
+$VERSION = '1.42';
 
 # How much space do we allow for the Hosts/Domains/Emails/Edomains column headers?
 $COLUMN_WIDTHS = 8;
 
+$MINUTE = 60;
+$HOUR   = 60 * $MINUTE;
+$DAY    = 24 * $HOUR;
+$WEEK   =  7 * $DAY;
+
 # Declare global variables.
 use vars qw($total_received_data  $total_received_data_gigs  $total_received_count);
 use vars qw($total_delivered_data $total_delivered_data_gigs $total_delivered_count);
-use vars qw(%arrival_time %size %from_host %from_address);
 use vars qw(%timestamp2time);                   #Hash of timestamp => time.
 use vars qw($last_timestamp $last_time);        #The last time convertion done.
 use vars qw($last_date $date_seconds);          #The last date convertion done.
@@ -512,6 +553,7 @@ use vars qw($show_errors $show_relay $show_transport $transport_pattern);
 use vars qw($topcount $local_league_table $include_remote_users);
 use vars qw($hist_opt $hist_interval $hist_number $volume_rounding);
 use vars qw($relay_pattern @queue_times @user_patterns @user_descriptions);
+use vars qw(@rcpt_times @delivery_times);
 use vars qw($include_original_destination);
 use vars qw($txt_fh $htm_fh $xls_fh);
 
@@ -521,18 +563,34 @@ use vars qw($merge_reports);            #Merge old reports ?
 
 # The following are modified in the parse() routine, and
 # referred to in the print_*() routines.
-use vars qw($queue_more_than $delayed_count $relayed_unshown $begin $end);
+use vars qw($delayed_count $relayed_unshown $begin $end);
+use vars qw(%messages $message_aref);
 use vars qw(%received_count       %received_data       %received_data_gigs);
 use vars qw(%delivered_count      %delivered_data      %delivered_data_gigs);
 use vars qw(%received_count_user  %received_data_user  %received_data_gigs_user);
 use vars qw(%delivered_count_user %delivered_data_user %delivered_data_gigs_user);
 use vars qw(%transported_count    %transported_data    %transported_data_gigs);
-use vars qw(%remote_delivered %relayed %delayed %had_error %errors_count);
-use vars qw(@queue_bin @remote_queue_bin @received_interval_count @delivered_interval_count);
-use vars qw(@user_pattern_totals);
+use vars qw(%relayed %errors_count $message_errors);
+use vars qw(@qt_all_bin @qt_remote_bin);
+use vars qw($qt_all_overflow $qt_remote_overflow);
+use vars qw(@dt_all_bin @dt_remote_bin %rcpt_times_bin);
+use vars qw($dt_all_overflow $dt_remote_overflow %rcpt_times_overflow);
+use vars qw(@received_interval_count @delivered_interval_count);
+use vars qw(@user_pattern_totals @user_pattern_interval_count);
 
 use vars qw(%report_totals);
 
+# Enumerations
+use vars qw($SIZE $FROM_HOST $FROM_ADDRESS $ARRIVAL_TIME $REMOTE_DELIVERED $PROTOCOL);
+use vars qw($DELAYED $HAD_ERROR);
+$SIZE             = 0;
+$FROM_HOST        = 1;
+$FROM_ADDRESS     = 2;
+$ARRIVAL_TIME     = 3;
+$REMOTE_DELIVERED = 4;
+$DELAYED          = 5;
+$HAD_ERROR        = 6;
+$PROTOCOL         = 7;
 
 
 
@@ -830,6 +888,44 @@ while($#c >= 0) { $s = $s * 62 + $tab62[ord(shift @c) - ord('0')] }
 $s;
 }
 
+#######################################################################
+#  wdhms_seconds();
+#
+#  $seconds = wdhms_seconds($string);
+#
+# Convert a string in a week/day/hour/minute/second format (eg 4h10s)
+# into seconds.
+#######################################################################
+sub wdhms_seconds {
+  if ($_[0] =~ /^(?:(\d+)w)?(?:(\d+)d)?(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?/) {
+    return((($1||0) * $WEEK) + (($2||0) * $DAY) + (($3||0) * $HOUR) + (($4||0) * $MINUTE) + ($5||0));
+  }
+  return undef;
+}
+
+#######################################################################
+#  queue_time();
+#
+#  $queued = queue_time($completed_tod, $arrival_time, $id);
+#
+# Given the completed time of day and either the arrival time
+# (preferred), or the message ID, calculate how long the message has
+# been on the queue.
+#
+#######################################################################
+sub queue_time {
+  my($completed_tod, $arrival_time, $id) = @_;
+
+  # Note: id_seconds() benchmarks as 42% slower than seconds()
+  # and computing the time accounts for a significant portion of
+  # the run time.
+  if (defined $arrival_time) {
+    return(seconds($completed_tod) - seconds($arrival_time));
+  }
+  else {
+    return(seconds($completed_tod) - id_seconds($id));
+  }
+}
 
 
 #######################################################################
@@ -868,29 +964,35 @@ sub calculate_localtime_offset {
 }
 
 
+
 #######################################################################
-# print_queue_times();
+# print_duration_table();
 #
-#  $time = print_queue_times($message_type,\@queue_times,$queue_more_than);
+#  print_duration_table($title, $message_type, \@times, \@values, $overflow);
 #
-# Given the type of messages being output, the array of message queue times,
-# and the number of messages which exceeded the queue times, print out
-# a table.
+# Print a table showing how long a particular step took for
+# the messages. The parameters are:
+#   $title         Eg "Time spent on the queue"
+#   $message_type  Eg "Remote"
+#   \@times        The maximum time a message took for it to increment
+#                  the corresponding @values counter.
+#   \@values       An array of message counters.
+#   $overflow      The number of messages which exceeded the maximum
+#                  time.
 #######################################################################
-sub print_queue_times {
+sub print_duration_table {
 no integer;
-my($string,$array,$queue_more_than) = @_;
+my($title, $message_type, $times_aref, $values_aref, $overflow) = @_;
 my(@chartdatanames);
 my(@chartdatavals);
 
 my $printed_one = 0;
 my $cumulative_percent = 0;
-#$queue_unknown += keys %arrival_time;
 
-my $queue_total = $queue_more_than;
-for ($i = 0; $i <= $#queue_times; $i++) { $queue_total += $$array[$i] }
+my $queue_total = $overflow;
+map {$queue_total += $_} @$values_aref;
 
-my $temp = "Time spent on the queue: $string";
+my $temp = "$title: $message_type";
 
 
 my $txt_format = "%5s %4s   %6d %5.1f%%  %5.1f%%\n";
@@ -899,7 +1001,7 @@ my $htm_format = "<tr><td align=\"right\">%s %s</td><td align=\"right\">%d</td><
 # write header
 printf $txt_fh ("%s\n%s\n\n", $temp, "-" x length($temp)) if $txt_fh;
 if ($htm_fh) {
-  print $htm_fh "<hr><a name=\"$string time\"></a><h2>$temp</h2>\n";
+  print $htm_fh "<hr><a name=\"$title $message_type\"></a><h2>$temp</h2>\n";
   print $htm_fh "<table border=0 width=\"100%\">\n";
   print $htm_fh "<tr><td>\n";
   print $htm_fh "<table border=1>\n";
@@ -908,31 +1010,31 @@ if ($htm_fh) {
 if ($xls_fh)
 {
 
-  $ws_global->write($row++, $col, "Time spent on the queue: ".$string, $f_header2);
+  $ws_global->write($row++, $col, "$title: ".$message_type, $f_header2);
   my @content=("Time", "Messages", "Percentage", "Cumulative Percentage");
   &set_worksheet_line($ws_global, $row++, 1, \@content, $f_headertab);
 }
 
 
-for ($i = 0; $i <= $#queue_times; $i++) {
-  if ($$array[$i] > 0)
+for ($i = 0; $i <= $#$times_aref; ++$i) {
+  if ($$values_aref[$i] > 0)
     {
-    my $percent = ($$array[$i] * 100)/$queue_total;
+    my $percent = ($values_aref->[$i] * 100)/$queue_total;
     $cumulative_percent += $percent;
 
     my @content=($printed_one? "     " : "Under",
-        format_time($queue_times[$i]),
-        $$array[$i], $percent, $cumulative_percent);
+        format_time($times_aref->[$i]),
+        $values_aref->[$i], $percent, $cumulative_percent);
 
     if ($htm_fh) {
       printf $htm_fh ($htm_format, @content);
-      if (!defined($queue_times[$i])) {
+      if (!defined($values_aref->[$i])) {
         print $htm_fh "Not defined";
       }
     }
     if ($txt_fh) {
       printf $txt_fh ($txt_format, @content);
-      if (!defined($queue_times[$i])) {
+      if (!defined($times_aref->[$i])) {
         print $txt_fh "Not defined";
       }
     }
@@ -942,25 +1044,25 @@ for ($i = 0; $i <= $#queue_times; $i++) {
       &set_worksheet_line($ws_global, $row, 0, [@content[0,1,2]], $f_default);
       &set_worksheet_line($ws_global, $row++, 3, [$content[3]/100,$content[4]/100], $f_percent);
 
-      if (!defined($queue_times[$i])) {
+      if (!defined($times_aref->[$i])) {
         $col=0;
         $ws_global->write($row++, $col, "Not defined"  );
       }
     }
 
     push(@chartdatanames,
-      ($printed_one? "" : "Under") . format_time($queue_times[$i]));
-    push(@chartdatavals, $$array[$i]);
+      ($printed_one? "" : "Under") . format_time($times_aref->[$i]));
+    push(@chartdatavals, $$values_aref[$i]);
     $printed_one = 1;
   }
 }
 
-if ($queue_more_than > 0) {
-  my $percent = ($queue_more_than * 100)/$queue_total;
+if ($overflow && $overflow > 0) {
+  my $percent = ($overflow * 100)/$queue_total;
   $cumulative_percent += $percent;
 
-    my @content = ("Over ", format_time($queue_times[$#queue_times]),
-        $queue_more_than, $percent, $cumulative_percent);
+    my @content = ("Over ", format_time($times_aref->[-1]),
+        $overflow, $percent, $cumulative_percent);
 
     printf $txt_fh ($txt_format, @content) if $txt_fh;
     printf $htm_fh ($htm_format, @content) if $htm_fh;
@@ -972,27 +1074,26 @@ if ($queue_more_than > 0) {
 
 }
 
-push(@chartdatanames, "Over " . format_time($queue_times[$#queue_times]));
-push(@chartdatavals, $queue_more_than);
+push(@chartdatanames, "Over " . format_time($times_aref->[-1]));
+push(@chartdatavals, $overflow);
 
 #printf("Unknown   %6d\n", $queue_unknown) if $queue_unknown > 0;
 if ($htm_fh) {
   print $htm_fh "</table>\n";
   print $htm_fh "</td><td>\n";
 
-  if ($HAVE_GD_Graph_pie && $charts) {
+  if ($HAVE_GD_Graph_pie && $charts && ($#chartdatavals > 0)) {
     my @data = (
        \@chartdatanames,
        \@chartdatavals
     );
     my $graph = GD::Graph::pie->new(200, 200);
-    my $pngname;
-    my $title;
-    if ($string =~ /all/) { $pngname = "queue_all.png"; $title = "Queue (all)"; }
-    if ($string =~ /remote/) { $pngname = "queue_rem.png"; $title = "Queue (remote)"; }
-    $graph->set(
-        title             => $title,
-    );
+    my $pngname = "$title-$message_type.png";
+    $pngname =~ s/[^\w\-\.]/_/;
+
+    my $graph_title = "$title ($message_type)";
+    $graph->set(title => $graph_title) if (length($graph_title) < 21);
+
     my $gd = $graph->plot(\@data) or warn($graph->error);
     if ($gd) {
       open(IMG, ">$chartdir/$pngname") or die "Could not write $chartdir/$pngname: $!\n";
@@ -1015,18 +1116,16 @@ print $htm_fh "\n" if $htm_fh;
 }
 
 
-
 #######################################################################
 # print_histogram();
 #
-#  print_histogram('Deliverieds|Messages received',@interval_count);
+#  print_histogram('Deliveries|Messages received|$pattern', $unit, @interval_count);
 #
 # Print a histogram of the messages delivered/received per time slot
 # (hour by default).
 #######################################################################
 sub print_histogram {
-my($text) = shift;
-my(@interval_count) = @_;
+my($text, $unit, @interval_count) = @_;
 my(@chartdatanames);
 my(@chartdatavals);
 my($maxd) = 0;
@@ -1046,14 +1145,10 @@ for ($i = 0; $i < $hist_number; $i++)
 my $scale = int(($maxd + 25)/50);
 $scale = 1 if $scale == 0;
 
-my($type);
-if ($text eq "Deliveries")
-{
-  $type = ($scale == 1)? "delivery" : "deliveries";
-}
-else
-{
-  $type = ($scale == 1)? "message" : "messages";
+if ($scale != 1) {
+  if ($unit !~ s/y$/ies/) {
+    $unit .= 's';
+  }
 }
 
 # make and output title
@@ -1061,7 +1156,7 @@ my $title = sprintf("$text per %s",
     ($hist_interval == 60)? "hour" :
     ($hist_interval == 1)?  "minute" : "$hist_interval minutes");
 
-my $txt_htm_title = $title . " (each dot is $scale $type)";
+my $txt_htm_title = $title . " (each dot is $scale $unit)";
 
 printf $txt_fh ("%s\n%s\n\n", $txt_htm_title, "-" x length($txt_htm_title)) if $txt_fh;
 
@@ -1148,7 +1243,7 @@ if ($htm_fh)
 {
   print $htm_fh "</pre>\n";
   print $htm_fh "</td><td>\n";
-  if ($HAVE_GD_Graph_linespoints && $charts) {
+  if ($HAVE_GD_Graph_linespoints && $charts && ($#chartdatavals > 0)) {
     # calculate the graph
     my @data = (
        \@chartdatanames,
@@ -1161,9 +1256,9 @@ if ($htm_fh)
         title             => $text,
         x_labels_vertical => 1
     );
-    my($pngname);
-    if ($text =~ /Deliveries/) { $pngname = "histogram_del.png"; }
-    if ($text =~ /Messages/)   { $pngname = "histogram_mes.png"; }
+    my $pngname = "histogram_$text.png";
+    $pngname =~ s/[^\w\._]/_/g;
+
     my $gd = $graph->plot(\@data) or warn($graph->error);
     if ($gd) {
       open(IMG, ">$chartdir/$pngname") or die "Could not write $chartdir/$pngname: $!\n";
@@ -1275,7 +1370,7 @@ if ($htm_fh)
 {
   print $htm_fh "</table>\n";
   print $htm_fh "</td><td>\n";
-  if ($HAVE_GD_Graph_pie && $charts)
+  if ($HAVE_GD_Graph_pie && $charts && ($#chartdatavals > 0))
     {
     # calculate the graph
     my @data = (
@@ -1383,7 +1478,7 @@ print $txt_fh "\n" if $txt_fh;
 if ($htm_fh) {
   print $htm_fh "</table>\n";
   print $htm_fh "</td><td>\n";
-  if ($HAVE_GD_Graph_pie && $charts) {
+  if ($HAVE_GD_Graph_pie && $charts && ($#chartdatavals > 0)) {
     # calculate the graph
     my @data = (
        \@chartdatanames,
@@ -1587,12 +1682,16 @@ Valid options are:
 -nt             don't display transport information
 -nt/pattern/    don't display transport information that matches
 -nvr            don't do volume rounding. Display in bytes, not KB/MB/GB.
--q<list>        list of times for queuing information
-                single 0 item suppresses
 -t<number>      display top <number> sources/destinations
                 default is 50, 0 suppresses top listing
 -tnl            omit local sources/destinations in top listing
 -t_remote_users show top user sources/destinations from non-local domains
+-q<list>        list of times for queuing information. -q0 suppresses.
+-show_rt<list>  Show the receipt times for all the messages.
+-show_dt<list>  Show the delivery times for all the messages.
+                <list> is an optional list of times in seconds.
+                Eg -show_rt1,2,4,8.
+
 -include_original_destination   show both the final and original
                 destinations in the results rather than just the final ones.
 
@@ -1644,6 +1743,7 @@ sub generate_parser {
   my $parser = '
   my($ip,$host,$email,$edomain,$domain,$thissize,$size,$old,$new);
   my($tod,$m_hour,$m_min,$id,$flag);
+  my($seconds,$queued,$rcpt_time);
   while (<$fh>) {
 
     # Convert syslog lines to mainlog format.
@@ -1666,7 +1766,12 @@ sub generate_parser {
   my $user_pattern_index = 0;
   foreach (@user_patterns) {
     $user_pattern_totals[$user_pattern_index] = 0;
-    $parser .= "  \$user_pattern_totals[$user_pattern_index]++ if $_;\n";
+    $parser .= <<EoText;
+  if ($_) {
+    \$user_pattern_totals[$user_pattern_index]++ if $_;
+    \$user_pattern_interval_count[$user_pattern_index][(\$m_hour*60 + \$m_min)/$hist_interval]++;
+  }
+EoText
     $user_pattern_index++;
   }
 
@@ -1678,6 +1783,12 @@ sub generate_parser {
     # $_ = substr($_, 40);
 
     $_ = substr($_, 40 + $extra);  # PH
+
+    # Get a pointer to an array of information about the message.
+    # This minimises the number of calls to hash functions.
+    $messages{$id} = [] unless exists $messages{$id};
+    $message_aref = $messages{$id};
+
 
     # JN - Skip over certain transports as specified via the "-nt/.../" command
     # line switch (where ... is a perl style regular expression).  This is
@@ -1754,15 +1865,16 @@ sub generate_parser {
 
     if ($flag eq "<=") {
       $thissize = (/\\sS=(\\d+)( |$)/) ? $1 : 0;
-      $size{$id} = $thissize;
+      $message_aref->[$SIZE] = $thissize;
+      $message_aref->[$PROTOCOL] = (/ P=(\S+)/) ? $1 : undef;
 
       #IFDEF ($show_relay)
       if ($host ne "local") {
         # Save incoming information in case it becomes interesting
         # later, when delivery lines are read.
         my($from) = /^(\\S+)/;
-        $from_host{$id} = "$host$ip";
-        $from_address{$id} = $from;
+        $message_aref->[$FROM_HOST]    = "$host$ip";
+        $message_aref->[$FROM_ADDRESS] = $from;
       }
       #ENDIF ($show_relay)
 
@@ -1782,40 +1894,40 @@ sub generate_parser {
           if ($host ne "local") {   #Store remote users only.
           #ENDIF ($include_remote_users && ! $local_league_table)
 
-            $received_count_user{$user}++;
+            ++$received_count_user{$user};
             add_volume(\\$received_data_user{$user},\\$received_data_gigs_user{$user},$thissize);
           }
         }
       #ENDIF ($local_league_table || $include_remote_users)
 
       #IFDEF ($do_sender{Host})
-        $received_count{Host}{$host}++;
+        ++$received_count{Host}{$host};
         add_volume(\\$received_data{Host}{$host},\\$received_data_gigs{Host}{$host},$thissize);
       #ENDIF ($do_sender{Host})
 
       #IFDEF ($do_sender{Domain})
         if ($domain) {
-          $received_count{Domain}{$domain}++;
+          ++$received_count{Domain}{$domain};
           add_volume(\\$received_data{Domain}{$domain},\\$received_data_gigs{Domain}{$domain},$thissize);
         }
       #ENDIF ($do_sender{Domain})
 
       #IFDEF ($do_sender{Email})
-        $received_count{Email}{$email}++;
+        ++$received_count{Email}{$email};
         add_volume(\\$received_data{Email}{$email},\\$received_data_gigs{Email}{$email},$thissize);
       #ENDIF ($do_sender{Email})
 
       #IFDEF ($do_sender{Edomain})
-        $received_count{Edomain}{$edomain}++;
+        ++$received_count{Edomain}{$edomain};
         add_volume(\\$received_data{Edomain}{$edomain},\\$received_data_gigs{Edomain}{$edomain},$thissize);
       #ENDIF ($do_sender{Edomain})
 
-      $total_received_count++;
+      ++$total_received_count;
       add_volume(\\$total_received_data,\\$total_received_data_gigs,$thissize);
 
-      #IFDEF ($#queue_times >= 0)
-        $arrival_time{$id} = $tod;
-      #ENDIF ($#queue_times >= 0)
+      #IFDEF ($#queue_times >= 0 || $#rcpt_times >= 0)
+        $message_aref->[$ARRIVAL_TIME] = $tod;
+      #ENDIF ($#queue_times >= 0 || $#rcpt_times >= 0)
 
       #IFDEF ($hist_opt > 0)
         $received_interval_count[($m_hour*60 + $m_min)/$hist_interval]++;
@@ -1823,9 +1935,9 @@ sub generate_parser {
     }
 
     elsif ($flag eq "=>") {
-      $size = $size{$id} || 0;
+      $size = $message_aref->[$SIZE] || 0;
       if ($host ne "local") {
-        $remote_delivered{$id} = 1;
+        $message_aref->[$REMOTE_DELIVERED] = 1;
 
 
         #IFDEF ($show_relay)
@@ -1835,7 +1947,7 @@ sub generate_parser {
         # addresses, there may be a further address between the first
         # and last.
 
-        if (defined $from_host{$id}) {
+        if (defined $message_aref->[$FROM_HOST]) {
           if (/^(\\S+)(?:\\s+\\([^)]\\))?\\s+<([^>]+)>/) {
             ($old,$new) = ($1,$2);
           }
@@ -1845,14 +1957,14 @@ sub generate_parser {
 
           if ("\\L$new" eq "\\L$old") {
             ($old) = /^(\\S+)/ if $old eq "";
-            my $key = "H=\\L$from_host{$id}\\E A=\\L$from_address{$id}\\E => " .
+            my $key = "H=\\L$message_aref->[$FROM_HOST]\\E A=\\L$message_aref->[$FROM_ADDRESS]\\E => " .
               "H=\\L$host\\E$ip A=\\L$old\\E";
             if (!defined $relay_pattern || $key !~ /$relay_pattern/o) {
               $relayed{$key} = 0 if !defined $relayed{$key};
-              $relayed{$key}++;
+              ++$relayed{$key};
             }
             else {
-              $relayed_unshown++
+              ++$relayed_unshown;
             }
           }
         }
@@ -1883,7 +1995,7 @@ sub generate_parser {
               my($parent) = $_ =~ /(<[^@]+@?[^>]*>)/;
               $user = "$user $parent" if defined $parent;
             }
-            $delivered_count_user{$user}++;
+            ++$delivered_count_user{$user};
             add_volume(\\$delivered_data_user{$user},\\$delivered_data_gigs_user{$user},$size);
           }
         }
@@ -1895,25 +2007,25 @@ sub generate_parser {
       #ENDIF ($do_sender{Host})
       #IFDEF ($do_sender{Domain})
         if ($domain) {
-          $delivered_count{Domain}{$domain}++;
+          ++$delivered_count{Domain}{$domain};
           add_volume(\\$delivered_data{Domain}{$domain},\\$delivered_data_gigs{Domain}{$domain},$size);
         }
       #ENDIF ($do_sender{Domain})
       #IFDEF ($do_sender{Email})
-        $delivered_count{Email}{$email}++;
+        ++$delivered_count{Email}{$email};
         add_volume(\\$delivered_data{Email}{$email},\\$delivered_data_gigs{Email}{$email},$size);
       #ENDIF ($do_sender{Email})
       #IFDEF ($do_sender{Edomain})
-        $delivered_count{Edomain}{$edomain}++;
+        ++$delivered_count{Edomain}{$edomain};
         add_volume(\\$delivered_data{Edomain}{$edomain},\\$delivered_data_gigs{Edomain}{$edomain},$size);
       #ENDIF ($do_sender{Edomain})
 
-      $total_delivered_count++;
+      ++$total_delivered_count;
       add_volume(\\$total_delivered_data,\\$total_delivered_data_gigs,$size);
 
       #IFDEF ($show_transport)
         my $transport = (/\\sT=(\\S+)/) ? $1 : ":blackhole:";
-        $transported_count{$transport}++;
+        ++$transported_count{$transport};
         add_volume(\\$transported_data{$transport},\\$transported_data_gigs{$transport},$size);
       #ENDIF ($show_transport)
 
@@ -1921,18 +2033,40 @@ sub generate_parser {
         $delivered_interval_count[($m_hour*60 + $m_min)/$hist_interval]++;
       #ENDIF ($hist_opt > 0)
 
+      #IFDEF ($#delivery_times > 0)
+        if (/ DT=(\S+)/) {
+          $seconds = wdhms_seconds($1);
+          for ($i = 0; $i <= $#delivery_times; $i++) {
+            if ($seconds < $delivery_times[$i]) {
+              ++$dt_all_bin[$i];
+              ++$dt_remote_bin[$i] if $message_aref->[$REMOTE_DELIVERED];
+              last;
+            }
+          }
+          if ($i > $#delivery_times) {
+            ++$dt_all_overflow;
+            ++$dt_remote_overflow if $message_aref->[$REMOTE_DELIVERED];
+          }
+        }
+      #ENDIF ($#delivery_times > 0)
+
     }
 
-    elsif ($flag eq "==" && defined($size{$id}) && !defined($delayed{$id})) {
-      $delayed_count++;
-      $delayed{$id} = 1;
+    elsif ($flag eq "==" && defined($message_aref->[$SIZE]) && !defined($message_aref->[$DELAYED])) {
+      ++$delayed_count;
+      $message_aref->[$DELAYED] = 1;
     }
 
     elsif ($flag eq "**") {
-      $had_error{$id} = 1 if defined ($size{$id});
+      if (defined ($message_aref->[$SIZE])) {
+        unless (defined $message_aref->[$HAD_ERROR]) {
+          ++$message_errors;
+          $message_aref->[$HAD_ERROR] = 1;
+        }
+      }
 
       #IFDEF ($show_errors)
-        $errors_count{$_}++;
+        ++$errors_count{$_};
       #ENDIF ($show_errors)
 
     }
@@ -1940,32 +2074,57 @@ sub generate_parser {
     elsif ($flag eq "Co") {
       #Completed?
       #IFDEF ($#queue_times >= 0)
-        #Note: id_seconds() benchmarks as 42% slower than seconds() and computing
-        #the time accounts for a significant portion of the run time.
-        my($queued);
-        if (defined $arrival_time{$id}) {
-          $queued = seconds($tod) - seconds($arrival_time{$id});
-          delete($arrival_time{$id});
-        }
-        else {
-          $queued = seconds($tod) - id_seconds($id);
-        }
+        $queued = queue_time($tod, $message_aref->[$ARRIVAL_TIME], $id);
 
         for ($i = 0; $i <= $#queue_times; $i++) {
           if ($queued < $queue_times[$i]) {
-            $queue_bin[$i]++;
-            $remote_queue_bin[$i]++ if $remote_delivered{$id};
+            ++$qt_all_bin[$i];
+            ++$qt_remote_bin[$i] if $message_aref->[$REMOTE_DELIVERED];
             last;
           }
         }
-        $queue_more_than++ if $i > $#queue_times;
+        if ($i > $#queue_times) {
+          ++$qt_all_overflow;
+          ++$qt_remote_overflow if $message_aref->[$REMOTE_DELIVERED];
+        }
       #ENDIF ($#queue_times >= 0)
 
-      #IFDEF ($show_relay)
-        delete($from_host{$id});
-        delete($from_address{$id});
-      #ENDIF ($show_relay)
+      #IFDEF ($#rcpt_times >= 0)
+        if (/ QT=(\S+)/) {
+          $seconds = wdhms_seconds($1);
+          #Calculate $queued if not previously calculated above.
+          #IFNDEF ($#queue_times >= 0)
+            $queued = queue_time($tod, $message_aref->[$ARRIVAL_TIME], $id);
+          #ENDIF ($#queue_times >= 0)
+          $rcpt_time = $seconds - $queued;
+          my($protocol);
 
+          if (defined $message_aref->[$PROTOCOL]) {
+            $protocol = $message_aref->[$PROTOCOL];
+
+            # Create the bin if its not already defined.
+            unless (exists $rcpt_times_bin{$protocol}) {
+              initialise_rcpt_times($protocol);
+            }
+          }
+
+
+          for ($i = 0; $i <= $#rcpt_times; ++$i) {
+            if ($rcpt_time < $rcpt_times[$i]) {
+              ++$rcpt_times_bin{all}[$i];
+              ++$rcpt_times_bin{$protocol}[$i] if defined $protocol;
+              last;
+            }
+          }
+
+          if ($i > $#rcpt_times) {
+            ++$rcpt_times_overflow{all};
+            ++$rcpt_times_overflow{$protocol} if defined $protocol;
+          }
+        }
+      #ENDIF ($#rcpt_times >= 0)
+
+      delete($messages{$id});
     }
   }';
 
@@ -1979,6 +2138,12 @@ sub generate_parser {
       $removing_lines = 1;
     }
 
+    # Convert constants.
+    while (/(\$[A-Z][A-Z_]*)\b/) {
+      my $constant = eval $1;
+      s/(\$[A-Z][A-Z_]*)\b/$constant/;
+    }
+
     $processed_parser .= $_."\n" unless $removing_lines;
 
     if (/^\s*#\s*ENDIF\s*\((.*?)\)/i) {
@@ -1988,7 +2153,7 @@ sub generate_parser {
       }
     }
   }
-  print STDERR "# START OF PARSER:\n$processed_parser\n# END OF PARSER\n\n" if $debug;
+  print STDERR "# START OF PARSER:$processed_parser\n# END OF PARSER\n\n" if $debug;
 
   return $processed_parser;
 }
@@ -2041,10 +2206,21 @@ sub print_header {
       print $htm_fh "<li><a href=\"#Messages received\">Messages received per hour</a>\n";
       print $htm_fh "<li><a href=\"#Deliveries\">Deliveries per hour</a>\n";
     }
+
     if ($#queue_times >= 0) {
-      print $htm_fh "<li><a href=\"#all messages time\">Time spent on the queue: all messages</a>\n";
-      print $htm_fh "<li><a href=\"#messages with at least one remote delivery time\">Time spent on the queue: messages with at least one remote delivery</a>\n";
+      print $htm_fh "<li><a href=\"#Time spent on the queue all messages\">Time spent on the queue: all messages</a>\n";
+      print $htm_fh "<li><a href=\"#Time spent on the queue messages with at least one remote delivery\">Time spent on the queue: messages with at least one remote delivery</a>\n";
     }
+
+    if ($#delivery_times >= 0) {
+      print $htm_fh "<li><a href=\"#Delivery times all messages\">Delivery times: all messages</a>\n";
+      print $htm_fh "<li><a href=\"#Delivery times messages with at least one remote delivery\">Delivery times: messages with at least one remote delivery</a>\n";
+    }
+
+    if ($#rcpt_times >= 0) {
+      print $htm_fh "<li><a href=\"#Receipt times all messages\">Receipt times</a>\n";
+    }
+
     print $htm_fh "<li><a href=\"#Relayed messages\">Relayed messages</a>\n" if $show_relay;
     if ($topcount) {
       foreach ('Host','Domain','Email','Edomain') {
@@ -2165,7 +2341,7 @@ sub print_grandtotals {
   }
   else {
     $volume = volume_rounded($total_received_data, $total_received_data_gigs);
-    $failed_count = keys %had_error;
+    $failed_count = $message_errors;
   }
 
   {
@@ -2282,6 +2458,14 @@ sub print_user_patterns {
   {
     ++$row;
   }
+
+  if ($hist_opt > 0) {
+    my $user_pattern_index = 0;
+    foreach $key (@user_descriptions) {
+      print_histogram($key, 'occurence', @{$user_pattern_interval_count[$user_pattern_index]});
+      $user_pattern_index++;
+    }
+  }
 }
 
 
@@ -2354,7 +2538,7 @@ sub print_transport {
   if ($htm_fh) {
     print $htm_fh "</table>\n";
     print $htm_fh "</td><td>\n";
-    if ($HAVE_GD_Graph_pie && $charts)
+    if ($HAVE_GD_Graph_pie && $charts && ($#chartdatavals_count > 0))
       {
       # calculate the graph
       my @data = (
@@ -2378,7 +2562,7 @@ sub print_transport {
     }
     print $htm_fh "</td><td>\n";
 
-    if ($HAVE_GD_Graph_pie && $charts) {
+    if ($HAVE_GD_Graph_pie && $charts && ($#chartdatavals_vol > 0)) {
       my @data = (
          \@chartdatanames,
          \@chartdatavals_vol
@@ -2563,6 +2747,7 @@ sub print_errors {
 # All the diffs should produce no output.
 #
 #  options='-bydomain -byemail -byhost -byedomain'
+#  options="$options -show_rt1,2,4 -show_dt 1,2,4"
 #  options="$options -pattern 'Completed Messages' /Completed/"
 #  options="$options -pattern 'Received Messages' /<=/"
 #
@@ -2591,6 +2776,11 @@ sub parse_old_eximstat_reports {
   my($fh) = @_;
 
   my(%league_table_value_entered, %league_table_value_was_zero, %table_order);
+
+  my(%user_pattern_index);
+  my $user_pattern_index = 0;
+  map {$user_pattern_index{$_} = $user_pattern_index++} @user_descriptions;
+  my $user_pattern_keys = join('|', @user_descriptions);
 
   while (<$fh>) {
     PARSE_OLD_REPORT_LINE:
@@ -2639,6 +2829,12 @@ sub parse_old_eximstat_reports {
       }
     }
 
+    elsif (/(^|<h2>)($user_pattern_keys) per /o) {
+      # Parse User defined pattern histograms if they exist.
+      parse_histogram($fh, $user_pattern_interval_count[$user_pattern_index{$2}] );
+    }
+
+
     elsif (/Deliveries by transport/i) {
 #Deliveries by transport
 #-----------------------
@@ -2658,34 +2854,15 @@ sub parse_old_eximstat_reports {
         last if (/^\s*$/);              #Finished if we have a blank line.
       }
     }
-    elsif (/(Messages received|Deliveries) per/) {
-#      Messages received per hour (each dot is 2 messages)
-#---------------------------------------------------
-#
-#00-01    106 .....................................................
-#01-02    103 ...................................................
-
-      # Set a pointer to the interval array so we can use the same code
-      # block for both messages received and delivered.
-      my $interval_aref = ($1 eq 'Deliveries') ? \@delivered_interval_count : \@received_interval_count;
-      my $reached_table = 0;
-      while (<$fh>) {
-        $reached_table = 1 if (/^00/);
-        next unless $reached_table;
-        print STDERR "Parsing $_" if $debug;
-        if (/^(\d+):(\d+)\s+(\d+)/) {           #hh:mm start time format ?
-          $$interval_aref[($1*60 + $2)/$hist_interval] += $3 if $hist_opt;
-        }
-        elsif (/^(\d+)-(\d+)\s+(\d+)/) {        #hh-hh start-end time format ?
-          $$interval_aref[($1*60)/$hist_interval] += $3 if $hist_opt;
-        }
-        else {                                  #Finished the table ?
-          last;
-        }
-      }
+    elsif (/Messages received per/) {
+      parse_histogram($fh, \@received_interval_count);
+    }
+    elsif (/Deliveries per/) {
+      parse_histogram($fh, \@delivered_interval_count);
     }
 
-    elsif (/Time spent on the queue: (all messages|messages with at least one remote delivery)/) {
+    #elsif (/Time spent on the queue: (all messages|messages with at least one remote delivery)/) {
+    elsif (/(Time spent on the queue|Delivery times|Receipt times): ((\S+) messages|messages with at least one remote delivery)((<[^>]*>)*\s*)$/) {
 #Time spent on the queue: all messages
 #-------------------------------------
 #
@@ -2697,7 +2874,40 @@ sub parse_old_eximstat_reports {
 
       # Set a pointer to the queue bin so we can use the same code
       # block for both all messages and remote deliveries.
-      my $bin_aref = ($1 eq 'all messages') ? \@queue_bin : \@remote_queue_bin;
+      #my $bin_aref = ($1 eq 'all messages') ? \@qt_all_bin : \@qt_remote_bin;
+      my($bin_aref, $times_aref, $overflow_sref);
+      if ($1 eq 'Time spent on the queue') {
+        $times_aref = \@queue_times;
+        if ($2 eq 'all messages') {
+          $bin_aref = \@qt_all_bin;
+          $overflow_sref = \$qt_all_overflow;
+        }
+        else {
+          $bin_aref = \@qt_remote_bin;
+          $overflow_sref = \$qt_remote_overflow;
+        }
+      }
+      elsif ($1 eq 'Delivery times') {
+        $times_aref = \@delivery_times;
+        if ($2 eq 'all messages') {
+          $bin_aref = \@dt_all_bin;
+          $overflow_sref = \$dt_all_overflow;
+        }
+        else {
+          $bin_aref = \@dt_remote_bin;
+          $overflow_sref = \$dt_remote_overflow;
+        }
+      }
+      else {
+        unless (exists $rcpt_times_bin{$3}) {
+          initialise_rcpt_times($3);
+        }
+        $bin_aref = $rcpt_times_bin{$3};
+        $times_aref = \@rcpt_times;
+        $overflow_sref = \$rcpt_times_overflow{$3};
+      }
+
+
       my $reached_table = 0;
       while (<$fh>) {
         $_ = html2txt($_);              #Convert general HTML markup to text.
@@ -2712,15 +2922,14 @@ sub parse_old_eximstat_reports {
           $previous_seconds_on_queue = $seconds;
           $time_on_queue = $seconds * 2 if ($modifier eq 'Over');
           my($i);
-          for ($i = 0; $i <= $#queue_times; $i++) {
-            if ($time_on_queue < $queue_times[$i]) {
+          for ($i = 0; $i <= $#$times_aref; $i++) {
+            if ($time_on_queue < $times_aref->[$i]) {
               $$bin_aref[$i] += $count;
               last;
             }
           }
-          # There's only one counter for messages going over the queue
-          # times so make sure we only count it once.
-          $queue_more_than += $count if (($bin_aref == \@queue_bin) && ($i > $#queue_times));
+          $$overflow_sref += $count if ($i > $#$times_aref);
+
         }
         else {
           last;                             #Finished the table ?
@@ -2922,6 +3131,35 @@ sub parse_old_eximstat_reports {
   }
 }
 
+#######################################################################
+# parse_histogram($fh, \@delivered_interval_count);
+# Parse a histogram into the provided array of counters.
+#######################################################################
+sub parse_histogram {
+  my($fh, $counters_aref) = @_;
+
+  #      Messages received per hour (each dot is 2 messages)
+  #---------------------------------------------------
+  #
+  #00-01    106 .....................................................
+  #01-02    103 ...................................................
+
+  my $reached_table = 0;
+  while (<$fh>) {
+    $reached_table = 1 if (/^00/);
+    next unless $reached_table;
+    print STDERR "Parsing $_" if $debug;
+    if (/^(\d+):(\d+)\s+(\d+)/) {           #hh:mm start time format ?
+      $$counters_aref[($1*60 + $2)/$hist_interval] += $3 if $hist_opt;
+    }
+    elsif (/^(\d+)-(\d+)\s+(\d+)/) {        #hh-hh start-end time format ?
+      $$counters_aref[($1*60)/$hist_interval] += $3 if $hist_opt;
+    }
+    else {                                  #Finished the table ?
+      last;
+    }
+  }
+}
 
 
 #######################################################################
@@ -3012,7 +3250,7 @@ sub html2txt {
   # <Userid@Domain> words, so explicitly specify the HTML tags we will remove
   # (the ones used by this program). If someone is careless enough to have their
   # Userid the same as an HTML tag, there's not much we can do about it.
-  s/<\/?(html|head|title|body|h\d|ul|li|a\s+|table|tr|td|th|pre|hr|p|br)\b.*?>/ /og;
+  s/<\/?(html|head|title|body|h\d|ul|li|a\s+|table|tr|td|th|pre|hr|p|br)\b.*?>/ /g;
 
   s/\&lt\;/\</og;             #Convert '&lt;' to '<'.
   s/\&gt\;/\>/og;             #Convert '&gt;' to '>'.
@@ -3072,6 +3310,41 @@ sub set_worksheet_line {
 
 }
 
+#######################################################################
+# @rcpt_times = parse_time_list($string);
+#
+# Parse a comma seperated list of time values in seconds given by
+# the user and fill an array.
+#
+# Return a default list if $string is undefined.
+# Return () if $string eq '0'.
+#######################################################################
+sub parse_time_list {
+  my($string) = @_;
+  if (! defined $string) {
+    return(60, 5*60, 15*60, 30*60, 60*60, 3*60*60, 6*60*60, 12*60*60, 24*60*60);
+  }
+  my(@times) = split(/,/, $string);
+  foreach my $q (@times) { $q = eval($q) + 0 }
+  @times = sort { $a <=> $b } @times;
+  @times = () if ($#times == 0 && $times[0] == 0);
+  return(@times);
+}
+
+
+#######################################################################
+# initialise_rcpt_times($protocol);
+# Initialise an array of rcpt_times to 0 for the specified protocol.
+#######################################################################
+sub initialise_rcpt_times {
+  my($protocol) = @_;
+  for (my $i = 0; $i <= $#rcpt_times; ++$i) {
+    $rcpt_times_bin{$protocol}[$i] = 0;
+  }
+  $rcpt_times_overflow{$protocol} = 0;
+}
+
+
 ##################################################
 #                 Main Program                   #
 ##################################################
@@ -3095,8 +3368,9 @@ $charts_option_specified = 0;
 $chartrel = ".";
 $chartdir = ".";
 
-@queue_times = (60, 5*60, 15*60, 30*60, 60*60, 3*60*60, 6*60*60,
-                12*60*60, 24*60*60);
+@queue_times = parse_time_list();
+@rcpt_times = ();
+@delivery_times = ();
 
 $last_offset = '';
 $offset_seconds = 0;
@@ -3110,22 +3384,13 @@ my(%output_files);     # What output files have been specified?
 
 # Decode options
 
-while (@ARGV > 0 && substr($ARGV[0], 0, 1) eq '-')
-  {
+while (@ARGV > 0 && substr($ARGV[0], 0, 1) eq '-') {
   if    ($ARGV[0] =~ /^\-h(\d+)$/) { $hist_opt = $1 }
   elsif ($ARGV[0] =~ /^\-ne$/)     { $show_errors = 0 }
-  elsif ($ARGV[0] =~ /^\-nr(.?)(.*)\1$/)
-    {
+  elsif ($ARGV[0] =~ /^\-nr(.?)(.*)\1$/) {
     if ($1 eq "") { $show_relay = 0 } else { $relay_pattern = $2 }
-    }
-  elsif ($ARGV[0] =~ /^\-q([,\d\+\-\*\/]+)$/)
-    {
-    @queue_times = split(/,/, $1);
-    my($q);
-    foreach $q (@queue_times) { $q = eval($q) + 0 }
-    @queue_times = sort { $a <=> $b } @queue_times;
-    @queue_times = () if ($#queue_times == 0 && $queue_times[0] == 0);
-    }
+  }
+  elsif ($ARGV[0] =~ /^\-q([,\d\+\-\*\/]+)$/) { @queue_times = parse_time_list($1) }
   elsif ($ARGV[0] =~ /^-nt$/)       { $show_transport = 0 }
   elsif ($ARGV[0] =~ /^\-nt(.?)(.*)\1$/)
     {
@@ -3159,6 +3424,8 @@ while (@ARGV > 0 && substr($ARGV[0], 0, 1) eq '-')
   elsif ($ARGV[0] =~ /^-byemaildomain$/)  { $do_sender{Edomain} = 1 }
   elsif ($ARGV[0] =~ /^-byedomain$/)  { $do_sender{Edomain} = 1 }
   elsif ($ARGV[0] =~ /^-nvr$/)      { $volume_rounding = 0 }
+  elsif ($ARGV[0] =~ /^-show_rt([,\d\+\-\*\/]+)?$/) { @rcpt_times = parse_time_list($1) }
+  elsif ($ARGV[0] =~ /^-show_dt([,\d\+\-\*\/]+)?$/) { @delivery_times = parse_time_list($1) }
   elsif ($ARGV[0] =~ /^-d$/)        { $debug = 1 }
   elsif ($ARGV[0] =~ /^--?h(elp)?$/){ help() }
   elsif ($ARGV[0] =~ /^-t_remote_users$/) { $include_remote_users = 1 }
@@ -3249,13 +3516,19 @@ while (@ARGV > 0 && substr($ARGV[0], 0, 1) eq '-')
   }
 
 
+# Initialise the queue/delivery/rcpt time counters.
 for (my $i = 0; $i <= $#queue_times; $i++) {
-  $queue_bin[$i] = 0;
-  $remote_queue_bin[$i] = 0;
+  $qt_all_bin[$i] = 0;
+  $qt_remote_bin[$i] = 0;
 }
+for (my $i = 0; $i <= $#delivery_times; $i++) {
+  $dt_all_bin[$i] = 0;
+  $dt_remote_bin[$i] = 0;
+}
+initialise_rcpt_times('all');
+
 
 # Compute the number of slots for the histogram
-
 if ($hist_opt > 0)
   {
   if ($hist_opt > 60 || 60 % $hist_opt != 0)
@@ -3267,6 +3540,12 @@ if ($hist_opt > 0)
   $hist_number = (24*60)/$hist_interval;        #Number of intervals per day.
   @received_interval_count = (0) x $hist_number;
   @delivered_interval_count = (0) x $hist_number;
+  my $user_pattern_index = 0;
+  for (my $user_pattern_index = 0; $user_pattern_index <= $#user_patterns; ++$user_pattern_index) {
+    @{$user_pattern_interval_count[$user_pattern_index]} = (0) x $hist_number;
+  }
+  @dt_all_bin = (0) x $hist_number;
+  @dt_remote_bin = (0) x $hist_number;
   }
 
 #$queue_unknown = 0;
@@ -3279,9 +3558,13 @@ $total_delivered_data = 0;
 $total_delivered_data_gigs = 0;
 $total_delivered_count = 0;
 
-$queue_more_than = 0;
+$qt_all_overflow = 0;
+$qt_remote_overflow = 0;
+$dt_all_overflow = 0;
+$dt_remote_overflow = 0;
 $delayed_count = 0;
 $relayed_unshown = 0;
+$message_errors = 0;
 $begin = "9999-99-99 99:99:99";
 $end = "0000-00-00 00:00:00";
 my($section,$type);
@@ -3346,14 +3629,27 @@ print_transport() if $show_transport;
 # Print the deliveries per interval as a histogram, unless configured not to.
 # First find the maximum in one interval and scale accordingly.
 if ($hist_opt > 0) {
-  print_histogram("Messages received", @received_interval_count);
-  print_histogram("Deliveries", @delivered_interval_count);
+  print_histogram("Messages received", 'message', @received_interval_count);
+  print_histogram("Deliveries", 'delivery', @delivered_interval_count);
 }
 
 # Print times on queue if required.
 if ($#queue_times >= 0) {
-  print_queue_times("all messages", \@queue_bin,$queue_more_than);
-  print_queue_times("messages with at least one remote delivery",\@remote_queue_bin,$queue_more_than);
+  print_duration_table("Time spent on the queue", "all messages", \@queue_times, \@qt_all_bin,$qt_all_overflow);
+  print_duration_table("Time spent on the queue", "messages with at least one remote delivery", \@queue_times, \@qt_remote_bin,$qt_remote_overflow);
+}
+
+# Print delivery times if required.
+if ($#delivery_times >= 0) {
+  print_duration_table("Delivery times", "all messages", \@delivery_times, \@dt_all_bin,$dt_all_overflow);
+  print_duration_table("Delivery times", "messages with at least one remote delivery", \@delivery_times, \@dt_remote_bin,$dt_remote_overflow);
+}
+
+# Print rcpt times if required.
+if ($#rcpt_times >= 0) {
+  foreach my $protocol ('all', grep(!/^all$/, sort keys %rcpt_times_bin)) {
+    print_duration_table("Receipt times", "$protocol messages", \@rcpt_times, $rcpt_times_bin{$protocol}, $rcpt_times_overflow{$protocol});
+  }
 }
 
 # Print relay information if required.
@@ -3395,5 +3691,6 @@ if ($xls_fh) {
 
 
 # End of eximstats
+
 
 # FIXME: Doku
