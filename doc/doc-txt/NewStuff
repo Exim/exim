@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.53 2005/06/27 14:34:33 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.54 2005/06/29 14:29:05 fanf2 Exp $
 
 New Features in Exim
 --------------------
@@ -234,6 +234,14 @@ TF/04 There is a new ratelimit ACL condition which can be used to measure
           ratelimit = ${lookup {$sender_host_address} \
                         cdb {DB/ratelimits.cdb} \
                         {$value} {RATELIMIT} }
+
+      Warning: if you have a busy server with a lot of ratelimit tests,
+      especially with the per_rcpt option, you may suffer from a performance
+      bottleneck caused by locking on the ratelimit hints database. Apart from
+      making your ACLs less complicated, you can reduce the problem by using a
+      RAM disk for Exim's hints directory, /var/spool/exim/db/. However this
+      means that Exim will lose its hints data after a reboot (including retry
+      hints, the callout cache, and ratelimit data).
 
 TK/01 Added an 'spf' lookup type that will return an SPF result for a given
       email address (the key) and an IP address (the database):
