@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.179 2005/06/29 14:17:01 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.180 2005/06/30 10:01:01 steve Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -243,6 +243,8 @@ SC/09 Eximstats: added the -show_rt<list> and the -show_dt<list> flags
 
 SC/10 Eximstats: added histograms for user specified patterns as requested
       by Marc Sherman.
+
+SC/11 Eximstats: v1.43 - bugfix for pattern histograms with -h0 specified.
 
 
 Exim version 4.51
