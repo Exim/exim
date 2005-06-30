@@ -1,5 +1,5 @@
 #!PERL_COMMAND -w
-# $Cambridge: exim/src/src/eximstats.src,v 1.8 2005/06/29 15:35:09 steve Exp $
+# $Cambridge: exim/src/src/eximstats.src,v 1.9 2005/06/30 09:59:34 steve Exp $
 
 # Copyright (c) 2001 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -222,6 +222,9 @@
 #
 # 2005-06-24  V1.42 Steve Campbell
 #             Added Histograms for user specified patterns.
+#
+# 2005-06-30  V1.43 Steve Campbell
+#             Bug fix for V1.42 with -h0 specified. Spotted by Chris Lear.
 #
 #
 # For documentation on the logfile format, see
@@ -515,7 +518,7 @@ use vars qw($WEEK $DAY $HOUR $MINUTE);
 
 @days_per_month = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
 $gig     = 1024 * 1024 * 1024;
-$VERSION = '1.42';
+$VERSION = '1.43';
 
 # How much space do we allow for the Hosts/Domains/Emails/Edomains column headers?
 $COLUMN_WIDTHS = 8;
@@ -1766,12 +1769,10 @@ sub generate_parser {
   my $user_pattern_index = 0;
   foreach (@user_patterns) {
     $user_pattern_totals[$user_pattern_index] = 0;
-    $parser .= <<EoText;
-  if ($_) {
-    \$user_pattern_totals[$user_pattern_index]++ if $_;
-    \$user_pattern_interval_count[$user_pattern_index][(\$m_hour*60 + \$m_min)/$hist_interval]++;
-  }
-EoText
+    $parser .= "  if ($_) {\n";
+    $parser .= "    \$user_pattern_totals[$user_pattern_index]++ if $_;\n";
+    $parser .= "    \$user_pattern_interval_count[$user_pattern_index][(\$m_hour*60 + \$m_min)/$hist_interval]++;\n" if ($hist_opt > 0);
+    $parser .= "  }\n";
     $user_pattern_index++;
   }
 
@@ -3546,7 +3547,7 @@ if ($hist_opt > 0)
   }
   @dt_all_bin = (0) x $hist_number;
   @dt_remote_bin = (0) x $hist_number;
-  }
+}
 
 #$queue_unknown = 0;
 
