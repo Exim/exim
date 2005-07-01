@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.5 2005/06/17 10:47:05 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.6 2005/07/01 10:21:45 ph10 Exp $
 
               Notes on the Sieve implementation for Exim
 
@@ -158,14 +158,6 @@ that aspect using the appendfile transport options "create_directory",
 the Exim specification for details.
 
 
-Semantics of Redirect
-
-Sieve scripts are supposed to be interoperable between servers, so this
-implementation does not allow redirecting mail to unqualified addresses,
-because the domain would depend on the used system and on systems with
-virtual mail domains it is probably not what the user expects it to be.
-
-
 String Arguments
 
 There has been confusion if the string arguments to "require" are to be
@@ -181,13 +173,10 @@ Sieve Syntax and Semantics
 RFC 3028 confuses syntax and semantics sometimes.  It uses a generic
 grammar as syntax for actions and tests and performs many checks during
 semantic analysis.  Syntax is specified as grammar rule, semantics
-with natural language, despire the latter often talking about syntax.
+with natural language, despite the latter often talking about syntax.
 The intention was to provide a framework for the syntax that describes
 current commands as well as future extensions, and describing commands
-by semantics.  Since the semantic analysis is not specified by formal
-rules, it is easy to get that phase wrong, as demonstrated by the mistake
-in RFC 3028 to forbid "elsif" being followed by "elsif" (which is allowed
-in Sieve, it's just not specified correctly).
+by semantics.
 
 RFC 3028 does not define if semantic checks are strict (always treat
 unknown extensions as errors) or lazy (treat unknown extensions as error,
