@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/regex.c,v 1.6 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/regex.c,v 1.7 2005/07/01 10:49:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -210,7 +210,7 @@ int mime_regex(uschar **listptr) {
 
 
   /* open file */
-  f = fopen(CS mime_decoded_filename, "r");
+  f = fopen(CS mime_decoded_filename, "rb");
   if (f == NULL) {
     /* open failed */
     log_write(0, LOG_MAIN,

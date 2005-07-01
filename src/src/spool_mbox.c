@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.7 2005/06/27 14:29:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.8 2005/07/01 10:49:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -56,7 +56,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
 
     /* open [message_id].eml file for writing */
     snprintf(CS mbox_path, 1024, "%s/scan/%s/%s.eml", spool_directory, message_id, message_id);
-    mbox_file = Ufopen(mbox_path,"w");
+    mbox_file = Ufopen(mbox_path,"wb");
 
     if (mbox_file == NULL) {
       debug_printf("unable to open file for writing: %s\n", mbox_path);
@@ -129,7 +129,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
     for (i = 0; i < 2; i++) {
       message_subdir[0] = (split_spool_directory == (i == 0))? message_id[5] : 0;
       sprintf(CS mbox_path, "%s/input/%s/%s-D", spool_directory, message_subdir, message_id);
-      data_file = Ufopen(mbox_path,"r");
+      data_file = Ufopen(mbox_path,"rb");
       if (data_file != NULL)
         break;
     };
@@ -162,7 +162,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
   *mbox_file_size = statbuf.st_size;
 
   /* open [message_id].eml file for reading */
-  mbox_file = Ufopen(mbox_path,"r");
+  mbox_file = Ufopen(mbox_path,"rb");
 
   return mbox_file;
 }

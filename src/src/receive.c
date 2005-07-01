@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.20 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.21 2005/07/01 10:49:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1113,7 +1113,7 @@ if (rc == OK) {
  closedir(tempdir);
 
   if (entry != NULL) {
-    mbox_file = Ufopen(rfc822_file_path,"r");
+    mbox_file = Ufopen(rfc822_file_path,"rb");
     if (mbox_file == NULL) {
       log_write(0, LOG_PANIC,
          "acl_smtp_mime: can't open RFC822 spool file, skipping.");
