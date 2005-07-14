@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.42 2005/06/29 14:19:28 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.43 2005/07/14 17:17:25 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1980,10 +1980,20 @@ data in the reject log does show the envelope recipients as part of its
 additional data.
 ------------------------------------------------------------------------------
 
-(337) 29-Jun-06 S Add "defer" to $recipient_verify_failure
+(337) 29-Jun-05 S Add "defer" to $recipient_verify_failure
 
 This is for when defer_ok was set when verifying recipients. Since this isn't
 for a failure, we probably also need "ok" for the non-fail case.
 ------------------------------------------------------------------------------
---- HWM 337 ------------------------------------------------------------------
+
+(338) 14-Jul-05 M Change to Bind 9 API
+
+Exim uses the original API for calling the DNS resolver. There is a newer API
+available, and noises are being made in some OS that compatibility with the old
+API is going to be dropped. Nevertheless, there are sure to be systems about
+for ages that require the use of the old API. Therefore, we will have to
+implement not only an interface to the new API, but a backwards compatibility
+feature. It would be nice if this was automatic.
+------------------------------------------------------------------------------
+--- HWM 338 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
