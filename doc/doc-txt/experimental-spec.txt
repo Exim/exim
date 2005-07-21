@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.3 2005/06/27 18:32:20 tom Exp $
+$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.4 2005/07/21 21:22:53 jetmore Exp $
 
 From time to time, experimental features may be added to Exim.
 While a feature  is experimental, there  will be a  build-time
@@ -194,7 +194,7 @@ expansion variables.
 
 2) Sign outgoing email with DK
 
-Outgoing messages are  signed just before  exim puts them  "on
+Outgoing messages are  signed just before  Exim puts them  "on
 the wire".  The only  thing that  happens after  DK signing is
 eventual TLS encryption.
 
@@ -257,7 +257,7 @@ to sign for.
 
 
 
-2. Brighmail AntiSpam (BMI) suppport
+2. Brightmail AntiSpam (BMI) suppport
 --------------------------------------------------------------
 
 Brightmail  AntiSpam  is  a  commercial  package.  Please  see
@@ -281,7 +281,7 @@ instead  of per-message.  To use  BMI, you  need to  take the
 following steps:
 
   1) Compile Exim with BMI support
-  2) Set up main BMI options (top section of exim config file)
+  2) Set up main BMI options (top section of Exim config file)
   3) Set up ACL control statement (ACL section of the config
      file)
   4) Set up your routers to use BMI verdicts (routers section
@@ -317,15 +317,15 @@ These four steps are explained in more details below.
   able to find the library file.
 
 
-2) Setting up BMI support in the exim main configuration
+2) Setting up BMI support in the Exim main configuration
 
-  To enable BMI  support in the  main exim configuration,  you
+  To enable BMI  support in the  main Exim configuration,  you
   should set the path to the main BMI configuration file  with
   the "bmi_config_file" option, like this:
 
   bmi_config_file = /opt/brightmail/etc/brightmail.cfg
 
-  This must go into section 1 of exims configuration file (You
+  This must go into section 1 of Exim's configuration file (You
   can  put it  right on  top). If  you omit  this option,  it
   defaults to /opt/brightmail/etc/brightmail.cfg.
 
@@ -344,7 +344,7 @@ These four steps are explained in more details below.
   an "accept"  block in  the "acl_check_rcpt"  ACL. You should
   use the "accept" block(s)  that accept messages from  remote
   servers for your own domain(s). Here is an example that uses
-  the "accept" blocks from exims default configuration file:
+  the "accept" blocks from Exim's default configuration file:
 
 
   accept  domains       = +local_domains
@@ -367,7 +367,7 @@ These four steps are explained in more details below.
   more "verdicts" are  present. Different recipients  can have
   different verdicts. Each  recipient is treated  individually
   during routing, so you  can query the verdicts  by recipient
-  at  that stage.  From Exims  view, a  verdict can  have the
+  at  that stage.  From Exim's  view, a  verdict can  have the
   following outcomes:
 
   o deliver the message normally
@@ -505,7 +505,7 @@ These four steps are explained in more details below.
   server and are  queried by the  BMI server itself.  However,
   you can also  pass opt-in data  for each recipient  from the
   MTA to the  BMI server. This  is particularly useful  if you
-  already look  up recipient  data in  exim anyway  (which can
+  already look  up recipient  data in  Exim anyway  (which can
   also be  stored in  a SQL  database or  other source).  This
   implementation enables you  to pass opt-in  data to the  BMI
   server  in  the  RCPT   ACL.  This  works  by   setting  the
@@ -533,7 +533,7 @@ These four steps are explained in more details below.
             control       = bmi_run
 
   Of course,  you can  also use  any other  lookup method that
-  exim supports, including LDAP, Postgres, MySQL, Oracle etc.,
+  Exim supports, including LDAP, Postgres, MySQL, Oracle etc.,
   as long as  the result is  a list of  colon-separated opt-in
   strings.
 
@@ -559,7 +559,7 @@ to obtain  a copy,  then compile  and install  it. By default,
 this will  put headers  in /usr/local/include  and the  static
 library in /usr/local/lib.
 
-To compile exim with SPF support, set these additional flags in
+To compile Exim with SPF support, set these additional flags in
 Local/Makefile:
 
 EXPERIMENTAL_SPF=yes
@@ -599,7 +599,7 @@ which the spf condition should succeed. Valid strings are:
               record of the queried domain. This should be
               treated like "none".
   o err_temp  This indicates a temporary error during all
-              processing, including exim's SPF processing.
+              processing, including Exim's SPF processing.
               You may defer messages when this occurs.
 
 You can prefix each string with an exclamation mark to  invert

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.43 2005/07/14 17:17:25 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.44 2005/07/21 21:22:53 jetmore Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -589,10 +589,6 @@ John W Baxter
 
 May be tricky, because at the higher levels, the format of the query is not
 understood.
-------------------------------------------------------------------------------
-
-(8)  01-Jan-02  S  Expand once_repeat in autoreply
-John Jetmore
 ------------------------------------------------------------------------------
 
 (9)  01-Jan-02  S  Headers as well as body in file for autoreply
