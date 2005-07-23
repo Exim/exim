@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.5 2005/07/23 20:16:32 tom Exp $
+$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.6 2005/07/23 20:19:09 tom Exp $
 
 From time to time, experimental features may be added to Exim.
 While a feature  is experimental, there  will be a  build-time
@@ -306,7 +306,7 @@ These four steps are explained in more details below.
   If  you use  other CFLAGS  or EXTRALIBS_EXIM  settings then
   merge the content of these lines with them.
 
-  Note for BMI6.x users: You'll also have to add -lxml2
+  Note for BMI6.x users: You'll also have to add -lxml2_single
   to the EXTRALIBS_EXIM line. Users of 5.5x do not need to  do
   this.
 
