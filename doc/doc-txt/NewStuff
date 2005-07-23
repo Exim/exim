@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.54 2005/06/29 14:29:05 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.55 2005/07/23 20:59:16 tom Exp $
 
 New Features in Exim
 --------------------
@@ -7,6 +7,20 @@ This file contains descriptions of new features that have been added to Exim,
 but have not yet made it into the main manual (which is most conveniently
 updated when there is a relatively large batch of changes). The doc/ChangeLog
 file contains a listing of all changes, including bug fixes.
+
+Exim version 4.53
+-----------------
+
+TK/01 Added the "success_on_redirect" address verification option. When an
+      address generates new addresses during routing, Exim will abort
+      verification with "success" when more than one address has been
+      generated, but continue to verify a single new address. The latter
+      does not happen when the new "success_on_redirect" option is set, like
+
+      require verify = recipient/success_on_redirect/callout=10s
+
+      In that case, verification will succeed when a router generates a new
+      address.
 
 
 Exim version 4.52

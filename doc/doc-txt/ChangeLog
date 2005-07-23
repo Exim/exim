@@ -1,7 +1,13 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.181 2005/07/01 10:49:01 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.182 2005/07/23 20:59:16 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+Exim version 4.53
+-----------------
+
+TK/01 Added the "success_on_redirect" address verification option. See
+      NewStuff for rationale and an example.
 
 
 Exim version 4.52
