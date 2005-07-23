@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.22 2005/06/27 14:29:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.23 2005/07/23 20:46:42 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -813,6 +813,8 @@ Arguments:
                        rewriting and messages from callouts
                      vopt_qualify => qualify an unqualified address; else error
                      vopt_expn => called from SMTP EXPN command
+                     vopt_success_on_redirect => when a new address is generated
+                       the verification instantly succeeds
 
                      These ones are used by do_callout() -- the options variable
                        is passed to it.
@@ -850,6 +852,7 @@ BOOL allok = TRUE;
 BOOL full_info = (f == NULL)? FALSE : (debug_selector != 0);
 BOOL is_recipient = (options & vopt_is_recipient) != 0;
 BOOL expn         = (options & vopt_expn) != 0;
+BOOL success_on_redirect = (options & vopt_success_on_redirect) != 0;
 int i;
 int yield = OK;
 int verify_type = expn? v_expn :
@@ -1219,9 +1222,12 @@ while (addr_new != NULL)
     generated address. */
 
     if (!full_info &&                    /* Stop if short info wanted AND */
-         (addr_new == NULL ||            /* No new address OR */
-          addr_new->next != NULL ||      /* More than one new address OR */
-          testflag(addr_new, af_pfr)))   /* New address is pfr */
+         (((addr_new == NULL ||          /* No new address OR */
+           addr_new->next != NULL ||     /* More than one new address OR */
+           testflag(addr_new, af_pfr)))  /* New address is pfr */
+         ||                              /* OR */
+         (addr_new != NULL &&            /* At least one new address AND */
+          success_on_redirect)))         /* success_on_redirect is set */
       {
       if (f != NULL) fprintf(f, "%s %s\n", address,
         address_test_mode? "is deliverable" : "verified");

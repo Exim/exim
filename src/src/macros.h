@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.16 2005/06/27 14:29:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.17 2005/07/23 20:46:42 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -617,6 +617,7 @@ enum { v_none, v_sender, v_recipient, v_expn };
 #define vopt_callout_no_cache     0x0040   /* disable callout cache */
 #define vopt_callout_recipsender  0x0080   /* use real sender to verify recip */
 #define vopt_callout_recippmaster 0x0100   /* use postmaster to verify recip */
+#define vopt_success_on_redirect  0x0200
 
 /* Values for fields in callout cache records */
 

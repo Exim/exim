@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.41 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.42 2005/07/23 20:46:42 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1338,6 +1338,7 @@ BOOL verify_header_sender = FALSE;
 BOOL defer_ok = FALSE;
 BOOL callout_defer_ok = FALSE;
 BOOL no_details = FALSE;
+BOOL success_on_redirect = FALSE;
 address_item *sender_vaddr = NULL;
 uschar *verify_sender_address = NULL;
 uschar *pm_mailfrom = NULL;
@@ -1480,6 +1481,7 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
   {
   if (strcmpic(ss, US"defer_ok") == 0) defer_ok = TRUE;
   else if (strcmpic(ss, US"no_details") == 0) no_details = TRUE;
+  else if (strcmpic(ss, US"success_on_redirect") == 0) success_on_redirect = TRUE;
 
   /* These two old options are left for backwards compatibility */
 
@@ -1737,6 +1739,9 @@ else if (verify_sender_address != NULL)
       else
         verify_options |= vopt_fake_sender;
 
+      if (success_on_redirect)
+        verify_options |= vopt_success_on_redirect;
+
       /* The recipient, qualify, and expn options are never set in
       verify_options. */
 
@@ -1787,6 +1792,9 @@ the DEFER overrides. */
 else
   {
   address_item addr2;
+
+  if (success_on_redirect)
+    verify_options |= vopt_success_on_redirect;
 
   /* We must use a copy of the address for verification, because it might
   get rewritten. */
