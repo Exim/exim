@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.55 2005/07/23 20:59:16 tom Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.56 2005/07/27 18:27:55 fanf2 Exp $
 
 New Features in Exim
 --------------------
@@ -164,6 +164,12 @@ TF/04 There is a new ratelimit ACL condition which can be used to measure
       example, you can limit the sending rate of each authenticated user,
       independent of the computer they are sending from, by setting the key
       to $authenticated_id. The default key is $sender_host_address.
+      Internally, Exim includes the smoothing constant p and the options in
+      the lookup key because they alter the meaning of the stored data.
+      This is not true for the limit m, so you can alter the configured
+      maximum rate and Exim will still remember clients' past behaviour,
+      but if you alter the other ratelimit parameters Exim will effectively
+      forget their past behaviour.
 
       Each ratelimit condition can have up to two options. The first option
       specifies what Exim measures the rate of, and the second specifies how
