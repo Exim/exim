@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.44 2005/07/21 21:22:53 jetmore Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.45 2005/07/28 08:04:56 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1991,5 +1991,11 @@ for ages that require the use of the old API. Therefore, we will have to
 implement not only an interface to the new API, but a backwards compatibility
 feature. It would be nice if this was automatic.
 ------------------------------------------------------------------------------
---- HWM 338 ------------------------------------------------------------------
+
+(339) 28-Jul-05 S Log name of maildir file
+
+This wish is for an option to log the name of the file that is written in
+maildir format (e.g. time.pid.host).
+------------------------------------------------------------------------------
+--- HWM 339 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
