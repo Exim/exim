@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.30 2005/06/21 14:14:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.31 2005/08/01 14:00:35 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -821,7 +821,7 @@ uschar *received_header_text   = US
      "${if def:tls_cipher {($tls_cipher)\n\t}}"
      #endif
      "(Exim $version_number)\n\t"
-     "id $message_id"
+     "id $message_exim_id"
      "${if def:received_for {\n\tfor $received_for}}"
      "\0<---------------Space to patch received_header_text->";
 

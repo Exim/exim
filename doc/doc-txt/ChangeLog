@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.185 2005/08/01 13:51:05 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.186 2005/08/01 14:00:34 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -16,6 +16,10 @@ PH/02 Patch to exigrep to allow it to work on syslog lines.
 PH/03 When creating an mbox file for a virus/spam scan, use fseek() instead of
       fread() to skip over the body file's header line, because in Cygwin the
       header line is locked and is inaccessible.
+
+PH/04 Added $message_exim_id, ultimately to replace $message_id (they will both
+      co-exist for some time) to make it clear that it is the Exim ID that is
+      referenced, not the Message-ID: header line.
 
 
 Exim version 4.52

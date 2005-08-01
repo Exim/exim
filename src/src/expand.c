@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.37 2005/08/01 13:20:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.38 2005/08/01 14:00:35 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -399,6 +399,7 @@ static var_entry var_table[] = {
   { "message_body",        vtype_msgbody,     &message_body },
   { "message_body_end",    vtype_msgbody_end, &message_body_end },
   { "message_body_size",   vtype_int,         &message_body_size },
+  { "message_exim_id",     vtype_stringptr,   &message_id },
   { "message_headers",     vtype_msgheaders,  NULL },
   { "message_id",          vtype_stringptr,   &message_id },
   { "message_linecount",   vtype_int,         &message_linecount },
