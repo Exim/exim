@@ -1,4 +1,4 @@
-$Cambridge: exim/src/src/lookups/README,v 1.1 2004/10/07 13:10:01 ph10 Exp $
+$Cambridge: exim/src/src/lookups/README,v 1.2 2005/08/01 13:20:28 ph10 Exp $
 
 LOOKUPS
 -------
@@ -26,11 +26,16 @@ key" style, where the key is associated with a "file name".
 For single key lookups, this means that the file name must be an absolute path.
 It is set for lsearch and dbm, but not for NIS, for example.
 
-When a single-key lookup file is opened, the handle returned by the xxx_open()
-function is saved, along with the file name and lookup type, in a tree. The
-xxx_close() function is not called when the first lookup is completed. If there
-are subsequent lookups of the same type that quote the same file name,
-xxx_open() isn't called; instead the cached handle is re-used.
+  lookup_absfilequery
+
+This is a query-style lookup that must start with an absolute file name. For
+example, the sqlite lookup is of this type.
+
+When a single-key or absfilequery lookup file is opened, the handle returned by
+the xxx_open() function is saved, along with the file name and lookup type, in
+a tree. The xxx_close() function is not called when the first lookup is
+completed. If there are subsequent lookups of the same type that quote the same
+file name, xxx_open() isn't called; instead the cached handle is re-used.
 
 Exim calls the function search_tidyup() at strategic points in its processing
 (e.g. after all routing and directing has been done) and this function walks

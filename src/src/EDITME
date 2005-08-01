@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.13 2005/07/23 20:19:41 tom Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.14 2005/08/01 13:20:28 ph10 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -266,6 +266,7 @@ LOOKUP_LSEARCH=yes
 # LOOKUP_ORACLE=yes
 # LOOKUP_PASSWD=yes
 # LOOKUP_PGSQL=yes
+# LOOKUP_SQLITE=yes
 # LOOKUP_WHOSON=yes
 
 # These two settings are obsolete; all three lookups are compiled when

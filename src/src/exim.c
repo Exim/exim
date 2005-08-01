@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.22 2005/06/28 10:23:35 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.23 2005/08/01 13:20:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -917,6 +917,9 @@ fprintf(f, "Lookups:");
 #endif
 #ifdef LOOKUP_PGSQL
   fprintf(f, " pgsql");
+#endif
+#ifdef LOOKUP_SQLITE
+  fprintf(f, " sqlite");
 #endif
 #ifdef LOOKUP_TESTDB
   fprintf(f, " testdb");

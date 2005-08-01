@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.36 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.37 2005/08/01 13:20:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3125,7 +3125,7 @@ while (*s != 0)
       /* Check that a key was provided for those lookup types that need it,
       and was not supplied for those that use the query style. */
 
-      if (!mac_islookup(stype, lookup_querystyle))
+      if (!mac_islookup(stype, lookup_querystyle|lookup_absfilequery))
         {
         if (key == NULL)
           {
@@ -3145,7 +3145,9 @@ while (*s != 0)
         }
 
       /* Get the next string in brackets and expand it. It is the file name for
-      single-key+file lookups, and the whole query otherwise. */
+      single-key+file lookups, and the whole query otherwise. In the case of
+      queries that also require a file name (e.g. sqlite), the file name comes
+      first. */
 
       if (*s != '{') goto EXPAND_FAILED_CURLY;
       filename = expand_string_internal(s+1, TRUE, &s, skipping);
@@ -3154,12 +3156,30 @@ while (*s != 0)
       while (isspace(*s)) s++;
 
       /* If this isn't a single-key+file lookup, re-arrange the variables
-      to be appropriate for the search_ functions. */
+      to be appropriate for the search_ functions. For query-style lookups,
+      there is just a "key", and no file name. For the special query-style +
+      file types, the query (i.e. "key") starts with a file name. */
 
       if (key == NULL)
         {
+        while (isspace(*filename)) filename++;
         key = filename;
-        filename = NULL;
+
+        if (mac_islookup(stype, lookup_querystyle))
+          {
+          filename = NULL;
+          }
+        else
+          {
+          if (*filename != '/')
+            {
+            expand_string_message = string_sprintf(
+              "absolute file name expected for \"%s\" lookup", name);
+            goto EXPAND_FAILED;
+            }
+          while (*key != 0 && !isspace(*key)) key++;
+          if (*key != 0) *key++ = 0;
+          }
         }
 
       /* If skipping, don't do the next bit - just lookup_value == NULL, as if

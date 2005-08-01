@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.23 2005/07/23 20:46:42 tom Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.24 2005/08/01 13:20:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1938,13 +1938,22 @@ if (iplookup)
   if (search_type < 0) log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s",
     search_error_message);
 
-  /* Adjust parameters for the type of lookup. For a query-style
-  lookup, there is no file name, and the "key" is just the query. For
-  a single-key lookup, the key is the current IP address, masked
-  appropriately, and reconverted to text form, with the mask appended.
-  For IPv6 addresses, specify dot separators instead of colons. */
+  /* Adjust parameters for the type of lookup. For a query-style lookup, there
+  is no file name, and the "key" is just the query. For query-style with a file
+  name, we have to fish the file off the start of the query. For a single-key
+  lookup, the key is the current IP address, masked appropriately, and
+  reconverted to text form, with the mask appended. For IPv6 addresses, specify
+  dot separators instead of colons. */
 
-  if (mac_islookup(search_type, lookup_querystyle))
+  if (mac_islookup(search_type, lookup_absfilequery))
+    {
+    filename = semicolon + 1;
+    key = filename;
+    while (*key != 0 && !isspace(*key)) key++;
+    filename = string_copyn(filename, key - filename);
+    while (isspace(*key)) key++;
+    }
+  else if (mac_islookup(search_type, lookup_querystyle))
     {
     filename = NULL;
     key = semicolon + 1;
@@ -2047,7 +2056,7 @@ if ((semicolon = Ustrchr(ss, ';')) != NULL)
       search_error_message, ss);
     return DEFER;
     }
-  isquery = mac_islookup(id, lookup_querystyle);
+  isquery = mac_islookup(id, lookup_querystyle|lookup_absfilequery);
   }
 
 if (isquery)

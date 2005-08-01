@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/drtables.c,v 1.4 2005/05/25 20:07:55 tom Exp $ */
+/* $Cambridge: exim/src/src/drtables.c,v 1.5 2005/08/01 13:20:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -91,6 +91,10 @@ be NULL for methods that don't need them. */
 
 #ifdef EXPERIMENTAL_SPF
 #include "lookups/spf.h"
+#endif
+
+#ifdef LOOKUP_SQLITE
+#include "lookups/sqlite.h"
 #endif
 
 #ifdef LOOKUP_TESTDB
@@ -453,6 +457,23 @@ Shares many functions with lsearch. */
   spf_close,                     /* close function */
   NULL,                          /* no tidy function */
   NULL                           /* no quoting function */
+#else
+  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
+#endif
+  },
+
+/* sqlite lookup */
+
+  {
+  US"sqlite",                    /* lookup name */
+  lookup_absfilequery,           /* query-style lookup, starts with file name */
+#ifdef LOOKUP_SQLITE
+  sqlite_open,                   /* open function */
+  NULL,                          /* no check function */
+  sqlite_find,                   /* find function */
+  sqlite_close,                  /* close function */
+  NULL,                          /* no tidy function */
+  sqlite_quote                   /* quoting function */
 #else
   NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
 #endif

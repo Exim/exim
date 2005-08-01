@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.56 2005/07/27 18:27:55 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.57 2005/08/01 13:20:28 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -21,6 +21,31 @@ TK/01 Added the "success_on_redirect" address verification option. When an
 
       In that case, verification will succeed when a router generates a new
       address.
+
+PH/01 Support for SQLite database lookups has been added. This is another
+      query-style lookup, but it is slightly different from the others because
+      a file name is required in addition to the SQL query. This is because an
+      SQLite database is a single file and there is no daemon as in other SQL
+      databases. The interface to Exim requires the name of the file, as an
+      absolute path, to be given at the start of the query. It is separated
+      from the query by white space. This means that the path name cannot
+      contain white space. Here is a lookup expansion example:
+
+        ${lookup sqlite {/some/thing/sqlitedb \
+          select name from aliases where id='ph10';}}
+
+      In a list, the syntax is similar. For example:
+
+        domainlist relay_domains = sqlite;/some/thing/sqlitedb \
+           select * from relays where ip='$sender_host_address';
+
+      The only character affected by the ${quote_sqlite: operator is a single
+      quote, which it doubles.
+
+      Note that you must set LOOKUP_SQLITE=yes in Local/Makefile in order to
+      obtain SQLite support, and you will also need to add -lsqlite3 to the
+      EXTRALIBS setting. And of course, you have to install SQLite on your
+      host first.
 
 
 Exim version 4.52

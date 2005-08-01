@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.7 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.8 2005/08/01 13:20:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -266,12 +266,20 @@ up user@domain for sender rejection). There's a flag to disable it. */
 
 if (!cb->use_partial) partial = -1;
 
-/* Set the parameters for the two different kinds of lookup. */
+/* Set the parameters for the three different kinds of lookup. */
 
 keyquery = semicolon + 1;
 while (isspace(*keyquery)) keyquery++;
 
-if (!mac_islookup(search_type, lookup_querystyle))
+if (mac_islookup(search_type, lookup_absfilequery))
+  {
+  filename = keyquery;
+  while (*keyquery != 0 && !isspace(*keyquery)) keyquery++;
+  filename = string_copyn(filename, keyquery - filename);
+  while (isspace(*keyquery)) keyquery++;
+  }
+
+else if (!mac_islookup(search_type, lookup_querystyle))
   {
   filename = keyquery;
   keyquery = s;

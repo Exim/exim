@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Cambridge: exim/src/scripts/MakeLinks,v 1.5 2005/06/15 08:57:10 ph10 Exp $
+# $Cambridge: exim/src/scripts/MakeLinks,v 1.6 2005/08/01 13:20:28 ph10 Exp $
 
 # Script to build links for all the exim source files from the system-
 # specific build directory. It should be run from within that directory.
@@ -84,6 +84,8 @@ ln -s ../../src/lookups/pgsql.h          pgsql.h
 ln -s ../../src/lookups/pgsql.c          pgsql.c
 ln -s ../../src/lookups/spf.h            spf.h
 ln -s ../../src/lookups/spf.c            spf.c
+ln -s ../../src/lookups/sqlite.h         sqlite.h
+ln -s ../../src/lookups/sqlite.c         sqlite.c
 ln -s ../../src/lookups/testdb.h         testdb.h
 ln -s ../../src/lookups/testdb.c         testdb.c
 ln -s ../../src/lookups/whoson.h         whoson.h

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.17 2005/07/23 20:46:42 tom Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.18 2005/08/01 13:20:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -629,6 +629,7 @@ enum { v_none, v_sender, v_recipient, v_expn };
 
 #define lookup_querystyle      1    /* query-style lookup */
 #define lookup_absfile         2    /* requires absolute file name */
+#define lookup_absfilequery    4    /* query-style starts with file name */
 
 /* Status values for host_item blocks. Require hstatus_unusable and
 hstatus_unusable_expired to be last. */
