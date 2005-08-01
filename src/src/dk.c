@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dk.c,v 1.6 2005/06/27 15:11:59 tom Exp $ */
+/* $Cambridge: exim/src/src/dk.c,v 1.7 2005/08/01 14:41:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -409,7 +409,7 @@ uschar *dk_exim_sign(int dk_fd,
 
   rc = store_get(1024);
   /* Build DomainKey-Signature header to return. */
-  snprintf(CS rc, 1024, "DomainKey-Signature: a=rsa-sha1; q=dns; c=%s;\r\n"
+  (void)string_format(rc, 1024, "DomainKey-Signature: a=rsa-sha1; q=dns; c=%s;\r\n"
                      "\ts=%s; d=%s;\r\n"
                      "\tb=%s;\r\n", dk_canon, dk_selector, dk_domain, sig);
 

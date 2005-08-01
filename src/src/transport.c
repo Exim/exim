@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.12 2005/06/27 14:29:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.13 2005/08/01 14:41:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -984,7 +984,7 @@ dk_transport_write_message(address_item *addr, int fd, int options,
   int wwritten = 0;
   uschar *dk_signature = NULL;
 
-  snprintf(CS dk_spool_name, 256, "%s/input/%s/%s-K",
+  (void)string_format(dk_spool_name, 256, "%s/input/%s/%s-K",
           spool_directory, message_subdir, message_id);
   dk_fd = Uopen(dk_spool_name, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE);
   if (dk_fd < 0)

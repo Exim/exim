@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.9 2005/07/01 10:49:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.10 2005/08/01 14:41:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -243,7 +243,7 @@ FILE *mime_get_decode_file(uschar *pname, uschar *fname) {
   filename = (uschar *)malloc(2048);
 
   if ((pname != NULL) && (fname != NULL)) {
-    snprintf(CS filename, 2048, "%s/%s", pname, fname);
+    (void)string_format(filename, 2048, "%s/%s", pname, fname);
     f = fopen(CS filename,"wb+");
   }
   else if (pname == NULL) {
@@ -256,7 +256,7 @@ FILE *mime_get_decode_file(uschar *pname, uschar *fname) {
     /* must find first free sequential filename */
     do {
       struct stat mystat;
-      snprintf(CS filename,2048,"%s/%s-%05u", pname, message_id, file_nr);
+      (void)string_format(filename,2048,"%s/%s-%05u", pname, message_id, file_nr);
       file_nr++;
       /* security break */
       if (file_nr >= 1024)
@@ -292,7 +292,7 @@ int mime_decode(uschar **listptr) {
   f_pos = ftell(mime_stream);
 
   /* build default decode path (will exist since MBOX must be spooled up) */
-  snprintf(CS decode_path,1024,"%s/scan/%s",spool_directory,message_id);
+  (void)string_format(decode_path,1024,"%s/scan/%s",spool_directory,message_id);
 
   /* reserve a line and decoder buffer to work in */
   buffer = (uschar *)malloc(MIME_MAX_LINE_LENGTH+1);
@@ -693,7 +693,7 @@ int mime_acl_check(uschar *acl, FILE *f, struct mime_boundary_context *context,
       /* must find first free sequential filename */
       do {
         struct stat mystat;
-        snprintf(CS filename,2048,"%s/scan/%s/__rfc822_%05u", spool_directory, message_id, file_nr);
+        (void)string_format(filename,2048,"%s/scan/%s/__rfc822_%05u", spool_directory, message_id, file_nr);
         file_nr++;
         /* security break */
         if (file_nr >= 128)

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.10 2005/06/27 15:11:04 tom Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.11 2005/08/01 14:41:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -195,7 +195,7 @@ int spam(uschar **listptr) {
   }
 
   /* now we are connected to spamd on spamd_sock */
-  snprintf(CS spamd_buffer,
+  (void)string_format(spamd_buffer,
            sizeof(spamd_buffer),
            "REPORT SPAMC/1.2\r\nUser: %s\r\nContent-length: %ld\r\n\r\n",
            user_name,
@@ -362,12 +362,12 @@ again:
   spam_bar = spam_bar_buffer;
 
   /* create "float" spam score */
-  snprintf(CS spam_score_buffer, sizeof(spam_score_buffer),"%.1f", spamd_score);
+  (void)string_format(spam_score_buffer, sizeof(spam_score_buffer),"%.1f", spamd_score);
   spam_score = spam_score_buffer;
 
   /* create "int" spam score */
   j = (int)((spamd_score + 0.001)*10);
-  snprintf(CS spam_score_int_buffer, sizeof(spam_score_int_buffer), "%d", j);
+  (void)string_format(spam_score_int_buffer, sizeof(spam_score_int_buffer), "%d", j);
   spam_score_int = spam_score_int_buffer;
 
   /* compare threshold against score */

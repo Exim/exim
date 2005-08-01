@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.21 2005/07/01 10:49:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.22 2005/08/01 14:41:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1097,7 +1097,8 @@ if (rc == OK) {
   struct dirent *entry;
   DIR *tempdir;
 
-  snprintf(CS temp_path, 1024, "%s/scan/%s", spool_directory, message_id);
+  (void)string_format(temp_path, 1024, "%s/scan/%s", spool_directory,
+    message_id);
 
  tempdir = opendir(CS temp_path);
  n = 0;
@@ -1105,7 +1106,7 @@ if (rc == OK) {
    entry = readdir(tempdir);
    if (entry == NULL) break;
     if (strncmpic(US entry->d_name,US"__rfc822_",9) == 0) {
-      snprintf(CS rfc822_file_path, 2048,"%s/scan/%s/%s", spool_directory, message_id, entry->d_name);
+      (void)string_format(rfc822_file_path, 2048,"%s/scan/%s/%s", spool_directory, message_id, entry->d_name);
      debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n", rfc822_file_path);
      break;
     };

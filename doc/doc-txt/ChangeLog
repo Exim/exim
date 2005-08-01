@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.186 2005/08/01 14:00:34 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.187 2005/08/01 14:41:25 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -20,6 +20,10 @@ PH/03 When creating an mbox file for a virus/spam scan, use fseek() instead of
 PH/04 Added $message_exim_id, ultimately to replace $message_id (they will both
       co-exist for some time) to make it clear that it is the Exim ID that is
       referenced, not the Message-ID: header line.
+
+PH/05 Replaced all Tom's calls to snprintf() with calls to the internal
+      string_format() function, because snprintf() does not exist on all
+      operating systems.
 
 
 Exim version 4.52

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.9 2005/08/01 13:51:05 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.10 2005/08/01 14:41:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -48,14 +48,14 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
     };
 
     /* create temp directory inside scan dir */
-    snprintf(CS mbox_path, 1024, "%s/scan/%s", spool_directory, message_id);
+    (void)string_format(mbox_path, 1024, "%s/scan/%s", spool_directory, message_id);
     if (!directory_make(NULL, mbox_path, 0750, FALSE)) {
       debug_printf("unable to create directory: %s/scan/%s\n", spool_directory, message_id);
       return NULL;
     };
 
     /* open [message_id].eml file for writing */
-    snprintf(CS mbox_path, 1024, "%s/scan/%s/%s.eml", spool_directory, message_id, message_id);
+    (void)string_format(mbox_path, 1024, "%s/scan/%s/%s.eml", spool_directory, message_id, message_id);
     mbox_file = Ufopen(mbox_path,"wb");
 
     if (mbox_file == NULL) {
@@ -167,7 +167,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
     spool_mbox_ok = 1;
   };
 
-  snprintf(CS mbox_path, 1024, "%s/scan/%s/%s.eml", spool_directory, message_id, message_id);
+  (void)string_format(mbox_path, 1024, "%s/scan/%s/%s.eml", spool_directory, message_id, message_id);
 
   /* get the size of the mbox message */
   stat(CS mbox_path, &statbuf);
@@ -204,7 +204,7 @@ void unspool_mbox(void) {
       struct dirent *entry;
       DIR *tempdir;
 
-      snprintf(CS mbox_path, 1024, "%s/scan/%s", spool_directory, spooled_message_id);
+      (void)string_format(mbox_path, 1024, "%s/scan/%s", spool_directory, spooled_message_id);
 
   tempdir = opendir(CS mbox_path);
   /* loop thru dir & delete entries */
@@ -212,7 +212,7 @@ void unspool_mbox(void) {
   do {
     entry = readdir(tempdir);
     if (entry == NULL) break;
-    snprintf(CS file_path, 1024,"%s/scan/%s/%s", spool_directory, spooled_message_id, entry->d_name);
+    (void)string_format(file_path, 1024,"%s/scan/%s/%s", spool_directory, spooled_message_id, entry->d_name);
     if ( (Ustrcmp(entry->d_name,"..") != 0) && (Ustrcmp(entry->d_name,".") != 0) ) {
       debug_printf("unspool_mbox(): unlinking '%s'\n", file_path);
               n = unlink(CS file_path);

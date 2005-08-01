@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/demime.c,v 1.7 2005/07/01 10:49:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/demime.c,v 1.8 2005/08/01 14:41:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -245,7 +245,7 @@ int mime_get_dump_file(uschar *extension, FILE **f, uschar *info) {
   do {
     struct stat mystat;
 
-    snprintf(CS file_name,1024,"%s/scan/%s/%s-%05u%s",spool_directory,message_id,message_id,file_nr,extension);
+    (void)string_format(file_name,1024,"%s/scan/%s/%s-%05u%s",spool_directory,message_id,message_id,file_nr,extension);
     file_nr++;
     if (file_nr >= MIME_SANITY_MAX_DUMP_FILES) {
       /* max parts reached */
@@ -259,7 +259,7 @@ int mime_get_dump_file(uschar *extension, FILE **f, uschar *info) {
   *f = fopen(CS file_name,"wb+");
   if (*f == NULL) {
     /* cannot open new dump file, disk full ? -> soft error */
-    snprintf(CS info, 1024,"unable to open dump file");
+    (void)string_format(info, 1024,"unable to open dump file");
     return -2;
   };
 
@@ -533,13 +533,13 @@ long uu_decode_line(uschar *line, uschar **data, long line_len, uschar *info) {
   /* allocate memory for data and work buffer */
   *data = (uschar *)malloc(line_len);
   if (*data == NULL) {
-    snprintf(CS info, 1024,"unable to allocate %lu bytes",line_len);
+    (void)string_format(info, 1024,"unable to allocate %lu bytes",line_len);
     return -2;
   };
 
   work = (uschar *)malloc(line_len);
   if (work == NULL) {
-    snprintf(CS info, 1024,"unable to allocate %lu bytes",line_len);
+    (void)string_format(info, 1024,"unable to allocate %lu bytes",line_len);
     return -2;
   };
 
@@ -656,7 +656,7 @@ long mime_decode_line(int mime_demux_mode,uschar *line, uschar **data, long max_
   /* allocate memory for data */
   *data = (uschar *)malloc(max_data_len);
   if (*data == NULL) {
-    snprintf(CS info, 1024,"unable to allocate %lu bytes",max_data_len);
+    (void)string_format(info, 1024,"unable to allocate %lu bytes",max_data_len);
     return -2;
   };
 
@@ -820,7 +820,7 @@ void mime_trigger_error(int level, uschar *format, ...) {
     sprintf(f,"demime acl condition: ");
     f+=22;
     va_start(ap, format);
-    vsnprintf(f, 16383,(char *)format, ap);
+    (void)string_vformat(US f, 16383,(char *)format, ap);
     va_end(ap);
     f-=22;
     log_write(0, LOG_MAIN, f);
@@ -866,7 +866,7 @@ int mime_demux(FILE *f, uschar *info) {
   /* allocate room for our linebuffer */
   line = (uschar *)malloc(MIME_SANITY_MAX_LINE_LENGTH);
   if (line == NULL) {
-    snprintf(CS info, 1024,"unable to allocate %u bytes",MIME_SANITY_MAX_LINE_LENGTH);
+    (void)string_format(info, 1024,"unable to allocate %u bytes",MIME_SANITY_MAX_LINE_LENGTH);
     return DEFER;
   };
 
@@ -1126,7 +1126,7 @@ int mime_demux(FILE *f, uschar *info) {
         if (data_len > 0) {
           if (fwrite(data,1,data_len,uu_dump_file) < data_len) {
             /* short write */
-            snprintf(CS info, 1024,"short write on uudecode dump file");
+            (void)string_format(info, 1024,"short write on uudecode dump file");
             free(line);
             return DEFER;
           };
@@ -1192,7 +1192,7 @@ int mime_demux(FILE *f, uschar *info) {
           if (data_len > 0) {
             if (fwrite(data,1,data_len,mime_dump_file) < data_len) {
               /* short write */
-              snprintf(CS info, 1024,"short write on dump file");
+              (void)string_format(info, 1024,"short write on dump file");
               free(line);
               return DEFER;
             };
@@ -1234,7 +1234,7 @@ int mime_demux(FILE *f, uschar *info) {
     /* at least one file could be TNEF encoded.
     attempt to send all decoded files thru the TNEF decoder */
 
-    snprintf(CS file_name,1024,"%s/scan/%s",spool_directory,message_id);
+    (void)string_format(file_name,1024,"%s/scan/%s",spool_directory,message_id);
     /* Removed FTTB. We need to decide on TNEF inclusion */
     /* mime_unpack_tnef(file_name); */
   };
