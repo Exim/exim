@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.8 2005/07/01 10:49:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.9 2005/08/01 13:51:05 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -134,10 +134,22 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
         break;
     };
 
-    (void)fread(data_buffer, 1, 18, data_file);
+    /* The code used to use this line, but it doesn't work in Cygwin.
+     *
+     *  (void)fread(data_buffer, 1, 18, data_file);
+     *
+     * What's happening is that spool_mbox used to use an fread to jump over the
+     * file header. That fails under Cygwin because the header is locked, but
+     * doing an fseek succeeds. We have to output the leading newline
+     * explicitly, because the one in the file is parted of the locked area.
+     */
+
+    (void)fwrite("\n", 1, 1, mbox_file);
+    (void)fseek(data_file, SPOOL_DATA_START_OFFSET, SEEK_SET);
 
     do {
       j = fread(data_buffer, 1, sizeof(data_buffer), data_file);
+
       if (j > 0) {
         i = fwrite(data_buffer, 1, j, mbox_file);
         if (i != j) {
