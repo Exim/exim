@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.58 2005/08/01 14:00:34 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.59 2005/08/01 15:01:12 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -49,6 +49,9 @@ PH/01 Support for SQLite database lookups has been added. This is another
 
 PH/02 The variable $message_id is now deprecated, to be replaced by
       $message_exim_id, which makes it clearer which ID is being referenced.
+
+PH/03 The use of forbid_filter_existstest now also locks out the use of the
+      ${stat: expansion item.
 
 
 Exim version 4.52

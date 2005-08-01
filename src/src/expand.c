@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.38 2005/08/01 14:00:35 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.39 2005/08/01 15:01:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4845,6 +4845,12 @@ while (*s != 0)
         int i;
         mode_t mode;
         struct stat st;
+
+        if ((expand_forbid & RDO_EXISTS) != 0)
+          {
+          expand_string_message = US"Use of the stat() expansion is not permitted";
+          goto EXPAND_FAILED;
+          }
 
         if (stat(CS sub, &st) < 0)
           {

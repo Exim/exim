@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.187 2005/08/01 14:41:25 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.188 2005/08/01 15:01:12 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -24,6 +24,9 @@ PH/04 Added $message_exim_id, ultimately to replace $message_id (they will both
 PH/05 Replaced all Tom's calls to snprintf() with calls to the internal
       string_format() function, because snprintf() does not exist on all
       operating systems.
+
+PH/06 The use of forbid_filter_existstest now also locks out the use of the
+      ${stat: expansion item.
 
 
 Exim version 4.52
