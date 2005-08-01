@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.183 2005/08/01 13:20:28 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.184 2005/08/01 13:28:30 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -10,6 +10,8 @@ TK/01 Added the "success_on_redirect" address verification option. See
       NewStuff for rationale and an example.
 
 PH/01 Added support for SQLite, basic code supplied by David Woodhouse.
+
+PH/02 Patch to exigrep to allow it to work on syslog lines.
 
 
 Exim version 4.52
