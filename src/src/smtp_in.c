@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.20 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.21 2005/08/02 08:25:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1625,7 +1625,7 @@ if (smtp_enforce_sync && sender_host_address != NULL && !sender_host_notsocket)
       {
       if (rc > 150) rc = 150;
       smtp_inbuffer[rc] = 0;
-      log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol violation: "
+      log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
         "synchronization error (input sent without waiting for greeting): "
         "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
         string_printing(smtp_inbuffer));
@@ -3562,8 +3562,7 @@ while (done <= 0)
     if (c > 150) c = 150;
     smtp_inptr[c] = 0;
     incomplete_transaction_log(US"sync failure");
-    log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol violation: "
-      "synchronization error "
+    log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol synchronization error "
       "(next input sent too soon: pipelining was%s advertised): "
       "rejected \"%s\" %s next input=\"%s\"",
       pipelining_advertised? "" : " not",
