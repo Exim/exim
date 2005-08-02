@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/rda.c,v 1.8 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/rda.c,v 1.9 2005/08/02 13:43:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -607,9 +607,13 @@ if (pipe(pfd) != 0)
 
 /* Ensure that SIGCHLD is set to SIG_DFL before forking, so that the child
 process can be waited for. We sometimes get here with it set otherwise. Save
-the old state for resetting on the wait. */
+the old state for resetting on the wait. Ensure that all cached resources are
+freed so that the subprocess starts with a clean slate and doesn't interfere
+with the parent process. */
 
 oldsignal = signal(SIGCHLD, SIG_DFL);
+search_tidyup();
+
 if ((pid = fork()) == 0)
   {
   header_line *waslast = header_last;   /* Save last header */
@@ -740,9 +744,11 @@ if ((pid = fork()) == 0)
     rda_write_string(fd, NULL);   /* Marks end of addresses */
     }
 
-  /* OK, this process is now done. Must use _exit() and not exit() !! */
+  /* OK, this process is now done. Free any cached resources. Must use _exit()
+  and not exit() !! */
 
   (void)close(fd);
+  search_tidyup();
   _exit(0);
   }
 
