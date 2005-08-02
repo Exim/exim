@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/OS/os.h-cygwin,v 1.2 2005/05/24 08:15:01 tom Exp $ */
+/* $Cambridge: exim/src/OS/os.h-cygwin,v 1.3 2005/08/02 09:09:27 ph10 Exp $
 
 /* Exim: OS-specific C header file for Cygwin */
 
@@ -7,9 +7,9 @@
 /* Define the OS_INIT macro that we insert in exim.c:main()
    to set the root and exim uid depending on the system */
 /* We use a special routine to initialize */
-void cygwin_init(int, char **, void *, void *, void *, void *);
+void cygwin_init(int, char **, void *, void *, void *, void *, void *);
 #define OS_INIT\
-  cygwin_init(argc, (char **) argv, &root_uid, &exim_uid, &exim_gid, &config_uid);
+  cygwin_init(argc, (char **) argv, &root_uid, &exim_uid, &exim_gid, &config_uid, &config_gid);
 
 /* We need a special mkdir that
    allows names starting with // */
@@ -27,7 +27,7 @@ int cygwin_setgid(gid_t gid );
 extern unsigned int cygwin_WinVersion;
 
 #define BASE_62 36  /* Windows aliases lower and upper cases in filenames.
-           Consider reducing MAX_LOCALHOST_NUMBER */
+                       Consider reducing MAX_LOCALHOST_NUMBER */
 #define CRYPT_H
 #define HAVE_MMAP
 #define HAVE_SYS_VFS_H

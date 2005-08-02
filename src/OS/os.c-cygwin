@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/OS/os.c-cygwin,v 1.2 2005/03/29 11:01:32 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.c-cygwin,v 1.3 2005/08/02 09:09:27 ph10 Exp $
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -84,7 +84,7 @@ int cygwin_setgid(gid_t gid )
 }
 
 /* Background processes run at lower priority */
-static void setpriority()
+static void cygwin_setpriority()
 {
   if (!SetPriorityClass(GetCurrentProcess(), BELOW_NORMAL_PRIORITY_CLASS))
     SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
@@ -152,7 +152,7 @@ static DWORD get_privileges ()
     cygwin_init is called from the OS_INIT macro in main(). */
 
 void cygwin_init(int argc, char ** argv, void * rup,
-                 void * eup, void * egp, void * cup)
+                 void * eup, void * egp, void * cup, void * cgp)
 {
   int i;
   uid_t myuid, systemuid;
@@ -181,7 +181,7 @@ void cygwin_init(int argc, char ** argv, void * rup,
         fprintf(stderr, " Root / mapped to %s.\n", win32_path);
       }
       else if (argv[i][1] == 'b' && argv[i][2] == 'd')
-        setpriority();
+        cygwin_setpriority();
     }
   }
   if (VERSION_IS_58M(cygwin_WinVersion)) {
@@ -220,9 +220,10 @@ void cygwin_init(int argc, char ** argv, void * rup,
     * (gid_t *) egp = adminsgid;
   }
 
-  /* Set the configuration uid to the system uid.
+  /* Set the configuration uid and gid to the system uid and admins gid.
      Note that exim uid is also accepted as owner of exim.conf. */
   * (uid_t *) cup = systemuid;
+  * (gid_t *) cgp = adminsgid;
 
   if (privileged) {             /* Can setuid */
     if (cygwin_setgid(* (gid_t *) egp) /* Setuid to exim */
@@ -242,8 +243,8 @@ void cygwin_init(int argc, char ** argv, void * rup,
   if (cygwin_debug) {
     fprintf(stderr, "Starting uid %ld, gid %ld, ntsec %lu, privileged %d.\n",
             myuid, mygid, cygwin_internal(CW_CHECK_NTSEC, NULL), privileged);
-    fprintf(stderr, "root_uid %ld, exim_uid %ld, exim_gid %ld, config_uid %ld.\n",
-            * (uid_t *) rup, * (uid_t *) eup, * (gid_t *) egp, * (uid_t *) cup);
+    fprintf(stderr, "root_uid %ld, exim_uid %ld, exim_gid %ld, config_uid %ld, config_gid %ld.\n",
+            * (uid_t *) rup, * (uid_t *) eup, * (gid_t *) egp, * (uid_t *) cup, * (gid_t *) cgp);
   }
   return;
 }
