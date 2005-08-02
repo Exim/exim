@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.13 2005/06/29 14:17:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.14 2005/08/02 09:24:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2317,8 +2317,8 @@ for (cutoff_retry = 0; expired &&
     doing a two-stage queue run, don't do this if forcing. */
 
     if ((!deliver_force || queue_2stage) && (queue_smtp ||
-        match_isinlist(addrlist->domain, &queue_smtp_domains, 0, NULL, NULL,
-          MCL_DOMAIN, TRUE, NULL) == OK))
+        match_isinlist(addrlist->domain, &queue_smtp_domains, 0,
+          &domainlist_anchor, NULL, MCL_DOMAIN, TRUE, NULL) == OK))
       {
       expired = FALSE;
       for (addr = addrlist; addr != NULL; addr = addr->next)

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.191 2005/08/02 09:09:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.192 2005/08/02 09:24:45 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -36,6 +36,9 @@ PH/08 Arrange for USE_INET_NTOA_FIX to be set in config.h for AIX systems as
       file for comments.
 
 PH/09 Installed latest Cygwin configuration files from the Cygwin maintainer.
+
+PH/10 Named domain lists were not working if used in a queue_smtp_domains
+      setting.
 
 
 Exim version 4.52
