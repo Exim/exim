@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.10 2005/08/01 14:41:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.11 2005/08/02 09:42:24 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -159,7 +159,6 @@ uschar *mime_parse_line(uschar *buffer, uschar *data, uschar *encoding, int *num
 
       /* byte 0 ---------------------- */
       if (*(p+1) == 255) {
-        mime_set_anomaly(MIME_ANOMALY_BROKEN_BASE64);
         break;
       }
       data[(*num_decoded)] = *p;
@@ -171,7 +170,6 @@ uschar *mime_parse_line(uschar *buffer, uschar *data, uschar *encoding, int *num
       p++;
       /* byte 1 ---------------------- */
       if (*(p+1) == 255) {
-        mime_set_anomaly(MIME_ANOMALY_BROKEN_BASE64);
         break;
       }
       data[(*num_decoded)] = *p;
@@ -183,7 +181,6 @@ uschar *mime_parse_line(uschar *buffer, uschar *data, uschar *encoding, int *num
       p++;
       /* byte 2 ---------------------- */
       if (*(p+1) == 255) {
-        mime_set_anomaly(MIME_ANOMALY_BROKEN_BASE64);
         break;
       }
       data[(*num_decoded)] = *p;
