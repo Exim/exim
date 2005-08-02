@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.h,v 1.5 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.h,v 1.6 2005/08/02 11:22:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -41,6 +41,7 @@ typedef struct {
   BOOL    hosts_override;
   BOOL    hosts_randomize;
   BOOL    keepalive;
+  BOOL    lmtp_ignore_quota;
   BOOL    retry_include_ip_address;
   #ifdef SUPPORT_TLS
   uschar *tls_certificate;

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.192 2005/08/02 09:24:45 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.193 2005/08/02 11:22:23 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -39,6 +39,9 @@ PH/09 Installed latest Cygwin configuration files from the Cygwin maintainer.
 
 PH/10 Named domain lists were not working if used in a queue_smtp_domains
       setting.
+
+PH/11 Added support for the IGNOREQUOTA extension to LMTP, both to the lmtp
+      transport and to the smtp transport in LMTP mode.
 
 
 Exim version 4.52

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.31 2005/08/01 14:00:35 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.32 2005/08/02 11:22:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -840,6 +840,7 @@ BOOL    recipients_max_reject  = FALSE;
 const pcre *regex_AUTH         = NULL;
 const pcre *regex_check_dns_names = NULL;
 const pcre *regex_From         = NULL;
+const pcre *regex_IGNOREQUOTA  = NULL;
 const pcre *regex_PIPELINING   = NULL;
 const pcre *regex_SIZE         = NULL;
 const pcre *regex_ismsgid      = NULL;

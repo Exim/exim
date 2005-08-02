@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/lmtp.h,v 1.2 2005/01/04 10:00:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/lmtp.h,v 1.3 2005/08/02 11:22:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -14,6 +14,7 @@ typedef struct {
   uschar *skt;
   int   timeout;
   int   options;
+  BOOL  ignore_quota;
 } lmtp_transport_options_block;
 
 /* Data for reading the private options. */

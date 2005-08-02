@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.21 2005/06/28 10:23:35 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.22 2005/08/02 11:22:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -5855,6 +5855,15 @@ if (addr_local != NULL || addr_remote != NULL)
 deliveries are done first, then remote ones. If ever the problems of how to
 handle fallback transports are figured out, this section can be put into a loop
 for handling fallbacks, though the uid switching will have to be revised. */
+
+/* Precompile a regex that is used to recognize a parameter in response
+to an LHLO command, if is isn't already compiled. This may be used on both
+local and remote LMTP deliveries. */
+
+if (regex_IGNOREQUOTA == NULL) regex_IGNOREQUOTA =
+  regex_must_compile(US"\\n250[\\s\\-]IGNOREQUOTA(\\s|\\n|$)", FALSE, TRUE);
+
+/* Handle local deliveries */
 
 if (addr_local != NULL)
   {

@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.29 2005/08/01 13:20:28 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.30 2005/08/02 11:22:23 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -210,6 +210,7 @@ Heiko Schlichting         Diagnosis of intermittent daemon crash bug
 Stephan Schulz            Patch for $host_data caching error
 Tony Sheen                Log files with datestamped names and auto rollover
 Martin Sluka              Patch for exigrep to include non-message lines
+Adam Stephens             Suggested patch for IGNOREQUOTA in LMTP
 Russell Stuart            Diagnosis of obscure batch multiple delivery bug
 Tamas Tevesz              Patch for crypt16() support
 Johan Thelmen             Support for the F-Secure virus scanner

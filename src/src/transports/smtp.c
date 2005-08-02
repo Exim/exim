@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.14 2005/08/02 09:24:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.15 2005/08/02 11:22:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -93,6 +93,8 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, interface) },
   { "keepalive",            opt_bool,
       (void *)offsetof(smtp_transport_options_block, keepalive) },
+  { "lmtp_ignore_quota",    opt_bool,
+      (void *)offsetof(smtp_transport_options_block, lmtp_ignore_quota) },
   { "max_rcpt",             opt_int | opt_public,
       (void *)offsetof(transport_instance, max_addresses) },
   { "multi_domain",         opt_bool | opt_public,
@@ -163,6 +165,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   FALSE,               /* hosts_override */
   FALSE,               /* hosts_randomize */
   TRUE,                /* keepalive */
+  FALSE,               /* lmtp_ignore_quota */
   TRUE                 /* retry_include_ip_address */
   #ifdef SUPPORT_TLS
  ,NULL,                /* tls_certificate */
@@ -796,6 +799,7 @@ BOOL pass_message = FALSE;
 smtp_inblock inblock;
 smtp_outblock outblock;
 int max_rcpt = tblock->max_addresses;
+uschar *igquotstr = US"";
 uschar *local_authenticated_sender = authenticated_sender;
 uschar *helo_data;
 uschar *message = NULL;
@@ -947,6 +951,13 @@ goto SEND_QUIT;
       ob->command_timeout)) goto RESPONSE_FAILED;
     }
 
+  /* Set IGNOREQUOTA if the response to LHLO specifies support and the
+  lmtp_ignore_quota option was set. */
+
+  igquotstr = (lmtp && ob->lmtp_ignore_quota &&
+    pcre_exec(regex_IGNOREQUOTA, NULL, CS buffer, Ustrlen(CS buffer), 0,
+      PCRE_EOPT, NULL, 0) >= 0)? US" IGNOREQUOTA" : US"";
+
   /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
 
   #ifdef SUPPORT_TLS
@@ -1080,6 +1091,13 @@ if (continue_hostname == NULL
   {
   int require_auth;
   uschar *fail_reason = US"server did not advertise AUTH support";
+
+  /* Set for IGNOREQUOTA if the response to LHLO specifies support and the
+  lmtp_ignore_quota option was set. */
+
+  igquotstr = (lmtp && ob->lmtp_ignore_quota &&
+    pcre_exec(regex_IGNOREQUOTA, NULL, CS buffer, Ustrlen(CS buffer), 0,
+      PCRE_EOPT, NULL, 0) >= 0)? US" IGNOREQUOTA" : US"";
 
   /* If the response to EHLO specified support for the SIZE parameter, note
   this, provided size_addition is non-negative. */
@@ -1343,8 +1361,8 @@ for (addr = first_addr;
   yield as OK, because this error can often mean that there is a problem with
   just one address, so we don't want to delay the host. */
 
-  count = smtp_write_command(&outblock, no_flush, "RCPT TO:<%s>\r\n",
-    transport_rcpt_address(addr, tblock->rcpt_include_affixes));
+  count = smtp_write_command(&outblock, no_flush, "RCPT TO:<%s>%s\r\n",
+    transport_rcpt_address(addr, tblock->rcpt_include_affixes), igquotstr);
   if (count < 0) goto SEND_FAILED;
   if (count > 0)
     {

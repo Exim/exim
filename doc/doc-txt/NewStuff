@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.59 2005/08/01 15:01:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.60 2005/08/02 11:22:23 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -52,6 +52,15 @@ PH/02 The variable $message_id is now deprecated, to be replaced by
 
 PH/03 The use of forbid_filter_existstest now also locks out the use of the
       ${stat: expansion item.
+
+PH/04 The IGNOREQUOTA extension to the LMTP protocol is now available in both
+      the lmtp transport and the smtp transport running in LMTP mode. In the
+      lmtp transport there is a new Boolean option called ignore_quota, and in
+      the smtp transport there is a new Boolean option called
+      lmtp_ignore_quota. If either of these options is set TRUE, the string
+      "IGNOREQUOTA" is added to RCPT commands when using the LMTP protocol,
+      provided that the server has advertised support for IGNOREQUOTA in its
+      response to the LHLO command.
 
 
 Exim version 4.52

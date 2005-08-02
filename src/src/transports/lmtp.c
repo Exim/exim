@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/lmtp.c,v 1.5 2005/06/27 14:29:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/lmtp.c,v 1.6 2005/08/02 11:22:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -28,6 +28,8 @@ optionlist lmtp_transport_options[] = {
       (void *)offsetof(transport_instance, batch_max) },
   { "command",           opt_stringptr,
       (void *)offsetof(lmtp_transport_options_block, cmd) },
+  { "ignore_quota",      opt_bool,
+      (void *)offsetof(lmtp_transport_options_block, ignore_quota) },
   { "socket",            opt_stringptr,
       (void *)offsetof(lmtp_transport_options_block, skt) },
   { "timeout",           opt_time,
@@ -46,7 +48,8 @@ lmtp_transport_options_block lmtp_transport_option_defaults = {
   NULL,           /* cmd */
   NULL,           /* skt */
   5*60,           /* timeout */
-  0               /* options */
+  0,              /* options */
+  FALSE           /* ignore_quota */
 };
 
 
@@ -457,6 +460,7 @@ int code, save_errno;
 BOOL send_data;
 BOOL yield = FALSE;
 address_item *addr;
+uschar *igquotstr = US"";
 uschar *sockname = NULL;
 uschar **argv;
 uschar buffer[256];
@@ -561,6 +565,13 @@ if (!lmtp_write_command(fd_in, "%s %s\r\n", "LHLO",
 if (!lmtp_read_response(out, buffer, sizeof(buffer), '2',
      timeout)) goto RESPONSE_FAILED;
 
+/* If the ignore_quota option is set, note whether the server supports the
+IGNOREQUOTA option, and if so, set an appropriate addition for RCPT. */
+
+if (ob->ignore_quota)
+  igquotstr = (pcre_exec(regex_IGNOREQUOTA, NULL, CS buffer,
+    Ustrlen(CS buffer), 0, PCRE_EOPT, NULL, 0) >= 0)? US" IGNOREQUOTA" : US"";
+
 /* Now the envelope sender */
 
 if (!lmtp_write_command(fd_in, "MAIL FROM:<%s>\r\n", return_path))
@@ -575,8 +586,8 @@ temporarily rejected; others may be accepted, for now. */
 send_data = FALSE;
 for (addr = addrlist; addr != NULL; addr = addr->next)
   {
-  if (!lmtp_write_command(fd_in, "RCPT TO:<%s>\r\n",
-       transport_rcpt_address(addr, tblock->rcpt_include_affixes)))
+  if (!lmtp_write_command(fd_in, "RCPT TO:<%s>%s\r\n",
+       transport_rcpt_address(addr, tblock->rcpt_include_affixes), igquotstr))
     goto WRITE_FAILED;
   if (lmtp_read_response(out, buffer, sizeof(buffer), '2', timeout))
     {

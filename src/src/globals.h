@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.22 2005/06/21 14:14:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.23 2005/08/02 11:22:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -542,6 +542,7 @@ extern int     recipients_max_reject;  /* If TRUE, reject whole message */
 extern const pcre *regex_AUTH;         /* For recognizing AUTH settings */
 extern const pcre  *regex_check_dns_names; /* For DNS name checking */
 extern const pcre  *regex_From;        /* For recognizing "From_" lines */
+extern const pcre  *regex_IGNOREQUOTA; /* For recognizing IGNOREQUOTA (LMTP) */
 extern const pcre  *regex_PIPELINING;  /* For recognizing PIPELINING */
 extern const pcre  *regex_SIZE;        /* For recognizing SIZE settings */
 extern const pcre  *regex_ismsgid;     /* Compiled r.e. for message it */
