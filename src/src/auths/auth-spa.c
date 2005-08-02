@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/auth-spa.c,v 1.2 2004/12/29 10:55:58 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/auth-spa.c,v 1.3 2005/08/02 13:23:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -84,6 +84,13 @@ int main (int argc, char ** argv)
        }
 
        challenge_str = argv [3];
+
+       if (spa_base64_to_bits ((char *)&challenge, sizeof(challenge),
+                (const char *)(challenge_str))<0)
+       {
+                printf("bad base64 data in challenge: %s\n", challenge_str);
+                exit (1);
+       }
 
        spa_build_auth_response (&challenge, &response, username, password);
        spa_bits_to_base64 (msgbuf, (unsigned char*)&response,
