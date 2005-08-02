@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.10 2005/06/22 15:44:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.11 2005/08/02 09:01:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -39,6 +39,9 @@ with these comments:
 
   code by Stuart Levy
   as seen in comp.sys.sgi.admin
+
+August 2005: Apparently this is also needed for AIX systems; USE_INET_NTOA_FIX
+should now be set for them as well.
 
 Arguments:  sa  an in_addr structure
 Returns:        pointer to static text string

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.189 2005/08/02 08:25:45 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.190 2005/08/02 09:01:44 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -30,6 +30,10 @@ PH/06 The use of forbid_filter_existstest now also locks out the use of the
 
 PH/07 Changed "SMTP protocol violation: synchronization error" into "SMTP
       protocol synchronization error", to keep the pedants happy.
+
+PH/08 Arrange for USE_INET_NTOA_FIX to be set in config.h for AIX systems as
+      well as for IRIX systems, when gcc is being used. See the host.c source
+      file for comments.
 
 
 Exim version 4.52

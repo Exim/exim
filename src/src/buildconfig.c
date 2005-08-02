@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.10 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.11 2005/08/02 09:01:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -285,10 +285,11 @@ fprintf(new, "#define HAVE_ICONV            %s\n",
 if (errno_quota[0] != 0)
   fprintf(new, "\n#define ERRNO_QUOTA           %s\n", errno_quota);
 
-if (strcmp(cc, "gcc") == 0 && strstr(ostype, "IRIX") != NULL)
+if (strcmp(cc, "gcc") == 0 &&
+    (strstr(ostype, "IRIX") != NULL || strstr(ostype, "AIX") != NULL))
   {
   fprintf(new, "\n/* This switch includes the code to fix the inet_ntoa() */");
-  fprintf(new, "\n/* bug when using gcc on an IRIX system. */");
+  fprintf(new, "\n/* bug when using gcc on an IRIX or AIX system. */");
   fprintf(new, "\n#define USE_INET_NTOA_FIX");
   }
 
