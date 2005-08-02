@@ -1,5 +1,5 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.5 2005/06/07 09:15:04 ph10 Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.6 2005/08/02 16:12:14 jetmore Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
@@ -8,7 +8,7 @@ use strict;
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
-my $p_version = "20050604.1";
+my $p_version = "20050802.1";
 my $p_usage   = "Usage: $p_name [--help|--version] (see --help for details)";
 my $p_cp      = <<EOM;
         Copyright (c) 2003-2005 John Jetmore <jj33\@pobox.com>
@@ -109,7 +109,7 @@ foreach my $m (@$msg) {
       push(@local_crit, \%t);
     }
   }
-  if ($G::show_tests) { print $e->get_var('message_id'), "\n"; }
+  if ($G::show_tests) { print $e->get_var('message_exim_id'), "\n"; }
   CRITERIA:
   foreach my $c (@$crit, @local_crit) {
     my $var = $e->get_var($c->{var});
@@ -182,7 +182,7 @@ sub process_criteria {
       my $var = lc($1); my $op = $2; my $val = $3;
       $val =~ s|^(['"])(.*)\1$|$2|;
       push(@c, { var => $var, cmp => "(\"\$var\" $op \"$val\") ? 1 : 0" });
-      if ($var eq 'message_id' && $op eq "eq") {
+      if (($var eq 'message_id' || $var eq 'message_exim_id') && $op eq "eq") {
         #print STDERR "short circuit @c[-1]->{cmp} $val\n";
         $G::msg_ids->{$val} = 1;
       }
@@ -412,6 +412,7 @@ sub _parse_header {
   chomp($_ = <I>);
   return(0) if ($self->{_message}.'-H' ne $_);
   $self->{_vars}{message_id}       = $self->{_message};
+  $self->{_vars}{message_exim_id}  = $self->{_message};
 
   # line 2
   chomp($_ = <I>);
@@ -1110,9 +1111,9 @@ The message's body.  Unlike Exim's variable of the same name, this variable cont
 
 A concatenation of all the header lines except for lines added by routers or transports.
 
-=item . $message_id
+=item . $message_exim_id, $message_id
 
-The unique message id that is used by Exim to identify the message.
+The unique message id that is used by Exim to identify the message.  $message_id is deprecated as of Exim 4.53.
 
 =item + $originator_login
 
