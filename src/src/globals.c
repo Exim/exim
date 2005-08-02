@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.32 2005/08/02 11:22:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.33 2005/08/02 15:19:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -569,6 +569,7 @@ uschar *helo_allow_chars       = US"";
 uschar *helo_lookup_domains    = US"@ : @[]";
 uschar *helo_try_verify_hosts  = NULL;
 BOOL    helo_verified          = FALSE;
+BOOL    helo_verify_failed     = FALSE;
 uschar *helo_verify_hosts      = NULL;
 uschar *hex_digits             = US"0123456789abcdef";
 uschar *hold_domains           = NULL;

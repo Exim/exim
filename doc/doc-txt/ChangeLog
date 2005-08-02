@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.195 2005/08/02 13:43:04 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.196 2005/08/02 15:19:20 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -49,6 +49,12 @@ PH/12 There was a missing call to search_tidyup() before the fork() in rda.c to
       run a filter in a subprocess. This could lead to confusion in subsequent
       lookups in the parent process. There should also be a search_tidyup() at
       the end of the subprocess.
+
+PH/13 Previously, if "verify = helo" was set in an ACL, the condition was true
+      only if the host matched helo_try_verify_hosts, which caused the
+      verification to occur when the EHLO/HELO command was issued. The ACL just
+      tested the remembered result. Now, if a previous verification attempt has
+      not happened, "verify = helo" does it there and then.
 
 
 Exim version 4.52

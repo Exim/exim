@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.17 2005/06/22 10:17:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.18 2005/08/02 15:19:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -268,6 +268,7 @@ extern void    smtp_send_prohibition_message(int, uschar *);
 extern int     smtp_setup_msg(void);
 extern BOOL    smtp_start_session(void);
 extern int     smtp_ungetc(int);
+extern BOOL    smtp_verify_helo(void);
 extern int     smtp_write_command(smtp_outblock *, BOOL, char *, ...);
 #ifdef WITH_CONTENT_SCAN
 extern int     spam(uschar **);

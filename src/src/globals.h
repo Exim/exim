@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.23 2005/08/02 11:22:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.24 2005/08/02 15:19:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -343,6 +343,7 @@ extern uschar *helo_allow_chars;       /* Rogue chars to allow in HELO/EHLO */
 extern uschar *helo_lookup_domains;    /* If these given, lookup host name */
 extern uschar *helo_try_verify_hosts;  /* Soft check HELO argument for these */
 extern BOOL    helo_verified;          /* True if HELO verified */
+extern BOOL    helo_verify_failed;     /* True if attempt failed */
 extern uschar *helo_verify_hosts;      /* Hard check HELO argument for these */
 extern uschar *hex_digits;             /* Used in several places */
 extern uschar *hold_domains;           /* Hold up deliveries to these */

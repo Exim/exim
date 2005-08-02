@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.21 2005/08/02 08:25:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.22 2005/08/02 15:19:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1933,6 +1933,130 @@ return 2;
 
 
 /*************************************************
+*             Verify HELO argument               *
+*************************************************/
+
+/* This function is called if helo_verify_hosts or helo_try_verify_hosts is
+matched. It is also called from ACL processing if verify = helo is used and
+verification was not previously tried (i.e. helo_try_verify_hosts was not
+matched). The result of its processing is to set helo_verified and
+helo_verify_failed. These variables should both be FALSE for this function to
+be called.
+
+Note that EHLO/HELO is legitimately allowed to quote an address literal. Allow
+for IPv6 ::ffff: literals.
+
+Argument:   none
+Returns:    TRUE if testing was completed;
+            FALSE on a temporary failure
+*/
+
+BOOL
+smtp_verify_helo(void)
+{
+BOOL yield = TRUE;
+
+HDEBUG(D_receive) debug_printf("verifying EHLO/HELO argument \"%s\"\n",
+  sender_helo_name);
+
+if (sender_helo_name == NULL)
+  {
+  HDEBUG(D_receive) debug_printf("no EHLO/HELO command was issued\n");
+  }
+
+else if (sender_helo_name[0] == '[')
+  {
+  helo_verified = Ustrncmp(sender_helo_name+1, sender_host_address,
+    Ustrlen(sender_host_address)) == 0;
+
+  #if HAVE_IPV6
+  if (!helo_verified)
+    {
+    if (strncmpic(sender_host_address, US"::ffff:", 7) == 0)
+      helo_verified = Ustrncmp(sender_helo_name + 1,
+        sender_host_address + 7, Ustrlen(sender_host_address) - 7) == 0;
+    }
+  #endif
+
+  HDEBUG(D_receive)
+    { if (helo_verified) debug_printf("matched host address\n"); }
+  }
+
+/* Do a reverse lookup if one hasn't already given a positive or negative
+response. If that fails, or the name doesn't match, try checking with a forward
+lookup. */
+
+else
+  {
+  if (sender_host_name == NULL && !host_lookup_failed)
+    yield = host_name_lookup() != DEFER;
+
+  /* If a host name is known, check it and all its aliases. */
+
+  if (sender_host_name != NULL)
+    {
+    helo_verified = strcmpic(sender_host_name, sender_helo_name) == 0;
+
+    if (helo_verified)
+      {
+      HDEBUG(D_receive) debug_printf("matched host name\n");
+      }
+    else
+      {
+      uschar **aliases = sender_host_aliases;
+      while (*aliases != NULL)
+        {
+        helo_verified = strcmpic(*aliases++, sender_helo_name) == 0;
+        if (helo_verified) break;
+        }
+      HDEBUG(D_receive)
+        {
+        if (helo_verified)
+          debug_printf("matched alias %s\n", *(--aliases));
+        }
+      }
+    }
+
+  /* Final attempt: try a forward lookup of the helo name */
+
+  if (!helo_verified)
+    {
+    int rc;
+    host_item h;
+    h.name = sender_helo_name;
+    h.address = NULL;
+    h.mx = MX_NONE;
+    h.next = NULL;
+    HDEBUG(D_receive) debug_printf("getting IP address for %s\n",
+      sender_helo_name);
+    rc = host_find_byname(&h, NULL, NULL, TRUE);
+    if (rc == HOST_FOUND || rc == HOST_FOUND_LOCAL)
+      {
+      host_item *hh = &h;
+      while (hh != NULL)
+        {
+        if (Ustrcmp(hh->address, sender_host_address) == 0)
+          {
+          helo_verified = TRUE;
+          HDEBUG(D_receive)
+            debug_printf("IP address for %s matches calling address\n",
+              sender_helo_name);
+          break;
+          }
+        hh = hh->next;
+        }
+      }
+    }
+  }
+
+if (!helo_verified) helo_verify_failed = FALSE;  /* We've tried ... */
+return yield;
+}
+
+
+
+
+/*************************************************
 *       Initialize for SMTP incoming message     *
 *************************************************/
 
@@ -2282,104 +2406,16 @@ while (done <= 0)
         (tls_active >= 0)? " TLS" : "", host_and_ident(FALSE));
 
       /* Verify if configured. This doesn't give much security, but it does
-      make some people happy to be able to do it. Note that HELO is legitimately
-      allowed to quote an address literal. Allow for IPv6 ::ffff: literals. */
+      make some people happy to be able to do it. If helo_required is set,
+      (host matches helo_verify_hosts) failure forces rejection. If helo_verify
+      is set (host matches helo_try_verify_hosts), it does not. This is perhaps
+      now obsolescent, since the verification can now be requested selectively
+      at ACL time. */
 
-      helo_verified = FALSE;
+      helo_verified = helo_verify_failed = FALSE;
       if (helo_required || helo_verify)
         {
-        BOOL tempfail = FALSE;
-
-        HDEBUG(D_receive) debug_printf("verifying %s %s\n", hello,
-          sender_helo_name);
-        if (sender_helo_name[0] == '[')
-          {
-          helo_verified = Ustrncmp(sender_helo_name+1, sender_host_address,
-            Ustrlen(sender_host_address)) == 0;
-
-          #if HAVE_IPV6
-          if (!helo_verified)
-            {
-            if (strncmpic(sender_host_address, US"::ffff:", 7) == 0)
-              helo_verified = Ustrncmp(sender_helo_name + 1,
-                sender_host_address + 7, Ustrlen(sender_host_address) - 7) == 0;
-            }
-          #endif
-
-          HDEBUG(D_receive)
-            { if (helo_verified) debug_printf("matched host address\n"); }
-          }
-
-        /* Do a reverse lookup if one hasn't already given a positive or
-        negative response. If that fails, or the name doesn't match, try
-        checking with a forward lookup. */
-
-        else
-          {
-          if (sender_host_name == NULL && !host_lookup_failed)
-            tempfail = host_name_lookup() == DEFER;
-
-          /* If a host name is known, check it and all its aliases. */
-
-          if (sender_host_name != NULL)
-            {
-            helo_verified = strcmpic(sender_host_name, sender_helo_name) == 0;
-
-            if (helo_verified)
-              {
-              HDEBUG(D_receive) debug_printf("matched host name\n");
-              }
-            else
-              {
-              uschar **aliases = sender_host_aliases;
-              while (*aliases != NULL)
-                {
-                helo_verified = strcmpic(*aliases++, sender_helo_name) == 0;
-                if (helo_verified) break;
-                }
-              HDEBUG(D_receive)
-                {
-                if (helo_verified)
-                  debug_printf("matched alias %s\n", *(--aliases));
-                }
-              }
-            }
-
-          /* Final attempt: try a forward lookup of the helo name */
-
-          if (!helo_verified)
-            {
-            int rc;
-            host_item h;
-            h.name = sender_helo_name;
-            h.address = NULL;
-            h.mx = MX_NONE;
-            h.next = NULL;
-            HDEBUG(D_receive) debug_printf("getting IP address for %s\n",
-              sender_helo_name);
-            rc = host_find_byname(&h, NULL, NULL, TRUE);
-            if (rc == HOST_FOUND || rc == HOST_FOUND_LOCAL)
-              {
-              host_item *hh = &h;
-              while (hh != NULL)
-                {
-                if (Ustrcmp(hh->address, sender_host_address) == 0)
-                  {
-                  helo_verified = TRUE;
-                  HDEBUG(D_receive)
-                    debug_printf("IP address for %s matches calling address\n",
-                      sender_helo_name);
-                  break;
-                  }
-                hh = hh->next;
-                }
-              }
-            }
-          }
-
-        /* Verification failed. A temporary lookup failure gives a temporary
-        error. */
-
+        BOOL tempfail = !smtp_verify_helo();
         if (!helo_verified)
           {
           if (helo_required)
