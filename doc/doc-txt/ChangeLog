@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.199 2005/08/08 09:57:29 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.200 2005/08/08 10:29:08 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -62,6 +62,10 @@ TK/03 Fix log output including CR from clamd.
 
 PH/14 A reference to $reply_address when Reply-to: was empty and From: did not
       exist provoked a memory error which could cause a segfault.
+
+PH/15 Installed PCRE 6.2
+
+PH/17 Defined BIND_8_COMPAT in the Darwin os.h file.
 
 
 Exim version 4.52
