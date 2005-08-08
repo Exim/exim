@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_out.c,v 1.5 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_out.c,v 1.6 2005/08/08 15:02:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -155,12 +155,13 @@ non-IPv6 systems, to enable the code to be less messy. However, on such systems
 host->address will always be an IPv4 address.
 
 The port field in the host item is used if it is set (usually router from SRV
-records). In other cases, the default passed as an argument is used.
+records or elsewhere). In other cases, the default passed as an argument is
+used, and the host item is updated with its value.
 
 Arguments:
   host        host item containing name and address (and sometimes port)
   host_af     AF_INET or AF_INET6
-  port        default, remote port to connect to, in host byte order for those
+  port        default remote port to connect to, in host byte order, for those
                 hosts whose port setting is PORT_NONE
   interface   outgoing interface address or NULL
   timeout     timeout value or 0
@@ -184,6 +185,7 @@ if (host->port != PORT_NONE)
       host->port);
   port = host->port;
   }
+else host->port = port;    /* Set the port actually used */
 
 HDEBUG(D_transport|D_acl|D_v)
   {

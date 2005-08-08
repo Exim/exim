@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.15 2005/08/02 11:22:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.16 2005/08/08 15:02:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -749,7 +749,7 @@ Arguments:
                   failed by one of them.
   host            host to deliver to
   host_af         AF_INET or AF_INET6
-  port            TCP/IP port to use, in host byte order
+  port            default TCP/IP port to use, in host byte order
   interface       interface to bind to, or NULL
   tblock          transport instance block
   copy_host       TRUE if host set in addr->host_used must be copied, because
@@ -1577,11 +1577,10 @@ if (!ok) ok = TRUE; else
         }
 
       /* SMTP, or success return from LMTP for this address. Pass back the
-      actual port used. */
+      actual host that was used. */
 
       addr->transport_return = OK;
       addr->more_errno = delivery_time;
-      thost->port = port;
       addr->host_used = thost;
       addr->special_action = flag;
       addr->message = conf;
@@ -2130,12 +2129,9 @@ else if (ob->hosts_randomize && hostlist->mx == MX_NONE && !continuing)
   }
 
 
-/* Sort out the port.  Set up a string for adding to the retry key if the port
-number is not the standard SMTP port. */
+/* Sort out the default port.  */
 
 if (!smtp_get_port(ob->port, addrlist, &port, tid)) return FALSE;
-pistring = string_sprintf(":%d", port);
-if (Ustrcmp(pistring, ":25") == 0) pistring = US"";
 
 
 /* For each host-plus-IP-address on the list:
@@ -2209,6 +2205,14 @@ for (cutoff_retry = 0; expired &&
     uschar *retry_host_key = NULL;
     uschar *retry_message_key = NULL;
     uschar *serialize_key = NULL;
+
+    /* Set up a string for adding to the retry key if the port number is not
+    the standard SMTP port. A host may have its own port setting that overrides
+    the default. */
+
+    pistring = string_sprintf(":%d", (host->port == PORT_NONE)?
+      port : host->port);
+    if (Ustrcmp(pistring, ":25") == 0) pistring = US"";
 
     /* Default next host is next host. :-) But this can vary if the
     hosts_max_try limit is hit (see below). It may also be reset if a host

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.202 2005/08/08 10:48:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.203 2005/08/08 15:02:48 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -72,6 +72,10 @@ PH/18 Reversed 4.52/PH/17 because the HP-UX user found it wasn't the cause
       HP-UX compiler.
 
 PH/19 Added sqlite_lock_timeout option (David Woodhouse's patch).
+
+PH/20 If a delivery was routed to a non-standard port by means of an SRV
+      record, the port was not correctly logged when the outgoing_port log
+      selector was set (it logged the transort's default port).
 
 
 Exim version 4.52
