@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.198 2005/08/03 09:29:24 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.199 2005/08/08 09:57:29 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -59,6 +59,9 @@ PH/13 Previously, if "verify = helo" was set in an ACL, the condition was true
 JJ/01 exipick: added $message_exim_id variable (see 4.53-PH/04)
 
 TK/03 Fix log output including CR from clamd.
+
+PH/14 A reference to $reply_address when Reply-to: was empty and From: did not
+      exist provoked a memory error which could cause a segfault.
 
 
 Exim version 4.52

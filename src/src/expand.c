@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.39 2005/08/01 15:01:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.40 2005/08/08 09:57:29 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1427,7 +1427,10 @@ while (last > first)
     s = find_header(US"reply-to:", exists_only, newsize, FALSE,
       headers_charset);
     if (s == NULL || *s == 0)
+      {
+      *newsize = 0;                            /* For the *s==0 case */
       s = find_header(US"from:", exists_only, newsize, FALSE, headers_charset);
+      }
     return (s == NULL)? US"" : s;
 
     /* A recipients list is available only during system message filtering,
