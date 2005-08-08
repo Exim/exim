@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/dftables.c,v 1.2 2005/06/15 08:57:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/dftables.c,v 1.3 2005/08/08 10:22:14 ph10 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -68,7 +68,7 @@ if (argc != 2)
   return 1;
   }
 
-f = fopen(argv[1], "w");
+f = fopen(argv[1], "wb");
 if (f == NULL)
   {
   fprintf(stderr, "dftables: failed to open %s for writing\n", argv[1]);

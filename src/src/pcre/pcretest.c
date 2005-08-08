@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcretest.c,v 1.2 2005/06/15 08:57:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcretest.c,v 1.3 2005/08/08 10:22:14 ph10 Exp $ */
 
 /*************************************************
 *             PCRE testing program               *
@@ -64,8 +64,8 @@ Makefile. */
 #include "pcreposix.h"
 #endif
 
-/* It is also possible, for the benefit of the version imported into Exim, to 
-build pcretest without support for UTF8 (define NOUTF8), without the interface 
+/* It is also possible, for the benefit of the version imported into Exim, to
+build pcretest without support for UTF8 (define NOUTF8), without the interface
 to the DFA matcher (NODFA), and without the doublecheck of the old "info"
 function (define NOINFOCHECK). */
 
@@ -205,7 +205,7 @@ int yield = 0;
 
 while (length-- > 0)
   {
-#if !defined NOUTF8   
+#if !defined NOUTF8
   if (use_utf8)
     {
     int rc = utf82ord(p, &c);
@@ -478,7 +478,7 @@ while (argc > 1 && argv[op][0] == '-')
   else if (strcmp(argv[op], "-t") == 0) timeit = 1;
   else if (strcmp(argv[op], "-i") == 0) showinfo = 1;
   else if (strcmp(argv[op], "-d") == 0) showinfo = debug = 1;
-#if !defined NODFA   
+#if !defined NODFA
   else if (strcmp(argv[op], "-dfa") == 0) all_use_dfa = 1;
 #endif
   else if (strcmp(argv[op], "-o") == 0 && argc > 2 &&

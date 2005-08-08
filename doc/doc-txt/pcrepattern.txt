@@ -1,11 +1,12 @@
 This file contains the PCRE man page that describes the regular expressions
-supported by PCRE version 6.0. Note that not all of the features are relevant
+supported by PCRE version 6.2. Note that not all of the features are relevant
 in the context of Exim. In particular, the version of PCRE that is compiled
 with Exim does not include UTF-8 support, there is no mechanism for changing
 the options with which the PCRE functions are called, and features such as
 callout are not accessible.
 -----------------------------------------------------------------------------
 
+PCREPATTERN(3)                                                  PCREPATTERN(3)
 
 
 NAME

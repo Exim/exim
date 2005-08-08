@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_compile.c,v 1.1 2005/06/15 08:57:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_compile.c,v 1.2 2005/08/08 10:22:14 ph10 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -700,7 +700,18 @@ read_repeat_counts(const uschar *p, int *minp, int *maxp, int *errorcodeptr)
 int min = 0;
 int max = -1;
 
+/* Read the minimum value and do a paranoid check: a negative value indicates
+an integer overflow. */
+
 while ((digitab[*p] & ctype_digit) != 0) min = min * 10 + *p++ - '0';
+if (min < 0 || min > 65535)
+  {
+  *errorcodeptr = ERR5;
+  return p;
+  }
+
+/* Read the maximum value if there is one, and again do a paranoid on its size.
+Also, max must not be less than min. */
 
 if (*p == '}') max = min; else
   {
@@ -708,6 +719,11 @@ if (*p == '}') max = min; else
     {
     max = 0;
     while((digitab[*p] & ctype_digit) != 0) max = max * 10 + *p++ - '0';
+    if (max < 0 || max > 65535)
+      {
+      *errorcodeptr = ERR5;
+      return p;
+      }
     if (max < min)
       {
       *errorcodeptr = ERR4;
@@ -716,16 +732,11 @@ if (*p == '}') max = min; else
     }
   }
 
-/* Do paranoid checks, then fill in the required variables, and pass back the
-pointer to the terminating '}'. */
+/* Fill in the required variables, and pass back the pointer to the terminating
+'}'. */
 
-if (min > 65535 || max > 65535)
-  *errorcodeptr = ERR5;
-else
-  {
-  *minp = min;
-  *maxp = max;
-  }
+*minp = min;
+*maxp = max;
 return p;
 }
 
@@ -3858,6 +3869,7 @@ BOOL utf8;
 BOOL class_utf8;
 #endif
 BOOL inescq = FALSE;
+BOOL capturing;
 unsigned int brastackptr = 0;
 size_t size;
 uschar *code;
@@ -4412,6 +4424,7 @@ while ((c = *(++ptr)) != 0)
     case '(':
     branch_newextra = 0;
     bracket_length = 1 + LINK_SIZE;
+    capturing = FALSE;
 
     /* Handle special forms of bracket, which all start (? */
 
@@ -4499,6 +4512,9 @@ while ((c = *(++ptr)) != 0)
 
         case 'P':
         ptr += 3;
+
+        /* Handle the definition of a named subpattern */
+
         if (*ptr == '<')
           {
           const uschar *p;    /* Don't amalgamate; some compilers */
@@ -4511,8 +4527,11 @@ while ((c = *(++ptr)) != 0)
             }
           name_count++;
           if (ptr - p > max_name_size) max_name_size = (ptr - p);
+          capturing = TRUE;   /* Named parentheses are always capturing */
           break;
           }
+
+        /* Handle back references and recursive calls to named subpatterns */
 
         if (*ptr == '=' || *ptr == '>')
           {
@@ -4627,6 +4646,14 @@ while ((c = *(++ptr)) != 0)
             nothing is done here and it is handled during the compiling
             process.
 
+            We allow for more than one options setting at the start. If such
+            settings do not change the existing options, nothing is compiled.
+            However, we must leave space just in case something is compiled.
+            This can happen for pathological sequences such as (?i)(?-i)
+            because the global options will end up with -i set. The space is
+            small and not significant. (Before I did this there was a reported
+            bug with (?i)(?-i) in a machine-generated pattern.)
+
             [Historical note: Up to Perl 5.8, options settings at top level
             were always global settings, wherever they appeared in the pattern.
             That is, they were equivalent to an external setting. From 5.8
@@ -4639,6 +4666,7 @@ while ((c = *(++ptr)) != 0)
               options = (options | set) & (~unset);
               set = unset = 0;     /* To save length */
               item_count--;        /* To allow for several */
+              length += 2;
               }
 
             /* Fall through */
@@ -4688,18 +4716,24 @@ while ((c = *(++ptr)) != 0)
           continue;
           }
 
-        /* If options were terminated by ':' control comes here. Fall through
-        to handle the group below. */
+        /* If options were terminated by ':' control comes here. This is a
+        non-capturing group with an options change. There is nothing more that
+        needs to be done because "capturing" is already set FALSE by default;
+        we can just fall through. */
+
         }
       }
 
-    /* Extracting brackets must be counted so we can process escapes in a
-    Perlish way. If the number exceeds EXTRACT_BASIC_MAX we are going to
-    need an additional 3 bytes of store per extracting bracket. However, if
-    PCRE_NO_AUTO)CAPTURE is set, unadorned brackets become non-capturing, so we
-    must leave the count alone (it will aways be zero). */
+    /* Ordinary parentheses, not followed by '?', are capturing unless
+    PCRE_NO_AUTO_CAPTURE is set. */
 
-    else if ((options & PCRE_NO_AUTO_CAPTURE) == 0)
+    else capturing = (options & PCRE_NO_AUTO_CAPTURE) == 0;
+
+    /* Capturing brackets must be counted so we can process escapes in a
+    Perlish way. If the number exceeds EXTRACT_BASIC_MAX we are going to need
+    an additional 3 bytes of memory per capturing bracket. */
+
+    if (capturing)
       {
       bracount++;
       if (bracount > EXTRACT_BASIC_MAX) bracket_length += 3;

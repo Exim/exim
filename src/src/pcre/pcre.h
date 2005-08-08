@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/pcre/pcre.h,v 1.2 2005/06/15 08:57:10 ph10 Exp $ */
-
 /*************************************************
 *       Perl-Compatible Regular Expressions      *
 *************************************************/
@@ -45,8 +43,8 @@ POSSIBILITY OF SUCH DAMAGE.
 make changes to pcre.in. */
 
 #define PCRE_MAJOR          6
-#define PCRE_MINOR          0
-#define PCRE_DATE           07-Jun-2005
+#define PCRE_MINOR          2
+#define PCRE_DATE           01-Aug-2005
 
 /* Win32 uses DLL by default; it needs special stuff for exported functions. */
 

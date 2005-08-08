@@ -6,9 +6,9 @@ is built with Exim.
 PCRETEST(1)                                                        PCRETEST(1)
 
 
-
 NAME
        pcretest - a program for testing Perl-compatible regular expressions.
+
 
 SYNOPSIS
 

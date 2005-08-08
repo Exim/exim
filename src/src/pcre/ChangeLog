@@ -1,6 +1,69 @@
 ChangeLog for PCRE
 ------------------
 
+Version 6.2 01-Aug-05
+---------------------
+
+ 1. There was no test for integer overflow of quantifier values. A construction
+    such as {1111111111111111} would give undefined results. What is worse, if
+    a minimum quantifier for a parenthesized subpattern overflowed and became
+    negative, the calculation of the memory size went wrong. This could have
+    led to memory overwriting.
+
+ 2. Building PCRE using VPATH was broken. Hopefully it is now fixed.
+
+ 3. Added "b" to the 2nd argument of fopen() in dftables.c, for non-Unix-like
+    operating environments where this matters.
+
+ 4. Applied Giuseppe Maxia's patch to add additional features for controlling
+    PCRE options from within the C++ wrapper.
+
+ 5. Named capturing subpatterns were not being correctly counted when a pattern
+    was compiled. This caused two problems: (a) If there were more than 100
+    such subpatterns, the calculation of the memory needed for the whole
+    compiled pattern went wrong, leading to an overflow error. (b) Numerical
+    back references of the form \12, where the number was greater than 9, were
+    not recognized as back references, even though there were sufficient
+    previous subpatterns.
+
+ 6. Two minor patches to pcrecpp.cc in order to allow it to compile on older
+    versions of gcc, e.g. 2.95.4.
+
+
+Version 6.1 21-Jun-05
+---------------------
+
+ 1. There was one reference to the variable "posix" in pcretest.c that was not
+    surrounded by "#if !defined NOPOSIX".
+
+ 2. Make it possible to compile pcretest without DFA support, UTF8 support, or
+    the cross-check on the old pcre_info() function, for the benefit of the
+    cut-down version of PCRE that is currently imported into Exim.
+
+ 3. A (silly) pattern starting with (?i)(?-i) caused an internal space
+    allocation error. I've done the easy fix, which wastes 2 bytes for sensible
+    patterns that start (?i) but I don't think that matters. The use of (?i) is
+    just an example; this all applies to the other options as well.
+
+ 4. Since libtool seems to echo the compile commands it is issuing, the output
+    from "make" can be reduced a bit by putting "@" in front of each libtool
+    compile command.
+
+ 5. Patch from the folks at Google for configure.in to be a bit more thorough
+    in checking for a suitable C++ installation before trying to compile the
+    C++ stuff. This should fix a reported problem when a compiler was present,
+    but no suitable headers.
+
+ 6. The man pages all had just "PCRE" as their title. I have changed them to
+    be the relevant file name. I have also arranged that these names are
+    retained in the file doc/pcre.txt, which is a concatenation in text format
+    of all the man pages except the little individual ones for each function.
+
+ 7. The NON-UNIX-USE file had not been updated for the different set of source
+    files that come with release 6. I also added a few comments about the C++
+    wrapper.
+
+
 Version 6.0 07-Jun-05
 ---------------------
 

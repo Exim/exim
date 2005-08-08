@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/ucp.h,v 1.1 2005/06/15 08:57:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/ucp.h,v 1.2 2005/08/08 10:22:14 ph10 Exp $ */
 
 /*************************************************
 *     libucp - Unicode Property Table handler    *
