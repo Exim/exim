@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.33 2005/08/02 15:19:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.34 2005/08/08 10:48:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -85,6 +85,10 @@ uschar *oracle_servers         = NULL;
 
 #ifdef LOOKUP_PGSQL
 uschar *pgsql_servers          = NULL;
+#endif
+
+#ifdef LOOKUP_SQLITE
+int     sqlite_lock_timeout    = 5;
 #endif
 
 #ifdef SUPPORT_MOVE_FROZEN_MESSAGES

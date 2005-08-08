@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.61 2005/08/02 15:19:20 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.62 2005/08/08 10:48:26 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -41,6 +41,14 @@ PH/01 Support for SQLite database lookups has been added. This is another
 
       The only character affected by the ${quote_sqlite: operator is a single
       quote, which it doubles.
+
+      The SQLite library handles multiple simultaneous accesses to the database
+      internally. Multiple readers are permitted, but only one process can
+      update at once. Attempts to access the database while it is being updated
+      are rejected after a timeout period, during which the SQLite library
+      waits for the lock to be released. In Exim, the default timeout is set
+      to 5 seconds, but it can be changed by means of the sqlite_lock_timeout
+      option.
 
       Note that you must set LOOKUP_SQLITE=yes in Local/Makefile in order to
       obtain SQLite support, and you will also need to add -lsqlite3 to the

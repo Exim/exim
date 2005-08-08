@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.24 2005/08/02 15:19:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.25 2005/08/08 10:48:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -49,6 +49,10 @@ extern uschar *oracle_servers;         /* List of servers and connect info */
 
 #ifdef LOOKUP_PGSQL
 extern uschar *pgsql_servers;          /* List of servers and connect info */
+#endif
+
+#ifdef LOOKUP_SQLITE
+extern int     sqlite_lock_timeout;    /* Internal lock waiting timeout */
 #endif
 
 #ifdef SUPPORT_MOVE_FROZEN_MESSAGES

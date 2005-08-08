@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.201 2005/08/08 10:32:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.202 2005/08/08 10:48:26 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -70,6 +70,8 @@ PH/17 Defined BIND_8_COMPAT in the Darwin os.h file.
 PH/18 Reversed 4.52/PH/17 because the HP-UX user found it wasn't the cause
       of the problem. Specifically, suggested +O2 rather than +O1 for the
       HP-UX compiler.
+
+PH/19 Added sqlite_lock_timeout option (David Woodhouse's patch).
 
 
 Exim version 4.52

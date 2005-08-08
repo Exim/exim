@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.11 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.12 2005/08/08 10:48:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -339,6 +339,9 @@ static optionlist optionlist_config[] = {
 #endif
   { "split_spool_directory",    opt_bool,        &split_spool_directory },
   { "spool_directory",          opt_stringptr,   &spool_directory },
+#ifdef LOOKUP_SQLITE
+  { "sqlite_lock_timeout",      opt_int,         &sqlite_lock_timeout },
+#endif
 #ifdef EXPERIMENTAL_SRS
   { "srs_config",               opt_stringptr,   &srs_config },
   { "srs_hashlength",           opt_int,         &srs_hashlength },

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.9 2005/06/21 14:14:55 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.10 2005/08/08 10:48:26 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -474,6 +474,7 @@ socket                               string*         unset         lmtp         
 spamd_address                        string          +             main              4.50 with content scan
 split_spool_directory                boolean         false         main              1.70
 spool_directory                      string          ++            main
+sqlite_lock_timeout                  time            5s            main              4.53
 srv_fail_domains                     domain list     unset         dnslookup         4.43
 strip_excess_angle_brackets          boolean         false         main
 strip_trailing_dot                   boolean         false         main

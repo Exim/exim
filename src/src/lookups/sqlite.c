@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/sqlite.c,v 1.1 2005/08/01 13:20:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/sqlite.c,v 1.2 2005/08/08 10:48:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -36,6 +36,7 @@ if (ret != 0)
   debug_printf("Error opening database: %s\n", *errmsg);
   }
 
+sqlite3_busy_timeout(db, 1000 * sqlite_lock_timeout);
 return db;
 }
 
