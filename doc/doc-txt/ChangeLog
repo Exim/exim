@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.203 2005/08/08 15:02:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.204 2005/08/09 13:31:52 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -76,6 +76,12 @@ PH/19 Added sqlite_lock_timeout option (David Woodhouse's patch).
 PH/20 If a delivery was routed to a non-standard port by means of an SRV
       record, the port was not correctly logged when the outgoing_port log
       selector was set (it logged the transort's default port).
+
+PH/21 Added support for host-specific ports to manualroute, queryprogram,
+      fallback_hosts, and "hosts" in the smtp transport.
+
+PH/22 If the log selector "outgoing_port" is set, the port is now also given on
+      host errors such as "Connection refused".
 
 
 Exim version 4.52

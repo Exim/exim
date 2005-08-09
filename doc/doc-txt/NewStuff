@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.62 2005/08/08 10:48:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.63 2005/08/09 13:31:52 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -75,6 +75,32 @@ PH/05 Previously, if "verify = helo" was set in an ACL, the condition was true
       verification to occur when the EHLO/HELO command was issued. The ACL just
       tested the remembered result. Now, if a previous verification attempt has
       not happened, "verify = helo" does it there and then.
+
+PH/06 It is now possible to specify a port number along with a host name or
+      IP address in the list of hosts defined in the manualroute or
+      queryprogram routers, fallback_hosts, or the "hosts" option of the smtp
+      transport. These all override any port specification on the transport.
+      The relatively standard syntax of using a colon separator has been
+      adopted, but there are some gotchas that need attention:
+
+      * In all these lists of hosts, colon is the default separator, so either
+        the colon that specifies a port must be doubled, or the separator must
+        be changed. The following two examples have the same effect:
+
+          fallback_hosts = host1.tld::1225 : host2.tld::1226
+          fallback_hosts = <; host1.tld:1225 ; host2.tld:1226
+
+      * When IPv6 addresses are involved, it gets worse, because they contain
+        colons of their own. To make this case easier, it is permitted to
+        enclose an IP address (either v4 or v6) in square brackets if a port
+        number follows. Here's an example from a manualroute router:
+
+           route_list = * "</ [10.1.1.1]:1225 / [::1]:1226"
+
+      If the "/MX" feature is to be used as well as a port specifier, the port
+      must come last. For example:
+
+           route_list = *  dom1.tld/mx::1225
 
 
 Exim version 4.52

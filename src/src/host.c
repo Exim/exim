@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.11 2005/08/02 09:01:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.12 2005/08/09 13:31:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -237,7 +237,7 @@ Returns:     0 if there is no port, else the port number. If there's a syntax
 */
 
 int
-host_extract_port(uschar *address)
+host_address_extract_port(uschar *address)
 {
 int port = 0;
 uschar *endptr;
@@ -277,6 +277,59 @@ else
   *address = 0;
   }
 
+return port;
+}
+
+
+/*************************************************
+*         Get port from a host item's name       *
+*************************************************/
+
+/* This function is called when finding the IP address for a host that is in a
+list of hosts explicitly configured, such as in the manualroute router, or in a
+fallback hosts list. We see if there is a port specification at the end of the
+host name, and if so, remove it. A minimum length of 3 is required for the
+original name; nothing shorter is recognized as having a port.
+
+We test for a name ending with a sequence of digits; if preceded by colon we
+have a port if the character before the colon is ] and the name starts with [
+or if there are no other colons in the name (i.e. it's not an IPv6 address).
+
+Arguments:  pointer to the host item
+Returns:    a port number or PORT_NONE
+*/
+
+int
+host_item_get_port(host_item *h)
+{
+uschar *p;
+int port, x;
+int len = Ustrlen(h->name);
+
+if (len < 3 || (p = h->name + len - 1, !isdigit(*p))) return PORT_NONE;
+
+/* Extract potential port number */
+
+port = *p-- - '0';
+x = 10;
+
+while (p > h->name + 1 && isdigit(*p))
+  {
+  port += (*p-- - '0') * x;
+  x *= 10;
+  }
+
+/* The smallest value of p at this point is h->name + 1. */
+
+if (*p != ':') return PORT_NONE;
+
+if (p[-1] == ']' && h->name[0] == '[')
+  h->name = string_copyn(h->name + 1, p - h->name - 2);
+else if (Ustrchr(h->name, ':') == p)
+  h->name = string_copyn(h->name, p - h->name);
+else return PORT_NONE;
+
+DEBUG(D_route|D_host_lookup) debug_printf("host=%s port=%d\n", h->name, port);
 return port;
 }
 
@@ -495,7 +548,7 @@ ip_address_item *next;
 
 while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
   {
-  int port = host_extract_port(s);            /* Leaves just the IP address */
+  int port = host_address_extract_port(s);            /* Leaves just the IP address */
   if (string_is_ip_address(s, NULL) == 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Malformed IP address \"%s\" in %s",
       s, name);

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.18 2005/08/02 15:19:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.19 2005/08/09 13:31:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -107,19 +107,20 @@ extern BOOL    filter_system_interpret(address_item **, uschar **);
 extern void    header_add(int, char *, ...);
 extern int     header_checkname(header_line *, BOOL);
 extern BOOL    header_match(uschar *, BOOL, BOOL, string_item *, int, ...);
+extern int     host_address_extract_port(uschar *);
 extern uschar *host_and_ident(BOOL);
 extern int     host_aton(uschar *, int *);
 extern void    host_build_hostlist(host_item **, uschar *, BOOL);
 extern ip_address_item *host_build_ifacelist(uschar *, uschar *);
 extern void    host_build_log_info(void);
 extern void    host_build_sender_fullhost(void);
-extern int     host_extract_port(uschar *);
 extern BOOL    host_find_byname(host_item *, uschar *, uschar **, BOOL);
 extern int     host_find_bydns(host_item *, uschar *, int, uschar *, uschar *,
                  uschar *,uschar **, BOOL *);
 extern ip_address_item *host_find_interfaces(void);
 extern BOOL    host_is_in_net(uschar *, uschar *, int);
 extern BOOL    host_is_tls_on_connect_port(int);
+extern int     host_item_get_port(host_item *);
 extern void    host_mask(int, int *, int);
 extern int     host_name_lookup(void);
 extern int     host_nmtoa(int, int *, int, uschar *, int);

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.12 2005/06/27 14:29:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.13 2005/08/09 13:31:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -448,13 +448,13 @@ for (;;)
 
   else if (Ustrncmp(big_buffer, "-host_address", 13) == 0)
     {
-    sender_host_port = host_extract_port(big_buffer + 14);
+    sender_host_port = host_address_extract_port(big_buffer + 14);
     sender_host_address = string_copy(big_buffer + 14);
     }
 
   else if (Ustrncmp(big_buffer, "-interface_address", 18) == 0)
     {
-    interface_port = host_extract_port(big_buffer + 19);
+    interface_port = host_address_extract_port(big_buffer + 19);
     interface_address = string_copy(big_buffer + 19);
     }
 

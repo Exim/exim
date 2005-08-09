@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/rf_lookup_hostlist.c,v 1.3 2005/01/11 15:51:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/rf_lookup_hostlist.c,v 1.4 2005/08/09 13:31:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -26,6 +26,12 @@ This function also supports pseudo-hosts whose names end with "/MX". In this
 case, MX records are looked up for the name, and the list of hosts obtained
 replaces the incoming "host". In other words, "x/MX" is shorthand for "those
 hosts pointed to by x's MX records".
+
+It is also possible for a port to be specified along with the host name or IP
+address. The syntax is to add ":port" on to the end. This doesn't work with
+IPv6 addresses, so we allow IP addresses to be enclosed in [] in order to make
+this work. The specification of the port must come last, that is, after "/MX"
+if that is present.
 
 Arguments:
   rblock               the router block
@@ -61,13 +67,18 @@ prev = NULL;
 for (h = addr->host_list; h != NULL; prev = h, h = next_h)
   {
   uschar *canonical_name;
-  int rc, len;
+  int rc, len, port;
 
   next_h = h->next;
   if (h->address != NULL) continue;
 
   DEBUG(D_route|D_host_lookup)
     debug_printf("finding IP address for %s\n", h->name);
+
+  /* Handle any port setting that may be on the name; it will be removed
+  from the end of the name. */
+
+  port = host_item_get_port(h);
 
   /* If the name ends with "/MX", we interpret it to mean "the list of hosts
   pointed to by MX records with this name". */
@@ -78,7 +89,7 @@ for (h = addr->host_list; h != NULL; prev = h, h = next_h)
     DEBUG(D_route|D_host_lookup)
       debug_printf("doing DNS MX lookup for %s\n", h->name);
 
-    h->name[len-3] = 0;
+    h->name = string_copyn(h->name, len - 3);
     rc = host_find_bydns(h,
         ignore_target_hosts,
         HOST_FIND_BY_MX,                /* look only for MX records */
@@ -157,6 +168,14 @@ for (h = addr->host_list; h != NULL; prev = h, h = next_h)
 
     addr->special_action = SPECIAL_FREEZE;
     return DEFER;
+    }
+
+  /* Deal with a port setting */
+
+  if (port != PORT_NONE)
+    {
+    host_item *hh;
+    for (hh = h; hh != next_h; hh = hh->next) hh->port = port;
     }
 
   /* A local host gets chopped, with its successors, if there are previous

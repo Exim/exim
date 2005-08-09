@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.46 2005/08/08 13:52:19 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.47 2005/08/09 13:31:52 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -373,10 +373,6 @@ This is for looking up things like subject contents. Probably need an option to
 exim_dbmbuild to make them into DBM files.
 ------------------------------------------------------------------------------
 
-(174)  19-Sep-2000 S  A way of using a different port for fallback hosts.
-Dean Brooks
-------------------------------------------------------------------------------
-
 (181)  10-Nov-2000 S  Compile-time options for ignoring Sendmail options
 
 So that new ones could be accommodated easily.
@@ -506,8 +502,6 @@ these entries.
 
 . Options and/or a utility to enable non-privileged users to view the queue
 (e.g. -bpp), manipulate their own messages, etc.
-
-. Specify a port along with a host in a route_list.
 
 . A generalized "From" escaping scheme that also escapes >From so that the
 whole thing can be reversed.

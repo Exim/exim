@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.16 2005/08/08 15:02:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.17 2005/08/09 13:31:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -329,8 +329,8 @@ this particular type of timeout.
 Returns:       nothing
 */
 
-static
-void set_errno(address_item *addrlist, int errno_value, uschar *msg, int rc,
+static void
+set_errno(address_item *addrlist, int errno_value, uschar *msg, int rc,
   BOOL pass_message)
 {
 address_item *addr;
@@ -505,14 +505,14 @@ if (addr->message != NULL)
   }
 else
   {
-  log_write(0, LOG_MAIN, "%s [%s]: %s",
-    host->name,
-    host->address,
-    strerror(addr->basic_errno));
-  deliver_msglog("%s %s [%s]: %s\n",
-    tod_stamp(tod_log),
-    host->name,
-    host->address,
+  uschar *msg =
+    ((log_extra_selector & LX_outgoing_port) != 0)?
+    string_sprintf("%s [%s]:%d", host->name, host->address,
+      (host->port == PORT_NONE)? 25 : host->port)
+    :
+    string_sprintf("%s [%s]", host->name, host->address);
+  log_write(0, LOG_MAIN, "%s %s", msg, strerror(addr->basic_errno));
+  deliver_msglog("%s %s %s\n", tod_stamp(tod_log), msg,
     strerror(addr->basic_errno));
   }
 }
@@ -2206,14 +2206,6 @@ for (cutoff_retry = 0; expired &&
     uschar *retry_message_key = NULL;
     uschar *serialize_key = NULL;
 
-    /* Set up a string for adding to the retry key if the port number is not
-    the standard SMTP port. A host may have its own port setting that overrides
-    the default. */
-
-    pistring = string_sprintf(":%d", (host->port == PORT_NONE)?
-      port : host->port);
-    if (Ustrcmp(pistring, ":25") == 0) pistring = US"";
-
     /* Default next host is next host. :-) But this can vary if the
     hosts_max_try limit is hit (see below). It may also be reset if a host
     address is looked up here (in case the host was multihomed). */
@@ -2243,6 +2235,8 @@ for (cutoff_retry = 0; expired &&
 
     if (host->address == NULL)
       {
+      int new_port;
+      host_item *hh;
       uschar *canonical_name;
 
       if (host->status >= hstatus_unusable)
@@ -2253,6 +2247,13 @@ for (cutoff_retry = 0; expired &&
         }
 
       DEBUG(D_transport) debug_printf("getting address for %s\n", host->name);
+
+      /* The host name is permitted to have an attached port. Find it, and
+      strip it from the name. Just remember it for now. */
+
+      new_port = host_item_get_port(host);
+
+      /* Count hosts looked up */
 
       hosts_looked_up++;
 
@@ -2269,6 +2270,11 @@ for (cutoff_retry = 0; expired &&
         rc = host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
           &canonical_name, NULL);
         }
+
+      /* Update the host (and any additional blocks, resulting from
+      multihoming) with a host-specific port, if any. */
+
+      for (hh = host; hh != nexthost; hh = hh->next) hh->port = new_port;
 
       /* Failure to find the host at this time (usually DNS temporary failure)
       is really a kind of routing failure rather than a transport failure.
@@ -2362,6 +2368,14 @@ for (cutoff_retry = 0; expired &&
 
     deliver_host = host->name;
     deliver_host_address = host->address;
+
+    /* Set up a string for adding to the retry key if the port number is not
+    the standard SMTP port. A host may have its own port setting that overrides
+    the default. */
+
+    pistring = string_sprintf(":%d", (host->port == PORT_NONE)?
+      port : host->port);
+    if (Ustrcmp(pistring, ":25") == 0) pistring = US"";
 
     /* Select IPv4 or IPv6, and choose an outgoing interface. If the interface
     string changes upon expansion, we must add it to the key that is used for

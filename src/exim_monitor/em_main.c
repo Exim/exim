@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_main.c,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_main.c,v 1.3 2005/08/09 13:31:52 ph10 Exp $ */
 
 /*************************************************
 *                  Exim Monitor                  *
@@ -200,7 +200,7 @@ Returns:     0 if there is no port, else the port number.
 */
 
 int
-host_extract_port(uschar *address)
+host_address_extract_port(uschar *address)
 {
 int skip = -3;                     /* Skip 3 dots in IPv4 addresses */
 address--;

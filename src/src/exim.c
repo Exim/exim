@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.23 2005/08/01 13:20:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.24 2005/08/09 13:31:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -599,7 +599,7 @@ Returns:    the port, or zero if there isn't one
 static int
 check_port(uschar *address)
 {
-int port = host_extract_port(address);
+int port = host_address_extract_port(address);
 if (string_is_ip_address(address, NULL) == 0)
   {
   fprintf(stderr, "exim abandoned: \"%s\" is not an IP address\n", address);
