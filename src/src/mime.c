@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.11 2005/08/02 09:42:24 tom Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.12 2005/08/16 12:32:32 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -484,7 +484,7 @@ int mime_get_header(FILE *f, uschar *header) {
     };
   };
 
-  if (header[num_copied-1] != ';') {
+  if ((num_copied > 0) && (header[num_copied-1] != ';')) {
     header[num_copied-1] = ';';
   };
 
