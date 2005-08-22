@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/call_radius.c,v 1.3 2005/03/29 14:19:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/call_radius.c,v 1.4 2005/08/22 10:49:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -113,16 +113,17 @@ else if (rc_avpair_add(&send, PW_SERVICE_TYPE, &service, 0) == NULL)
 
 #else  /* RADIUS_LIB_RADIUSCLIENT unset => RADIUS_LIB_RADIUSCLIENT2 */
 
-if ((h = rc_read_config(RADIUS_CONFIG_FILE)) != 0)
+if ((h = rc_read_config(RADIUS_CONFIG_FILE)) == NULL)
   *errptr = string_sprintf("RADIUS: can't open %s", RADIUS_CONFIG_FILE);
 
 else if (rc_read_dictionary(h, rc_conf_str(h, "dictionary")) != 0)
   *errptr = string_sprintf("RADIUS: can't read dictionary");
 
-else if (rc_avpair_add(h, &send, PW_USER_NAME, user, 0, 0) == NULL)
+else if (rc_avpair_add(h, &send, PW_USER_NAME, user, Ustrlen(user), 0) == NULL)
   *errptr = string_sprintf("RADIUS: add user name failed\n");
 
-else if (rc_avpair_add(h, &send, PW_USER_PASSWORD, CS radius_args, 0, 0) == NULL)
+else if (rc_avpair_add(h, &send, PW_USER_PASSWORD, CS radius_args,
+    Ustrlen(radius_args), 0) == NULL)
   *errptr = string_sprintf("RADIUS: add password failed\n");
 
 else if (rc_avpair_add(h, &send, PW_SERVICE_TYPE, &service, 0, 0) == NULL)

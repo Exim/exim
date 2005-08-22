@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.24 2005/08/01 13:20:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.25 2005/08/22 10:49:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -152,6 +152,7 @@ BOOL done = FALSE;
 uschar *address_key;
 uschar *from_address;
 uschar *random_local_part = NULL;
+uschar *save_deliver_domain = deliver_domain;
 uschar **failure_ptr = is_recipient?
   &recipient_verify_failure : &sender_verify_failure;
 open_db dbblock;
@@ -415,12 +416,14 @@ for (host = host_list; host != NULL && !done; host = host->next)
 
   deliver_host = host->name;
   deliver_host_address = host->address;
+  deliver_domain = addr->domain;
   if (!smtp_get_interface(tf->interface, host_af, addr, NULL, &interface,
           US"callout") ||
       !smtp_get_port(tf->port, addr, &port, US"callout"))
     log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
       addr->message);
   deliver_host = deliver_host_address = NULL;
+  deliver_domain = save_deliver_domain;
 
   /* Set HELO string according to the protocol */
 
@@ -1053,13 +1056,16 @@ while (addr_new != NULL)
         if (tf.hosts != NULL && (host_list == NULL || tf.hosts_override))
           {
           uschar *s;
+          uschar *save_deliver_domain = deliver_domain;
+          uschar *save_deliver_localpart = deliver_localpart;
 
           host_list = NULL;    /* Ignore the router's hosts */
 
           deliver_domain = addr->domain;
           deliver_localpart = addr->local_part;
           s = expand_string(tf.hosts);
-          deliver_domain = deliver_localpart = NULL;
+          deliver_domain = save_deliver_domain;
+          deliver_localpart = save_deliver_localpart;
 
           if (s == NULL)
             {

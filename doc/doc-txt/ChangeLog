@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.205 2005/08/16 12:35:12 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.206 2005/08/22 10:49:04 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -83,8 +83,25 @@ PH/21 Added support for host-specific ports to manualroute, queryprogram,
 PH/22 If the log selector "outgoing_port" is set, the port is now also given on
       host errors such as "Connection refused".
 
+PH/23 Applied a patch to fix problems with exim-4.52 while doing radius
+      authentication with radiusclient 0.4.9:
+
+      - Error returned from rc_read_config was caught wrongly
+      - Username/password not passed on to radius server due to wrong length.
+
+      The presumption is that some radiusclient API changes for 4.51/PH/17
+      were not taken care of correctly. The code is still untested by me (my
+      Linux distribution still has 0.3.2 of radiusclient), but it was
+      contributed by a Radius user.
+
+PH/24 When doing a callout, the value of $domain wasn't set correctly when
+      expanding the "port" option of the smtp transport.
+
 TK/04 MIME ACL: Fix buffer underrun that occurs when EOF condition is met
       while reading a MIME header. Thanks to Tom Hughes for a patch.
+
+PH/24 Include config.h inside local_scan.h so that configuration settings are
+      available.
 
 
 Exim version 4.52

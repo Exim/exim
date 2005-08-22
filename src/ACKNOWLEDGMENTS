@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.30 2005/08/02 11:22:23 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.31 2005/08/22 10:49:04 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -208,6 +208,7 @@ Peter Savitch             Diagnosis of FPE bug when statvfs() fails on spool
 Harald Schueler           Patch for dn_expand() failure on truncated data
 Heiko Schlichting         Diagnosis of intermittent daemon crash bug
 Stephan Schulz            Patch for $host_data caching error
+Lai Zit Seng              Patch for radiusclient 0.4.9 interface bugs
 Tony Sheen                Log files with datestamped names and auto rollover
 Martin Sluka              Patch for exigrep to include non-message lines
 Adam Stephens             Suggested patch for IGNOREQUOTA in LMTP

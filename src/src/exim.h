@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.17 2005/06/29 10:56:35 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.18 2005/08/22 10:49:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -417,9 +417,8 @@ extern int ferror(FILE *);
 #include "pcre/pcre.h"
 
 /* Exim includes are in several files. Note that local_scan.h #includes
-mytypes.h and store.h, so we don't need to mention them explicitly. */
-
-#include "config.h"
+config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
+*/
 
 #include "local_scan.h"
 #include "macros.h"

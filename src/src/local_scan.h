@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/local_scan.h,v 1.4 2005/03/22 14:11:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/local_scan.h,v 1.5 2005/08/22 10:49:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -14,9 +14,11 @@ available for use in that function, and which are documented.
 This API is also used for functions called by the ${dlfunc expansion item. */
 
 
-/* Some basic types that make some things easier, and the store functions. */
+/* Some basic types that make some things easier, the Exim configuration
+settings, and the store functions. */
 
 #include <sys/types.h>
+#include "config.h"
 #include "mytypes.h"
 #include "store.h"
 
