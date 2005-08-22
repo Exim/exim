@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.22 2005/08/02 15:19:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.23 2005/08/22 14:01:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -118,8 +118,6 @@ static int  synprot_error_count;
 static int  unknown_command_count;
 static int  sync_cmd_limit;
 static int  smtp_write_error = 0;
-
-static uschar *smtp_data;
 
 static uschar *cmd_buffer;
 
@@ -535,7 +533,7 @@ for (p = cmd_list; p < cmd_list_end; p++)
     the following test, so that if it fails, the command name can easily be
     logged. */
 
-    smtp_data = cmd_buffer + p->len;
+    smtp_command_argument = cmd_buffer + p->len;
 
     /* Count non-mail commands from those hosts that are controlled in this
     way. The default is all hosts. We don't waste effort checking the list
@@ -553,11 +551,11 @@ for (p = cmd_list; p < cmd_list_end; p++)
         return TOO_MANY_NONMAIL_CMD;
       }
 
-    /* Get the data pointer over leading spaces and return; if there is no data
-    for a command that expects it, we give the error centrally here. */
+    /* Get the data pointer over leading spaces and return; if there is data
+    for a command that does not expect it, give the error centrally here. */
 
-    while (isspace(*smtp_data)) smtp_data++;
-    return (p->has_arg || *smtp_data == 0)? p->cmd : BADARG_CMD;
+    while (isspace(*smtp_command_argument)) smtp_command_argument++;
+    return (p->has_arg || *smtp_command_argument == 0)? p->cmd : BADARG_CMD;
     }
   }
 
@@ -745,7 +743,7 @@ return yield;
 *         Extract SMTP command option            *
 *************************************************/
 
-/* This function picks the next option setting off the end of smtp_data. It
+/* This function picks the next option setting off the end of smtp_command_argument. It
 is called for MAIL FROM and RCPT TO commands, to pick off the optional ESMTP
 things that can appear there.
 
@@ -760,11 +758,11 @@ static BOOL
 extract_option(uschar **name, uschar **value)
 {
 uschar *n;
-uschar *v = smtp_data + Ustrlen(smtp_data) -1;
+uschar *v = smtp_command_argument + Ustrlen(smtp_command_argument) -1;
 while (isspace(*v)) v--;
 v[1] = 0;
 
-while (v > smtp_data && *v != '=' && !isspace(*v)) v--;
+while (v > smtp_command_argument && *v != '=' && !isspace(*v)) v--;
 if (*v != '=') return FALSE;
 
 n = v;
@@ -926,7 +924,7 @@ while (done <= 0)
     case HELO_CMD:
     case EHLO_CMD:
 
-    check_helo(smtp_data);
+    check_helo(smtp_command_argument);
     /* Fall through */
 
     case RSET_CMD:
@@ -946,7 +944,7 @@ while (done <= 0)
       /* The function moan_smtp_batch() does not return. */
       moan_smtp_batch(cmd_buffer, "503 Sender already given");
 
-    if (smtp_data[0] == 0)
+    if (smtp_command_argument[0] == 0)
       /* The function moan_smtp_batch() does not return. */
       moan_smtp_batch(cmd_buffer, "501 MAIL FROM must have an address operand");
 
@@ -957,8 +955,8 @@ while (done <= 0)
     /* Apply SMTP rewrite */
 
     raw_sender = ((rewrite_existflags & rewrite_smtp) != 0)?
-      rewrite_one(smtp_data, rewrite_smtp|rewrite_smtp_sender, NULL, FALSE,
-        US"", global_rewrite_rules) : smtp_data;
+      rewrite_one(smtp_command_argument, rewrite_smtp|rewrite_smtp_sender, NULL, FALSE,
+        US"", global_rewrite_rules) : smtp_command_argument;
 
     /* Extract the address; the TRUE flag allows <> as valid */
 
@@ -1001,7 +999,7 @@ while (done <= 0)
       /* The function moan_smtp_batch() does not return. */
       moan_smtp_batch(cmd_buffer, "503 No sender yet given");
 
-    if (smtp_data[0] == 0)
+    if (smtp_command_argument[0] == 0)
       /* The function moan_smtp_batch() does not return. */
       moan_smtp_batch(cmd_buffer, "501 RCPT TO must have an address operand");
 
@@ -1016,8 +1014,8 @@ while (done <= 0)
     recipient address */
 
     recipient = ((rewrite_existflags & rewrite_smtp) != 0)?
-      rewrite_one(smtp_data, rewrite_smtp, NULL, FALSE, US"",
-        global_rewrite_rules) : smtp_data;
+      rewrite_one(smtp_command_argument, rewrite_smtp, NULL, FALSE, US"",
+        global_rewrite_rules) : smtp_command_argument;
 
     /* rfc821_domains = TRUE; << no longer needed */
     recipient = parse_extract_address(recipient, &errmess, &start, &end,
@@ -1546,8 +1544,7 @@ if (acl_smtp_connect != NULL)
   {
   int rc;
   uschar *user_msg, *log_msg;
-  smtp_data = US"in \"connect\" ACL";    /* For logged failure message */
-  rc = acl_check(ACL_WHERE_CONNECT, US"", acl_smtp_connect, &user_msg,
+  rc = acl_check(ACL_WHERE_CONNECT, NULL, acl_smtp_connect, &user_msg,
     &log_msg);
   if (rc != OK)
     {
@@ -1816,12 +1813,15 @@ int code = acl_wherecodes[where];
 BOOL drop = rc == FAIL_DROP;
 uschar *lognl;
 uschar *sender_info = US"";
-uschar *what = (where == ACL_WHERE_PREDATA)? US"DATA" :
+uschar *what =
 #ifdef WITH_CONTENT_SCAN
-               (where == ACL_WHERE_MIME)? US"during MIME ACL checks" :
+  (where == ACL_WHERE_MIME)? US"during MIME ACL checks" :
 #endif
-               (where == ACL_WHERE_DATA)? US"after DATA" :
-  string_sprintf("%s %s", acl_wherenames[where], smtp_data);
+  (where == ACL_WHERE_PREDATA)? US"DATA" :
+  (where == ACL_WHERE_DATA)? US"after DATA" :
+  (smtp_command_argument == NULL)?
+    string_sprintf("%s in \"connect\" ACL", acl_wherenames[where]) :
+    string_sprintf("%s %s", acl_wherenames[where], smtp_command_argument);
 
 if (drop) rc = FAIL;
 
@@ -2179,8 +2179,7 @@ while (done <= 0)
 
     if (acl_smtp_auth != NULL)
       {
-      rc = acl_check(ACL_WHERE_AUTH, smtp_data, acl_smtp_auth, &user_msg,
-        &log_msg);
+      rc = acl_check(ACL_WHERE_AUTH, NULL, acl_smtp_auth, &user_msg, &log_msg);
       if (rc != OK)
         {
         done = smtp_handle_acl_fail(ACL_WHERE_AUTH, rc, user_msg, log_msg);
@@ -2190,8 +2189,8 @@ while (done <= 0)
 
     /* Find the name of the requested authentication mechanism. */
 
-    s = smtp_data;
-    while ((c = *smtp_data) != 0 && !isspace(c))
+    s = smtp_command_argument;
+    while ((c = *smtp_command_argument) != 0 && !isspace(c))
       {
       if (!isalnum(c) && c != '-' && c != '_')
         {
@@ -2199,16 +2198,16 @@ while (done <= 0)
           US"invalid character in authentication mechanism name");
         goto COMMAND_LOOP;
         }
-      smtp_data++;
+      smtp_command_argument++;
       }
 
     /* If not at the end of the line, we must be at white space. Terminate the
     name and move the pointer on to any data that may be present. */
 
-    if (*smtp_data != 0)
+    if (*smtp_command_argument != 0)
       {
-      *smtp_data++ = 0;
-      while (isspace(*smtp_data)) smtp_data++;
+      *smtp_command_argument++ = 0;
+      while (isspace(*smtp_command_argument)) smtp_command_argument++;
       }
 
     /* Search for an authentication mechanism which is configured for use
@@ -2238,7 +2237,7 @@ while (done <= 0)
     expand_nmax = 0;
     expand_nlength[0] = 0;   /* $0 contains nothing */
 
-    c = (au->info->servercode)(au, smtp_data);
+    c = (au->info->servercode)(au, smtp_command_argument);
     if (au->set_id != NULL) set_id = expand_string(au->set_id);
     expand_nmax = -1;        /* Reset numeric variables */
 
@@ -2354,14 +2353,14 @@ while (done <= 0)
     /* Reject the HELO if its argument was invalid or non-existent. A
     successful check causes the argument to be saved in malloc store. */
 
-    if (!check_helo(smtp_data))
+    if (!check_helo(smtp_command_argument))
       {
       smtp_printf("501 Syntactically invalid %s argument(s)\r\n", hello);
 
       log_write(0, LOG_MAIN|LOG_REJECT, "rejected %s from %s: syntactically "
         "invalid argument(s): %s", hello, host_and_ident(FALSE),
-        (*smtp_data == 0)? US"(no argument given)" :
-                           string_printing(smtp_data));
+        (*smtp_command_argument == 0)? US"(no argument given)" :
+                           string_printing(smtp_command_argument));
 
       if (++synprot_error_count > smtp_max_synprot_errors)
         {
@@ -2384,7 +2383,7 @@ while (done <= 0)
     if (!sender_host_unknown)
       {
       BOOL old_helo_verified = helo_verified;
-      uschar *p = smtp_data;
+      uschar *p = smtp_command_argument;
 
       while (*p != 0 && !isspace(*p)) { *p = tolower(*p); p++; }
       *p = 0;
@@ -2443,8 +2442,7 @@ while (done <= 0)
 
     if (acl_smtp_helo != NULL)
       {
-      rc = acl_check(ACL_WHERE_HELO, smtp_data, acl_smtp_helo, &user_msg,
-        &log_msg);
+      rc = acl_check(ACL_WHERE_HELO, NULL, acl_smtp_helo, &user_msg, &log_msg);
       if (rc != OK)
         {
         done = smtp_handle_acl_fail(ACL_WHERE_HELO, rc, user_msg, log_msg);
@@ -2660,7 +2658,7 @@ while (done <= 0)
       break;
       }
 
-    if (smtp_data[0] == 0)
+    if (smtp_command_argument[0] == 0)
       {
       done = synprot_error(L_smtp_protocol_error, 501, NULL,
         US"MAIL must have an address operand");
@@ -2819,8 +2817,8 @@ while (done <= 0)
     TRUE flag allows "<>" as a sender address. */
 
     raw_sender = ((rewrite_existflags & rewrite_smtp) != 0)?
-      rewrite_one(smtp_data, rewrite_smtp, NULL, FALSE, US"",
-        global_rewrite_rules) : smtp_data;
+      rewrite_one(smtp_command_argument, rewrite_smtp, NULL, FALSE, US"",
+        global_rewrite_rules) : smtp_command_argument;
 
     /* rfc821_domains = TRUE; << no longer needed */
     raw_sender =
@@ -2830,7 +2828,7 @@ while (done <= 0)
 
     if (raw_sender == NULL)
       {
-      done = synprot_error(L_smtp_syntax_error, 501, smtp_data, errmess);
+      done = synprot_error(L_smtp_syntax_error, 501, smtp_command_argument, errmess);
       break;
       }
 
@@ -2890,7 +2888,7 @@ while (done <= 0)
       else
         {
         smtp_printf("501 %s: sender address must contain a domain\r\n",
-          smtp_data);
+          smtp_command_argument);
         log_write(L_smtp_syntax_error,
           LOG_MAIN|LOG_REJECT,
           "unqualified sender rejected: <%s> %s%s",
@@ -2958,7 +2956,7 @@ while (done <= 0)
 
     /* Check for an operand */
 
-    if (smtp_data[0] == 0)
+    if (smtp_command_argument[0] == 0)
       {
       done = synprot_error(L_smtp_syntax_error, 501, NULL,
         US"RCPT must have an address operand");
@@ -2970,8 +2968,8 @@ while (done <= 0)
     as a recipient address */
 
     recipient = ((rewrite_existflags & rewrite_smtp) != 0)?
-      rewrite_one(smtp_data, rewrite_smtp, NULL, FALSE, US"",
-        global_rewrite_rules) : smtp_data;
+      rewrite_one(smtp_command_argument, rewrite_smtp, NULL, FALSE, US"",
+        global_rewrite_rules) : smtp_command_argument;
 
     /* rfc821_domains = TRUE; << no longer needed */
     recipient = parse_extract_address(recipient, &errmess, &start, &end,
@@ -2980,7 +2978,7 @@ while (done <= 0)
 
     if (recipient == NULL)
       {
-      done = synprot_error(L_smtp_syntax_error, 501, smtp_data, errmess);
+      done = synprot_error(L_smtp_syntax_error, 501, smtp_command_argument, errmess);
       rcpt_fail_count++;
       break;
       }
@@ -3010,7 +3008,7 @@ while (done <= 0)
         {
         rcpt_fail_count++;
         smtp_printf("501 %s: recipient address must contain a domain\r\n",
-          smtp_data);
+          smtp_command_argument);
         log_write(L_smtp_syntax_error,
           LOG_MAIN|LOG_REJECT, "unqualified recipient rejected: "
           "<%s> %s%s", recipient, host_and_ident(TRUE),
@@ -3084,7 +3082,7 @@ while (done <= 0)
         "discarded by %s ACL%s%s", host_and_ident(TRUE),
         (sender_address_unrewritten != NULL)?
         sender_address_unrewritten : sender_address,
-        smtp_data, recipients_discarded? "MAIL" : "RCPT",
+        smtp_command_argument, recipients_discarded? "MAIL" : "RCPT",
         (log_msg == NULL)? US"" : US": ",
         (log_msg == NULL)? US"" : log_msg);
       }
@@ -3158,8 +3156,7 @@ while (done <= 0)
 
 
     case VRFY_CMD:
-    rc = acl_check(ACL_WHERE_VRFY, smtp_data, acl_smtp_vrfy, &user_msg,
-      &log_msg);
+    rc = acl_check(ACL_WHERE_VRFY, NULL, acl_smtp_vrfy, &user_msg, &log_msg);
     if (rc != OK)
       done = smtp_handle_acl_fail(ACL_WHERE_VRFY, rc, user_msg, log_msg);
     else
@@ -3168,7 +3165,7 @@ while (done <= 0)
       uschar *s = NULL;
 
       /* rfc821_domains = TRUE; << no longer needed */
-      address = parse_extract_address(smtp_data, &errmess, &start, &end,
+      address = parse_extract_address(smtp_command_argument, &errmess, &start, &end,
         &recipient_domain, FALSE);
       /* rfc821_domains = FALSE; << no longer needed */
 
@@ -3195,7 +3192,7 @@ while (done <= 0)
             string_sprintf("550 <%s> %s", address, addr->message) :
             string_sprintf("550 <%s> is not deliverable", address);
           log_write(0, LOG_MAIN, "VRFY failed for %s %s",
-            smtp_data, host_and_ident(TRUE));
+            smtp_command_argument, host_and_ident(TRUE));
           break;
           }
         }
@@ -3206,17 +3203,16 @@ while (done <= 0)
 
 
     case EXPN_CMD:
-    rc = acl_check(ACL_WHERE_EXPN, smtp_data, acl_smtp_expn, &user_msg,
-      &log_msg);
+    rc = acl_check(ACL_WHERE_EXPN, NULL, acl_smtp_expn, &user_msg, &log_msg);
     if (rc != OK)
       done = smtp_handle_acl_fail(ACL_WHERE_EXPN, rc, user_msg, log_msg);
     else
       {
       BOOL save_log_testing_mode = log_testing_mode;
       address_test_mode = log_testing_mode = TRUE;
-      (void) verify_address(deliver_make_addr(smtp_data, FALSE), smtp_out,
-        vopt_is_recipient | vopt_qualify | vopt_expn, -1, -1, -1, NULL, NULL,
-        NULL);
+      (void) verify_address(deliver_make_addr(smtp_command_argument, FALSE),
+        smtp_out, vopt_is_recipient | vopt_qualify | vopt_expn, -1, -1, -1,
+        NULL, NULL, NULL);
       address_test_mode = FALSE;
       log_testing_mode = save_log_testing_mode;    /* true for -bh */
       }
@@ -3343,7 +3339,7 @@ while (done <= 0)
 
     if (acl_smtp_quit != NULL)
       {
-      rc = acl_check(ACL_WHERE_QUIT, US"", acl_smtp_quit,&user_msg,&log_msg);
+      rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit,&user_msg,&log_msg);
       if (rc == ERROR)
         log_write(0, LOG_MAIN|LOG_PANIC, "ACL for QUIT returned ERROR: %s",
           log_msg);
@@ -3432,11 +3428,10 @@ while (done <= 0)
       break;
       }
 
-    log_write(L_etrn, LOG_MAIN, "ETRN %s received from %s", smtp_data,
+    log_write(L_etrn, LOG_MAIN, "ETRN %s received from %s", smtp_command_argument,
       host_and_ident(FALSE));
 
-    rc = acl_check(ACL_WHERE_ETRN, smtp_data, acl_smtp_etrn, &user_msg,
-      &log_msg);
+    rc = acl_check(ACL_WHERE_ETRN, NULL, acl_smtp_etrn, &user_msg, &log_msg);
     if (rc != OK)
       {
       done = smtp_handle_acl_fail(ACL_WHERE_ETRN, rc, user_msg, log_msg);
@@ -3445,7 +3440,7 @@ while (done <= 0)
 
     /* Compute the serialization key for this command. */
 
-    etrn_serialize_key = string_sprintf("etrn-%s\n", smtp_data);
+    etrn_serialize_key = string_sprintf("etrn-%s\n", smtp_command_argument);
 
     /* If a command has been specified for running as a result of ETRN, we
     permit any argument to ETRN. If not, only the # standard form is permitted,
@@ -3457,7 +3452,7 @@ while (done <= 0)
       uschar *error;
       BOOL rc;
       etrn_command = smtp_etrn_command;
-      deliver_domain = smtp_data;
+      deliver_domain = smtp_command_argument;
       rc = transport_set_up_command(&argv, smtp_etrn_command, TRUE, 0, NULL,
         US"ETRN processing", &error);
       deliver_domain = NULL;
@@ -3474,7 +3469,7 @@ while (done <= 0)
 
     else
       {
-      if (*smtp_data++ != '#')
+      if (*smtp_command_argument++ != '#')
         {
         done = synprot_error(L_smtp_syntax_error, 501, NULL,
           US"argument must begin with #");
@@ -3482,7 +3477,7 @@ while (done <= 0)
         }
       etrn_command = US"exim -R";
       argv = child_exec_exim(CEE_RETURN_ARGV, TRUE, NULL, TRUE, 2, US"-R",
-        smtp_data);
+        smtp_command_argument);
       }
 
     /* If we are host-testing, don't actually do anything. */
@@ -3504,7 +3499,7 @@ while (done <= 0)
 
     if (smtp_etrn_serialize && !enq_start(etrn_serialize_key))
       {
-      smtp_printf("458 Already processing %s\r\n", smtp_data);
+      smtp_printf("458 Already processing %s\r\n", smtp_command_argument);
       break;
       }
 
@@ -3613,7 +3608,7 @@ while (done <= 0)
     incomplete_transaction_log(US"too many non-mail commands");
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
       "nonmail commands (last was \"%.*s\")",  host_and_ident(FALSE),
-      smtp_data - cmd_buffer, cmd_buffer);
+      smtp_command_argument - cmd_buffer, cmd_buffer);
     smtp_printf("554 Too many nonmail commands\r\n");
     done = 1;   /* Pretend eof - drops connection */
     break;

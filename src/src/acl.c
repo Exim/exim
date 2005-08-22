@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.43 2005/08/02 15:19:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.44 2005/08/22 14:01:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3331,7 +3331,7 @@ acl_check_internal() to do the actual work.
 
 Arguments:
   where        ACL_WHERE_xxxx indicating where called from
-  data_string  RCPT address, or SMTP command argument, or NULL
+  recipient    RCPT address for RCPT check, else NULL
   s            the input string; NULL is the same as an empty ACL => DENY
   user_msgptr  where to put a user error (for SMTP response)
   log_msgptr   where to put a logging message (not for SMTP response)
@@ -3345,12 +3345,12 @@ Returns:       OK         access is granted by an ACCEPT verb
 */
 
 int
-acl_check(int where, uschar *data_string, uschar *s, uschar **user_msgptr,
+acl_check(int where, uschar *recipient, uschar *s, uschar **user_msgptr,
   uschar **log_msgptr)
 {
 int rc;
 address_item adb;
-address_item *addr;
+address_item *addr = NULL;
 
 *user_msgptr = *log_msgptr = NULL;
 sender_verified_failed = NULL;
@@ -3360,7 +3360,7 @@ if (where == ACL_WHERE_RCPT)
   {
   adb = address_defaults;
   addr = &adb;
-  addr->address = data_string;
+  addr->address = recipient;
   if (deliver_split_address(addr) == DEFER)
     {
     *log_msgptr = US"defer in percent_hack_domains check";
@@ -3369,16 +3369,11 @@ if (where == ACL_WHERE_RCPT)
   deliver_domain = addr->domain;
   deliver_localpart = addr->local_part;
   }
-else
-  {
-  addr = NULL;
-  smtp_command_argument = data_string;
-  }
 
 rc = acl_check_internal(where, addr, s, 0, user_msgptr, log_msgptr);
 
-smtp_command_argument = deliver_domain =
-  deliver_localpart = deliver_address_data = sender_address_data = NULL;
+deliver_domain = deliver_localpart = deliver_address_data =
+  sender_address_data = NULL;
 
 /* A DISCARD response is permitted only for message ACLs, excluding the PREDATA
 ACL, which is really in the middle of an SMTP command. */

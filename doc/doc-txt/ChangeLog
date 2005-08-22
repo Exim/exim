@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.206 2005/08/22 10:49:04 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.207 2005/08/22 14:01:37 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -102,6 +102,10 @@ TK/04 MIME ACL: Fix buffer underrun that occurs when EOF condition is met
 
 PH/24 Include config.h inside local_scan.h so that configuration settings are
       available.
+
+PH/25 Make $smtp_command_argument available after all SMTP commands. This means
+      that in an ACL for RCPT (for example), you can examine exactly what was
+      received.
 
 
 Exim version 4.52
