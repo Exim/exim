@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.12 2005/08/09 13:31:52 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.13 2005/08/22 15:28:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -435,11 +435,41 @@ if (sender_host_name == NULL)
 else
   {
   int len;
+  BOOL no_helo = FALSE;
+
+  /* Comparing a HELO name to a host name is easy */
+
   if (sender_helo_name == NULL ||
-      strcmpic(sender_host_name, sender_helo_name) == 0 ||
-        (sender_helo_name[0] == '[' &&
-         sender_helo_name[(len=Ustrlen(sender_helo_name))-1] == ']' &&
-         strncmpic(sender_helo_name+1, sender_host_address, len - 2) == 0))
+      strcmpic(sender_host_name, sender_helo_name) == 0)
+    no_helo = TRUE;
+
+  /* If HELO/EHLO was followed by an IP literal, it's much more messy because
+  of two features of IPv6. Firstly, there's the "IPv6:" prefix (Exim is liberal
+  and doesn't require this, for historical reasons). Secondly, an IPv6 address
+  may not be given in canonical form, so we have to canonicize it before
+  comparing. As it happens, the code works for both IPv4 and IPv6. */
+
+  else if (sender_helo_name[0] == '[' &&
+           sender_helo_name[(len=Ustrlen(sender_helo_name))-1] == ']')
+    {
+    uschar *helo_ip;
+    int offset = 1;
+
+    if (strncmpic(sender_helo_name+1, US"IPv6:",5) == 0) offset += 5;
+    helo_ip = string_copyn(sender_helo_name + offset, len - offset - 1);
+
+    if (string_is_ip_address(helo_ip, NULL) != 0)
+      {
+      int x[4];
+      int size;
+      size = host_aton(helo_ip, x);
+      helo_ip = store_get(48);  /* large enough for full IPv6 */
+      (void)host_nmtoa(size, x, -1, helo_ip, ':');
+      if (strcmpic(helo_ip, sender_host_address) == 0) no_helo = TRUE;
+      }
+    }
+
+  if (no_helo)
     {
     sender_fullhost = string_sprintf("%s %s", sender_host_name, address);
     sender_rcvhost = (sender_ident == NULL)?

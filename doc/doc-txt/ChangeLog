@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.207 2005/08/22 14:01:37 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.208 2005/08/22 15:28:20 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -106,6 +106,11 @@ PH/24 Include config.h inside local_scan.h so that configuration settings are
 PH/25 Make $smtp_command_argument available after all SMTP commands. This means
       that in an ACL for RCPT (for example), you can examine exactly what was
       received.
+
+PH/26 Exim was recognizing IPv6 addresses of the form [IPv6:....] in EHLO
+      commands, but it was not correctly comparing the address with the actual
+      client host address. Thus, it would show the EHLO address in Received:
+      header lines when this was not necessary.
 
 
 Exim version 4.52
