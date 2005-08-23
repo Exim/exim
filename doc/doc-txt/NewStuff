@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.64 2005/08/22 14:01:37 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.65 2005/08/23 08:50:07 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -105,6 +105,8 @@ PH/06 It is now possible to specify a port number along with a host name or
 PH/07 $smtp_command_argument is now set for all SMTP commands, not just the
       non-message ones. This makes it possible to inspect the complete command
       for RCPT commands, for example.
+
+PH/08 The ${eval expansion now supports % as a "remainder" operator.
 
 
 Exim version 4.52
