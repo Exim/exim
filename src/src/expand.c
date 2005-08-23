@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.40 2005/08/08 09:57:29 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.41 2005/08/23 08:46:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2749,12 +2749,14 @@ uschar *s = *sptr;
 int x = eval_term(&s, decimal, error);
 if (*error == NULL)
   {
-  while (*s == '*' || *s == '/')
+  while (*s == '*' || *s == '/' || *s == '%')
     {
     int op = *s++;
     int y = eval_term(&s, decimal, error);
     if (*error != NULL) break;
-    if (op == '*') x *= y; else x /= y;
+    if (op == '*') x *= y;
+      else if (op == '/') x /= y;
+      else x %= y;
     }
   }
 *sptr = s;

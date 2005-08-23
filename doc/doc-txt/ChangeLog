@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.208 2005/08/22 15:28:20 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.209 2005/08/23 08:46:33 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -111,6 +111,8 @@ PH/26 Exim was recognizing IPv6 addresses of the form [IPv6:....] in EHLO
       commands, but it was not correctly comparing the address with the actual
       client host address. Thus, it would show the EHLO address in Received:
       header lines when this was not necessary.
+
+PH/27 Added the % operator to ${eval:}.
 
 
 Exim version 4.52
