@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.210 2005/08/23 10:29:10 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.211 2005/08/23 11:25:38 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -118,6 +118,9 @@ PH/28 Exim tries to create and chdir to its spool directory when it starts;
       it should be ignoring failures (because with -C, for example, it has lost
       privilege). It wasn't ignoring creation failures other than "already
       exists".
+
+PH/29 Added "crypteq" to the list of supported features that Exim outputs when
+      -bV or -d is used.
 
 
 Exim version 4.52

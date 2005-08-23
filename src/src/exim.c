@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.25 2005/08/23 10:29:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.26 2005/08/23 11:25:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -833,6 +833,9 @@ fprintf(f, "Using tdb\n");
 #endif
 
 fprintf(f, "Support for:");
+#ifdef SUPPORT_CRYPTEQ
+  fprintf(f, " crypteq");
+#endif
 #if HAVE_ICONV
   fprintf(f, " iconv()");
 #endif
