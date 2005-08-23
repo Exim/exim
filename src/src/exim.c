@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.24 2005/08/09 13:31:52 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.25 2005/08/23 10:29:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3300,11 +3300,12 @@ if (((debug_selector & D_any) != 0 || (log_extra_selector & LX_arguments) != 0)
 on this in the code, which always uses fully qualified names, but it's useful
 for core dumps etc. Don't complain if it fails - the spool directory might not
 be generally accessible and calls with the -C option (and others) have lost
-privilege by now. */
+privilege by now. Before the chdir, we try to ensure that the directory exists.
+*/
 
 if (Uchdir(spool_directory) != 0)
   {
-  (void)directory_make(spool_directory, US"", SPOOL_DIRECTORY_MODE, TRUE);
+  (void)directory_make(spool_directory, US"", SPOOL_DIRECTORY_MODE, FALSE);
   (void)Uchdir(spool_directory);
   }
 

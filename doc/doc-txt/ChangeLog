@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.209 2005/08/23 08:46:33 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.210 2005/08/23 10:29:10 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -113,6 +113,11 @@ PH/26 Exim was recognizing IPv6 addresses of the form [IPv6:....] in EHLO
       header lines when this was not necessary.
 
 PH/27 Added the % operator to ${eval:}.
+
+PH/28 Exim tries to create and chdir to its spool directory when it starts;
+      it should be ignoring failures (because with -C, for example, it has lost
+      privilege). It wasn't ignoring creation failures other than "already
+      exists".
 
 
 Exim version 4.52
