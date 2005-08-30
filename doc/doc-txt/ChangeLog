@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.213 2005/08/30 10:07:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.214 2005/08/30 10:55:52 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -127,6 +127,8 @@ PH/30 Fixed (presumably very longstanding) bug in exim_dbmbuild: if it failed
       too many continuations, the temporary file was not being removed.
 
 PH/31 Missing "BOOL" in function definition in filtertest.c.
+
+PH/32 Applied Sieve patches from the maintainer.
 
 
 Exim version 4.52

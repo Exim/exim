@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.12 2005/06/17 10:47:05 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.13 2005/08/30 10:55:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -311,8 +311,7 @@ while (nl>0 && hl>0)
   if (hc&0x80) return 0;
 #endif
   /* tolower depends on the locale and only ASCII case must be insensitive */
-  if ((nc&0x80) || (hc&0x80)) { if (nc!=hc) return 0; }
-  else if ((nc>='A' && nc<='Z' ? nc|0x20 : nc) != (hc>='A' && hc<='Z' ? hc|0x20 : hc)) return 0;
+  if ((nc>='A' && nc<='Z' ? nc|0x20 : nc) != (hc>='A' && hc<='Z' ? hc|0x20 : hc)) return 0;
   ++n;
   ++h;
   --nl;
@@ -323,7 +322,7 @@ return (match_prefix ? nl==0 : nl==0 && hl==0);
 
 
 /*************************************************
-*        Octet-wise glob pattern search          *
+*              Glob pattern search               *
 *************************************************/
 
 /*
@@ -333,231 +332,99 @@ Arguments:
 
 Returns:      0               needle not found in haystack
               1               needle found
+              -1              pattern error
 */
 
-static int eq_octetglob(const struct String *needle,
-  const struct String *haystack)
+static int eq_glob(const struct String *needle,
+  const struct String *haystack, int ascii_caseless)
 {
-struct String n,h;
+const uschar *n,*h,*nend,*hend;
+int may_advance=0;
 
-n=*needle;
-h=*haystack;
-while (n.length)
+n=needle->character;
+h=haystack->character;
+nend=n+needle->length;
+hend=h+haystack->length;
+while (n<nend)
   {
-  switch (n.character[0])
+  if (*n=='*')
     {
-    case '*':
-      {
-      int currentLength;
-
-      ++n.character;
-      --n.length;
-      /* The greedy match is not yet well tested.  Some day we may */
-      /* need to refer to the matched parts, so the code is already */
-      /* prepared for that. */
-#if 1
-      /* greedy match */
-      currentLength=h.length;
-      h.character+=h.length;
-      h.length=0;
-      while (h.length<=currentLength)
-        {
-        if (eq_octetglob(&n,&h)) return 1;
-        else /* go back one octet */
-          {
-          --h.character;
-          ++h.length;
-          }
-        }
-      return 0;
-#else
-      /* minimal match */
-      while (h.length)
-        {
-        if (eq_octetglob(&n,&h)) return 1;
-        else /* advance one octet */
-          {
-          ++h.character;
-          --h.length;
-          }
-        }
-      break;
-#endif
-      }
-    case '?':
-      {
-      if (h.length)
-        {
-        ++h.character;
-        --h.length;
-        ++n.character;
-        --n.length;
-        }
-      else return 0;
-      break;
-      }
-    case '\\':
-      {
-      ++n.character;
-      --n.length;
-      /* FALLTHROUGH */
-      }
-    default:
-      {
-      if
-        (
-        h.length==0 ||
-#if !HAVE_ICONV
-        (h.character[0]&0x80) || (n.character[0]&0x80) ||
-#endif
-        h.character[0]!=n.character[0]
-        ) return 0;
-      else
-        {
-        ++h.character;
-        --h.length;
-        ++n.character;
-        --n.length;
-        };
-      }
+    ++n;
+    may_advance=1;
     }
-  }
-return (h.length==0);
-}
-
-
-/*************************************************
-*   ASCII case-insensitive glob pattern search   *
-*************************************************/
-
-/*
-Arguments:
-  needle      UTF-8 pattern to search ...
-  haystack    ... inside the haystack
-
-Returns:      0               needle not found in haystack
-              1               needle found
-*/
-
-static int eq_asciicaseglob(const struct String *needle,
-  const struct String *haystack)
-{
-struct String n,h;
-
-n=*needle;
-h=*haystack;
-while (n.length)
-  {
-  switch (n.character[0])
+  else
     {
-    case '*':
-      {
-      int currentLength;
+    const uschar *npart,*hpart;
 
-      ++n.character;
-      --n.length;
-      /* The greedy match is not yet well tested.  Some day we may */
-      /* need to refer to the matched parts, so the code is already */
-      /* prepared for that. */
-#if 1
-      /* greedy match */
-      currentLength=h.length;
-      h.character+=h.length;
-      h.length=0;
-      while (h.length<=currentLength)
-        {
-        if (eq_asciicaseglob(&n,&h)) return 1;
-        else /* go back one UTF-8 character */
-          {
-          if (h.length==currentLength) return 0;
-          --h.character;
-          ++h.length;
-          if (h.character[0]&0x80)
-            {
-            while (h.length<currentLength && (*(h.character-1)&0x80))
-              {
-              --h.character;
-              ++h.length;
-              }
-            }
-          }
-        }
-      /* NOTREACHED */
-#else
-      while (h.length)
-        {
-        if (eq_asciicaseglob(&n,&h)) return 1;
-        else /* advance one UTF-8 character */
-          {
-          if (h.character[0]&0x80)
-            {
-            while (h.length && (h.character[0]&0x80))
-              {
-              ++h.character;
-              --h.length;
-              }
-            }
-          else
-            {
-            ++h.character;
-            --h.length;
-            }
-          }
-        }
-      break;
-#endif
-      }
-    case '?':
+    /* Try to match a non-star part of the needle at the current */
+    /* position in the haystack.                                 */
+    match_part:
+    npart=n;
+    hpart=h;
+    while (npart<nend && *npart!='*') switch (*npart)
       {
-      if (h.length)
+      case '?':
         {
-        ++n.character;
-        --n.length;
-        /* advance one UTF-8 character */
-        if (h.character[0]&0x80)
+        if (hpart==hend) return 0;
+        /* watch out: Do not match one character, but one UTF8 encoded character */
+        if ((*hpart&0xc0)==0xc0)
           {
-          while (h.length && (h.character[0]&0x80))
+          ++hpart;
+          while (hpart<hend && ((*hpart&0xc0)==0x80)) ++hpart;
+          }
+        else
+         ++hpart;
+        ++npart;
+        break;
+        }
+      case '\\':
+        {
+        ++npart;
+        if (npart==nend) return -1;
+        /* FALLTHROUGH */
+        }
+      default:
+        {
+        if (hpart==hend) return 0;
+        /* tolower depends on the locale, but we need ASCII */
+        if
+          (
+#if !HAVE_ICONV
+          (*hpart&0x80) || (*npart&0x80) ||
+#endif
+          ascii_caseless
+          ? ((*npart>='A' && *npart<='Z' ? *npart|0x20 : *npart) != (*hpart>='A' && *hpart<='Z' ? *hpart|0x20 : *hpart))
+          : *hpart!=*npart
+          )
+          {
+          if (may_advance)
+            /* string match after a star failed, advance and try again */
             {
-            ++h.character;
-            --h.length;
+            ++h;
+            goto match_part;
             }
+          else return 0;
           }
         else
           {
-          ++h.character;
-          --h.length;
-          }
+          ++npart;
+          ++hpart;
+          };
         }
-      else return 0;
-      break;
       }
-    case '\\':
+    /* at this point, a part was matched successfully */
+    if (may_advance && npart==nend && hpart<hend)
+      /* needle ends, but haystack does not: if there was a star before, advance and try again */
       {
-      ++n.character;
-      --n.length;
-      /* FALLTHROUGH */
+      ++h;
+      goto match_part;
       }
-    default:
-      {
-      char nc,hc;
-
-      if (h.length==0) return 0;
-      nc=n.character[0];
-      hc=h.character[0];
-#if !HAVE_ICONV
-      if ((hc&0x80) || (nc&0x80)) return 0;
-#endif
-      /* tolower depends on the locale and only ASCII case must be insensitive */
-      if ((nc&0x80) || (hc&0x80)) { if (nc!=hc) return 0; }
-      else if ((nc>='A' && nc<='Z' ? nc|0x20 : nc) != (hc>='A' && hc<='Z' ? hc|0x20 : hc)) return 0;
-      ++h.character;
-      --h.length;
-      ++n.character;
-      --n.length;
-      }
+    h=hpart;
+    n=npart;
+    may_advance=0;
     }
   }
-return (h.length==0);
+return (h==hend ? 1 : may_advance);
 }
 
 
@@ -715,12 +582,20 @@ switch (mt)
       {
       case COMP_OCTET:
         {
-        if (eq_octetglob(needle,haystack)) r=1;
+        if ((r=eq_glob(needle,haystack,0))==-1)
+          {
+          filter->errmsg=CUS "syntactically invalid pattern";
+          return -1;
+          }
         break;
         }
       case COMP_EN_ASCII_CASEMAP:
         {
-        if (eq_asciicaseglob(needle,haystack)) r=1;
+        if ((r=eq_glob(needle,haystack,1))==-1)
+          {
+          filter->errmsg=CUS "syntactically invalid pattern";
+          return -1;
+          }
         break;
         }
       default:
@@ -2838,12 +2713,12 @@ if (parse_start(&sieve,1,generated)==1)
   if (sieve.keep)
     {
     add_addr(generated,US"inbox",1,0,0,0);
-    msg = string_sprintf("Keep");
+    msg = string_sprintf("Implicit keep");
     r = FF_DELIVERED;
     }
-    else
+  else
     {
-    msg = string_sprintf("No keep");
+    msg = string_sprintf("No implicit keep");
     r = FF_DELIVERED;
     }
   }

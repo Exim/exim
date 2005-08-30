@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.6 2005/07/01 10:21:45 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.7 2005/08/30 10:55:52 ph10 Exp $
 
               Notes on the Sieve implementation for Exim
 
@@ -20,18 +20,48 @@ then there is no way around it.
 
 Exim Implementation
 
-The Exim Sieve implementation offers the core as defined by RFC 3028bis,
-the "envelope" (RFC 3028), the "fileinto" (RFC 3028), the "copy" (RFC
-3894) and the "vacation" (draft-ietf-sieve-vacation-02.txt) extension,
-the "i;ascii-numeric" comparator, but not the "reject" extension.
-Exim does not support MDMs, so adding it just to the sieve filter makes
-little sense.
+The Exim Sieve implementation offers the core as defined by draft
+3028bis-4 (next version of RFC 3028 that fixes specification mistakes),
+the "envelope" (3028bis), the "fileinto" (3028bis), the "copy" (RFC 3894)
+and the "vacation" (draft-ietf-sieve-vacation-02.txt) extension, the
+"i;ascii-numeric" comparator (RFC 2244).
 
 The Sieve filter is integrated in Exim and works very similar to the
 Exim filter: Sieve scripts are recognized by the first line containing
 "# sieve filter".  When using "keep" or "fileinto" to save a mail into a
 folder, the resulting string is available as the variable $address_file
-in the transport that stores it.  A suitable transport could be:
+in the transport that stores it.  The following routers and transport
+show a typical use of Sieve:
+
+begin routers
+
+localuser_verify:
+  driver = accept
+  domains = +localdomains
+  local_part_suffix = "-*"
+  local_part_suffix_optional
+  check_local_user
+  require_files = $home/.forward
+  verify_only = true
+
+localuser_deliver:
+  driver = redirect
+  domains = +localdomains
+  local_part_suffix = "-*"
+  local_part_suffix_optional
+  sieve_subaddress = "${sg{$local_part_suffix}{^-}{}}"
+  sieve_useraddress = "$local_part"
+  check_local_user
+  require_files = $home/.forward
+  file = $home/.forward
+  check_ancestor
+  allow_filter
+  file_transport = localuser
+  reply_transport = vacation
+  sieve_vacation_directory = $home/mail/vacation
+  verify = false
+
+begin transports
 
 localuser:
   driver = appendfile
@@ -39,7 +69,7 @@ localuser:
               {/var/mail/$local_part} \
               {${if eq{${substr_0_1:$address_file}}{/} \
                     {$address_file} \
-                    {$home/$address_file} \
+                    {$home/mail/$address_file} \
               }} \
          }
   delivery_date_add
@@ -47,13 +77,16 @@ localuser:
   return_path_add
   mode = 0600
 
-Absolute files are stored where specified, relative files are stored
-relative to $home and "inbox" goes to the standard mailbox location.
+vacation:
+  driver = autoreply
 
-To enable "vacation", set sieve_vacation_directory for the router to
-the directory where vacation databases are held (don't put anything
-else in that directory) and point reply_transport to an autoreply
-transport.
+Absolute files are stored where specified, relative files are stored
+relative to $home/mail and "inbox" goes to the standard mailbox location.
+To enable "vacation", sieve_vacation_directory is set to the directory
+where vacation databases are held (don't put anything else in that
+directory) and point reply_transport to an autoreply transport.
+Setting the Sieve useraddress and subaddress allows to use the subaddress
+extension.
 
 
 RFC Compliance
@@ -70,41 +103,15 @@ Since all parts of Exim use \n as newline character, this implementation
 does, too.  You can change this by defining the macro RFC_EOL at compile
 time to enforce CRLF being used.
 
-Exim violates RFC 2822, section 3.6.8, by accepting 8-bit header names, so
-this implementation repeats this violation to stay consistent with Exim.
-This is in preparation to UTF-8 data.
-
 Sieve scripts can not contain NUL characters in strings, but mail
 headers could contain MIME encoded NUL characters, which could never
 be matched by Sieve scripts using exact comparisons.  For that reason,
 this implementation extends the Sieve quoted string syntax with \0
 to describe a NUL character, violating \0 being the same as 0 in
-RFC 3028.  Even without using \0, the following tests are all true in
-this implementation.  Implementations that use C-style strings will only
-evaulate the first test as true.
-
-Subject: =?iso-8859-1?q?abc=00def
-
-header :contains "Subject" ["abc"]
-header :contains "Subject" ["def"]
-header :matches "Subject" ["abc?def"]
-
-Note that by considering Sieve to be a MUA, RFC 2047 can be interpreted
-in a way that NUL characters truncating strings is allowed for Sieve
-implementations, although not recommended.  It is further allowed to use
-encoded NUL characters in headers, but that's not recommended either.
-The above example shows why.  Good code should still be able to deal
-with it.
-
-RFC 3028 states that if an implementation fails to convert a character
-set to UTF-8, two strings can not be equal if one contains octects greater
-than 127.  Assuming that all unknown character sets are one-byte character
-sets with the lower 128 octects being US-ASCII is not sound, so this
-implementation violates RFC 3028 and treats such MIME words literally.
-That way at least something could be matched.
+RFC 3028.
 
 The folder specified by "fileinto" must not contain the character
-sequence ".." to avoid security problems.  RFC 3028 does not specifiy the
+sequence ".." to avoid security problems.  RFC 3028 does not specify the
 syntax of folders apart from keep being equivalent to fileinto "INBOX".
 This implementation uses "inbox" instead.
 
@@ -112,33 +119,6 @@ Sieve script errors currently cause that messages are silently filed into
 "inbox".  RFC 3028 requires that the user is notified of that condition.
 This may be implemented in future by adding a header line to mails that
 are filed into "inbox" due to an error in the filter.
-
-
-Strings Containing Header Names Or Envelope Elements
-
-RFC 3028 does not specify what happens if a string denoting a header
-field or envelope element does not contain a valid name, e.g. it
-contains a colon for a header or it is not "from" or "to" for envelopes.
-This implementation generates an error instead of ignoring the header
-field in order to ease script debugging, which fits in the common picture
-of Sieve.
-
-
-Header Test With Invalid MIME Encoding In Header
-
-Some MUAs process invalid base64 encoded data, generating junk.
-Others ignore junk after seeing an equal sign in base64 encoded data.
-RFC 2047 does not specify how to react in this case, other than stating
-that a client must not forbid to process a message for that reason.
-RFC 2045 specifies that invalid data should be ignored (appearantly
-looking at end of line characters).  It also specifies that invalid data
-may lead to rejecting messages containing them (and there it appears to
-talk about true encoding violations), which is a clear contradiction to
-ignoring them.
-
-RFC 3028 does not specify how to process incorrect MIME words.
-This implementation treats them literally, as it does if the word is
-correct, but its character set can not be converted to UTF-8.
 
 
 Semantics Of Keep
@@ -158,41 +138,21 @@ that aspect using the appendfile transport options "create_directory",
 the Exim specification for details.
 
 
-String Arguments
-
-There has been confusion if the string arguments to "require" are to be
-matched case-sensitive or not.  The comparator default is case-insensitive
-comparison, but "require" does not allow to specify a comparator, so
-this default does not apply.  Lacking a clear specification, matching
-the strings exactly makes most sense.  The same is valid for comparator
-names, also specified as strings.
-
-
 Sieve Syntax and Semantics
 
 RFC 3028 confuses syntax and semantics sometimes.  It uses a generic
-grammar as syntax for actions and tests and performs many checks during
-semantic analysis.  Syntax is specified as grammar rule, semantics
-with natural language, despite the latter often talking about syntax.
+grammar as syntax for commands and tests and performs many checks during
+semantic analysis.  Syntax is specified by grammar rules, semantics
+by natural language, despite the latter often talking about syntax.
 The intention was to provide a framework for the syntax that describes
 current commands as well as future extensions, and describing commands
 by semantics.
 
-RFC 3028 does not define if semantic checks are strict (always treat
-unknown extensions as errors) or lazy (treat unknown extensions as error,
-if they are executed), and since it employs a very generic grammar,
-it is not unreasonable for an implementation using a parser for the
-generic grammar to indeed process scripts that contain unknown commands
-in dead code.  It is just required to treat disabled but known extensions
-the same as unknown extensions.
-
-The following suggestion for section 8.2 gives two grammars, one for
+The following replacement for section 8.2 gives two grammars, one for
 the framework, and one for specific commands, thus removing most of the
 semantic analysis.  Since the parser can not parse unsupported extensions,
-the result is strict error checking.  As required in section 2.10.5, known
-but not enabled extensions must behave the same as unknown extensions,
-so those also result strictly in errors (though at the thin semantic
-layer), even if they can be parsed fine.
+the result is strict error checking of any executed and not executed code
+until "stop" is executed or the end of the script is reached.
 
 8.2. Grammar
 
@@ -202,11 +162,12 @@ The grammar is specified in ABNF with two extensions to describe tagged
 arguments that can be reordered and grammar extensions: { } denotes a
 sequence of symbols that may appear in any order.  Example:
 
-  start =  { a b c }
+  options = a b c
+  start   = { options }
 
 is equivalent to:
 
-  start =  ( a b c ) / ( a c b ) / ( b a c ) / ( b c a ) / ( c a b ) / ( c b a )
+  start   =  ( a b c ) / ( a c b ) / ( b a c ) / ( b c a ) / ( c a b ) / ( c b a )
 
 The symbol =) is used to append to a rule:
 
