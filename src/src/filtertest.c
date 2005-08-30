@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filtertest.c,v 1.6 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filtertest.c,v 1.7 2005/08/30 10:07:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -33,7 +33,7 @@ Returns:      nothing
 */
 
 static void
-read_message_body(dot_ended)
+read_message_body(BOOL dot_ended)
 {
 register int ch;
 int body_len, body_end_len, header_size;
