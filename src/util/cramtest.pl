@@ -1,10 +1,10 @@
 #!/usr/bin/perl
-# $Cambridge: exim/src/util/cramtest.pl,v 1.1 2004/10/07 10:39:03 ph10 Exp $
+# $Cambridge: exim/src/util/cramtest.pl,v 1.2 2005/08/30 09:19:33 ph10 Exp $
 
-# This script is contributed by Vadim Vygonets to aid in debugging CRAM-MD5 
-# authentication. 
+# This script is contributed by Vadim Vygonets to aid in debugging CRAM-MD5
+# authentication.
 
-# A patch was contributed by Jon Warbrick to upgrade it to use the Digest::MD5 
+# A patch was contributed by Jon Warbrick to upgrade it to use the Digest::MD5
 # module instead of the deprecated MD5 module.
 
 # The script prompts for three data values: a user name, a password, and the
@@ -22,11 +22,11 @@
 
 
 # Copyright (c) 2002
-#	Vadim Vygonets <vadik-exim@vygo.net>.  All rights reserved.
+#       Vadim Vygonets <vadik-exim@vygo.net>.  All rights reserved.
 # Public domain is OK with me.
 
 use MIME::Base64;
-use DIGEST::MD5;
+use Digest::MD5;
 
 print "User: ";
 chop($user = <>);
@@ -38,15 +38,15 @@ $chal =~ s/^334 //;
 
 $context = new Digest::MD5;
 if (length($passwd) > 64) {
-	$context->add($passwd);
-	$passwd = $context->digest();
-	$context->reset();
+        $context->add($passwd);
+        $passwd = $context->digest();
+        $context->reset();
 }
 
 @passwd = unpack("C*", pack("a64", $passwd));
 for ($i = 0; $i < 64; $i++) {
-	$pass_ipad[$i] = $passwd[$i] ^ 0x36;
-	$pass_opad[$i] = $passwd[$i] ^ 0x5C;
+        $pass_ipad[$i] = $passwd[$i] ^ 0x36;
+        $pass_opad[$i] = $passwd[$i] ^ 0x5C;
 }
 $context->add(pack("C64", @pass_ipad), decode_base64($chal));
 $digest = $context->digest();

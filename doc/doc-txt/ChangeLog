@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.211 2005/08/23 11:25:38 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.212 2005/08/30 09:19:33 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -121,6 +121,10 @@ PH/28 Exim tries to create and chdir to its spool directory when it starts;
 
 PH/29 Added "crypteq" to the list of supported features that Exim outputs when
       -bV or -d is used.
+
+PH/30 Fixed (presumably very longstanding) bug in exim_dbmbuild: if it failed
+      because an input line was too long, either on its own, or by virtue of
+      too many continuations, the temporary file was not being removed.
 
 
 Exim version 4.52

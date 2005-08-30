@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim_dbmbuild.c,v 1.4 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim_dbmbuild.c,v 1.5 2005/08/30 09:19:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -234,7 +234,8 @@ while (Ufgets(line, max_insize, f) != NULL)
   if (len >= max_insize - 1 && p[-1] != '\n')
     {
     printf("Overlong line read: max permitted length is %d\n", max_insize - 1);
-    return 1;
+    yield = 2;
+    goto TIDYUP;
     }
 
   if (line[0] == '#') continue;
@@ -260,7 +261,8 @@ while (Ufgets(line, max_insize, f) != NULL)
       {
       printf("Continued set of lines is too long: max permitted length is %d\n",
         max_outsize -1);
-      return 1;
+      yield = 2;
+      goto TIDYUP;
       }
 
     Ustrcpy(bptr, s);

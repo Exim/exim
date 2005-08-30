@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.47 2005/08/09 13:31:52 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.48 2005/08/30 09:19:33 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1967,5 +1967,12 @@ feature. It would be nice if this was automatic.
 This wish is for an option to log the name of the file that is written in
 maildir format (e.g. time.pid.host).
 ------------------------------------------------------------------------------
---- HWM 339 ------------------------------------------------------------------
+
+(340) 30-Aug-05 M Match more than one item
+
+match_address, for instance, matches one address to a list. The wish is to be
+able to supply two lists; for each address in the first list, search the
+second. Maybe something like ${match_any{...}{...}} is needed.
+------------------------------------------------------------------------------
+--- HWM 340 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
