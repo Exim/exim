@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dk.c,v 1.7 2005/08/01 14:41:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dk.c,v 1.8 2005/09/01 08:39:03 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -227,7 +227,7 @@ void dk_exim_verify_finish(void) {
   dk_verify_block->result_string = string_copy((uschar *)DK_STAT_to_string(dk_internal_status));
 
   /* All done, reset dk_context. */
-  dk_free(dk_context);
+  dk_free(dk_context,1);
   dk_context = NULL;
 
   store_pool = old_pool;
@@ -417,7 +417,7 @@ uschar *dk_exim_sign(int dk_fd,
 
   CLEANUP:
   if (dk_context != NULL) {
-    dk_free(dk_context);
+    dk_free(dk_context,1);
     dk_context = NULL;
   }
   store_pool = old_pool;
