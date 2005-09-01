@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.214 2005/08/30 10:55:52 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.215 2005/09/01 08:40:54 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -129,6 +129,8 @@ PH/30 Fixed (presumably very longstanding) bug in exim_dbmbuild: if it failed
 PH/31 Missing "BOOL" in function definition in filtertest.c.
 
 PH/32 Applied Sieve patches from the maintainer.
+
+TK/05 Domainkeys: Accomodate for a minor API change in libdomainkeys 0.67.
 
 
 Exim version 4.52
