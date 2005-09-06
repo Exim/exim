@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/exim_install,v 1.1 2004/10/06 15:07:40 ph10 Exp $
+# $Cambridge: exim/src/scripts/exim_install,v 1.2 2005/09/06 13:18:13 ph10 Exp $
 
 # Script to install Exim binaries in BIN_DIRECTORY, which is defined in
 # the local Makefile. It expects to be run in a build directory. It needs
@@ -71,6 +71,10 @@ BIN_DIRECTORY=`sed -n   -e '/^ *BIN_DIRECTORY *=/{s/^[^=]*= *//; s/ \{1,\}#.*//;
 CONFIGURE_FILE=`sed -n -e '/^ *CONFIGURE_FILE *=/{s/^[^=]*= *//; s/ \{1,\}#.*//;s/ *$//;h;}' -e '${g;p;}' Makefile`
 INFO_DIRECTORY=`sed -n -e '/^ *INFO_DIRECTORY *=/{s/^[^=]*= *//; s/ \{1,\}#.*//;s/ *$//;h;}' -e '${g;p;}' Makefile`
 NO_SYMLINK=`sed -n         -e '/^ *NO_SYMLINK *=/{s/^[^=]*= *//; s/ \{1,\}#.*//;s/ *$//;h;}' -e '${g;p;}' Makefile`
+
+CHOWN=`sed -n           -e '/^ *CHOWN_COMMAND *=/{s/^[^=]*= *//; s/ \{1,\}#.*//;s/ *$//;h;}' -e '${g;p;}' Makefile`
+MV=`sed -n                 -e '/^ *MV_COMMAND *=/{s/^[^=]*= *//; s/ \{1,\}#.*//;s/ *$//;h;}' -e '${g;p;}' Makefile`
+
 SYSTEM_ALIASES_FILE=`sed -n -e '/^ *SYSTEM_ALIASES_FILE *=/{s/^[^=]*= *//; s/ \{1,\}#.*//;s/ *$//;h;}' -e '${g;p;}' Makefile`
 EXE=`sed -n                                 -e '/^ *EXE *=/{s/^[^=]*= *//; s/ \{1,\}#.*//;s/ *$//;h;}' -e '${g;p;}' Makefile`
 
@@ -86,11 +90,12 @@ case "$INST_CONFIGURE_FILE"      in ?*) CONFIGURE_FILE="$INST_CONFIGURE_FILE";; 
 case "$INST_INFO_DIRECTORY"      in ?*) INFO_DIRECTORY="$INST_INFO_DIRECTORY";; esac
 case "$INST_SYSTEM_ALIASES_FILE" in ?*) SYSTEM_ALIASES_FILE="$INST_SYSTEM_ALIASES_FILE";; esac
 
+case "$INST_CHOWN"               in ?*) CHOWN="$INST_CHOWN";; esac
+case "$INST_MV"                  in ?*) MV="$INST_MV";; esac
+
 case "$INST_UID"     in '') INST_UID=root;;    *) INST_UID="$INST_UID";; esac
 case "$INST_CP"      in '') CP=cp;;            *) CP="$INST_CP";; esac
-case "$INST_MV"      in '') MV=mv;;            *) MV="$INST_MV";; esac
 case "$INST_LN"      in '') LN=ln;;            *) LN="$INST_LN";; esac
-case "$INST_CHOWN"   in '') CHOWN=chown;;      *) CHOWN="$INST_CHOWN";; esac
 case "$INST_CHMOD"   in '') CHMOD=chmod;;      *) CHMOD="$INST_CHMOD";; esac
 case "$INST_DIRNAME" in '') DIRNAME=dirname;;  *) DIRNAME="$INST_DIRNAME";; esac
 case "$INST_MKDIR"   in '') MKDIR=mkdir;;      *) MKDIR="$INST_MKDIR";; esac
@@ -142,6 +147,26 @@ fi
 if [ "${CHOWN}" = "chown" -a ! -f /usr/bin/chown -a -f /usr/etc/chown ] ; then
   CHOWN=/usr/etc/chown
 fi
+
+# The values of CHOWN and MV taken from the Makefile are sometimes set to
+# "look_for_it", which causes a search of the usual suspects. This code is
+# similar to that in exicyclog, but has to be fudged for upper/lower case
+# distinctions.
+
+for cmd in CHOWN MV ; do
+  eval "oldcmd=\$$cmd"
+  if [ "$oldcmd" != "look_for_it" ] ; then continue ; fi
+  if [ "$cmd" = "CHOWN" ] ; then cmdlc="chown" ; fi
+  if [ "$cmd" = "MV" ] ; then cmdlc="mv" ; fi
+  newcmd=$cmdlc
+  for dir in /bin /usr/bin /usr/sbin /usr/etc ; do
+    if [ -f $dir/$cmdlc ] ; then
+      newcmd=$dir/$cmdlc
+      break
+    fi
+  done
+  eval $cmd=$newcmd
+done
 
 # See if the exim monitor has been built
 
