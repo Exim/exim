@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.44 2005/08/22 14:01:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.45 2005/09/06 13:17:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1409,18 +1409,29 @@ always). */
 if (strcmpic(ss, US"header_syntax") == 0)
   {
   if (slash != NULL) goto NO_OPTIONS;
-  if (where != ACL_WHERE_DATA && where != ACL_WHERE_NOTSMTP)
-    {
-    *log_msgptr = string_sprintf("cannot check header contents in ACL for %s "
-      "(only possible in ACL for DATA)", acl_wherenames[where]);
-    return ERROR;
-    }
+  if (where != ACL_WHERE_DATA && where != ACL_WHERE_NOTSMTP) goto WRONG_ACL;
   rc = verify_check_headers(log_msgptr);
   if (rc != OK && smtp_return_error_details && *log_msgptr != NULL)
     *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
   return rc;
   }
 
+/* Check that no recipient of this message is "blind", that is, every envelope
+recipient must be mentioned in either To: or Cc:. */
+
+if (strcmpic(ss, US"not_blind") == 0)
+  {
+  if (slash != NULL) goto NO_OPTIONS;
+  if (where != ACL_WHERE_DATA && where != ACL_WHERE_NOTSMTP) goto WRONG_ACL;
+  rc = verify_check_notblind();
+  if (rc != OK)
+    {
+    *log_msgptr = string_sprintf("bcc recipient detected");
+    if (smtp_return_error_details)
+      *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
+    }
+  return rc;
+  }
 
 /* The remaining verification tests check recipient and sender addresses,
 either from the envelope or from the header. There are a number of
@@ -1433,12 +1444,7 @@ sender and recipient. */
 
 if (strcmpic(ss, US"header_sender") == 0)
   {
-  if (where != ACL_WHERE_DATA && where != ACL_WHERE_NOTSMTP)
-    {
-    *log_msgptr = string_sprintf("cannot check header contents in ACL for %s "
-      "(only possible in ACL for DATA)", acl_wherenames[where]);
-    return ERROR;
-    }
+  if (where != ACL_WHERE_DATA && where != ACL_WHERE_NOTSMTP) goto WRONG_ACL;
   verify_header_sender = TRUE;
   }
 
@@ -1874,6 +1880,13 @@ return ERROR;
 NO_OPTIONS:
 *log_msgptr = string_sprintf("unexpected '/' found in \"%s\" "
   "(this verify item has no options)", arg);
+return ERROR;
+
+/* Calls in the wrong ACL come here */
+
+WRONG_ACL:
+*log_msgptr = string_sprintf("cannot check header contents in ACL for %s "
+  "(only possible in ACL for DATA)", acl_wherenames[where]);
 return ERROR;
 }
 

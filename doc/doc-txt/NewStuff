@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.65 2005/08/23 08:50:07 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.66 2005/09/06 13:17:36 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -107,6 +107,18 @@ PH/07 $smtp_command_argument is now set for all SMTP commands, not just the
       for RCPT commands, for example.
 
 PH/08 The ${eval expansion now supports % as a "remainder" operator.
+
+PH/09 There is a new ACL condition "verify = not_blind". It checks that there
+      are no blind (bcc) recipients in the message. Every envelope recipient
+      must appear either in a To: header line or in a Cc: header line for this
+      condition to be true. Local parts are checked case-sensitively; domains
+      are checked case-insensitively. If Resent-To: or Resent-Cc: header lines
+      exist, they are also checked. This condition can be used only in a DATA
+      or non-SMTP ACL.
+
+      There are, of course, many legitimate messages that make use of blind
+      (bcc) recipients. This check should not be used on its own for blocking
+      messages.
 
 
 Exim version 4.52

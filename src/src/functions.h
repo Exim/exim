@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.19 2005/08/09 13:31:52 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.20 2005/09/06 13:17:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -337,6 +337,7 @@ extern int     verify_check_header_address(uschar **, uschar **, int, int, int,
                  uschar *, uschar *, int, int *);
 extern int     verify_check_headers(uschar **);
 extern int     verify_check_host(uschar **);
+extern int     verify_check_notblind(void);
 extern int     verify_check_this_host(uschar **, unsigned int *, uschar*,
                  uschar *, uschar **);
 extern address_item *verify_checked_sender(uschar *);

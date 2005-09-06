@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.32 2005/08/23 08:46:33 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.33 2005/09/06 13:17:36 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  23 August 2005
+Last updated:  06 September 2005
 
 
 THE OLD LIST
@@ -96,6 +96,7 @@ Andrew Doran              Patch for NetBSD configuration files
 Michael Deutschmann       Suggested patch for treating bind() failure like connect()
                           Patch for $sender_data and $recipient_data
                           Suggested patch for null address match lookup bug
+                          Suggested patch for verify = not_blind
 Oliver Eikemeier          Patch to skip Received: if expansion is empty
                           Patch for "eqi"
 Nico Erfurth              Fix for bug in ${readfile}

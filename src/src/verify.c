@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.25 2005/08/22 10:49:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.26 2005/09/06 13:17:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1449,6 +1449,89 @@ for (h = header_list; h != NULL; h = h->next)
 return OK;
 }
 
+
+
+/*************************************************
+*          Check for blind recipients            *
+*************************************************/
+
+/* This function checks that every (envelope) recipient is mentioned in either
+the To: or Cc: header lines, thus detecting blind carbon copies.
+
+There are two ways of scanning that could be used: either scan the header lines
+and tick off the recipients, or scan the recipients and check the header lines.
+The original proposed patch did the former, but I have chosen to do the latter,
+because (a) it requires no memory and (b) will use fewer resources when there
+are many addresses in To: and/or Cc: and only one or two envelope recipients.
+
+Arguments:   none
+Returns:     OK    if there are no blind recipients
+             FAIL  if there is at least one blind recipient
+*/
+
+int
+verify_check_notblind(void)
+{
+int i;
+for (i = 0; i < recipients_count; i++)
+  {
+  header_line *h;
+  BOOL found = FALSE;
+  uschar *address = recipients_list[i].address;
+
+  for (h = header_list; !found && h != NULL; h = h->next)
+    {
+    uschar *colon, *s;
+
+    if (h->type != htype_to && h->type != htype_cc) continue;
+
+    colon = Ustrchr(h->text, ':');
+    s = colon + 1;
+    while (isspace(*s)) s++;
+
+    parse_allow_group = TRUE;     /* Allow group syntax */
+
+    /* Loop for multiple addresses in the header */
+
+    while (*s != 0)
+      {
+      uschar *ss = parse_find_address_end(s, FALSE);
+      uschar *recipient,*errmess;
+      int terminator = *ss;
+      int start, end, domain;
+
+      /* Temporarily terminate the string at this point, and extract the
+      operative address within. */
+
+      *ss = 0;
+      recipient = parse_extract_address(s,&errmess,&start,&end,&domain,FALSE);
+      *ss = terminator;
+
+      /* If we found a valid recipient that has a domain, compare it with the
+      envelope recipient. Local parts are compared case-sensitively, domains
+      case-insensitively. By comparing from the start with length "domain", we
+      include the "@" at the end, which ensures that we are comparing the whole
+      local part of each address. */
+
+      if (recipient != NULL && domain != 0)
+        {
+        found = Ustrncmp(recipient, address, domain) == 0 &&
+                strcmpic(recipient + domain, address + domain) == 0;
+        if (found) break;
+        }
+
+      /* Advance to the next address */
+
+      s = ss + (terminator? 1:0);
+      while (isspace(*s)) s++;
+      }   /* Next address */
+    }     /* Next header (if found is false) */
+
+  if (!found) return FAIL;
+  }       /* Next recipient */
+
+return OK;
+}
 
 
 
