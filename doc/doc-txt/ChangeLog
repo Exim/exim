@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.215 2005/09/01 08:40:54 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.216 2005/09/06 13:21:06 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -124,13 +124,25 @@ PH/29 Added "crypteq" to the list of supported features that Exim outputs when
 
 PH/30 Fixed (presumably very longstanding) bug in exim_dbmbuild: if it failed
       because an input line was too long, either on its own, or by virtue of
-      too many continuations, the temporary file was not being removed.
+      too many continuations, the temporary file was not being removed, and the
+      return code was incorrect.
 
 PH/31 Missing "BOOL" in function definition in filtertest.c.
 
 PH/32 Applied Sieve patches from the maintainer.
 
 TK/05 Domainkeys: Accomodate for a minor API change in libdomainkeys 0.67.
+
+PH/33 Added "verify = not_blind".
+
+PH/34 There are settings for CHOWN_COMMAND and MV_COMMAND that can be used in
+      Local/Makefile (with some defaults set). These are used in built scripts
+      such as exicyclog, but they have never been used in the exim_install
+      script (though there are many overriding facilities there). I have
+      arranged that the exim_install script now takes note of these two
+      settings.
+
+PH/35 Installed configuration files for Dragonfly.
 
 
 Exim version 4.52
