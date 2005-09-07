@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.26 2005/08/22 14:01:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.27 2005/09/07 10:15:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -593,6 +593,7 @@ extern BOOL    sender_host_notsocket;  /* Set for -bs and -bS */
 extern BOOL    sender_host_unknown;    /* TRUE for -bs and -bS except inetd */
 extern uschar *sender_ident;           /* Sender identity via RFC 1413 */
 extern BOOL    sender_local;           /* TRUE for local senders */
+extern BOOL    sender_name_forced;     /* Set by -F */
 extern uschar *sender_rate;            /* Sender rate computed by ACL */
 extern uschar *sender_rate_limit;      /* Configured rate limit */
 extern uschar *sender_rate_period;     /* Configured smoothing period */
@@ -684,6 +685,7 @@ extern BOOL    strip_excess_angle_brackets; /* Surrounding route-addrs */
 extern BOOL    strip_trailing_dot;     /* Remove dots at ends of domains */
 extern uschar *submission_domain;      /* Domain for submission mode */
 extern BOOL    submission_mode;        /* Can be forced from ACL */
+extern uschar *submission_name;        /* User name set from ACL */
 extern BOOL    synchronous_delivery;   /* TRUE if -odi is set */
 extern BOOL    syslog_duplication;     /* FALSE => no duplicate logging */
 extern int     syslog_facility;        /* As defined by Syslog.h */

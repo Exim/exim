@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.22 2005/08/01 14:41:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.23 2005/09/07 10:15:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2338,6 +2338,28 @@ Sender: if it is required. */
 
 if (from_header == NULL && (sender_host_address == NULL || submission_mode))
   {
+  uschar *oname = US"";
+
+  /* Use the originator_name if this is a locally submitted message and the
+  caller is not trusted. For trusted callers, use it only if -F was used to
+  force its value or if we have a non-SMTP message for which -f was not used
+  to set the sender. */
+
+  if (sender_host_address == NULL)
+    {
+    if (!trusted_caller || sender_name_forced ||
+         (!smtp_input && !sender_address_forced))
+      oname = originator_name;
+    }
+
+  /* For non-locally submitted messages, the only time we use the originator
+  name is when it was forced by the /name= option on control=submission. */
+
+  else
+    {
+    if (submission_name != NULL) oname = submission_name;
+    }
+
   /* Envelope sender is empty */
 
   if (sender_address[0] == 0)
@@ -2345,8 +2367,8 @@ if (from_header == NULL && (sender_host_address == NULL || submission_mode))
     uschar *fromstart, *fromend;
 
     fromstart = string_sprintf("%sFrom: %s%s", resent_prefix,
-      originator_name, (originator_name[0] == 0)? "" : " <");
-    fromend = (originator_name[0] == 0)? US"" : US">";
+      oname, (oname[0] == 0)? "" : " <");
+    fromend = (oname[0] == 0)? US"" : US">";
 
     if (sender_local || local_error_message)
       {
@@ -2384,11 +2406,11 @@ if (from_header == NULL && (sender_host_address == NULL || submission_mode))
   else
     {
     header_add(htype_from, "%sFrom: %s%s%s%s\n", resent_prefix,
-      originator_name,
-      (originator_name[0] == 0)? "" : " <",
+      oname,
+      (oname[0] == 0)? "" : " <",
       (sender_address_unrewritten == NULL)?
         sender_address : sender_address_unrewritten,
-      (originator_name[0] == 0)? "" : ">");
+      (oname[0] == 0)? "" : ">");
 
     from_header = header_last;    /* To get it checked for Sender: */
     }
@@ -2469,12 +2491,14 @@ if (from_header != NULL &&
 
   if (make_sender)
     {
-    if (submission_mode && originator_name[0] == 0)
+    if (submission_mode && submission_name == NULL)
       header_add(htype_sender, "%sSender: %s\n", resent_prefix,
         generated_sender_address);
     else
       header_add(htype_sender, "%sSender: %s <%s>\n",
-        resent_prefix, originator_name, generated_sender_address);
+        resent_prefix,
+        submission_mode? submission_name : originator_name,
+        generated_sender_address);
     }
 
   /* Ensure that a non-null envelope sender address corresponds to the

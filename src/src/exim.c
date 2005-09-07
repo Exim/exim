@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.26 2005/08/23 11:25:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.27 2005/09/07 10:15:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1993,6 +1993,7 @@ for (i = 1; i < argc; i++)
         { badarg = TRUE; break; }
       }
     originator_name = argrest;
+    sender_name_forced = TRUE;
     break;
 
 

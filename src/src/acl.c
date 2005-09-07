@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.45 2005/09/06 13:17:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.46 2005/09/07 10:15:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2494,7 +2494,7 @@ for (; cb != NULL; cb = cb->next)
           {
           uschar *pp = p + 6;
           while (*pp != 0 && *pp != '/') pp++;
-          originator_name = string_copy(parse_fix_phrase(p+6, pp-p-6,
+          submission_name = string_copy(parse_fix_phrase(p+6, pp-p-6,
             big_buffer, big_buffer_size));
           p = pp;
           }

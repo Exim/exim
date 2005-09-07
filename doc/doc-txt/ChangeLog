@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.216 2005/09/06 13:21:06 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.217 2005/09/07 10:15:33 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -143,6 +143,14 @@ PH/34 There are settings for CHOWN_COMMAND and MV_COMMAND that can be used in
       settings.
 
 PH/35 Installed configuration files for Dragonfly.
+
+PH/36 When a locally submitted message by a trusted user did not contain a
+      From: header, and the sender address was obtained from -f or from an SMTP
+      MAIL command, and the trusted user did not use -F to supply a sender
+      name, $originator_name was incorrectly used when constructing a From:
+      header. Furthermore, $originator_name was used for submission mode
+      messages from external hosts without From: headers in a similar way,
+      which is clearly wrong.
 
 
 Exim version 4.52

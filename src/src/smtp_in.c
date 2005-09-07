@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.23 2005/08/22 14:01:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.24 2005/09/07 10:15:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -815,6 +815,7 @@ submission_mode = FALSE;                             /* Can be set by ACL */
 active_local_from_check = local_from_check;          /* Can be set by ACL */
 active_local_sender_retain = local_sender_retain;    /* Can be set by ACL */
 sender_address = NULL;
+submission_name = NULL;                              /* Can be set by ACL */
 raw_sender = NULL;                  /* After SMTP rewrite, before qualifying */
 sender_address_unrewritten = NULL;  /* Set only after verify rewrite */
 sender_verified_list = NULL;        /* No senders verified */
