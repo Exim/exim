@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.13 2005/06/27 15:11:04 tom Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.14 2005/09/12 15:09:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -258,7 +258,7 @@ passed on must have the original errors_address value.
 Arguments:
   rblock               the router control block
   addr                 the address being routed
-  verify               true if verifying
+  verify               v_none/v_recipient/v_sender/v_expn
   addr_prop            point to the propagated block, which is where the
                          new values are to be placed
 
@@ -268,7 +268,7 @@ Returns:    the result of rf_get_errors_address() or rf_get_munge_headers(),
 
 static int
 sort_errors_and_headers(router_instance *rblock, address_item *addr,
-  BOOL verify, address_item_propagated *addr_prop)
+  int verify, address_item_propagated *addr_prop)
 {
 int frc = rf_get_errors_address(addr, rblock, verify,
   &(addr_prop->errors_address));
@@ -499,7 +499,7 @@ int redirect_router_entry(
   router_instance *rblock,        /* data for this instantiation */
   address_item *addr,             /* address we are working on */
   struct passwd *pw,              /* passwd entry after check_local_user */
-  BOOL verify,                    /* TRUE when verifying */
+  int verify,                     /* v_none/v_recipient/v_sender/v_expn */
   address_item **addr_local,      /* add it to this if it's local */
   address_item **addr_remote,     /* add it to this if it's remote */
   address_item **addr_new,        /* put new addresses on here */
@@ -539,7 +539,7 @@ addr_prop.srs_sender = NULL;
 /* When verifying and testing addresses, the "logwrite" command in filters
 must be bypassed. */
 
-if (!verify && !address_test_mode) options |= RDO_REALLOG;
+if (verify == v_none && !address_test_mode) options |= RDO_REALLOG;
 
 /* Sort out the fixed or dynamic uid/gid. This uid is used (a) for reading the
 file (and interpreting a filter) and (b) for running the transports for
@@ -618,7 +618,8 @@ if (!ugid.gid_set && pw != NULL)
 
       /* Forward SRS */
       /* No point in actually performing SRS if we are just verifying a recipient */
-      if((srs_action & 1) && !verify && (sender_address ? sender_address[0] != 0 : FALSE))
+      if((srs_action & 1) && verify == v_none &&
+         (sender_address ? sender_address[0] != 0 : FALSE))
       {
 
         srs_orig_sender = sender_address;
@@ -801,12 +802,12 @@ dealing with it, the router declines. */
 if (eblock != NULL)
   {
   if (!moan_skipped_syntax_errors(
-        rblock->name,                           /* For message content */
-        eblock,                                 /* Ditto */
-        (verify || address_test_mode)?
-          NULL : ob->syntax_errors_to,          /* Who to mail */
-        generated != NULL,                      /* True if not all failed */
-        ob->syntax_errors_text))                /* Custom message */
+        rblock->name,                            /* For message content */
+        eblock,                                  /* Ditto */
+        (verify != v_none || address_test_mode)?
+          NULL : ob->syntax_errors_to,           /* Who to mail */
+        generated != NULL,                       /* True if not all failed */
+        ob->syntax_errors_text))                 /* Custom message */
     return DEFER;
 
   if (filtertype != FILTER_FORWARD || generated == NULL)
@@ -835,7 +836,7 @@ generated anything. Log what happened to this address, and return DISCARD. */
 
 if (frc == FF_DELIVERED)
   {
-  if (generated == NULL && !verify && !address_test_mode)
+  if (generated == NULL && verify == v_none && !address_test_mode)
     {
     log_write(0, LOG_MAIN, "=> %s <%s> R=%s", discarded, addr->address,
       rblock->name);

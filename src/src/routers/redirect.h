@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.h,v 1.5 2005/05/24 08:15:02 tom Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.h,v 1.6 2005/09/12 15:09:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -69,7 +69,7 @@ extern redirect_router_options_block redirect_router_option_defaults;
 /* The main and initialization entry points for the router */
 
 extern int redirect_router_entry(router_instance *, address_item *,
-  struct passwd *, BOOL, address_item **, address_item **,
+  struct passwd *, int, address_item **, address_item **,
   address_item **, address_item **);
 
 extern void redirect_router_init(router_instance *);

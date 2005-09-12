@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/iplookup.c,v 1.3 2005/06/27 14:29:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/iplookup.c,v 1.4 2005/09/12 15:09:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -137,7 +137,7 @@ iplookup_router_entry(
   router_instance *rblock,        /* data for this instantiation */
   address_item *addr,             /* address we are working on */
   struct passwd *pw,              /* passwd entry after check_local_user */
-  BOOL verify,                    /* TRUE when verifying */
+  int verify,                     /* v_none/v_recipient/v_sender/v_expn */
   address_item **addr_local,      /* add it to this if it's local */
   address_item **addr_remote,     /* add it to this if it's remote */
   address_item **addr_new,        /* put new addresses on here */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/route.c,v 1.5 2005/03/15 11:37:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/route.c,v 1.6 2005/09/12 15:09:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1697,8 +1697,8 @@ for (r = (addr->start_router == NULL)? routers : addr->start_router;
 
   HDEBUG(D_route) debug_printf("calling %s router\n", r->name);
 
-  yield = (r->info->code)(r, addr, pw, verify != v_none, paddr_local,
-    paddr_remote, addr_new, addr_succeed);
+  yield = (r->info->code)(r, addr, pw, verify, paddr_local, paddr_remote,
+    addr_new, addr_succeed);
 
   if (yield == FAIL)
     {

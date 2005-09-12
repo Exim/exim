@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.4 2005/06/17 14:20:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.5 2005/09/12 15:09:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -128,7 +128,7 @@ dnslookup_router_entry(
   router_instance *rblock,        /* data for this instantiation */
   address_item *addr,             /* address we are working on */
   struct passwd *pw,              /* passwd entry after check_local_user */
-  BOOL verify,                    /* TRUE when verifying */
+  int verify,                     /* v_none/v_recipient/v_sender/v_expn */
   address_item **addr_local,      /* add it to this if it's local */
   address_item **addr_remote,     /* add it to this if it's remote */
   address_item **addr_new,        /* put new addresses on here */
@@ -177,9 +177,19 @@ precedence over global names. For example, if the domain is "xxx.ch" it might
 be something in the "ch" toplevel domain, but it also might be xxx.ch.xyz.com.
 The choice of pre- or post-widening affects which takes precedence. If ever
 somebody comes up with some kind of requirement for pre-widening, presumably
-with some conditions under which it is done, it can be selected here. */
+with some conditions under which it is done, it can be selected here.
 
-if (ob->widen_domains != NULL)
+The rewrite_headers option works only when routing an address at transport
+time, because the alterations to the headers are not persistent so must be
+worked out immediately before they are used. Sender addresses are routed for
+verification purposes, but never at transport time, so any header changes that
+you might expect as a result of sender domain widening do not occur. Therefore
+we do not perform widening when verifying sender addresses; however, widening
+sender addresses is OK if we do not have to rewrite the headers. The
+suppression of widening for sender addresses is silent because it is the normal
+desirable behaviour. */
+
+if (ob->widen_domains != NULL && (verify != v_sender || !ob->rewrite_headers))
   {
   listptr = ob->widen_domains;
   widen = string_nextinlist(&listptr, &widen_sep, widen_buffer,

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/manualroute.c,v 1.2 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/manualroute.c,v 1.3 2005/09/12 15:09:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -191,7 +191,7 @@ manualroute_router_entry(
   router_instance *rblock,        /* data for this instantiation */
   address_item *addr,             /* address we are working on */
   struct passwd *pw,              /* passwd entry after check_local_user */
-  BOOL verify,                    /* TRUE when verifying */
+  int verify,                     /* v_none/v_recipient/v_sender/v_expn */
   address_item **addr_local,      /* add it to this if it's local */
   address_item **addr_remote,     /* add it to this if it's remote */
   address_item **addr_new,        /* put new addresses on here */
@@ -386,7 +386,7 @@ address is just accepted. */
 
 if (hostlist[0] == 0)
   {
-  if (verify) goto ROUTED;
+  if (verify != v_none) goto ROUTED;
   addr->message = string_sprintf("error in %s router: no host(s) specified "
     "for domain %s", rblock->name, domain);
   log_write(0, LOG_MAIN, "%s", addr->message);
@@ -405,7 +405,7 @@ if (rc != OK) return rc;
 defined for these hosts. It will be a remote one, as a local transport is
 dealt with above. However, we don't need one if verifying only. */
 
-if (transport == NULL && !verify)
+if (transport == NULL && verify == v_none)
     {
     log_write(0, LOG_MAIN, "Error in %s router: no transport defined",
       rblock->name);

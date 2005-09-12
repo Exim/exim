@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.223 2005/09/12 14:03:42 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.224 2005/09/12 15:09:55 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -169,6 +169,9 @@ PH/41 Added a "distclean" target to the top-level Makefile; it deletes all
 
 PH/42 (But a TF fix): In a domain list, Exim incorrectly matched @[] if the IP
       address in a domain literal was a prefix of an interface address.
+
+PH/43 (Again a TF fix): In the dnslookup router, do not apply widen_domains
+      when verifying a sender address, unless rewrite_headers is false.
 
 
 Exim version 4.52

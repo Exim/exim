@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/structs.h,v 1.6 2005/05/24 08:15:02 tom Exp $ */
+/* $Cambridge: exim/src/src/structs.h,v 1.7 2005/09/12 15:09:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -307,7 +307,7 @@ typedef struct router_info {
     router_instance *,
     struct address_item *,
     struct passwd *,
-    BOOL,
+    int,
     struct address_item **,
     struct address_item **,
     struct address_item **,

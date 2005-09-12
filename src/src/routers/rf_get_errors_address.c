@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/rf_get_errors_address.c,v 1.3 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/rf_get_errors_address.c,v 1.4 2005/09/12 15:09:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -26,7 +26,7 @@ configuration.
 Arguments:
   addr         the input address
   rblock       the router instance
-  verify       TRUE when verifying
+  verify       v_none / v_recipient / v_sender / v_expn
   errors_to    point the errors address here
 
 Returns:       OK if no problem
@@ -36,7 +36,7 @@ Returns:       OK if no problem
 
 int
 rf_get_errors_address(address_item *addr, router_instance *rblock,
-  BOOL verify, uschar **errors_to)
+  int verify, uschar **errors_to)
 {
 uschar *s;
 
@@ -75,7 +75,7 @@ of routers by checking the sender address. When testing an address, there may
 not be a sender address. We also need to save and restore the expansion values
 associated with an address. */
 
-if (verify)
+if (verify != v_none)
   {
   *errors_to = s;
   DEBUG(D_route)
