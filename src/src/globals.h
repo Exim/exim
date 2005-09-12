@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.27 2005/09/07 10:15:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.28 2005/09/12 10:08:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -686,6 +686,7 @@ extern BOOL    strip_trailing_dot;     /* Remove dots at ends of domains */
 extern uschar *submission_domain;      /* Domain for submission mode */
 extern BOOL    submission_mode;        /* Can be forced from ACL */
 extern uschar *submission_name;        /* User name set from ACL */
+extern BOOL    suppress_local_fixups;  /* Can be forced from ACL */
 extern BOOL    synchronous_delivery;   /* TRUE if -odi is set */
 extern BOOL    syslog_duplication;     /* FALSE => no duplicate logging */
 extern int     syslog_facility;        /* As defined by Syslog.h */

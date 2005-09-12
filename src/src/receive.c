@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.23 2005/09/07 10:15:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.24 2005/09/12 10:08:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1160,9 +1160,10 @@ return TRUE;
 Either a non-null list of recipients, or the extract flag will be true, or
 both. The flag sender_local is true for locally generated messages. The flag
 submission_mode is true if an ACL has obeyed "control = submission". The flag
-smtp_input is true if the message is to be handled using SMTP conventions about
-termination and lines starting with dots. For non-SMTP messages, dot_ends is
-true for dot-terminated messages.
+suppress_local_fixups is true if an ACL has obeyed "control =
+suppress_local_fixups". The flag smtp_input is true if the message is to be
+handled using SMTP conventions about termination and lines starting with dots.
+For non-SMTP messages, dot_ends is true for dot-terminated messages.
 
 If a message was successfully read, message_id[0] will be non-zero.
 
@@ -1976,18 +1977,22 @@ for (h = header_list->next; h != NULL; h = h->next)
     break;
 
     /* If there is a "Sender:" header and the message is locally originated,
-    and from an untrusted caller, or if we are in submission mode for a remote
-    message, mark it "old" so that it will not be transmitted with the message,
-    unless active_local_sender_retain is set. (This can only be true if
-    active_local_from_check is false.) If there are any resent- headers in the
-    message, apply this rule to Resent-Sender: instead of Sender:. Messages
-    with multiple resent- header sets cannot be tidily handled. (For this
-    reason, at least one MUA - Pine - turns old resent- headers into X-resent-
-    headers when resending, leaving just one set.) */
+    and from an untrusted caller and suppress_local_fixups is not set, or if we
+    are in submission mode for a remote message, mark it "old" so that it will
+    not be transmitted with the message, unless active_local_sender_retain is
+    set. (This can only be true if active_local_from_check is false.) If there
+    are any resent- headers in the message, apply this rule to Resent-Sender:
+    instead of Sender:. Messages with multiple resent- header sets cannot be
+    tidily handled. (For this reason, at least one MUA - Pine - turns old
+    resent- headers into X-resent- headers when resending, leaving just one
+    set.) */
 
     case htype_sender:
     h->type = ((!active_local_sender_retain &&
-                ((sender_local && !trusted_caller) || submission_mode)
+                (
+                (sender_local && !trusted_caller && !suppress_local_fixups)
+                  || submission_mode
+                )
                ) &&
                (!resents_exist||is_resent))?
       htype_old : htype_sender;
@@ -2249,11 +2254,13 @@ ensure that it is an empty string. */
 message_subdir[0] = split_spool_directory? message_id[5] : 0;
 
 /* Now that we have the message-id, if there is no message-id: header, generate
-one, but only for local or submission mode messages. This can be
-user-configured if required, but we had better flatten any illegal characters
-therein. */
+one, but only for local (without suppress_local_fixups) or submission mode
+messages. This can be user-configured if required, but we had better flatten
+any illegal characters therein. */
 
-if (msgid_header == NULL && (sender_host_address == NULL || submission_mode))
+if (msgid_header == NULL &&
+      ((sender_host_address == NULL && !suppress_local_fixups)
+        || submission_mode))
   {
   uschar *p;
   uschar *id_text = US"";
@@ -2327,16 +2334,18 @@ for (i = 0; i < recipients_count; i++)
     rewrite_address(recipients_list[i].address, TRUE, TRUE,
       global_rewrite_rules, rewrite_existflags);
 
-/* If there is no From: header, generate one for local or submission_mode
-messages. If there is no sender address, but the sender is local or this is a
-local delivery error, use the originator login. This shouldn't happen for
-genuine bounces, but might happen for autoreplies. The addition of From: must
-be done *before* checking for the possible addition of a Sender: header,
-because untrusted_set_sender allows an untrusted user to set anything in the
-envelope (which might then get info From:) but we still want to ensure a valid
-Sender: if it is required. */
+/* If there is no From: header, generate one for local (without
+suppress_local_fixups) or submission_mode messages. If there is no sender
+address, but the sender is local or this is a local delivery error, use the
+originator login. This shouldn't happen for genuine bounces, but might happen
+for autoreplies. The addition of From: must be done *before* checking for the
+possible addition of a Sender: header, because untrusted_set_sender allows an
+untrusted user to set anything in the envelope (which might then get info
+From:) but we still want to ensure a valid Sender: if it is required. */
 
-if (from_header == NULL && (sender_host_address == NULL || submission_mode))
+if (from_header == NULL &&
+    ((sender_host_address == NULL && !suppress_local_fixups)
+      || submission_mode))
   {
   uschar *oname = US"";
 
@@ -2417,19 +2426,19 @@ if (from_header == NULL && (sender_host_address == NULL || submission_mode))
   }
 
 
-/* If the sender is local, or if we are in submission mode and there is an
-authenticated_id, check that an existing From: is correct, and if not, generate
-a Sender: header, unless disabled. Any previously-existing Sender: header was
-removed above. Note that sender_local, as well as being TRUE if the caller of
-exim is not trusted, is also true if a trusted caller did not supply a -f
-argument for non-smtp input. To allow trusted callers to forge From: without
-supplying -f, we have to test explicitly here. If the From: header contains
-more than one address, then the call to parse_extract_address fails, and a
-Sender: header is inserted, as required. */
+/* If the sender is local (without suppress_local_fixups), or if we are in
+submission mode and there is an authenticated_id, check that an existing From:
+is correct, and if not, generate a Sender: header, unless disabled. Any
+previously-existing Sender: header was removed above. Note that sender_local,
+as well as being TRUE if the caller of exim is not trusted, is also true if a
+trusted caller did not supply a -f argument for non-smtp input. To allow
+trusted callers to forge From: without supplying -f, we have to test explicitly
+here. If the From: header contains more than one address, then the call to
+parse_extract_address fails, and a Sender: header is inserted, as required. */
 
 if (from_header != NULL &&
      (active_local_from_check &&
-       ((sender_local && !trusted_caller) ||
+       ((sender_local && !trusted_caller && !suppress_local_fixups) ||
         (submission_mode && authenticated_id != NULL))
      ))
   {
@@ -2571,11 +2580,13 @@ if (!to_or_cc_header_exists && !bcc_header_exists)
 ******/
 
 /* If there is no date header, generate one if the message originates locally
-(i.e. not over TCP/IP) or the submission mode flag is set. Messages without
-Date: are not valid, but it seems to be more confusing if Exim adds one to
-all remotely-originated messages. */
+(i.e. not over TCP/IP) and suppress_local_fixups is not set, or if the
+submission mode flag is set. Messages without Date: are not valid, but it seems
+to be more confusing if Exim adds one to all remotely-originated messages. */
 
-if (!date_header_exists && (sender_host_address == NULL || submission_mode))
+if (!date_header_exists &&
+      ((sender_host_address == NULL && !suppress_local_fixups)
+        || submission_mode))
   header_add(htype_other, "%sDate: %s\n", resent_prefix, tod_stamp(tod_full));
 
 search_tidyup();    /* Free any cached resources */

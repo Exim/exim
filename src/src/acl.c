@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.46 2005/09/07 10:15:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.47 2005/09/12 10:08:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -140,13 +140,16 @@ enum {
 #endif
   CONTROL_ERROR, CONTROL_CASEFUL_LOCAL_PART, CONTROL_CASELOWER_LOCAL_PART,
   CONTROL_ENFORCE_SYNC, CONTROL_NO_ENFORCE_SYNC, CONTROL_FREEZE,
-  CONTROL_QUEUE_ONLY, CONTROL_SUBMISSION,
+  CONTROL_QUEUE_ONLY, CONTROL_SUBMISSION, CONTROL_SUPPRESS_LOCAL_FIXUPS,
 #ifdef WITH_CONTENT_SCAN
   CONTROL_NO_MBOX_UNSPOOL,
 #endif
   CONTROL_FAKEDEFER, CONTROL_FAKEREJECT, CONTROL_NO_MULTILINE };
 
-/* ACL control names; keep in step with the table above! */
+/* ACL control names; keep in step with the table above! This list is used for
+turning ids into names. The actual list of recognized names is in the variable
+control_def controls_list[] below. The fact that there are two lists is a mess
+and should be tidied up. */
 
 static uschar *controls[] = {
   #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -157,10 +160,11 @@ static uschar *controls[] = {
   #endif
   US"error", US"caseful_local_part",
   US"caselower_local_part", US"enforce_sync", US"no_enforce_sync", US"freeze",
-  US"queue_only", US"submission",
+  US"queue_only", US"submission", US"suppress_local_fixups",
   #ifdef WITH_CONTENT_SCAN
   US"no_mbox_unspool",
   #endif
+
   US"no_multiline"};
 
 /* Flags to indicate for which conditions /modifiers a string expansion is done
@@ -482,6 +486,10 @@ static unsigned int control_forbids[] = {
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* submission */
     (1<<ACL_WHERE_PREDATA)),
 
+  (unsigned int)
+  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* suppress_local_fixups */
+    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_PREDATA)),
+
 #ifdef WITH_CONTENT_SCAN
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* no_mbox_unspool */
@@ -512,24 +520,25 @@ typedef struct control_def {
 
 static control_def controls_list[] = {
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  { US"bmi_run",                CONTROL_BMI_RUN, FALSE},
+  { US"bmi_run",                CONTROL_BMI_RUN, FALSE },
 #endif
 #ifdef EXPERIMENTAL_DOMAINKEYS
-  { US"dk_verify",              CONTROL_DK_VERIFY, FALSE},
+  { US"dk_verify",              CONTROL_DK_VERIFY, FALSE },
 #endif
-  { US"caseful_local_part",     CONTROL_CASEFUL_LOCAL_PART, FALSE},
-  { US"caselower_local_part",   CONTROL_CASELOWER_LOCAL_PART, FALSE},
-  { US"enforce_sync",           CONTROL_ENFORCE_SYNC, FALSE},
-  { US"freeze",                 CONTROL_FREEZE, FALSE},
-  { US"no_enforce_sync",        CONTROL_NO_ENFORCE_SYNC, FALSE},
-  { US"no_multiline_responses", CONTROL_NO_MULTILINE, FALSE},
-  { US"queue_only",             CONTROL_QUEUE_ONLY, FALSE},
+  { US"caseful_local_part",     CONTROL_CASEFUL_LOCAL_PART, FALSE },
+  { US"caselower_local_part",   CONTROL_CASELOWER_LOCAL_PART, FALSE },
+  { US"enforce_sync",           CONTROL_ENFORCE_SYNC, FALSE },
+  { US"freeze",                 CONTROL_FREEZE, FALSE },
+  { US"no_enforce_sync",        CONTROL_NO_ENFORCE_SYNC, FALSE },
+  { US"no_multiline_responses", CONTROL_NO_MULTILINE, FALSE },
+  { US"queue_only",             CONTROL_QUEUE_ONLY, FALSE },
 #ifdef WITH_CONTENT_SCAN
-  { US"no_mbox_unspool",        CONTROL_NO_MBOX_UNSPOOL, FALSE},
+  { US"no_mbox_unspool",        CONTROL_NO_MBOX_UNSPOOL, FALSE },
 #endif
-  { US"fakedefer",              CONTROL_FAKEDEFER, TRUE},
-  { US"fakereject",             CONTROL_FAKEREJECT, TRUE},
-  { US"submission",             CONTROL_SUBMISSION, TRUE}
+  { US"fakedefer",              CONTROL_FAKEDEFER, TRUE },
+  { US"fakereject",             CONTROL_FAKEREJECT, TRUE },
+  { US"submission",             CONTROL_SUBMISSION, TRUE },
+  { US"suppress_local_fixups",  CONTROL_SUPPRESS_LOCAL_FIXUPS, FALSE }
   };
 
 /* Support data structures for Client SMTP Authorization. acl_verify_csa()
@@ -2505,6 +2514,10 @@ for (; cb != NULL; cb = cb->next)
         *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
         return ERROR;
         }
+      break;
+
+      case CONTROL_SUPPRESS_LOCAL_FIXUPS:
+      suppress_local_fixups = TRUE;
       break;
       }
     break;

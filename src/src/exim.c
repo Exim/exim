@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.27 2005/09/07 10:15:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.28 2005/09/12 10:08:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3913,7 +3913,7 @@ for (i = 0;;)
 
 /* If we cannot get a user login, log the incident and give up, unless the
 configuration specifies something to use. When running in the test harness,
-any setting of unknown_login overrides the actual login name. */
+any setting of unknown_login overrides the actual name. */
 
 if (originator_login == NULL || running_in_test_harness)
   {

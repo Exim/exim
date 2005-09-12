@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.24 2005/09/07 10:15:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.25 2005/09/12 10:08:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -812,6 +812,7 @@ fake_response = OK;                                  /* Can be set by ACL */
 no_mbox_unspool = FALSE;                             /* Can be set by ACL */
 #endif
 submission_mode = FALSE;                             /* Can be set by ACL */
+suppress_local_fixups = FALSE;                       /* Can be set by ACL */
 active_local_from_check = local_from_check;          /* Can be set by ACL */
 active_local_sender_retain = local_sender_retain;    /* Can be set by ACL */
 sender_address = NULL;

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.217 2005/09/07 10:15:33 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.218 2005/09/12 10:08:53 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -151,6 +151,8 @@ PH/36 When a locally submitted message by a trusted user did not contain a
       header. Furthermore, $originator_name was used for submission mode
       messages from external hosts without From: headers in a similar way,
       which is clearly wrong.
+
+PH/37 Added control=suppress_local_fixups.
 
 
 Exim version 4.52

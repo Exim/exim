@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.35 2005/09/07 10:15:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.36 2005/09/12 10:08:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1083,6 +1083,7 @@ BOOL    strip_trailing_dot     = FALSE;
 uschar *submission_domain      = NULL;
 BOOL    submission_mode        = FALSE;
 uschar *submission_name        = NULL;
+BOOL    suppress_local_fixups  = FALSE;
 BOOL    synchronous_delivery   = FALSE;
 BOOL    syslog_duplication     = TRUE;
 int     syslog_facility        = LOG_MAIL;

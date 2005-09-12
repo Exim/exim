@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.66 2005/09/06 13:17:36 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.67 2005/09/12 10:08:53 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -119,6 +119,28 @@ PH/09 There is a new ACL condition "verify = not_blind". It checks that there
       There are, of course, many legitimate messages that make use of blind
       (bcc) recipients. This check should not be used on its own for blocking
       messages.
+
+PH/10 There is a new ACL control called "suppress_local_fixups". This applies
+      to locally submitted (non TCP/IP) messages, and is the complement of
+      "control = submission". It disables the fixups that are normally applied
+      to locally-submitted messages. Specifically:
+
+      (a) Any Sender: header line is left alone (in this respect, it's a
+          dynamic version of local_sender_retain).
+
+      (b) No Message-ID:, From:, or Date: headers are added.
+
+      (c) There is no check that From: corresponds to the actual sender.
+
+      This feature may be useful when a remotely-originated message is
+      accepted, passed to some scanning program, and then re-submitted for
+      delivery. It means that all four possibilities can now be specified:
+
+      (1) Locally submitted, fixups applies: the default.
+      (2) Locally submitted, no fixups applied: use control =
+          suppress_local_fixups.
+      (3) Remotely submitted, no fixups applied: the default.
+      (4) Remotely submitted, fixups applied: use control = submission.
 
 
 Exim version 4.52
