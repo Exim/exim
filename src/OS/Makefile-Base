@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.7 2005/06/27 10:24:43 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.8 2005/09/12 13:50:03 ph10 Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -655,7 +655,7 @@ $(MONBIN): $(HDRS)
 buildpcre:
 	 @(cd pcre; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" \
 	   FE="$(FE)" CFLAGS="$(CFLAGS) $(PCRE_CFLAGS)" \
-	   RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
+	   RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)")
 	 @if $(SHELL) $(SCRIPTS)/newer pcre/libpcre.a exim; then \
 	   rm -f exim eximon.bin; fi
@@ -665,7 +665,7 @@ buildpcre:
 
 buildlookups:
 	 @cd lookups; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
-	   FE="$(FE)" RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
+	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) $(LOOKUP_INCLUDE)"; \
 	 echo " "
 
@@ -673,7 +673,7 @@ buildlookups:
 
 buildrouters:
 	 @cd routers; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
-	   FE="$(FE)" RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
+	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"; \
 	 echo " "
 
@@ -681,7 +681,7 @@ buildrouters:
 
 buildtransports:
 	 @cd transports; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
-	   FE="$(FE)" RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
+	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"; \
 	 echo " "
 
@@ -689,7 +689,7 @@ buildtransports:
 
 buildauths:
 	 @cd auths; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
-	   FE="$(FE)" RANLIB="$(RANLIB)" HDRS="$(PHDRS)" \
+	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"; \
 	 echo " "
 

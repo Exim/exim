@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/Makefile,v 1.2 2004/10/11 13:24:19 ph10 Exp $
+# $Cambridge: exim/src/Makefile,v 1.3 2005/09/12 13:50:03 ph10 Exp $
 
 # Top-level makefile for Exim; handles creating a build directory with
 # appropriate links, and then creating and running the main makefile in that
@@ -13,6 +13,7 @@
 # or "make" must be called with a different SHELL= setting.
 
 SHELL=/bin/sh
+RM_COMMAND=/bin/rm
 
 # If a build name has not been specified by running this make file via a
 # command of the form "make build=xxxx", then determine the name of the
@@ -58,7 +59,7 @@ configure: build-directory
 # "configure", which doesn't force it).
 
 makefile: build-directory
-	@cd build-$(buildname); /bin/rm -f Makefile; \
+	@cd build-$(buildname); $(RM_COMMAND) -f Makefile; \
 	  build=$(build) $(SHELL) ../scripts/Configure-Makefile
 
 # Go to the build directory and do the business
@@ -77,12 +78,12 @@ clean:; @echo ""; echo '*** "make clean" just removes all .o and .a files'
 	@echo '*** Use "make makefile" to force a rebuild of the makefile'
 	@echo ""
 	cd build-$(buildname); \
-	/bin/rm -f *.o lookups/*.o lookups/*.a auths/*.o auths/*.a \
+	$(RM_COMMAND) -f *.o lookups/*.o lookups/*.a auths/*.o auths/*.a \
 	routers/*.o routers/*.a transports/*.o transports/*.a \
 	pcre/*.o pcre/*.a
 
 clean_exim:; cd build-$(buildname); \
-	 /bin/rm -f *.o lookups/*.o lookups/*.a auths/*.o auths/*.a \
+	 $(RM_COMMAND) -f *.o lookups/*.o lookups/*.a auths/*.o auths/*.a \
 	routers/*.o routers/*.a transports/*.o transports/*.a
 
 # End of top-level makefile

@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/lookups/Makefile,v 1.4 2005/08/01 13:20:28 ph10 Exp $
+# $Cambridge: exim/src/src/lookups/Makefile,v 1.5 2005/09/12 13:50:03 ph10 Exp $
 
 # Make file for building a library containing all the available lookups and
 # calling it lookups.a. This is called from the main make file, after cd'ing
@@ -10,11 +10,11 @@ OBJ = cdb.o dbmdb.o dnsdb.o dsearch.o ibase.o ldap.o lsearch.o mysql.o nis.o \
       lf_check_file.o lf_quote.o
 
 lookups.a:       $(OBJ)
-		 @/bin/rm -f lookups.a
+		 @$(RM_COMMAND) -f lookups.a
 		 @echo "$(AR) lookups.a"
 		 @$(AR) lookups.a $(OBJ)
 		 $(RANLIB) $@
-		 @/bin/rm -rf ../drtables.o
+		 @$(RM_COMMAND) -rf ../drtables.o
 
 .SUFFIXES:       .o .c
 .c.o:;           @echo "$(CC) $*.c"

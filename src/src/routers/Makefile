@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/routers/Makefile,v 1.2 2005/05/17 09:53:35 ph10 Exp $
+# $Cambridge: exim/src/src/routers/Makefile,v 1.3 2005/09/12 13:50:03 ph10 Exp $
 
 # Make file for building a library containing all the available routers and
 # calling it routers.a. This is called from the main make file, after cd'ing
@@ -14,11 +14,11 @@ OBJ = accept.o dnslookup.o ipliteral.o iplookup.o manualroute.o \
       rf_set_ugid.o
 
 routers.a:       $(OBJ)
-		 @/bin/rm -f routers.a
+		 @$(RM_COMMAND) -f routers.a
 		 @echo "$(AR) routers.a"
 		 @$(AR) routers.a $(OBJ)
 		 $(RANLIB) $@
-		 @/bin/rm -rf ../drtables.o
+		 @$(RM_COMMAND) -rf ../drtables.o
 
 .SUFFIXES:       .o .c
 .c.o:;           @echo "$(CC) $*.c"

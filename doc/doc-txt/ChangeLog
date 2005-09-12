@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.220 2005/09/12 13:39:31 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.221 2005/09/12 13:50:03 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -161,6 +161,8 @@ PH/38 When log_selector = +received_sender was set, and the addition of the
 
 PH/39 Added a new log selector, "unknown_in_list", which provokes a log entry
       when the result of a list match is failure because a DNS lookup failed.
+
+PH/40 RM_COMMAND is now used in the building process.
 
 
 Exim version 4.52

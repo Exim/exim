@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/transports/Makefile,v 1.2 2005/05/17 09:53:35 ph10 Exp $
+# $Cambridge: exim/src/src/transports/Makefile,v 1.3 2005/09/12 13:50:04 ph10 Exp $
 
 # Make file for building a library containing all the available transports and
 # calling it transports.a. This is called from the main make file, after cd'ing
@@ -7,11 +7,11 @@
 OBJ = appendfile.o autoreply.o lmtp.o pipe.o smtp.o tf_maildir.o
 
 transports.a:    $(OBJ)
-		 @/bin/rm -f transports.a
+		 @$(RM_COMMAND) -f transports.a
 		 @echo "$(AR) transports.a"
 		 @$(AR) transports.a $(OBJ)
 		 $(RANLIB) $@
-		 @/bin/rm -rf ../drtables.o
+		 @$(RM_COMMAND) -rf ../drtables.o
 
 .SUFFIXES:       .o .c
 .c.o:;           @echo "$(CC) $*.c"
