@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/log.c,v 1.6 2005/06/28 10:23:35 ph10 Exp $ */
+/* $Cambridge: exim/src/src/log.c,v 1.7 2005/09/12 10:49:30 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -741,7 +741,7 @@ va_end(ap);
 this way because it kind of fits with LOG_RECIPIENTS. */
 
 if ((flags & LOG_SENDER) != 0 &&
-    ptr < log_buffer + LOG_BUFFER_SIZE - 8 - Ustrlen(raw_sender))
+    ptr < log_buffer + LOG_BUFFER_SIZE - 10 - Ustrlen(raw_sender))
   {
   sprintf(CS ptr, " from <%s>", raw_sender);
   while (*ptr) ptr++;

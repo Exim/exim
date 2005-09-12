@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.218 2005/09/12 10:08:53 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.219 2005/09/12 10:49:30 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -153,6 +153,11 @@ PH/36 When a locally submitted message by a trusted user did not contain a
       which is clearly wrong.
 
 PH/37 Added control=suppress_local_fixups.
+
+PH/38 When log_selector = +received_sender was set, and the addition of the
+      sender made the log line's construction buffer exactly full, or one byte
+      less than full, an overflow happened when the terminating "\n" was
+      subsequently added.
 
 
 Exim version 4.52
