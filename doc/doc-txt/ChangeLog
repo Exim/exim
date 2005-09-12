@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.222 2005/09/12 13:55:54 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.223 2005/09/12 14:03:42 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -166,6 +166,9 @@ PH/40 RM_COMMAND is now used in the building process.
 
 PH/41 Added a "distclean" target to the top-level Makefile; it deletes all
       the "build-* directories that it finds.
+
+PH/42 (But a TF fix): In a domain list, Exim incorrectly matched @[] if the IP
+      address in a domain literal was a prefix of an interface address.
 
 
 Exim version 4.52

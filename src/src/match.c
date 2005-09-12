@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.9 2005/09/12 13:39:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.10 2005/09/12 14:03:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -174,7 +174,9 @@ if (cb->at_is_special && pattern[0] == '@')
     int slen = Ustrlen(s);
     if (s[0] != '[' && s[slen-1] != ']') return FAIL;
     for (ip = host_find_interfaces(); ip != NULL; ip = ip->next)
-      if (Ustrncmp(ip->address, s+1, slen - 2) == 0) return OK;
+      if (Ustrncmp(ip->address, s+1, slen - 2) == 0
+            && ip->address[slen - 2] == 0)
+        return OK;
     return FAIL;
     }
 
