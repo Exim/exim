@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.67 2005/09/12 10:08:53 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.68 2005/09/12 13:39:31 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -141,6 +141,10 @@ PH/10 There is a new ACL control called "suppress_local_fixups". This applies
           suppress_local_fixups.
       (3) Remotely submitted, no fixups applied: the default.
       (4) Remotely submitted, fixups applied: use control = submission.
+
+PH/11 There is a new log selector, "unknown_in_list", which provokes a log
+      entry when the result of a list match is failure because a DNS lookup
+      failed.
 
 
 Exim version 4.52

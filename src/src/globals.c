@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.36 2005/09/12 10:08:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.37 2005/09/12 13:39:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -676,7 +676,8 @@ bit_table log_options[]        = {
   { US"subject",                      LX_subject },
   { US"tls_certificate_verified",     LX_tls_certificate_verified },
   { US"tls_cipher",                   LX_tls_cipher },
-  { US"tls_peerdn",                   LX_tls_peerdn }
+  { US"tls_peerdn",                   LX_tls_peerdn },
+  { US"unknown_in_list",              LX_unknown_in_list }
 };
 
 int     log_options_count      = sizeof(log_options)/sizeof(bit_table);

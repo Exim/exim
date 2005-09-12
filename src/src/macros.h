@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.18 2005/08/01 13:20:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.19 2005/09/12 13:39:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -390,6 +390,7 @@ set all the bits in a multi-word selector. */
 #define LX_tls_certificate_verified    0x80010000
 #define LX_tls_cipher                  0x80020000
 #define LX_tls_peerdn                  0x80040000
+#define LX_unknown_in_list             0x80080000
 
 #define L_default     (L_connection_reject        | \
                        L_delay_delivery           | \

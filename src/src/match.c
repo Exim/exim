@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.8 2005/08/01 13:20:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.9 2005/09/12 13:39:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -720,7 +720,12 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
           {
           HDEBUG(D_lists) debug_printf("%s %s (%s)\n", ot,
             include_unknown? "yes":"no", error);
-          if (!include_unknown) return FAIL;
+          if (!include_unknown)
+            {
+            if ((log_extra_selector & LX_unknown_in_list) != 0)
+              log_write(0, LOG_MAIN, "list matching forced to fail: %s", error);
+            return FAIL;
+            }
           log_write(0, LOG_MAIN, "%s: accepted by +include_unknown", error);
           return OK;
           }
@@ -811,7 +816,12 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
           HDEBUG(D_lists) debug_printf("%s %s (%s)\n", ot,
             include_unknown? "yes":"no", error);
           (void)fclose(f);
-          if (!include_unknown) return FAIL;
+          if (!include_unknown)
+            {
+            if ((log_extra_selector & LX_unknown_in_list) != 0)
+              log_write(0, LOG_MAIN, "list matching forced to fail: %s", error);
+            return FAIL;
+            }
           log_write(0, LOG_MAIN, "%s: accepted by +include_unknown", error);
           return OK;
           }

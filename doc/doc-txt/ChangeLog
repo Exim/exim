@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.219 2005/09/12 10:49:30 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.220 2005/09/12 13:39:31 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -158,6 +158,9 @@ PH/38 When log_selector = +received_sender was set, and the addition of the
       sender made the log line's construction buffer exactly full, or one byte
       less than full, an overflow happened when the terminating "\n" was
       subsequently added.
+
+PH/39 Added a new log selector, "unknown_in_list", which provokes a log entry
+      when the result of a list match is failure because a DNS lookup failed.
 
 
 Exim version 4.52
