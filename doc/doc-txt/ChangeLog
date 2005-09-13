@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.224 2005/09/12 15:09:55 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.225 2005/09/13 09:54:14 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -172,6 +172,9 @@ PH/42 (But a TF fix): In a domain list, Exim incorrectly matched @[] if the IP
 
 PH/43 (Again a TF fix): In the dnslookup router, do not apply widen_domains
       when verifying a sender address, unless rewrite_headers is false.
+
+TF/01 Add missing LIBS=-lm to OS/Makefile-OpenBSD which was overlooked when
+      the ratelimit ACL was added.
 
 
 Exim version 4.52
