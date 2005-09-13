@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/rf_get_errors_address.c,v 1.4 2005/09/12 15:09:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/rf_get_errors_address.c,v 1.5 2005/09/13 10:35:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -100,10 +100,23 @@ else
     address_expansions_save[i++] = **p++;
   address_test_mode = FALSE;
 
+  /* NOTE: the address is verified as a recipient, not a sender. This is
+  perhaps confusing. It isn't immediately obvious what to do: we want to have
+  some confidence that we can deliver to the address, in which case it will be
+  a recipient, but on the other hand, it will be passed on in SMTP deliveries
+  as a sender. However, I think on balance recipient is right because sender
+  verification is really about the *incoming* sender of the message.
+
+  If this code is changed, note that you must set vopt_fake_sender instead of
+  vopt_is_recipient, as otherwise sender_address may be altered because
+  verify_address() thinks it is dealing with *the* sender of the message. */
+
   DEBUG(D_route|D_verify)
     debug_printf("------ Verifying errors address %s ------\n", s);
-  if (verify_address(snew, NULL, vopt_is_recipient | vopt_qualify, -1, -1, -1,
-    NULL, NULL, NULL) == OK) *errors_to = snew->address;
+  if (verify_address(snew, NULL,
+      vopt_is_recipient /* vopt_fake_sender is the alternative */
+      | vopt_qualify, -1, -1, -1, NULL, NULL, NULL) == OK)
+    *errors_to = snew->address;
   DEBUG(D_route|D_verify)
     debug_printf("------ End verifying errors address %s ------\n", s);
 
