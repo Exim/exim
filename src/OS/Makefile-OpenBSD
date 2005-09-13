@@ -1,10 +1,12 @@
-# $Cambridge: exim/src/OS/Makefile-OpenBSD,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-OpenBSD,v 1.2 2005/09/13 09:43:17 fanf2 Exp $
 
 # Exim: OS-specific make file for OpenBSD
 
 CHOWN_COMMAND=/usr/sbin/chown
 CHGRP_COMMAND=/usr/sbin/chgrp
 CFLAGS=-O2 -Wall
+
+LIBS=-lm
 
 HAVE_SA_LEN=YES
 
