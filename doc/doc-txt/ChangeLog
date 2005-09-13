@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.229 2005/09/13 15:40:07 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.230 2005/09/13 17:51:05 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -187,6 +187,8 @@ PH/47 Added an interface to a fake DNS resolver for use by the new test suite,
       avoiding the need to install special zones in a real server. This is
       backwards compatible; if it can't find the fake resolver, it drops back.
       Thus, both old and new test suites can be run.
+
+TF/02 Added util/ratelimit.pl
 
 
 Exim version 4.52

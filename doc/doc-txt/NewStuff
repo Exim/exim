@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.69 2005/09/13 11:13:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.70 2005/09/13 17:51:05 fanf2 Exp $
 
 New Features in Exim
 --------------------
@@ -150,6 +150,10 @@ PH/12 There is a new variable called $smtp_command which contains the full SMTP
       command (compare $smtp_command_argument - see PH/07 above). This makes it
       possible to distinguish between HELO and EHLO, and also between things
       like "MAIL FROM:<>" and "MAIL FROM: <>".
+
+TF/01 There's a new script in util/ratelimit.pl which extracts sending
+      rates from log files, to assist with choosing appropriate settings
+      when deploying the ratelimit ACL condition.
 
 
 Exim version 4.52

@@ -1,4 +1,4 @@
-$Cambridge: exim/src/util/README,v 1.1 2005/05/24 11:20:40 ph10 Exp $
+$Cambridge: exim/src/util/README,v 1.2 2005/09/13 17:51:06 fanf2 Exp $
 
 The "util" directory in the Exim distribution
 ---------------------------------------------
@@ -24,6 +24,13 @@ mkcdb.pl
 A Perl script for a converting flat file into a format that is suitable for
 processing by cdbmake into a cdb file. It has some advantages over the
 cdbmake-12 awk script.
+
+ratelimit.pl
+------------
+
+A Perl script for computing peak sending rates from a log file. This is for
+use with the ratelimit ACL condition, so that you can get some idea of what a
+reasonable limit would be before deploying the feature.
 
 unknownuser.sh
 --------------
