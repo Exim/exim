@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.28 2005/09/12 10:08:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.29 2005/09/13 11:13:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -619,7 +619,8 @@ extern uschar *smtp_active_hostname;   /* Hostname for this message */
 extern BOOL    smtp_authenticated;     /* Sending client has authenticated */
 extern uschar *smtp_banner;            /* Banner string (to be expanded) */
 extern BOOL    smtp_check_spool_space; /* TRUE to check SMTP SIZE value */
-extern uschar *smtp_command_argument;  /* For all SMTP commands */
+extern uschar *smtp_cmd_argument;      /* For all SMTP commands */
+extern uschar *smtp_cmd_buffer;        /* SMTP command buffer */
 extern int     smtp_connect_backlog;   /* Max backlog permitted */
 extern double  smtp_delay_mail;        /* Current MAIL delay */
 extern double  smtp_delay_rcpt;        /* Current RCPT delay */

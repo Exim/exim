@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.226 2005/09/13 10:35:52 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.227 2005/09/13 11:13:27 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -178,6 +178,8 @@ PH/44 Wrote a long comment about why errors_to addresses are verified as
 
 TF/01 Add missing LIBS=-lm to OS/Makefile-OpenBSD which was overlooked when
       the ratelimit ACL was added.
+
+PH/45 Added $smtp_command for the full command (cf $smtp_command_argument).
 
 
 Exim version 4.52

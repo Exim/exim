@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.25 2005/09/12 10:08:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.26 2005/09/13 11:13:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -39,7 +39,7 @@ by RFC 821. However, RFC 1869 specifies that this must be increased for SMTP
 commands that accept arguments, and this in particular applies to AUTH, where
 the data can be quite long. */
 
-#define cmd_buffer_size  2048
+#define smtp_cmd_buffer_size  2048
 
 /* Size of buffer for reading SMTP incoming packets */
 
@@ -118,8 +118,6 @@ static int  synprot_error_count;
 static int  unknown_command_count;
 static int  sync_cmd_limit;
 static int  smtp_write_error = 0;
-
-static uschar *cmd_buffer;
 
 /* We need to know the position of RSET, HELO, EHLO, AUTH, and STARTTLS. Their
 final fields of all except AUTH are forced TRUE at the start of a new message
@@ -455,7 +453,8 @@ exim_exit(EXIT_FAILURE);
 There are sites that don't do this, and in any case internal SMTP probably
 should check only for LF. Consequently, we check here for LF only. The line
 ends up with [CR]LF removed from its end. If we get an overlong line, treat as
-an unknown command. The command is read into the static cmd_buffer.
+an unknown command. The command is read into the global smtp_cmd_buffer so that
+it is available via $smtp_command.
 
 The character reading routine sets up a timeout for each block actually read
 from the input (which may contain more than one command). We set up a special
@@ -480,7 +479,7 @@ os_non_restarting_signal(SIGALRM, command_timeout_handler);
 
 while ((c = (receive_getc)()) != '\n' && c != EOF)
   {
-  if (ptr >= cmd_buffer_size)
+  if (ptr >= smtp_cmd_buffer_size)
     {
     os_non_restarting_signal(SIGALRM, sigalrm_handler);
     return OTHER_CMD;
@@ -490,7 +489,7 @@ while ((c = (receive_getc)()) != '\n' && c != EOF)
     hadnull = TRUE;
     c = '?';
     }
-  cmd_buffer[ptr++] = c;
+  smtp_cmd_buffer[ptr++] = c;
   }
 
 receive_linecount++;    /* For BSMTP errors */
@@ -504,10 +503,10 @@ if (c == EOF) return EOF_CMD;
 /* Remove any CR and white space at the end of the line, and terminate the
 string. */
 
-while (ptr > 0 && isspace(cmd_buffer[ptr-1])) ptr--;
-cmd_buffer[ptr] = 0;
+while (ptr > 0 && isspace(smtp_cmd_buffer[ptr-1])) ptr--;
+smtp_cmd_buffer[ptr] = 0;
 
-DEBUG(D_receive) debug_printf("SMTP<< %s\n", cmd_buffer);
+DEBUG(D_receive) debug_printf("SMTP<< %s\n", smtp_cmd_buffer);
 
 /* NULLs are not allowed in SMTP commands */
 
@@ -519,7 +518,7 @@ if required. */
 
 for (p = cmd_list; p < cmd_list_end; p++)
   {
-  if (strncmpic(cmd_buffer, US p->name, p->len) == 0)
+  if (strncmpic(smtp_cmd_buffer, US p->name, p->len) == 0)
     {
     if (smtp_inptr < smtp_inend &&                     /* Outstanding input */
         p->cmd < sync_cmd_limit &&                     /* Command should sync */
@@ -533,7 +532,7 @@ for (p = cmd_list; p < cmd_list_end; p++)
     the following test, so that if it fails, the command name can easily be
     logged. */
 
-    smtp_command_argument = cmd_buffer + p->len;
+    smtp_cmd_argument = smtp_cmd_buffer + p->len;
 
     /* Count non-mail commands from those hosts that are controlled in this
     way. The default is all hosts. We don't waste effort checking the list
@@ -554,8 +553,8 @@ for (p = cmd_list; p < cmd_list_end; p++)
     /* Get the data pointer over leading spaces and return; if there is data
     for a command that does not expect it, give the error centrally here. */
 
-    while (isspace(*smtp_command_argument)) smtp_command_argument++;
-    return (p->has_arg || *smtp_command_argument == 0)? p->cmd : BADARG_CMD;
+    while (isspace(*smtp_cmd_argument)) smtp_cmd_argument++;
+    return (p->has_arg || *smtp_cmd_argument == 0)? p->cmd : BADARG_CMD;
     }
   }
 
@@ -743,7 +742,7 @@ return yield;
 *         Extract SMTP command option            *
 *************************************************/
 
-/* This function picks the next option setting off the end of smtp_command_argument. It
+/* This function picks the next option setting off the end of smtp_cmd_argument. It
 is called for MAIL FROM and RCPT TO commands, to pick off the optional ESMTP
 things that can appear there.
 
@@ -758,11 +757,11 @@ static BOOL
 extract_option(uschar **name, uschar **value)
 {
 uschar *n;
-uschar *v = smtp_command_argument + Ustrlen(smtp_command_argument) -1;
+uschar *v = smtp_cmd_argument + Ustrlen(smtp_cmd_argument) -1;
 while (isspace(*v)) v--;
 v[1] = 0;
 
-while (v > smtp_command_argument && *v != '=' && !isspace(*v)) v--;
+while (v > smtp_cmd_argument && *v != '=' && !isspace(*v)) v--;
 if (*v != '=') return FALSE;
 
 n = v;
@@ -926,7 +925,7 @@ while (done <= 0)
     case HELO_CMD:
     case EHLO_CMD:
 
-    check_helo(smtp_command_argument);
+    check_helo(smtp_cmd_argument);
     /* Fall through */
 
     case RSET_CMD:
@@ -944,11 +943,11 @@ while (done <= 0)
     case MAIL_CMD:
     if (sender_address != NULL)
       /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(cmd_buffer, "503 Sender already given");
+      moan_smtp_batch(smtp_cmd_buffer, "503 Sender already given");
 
-    if (smtp_command_argument[0] == 0)
+    if (smtp_cmd_argument[0] == 0)
       /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(cmd_buffer, "501 MAIL FROM must have an address operand");
+      moan_smtp_batch(smtp_cmd_buffer, "501 MAIL FROM must have an address operand");
 
     /* Reset to start of message */
 
@@ -957,8 +956,8 @@ while (done <= 0)
     /* Apply SMTP rewrite */
 
     raw_sender = ((rewrite_existflags & rewrite_smtp) != 0)?
-      rewrite_one(smtp_command_argument, rewrite_smtp|rewrite_smtp_sender, NULL, FALSE,
-        US"", global_rewrite_rules) : smtp_command_argument;
+      rewrite_one(smtp_cmd_argument, rewrite_smtp|rewrite_smtp_sender, NULL, FALSE,
+        US"", global_rewrite_rules) : smtp_cmd_argument;
 
     /* Extract the address; the TRUE flag allows <> as valid */
 
@@ -968,7 +967,7 @@ while (done <= 0)
 
     if (raw_sender == NULL)
       /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(cmd_buffer, "501 %s", errmess);
+      moan_smtp_batch(smtp_cmd_buffer, "501 %s", errmess);
 
     sender_address = string_copy(raw_sender);
 
@@ -983,7 +982,7 @@ while (done <= 0)
           "and rewritten\n", raw_sender);
         }
       /* The function moan_smtp_batch() does not return. */
-      else moan_smtp_batch(cmd_buffer, "501 sender address must contain "
+      else moan_smtp_batch(smtp_cmd_buffer, "501 sender address must contain "
         "a domain");
       }
     break;
@@ -999,25 +998,25 @@ while (done <= 0)
     case RCPT_CMD:
     if (sender_address == NULL)
       /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(cmd_buffer, "503 No sender yet given");
+      moan_smtp_batch(smtp_cmd_buffer, "503 No sender yet given");
 
-    if (smtp_command_argument[0] == 0)
+    if (smtp_cmd_argument[0] == 0)
       /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(cmd_buffer, "501 RCPT TO must have an address operand");
+      moan_smtp_batch(smtp_cmd_buffer, "501 RCPT TO must have an address operand");
 
     /* Check maximum number allowed */
 
     if (recipients_max > 0 && recipients_count + 1 > recipients_max)
       /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(cmd_buffer, "%s too many recipients",
+      moan_smtp_batch(smtp_cmd_buffer, "%s too many recipients",
         recipients_max_reject? "552": "452");
 
     /* Apply SMTP rewrite, then extract address. Don't allow "<>" as a
     recipient address */
 
     recipient = ((rewrite_existflags & rewrite_smtp) != 0)?
-      rewrite_one(smtp_command_argument, rewrite_smtp, NULL, FALSE, US"",
-        global_rewrite_rules) : smtp_command_argument;
+      rewrite_one(smtp_cmd_argument, rewrite_smtp, NULL, FALSE, US"",
+        global_rewrite_rules) : smtp_cmd_argument;
 
     /* rfc821_domains = TRUE; << no longer needed */
     recipient = parse_extract_address(recipient, &errmess, &start, &end,
@@ -1026,7 +1025,7 @@ while (done <= 0)
 
     if (recipient == NULL)
       /* The function moan_smtp_batch() does not return. */
-      moan_smtp_batch(cmd_buffer, "501 %s", errmess);
+      moan_smtp_batch(smtp_cmd_buffer, "501 %s", errmess);
 
     /* If the recipient address is unqualified, qualify it if permitted. Then
     add it to the list of recipients. */
@@ -1040,7 +1039,7 @@ while (done <= 0)
         recipient = rewrite_address_qualify(recipient, TRUE);
         }
       /* The function moan_smtp_batch() does not return. */
-      else moan_smtp_batch(cmd_buffer, "501 recipient address must contain "
+      else moan_smtp_batch(smtp_cmd_buffer, "501 recipient address must contain "
         "a domain");
       }
     receive_add_recipient(recipient, -1);
@@ -1056,10 +1055,10 @@ while (done <= 0)
       {
       /* The function moan_smtp_batch() does not return. */
       if (sender_address == NULL)
-        moan_smtp_batch(cmd_buffer,
+        moan_smtp_batch(smtp_cmd_buffer,
           "503 MAIL FROM:<sender> command must precede DATA");
       else
-        moan_smtp_batch(cmd_buffer,
+        moan_smtp_batch(smtp_cmd_buffer,
           "503 RCPT TO:<recipient> must precede DATA");
       }
     else
@@ -1089,19 +1088,19 @@ while (done <= 0)
 
     case BADARG_CMD:
     /* The function moan_smtp_batch() does not return. */
-    moan_smtp_batch(cmd_buffer, "501 Unexpected argument data");
+    moan_smtp_batch(smtp_cmd_buffer, "501 Unexpected argument data");
     break;
 
 
     case BADCHAR_CMD:
     /* The function moan_smtp_batch() does not return. */
-    moan_smtp_batch(cmd_buffer, "501 Unexpected NULL in SMTP command");
+    moan_smtp_batch(smtp_cmd_buffer, "501 Unexpected NULL in SMTP command");
     break;
 
 
     default:
     /* The function moan_smtp_batch() does not return. */
-    moan_smtp_batch(cmd_buffer, "500 Command unrecognized");
+    moan_smtp_batch(smtp_cmd_buffer, "500 Command unrecognized");
     break;
     }
   }
@@ -1165,8 +1164,10 @@ tls_advertised = FALSE;
 
 for (i = 0; i < ACL_C_MAX; i++) acl_var[i] = NULL;
 
-cmd_buffer = (uschar *)malloc(cmd_buffer_size + 1);  /* allow for trailing 0 */
-if (cmd_buffer == NULL)
+/* Allow for trailing 0 in the command buffer. */
+
+smtp_cmd_buffer = (uschar *)malloc(smtp_cmd_buffer_size + 1);
+if (smtp_cmd_buffer == NULL)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "malloc() failed for SMTP command buffer");
 
@@ -1671,14 +1672,14 @@ int yield = -1;
 
 log_write(type, LOG_MAIN, "SMTP %s error in \"%s\" %s %s",
   (type == L_smtp_syntax_error)? "syntax" : "protocol",
-  string_printing(cmd_buffer), host_and_ident(TRUE), errmess);
+  string_printing(smtp_cmd_buffer), host_and_ident(TRUE), errmess);
 
 if (++synprot_error_count > smtp_max_synprot_errors)
   {
   yield = 1;
   log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
     "syntax or protocol errors (last command was \"%s\")",
-    host_and_ident(FALSE), cmd_buffer);
+    host_and_ident(FALSE), smtp_cmd_buffer);
   }
 
 if (code > 0)
@@ -1821,9 +1822,9 @@ uschar *what =
 #endif
   (where == ACL_WHERE_PREDATA)? US"DATA" :
   (where == ACL_WHERE_DATA)? US"after DATA" :
-  (smtp_command_argument == NULL)?
+  (smtp_cmd_argument == NULL)?
     string_sprintf("%s in \"connect\" ACL", acl_wherenames[where]) :
-    string_sprintf("%s %s", acl_wherenames[where], smtp_command_argument);
+    string_sprintf("%s %s", acl_wherenames[where], smtp_cmd_argument);
 
 if (drop) rc = FAIL;
 
@@ -2191,8 +2192,8 @@ while (done <= 0)
 
     /* Find the name of the requested authentication mechanism. */
 
-    s = smtp_command_argument;
-    while ((c = *smtp_command_argument) != 0 && !isspace(c))
+    s = smtp_cmd_argument;
+    while ((c = *smtp_cmd_argument) != 0 && !isspace(c))
       {
       if (!isalnum(c) && c != '-' && c != '_')
         {
@@ -2200,16 +2201,16 @@ while (done <= 0)
           US"invalid character in authentication mechanism name");
         goto COMMAND_LOOP;
         }
-      smtp_command_argument++;
+      smtp_cmd_argument++;
       }
 
     /* If not at the end of the line, we must be at white space. Terminate the
     name and move the pointer on to any data that may be present. */
 
-    if (*smtp_command_argument != 0)
+    if (*smtp_cmd_argument != 0)
       {
-      *smtp_command_argument++ = 0;
-      while (isspace(*smtp_command_argument)) smtp_command_argument++;
+      *smtp_cmd_argument++ = 0;
+      while (isspace(*smtp_cmd_argument)) smtp_cmd_argument++;
       }
 
     /* Search for an authentication mechanism which is configured for use
@@ -2239,7 +2240,7 @@ while (done <= 0)
     expand_nmax = 0;
     expand_nlength[0] = 0;   /* $0 contains nothing */
 
-    c = (au->info->servercode)(au, smtp_command_argument);
+    c = (au->info->servercode)(au, smtp_cmd_argument);
     if (au->set_id != NULL) set_id = expand_string(au->set_id);
     expand_nmax = -1;        /* Reset numeric variables */
 
@@ -2355,20 +2356,20 @@ while (done <= 0)
     /* Reject the HELO if its argument was invalid or non-existent. A
     successful check causes the argument to be saved in malloc store. */
 
-    if (!check_helo(smtp_command_argument))
+    if (!check_helo(smtp_cmd_argument))
       {
       smtp_printf("501 Syntactically invalid %s argument(s)\r\n", hello);
 
       log_write(0, LOG_MAIN|LOG_REJECT, "rejected %s from %s: syntactically "
         "invalid argument(s): %s", hello, host_and_ident(FALSE),
-        (*smtp_command_argument == 0)? US"(no argument given)" :
-                           string_printing(smtp_command_argument));
+        (*smtp_cmd_argument == 0)? US"(no argument given)" :
+                           string_printing(smtp_cmd_argument));
 
       if (++synprot_error_count > smtp_max_synprot_errors)
         {
         log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
           "syntax or protocol errors (last command was \"%s\")",
-          host_and_ident(FALSE), cmd_buffer);
+          host_and_ident(FALSE), smtp_cmd_buffer);
         done = 1;
         }
 
@@ -2385,7 +2386,7 @@ while (done <= 0)
     if (!sender_host_unknown)
       {
       BOOL old_helo_verified = helo_verified;
-      uschar *p = smtp_command_argument;
+      uschar *p = smtp_cmd_argument;
 
       while (*p != 0 && !isspace(*p)) { *p = tolower(*p); p++; }
       *p = 0;
@@ -2660,7 +2661,7 @@ while (done <= 0)
       break;
       }
 
-    if (smtp_command_argument[0] == 0)
+    if (smtp_cmd_argument[0] == 0)
       {
       done = synprot_error(L_smtp_protocol_error, 501, NULL,
         US"MAIL must have an address operand");
@@ -2819,8 +2820,8 @@ while (done <= 0)
     TRUE flag allows "<>" as a sender address. */
 
     raw_sender = ((rewrite_existflags & rewrite_smtp) != 0)?
-      rewrite_one(smtp_command_argument, rewrite_smtp, NULL, FALSE, US"",
-        global_rewrite_rules) : smtp_command_argument;
+      rewrite_one(smtp_cmd_argument, rewrite_smtp, NULL, FALSE, US"",
+        global_rewrite_rules) : smtp_cmd_argument;
 
     /* rfc821_domains = TRUE; << no longer needed */
     raw_sender =
@@ -2830,7 +2831,7 @@ while (done <= 0)
 
     if (raw_sender == NULL)
       {
-      done = synprot_error(L_smtp_syntax_error, 501, smtp_command_argument, errmess);
+      done = synprot_error(L_smtp_syntax_error, 501, smtp_cmd_argument, errmess);
       break;
       }
 
@@ -2890,7 +2891,7 @@ while (done <= 0)
       else
         {
         smtp_printf("501 %s: sender address must contain a domain\r\n",
-          smtp_command_argument);
+          smtp_cmd_argument);
         log_write(L_smtp_syntax_error,
           LOG_MAIN|LOG_REJECT,
           "unqualified sender rejected: <%s> %s%s",
@@ -2958,7 +2959,7 @@ while (done <= 0)
 
     /* Check for an operand */
 
-    if (smtp_command_argument[0] == 0)
+    if (smtp_cmd_argument[0] == 0)
       {
       done = synprot_error(L_smtp_syntax_error, 501, NULL,
         US"RCPT must have an address operand");
@@ -2970,8 +2971,8 @@ while (done <= 0)
     as a recipient address */
 
     recipient = ((rewrite_existflags & rewrite_smtp) != 0)?
-      rewrite_one(smtp_command_argument, rewrite_smtp, NULL, FALSE, US"",
-        global_rewrite_rules) : smtp_command_argument;
+      rewrite_one(smtp_cmd_argument, rewrite_smtp, NULL, FALSE, US"",
+        global_rewrite_rules) : smtp_cmd_argument;
 
     /* rfc821_domains = TRUE; << no longer needed */
     recipient = parse_extract_address(recipient, &errmess, &start, &end,
@@ -2980,7 +2981,7 @@ while (done <= 0)
 
     if (recipient == NULL)
       {
-      done = synprot_error(L_smtp_syntax_error, 501, smtp_command_argument, errmess);
+      done = synprot_error(L_smtp_syntax_error, 501, smtp_cmd_argument, errmess);
       rcpt_fail_count++;
       break;
       }
@@ -3010,7 +3011,7 @@ while (done <= 0)
         {
         rcpt_fail_count++;
         smtp_printf("501 %s: recipient address must contain a domain\r\n",
-          smtp_command_argument);
+          smtp_cmd_argument);
         log_write(L_smtp_syntax_error,
           LOG_MAIN|LOG_REJECT, "unqualified recipient rejected: "
           "<%s> %s%s", recipient, host_and_ident(TRUE),
@@ -3084,7 +3085,7 @@ while (done <= 0)
         "discarded by %s ACL%s%s", host_and_ident(TRUE),
         (sender_address_unrewritten != NULL)?
         sender_address_unrewritten : sender_address,
-        smtp_command_argument, recipients_discarded? "MAIL" : "RCPT",
+        smtp_cmd_argument, recipients_discarded? "MAIL" : "RCPT",
         (log_msg == NULL)? US"" : US": ",
         (log_msg == NULL)? US"" : log_msg);
       }
@@ -3167,7 +3168,7 @@ while (done <= 0)
       uschar *s = NULL;
 
       /* rfc821_domains = TRUE; << no longer needed */
-      address = parse_extract_address(smtp_command_argument, &errmess, &start, &end,
+      address = parse_extract_address(smtp_cmd_argument, &errmess, &start, &end,
         &recipient_domain, FALSE);
       /* rfc821_domains = FALSE; << no longer needed */
 
@@ -3194,7 +3195,7 @@ while (done <= 0)
             string_sprintf("550 <%s> %s", address, addr->message) :
             string_sprintf("550 <%s> is not deliverable", address);
           log_write(0, LOG_MAIN, "VRFY failed for %s %s",
-            smtp_command_argument, host_and_ident(TRUE));
+            smtp_cmd_argument, host_and_ident(TRUE));
           break;
           }
         }
@@ -3212,7 +3213,7 @@ while (done <= 0)
       {
       BOOL save_log_testing_mode = log_testing_mode;
       address_test_mode = log_testing_mode = TRUE;
-      (void) verify_address(deliver_make_addr(smtp_command_argument, FALSE),
+      (void) verify_address(deliver_make_addr(smtp_cmd_argument, FALSE),
         smtp_out, vopt_is_recipient | vopt_qualify | vopt_expn, -1, -1, -1,
         NULL, NULL, NULL);
       address_test_mode = FALSE;
@@ -3430,7 +3431,7 @@ while (done <= 0)
       break;
       }
 
-    log_write(L_etrn, LOG_MAIN, "ETRN %s received from %s", smtp_command_argument,
+    log_write(L_etrn, LOG_MAIN, "ETRN %s received from %s", smtp_cmd_argument,
       host_and_ident(FALSE));
 
     rc = acl_check(ACL_WHERE_ETRN, NULL, acl_smtp_etrn, &user_msg, &log_msg);
@@ -3442,7 +3443,7 @@ while (done <= 0)
 
     /* Compute the serialization key for this command. */
 
-    etrn_serialize_key = string_sprintf("etrn-%s\n", smtp_command_argument);
+    etrn_serialize_key = string_sprintf("etrn-%s\n", smtp_cmd_argument);
 
     /* If a command has been specified for running as a result of ETRN, we
     permit any argument to ETRN. If not, only the # standard form is permitted,
@@ -3454,7 +3455,7 @@ while (done <= 0)
       uschar *error;
       BOOL rc;
       etrn_command = smtp_etrn_command;
-      deliver_domain = smtp_command_argument;
+      deliver_domain = smtp_cmd_argument;
       rc = transport_set_up_command(&argv, smtp_etrn_command, TRUE, 0, NULL,
         US"ETRN processing", &error);
       deliver_domain = NULL;
@@ -3471,7 +3472,7 @@ while (done <= 0)
 
     else
       {
-      if (*smtp_command_argument++ != '#')
+      if (*smtp_cmd_argument++ != '#')
         {
         done = synprot_error(L_smtp_syntax_error, 501, NULL,
           US"argument must begin with #");
@@ -3479,7 +3480,7 @@ while (done <= 0)
         }
       etrn_command = US"exim -R";
       argv = child_exec_exim(CEE_RETURN_ARGV, TRUE, NULL, TRUE, 2, US"-R",
-        smtp_command_argument);
+        smtp_cmd_argument);
       }
 
     /* If we are host-testing, don't actually do anything. */
@@ -3501,7 +3502,7 @@ while (done <= 0)
 
     if (smtp_etrn_serialize && !enq_start(etrn_serialize_key))
       {
-      smtp_printf("458 Already processing %s\r\n", smtp_command_argument);
+      smtp_printf("458 Already processing %s\r\n", smtp_cmd_argument);
       break;
       }
 
@@ -3599,7 +3600,7 @@ while (done <= 0)
       "(next input sent too soon: pipelining was%s advertised): "
       "rejected \"%s\" %s next input=\"%s\"",
       pipelining_advertised? "" : " not",
-      cmd_buffer, host_and_ident(TRUE),
+      smtp_cmd_buffer, host_and_ident(TRUE),
       string_printing(smtp_inptr));
     smtp_printf("554 SMTP synchronization error\r\n");
     done = 1;   /* Pretend eof - drops connection */
@@ -3610,7 +3611,7 @@ while (done <= 0)
     incomplete_transaction_log(US"too many non-mail commands");
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
       "nonmail commands (last was \"%.*s\")",  host_and_ident(FALSE),
-      smtp_command_argument - cmd_buffer, cmd_buffer);
+      smtp_cmd_argument - smtp_cmd_buffer, smtp_cmd_buffer);
     smtp_printf("554 Too many nonmail commands\r\n");
     done = 1;   /* Pretend eof - drops connection */
     break;
@@ -3621,14 +3622,14 @@ while (done <= 0)
       {
       log_write(L_smtp_syntax_error, LOG_MAIN,
         "SMTP syntax error in \"%s\" %s %s",
-        string_printing(cmd_buffer), host_and_ident(TRUE),
+        string_printing(smtp_cmd_buffer), host_and_ident(TRUE),
         US"unrecognized command");
       incomplete_transaction_log(US"unrecognized command");
       smtp_printf("500 Too many unrecognized commands\r\n");
       done = 2;
       log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
         "unrecognized commands (last was \"%s\")", host_and_ident(FALSE),
-        cmd_buffer);
+        smtp_cmd_buffer);
       }
     else
       done = synprot_error(L_smtp_syntax_error, 500, NULL,

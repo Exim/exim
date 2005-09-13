@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.37 2005/09/12 13:39:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.38 2005/09/13 11:13:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1014,7 +1014,8 @@ uschar *smtp_banner            = US"$smtp_active_hostname ESMTP "
                              "\0<---------------Space to patch smtp_banner->";
 BOOL    smtp_batched_input     = FALSE;
 BOOL    smtp_check_spool_space = TRUE;
-uschar *smtp_command_argument  = NULL;
+uschar *smtp_cmd_argument      = NULL;
+uschar *smtp_cmd_buffer        = NULL;
 int     smtp_connect_backlog   = 20;
 double  smtp_delay_mail        = 0.0;
 double  smtp_delay_rcpt        = 0.0;

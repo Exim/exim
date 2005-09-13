@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.68 2005/09/12 13:39:31 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.69 2005/09/13 11:13:27 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -104,7 +104,7 @@ PH/06 It is now possible to specify a port number along with a host name or
 
 PH/07 $smtp_command_argument is now set for all SMTP commands, not just the
       non-message ones. This makes it possible to inspect the complete command
-      for RCPT commands, for example.
+      for RCPT commands, for example. But see also PH/45 below.
 
 PH/08 The ${eval expansion now supports % as a "remainder" operator.
 
@@ -145,6 +145,11 @@ PH/10 There is a new ACL control called "suppress_local_fixups". This applies
 PH/11 There is a new log selector, "unknown_in_list", which provokes a log
       entry when the result of a list match is failure because a DNS lookup
       failed.
+
+PH/12 There is a new variable called $smtp_command which contains the full SMTP
+      command (compare $smtp_command_argument - see PH/07 above). This makes it
+      possible to distinguish between HELO and EHLO, and also between things
+      like "MAIL FROM:<>" and "MAIL FROM: <>".
 
 
 Exim version 4.52
