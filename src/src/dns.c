@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.9 2005/06/29 10:56:35 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.10 2005/09/13 15:40:07 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -21,6 +21,120 @@ static void dns_complete_a6(dns_address ***, dns_answer *, dns_record *,
   int, uschar *);
 #endif
 #endif
+
+
+/*************************************************
+*               Fake DNS resolver                *
+*************************************************/
+
+/* This function is called instead of res_search() when Exim is running in its
+test harness. It recognizes some special domain names, and uses them to force
+failure and retry responses (optionally with a delay). It also recognises the
+zones test.ex and 10.in-addr.arpa, and for those it calls an external utility
+that mock-up a nameserver, if it can find the utility. Otherwise, it passes its
+arguments on to res_search().
+
+Background: the original test suite required a real nameserver to carry the
+test.ex and 10.in-addr.arpa zones, whereas the new test suit has the fake
+server for portability. This code supports both.
+
+Arguments:
+  name        the domain name
+  type        the DNS record type
+  answerptr   where to put the answer
+  size        size of the answer area
+
+Returns:      length of returned data, or -1 on error (h_errno set)
+*/
+
+static int
+fakens_search(uschar *name, int type, uschar *answerptr, int size)
+{
+int len = Ustrlen(name);
+uschar *endname = name + len;
+
+if (len >= 14 && Ustrcmp(endname - 14, "test.again.dns") == 0)
+  {
+  int delay = Uatoi(name);  /* digits at the start of the name */
+  DEBUG(D_dns) debug_printf("Return from DNS lookup of %s (%s) faked for testing\n",
+    name, dns_text_type(type));
+  if (delay > 0)
+    {
+    DEBUG(D_dns) debug_printf("delaying %d seconds\n", delay);
+    sleep(delay);
+    }
+  h_errno = TRY_AGAIN;
+  return -1;
+  }
+
+if (len >= 13 && Ustrcmp(endname - 13, "test.fail.dns") == 0)
+  {
+  DEBUG(D_dns) debug_printf("Return from DNS lookup of %s (%s) faked for testing\n",
+    name, dns_text_type(type));
+  h_errno = NO_RECOVERY;
+  return -1;
+  }
+
+if (Ustrcmp(name, "test.ex") == 0 ||
+    (len > 8 && Ustrcmp(endname - 8, ".test.ex") == 0) ||
+    (len >= 16 && Ustrcmp(endname - 16, ".10.in-addr.arpa") == 0))
+  {
+  uschar utilname[256];
+  struct stat statbuf;
+
+  (void)string_format(utilname, sizeof(utilname), "%s/../bin/fakens",
+    spool_directory);
+
+  if (stat(CS utilname, &statbuf) >= 0)
+    {
+    pid_t pid;
+    int infd, outfd, rc;
+    uschar *argv[5];
+
+    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) using fakens\n",
+      name, dns_text_type(type));
+
+    argv[0] = utilname;
+    argv[1] = spool_directory;
+    argv[2] = name;
+    argv[3] = dns_text_type(type);
+    argv[4] = NULL;
+
+    pid = child_open(argv, NULL, 0000, &infd, &outfd, FALSE);
+    if (pid < 0)
+      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to run fakens: %s",
+        strerror(errno));
+
+    len = 0;
+    rc = -1;
+    while (size > 0 && (rc = read(outfd, answerptr, size)) > 0)
+      {
+      len += rc;
+      answerptr += rc;
+      size -= rc;
+      }
+
+    if (rc < 0)
+      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "read from fakens failed: %s",
+        strerror(errno));
+
+    switch(child_close(pid, 0))
+      {
+      case 0: return len;
+      case 1: h_errno = HOST_NOT_FOUND; break;
+      case 2: h_errno = TRY_AGAIN; break;
+      default:
+      case 3: h_errno = NO_RECOVERY; break;
+      case 4: h_errno = NO_DATA; break;
+      }
+    return -1;
+    }
+  }
+
+/* Not test.ex or 10.in-addr.arpa, or fakens utility not found. */
+
+return res_search(CS name, C_IN, type, answerptr, size);
+}
 
 
 
@@ -334,8 +448,8 @@ Returns:    DNS_SUCCEED   successful lookup
 int
 dns_basic_lookup(dns_answer *dnsa, uschar *name, int type)
 {
+int rc = -1;
 #ifndef STAND_ALONE
-int rc;
 uschar *save;
 #endif
 
@@ -359,35 +473,6 @@ if (previous != NULL)
       (previous->data.val == DNS_AGAIN)? "DNS_AGAIN" :
       (previous->data.val == DNS_FAIL)? "DNS_FAIL" : "??");
   return previous->data.val;
-  }
-
-/* If we are running in the test harness, recognize a couple of special
-names that always give error returns. This makes it straightforward to
-test the handling of DNS errors. */
-
-if (running_in_test_harness)
-  {
-  uschar *endname = name + Ustrlen(name);
-  if (Ustrcmp(endname - 14, "test.again.dns") == 0)
-    {
-    int delay = Uatoi(name);  /* digits at the start of the name */
-    DEBUG(D_dns) debug_printf("Real DNS lookup of %s (%s) bypassed for testing\n",
-      name, dns_text_type(type));
-    if (delay > 0)
-      {
-      DEBUG(D_dns) debug_printf("delaying %d seconds\n", delay);
-      sleep(delay);
-      }
-    DEBUG(D_dns) debug_printf("returning DNS_AGAIN\n");
-    return dns_return(name, type, DNS_AGAIN);
-    }
-  if (Ustrcmp(endname - 13, "test.fail.dns") == 0)
-    {
-    DEBUG(D_dns) debug_printf("Real DNS lookup of %s (%s) bypassed for testing\n",
-      name, dns_text_type(type));
-    DEBUG(D_dns) debug_printf("returning DNS_FAIL\n");
-    return dns_return(name, type, DNS_FAIL);
-    }
   }
 
 /* If configured, check the hygene of the name passed to lookup. Otherwise,
@@ -438,10 +523,18 @@ if (check_dns_names_pattern[0] != 0 && type != T_PTR)
 #endif /* STAND_ALONE */
 
 /* Call the resolver; for an overlong response, res_search() will return the
-number of bytes the message would need, so we need to check for this case.
-The effect is to truncate overlong data. */
+number of bytes the message would need, so we need to check for this case. The
+effect is to truncate overlong data.
 
-dnsa->answerlen = res_search(CS name, C_IN, type, dnsa->answer, MAXPACKET);
+If we are running in the test harness, instead of calling the normal resolver
+(res_search), we call fakens_search(), which recognizes certain special
+domains, and interfaces to a fake nameserver for certain special zones. */
+
+if (running_in_test_harness)
+  dnsa->answerlen = fakens_search(name, type, dnsa->answer, MAXPACKET);
+else
+  dnsa->answerlen = res_search(CS name, C_IN, type, dnsa->answer, MAXPACKET);
+
 if (dnsa->answerlen > MAXPACKET) dnsa->answerlen = MAXPACKET;
 
 if (dnsa->answerlen < 0) switch (h_errno)
