@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.227 2005/09/13 11:13:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.228 2005/09/13 11:27:45 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -180,6 +180,8 @@ TF/01 Add missing LIBS=-lm to OS/Makefile-OpenBSD which was overlooked when
       the ratelimit ACL was added.
 
 PH/45 Added $smtp_command for the full command (cf $smtp_command_argument).
+
+PH/46 Added extra information about PostgreSQL errors to the error string.
 
 
 Exim version 4.52

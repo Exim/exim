@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/pgsql.c,v 1.2 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/pgsql.c,v 1.3 2005/09/13 11:27:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -285,8 +285,15 @@ else
     break;
 
     default:
+    /* This was the original code:
     *errmsg = string_sprintf("PGSQL: query failed: %s\n",
                              PQresultErrorMessage(pg_result));
+    This was suggested by a user:
+    */
+
+    *errmsg = string_sprintf("PGSQL: query failed: %s (%s) (%s)\n",
+                             PQresultErrorMessage(pg_result),
+                             PQresStatus(PQresultStatus(pg_result)), query);
     *defer_break = FALSE;
     goto PGSQL_EXIT;
     }
