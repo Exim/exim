@@ -1,6 +1,6 @@
 #!/usr/bin/perl -wT
 #
-# $Cambridge: exim/src/util/ratelimit.pl,v 1.1 2005/09/13 17:51:06 fanf2 Exp $
+# $Cambridge: exim/src/util/ratelimit.pl,v 1.2 2005/09/13 18:06:31 fanf2 Exp $
 
 use strict;
 
@@ -118,9 +118,9 @@ while (<>) {
   }
   # see acl_ratelimit() for details of the following
   my $interval = $time - $time{$key};
+  $interval = 1e-9 if $interval <= 0.0;
   my $i_over_p = $interval / $period;
   my $a = exp(-$i_over_p);
-  $i_over_p = 1e-9 if $i_over_p <= 0.0;
   $time{$key} = $time;
   $rate{$key} = $size * (1.0 - $a) / $i_over_p + $a * $rate{$key};
   $max{$key} = $rate{$key} if $rate{$key} > $max{$key};

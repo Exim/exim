@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.47 2005/09/12 10:08:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.48 2005/09/13 18:06:30 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2164,16 +2164,16 @@ else
                    + (double)tv.tv_usec / 1000000.0;
   double prev_time = (double)dbd->time_stamp
                    + (double)dbd->time_usec / 1000000.0;
-  double interval = this_time - prev_time;
-
-  double i_over_p = interval / period;
-  double a = exp(-i_over_p);
 
   /* We must avoid division by zero, and deal gracefully with the clock going
   backwards. If we blunder ahead when time is in reverse then the computed
-  rate will become bogusly huge. Clamp i/p to a very small number instead. */
+  rate will be bogus. To be safe we clamp interval to a very small number. */
 
-  if (i_over_p <= 0.0) i_over_p = 1e-9;
+  double interval = this_time - prev_time <= 0.0 ? 1e-9
+                  : this_time - prev_time;
+
+  double i_over_p = interval / period;
+  double a = exp(-i_over_p);
 
   dbd->time_stamp = tv.tv_sec;
   dbd->time_usec = tv.tv_usec;
