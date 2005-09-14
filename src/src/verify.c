@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.26 2005/09/06 13:17:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.27 2005/09/14 09:40:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -410,18 +410,22 @@ for (host = host_list; host != NULL && !done; host = host->next)
 
   host_af = (Ustrchr(host->address, ':') == NULL)? AF_INET:AF_INET6;
 
-  /* Expand and interpret the interface and port strings. This has to
-  be delayed till now, because they may expand differently for different
-  hosts. If there's a failure, log it, but carry on with the defaults. */
+  /* Expand and interpret the interface and port strings. The latter will not
+  be used if there is a host-specific port (e.g. from a manualroute router).
+  This has to be delayed till now, because they may expand differently for
+  different hosts. If there's a failure, log it, but carry on with the
+  defaults. */
 
   deliver_host = host->name;
   deliver_host_address = host->address;
   deliver_domain = addr->domain;
+
   if (!smtp_get_interface(tf->interface, host_af, addr, NULL, &interface,
           US"callout") ||
       !smtp_get_port(tf->port, addr, &port, US"callout"))
     log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
       addr->message);
+
   deliver_host = deliver_host_address = NULL;
   deliver_domain = save_deliver_domain;
 
