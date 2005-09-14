@@ -1,4 +1,4 @@
-$Cambridge: exim/src/README.UPDATING,v 1.7 2005/04/28 13:06:32 ph10 Exp $
+$Cambridge: exim/src/README.UPDATING,v 1.8 2005/09/14 13:20:12 ph10 Exp $
 
 This document contains detailed information about incompatibilities that might
 be encountered when upgrading from one release of Exim to another. The
@@ -26,6 +26,13 @@ there have been two big upheavals...
 
 The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
+
+
+Version 4.53
+------------
+
+If you are using the experimental Domain Keys support, you must upgrade to
+at least libdomainkeys 0.67 in order to run this release of Exim.
 
 
 Version 4.51
