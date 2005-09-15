@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.7 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.8 2005/09/15 09:15:26 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -767,8 +767,8 @@ for(;;)
   /* If the buffer contains just one digit, or just consists of "d", use the
   previous name for an update. */
 
-  if ((isdigit((uschar)buffer[0]) && !isdigit((uschar)buffer[1])) ||
-       Ustrcmp(buffer, "d") == 0)
+  if ((isdigit((uschar)buffer[0]) && (buffer[1] == ' ' || buffer[1] == '\0')
+       || Ustrcmp(buffer, "d") == 0)
     {
     if (name[0] == 0)
       {
@@ -894,7 +894,8 @@ for(;;)
             break;
 
             case type_ratelimit:
-            ratelimit = (dbdata_ratelimit *)value;
+            ratelimit = (dbdata_ratelimit *)record;
+            length = sizeof(dbdata_ratelimit);
             switch(fieldno)
               {
               case 0:
@@ -904,6 +905,7 @@ for(;;)
 
               case 1:
               ratelimit->time_usec = Uatoi(value);
+              break;
 
               case 2:
               ratelimit->rate = Ustrtod(value, NULL);
@@ -1014,7 +1016,7 @@ for(;;)
       break;
 
       case type_ratelimit:
-      ratelimit = (dbdata_ratelimit *)value;
+      ratelimit = (dbdata_ratelimit *)record;
       printf("0 time stamp:  %s\n", print_time(ratelimit->time_stamp));
       printf("1 fract. time: .%06d\n", ratelimit->time_usec);
       printf("2 sender rate: % .3f\n", ratelimit->rate);

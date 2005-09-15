@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.231 2005/09/13 18:06:30 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.232 2005/09/15 09:15:26 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -192,6 +192,9 @@ TF/02 Added util/ratelimit.pl
 
 TF/03 Minor fix to the ratelimit code to improve its behaviour in case the
       clock is set back in time.
+
+TF/04 Fix the ratelimit support in exim_fixdb. Patch provided by Brian
+      Candler <B.Candler@pobox.com>.
 
 
 Exim version 4.52
