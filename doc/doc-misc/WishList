@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.48 2005/08/30 09:19:33 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.49 2005/09/15 08:27:59 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1974,5 +1974,10 @@ match_address, for instance, matches one address to a list. The wish is to be
 able to supply two lists; for each address in the first list, search the
 second. Maybe something like ${match_any{...}{...}} is needed.
 ------------------------------------------------------------------------------
---- HWM 340 ------------------------------------------------------------------
+
+(341) 15-Sep-05 S Add /return_path_retain to submission mode
+
+This would re-instate the behaviour prior to change 4.52/TF/02.
+------------------------------------------------------------------------------
+--- HWM 341 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
