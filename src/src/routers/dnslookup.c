@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.5 2005/09/12 15:09:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.6 2005/09/15 16:02:07 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -185,11 +185,14 @@ worked out immediately before they are used. Sender addresses are routed for
 verification purposes, but never at transport time, so any header changes that
 you might expect as a result of sender domain widening do not occur. Therefore
 we do not perform widening when verifying sender addresses; however, widening
-sender addresses is OK if we do not have to rewrite the headers. The
-suppression of widening for sender addresses is silent because it is the normal
-desirable behaviour. */
+sender addresses is OK if we do not have to rewrite the headers. A corollary
+of this is that if the current address is not the original address, then it
+does not appear in the message header so it is also OK to widen. The
+suppression of widening for sender addresses is silent because it is the
+normal desirable behaviour. */
 
-if (ob->widen_domains != NULL && (verify != v_sender || !ob->rewrite_headers))
+if (ob->widen_domains != NULL &&
+    (verify != v_sender || !ob->rewrite_headers || addr->parent != NULL))
   {
   listptr = ob->widen_domains;
   widen = string_nextinlist(&listptr, &widen_sep, widen_buffer,

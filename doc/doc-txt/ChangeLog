@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.232 2005/09/15 09:15:26 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.233 2005/09/15 16:02:07 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -195,6 +195,9 @@ TF/03 Minor fix to the ratelimit code to improve its behaviour in case the
 
 TF/04 Fix the ratelimit support in exim_fixdb. Patch provided by Brian
       Candler <B.Candler@pobox.com>.
+
+TF/05 The fix for PH/43 was not completely correct; widen_domains is always
+      OK for addresses that are the result of redirections.
 
 
 Exim version 4.52
