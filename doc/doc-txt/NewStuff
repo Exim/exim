@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.70 2005/09/13 17:51:05 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.71 2005/09/15 12:22:41 fanf2 Exp $
 
 New Features in Exim
 --------------------
@@ -291,7 +291,7 @@ TF/04 There is a new ratelimit ACL condition which can be used to measure
       rate limit. Conversely, if m and p are both small then messages must be
       sent at an even rate.
 
-      The key is used to look up the data used to calcluate the client's
+      The key is used to look up the data used to calculate the client's
       average sending rate. This data is stored in a database maintained by
       Exim in its spool directory alongside the retry database etc. For
       example, you can limit the sending rate of each authenticated user,
@@ -306,7 +306,8 @@ TF/04 There is a new ratelimit ACL condition which can be used to measure
 
       Each ratelimit condition can have up to two options. The first option
       specifies what Exim measures the rate of, and the second specifies how
-      Exim handles excessively fast clients.
+      Exim handles excessively fast clients. The options are separated by a
+      slash, like the other parameters.
 
       The per_mail option means that it measures the client's rate of sending
       messages. This is the default if none of the per_* options is specified.
