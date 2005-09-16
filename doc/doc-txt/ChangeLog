@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.233 2005/09/15 16:02:07 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.234 2005/09/16 14:44:11 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -198,6 +198,10 @@ TF/04 Fix the ratelimit support in exim_fixdb. Patch provided by Brian
 
 TF/05 The fix for PH/43 was not completely correct; widen_domains is always
       OK for addresses that are the result of redirections.
+
+PH/48 A number of further additions for the benefit of the new test suite,
+      including a fake gethostbyname() that interfaces to the fake DNS resolver
+      (see PH/47 above).
 
 
 Exim version 4.52

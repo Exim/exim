@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/child.c,v 1.5 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/child.c,v 1.6 2005/09/16 14:44:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -38,7 +38,7 @@ if (oldfd == newfd) return;
 }
 
 
-
+#ifndef STAND_ALONE
 /*************************************************
 *   Build argv list and optionally re-exec Exim  *
 *************************************************/
@@ -233,7 +233,7 @@ if (pid > 0)
 errno = save_errno;
 return (pid_t)(-1);
 }
-
+#endif
 
 
 

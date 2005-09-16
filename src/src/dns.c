@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.10 2005/09/13 15:40:07 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.11 2005/09/16 14:44:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -30,16 +30,16 @@ static void dns_complete_a6(dns_address ***, dns_answer *, dns_record *,
 /* This function is called instead of res_search() when Exim is running in its
 test harness. It recognizes some special domain names, and uses them to force
 failure and retry responses (optionally with a delay). It also recognises the
-zones test.ex and 10.in-addr.arpa, and for those it calls an external utility
-that mock-up a nameserver, if it can find the utility. Otherwise, it passes its
-arguments on to res_search().
+zones test.ex, 10.in-addr.arpa, and 0.8.e.f.ip6.arpa, and for those it calls an
+external utility that mock-up a nameserver, if it can find the utility.
+Otherwise, it passes its arguments on to res_search().
 
 Background: the original test suite required a real nameserver to carry the
-test.ex and 10.in-addr.arpa zones, whereas the new test suit has the fake
-server for portability. This code supports both.
+test zones, whereas the new test suit has the fake server for portability. This
+code supports both.
 
 Arguments:
-  name        the domain name
+  domain      the domain name
   type        the DNS record type
   answerptr   where to put the answer
   size        size of the answer area
@@ -48,10 +48,16 @@ Returns:      length of returned data, or -1 on error (h_errno set)
 */
 
 static int
-fakens_search(uschar *name, int type, uschar *answerptr, int size)
+fakens_search(uschar *domain, int type, uschar *answerptr, int size)
 {
-int len = Ustrlen(name);
-uschar *endname = name + len;
+int len = Ustrlen(domain);
+uschar *endname;
+uschar name[256];
+
+if (domain[len - 1] == '.') len--;
+Ustrncpy(name, domain, len);
+name[len] = 0;
+endname = name + len;
 
 if (len >= 14 && Ustrcmp(endname - 14, "test.again.dns") == 0)
   {
@@ -77,7 +83,8 @@ if (len >= 13 && Ustrcmp(endname - 13, "test.fail.dns") == 0)
 
 if (Ustrcmp(name, "test.ex") == 0 ||
     (len > 8 && Ustrcmp(endname - 8, ".test.ex") == 0) ||
-    (len >= 16 && Ustrcmp(endname - 16, ".10.in-addr.arpa") == 0))
+    (len >= 16 && Ustrcmp(endname - 16, ".10.in-addr.arpa") == 0) ||
+    (len >= 17 && Ustrcmp(endname - 17, ".0.8.e.f.ip6.arpa") == 0))
   {
   uschar utilname[256];
   struct stat statbuf;
@@ -133,7 +140,9 @@ if (Ustrcmp(name, "test.ex") == 0 ||
 
 /* Not test.ex or 10.in-addr.arpa, or fakens utility not found. */
 
-return res_search(CS name, C_IN, type, answerptr, size);
+DEBUG(D_dns) debug_printf("passing %s on to res_search\n", domain);
+
+return res_search(CS domain, C_IN, type, answerptr, size);
 }
 
 

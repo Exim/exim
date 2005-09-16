@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.13 2005/08/22 15:28:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.14 2005/09/16 14:44:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -102,6 +102,13 @@ number of multihomed host IP addresses into the order, so as to get
 repeatability. This doesn't have to be efficient. But don't interchange IPv4
 and IPv6 addresses!
 
+NOTE:
+This sorting is not necessary for the new test harness, because it
+doesn't call the real DNS resolver, and its output is repeatable. However,
+until the old test harness is discarded, we need to retain this capability.
+The new harness is being developed towards the end of 2005. It will be some
+time before it can do everything that the old one can do.
+
 Arguments:
   host        -> the first host item
   last        -> the last host item
@@ -131,6 +138,148 @@ while (!done)
       }
     }
   }
+}
+
+
+
+/*************************************************
+*       Replace gethostbyname() when testing     *
+*************************************************/
+
+/* This function is called instead of gethostbyname(), gethostbyname2(), or
+getipnodebyname() when running in the test harness. It uses only the DNS to
+look up the host name. In the new test harness, this means it will access only
+the fake DNS resolver. In the old harness it will call the real resolver and
+access the test zone.
+
+Arguments:
+  name          the host name or a textual IP address
+  af            AF_INET or AF_INET6
+  error_num     where to put an error code:
+                HOST_NOT_FOUND/TRY_AGAIN/NO_RECOVERY/NO_DATA
+
+Returns:        a hostent structure or NULL for an error
+*/
+
+static struct hostent *
+host_fake_gethostbyname(uschar *name, int af, int *error_num)
+{
+int ipa;
+int alen = (af == AF_INET)? sizeof(struct in_addr):sizeof(struct in6_addr);
+uschar *lname = name;
+uschar *adds;
+uschar **alist;
+struct hostent *yield;
+dns_answer dnsa;
+dns_scan dnss;
+dns_record *rr;
+
+DEBUG(D_host_lookup)
+  debug_printf("using host_fake_gethostbyname for %s (%s)\n", name,
+    (af == AF_INET)? "IPv4" : "IPv6");
+
+if (Ustrcmp(name, "localhost") == 0)
+  lname = (af == AF_INET)? US"127.0.0.1" : US"::1";
+
+/* Handle a literal IP address */
+
+ipa = string_is_ip_address(lname, NULL);
+if (ipa != 0)
+  {
+  if ((ipa == 4 && af == AF_INET) ||
+      (ipa == 6 && af == AF_INET6))
+    {
+    int i, n;
+    int x[4];
+    yield = store_get(sizeof(struct hostent));
+    alist = store_get(2 * sizeof(char *));
+    adds  = store_get(alen);
+    yield->h_name = CS name;
+    yield->h_aliases = NULL;
+    yield->h_addrtype = af;
+    yield->h_length = alen;
+    yield->h_addr_list = CSS alist;
+    *alist++ = adds;
+    n = host_aton(lname, x);
+    for (i = 0; i < n; i++)
+      {
+      int y = x[i];
+      *adds++ = (y >> 24) & 255;
+      *adds++ = (y >> 16) & 255;
+      *adds++ = (y >> 8) & 255;
+      *adds++ = y & 255;
+      }
+    *alist = NULL;
+    }
+
+  /* Wrong kind of literal address */
+
+  else
+    {
+    *error_num = HOST_NOT_FOUND;
+    return NULL;
+    }
+  }
+
+/* Handle a host name */
+
+else
+  {
+  int type = (af == AF_INET)? T_A:T_AAAA;
+  int rc = dns_lookup(&dnsa, lname, type, NULL);
+  int count = 0;
+
+  switch(rc)
+    {
+    case DNS_SUCCEED: break;
+    case DNS_NOMATCH: *error_num = HOST_NOT_FOUND; return NULL;
+    case DNS_NODATA:  *error_num = NO_DATA; return NULL;
+    case DNS_AGAIN:   *error_num = TRY_AGAIN; return NULL;
+    default:
+    case DNS_FAIL:    *error_num = NO_RECOVERY; return NULL;
+    }
+
+  for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+       rr != NULL;
+       rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+    {
+    if (rr->type == type) count++;
+    }
+
+  yield = store_get(sizeof(struct hostent));
+  alist = store_get((count + 1) * sizeof(char **));
+  adds  = store_get(count *alen);
+
+  yield->h_name = CS name;
+  yield->h_aliases = NULL;
+  yield->h_addrtype = af;
+  yield->h_length = alen;
+  yield->h_addr_list = CSS alist;
+
+  for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+       rr != NULL;
+       rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+    {
+    int i, n;
+    int x[4];
+    dns_address *da;
+    if (rr->type != type) continue;
+    da = dns_address_from_rr(&dnsa, rr);
+    *alist++ = adds;
+    n = host_aton(da->address, x);
+    for (i = 0; i < n; i++)
+      {
+      int y = x[i];
+      *adds++ = (y >> 24) & 255;
+      *adds++ = (y >> 16) & 255;
+      *adds++ = (y >> 8) & 255;
+      *adds++ = y & 255;
+      }
+    }
+  *alist = NULL;
+  }
+
+return yield;
 }
 
 
@@ -1813,16 +1962,27 @@ for (i = 1; i <= times;
   struct hostent *hostdata;
 
   #if HAVE_IPV6
+  if (running_in_test_harness)
+    hostdata = host_fake_gethostbyname(host->name, af, &error_num);
+  else
+    {
     #if HAVE_GETIPNODEBYNAME
     hostdata = getipnodebyname(CS host->name, af, 0, &error_num);
     #else
     hostdata = gethostbyname2(CS host->name, af);
     error_num = h_errno;
     #endif
-  #else
-  hostdata = gethostbyname(CS host->name);
-  error_num = h_errno;
-  #endif
+    }
+
+  #else    /* not HAVE_IPV6 */
+  if (running_in_test_harness)
+    hostdata = host_fake_gethostbyname(host->name, AF_INET, &error_num);
+  else
+    {
+    hostdata = gethostbyname(CS host->name);
+    error_num = h_errno;
+    }
+  #endif   /* HAVE_IPV6 */
 
   if (hostdata == NULL)
     {
@@ -2053,7 +2213,6 @@ to do so. On an IPv4 system, go round the loop once only, looking only for A
 records. */
 
 #if HAVE_IPV6
-
   #ifndef STAND_ALONE
     if (dns_ipv4_lookup != NULL &&
         match_isinlist(host->name, &dns_ipv4_lookup, 0, NULL, NULL, MCL_DOMAIN,
@@ -2317,8 +2476,10 @@ if ((whichrrs & HOST_FIND_BY_SRV) != 0)
 
   if (rc == DNS_FAIL || rc == DNS_AGAIN)
     {
+    #ifndef STAND_ALONE
     if (match_isinlist(host->name, &srv_fail_domains, 0, NULL, NULL, MCL_DOMAIN,
         TRUE, NULL) != OK)
+    #endif
       return HOST_FIND_AGAIN;
     DEBUG(D_host_lookup) debug_printf("DNS_%s treated as DNS_NODATA "
       "(domain in srv_fail_domains)\n", (rc == DNS_FAIL)? "FAIL":"AGAIN");
@@ -2339,8 +2500,10 @@ if (rc != DNS_SUCCEED && (whichrrs & HOST_FIND_BY_MX) != 0)
   if (rc == DNS_NOMATCH) return HOST_FIND_FAILED;
   if (rc == DNS_FAIL || rc == DNS_AGAIN)
     {
+    #ifndef STAND_ALONE
     if (match_isinlist(host->name, &mx_fail_domains, 0, NULL, NULL, MCL_DOMAIN,
         TRUE, NULL) != OK)
+    #endif
       return HOST_FIND_AGAIN;
     DEBUG(D_host_lookup) debug_printf("DNS_%s treated as DNS_NODATA "
       "(domain in mx_fail_domains)\n", (rc == DNS_FAIL)? "FAIL":"AGAIN");
@@ -2986,18 +3149,6 @@ return yield;
 
 #ifdef STAND_ALONE
 
-BOOL alldigits(uschar *buffer)
-{
-if (!isdigit(*buffer)) return FALSE;
-if (*buffer == '0' && buffer[1] == 'x')
-  {
-  buffer++;
-  while (isxdigit(*(++buffer)));
-  }
-else while (isdigit(*(++buffer)));
-return (*buffer == 0);
-}
-
 int main(int argc, char **cargv)
 {
 host_item h;
@@ -3053,6 +3204,12 @@ while (Ufgets(buffer, 256, stdin) != NULL)
   else if (Ustrcmp(buffer, "no_qualify_single") == 0) qualify_single = FALSE;
   else if (Ustrcmp(buffer, "search_parents") == 0) search_parents = TRUE;
   else if (Ustrcmp(buffer, "no_search_parents") == 0) search_parents = FALSE;
+  else if (Ustrcmp(buffer, "test_harness") == 0)
+    running_in_test_harness = !running_in_test_harness;
+  else if (Ustrcmp(buffer, "res_debug") == 0)
+    {
+    _res.options ^= RES_DEBUG;
+    }
   else if (Ustrncmp(buffer, "retrans", 7) == 0)
     {
     (void)sscanf(CS(buffer+8), "%d", &dns_retrans);
@@ -3062,12 +3219,6 @@ while (Ufgets(buffer, 256, stdin) != NULL)
     {
     (void)sscanf(CS(buffer+6), "%d", &dns_retry);
     _res.retry = dns_retry;
-    }
-  else if (alldigits(buffer))
-    {
-    debug_selector = Ustrtol(buffer, NULL, 0);
-    _res.options &= ~RES_DEBUG;
-    DEBUG(D_resolver) _res.options |= RES_DEBUG;
     }
   else
     {

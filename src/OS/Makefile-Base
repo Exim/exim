@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.8 2005/09/12 13:50:03 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.9 2005/09/16 14:44:11 ph10 Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -727,15 +727,16 @@ test_dbfn:   config.h dbfn.c dummies.o sa-globals.o sa-os.o store.o \
 	  tod.o version.o $(LIBS) $(DBMLIB)
 	rm -f dbfn.o
 
-test_host:   config.h host.c dns.c dummies.o sa-globals.o sa-os.o store.o \
-	       string.o tod.o tree.o
+test_host:   config.h child.c host.c dns.c dummies.c sa-globals.o sa-os.o \
+	       store.o string.o tod.o tree.o
+	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE -DTEST_HOST child.c
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE -DTEST_HOST host.c
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE -DTEST_HOST dns.c
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE -DTEST_HOST dummies.c
 	$(LNCC) -o test_host $(LFLAGS) \
-	  host.o dns.o dummies.o sa-globals.o os.o store.o string.o tod.o tree.o \
-	  $(LIBS) $(LIBRESOLV)
-	rm -f dummies.o  host.o dns.o
+	  host.o child.o dns.o dummies.o sa-globals.o os.o store.o string.o \
+	  tod.o tree.o $(LIBS) $(LIBRESOLV)
+	rm -f child.o dummies.o host.o dns.o
 
 test_os:     os.h os.c dummies.o sa-globals.o store.o string.o tod.o
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE os.c
