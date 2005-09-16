@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.8 2005/09/15 09:15:26 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.9 2005/09/16 14:11:25 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -767,7 +767,7 @@ for(;;)
   /* If the buffer contains just one digit, or just consists of "d", use the
   previous name for an update. */
 
-  if ((isdigit((uschar)buffer[0]) && (buffer[1] == ' ' || buffer[1] == '\0')
+  if ((isdigit((uschar)buffer[0]) && (buffer[1] == ' ' || buffer[1] == '\0'))
        || Ustrcmp(buffer, "d") == 0)
     {
     if (name[0] == 0)
