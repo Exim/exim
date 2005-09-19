@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.34 2005/09/12 13:50:03 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.35 2005/09/19 11:56:11 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  12 September 2005
+Last updated:  19 September 2005
 
 
 THE OLD LIST
@@ -146,6 +146,7 @@ Michael Haardt            Tidies to make the code stricter
                             continued maintenance of same
                           Patch for faster sort algorithm in queue.c
                           Patch for LDAP timeout handling
+                            ... and several more
 Thomas Hager              Patch for saslauthd crash bug
 Richard Hall              Fix for file descriptor leak in redirection
 Steve Haslam              Lots of stuff, including

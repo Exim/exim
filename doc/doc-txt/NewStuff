@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.71 2005/09/15 12:22:41 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.72 2005/09/19 11:56:11 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -154,6 +154,16 @@ PH/12 There is a new variable called $smtp_command which contains the full SMTP
 TF/01 There's a new script in util/ratelimit.pl which extracts sending
       rates from log files, to assist with choosing appropriate settings
       when deploying the ratelimit ACL condition.
+
+PH/13 A new letter, "H", is available in retry parameter sets. It is similar
+      to "G" (geometric increasing time intervals), except that the interval
+      before the next retry is randomized. Each time, the previous interval is
+      multiplied by the factor in order to get a maximum for the next interval.
+      The mininum interval is the first argument of the parameter, and an
+      actual interval is chosen randomly between them. Such a rule has been
+      found to be helpful in cluster configurations when all the members of the
+      cluster restart at once, and may synchronize their queue processing
+      times.
 
 
 Exim version 4.52

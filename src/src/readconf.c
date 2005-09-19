@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.12 2005/08/08 10:48:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.13 2005/09/19 11:56:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3554,6 +3554,7 @@ while ((p = get_config_line()) != NULL)
       break;
 
       case 'G':   /* Geometrically increasing intervals */
+      case 'H':   /* Ditto, but with randomness */
       rule->p1 = retry_arg(&p, 0);
       rule->p2 = retry_arg(&p, 1);
       break;
@@ -3564,7 +3565,7 @@ while ((p = get_config_line()) != NULL)
       }
 
     if (rule->timeout <= 0 || rule->p1 <= 0 ||
-          (rule->rule == 'G' && rule->p2 < 1000))
+          (rule->rule != 'F' && rule->p2 < 1000))
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
         "bad parameters for retry rule");
 

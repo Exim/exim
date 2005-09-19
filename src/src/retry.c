@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/retry.c,v 1.3 2005/06/29 14:17:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/retry.c,v 1.4 2005/09/19 11:56:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -739,15 +739,24 @@ for (i = 0; i < 3; i++)
         if (rule == NULL) next_try = now; else
           {
           if (rule->rule == 'F') next_try = now + rule->p1;
-          else  /* assume rule = 'G' */
+          else  /* rule = 'G' or 'H' */
             {
             int last_predicted_gap =
               retry_record->next_try - retry_record->last_try;
             int last_actual_gap = now - retry_record->last_try;
             int lastgap = (last_predicted_gap < last_actual_gap)?
               last_predicted_gap : last_actual_gap;
-            next_try = now + ((lastgap < rule->p1)? rule->p1 :
-               (lastgap * rule->p2)/1000);
+            int next_gap = (lastgap * rule->p2)/1000;
+            if (rule->rule == 'G')
+              {
+              next_try = now + ((lastgap < rule->p1)? rule->p1 : next_gap);
+              }
+            else  /* The 'H' rule */
+              {
+              next_try = now + rule->p1;
+              if (next_gap > rule->p1)
+                next_try += random_number(next_gap - rule->p1);
+              }
             }
           }
 
