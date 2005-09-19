@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.237 2005/09/19 14:01:51 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.238 2005/09/19 18:00:47 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -211,6 +211,10 @@ PH/49 Michael Haardt's randomized retrying, but as a separate retry parameter
       type ("H").
 
 PH/50 Make never_users, trusted_users, admin_groups, trusted_groups expandable.
+
+TF/07 Exim produced the error message "an SRV record indicated no SMTP
+      service" if it encountered an MX record with an empty target hostname.
+      The message is now "an MX or SRV record indicated no SMTP service".
 
 
 Exim version 4.52

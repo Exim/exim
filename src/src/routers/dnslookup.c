@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.7 2005/09/19 09:41:37 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.8 2005/09/19 18:00:47 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -304,9 +304,9 @@ for (;;)
 
   if (rc != HOST_FIND_FAILED) break;
 
-  /* Check to see if the failure is the result of MX records pointing
-  to non-existent domains, and if so, set an appropriate error message; the
-  case of an SRV record pointing to "." is another special case that we can
+  /* Check to see if the failure is the result of MX records pointing to
+  non-existent domains, and if so, set an appropriate error message; the case
+  of an MX or SRV record pointing to "." is another special case that we can
   detect. Otherwise "unknown mail domain" is used, which is confusing. Also, in
   this case don't do the widening. We need check only the first host to see if
   its MX has been filled in, but there is no address, because if there were any
@@ -319,7 +319,7 @@ for (;;)
     {
     setflag(addr, af_pass_message);   /* This is not a security risk */
     if (h.name[0] == 0)
-      addr->message = US"an SRV record indicated no SMTP service";
+      addr->message = US"an MX or SRV record indicated no SMTP service";
     else
       {
       addr->message = US"all relevant MX records point to non-existent hosts";
