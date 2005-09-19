@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.72 2005/09/19 11:56:11 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.73 2005/09/19 14:01:51 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -164,6 +164,9 @@ PH/13 A new letter, "H", is available in retry parameter sets. It is similar
       found to be helpful in cluster configurations when all the members of the
       cluster restart at once, and may synchronize their queue processing
       times.
+
+PH/14 The options never_users, trusted_users, admin_groups, and trusted_groups
+      are now expanded when the configuration file is read.
 
 
 Exim version 4.52

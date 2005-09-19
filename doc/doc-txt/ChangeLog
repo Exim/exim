@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.236 2005/09/19 11:56:11 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.237 2005/09/19 14:01:51 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -209,6 +209,8 @@ TF/06 The fix for widen_domains has also been applied to qualify_single and
 
 PH/49 Michael Haardt's randomized retrying, but as a separate retry parameter
       type ("H").
+
+PH/50 Make never_users, trusted_users, admin_groups, trusted_groups expandable.
 
 
 Exim version 4.52

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.13 2005/09/19 11:56:11 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.14 2005/09/19 14:01:51 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1625,10 +1625,16 @@ switch (type)
       int count = 1;
       uid_t *list;
       int ptr = 0;
-      uschar *p = sptr;
+      uschar *p;
+      uschar *op = expand_string (sptr);
 
+      if (op == NULL)
+        log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to expand %s: %s",
+          name, expand_string_message);
+
+      p = op;
       if (*p != 0) count++;
-      while (*p != 0) if (*p++ == ':') count++;
+      while (*p != 0) if (*p++ == ':' && *p != 0) count++;
       list = store_malloc(count*sizeof(uid_t));
       list[ptr++] = (uid_t)(count - 1);
 
@@ -1637,7 +1643,7 @@ switch (type)
       else
         *((uid_t **)((uschar *)data_block + (long int)(ol->value))) = list;
 
-      p = sptr;
+      p = op;
       while (count-- > 1)
         {
         int sep = 0;
@@ -1660,10 +1666,16 @@ switch (type)
       int count = 1;
       gid_t *list;
       int ptr = 0;
-      uschar *p = sptr;
+      uschar *p;
+      uschar *op = expand_string (sptr);
 
+      if (op == NULL)
+        log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "failed to expand %s: %s",
+          name, expand_string_message);
+
+      p = op;
       if (*p != 0) count++;
-      while (*p != 0) if (*p++ == ':') count++;
+      while (*p != 0) if (*p++ == ':' && *p != 0) count++;
       list = store_malloc(count*sizeof(gid_t));
       list[ptr++] = (gid_t)(count - 1);
 
@@ -1672,7 +1684,7 @@ switch (type)
       else
         *((gid_t **)((uschar *)data_block + (long int)(ol->value))) = list;
 
-      p = sptr;
+      p = op;
       while (count-- > 1)
         {
         int sep = 0;
