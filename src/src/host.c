@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.14 2005/09/16 14:44:11 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.15 2005/09/19 10:13:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -147,8 +147,11 @@ while (!done)
 *************************************************/
 
 /* This function is called instead of gethostbyname(), gethostbyname2(), or
-getipnodebyname() when running in the test harness. It uses only the DNS to
-look up the host name. In the new test harness, this means it will access only
+getipnodebyname() when running in the test harness. It recognizes the name
+"manyhome.test.ex" and generates a humungous number of IP addresses. It also
+recognizes an unqualified "localhost" and forces it to the appropriate loopback
+address. IP addresses are treated as literals. For other names, it uses the DNS
+to find the host name. In the new test harness, this means it will access only
 the fake DNS resolver. In the old harness it will call the real resolver and
 access the test zone.
 
@@ -177,6 +180,36 @@ dns_record *rr;
 DEBUG(D_host_lookup)
   debug_printf("using host_fake_gethostbyname for %s (%s)\n", name,
     (af == AF_INET)? "IPv4" : "IPv6");
+
+/* Handle the name that needs a vast number of IP addresses */
+
+if (Ustrcmp(name, "manyhome.test.ex") == 0 && af == AF_INET)
+  {
+  int i, j;
+  yield = store_get(sizeof(struct hostent));
+  alist = store_get(2049 * sizeof(char *));
+  adds  = store_get(2048 * alen);
+  yield->h_name = CS name;
+  yield->h_aliases = NULL;
+  yield->h_addrtype = af;
+  yield->h_length = alen;
+  yield->h_addr_list = CSS alist;
+  for (i = 104; i <= 111; i++)
+    {
+    for (j = 0; j <= 255; j++)
+      {
+      *alist++ = adds;
+      *adds++ = 10;
+      *adds++ = 250;
+      *adds++ = i;
+      *adds++ = j;
+      }
+    }
+  *alist = NULL;
+  return yield;
+  }
+
+/* Handle unqualified "localhost" */
 
 if (Ustrcmp(name, "localhost") == 0)
   lname = (af == AF_INET)? US"127.0.0.1" : US"::1";
