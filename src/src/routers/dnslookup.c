@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.6 2005/09/15 16:02:07 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.7 2005/09/19 09:41:37 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -253,10 +253,14 @@ for (;;)
 
   /* Unfortunately, we cannot set the mx_only option in advance, because the
   DNS lookup may extend an unqualified name. Therefore, we must do the test
-  subsequently. */
+  subsequently. We use the same logic as that for widen_domains above to avoid
+  requesting a header rewrite that cannot work. */
 
-  if (ob->qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
-  if (ob->search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
+  if (verify != v_sender || !ob->rewrite_headers || addr->parent != NULL)
+    {
+    if (ob->qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
+    if (ob->search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
+    }
 
   rc = host_find_bydns(&h, rblock->ignore_target_hosts, flags, srv_service,
     ob->srv_fail_domains, ob->mx_fail_domains, &fully_qualified_name, &removed);
