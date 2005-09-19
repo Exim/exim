@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.14 2005/08/01 13:20:28 ph10 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.15 2005/09/19 14:42:31 ph10 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -183,6 +183,12 @@ SPOOL_DIRECTORY=/var/spool/exim
 ###############################################################################
 #           THESE ARE THINGS YOU PROBABLY WANT TO SPECIFY                     #
 ###############################################################################
+
+# If you need extra header file search paths on all compiles, put the -I
+# options in INCLUDE.  If you want the extra searches only for certain
+# parts of the build, see more specific xxx_INCLUDE variables below.
+
+# INCLUDE=-I/example/include
 
 # You need to specify some routers and transports if you want the Exim that you
 # are building to be capable of delivering mail. You almost certainly need at
