@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.74 2005/09/22 12:03:36 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.75 2005/09/22 12:58:14 fanf2 Exp $
 
 New Features in Exim
 --------------------
@@ -381,13 +381,12 @@ TF/04 There is a new ratelimit ACL condition which can be used to measure
         # Log all senders' rates
         warn
           ratelimit = 0 / 1h / strict
-          log_message = \
-            Sender rate $sender_rate > $sender_rate_limit / $sender_rate_period
+          log_message = Sender rate $sender_rate / $sender_rate_period
 
         # Slow down fast senders
         warn
           ratelimit = 100 / 1h / per_rcpt / strict
-          delay     = ${eval: 10 * ($sender_rate - $sender_rate_limit) }
+          delay     = ${eval: $sender_rate - $sender_rate_limit }s
 
         # Keep authenticated users under control
         deny
@@ -401,8 +400,8 @@ TF/04 There is a new ratelimit ACL condition which can be used to measure
         # Restrict incoming rate from each host, with a default rate limit
         # set using a macro and special cases looked up in a table.
         defer
-          message = Sender rate $sender_rate exceeds \
-                    $sender_rate_limit messages per $sender_rate_period
+          message = Sender rate exceeds $sender_rate_limit \
+                    messages per $sender_rate_period
           ratelimit = ${lookup {$sender_host_address} \
                         cdb {DB/ratelimits.cdb} \
                         {$value} {RATELIMIT} }
