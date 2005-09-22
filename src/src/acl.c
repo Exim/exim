@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.48 2005/09/13 18:06:30 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.49 2005/09/22 12:02:22 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1391,10 +1391,8 @@ occurred earlier. If not, we can attempt the verification now. */
 if (strcmpic(ss, US"helo") == 0)
   {
   if (slash != NULL) goto NO_OPTIONS;
-  if (helo_verified) return OK;
-  if (helo_verify_failed) return FAIL;
-  if (smtp_verify_helo()) return helo_verified? OK : FAIL;
-  return DEFER;
+  if (!helo_verified && !helo_verify_failed) smtp_verify_helo();
+  return helo_verified? OK : FAIL;
   }
 
 /* Do Client SMTP Authorization checks in a separate function, and turn the

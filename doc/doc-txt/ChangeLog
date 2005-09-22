@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.238 2005/09/19 18:00:47 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.239 2005/09/22 12:02:21 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -215,6 +215,11 @@ PH/50 Make never_users, trusted_users, admin_groups, trusted_groups expandable.
 TF/07 Exim produced the error message "an SRV record indicated no SMTP
       service" if it encountered an MX record with an empty target hostname.
       The message is now "an MX or SRV record indicated no SMTP service".
+
+TF/08 Change PH/13 introduced the possibility that verify=helo may defer,
+      if the DNS of the sending site is misconfigured. This is quite a
+      common situation. This change restores the behaviour of treating a
+      helo verification defer as a failure.
 
 
 Exim version 4.52
