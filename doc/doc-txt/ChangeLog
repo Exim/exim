@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.239 2005/09/22 12:02:21 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.240 2005/09/26 09:52:18 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -220,6 +220,9 @@ TF/08 Change PH/13 introduced the possibility that verify=helo may defer,
       if the DNS of the sending site is misconfigured. This is quite a
       common situation. This change restores the behaviour of treating a
       helo verification defer as a failure.
+
+PH/51 If self=fail was set on a router, the bounce message did not include the
+      actual error message.
 
 
 Exim version 4.52

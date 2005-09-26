@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/rf_self_action.c,v 1.2 2005/01/04 10:00:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/rf_self_action.c,v 1.3 2005/09/26 09:52:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -133,6 +133,7 @@ switch (code)
     debug_printf(": address failed (self = fail)\n");
     }
   addr->message = msg;
+  setflag(addr, af_pass_message);
   return FAIL;
   }
 
