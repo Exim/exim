@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.42 2005/09/13 11:13:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.43 2005/09/28 10:46:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4358,6 +4358,8 @@ while (*s != 0)
         continue;
         }
 
+      /* Note that for Darwin and Cygwin, BASE_62 actually has the value 36 */
+
       case EOP_BASE62D:
         {
         uschar buf[16];
@@ -4369,10 +4371,11 @@ while (*s != 0)
           if (t == NULL)
             {
             expand_string_message = string_sprintf("argument for base62d "
-              "operator is \"%s\", which is not a base 62 number", sub);
+              "operator is \"%s\", which is not a base %d number", sub,
+              BASE_62);
             goto EXPAND_FAILED;
             }
-          n = n * 62 + (t - base62_chars);
+          n = n * BASE_62 + (t - base62_chars);
           }
         (void)sprintf(CS buf, "%ld", n);
         yield = string_cat(yield, &size, &ptr, buf, Ustrlen(buf));

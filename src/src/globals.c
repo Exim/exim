@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.38 2005/09/13 11:13:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.39 2005/09/28 10:46:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -333,8 +333,14 @@ uschar *av_scanner             = US"sophie:/var/run/sophie";  /* AV scanner */
 #endif
 
 BOOL    background_daemon      = TRUE;
+
+#if BASE_62 == 62
 uschar *base62_chars=
     US"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+#else
+uschar *base62_chars= US"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+#endif
+
 uschar *bi_command             = NULL;
 uschar *big_buffer             = NULL;
 int     big_buffer_size        = BIG_BUFFER_SIZE;
