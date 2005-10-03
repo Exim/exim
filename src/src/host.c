@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.15 2005/09/19 10:13:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.16 2005/10/03 09:51:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -167,8 +167,13 @@ Returns:        a hostent structure or NULL for an error
 static struct hostent *
 host_fake_gethostbyname(uschar *name, int af, int *error_num)
 {
-int ipa;
+#if HAVE_IPV6
 int alen = (af == AF_INET)? sizeof(struct in_addr):sizeof(struct in6_addr);
+#else
+int alen = sizeof(struct in_addr);
+#endif
+
+int ipa;
 uschar *lname = name;
 uschar *adds;
 uschar **alist;
