@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.50 2005/09/26 09:14:44 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.51 2005/10/03 09:11:42 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1986,5 +1986,11 @@ Odd values for "condition" in an ACL cause it to defer. In a router, they are
 treated as "true". At least they should be logged in a router, and perhaps they
 should also defer, for compatibility with ACLs.
 ------------------------------------------------------------------------------
---- HWM 342 ------------------------------------------------------------------
+
+(343) 03-Oct-05 M A query-style lookup for scanning flat files
+
+The natural syntax for this would be to use a regex, like this:
+${lookup regex{/some/file regex}{found-string}{not-found-string}}
+------------------------------------------------------------------------------
+--- HWM 343 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
