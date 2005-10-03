@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.241 2005/09/28 10:46:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.242 2005/10/03 09:56:42 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -9,6 +9,11 @@ Exim version 4.54
 PH/01 The ${base62: operator adjusted itself to base 36 when BASE_62 was
       set to 36 (for Darwin and Cygwin), but the ${base62d: operator did not.
       It now does.
+
+PH/02 Two minor problems detected in Cygwin: the os.{c,h} files had lost */ on
+      the CVS lines, and there was a missing #if HAVE_IPV6 in host.c.
+
+PH/03 Typo: missing ".o" in src/pcre/Makefile.
 
 
 Exim version 4.53

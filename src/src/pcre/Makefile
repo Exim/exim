@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/pcre/Makefile,v 1.4 2005/06/17 11:33:00 ph10 Exp $
+# $Cambridge: exim/src/src/pcre/Makefile,v 1.5 2005/10/03 09:56:42 ph10 Exp $
 
 # Makefile for PCRE (Perl-Compatible Regular Expression) library for use by
 # Exim. This is a tailored Makefile, not the normal one that comes with the
@@ -57,7 +57,7 @@ pcre_get.o:     pcre_get.c pcre.h config.h pcre_internal.h Makefile
 		@echo "$(CC) pcre_get.c"
 		$(FE)$(CC) -c $(CFLAGS) pcre_get.c
 
-pcre_globals.:  pcre_globals.c pcre.h config.h pcre_internal.h Makefile
+pcre_globals.o: pcre_globals.c pcre.h config.h pcre_internal.h Makefile
 		@echo "$(CC) pcre_globals.c"
 		$(FE)$(CC) -c $(CFLAGS) pcre_globals.c
 
