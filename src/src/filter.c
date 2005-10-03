@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filter.c,v 1.4 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filter.c,v 1.5 2005/10/03 11:26:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2321,14 +2321,42 @@ header_line *h;
 int to_count = 2;
 int from_count = 9;
 
-/* If any header line in the message starts with "List-", it is not
-a personal message. */
+/* If any header line in the message is a defined "List-" header field, it is
+not a personal message. We used to check for any header line that started with
+"List-", but this was tightened up for release 4.54. The check is now for
+"List-Id", defined in RFC 2929, or "List-Help", "List-Subscribe", "List-
+Unsubscribe", "List-Post", "List-Owner" or "List-Archive", all of which are
+defined in RFC 2369. We also scan for "Auto-Submitted"; if it is found to
+contain any value other than "no", the message is not personal (RFC 3834).
+Previously the test was for "auto-". */
 
 for (h = header_list; h != NULL; h = h->next)
   {
-  if (h->type != htype_old && h->slen > 5 &&
-      strncmpic(h->text, US"List-", 5) == 0)
-    return FALSE;
+  uschar *s;
+  if (h->type == htype_old) continue;
+
+  if (strncmpic(h->text, US"List-", 5) == 0)
+    {
+    s = h->text + 5;
+    if (strncmpic(s, US"Id:", 3) == 0 ||
+        strncmpic(s, US"Help:", 5) == 0 ||
+        strncmpic(s, US"Subscribe:", 10) == 0 ||
+        strncmpic(s, US"Unsubscribe:", 12) == 0 ||
+        strncmpic(s, US"Post:", 5) == 0 ||
+        strncmpic(s, US"Owner:", 6) == 0 ||
+        strncmpic(s, US"Archive:", 8) == 0)
+      return FALSE;
+    }
+
+  else if (strncmpic(h->text, US"Auto-submitted:", 15) == 0)
+    {
+    s = h->text + 15;
+    while (isspace(*s)) s++;
+    if (strncmpic(s, US"no", 2) != 0) return FALSE;
+    s += 2;
+    while (isspace(*s)) s++;
+    if (*s != 0) return FALSE;
+    }
   }
 
 /* Set up "my" address */
@@ -2384,7 +2412,6 @@ yield =
     "^daemon@", "^root@", "^listserv@", "^majordomo@", "^.*?-request@",
     "^owner-[^@]+@", self, self_from, psself, psself_from) &&
 
-  header_match(US"auto-submitted:", FALSE, FALSE, NULL, 1, "auto-") &&
   header_match(US"precedence:", FALSE, FALSE, NULL, 3, "bulk","list","junk") &&
 
   (sender_address == NULL || sender_address[0] != 0);
