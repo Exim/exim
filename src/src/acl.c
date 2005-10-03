@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.49 2005/09/22 12:02:22 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.50 2005/10/03 13:25:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2497,10 +2497,12 @@ for (; cb != NULL; cb = cb->next)
           submission_domain = string_copyn(p+8, pp-p-8);
           p = pp;
           }
+        /* The name= option must be last, because it swallows the rest of
+        the string. */
         else if (Ustrncmp(p, "/name=", 6) == 0)
           {
           uschar *pp = p + 6;
-          while (*pp != 0 && *pp != '/') pp++;
+          while (*pp != 0) pp++;
           submission_name = string_copy(parse_fix_phrase(p+6, pp-p-6,
             big_buffer, big_buffer_size));
           p = pp;

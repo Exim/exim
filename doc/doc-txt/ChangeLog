@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.243 2005/10/03 11:26:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.244 2005/10/03 13:25:32 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -20,6 +20,12 @@ PH/04 Tighten up "personal" tests: Instead of testing for any "List-"
       Also, for "Auto-Submitted", treat anything other than "no" as
       non-personal, in accordance with RFC 3834. (Previously it treated
       anything starting "auto-" as non-personal.)
+
+TF/01 The control=submission/name=... option had a problem with syntax
+      errors if the name included a slash character. The /name= option
+      now slurps the rest of the string, so it can include any characters
+      but it must come last in the list of options (after /sender_retain
+      or /domain=).
 
 
 Exim version 4.53

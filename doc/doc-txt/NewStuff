@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.75 2005/09/22 12:58:14 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.76 2005/10/03 13:25:32 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -7,6 +7,16 @@ This file contains descriptions of new features that have been added to Exim,
 but have not yet made it into the main manual (which is most conveniently
 updated when there is a relatively large batch of changes). The doc/ChangeLog
 file contains a listing of all changes, including bug fixes.
+
+Exim version 4.54
+-----------------
+
+There was a problem with 4.52/TF/02 in that a "name=" option on control=
+submission terminated at the next slash, thereby not allowing for slashes in
+the name. This has been changed so that "name=" takes the rest of the string as
+its data. It must therefore be the last option.
+
+
 
 Exim version 4.53
 -----------------
