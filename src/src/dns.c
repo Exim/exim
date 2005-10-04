@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.11 2005/09/16 14:44:11 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.12 2005/10/04 08:54:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -29,10 +29,10 @@ static void dns_complete_a6(dns_address ***, dns_answer *, dns_record *,
 
 /* This function is called instead of res_search() when Exim is running in its
 test harness. It recognizes some special domain names, and uses them to force
-failure and retry responses (optionally with a delay). It also recognises the
-zones test.ex, 10.in-addr.arpa, and 0.8.e.f.ip6.arpa, and for those it calls an
-external utility that mock-up a nameserver, if it can find the utility.
-Otherwise, it passes its arguments on to res_search().
+failure and retry responses (optionally with a delay). Otherwise, it calls an
+external utility that mocks-up a nameserver, if it can find the utility.
+If not, it passes its arguments on to res_search(). The fake nameserver may
+also return a code specifying that the name should be passed on.
 
 Background: the original test suite required a real nameserver to carry the
 test zones, whereas the new test suit has the fake server for portability. This
@@ -51,13 +51,23 @@ static int
 fakens_search(uschar *domain, int type, uschar *answerptr, int size)
 {
 int len = Ustrlen(domain);
+int asize = size;                  /* Locally modified */
 uschar *endname;
 uschar name[256];
+uschar utilname[256];
+uschar *aptr = answerptr;          /* Locally modified */
+struct stat statbuf;
+
+/* Remove terminating dot. */
 
 if (domain[len - 1] == '.') len--;
 Ustrncpy(name, domain, len);
 name[len] = 0;
 endname = name + len;
+
+/* This code, for forcing TRY_AGAIN and NO_RECOVERY, is here so that it works
+for the old test suite that uses a real nameserver. When the old test suite is
+eventually abandoned, this code could be moved into the fakens utility. */
 
 if (len >= 14 && Ustrcmp(endname - 14, "test.again.dns") == 0)
   {
@@ -81,66 +91,60 @@ if (len >= 13 && Ustrcmp(endname - 13, "test.fail.dns") == 0)
   return -1;
   }
 
-if (Ustrcmp(name, "test.ex") == 0 ||
-    (len > 8 && Ustrcmp(endname - 8, ".test.ex") == 0) ||
-    (len >= 16 && Ustrcmp(endname - 16, ".10.in-addr.arpa") == 0) ||
-    (len >= 17 && Ustrcmp(endname - 17, ".0.8.e.f.ip6.arpa") == 0))
+/* Look for the fakens utility, and if it exists, call it. */
+
+(void)string_format(utilname, sizeof(utilname), "%s/../bin/fakens",
+  spool_directory);
+
+if (stat(CS utilname, &statbuf) >= 0)
   {
-  uschar utilname[256];
-  struct stat statbuf;
+  pid_t pid;
+  int infd, outfd, rc;
+  uschar *argv[5];
 
-  (void)string_format(utilname, sizeof(utilname), "%s/../bin/fakens",
-    spool_directory);
+  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) using fakens\n",
+    name, dns_text_type(type));
 
-  if (stat(CS utilname, &statbuf) >= 0)
+  argv[0] = utilname;
+  argv[1] = spool_directory;
+  argv[2] = name;
+  argv[3] = dns_text_type(type);
+  argv[4] = NULL;
+
+  pid = child_open(argv, NULL, 0000, &infd, &outfd, FALSE);
+  if (pid < 0)
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to run fakens: %s",
+      strerror(errno));
+
+  len = 0;
+  rc = -1;
+  while (asize > 0 && (rc = read(outfd, aptr, asize)) > 0)
     {
-    pid_t pid;
-    int infd, outfd, rc;
-    uschar *argv[5];
+    len += rc;
+    aptr += rc;       /* Don't modify the actual arguments, because they */
+    asize -= rc;      /* may need to be passed on to res_search(). */
+    }
 
-    DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) using fakens\n",
-      name, dns_text_type(type));
+  if (rc < 0)
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "read from fakens failed: %s",
+      strerror(errno));
 
-    argv[0] = utilname;
-    argv[1] = spool_directory;
-    argv[2] = name;
-    argv[3] = dns_text_type(type);
-    argv[4] = NULL;
-
-    pid = child_open(argv, NULL, 0000, &infd, &outfd, FALSE);
-    if (pid < 0)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to run fakens: %s",
-        strerror(errno));
-
-    len = 0;
-    rc = -1;
-    while (size > 0 && (rc = read(outfd, answerptr, size)) > 0)
-      {
-      len += rc;
-      answerptr += rc;
-      size -= rc;
-      }
-
-    if (rc < 0)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "read from fakens failed: %s",
-        strerror(errno));
-
-    switch(child_close(pid, 0))
-      {
-      case 0: return len;
-      case 1: h_errno = HOST_NOT_FOUND; break;
-      case 2: h_errno = TRY_AGAIN; break;
-      default:
-      case 3: h_errno = NO_RECOVERY; break;
-      case 4: h_errno = NO_DATA; break;
-      }
-    return -1;
+  switch(child_close(pid, 0))
+    {
+    case 0: return len;
+    case 1: h_errno = HOST_NOT_FOUND; return -1;
+    case 2: h_errno = TRY_AGAIN; return -1;
+    default:
+    case 3: h_errno = NO_RECOVERY; return -1;
+    case 4: h_errno = NO_DATA; return -1;
+    case 5: /* Pass on to res_search() */
+    DEBUG(D_dns) debug_printf("fakens returned PASS_ON\n");
     }
   }
 
-/* Not test.ex or 10.in-addr.arpa, or fakens utility not found. */
+/* fakens utility not found, or it returned "pass on" */
 
-DEBUG(D_dns) debug_printf("passing %s on to res_search\n", domain);
+DEBUG(D_dns) debug_printf("passing %s on to res_search()\n", domain);
 
 return res_search(CS domain, C_IN, type, answerptr, size);
 }

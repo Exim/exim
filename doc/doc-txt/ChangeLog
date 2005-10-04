@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.244 2005/10/03 13:25:32 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.245 2005/10/04 08:54:33 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -26,6 +26,9 @@ TF/01 The control=submission/name=... option had a problem with syntax
       now slurps the rest of the string, so it can include any characters
       but it must come last in the list of options (after /sender_retain
       or /domain=).
+
+PH/05 Some modifications to the interface to the fake nameserver for the new
+      testing suite.
 
 
 Exim version 4.53
