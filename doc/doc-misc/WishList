@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.51 2005/10/03 09:11:42 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.52 2005/10/10 08:23:44 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1992,5 +1992,8 @@ should also defer, for compatibility with ACLs.
 The natural syntax for this would be to use a regex, like this:
 ${lookup regex{/some/file regex}{found-string}{not-found-string}}
 ------------------------------------------------------------------------------
---- HWM 343 ------------------------------------------------------------------
+
+(344) 10-Oct-05 M Make debug_print work in authenticators
+------------------------------------------------------------------------------
+--- HWM 344 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
