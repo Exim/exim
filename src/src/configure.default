@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/configure.default,v 1.4 2005/10/11 09:30:41 ph10 Exp $
+# $Cambridge: exim/src/src/configure.default,v 1.5 2005/10/11 13:50:48 ph10 Exp $
 
 ######################################################################
 #                  Runtime configuration file for Exim               #
@@ -311,22 +311,34 @@ acl_check_rcpt:
   require verify        = sender
 
   # Accept if the message comes from one of the hosts for which we are an
-  # outgoing relay. Recipient verification is omitted here, because in many
-  # cases the clients are dumb MUAs that don't cope well with SMTP error
-  # responses. If you are actually relaying out from MTAs, you should probably
-  # add recipient verification here. Note that, by putting this test before
-  # any DNS black list checks, you will always accept from these hosts, even
-  # if they end up on a black list. The assumption is that they are your
-  # friends, and if they get onto a black list, it is a mistake.
+  # outgoing relay. It is assumed that such hosts are most likely to be MUAs,
+  # so we set control=submission to make Exim treat the message as a
+  # submission. It will fix up various errors in the message, for example, the
+  # lack of a Date: header line. If you are actually relaying out out from
+  # MTAs, you may want to disable this. If you are handling both relaying from
+  # MTAs and submissions from MUAs you should probably split them into two
+  # lists, and handle them differently.
+
+  # Recipient verification is omitted here, because in many cases the clients
+  # are dumb MUAs that don't cope well with SMTP error responses. If you are
+  # actually relaying out from MTAs, you should probably add recipient
+  # verification here.
+
+  # Note that, by putting this test before any DNS black list checks, you will
+  # always accept from these hosts, even if they end up on a black list. The
+  # assumption is that they are your friends, and if they get onto a black
+  # list, it is a mistake.
 
   accept  hosts         = +relay_from_hosts
+          control       = submission
 
   # Accept if the message arrived over an authenticated connection, from
   # any host. Again, these messages are usually from MUAs, so recipient
-  # verification is omitted. And again, we do this check before any black list
-  # tests.
+  # verification is omitted, and submission mode is set. And again, we do this
+  # check before any black list tests.
 
   accept  authenticated = *
+          control       = submission
 
   #############################################################################
   # There are no default checks on DNS black lists because the domains that
