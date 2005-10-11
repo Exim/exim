@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.52 2005/10/10 08:23:44 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.53 2005/10/11 09:30:41 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1926,14 +1926,6 @@ Exim 4 Wish List: 55, 62, 63, 160, 212, 237, 270, 314, 328.
 
 This is probably a longish-term thing at the moment. Quotas over 2G are now
 supported, but not individual messages; no doubt one day this will be wanted.
-------------------------------------------------------------------------------
-
-(335) 14-Jun-05 T Re-arrange default configuration
-
-A small niggle which might be worth fixing is the ordering of the ACL in the
-default configuration file. The relay_from_hosts and authenticated clauses
-would be better off before the dnslists examples. However, this should be left
-until a x.x0 release, because of the documentation implications.
 ------------------------------------------------------------------------------
 
 (336) 16-Jun-05 M Show recipient(s) after header check failure

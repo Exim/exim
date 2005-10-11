@@ -1,7 +1,15 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.245 2005/10/04 08:54:33 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.246 2005/10/11 09:30:41 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+Exim version 4.60
+-----------------
+
+PH/01 In the default runtime configuration, move the checks for
+      relay_from_hosts and authenticated clients from after to before the
+      (commented out) DNS black list checks.
+
 
 Exim version 4.54
 -----------------
