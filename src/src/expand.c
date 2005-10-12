@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.44 2005/10/12 10:07:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.45 2005/10/12 11:00:34 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3404,18 +3404,23 @@ while (*s != 0)
       int mysize = 0, myptr = 0;
       const pcre *re;
       uschar *p;
-      /* Ugliness: We want to expand parameter 1 first, then set
+
+      /* TF: Ugliness: We want to expand parameter 1 first, then set
          up expansion variables that are used in the expansion of
          parameter 2. So we clone the string for the first
-         expansion, where we only expand paramter 1. */
-      uschar *s_backup = string_copy(s);
+         expansion, where we only expand parameter 1.
+
+         PH: Actually, that isn't necessary. The read_subs() function is
+         designed to work this way for the ${if and ${lookup expansions. I've
+         tidied the code.
+      */
 
       /* Reset expansion variables */
       prvscheck_result = NULL;
       prvscheck_address = NULL;
       prvscheck_keynum = NULL;
 
-      switch(read_subs(sub_arg, 1, 1, &s_backup, skipping, FALSE, US"prvs"))
+      switch(read_subs(sub_arg, 1, 1, &s, skipping, FALSE, US"prvs"))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -3425,7 +3430,8 @@ while (*s != 0)
       re = regex_must_compile(US"^prvs\\=(.+)\\/([0-9])([0-9]{3})([A-F0-9]{6})\\@(.+)$",
                               TRUE,FALSE);
 
-      if (regex_match_and_setup(re,sub_arg[0],0,-1)) {
+      if (regex_match_and_setup(re,sub_arg[0],0,-1))
+        {
         uschar *local_part = string_copyn(expand_nstring[1],expand_nlength[1]);
         uschar *key_num = string_copyn(expand_nstring[2],expand_nlength[2]);
         uschar *daystamp = string_copyn(expand_nstring[3],expand_nlength[3]);
@@ -3445,21 +3451,19 @@ while (*s != 0)
         prvscheck_address[myptr] = '\0';
         prvscheck_keynum = string_copy(key_num);
 
-        /* Now re-expand all arguments in the usual manner */
-        switch(read_subs(sub_arg, 3, 3, &s, skipping, TRUE, US"prvs"))
+        /* Now expand the second argument */
+        switch(read_subs(sub_arg, 1, 1, &s, skipping, FALSE, US"prvs"))
           {
           case 1: goto EXPAND_FAILED_CURLY;
           case 2:
           case 3: goto EXPAND_FAILED;
           }
 
-        if (*sub_arg[2] == '\0')
-          yield = string_cat(yield,&size,&ptr,prvscheck_address,Ustrlen(prvscheck_address));
-        else
-          yield = string_cat(yield,&size,&ptr,sub_arg[2],Ustrlen(sub_arg[2]));
-
         /* Now we have the key and can check the address. */
-        p = prvs_hmac_sha1(prvscheck_address, sub_arg[1], prvscheck_keynum, daystamp);
+
+        p = prvs_hmac_sha1(prvscheck_address, sub_arg[0], prvscheck_keynum,
+          daystamp);
+
         if (p == NULL)
           {
           expand_string_message = US"hmac-sha1 conversion failed";
@@ -3468,6 +3472,7 @@ while (*s != 0)
 
         DEBUG(D_expand) debug_printf("prvscheck: received hash is %s\n", hash);
         DEBUG(D_expand) debug_printf("prvscheck:      own hash is %s\n", p);
+
         if (Ustrcmp(p,hash) == 0)
           {
           /* Success, valid BATV address. Now check the expiry date. */
@@ -3497,11 +3502,34 @@ while (*s != 0)
           prvscheck_result = NULL;
           DEBUG(D_expand) debug_printf("prvscheck: hash failure, $pvrs_result unset\n");
           }
-      }
+
+        /* Now expand the final argument. We leave this till now so that
+        it can include $prvscheck_result. */
+
+        switch(read_subs(sub_arg, 1, 0, &s, skipping, TRUE, US"prvs"))
+          {
+          case 1: goto EXPAND_FAILED_CURLY;
+          case 2:
+          case 3: goto EXPAND_FAILED;
+          }
+
+        if (sub_arg[0] == NULL || *sub_arg[0] == '\0')
+          yield = string_cat(yield,&size,&ptr,prvscheck_address,Ustrlen(prvscheck_address));
+        else
+          yield = string_cat(yield,&size,&ptr,sub_arg[0],Ustrlen(sub_arg[0]));
+
+        /* Reset the "internal" variables afterwards, because they are in
+        dynamic store that will be reclaimed if the expansion succeeded. */
+
+        prvscheck_address = NULL;
+        prvscheck_keynum = NULL;
+        }
       else
         {
         /* Does not look like a prvs encoded address, return the empty string.
-           We need to make sure all subs are expanded first. */
+           We need to make sure all subs are expanded first, so as to skip over
+           the entire item. */
+
         switch(read_subs(sub_arg, 3, 3, &s, skipping, TRUE, US"prvs"))
           {
           case 1: goto EXPAND_FAILED_CURLY;

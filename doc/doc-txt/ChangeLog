@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.248 2005/10/12 10:07:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.249 2005/10/12 11:00:34 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -15,8 +15,24 @@ PH/01 Two changes to the default runtime configuration:
           clients checks, on the grounds that messages accepted by these
           statements are most likely to be submissions.
 
-PH/02 Generate an error if the third argument for the ${prvs expansion is not
-      a single digit.
+PH/02 Several tidies to the handling of ${prvs and ${prvscheck:
+
+      (1) Generate an error if the third argument for the ${prvs expansion is
+          not a single digit.
+
+      (2) Treat a missing third argument of ${prvscheck as if it were an empty
+          string.
+
+      (3) Reset the variables that are obtained from the first argument of
+          ${prvscheck and used in the second argument before leaving the code,
+          because their memory is reclaimed, so using them afterwards may do
+          silly things.
+
+      (4) Tidy up the code for expanding the arguments of ${prvscheck one by
+          one (it's much easier than Tom thought :-).
+
+      (5) Because of (4), we can now allow for the use of $prvscheck_result
+          inside the third argument.
 
 
 Exim version 4.54
