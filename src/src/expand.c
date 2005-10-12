@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.45 2005/10/12 11:00:34 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.46 2005/10/12 11:20:41 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3530,7 +3530,7 @@ while (*s != 0)
            We need to make sure all subs are expanded first, so as to skip over
            the entire item. */
 
-        switch(read_subs(sub_arg, 3, 3, &s, skipping, TRUE, US"prvs"))
+        switch(read_subs(sub_arg, 2, 1, &s, skipping, TRUE, US"prvs"))
           {
           case 1: goto EXPAND_FAILED_CURLY;
           case 2:
