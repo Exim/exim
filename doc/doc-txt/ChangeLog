@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.247 2005/10/11 13:50:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.248 2005/10/12 10:07:00 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -14,6 +14,9 @@ PH/01 Two changes to the default runtime configuration:
       (2) Add control=submission to the relay_from_hosts and authenticated
           clients checks, on the grounds that messages accepted by these
           statements are most likely to be submissions.
+
+PH/02 Generate an error if the third argument for the ${prvs expansion is not
+      a single digit.
 
 
 Exim version 4.54

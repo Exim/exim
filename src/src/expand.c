@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.43 2005/09/28 10:46:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.44 2005/10/12 10:07:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3360,15 +3360,24 @@ while (*s != 0)
       domain = Ustrrchr(sub_arg[0],'@');
       if ( (domain == NULL) || (domain == sub_arg[0]) || (Ustrlen(domain) == 1) )
         {
-        expand_string_message = US"first parameter must be a qualified email address";
+        expand_string_message = US"prvs first argument must be a qualified email address";
         goto EXPAND_FAILED;
         }
 
-      /* Calculate the hash */
+      /* Calculate the hash. The second argument must be a single-digit
+      key number, or unset. */
+
+      if (sub_arg[2] != NULL &&
+          (!isdigit(sub_arg[2][0]) || sub_arg[2][1] != 0))
+        {
+        expand_string_message = US"prvs second argument must be a single digit";
+        goto EXPAND_FAILED;
+        }
+
       p = prvs_hmac_sha1(sub_arg[0],sub_arg[1],sub_arg[2],prvs_daystamp(7));
       if (p == NULL)
         {
-        expand_string_message = US"hmac-sha1 conversion failed";
+        expand_string_message = US"prvs hmac-sha1 conversion failed";
         goto EXPAND_FAILED;
         }
 
