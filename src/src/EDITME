@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.15 2005/09/19 14:42:31 ph10 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.16 2005/10/12 15:45:38 ph10 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -306,10 +306,11 @@ LOOKUP_LSEARCH=yes
 # the command for linking Exim itself, not on any auxiliary programs. You
 # don't need to set LOOKUP_INCLUDE if the relevant directories are already
 # specified in INCLUDE. The settings below are just examples; -lpq is for
-# PostgreSQL, -lgds is for Interbase.
+# PostgreSQL, -lgds is for Interbase, -lsqlite3 is for SQLite.
 
 # LOOKUP_INCLUDE=-I /usr/local/ldap/include -I /usr/local/mysql/include -I /usr/local/pgsql/include
-# LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lgds
+# LOOKUP_LIBS=-L/usr/local/lib -lldap -llber -lmysqlclient -lpq -lgds -lsqlite3
+
 
 #------------------------------------------------------------------------------
 # Compiling the Exim monitor: If you want to compile the Exim monitor, a
@@ -320,6 +321,7 @@ LOOKUP_LSEARCH=yes
 # local OS-specific make files.
 
 EXIM_MONITOR=eximon.bin
+
 
 #------------------------------------------------------------------------------
 # Compiling Exim with content scanning support: If you want to compile Exim
