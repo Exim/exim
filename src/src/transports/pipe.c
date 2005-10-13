@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/pipe.c,v 1.7 2005/06/27 14:29:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/pipe.c,v 1.8 2005/10/13 13:21:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -89,7 +89,7 @@ pipe_transport_options_block pipe_transport_option_defaults = {
   NULL,           /* cmd */
   NULL,           /* allow_commands */
   NULL,           /* environment */
-  US"/usr/bin",   /* path */
+  US"/bin:/usr/bin",  /* path */
   NULL,           /* message_prefix (reset in init if not bsmtp) */
   NULL,           /* message_suffix (ditto) */
   US mac_expanded_string(EX_TEMPFAIL) ":"    /* temp_errors */
