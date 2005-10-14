@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.53 2005/10/11 09:30:41 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.54 2005/10/14 15:44:53 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1987,5 +1987,15 @@ ${lookup regex{/some/file regex}{found-string}{not-found-string}}
 
 (344) 10-Oct-05 M Make debug_print work in authenticators
 ------------------------------------------------------------------------------
---- HWM 344 ------------------------------------------------------------------
+
+(345) 14-Oct-05 M Standardize rejection messages
+
+"The parsing for rejection lines is a bit of a mess, and fairly
+unmaintainable. Do you think it would be possible to standardise
+rejection/refusal log messages? How about something like:
+
+(<ID>|16 Spaces) *< (Connection|MAIL|RCPT|HELO|EHLO|DATA) rejected (from
+<Address>)?: <Reason> (\(<Detail>\))?"
+------------------------------------------------------------------------------
+--- HWM 345 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
