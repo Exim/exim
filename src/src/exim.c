@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.28 2005/09/12 10:08:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.29 2005/10/20 14:03:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -860,6 +860,9 @@ fprintf(f, "Support for:");
   #else
   fprintf(f, " OpenSSL");
   #endif
+#endif
+#ifdef SUPPORT_TRANSLATE_IP_ADDRESS
+  fprintf(f, " translate_ip_address");
 #endif
 #ifdef WITH_CONTENT_SCAN
   fprintf(f, " Content_Scanning");

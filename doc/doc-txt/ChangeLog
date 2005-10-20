@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.250 2005/10/13 13:21:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.251 2005/10/20 14:03:22 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -37,6 +37,9 @@ PH/02 Several tidies to the handling of ${prvs and ${prvscheck:
 PH/03 For some reason, the default setting of PATH when running a command from
       a pipe transport was just "/usr/bin". I have changed it to
       "/bin:/usr/bin".
+
+PH/04 SUPPORT_TRANSLATE_IP_ADDRESS did not cause anything to be listed in the
+      output from -bV.
 
 
 Exim version 4.54
