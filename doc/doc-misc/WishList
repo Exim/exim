@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.54 2005/10/14 15:44:53 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.55 2005/10/20 11:36:09 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1997,5 +1997,10 @@ rejection/refusal log messages? How about something like:
 (<ID>|16 Spaces) *< (Connection|MAIL|RCPT|HELO|EHLO|DATA) rejected (from
 <Address>)?: <Reason> (\(<Detail>\))?"
 ------------------------------------------------------------------------------
---- HWM 345 ------------------------------------------------------------------
+
+(346) 20-Oct-05 S Set $domain and $local_part in retry matching
+
+Currently, these variables are unset. Make it like rewrite matching.
+------------------------------------------------------------------------------
+--- HWM 346 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
