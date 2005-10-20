@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.29 2005/10/20 14:03:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.30 2005/10/20 15:19:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -863,6 +863,9 @@ fprintf(f, "Support for:");
 #endif
 #ifdef SUPPORT_TRANSLATE_IP_ADDRESS
   fprintf(f, " translate_ip_address");
+#endif
+#ifdef SUPPORT_MOVE_FROZEN_MESSAGES
+  fprintf(f, " move_frozen_messages");
 #endif
 #ifdef WITH_CONTENT_SCAN
   fprintf(f, " Content_Scanning");
