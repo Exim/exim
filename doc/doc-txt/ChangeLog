@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.252 2005/10/20 15:19:13 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.253 2005/11/10 15:00:46 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -40,6 +40,17 @@ PH/03 For some reason, the default setting of PATH when running a command from
 
 PH/04 SUPPORT_TRANSLATE_IP_ADDRESS and MOVE_FROZEN_MESSAGES did not cause
       anything to be listed in the output from -bV.
+
+PH/05 When a filter generated an autoreply, the entire To: header line was
+      quoted in the delivery log line, like this:
+
+        => >A.N.Other <ano@some.domain> <original@ddress> ...
+
+      This has been changed so that it extracts the operative address. There
+      may be more than one such address. If so, they are comma-separated, like
+      this:
+
+        => >ano@some.domain,ona@other.domain <original@ddress> ...
 
 
 Exim version 4.54

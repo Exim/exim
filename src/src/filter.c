@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filter.c,v 1.5 2005/10/03 11:26:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filter.c,v 1.6 2005/11/10 15:00:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2207,12 +2207,16 @@ while (commands != NULL)
     else
       {
       uschar *tt;
+      uschar *log_addr = NULL;
       uschar *to = commands->args[mailarg_index_to].u;
+      int size = 0;
+      int ptr = 0;
+
       if (to == NULL) to = expand_string(US"$reply_address");
       while (isspace(*to)) to++;
 
-      for (tt = to; *tt != 0; tt++)     /* Get rid of newlines so that */
-        if (*tt == '\n') *tt = ' ';     /* the eventual log line is OK */
+      for (tt = to; *tt != 0; tt++)     /* Get rid of newlines */
+        if (*tt == '\n') *tt = ' ';
 
       DEBUG(D_filter)
         {
@@ -2235,9 +2239,45 @@ while (commands != NULL)
           }
         }
 
-      /* Create the "address" for the autoreply */
+      /* Create the "address" for the autoreply. This is used only for logging,
+      as the actual recipients are extraced from the To: line by -t. We use the
+      same logic here to extract the working addresses (there may be more than
+      one). */
 
-      addr = deliver_make_addr(string_sprintf(">%.256s", to), FALSE);
+      tt = to;
+      while (*tt != 0)
+        {
+        uschar *ss = parse_find_address_end(tt, FALSE);
+        uschar *recipient, *errmess;
+        int start, end, domain;
+        int temp = *ss;
+
+        *ss = 0;
+        recipient = parse_extract_address(tt, &errmess, &start, &end, &domain,
+          FALSE);
+        *ss = temp;
+
+        /* Ignore empty addresses and errors; an error will occur later if
+        there's something really bad. */
+
+        if (recipient != NULL)
+          {
+          log_addr = string_cat(log_addr, &size, &ptr,
+            (log_addr == NULL)? US">" : US",", 1);
+          log_addr = string_cat(log_addr, &size, &ptr, recipient,
+            Ustrlen(recipient));
+          }
+
+        /* Move on past this address */
+
+        tt = ss + (*ss? 1:0);
+        while (isspace(*tt)) tt++;
+        }
+
+      if (log_addr == NULL) log_addr = string_sprintf("invalid-to-line");
+        else log_addr[ptr] = 0;
+
+      addr = deliver_make_addr(log_addr, FALSE);
       setflag(addr, af_pfr);
       if (commands->noerror) setflag(addr, af_ignore_error);
       addr->next = *generated;
