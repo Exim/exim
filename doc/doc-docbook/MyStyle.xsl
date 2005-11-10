@@ -1,4 +1,4 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle.xsl,v 1.1 2005/06/16 10:32:31 ph10 Exp $ -->
+<!-- $Cambridge: exim/doc/doc-docbook/MyStyle.xsl,v 1.2 2005/11/10 12:30:13 ph10 Exp $ -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>
 
@@ -12,7 +12,7 @@ have happen in all forms of output. It is imported by all the drivers. -->
 
 <!-- Set no relative indent for titles and body -->
 
-<xsl:param name="title.margin.left">0pt</xsl:param>
+<xsl:param name="body.start.indent">0pt</xsl:param>
 
 
 <!-- This removes the dot at the end of run-in titles, which we use

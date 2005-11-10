@@ -1,4 +1,4 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.1 2005/06/16 10:32:31 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.2 2005/11/10 12:30:13 ph10 Exp $
 
 # Make file for Exim documentation from Asciidoc source.
 
@@ -25,10 +25,10 @@ filter-fo.xml: filter.xml Pre-xml
 	      Pre-xml -bookinfo <filter.xml >filter-fo.xml
 
 filter-html.xml: filter.xml Pre-xml
-	      Pre-xml <filter.xml >filter-html.xml
+	      Pre-xml -html <filter.xml >filter-html.xml
 
 filter-txt.xml: filter.xml Pre-xml
-	      Pre-xml -ascii <filter.xml >filter-txt.xml
+	      Pre-xml -ascii -html <filter.xml >filter-txt.xml
 
 filter.fo:    filter-fo.xml MyStyle-filter-fo.xsl MyStyle-fo.xsl MyStyle.xsl
 	      /bin/rm -rf filter.fo filter-fo.fo
@@ -36,16 +36,18 @@ filter.fo:    filter-fo.xml MyStyle-filter-fo.xsl MyStyle-fo.xsl MyStyle.xsl
 	      /bin/mv -f filter-fo.fo filter.fo
 
 filter.ps:    filter.fo
-	      fop filter.fo -ps filter.ps
+	      fop filter.fo -ps filter-tmp.ps
+	      mv filter-tmp.ps filter.ps
 
 filter.pdf:   filter.fo
-	      fop filter.fo -pdf filter.pdf
+	      fop filter.fo -pdf filter-tmp.pdf
+	      mv filter-tmp.pdf filter.pdf
 
 filter.html:  filter-html.xml TidyHTML-filter MyStyle-nochunk-html.xsl MyStyle-html.xsl MyStyle.xsl
 	      /bin/rm -rf filter.html filter-html.html
 	      xmlto -x MyStyle-nochunk-html.xsl html-nochunks filter-html.xml
 	      /bin/mv -f filter-html.html filter.html
-	       ./TidyHTML-filter
+	      ./TidyHTML-filter
 
 filter.txt:   filter-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl MyStyle.xsl
 	      /bin/rm -rf filter-txt.html
@@ -75,10 +77,10 @@ spec-fo.xml:  spec.xml Pre-xml
 	      Pre-xml <spec.xml >spec-fo.xml
 
 spec-html.xml: spec.xml Pre-xml
-	      Pre-xml -abstract -oneindex <spec.xml >spec-html.xml
+	      Pre-xml -abstract -html -oneindex <spec.xml >spec-html.xml
 
 spec-txt.xml: spec.xml Pre-xml
-	      Pre-xml -abstract -ascii -noindex <spec.xml >spec-txt.xml
+	      Pre-xml -abstract -ascii -html -noindex <spec.xml >spec-txt.xml
 
 spec.fo:      spec-fo.xml MyStyle-spec-fo.xsl MyStyle-fo.xsl MyStyle.xsl MyTitleStyle.xsl
 	      /bin/rm -rf spec.fo spec-fo.fo
@@ -86,10 +88,12 @@ spec.fo:      spec-fo.xml MyStyle-spec-fo.xsl MyStyle-fo.xsl MyStyle.xsl MyTitle
 	      /bin/mv -f spec-fo.fo spec.fo
 
 spec.ps:      spec.fo
-	      FOP_OPTS=-Xmx512m fop spec.fo -ps spec.ps
+	      FOP_OPTS=-Xmx512m fop spec.fo -ps spec-tmp.ps
+	      mv spec-tmp.ps spec.ps
 
 spec.pdf:     spec.fo
-	      FOP_OPTS=-Xmx512m fop spec.fo -pdf spec.pdf
+	      FOP_OPTS=-Xmx512m fop spec.fo -pdf spec-tmp.pdf
+	      mv spec-tmp.pdf spec.pdf
 
 spec.html:    spec-html.xml TidyHTML-spec MyStyle-chunk-html.xsl MyStyle-html.xsl MyStyle.xsl
 	      /bin/rm -rf spec.html
@@ -126,10 +130,10 @@ test-fo.xml:  test.xml Pre-xml
 	      ./Pre-xml <test.xml >test-fo.xml
 
 test-html.xml: test.xml Pre-xml
-	      ./Pre-xml -abstract -oneindex <test.xml >test-html.xml
+	      ./Pre-xml -abstract -html -oneindex <test.xml >test-html.xml
 
 test-txt.xml: test.xml Pre-xml
-	      ./Pre-xml -abstract -ascii -noindex <test.xml >test-txt.xml
+	      ./Pre-xml -abstract -ascii -html -noindex <test.xml >test-txt.xml
 
 test.fo:      test-fo.xml MyStyle-spec-fo.xsl MyStyle-fo.xsl MyStyle.xsl MyTitleStyle.xsl
 	      /bin/rm -rf test.fo test-fo.fo
@@ -137,10 +141,12 @@ test.fo:      test-fo.xml MyStyle-spec-fo.xsl MyStyle-fo.xsl MyStyle.xsl MyTitle
 	      /bin/mv -f test-fo.fo test.fo
 
 test.ps:      test.fo
-	      fop test.fo -ps test.ps
+	      fop test.fo -ps test-tmp.ps
+	      mv test-tmp.ps test.ps
 
 test.pdf:     test.fo
-	      fop test.fo -pdf test.pdf
+	      fop test.fo -pdf test-tmp.pdf
+	      mv test-tmp.pdf test.pdf
 
 test.html:    test-html.xml MyStyle-nochunk-html.xsl MyStyle-html.xsl MyStyle.xsl
 	      /bin/rm -rf test.html test-html.html

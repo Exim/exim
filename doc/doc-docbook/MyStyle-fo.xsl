@@ -1,4 +1,4 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-fo.xsl,v 1.1 2005/06/16 10:32:31 ph10 Exp $ -->
+<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-fo.xsl,v 1.2 2005/11/10 12:30:13 ph10 Exp $ -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
@@ -80,11 +80,6 @@ entries print in bold. -->
 </xsl:template>
 
 
-
-
-
-
-
 <!--
 Adjust the sizes of the fonts for titles; the defaults are too gross.
 -->
@@ -146,8 +141,6 @@ http://www.sagehill.net/docbookxsl/PrintHeaders.html
   <!-- <xsl:attribute name="font-size">9pt</xsl:attribute> -->
   <xsl:attribute name="font-style">italic</xsl:attribute>
 </xsl:attribute-set>
-
-
 
 
 <!-- Things that can be inserted into the footer are:

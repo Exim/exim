@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.10 2005/08/08 10:48:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.11 2005/11/10 12:30:14 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -161,6 +161,8 @@ disable_logging                      boolean         false         routers      
 disable_logging                      boolean         false         transports        4.11
 dns_again_means_nonexist             domain list     unset         main              1.89
 dns_check_names_pattern              string          +             main              2.11
+dns_csa_search_limit                 integer         5             main              4.60
+dns_csa_use_reverse                  boolean         true          main              4.60
 dns_ipv4_lookup                      boolean         false         main              3.20
 dns_qualify_single                   boolean         true          smtp
 dns_retrans                          time            0s            main              1.60
@@ -738,6 +740,7 @@ APPENDFILE_DIRECTORY_MODE    optional*
 APPENDFILE_LOCKFILE_MODE     optional*
 AR                           system       command to build a library
 AUTH_CRAM_MD5                driver       include cram_md5 authenticator
+AUTH_CYRUS_SASL              driver       include Cyrus SASL authenticator
 AUTH_PLAINTEXT               driver       include plaintext authenticator
 AUTH_SPA                     driver       include SPA (NTLM) authenticator
 BASENAME_COMMAND             system**     path to basename

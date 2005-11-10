@@ -1,4 +1,4 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-html.xsl,v 1.1 2005/06/16 10:32:31 ph10 Exp $ -->
+<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-html.xsl,v 1.2 2005/11/10 12:30:13 ph10 Exp $ -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>
 
@@ -7,22 +7,6 @@ changes that are wanted for all forms of output. Then it makes changes that are
 specific to HTML output. -->
 
 <xsl:import href="MyStyle.xsl"/>
-
-<xsl:param name="shade.verbatim" select="1"></xsl:param>
-
-<xsl:attribute-set name="shade.verbatim.style">
-  <xsl:attribute name="bgcolor">#F0F0E0</xsl:attribute>
-  <xsl:attribute name="width">100%</xsl:attribute>
-  <xsl:attribute name="cellpadding">2</xsl:attribute>
-  <xsl:attribute name="border">0</xsl:attribute>
-</xsl:attribute-set>
-
-<!-- This is how you can make use of a CSS stylesheet, but at present I'm
-not doing so. -->
-
-<!--
-<xsl:param name="html.stylesheet" select="'Myhtml.css'"/>
--->
 
 
 <!-- This removes the title of the current page from the top of the page -
@@ -36,6 +20,10 @@ think that matters too much. -->
 <!-- This allows for the setting of RevisionFlag on elements. -->
 
 <xsl:param name="show.revisionflag" select="'1'"/>
+
+<!-- This adds an in-line style to the generated HTML. We need this for the
+RevisionFlag stuff. While we are at it, we also set the style for
+<literallayout> blocks. -->
 
 <xsl:template name="system.head.content">
 <style type="text/css">
@@ -51,9 +39,42 @@ span.deleted { text-decoration: line-through;
                background-color: #FF7F7F; }
 span.changed { background-color: #99ff99; }
 span.off     {  }
+
+<!-- Styles for <literallayout> -->
+
+pre.literallayout {
+  background-color: #E8E8D0;
+  padding-left: 0.5cm;
+  padding-top:  5px;
+  padding-bottom: 5px;
+}
+
+div[class=changed] pre.literallayout {
+  background-color: #99ff99;
+  padding-left: 0.5cm;
+  padding-top:  5px;
+  padding-bottom: 5px;
+}
+
+div.literallayout {
+  background-color: #E8E8D0;
+  padding-left: 0.5cm;
+  padding-top:  5px;
+  padding-bottom: 5px;
+}
+
+div[class=changed] div.literallayout {
+  background-color: #99ff99;
+  padding-left: 0.5cm;
+  padding-top:  5px;
+  padding-bottom: 5px;
+}
+
 </xsl:text>
 </style>
 </xsl:template>
+
+<!-- Here's the template for the actual revision flag thingy. -->
 
 <xsl:template match="*[@revisionflag]">
   <xsl:choose>

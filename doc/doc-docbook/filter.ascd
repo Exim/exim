@@ -1,5 +1,5 @@
 ///
-$Cambridge: exim/doc/doc-docbook/filter.ascd,v 1.1 2005/06/16 10:32:31 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/filter.ascd,v 1.2 2005/11/10 12:30:13 ph10 Exp $
 
 This file contains the Asciidoc source for the document that describes Exim's
 filtering facilities from a user's point of view. See the file AdMarkup.txt for
@@ -21,9 +21,9 @@ Exim's interfaces to mail filtering
 :author:          Philip Hazel
 :copyright:       University of Cambridge
 :cpyear:          2005
-:date:            13 May 2005
+:date:            06 October 2005
 :doctitleabbrev:  Exim filtering
-:revision:        4.50
+:revision:        4.60
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@ Forwarding and filtering in Exim
 
 This document describes the user interfaces to Exim's in-built mail filtering
 facilities, and is copyright (C) University of Cambridge 2005. It corresponds
-to Exim version 4.50.
+to Exim version 4.60.
 
 
 
@@ -163,10 +163,10 @@ The recipient is by default the user running the command, and so is the sender,
 but the command can be run with the %-f% option to supply a different sender.
 For example,
 
-...
+....
 /usr/sbin/sendmail -bf myfilter \
    -f islington@never.where <test-message
-...
+....
 
 Alternatively, if the %-f% option is not used, but the first line of the
 supplied message is a ``From'' separator from a message folder file (not the same
@@ -239,8 +239,8 @@ Sieve filter files
 ------------------
 The code for Sieve filtering in Exim was contributed by Michael Haardt, and
 most of the content of this chapter is taken from the notes he provided. Since
-Sieve is a extensible language, it is important to understand ``Sieve'' in this
-context as ``the specific implementation of Sieve for Exim''.
+Sieve is an extensible language, it is important to understand ``Sieve'' in
+this context as ``the specific implementation of Sieve for Exim''.
 
 This chapter does not contain a description of Sieve, since that can be found
 in RFC 3028, which should be read in conjunction with these notes.
@@ -281,13 +281,13 @@ Strings containing header names
 RFC 3028 does not specify what happens if a string denoting a header field does
 not contain a valid header name, for example, it contains a colon. This
 implementation generates an error instead of ignoring the header field in order
-to ease script debugging, which fits in the common picture of Sieve.
+to ease script debugging, which fits in with the common picture of Sieve.
 
 
 
 Exists test with empty list of headers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The *exists* test succeeds only if all specified headers exist. RFC 3028
+The *exists* test succeeds only if all the specified headers exist. RFC 3028
 does not explicitly specify what happens on an empty list of headers. This
 implementation evaluates that condition as true, interpreting the RFC in a
 strict sense.
@@ -357,12 +357,12 @@ it to be.
 
 String arguments
 ~~~~~~~~~~~~~~~~
-There has been confusion if the string arguments to *require* are to be
-matched case-sensitively or not. This implementation matches them with
-the match type ^:is^ (default, see section 2.7.1) and the comparator
-^i;ascii-casemap^ (default, see section 2.7.3). The RFC defines the
-command defaults clearly, so any different implementations violate RFC
-3028. The same is valid for comparator names, also specified as strings.
+There has been confusion if the string arguments to *require* are to be matched
+case-sensitively or not. This implementation matches them with the match type
+^:is^ (default, see section 2.7.1 of the RFC) and the comparator
+^i;ascii-casemap^ (default, see section 2.7.3 of the RFC). The RFC defines the
+command defaults clearly, so any different implementations violate RFC 3028.
+The same is valid for comparator names, also specified as strings.
 
 
 
@@ -371,7 +371,7 @@ Number units
 There is a mistake in RFC 3028: the suffix G denotes gibi-, not tebibyte.
 The mistake is obvious, because RFC 3028 specifies G to denote 2^30
 (which is gibi, not tebi), and that is what this implementation uses as
-scaling factor for the suffix G.
+the scaling factor for the suffix G.
 
 
 
@@ -388,13 +388,13 @@ RFC 3028 requires the use of CRLF to terminate a line.
 The rationale was that CRLF is universally used in network protocols
 to mark the end of the line. This implementation does not embed Sieve
 in a network protocol, but uses Sieve scripts as part of the Exim MTA.
-Since all parts of Exim use LF as newline character, this implementation
+Since all parts of Exim use LF as the newline character, this implementation
 does, too, by default, though the system administrator may choose (at Exim
 compile time) to use CRLF instead.
 
 Exim violates RFC 2822, section 3.6.8, by accepting 8-bit header names, so
 this implementation repeats this violation to stay consistent with Exim.
-This is in preparation to UTF-8 data.
+This is in preparation for UTF-8 data.
 
 Sieve scripts cannot contain NUL characters in strings, but mail
 headers could contain MIME encoded NUL characters, which could never
@@ -411,7 +411,7 @@ evaluate the first test as true.
   header :contains "Subject" ["def"]
   header :matches "Subject" ["abc?def"]
 
-Note that by considering Sieve to be a MUA, RFC 2047 can be interpreted
+Note that by considering Sieve to be an MUA, RFC 2047 can be interpreted
 in a way that NUL characters truncating strings is allowed for Sieve
 implementations, although not recommended. It is further allowed to use
 encoded NUL characters in headers, but that's not recommended either.
@@ -425,7 +425,7 @@ implementation violates RFC 3028 and treats such MIME words literally.
 That way at least something could be matched.
 
 The folder specified by *fileinto* must not contain the character
-sequence ``..'' to avoid security problems. RFC 3028 does not specify the
+sequence ``##`..`##'' to avoid security problems. RFC 3028 does not specify the
 syntax of folders apart from *keep* being equivalent to
 
   fileinto "INBOX";
@@ -434,7 +434,7 @@ This implementation uses _inbox_ instead.
 
 Sieve script errors currently cause messages to be silently filed into
 _inbox_.  RFC 3028 requires that the user is notified of that condition.
-This may be implemented in future by adding a header line to mails that
+This may be implemented in the future by adding a header line to mails that
 are filed into _inbox_ due to an error in the filter.
 
 
@@ -489,7 +489,7 @@ it is part of a condition, it must also be free of round brackets
 - Otherwise, it must be enclosed in double quotation marks. In this case, the
 character \ (backslash) is treated as an ``escape character'' within the string,
 causing the following character or characters to be treated specially:
-
++
 &&&&
 `\n`   is replaced by a newline
 `\r`   is replaced by a carriage return
@@ -514,10 +514,6 @@ entered.
 The maximum permitted length of a data string, before expansion, is 1024
 characters.
 
-
-++++++++++++
-<?hard-pagebreak?>
-++++++++++++
 
 [[SECTfilterstringexpansion]]
 String expansion
@@ -1066,10 +1062,10 @@ in the format of a 'To:' or 'Cc:' header line. In fact, the text you supply
 here is copied exactly into the appropriate header line. It may contain
 additional information as well as email addresses. For example:
 
-...
+....
 mail to "Julius Caesar <jc@rome.example>, \
          <ma@rome.example> (Mark A.)"
-...
+....
 
 Similarly, the texts supplied for ^from^ and ^reply_to^ are copied into
 their respective header lines.
@@ -1112,7 +1108,7 @@ forward file, Exim normally adds a 'Sender:' header to the message,
 though it can be configured not to do this.
 
 The %extra_headers% keyword allows you to add custom header lines to the
-message. The text supplied must be one or more syntactically valid RFC 2882
+message. The text supplied must be one or more syntactically valid RFC 2822
 header lines. You can use ``\n'' within quoted text to specify newlines between
 headers, and also to define continued header lines. For example:
 
@@ -1237,9 +1233,6 @@ being tested by means of the %-bf% option (see section <<SECTtesting>> above),
 the value of the string is written to the standard output.
 
 
-++++++++++++
-<?hard-pagebreak?>
-++++++++++++
 [[SECTfail]]
 The fail command
 ~~~~~~~~~~~~~~~~
@@ -1322,9 +1315,6 @@ negative forms of condition that are more English-like.
 
 
 
-++++++++++++
-<?hard-pagebreak?>
-++++++++++++
 String testing conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 There are a number of conditions that operate on text strings, using the words
@@ -1606,8 +1596,17 @@ Details of the personal condition
 The basic ^personal^ test is roughly equivalent to the following:
 
   not error_message and
-  $message_headers does not contain "\nList-" and
-  $header_auto-submitted: does not contain "auto-" and
+  $message_headers does not contain "\nList-Id:" and
+  $message_headers does not contain "\nList-Help:" and
+  $message_headers does not contain "\nList-Subscribe:" and
+  $message_headers does not contain "\nList-Unsubscribe:" and
+  $message_headers does not contain "\nList-Post:" and
+  $message_headers does not contain "\nList-Owner:" and
+  $message_headers does not contain "\nList-Archive:" and
+    (
+    "${if def h_auto-submitted:{present}{absent}}" is "absent" or
+    $header_auto-submitted: is "no"
+    ) and
   $header_precedence: does not contain "bulk" and
   $header_precedence: does not contain "list" and
   $header_precedence: does not contain "junk" and
@@ -1745,7 +1744,7 @@ Throw away all mail from one site, except from postmaster:
      seen finish
   endif
 
-Handle multiple personal mailboxes
+Handle multiple personal mailboxes:
 
   # Exim filter
   if $local_part_suffix is "-foo"

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.1 2005/06/16 10:32:31 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.2 2005/11/10 12:30:13 ph10 Exp $
 
 CREATING THE EXIM DOCUMENTATION
 
@@ -365,6 +365,13 @@ and then updates all the chapter files to insert appropriate links.
 The index.html file as built by xmlto contains the whole table of contents in a
 single line, which makes is hard to debug by hand. Since I was postprocessing
 it anyway, I arranged to insert newlines after every '>' character.
+
+The TidyHTML-spec script also processes every HTML file, to tidy up some of the
+untidy features therein. It turns <div class="literallayout"><p> into <div
+class="literallayout"> and a matching </p></div> into </div> to get rid of
+unwanted vertical white space in literallayout blocks. Before each occurrence
+of </td> it inserts &nbsp; so that the table's cell is a little bit wider than
+the text itself.
 
 The TidyHTML-spec script also takes the opportunity to postprocess the
 spec.html/ix01.html file, which contains the document index. Again, the index

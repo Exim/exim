@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-docbook/AdMarkup.txt,v 1.1 2005/06/16 10:32:31 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/AdMarkup.txt,v 1.2 2005/11/10 12:30:13 ph10 Exp $
 
 Asciidoc markup used in the Exim documentation
 ----------------------------------------------
@@ -130,6 +130,8 @@ example:
   This is an AsciiDoc comment block.
   ///
 
+You can also include one-line comments by starting the line with //.
+
 
 URL REFERENCES
 
@@ -185,7 +187,8 @@ asterisk or if any lines in the block end in a backslash (as is quite often the
 case in Exim configuration examples), you have to use a "listing block" or a
 "literal block" instead of a "literal paragraph". Otherwise an initial asterisk
 makes AsciiDoc think this is a list item, and a terminating backslash causes
-lines to be concatenated.
+lines to be concatenated. Also, a blank line in the block generates two output
+items, so that case should also be avoided.
 
 Another time when you have to use an explicit block is when a display forms
 part of a list item. This is because you have to indent such displays more than
@@ -404,8 +407,9 @@ insert
   [revisionflag="changed"]
 
 This should precede any index settings at the start of the paragraph. If you
-want to do this for a display, you must use the "&&&" block described above,
-because that's the only type that I have set up to support it.
+want to do this for a display, you must use the "...." or "&&&" blocks
+described above, because that's the only types that I have set up to support
+it.
 
 
 FUDGES

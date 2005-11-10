@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-# $Cambridge: exim/doc/doc-docbook/Pre-xml,v 1.1 2005/06/16 10:32:31 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Pre-xml,v 1.2 2005/11/10 12:30:13 ph10 Exp $
 
 # Script to pre-process XML input before processing it for various purposes.
 # Options specify which transformations are to be done. Monospaced literal
@@ -21,12 +21,18 @@
 #            Replace &#169;   by (c)
 #            Put quotes round <literal> text
 #            Put quotes round <quote> text
-
+#
 # -bookinfo: Remove the <bookinfo> element from the file
-
+#
 # -fi:       Replace "fi" by &#xFB01; except when it is in an XML element, or
 #            inside a <literal>.
-
+#
+# -html:     Certain things are done only for HTML output:
+#
+#            If <literallayout> is followed by optional # space and then a
+#            newline, the space and newline are removed, because otherwise you
+#            get a blank line in the HTML output.
+#
 # -noindex   Remove the XML to generate a Concept and an Options index.
 # -oneindex  Ditto, but add XML to generate a single index.
 
@@ -50,7 +56,7 @@ if ($ascii)
   $s =~ s/&#x2020;/*/g;
   $s =~ s/&#x2021;/**/g;
   $s =~ s/&#x00a0;/ /g;
-  $s =~ s/&#x00a9;/(c)/g;
+  $s =~ s/&#169;/(c)/g;
   $s =~ s/<quote>/"/g;
   $s =~ s/<\/quote>/"/g;
   }
@@ -64,7 +70,9 @@ $s;
 $abstract  = 0;
 $ascii     = 0;
 $bookinfo  = 0;
+$html      = 0;
 $inliteral = 0;
+$inliterallayout = 0;
 $ligatures = 0;
 $madeindex = 0;
 $noindex   = 0;
@@ -76,6 +84,7 @@ foreach $arg (@ARGV)
   elsif ($arg eq "-abstract") { $abstract = 1; }
   elsif ($arg eq "-ascii")    { $ascii = 1; }
   elsif ($arg eq "-bookinfo") { $bookinfo = 1; }
+  elsif ($arg eq "-html")     { $html = 1; }
   elsif ($arg eq "-noindex")  { $noindex = 1; }
   elsif ($arg eq "-oneindex") { $oneindex = 1; }
   else  { die "** Pre-xml: Unknown option \"$arg\"\n"; }
@@ -99,6 +108,7 @@ while (<STDIN>)
 
   if (/^<literallayout class="monospaced">/)
     {
+    $_ = substr($_, 0, -1) if $html;
     print;
     while (<STDIN>)
       {
@@ -128,16 +138,21 @@ while (<STDIN>)
 
   # A line that is not in a monospaced literal block; keep track of which
   # parts are in <literal> and which not. The latter get processed by the
-  # function above.
+  # function above. Items in <literal> get quoted unless they are also in
+  # a <literallayout> block, or are already being quoted.
 
   for (;;)
     {
+    $_ = substr($_, 0, -1) if $html && /^<literallayout[^>]*>\s*\n$/;
+    $inliterallayout = 1 if /^<literallayout/;
+    $inliterallayout = 0 if /^<\/literallayout/;
+
     if ($inliteral)
       {
-      if (/^(.*?)<\/literal>(.*)$/)
+      if (/^(.*?)<\/literal>(?!<\/quote>)(.*)$/)
         {
         print $1;
-        print "\"" if $ascii;
+        print "\"" if $ascii && !$inliterallayout;
         print "</literal>";
         $inliteral = 0;
         $_ = "$2\n";
@@ -153,11 +168,11 @@ while (<STDIN>)
 
     else
       {
-      if (/^(.*?)<literal>(.*)$/)
+      if (/^(.*?)(?<!<quote>)<literal>(.*)$/)
         {
         print &process($1);
         print "<literal>";
-        print "\"" if $ascii;
+        print "\"" if $ascii && !$inliterallayout;
         $inliteral = 1;
         $_ = "$2\n";
         }
