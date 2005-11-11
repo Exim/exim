@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filter.c,v 1.6 2005/11/10 15:00:46 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filter.c,v 1.7 2005/11/11 10:02:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2240,9 +2240,10 @@ while (commands != NULL)
         }
 
       /* Create the "address" for the autoreply. This is used only for logging,
-      as the actual recipients are extraced from the To: line by -t. We use the
+      as the actual recipients are extracted from the To: line by -t. We use the
       same logic here to extract the working addresses (there may be more than
-      one). */
+      one). Just in case there are a vast number of addresses, stop when the
+      string gets too long. */
 
       tt = to;
       while (*tt != 0)
@@ -2266,6 +2267,14 @@ while (commands != NULL)
             (log_addr == NULL)? US">" : US",", 1);
           log_addr = string_cat(log_addr, &size, &ptr, recipient,
             Ustrlen(recipient));
+          }
+
+        /* Check size */
+
+        if (ptr > 256)
+          {
+          log_addr = string_cat(log_addr, &size, &ptr, US", ...", 5);
+          break;
           }
 
         /* Move on past this address */

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.253 2005/11/10 15:00:46 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.254 2005/11/11 10:02:04 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -51,6 +51,18 @@ PH/05 When a filter generated an autoreply, the entire To: header line was
       this:
 
         => >ano@some.domain,ona@other.domain <original@ddress> ...
+
+PH/06 When a client host used a correct literal IP address in a HELO or EHLO
+      command, (for example, EHLO [1.2.3.4]) and the client's IP address was
+      not being looked up in the rDNS to get a host name, Exim was showing the
+      IP address twice in Received: lines, even though the IP addresses were
+      identical. For example:
+
+        Received: from [1.2.3.4] (helo=[1.2.3.4])
+
+      However, if the real host name was known, it was omitting the HELO data
+      if it matched the actual IP address. This has been tidied up so that it
+      doesn't show the same IP address twice.
 
 
 Exim version 4.54

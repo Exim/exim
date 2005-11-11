@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.16 2005/10/03 09:51:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.17 2005/11/11 10:02:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -535,8 +535,9 @@ as follows:
 
 (a) No sender_host_name or sender_helo_name: "[ip address]"
 (b) Just sender_host_name: "host_name [ip address]"
-(c) Just sender_helo_name: "(helo_name) [ip address]"
-(d) The two are identical: "host_name [ip address]"
+(c) Just sender_helo_name: "(helo_name) [ip address]" unless helo is IP
+            in which case: "[ip address}"
+(d) The two are identical: "host_name [ip address]" includes helo = IP
 (e) The two are different: "host_name (helo_name) [ip address]"
 
 If log_incoming_port is set, the sending host's port number is added to the IP
@@ -557,7 +558,9 @@ Returns:    nothing
 void
 host_build_sender_fullhost(void)
 {
+BOOL show_helo = TRUE;
 uschar *address;
+int len;
 int old_pool = store_pool;
 
 if (sender_host_address == NULL) return;
@@ -572,6 +575,43 @@ domain. Sigh. */
 address = string_sprintf("[%s]:%d", sender_host_address, sender_host_port);
 if ((log_extra_selector & LX_incoming_port) == 0 || sender_host_port <= 0)
   *(Ustrrchr(address, ':')) = 0;
+
+/* If there's no EHLO/HELO data, we can't show it. */
+
+if (sender_helo_name == NULL) show_helo = FALSE;
+
+/* If HELO/EHLO was followed by an IP literal, it's messy because of two
+features of IPv6. Firstly, there's the "IPv6:" prefix (Exim is liberal and
+doesn't require this, for historical reasons). Secondly, IPv6 addresses may not
+be given in canonical form, so we have to canonicize them before comparing. As
+it happens, the code works for both IPv4 and IPv6. */
+
+else if (sender_helo_name[0] == '[' &&
+         sender_helo_name[(len=Ustrlen(sender_helo_name))-1] == ']')
+  {
+  int offset = 1;
+  uschar *helo_ip;
+
+  if (strncmpic(sender_helo_name + 1, US"IPv6:", 5) == 0) offset += 5;
+  if (strncmpic(sender_helo_name + 1, US"IPv4:", 5) == 0) offset += 5;
+
+  helo_ip = string_copyn(sender_helo_name + offset, len - offset - 1);
+
+  if (string_is_ip_address(helo_ip, NULL) != 0)
+    {
+    int x[4], y[4];
+    int sizex, sizey;
+    uschar ipx[48], ipy[48];    /* large enough for full IPv6 */
+
+    sizex = host_aton(helo_ip, x);
+    sizey = host_aton(sender_host_address, y);
+
+    (void)host_nmtoa(sizex, x, -1, ipx, ':');
+    (void)host_nmtoa(sizey, y, -1, ipy, ':');
+
+    if (strcmpic(ipx, ipy) == 0) show_helo = FALSE;
+    }
+  }
 
 /* Host name is not verified */
 
@@ -588,7 +628,7 @@ if (sender_host_name == NULL)
 
   sender_rcvhost = string_cat(NULL, &size, &ptr, address, adlen);
 
-  if (sender_ident != NULL || sender_helo_name != NULL || portptr != NULL)
+  if (sender_ident != NULL || show_helo || portptr != NULL)
     {
     int firstptr;
     sender_rcvhost = string_cat(sender_rcvhost, &size, &ptr, US" (", 2);
@@ -598,7 +638,7 @@ if (sender_host_name == NULL)
       sender_rcvhost = string_append(sender_rcvhost, &size, &ptr, 2, US"port=",
         portptr + 1);
 
-    if (sender_helo_name != NULL)
+    if (show_helo)
       sender_rcvhost = string_append(sender_rcvhost, &size, &ptr, 2,
         (firstptr == ptr)? US"helo=" : US" helo=", sender_helo_name);
 
@@ -617,54 +657,15 @@ if (sender_host_name == NULL)
   store_reset(sender_rcvhost + ptr + 1);
   }
 
-/* Host name is known and verified. */
+/* Host name is known and verified. Unless we've already found that the HELO
+data matches the IP address, compare it with the name. */
 
 else
   {
-  int len;
-  BOOL no_helo = FALSE;
+  if (show_helo && strcmpic(sender_host_name, sender_helo_name) == 0)
+    show_helo = FALSE;
 
-  /* Comparing a HELO name to a host name is easy */
-
-  if (sender_helo_name == NULL ||
-      strcmpic(sender_host_name, sender_helo_name) == 0)
-    no_helo = TRUE;
-
-  /* If HELO/EHLO was followed by an IP literal, it's much more messy because
-  of two features of IPv6. Firstly, there's the "IPv6:" prefix (Exim is liberal
-  and doesn't require this, for historical reasons). Secondly, an IPv6 address
-  may not be given in canonical form, so we have to canonicize it before
-  comparing. As it happens, the code works for both IPv4 and IPv6. */
-
-  else if (sender_helo_name[0] == '[' &&
-           sender_helo_name[(len=Ustrlen(sender_helo_name))-1] == ']')
-    {
-    uschar *helo_ip;
-    int offset = 1;
-
-    if (strncmpic(sender_helo_name+1, US"IPv6:",5) == 0) offset += 5;
-    helo_ip = string_copyn(sender_helo_name + offset, len - offset - 1);
-
-    if (string_is_ip_address(helo_ip, NULL) != 0)
-      {
-      int x[4];
-      int size;
-      size = host_aton(helo_ip, x);
-      helo_ip = store_get(48);  /* large enough for full IPv6 */
-      (void)host_nmtoa(size, x, -1, helo_ip, ':');
-      if (strcmpic(helo_ip, sender_host_address) == 0) no_helo = TRUE;
-      }
-    }
-
-  if (no_helo)
-    {
-    sender_fullhost = string_sprintf("%s %s", sender_host_name, address);
-    sender_rcvhost = (sender_ident == NULL)?
-      string_sprintf("%s (%s)", sender_host_name, address) :
-      string_sprintf("%s (%s ident=%s)", sender_host_name, address,
-        sender_ident);
-    }
-  else
+  if (show_helo)
     {
     sender_fullhost = string_sprintf("%s (%s) %s", sender_host_name,
       sender_helo_name, address);
@@ -673,6 +674,14 @@ else
         address, sender_helo_name) :
       string_sprintf("%s\n\t(%s helo=%s ident=%s)", sender_host_name,
         address, sender_helo_name, sender_ident);
+    }
+  else
+    {
+    sender_fullhost = string_sprintf("%s %s", sender_host_name, address);
+    sender_rcvhost = (sender_ident == NULL)?
+      string_sprintf("%s (%s)", sender_host_name, address) :
+      string_sprintf("%s (%s ident=%s)", sender_host_name, address,
+        sender_ident);
     }
   }
 
