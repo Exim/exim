@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.254 2005/11/11 10:02:04 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.255 2005/11/14 10:46:27 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -63,6 +63,11 @@ PH/06 When a client host used a correct literal IP address in a HELO or EHLO
       However, if the real host name was known, it was omitting the HELO data
       if it matched the actual IP address. This has been tidied up so that it
       doesn't show the same IP address twice.
+
+PH/07 When both +timestamp and +memory debugging was on, the value given by
+      $tod_xxx expansions could be wrong, because the tod_stamp() function was
+      called by the debug printing, thereby overwriting the timestamp buffer.
+      Debugging no longer uses the tod_stamp() function when +timestamp is set.
 
 
 Exim version 4.54

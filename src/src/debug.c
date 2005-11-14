@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/debug.c,v 1.3 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/debug.c,v 1.4 2005/11/14 10:46:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -161,14 +161,19 @@ debug_vprintf(char *format, va_list ap)
 {
 if (debug_file == NULL) return;
 
-/* Various things can be inserted at the start of a line. */
+/* Various things can be inserted at the start of a line. Don't use the
+tod_stamp() function for the timestamp, because that will overwrite the
+timestamp buffer, which may contain something useful. (This was a bug fix: the
++memory debugging with +timestamp did cause a problem.) */
 
 if (debug_ptr == debug_buffer)
   {
   DEBUG(D_timestamp)
     {
-    uschar *ts = tod_stamp(tod_log_bare);
-    sprintf(CS debug_ptr, "%s ", ts + 11);
+    time_t now = time(NULL);
+    struct tm *t = timestamps_utc? gmtime(&now) : localtime(&now);
+    (void) sprintf(CS debug_ptr, "%02d:%02d:%02d ", t->tm_hour, t->tm_min,
+      t->tm_sec);
     while(*debug_ptr != 0) debug_ptr++;
     }
 
