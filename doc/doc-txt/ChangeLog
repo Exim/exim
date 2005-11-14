@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.259 2005/11/14 15:28:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.260 2005/11/14 16:09:54 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -119,6 +119,8 @@ PH/10 Exim was violating RFC 3834 ("Recommendations for Automatic Responses to
 
 PH/11 Added "${if def:sender_address {(envelope-from <$sender_address>)\n\t}}"
       to the default Received: header definition.
+
+PH/12 Added log selector acl_warn_skipped (default on).
 
 
 Exim version 4.54

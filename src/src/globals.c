@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.40 2005/11/14 15:28:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.41 2005/11/14 16:09:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -646,6 +646,7 @@ independently. This separation became necessary when the number of log
 selectors was getting close to filling a 32-bit word. */
 
 bit_table log_options[]        = {
+  { US"acl_warn_skipped",             LX_acl_warn_skipped },
   { US"address_rewrite",              L_address_rewrite },
   { US"all",                          L_all },
   { US"all_parents",                  L_all_parents },

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.50 2005/10/03 13:25:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.51 2005/11/14 16:09:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3321,7 +3321,7 @@ while (acl != NULL)
     case ACL_WARN:
     if (cond == OK)
       acl_warn(where, *user_msgptr, *log_msgptr);
-    else if (cond == DEFER)
+    else if (cond == DEFER && (log_extra_selector & LX_acl_warn_skipped) != 0)
       log_write(0, LOG_MAIN, "%s Warning: ACL \"warn\" statement skipped: "
         "condition test deferred%s%s", host_and_ident(TRUE),
         (*log_msgptr == NULL)? US"" : US": ",

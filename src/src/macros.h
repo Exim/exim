@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.19 2005/09/12 13:39:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.20 2005/11/14 16:09:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -371,26 +371,27 @@ set all the bits in a multi-word selector. */
 #define L_smtp_protocol_error          0x00004000
 #define L_smtp_syntax_error            0x00008000
 
-#define LX_arguments                   0x80000001
-#define LX_deliver_time                0x80000002
-#define LX_delivery_size               0x80000004
-#define LX_ident_timeout               0x80000008
-#define LX_incoming_interface          0x80000010
-#define LX_incoming_port               0x80000020
-#define LX_outgoing_port               0x80000040
-#define LX_queue_time                  0x80000080
-#define LX_queue_time_overall          0x80000100
-#define LX_received_sender             0x80000200
-#define LX_received_recipients         0x80000400
-#define LX_rejected_header             0x80000800
-#define LX_return_path_on_delivery     0x80001000
-#define LX_sender_on_delivery          0x80002000
-#define LX_smtp_confirmation           0x80004000
-#define LX_subject                     0x80008000
-#define LX_tls_certificate_verified    0x80010000
-#define LX_tls_cipher                  0x80020000
-#define LX_tls_peerdn                  0x80040000
-#define LX_unknown_in_list             0x80080000
+#define LX_acl_warn_skipped            0x80000001
+#define LX_arguments                   0x80000002
+#define LX_deliver_time                0x80000004
+#define LX_delivery_size               0x80000008
+#define LX_ident_timeout               0x80000010
+#define LX_incoming_interface          0x80000020
+#define LX_incoming_port               0x80000040
+#define LX_outgoing_port               0x80000080
+#define LX_queue_time                  0x80000100
+#define LX_queue_time_overall          0x80000200
+#define LX_received_sender             0x80000400
+#define LX_received_recipients         0x80000800
+#define LX_rejected_header             0x80001000
+#define LX_return_path_on_delivery     0x80002000
+#define LX_sender_on_delivery          0x80004000
+#define LX_smtp_confirmation           0x80008000
+#define LX_subject                     0x80010000
+#define LX_tls_certificate_verified    0x80020000
+#define LX_tls_cipher                  0x80040000
+#define LX_tls_peerdn                  0x80080000
+#define LX_unknown_in_list             0x80100000
 
 #define L_default     (L_connection_reject        | \
                        L_delay_delivery           | \
@@ -403,7 +404,8 @@ set all the bits in a multi-word selector. */
                        L_size_reject              | \
                        L_skip_delivery)
 
-#define LX_default   ((LX_rejected_header         | \
+#define LX_default   ((LX_acl_warn_skipped        | \
+                       LX_rejected_header         | \
                        LX_tls_cipher) & 0x7fffffff)
 
 /* Private error numbers for delivery failures, set negative so as not
