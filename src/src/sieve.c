@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.13 2005/08/30 10:55:52 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.14 2005/11/14 11:41:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -28,10 +28,13 @@
 /* Undefine it for UNIX-style \n end-of-line terminators (default). */
 #undef RFC_EOL
 
-/* Define this for development of the subaddress Sieve extension.   */
+/* Define this for development of the Sieve extension "notify".     */
+#undef NOTIFY
+
+/* Define this for the Sieve extension "subaddress".                */
 #define SUBADDRESS
 
-/* Define this for the vacation Sieve extension.                    */
+/* Define this for the Sieve extension "vacation".                  */
 #define VACATION
 
 /* Must be >= 1                                                     */
@@ -52,6 +55,9 @@ struct Sieve
   int keep;
   int require_envelope;
   int require_fileinto;
+#ifdef NOTIFY
+  int require_notify;
+#endif
 #ifdef SUBADDRESS
   int require_subaddress;
 #endif
@@ -102,6 +108,10 @@ static uschar str_fileinto_c[]="fileinto";
 static const struct String str_fileinto={ str_fileinto_c, 8 };
 static uschar str_envelope_c[]="envelope";
 static const struct String str_envelope={ str_envelope_c, 8 };
+#ifdef NOTIFY
+static uschar str_notify_c[]="notify";
+static const struct String str_notify={ str_notify_c, 6 };
+#endif
 #ifdef SUBADDRESS
 static uschar str_subaddress_c[]="subaddress";
 static const struct String str_subaddress={ str_subaddress_c, 10 };
@@ -1886,7 +1896,7 @@ else if (parse_identifier(filter,CUS "envelope"))
     return -1;
     }
   *cond=0;
-  for (e=env; e->character; ++e)
+  for (e=env; e->length!=-1 && !*cond; ++e)
     {
     const uschar *envelopeExpr=CUS 0;
     uschar *envelope=US 0;
@@ -2054,6 +2064,11 @@ while (*filter->pc)
       filter->errmsg=CUS "missing test";
       return -1;
       }
+    if ((filter_test != FTEST_NONE && debug_selector != 0) ||
+        (debug_selector & D_filter) != 0)
+      {
+      if (exec) debug_printf("if %s\n",cond?"true":"false");
+      }
     m=parse_block(filter,exec ? cond : 0, generated);
     if (m==-1 || m==2) return m;
     if (m==0)
@@ -2074,6 +2089,11 @@ while (*filter->pc)
           {
           filter->errmsg=CUS "missing test";
           return -1;
+          }
+        if ((filter_test != FTEST_NONE && debug_selector != 0) ||
+            (debug_selector & D_filter) != 0)
+          {
+          if (exec) debug_printf("elsif %s\n",cond?"true":"false");
           }
         m=parse_block(filter,exec && unsuccessful ? cond : 0, generated);
         if (m==-1 || m==2) return m;
@@ -2187,7 +2207,7 @@ while (*filter->pc)
     fileinto-command =  "fileinto" { fileinto-options } string ";"
     fileinto-options =
     fileinto-options =) [ ":copy" ]
-   */
+    */
 
     struct String folder;
     uschar *s;
@@ -2241,6 +2261,54 @@ while (*filter->pc)
       }
     if (parse_semicolon(filter)==-1) return -1;
     }
+#ifdef NOTIFY
+  else if (parse_identifier(filter,CUS "notify"))
+    {
+    /*
+    notify-command =  "notify" { notify-options } ";"
+    notify-options =  [":method" string]
+                      [":message" string]
+    */
+
+    int m;
+    struct String method;
+    struct String message;
+
+    if (!filter->require_notify)
+      {
+      filter->errmsg=CUS "missing previous require \"notify\";";
+      return -1;
+      }
+    method.character=(uschar*)0;
+    method.length=-1;
+    message.character=(uschar*)0;
+    message.length=-1;
+    for (;;)
+      {
+      if (parse_white(filter)==-1) return -1;
+      if (parse_identifier(filter,CUS ":method")==1)
+        {
+        if (parse_white(filter)==-1) return -1;
+        if ((m=parse_string(filter,&method))!=1)
+          {
+          if (m==0) filter->errmsg=CUS "method string expected";
+          return -1;
+          }
+        }
+      else if (parse_identifier(filter,CUS ":message")==1)
+        {
+        if (parse_white(filter)==-1) return -1;
+        if ((m=parse_string(filter,&message))!=1)
+          {
+          if (m==0) filter->errmsg=CUS "message string expected";
+          return -1;
+          }
+        }
+      else break;
+      }
+    if (parse_semicolon(filter)==-1) return -1;
+    }
+#endif
 #ifdef VACATION
   else if (parse_identifier(filter,CUS "vacation"))
     {
@@ -2548,6 +2616,9 @@ filter->line=1;
 filter->keep=1;
 filter->require_envelope=0;
 filter->require_fileinto=0;
+#ifdef NOTIFY
+filter->require_notify=0;
+#endif
 #ifdef SUBADDRESS
 filter->require_subaddress=0;
 #endif
@@ -2613,6 +2684,9 @@ while (parse_identifier(filter,CUS "require"))
     {
     if (eq_octet(check,&str_envelope,0)) filter->require_envelope=1;
     else if (eq_octet(check,&str_fileinto,0)) filter->require_fileinto=1;
+#ifdef NOTIFY
+    else if (eq_octet(check,&str_notify,0)) filter->require_notify=1;
+#endif
 #ifdef SUBADDRESS
     else if (eq_octet(check,&str_subaddress,0)) filter->require_subaddress=1;
 #endif
