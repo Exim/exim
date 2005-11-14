@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/moan.c,v 1.3 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/moan.c,v 1.4 2005/11/14 13:56:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -61,7 +61,7 @@ else DEBUG(D_any) debug_printf("Child process %d for sending message\n", pid);
 
 f = fdopen(fd, "wb");
 if (errors_reply_to != NULL) fprintf(f, "Reply-To: %s\n", errors_reply_to);
-fprintf(f, "Auto_submitted: auto-generated\n");
+fprintf(f, "Auto-Submitted: auto-replied\n");
 fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
   qualify_domain_sender);
 fprintf(f, "To: %s\n", recipient);
@@ -414,7 +414,7 @@ if (pid < 0)
   }
 
 f = fdopen(fd, "wb");
-fprintf(f, "Auto_submitted: auto-generated\n");
+fprintf(f, "Auto-Submitted: auto-replied\n");
 fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
   qualify_domain_sender);
 fprintf(f, "To: %s\n", who);
@@ -658,7 +658,7 @@ if (pid < 0)
   }
 
 f = fdopen(fd, "wb");
-fprintf(f, "Auto_submitted: auto-generated\n");
+fprintf(f, "Auto-Submitted: auto-replied\n");
 fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
   qualify_domain_sender);
 fprintf(f, "To: %s\n", s);

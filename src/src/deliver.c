@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.22 2005/08/02 11:22:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.23 2005/11/14 13:56:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1991,7 +1991,7 @@ if (addr->special_action == SPECIAL_WARN &&
 
       if (errors_reply_to != NULL)
         fprintf(f, "Reply-To: %s\n", errors_reply_to);
-      fprintf(f, "Auto-Submitted: auto-generated\n");
+      fprintf(f, "Auto-Submitted: auto-replied\n");
       fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
         qualify_domain_sender);
       fprintf(f, "%s", CS warn_message);
@@ -6177,7 +6177,7 @@ while (addr_failed != NULL)
 
       if (errors_reply_to != NULL)
         fprintf(f, "Reply-To: %s\n", errors_reply_to);
-      fprintf(f, "Auto-Submitted: auto-generated\n");
+      fprintf(f, "Auto-Submitted: auto-replied\n");
       fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
         qualify_domain_sender);
       fprintf(f, "To: %s\n", bounce_recipient);
@@ -6699,7 +6699,7 @@ else if (addr_defer != (address_item *)(+1))
 
         if (errors_reply_to != NULL)
           fprintf(f, "Reply-To: %s\n", errors_reply_to);
-        fprintf(f, "Auto-Submitted: auto-generated\n");
+        fprintf(f, "Auto-Submitted: auto-replied\n");
         fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
           qualify_domain_sender);
         fprintf(f, "To: %s\n", recipients);
