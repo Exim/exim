@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/autoreply.c,v 1.5 2005/06/27 14:29:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/autoreply.c,v 1.6 2005/11/14 11:32:16 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -630,28 +630,32 @@ if (ff != NULL)
   }
 
 /* Copy the original message if required, observing the return size
-limit. */
+limit if we are returning the body. */
 
 if (return_message)
   {
-  if (bounce_return_size_limit > 0)
+  uschar *rubric = (tblock->headers_only)?
+    US"------ This is a copy of the message's header lines.\n"
+    : (tblock->body_only)?
+    US"------ This is a copy of the body of the message, without the headers.\n"
+    :
+    US"------ This is a copy of the message, including all the headers.\n";
+
+  if (bounce_return_size_limit > 0 && !tblock->headers_only)
     {
     struct stat statbuf;
     int max = (bounce_return_size_limit/DELIVER_IN_BUFFER_SIZE + 1) *
       DELIVER_IN_BUFFER_SIZE;
     if (fstat(deliver_datafile, &statbuf) == 0 && statbuf.st_size > max)
       {
-      fprintf(f, "\n"
-"------ This is a copy of the message, including all the headers.\n"
+      fprintf(f, "\n%s"
 "------ The body of the message is " OFF_T_FMT " characters long; only the first\n"
-"------ %d or so are included here.\n\n", statbuf.st_size,
+"------ %d or so are included here.\n\n", rubric, statbuf.st_size,
         (max/1000)*1000);
       }
-    else fprintf(f, "\n"
-"------ This is a copy of the message, including all the headers. ------\n\n");
+    else fprintf(f, "\n%s\n", rubric);
     }
-  else fprintf(f, "\n"
-"------ This is a copy of the message, including all the headers. ------\n\n");
+  else fprintf(f, "\n%s\n", rubric);
 
   fflush(f);
   transport_count = 0;

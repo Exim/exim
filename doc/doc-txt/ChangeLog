@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.255 2005/11/14 10:46:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.256 2005/11/14 11:32:16 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -68,6 +68,11 @@ PH/07 When both +timestamp and +memory debugging was on, the value given by
       $tod_xxx expansions could be wrong, because the tod_stamp() function was
       called by the debug printing, thereby overwriting the timestamp buffer.
       Debugging no longer uses the tod_stamp() function when +timestamp is set.
+
+PH/08 When the original message was included in an autoreply transport, it
+      always said "this is a copy of the message, including all the headers",
+      even if body_only or headers_only was set. It now gives an appropriate
+      message.
 
 
 Exim version 4.54
