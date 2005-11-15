@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.55 2005/10/20 11:36:09 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.56 2005/11/15 09:27:25 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -2002,5 +2002,13 @@ rejection/refusal log messages? How about something like:
 
 Currently, these variables are unset. Make it like rewrite matching.
 ------------------------------------------------------------------------------
---- HWM 346 ------------------------------------------------------------------
+
+(347) 15-Nov-05 M Arrange to expand data from wildlsearch
+
+This would allow keys that are regular expressions to set up numerical
+variables that are included in the data. This has to be done inside the lookup
+code, because of caching. Probably means we have to invent ewildlsearch and
+enwildlsearch.
+------------------------------------------------------------------------------
+--- HWM 347 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
