@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.37 2005/11/02 16:32:58 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.38 2005/11/15 10:08:25 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  02 November 2005
+Last updated:  15 November 2005
 
 
 THE OLD LIST
@@ -185,6 +185,7 @@ Everton da Silva Marques  Suggested patch for SRV handling
                           Suggested patch for SRV/MX lookup retry option
 Nikos Mavrogiannopoulos   GnuTLS proof of concept code
                           Update to RSA and D-H parameter caching code
+Komar Maxim               Patch for check_rfc2047_length
 Andy Mell                 Fix for rejectlog regeneration bug
 Marc Merlin               Many suggestions and patches for callouts and
                             SMTP error message features

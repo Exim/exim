@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.14 2005/09/19 14:01:51 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.15 2005/11/15 10:08:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -182,6 +182,7 @@ static optionlist optionlist_config[] = {
   { "callout_random_local_part",opt_stringptr,   &callout_random_local_part },
   { "check_log_inodes",         opt_int,         &check_log_inodes },
   { "check_log_space",          opt_Kint,        &check_log_space },
+  { "check_rfc2047_length",     opt_bool,        &check_rfc2047_length },
   { "check_spool_inodes",       opt_int,         &check_spool_inodes },
   { "check_spool_space",        opt_Kint,        &check_spool_space },
   { "daemon_smtp_port",         opt_stringptr|opt_hidden, &daemon_smtp_port },

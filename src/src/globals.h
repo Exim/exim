@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.29 2005/09/13 11:13:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.30 2005/11/15 10:08:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -195,6 +195,7 @@ extern uschar *callout_random_local_part; /* Local part to be used to check if s
 extern uschar *check_dns_names_pattern;/* Regex for syntax check */
 extern int     check_log_inodes;       /* Minimum for message acceptance */
 extern int     check_log_space;        /* Minimum for message acceptance */
+extern BOOL    check_rfc2047_length;   /* Check RFC 2047 encoded string length */
 extern int     check_spool_inodes;     /* Minimum for message acceptance */
 extern int     check_spool_space;      /* Minimum for message acceptance */
 extern int     clmacro_count;          /* Number of command line macros */

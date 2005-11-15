@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.12 2005/08/16 12:32:32 tom Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.13 2005/11/15 10:08:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -619,7 +619,7 @@ int mime_acl_check(uschar *acl, FILE *f, struct mime_boundary_context *context,
                 memset(param_value,0,param_value_len+1);
                 q = p + mime_parameter_list[j].namelen;
                 Ustrncpy(param_value, q, param_value_len);
-                param_value = rfc2047_decode(param_value, TRUE, NULL, 32, &param_value_len, &q);
+                param_value = rfc2047_decode(param_value, check_rfc2047_length, NULL, 32, &param_value_len, &q);
                 debug_printf("Found %s MIME parameter in %s header, value is '%s'\n", mime_parameter_list[j].name, mime_header_list[i].name, param_value);
                 *((uschar **)(mime_parameter_list[j].value)) = param_value;
                 p += (mime_parameter_list[j].namelen + param_value_len + 1);

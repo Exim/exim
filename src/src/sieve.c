@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.14 2005/11/14 11:41:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.15 2005/11/15 10:08:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -800,7 +800,7 @@ while (*r)
     *t++=*r++;
   }
 *t++='\0';
-value->character=rfc2047_decode(s,TRUE,US"utf-8",'\0',&value->length,&errmsg);
+value->character=rfc2047_decode(s,check_rfc2047_length,US"utf-8",'\0',&value->length,&errmsg);
 }
 
 

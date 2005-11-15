@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.46 2005/10/12 11:20:41 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.47 2005/11/15 10:08:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1205,7 +1205,8 @@ else
   uschar *decoded, *error;
   while (ptr > yield && isspace(ptr[-1])) ptr--;
   *ptr = 0;
-  decoded = rfc2047_decode2(yield, TRUE, charset, '?', NULL, newsize, &error);
+  decoded = rfc2047_decode2(yield, check_rfc2047_length, charset, '?', NULL,
+    newsize, &error);
   if (error != NULL)
     {
     DEBUG(D_any) debug_printf("*** error in RFC 2047 decoding: %s\n"

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.41 2005/11/14 16:09:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.42 2005/11/15 10:08:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -372,6 +372,7 @@ uschar *callout_random_local_part = US"$primary_hostname-$tod_epoch-testing";
 uschar *check_dns_names_pattern= US"(?i)^(?>(?(1)\\.|())[^\\W_](?>[a-z0-9-]*[^\\W_])?)+$";
 int     check_log_inodes       = 0;
 int     check_log_space        = 0;
+BOOL    check_rfc2047_length   = TRUE;
 int     check_spool_inodes     = 0;
 int     check_spool_space      = 0;
 int     clmacro_count          = 0;

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.261 2005/11/15 09:44:33 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.262 2005/11/15 10:08:24 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -125,6 +125,10 @@ PH/12 Added log selector acl_warn_skipped (default on).
 PH/13 After a successful wildlsearch lookup, discard the values of numeric
       variables because (a) they are in the wrong storage pool and (b) even if
       they were copied, it wouldn't work properly because of the caching.
+
+PH/14 Add check_rfc2047_length to disable enforcement of RFC 2047 length
+      checking when decoding. Apparently there are clients that generate
+      overlong encoded strings. Why am I not surprised?
 
 
 Exim version 4.54
