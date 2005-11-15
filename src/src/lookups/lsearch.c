@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/lsearch.c,v 1.4 2005/06/27 14:29:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/lsearch.c,v 1.5 2005/11/15 09:44:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -197,7 +197,16 @@ for (last_was_eol = TRUE;
       if (rc == FAIL) continue;
       if (rc == DEFER) return DEFER;
       }
-    break;      /* Key matched */
+
+    /* The key has matched. If the search involved a regular expression, it
+    might have caused numerical variables to be set. However, their values will
+    be in the wrong storage pool for external use. Copying them to the standard
+    pool is not feasible because of the caching of lookup results - a repeated
+    lookup will not match the regular expression again. Therefore, we flatten
+    all numeric variables at this point. */
+
+    expand_nmax = -1;
+    break;
 
     /* Compare an ip address against a list of network/ip addresses. We have to
     allow for the "*" case specially. */

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.260 2005/11/14 16:09:54 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.261 2005/11/15 09:44:33 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -121,6 +121,10 @@ PH/11 Added "${if def:sender_address {(envelope-from <$sender_address>)\n\t}}"
       to the default Received: header definition.
 
 PH/12 Added log selector acl_warn_skipped (default on).
+
+PH/13 After a successful wildlsearch lookup, discard the values of numeric
+      variables because (a) they are in the wrong storage pool and (b) even if
+      they were copied, it wouldn't work properly because of the caching.
 
 
 Exim version 4.54
