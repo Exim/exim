@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.10 2005/09/12 14:03:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.11 2005/11/15 11:19:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -955,6 +955,20 @@ error = error;  /* Keep clever compilers from complaining */
 DEBUG(D_lists) debug_printf("address match: subject=%s pattern=%s\n",
   subject, pattern);
 
+/* Find the subject's domain */
+
+sdomain = Ustrrchr(subject, '@');
+
+/* The only case where a subject may not have a domain is if the subject is
+empty. Otherwise, a subject with no domain is a serious configuration error. */
+
+if (sdomain == NULL && *subject != 0)
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "no @ found in the subject of an "
+    "address list match: subject=\"%s\" pattern=\"%s\"", subject, pattern);
+  return FAIL;
+  }
+
 /* Handle a regular expression, which must match the entire incoming address.
 This may be the empty address. */
 
@@ -988,10 +1002,6 @@ because other patterns expect to have a local part and a domain to match
 against. */
 
 if (*subject == 0) return (*pattern == 0)? OK : FAIL;
-
-/* Find the subject's domain */
-
-sdomain = Ustrrchr(subject, '@');
 
 /* If the pattern starts with "@@" we have a split lookup, where the domain is
 looked up to obtain a list of local parts. If the subject's local part is just

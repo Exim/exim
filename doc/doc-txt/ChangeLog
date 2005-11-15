@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.262 2005/11/15 10:08:24 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.263 2005/11/15 11:19:38 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -129,6 +129,10 @@ PH/13 After a successful wildlsearch lookup, discard the values of numeric
 PH/14 Add check_rfc2047_length to disable enforcement of RFC 2047 length
       checking when decoding. Apparently there are clients that generate
       overlong encoded strings. Why am I not surprised?
+
+PH/15 If the first argument of "${if match_address" was not empty, but did not
+      contain an "@" character, Exim crashed. Now it writes a panic log message
+      and treats the condition as false.
 
 
 Exim version 4.54
