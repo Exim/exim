@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////
-$Cambridge: exim/doc/doc-docbook/spec.ascd,v 1.2 2005/11/10 12:30:13 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/spec.ascd,v 1.3 2005/11/15 16:10:50 ph10 Exp $
 
 This is the primary source of the Exim Manual. It is an AsciiDoc document
 that is converted into DocBook XML for subsequent conversion into printing
@@ -1776,6 +1776,7 @@ this.
 Support for iconv()
 ~~~~~~~~~~~~~~~~~~~
 cindex:['iconv()' support]
+cindex:[RFC 2047]
 The contents of header lines in messages may be encoded according to the rules
 described RFC 2047. This makes it possible to transmit characters that are not
 in the ASCII character set, and to label them as being in a particular
@@ -6103,8 +6104,8 @@ aliases; the full map names must be used.
 cindex:[lookup,wildlsearch]
 cindex:[nwildlsearch lookup type]
 cindex:[lookup,nwildlsearch]
-^wildlsearch^ or ^nwildlsearch^: These search a file linearly, like
-^lsearch^, but instead of being interpreted as a literal string, each key may
+^wildlsearch^ or ^nwildlsearch^: These search a file linearly, like ^lsearch^,
+but instead of being interpreted as a literal string, each key in the file may
 be wildcarded. The difference between these two lookup types is that for
 ^wildlsearch^, each key in the file is string-expanded before being used,
 whereas for ^nwildlsearch^, no expansion takes place.
@@ -6134,6 +6135,12 @@ either quote it (see ^lsearch^ above), or represent these characters in other
 ways. For example, `\s` can be used for white space and `\x3A` for a
 colon. This may be easier than quoting, because if you quote, you have to
 escape all the backslashes inside the quotes.
+
+*Note*: It is not possible to capture substrings in a regular expression match
+for later use, because the results of all lookups are cached. If a lookup is
+repeated, the result is taken from the cache, and no actual pattern matching
+takes place. The values of all the numeric variables are unset after a
+^(n)wildlsearch^ match.
 
 .. Although I cannot see it being of much use, the general matching function
 that is used to implement ^(n)wildlsearch^ means that the string may begin with
@@ -8620,9 +8627,9 @@ In a router or a transport you could then have:
 +
 ....
 headers_add = \
-  X-Spam-Scanned: ${primary_hostname} ${message_id} \
+  X-Spam-Scanned: ${primary_hostname} ${message_exim_id} \
   ${hmac{md5}{SPAMSCAN_SECRET}\
-  {${primary_hostname},${message_id},$h_message-id:}}
+  {${primary_hostname},${message_exim_id},$h_message-id:}}
 ....
 +
 Then given a message, you can check where it was scanned by looking at the
@@ -9323,6 +9330,7 @@ variables or headers inside regular expressions.
 
 *\$\{rfc2047:*<'string'>*\}*::
 cindex:[expansion,RFC 2047]
+cindex:[RFC 2047,expansion operator]
 This operator encodes text according to the rules of RFC 2047. This is an
 encoding that is used in header lines to encode non-ASCII characters. It is
 assumed that the input string is in the encoding specified by the
@@ -9332,7 +9340,7 @@ only characters in the range 33--126, and no instances of the characters
   ? = ( ) < > @ , ; : \ " . [ ] _
 +
 it is not modified. Otherwise, the result is the RFC 2047 encoding of the
-string, using as many ``coded words'' as necessary to encode all the
+string, using as many ``encoded words'' as necessary to encode all the
 characters.
 
 
@@ -11870,6 +11878,7 @@ Policy controls
 %acl_smtp_starttls%                 ACL for STARTTLS
 %acl_smtp_vrfy%                     ACL for VRFY
 %av_scanner%                        specify virus scanner
+%check_rfc2047_length%              check length of RFC 2047 ``encoded words''
 %dns_csa_search_limit%              control CSA parent search depth
 %dns_csa_use_reverse%               en/disable CSA IP reverse search
 %header_maxsize%                    total size of message header
@@ -12028,6 +12037,7 @@ Processing messages
 %allow_domain_literals%             recognize domain literal syntax
 %allow_mx_to_ip%                    allow MX to point to IP address
 %allow_utf8_domains%                in addresses
+%check_rfc2047_length%              check length of RFC 2047 ``encoded words''
 %delivery_date_remove%              from incoming messages
 %envelope_to_remote%                from incoming messages
 %extract_addresses_remove_arguments%affects %-t% processing
@@ -12590,6 +12600,20 @@ oindex:[%check_log_space%]
 ===
 
 See %check_spool_space% below.
+
+oindex:[%check_rfc2047_length%]
+cindex:[RFC 2047,disabling length check]
+`..'=
+%check_rfc2047_length%, User: 'main', Type: 'boolean', Default: 'true'
+===
+
+RFC 2047 defines a way of encoding non-ASCII characters in headers using a
+system of ``encoded words''. The RFC specifies a maximum length for an encoded
+word; strings to be encoded that exceed this length are supposed to use
+multiple encoded words. By default, Exim does not recognize encoded words that
+exceed the maximum length. However, it seems that some software, in violation
+of the RFC, generates overlong encoded words. If %check_rfc2047_length% is set
+false, Exim recognizes encoded words of any length.
 
 
 oindex:[%check_spool_inodes%]
@@ -14283,27 +14307,29 @@ added to the message. Otherwise, the string should start with the text
 ``Received:'' and conform to the RFC 2822 specification for 'Received:' header
 lines. The default setting is:
 
+[revisionflag="changed"]
 ....
 received_header_text = Received: \
-    ${if def:sender_rcvhost {from $sender_rcvhost\n\t}\
-    {${if def:sender_ident {from $sender_ident }}\
-    ${if def:sender_helo_name {(helo=$sender_helo_name)\n\t}}}}\
-    by $primary_hostname \
-    ${if def:received_protocol {with $received_protocol}} \
-    ${if def:tls_cipher {($tls_cipher)\n\t}}\
-    (Exim $version_number)\n\t\
-    id $message_exim_id\
-    ${if def:received_for {\n\tfor $received_for}}
+  ${if def:sender_rcvhost {from $sender_rcvhost\n\t}\
+  {${if def:sender_ident {from ${quote_local_part: $sender_ident} }}\
+  ${if def:sender_helo_name {(helo=$sender_helo_name)\n\t}}}}\
+  by $primary_hostname \
+  ${if def:received_protocol {with $received_protocol}} \
+  ${if def:tls_cipher {($tls_cipher)\n\t}}\
+  (Exim $version_number)\n\t\
+  ${if def:sender_address {(envelope-from <$sender_address>)\n\t}}\
+  id $message_exim_id\
+  ${if def:received_for {\n\tfor $received_for}}
 ....
 
-Note the use of quotes, to allow the sequences `\n` and `\t` to be used
-for newlines and tabs, respectively. The reference to the TLS cipher is omitted
-when Exim is built without TLS support. The use of conditional expansions
-ensures that this works for both locally generated messages and messages
-received from remote hosts, giving header lines such as the following:
+The reference to the TLS cipher is omitted when Exim is built without TLS
+support. The use of conditional expansions ensures that this works for both
+locally generated messages and messages received from remote hosts, giving
+header lines such as the following:
 
   Received: from scrooge.carol.example ([192.168.12.25] ident=root)
           by marley.carol.example with esmtp (Exim 4.00)
+          (envelope-from <bob@carol.example>)
           id 16IOWa-00019l-00
           for chas@dickens.example; Tue, 25 Dec 2001 14:43:44 +0000
   Received: by scrooge.carol.example with local (Exim 4.00)
@@ -15941,9 +15967,8 @@ If a router successfully handles an address, it may queue the address for
 delivery or it may generate child addresses. In both cases, if there is a
 delivery problem during later processing, the resulting bounce message is sent
 to the address that results from expanding this string, provided that the
-address verifies successfully.
-%errors_to% is expanded before %headers_add%, %headers_remove%, and
-%transport%.
+address verifies successfully. %errors_to% is expanded before %headers_add%,
+%headers_remove%, and %transport%.
 
 If the option is unset, or the expansion is forced to fail, or the result of
 the expansion fails to verify, the errors address associated with the incoming
@@ -16081,13 +16106,17 @@ oindex:[%headers_add%]
 %headers_add%, Use: 'routers', Type: 'string'!!, Default: 'unset'
 ===
 
+[revisionflag="changed"]
 cindex:[header lines,adding]
 cindex:[router,adding header lines]
 This option specifies a string of text that is expanded at routing time, and
 associated with any addresses that are accepted by the router. However, this
 option has no effect when an address is just being verified. The way in which
 the text is used to add header lines at transport time is described in section
-<<SECTheadersaddrem>>.
+<<SECTheadersaddrem>>. New header lines are not actually added until the
+message is in the process of being transported. This means that references to
+header lines in string expansions in the transport's configuration do not
+``see'' the added header lines.
 
 The %headers_add% option is expanded after %errors_to%, but before
 %headers_remove% and %transport%. If the expanded string is empty, or if the
@@ -16109,13 +16138,17 @@ oindex:[%headers_remove%]
 %headers_remove%, Use: 'routers', Type: 'string'!!, Default: 'unset'
 ===
 
+[revisionflag="changed"]
 cindex:[header lines,removing]
 cindex:[router,removing header lines]
 This option specifies a string of text that is expanded at routing time, and
 associated with any addresses that are accepted by the router. However, this
 option has no effect when an address is just being verified. The way in which
 the text is used to remove header lines at transport time is described in
-section <<SECTheadersaddrem>>.
+section <<SECTheadersaddrem>>. Header lines are not actually removed until the
+message is in the process of being transported. This means that references to
+header lines in string expansions in the transport's configuration still
+``see'' the original header lines.
 
 The %headers_remove% option is expanded after %errors_to% and %headers_add%,
 but before %transport%. If the expansion is forced to fail, the option has no
@@ -21390,7 +21423,8 @@ oindex:[%mode%]
 %mode%, Use: 'autoreply', Type: 'octal integer', Default: '0600'
 ===
 
-If either the log file or the ``once'' file has to be created, this mode is used.
+If either the log file or the ``once'' file has to be created, this mode is
+used.
 
 
 oindex:[%never_mail%]
@@ -21409,26 +21443,30 @@ oindex:[%once%]
 %once%, Use: 'autoreply', Type: 'string'!!, Default: 'unset'
 ===
 
-This option names a file or DBM database in which a record of each
-'To:' recipient is kept when the message is specified by the transport.
-*Note*: This does not apply to 'Cc:' or 'Bcc:' recipients.
-If %once_file_size% is not set, a DBM database is used, and it is allowed to
-grow as large as necessary. If a potential recipient is already in the
-database, no message is sent by default. However, if %once_repeat% specifies a
-time greater than zero, the message is sent if that much time has elapsed since
-a message was last sent to this recipient. If %once% is unset, the message is
-always sent.
+This option names a file or DBM database in which a record of each 'To:'
+recipient is kept when the message is specified by the transport. *Note*: This
+does not apply to 'Cc:' or 'Bcc:' recipients.
 
-If %once_file_size% is set greater than zero, it changes the way Exim
-implements the %once% option. Instead of using a DBM file to record every
-recipient it sends to, it uses a regular file, whose size will never get larger
-than the given value. In the file, it keeps a linear list of recipient
-addresses and times at which they were sent messages. If the file is full when
-a new address needs to be added, the oldest address is dropped. If
-%once_repeat% is not set, this means that a given recipient may receive
-multiple messages, but at unpredictable intervals that depend on the rate of
-turnover of addresses in the file. If %once_repeat% is set, it specifies a
-maximum time between repeats.
+If %once% is unset, or is set to an empty string, the message is always sent.
+By default, if %once% is set to a non-empty file name, the message
+is not sent if a potential recipient is already listed in the database.
+However, if the %once_repeat% option specifies a time greater than zero, the
+message is sent if that much time has elapsed since a message was last sent to
+this recipient. A setting of zero time for %once_repeat% (the default) prevents
+a message from being sent a second time -- in this case, zero means infinity.
+
+If %once_file_size% is zero, a DBM database is used to remember recipients, and
+it is allowed to grow as large as necessary. If %once_file_size% is set greater
+than zero, it changes the way Exim implements the %once% option. Instead of
+using a DBM file to record every recipient it sends to, it uses a regular file,
+whose size will never get larger than the given value.
+
+In the file, Exim keeps a linear list of recipient addresses and the times at
+which they were sent messages. If the file is full when a new address needs to
+be added, the oldest address is dropped. If %once_repeat% is not set, this
+means that a given recipient may receive multiple messages, but at
+unpredictable intervals that depend on the rate of turnover of addresses in the
+file. If %once_repeat% is set, it specifies a maximum time between repeats.
 
 
 oindex:[%once_file_size%]
@@ -23466,15 +23504,15 @@ into
 
   From: Ford Prefect <prefectf@hitch.fict.example>
 +
+cindex:[RFC 2047]
 Sometimes there is a need to replace the whole address item, and this can be
 done by adding the flag letter ``w'' to a rule. If this is set on a rule that
 causes an address in a header line to be rewritten, the entire address is
 replaced, not just the working part. The replacement must be a complete RFC
 2822 address, including the angle brackets if necessary. If text outside angle
 brackets contains a character whose value is greater than 126 or less than 32
-(except for tab), the text is encoded according to RFC 2047.
-The character set is taken from %headers_charset%, which defaults to
-ISO-8859-1.
+(except for tab), the text is encoded according to RFC 2047. The character set
+is taken from %headers_charset%, which defaults to ISO-8859-1.
 +
 When the ``w'' flag is set on a rule that causes an envelope address to be
 rewritten, all but the working part of the replacement address is discarded.
@@ -28942,6 +28980,7 @@ This variable is set only after the %decode% modifier (see above) has been
 successfully run. It contains the full path and file name of the file
 containing the decoded data.
 
+cindex:[RFC 2047]
 $mime_filename$::
 This is perhaps the most important of the MIME variables. It contains a
 proposed filename for an attachment, if one was found in either the
@@ -28961,8 +29000,8 @@ follows:
 --
 . The outermost MIME part of a message is always a cover letter.
 
-. If a multipart/alternative or multipart/related MIME part is a cover letter, so
-are all MIME subparts within that multipart.
+. If a multipart/alternative or multipart/related MIME part is a cover letter,
+so are all MIME subparts within that multipart.
 
 . If any other multipart is a cover letter, the first subpart is a cover letter,
 and the rest are attachments.
@@ -29429,8 +29468,8 @@ is NULL for locally submitted messages.
 The port on which this message was received.
 
 *uschar~\*message_id*::
-This variable contains the message id for the incoming message as a
-zero-terminated string.
+This variable contains Exim's message id for the incoming message (the value of
+$message_exim_id$) as a zero-terminated string.
 
 *uschar~\*received_protocol*::
 The name of the protocol by which the message was received.
@@ -29746,9 +29785,10 @@ matching recipient could be found. The argument must be a complete email
 address.
 
 
+cindex:[RFC 2047]
 *uschar~*rfc2047_decode(uschar~{star}string,~BOOL~lencheck,~uschar~{star}target,~int~zeroval,~int~{star}lenptr,~uschar~{star}{star}error)*::
 This function decodes strings that are encoded according to RFC 2047. Typically
-these are the contents of header lines. First, each encoded ``word'' is decoded
+these are the contents of header lines. First, each ``encoded word'' is decoded
 from the Q or B encoding into a byte-string. Then, if provided with the name of
 a charset encoding, and if the 'iconv()' function is available, an attempt is
 made  to translate the result to the named character set. If this fails, the
@@ -29759,6 +29799,7 @@ maximum MIME word length is enforced. The third argument is the target
 encoding, or NULL if no translation is wanted.
 +
 cindex:[binary zero,in RFC 2047 decoding]
+cindex:[RFC 2047,binary zero in]
 If a binary zero is encountered in the decoded string, it is replaced by the
 contents of the %zeroval% argument. For use with Exim headers, the value must
 not be 0 because header lines are handled as zero-terminated strings.
@@ -30798,15 +30839,15 @@ upper cased, as is conventional in a number of operating systems. See the
 %unknown_username% option can be used to specify user names in cases when
 there is no password file entry.
 
+cindex:[RFC 2047]
 In all cases, the user name is made to conform to RFC 2822 by quoting all or
 parts of it if necessary. In addition, if it contains any non-printing
 characters, it is encoded as described in RFC 2047, which defines a way of
-including non-ASCII characters in header lines.
-The value of the %headers_charset% option specifies the name of the encoding
-that is used (the characters are assumed to be in this encoding).
-The setting of %print_topbitchars% controls whether characters with the top
-bit set (that is, with codes greater than 127) count as printing characters or
-not.
+including non-ASCII characters in header lines. The value of the
+%headers_charset% option specifies the name of the encoding that is used (the
+characters are assumed to be in this encoding). The setting of
+%print_topbitchars% controls whether characters with the top bit set (that is,
+with codes greater than 127) count as printing characters or not.
 
 
 
@@ -32843,6 +32884,7 @@ The list of optional log items is in the following table, with the default
 selection marked by asterisks:
 
 &&&
+`\*acl_warn_skipped           `  skipped %warn% statement in ACL
 ` address_rewrite            `  address rewriting
 ` all_parents                `  all parents in => lines
 ` arguments                  `  command line arguments
@@ -32885,12 +32927,17 @@ selection marked by asterisks:
 
 More details on each of these items follows:
 
+[revisionflag="changed"]
+- cindex:[%warn% statement,log when skipping]
+%acl_warn_skipped%: When an ACL %warn% statement is skipped because one of its
+conditions cannot be evaluated, a log line to this effect is written if this
+log selector is set.
+
 - cindex:[log,rewriting]
 cindex:[rewriting,logging]
 %address_rewrite%: This applies both to global rewrites and per-transport
-rewrites,
-but not to rewrites in filters run as an unprivileged user (because such users
-cannot access the log).
+rewrites, but not to rewrites in filters run as an unprivileged user (because
+such users cannot access the log).
 
 - cindex:[log,full parentage]
 %all_parents%: Normally only the original and final addresses are logged on

@@ -1,4 +1,4 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.2 2005/11/10 12:30:13 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.3 2005/11/15 16:10:50 ph10 Exp $
 
 # Make file for Exim documentation from Asciidoc source.
 
@@ -39,9 +39,12 @@ filter.ps:    filter.fo
 	      fop filter.fo -ps filter-tmp.ps
 	      mv filter-tmp.ps filter.ps
 
-filter.pdf:   filter.fo
-	      fop filter.fo -pdf filter-tmp.pdf
-	      mv filter-tmp.pdf filter.pdf
+#filter.pdf:   filter.fo
+#	       fop filter.fo -pdf filter-tmp.pdf
+#	       mv filter-tmp.pdf filter.pdf
+
+filter.pdf:   filter.ps
+	      ps2pdf filter.ps filter.pdf
 
 filter.html:  filter-html.xml TidyHTML-filter MyStyle-nochunk-html.xsl MyStyle-html.xsl MyStyle.xsl
 	      /bin/rm -rf filter.html filter-html.html
@@ -91,9 +94,12 @@ spec.ps:      spec.fo
 	      FOP_OPTS=-Xmx512m fop spec.fo -ps spec-tmp.ps
 	      mv spec-tmp.ps spec.ps
 
-spec.pdf:     spec.fo
-	      FOP_OPTS=-Xmx512m fop spec.fo -pdf spec-tmp.pdf
-	      mv spec-tmp.pdf spec.pdf
+#spec.pdf:     spec.fo
+#	       FOP_OPTS=-Xmx512m fop spec.fo -pdf spec-tmp.pdf
+#	       mv spec-tmp.pdf spec.pdf
+
+spec.pdf:     spec.ps
+	      ps2pdf spec.ps spec.pdf
 
 spec.html:    spec-html.xml TidyHTML-spec MyStyle-chunk-html.xsl MyStyle-html.xsl MyStyle.xsl
 	      /bin/rm -rf spec.html
@@ -144,9 +150,12 @@ test.ps:      test.fo
 	      fop test.fo -ps test-tmp.ps
 	      mv test-tmp.ps test.ps
 
-test.pdf:     test.fo
-	      fop test.fo -pdf test-tmp.pdf
-	      mv test-tmp.pdf test.pdf
+#test.pdf:     test.fo
+#	       fop test.fo -pdf test-tmp.pdf
+#	       mv test-tmp.pdf test.pdf
+
+test.pdf:     test.ps
+	      ps2pdf test.ps test.pdf
 
 test.html:    test-html.xml MyStyle-nochunk-html.xsl MyStyle-html.xsl MyStyle.xsl
 	      /bin/rm -rf test.html test-html.html

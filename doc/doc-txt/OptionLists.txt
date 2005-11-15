@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.11 2005/11/10 12:30:14 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.12 2005/11/15 16:10:51 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -11,7 +11,7 @@ This file contains complete lists of four kinds of Exim option:
   4. Those that can appear in the build time configuration for the Exim monitor
      (Local/eximon.conf).
 
-This file was last updated for Exim release 4.51.
+This file was last updated for Exim release 4.60.
 
 
 1. RUN TIME OPTIONS
@@ -117,6 +117,7 @@ check_log_inodes                     integer         0             main
 check_log_space                      integer         0             main
 check_owner                          boolean         true          appendfile        3.14
                                                      +             redirect          4.00
+check_rfc2047_length                 boolean         true          main              4.60
 check_secondary_mx                   boolean         false         dnslookup         4.00
 check_spool_inodes                   integer         0             main
 check_spool_space                    integer         0             main
