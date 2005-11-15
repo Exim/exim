@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/autoreply.c,v 1.6 2005/11/14 11:32:16 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/autoreply.c,v 1.7 2005/11/15 11:23:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -420,7 +420,7 @@ recipient, the effect might not be quite as envisaged. If once_file_size is
 set, instead of a dbm file, we use a regular file containing a circular buffer
 recipient cache. */
 
-if (oncelog != NULL && to != NULL)
+if (oncelog != NULL && *oncelog != 0 && to != NULL)
   {
   time_t then = 0;
 
