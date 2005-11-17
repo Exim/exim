@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.56 2005/11/15 09:27:25 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.57 2005/11/17 10:15:28 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -2010,5 +2010,12 @@ variables that are included in the data. This has to be done inside the lookup
 code, because of caching. Probably means we have to invent ewildlsearch and
 enwildlsearch.
 ------------------------------------------------------------------------------
---- HWM 347 ------------------------------------------------------------------
+
+(348) 17-Nov-05 S Option to allow AUTH when not advertised.
+
+It seems that there are clients that send AUTH when it hasn't been advertised,
+some even after HELO, not even EHLO. Sigh. Possibly this should be an ACL
+control, to enable it to be restricted to certain hosts.
+------------------------------------------------------------------------------
+--- HWM 348 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
