@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.265 2005/11/21 10:09:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.266 2005/11/21 10:24:02 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -147,6 +147,9 @@ PH/17 A further patch from the Sieve maintainer: "Introduce the new Sieve
 
       Document more things not specified clearly in RFC3028.  I had all this
       sorted out, when out of a sudden new issues came to my mind.  Oops."
+
+PH/18 Exim was not recognizing the "net-" search type prefix in match_ip lists
+      (Bugzilla #53).
 
 
 Exim version 4.54

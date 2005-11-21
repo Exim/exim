@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.27 2005/09/14 09:40:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.28 2005/11/21 10:24:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1991,7 +1991,7 @@ if (string_is_ip_address(ss, &maskoffset) > 0)
 semicolon = Ustrchr(ss, ';');
 
 /* If we are doing an IP address only match, then all lookups must be IP
-address lookups. */
+address lookups, even if there is no "net-". */
 
 if (isiponly)
   {
@@ -1999,13 +1999,14 @@ if (isiponly)
   }
 
 /* Otherwise, if the item is of the form net[n]-lookup;<file|query> then it is
-a lookup on a masked IP network, in textual form. The net- stuff really only
-applies to single-key lookups where the key is implicit. For query-style
-lookups the key is specified in the query. From release 4.30, the use of net-
-for query style is no longer needed, but we retain it for backward
-compatibility. */
+a lookup on a masked IP network, in textual form. We obey this code even if we
+have already set iplookup, so as to skip over the "net-" prefix and to set the
+mask length. The net- stuff really only applies to single-key lookups where the
+key is implicit. For query-style lookups the key is specified in the query.
+From release 4.30, the use of net- for query style is no longer needed, but we
+retain it for backward compatibility. */
 
-else if (Ustrncmp(ss, "net", 3) == 0 && semicolon != NULL)
+if (Ustrncmp(ss, "net", 3) == 0 && semicolon != NULL)
   {
   mlen = 0;
   for (t = ss + 3; isdigit(*t); t++) mlen = mlen * 10 + *t - '0';
