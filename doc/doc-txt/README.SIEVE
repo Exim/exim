@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.8 2005/11/14 11:41:23 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.9 2005/11/21 10:09:13 ph10 Exp $
 
               Notes on the Sieve implementation for Exim
 
@@ -132,7 +132,7 @@ implicit keep flag; there is no command to set it once it has
 been reset.
 
 
-Semantics of Fileinto
+Semantics Of Fileinto
 
 RFC 3028 does not specify if "fileinto" tries to create a mail folder,
 in case it does not exist.  This implementation allows to configure
@@ -141,7 +141,35 @@ that aspect using the appendfile transport options "create_directory",
 the Exim specification for details.
 
 
-Sieve Syntax and Semantics
+Allof And Anyof Test
+
+RFC 3028 does not specify if these tests use shortcut/lazy evaluation.
+Exim uses shortcut evaluation.
+
+
+Action Reordering
+
+RFC 3028 does not specify if actions may be executed out of order.
+Exim may execute them out of order, e.g. messages may be filed to
+folders or forwarded in a different order than specified, because
+those actions only setup delivery, but do not execute it themselves.
+
+
+Wildcard Matching
+
+RFC 3028 is not exactly clear if comparators act on unicode characters
+or on octets containing their UTF-8 representation.  As it turns out,
+many implementations go the second way.  This does not make a difference
+but for wildcard matching and octet-wise comparison.  Working on unicode
+means a dot matches a character.  Working on UTF-8 means the dot matches
+a single octet of a multi-octet sequence.  For octet-wise comparisons,
+working on UTF-8 means arbitrary byte sequences in headers can not be
+matches, as they are rarely correct UTF-8 sequences and can thus not be
+expressed as string literal.  This implementation works on unicode, but
+this may be changed in case RFC3028bis specifies this issue safe and sound.
+
+
+Sieve Syntax And Semantics
 
 RFC 3028 confuses syntax and semantics sometimes.  It uses a generic
 grammar as syntax for commands and tests and performs many checks during

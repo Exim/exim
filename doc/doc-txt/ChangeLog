@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.264 2005/11/15 11:23:43 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.265 2005/11/21 10:09:12 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -135,6 +135,18 @@ PH/15 If the first argument of "${if match_address" was not empty, but did not
       and treats the condition as false.
 
 PH/16 In autoreply, treat an empty string for "once" the same as unset.
+
+PH/17 A further patch from the Sieve maintainer: "Introduce the new Sieve
+      extension "envelope-auth".  The code is finished and in agreement with
+      other implementations, but there is no documentation so far and in fact,
+      nobody wrote the draft yet.  This extension is currently #undef'ed, thus
+      not changing the active code.
+
+      Print executed "if" and "elsif" statements when debugging is used. This
+      helps a great deal to understand what a filter does.
+
+      Document more things not specified clearly in RFC3028.  I had all this
+      sorted out, when out of a sudden new issues came to my mind.  Oops."
 
 
 Exim version 4.54

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.15 2005/11/15 10:08:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.16 2005/11/21 10:09:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -28,6 +28,9 @@
 /* Undefine it for UNIX-style \n end-of-line terminators (default). */
 #undef RFC_EOL
 
+/* Define this for development of the Sieve extension "envelope-auth". */
+#undef ENVELOPE_AUTH
+
 /* Define this for development of the Sieve extension "notify".     */
 #undef NOTIFY
 
@@ -55,6 +58,9 @@ struct Sieve
   int keep;
   int require_envelope;
   int require_fileinto;
+#ifdef ENVELOPE_AUTH
+  int require_envelope_auth;
+#endif
 #ifdef NOTIFY
   int require_notify;
 #endif
@@ -98,6 +104,8 @@ static uschar str_cc_c[]="Cc";
 static const struct String str_cc={ str_cc_c, 2 };
 static uschar str_bcc_c[]="Bcc";
 static const struct String str_bcc={ str_bcc_c, 3 };
+static uschar str_auth_c[]="auth";
+static const struct String str_auth={ str_auth_c, 4 };
 static uschar str_sender_c[]="Sender";
 static const struct String str_sender={ str_sender_c, 6 };
 static uschar str_resent_from_c[]="Resent-From";
@@ -108,6 +116,10 @@ static uschar str_fileinto_c[]="fileinto";
 static const struct String str_fileinto={ str_fileinto_c, 8 };
 static uschar str_envelope_c[]="envelope";
 static const struct String str_envelope={ str_envelope_c, 8 };
+#ifdef ENVELOPE_AUTH
+static uschar str_envelope_auth_c[]="envelope-auth";
+static const struct String str_envelope_auth={ str_envelope_auth_c, 13 };
+#endif
 #ifdef NOTIFY
 static uschar str_notify_c[]="notify";
 static const struct String str_notify={ str_notify_c, 6 };
@@ -1834,6 +1846,9 @@ else if (parse_identifier(filter,CUS "envelope"))
                   <envelope-part: string-list> <key-list: string-list>
 
   envelope-part is case insensitive "from" or "to"
+#ifdef ENVELOPE_AUTH
+  envelope-part =/ "auth"
+#endif
   */
 
   enum Comparator comparator=COMP_EN_ASCII_CASEMAP;
@@ -1929,6 +1944,23 @@ else if (parse_identifier(filter,CUS "envelope"))
         case ADDRPART_DOMAIN: envelopeExpr=CUS "$domain"; break;
         }
       }
+#ifdef ENVELOPE_AUTH
+    else if (eq_asciicase(e,&str_auth,0))
+      {
+      switch (addressPart)
+        {
+        case ADDRPART_ALL: envelopeExpr=CUS "$authenticated_sender"; break;
+#ifdef SUBADDRESS
+        case ADDRPART_USER:
+#endif
+        case ADDRPART_LOCALPART: envelopeExpr=CUS "${local_part:$authenticated_sender}"; break;
+        case ADDRPART_DOMAIN: envelopeExpr=CUS "${domain:$authenticated_sender}"; break;
+#ifdef SUBADDRESS
+        case ADDRPART_DETAIL: envelopeExpr=CUS 0; break;
+#endif
+        }
+      }
+#endif
     else
       {
       filter->errmsg=CUS "invalid envelope string";
@@ -2069,6 +2101,11 @@ while (*filter->pc)
       {
       if (exec) debug_printf("if %s\n",cond?"true":"false");
       }
+    if ((filter_test != FTEST_NONE && debug_selector != 0) ||
+        (debug_selector & D_filter) != 0)
+      {
+      if (exec) debug_printf("if %s\n",cond?"true":"false");
+      }
     m=parse_block(filter,exec ? cond : 0, generated);
     if (m==-1 || m==2) return m;
     if (m==0)
@@ -2089,6 +2126,11 @@ while (*filter->pc)
           {
           filter->errmsg=CUS "missing test";
           return -1;
+          }
+        if ((filter_test != FTEST_NONE && debug_selector != 0) ||
+            (debug_selector & D_filter) != 0)
+          {
+          if (exec) debug_printf("elsif %s\n",cond?"true":"false");
           }
         if ((filter_test != FTEST_NONE && debug_selector != 0) ||
             (debug_selector & D_filter) != 0)
@@ -2616,6 +2658,9 @@ filter->line=1;
 filter->keep=1;
 filter->require_envelope=0;
 filter->require_fileinto=0;
+#ifdef ENVELOPE_AUTH
+filter->require_envelope_auth=0;
+#endif
 #ifdef NOTIFY
 filter->require_notify=0;
 #endif
@@ -2684,6 +2729,9 @@ while (parse_identifier(filter,CUS "require"))
     {
     if (eq_octet(check,&str_envelope,0)) filter->require_envelope=1;
     else if (eq_octet(check,&str_fileinto,0)) filter->require_fileinto=1;
+#ifdef ENVELOPE_AUTH
+    else if (eq_octet(check,&str_envelope_auth,0)) filter->require_envelope_auth=1;
+#endif
 #ifdef NOTIFY
     else if (eq_octet(check,&str_notify,0)) filter->require_notify=1;
 #endif
