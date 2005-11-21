@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.17 2005/11/11 10:02:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.18 2005/11/21 12:04:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1836,13 +1836,10 @@ for (hname = sender_host_name; hname != NULL; hname = *aliases++)
   if ((rc = host_find_byname(&h, NULL, NULL, FALSE)) == HOST_FOUND)
     {
     host_item *hh;
-    uschar *address_ipv4 = (Ustrncmp(sender_host_address, "::ffff:", 7) == 0)?
-      sender_host_address + 7 : sender_host_address;
     HDEBUG(D_host_lookup) debug_printf("checking addresses for %s\n", hname);
     for (hh = &h; hh != NULL; hh = hh->next)
       {
-      if ((Ustrcmp(hh->address, (Ustrchr(hh->address, ':') == NULL)?
-          address_ipv4 : sender_host_address)) == 0)
+      if (host_is_in_net(hh->address, sender_host_address, 0))
         {
         HDEBUG(D_host_lookup) debug_printf("  %s OK\n", hh->address);
         ok = TRUE;

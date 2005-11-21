@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.266 2005/11/21 10:24:02 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.267 2005/11/21 12:04:23 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -150,6 +150,16 @@ PH/17 A further patch from the Sieve maintainer: "Introduce the new Sieve
 
 PH/18 Exim was not recognizing the "net-" search type prefix in match_ip lists
       (Bugzilla #53).
+
+PH/19 Exim expands the IPv6 address given to -bh to its full non-abbreviated
+      canonical form (as documented). However, after a host name lookup from
+      the IP address, check_host() was doing a simple string comparison with
+      addresses acquired from the DNS when checking that the found name did
+      have the original IP as one of its addresses. Since any found IPv6
+      addresses are likely to be in abbreviated form, the comparison could
+      fail. Luckily, there already exists a function for doing the comparison
+      by converting both addresses to binary, so now that is used instead of
+      the text comparison.
 
 
 Exim version 4.54
