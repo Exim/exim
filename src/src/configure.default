@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/configure.default,v 1.5 2005/10/11 13:50:48 ph10 Exp $
+# $Cambridge: exim/src/src/configure.default,v 1.6 2005/11/21 10:00:26 ph10 Exp $
 
 ######################################################################
 #                  Runtime configuration file for Exim               #
@@ -61,9 +61,9 @@ domainlist relay_to_domains =
 hostlist   relay_from_hosts = 127.0.0.1
 
 # Most straightforward access control requirements can be obtained by
-# appropriate settings of the above options. In more complicated situations, you
-# may need to modify the Access Control List (ACL) which appears later in this
-# file.
+# appropriate settings of the above options. In more complicated situations,
+# you may need to modify the Access Control List (ACL) which appears later in
+# this file.
 
 # The first setting specifies your local domains, for example:
 #
@@ -279,21 +279,26 @@ acl_check_rcpt:
   #
   # Two different rules are used. The first one is stricter, and is applied to
   # messages that are addressed to one of the local domains handled by this
-  # host. It blocks local parts that begin with a dot or contain @ % ! / or |.
-  # If you have local accounts that include these characters, you will have to
-  # modify this rule.
+  # host. The line "domains = +local_domains" restricts it to domains that are
+  # defined by the "domainlist local_domains" setting above. The rule  blocks
+  # local parts that begin with a dot or contain @ % ! / or |. If you have
+  # local accounts that include these characters, you will have to modify this
+  # rule.
 
   deny    message       = Restricted characters in address
           domains       = +local_domains
           local_parts   = ^[.] : ^.*[@%!/|]
 
-  # The second rule applies to all other domains, and is less strict. This
-  # allows your own users to send outgoing messages to sites that use slashes
-  # and vertical bars in their local parts. It blocks local parts that begin
-  # with a dot, slash, or vertical bar, but allows these characters within the
-  # local part. However, the sequence /../ is barred. The use of @ % and ! is
-  # blocked, as before. The motivation here is to prevent your users (or
-  # your users' viruses) from mounting certain kinds of attack on remote sites.
+  # The second rule applies to all other domains, and is less strict. The line
+  # "domains = !+local_domains" restricts it to domains that are NOT defined by
+  # the "domainlist local_domains" setting above. The exclamation mark is a
+  # negating operator. This rule allows your own users to send outgoing
+  # messages to sites that use slashes and vertical bars in their local parts.
+  # It blocks local parts that begin with a dot, slash, or vertical bar, but
+  # allows these characters within the local part. However, the sequence /../
+  # is barred. The use of @ % and ! is blocked, as before. The motivation here
+  # is to prevent your users (or your users' viruses) from mounting certain
+  # kinds of attack on remote sites.
 
   deny    message       = Restricted characters in address
           domains       = !+local_domains
@@ -445,12 +450,17 @@ begin routers
 
 
 # This router routes addresses that are not in local domains by doing a DNS
-# lookup on the domain name. Any domain that resolves to 0.0.0.0 or to a
-# loopback interface address (127.0.0.0/8) is treated as if it had no DNS
-# entry. Note that 0.0.0.0 is the same as 0.0.0.0/32, which is commonly treated
-# as the local host inside the network stack. It is not 0.0.0.0/0, the default
-# route. If the DNS lookup fails, no further routers are tried because of
-# the no_more setting, and consequently the address is unrouteable.
+# lookup on the domain name. The exclamation mark that appears in "domains = !
+# +local_domains" is a negating operator, that is, it can be read as "not". The
+# recipient's domain must not be one of those defined by "domainlist
+# local_domains" above for this router to be used.
+#
+# If the router is used, any domain that resolves to 0.0.0.0 or to a loopback
+# interface address (127.0.0.0/8) is treated as if it had no DNS entry. Note
+# that 0.0.0.0 is the same as 0.0.0.0/32, which is commonly treated as the
+# local host inside the network stack. It is not 0.0.0.0/0, the default route.
+# If the DNS lookup fails, no further routers are tried because of the no_more
+# setting, and consequently the address is unrouteable.
 
 dnslookup:
   driver = dnslookup
@@ -460,7 +470,8 @@ dnslookup:
   no_more
 
 
-# The remaining routers handle addresses in the local domain(s).
+# The remaining routers handle addresses in the local domain(s), that is those
+# domains that are defined by "domainlist local_domains" above.
 
 
 # This router handles aliasing using a linearly searched alias file with the
