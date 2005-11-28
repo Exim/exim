@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.16 2005/11/21 10:09:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.17 2005/11/28 09:47:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2101,11 +2101,6 @@ while (*filter->pc)
       {
       if (exec) debug_printf("if %s\n",cond?"true":"false");
       }
-    if ((filter_test != FTEST_NONE && debug_selector != 0) ||
-        (debug_selector & D_filter) != 0)
-      {
-      if (exec) debug_printf("if %s\n",cond?"true":"false");
-      }
     m=parse_block(filter,exec ? cond : 0, generated);
     if (m==-1 || m==2) return m;
     if (m==0)
@@ -2126,11 +2121,6 @@ while (*filter->pc)
           {
           filter->errmsg=CUS "missing test";
           return -1;
-          }
-        if ((filter_test != FTEST_NONE && debug_selector != 0) ||
-            (debug_selector & D_filter) != 0)
-          {
-          if (exec) debug_printf("elsif %s\n",cond?"true":"false");
           }
         if ((filter_test != FTEST_NONE && debug_selector != 0) ||
             (debug_selector & D_filter) != 0)
