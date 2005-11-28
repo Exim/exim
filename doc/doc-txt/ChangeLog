@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.267 2005/11/21 12:04:23 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.268 2005/11/28 10:07:55 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -160,6 +160,11 @@ PH/19 Exim expands the IPv6 address given to -bh to its full non-abbreviated
       fail. Luckily, there already exists a function for doing the comparison
       by converting both addresses to binary, so now that is used instead of
       the text comparison.
+
+PH/20 There was another similar case to PH/19, when a complete host name was
+      given in a host list; looking up its IP address could give an abbreviated
+      form, whereas the current host's name might or might not be abbreviated.
+      The same fix has been applied.
 
 
 Exim version 4.54

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.28 2005/11/21 10:24:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.29 2005/11/28 10:07:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2109,9 +2109,7 @@ if (*t == 0)
     host_item *hh;
     for (hh = &h; hh != NULL; hh = hh->next)
       {
-      if (Ustrcmp(hh->address, (Ustrchr(hh->address, ':') == NULL)?
-        cb->host_ipv4 : cb->host_address) == 0)
-          return OK;
+      if (host_is_in_net(hh->address, cb->host_address, 0)) return OK;
       }
     return FAIL;
     }
