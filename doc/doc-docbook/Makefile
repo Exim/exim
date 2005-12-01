@@ -1,4 +1,4 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.3 2005/11/15 16:10:50 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.4 2005/12/01 15:29:42 ph10 Exp $
 
 # Make file for Exim documentation from Asciidoc source.
 
@@ -44,7 +44,7 @@ filter.ps:    filter.fo
 #	       mv filter-tmp.pdf filter.pdf
 
 filter.pdf:   filter.ps
-	      ps2pdf filter.ps filter.pdf
+	      ps2pdf -sPAPERSIZE=a4 filter.ps filter.pdf
 
 filter.html:  filter-html.xml TidyHTML-filter MyStyle-nochunk-html.xsl MyStyle-html.xsl MyStyle.xsl
 	      /bin/rm -rf filter.html filter-html.html
