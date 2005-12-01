@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/os.c,v 1.3 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/os.c,v 1.4 2005/12/01 14:21:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -661,8 +661,9 @@ for (cp = buf; cp < buf + ifc.V_ifc_len; cp += len)
   if ((ifreq.V_ifr_flags & IFF_UP) == 0) continue;
 
   /* On some operating systems we have to get the IP address of the interface
-  by another call. On others, it's already there, but we must reinstate the
-  data in ifreq, because SIOCGIFFLAGS may wreck it. */
+  by another call. On others, it's already there, but we must copy the full
+  length because we only copied the basic length above, and anyway,
+  GIFFLAGS may have wrecked the data. */
 
   #ifndef SIOCGIFCONF_GIVES_ADDR
   if (ioctl(vs, V_GIFADDR, (char *)&ifreq) < 0)
@@ -671,8 +672,8 @@ for (cp = buf; cp < buf + ifc.V_ifc_len; cp += len)
   addrp = &ifreq.V_ifr_addr;
 
   #else
-  memcpy((char *)&ifreq, cp, sizeof(ifreq));
-  memcpy(addrbuf, (char *)&(ifreq.V_ifr_addr), len - sizeof(ifreq.V_ifr_name));
+  memcpy(addrbuf, cp + offsetof(struct V_ifreq, V_ifr_addr),
+    len - sizeof(ifreq.V_ifr_name));
   addrp = (struct sockaddr *)addrbuf;
   #endif
 

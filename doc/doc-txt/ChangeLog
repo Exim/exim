@@ -1,7 +1,19 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.268 2005/11/28 10:07:55 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.269 2005/12/01 14:21:25 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+Exim version 4.61
+-----------------
+
+PH/01 The code for finding all the local interface addresses on a FreeBSD
+      system running IPv6 was broken. This may well have applied to all BSD
+      systems, as well as to others that have similar system calls. The broken
+      code found IPv4 interfaces correctly, but gave incorrect values for the
+      IPv6 interfaces. In particular, ::1 was not found. The effect in Exim was
+      that it would not match correctly against @[] and not recognize the IPv6
+      addresses as local.
+
 
 Exim version 4.60
 -----------------
