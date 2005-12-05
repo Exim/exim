@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.269 2005/12/01 14:21:25 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.270 2005/12/05 14:38:18 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -13,6 +13,9 @@ PH/01 The code for finding all the local interface addresses on a FreeBSD
       IPv6 interfaces. In particular, ::1 was not found. The effect in Exim was
       that it would not match correctly against @[] and not recognize the IPv6
       addresses as local.
+
+PH/02 The ipliteral router was not recognizing addresses of the form user@
+      [ipv6:....] because it didn't know about the "ipv6:" prefix.
 
 
 Exim version 4.60

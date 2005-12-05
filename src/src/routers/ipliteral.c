@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/ipliteral.c,v 1.5 2005/09/12 15:09:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/ipliteral.c,v 1.6 2005/12/05 14:38:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -102,6 +102,7 @@ ipliteral_router_options_block *ob =
 */
 host_item *h;
 uschar *domain = addr->domain;
+uschar *ip;
 int len = Ustrlen(domain);
 int rc;
 
@@ -111,14 +112,19 @@ addr_succeed = addr_succeed;
 DEBUG(D_route) debug_printf("%s router called for %s: domain = %s\n",
   rblock->name, addr->address, addr->domain);
 
-/* Check that the domain is an IP address enclosed in square brackets. If
-not, the router declines. Otherwise route to the single IP address, setting the
-host name to "(unnamed)". */
+/* Check that the domain is an IP address enclosed in square brackets. Remember
+to allow for the "official" form of IPv6 addresses. If not, the router
+declines. Otherwise route to the single IP address, setting the host name to
+"(unnamed)". */
 
 if (domain[0] != '[' || domain[len-1] != ']') return DECLINE;
 domain[len-1] = 0;  /* temporarily */
 
-if (string_is_ip_address(domain+1, NULL) == 0)
+ip = domain + 1;
+if (strncmpic(ip, US"IPV6:", 5) == 0 || strncmpic(ip, US"IPV4:", 5) == 0)
+  ip += 5;
+
+if (string_is_ip_address(ip, NULL) == 0)
   {
   domain[len-1] = ']';
   return DECLINE;
@@ -128,10 +134,10 @@ if (string_is_ip_address(domain+1, NULL) == 0)
 but if it is set, it should probably work. */
 
 if (verify_check_this_host(&(rblock->ignore_target_hosts), NULL, domain,
-      domain + 1, NULL) == OK)
+      ip, NULL) == OK)
   {
   DEBUG(D_route)
-      debug_printf("%s is in ignore_target_hosts\n", domain+1);
+      debug_printf("%s is in ignore_target_hosts\n", ip);
   addr->message = US"IP literal host explicitly ignored";
   domain[len-1] = ']';
   return DECLINE;
@@ -142,7 +148,7 @@ if (verify_check_this_host(&(rblock->ignore_target_hosts), NULL, domain,
 h = store_get(sizeof(host_item));
 
 h->next = NULL;
-h->address = string_copy(domain+1);
+h->address = string_copy(ip);
 h->port = PORT_NONE;
 domain[len-1] = ']';   /* restore */
 h->name = string_copy(domain);
