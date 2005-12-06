@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.15 2005/11/15 10:08:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.16 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -194,6 +194,7 @@ static optionlist optionlist_config[] = {
   { "deliver_drop_privilege",   opt_bool,        &deliver_drop_privilege },
   { "deliver_queue_load_max",   opt_fixed,       &deliver_queue_load_max },
   { "delivery_date_remove",     opt_bool,        &delivery_date_remove },
+  { "disable_ipv6",             opt_bool,        &disable_ipv6 },
   { "dns_again_means_nonexist", opt_stringptr,   &dns_again_means_nonexist },
   { "dns_check_names_pattern",  opt_stringptr,   &check_dns_names_pattern },
   { "dns_csa_search_limit",     opt_int,         &dns_csa_search_limit },
@@ -2832,9 +2833,9 @@ if (primary_hostname == NULL)
     struct hostent *hostdata;
 
     #if HAVE_IPV6
-    if (dns_ipv4_lookup == NULL ||
+    if (!disable_ipv6 && (dns_ipv4_lookup == NULL ||
          match_isinlist(hostname, &dns_ipv4_lookup, 0, NULL, NULL, MCL_DOMAIN,
-           TRUE, NULL) != OK)
+           TRUE, NULL) != OK))
       af = AF_INET6;
     #else
     af = AF_INET;

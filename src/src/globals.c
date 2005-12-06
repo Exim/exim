@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.42 2005/11/15 10:08:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.43 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -482,6 +482,7 @@ int     demime_errorlevel      = 0;
 int     demime_ok              = 0;
 uschar *demime_reason          = NULL;
 #endif
+BOOL    disable_ipv6           = FALSE;
 BOOL    disable_logging        = FALSE;
 
 #ifdef EXPERIMENTAL_DOMAINKEYS

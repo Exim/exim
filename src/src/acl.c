@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.51 2005/11/14 16:09:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.52 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1146,7 +1146,7 @@ not quite kosher to treat bare domains such as EHLO 192.0.2.57 the same as
 address literals, but it's probably the most friendly thing to do. This is an
 extension to CSA, so we allow it to be turned off for proper conformance. */
 
-if (string_is_ip_address(domain, NULL))
+if (string_is_ip_address(domain, NULL) != 0)
   {
   if (!dns_csa_use_reverse) return CSA_UNKNOWN;
   dns_build_reverse(domain, target);

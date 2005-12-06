@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.14 2005/06/10 18:59:35 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.15 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -221,7 +221,7 @@ remaining string is valid as an IP address, set an impossible separator so that
 it is treated as one item. */
 
 if (type == T_PTR && keystring[0] != '<' &&
-    string_is_ip_address(keystring, NULL) > 0)
+    string_is_ip_address(keystring, NULL) != 0)
   sep = -1;
 
 /* Now scan the list and do a lookup for each item */
@@ -241,7 +241,7 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
   doing the reversal is now in a separate function. */
 
   if ((type == T_PTR || type == T_CSA) &&
-      string_is_ip_address(domain, NULL) > 0)
+      string_is_ip_address(domain, NULL) != 0)
     {
     dns_build_reverse(domain, rbuffer);
     domain = rbuffer;

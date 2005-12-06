@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.270 2005/12/05 14:38:18 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.271 2005/12/06 10:25:59 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -16,6 +16,8 @@ PH/01 The code for finding all the local interface addresses on a FreeBSD
 
 PH/02 The ipliteral router was not recognizing addresses of the form user@
       [ipv6:....] because it didn't know about the "ipv6:" prefix.
+
+PH/03 Added disable_ipv6.
 
 
 Exim version 4.60

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.29 2005/11/28 10:07:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.30 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1093,7 +1093,7 @@ while (addr_new != NULL)
               {
               nexthost = host->next;
               if (tf.gethostbyname ||
-                  string_is_ip_address(host->name, NULL) > 0)
+                  string_is_ip_address(host->name, NULL) != 0)
                 (void)host_find_byname(host, NULL, &canonical_name, TRUE);
               else
                 {
@@ -1983,7 +1983,7 @@ if (*ss == '@')
 /* If the pattern is an IP address, optionally followed by a bitmask count, do
 a (possibly masked) comparision with the current IP address. */
 
-if (string_is_ip_address(ss, &maskoffset) > 0)
+if (string_is_ip_address(ss, &maskoffset) != 0)
   return (host_is_in_net(cb->host_address, ss, maskoffset)? OK : FAIL);
 
 /* See if there is a semicolon in the pattern */
@@ -2784,7 +2784,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
     while ((keydomain = string_nextinlist(&key, &keysep, keybuffer,
             sizeof(keybuffer))) != NULL)
       {
-      if (string_is_ip_address(keydomain, NULL) > 0)
+      if (string_is_ip_address(keydomain, NULL) != 0)
         {
         uschar keyrevadd[128];
         invert_address(keyrevadd, keydomain);

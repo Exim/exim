@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/ipliteral.c,v 1.6 2005/12/05 14:38:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/ipliteral.c,v 1.7 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -104,7 +104,7 @@ host_item *h;
 uschar *domain = addr->domain;
 uschar *ip;
 int len = Ustrlen(domain);
-int rc;
+int rc, ipv;
 
 addr_new = addr_new;         /* Keep picky compilers happy */
 addr_succeed = addr_succeed;
@@ -124,7 +124,8 @@ ip = domain + 1;
 if (strncmpic(ip, US"IPV6:", 5) == 0 || strncmpic(ip, US"IPV4:", 5) == 0)
   ip += 5;
 
-if (string_is_ip_address(ip, NULL) == 0)
+ipv = string_is_ip_address(ip, NULL);
+if (ipv == 0 || (disable_ipv6 && ipv == 6))
   {
   domain[len-1] = ']';
   return DECLINE;

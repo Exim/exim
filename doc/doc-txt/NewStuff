@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.77 2005/11/21 09:51:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.78 2005/12/06 10:25:59 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -7,6 +7,19 @@ This file contains descriptions of new features that have been added to Exim,
 but have not yet made it into the main manual (which is most conveniently
 updated when there is a relatively large batch of changes). The doc/ChangeLog
 file contains a listing of all changes, including bug fixes.
+
+Version 4.61
+------------
+
+PH/01 There is a new global option called disable_ipv6, which does exactly what
+      its name implies. If set true, even if the Exim binary has IPv6 support,
+      no IPv6 activities take place. AAAA records are never looked up as a for
+      host names given in manual routing data or elsewhere. AAAA records that
+      are received from the DNS as additional data for MX records are ignored.
+      Any IPv6 addresses that are listed in local_interfaces, manualroute route
+      data, etc. are also ignored. If IP literals are enabled, the ipliteral
+      router declines to handle IPv6 literal addresses.
+
 
 Version 4.60
 ------------

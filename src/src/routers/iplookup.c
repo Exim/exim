@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/iplookup.c,v 1.4 2005/09/12 15:09:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/iplookup.c,v 1.5 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -202,7 +202,7 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
   host->mx = MX_NONE;
   host->next = NULL;
 
-  if (string_is_ip_address(host->name, NULL))
+  if (string_is_ip_address(host->name, NULL) != 0)
     host->address = host->name;
   else
     {

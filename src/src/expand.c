@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.47 2005/11/15 10:08:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.48 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1713,7 +1713,7 @@ switch(cond_type)
     case ECOND_ISIP4:
     case ECOND_ISIP6:
     rc = string_is_ip_address(sub[0], NULL);
-    *yield = ((cond_type == ECOND_ISIP)? (rc > 0) :
+    *yield = ((cond_type == ECOND_ISIP)? (rc != 0) :
              (cond_type == ECOND_ISIP4)? (rc == 4) : (rc == 6)) == testfor;
     break;
 
@@ -1973,7 +1973,7 @@ switch(cond_type)
     goto MATCHED_SOMETHING;
 
     case ECOND_MATCH_IP:       /* Match IP address in a host list */
-    if (sub[0][0] != 0 && string_is_ip_address(sub[0], NULL) <= 0)
+    if (sub[0][0] != 0 && string_is_ip_address(sub[0], NULL) == 0)
       {
       expand_string_message = string_sprintf("\"%s\" is not an IP address",
         sub[0]);

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.18 2005/11/21 12:04:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.19 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -774,10 +774,15 @@ ip_address_item *next;
 
 while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
   {
+  int ipv;
   int port = host_address_extract_port(s);            /* Leaves just the IP address */
-  if (string_is_ip_address(s, NULL) == 0)
+  if ((ipv = string_is_ip_address(s, NULL)) == 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Malformed IP address \"%s\" in %s",
       s, name);
+
+  /* Skip IPv6 addresses if IPv6 is disabled. */
+
+  if (disable_ipv6 && ipv == 6) continue;
 
   /* This use of strcpy() is OK because we have checked that s is a valid IP
   address above. The field in the ip_address_item is large enough to hold an
@@ -1965,17 +1970,17 @@ if (running_in_test_harness)
     return HOST_FIND_AGAIN;
   }
 
-/* In an IPv6 world, we need to scan for both kinds of address, so go round the
-loop twice. Note that we have ensured that AF_INET6 is defined even in an IPv4
-world, which makes for slightly tidier code. However, if dns_ipv4_lookup
-matches the domain, we also just do IPv4 lookups here (except when testing
-standalone). */
+/* In an IPv6 world, unless IPv6 has been disabled, we need to scan for both
+kinds of address, so go round the loop twice. Note that we have ensured that
+AF_INET6 is defined even in an IPv4 world, which makes for slightly tidier
+code. However, if dns_ipv4_lookup matches the domain, we also just do IPv4
+lookups here (except when testing standalone). */
 
 #if HAVE_IPV6
   #ifndef STAND_ALONE
-  if (dns_ipv4_lookup != NULL &&
+  if (disable_ipv6 || (dns_ipv4_lookup != NULL &&
         match_isinlist(host->name, &dns_ipv4_lookup, 0, NULL, NULL, MCL_DOMAIN,
-          TRUE, NULL) == OK)
+          TRUE, NULL) == OK))
     { af = AF_INET; times = 1; }
   else
   #endif  /* STAND_ALONE */
@@ -2249,18 +2254,18 @@ if (allow_ip && string_is_ip_address(host->name, NULL) != 0)
   return HOST_FOUND;
   }
 
-/* On an IPv6 system, go round the loop up to three times, looking for A6 and
-AAAA records the first two times. However, unless doing standalone testing, we
-force an IPv4 lookup if the domain matches dns_ipv4_lookup is set. Since A6
-records look like being abandoned, support them only if explicitly configured
-to do so. On an IPv4 system, go round the loop once only, looking only for A
-records. */
+/* On an IPv6 system, unless IPv6 is disabled, go round the loop up to three
+times, looking for A6 and AAAA records the first two times. However, unless
+doing standalone testing, we force an IPv4 lookup if the domain matches
+dns_ipv4_lookup is set. Since A6 records look like being abandoned, support
+them only if explicitly configured to do so. On an IPv4 system, go round the
+loop once only, looking only for A records. */
 
 #if HAVE_IPV6
   #ifndef STAND_ALONE
-    if (dns_ipv4_lookup != NULL &&
+    if (disable_ipv6 || (dns_ipv4_lookup != NULL &&
         match_isinlist(host->name, &dns_ipv4_lookup, 0, NULL, NULL, MCL_DOMAIN,
-        TRUE, NULL) == OK)
+        TRUE, NULL) == OK))
       i = 0;    /* look up A records only */
     else
   #endif        /* STAND_ALONE */
@@ -2893,10 +2898,14 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ADDITIONAL);
 
   if (rr->type != T_A
   #if HAVE_IPV6
-    && rr->type != T_AAAA
-    #ifdef SUPPORT_A6
-    && rr->type != T_A6
-    #endif
+    && ( disable_ipv6 ||
+         (
+         rr->type != T_AAAA
+         #ifdef SUPPORT_A6
+         && rr->type != T_A6
+         #endif
+         )
+       )
   #endif
     ) continue;
 

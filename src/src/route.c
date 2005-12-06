@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/route.c,v 1.6 2005/09/12 15:09:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/route.c,v 1.7 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1854,7 +1854,7 @@ if (r->translate_ip_address != NULL)
 
     DEBUG(D_route) debug_printf("%s [%s] translated to %s\n",
       h->name, h->address, newaddress);
-    if (string_is_ip_address(newaddress, NULL) > 0)
+    if (string_is_ip_address(newaddress, NULL) != 0)
       {
       h->address = newaddress;
       continue;

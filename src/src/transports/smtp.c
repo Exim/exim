@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.17 2005/08/09 13:31:53 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.18 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2260,7 +2260,7 @@ for (cutoff_retry = 0; expired &&
       /* Find by name if so configured, or if it's an IP address. We don't
       just copy the IP address, because we need the test-for-local to happen. */
 
-      if (ob->gethostbyname || string_is_ip_address(host->name, NULL) > 0)
+      if (ob->gethostbyname || string_is_ip_address(host->name, NULL) != 0)
         rc = host_find_byname(host, NULL, &canonical_name, TRUE);
       else
         {

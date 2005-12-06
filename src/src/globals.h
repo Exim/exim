@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.30 2005/11/15 10:08:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.31 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -271,6 +271,7 @@ extern int     demime_errorlevel;      /* Severity of MIME error */
 extern int     demime_ok;              /* Nonzero if message has been demimed */
 extern uschar *demime_reason;          /* Reason for broken MIME container */
 #endif
+extern BOOL    disable_ipv6;           /* Don't do any IPv6 things */
 extern BOOL    disable_logging;        /* Disables log writing when TRUE */
 
 #ifdef EXPERIMENTAL_DOMAINKEYS

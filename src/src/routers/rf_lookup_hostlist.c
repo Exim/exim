@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/rf_lookup_hostlist.c,v 1.4 2005/08/09 13:31:53 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/rf_lookup_hostlist.c,v 1.5 2005/12/06 10:25:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -103,7 +103,7 @@ for (h = addr->host_list; h != NULL; prev = h, h = next_h)
   /* If explicitly configured to look up by name, or if the "host name" is
   actually an IP address, do a byname lookup. */
 
-  else if (lookup_type == lk_byname || string_is_ip_address(h->name, NULL) > 0)
+  else if (lookup_type == lk_byname || string_is_ip_address(h->name, NULL) != 0)
     {
     DEBUG(D_route|D_host_lookup) debug_printf("calling host_find_byname\n");
     rc = host_find_byname(h, ignore_target_hosts, &canonical_name, TRUE);
