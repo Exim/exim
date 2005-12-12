@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.271 2005/12/06 10:25:59 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.272 2005/12/12 11:02:44 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -18,6 +18,13 @@ PH/02 The ipliteral router was not recognizing addresses of the form user@
       [ipv6:....] because it didn't know about the "ipv6:" prefix.
 
 PH/03 Added disable_ipv6.
+
+PH/04 Changed $reply_address to use the raw form of the headers instead of the
+      decoded form, because it is most often used to construct To: headers
+      lines in autoreplies, and the decoded form may well be syntactically
+      invalid. However, $reply_address has leading white space removed, and all
+      newlines turned into spaces so that the autoreply transport does not
+      grumble.
 
 
 Exim version 4.60

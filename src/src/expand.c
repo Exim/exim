@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.48 2005/12/06 10:25:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.49 2005/12/12 11:02:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1426,12 +1426,18 @@ while (last > first)
     return tod_stamp(tod_log_datestamp);
 
     case vtype_reply:                          /* Get reply address */
-    s = find_header(US"reply-to:", exists_only, newsize, FALSE,
+    s = find_header(US"reply-to:", exists_only, newsize, TRUE,
       headers_charset);
     if (s == NULL || *s == 0)
       {
       *newsize = 0;                            /* For the *s==0 case */
-      s = find_header(US"from:", exists_only, newsize, FALSE, headers_charset);
+      s = find_header(US"from:", exists_only, newsize, TRUE, headers_charset);
+      }
+    if (s != NULL)
+      {
+      uschar *t;
+      while (isspace(*s)) s++;
+      for (t = s; *t != 0; t++) if (*t == '\n') *t = ' ';
       }
     return (s == NULL)? US"" : s;
 
