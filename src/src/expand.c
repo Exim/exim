@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.49 2005/12/12 11:02:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.50 2005/12/12 12:05:08 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1428,6 +1428,7 @@ while (last > first)
     case vtype_reply:                          /* Get reply address */
     s = find_header(US"reply-to:", exists_only, newsize, TRUE,
       headers_charset);
+    if (s != NULL) while (isspace(*s)) s++;
     if (s == NULL || *s == 0)
       {
       *newsize = 0;                            /* For the *s==0 case */
@@ -1438,6 +1439,8 @@ while (last > first)
       uschar *t;
       while (isspace(*s)) s++;
       for (t = s; *t != 0; t++) if (*t == '\n') *t = ' ';
+      while (t > s && isspace(t[-1])) t--;
+      *t = 0;
       }
     return (s == NULL)? US"" : s;
 
