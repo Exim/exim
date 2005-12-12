@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.272 2005/12/12 11:02:44 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.273 2005/12/12 11:41:50 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -25,6 +25,9 @@ PH/04 Changed $reply_address to use the raw form of the headers instead of the
       invalid. However, $reply_address has leading white space removed, and all
       newlines turned into spaces so that the autoreply transport does not
       grumble.
+
+PH/05 If group was specified without a user on a router, and no group or user
+      was specified on a transport, the group from the router was ignored.
 
 
 Exim version 4.60

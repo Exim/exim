@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.23 2005/11/14 13:56:49 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.24 2005/12/12 11:41:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1304,6 +1304,14 @@ else if (tp->expand_gid != NULL)
     }
   }
 
+/* If the transport did not set a group, see if the router did. */
+
+if (!gid_set && testflag(addr, af_gid_set))
+  {
+  *gidp = addr->gid;
+  gid_set = TRUE;
+  }
+
 /* Pick up a uid from the transport if one is set. */
 
 if (tp->uid_set) *uidp = tp->uid;
@@ -1339,20 +1347,13 @@ else if (tp->deliver_as_creator)
     }
   }
 
-/* Otherwise see if the address specifies the uid and if so, take its
-initgroups flag. The gid from the address is taken only if the transport hasn't
-set it. In other words, a gid on the transport overrides the gid on the
-address. */
+/* Otherwise see if the address specifies the uid and if so, take it and its
+initgroups flag. */
 
 else if (testflag(addr, af_uid_set))
   {
   *uidp = addr->uid;
   *igfp = testflag(addr, af_initgroups);
-  if (!gid_set)
-    {
-    *gidp = addr->gid;
-    gid_set = TRUE;
-    }
   }
 
 /* Nothing has specified the uid - default to the Exim user, and group if the
@@ -1368,7 +1369,9 @@ else
     }
   }
 
-/* If no gid is set, it is a disaster. */
+/* If no gid is set, it is a disaster. We default to the Exim gid only if
+defaulting to the Exim uid. In other words, if the configuration has specified
+a uid, it must also provide a gid. */
 
 if (!gid_set)
   {
