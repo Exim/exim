@@ -1,4 +1,4 @@
-$Cambridge: exim/src/README.UPDATING,v 1.9 2005/10/03 13:25:32 ph10 Exp $
+$Cambridge: exim/src/README.UPDATING,v 1.10 2005/12/12 15:58:53 ph10 Exp $
 
 This document contains detailed information about incompatibilities that might
 be encountered when upgrading from one release of Exim to another. The
@@ -26,6 +26,16 @@ there have been two big upheavals...
 
 The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
+
+
+Exim version 4.61
+-----------------
+
+The default number of ACL variables of each type has been increased to 20, and
+it's possible to compile Exim with more. You can safely upgrade to this release
+if you already have messages on the queue with saved ACL variable values.
+However, if you downgrade from this release with messages on the queue, any
+saved ACL values they may have will be lost.
 
 
 Exim version 4.54

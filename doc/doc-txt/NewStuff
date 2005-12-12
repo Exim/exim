@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.79 2005/12/12 11:02:44 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.80 2005/12/12 15:58:53 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -19,6 +19,14 @@ PH/01 There is a new global option called disable_ipv6, which does exactly what
       IPv6 addresses that are listed in local_interfaces, manualroute route
       data, etc. are also ignored. If IP literals are enabled, the ipliteral
       router declines to handle IPv6 literal addresses.
+
+PH/01 There are now 20 of each type of ACL variable by default (instead of 10).
+      It is also possible to change the numbers by setting ACL_CVARS and/or
+      ACL_MVARS in Local/Makefile. Backward compatibility is maintained if you
+      upgrade to this release with existing messages containing ACL variable
+      settings on the queue. However, going in the other direction
+      (downgrading) will not be compatible; the values of ACL variables will be
+      lost.
 
 
 Version 4.60

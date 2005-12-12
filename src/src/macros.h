@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.20 2005/11/14 16:09:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.21 2005/12/12 15:58:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -159,11 +159,6 @@ message id with a trailing "-H" or "-D" added. */
 record. */
 
 #define WAIT_NAME_MAX 50
-
-/* The numbers of connection and message variables for ACLs */
-
-#define ACL_C_MAX 10
-#define ACL_M_MAX 10
 
 /* Fixed option values for all PCRE functions */
 

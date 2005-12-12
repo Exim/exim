@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.43 2005/12/06 10:25:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.44 2005/12/12 15:58:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -184,7 +184,7 @@ uschar *acl_smtp_rcpt          = NULL;
 uschar *acl_smtp_starttls      = NULL;
 uschar *acl_smtp_vrfy          = NULL;
 BOOL    acl_temp_details       = FALSE;
-uschar *acl_var[ACL_C_MAX+ACL_M_MAX];
+uschar *acl_var[ACL_CVARS + ACL_MVARS];
 uschar *acl_verify_message     = NULL;
 header_line *acl_warn_headers  = NULL;
 string_item *acl_warn_logged   = NULL;

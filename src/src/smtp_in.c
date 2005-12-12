@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.26 2005/09/13 11:13:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.27 2005/12/12 15:58:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -841,7 +841,9 @@ sender_rate = sender_rate_limit = sender_rate_period = NULL;
 ratelimiters_mail = NULL;           /* Updated by ratelimit ACL condition */
                    /* Note that ratelimiters_conn persists across resets. */
 
-for (i = 0; i < ACL_M_MAX; i++) acl_var[ACL_C_MAX + i] = NULL;
+/* The message variables follow the connection variables. */
+
+for (i = 0; i < ACL_MVARS; i++) acl_var[ACL_CVARS + i] = NULL;
 
 /* The message body variables use malloc store. They may be set if this is
 not the first message in an SMTP session and the previous message caused them
@@ -1162,7 +1164,7 @@ tls_advertised = FALSE;
 
 /* Reset ACL connection variables */
 
-for (i = 0; i < ACL_C_MAX; i++) acl_var[i] = NULL;
+for (i = 0; i < ACL_CVARS; i++) acl_var[i] = NULL;
 
 /* Allow for trailing 0 in the command buffer. */
 

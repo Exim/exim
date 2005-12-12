@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.13 2005/12/06 10:25:59 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.14 2005/12/12 15:58:53 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -735,6 +735,8 @@ to stop you overriding it in your Local/Makefile.
 Option                       Type         Description
 ------------------------------------------------------------------------------
 
+ACL_CVARS=20                 optional*    number of acl_c variables
+ACL_MVARS=20                 optional*    number of acl_m variables
 ALT_CONFIG_PREFIX            optional     restricts location of -C files
 ALT_CONFIG_ROOT_ONLY         optional*    privileged -C needs root (not exim)
 APPENDFILE_MODE              optional*

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.7 2005/05/23 15:28:38 fanf2 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.8 2005/12/12 15:58:53 ph10 Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -118,7 +118,7 @@ that fires up the monitor fishes the value out by using -bP anyway. */
 #endif
 
 
-uschar *acl_var[ACL_C_MAX+ACL_M_MAX];
+uschar *acl_var[ACL_CVARS + ACL_MVARS];
 
 uschar *active_hostname        = NULL;
 BOOL    allow_unqualified_recipient = FALSE;

@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.38 2005/11/15 10:08:25 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.39 2005/12/12 15:58:53 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  15 November 2005
+Last updated:  12 December 2005
 
 
 THE OLD LIST
@@ -210,6 +210,7 @@ Alexander Sabourenkov     Patch to add saslauthd daemon support
                           Patch for MySQL non-data queries
 David Saez                Suggested patch for $sender_hostname lookup if needed
                           Support for the clamd virus scanner
+                          Suggested patch for increased number of ACL variables
 Jonathan Sambrook         Suggested patch for expanding uid and gid lists
 Peter Savitch             Diagnosis of FPE bug when statvfs() fails on spool
 Harald Schueler           Patch for dn_expand() failure on truncated data

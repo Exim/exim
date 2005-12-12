@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.52 2005/12/06 10:25:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.53 2005/12/12 15:58:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -752,17 +752,33 @@ while ((s = (*func)()) != NULL)
 
   if (c == ACLC_SET)
     {
-    if (Ustrncmp(s, "acl_", 4) != 0 || (s[4] != 'c' && s[4] != 'm') ||
-        !isdigit(s[5]) || (!isspace(s[6]) && s[6] != '='))
+    int offset, max, n;
+    uschar *endptr;
+
+    if (Ustrncmp(s, "acl_", 4) != 0) goto BAD_ACL_VAR;
+    if (s[4] == 'c')
       {
-      *error = string_sprintf("unrecognized name after \"set\" in ACL "
-        "modifier \"set %s\"", s);
+      offset = 0;
+      max = ACL_CVARS;
+      }
+    else if (s[4] == 'm')
+      {
+      offset = ACL_CVARS;
+      max = ACL_MVARS;
+      }
+    else goto BAD_ACL_VAR;
+
+    n = Ustrtoul(s + 5, &endptr, 10);
+    if ((*endptr != 0 && *endptr != '=' && !isspace(*endptr)) || n >= max)
+      {
+      BAD_ACL_VAR:
+      *error = string_sprintf("syntax error or unrecognized name after "
+        "\"set\" in ACL modifier \"set %s\"", s);
       return NULL;
       }
 
-    cond->u.varnumber = s[5] - '0';
-    if (s[4] == 'm') cond->u.varnumber += ACL_C_MAX;
-    s += 6;
+    cond->u.varnumber = n + offset;
+    s = endptr;
     while (isspace(*s)) s++;
     }
 
@@ -2329,8 +2345,8 @@ for (; cb != NULL; cb = cb->next)
     if (cb->type == ACLC_SET)
       {
       int n = cb->u.varnumber;
-      int t = (n < ACL_C_MAX)? 'c' : 'm';
-      if (n >= ACL_C_MAX) n -= ACL_C_MAX;
+      int t = (n < ACL_CVARS)? 'c' : 'm';
+      if (n >= ACL_CVARS) n -= ACL_CVARS;
       debug_printf("acl_%c%d ", t, n);
       lhswidth += 7;
       }
@@ -2802,7 +2818,7 @@ for (; cb != NULL; cb = cb->next)
     case ACLC_SET:
       {
       int old_pool = store_pool;
-      if (cb->u.varnumber < ACL_C_MAX) store_pool = POOL_PERM;
+      if (cb->u.varnumber < ACL_CVARS) store_pool = POOL_PERM;
       acl_var[cb->u.varnumber] = string_copy(arg);
       store_pool = old_pool;
       }

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.50 2005/12/12 12:05:08 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.51 2005/12/12 15:58:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -298,26 +298,6 @@ enum {
 /* This table must be kept in alphabetical order. */
 
 static var_entry var_table[] = {
-  { "acl_c0",              vtype_stringptr,   &acl_var[0] },
-  { "acl_c1",              vtype_stringptr,   &acl_var[1] },
-  { "acl_c2",              vtype_stringptr,   &acl_var[2] },
-  { "acl_c3",              vtype_stringptr,   &acl_var[3] },
-  { "acl_c4",              vtype_stringptr,   &acl_var[4] },
-  { "acl_c5",              vtype_stringptr,   &acl_var[5] },
-  { "acl_c6",              vtype_stringptr,   &acl_var[6] },
-  { "acl_c7",              vtype_stringptr,   &acl_var[7] },
-  { "acl_c8",              vtype_stringptr,   &acl_var[8] },
-  { "acl_c9",              vtype_stringptr,   &acl_var[9] },
-  { "acl_m0",              vtype_stringptr,   &acl_var[10] },
-  { "acl_m1",              vtype_stringptr,   &acl_var[11] },
-  { "acl_m2",              vtype_stringptr,   &acl_var[12] },
-  { "acl_m3",              vtype_stringptr,   &acl_var[13] },
-  { "acl_m4",              vtype_stringptr,   &acl_var[14] },
-  { "acl_m5",              vtype_stringptr,   &acl_var[15] },
-  { "acl_m6",              vtype_stringptr,   &acl_var[16] },
-  { "acl_m7",              vtype_stringptr,   &acl_var[17] },
-  { "acl_m8",              vtype_stringptr,   &acl_var[18] },
-  { "acl_m9",              vtype_stringptr,   &acl_var[19] },
   { "acl_verify_message",  vtype_stringptr,   &acl_verify_message },
   { "address_data",        vtype_stringptr,   &deliver_address_data },
   { "address_file",        vtype_stringptr,   &address_file },
@@ -1249,6 +1229,33 @@ find_variable(uschar *name, BOOL exists_only, BOOL skipping, int *newsize)
 int first = 0;
 int last = var_table_size;
 
+/* Handle ACL variables, which are not in the table because their number may
+vary depending on a build-time setting. */
+
+if (Ustrncmp(name, "acl_", 4) == 0)
+  {
+  int offset, max, n;
+  uschar *endptr;
+
+  if (name[4] == 'm')
+    {
+    offset = ACL_CVARS;
+    max = ACL_MVARS;
+    }
+  else if (name[4] == 'c')
+    {
+    offset = 0;
+    max = ACL_CVARS;
+    }
+  else return NULL;
+
+  n = Ustrtoul(name + 5, &endptr, 10);
+  if (*endptr != 0 || n >= max) return NULL;
+  return (acl_var[offset + n] == NULL)? US"" : acl_var[offset + n];
+  }
+
+/* For all other variables, search the table */
+
 while (last > first)
   {
   uschar *s, *domain;
@@ -1260,7 +1267,7 @@ while (last > first)
   if (c < 0) { last = middle; continue; }
 
   /* Found an existing variable. If in skipping state, the value isn't needed,
-  and we want to avoid processing (such as looking up up the host name). */
+  and we want to avoid processing (such as looking up the host name). */
 
   if (skipping) return US"";
 

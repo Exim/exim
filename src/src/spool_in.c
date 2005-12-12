@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.13 2005/08/09 13:31:53 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.14 2005/12/12 15:58:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -236,7 +236,7 @@ uschar *p;
 one exception. DO NOT change the default value of dont_deliver, because it may
 be forced by an external setting. */
 
-for (n = 0; n < ACL_C_MAX + ACL_M_MAX; n++) acl_var[n] = NULL;
+for (n = 0; n < ACL_CVARS + ACL_MVARS; n++) acl_var[n] = NULL;
 
 authenticated_id = NULL;
 authenticated_sender = NULL;
@@ -376,22 +376,54 @@ for (;;)
   {
   if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
   if (big_buffer[0] != '-') break;
-
   big_buffer[Ustrlen(big_buffer) - 1] = 0;
+
+  /* For backward compatibility, we recognize "-acl", which was used before the
+  number of ACL variables changed. Its variable number is 0-9 for connection
+  variables, and 10-19 for message variables. */
+
   if (Ustrncmp(big_buffer, "-acl ", 5) == 0)
     {
     int index, count;
     if (sscanf(CS big_buffer + 5, "%d %d", &index, &count) != 2)
       goto SPOOL_FORMAT_ERROR;
-    /* Ignore if index too big - might be if a later release with more
-    variables built this spool file. */
-    if (index < ACL_C_MAX + ACL_M_MAX)
+    acl_var[index] = store_get(count + 1);
+    if (fread(acl_var[index], 1, count+1, f) < count) goto SPOOL_READ_ERROR;
+    acl_var[index][count] = 0;
+    }
+
+  /* Nowadays we use "-aclc" and "-aclm" for the different types of ACL
+  variable, because Exim may be built with different numbers of them. */
+
+  else if (Ustrncmp(big_buffer, "-aclc ", 6) == 0)
+    {
+    int index, count;
+    if (sscanf(CS big_buffer + 6, "%d %d", &index, &count) != 2)
+      goto SPOOL_FORMAT_ERROR;
+    if (index < ACL_CVARS)
       {
       acl_var[index] = store_get(count + 1);
       if (fread(acl_var[index], 1, count+1, f) < count) goto SPOOL_READ_ERROR;
       acl_var[index][count] = 0;
       }
     }
+
+  else if (Ustrncmp(big_buffer, "-aclm ", 6) == 0)
+    {
+    int index, count;
+    if (sscanf(CS big_buffer + 6, "%d %d", &index, &count) != 2)
+      goto SPOOL_FORMAT_ERROR;
+    if (index < ACL_MVARS)
+      {
+      index += ACL_CVARS;
+      acl_var[index] = store_get(count + 1);
+      if (fread(acl_var[index], 1, count+1, f) < count) goto SPOOL_READ_ERROR;
+      acl_var[index][count] = 0;
+      }
+    }
+
+  /* Other values */
+
   else if (Ustrcmp(big_buffer, "-local") == 0) sender_local = TRUE;
   else if (Ustrcmp(big_buffer, "-localerror") == 0)
     local_error_message = TRUE;

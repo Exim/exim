@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/config.h.defaults,v 1.7 2005/08/01 13:20:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/config.h.defaults,v 1.8 2005/12/12 15:58:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -10,6 +10,9 @@
 /* The default settings for Exim configuration variables. A #define without
 any data just defines the existence of the variable; it won't get included
 in config.h unless some value is defined in Local/Makefile. */
+
+#define ACL_CVARS                    20
+#define ACL_MVARS                    20
 
 #define ALT_CONFIG_PREFIX
 #define ALT_CONFIG_ROOT_ONLY

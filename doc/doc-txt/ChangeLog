@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.273 2005/12/12 11:41:50 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.274 2005/12/12 15:58:53 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -28,6 +28,12 @@ PH/04 Changed $reply_address to use the raw form of the headers instead of the
 
 PH/05 If group was specified without a user on a router, and no group or user
       was specified on a transport, the group from the router was ignored.
+
+PH/06 Increased the number of ACL variables to 20 of each type, and arranged
+      for visible compile-time settings that can be used to change these
+      numbers, for those that want even more. Backwards compatibility with old
+      spool files has been maintained. However, going back to a previous Exim
+      release will lost any variables that are in spool files.
 
 
 Exim version 4.60

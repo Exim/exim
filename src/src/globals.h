@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.31 2005/12/06 10:25:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.32 2005/12/12 15:58:53 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -126,7 +126,7 @@ extern uschar *acl_smtp_rcpt;          /* ACL run for RCPT */
 extern uschar *acl_smtp_starttls;      /* ACL run for STARTTLS */
 extern uschar *acl_smtp_vrfy;          /* ACL run for VRFY */
 extern BOOL    acl_temp_details;       /* TRUE to give details for 4xx error */
-extern uschar *acl_var[ACL_C_MAX+ACL_M_MAX]; /* User variables */
+extern uschar *acl_var[ACL_CVARS+ACL_MVARS]; /* User ACL variables */
 extern uschar *acl_verify_message;     /* User message for verify failure */
 extern header_line *acl_warn_headers;  /* Warning headers added by ACL */
 extern string_item *acl_warn_logged;   /* Logged lines */
