@@ -1,4 +1,4 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.4 2005/12/01 15:29:42 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.5 2005/12/13 13:52:07 nm4 Exp $
 
 # Make file for Exim documentation from Asciidoc source.
 
@@ -22,13 +22,13 @@ filter.xml:   filter.ascd MyAsciidoc.conf
 	      asciidoc -d book -b docbook -f MyAsciidoc.conf filter.ascd
 
 filter-fo.xml: filter.xml Pre-xml
-	      Pre-xml -bookinfo <filter.xml >filter-fo.xml
+	      ./Pre-xml -bookinfo <filter.xml >filter-fo.xml
 
 filter-html.xml: filter.xml Pre-xml
-	      Pre-xml -html <filter.xml >filter-html.xml
+	      ./Pre-xml -html <filter.xml >filter-html.xml
 
 filter-txt.xml: filter.xml Pre-xml
-	      Pre-xml -ascii -html <filter.xml >filter-txt.xml
+	      ./Pre-xml -ascii -html <filter.xml >filter-txt.xml
 
 filter.fo:    filter-fo.xml MyStyle-filter-fo.xsl MyStyle-fo.xsl MyStyle.xsl
 	      /bin/rm -rf filter.fo filter-fo.fo
@@ -77,13 +77,13 @@ spec.xml:     spec.ascd MyAsciidoc.conf
 	      asciidoc -d book -b docbook -f MyAsciidoc.conf spec.ascd
 
 spec-fo.xml:  spec.xml Pre-xml
-	      Pre-xml <spec.xml >spec-fo.xml
+	      ./Pre-xml <spec.xml >spec-fo.xml
 
 spec-html.xml: spec.xml Pre-xml
-	      Pre-xml -abstract -html -oneindex <spec.xml >spec-html.xml
+	      ./Pre-xml -abstract -html -oneindex <spec.xml >spec-html.xml
 
 spec-txt.xml: spec.xml Pre-xml
-	      Pre-xml -abstract -ascii -html -noindex <spec.xml >spec-txt.xml
+	      ./Pre-xml -abstract -ascii -html -noindex <spec.xml >spec-txt.xml
 
 spec.fo:      spec-fo.xml MyStyle-spec-fo.xsl MyStyle-fo.xsl MyStyle.xsl MyTitleStyle.xsl
 	      /bin/rm -rf spec.fo spec-fo.fo
