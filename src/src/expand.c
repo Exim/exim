@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.51 2005/12/12 15:58:53 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.52 2005/12/14 14:50:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1230,12 +1230,15 @@ int first = 0;
 int last = var_table_size;
 
 /* Handle ACL variables, which are not in the table because their number may
-vary depending on a build-time setting. */
+vary depending on a build-time setting. If the variable's name is not of the
+form acl_mddd or acl_cddd, where the d's are digits, fall through to look for
+other names that start with acl_. */
 
 if (Ustrncmp(name, "acl_", 4) == 0)
   {
-  int offset, max, n;
   uschar *endptr;
+  int offset = -1;
+  int max = 0;
 
   if (name[4] == 'm')
     {
@@ -1247,11 +1250,13 @@ if (Ustrncmp(name, "acl_", 4) == 0)
     offset = 0;
     max = ACL_CVARS;
     }
-  else return NULL;
 
-  n = Ustrtoul(name + 5, &endptr, 10);
-  if (*endptr != 0 || n >= max) return NULL;
-  return (acl_var[offset + n] == NULL)? US"" : acl_var[offset + n];
+  if (offset >= 0)
+    {
+    int n = Ustrtoul(name + 5, &endptr, 10);
+    if (*endptr == 0 && n < max)
+      return (acl_var[offset + n] == NULL)? US"" : acl_var[offset + n];
+    }
   }
 
 /* For all other variables, search the table */
