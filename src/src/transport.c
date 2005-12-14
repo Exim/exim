@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.13 2005/08/01 14:41:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.14 2005/12/14 10:00:05 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1749,7 +1749,7 @@ if ((pid = fork()) == 0)
   automatic comparison. */
 
   if ((pid = fork()) != 0) _exit(EXIT_SUCCESS);
-  if (running_in_test_harness) millisleep(500);
+  if (running_in_test_harness) sleep(1);
 
   /* Set up the calling arguments; use the standard function for the basics,
   but we have a number of extras that may be added. */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.27 2005/12/12 15:58:53 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.28 2005/12/14 10:00:05 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1132,15 +1132,6 @@ smtp_start_session(void)
 int size = 256;
 int i, ptr;
 uschar *p, *s, *ss;
-
-/* If we are running in the test harness, and the incoming call is from
-127.0.0.2 (sic), have a short delay. This makes it possible to test handling of
-input sent too soon (before the banner is output). */
-
-if (running_in_test_harness &&
-    sender_host_address != NULL &&
-    Ustrcmp(sender_host_address, "127.0.0.2") == 0)
-  sleep(1);
 
 /* Default values for certain variables */
 

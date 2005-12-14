@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.274 2005/12/12 15:58:53 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.275 2005/12/14 10:00:05 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -34,6 +34,11 @@ PH/06 Increased the number of ACL variables to 20 of each type, and arranged
       numbers, for those that want even more. Backwards compatibility with old
       spool files has been maintained. However, going back to a previous Exim
       release will lost any variables that are in spool files.
+
+PH/07 Two small changes when running in the test harness: increase delay when
+      passing a TCP/IP connection to a new process, in case the original
+      process has to generate a bounce, and remove special handling of
+      127.0.0.2 (sic), which is no longer necessary.
 
 
 Exim version 4.60
