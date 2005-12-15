@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dbfn.c,v 1.6 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dbfn.c,v 1.7 2005/12/15 11:18:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -80,6 +80,10 @@ Returns:   NULL if the open failed, or the locking failed. After locking
 
            On success, dbblock is returned. This contains the dbm pointer and
            the fd of the locked lock file.
+
+There are some calls that use O_RDWR|O_CREAT for the flags. Having discovered
+this in December 2005, I'm not sure if this is correct or not, but for the
+moment I haven't changed them.
 */
 
 open_db *
@@ -235,7 +239,9 @@ if (dbblock->dbptr == NULL)
   }
 
 DEBUG(D_hints_lookup)
-  debug_printf("opened hints database %s: flags=%x\n", buffer, flags);
+  debug_printf("opened hints database %s: flags=%s\n", buffer,
+    (flags == O_RDONLY)? "O_RDONLY" : (flags == O_RDWR)? "O_RDWR" :
+    (flags == (O_RDWR|O_CREAT))? "O_RDWR|O_CREAT" : "??");
 
 /* Pass back the block containing the opened database handle and the open fd
 for the lock. */
