@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.277 2005/12/15 15:44:46 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.278 2005/12/15 17:58:23 jetmore Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -45,6 +45,12 @@ PH/08 Changed debug output of dbfn_open() flags from numbers to names, so as to
 
 PH/09 Moved a debug statement in filter processing to avoid a race problem when
       testing.
+
+JJ/01 exipick: fixed bug where -b (brief) output option showed "Vars:"
+      whether --show-vars was specified or not
+
+JJ/02 exipick: Added support for new ACL variable spool format introduced
+      in 4.61-PH/06
 
 
 Exim version 4.60

@@ -1,5 +1,5 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.7 2005/08/03 15:21:28 jetmore Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.8 2005/12/15 17:58:23 jetmore Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
@@ -8,7 +8,7 @@ use strict;
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
-my $p_version = "20050802.0";
+my $p_version = "20051215.3";
 my $p_usage   = "Usage: $p_name [--help|--version] (see --help for details)";
 my $p_cp      = <<EOM;
         Copyright (c) 2003-2005 John Jetmore <jj33\@pobox.com>
@@ -71,17 +71,17 @@ push(@ARGV, "\$deliver_freeze")                      if ($G::qgrep_z);
 push(@ARGV, "!\$deliver_freeze")                     if ($G::qgrep_x);
 $G::mailq_bp        = $G::mailq_bp;        # shut up -w
 $G::and             = $G::and;             # shut up -w
-$G::msg_ids         = {};
+$G::msg_ids         = {};                  # short circuit when crit is only MID
 $G::caseless        = $G::caseful ? 0 : 1; # nocase by default, case if both
-@G::recipients_crit = ();
+@G::recipients_crit = ();                  # holds per-recip criteria
 $spool              = $G::spool if ($G::spool);
 my $count_only      = 1 if ($G::mailq_bpc || $G::qgrep_c);
 my $unsorted        = 1 if ($G::mailq_bpr || $G::mailq_bpra || $G::mailq_bpru);
 my $msg             = get_all_msgs($spool, $unsorted);
 my $crit            = process_criteria(\@ARGV);
 my $e               = Exim::SpoolFile->new();
-my $tcount          = 0 if ($count_only);
-my $mcount          = 0 if ($count_only);
+my $tcount          = 0 if ($count_only);  # holds count of all messages
+my $mcount          = 0 if ($count_only);  # holds count of matching messages
 $e->set_undelivered_only(1)      if ($G::mailq_bpru || $G::mailq_bpu);
 $e->set_show_generated(1)        if ($G::mailq_bpra || $G::mailq_bpa);
 $e->output_long()                if ($G::qgrep_l);
@@ -129,7 +129,9 @@ foreach my $m (@$msg) {
       else        { next(MSG);      }
     }
   }
-  next(MSG) if (scalar(@$crit, @local_crit) > 0 && !$match);
+
+  # skip this message if any criteria were supplied and it didn't match
+  next(MSG) if ((scalar(@$crit) || scalar(@local_crit)) && !$match);
 
   if ($count_only) {
     $mcount++;
@@ -235,8 +237,10 @@ BEGIN {
 
 package Exim::SpoolFile;
 
-$Exim::SpoolFile::ACL_C_MAX = 10;
-#$Exim::SpoolFile::ACL_M_MAX = 10;
+# versions 4.61 and higher will not need these variables anymore, but they
+# are left for handling legacy installs
+$Exim::SpoolFile::ACL_C_MAX_LEGACY = 10;
+#$Exim::SpoolFile::ACL_M_MAX _LEGACY= 10;
 
 sub new {
   my $class = shift;
@@ -378,7 +382,7 @@ sub set_spool {
 # accepts a variable with or without leading '$' or trailing ':'
 sub get_var {
   my $self = shift;
-  my $var  = shift;
+  my $var  = lc(shift);
 
   $var =~ s/^\$//;
   $var =~ s/:$//;
@@ -445,11 +449,21 @@ sub _parse_header {
       if ($tag eq '-acl') {
         my $t;
         return(0) if ($arg !~ /^(\d+)\s(\d+)$/);
-        if ($1 < $Exim::SpoolFile::ACL_C_MAX) {
+        if ($1 < $Exim::SpoolFile::ACL_C_MAX_LEGACY) {
           $t = "acl_c$1";
         } else {
-          $t = "acl_m" . ($1 - $Exim::SpoolFile::ACL_C_MAX);
+          $t = "acl_m" . ($1 - $Exim::SpoolFile::ACL_C_MAX_LEGACY);
         }
+        read(I, $self->{_vars}{$t}, $2+1) || return(0);
+        chomp($self->{_vars}{$t});
+      } elsif ($tag eq '-aclc') {
+        return(0) if ($arg !~ /^(\d+)\s(\d+)$/);
+        my $t = "acl_c$1";
+        read(I, $self->{_vars}{$t}, $2+1) || return(0);
+        chomp($self->{_vars}{$t});
+      } elsif ($tag eq '-aclm') {
+        return(0) if ($arg !~ /^(\d+)\s(\d+)$/);
+        my $t = "acl_m$1";
         read(I, $self->{_vars}{$t}, $2+1) || return(0);
         chomp($self->{_vars}{$t});
       } elsif ($tag eq '-local') {
@@ -725,7 +739,7 @@ sub print_message {
       push(@r, $r);
     }
     print $fh " To: ", join(';', @r);
-    if ($self->{_show_vars}) {
+    if ($self->{_show_vars} && scalar(@{$self->{_show_vars}})) {
       print $fh " Vars: ", join(';',
                                 map { "$_='".$self->get_var($_)."'" }
                                     (@{$self->{_show_vars}})
