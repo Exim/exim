@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.276 2005/12/15 11:18:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.277 2005/12/15 15:44:46 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -42,6 +42,9 @@ PH/07 Two small changes when running in the test harness: increase delay when
 
 PH/08 Changed debug output of dbfn_open() flags from numbers to names, so as to
       be the same on different OS.
+
+PH/09 Moved a debug statement in filter processing to avoid a race problem when
+      testing.
 
 
 Exim version 4.60

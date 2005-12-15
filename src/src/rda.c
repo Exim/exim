@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/rda.c,v 1.10 2005/08/08 13:21:46 ph10 Exp $ */
+/* $Cambridge: exim/src/src/rda.c,v 1.11 2005/12/15 15:44:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -770,14 +770,6 @@ if (read(fd, filtertype, sizeof(int)) != sizeof(int) ||
     read(fd, &yield, sizeof(int)) != sizeof(int) ||
     !rda_read_string(fd, error)) goto DISASTER;
 
-/* In the test harness, give the subprocess time to finish off and write
-any debugging output. */
-
-if (running_in_test_harness) millisleep(250);
-
-DEBUG(D_route)
-  debug_printf("rda_interpret: subprocess yield=%d error=%s\n", yield, *error);
-
 /* Read the contents of any syntax error blocks if we have a pointer */
 
 if (eblockp != NULL)
@@ -933,6 +925,9 @@ while ((rc = wait(&status)) != pid)
     goto FINAL_EXIT;
     }
   }
+
+DEBUG(D_route)
+  debug_printf("rda_interpret: subprocess yield=%d error=%s\n", yield, *error);
 
 if (had_disaster)
   {
