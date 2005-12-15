@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.278 2005/12/15 17:58:23 jetmore Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.279 2005/12/15 18:09:55 jetmore Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -243,9 +243,6 @@ TF/01 The control=submission/name=... option had a problem with syntax
 
 PH/05 Some modifications to the interface to the fake nameserver for the new
       testing suite.
-
-PH/06 Add ${if def:sender_address {(envelope-from <$sender_address>)\n\t}}
-      into the default Received: header string.
 
 
 
