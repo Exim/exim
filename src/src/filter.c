@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filter.c,v 1.7 2005/11/11 10:02:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filter.c,v 1.8 2005/12/19 12:25:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2211,6 +2211,7 @@ while (commands != NULL)
       uschar *to = commands->args[mailarg_index_to].u;
       int size = 0;
       int ptr = 0;
+      int badflag = 0;
 
       if (to == NULL) to = expand_string(US"$reply_address");
       while (isspace(*to)) to++;
@@ -2283,11 +2284,15 @@ while (commands != NULL)
         while (isspace(*tt)) tt++;
         }
 
-      if (log_addr == NULL) log_addr = string_sprintf("invalid-to-line");
-        else log_addr[ptr] = 0;
+      if (log_addr == NULL)
+        {
+        log_addr = string_sprintf(">**bad-reply**");
+        badflag = af_bad_reply;
+        }
+      else log_addr[ptr] = 0;
 
       addr = deliver_make_addr(log_addr, FALSE);
-      setflag(addr, af_pfr);
+      setflag(addr, (af_pfr|badflag));
       if (commands->noerror) setflag(addr, af_ignore_error);
       addr->next = *generated;
       *generated = addr;

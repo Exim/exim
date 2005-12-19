@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.279 2005/12/15 18:09:55 jetmore Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.280 2005/12/19 12:25:21 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -51,6 +51,14 @@ JJ/01 exipick: fixed bug where -b (brief) output option showed "Vars:"
 
 JJ/02 exipick: Added support for new ACL variable spool format introduced
       in 4.61-PH/06
+
+PH/10 Fixed another bug related to PH/04 above: if an incoming message had a
+      syntactically invalid From: or Reply-to: line, and a filter used this to
+      generate an autoreply, and therefore failed to obtain an address for the
+      autoreply, Exim could try to deliver to a non-existent relative file
+      name, causing unrelated and misleading errors. What now happens is that
+      it logs this as a hard delivery error, but does not attempt to create a
+      bounce message.
 
 
 Exim version 4.60

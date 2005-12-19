@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.24 2005/12/12 11:41:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.25 2005/12/19 12:25:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -5175,7 +5175,20 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
 
     if (testflag(addr, af_pfr))
       {
-      int offset = testflag(addr->parent, af_homonym)? 3:0;
+      /* If an autoreply in a filter could not generate a syntactically valid
+      address, give up forthwith. Set af_ignore_error so that we don't try to
+      generate a bounce. */
+
+      if (testflag(addr, af_bad_reply))
+        {
+        addr->basic_errno = ERRNO_BADADDRESS2;
+        addr->local_part = addr->address;
+        addr->message =
+          US"filter autoreply generated syntactically invalid recipient";
+        setflag(addr, af_ignore_error);
+        (void)post_process_one(addr, FAIL, LOG_MAIN, DTYPE_ROUTER, 0);
+        continue;   /* with the next new address */
+        }
 
       /* If two different users specify delivery to the same pipe or file or
       autoreply, there should be two different deliveries, so build a unique
@@ -5183,7 +5196,8 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
       duplicate testing and recording delivery, and also for retrying. */
 
       addr->unique =
-        string_sprintf("%s:%s", addr->address, addr->parent->unique + offset);
+        string_sprintf("%s:%s", addr->address, addr->parent->unique +
+          (testflag(addr->parent, af_homonym)? 3:0));
 
       addr->address_retry_key = addr->domain_retry_key =
         string_sprintf("T:%s", addr->unique);
