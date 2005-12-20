@@ -1,4 +1,4 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.5 2005/12/13 13:52:07 nm4 Exp $
+# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.6 2005/12/20 15:45:02 ph10 Exp $
 
 # Make file for Exim documentation from Asciidoc source.
 
@@ -35,16 +35,18 @@ filter.fo:    filter-fo.xml MyStyle-filter-fo.xsl MyStyle-fo.xsl MyStyle.xsl
 	      xmlto -x MyStyle-filter-fo.xsl fo filter-fo.xml
 	      /bin/mv -f filter-fo.fo filter.fo
 
+# Do not use pdf2ps from the PDF version; better PS is generated directly.
+
 filter.ps:    filter.fo
 	      fop filter.fo -ps filter-tmp.ps
 	      mv filter-tmp.ps filter.ps
 
-#filter.pdf:   filter.fo
-#	       fop filter.fo -pdf filter-tmp.pdf
-#	       mv filter-tmp.pdf filter.pdf
+# Do not use ps2pdf from the PS version; better PDF is generated directly. It
+# contains cross links etc.
 
-filter.pdf:   filter.ps
-	      ps2pdf -sPAPERSIZE=a4 filter.ps filter.pdf
+filter.pdf:   filter.fo
+	      fop filter.fo -pdf filter-tmp.pdf
+	      mv filter-tmp.pdf filter.pdf
 
 filter.html:  filter-html.xml TidyHTML-filter MyStyle-nochunk-html.xsl MyStyle-html.xsl MyStyle.xsl
 	      /bin/rm -rf filter.html filter-html.html
@@ -90,16 +92,18 @@ spec.fo:      spec-fo.xml MyStyle-spec-fo.xsl MyStyle-fo.xsl MyStyle.xsl MyTitle
 	      xmlto -x MyStyle-spec-fo.xsl fo spec-fo.xml
 	      /bin/mv -f spec-fo.fo spec.fo
 
+# Do not use pdf2ps from the PDF version; better PS is generated directly.
+
 spec.ps:      spec.fo
 	      FOP_OPTS=-Xmx512m fop spec.fo -ps spec-tmp.ps
 	      mv spec-tmp.ps spec.ps
 
-#spec.pdf:     spec.fo
-#	       FOP_OPTS=-Xmx512m fop spec.fo -pdf spec-tmp.pdf
-#	       mv spec-tmp.pdf spec.pdf
+# Do not use ps2pdf from the PS version; better PDF is generated directly. It
+# contains cross links etc.
 
-spec.pdf:     spec.ps
-	      ps2pdf spec.ps spec.pdf
+spec.pdf:     spec.fo
+	      FOP_OPTS=-Xmx512m fop spec.fo -pdf spec-tmp.pdf
+	      mv spec-tmp.pdf spec.pdf
 
 spec.html:    spec-html.xml TidyHTML-spec MyStyle-chunk-html.xsl MyStyle-html.xsl MyStyle.xsl
 	      /bin/rm -rf spec.html
@@ -146,16 +150,18 @@ test.fo:      test-fo.xml MyStyle-spec-fo.xsl MyStyle-fo.xsl MyStyle.xsl MyTitle
 	      xmlto -x MyStyle-spec-fo.xsl fo test-fo.xml
 	      /bin/mv -f test-fo.fo test.fo
 
+# Do not use pdf2ps from the PDF version; better PS is generated directly.
+
 test.ps:      test.fo
 	      fop test.fo -ps test-tmp.ps
 	      mv test-tmp.ps test.ps
 
-#test.pdf:     test.fo
-#	       fop test.fo -pdf test-tmp.pdf
-#	       mv test-tmp.pdf test.pdf
+# Do not use ps2pdf from the PS version; better PDF is generated directly. It
+# contains cross links etc.
 
-test.pdf:     test.ps
-	      ps2pdf test.ps test.pdf
+test.pdf:     test.fo
+	      fop test.fo -pdf test-tmp.pdf
+	      mv test-tmp.pdf test.pdf
 
 test.html:    test-html.xml MyStyle-nochunk-html.xsl MyStyle-html.xsl MyStyle.xsl
 	      /bin/rm -rf test.html test-html.html
