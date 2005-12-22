@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exinext.src,v 1.1 2004/10/07 10:39:01 ph10 Exp $
+# $Cambridge: exim/src/src/exinext.src,v 1.2 2005/12/22 11:47:24 ph10 Exp $
 
 # Copyright (c) 1996-2004 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -107,13 +107,14 @@ qualify_domain=`$exim_path $eximmacdef -C $config -bP qualify_domain | sed 's/.*
 #              pick up routing delays after temporary recipient errors.
 #              Also add unqualified subject if it looks like a message id.
 # 01-Apr-2004  Add the -C feature for testing
+# 22-Dec-2005  Complete the -C feature (!)
 
 if [ "$argone" = "" ]; then
   echo "Usage: exinext <address>|<domain>|<local-part>"
   exit 1
 fi
 
-perl - $exim_path "$eximmacdef" $argone $spool_directory $qualify_domain <<'End'
+perl - $exim_path "$eximmacdef" $argone $spool_directory $qualify_domain $config <<'End'
 
   # Name the arguments
 
@@ -122,6 +123,7 @@ perl - $exim_path "$eximmacdef" $argone $spool_directory $qualify_domain <<'End'
   $subject = $ARGV[2];
   $spool = $ARGV[3];
   $qualify = $ARGV[4];
+  $config = $ARGV[5];
 
   # If the subject doesn't contain an @ then construct an address
   # for the domain, and ensure that in both cases the domain is
@@ -133,7 +135,7 @@ perl - $exim_path "$eximmacdef" $argone $spool_directory $qualify_domain <<'End'
   # Run Exim to get a list of hosts for the given domain; for
   # each one construct the appropriate retry key.
 
-  open(LIST, "$exim -v -bt $address |") ||
+  open(LIST, "$exim -C $config -v -bt $address |") ||
     die "can't run exim to route $address";
 
   while (<LIST>)

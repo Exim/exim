@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.280 2005/12/19 12:25:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.281 2005/12/22 11:47:24 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -59,6 +59,10 @@ PH/10 Fixed another bug related to PH/04 above: if an incoming message had a
       name, causing unrelated and misleading errors. What now happens is that
       it logs this as a hard delivery error, but does not attempt to create a
       bounce message.
+
+PH/11 The exinext utility has a -C option for testing purposes, but although
+      the given file was scanned by exinext itself; it wasn't being passed on
+      when Exim was called.
 
 
 Exim version 4.60
