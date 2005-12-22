@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.18 2005/12/06 10:25:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.19 2005/12/22 14:54:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -462,11 +462,12 @@ if (buffer[0] != 0)
   }
 
 /* No data was read. If there is no errno, this must be the EOF (i.e.
-connection closed) case, which causes deferral. Otherwise, put the host's
-identity in the message, leaving the errno value to be interpreted as well. In
-all cases, we have to assume the connection is now dead. */
+connection closed) case, which causes deferral. An explicit connection reset
+error has the same effect. Otherwise, put the host's identity in the message,
+leaving the errno value to be interpreted as well. In all cases, we have to
+assume the connection is now dead. */
 
-if (*errno_value == 0)
+if (*errno_value == 0 || *errno_value == ECONNRESET)
   {
   *errno_value = ERRNO_SMTPCLOSED;
   *message = US string_sprintf("Remote host %s [%s] closed connection "
