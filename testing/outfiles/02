@@ -1,0 +1,5 @@
+<para>
+This input file tries to provoke errors &amp;;.
+Try &amp;abcd without semicolon: &abcd and at EOL &abcd
+</para>
+<abcd>

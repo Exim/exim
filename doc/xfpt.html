@@ -1,0 +1,1193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><style xmlns="" type="text/css">
+div.added    { background-color: #ffff99; }
+div.deleted  { text-decoration: line-through;
+               background-color: #FF7F7F; }
+div.changed  { background-color: #99ff99; }
+div.off      {  }
+
+span.added   { background-color: #ffff99; }
+span.deleted { text-decoration: line-through;
+               background-color: #FF7F7F; }
+span.changed { background-color: #99ff99; }
+span.off     {  }
+
+
+
+pre.literallayout {
+  background-color: #E8E8D0;
+  padding-left: 0.5cm;
+  padding-top:  5px;
+  padding-bottom: 5px;
+}
+
+div[class=changed] pre.literallayout {
+  background-color: #99ff99;
+  padding-left: 0.5cm;
+  padding-top:  5px;
+  padding-bottom: 5px;
+}
+
+div.literallayout {
+  background-color: #E8E8D0;
+  padding-left: 0.5cm;
+  padding-top:  5px;
+  padding-bottom: 5px;
+}
+
+div[class=changed] div.literallayout {
+  background-color: #99ff99;
+  padding-left: 0.5cm;
+  padding-top:  5px;
+  padding-bottom: 5px;
+}
+
+</style>
+<title>
+The xfpt plain text to XML processor</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1" />
+</head>
+<body>
+<div class="book" lang="en" xml:lang="en">
+<div class="titlepage">
+<div>
+<div>
+<h1 class="title">
+<a id="id2451640">
+</a>
+The xfpt plain text to XML processor</h1>
+</div>
+<div>
+<div class="author">
+<h3 class="author">
+<span class="firstname">
+Philip</span>
+<span class="surname">
+Hazel</span>
+</h3>
+</div>
+</div>
+<div>
+<p class="copyright">
+Copyright © 2006 University of Cambridge</p>
+</div>
+<div>
+<div class="revhistory">
+<table border="1" width="100%" summary="Revision history">
+<tr>
+<th align="left" valign="top" colspan="3">
+<b>
+Revision History</b>
+</th>
+</tr>
+<tr>
+<td align="left">
+Revision 0.00</td>
+<td align="left">
+16 January 2006</td>
+<td align="left">
+PH</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<hr />
+</div>
+<div class="toc">
+<p>
+<b>
+Table of Contents</b>
+</p>
+<dl>
+<dt>
+<span xmlns="" class="chapter">
+<a id="toc0001" href="#id2490895">
+1. Introduction</a>
+</span>
+</dt>
+<dd>
+<dl>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0002" href="#id2453011">
+1.1. The <span xmlns="http://www.w3.org/1999/xhtml" class="emphasis">
+<em>
+xfpt</em>
+</span>
+command line</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0003" href="#id2454820">
+1.2. A short <span xmlns="http://www.w3.org/1999/xhtml" class="emphasis">
+<em>
+xfpt</em>
+</span>
+example</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0004" href="#SECTliteralprocessing">
+1.3. Literal and non-literal processing</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0005" href="#id2453241">
+1.4. Format of directive lines</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0006" href="#SECTcallingmacro">
+1.5. Calling macros</a>
+</span>
+</dt>
+</dl>
+</dd>
+<dt>
+<span xmlns="" class="chapter">
+<a id="toc0007" href="#id2453488">
+2. Flag sequences</a>
+</span>
+</dt>
+<dd>
+<dl>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0008" href="#id2453540">
+2.1. Flag sequences for XML entities and <span xmlns="http://www.w3.org/1999/xhtml" class="emphasis">
+<em>
+xfpt</em>
+</span>
+variables</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0009" href="#id2500320">
+2.2. Flag sequences for calling macros</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0010" href="#id2500341">
+2.3. Other flag sequences</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0011" href="#id2500485">
+2.4. Unrecognized flag sequences</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0012" href="#id2500498">
+2.5. Standard flag sequences</a>
+</span>
+</dt>
+</dl>
+</dd>
+<dt>
+<span xmlns="" class="chapter">
+<a id="toc0013" href="#id2500738">
+3. Built-in directive processing</a>
+</span>
+</dt>
+<dd>
+<dl>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0014" href="#id2500760">
+3.1. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.arg</strong>
+</span>
+directive</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0015" href="#id2500804">
+3.2. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.eacharg</strong>
+</span>
+directive</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0016" href="#id2500942">
+3.3. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.echo</strong>
+</span>
+directive</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0017" href="#id2500962">
+3.4. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.endarg</strong>
+</span>
+directive</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0018" href="#id2500984">
+3.5. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.endeach</strong>
+</span>
+directive</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0019" href="#id2501007">
+3.6. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.flag</strong>
+</span>
+directive</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0020" href="#id2501042">
+3.7. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.include</strong>
+</span>
+directive</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0021" href="#id2501067">
+3.8. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.literal</strong>
+</span>
+directive</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0022" href="#SECTmacro">
+3.9. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.macro</strong>
+</span>
+directive</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0023" href="#id2501281">
+3.10. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.pop</strong>
+</span>
+directive</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0024" href="#id2501342">
+3.11. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.push</strong>
+</span>
+directive</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0025" href="#SECTrevision">
+3.12. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.revision</strong>
+</span>
+directive</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0026" href="#id2501568">
+3.13. The <span xmlns="http://www.w3.org/1999/xhtml" class="bold">
+<strong>
+.set</strong>
+</span>
+directive</a>
+</span>
+</dt>
+</dl>
+</dd>
+<dt>
+<span xmlns="" class="chapter">
+<a id="toc0027" href="#CHAPstdmac">
+4. The standard macros for DocBook</a>
+</span>
+</dt>
+<dd>
+<dl>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0028" href="#id2501671">
+4.1. Overall setup</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0029" href="#id2501728">
+4.2. Chapters, sections, and subsections</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0030" href="#id2501835">
+4.3. URL references</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0031" href="#id2501904">
+4.4. Itemized lists</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0032" href="#id2501978">
+4.5. Ordered lists</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0033" href="#id2502071">
+4.6. Variable lists</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0034" href="#id2502125">
+4.7. Nested lists</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0035" href="#id2502147">
+4.8. Displayed text</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0036" href="#id2502259">
+4.9. Block quotes</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0037" href="#SECTrevmacs">
+4.10. Revision markings</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0038" href="#id2502417">
+4.11. Informal tables</a>
+</span>
+</dt>
+<dt>
+<span xmlns="" class="section">
+<a id="toc0039" href="#id2502692">
+4.12. Indexes</a>
+</span>
+</dt>
+</dl>
+</dd>
+</dl>
+</div>
+<div class="chapter" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title"><a href="#" id="id2490895">1. Introduction</a></h2></div></div></div><p><span class="emphasis"><em>xfpt</em></span> is a program that reads a marked-up ASCII source file, and converts it into
+XML. It was written with DocBook XML in mind, but can also be used for other
+forms of XML. Unlike <span class="emphasis"><em>AsciiDoc</em></span> (<span class="bold"><strong><a href="http://www.methods.co.nz/asciidoc/" target="_top">http://www.methods.co.nz/asciidoc/</a></strong></span>),
+<span class="emphasis"><em>xfpt</em></span> does not try to produce XML from a document that is also usable as a
+freestanding ASCII document. The input for <span class="emphasis"><em>xfpt</em></span> is very definitely “<span class="quote">marked
+up</span>”. This makes it less ambiguous for large and/or complicated documents. <span class="emphasis"><em>xfpt</em></span>
+is also much faster than <span class="emphasis"><em>AsciiDoc</em></span> because it is written in C and does not
+rely on pattern matching.
+</p><p>
+<span class="emphasis"><em>xfpt</em></span> is aimed at users who understand the XML that they are generating. It makes
+it easy to include literal XML, either in blocks, or within paragraphs. <span class="emphasis"><em>xfpt</em></span>
+restricts itself to two special characters that trigger all its processing.
+</p><p>
+<span class="emphasis"><em>xfpt</em></span> treats any input line that starts with a dot as a <span class="emphasis"><em>directive</em></span> line.
+Directives control the way the input is processed. A small number of directives
+are implemented in the program itself. A macro facility makes it possible to
+combine these in various ways to define directives for higher-level concepts
+such as chapters and sections. A standard macro library that generates a simple
+subset of DocBook XML is provided. The only XML element that the program itself
+generates is <code class="literal">&lt;para&gt;</code>; all the others must be included as literal XML, either
+directly in the input text, or, more commonly, as part of the text that is
+generated by a macro call.
+</p><p>
+The ampersand character is special within non-literal text that is processed by
+<span class="emphasis"><em>xfpt</em></span>. An ampersand introduces a <span class="emphasis"><em>flag sequence</em></span> that modifies the output.
+Ampersand was chosen because it is also special in XML. As well as recognizing
+flag sequences that begin with an ampersand, <span class="emphasis"><em>xfpt</em></span> converts grave accents and
+apostrophes that appear in non-literal text into typographic opening and
+closing quotes, as follows:
+</p><div class="literallayout">
+ <code class="literal"> `    </code>  becomes  ‘<br />
+ <code class="literal"> '    </code>  becomes  ’<br />
+</div><p>
+Within normal input text, ampersand, grave accent, and apostrophe are the only
+characters that cause <span class="emphasis"><em>xfpt</em></span> to change the input text, and this applies only to
+non-literal text. In literal text, there are no markup characters, and only a
+dot at the start of a line is recognized as special. Within the body of a
+macro, there is one more special character: the dollar character is used to
+introduce an argument substitution.
+</p><p>
+Notwithstanding the previous paragraph, <span class="emphasis"><em>xfpt</em></span> knows that it is generating XML,
+and in all cases when a literal ampersand or angle bracket is required in the
+output, the appropriate XML entity reference (<code class="literal">&amp;amp;</code>, <code class="literal">&amp;lt;</code>, or
+<code class="literal">&amp;gt;</code>, respectively) is generated.
+</p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2453011">1.1 The <span xmlns="http://www.w3.org/1999/xhtml" class="emphasis"><em>xfpt</em></span> command line</a></h3></div></div></div><p>The format of the <span class="emphasis"><em>xfpt</em></span> command line is:
+</p><div class="literallayout">
+ <code class="literal">xfpt [</code><span class="emphasis"><em>options</em></span><code class="literal">] [</code><span class="emphasis"><em>input source</em></span><code class="literal">]</code><br />
+</div><p>
+If no input is specified, the standard input is read. There are three options:
+</p><div class="literallayout">
+ <code class="literal">-help</code><br />
+</div><p>
+This option causes <span class="emphasis"><em>xfpt</em></span> to output its “<span class="quote">usage</span>” message, and exit.  
+</p><div class="literallayout">
+ <code class="literal">-o </code><span class="emphasis"><em>&lt;output destination&gt;</em></span><br />
+</div><p>
+This option overrides the default destination. If the standard input is being
+read, the default destination is the standard output. Otherwise, the default
+destination is the name of the input file with the extension <em class="filename">.xml</em>,
+replacing its existing extension if there is one. A single hyphen character can
+be given as an output destination to refer to the standard output.
+</p><div class="literallayout">
+  <code class="literal">-S </code><span class="emphasis"><em>&lt;directory path&gt;</em></span><br />
+</div><p>
+This option overrides the path to <span class="emphasis"><em>xfpt</em></span>’s library directory that is built into
+the program. This makes it possible to use or test alternate libraries.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2454820">1.2 A short <span xmlns="http://www.w3.org/1999/xhtml" class="emphasis"><em>xfpt</em></span> example</a></h3></div></div></div><p>Here is a very short example of a complete <span class="emphasis"><em>xfpt</em></span> input file that uses some of the
+standard macros and flags:
+</p><pre class="literallayout">
+ .include stdflags
+ .include stdmacs
+ .docbook
+ .book
+
+ .chapter "The first chapter"
+ This is the text of the first chapter. Here is an &amp;'italic'&amp;
+ word, and here is a &amp;*bold*&amp; one.
+
+ .section "This is a section heading"
+ We can use the &amp;*ilist*&amp; macro to generate an itemized list:
+ .ilist
+ The first item in the list.
+ .next
+ The last item in the list.
+ .endlist
+
+ There are also standard macros for ordered lists, literal
+ layout blocks, code blocks, URL references, index entries
+ and tables.
+</pre></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="SECTliteralprocessing">1.3 Literal and non-literal processing</a></h3></div></div></div><p><span class="emphasis"><em>xfpt</em></span> processes non-directive input lines in one of four ways (known as
+“<span class="quote">modes</span>”):
+</p><div class="itemizedlist"><ul type="disc"><li><p>
+In the default mode, text is processed paragraph by paragraph. The end of a
+paragraph is indicated by the end of the input, a blank line, or by an
+occurrence of the <span class="bold"><strong>.literal</strong></span> directive. Other directives (for example,
+<span class="bold"><strong>.include</strong></span>) do not of themselves terminate a paragraph. Most of the standard
+macros (such as <span class="bold"><strong>.chapter</strong></span> and <span class="bold"><strong>.section</strong></span>) force a paragraph end by
+starting their contents with a <span class="bold"><strong>.literal</strong></span> directive.
+</p><p>
+Because <span class="emphasis"><em>xfpt</em></span> reads a whole paragraph before processing it, error messages
+contain the phrase “<span class="quote">detected near line <span class="emphasis"><em>nnn</em></span></span>”, where the line number is
+typically that of the last line of the paragraph.
+</p></li><li><p>
+In the “<span class="quote">literal layout</span>” mode, text is processed line by line, but is
+otherwise handled as in the default mode. The only real difference this makes
+to the markup from the user’s point of view is that paired flags must be on the
+same line. In this mode, error messages are more likely to contain the exact
+line number where the fault lies. Literal layout mode is used by the standard
+<span class="bold"><strong>.display</strong></span> macro to generate <code class="literal">&lt;literallayout&gt;</code> elements.
+</p></li><li><p>
+In the “<span class="quote">literal text</span>” mode, text is also processed line by line, but no flags
+are recognized. The only modification <span class="emphasis"><em>xfpt</em></span> makes to the text is to turn
+ampersand and angle bracket characters into XML entity references. This mode is
+used by the standard <span class="bold"><strong>.code</strong></span> macro to generate <code class="literal">&lt;literallayout&gt;</code> elements
+that include <code class="literal">class=monospaced</code>.
+</p></li><li><p>
+In the “<span class="quote">literal XML</span>” mode, text lines are copied to the output without
+modification. This is the easiest way to include a chunk of literal XML in the
+output. An example might be the <code class="literal">&lt;bookinfo&gt;</code> element, which occurs only once
+in a document. It is not worth setting up a macro for a one-off item like this.
+</p></li></ul></div><p>
+The <span class="bold"><strong>.literal</strong></span> directive switches between the modes. It is not normally used
+directly, but instead is incorported into appropriate macro definitions.
+</p><p>
+Directive lines are recognized and acted upon in all four modes. However, an
+unrecognized line that starts with a dot in the literal text or literal XML
+mode is treated as data. In the other modes, such a line provokes an error.
+</p><p>
+If you need to have a data line that begins with a dot in literal layout mode,
+you can either specify it by character number, or precede it with some
+non-acting markup. These two examples are both valid:
+</p><pre class="literallayout">
+ &amp;#x2e;start with a dot
+ &amp;''&amp;.start with a dot
+</pre><p>
+The second example assumes the standard flags are defined: it precedes the dot 
+with an empty italic string. However, this is untidy because the empty string
+will be carried over into the XML.
+</p><p>
+In literal text or literal XML mode, it is not possible to have a data line
+that starts with a dot followed by the name of a directive or macro. You have
+to use literal layout mode if you require such output. Another solution, which
+is used in the source for this document (where many examples show directive
+lines), is to indent every displayed line by one space, and thereby avoid the
+problem altogether.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2453241">1.4 Format of directive lines</a></h3></div></div></div><p>If an input line starts with a dot followed by a space, it is ignored by <span class="emphasis"><em>xfpt</em></span>.
+This provides a facility for including comments in the input. Otherwise, the
+dot must be followed by a directive or macro name, and possibly one or more
+arguments. Arguments that are strings are delimited by white space unless they
+are enclosed in single or double quotes. The delimiting quote character can be
+included within a quoted string by doubling it. Here are some examples:
+</p><pre class="literallayout">
+ .literal layout
+ .set version 0.00
+ .row "Jack's house" 'Jill''s house'
+</pre><p>
+An unrecognized directive line normally causes an error; however, in the
+literal text and literal XML modes, an unrecognized line that starts with a
+dot is treated as a data line.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="SECTcallingmacro">1.5 Calling macros</a></h3></div></div></div><p>Macros are defined by the <span class="bold"><strong>.macro</strong></span> directive, which is described in section
+<a href="#SECTmacro" title="3.9&#xA0;The .macro directive">3.9</a>. There are two ways of calling a macro. It can be called in the
+same way as a directive, or it can be called from within text that is being
+processed. The second case is called an “<span class="quote">inline macro call</span>”.
+</p><p>
+When a macro is called as a directive, its name is given after a dot at the
+start of a line, and the name may be followed by any number of optional
+arguments, in the same way as a built-in directive (see the previous section).
+For example:
+</p><pre class="literallayout">
+ .chapter "Chapter title" chapter-reference
+</pre><p>
+The contents of the macro, after argument substitution, are processed in
+exactly the same way as normal input lines. A macro that is called as a 
+directive may contain nested macro calls.
+</p><p>
+When a macro is called from within a text string, its name is given after an
+ampersand, and is followed by an opening parenthesis. Arguments, delimited by
+commas, can then follow, up to a closing parenthesis. If an argument contains a
+comma or a closing parenthesis, it must be quoted. White space after a
+separating comma is ignored. The most common example of this type of macro
+call is the standard macro for generating a URL reference:
+</p><pre class="literallayout">
+ Refer to a URL via &amp;url(http://x.example,this text).
+</pre><p>
+There are differences in the behaviour of macros, depending on which way they
+are called. A macro that is called inline may not contain references to other
+macros; it must contain only text lines and calls to built-in directives.
+Also, newlines that terminate text lines within the macro are not included in
+the output.
+</p><p>
+A macro that can be called inline can always be called as a directive, but the
+opposite is not always true. Macros are usually designed to be called either
+one way or the other. However, the <span class="bold"><strong>.new</strong></span> and <span class="bold"><strong>.index</strong></span> macros in the
+standard library are examples of macros that are designed be called either way.
+</p></div></div><div class="chapter" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title"><a href="#" id="id2453488">2. Flag sequences</a></h2></div></div></div><p>Only one flag sequence is built-into the code itself. If an input line ends
+with three ampersands (ignoring trailing white space), the ampersands are
+removed, and the next input line, with any leading white space removed, is
+joined to the original line. This happens before any other processing, and may
+involve any number of lines. Thus:
+</p><div class="literallayout">
+ <code class="literal">The quick &amp;&amp;&amp;</code><br />
+ <code class="literal">    brown &amp;&amp;&amp;</code><br />
+ <code class="literal">      fox.</code><br />
+</div><p>
+produces exactly the same output as:
+</p><pre class="literallayout">
+ The quick brown fox.
+</pre><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2453540">2.1 Flag sequences for XML entities and <span xmlns="http://www.w3.org/1999/xhtml" class="emphasis"><em>xfpt</em></span> variables</a></h3></div></div></div><p>If an ampersand is followed by a # character, a number, and a semicolon, it is
+understood as a numerical reference to an XML entity, and is passed through
+unmodified. The number can be decimal, or hexadecimal preceded by <code class="literal">x</code>. For
+example:
+</p><pre class="literallayout">
+ This is an Ohm sign: &amp;#x2126;.
+ This is a degree sign: &amp;#176;.
+</pre><p>
+If an ampersand is followed by a letter, a sequence of letters, digits, and
+dots is read. If this is terminated by a semicolon, the characters between the
+ampersand and the semicolon are interpreted as an entity name. This can be:
+</p><div class="itemizedlist"><ul type="disc"><li><p>
+The name of an inbuilt <span class="emphasis"><em>xfpt</em></span> variable. At present, there is only one of these,
+called <code class="literal">xfpt.rev</code>. Its use is described with the <span class="bold"><strong>.revision</strong></span> directive
+below.
+</p></li><li><p>
+The name of a user variable that has been set by the <span class="bold"><strong>.set</strong></span> directive, also
+described below.
+</p></li><li><p>
+The name of an XML entity. This is assumed if the name is not recognized as one
+of the previous types. In this case, the input text is passed to the output
+without modification. For example:
+</p><pre class="literallayout">
+ This is an Ohm sign: &amp;Ohm;.
+</pre></li></ul></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2500320">2.2 Flag sequences for calling macros</a></h3></div></div></div><p>If an ampersand is followed by a sequence of alphanumeric characters starting
+with a letter, terminated by an opening parenthesis, the characters between the
+ampersand and the parenthesis are interpreted as the name of a macro. See
+section <a href="#SECTcallingmacro" title="1.5&#xA0;Calling macros">1.5</a> for more details.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2500341">2.3 Other flag sequences</a></h3></div></div></div><p>Any other flag sequences that are needed must be defined by means of the
+<span class="bold"><strong>.flag</strong></span> directive. These are of two types, standalone and paired. Both cases
+define replacement text. This is always literal; it is not itself scanned for
+flag occurrences.
+</p><p>
+Lines are scanned from left to right when flags are being interpreted. If
+there is any ambiguity when a text string is being scanned, the longest flag
+sequence wins. Thus, it is possible (as in the standard flag sequences) to
+define both <code class="literal">&amp;&lt;</code> and <code class="literal">&amp;&lt;&lt;</code> as flags, provided that you never want to
+follow the first of them with a <code class="literal">&lt;</code> character.
+</p><p>
+You can define flags that start with <code class="literal">&amp;#</code>, but these must be used with care,
+lest they be misinterpreted as numerical references to XML entities.
+</p><p>
+A standalone flag consists of an ampersand followed by any number of
+non-alphanumeric characters. When it is encountered, it is replaced by its
+replacement text. For example, in the standard flag definitions, <code class="literal">&amp;&amp;</code>
+is defined as a standalone flag with with the replacement text <code class="literal">&amp;amp;</code>.
+</p><p>
+A paired flag is defined as two sequences. The first takes the same form as a
+standalone flag. The second also consists of non-alphanumeric characters, but
+need not start with an ampersand. It is often defined as the reverse of the
+first sequence. When the first sequence of a paired flag is encountered, its
+partner is expected to be found within the same paragraph (or line, in literal
+layout mode). Furthermore, multiple occurrences of paired flags must be
+correctly nested. For example, in the standard definitions, <code class="literal">&amp;'</code> and
+<code class="literal">'&amp;</code> are defined as a flag pair for enclosing text in an <code class="literal">&lt;emphasis&gt;</code>
+element. Each member of the pair is replaced by its replacement text.
+</p><p>
+Note that, though <span class="emphasis"><em>xfpt</em></span> diagnoses an error for badly nested flag pairs, it does
+not prevent you from generating invalid XML. For example, DocBook does not
+allow <code class="literal">&lt;emphasis&gt;</code> within <code class="literal">&lt;literal&gt;</code>, though it does allow <code class="literal">&lt;literal&gt;</code>
+within <code class="literal">&lt;emphasis&gt;</code>.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2500485">2.4 Unrecognized flag sequences</a></h3></div></div></div><p>If an ampersand is not followed by a character sequence in one of the forms
+described in the preceding sections, an error occurs.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2500498">2.5 Standard flag sequences</a></h3></div></div></div><p>These are the standalone flag sequences that are defined in the <em class="filename">stdflags</em>
+file in the <span class="emphasis"><em>xfpt</em></span> library:
+</p><div class="literallayout">
+ <code class="literal">&amp;&amp;        </code> becomes <code class="literal"> &amp;amp;</code> (ampersand)<br />
+ <code class="literal">&amp;--       </code> becomes <code class="literal"> &amp;ndash;</code> (en-dash)<br />
+ <code class="literal">&amp;~        </code> becomes <code class="literal"> &amp;nbsp;</code> (‘hard’ space)<br />
+</div><p>
+These are the flag pairs that are defined in the <em class="filename">stdflags</em> file in the <span class="emphasis"><em>xfpt</em></span>
+library:
+</p><div class="literallayout">
+ <code class="literal">&amp;"..."&amp;   </code> becomes <code class="literal">&lt;quote&gt;...&lt;/quote&gt;</code><br />
+ <code class="literal">&amp;'...'&amp;   </code> becomes <code class="literal">&lt;emphasis&gt;...&lt;/emphasis&gt;</code><br />
+ <code class="literal">&amp;*...*&amp;   </code> becomes <code class="literal">&lt;emphasis role="bold"&gt;...&lt;/emphasis&gt;</code><br />
+ <code class="literal">&amp;`...`&amp;   </code> becomes <code class="literal">&lt;literal&gt;...&lt;/literal&gt;</code><br />
+ <code class="literal">&amp;_..._&amp;   </code> becomes <code class="literal">&lt;filename&gt;...&lt;/filename&gt;</code><br />
+ <code class="literal">&amp;(...)&amp;   </code> becomes <code class="literal">&lt;command&gt;...&lt;/command&gt;</code><br />
+ <code class="literal">&amp;[...]&amp;   </code> becomes <code class="literal">&lt;function&gt;...&lt;/function&gt;</code><br />
+ <code class="literal">&amp;%...%&amp;   </code> becomes <code class="literal">&lt;option&gt;...&lt;/option&gt;</code><br />
+ <code class="literal">&amp;$...$&amp;   </code> becomes <code class="literal">&lt;varname&gt;...&lt;/varname&gt;</code><br />
+ <code class="literal">&amp;&lt;...&gt;&amp;   </code> becomes <code class="literal">&lt;...&gt;</code><br />
+ <code class="literal">&amp;&lt;&lt;...&gt;&gt;&amp; </code> becomes <code class="literal">&lt;xref linkend="..."/&gt;</code><br />
+</div><p>
+For example, if you want to include a literal XML element in your output, you
+can do it like this: <code class="literal">&amp;&lt;element&gt;&amp;</code>. If you want to include a longer
+sequence of literal XML, changing to the literal XML mode may be more
+convenient.
+</p></div></div><div class="chapter" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title"><a href="#" id="id2500738">3. Built-in directive processing</a></h2></div></div></div><p>The directives that are built into the code of <span class="emphasis"><em>xfpt</em></span> are now described in
+alphabetical order. You can see more examples of their use in the definitions
+of the standard macros in chapter <a href="#CHAPstdmac" title="4.&#xA0;The standard macros for DocBook">4</a>.
+</p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2500760">3.1 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.arg</strong></span> directive</a></h3></div></div></div><p>This directive may appear only within the body of a macro. It must be followed
+by a single number, optionally preceded by a minus sign. If the number is
+positive (no minus sign), subsequent lines, up to a <span class="bold"><strong>.endarg</strong></span> directive, are
+skipped unless the macro has been called with at least that number of
+arguments and the given argument is not an empty string. If the number is
+negative (minus sign present), subsequent lines are skipped if the macro has
+been called with fewer than that number of arguments, or with an empty string 
+for the given argument. For example:
+</p><pre class="literallayout">
+ .macro example
+ .arg 2
+ Use these lines if there are at least 2 arguments 
+ and the second one is not empty. Normally there would 
+ be a reference to the 2nd argument. 
+ .endarg
+ .arg -2 
+ Use this line unless there are at least 2 arguments 
+ and the second one is not empty. 
+ .endarg 
+ .endmacro
+</pre></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2500804">3.2 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.eacharg</strong></span> directive</a></h3></div></div></div><p>This directive may appear only within the body of a macro. It may optionally be
+followed by a single number; if omitted the value is taken to be 1. Subsequent
+lines, up to a <span class="bold"><strong>.endeach</strong></span> directive, are processed multiple times, once for
+each remaining argument. Unlike <span class="bold"><strong>.arg</strong></span>, an argument that is an empty string 
+is not treated specially.
+</p><p>
+The number given with <span class="bold"><strong>.eacharg</strong></span> defines which argument to start with. While
+these lines are being processed, the remaining macro arguments can be
+referenced relative to the current argument. <code class="literal">$+1</code> refers to the current
+argument, <code class="literal">$+2</code> to the next argument, and so on.
+</p><p>
+The <span class="bold"><strong>.endeach</strong></span> directive may also be followed by a number, again defaulting
+to 1. When <span class="bold"><strong>.endeach</strong></span> is reached, the current argument number is incremented
+by that number. If there are still unused arguments available, the lines
+between <span class="bold"><strong>.eacharg</strong></span> and <span class="bold"><strong>.endeach</strong></span> are processed again.
+</p><p>
+This example is taken from the coding for the standard <span class="bold"><strong>.row</strong></span> macro, which
+generates an <code class="literal">&lt;entry&gt;</code> element for each of its arguments:
+</p><pre class="literallayout">
+ .eacharg
+ &amp;&lt;entry&gt;&amp;$+1&amp;&lt;/entry&gt;&amp;
+ .endeach
+</pre><p>
+This example is taken from the coding for the standard <span class="bold"><strong>.itable</strong></span> macro, which
+processes arguments in pairs to define the table’s columns, starting from the
+fifth argument:
+</p><pre class="literallayout">
+ .eacharg 5
+ &amp;&lt;colspec colwidth="$+1" align="$+2"/&gt;&amp;
+ .endeach 2
+</pre></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2500942">3.3 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.echo</strong></span> directive</a></h3></div></div></div><p>This directive takes a single string argument. It writes it to the standard
+error stream. Within a macro, argument substitution takes place, but no other
+processing is done on the string. This directive can be useful for debugging
+macros or writing comments to the user.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2500962">3.4 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.endarg</strong></span> directive</a></h3></div></div></div><p>See the description of <span class="bold"><strong>.arg</strong></span> above.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2500984">3.5 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.endeach</strong></span> directive</a></h3></div></div></div><p>See the description of <span class="bold"><strong>.eacharg</strong></span> above.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2501007">3.6 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.flag</strong></span> directive</a></h3></div></div></div><p>This directive is used to define flag sequences. The directive must be followed
+either by a standalone flag sequence and one string in quotes, or by a flag
+pair and two strings in quotes. White space separates these items. For example:
+</p><pre class="literallayout">
+ .flag &amp;&amp; "&amp;amp;"
+ .flag &amp;" "&amp;  "&lt;quote&gt;"  "&lt;/quote&gt;"
+</pre><p>
+There are more examples in the definitions of the standard flags. If you
+redefine an existing flag, the new definition overrides the old. There is no
+way to revert to the previous definition.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2501042">3.7 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.include</strong></span> directive</a></h3></div></div></div><p>This directive must be followed by a single string argument that is the path to
+a file. The contents of the file are read and incorporated into the input at
+this point. If the string does not contain any slashes, the path to the <span class="emphasis"><em>xfpt</em></span>
+library is prepended. Otherwise, the path is used unaltered.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2501067">3.8 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.literal</strong></span> directive</a></h3></div></div></div><p>This must be followed by one of the words “<span class="quote">layout</span>”, “<span class="quote">text</span>”, “<span class="quote">off</span>”, or
+“<span class="quote">xml</span>”. It forces an end to a previous paragraph, if there is one, and then
+switches between processing modes. The default mode is the “<span class="quote">off</span>” mode, in
+which text is processed paragraph by paragraph, and flags are recognized.
+Section <a href="#SECTliteralprocessing" title="1.3&#xA0;Literal and non-literal processing">1.3</a> describes how input lines are processed in
+the four modes.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="SECTmacro">3.9 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.macro</strong></span> directive</a></h3></div></div></div><p>This directive is used to define macros. It must be followed by a macro name,
+and then, optionally, by any number of arguments. These provide default values.
+The following lines, up to <span class="bold"><strong>.endmacro</strong></span>, form the body of the macro. They are
+not processed in any way when the macro is defined; they are processed only
+when the macro is called (see section <a href="#SECTcallingmacro" title="1.5&#xA0;Calling macros">1.5</a>).
+</p><p>
+Within the body of a macro, argument substitutions can be specified by means of
+a dollar character and an argument number, for example, <code class="literal">$3</code> for the third
+argument. See also <span class="bold"><strong>.eacharg</strong></span> above for the use of <code class="literal">$+</code> to refer to
+relative arguments when looping through them. A reference to an argument that
+is not supplied, and is not given a default, results in an empty substitution.
+</p><p>
+There is also a facility for a conditional substitution. A reference to an
+argument of the form:
+</p><div class="literallayout">
+<code class="literal">$=</code><span class="emphasis"><em>&lt;digits&gt;&lt;delimiter&gt;&lt;text&gt;&lt;delimiter&gt;</em></span><br />
+</div><p>
+inserts the text if the argument is defined and is not an empty string, and
+nothing otherwise. The text is itself scanned for flags and argument
+substitutions. The delimiter must be a single character that does not appear in
+the text. For example:
+</p><pre class="literallayout">
+&amp;&lt;chapter$=2+ id="$2"+&gt;&amp;
+</pre><p>
+If this appears in a macro that is called with only one argument, the result
+is:
+</p><pre class="literallayout">
+&lt;chapter&gt;
+</pre><p>
+but if the second argument is, say <code class="literal">abcd</code>, the result is:
+</p><pre class="literallayout">
+&lt;chapter id="abcd"&gt;
+</pre><p>
+This conditional feature can be used with both absolute and relative argument
+references.
+</p><p>
+If a dollar character is required as data within the body of a macro, it must 
+be doubled. For example:
+</p><pre class="literallayout">
+  .macro price
+  The price is $$1.
+  .endmacro
+</pre><p>
+If you redefine an existing macro, the new definition overrides the old. There
+is no way to revert to the previous definition. If you define a macro whose 
+name is the same as the name of a built-in directive you will not be able to 
+call it, because <span class="emphasis"><em>xfpt</em></span> looks for built-in directives before it looks for macros.
+</p><p>
+It is possible to define a macro within a macro, though clearly care must be 
+taken with argument references to ensure that substitutions happen at the right
+level.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2501281">3.10 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.pop</strong></span> directive</a></h3></div></div></div><p><span class="emphasis"><em>xfpt</em></span> keeps a stack of text strings that are manipulated by the <span class="bold"><strong>.push</strong></span> and
+<span class="bold"><strong>.pop</strong></span> directives. When the end of the input is reached, any strings that
+remain on the stack are popped off, processed for flags, and written to the
+output.
+</p><p>
+Each string on the stack may, optionally, be associated with an upper case
+letter. If <span class="bold"><strong>.pop</strong></span> is followed by an upper case letter, it searches down the
+stack for a string with the same letter. If it cannot find one, it does
+nothing. Otherwise, it pops off, processes, and writes out all the strings down
+to and including the one that matches.
+</p><p>
+If <span class="bold"><strong>.pop</strong></span> is given without a following letter, it pops one string off the
+stack and writes it out. If there is nothing on the stack, an error occurs.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2501342">3.11 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.push</strong></span> directive</a></h3></div></div></div><p>This directive pushes a string onto the stack. If the rest of the command line
+starts with an upper case letter followed by white space, that letter is
+associated with the string that is pushed, which consists of the rest of the
+line. For example, the <span class="bold"><strong>.chapter</strong></span> macro contains this line:
+</p><pre class="literallayout">
+ .push C &amp;&lt;/chapter&gt;&amp;
+</pre><p>
+Earlier in the macro there is the line:
+</p><pre class="literallayout">
+ .pop C
+</pre><p>
+This arrangement ensures that any previous chapter is terminated before
+starting a new one, and also when the end of the input is reached.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="SECTrevision">3.12 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.revision</strong></span> directive</a></h3></div></div></div><p>This directive is provided to make it easy to set the <code class="literal">revisionflag</code>
+attribute on XML elements in a given portion of the document. The DocBook
+specification states that the <code class="literal">revisionflag</code> attribute is common to all
+elements.
+</p><p>
+The <span class="bold"><strong>.revision</strong></span> directive must be followed by one of the words “<span class="quote">changed</span>”,
+“<span class="quote">added</span>”, “<span class="quote">deleted</span>”, or “<span class="quote">off</span>”. For any value other than “<span class="quote">off</span>”, it causes
+the internal variable <span class="emphasis"><em>xfpt.rev</em></span> to be set to <code class="literal">revisionflag=</code> followed by
+the given argument. If the argument is “<span class="quote">off</span>”, the internal variable is
+emptied.
+</p><p>
+The contents of <span class="emphasis"><em>xfpt.rev</em></span> are included in every <code class="literal">&lt;para&gt;</code> element that <span class="emphasis"><em>xfpt</em></span>
+generates. In addition, a number of the standard macros contain references to
+<span class="emphasis"><em>xfpt.rev</em></span> in appropriate places. Thus, setting:
+</p><pre class="literallayout">
+ .revision changed
+</pre><p>
+should cause all subsequent text to be marked up with <code class="literal">revisionflag</code>
+attributes, until
+</p><pre class="literallayout">
+ .revision off
+</pre><p>
+is encountered. Unfortunately, at the time of writing, not all DocBook
+processing software pays attention to the <code class="literal">revisionflag</code> attribute. 
+Furthermore, some software grumbles that it is “<span class="quote">unexpected</span>” on some elements, 
+though it does still seem to process it correctly.
+</p><p>
+For handling the most common case (setting and unsetting “<span class="quote">changed</span>”), the
+standard macros <span class="bold"><strong>.new</strong></span> and <span class="bold"><strong>.wen</strong></span> are provided (see section
+<a href="#SECTrevmacs" title="4.10&#xA0;Revision markings">4.10</a>).
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2501568">3.13 The <span xmlns="http://www.w3.org/1999/xhtml" class="bold"><strong>.set</strong></span> directive</a></h3></div></div></div><p>This directive must be followed by a name and a text string. It defines a user
+variable and gives it a name. A reference to the name in the style of an XML
+entity causes the string to be substituted, without further processing. For
+example:
+</p><pre class="literallayout">
+ .set version 4.99
+</pre><p>
+This could be referenced as <code class="literal">&amp;version;</code>. If a variable is given the name of
+an XML entity, you will not be able to refer to the XML entity, because local
+variables take precedence. There is no way to delete a local variable after it
+has been defined.
+</p></div></div><div class="chapter" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title"><a href="#" id="CHAPstdmac">4. The standard macros for DocBook</a></h2></div></div></div><p>A set of simple macros for commonly needed DocBook features is provided in
+<span class="emphasis"><em>xfpt</em></span>’s library. This may be extended as experience with <span class="emphasis"><em>xfpt</em></span> accumulates. The
+standard macros assume that the standard flags are defined, so a document that
+is going to use these features should start with:
+</p><pre class="literallayout">
+ .include stdflags
+ .include stdmacs
+</pre><p>
+All the standard macros except <span class="bold"><strong>new</strong></span>, <span class="bold"><strong>index</strong></span>, and <span class="bold"><strong>url</strong></span> are intended to
+be called as directive lines. Their names are therefore shown with a leading
+dot in the discussion below.
+</p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2501671">4.1 Overall setup</a></h3></div></div></div><p>There are two macros that should be used only once, at the start of the
+document. The <span class="bold"><strong>.docbook</strong></span> macro has no arguments. It inserts into the output
+file the standard header material for a DocBook XML file, which is:
+</p><pre class="literallayout">
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"&gt;
+</pre><p>
+The <span class="bold"><strong>.book</strong></span> macro has no arguments. It generates <code class="literal">&lt;book&gt;</code> and pushes
+<code class="literal">&lt;/book&gt;</code> onto the stack so that it will be output at the end.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2501728">4.2 Chapters, sections, and subsections</a></h3></div></div></div><p>Chapters, sections, and subsections are supported by three macros that all
+operate in the same way. They are <span class="bold"><strong>.chapter</strong></span>, <span class="bold"><strong>.section</strong></span>, and
+<span class="bold"><strong>.subsection</strong></span>. They take either one, two, or three arguments. The first
+argument is the title. If a second argument is present, and is not an empty
+string, it is set as an ID, and can be used in cross-references. For example:
+</p><pre class="literallayout">
+ .chapter "Introduction"
+</pre><p>
+sets no ID, but
+</p><pre class="literallayout">
+ .section "A section title" "SECTdemo"
+</pre><p>
+can be referenced from elsewhere in the document by a phrase such as:
+</p><pre class="literallayout">
+ see section &amp;&lt;&lt;SECTdemo&gt;&gt;&amp;
+</pre><p>
+When the title of a chapter of section is being used as a running head or foot 
+(for example), it may be too long to fit comfortably into the available space. 
+DocBook provides the facility for a title abbreviation to be specified to deal
+with this problem. If a third argument is given to one of these macros, it
+causes a <code class="literal">&lt;titleabbrev&gt;</code> element to be generated. In this case, a second
+argument must also be provided, but if you do not need an ID, the second
+argument can be an empty string. For example:
+</p><pre class="literallayout">
+  .chapter "This chapter has quite a long title" "" "Long title"
+</pre><p>
+Where and when the abbreviation is used in place of the full title is
+controlled by the stylesheet when the XML is processed.
+</p><p>
+These three macros use the stack to ensure that each chapter, section, and
+subsection is terminated at the correct point. For example, starting a new
+section automatically terminates an open subsection and a previous section.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2501835">4.3 URL references</a></h3></div></div></div><p>The <span class="bold"><strong>url</strong></span> macro generates URL references, and is intended to be called inline
+within the text that is being processed. It generates a <code class="literal">&lt;ulink&gt;</code> element,
+and has either one or two arguments. The first argument is the URL, and the
+second is the text that describes it. For example:
+</p><pre class="literallayout">
+ More details are &amp;url(http://x.example, here).
+</pre><p>
+This generates the following XML:
+</p><pre class="literallayout">
+ More details are &lt;ulink url="http://x.example"&gt;here&lt;/ulink&gt;.
+</pre><p>
+If the second argument is absent, the contents of the first argument are used
+instead. If <span class="bold"><strong>url</strong></span> is called as a directive, there will be a newline in the 
+output after <code class="literal">&lt;/ulink&gt;</code>, which in most cases (such as the example above), you 
+do not want.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2501904">4.4 Itemized lists</a></h3></div></div></div><p>The <span class="bold"><strong>.ilist</strong></span> macro marks the start of an itemized list, the items of which
+are normally rendered with bullets or similar markings. The macro can
+optionally be called with one argument, for which there is no default. If the
+argument is present, it is used to add a <code class="literal">mark=</code> attribute to the
+<code class="literal">&lt;itemizedlist&gt;</code> element that is generated. The mark names that can be used
+depend on the software that processes the resulting XML. For HTML output,
+“<span class="quote">square</span>” and “<span class="quote">opencircle</span>” work in some browsers.
+</p><p>
+The text for the first item follows the macro call. The start of the next item
+is indicated by the <span class="bold"><strong>.next</strong></span> macro, and the end of the list by <span class="bold"><strong>.endlist</strong></span>.
+For example:
+</p><pre class="literallayout">
+ .ilist
+ This is the first item.
+ .next
+ This is the next item.
+ .endlist
+</pre><p>
+There may be more than one paragraph in an item. 
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2501978">4.5 Ordered lists</a></h3></div></div></div><p>The <span class="bold"><strong>.olist</strong></span> macro marks the start of an ordered list, the items of which are
+numbered. If no argument is given, arabic numerals are used. One of the
+following words can be given as the macro’s argument to specify the numeration:
+</p><div class="literallayout">
+<code class="literal">arabic     </code>   arabic numerals<br />
+<code class="literal">loweralpha </code>   lower case letters<br />
+<code class="literal">lowerroman </code>   lower case roman numerals<br />
+<code class="literal">upperalpha </code>   upper case letters<br />
+<code class="literal">upperroman </code>   upper case roman numerals<br />
+</div><p>
+The text for the first item follows the macro call. The start of the next item
+is indicated by the <span class="bold"><strong>.next</strong></span> macro, and the end of the list by <span class="bold"><strong>.endlist</strong></span>.
+For example:
+</p><pre class="literallayout">
+ .olist lowerroman
+ This is the first item.
+ .next
+ This is the next item.
+ .endlist
+</pre><p>
+There may be more than one paragraph in an item.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2502071">4.6 Variable lists</a></h3></div></div></div><p>A variable list is one in which each entry is composed of a set of one or more
+terms and an associated description. Typically, the terms are printed in a
+style that makes them stand out, and the description is indented underneath.
+The start of a variable list is indicated by the <span class="bold"><strong>.vlist</strong></span> macro, which has
+one optional argument. If present, it defines a title for the list.
+</p><p>
+Each entry is defined by a <span class="bold"><strong>.vitem</strong></span> macro, whose arguments are the terms.
+This is followed by the body of the entry. The list is terminated by the
+<span class="bold"><strong>.endlist</strong></span> macro. For example:
+</p><pre class="literallayout">
+ .vlist "Font filename extensions"
+ .vitem "TTF"
+ TrueType fonts.
+ .vitem "PFA" "PFB"
+ PostScript fonts.
+ .endlist
+</pre><p>
+As for the other lists, there may be more than one paragraph in an item.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2502125">4.7 Nested lists</a></h3></div></div></div><p>Lists may be nested as required. Some DocBook processors automatically choose
+different bullets for nested itemized lists, but others do not. The
+<span class="bold"><strong>.endlist</strong></span> macro has no useful arguments. Any text that follows it is
+treated as a comment. This can provide an annotation facility that may make the
+input easier to understand when lists are nested.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2502147">4.8 Displayed text</a></h3></div></div></div><p>In displayed text each non-directive input line generates one output line. The
+<code class="literal">&lt;literallayout&gt;</code> DocBook element is used to achieve this. Two kinds of
+displayed text are supported by the standard macros. They differ in their
+handling of the text itself.
+</p><p>
+The macro <span class="bold"><strong>.display</strong></span> is followed by lines that are processed in the same way
+as normal paragraphs: flags are interpreted, and so there may be font changes
+and so on. The lines are processed in literal layout mode. For example:
+</p><pre class="literallayout">
+ .display
+ &amp;`-o`&amp;   set output destination
+ &amp;`-S`&amp;   set library path
+ .endd
+</pre><p>
+The output is as follows:
+</p><div class="literallayout">
+ <code class="literal">-o</code>   set output destination<br />
+ <code class="literal">-S</code>   set library path<br />
+</div><p>
+The macro <span class="bold"><strong>.code</strong></span> is followed lines that are not processed in any way, except
+to turn ampersands and angle brackets into XML entities. The lines are
+processed in literal text mode. In addition, <code class="literal">class="monospaced"</code> is added to
+the <code class="literal">&lt;literallayout&gt;</code> element, so that the lines are displayed in a
+monospaced font. For example:
+</p><pre class="literallayout">
+ .code
+ z = sqrt(x*x + y*y);
+ .endd
+</pre><p>
+As the examples illustrate, both kinds of display are terminated by the
+<span class="bold"><strong>.endd</strong></span> macro.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2502259">4.9 Block quotes</a></h3></div></div></div><p>The macro pair <span class="bold"><strong>.blockquote</strong></span> and <span class="bold"><strong>.endblockquote</strong></span> are used to wrap the
+lines between them in a <code class="literal">&lt;blockquote&gt;</code> element.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="SECTrevmacs">4.10 Revision markings</a></h3></div></div></div><p>Two macros are provided to simplify setting and unsetting the “<span class="quote">changed</span>”
+revision marking (see section <a href="#SECTrevision" title="3.12&#xA0;The .revision directive">3.12</a>). When the revised text is
+substantial (for example, a complete paragraph, table, display, or section), it
+can be placed between <span class="bold"><strong>.new</strong></span> and <span class="bold"><strong>.wen</strong></span>, as in this example:
+</p><pre class="literallayout">
+  This paragraph is not flagged as changed.
+  .new
+  This is a changed paragraph that contains a display:
+  .display
+  whatever
+  .endd
+  This is the next paragraph.
+  .wen      
+  Here is the next, unmarked, paragraph.
+</pre><p>
+When called like this, without an argument, <span class="bold"><strong>.new</strong></span> terminates the current
+paragraph, and <span class="bold"><strong>.wen</strong></span> always does so. Therefore, even though there are no
+blank lines before <span class="bold"><strong>.new</strong></span> or <span class="bold"><strong>.wen</strong></span> above, the revised text will end up in
+a paragraph of its own. (You can, of course, put in blank lines if you wish.)
+</p><p>
+If want to indicate that just a few words inside a paragraph are revised, you
+can call the <span class="bold"><strong>new</strong></span> macro with an argument. The macro can be called either as
+a directive or inline:
+</p><pre class="literallayout">
+  This is a paragraph that has 
+  .new "a few marked words" 
+  within it. Here are &amp;new(some more) marked words.
+</pre><p>
+The effect of this is to generate a <code class="literal">&lt;phrase&gt;</code> XML element with the
+<code class="literal">revisionflag</code> attribute set. The <span class="bold"><strong>.wen</strong></span> macro is not used in this case.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2502417">4.11 Informal tables</a></h3></div></div></div><p>The <span class="bold"><strong>.itable</strong></span> macro starts an informal (untitled) table with some basic
+parameterization. If you are working on a large document that has many tables
+with the same parameters, the best approach is to define your own table macros,
+possibly calling the standard one with specific arguments.
+</p><p>
+The <span class="bold"><strong>.itable</strong></span> macro has four basic arguments:
+</p><div class="orderedlist"><ol type="1"><li><p>
+The frame requirement for the table, which may be one of the words “<span class="quote">all</span>”,
+“<span class="quote">bottom</span>”, “<span class="quote">none</span>” (the default), “<span class="quote">sides</span>”, “<span class="quote">top</span>”, or “<span class="quote">topbot</span>”.
+</p></li><li><p>
+The “<span class="quote">colsep</span>” value for the table. The default is “<span class="quote">0</span>”, meaning no vertical
+separator lines between columns. The value “<span class="quote">1</span>” requests vertical separator
+lines.
+</p></li><li><p>
+The “<span class="quote">rowsep</span>” value for the table. The default is “<span class="quote">0</span>”, meaning no horizontal
+lines between rows. The value “<span class="quote">1</span>” requests horizontal separator lines.
+</p></li><li><p>
+The number of columns.
+</p></li></ol></div><p>
+These arguments must be followed by two arguments for each column. The first
+specifies the column width, and the second its aligmnent. A column width can be
+specified as an absolute dimension such as 36pt or 2in, or as a proportional
+measure, which has the form of a number followed by an asterisk. The two forms
+can be mixed – see the DocBook specification for details.
+</p><p>
+Straightforward column alignments can be specified as “<span class="quote">center</span>”, “<span class="quote">left</span>”, or
+“<span class="quote">right</span>”. DocBook also has some other possibilities, but sadly they do not 
+seem to include “<span class="quote">centre</span>”.
+</p><p>
+Each row of the table is specified using a <span class="bold"><strong>.row</strong></span> macro; the entries in
+the row are the macros’s arguments. The table is terminated by <span class="bold"><strong>.endtable</strong></span>,
+which has no arguments. For example:
+</p><pre class="literallayout">
+ .itable all 1 1 2 1in left 2in center
+ .row "cell 11" "cell 12"
+ .row "cell 21" "cell 22"
+ .endtable
+</pre><p>
+This specifies a framed table, with both column and row separator lines. There
+are two columns: the first is one inch wide and left aligned, and the second is
+two inches wide and centred. There are two rows. The output looks like this:
+</p><div class="informaltable"><table border="1"><colgroup><col align="left" /><col align="center" /></colgroup><tbody><tr><td align="left">cell 11</td><td align="center">cell 12</td></tr><tr><td align="left">cell 21</td><td align="center">cell 22</td></tr></tbody></table></div><p>
+The <span class="bold"><strong>.row</strong></span> macro does not set the <code class="literal">revisionflag</code> attribute in the 
+<code class="literal">&lt;entry&gt;</code> elements that it generates because this appears to be ignored by 
+all current XML processors. However, you can use an inline call of the <span class="bold"><strong>new</strong></span> 
+macro within an entry to generate a <code class="literal">&lt;phrase&gt;</code> element with <code class="literal">revisionflag</code> 
+set.
+</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 xmlns="" class="title"><a xmlns="http://www.w3.org/1999/xhtml" href="#" id="id2502692">4.12 Indexes</a></h3></div></div></div><p>The <span class="bold"><strong>.index</strong></span> macro generates <code class="literal">&lt;indexterm&gt;</code> elements (index entries) in the
+output. It takes one or two arguments. The first is the text for the primary
+index term, and the second, if present, specifies a secondary index term. This
+macro can be called either from a directive line, or inline. However, it is
+mostly called as a directive, at the start of a relevant paragraph. For
+example:
+</p><pre class="literallayout">
+ .index goose "wild chase"
+ The chasing of wild geese...
+</pre><p>
+The <span class="bold"><strong>.makeindex</strong></span> macro should be called at the end of the document, at the
+point where you want an index to be generated. It can have up to two
+arguments. The first is the title for the index, for which the default is
+“<span class="quote">Index</span>”. The second, if present, causes a <code class="literal">role=</code> attribute to be added to
+the <code class="literal">&lt;index&gt;</code> element that is generated. For this to be useful, you need to
+generate <code class="literal">&lt;indexterm&gt;</code> elements that have similar <code class="literal">role=</code> attributes. The
+standard <span class="bold"><strong>index</strong></span> macro cannot do this. If you want to generate multiple
+indexes using this mechanism, it is best to define your own macros for each
+index type. For example:
+</p><pre class="literallayout">
+ .macro cindex
+ &amp;&lt;indexterm role="concept"&gt;&amp;
+ &amp;&lt;primary&gt;&amp;$1&amp;&lt;/primary&gt;&amp;
+ .arg 2
+ &amp;&lt;secondary&gt;&amp;$2&amp;&lt;/secondary&gt;&amp;
+ .endarg
+ &amp;&lt;/indexterm&gt;&amp;
+ .endmacro
+</pre><p>
+This defines a <span class="bold"><strong>.cindex</strong></span> macro for the “<span class="quote">concept</span>” index. At the end of the 
+document you might have:
+</p><pre class="literallayout">
+ .makeindex "Concept index" "concept"
+ .makeindex
+</pre><p>
+As long as the processing software can handle multiple indexes, this causes two
+indexes to be generated. The first is entitled “<span class="quote">Concept index</span>”, and contains 
+only those index entries that were generated by the <span class="bold"><strong>.cindex</strong></span> macro. The 
+second contains all index entries.
+</p></div></div></div></body></html>

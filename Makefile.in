@@ -1,0 +1,63 @@
+
+# Makefile.in for xfpt. The building work is done by a separate Makefile in
+# the src directory, which gets passed settings from here.
+
+mkinstalldirs = $(SHELL) mkinstalldirs
+
+# These variables get set up by the configure script.
+
+CC=@CC@
+CFLAGS=@CFLAGS@
+LFLAGS=@LFLAGS@
+
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+
+BINDIR=@prefix@/bin
+DATADIR=@prefix@/share/xfpt
+MANDIR=@prefix@/man
+
+# BINDIR is the directory in which the commands are installed.
+# DATADIR is the directory in which the include styles are installed.
+# MANDIR is the directory in which the man pages are installed.
+
+# The compile commands can be very long. To make the output look better,
+# they are not normally echoed in full. To get full echoing, the caller
+# must set FULLECHO='' on the command line and call make with -e. We default
+# FULLECHO to '@' to suppress the full echo. Then define an abbreviation.
+
+FULLECHO = @
+FE       = $(FULLECHO)
+
+# Do the building in the src directory
+
+build:; @cd src; $(MAKE) all \
+                BINDIR=$(BINDIR) \
+                DATADIR=$(DATADIR) \
+                MANDIR=$(MANDIR) \
+                CC="$(CC)" \
+                CFLAGS="$(CFLAGS)" \
+                LFLAGS="$(LFLAGS)" \
+                FE="$(FE)"
+
+clean:; cd src; $(MAKE) clean
+
+distclean:;     rm Makefile config.cache config.log config.status; \
+                cd src; $(MAKE) clean
+
+test:; cd testing; runtest
+
+install:        build
+		$(mkinstalldirs) $(BINDIR)
+		$(mkinstalldirs) $(DATADIR)
+		$(mkinstalldirs) $(MANDIR)
+		$(mkinstalldirs) $(MANDIR)/man1
+		$(INSTALL) src/xfpt $(BINDIR)/xfpt
+		$(INSTALL_DATA) share/* $(DATADIR)
+		$(INSTALL_DATA) doc/xfpt.1 $(MANDIR)/man1
+
+uninstall:;     rm -rf \
+		$(BINDIR)/xfpt \
+		$(DATADIR) \
+		$(MANDIR)/man1/xfpt.1
+# End

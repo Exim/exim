@@ -1,0 +1,235 @@
+. Standard macros for xfpt
+
+. =============== Standard boilerplate ===============
+
+.macro docbook
+.literal layout
+&<?xml version="1.0" encoding="UTF-8"?>&
+&<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">&
+.endmacro
+
+. =============== Large text items ===============
+
+.macro book
+.literal layout
+.push &</book&xfpt.rev;>&
+&<book>&
+.literal off
+.endmacro
+
+.macro chapter
+.literal layout
+.pop C
+.push C
+.push &</chapter>&
+&<chapter$=2+ id="$2"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.arg 3
+&<titleabbrev>&$3&</titleabbrev>&
+.endarg
+.literal off
+.endmacro
+
+.macro section
+.literal layout
+.pop S
+.push S &</section>&
+&<section$=2+ id="$2"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.arg 3
+&<titleabbrev>&$3&</titleabbrev>&
+.endarg
+.literal off
+.endmacro
+
+.macro subsection
+.literal layout
+.pop U
+.push U &</section>&
+&<section$=2+ id="$2"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.arg 3
+&<titleabbrev>&$3&</titleabbrev>&
+.endarg
+.literal off
+.endmacro
+
+. =============== Lists ===============
+
+.macro ilist
+.literal layout
+.push L &</itemizedlist>&
+.push I &</listitem>&
+&<itemizedlist$=1/ mark="$1"/&xfpt.rev;>&
+&<listitem>&
+.literal off
+.endmacro
+
+.macro olist "arabic"
+.literal layout
+.push L &</orderedlist>&
+.push I &</listitem>&
+&<orderedlist numeration="$1"&xfpt.rev;>&
+&<listitem>&
+.literal off
+.endmacro
+
+.macro next
+.literal layout
+.pop I
+.push I &</listitem>&
+&<listitem>&
+.literal off
+.endmacro
+
+.macro endlist
+.literal layout
+.pop L
+.literal off
+.endmacro
+
+.macro vlist
+.literal layout
+.push L &</variablelist>&
+&<variablelist&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.endmacro
+
+.macro vitem
+.literal layout
+.pop I
+.push I &</listitem>&&</varlistentry>&
+&<varlistentry&xfpt.rev;>&
+.eacharg
+&<term>&$+1&</term>&
+.endeach
+&<listitem>&
+.literal off
+.endmacro
+
+. =============== Displayed text ===============
+
+.macro display
+.literal layout
+&<literallayout&xfpt.rev;>&
+.endmacro
+
+.macro code
+.literal layout
+&<literallayout class="monospaced"&xfpt.rev;>&
+.literal text
+.endmacro
+
+.macro endd
+.literal layout
+&</literallayout>&
+.literal off
+.endmacro
+
+. =============== Block quotes ===============
+
+.macro blockquote
+.literal layout
+&<blockquote&xfpt.rev;>&
+.literal off
+.endmacro
+
+.macro endblockquote
+.literal layout
+&</blockquote>&
+.literal off
+.endmacro
+
+. =============== Tables ===============
+
+.macro itable "none" "0" "0" "2" "1*" "left" "1*" "left"
+.literal layout
+&<informaltable frame="$1"&xfpt.rev;>&
+&<tgroup cols="$4" colsep="$2" rowsep="$3">&
+.eacharg 5
+&<colspec colwidth="$+1" align="$+2"/>&
+.endeach 2
+&<tbody>&
+.endmacro
+
+.macro row
+.literal layout
+&<row>&
+.eacharg
+&<entry>&$+1&</entry>&
+.endeach
+&</row>&
+.endmacro
+
+.macro endtable
+.literal layout
+&</tbody>&
+&</tgroup>&
+&</informaltable>&
+.literal off
+.endmacro
+
+. =============== Indexing ===============
+
+.macro index
+&<indexterm>&
+&<primary>&$1&</primary>&
+.arg 2
+&<secondary>&$2&</secondary>&
+.endarg
+&</indexterm>&
+.endmacro
+
+.macro makeindex "Index"
+.literal layout
+.pop C
+.push C
+.push &</index>&
+.arg -2
+&<index>&
+.endarg
+.arg 2
+&<index role="$2">&
+.endarg
+&<title>&$1&</title>&
+.literal off
+.endmacro
+
+. =============== URL ===============
+
+.macro url
+.arg -2
+&*&<ulink url="$1">&$1&</ulink>&*&
+.endarg
+.arg 2
+&*&<ulink url="$1">&$2&</ulink>&*&
+.endarg
+.endmacro
+
+. =============== Change flags ===============
+
+.macro new
+.arg -1
+.literal layout
+.revision changed
+.literal off
+.endarg
+.arg 1
+&<phrase revisionflag="changed">&$1&</phrase>&
+.endmacro
+
+.macro wen
+.literal layout
+.revision off
+.literal off
+.endmacro
+
+. End

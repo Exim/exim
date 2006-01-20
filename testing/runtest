@@ -1,0 +1,164 @@
+#!/usr/bin/perl -w
+
+# Controlling script for xfpt tests
+
+$xfpt = "../src/xfpt -S ../share";
+$cf = "cf";
+
+$force_update = 0;
+$starttest = undef;
+$endtest = undef;
+$started = 0;
+
+$cmd_options = "";
+while (defined $ARGV[0] && $ARGV[0] =~ /^-/)
+  {
+  my($arg) = shift @ARGV;
+  $cmd_options .= "$arg ";
+  } 
+
+if (defined $ARGV[0])
+  {
+  $starttest = $endtest = $ARGV[0];
+  $endtest = $ARGV[1] if defined $ARGV[1];
+  $endtest = undef if $endtest eq "+"; 
+  }   
+  
+opendir(DIR, "./infiles") || die "Failed to opendir ./infiles: $!\n";
+@files = sort(readdir(DIR));
+closedir(DIR);
+
+while (scalar @files > 0)
+  {
+  my($copy) = 0;
+  my($file) = shift @files;
+  my($options) = $cmd_options; 
+
+  # Skip . and .. and also skip any file ending in .opt because that
+  # contains options for any given test.
+    
+  next if $file =~ /^\.\.?$|\.opt$/;
+  
+  next if !$started && defined $starttest && $file !~ /^$starttest/;
+  $started = 1; 
+  
+  $options .= `cat infiles/$file.opt` if -e "infiles/$file.opt";
+  chomp $options; 
+  
+  my ($rc) = system("$xfpt $options -o test.xml infiles/$file " .
+                    "2> test.err");
+
+#  if (($rc >> 8) != 0)
+#    {
+#    printf("Test $file RC = 0x%x\n", $rc);
+#    system("more test.err"); 
+#    exit 1;
+#    }
+    
+  # Compare stderr output
+    
+  if (! -z "test.err")
+    {
+    if (! -e "outfiles/$file.err")
+      {
+      printf("There is stderr output, but outfiles/$file.err does not exist.\n");
+      system("more test.err"); 
+      exit 1;
+      }    
+
+    $rc = system("$cf test.err outfiles/$file.err >test.cf");
+    
+    if ($rc != 0)
+      {
+      # printf("text cf RC=$rc\n");
+      system("more test.cf");
+    
+      for (;;)
+        {
+        print "Continue, Update & retry, Quit? [Q] ";
+    
+        if ($force_update)
+          {
+          $_ = "u";
+          print "... update forced\n";
+          }
+        else
+          {
+          open(T, "/dev/tty") || die "Failed to open /dev/tty: $!\n";
+          $_ = <T>;
+          close(T);
+          }
+    
+        exit 1 if /^q?$/i;
+        goto CHECK_MAIN if /^c$/i; 
+        
+        if (/^u$/)
+          {
+          exit 1 if system("cp test.err outfiles/$file.err") != 0;
+          unshift @files, $file; 
+          print (("#" x 79) . "\n");
+          last;
+          }
+        }
+
+      redo;   # Repeats the test
+      } 
+    }  
+
+  # Compare the main output
+
+  CHECK_MAIN:
+   
+  $rc = system("$cf test.xml outfiles/$file >test.cf");
+  if ($rc != 0)
+    {
+    # printf("cf RC=$rc\n");
+    system("more test.cf");
+
+    for (;;)
+      {
+      print "View, Continue, Update & retry, Quit? [Q] ";
+
+      if ($force_update)
+        {
+        $_ = "u";
+        print "... update forced\n";
+        }
+      else
+        {
+        open(T, "/dev/tty") || die "Failed to open /dev/tty: $!\n";
+        $_ = <T>;
+        close(T);
+        }
+
+      exit 1 if /^\s*q?$/i;
+      last if /^\s*c$/i; 
+      
+      if (/^\s*v$/)
+        {
+        system ("less -XF test.xml"); 
+        # Stay in loop to reprompt 
+        }  
+      
+      elsif (/^\s*u$/)
+        {
+        exit 1 if system("cp test.xml outfiles/$file") != 0;
+        unshift @files, $file; 
+        print (("#" x 79) . "\n");
+        last;
+        }
+      }
+    }
+  else
+    {
+    printf ("Test $file OK\n");
+#    system("gzip outfiles/$file"); 
+    last if defined $endtest && $file =~ /^$endtest/;
+    }
+  }
+  
+die "No selected test found\n" if !$started; 
+
+system("/bin/rm -rf test.* test-*"); 
+
+# End

@@ -1,0 +1,225 @@
+.include stdflags
+.include stdmacs
+
+.set abcd "ABCD"
+
+.docbook
+.book
+
+.revision changed
+.chapter "First chapter"  "" "abbrev"
+This is text before the first section.
+.revision off
+
+.section "First section"
+.index primary secondary
+This is the text of the first section.
+We are going to have an index in the middle of a paragraph.
+.index "primary two" "secondary two"
+This is the rest of the paragraph.
+
+.section "Second section"
+This is the text of the second section. Here's a reference to 
+chapter &<<CHAPsecond>>&. Here are some entities, both local and default:
+&&abcd; is &abcd;; &&rhubarb; is &rhubarb;.
+
+.chapter "Second chapter" "CHAPsecond"
+This is the second chapter. Test a block quote:
+
+.revision "changed"
+.blockquote
+All the world's a stage, and all the men and women merely players. They have 
+their exits and their entrances, and one man in his time plays many parts.
+.endblockquote
+
+.ilist
+This is the first item in an itemized list.
+
+There is more than one paragraph.
+.next
+This is the second item in an itemized list.
+.endlist
+
+.olist
+Now we have an ordered list.
+
+Again more than one paragraph.
+.next
+The second item.
+.next
+The third item
+.endlist
+
+.revision off
+
+.olist "lowerroman"
+Try lower case roman numerals.
+.ilist
+Try a nested list.
+.next
+next
+.endlist
+back in the first of the ordered.
+.next
+the next
+.endlist
+
+This is a normal text paragraph.
+.revision changed
+.display
+This is a display where the font
+should be normal
+even recognizing &'italic'& and stuff
+but the
+layout is literal
+.endd
+.revision off
+.code
+This, however is a code paragraph
+where &'italic'& everything except
+<angle> brackets is totally literal,
+and & is no longer a flag.
+.endd
+And now we are back to a &*normal*& paragraph again.
+
+.itable
+.row 1 2
+.row 3 4
+.endtable
+
+.itable all 1 1 3 1* left 2* center 3* right
+.row 1 2 3
+.row 4 5 6
+.endtable
+
+.vlist
+.vitem &*First*&
+This is a paragraph about the first item.
+
+In fact, here is a second paragraph.
+
+.vitem &*Second*&
+And now we have the second item.
+.endlist
+
+
+The quick brown fox
+jumps over the lazy dog.
+
+.literal xml
+<!--this should be--> &&&
+<para>
+completely untouched
+.not even dot lines
+.endxmliphant
+are touched
+</para>
+.literal off
+
+whereas this should &&&  
+  note concats
+<and stuff>  
+Test &copy; and &#1234; and &#x4dc4; for size. 
+
+Check `quote' marks. And ``doublequote'' marks.
+
+This is a paragraph
+where things happen over multiple
+lines.
+
+Test some of the standard flags &'italic'& and &*bold*& text and 
+&`literal`& text and &_filename_& in text and &"quoted"& text and
+we have && and &-- as single replacements.
+
+.push abcd
+.pop
+
+.push X the X line 1
+.pop
+
+.push X the X line 2
+.pop X
+
+.push X the X line 3
+.push B the B line
+.pop X
+.pop Z
+
+.macro abcd
+This is the first line of the macro abcd.
+This is the second line. Contains a dollar ($$) character.
+.endmacro
+
+This is text after the macro definition.
+.abcd
+
+.macro xyz "default 1" default-2
+First line.
+Insert args: 1="$1" 2="$2" 3="$3"
+.endmacro
+
+.xyz
+.xyz "set 1"
+.xyz set1 set2
+.xyz "set1" set2 "set 3"
+
+.macro pqr
+Always.
+.arg 1
+If arg1: $1
+.endarg
+.arg 2
+If arg2: $2
+.endarg
+.arg -2
+There is no second argument.
+.endmacro
+
+.pqr
+.pqr setarg1
+.pqr setarg1 setarg2 
+
+.literal text
+Inside literal text, unknown directives
+.like this one
+should be passed as data
+.literal off
+
+
+.macro m1 one two
+$1 $2
+.endmacro
+
+.macro m2 three
+$1
+.eacharg 2
+$+1
+.endeach
+.endmacro
+
+
+.display
+&`&&m1(1,2)        `&  |&m1(1,2)|
+&`&&m1(1)          `&  |&m1(1)|
+&`&&m1()           `&  |&m1()|
+&`&&m1("a(,b)")    `&  |&m1("a(,b)")|
+&`&&m1("a(,b)", c) `&  |&m1("a(,b)", c)|
+
+&`&&m2()           `&  |&m2()|
+&`&&m2(a)          `&  |&m2(a)|
+&`&&m2(a,b)        `&  |&m2(a,b)|
+
+&`&&m2("&&m1(x,y)")        `&  |&m2("&m1(x,y)")|
+&`&&m2("&&m1(x,y)", 3, 4)  `&  |&m2("&m1(x,y)", 3, 4)|
+.endd
+
+URL &url(http://etc) and another &url(http://etc, text) and so on.
+
+
+.literal layout
+.pop C
+.literal xml
+<index>
+<title>Index</title>
+</index>
+.literal off

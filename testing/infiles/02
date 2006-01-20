@@ -1,0 +1,40 @@
+.include stdflags
+.include "stdmacs"
+
+This input file tries to provoke errors &;.
+Try &&abcd without semicolon: &abcd and at EOL &abcd
+
+.flag &:
+.flag &: "abc" "xyz"
+.flag :: "pqr"
+.flag &: :& &'
+
+.set abcd "abcd" xyz
+
+.arg
+.arg 3
+
+.endarg
+.endarg abcd
+
+.eacharg
+.eacharg 45
+
+.endeach
+.endeach 99
+
+.rhubarb and custard
+
+.literal xml stuff
+<abcd>
+.literal off more stuff
+
+.macro x 
+.arg 4n
+.arg
+.endarg
+.endarg 99
+.eacharg 6 G
+.endmacro
+
+.x

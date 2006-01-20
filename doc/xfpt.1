@@ -1,0 +1,45 @@
+.TH XFPT 1
+.SH NAME
+xfpt - make XML from plain text
+.SH SYNOPSIS
+.B xfpt [options] [source file]
+.
+.SH DESCRIPTION
+.rs
+.sp
+\fBxfpt\fP converts a marked up text file to XML. The markup is simple and
+consists of lines that begin with a dot ("directive lines") and sequences in
+the text that begin with an ampersand ("flags"). The flag sequences are not
+built-in, but are defined by directives. As well as the in-built directives,
+macros can be used to implement higher level concepts. A standard set of macros 
+and flags that generate DocBook XML is provided. There is a full description in
+the \fBxfpt\fP specification, which is distributed as a PDF file, an HTML file, 
+and as \Bxfpt\fP source.
+.
+.SH OPTIONS
+.rs
+.TP 10
+\fB-help\fP
+This causes \fBxfpt\fP to output its "usage" information and then exit.
+.TP
+\fB-o\fP \fIfile\fP
+This specifies the output file. The default is the standard output if no source 
+file is given, and the source file name with a \fI.xml\fP extension otherwise.
+.TP
+\fB-S\fP \fIdirectory\fP
+This specifies an alternative "share" directory in which to find standard 
+configuration files.
+.
+.SH AUTHOR
+.rs
+.sp
+Philip Hazel
+.br
+University Computing Service
+.br
+Cambridge CB2 3QG, England.
+.P
+.in 0
+Last updated: 17 January 2006
+.br
+Copyright (c) 2006 University of Cambridge.

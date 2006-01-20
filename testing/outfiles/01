@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<book>
+<chapter revisionflag="changed">
+<title>First chapter</title>
+<titleabbrev>abbrev</titleabbrev>
+<para>
+This is text before the first section.
+</para>
+<section>
+<title>First section</title>
+<para>
+<indexterm>
+<primary>primary</primary>
+<secondary>secondary</secondary>
+</indexterm>
+This is the text of the first section.
+We are going to have an index in the middle of a paragraph.
+<indexterm>
+<primary>primary two</primary>
+<secondary>secondary two</secondary>
+</indexterm>
+This is the rest of the paragraph.
+</para>
+</section>
+<section>
+<title>Second section</title>
+<para>
+This is the text of the second section. Here&#x2019;s a reference to 
+chapter <xref linkend="CHAPsecond"/>. Here are some entities, both local and default:
+&amp;abcd; is ABCD; &amp;rhubarb; is &rhubarb;.
+</para>
+</section>
+</chapter>
+
+<chapter id="CHAPsecond">
+<title>Second chapter</title>
+<para>
+This is the second chapter. Test a block quote:
+</para>
+<blockquote revisionflag="changed">
+<para revisionflag="changed">
+All the world&#x2019;s a stage, and all the men and women merely players. They have 
+their exits and their entrances, and one man in his time plays many parts.
+</para>
+</blockquote>
+<itemizedlist revisionflag="changed">
+<listitem>
+<para revisionflag="changed">
+This is the first item in an itemized list.
+</para>
+<para revisionflag="changed">
+There is more than one paragraph.
+</para>
+</listitem>
+<listitem>
+<para revisionflag="changed">
+This is the second item in an itemized list.
+</para>
+</listitem>
+</itemizedlist>
+<orderedlist numeration="arabic" revisionflag="changed">
+<listitem>
+<para revisionflag="changed">
+Now we have an ordered list.
+</para>
+<para revisionflag="changed">
+Again more than one paragraph.
+</para>
+</listitem>
+<listitem>
+<para revisionflag="changed">
+The second item.
+</para>
+</listitem>
+<listitem>
+<para revisionflag="changed">
+The third item
+</para>
+</listitem>
+</orderedlist>
+<orderedlist numeration="lowerroman">
+<listitem>
+<para>
+Try lower case roman numerals.
+</para>
+<itemizedlist>
+<listitem>
+<para>
+Try a nested list.
+</para>
+</listitem>
+<listitem>
+<para>
+next
+</para>
+</listitem>
+</itemizedlist>
+<para>
+back in the first of the ordered.
+</para>
+</listitem>
+<listitem>
+<para>
+the next
+</para>
+</listitem>
+</orderedlist>
+<para revisionflag="changed">
+This is a normal text paragraph.
+</para>
+<literallayout revisionflag="changed">
+This is a display where the font
+should be normal
+even recognizing <emphasis>italic</emphasis> and stuff
+but the
+layout is literal
+</literallayout>
+<literallayout class="monospaced">
+This, however is a code paragraph
+where &amp;'italic'&amp; everything except
+&lt;angle&gt; brackets is totally literal,
+and &amp; is no longer a flag.
+</literallayout>
+<para>
+And now we are back to a <emphasis role="bold">normal</emphasis> paragraph again.
+</para>
+<informaltable frame="none">
+<tgroup cols="2" colsep="0" rowsep="0">
+<tbody>
+<row>
+<entry>1</entry>
+<entry>2</entry>
+</row>
+<row>
+<entry>3</entry>
+<entry>4</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<informaltable frame="all">
+<tgroup cols="3" colsep="1" rowsep="1">
+<colspec colwidth="1*" align="left"/>
+<colspec colwidth="2*" align="center"/>
+<colspec colwidth="3*" align="right"/>
+<tbody>
+<row>
+<entry>1</entry>
+<entry>2</entry>
+<entry>3</entry>
+</row>
+<row>
+<entry>4</entry>
+<entry>5</entry>
+<entry>6</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<variablelist>
+<varlistentry>
+<term><emphasis role="bold">First</emphasis></term>
+<listitem>
+<para>
+This is a paragraph about the first item.
+</para>
+<para>
+In fact, here is a second paragraph.
+</para>
+</listitem></varlistentry>
+<varlistentry>
+<term><emphasis role="bold">Second</emphasis></term>
+<listitem>
+<para>
+And now we have the second item.
+</para>
+</listitem></varlistentry>
+</variablelist>
+<para>
+The quick brown fox
+jumps over the lazy dog.
+</para>
+<!--this should be--> <para>
+completely untouched
+.not even dot lines
+.endxmliphant
+are touched
+</para>
+<para>
+whereas this should note concats
+&lt;and stuff&gt;  
+Test &copy; and &#1234; and &#x4dc4; for size. 
+</para>
+<para>
+Check &#x2018;quote&#x2019; marks. And &#x2018;&#x2018;doublequote&#x2019;&#x2019; marks.
+</para>
+<para>
+This is a paragraph
+where things happen over multiple
+lines.
+</para>
+<para>
+Test some of the standard flags <emphasis>italic</emphasis> and <emphasis role="bold">bold</emphasis> text and 
+<literal>literal</literal> text and <filename>filename</filename> in text and <quote>quoted</quote> text and
+we have &amp; and &ndash; as single replacements.
+</para>
+<para>
+abcd
+</para>
+<para>
+the X line 1
+</para>
+<para>
+the X line 2
+</para>
+<para>
+the B line
+the X line 3
+</para>
+<para>
+This is text after the macro definition.
+This is the first line of the macro abcd.
+This is the second line. Contains a dollar ($) character.
+</para>
+<para>
+First line.
+Insert args: 1="default 1" 2="default-2" 3=""
+First line.
+Insert args: 1="set 1" 2="default-2" 3=""
+First line.
+Insert args: 1="set1" 2="set2" 3=""
+First line.
+Insert args: 1="set1" 2="set2" 3="set 3"
+</para>
+<para>
+Always.
+There is no second argument.
+Always.
+If arg1: setarg1
+There is no second argument.
+Always.
+If arg1: setarg1
+If arg2: setarg2
+</para>
+Inside literal text, unknown directives
+.like this one
+should be passed as data
+<literallayout>
+<literal>&amp;m1(1,2)        </literal>  |1 2|
+<literal>&amp;m1(1)          </literal>  |1 two|
+<literal>&amp;m1()           </literal>  |one two|
+<literal>&amp;m1("a(,b)")    </literal>  |a(,b) two|
+<literal>&amp;m1("a(,b)", c) </literal>  |a(,b) c|
+
+<literal>&amp;m2()           </literal>  |three|
+<literal>&amp;m2(a)          </literal>  |a|
+<literal>&amp;m2(a,b)        </literal>  |ab|
+
+<literal>&amp;m2("&amp;m1(x,y)")        </literal>  |x y|
+<literal>&amp;m2("&amp;m1(x,y)", 3, 4)  </literal>  |x y34|
+</literallayout>
+<para>
+URL <emphasis role="bold"><ulink url="http://etc">http://etc</ulink></emphasis> and another <emphasis role="bold"><ulink url="http://etc">text</ulink></emphasis> and so on.
+</para>
+</chapter>
+
+<index>
+<title>Index</title>
+</index>
+</book>
