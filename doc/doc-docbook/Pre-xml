@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-# $Cambridge: exim/doc/doc-docbook/Pre-xml,v 1.2 2005/11/10 12:30:13 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Pre-xml,v 1.3 2006/02/01 11:01:01 ph10 Exp $
 
 # Script to pre-process XML input before processing it for various purposes.
 # Options specify which transformations are to be done. Monospaced literal
@@ -8,19 +8,16 @@
 
 # Changes:
 
-# -abstract: Remove the <abstract> element
-
-# -ascii:    Replace &8230;   (sic, no x) with ...
-#            Replace &#x2019; by '
-#            Replace &#x201C; by "
-#            Replace &#x201D; by "
-#            Replace &#x2013; by -
-#            Replace &#x2020; by *
-#            Replace &#x2021; by **
-#            Replace &#x00a0; by a space
-#            Replace &#169;   by (c)
-#            Put quotes round <literal> text
+# -ascii:    Replace &#x2019; by '
+#            Replace &copy;   by (c)
+#            Replace &dagger; by *
+#            Replace &Dagger; by **
+#            Replace &nbsp;   by a space
+#            Replace &ndash;  by -
 #            Put quotes round <quote> text
+#
+# -quoteliteral:
+#            Put quotes round <literal> text
 #
 # -bookinfo: Remove the <bookinfo> element from the file
 #
@@ -29,16 +26,22 @@
 #
 # -html:     Certain things are done only for HTML output:
 #
-#            If <literallayout> is followed by optional # space and then a
+#            If <literallayout> is followed by optional space and then a
 #            newline, the space and newline are removed, because otherwise you
 #            get a blank line in the HTML output.
 #
 # -noindex   Remove the XML to generate a Concept and an Options index.
 # -oneindex  Ditto, but add XML to generate a single index.
+#
+# -optbreak  Insert an optional line break (zero-width space, &#x200B;) after
+#            every underscore in text within <option> and <variable> elements,
+#            except when preceded by <entry> (i.e. not in tables). The same is
+#            also done within a word of four or more upper-case letters (for
+#            compile-time options).
 
 
 
-# The function that processes non-literal monospaced text
+# The function that processes non-literal, non-monospaced text
 
 sub process()
 {
@@ -46,17 +49,23 @@ my($s) = $_[0];
 
 $s =~ s/fi(?![^<>]*>)/&#xFB01;/g if $ligatures;
 
+if ($optbreak)
+  {
+  $s =~ s%(?<!<entry>)(<option>|<varname>)([^<]+)%
+    my($x,$y) = ($1,$2); $y =~ s/_/_&#x200B;/g; "$x"."$y"%gex;
+
+  $s =~ s?\b([A-Z_]{4,})\b?
+    my($x) = $1; $x =~ s/_/_&#x200B;/g; "$x"?gex;
+  }
+
 if ($ascii)
   {
-  $s =~ s/&#8230;/.../g;
   $s =~ s/&#x2019;/'/g;
-  $s =~ s/&#x201C;/"/g;
-  $s =~ s/&#x201D;/"/g;
-  $s =~ s/&#x2013;/-/g;
-  $s =~ s/&#x2020;/*/g;
-  $s =~ s/&#x2021;/**/g;
-  $s =~ s/&#x00a0;/ /g;
-  $s =~ s/&#169;/(c)/g;
+  $s =~ s/&copy;/(c)/g;
+  $s =~ s/&dagger;/*/g;
+  $s =~ s/&Dagger;/**/g;
+  $s =~ s/&nsbp;/ /g;
+  $s =~ s/&ndash;/-/g;
   $s =~ s/<quote>/"/g;
   $s =~ s/<\/quote>/"/g;
   }
@@ -67,7 +76,6 @@ $s;
 
 # The main program
 
-$abstract  = 0;
 $ascii     = 0;
 $bookinfo  = 0;
 $html      = 0;
@@ -77,25 +85,24 @@ $ligatures = 0;
 $madeindex = 0;
 $noindex   = 0;
 $oneindex  = 0;
+$optbreak  = 0;
+$quoteliteral = 0;
 
 foreach $arg (@ARGV)
   {
   if    ($arg eq "-fi")       { $ligatures = 1; }
-  elsif ($arg eq "-abstract") { $abstract = 1; }
   elsif ($arg eq "-ascii")    { $ascii = 1; }
   elsif ($arg eq "-bookinfo") { $bookinfo = 1; }
   elsif ($arg eq "-html")     { $html = 1; }
   elsif ($arg eq "-noindex")  { $noindex = 1; }
   elsif ($arg eq "-oneindex") { $oneindex = 1; }
+  elsif ($arg eq "-optbreak") { $optbreak = 1; }
+  elsif ($arg eq "-quoteliteral") { $quoteliteral = 1; }
   else  { die "** Pre-xml: Unknown option \"$arg\"\n"; }
   }
 
 while (<STDIN>)
   {
-  # Remove <abstract> if required
-
-  next if ($abstract && /^\s*<abstract>/);
-
   # Remove <bookinfo> if required
 
   if ($bookinfo && /^<bookinfo/)
@@ -152,7 +159,7 @@ while (<STDIN>)
       if (/^(.*?)<\/literal>(?!<\/quote>)(.*)$/)
         {
         print $1;
-        print "\"" if $ascii && !$inliterallayout;
+        print "\"" if $quoteliteral && !$inliterallayout;
         print "</literal>";
         $inliteral = 0;
         $_ = "$2\n";
@@ -172,7 +179,7 @@ while (<STDIN>)
         {
         print &process($1);
         print "<literal>";
-        print "\"" if $ascii && !$inliterallayout;
+        print "\"" if $quoteliteral && !$inliterallayout;
         $inliteral = 1;
         $_ = "$2\n";
         }

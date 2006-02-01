@@ -1,4 +1,4 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-spec-fo.xsl,v 1.2 2005/08/05 10:57:41 ph10 Exp $ -->
+<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-spec-fo.xsl,v 1.3 2006/02/01 11:01:01 ph10 Exp $ -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>
 
@@ -12,6 +12,19 @@ printing the Exim specification document. -->
 <xsl:import href="MyStyle.xsl"/>
 <xsl:import href="MyStyle-fo.xsl"/>
 
-<!-- Nothing special for the full spec document yet -->
+<!-- Special for the spec document -->
+
+<!-- Arrange for the table of contents to be an even number of pages. The name
+"lot" includes all pages that contain a "list of titles", which in our case is
+only the TOC. -->
+
+<xsl:template name="force.page.count">
+  <xsl:param name="element" select="local-name(.)"/>
+  <xsl:param name="master-reference" select="''"/>
+  <xsl:choose>
+    <xsl:when test="$master-reference = 'lot'">end-on-even</xsl:when>
+    <xsl:otherwise>no-force</xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
 
 </xsl:stylesheet>

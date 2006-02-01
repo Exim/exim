@@ -1,4 +1,4 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-fo.xsl,v 1.2 2005/11/10 12:30:13 ph10 Exp $ -->
+<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-fo.xsl,v 1.3 2006/02/01 11:01:01 ph10 Exp $ -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
@@ -21,13 +21,16 @@ specification. It is imported by MyStyle-filter-fo.xsl and MyStyle-spec-fo.xsl.
 <xsl:param name="double.sided" select="1"></xsl:param>
 -->
 
+<!-- Let's have whatever fop extensions there are -->
+
+<xsl:param name="fop.extensions" select="1"></xsl:param>
+
 <!-- Allow for typed index entries. The "role" setting works with DocBook
 version 4.2 or earlier. Later versions (which we are not currently using)
 need "type". -->
 
 <xsl:param name="index.on.type" select="1"></xsl:param>
 <xsl:param name="index.on.role" select="1"></xsl:param>
-
 
 <!-- The default uses short chapter titles in the TOC! I want them only for
 use in footer lines. So we have to modify this template. I changed
@@ -135,7 +138,6 @@ Adjust the sizes of the fonts for titles; the defaults are too gross.
 http://www.sagehill.net/docbookxsl/PrintHeaders.html
 -->
 
-
 <xsl:attribute-set name="footer.content.properties">
   <!-- <xsl:attribute name="font-family">serif</xsl:attribute> -->
   <!-- <xsl:attribute name="font-size">9pt</xsl:attribute> -->
@@ -143,39 +145,15 @@ http://www.sagehill.net/docbookxsl/PrintHeaders.html
 </xsl:attribute-set>
 
 
-<!-- Things that can be inserted into the footer are:
+<!-- The default cell widths make the centre one too large -->
 
-<fo:page-number/>
-Inserts the current page number.
+<xsl:param name="footer.column.widths">4 1 4</xsl:param>
 
-<xsl:apply-templates select="." mode="title.markup"/>
-Inserts the title of the current chapter, appendix, or other component.
 
-<xsl:apply-templates select="." mode="titleabbrev.markup"/>
-Inserts the titleabbrev of the current chapter, appendix, or other component,
-if it is available. Otherwise it inserts the regular title.
-
-<xsl:apply-templates select="." mode="object.title.markup"/>
-Inserts the chapter title with chapter number label. Likewise for appendices.
-
-<fo:retrieve-marker ... />      Used to retrieve the current section name.
-
-<xsl:apply-templates select="//corpauthor[1]"/>
-Inserts the value of the first corpauthor element found anywhere in the
-document.
-
-<xsl:call-template name="datetime.format">
-  <xsl:with-param ...
-Inserts a date timestamp.
-
-<xsl:call-template name="draft.text"/>
-Inserts the Draft message if draft.mode is currently on.
-
-<fo:external-graphic ... />
-Inserts a graphical image.
-See the section Graphic in header or footer for details.
+<!-- Put the abbreviated chapter titles in running feet, and add the chapter
+number afterwards in parentheses. I changed title.markup to titleabbrev.markup,
+and added some lines.
 -->
-
 
 <xsl:template name="footer.content">
   <xsl:param name="pageclass" select="''"/>
@@ -206,6 +184,15 @@ See the section Graphic in header or footer for details.
         <fo:page-number/>
       </xsl:when>
 
+      <!-- This clause added by PH -->
+      <xsl:when test="$double.sided = 0 and $position='right' and $pageclass='body'">
+        <xsl:apply-templates select="." mode="titleabbrev.markup"/>
+          <xsl:text> (</xsl:text>
+          <xsl:apply-templates select="." mode="label.markup"/>
+          <xsl:text>)</xsl:text>
+      </xsl:when>
+
+      <!-- Changed title.markup to titleabbrev.markup for TOC -->
       <xsl:when test="$double.sided = 0 and $position='right'">
         <xsl:apply-templates select="." mode="titleabbrev.markup"/>
       </xsl:when>
@@ -229,6 +216,49 @@ See the section Graphic in header or footer for details.
       </xsl:otherwise>
     </xsl:choose>
   </fo:block>
+</xsl:template>
+
+
+<!-- Arrange for ordered list numbers to be in parentheses instead of just
+followed by a dot, which I don't like. Unfortunately, this styling is
+output-specific, so we have to do it separately for FO and HTML output. -->
+
+<xsl:template match="orderedlist/listitem" mode="item-number">
+  <xsl:variable name="numeration">
+    <xsl:call-template name="list.numeration">
+      <xsl:with-param name="node" select="parent::orderedlist"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="type">
+    <xsl:choose>
+      <xsl:when test="$numeration='arabic'">(1)</xsl:when>
+      <xsl:when test="$numeration='loweralpha'">(a)</xsl:when>
+      <xsl:when test="$numeration='lowerroman'">(i)</xsl:when>
+      <xsl:when test="$numeration='upperalpha'">(A)</xsl:when>
+      <xsl:when test="$numeration='upperroman'">(I)</xsl:when>
+      <!-- What!? This should never happen -->
+      <xsl:otherwise>
+        <xsl:message>
+          <xsl:text>Unexpected numeration: </xsl:text>
+          <xsl:value-of select="$numeration"/>
+        </xsl:message>
+        <xsl:value-of select="1."/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="item-number">
+    <xsl:call-template name="orderedlist-item-number"/>
+  </xsl:variable>
+
+  <xsl:if test="parent::orderedlist/@inheritnum='inherit'
+                and ancestor::listitem[parent::orderedlist]">
+    <xsl:apply-templates select="ancestor::listitem[parent::orderedlist][1]"
+                         mode="item-number"/>
+  </xsl:if>
+
+  <xsl:number value="$item-number" format="{$type}"/>
 </xsl:template>
 
 </xsl:stylesheet>

@@ -1,21 +1,66 @@
 #! /usr/bin/perl
 
-# $Cambridge: exim/doc/doc-docbook/Tidytxt,v 1.1 2005/06/16 10:32:31 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Tidytxt,v 1.2 2006/02/01 11:01:01 ph10 Exp $
 
-# Script to tidy up the output of w3m when it makes a text file. We convert
-# sequences of blank lines into a single blank line.
+# Script to tidy up the output of w3m when it makes a text file. First we
+# convert sequences of blank lines into a single blank line, to get everything
+# uniform. Then we go through and insert blank lines before chapter and
+# sections, also converting chapter titles to uppercase.
 
-$blanks = 0;
-while (<>)
+@lines = <>;
+
+$lastwasblank = 0;
+foreach $line (@lines)
   {
-  if (/^\s*$/)
+  if ($line =~ /^\s*$/)
     {
-    $blanks++;
+    $line = "" if $lastwasblank;
+    $lastwasblank = 1;
     next;
     }
-  print "\n" if $blanks > 0;
-  $blanks = 0;
-  print;
+  $lastwasblank = 0;
   }
+
+# Find start of TOC, uppercasing its title
+
+for ($i = 0; $i < scalar @lines; $i++)
+  {
+  $lines[$i] = "TABLE OF CONTENTS\n" if $lines[$i] =~ /^Table of Contents/;
+  last if $lines[$i] =~ /^1. /;
+  }
+
+# Find start of first chapter
+
+for ($i++; $i < scalar @lines; $i++)
+  { last if $lines[$i] =~ /^1. /; }
+
+# Process the body. We can detect the starts of chapters and sections by
+# looking for preceding and following blank lines, and then matching against
+# the numbers.
+
+$chapter = 0;
+for (; $i < scalar @lines; $i++)
+  {
+  next if $lines[$i-1] !~ /^$/ || $lines[$i+1] !~ /^$/;
+
+  # Start of chapter
+
+  if ($lines[$i] =~ /^(\d+)\. / && $1 == $chapter + 1)
+    {
+    $chapter++;
+    $section = 0;
+    $lines[$i] = "\n\n" . ("=" x 79) . "\n" . uc($lines[$i]);
+    }
+
+  # Start of next section
+
+  elsif ($lines[$i] =~ /^(\d+)\.(\d+) / && $1 == $chapter && $2 == $section + 1)
+    {
+    $section++;
+    $lines[$i] = "\n$lines[$i]" . "-" x (length($lines[$i]) - 1) . "\n";
+    }
+  }
+
+print @lines;
 
 # End

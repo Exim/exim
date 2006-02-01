@@ -1,4 +1,4 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle.xsl,v 1.2 2005/11/10 12:30:13 ph10 Exp $ -->
+<!-- $Cambridge: exim/doc/doc-docbook/MyStyle.xsl,v 1.3 2006/02/01 11:01:01 ph10 Exp $ -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>
 
@@ -51,16 +51,9 @@ book      toc,title
 <xsl:param name="hyphenate">false</xsl:param>
 
 
-<!--
-Generate only numbers, no titles, in cross references.
--->
+<!-- Generate only numbers, no titles, in cross references. -->
 
 <xsl:param name="xref.with.number.and.title">0</xsl:param>
-
-
-<!-- Hopefully this might do something useful? It doesn't seem to. -->
-
-<xsl:param name="fop.extensions" select="1"></xsl:param>
 
 
 <!-- Output variable names in italic rather than the default monospace. -->
@@ -73,6 +66,13 @@ Generate only numbers, no titles, in cross references.
 <!-- Output file names in italic rather than the default monospace. -->
 
 <xsl:template match="filename">
+  <xsl:call-template name="inline.italicseq"/>
+</xsl:template>
+
+
+<!-- Output function names in italic rather than the default boldface. -->
+
+<xsl:template match="function">
   <xsl:call-template name="inline.italicseq"/>
 </xsl:template>
 
@@ -92,6 +92,12 @@ fiddling with a parameter.
 <xsl:param name="local.l10n.xml" select="document('')"/>
 <l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
   <l:l10n language="en">
+
+    <!-- Turn the text "Revision History" into nothing, because we only have
+    the info for the latest revision in the file. -->
+
+    <l:gentext key="revhistory" text=""/>
+    <l:gentext key="RevHistory" text=""/>
 
     <!-- The default (as modified above) gives us "Chapter xxx" or "Section
     xxx", with a capital letter at the start. So we have to make an more

@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/doc/doc-docbook/x2man,v 1.1 2005/06/16 10:32:31 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/x2man,v 1.2 2006/02/01 11:01:02 ph10 Exp $
 
 # Script to find the command line options in the DocBook source of the Exim
 # spec, and turn them into a man page, because people like that.
@@ -96,11 +96,11 @@ while ($next)
 
   # Start of new option
 
-  if (/^<term>$/)
+  if (/^<term>(<emphasis role="bold">-.*?)<\/term>$/)
     {
     print OUT ".TP 10\n";
+    $_ = "$1\n";
     $optstart = 1;
-    next;
     }
 
   # If a line contains text that is not in <>, read subsequent lines of the
@@ -192,11 +192,9 @@ while ($next)
   s/&lt;/</g;
   s/&gt;/>/g;
 
-  s/&#x002d;/-/g;
-  s/&#x00a0;/ /g;
-  s/&#x2013;/-/g;
+  s/&nbsp;/ /g;
+  s/&ndash;/-/g;
   s/&#x2019;/'/g;
-  s/&#8230;/.../g;    # Sic - no x
 
   # Escape hyphens to prevent unwanted hyphenation
 

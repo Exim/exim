@@ -1,0 +1,61 @@
+#! /usr/bin/perl -w
+
+# $Cambridge: exim/doc/doc-docbook/PageLabelPDF,v 1.1 2006/02/01 11:01:01 ph10 Exp $
+
+# Program to add page label information to the PDF output file. I have not
+# found a way of automatically discovering the number of frontmatter pages
+# in the document. It is therefore screwed in as 12 in the next statement.
+
+$add = "/PageLabels << /Nums [ 0 << /S /r >>\n" .
+       "                      12 << /S /D >>\n" .
+       "                     ]\n" .
+       "            >>\n";
+
+$extra = length $add;
+
+$before = 0;
+while (<>)
+  {
+  print;
+  $before += length($_);
+  last if $_ =~ "^<< /Type /Catalog";
+  }
+
+print $add;
+
+while (<>)
+  {
+  print;
+  last if $_ =~ /^xref$/;
+  }
+
+while (<>)
+  {
+  if (/^(\d{10}) (.*)/)
+    {
+    my($was) = $1;
+    my($rest) = $2;
+    printf "%010d $rest\n", $was + (($was > $before)? $extra : 0);
+    }
+  elsif (/^startxref/)
+    {
+    print;
+    $_ = <>;
+    if (/^(\d+)/)
+      {
+      print $1 + $extra, "\n";
+      }
+    else
+      {
+      print;
+      }
+    }
+  else
+    {
+    print;
+    }
+  }
+
+# End
+
+

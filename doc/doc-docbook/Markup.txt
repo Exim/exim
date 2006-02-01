@@ -1,0 +1,354 @@
+$Cambridge: exim/doc/doc-docbook/Markup.txt,v 1.1 2006/02/01 11:01:01 ph10 Exp $
+
+XFPT MARKUP USED IN THE EXIM DOCUMENTATION
+------------------------------------------
+
+This file contains a summary of the xfpt markup that is used in the source
+files of the Exim documentation. The source files are in plain text that can be
+edited by any text editor. They are converted by the xfpt application into
+DocBook XML for subsequent processing into the various output formats.
+
+The advantage of using xfpt format as a "back end" is that is uses relatively
+simple markup in the majority of the text, making it easier to read and edit.
+The disadvantage is that it is tricky to deal with complicated formatting,
+though that is probably true of any markup language, and is certainly true of
+XML itself.
+
+The Exim documentation uses standard xfpt DocBook markup with a few additions.
+The definitions of the additions that are used in spec.xfpt and filter.xfpt,
+respectively, appear at the start of each of those files. In this file we
+describe all the markup briefly, both the standard and additional items. See
+the xfpt specification for more details.
+
+Markup in xfpt is indicated in one of two ways: lines that start with a dot are
+interpreted specially ("directive lines"), and ampersand characters within the
+text always introduce a markup item. Recognized sequences that start with an
+ampersand are called "flags". Some of these have "partners" that do not
+necessarily start with an ampersand, but these must always appear after a flag
+that starts with an ampersand. There are no other forms of markup.
+
+There are two text characters that are not printed as their Ascii graphics.
+These are the grave accent and the single quote. They are automatically
+converted into opening and closing typographic quote characters in non-literal
+text. Other input characters that are not part of some markup always stand for
+themselves.
+
+
+CONTINUATION LINES
+
+Any line of input can be continued onto the next line by ending the first line
+with the sequence &&&. The line break and any leading spaces at the start of
+the following line are ignored. This processing happens as the lines are read
+in, before any other processing.
+
+
+SPECIAL CHARACTERS IN TEXT
+
+The following flag sequences are translated to non-Ascii characters:
+
+  &--     en-dash (generates &ndash;)
+  &~      hard space (generates &nbsp;)
+
+The following two flags are for use on Exim option definitions. They are
+designed for use within italic text; however, they terminate and restart the
+italic so that the daggers themselves are roman. These flags do not work
+outside italic text.
+
+  &!!     dagger         (generates </emphasis>&dagger;<emphasis>)
+  &!?     double dagger  (generates </emphasis>&Dagger;<emphasis>)
+
+Any Unicode character can be accessed by giving its name or code point in the
+normal XML fashion. For example, &dagger; gives a dagger and &copy; gives a
+copyright symbol.
+
+
+AMPERSANDS AS DATA
+
+If you really do want an ampersand character in the text, you must type two
+ampersands. This is a flag that expands to &amp; in the output. Of course, you
+could also just type &amp; yourself; the flag is just for convenience.
+
+
+PAIRED FLAGS
+
+There are several sequences that use pairs of markup flags, surrounding some
+enclosed text, which is represented as ... in the following list:
+
+  &'...'&    italic: maps to <emphasis>...</emphasis>
+             used for email addresses, domains, local
+             parts, header names, user names
+
+  &*...*&    bold: maps to <emphasis role="bold">...</emphasis>
+             used for things like &*Note:*&
+
+  &`...`&    monospaced text: maps to <literal>...</literal>
+             used for literal quoting in mixed-font text
+
+  &$...$&    Exim variable: maps to <varname>$...</varname>
+             note that the leading dollar is automatically inserted
+
+  &%...%&    Exim option, command line option: maps to <option>...</option>
+
+  &(...)&    Exim driver name, Unix command name, filter command name:
+             maps to <command>...</command>
+
+  &[...]&    C function: maps to <function>...</function>
+
+  &_..._&    file name: maps to <filename>...</filename>
+
+  &"..."&    put word in quotation marks: maps to <quote>...</quote>
+
+For example,
+
+  This is an &'italic phrase'&. This is a &_filename_& and a &$variable$&.
+  This &"word"& is in quote marks.
+
+It is important to use &"..."& rather than literal quotes so that different
+renditions can be used for different forms of output.
+
+These markup items can be nested, but not overlapped. However, the resulting
+XML from nested constructions is not always valid, so nesting is best avoided
+if possible. For example, &`xxx&'yyy'&xxx`& generates an <emphasis> item within
+a <literal> item, and the DocBook DTD does not allow that. However, a
+combination that does work is <literal> within an <emphasis>, so that is what
+you have to use if you want an italic or boldface monospaced font. For example,
+you have to use &*&`bold mono`&*& and not &`&*bold mono*&`&.
+
+
+LITERAL XML
+
+You can include blocks of literal XML between these two directive lines:
+
+  .literal xml
+  ...
+  .literal off
+
+There are some examples at the start of the Exim specification. You can also
+include individual XML elements by enclosing them in &<...>& but at the time of
+writing there are no examples of this usage in the Exim documentation.
+
+
+COMMENTS
+
+You can include comments that will not be copied to the XML document by
+starting a line with a dot followed by a space. You can include comments that
+are copied to the XML by either of the literal XML methods just described.
+
+
+URL REFERENCES
+
+To refer to a URL, use &url, followed by parentheses that can enclose one or
+two arguments, comma separated. The second, if present, is used as the
+displayed text. If there is only one argument, it is used both as the displayed
+text and as the URL. For example, here is a reference to
+&url(http://www.exim.org/,the exim home page). In HTML output, all you see is
+the display text; in printed output you see something like "the exim home page
+[http://www.exim.org/]". The URL is printed in a bold font.
+
+
+CHAPTERS AND SECTIONS
+
+The directives .chapter and .section mark the beginnings of chapters and
+sections. They are followed by a title in quotes, and optionally by up to two
+more arguments. Either single or double quotes can be used, and if you need a
+quote of the type being used as a delimiter within the string, it must be
+doubled. (Quotes are not in fact needed if the title contains no white space,
+but this is rare.)
+
+The second argument, if present and not an empty string, is an id for
+cross-references. For example:
+
+  .chapter "Environment for running local transports" "CHAPenvironment"
+
+To refer to a cross-reference point, enclose the name in &<<...>>&. For
+example:
+
+  See section &<<SECTexample>>&.
+
+Chapter titles are used for running feet in the PostScript and PDF forms of the
+manual. Sometimes they are too long, causing them to be split in an ugly way.
+The solution to this is to define a short title for the running feet as the
+third argument for .chapter or .section, like this:
+
+  .chapter "Environment for running local transports" "CHAPenvironment" &&&
+           "Environment for local transports"
+
+Note the use of &&& in this example to continue the logical input line. If you
+need to specify a third argument without a second argument, the second argument
+must be given as an empty string in quotes.
+
+
+DISPLAYS
+
+There are two forms of text display. Displayed blocks of literal text are
+started by .code and terminated by .endd:
+
+  .code
+  # Exim filter
+  deliver baggins@rivendell.middle-earth.example
+  .endd
+
+No flags are recognized in such blocks, which are displayed in a monospaced
+font.
+
+Blocks of text between .display and .endd are displayed in the current font,
+with the lines processed for flags as in normal paragraphs, but keeping the
+line layout. Flags can be used in the block to specify different fonts or
+special characters. For example:
+
+  .display
+  &`\n`&   is replaced by a newline
+  &`\r`&   is replaced by a carriage return
+  &`\t`&   is replaced by a tab
+  .endd
+
+
+BLOCK QUOTES
+
+Text between .blockquote and .endblockquote is forced to start a new paragraph
+and is wrapped in a <blockquote> element.
+
+
+INDEX ENTRIES
+
+To create an index entry, include a line like one of these:
+
+  .cindex "primary text" "secondary text"
+  .oindex "primary text" "secondary text"
+
+The first is for the "concept index" and the second is for the "options index".
+Not all forms of output distinguish between these - sometimes there is just one
+index.
+
+The index for the Exim reference manual has a number of "see also" entries.
+These are coded in raw XML at the start of the source file.
+
+
+LISTS
+
+Bulleted (itemized) lists are started by .ilist, and ordered (numbered) lists
+are started by .olist, which can be followed by "arabic", "loweralpha",
+"lowerroman", "upperalpha", or "upperroman" to indicate the type of numeration
+that is wanted. Each new item is started by .next, and the whole list is
+terminated by .endlist. Lists can be nested. For example:
+
+  .ilist
+  The first item in the itemized list.
+  .olist lowerroman
+  The first item in the nested, numbered list
+  .next
+  The next item in the nested, numbered list.
+  .endlist
+  Continuing with the first item in the itemized list.
+  .next
+  The next item in the itemized list.
+  .endlist
+
+Variable lists are used for Exim command line options and similar things. They
+map into XML <variablelist> items. Start the list with .vlist and end it with
+.endlist. Each item starts with a .vitem line, followed by its description. The
+argument to .vitem must be quoted if it contains spaces. For example:
+
+  .vlist
+  .vitem &*--*&
+  This is a pseudo-option whose only purpose is to terminate the options and
+  therefore to cause subsequent command line items to be treated as arguments
+  rather than options, even if they begin with hyphens.
+
+  .vitem &*--help*&
+  This option causes Exim to output a few sentences stating what it is.
+  The same output is generated if the Exim binary is called with no options and
+  no arguments.
+  ...
+  .endlist
+
+
+TABLES
+
+The .itable macro directive in xfpt can be used to specify an informal table.
+See the specification for details. The Exim specification uses this directly in
+one place, but most of its tables contain only two columns, for which a
+cut-down macro called .table2 has been defined. Its arguments are the widths of
+the columns, defaulting to 190pt and 300pt, which are suitable for the many
+tables that appear at the start of the global options definition chapter. Each
+row in a table is defined by a .row macro, and the table ends with .endtable.
+For example:
+
+  .table2 100pt
+  .row &_OptionLists.txt_&   "list of all options in alphabetical order"
+  .row &_dbm.discuss.txt_&   "discussion about DBM libraries"
+  ...
+  .endtable
+
+This example overrides the width of the first column. The first arguments of
+the .row macro do not need quotes, because they contain no white space, but
+quotes could have been used.
+
+
+EXIM CONFIGURATION OPTION HEADINGS
+
+Each Exim configuration option is formatted with its name, usage, type, and
+default value on a single output line, spread over the line so as to fill it
+completely. The only way I know of aligning text using DocBook is to use a
+table. The .option macro defines such a table and inserts its four arguments
+into the cells. For example:
+
+  .option acl_not_smtp_mime main string&!! unset
+  This option causes...
+
+The macro contains the font definitions and the heading words "Use", "Type",
+and "Default", so you do not have to supply them. Notice the use of the &!!
+flag to put a dagger after the word "string".
+
+
+CHANGE BARS
+
+I have not yet found a way of producing change bars in the PostScript and PDF
+versions of the documents. However, it is possible to put a green background
+behind changed text in the HTML version, so the appropriate markup should be
+used in the source. There is a facility in xfpt for setting the "revisionflag"
+attribute on appropriate XML elements. There is also a macro called .new which
+packages this up for use in three different ways. One or more large text items
+can be placed between .new and .wen ("wen" is "new" backwards). For example:
+
+  This paragraph is not flagged as new.
+  .new
+  This is a new paragraph that contains a display:
+  .display
+  whatever
+  .endd
+  This is the next paragraph.
+  .wen
+  Here is the next, unmarked, paragraph.
+
+When called without an argument, .new terminates the current paragraph, and
+.wen always does so. Therefore, even though there are no blank lines before
+.new or .wen above, the marked text will be in a paragraph of its own. You
+can, of course, put in blank lines if you wish, and it is probably clearer to
+do so.
+
+If want to mark just a few words inside a paragraph as new, you can call the
+.new macro with an argument. The macro can be called either as a directive or
+as an inline macro call, which takes the form of an ampersand followed by the
+name, with the argument in parentheses. For example:
+
+  This is a paragraph that has
+  .new "a few marked words"
+  within it. Here are &new(some more) marked words.
+
+The effect of this is to generate a <phrase> XML element with the revisionflag
+attribute set. The .wen macro is not used in this case.
+
+If you want to mark a whole table as new, .new and .wen can be used to surround
+it as described above. However, current DocBook processors do not seem to
+recognize the "revisionflag" attribute on individual rows and table entries.
+You can, nevertheless, mark the contents of individual table entries as changed
+by using an inline macro call. For example:
+
+  .row "&new(some text)" "...."
+
+Each such entry must be separately marked. If there are more than one or two,
+it may be easier just to mark the entire table.
+
+Philip Hazel
+Last updated: 25 January 2006

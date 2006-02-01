@@ -13,14 +13,14 @@
 <!ENTITY hsize5space "18.6624pt"> <!-- 0.75 * hsize5 -->
 ]>
 
-<!-- $Cambridge: exim/doc/doc-docbook/MyTitlepage.templates.xml,v 1.1 2005/06/16 10:32:31 ph10 Exp $ -->
+<!-- $Cambridge: exim/doc/doc-docbook/MyTitlepage.templates.xml,v 1.2 2006/02/01 11:01:01 ph10 Exp $ -->
 
 <!-- This document is copied from the DocBook XSL stylesheets, and modified to
 do what I want it to do for the Exim reference manual. Process this document
 with:
 
 xsltproc -output MyTitleStyle.xsl \
-  /usr/share/sgml/docbook/xsl-stylesheets-1.66.1/template/titlepage.xsl \
+  /usr/share/sgml/docbook/xsl-stylesheets-1.68.1/template/titlepage.xsl \
   MyTitlepage.templates.xml
 
 in order to generate a style sheet called MyTitleStyle.xsl. That is then
@@ -52,7 +52,7 @@ need to set up! -->
              param:node="ancestor-or-self::book[1]"
              text-align="center"
              font-size="&hsize5;"
-             space-before="&hsize5space;"
+             space-before="5em"
              font-weight="bold"
              font-family="{$title.fontset}"/>
       <subtitle
@@ -67,6 +67,7 @@ need to set up! -->
       <author font-size="&hsize3;"
               space-before="&hsize2space;"
               keep-with-next="always"/>
+      <affiliation space-before="1em"/>
     </t:titlepage-content>
 
   <t:titlepage-content t:side="verso">
@@ -77,11 +78,13 @@ need to set up! -->
              font-family="{$title.fontset}"/>
       <corpauthor/>
       <authorgroup t:named-template="verso.authorgroup"/>
-      <author/>
-      <othercredit/>
+      <author space-before="1em"/>
+      <affiliation space-before="1em"/>
+      <address/>
       <pubdate space-before="1em"/>
       <abstract/>
-      <copyright/>
+      <copyright space-before="1em"/>
+      <revhistory space-before="1em"/>
       <legalnotice font-size="8pt"/>
   </t:titlepage-content>
 
