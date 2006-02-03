@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/parse.c,v 1.5 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/parse.c,v 1.6 2006/02/03 15:26:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -243,18 +243,17 @@ s = skip_comment(s);
 any character except [ ] \, including linear white space, and may contain
 quoted characters. However, RFC 821 restricts literals to being dot-separated
 3-digit numbers, and we make the obvious extension for IPv6. Go for a sequence
-of digits and dots (hex digits and colons for IPv6) here; later this will be
-checked for being a syntactically valid IP address if it ever gets to a router.
+of digits, dots, hex digits, and colons here; later this will be checked for
+being a syntactically valid IP address if it ever gets to a router.
 
-If IPv6 is supported, allow both the formal form, with IPV6: at the start, and
-the informal form without it, and accept IPV4: as well, 'cause someone will use
-it sooner or later. */
+Allow both the formal IPv6 form, with IPV6: at the start, and the informal form
+without it, and accept IPV4: as well, 'cause someone will use it sooner or
+later. */
 
 if (*s == '[')
   {
   *t++ = *s++;
 
-  #if HAVE_IPV6
   if (strncmpic(s, US"IPv6:", 5) == 0 || strncmpic(s, US"IPv4:", 5) == 0)
     {
     memcpy(t, s, 5);
@@ -262,10 +261,6 @@ if (*s == '[')
     s += 5;
     }
   while (*s == '.' || *s == ':' || isxdigit(*s)) *t++ = *s++;
-
-  #else
-  while (*s == '.' || isdigit(*s)) *t++ = *s++;
-  #endif
 
   if (*s == ']') *t++ = *s++; else
     {

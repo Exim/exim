@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.282 2005/12/22 14:54:50 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.283 2006/02/03 15:26:54 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -66,6 +66,11 @@ PH/11 The exinext utility has a -C option for testing purposes, but although
 
 PH/12 In the smtp transport, treat an explicit ECONNRESET error the same as
       an end-of-file indication when reading a command response.
+
+PH/13 Domain literals for IPv6 were not recognized unless IPv6 support was
+      compiled. In many other places in Exim, IPv6 addresses are always
+      recognized, so I have changed this. It also means that IPv4 domain
+      literals of the form [IPV4:n.n.n.n] are now always recognized.
 
 
 Exim version 4.60
