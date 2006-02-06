@@ -1,0 +1,54 @@
+dnl $Cambridge: exim/test/configure.ac,v 1.1 2006/02/06 16:07:10 ph10 Exp $
+
+dnl Process this file with autoconf to produce a configure script.
+
+dnl This is required at the start; the name is the name of a file
+dnl it should be seeing, to verify it is in the same directory.
+
+AC_INIT(listtests)
+
+dnl A safety precaution
+
+AC_PREREQ(2.57)
+
+dnl Checks for programs.
+
+AC_PROG_CC
+
+dnl Checks for header files.
+
+AC_CHECK_HEADERS(openssl/crypto.h,[CLIENT_SSL=bin/client-ssl])
+AC_CHECK_HEADERS(gnutls/gnutls.h,[CLIENT_GNUTLS=bin/client-gnutls])
+
+dnl The check on dynamically loaded modules requires the building of
+dnl something to load. This seems to be something that varies between
+dnl systems and compilers something awful. Therefore, we enable it only
+dnl for those systems and compilers that we know about.
+
+dnl I tried using AC_CANONICAL_HOST, but it insisted on looking for an
+dnl "install" script for some weird reason.
+
+host_os=`uname -s`
+
+case $CC-$host_os in
+  gcc-*linux* | gcc-*Linux* | gcc-*LINUX* | gcc-FreeBSD)
+    LOADED=bin/loaded
+    LOADED_OPT=-shared
+    echo "Using gcc on $host_os: will compile dynamically loaded module"
+    ;;
+  *)
+    LOADED=
+    echo "Will not compile dynamically loaded module: not known OS/CC combination"
+    ;;
+esac
+
+dnl "Export" these variables
+
+AC_SUBST(CLIENT_SSL)
+AC_SUBST(CLIENT_GNUTLS)
+AC_SUBST(LOADED)
+AC_SUBST(LOADED_OPT)
+
+dnl This must be last; it determines what files are written
+
+AC_OUTPUT(Makefile)

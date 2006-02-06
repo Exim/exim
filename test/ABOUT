@@ -1,0 +1,38 @@
+$Cambridge: exim/test/ABOUT,v 1.1 2006/02/06 16:07:10 ph10 Exp $
+
+CVS directory exim/exim-test
+----------------------------
+
+The files in this directory are those that comprise the Exim test suite. The
+README file contains a complete description of the suite and how it works. The
+contents of this directory are:
+
+FILES
+
+Makefile.in         source of the Makefile for building auxiliary test programs
+README              description and instructions for running the test suite
+configure.ac        autoconf configuration file
+listtests           shell/Perl script for listing the available tests
+patchexim           Perl script for patching Exim in preparation for testing
+runtest             Perl script for running the tests
+
+DIRECTORIES
+
+aux-fixed           fixed auxiliary data files
+aux-var-src         source for variable data files
+confs               Exim configurations for the tests
+dnszones-src        sources for fake DNS zone files
+log                 saved mainlogs
+mail                saved mailboxes
+msglog              saved message logs
+paniclog            saved panic logs
+rejectlog           saved reject logs
+scripts             scripts for the tests
+src                 sources for auxiliary programs
+stderr              saved stderr outputs
+stdout              saved stdout output
+
+The scripts directory is subdivided into subdirectories containing tests of
+different categories.
+
+End

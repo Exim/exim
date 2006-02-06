@@ -1,0 +1,97 @@
+# $Cambridge: exim/test/Makefile.in,v 1.1 2006/02/06 16:07:10 ph10 Exp $
+# This Makefile builds the support programs for the Exim test suite.
+
+##############################################################################
+# These variables are set by the configure script.
+
+CC=@CC@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+CLIENT_SSL=@CLIENT_SSL@
+CLIENT_GNUTLS=@CLIENT_GNUTLS@
+LOADED=@LOADED@
+LOADED_OPT=@LOADED_OPT@
+
+##############################################################################
+
+# List of targets
+
+all:            makebin bin/cf bin/client $(CLIENT_SSL) $(CLIENT_GNUTLS) \
+                bin/checkaccess bin/fakens bin/fd bin/iefbr14 $(LOADED) \
+                bin/mtpscript bin/server bin/showids
+
+# Ensure the bin directory exists
+
+makebin:;       @if [ ! -e bin ] ; then mkdir bin 2>/dev/null; echo ""; fi
+
+# Compile and link the programs:
+#
+# bin/client        is the SMTP script-driven client, without TLS support
+# bin/client-ssl    is with OpenSSL support
+#                   there isn't yet a version with GnuTLS support
+# bin/checkaccess   tests whether the exim uid/gid can access the files
+# bin/iefbr14       a program that does nothing and returns 0
+# bin/loaded        is a dynamically loaded test module
+# bin/server        is the SMTP script-driven server (no TLS support)
+
+bin/cf:         src/cf.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/cf src/cf.c
+		@echo ">>> bin/cf command build"
+		@echo " "
+
+bin/client:     src/client.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/client src/client.c
+		@echo ">>> bin/client command built"
+		@echo " "
+
+bin/client-gnutls: src/client.c
+		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -lgnutls -lgcrypt -o bin/client-gnutls src/client.c
+		@echo ">>> bin/client-gnutls command built"
+		@echo " "
+
+bin/client-ssl: src/client.c
+		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -lssl -lcrypto -o bin/client-ssl src/client.c
+		@echo ">>> bin/client-ssl command built"
+		@echo " "
+
+bin/checkaccess:src/checkaccess.c
+		$(CC) $(CFLAGS) -DNO_TLS $(LDFLAGS) -o bin/checkaccess src/checkaccess.c
+		@echo ">>> bin/checkaccess command built"
+		@echo " "
+
+bin/fakens:     src/fakens.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fakens src/fakens.c
+		@echo ">>> bin/fakens command built"
+		@echo " "
+
+bin/fd:         src/fd.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fd src/fd.c
+		@echo ">>> bin/fd command built"
+		@echo " "
+
+bin/iefbr14:    src/iefbr14.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/iefbr14 src/iefbr14.c
+		@echo ">>> bin/iefbr14 command built"
+		@echo " "
+
+bin/loaded:     src/loaded.c
+		$(CC) $(CFLAGS) $(LDFLAGS) $(LOADED_OPT) -o bin/loaded src/loaded.c
+		@echo ">>> bin/loaded command built"
+		@echo " "
+
+bin/mtpscript:  src/mtpscript.c
+		$(CC) $(CFLAGS) $(LDFLAGS) $(mtpscript_OPT) -o bin/mtpscript src/mtpscript.c
+		@echo ">>> bin/mtpscript command built"
+		@echo " "
+
+bin/server:     src/server.c
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/server src/server.c
+		@echo ">>> bin/server command built"
+		@echo " "
+
+bin/showids:    src/showids.c 
+		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/showids src/showids.c
+		@echo ">>> bin/showids command built"
+		@echo " "
+
+# End

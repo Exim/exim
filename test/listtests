@@ -1,0 +1,67 @@
+#! /bin/sh
+
+# $Cambridge: exim/test/listtests,v 1.1 2006/02/06 16:07:10 ph10 Exp $
+
+# This script scans the directories of Exim test scripts and lists the first
+# comment line of each one, which gives a description. The output is piped via
+# "more". If the script has an argument, it is a pattern that is used to select
+# only certain subdirectories. If the script has a second argument, it is a
+# pattern that is used to select only certain test titles from the selected
+# directories.
+
+/usr/bin/perl -w - "$1" "$2" <<'PerlEnd' | less
+
+$dirpat = "$ARGV[0]";
+$filpat = "$ARGV[1]";
+
+opendir(SCRIPTS, "scripts") || die "** Failed to opendir(SCRIPTS): $!\n";
+@subdirs = readdir(SCRIPTS);
+closedir(SCRIPTS);
+
+foreach $subdir (sort @subdirs)
+  {
+  my($first) = 1;
+
+  next if $subdir =~ /^\./;
+  next if $dirpat ne "" && $subdir !~ /$dirpat/i;
+
+  opendir(TESTS, "scripts/$subdir") ||
+    die "** Failed to opendir(scripts/$subdir): $!\n";
+  @tests = readdir(TESTS);
+  closedir(TESTS);
+
+  foreach $file (sort @tests)
+    {
+    next if $file !~ /^\d\d\d\d$/;
+
+    open(IN, "scripts/$subdir/$file") ||
+      die "** Failed to open scripts/$subdir/$file: $!\n";
+    my($heading) = substr(<IN>, 2);
+    close(IN);
+
+    if ($filpat eq "" || $heading =~ /$filpat/i)
+      {
+      if ($first)
+        {
+        print "\n=== $subdir ===\n";
+        if (open(REQUIRES, "scripts/$subdir/REQUIRES"))
+          {
+          my($indent) = "";
+          print "=== Requires: ";
+          while (<REQUIRES>)
+            {
+            print $indent, $_;
+            $indent = "              ";
+            }
+          print "\n" if $indent eq "";
+          close (REQUIRES);
+          }
+        $first = 0;
+        }
+      printf("%s/%s %s", (substr $subdir, 5), $file, $heading);
+      }
+    }
+  }
+PerlEnd
+
+# End

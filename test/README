@@ -1,0 +1,1039 @@
+$Cambridge: exim/test/README,v 1.1 2006/02/06 16:07:10 ph10 Exp $
+
+EXPORTABLE EXIM TEST SUITE
+--------------------------
+
+This document last updated for:
+
+Test Suite Version: 4.61
+Date: 06 February 2006
+
+
+BACKGROUND
+----------
+
+For a long time, the Exim test suite was confined to Philip Hazel's
+workstation, because it relied on that particular environment. The problem is
+that an MTA such as Exim interacts a great deal with its environment, so if you
+run it somewhere else, the output will be different, which makes automatic
+checking difficult. Even in a single environment, things are not all that easy.
+For instance, if Exim delivers a message, the log line (which one would want to
+compare) contains a timestamp and an Exim message id that will be different
+each time. This issue is dealt with by a Perl script that munges the output by
+recognizing changing sequences and replacing them with fixed values before
+doing a comparison. Another problem with exporting the original test suite is
+that it assumes a version of Exim with more or less every optional feature
+enabled.
+
+This README describes a new test suite that is intended to be exportable and to
+run in a number of different environments. The current status of this project
+is "experimental and incomplete". I am releasing it in this state in order to
+get feedback on how well it succeeds and of course to iron out any bugs. The
+original test suite contains over 600 tests; it will be some time before they
+are all re-implemented in the new world.
+
+The tests themselves are in no particular order; they accumulated over the
+years as Exim was extended and modified. They vary greatly in size and
+complexity. Some were specifically constructed to test new features; others
+were made to demonstrate that a bug had been fixed.
+
+A few of the original tests have had to be omitted from this more general
+suite because differences in operating system behaviour make it impossible to
+generalize them. An example is a test that uses a version of Exim that is
+setuid to the Exim user rather than root, with the deliver_drop_privilege
+option set. In Linux, such a binary is able to deliver a message as the caller
+of Exim, because it can revert to the caller's uid. In FreeBSD this is not the
+case.
+
+This is early documentation; it too may be buggy... :-) It is certainly
+incomplete, because there are features yet to be added to the test suite.
+
+
+REQUIREMENTS
+------------
+
+In order to run this test suite, the following requirements must be met:
+
+(1) You should run the tests on the latest version of Exim, because the suite
+    is continuously updated to test the latest features and bug fixes. The
+    version you test does not, however, have to be installed as the live
+    version. You can of course run the tests on an older Exim, but some may
+    fail. In particular, the test suite will fall apart horrible with versions
+    of Exim prior to 4.54.
+
+(2) You can use any non-root login to run the tests, but there must be access
+    via "sudo" to root from this login. Privilege is required to override
+    configuration change checks and for things like cleaning up spool files,
+    but on the other hand, the tests themselves need to call Exim from a
+    non-root process. The use of "sudo" is the easiest way to achieve all this.
+    The test script uses "sudo" to do a number of things as root, so it is best
+    if you set a sudo timeout so that you do not have to keep typing a
+    password. For example, if you put
+
+      Defaults timestamp_timeout=480
+
+    in /etc/sudoers, a password lasts for 8 hours (a working day). It is
+    probably not a good idea to run the tests as the Exim user, as this is
+    recognized as special by Exim.
+
+(3) The login under which you run the tests must be in the exim group so that
+    it has access to logs, spool files, etc. The login should not be one of the
+    names "userx", "usery", "userz", or a few other simple ones such as "abcd"
+    and "xyz" and single letters that are used in the tests. (The original
+    tests use my login a lot; I'm weeding this out as I convert, and I'll try
+    to get rid of common names as well.) The test suite expects the login to
+    have a gecos name; I think it will now run if the gecos field is empty but
+    there may be anomalies.
+
+(4) The directory into which you unpack the test suite must be accessible by
+    the Exim user, so that code which is running as exim can access the files
+    therein. A world-readable directory is fine. However, there may be problems
+    if the path name of the directory is excessively long. This is because it
+    sometimes appears in logs lines or debug output, and if it is truncated, it
+    is no longer recognized.
+
+(5) Exim must be built with its user and group specified at build time, and
+    with certain minimum facilities, namely:
+
+      Routers:    accept, dnslookup, manualroute, redirect
+      Transports: appendfile, autoreply, pipe, smtp
+      Lookups:    lsearch
+
+    Most Exim binaries will have these included.
+
+(6) A C compiler is needed to build some test programs, and the test script is
+    written in Perl, so you need that.
+
+(7) Some of the tests run Exim as a daemon, and others use a testing server
+    (described below). These require TCP ports. In the configurations and
+    scripts, the ports are parameterized, but at present, fixed values are
+    written into the controlling script. These are ports 1224 to 1229. If these
+    ports are not available for use, some of the tests will fail.
+
+(8) There is an underlying assumption that the host on which the tests are
+    being run has an IPv4 address (which the test script seeks out). If there
+    is also an IPv6 address, additional tests are run when the Exim binary
+    contains IPv6 support. There are checks in the scripts for a running IPv4
+    interface; when one is not found, some tests are skipped (with a warning
+    message).
+
+
+OPTIONAL EXTRAS
+---------------
+
+If the Exim binary that is being tested contains extra functionality in
+addition to the minimum specified above, additional tests are run to exercise
+the extra functionality, except for a few special cases such as the databases
+(MySQL, PostgreSQL, LDAP) where special data is needed for the tests.
+
+
+RUNNING THE TEST SUITE
+----------------------
+
+(1) Download the tarball exim-testsuite-x.xx.tar.bz2 and unpack it, preferably
+    in a directory alongside an Exim source directory (see below).
+
+(2) cd into the exim-testsuite-x.xx directory.
+
+(3) Run "./configure" and then "make". This builds a few auxiliary programs
+    that are written in C.
+
+(4) Run "./runtest" (a Perl script) as described below.
+
+(5) If you want to see what tests are available, run "./listtests".
+
+
+BREAKING OUT OF THE TEST SCRIPT
+-------------------------------
+
+If you abandon the test run by typing ^C, the interrupt may be passed to a
+program that the script is running, or it may be passed to the script itself.
+In the former case, the script should detect that the program has ended
+abnormally. In both cases, the script tries to clean up everything, including
+killing any Exim daemons that it has started. However, there may be race
+conditions in which the clean up does not happen. If, after breaking out of a
+run, you see strange errors in the next run, look for any left-over Exim
+daemons, and kill them by hand.
+
+
+THE LISTTESTS SCRIPT
+--------------------
+
+The individual test scripts are in subdirectories of the "scripts" directory.
+If you do not supply any arguments to ./listtests, it scans all the scripts in
+all the directories, and outputs the heading line from each script. The output
+is piped through "less", and begins like this:
+
+=== 0000-Basic ===
+Basic/0001 Basic configuration setting
+Basic/0002 Common string expansions
+Basic/0003 Caseless address blocking
+...
+
+Lines that start === give the name of the subdirectory containing the test
+scripts that follow. If you supply an argument to ./listtests, it is used as a
+Perl pattern to match case-independently against the names of the
+subdirectories. Only those that match are scanned. For example, "./listtests
+ipv6" outputs this:
+
+=== 1000-Basic-ipv6 ===
+=== Requires: support IPv6
+Basic-ipv6/1000 -bh and non-canonical IPv6 addresses
+Basic-ipv6/1001 recognizing IPv6 address in HELO/EHLO
+
+=== 2250-dnsdb-ipv6 ===
+=== Requires: support IPv6
+              lookup dnsdb
+dnsdb-ipv6/2250 dnsdb ipv6 lookup in string expansions
+
+If you supply a second argument to ./listtests, it is used as a Perl pattern to
+match case-independently against the individual script titles. For example,
+"./listtests . mx" lists all tests whose titles contain "mx", because "."
+matches all the subdirectory names.
+
+
+THE RUNTEST SCRIPT
+------------------
+
+If you do not supply any arguments to ./runtest, it searches for an Exim
+source tree at the same level as the test suite directory. It then looks for an
+Exim binary in a "build" directory of that source tree. If there are several
+Exim source trees, it chooses the latest version of Exim. Consider the
+following example:
+
+  $ ls -F /source/exim
+  exim-4.50/  exim-4.52/  exim-testsuite-0.00/
+
+A simple ./runtest from within the test suite will use a 4.52 binary if it
+finds one, otherwise a 4.50 binary. If a binary cannot be found, the script
+prompts for one. Alternatively, you can supply the binary on the command line:
+
+  ./runtest /usr/exim/bin/exim
+
+The test suite also uses some of the Exim utilities (such as exim_dbmbuild),
+and it expects to find them in the same directory as Exim itself. If they are
+not found, the tests that use them are omitted. A suitable comment is output.
+
+On the ./runtest command line, following the name of the binary, if present,
+there may be a number of options and then one or two numbers. The full syntax
+is as follows:
+
+  ./runtest [binary name] [runtest options] [exim options] \
+            [first test] [last test]
+
+There are some options for the ./runtest script itself:
+
+  -DEBUG    This option is for debugging the test script. It causes some
+            tracing information to be output.
+
+  -DIFF     By default, file comparisons are done using a private compare
+            command called "cf", which is built from source that is provided in
+            the src directory. This is a command I've had for nearly 20 years -
+            look at the source comments for its history - whose output I
+            prefer. However, if you want to use "diff" instead, give -DIFF as a
+            runtest option. In that case, "diff -u" is used for comparisons.
+            (If it turns out that most people prefer to use diff, I'll change
+            the default.)
+
+  -KEEP     Normally, after a successful run, the test output files are
+            deleted. This option prevents this. It is useful when running a
+            single test, in order to look at the actual output before it is
+            modified for comparison with saved output.
+
+  -NOIPV4   Pretend that an IPv4 interface was not found. This is useful for
+            testing that the test suite correctly skips tests that require
+            a running IPv4 interface.
+
+  -NOIPV6   Pretend that an IPv6 interface was not found. This is useful for
+            testing that the test suite correctly skips tests that require
+            a running IPv6 interface.
+
+  -UPDATE   If this option is set, any detected changes in test output are
+            automatically accepted and used to update the stored copies of the
+            output. It is a dangerous option, but it useful for the test suite
+            maintainer after making a change to the code that affects a lot of
+            tests (for example, the wording of a message).
+
+The options for ./runtest must be given first (but after the name of the
+binary, if present). Any further options, that is, items on the command line
+that start with a hyphen, are passed to the Exim binary when it is run as part
+of a test. The only sensible use of this is to pass "-d" in order to run a test
+with debugging enabled. Any other options are likely to conflict with options
+that are set in the tests. Some tests are already set up to run with debugging.
+In these cases, -d on the command line overrides their own debug settings.
+
+The final two arguments specify the range of tests to be run. Test numbers lie
+in the range 1 to 9999. If no numbers are given, the defaults are 1 and 8999
+(sic). Tests with higher numbers (9000 upwards) are not run automatically
+because they require specific data (such as a particular MySQL table) that is
+unlikely to be generally available.
+
+Tests that require certain optional features of Exim are grouped by number, so
+in any given range, not all the tests will exist. Non-existent tests are just
+skipped, but if there are no tests at all in the given range, a message is
+output.
+
+If you give only one number, just that test is run (if it exists). Instead of a
+second number, you can give the character "+", which is interpreted as "to the
+end". Normally this is 8999; if the starting number is 9000 or higher, "+" is
+interpreted as 9999. Examples:
+
+  ./runtest 1300
+  ./runtest 1400 1699
+  ./runtest /usr/sbin/exim 5000 +
+  ./runtest -DIFF -d 81
+
+When the script starts up, the first thing it does is to check that you have
+sudo access to root. Then it outputs the version number of the Exim binary that
+it is testing, and also information about the optional facilities that are
+present (obtained from "exim -bV"). This is followed by some environmental
+information, including the current login id and the hosts's IP address. The
+script checks that the current user is in the Exim group, and that the Exim
+user has access to the test suite directory.
+
+The script outputs the list of tests requested, and a list of tests that will
+be omitted because the relevant optional facilities are not in the binary. You
+are then invited to press Return to start the tests running.
+
+
+TEST OUTPUT
+-----------
+
+When all goes well, the only permanent output is the identity of the tests as
+they are run, and "Script completed" for each test script, for example:
+
+  Basic/0001 Basic configuration setting
+    Script completed
+  Basic/0002 Basic string expansions
+    Script completed
+  Basic/0003 Caseless address blocking
+    Script completed
+  Basic/0004 Caseful address blocking
+    Script completed
+  Basic/0005 -bs to simple local delivery
+  ...
+
+While a script is running, it shows "Test n" on the screen, for each of the
+Exim tests within the script. There may also be comments from some tests when a
+delay is expected, for example, if there is a "sleep" while testing a timeout.
+
+Before each set of optional tests, an extra identifying line is output. For
+example:
+
+  >>> The following tests require: authenticator cram_md5
+  CRAM-MD5/2500 CRAM-MD5 server tests
+    Script completed
+  CRAM-MD5/2501 CRAM-MD5 client tests
+    Script completed
+
+If a test fails, you are shown the output of the text comparison that failed,
+and prompted as to what to do next. The output is shown using the "less"
+command, or "more" if "less" is not available. By default, the output is from
+the "cf" program, and might look like this:
+
+  DBM/1300 DBM files and exim_dbmbuild
+  ===============
+  Lines 7-9 of "test-stdout-munged" do not match lines 7-11 of "stdout/1300".
+  ----------
+  exim_dbmbuild exit code = 1
+  Continued set of lines is too long: max permitted length is 99999
+  exim_dbmbuild exit code = 1
+  ----------
+  dbmbuild abandoned
+  exim_dbmbuild exit code = 2
+  Continued set of lines is too long: max permitted length is 99999
+  dbmbuild abandoned
+  exim_dbmbuild exit code = 2
+  ===============
+  1 difference found.
+  "test-stdout-munged" contains 16 lines; "stdout/1300" contains 18 lines.
+
+  Continue, Update & retry, Quit? [Q]
+
+This example was generated by running the test with a version of Exim
+that had a bug in the exim_dbmbuild utility (the bug was fixed at release
+4.53). See "How the tests work" below for a description of the files that are
+used. In this case, the standard output differed from what was expected.
+
+The reply to the prompt must either be empty, in which case it takes the
+default that is given in brackets (in this case Q), or a single letter, in
+upper or lower case (in this case, one of C, U, or Q). If you type anything
+else, the prompt is repeated.
+
+"Continue" carries on as if the files had matched; that is, it ignores the
+mismatch. Any other output files for the same test will be compared before
+moving on to the next test.
+
+"Update & retry" copies the new file to the saved file, and reruns the test
+after doing any further comparisons that may be necessary.
+
+Other circumstances give rise to other prompts. If a test generates output for
+which there is no saved data, the prompt (after a message stating which file is
+unexpectely not empty) is:
+
+  Continue, Show, or Quit? [Q]
+
+"Show" displays the data on the screen, and then you get the "Continue..."
+prompt. If a test ends with an unexpected return code, the prompt is:
+
+  show stdErr, show stdOut, Continue (without file comparison), or Quit? [Q]
+
+Typically in these cases there will be something interesting in the stderr
+or stdout output. There is a similar prompt after the "server" auxiliary
+program fails.
+
+
+OPENSSL AND GNUTLS ERROR MESSAGES
+---------------------------------
+
+Some of the TLS tests deliberately cause errors to check how Exim handles them.
+It has been observed that different releases of the OpenSSL and GnuTLS
+libraries generate different error messages. This may cause the comparison with
+the saved output to fail. Such errors can be ignored.
+
+
+OTHER SCRIPTS AND PROGRAMS
+--------------------------
+
+There is a freestanding Perl script called "listtests" that scans the test
+scripts and outputs a list of all the tests, with a short descriptive comment
+for each one. Special requirements for groups of tests are also noted.
+
+The main runtest script makes use of a second Perl script and some compiled C
+programs. These are:
+
+patchexim          A Perl script that makes a patched version of Exim (see the
+                   next section for details).
+
+bin/cf             A text comparison program (see above).
+
+bin/checkaccess    A program that is run as root; it changes uid/gid to the
+                   Exim user and group, and then checks that it can access
+                   files in the test suite's directory.
+
+bin/client         A script-driven SMTP client simulation.
+
+bin/client-gnutls  A script-driven SMTP client simulation with GnuTLS support.
+                   This is built only if GnuTLS support is detected on the host.
+
+bin/client-ssl     A script-driven SMTP client simulation with OpenSSL support.
+                   This is built only if OpenSSL support is detected on the
+                   host.
+
+bin/fakens         A fake "nameserver" for DNS tests (see below for details).
+
+bin/fd             A program that outputs details of open file descriptors.
+
+bin/iefbr14        A program that does nothing, and returns 0. It's just like
+                   the "true" command, but it is in a known place.
+
+bin/loaded         Some dynamically loaded functions for testing dlfunc support.
+
+bin/server         A script-driven SMTP server simulation.
+
+The runtest script also makes use of a number of ordinary commands such as
+"cp", "kill", "more", and "rm", via the system() call. In some cases these are
+run as root by means of sudo.
+
+
+STANDARD SUBSTITUTIONS
+----------------------
+
+In the following sections, there are several references to the "standard
+substitutions". These make changes to some of the stored files when they are
+used in a test. To save repetition, the substitutions themselves are documented
+here:
+
+  CALLER         is replaced by the login name of the user running the tests
+  CALLER_GID     is replaced by the caller's group id
+  CALLER_UID     is replaced by the caller's user id
+  DIR            is replaced by the name of the test-suite directory
+  EXIMGROUP      is replaced by the name of the Exim group
+  EXIMUSER       is replaced by the name of the Exim user
+  HOSTIPV4       is replaced by the local host's IPv4 address
+  HOSTIPV6       is replaced by the local host's IPv6 address
+  HOSTNAME       is replaced by the local host's name
+  PORT_D         is replaced by a port number for normal daemon use
+  PORT_N         is replaced by a port number that should never respond
+  PORT_S         is replaced by a port number for normal bin/server use
+  TESTNUM        is replaced by the current test number
+  V4NET          is replaced by an IPv4 network number for testing
+  V6NET          is replaced by an IPv6 network number for testing
+
+PORT_D is currently hard-wired to 1225, PORT_N to 1223, and PORT_S to 1224.
+V4NET is hardwired to 224 and V6NET to ff00. These networks are used for DNS
+testing purposes, and for testing Exim with -bh. The only requirement is that
+they are networks that can never be used for an IP address of a real host. I've
+chosen two multicast networks for the moment.
+
+If the host has no IPv6 address, "<no IPv6 address found>" is substituted but
+that does not matter because no IPv6 tests will be run. A similar substitution
+is made if there is no IPv4 address, and again, tests that actually require a
+running IPv4 interface should be skipped.
+
+If the host has more than one IPv4 or IPv6 address, the first one that
+"ifconfig" lists is used. If the only available address is 127.0.0.1 (or ::1
+for IPv6) it is used, but another value is prefered if available.
+
+In situations where a specific test is not being run (for example, when setting
+up dynamic data files), TESTNUM is replaced by an empty string, but should not
+in fact occur in such files.
+
+
+HOW THE TESTS WORK
+------------------
+
+Each numbered script runs Exim (sometimes several times) with its own Exim
+configuration file. The configurations are stored in the "confs" directory,
+and before running each test, a copy of the appropriate configuration, with the
+standard substitutions, is made in the file test-config. The -C command line
+option is used to tell Exim to use this configuration.
+
+The -D option is used to pass the path of the Exim binary to the configuration.
+This is not standardly substituted, because there are two possible binaries
+that might be used in the same test (one setuid to root, the other to the exim
+user). Some tests also make use of -D to vary the configuration for different
+calls to the Exim binary.
+
+Normally, of course, Exim gives up root privilege when -C and -D are used by
+unprivileged users. We do not want this to happen when running the tests,
+because we want to be able to test all aspects of Exim, including receiving
+mail from unprivileged users. The way this is handled is as follows:
+
+At the start of the runtest script, the patchexim script is run as root. This
+script makes a copy of the Exim binary that is to be tested, patching it as it
+does so. (This is a binary patch, not a source patch.) The patch causes the
+binary, when run, to "know" that it is running in the test harness. It does not
+give up root privilege when -C and -D are used, and in a few places it takes
+other special actions, such as delaying when starting a subprocess to allow
+debug output from the parent to be written first. If you want to know more,
+grep the Exim source files for "running_in_test_harness".
+
+The patched binary is placed in the directory eximdir/exim and given the normal
+setuid root privilege. This is, of course, a dangerous binary to have lying
+around, especially if there are unprivileged users on the system. To protect
+it, the eximdir directory is created with the current user as owner, exim as
+the group owner, and with access drwx--x---. Thus, only the user who is running
+the tests (who is known to have access to root) and the exim user have access
+to the modified Exim binary. When runtest terminates, the patched binary is
+removed.
+
+Each set of tests proceeds by interpreting its controlling script. The scripts
+are in subdirectories of the "scripts" directory. They are split up according
+to the requirements of the tests they contain, with the 0000-Basic directory
+containing tests that can always be run. Run the "listtests" script to obtain a
+list of tests.
+
+
+TEST OUTPUT
+-----------
+
+Output from script runs is written to the files test-stdout and test-stderr.
+When an Exim server is involved, test-stdout-server and test-stderr-server are
+used for its output. Before being compared with the saved output, the
+non-server and server files are concatenated, so a single saved file contains
+both.
+
+A directory called spool is used for Exim's spool files, and for Exim logs.
+These locations are specified in every test's configuration file.
+
+When messages are delivered to files, the files are put in the test-mail
+directory. Output from comparisons is written to test-cf.
+
+Before comparisons are done, output texts are modified ("munged") to change or
+remove parts that are expected to vary from run to run. The modified files all
+end with the suffix "-munged". Thus, you will see test-stdout-munged,
+test-mainlog-munged, test-mail-munged, and so on. Other files whose names start
+with "test-" are created and used by some of the tests.
+
+At the end of a successful test run, the spool directory and all the files
+whose names begin with "test-" are removed. If the run ends unsuccessfully
+(typically after a "Q" response to a prompt), the spool and test files are left
+in existence so that the problem can be investigated.
+
+
+TEST COMMANDS
+-------------
+
+Each test script consists of a list of commands, each optionally preceded by
+comments (lines starting with #) and (also optionally) a line containing an
+expected return code. Some of the commands are followed by data lines
+terminated by a line of four asterisks.
+
+The first line of each script must be a comment that briefly describes the
+script. For example:
+
+  # -bS Use of HELO/RSET
+
+A line consisting just of digits is interpreted as the expected return code
+for the command that follows. The default expectation when no such line exists
+is a zero return code. For example, here is a complete test script, containing
+just one command:
+
+  # -bS Unexpected EOF in headers
+  1
+  exim -bS -odi
+  mail from:<someone@some.where>
+  rcpt to:<blackhole@HOSTNAME>
+  data
+  from: me
+  ****
+
+The expected return code in this case is 1, and the data lines are passed to
+Exim on its standard input. Both the command line and the data lines have the
+standard substitions applied to them. Thus, HOSTNAME in the example above will
+be replaced by the local host's name. Long commands can be continued over
+several lines by using \ as a continuation character. This does *not* apply to
+data lines.
+
+Here follows a [currently incomplete] list of supported commands. They can be
+divided into two groups:
+
+
+Commands with no input
+----------------------
+
+These commands are not followed by any input data, or by a line of asterisks.
+
+  dbmbuild <file1> <file1>
+
+This command runs the exim_dbmbuild utility to build a DBM file. It is used
+only when DBM support is available in Exim, and typically follows the use of a
+"write" command (see below) that creates the input file.
+
+
+  echo <text>
+
+The text is written to the screen; this is used to output comments from
+scripts.
+
+
+  gnutls
+
+This command is present at the start of all but one of the tests that use
+GnuTLS. It copies a pre-existing parameter file into the spool directory, so
+that Exim does not have to re-create the file each time. The first GnuTLS test
+does not do this, in order to test that Exim can create the file (it takes some
+time).
+
+
+  killdaemon
+
+This command must be given in any script that starts an Exim daemon, normally
+at the end. It searches for the PID file in the spool directory, and sends a
+SIGINT signal to the Exim daemon process whose PID it finds. See below for
+comments about starting Exim daemons.
+
+
+  millisleep <m>
+
+This command causes the script to sleep for m milliseconds. Nothing is output
+to the screen.
+
+
+  need_ipv4
+
+This command must be at the head of a script. If no IPv4 interface has been
+found, the entire script is skipped, and a comment is output.
+
+
+  need_ipv6
+
+This command must be at the head of a script. If no IPv6 interface has been
+found, the entire script is skipped, and a comment is output.
+
+
+  need_move_frozen_messages
+
+This command must be at the head of a script. If the Exim binary does not have
+support for moving frozen messages (which is an optional feature), the entire
+script is skipped, and a comment is output.
+
+
+  no_message_check
+
+If this command is encountered anywhere in the script, messages that are
+delivered when the script runs are not compared with saved versions.
+
+
+  no_msglog_check
+
+If this command is encountered anywhere in the script, message log files that
+are still in existence at the end of the run (for messages that were not
+delivered) are not compared with saved versions.
+
+  no_stderr_check
+
+If this command is encountered anywhere in the script, the stderr output from
+the run is not compared with a saved version.
+
+
+  no_stdout_check
+
+If this command is encountered anywhere in the script, the stdout output from
+the run is not compared with a saved version.
+
+
+  rmfiltertest
+
+This command indicates that the script is for a certain type of filter test, in
+which there are a lot of repetitive stdout lines that get in the way, because
+filter tests output data about the sender and recipient. Such lines are removed
+from the stdout output before comparing, for ease of human perusal.
+
+
+  sleep <n>
+
+This command causes the script to sleep for n seconds. If n is greater than
+one, "sleep <n>" is output to the screen, followed by a dot for every second
+that passes.
+
+
+  sortlog
+
+This command causes special sorting to occur on the mainlog file before
+comparison. Every sequence of contiguous delivery lines (lines containing the
+=> -> or *> flags) is sorted. This is necessary in some tests that use parallel
+deliveries because on different systems the processes may terminate in a
+different order.
+
+
+A number of standard file management commands are recognized. These are chmod,
+chown, ln, ls, du, mkdir, mkfifo, and touch. Some are run as root using "sudo".
+
+
+Commands with input
+-------------------
+
+The remaining commands are followed by data lines for their standard input,
+terminated by four asterisks. Even if no data is required for the particular
+usage, the asterisks must be given.
+
+
+  catwrite <file name> [nxm[=start-of-line-text]]*
+
+This command operates like the "write" command, which is described below,
+except that the out it generates is copied to the end of the test-stdout file
+as well as to the named file.
+
+
+
+  client [<options>] <ip address> <port> [<outgoing interface>]
+
+This command runs the auxiliary "client" program that simulates an SMTP client.
+It is controlled by a script read from its standard input, details of which are
+given below. The only option is -t, which must be followed by a number, to
+specify the command timeout in seconds. The program connects to the given IP
+address and port, using the specified interface, if one is given.
+
+
+  client-ssl [<options>] <ip address> <port> [<outgoing interface>] \
+             [<cert file>] [<key file>]
+
+When OpenSSL is available on the host, an alternative version of the client
+program is compiled, one that supports TLS using OpenSSL. The additional
+arguments specify a certificate and key file when required. There is one
+additional option, -tls-on-connect, that causes the client to initiate TLS
+negotiation immediately on connection.
+
+
+  client-gnutls [<options>] <ip address> <port> [<outgoing interface>] \
+                [<cert file>] [<key file>]
+
+When GnuTLS is available on the host, an alternative version of the client
+program is compiled, one that supports TLS using GnuTLS. The additional
+arguments specify a certificate and key file when required. There is one
+additional option, -tls-on-connect, that causes the client to initiate TLS
+negotiation immediately on connection.
+
+
+  exim [<options>] [<arguments>]
+
+This command runs the testing version of Exim. Any occurrence of "$msg1" in the
+command line is replaced by the ID of the first (oldest) message in Exim's
+(testing) spool. "$msg2" refers to the second, and so on. The name "exim" can
+be preceded by an environment setting as in this example:
+
+  LDAPTLS_REQCERT=never exim -be
+
+It can also be preceded by a number; this specifies a number of seconds to wait
+before closing the stdout pipe to Exim, and is used for some timeout tests. For
+example:
+
+  3 exim -bs
+
+Finally, "exim" can be preceded by "sudo", to run Exim as root. If more than
+one of these prefixes is present, they must be in the above order.
+
+
+  exim_exim [<options>] [<arguments>]
+
+This runs an alternative version of Exim that is setuid to exim rather than to
+root.
+
+
+  server [<options>] <port or socket> [<connection count>]
+
+This command runs the auxiliary "server" program that simulates an SMTP (or
+other) server. It is controlled by a script that is read from its standard
+input, details of which are given below. A number of options are implemented:
+
+  -d       causes the server to output debugging information
+
+  -t       sets a timeout in seconds (default 5) for when the server is
+           awaiting an incoming connection
+
+  -noipv4  causes the server not to set up an IPv4 socket
+
+  -noipv6  causes the server not to set up an IPv6 socket
+
+By default, in an IPv6 environment, both kinds of socket are set up. However,
+the test script knows which interfaces actually exist on the host, and it adds
+-noipv4 or -noipv6 to the server command as required. An error occurs if both
+these options are given.
+
+The only required argument is either a port number or the path name of a Unix
+domain socket. The port is normally PORT_S, which is changed to an actual
+number by the standard substitutions. The optional final argument specifies the
+number of different connections to expect (default 1). These must happen
+serially (one at a time). There is no support for multiple simultaneous
+connections. Here are some example commands:
+
+  server PORT_S
+  server -t 10 PORT_S 3
+  server /tmp/somesocket
+
+The following lines, up to a line of four asterisks, are the server's
+controlling standard input (described below). These lines are read and
+remembered; during the following commands, until an "exim" command is reached,
+the server is run in parallel.
+
+
+  write <file name> [nxm[=start-of-line-text]]*
+
+The "write" command is a way of creating files of specific sizes for buffering
+tests, or containing specific data lines. Being able to do this from within the
+script saves holding lots of little test files. The optional argument specifies
+n lines of length m. The lines consist of the letter "a". If start of line text
+is supplied, it replaces "a"s at the start of each line. Underscores in the
+start of line text are turned into spaces. The optional argument may be
+repeated. The data lines that follow a "write" command are split into two by a
+line of four plus signs. Any above the split are written before the
+fixed-length lines, and any below the split are written after. For example:
+
+  write test-data 3x30=AB_ 1x50
+  Pre-data
+  lines
+  ++++
+  Post-data
+  lines
+  ****
+
+This command generates a file containing:
+
+  Pre-data
+  lines
+  AB aaaaaaaaaaaaaaaaaaaaaaaaaaa
+  AB aaaaaaaaaaaaaaaaaaaaaaaaaaa
+  AB aaaaaaaaaaaaaaaaaaaaaaaaaaa
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  Post-data
+  lines
+
+If there are no fixed-length line specifiers, there is no need to split the
+data, and a line of plusses is not needed.
+
+
+  [sudo] perl
+
+This command runs Perl, with the data as its standard input, to allow arbitrary
+one-off things to be done.
+
+
+CLIENT SCRIPTS
+--------------
+
+Lines in client scripts are of two kinds:
+
+(1) If a line begins with three question marks and a space, the rest of the
+    line defines the start of expected output from the server. If what is
+    received does not match, the client bombs out with an error message.
+
+(2) If a line starts with three plus signs followed by a space, the rest of the
+    line specifies a number of seconds to sleep for before proceeding.
+
+(3) Otherwise, the line is an input line line that is sent to the server. Any
+    occurrences of \r and \n in the line are turned into carriage return and
+    linefeed, respectively. This is used for testing PIPELINING.
+
+Here is a simple example:
+
+  client 127.0.0.1 PORT_D
+  ??? 250
+  EHLO xxx
+  ??? 250-
+  ??? 250
+  AUTH PLAIN AbdXi0AdnD2CVy
+  ??? 535
+  quit
+  ??? 221
+  ****
+
+In the case of client-gnutls and client-ssl, if a command is "starttls", this
+is remembered, and after a subsequent OK response, an attempt to move into TLS
+mode occurs. If a command is "starttls_wait", the client sends "starttls" but
+does not start up TLS; this is for testing timeouts. If a command is "stoptls",
+an existing TLS connection is shut down, but nothing is sent.
+
+
+SERVER SCRIPTS
+--------------
+
+The server program sleeps till a connection occurs or its timeout is reached,
+in which case it bombs out. The next set of command lines are interpreted. They
+are of the following kinds:
+
+(1) A line that starts with '>' or with a digit is an output line that is sent
+    to the client. In the case of '>':
+
+    (a) If the line starts with ">>", no terminating CRLF is sent.
+    (b) If the line starts with ">CR>", just CR is sent at the end.
+    (c) If the line starts with ">LF>", just LF is sent at the end.
+    (d) If the line starts with ">*eof", nothing is sent and the connection
+          is closed.
+
+    The data that is sent starts after the initial '>' sequence.
+
+(2) A line that starts with "*sleep" specifies a number of seconds to wait
+    before proceeding.
+
+(3) A line containing "*eof" specifies that the client is expected to close
+    the connection at this point.
+
+(4) A line containing just '.' specifies that the client is expected to send
+    many lines, terminated by one that contains just a dot.
+
+(5) Otherwise, the line defines the start of an input line that the client
+    is expected to send. To allow for lines that start with digits, the line
+    may start with '<', which is not taken as part of the input data. If the
+    input does not match, the server bombs out with an error message.
+
+Here is a simple server example:
+
+  server PORT_S
+  220 Greetings
+  EHLO
+  250 Hello there
+  MAIL FROM
+  250 OK
+  RCPT TO
+  250 OK
+  DATA
+  354 Send it!
+  .
+  250 OK
+  QUIT
+  225 OK
+  ****
+
+After a "server" command in a test script, the server runs in parallel until an
+"exim" command is reached. The "exim" command attempts to deliver one or more
+messages to port PORT_S on the local host. When it has finished, the test
+script waits for the "server" process to finish.
+
+
+AUXILIARY DATA FILES
+--------------------
+
+Many of the tests make use of auxiliary data files. There are two types; those
+whose content is fixed, and those whose content needs to be varied according to
+the current environment. The former are kept in the directory aux-fixed. The
+latter are distributed in the directory aux-var-src, and copied with the
+standard substitutions into the directory aux-var at the start of each test
+run.
+
+Most of the auxiliary files have names that start with a test number,
+indicating that they are specific to that one test. A few fixed files (for
+example, some TLS certificates) are used by more than one test, and so their
+names are not of this form.
+
+There are also some auxilary DNS zone files, which are described in the next
+section.
+
+
+DNS LOOKUPS AND GETHOSTBYNAME
+-----------------------------
+
+The original test suite required special testing zones to be loaded into a
+local nameserver. This is no longer a requirement for the new suite. Instead, a
+program called fakens is used to simulate a nameserver. When Exim is running in
+the test harness, instead of calling res_search() - the normal call to the DNS
+resolver - it calls a testing function. This handles a few special names itself
+(for compatibility with the old test suite), but otherwise passes the query to
+the fakens program.
+
+The fakens program consults "zone files" in the directory called dnszones, and
+returns data in the standard resource record format for Exim to process as if
+it came from the DNS. However, if the requested domain is not in any of the
+zones that fakens knows about, it returns a special code that causes Exim to
+pass the query on to res_search(). The zone files are:
+
+  db.test.ex    A zone for the domain test.ex.
+  db.ip4.10     A zone for one special case in 10.250.0.0/16 (see below)
+  db.ip4.V4NET  A zone for the domain V4NET.in-addr.arpa.
+  db.ip4.127    A zone for the domain 127.in-addr.arpa.
+  db.ip6.V6NET  A zone for the domain inverted(V6NET).ip6.arpa.
+  db.ip6.0      A zone for the domain 0.ip6.arpa.
+
+V4NET and V6NET are substituted with the current testing networks (see above).
+In the case of V6NET, the network is four hex digits, and it is split and
+inverted appropriately when setting up the zone.
+
+These fake zone files are built dynamically from sources in the dnszones-src
+directory by applying the standard substitutions. The test suite also builds
+dynamic zone files for the name of the current host and its IP address(es). The
+idea is that there should not be any need to rely on an external DNS.
+
+The domain names that are handled directly by Exim, without being passed to
+fakens, are:
+
+  test.again.dns    This always provokes a TRY_AGAIN response, for testing the
+                    handling of temporary DNS error. If the full domain name
+                    starts with digits, a delay of that many seconds occurs.
+
+  test.fail.dns     This always provokes a NO_RECOVERY response, for testing
+                    DNS server failures.
+
+This special handling could now be done in the fakens program, but while the
+old test suite is still being used it has to be done in Exim itself, so for the
+moment it remains there.
+
+The use of gethostbyname() and its IPv6 friends is also subverted when Exim is
+running in the test harness. The test code handles a few special names
+directly; for all the others it uses DNS lookups, which are then handled as
+just described. Thus, the use of /etc/hosts is completely bypassed. The names
+that are specially handled are:
+
+  manyhome.test.ex  This name is used for testing hosts with ridiculously large
+                    numbers of IP addresses; 2048 IP addresses are generated
+                    and returned. Doing it this way saves having to make the
+                    interface to fakens handle more records that can fit in the
+                    data block. The addresses that are generated are in the
+                    10.250.0.0/16 network.
+
+  localhost         Always returns 127.0.0.1 or ::1, for IPv4 and IPv6 lookups,
+                    respectively.
+
+  <an IP address>   If the IP address is of the correct form for the lookup
+                    type (IPv4 or IPv6), it is returned. Otherwise a panic-die
+                    error occurs.
+
+The reverse zone db.ip4.10 is provided just for the manyhome.test.ex case. It
+contains a single wildcard resource record. It also contains the line
+
+  PASS ON NOT FOUND
+
+Whenever fakens finds this line in a zone file, it returns PASS_ON instead of
+HOST_NOT_FOUND. This causes Exim to pass the query to res_search().
+
+****
