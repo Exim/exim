@@ -1,0 +1,12 @@
+; $Cambridge: exim/test/dnszones-src/db.ip6.V6NET,v 1.1 2006/02/06 16:22:56 ph10 Exp $
+
+; This is a testing reverse zone file for use when testing DNS handling in
+; Exim. This is a fake zone of no real use - hence no SOA record. The zone
+; name is determined by the V6NET substitution. This file is passed through
+; the substitution mechanism before being used by the fakens auxiliary program,
+; though in fact there is nothing to substitute.
+
+2.6.0.a.6.8.e.f.f.f.0.2.0.0.a.0.1.0.0.0.2.1.0.0.0.0.0.0 PTR testptr-arpa.ipv6.test.ex.
+d.0.0.0.c.b.a.0.8.0.0.0.7.0.0.0.6.0.0.0.5.0.0.0.4.3.2.1 PTR test3.ipv6.test.ex.
+
+; End

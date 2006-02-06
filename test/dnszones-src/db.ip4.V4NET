@@ -1,0 +1,60 @@
+; $Cambridge: exim/test/dnszones-src/db.ip4.V4NET,v 1.1 2006/02/06 16:22:56 ph10 Exp $
+
+; This is a testing reverse zone file for use when testing DNS handling in
+; Exim. This is a fake zone of no real use - hence no SOA record. The zone name
+; is determined by the V4NET substitution. This file is passed through the
+; substitution mechanism before being used by the fakens auxiliary program.
+
+1.0.0       PTR    ten-1.test.ex.
+2.0.0       PTR    ten-2.test.ex.
+3.0.0       PTR    ten-3-alias.test.ex.
+3.0.0       PTR    ten-3.test.ex.
+4.0.0       PTR    ten-4.test.ex.
+5.0.0       PTR    ten-5-6.test.ex.
+6.0.0       PTR    ten-5-6.test.ex.
+
+; V4NET.0.0.97 is deliberately not reverse registered
+
+98.0.0      PTR    noforward.test.ex.
+99.0.0      PTR    ten-99.TEST.EX.
+
+; V4NET.11.12.13 (black-1) is deliberately not reverse registered
+
+14.12.11    PTR    black-2.test.ex.
+
+10.10.10    PTR    myhost.test.ex.
+
+5.4.12      PTR    other1.test.ex.
+1.3.12      PTR    other2.test.ex.
+2.3.12      PTR    other2.test.ex.
+
+1.0.99      PTR    other99.test.ex.
+
+; The first of these deliberately points back to a different name
+; with a different address - that of the second one.
+
+99.99.99    PTR    badB.test.ex.
+98.99.99    PTR    badB.test.ex.
+
+; This host has multiple names with several components, for
+; testing negative wildcard matching
+
+97.99.99    PTR    x.gov.uk.test.ex.
+97.99.99    PTR    x.co.uk.test.ex.
+
+; This points to a name that will give `try again' when looked
+; up from within the test harness.
+
+96.99.99    PTR    x.test.again.dns.
+
+; This IP number points back to a legitimate host, but also to a name that
+; isn't forward registered
+
+90.99.99    PTR    oneback.test.ex.
+90.99.99    PTR    host1.masq.test.ex.
+
+; This is a duff registration for testing
+
+255.255.255 PTR .
+
+; End

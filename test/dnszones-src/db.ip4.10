@@ -1,0 +1,19 @@
+; $Cambridge: exim/test/dnszones-src/db.ip4.10,v 1.1 2006/02/06 16:22:56 ph10 Exp $
+
+; This is a testing reverse zone file for use when testing DNS handling in
+; Exim. This is a fake zone of no real use - hence no SOA record. The zone name
+; is 10.in-addr.arpa. This file is passed through the substitution mechanism
+; before being used by the fakens auxiliary program, though in fact there is
+; nothing to substitute.
+
+; This zone exists to handle reverse lookups for the host with a huge number of
+; IP addresses that get manufactured by the fake_gethostbyname() function in
+; Exim. They are hard-wired to use the 10.250.0.0/16 network. Apart from that
+; one use, the test suite shouldn't be using that network, so everything else
+; is passed on to res_search(). The next line triggers this action.
+
+PASS ON NOT FOUND
+
+*.250       PTR    manyhome.test.ex.
+
+; End
