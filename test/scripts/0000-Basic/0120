@@ -1,0 +1,8 @@
+# $message_age
+exim -odi postmaster
+****
+exim -odi -qf
+****
+sleep 3
+exim -odi -qf
+****

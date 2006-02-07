@@ -1,0 +1,219 @@
+# mua_wrapper
+need_ipv4
+#
+1
+exim xyz@test.ex
+This should fail hard (nothing listening)
+****
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+354 OK
+.
+250 OK
+****
+exim a@x.y b@x.y
+This should succeed
+****
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+550 NOTOK
+QUIT
+250 OK
+****
+1
+exim a@x.y b@x.y
+This should not succeed (one recipient rejected)
+****
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+550 BAD MAIL
+RCPT TO
+550 NOTOK
+RCPT TO
+550 NOTOK
+QUIT
+250 OK
+****
+1
+exim a@x.y b@x.y
+This should not succeed (mail rejected)
+****
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+450 TEMPORARY MAIL FAIL
+RCPT TO
+450 NOTOK
+RCPT TO
+450 NOTOK
+QUIT
+250 OK
+****
+1
+exim a@x.y b@x.y
+This should not succeed (mail rejected, even though temporary)
+****
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+354 OK
+.
+250 OK
+****
+exim postmaster@x.y b@x.y
+This should succeed (alias to normal address)
+****
+1
+exim file@x.y b@x.y
+This should not succeed (alias to local delivery)
+****
+1
+exim fail@x.y b@x.y
+This should not succeed (alias to fail)
+****
+1
+exim a@x.y defer@x.y
+This should not succeed (alias to defer)
+****
+1
+exim a@x.y otherhost@x.y
+This should not succeed (routed to different hosts)
+****
+1
+exim a@x.y addheader@x.y
+This should not succeed (different headers add)
+****
+# Should fail - daemon not allowed
+1
+exim -bd
+****
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+354 OK
+.
+250 OK
+****
+exim -bs
+ehlo a.b
+mail from:<sen@der>
+rcpt to:<a@x.y>
+rcpt to:<b@x.y>
+data
+This should succeed.
+.
+quit
+****
+1
+exim -bs
+ehlo a.b
+mail from:<sen@der>
+rcpt to:<a@x.y>
+rcpt to:<b@x.y>
+data
+This should fail - nothing listening
+.
+quit
+****
+server PORT_S 2
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+*sleep 2
+>*eof
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+*sleep 2
+****
+1
+exim a@x.y b@x.y
+This should fail because of timeouts
+.
+quit
+****
+1
+exim badport1@z badport2@z
+This should fail because of a bad port definition.
+****
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 SORRY
+QUIT
+221 BYE
+****
+# Test for an empty sender
+1
+exim -f '<>' a@x.y
+This should fail.
+****

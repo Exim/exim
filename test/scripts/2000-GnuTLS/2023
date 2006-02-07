@@ -1,0 +1,7 @@
+# TLS: ACL for STARTTLS
+gnutls
+exim -bs -oMa 10.9.8.10
+ehlo a.b.c
+starttls
+quit
+****

@@ -1,0 +1,35 @@
+# queue run in order - single spool
+exim -odq a@test.ex
+****
+millisleep 500
+exim -odq b@test.ex
+****
+millisleep 500
+exim -odq c@test.ex
+****
+millisleep 500
+exim -odq d@test.ex
+****
+millisleep 500
+exim -odq e@test.ex
+****
+millisleep 500
+exim -odq f@test.ex
+****
+millisleep 500
+exim -odq g@test.ex
+****
+millisleep 500
+exim -odq h@test.ex
+****
+millisleep 500
+exim -odq i@test.ex
+****
+millisleep 500
+exim -odq j@test.ex
+****
+exim -bp
+****
+exim -q
+****
+no_msglog_check

@@ -1,0 +1,22 @@
+# mysql lookups - expects specific data
+exim -d-all+lookup -be
+${lookup mysql {select name from them where id='ph10';}}
+${lookup mysql {select name from them where id='ph10';}}
+${lookup mysql {select name from them where id='xxxx';}}
+${lookup mysql {select name from them where id='nothing';}}
+${lookup mysql {select id,name from them where id='nothing';}}
+${lookup mysql {delete from them where id='nonexist';}}
+${lookup mysql {select * from them where id='quote';}}
+${lookup mysql {select * from them where id='filter';}}
+${lookup mysql {select * from them where id='quote2';}}
+${lookup mysql {select * from them where id='nlonly';}}
+****
+exim -d -bh 10.0.0.0
+mail from:<a@b>
+rcpt to:<c@d>
+quit
+****
+exim -odi -d ph10
+Test message
+.
+****

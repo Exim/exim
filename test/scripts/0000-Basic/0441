@@ -1,0 +1,8 @@
+# Message ids with and without domain literals
+exim -odq userx
+Message-id: <something@[1.2.3.4]>
+****
+exim -odq userx
+Message-Id: <something@some.domain>
+****
+no_msglog_check

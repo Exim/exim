@@ -1,0 +1,25 @@
+# -R and -S
+exim -odq postmaster
+****
+exim -Rpostmaster
+****
+exim -Rf postmaster
+****
+exim -R postmaster
+****
+exim -S postmaster
+****
+exim -S CALLER
+****
+exim -Rr p[aeiou]st
+****
+exim -Sr 'CALLER|^post'
+****
+exim -qqSr 'CALLER'
+****
+exim -qSr '^10'
+****
+exim -R postmaster -S postmaster
+****
+exim -S CALLER -R master
+****

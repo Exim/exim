@@ -1,0 +1,4 @@
+# ignore_target_hosts (byname)
+1
+exim -bt userx@ten-3.test.ex
+****

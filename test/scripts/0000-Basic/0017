@@ -1,0 +1,13 @@
+# ETRN (prohibited host)
+exim -bh 1.1.1.1
+etrn some.random.domain
+quit
+****
+exim -bh 10.9.8.7
+etrn some.domain
+quit
+****
+exim -bh 10.9.8.8
+etrn some.domain
+quit
+****

@@ -1,0 +1,65 @@
+# ident queries
+need_ipv4
+#
+server 1413
+<999 , 25
+>999 , 25 : USERID : UNIX :abcd
+****
+exim -bh 127.0.0.1 -oMa 127.0.0.1.999 -oMi '[127.0.0.1]:25'
+helo a.b.c
+quit
+****
+# No CRLF send with output
+server 1413
+<999 , 25
+>>999 , 25 : USERID : UNIX :abcd
+****
+exim -bh 127.0.0.1 -oMa '[127.0.0.1]:999' -oMi 127.0.0.1.25
+helo a.b.c
+quit
+****
+# Non-printing characters
+server 1413
+<999 , 25
+>999 , 25 : USERID : UNIX :abcd
+****
+exim -bh 127.0.0.1 -oMa 127.0.0.1.999 -oMi 127.0.0.1.25
+helo a.b.c
+quit
+****
+# More than 127 but less than 2K
+server 1413
+<999 , 25
+>999 , 25 : USERID : UNIX :abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++<<<
+****
+exim -bh 127.0.0.1 -oMa 127.0.0.1.999 -oMi 127.0.0.1.25
+helo a.b.c
+quit
+****
+# More than 2K
+server 1413
+<999 , 25
+>999 , 25 : USERID : UNIX :abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++
+****
+exim -bh 127.0.0.1 -oMa 127.0.0.1.999 -oMi 127.0.0.1.25
+helo a.b.c
+quit
+****
+# Different spacing in the returned identity (1)
+server 1413
+<999 , 25
+>999, 25 : USERID : UNIX :abcd
+****
+exim -bh 127.0.0.1 -oMa 127.0.0.1.999 -oMi 127.0.0.1.25
+helo a.b.c
+quit
+****
+# Different spacing in the returned identity (2)
+server 1413
+<999 , 25
+>999,25 : USERID : UNIX :abcd
+****
+exim -bh 127.0.0.1 -oMa 127.0.0.1.999 -oMi 127.0.0.1.25
+helo a.b.c
+quit
+****

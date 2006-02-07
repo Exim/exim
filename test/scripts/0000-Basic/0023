@@ -1,0 +1,333 @@
+# ACL basic tests
+exim -bh 1.2.3.4
+mail from:<x@y>
+rcpt to:<postmaster@test.ex>
+rcpt to:<z@z>
+rcpt to:<x@test.ex>
+rcpt to:<userx@test.ex>
+rcpt to:<r@relay.test.ex>
+rcpt to:<x@deny.test.ex>
+rcpt to:<x@refuse.test.ex>
+rcpt to:<x@nopass>
+rcpt to:<x@wontpass>
+quit
+****
+exim -bh 5.6.7.8
+mail from:<x@y>
+rcpt to:<x@y>
+rcpt to:<x@test.ex>
+rcpt to:<userx@test.ex>
+rcpt to:<spqr@test.ex>
+quit
+****
+exim -bh 9.9.9.9
+mail from:<x@y>
+rcpt to:<x@y>
+rcpt to:<a@b>
+quit
+****
+exim -bh 9.9.9.8
+mail from:<x@y>
+rcpt to:<x@y>
+rcpt to:<a@b>
+quit
+****
+exim -bh 9.9.9.255
+mail from:<x@y>
+rcpt to:<x@y>
+rcpt to:<a@b>
+quit
+****
+exim -bh 5.6.8.1
+mail from:<x@y>
+rcpt to:<x@y>
+rcpt to:<y@x>
+rset
+mail from:<user1@domain1>
+rcpt to:<x@y>
+rset
+mail from:<user2@domain1>
+rcpt to:<x@y>
+rset
+mail from:<user1@domain2>
+rcpt to:<x@y>
+rset
+mail from:<ok@ok.ok>
+rcpt to:<x@y>
+rcpt to:<y@x>
+rset
+quit
+****
+exim -bh 5.6.11.1
+mail from:<x@y>
+rcpt to:<x@y>
+rcpt to:<x2@y>
+rcpt to:<y2@y>
+quit
+****
+exim -bh 5.6.12.1
+mail from:<x@y>
+rcpt to:<x@ok>
+rcpt to:<x@y>
+quit
+****
+exim -bh 5.6.12.2
+mail from:<x@y>
+rcpt to:<x@ok>
+rcpt to:<x@y>
+quit
+****
+exim -bh 8.8.8.8
+mail from:<x@y>
+rcpt to:<x@y>
+quit
+****
+exim -bh 5.6.13.1
+mail from:<x@y>
+rcpt to:<x@y>
+rcpt to:<x1@y>
+rcpt to:<x2@y>
+quit
+****
+exim -bh V4NET.11.12.13
+mail from:<x@y>
+rcpt to:<x@y>
+rcpt to:<x1@y>
+quit
+****
+exim -bh V4NET.11.12.12
+mail from:<x@y>
+rcpt to:<x@y>
+rcpt to:<x1@y>
+quit
+****
+exim -bh 20.20.20.20
+mail from:<x@y>
+rcpt to:<x1@y>
+rcpt to:<x2@y>
+quit
+****
+exim -bh 20.20.20.20
+mail from:<userx@y>
+rcpt to:<x1@y>
+rcpt to:<userx@y>
+quit
+****
+exim -bh 21.21.21.21
+mail from:<userx@y>
+rcpt to:<x1@y>
+rcpt to:<userx@y>
+rcpt to:<fail@y>
+rset
+mail from:<x@y>
+rcpt to:<x1@y>
+rcpt to:<x2@y>
+rset
+mail from:<fail@y>
+rcpt to:<x@y>
+quit
+****
+exim -bh 22.22.22.22
+mail from:<userx@y>
+rcpt to:<userx@y>
+rcpt to:<x@y>
+quit
+****
+exim -bh 23.23.23.0
+mail from:<x@y>
+rcpt to:<userx@y>
+rset
+mail from:<userx@y>
+rcpt to:<userx@y>
+quit
+****
+exim -bh 23.23.23.1
+mail from:<x@y>
+rcpt to:<userx@y>
+quit
+****
+exim -bh 24.24.24.24
+mail from:<x@y>
+rcpt to:<userx@y>
+quit
+****
+exim -bh 25.25.25.25
+mail from:<x@y>
+rcpt to:<x@y>
+quit
+****
+exim -bh 26.26.26.26
+mail from:<>
+rcpt to:<x@y>
+rcpt to:<y@y>
+rcpt to:<z@y>
+quit
+****
+exim -bh 27.27.27.27
+mail from:<>
+rcpt to:<x@y>
+quit
+****
+exim -bh 28.28.28.28
+mail from:<>
+rcpt to:<x@y>
+rset
+mail from:<a@okdomain>
+rcpt to:<x@y>
+rset
+mail from:<a@baddomain>
+rcpt to:<x@y>
+quit
+****
+exim -bh V4NET.0.0.3
+mail from:<>
+rcpt to:<x@y>
+quit
+****
+exim -bh V4NET.0.0.97
+mail from:<>
+rcpt to:<x@y>
+quit
+****
+exim -bh 29.29.29.29
+mail from:<a@localhost>
+rcpt to:<x@y>
+rset
+mail from:<a@elsewhere>
+rcpt to:<x@y>
+quit
+****
+exim -bh 30.30.30.30
+mail from:<a@ten-1>
+rcpt to:<x@y>
+rset
+mail from:<a@ten-2>
+rcpt to:<x@y>
+rset
+mail from:<a@13.12.11.V4NET.rbl>
+rcpt to:<x@y>
+quit
+****
+exim -bh 31.31.31.31
+mail from:<x@y>
+rcpt to:<x@y>
+quit
+****
+exim -odi -bs -oMa 32.32.32.32
+mail from:<userx@test.ex>
+rcpt to:<userx-vs@test.ex>
+data
+Test with verify sender.
+.
+quit
+****
+exim -odi -bs -oMa 32.32.32.32
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+data
+Test without verify sender.
+.
+quit
+****
+exim -bh 33.33.33.33
+mail from:<x@y>
+rcpt to:<x1@y>
+rcpt to:<x2@y>
+quit
+****
+# The 1 causes a 1-second delay in the test.again.dns lookup
+exim -bh 44.44.44.1
+mail from:<x@y>
+rcpt to:<x@y>
+quit
+****
+exim -odi -bs -oMa 55.55.55.55
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+data
+ACL header adding test.
+.
+quit
+****
+exim -odi -bs -oMa 56.56.56.56
+mail from:<userx@test.ex>
+rcpt to:<cond-yes@test.ex>
+data
+.
+mail from:<userx@test.ex>
+rcpt to:<cond-1@test.ex>
+data
+.
+mail from:<userx@test.ex>
+rcpt to:<cond-10@test.ex>
+data
+.
+mail from:<userx@test.ex>
+rcpt to:<cond-true@test.ex>
+data
+.
+mail from:<userx@test.ex>
+rcpt to:<cond-rhubarb@test.ex>
+data
+.
+mail from:<userx@test.ex>
+rcpt to:<cond-@test.ex>
+data
+.
+mail from:<userx@test.ex>
+rcpt to:<cond-no@test.ex>
+data
+.
+mail from:<userx@test.ex>
+rcpt to:<cond-0@test.ex>
+data
+.
+mail from:<userx@test.ex>
+rcpt to:<cond-00@test.ex>
+data
+.
+mail from:<userx@test.ex>
+rcpt to:<cond-false@test.ex>
+data
+.
+quit
+****
+exim -odi -bs -oMa 56.56.57.57
+mail from:<userx@test.ex>
+rcpt to:<cond-yes@test.ex>
+data
+.
+mail from:<userx@test.ex>
+rcpt to:<cond-rhubarb@test.ex>
+quit
+****
+exim -DLOG_SELECTOR=log_selector=-acl_warn_skipped -odi -bs -oMa 56.56.56.56
+mail from:<userx@test.ex>
+rcpt to:<cond-rhubarb@test.ex>
+data
+.
+quit
+****
+exim -odi -bs -oMa 56.56.58.58
+mail from:<rcpttest@test.ex>
+rcpt to:<ok1@test.ex>
+rcpt to:<bad1@test.ex>
+rcpt to:<ok2@test.ex>
+rcpt to:<ok3@test.ex>
+rcpt to:<bad2@test.ex>
+rcpt to:<bad3@test.ex>
+data
+.
+quit
+****
+exim -odi -bs -oMa 56.56.59.59
+mail from:<rcpttest@test.ex>
+rcpt to:<fail@test.ex>
+quit
+****
+exim -odi -bs -oMa V4NET.11.12.13
+mail from:<x@y>
+rcpt to:<x@y>
+rcpt to:<x1@y>
+quit
+****

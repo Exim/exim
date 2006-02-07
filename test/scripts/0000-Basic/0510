@@ -1,0 +1,8 @@
+# -bf and -bF combined
+exim -bf DIR/aux-fixed/TESTNUM.ufilter -bF \
+         DIR/aux-fixed/TESTNUM.sfilter -f sen@d.e.r
+From: a.user@a.domain
+Subject: test 1
+
+Body content.
+****

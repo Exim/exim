@@ -1,0 +1,31 @@
+# SRV lookups
+need_ipv4
+#
+2
+exim -bt x@nosrv.test.ex x@srv01.test.ex x@mx246.test.ex x@srv02.test.ex x@nosmtp.test.ex x@srv03.test.ex
+****
+exim -DSRV=smtp2 -bt x@srv03.test.ex
+****
+exim -odi -N x@srv01.test.ex
+****
+exim -odi -DSRV=smtp2 -N x@srv03.test.ex
+****
+# Actually send a message to a port specified in the SRV record.
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+354 OK
+.
+250 OK
+QUIT
+250 OK
+****
+exim -v -odi x@srv27.test.ex
+****

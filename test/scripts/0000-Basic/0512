@@ -1,0 +1,15 @@
+# hosts_max_try_hardlimit
+need_ipv4
+#
+exim -odi userx
+****
+sleep 2
+exim -d-all+transport -qf
+****
+sudo rm spool/db/retry
+exim -odi userx
+****
+sleep 2
+exim -d-all+transport -qf -DHARDLIMIT=hosts_max_try_hardlimit=2
+****
+no_msglog_check

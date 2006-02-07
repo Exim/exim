@@ -1,0 +1,8 @@
+# LMTP and transport filter and shadow transport
+exim -odi userx jack jill
+mailbox: copied
+This is a test message.
+****
+exim -odi userx jack jill
+This is another test message.
+****

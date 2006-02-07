@@ -1,0 +1,6 @@
+# verify callout with no transport
+exim -bhc V4NET.0.0.1
+Mail from: x@ten-1.test.ex
+rcpt to: x@y
+quit
+****

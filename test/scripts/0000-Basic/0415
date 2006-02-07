@@ -1,0 +1,37 @@
+# overflow in integer options
+1
+exim -DARG1=4000000M -bP check_spool_space
+****
+1
+exim -DARG1=40MK -bP check_spool_space
+****
+1
+exim -DARG2=4000000000.123 -bP queue_only_load
+****
+1
+exim -DARG2=4000000.123 -bP queue_only_load
+****
+exim -bP finduser_retries
+****
+1
+exim -DVALUE=999999999999999999 -bP finduser_retries 
+****
+exim -DVALUE=999999999 -bP finduser_retries 
+****
+1
+exim -DVALUE=999999999K -bP finduser_retries 
+****
+exim -DVALUE=999999K -bP finduser_retries 
+****
+1
+exim -DVALUE=999999M -bP finduser_retries 
+****
+1
+exim -DVALUE=99Q -bP finduser_retries 
+****
+1
+exim -DVALUE=Q -bP finduser_retries 
+****
+1
+exim -DVALUE="99 extra" -bP finduser_retries 
+****

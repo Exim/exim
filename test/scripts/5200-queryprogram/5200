@@ -1,0 +1,4 @@
+# top-level freezing mechanisms
+exim -odi userx@test.ex
+Text.
+****

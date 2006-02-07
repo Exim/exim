@@ -1,0 +1,4 @@
+# Bounce message for MX->localhost
+exim -odi userx@mxt1.test.ex
+This is a test message.
+****

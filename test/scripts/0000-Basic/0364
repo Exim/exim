@@ -1,0 +1,6 @@
+# widening by steam
+need_ipv4
+#
+2
+exim -d-all+route -bt kilos@thishost solik@otherhost xxx@ten-1 xxx@testsub
+****

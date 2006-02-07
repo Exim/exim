@@ -1,0 +1,15 @@
+# lookup caching all
+exim -d -be
+${lookup{list}lsearch{DIR/aux-fixed/TESTNUM.aliases}{$value}{NOT FOUND}}
+${lookup{list}lsearch{DIR/aux-fixed/TESTNUM.aliases}{$value}{NOT FOUND}}
+${lookup{root}lsearch{DIR/aux-fixed/TESTNUM.aliases}{$value}{NOT FOUND}}
+${lookup{root}lsearch{DIR/aux-fixed/TESTNUM.aliases}{$value}{NOT FOUND}}
+${lookup{list}lsearch{DIR/aux-fixed/TESTNUM.aliases}{$value}{NOT FOUND}}
+
+${lookup{list}lsearch{DIR/aux-fixed/TESTNUM.aliases2}{$value}{NOT FOUND}}
+${lookup{root}lsearch{DIR/aux-fixed/TESTNUM.aliases2}{$value}{NOT FOUND}}
+${lookup{list}lsearch{DIR/aux-fixed/TESTNUM.aliases2}{$value}{NOT FOUND}}
+
+${lookup{list}lsearch{DIR/aux-fixed/TESTNUM.aliases}{$value}{NOT FOUND}}
+${lookup{root}lsearch{DIR/aux-fixed/TESTNUM.aliases}{$value}{NOT FOUND}}
+****

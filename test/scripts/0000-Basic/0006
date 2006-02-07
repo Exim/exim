@@ -1,0 +1,28 @@
+# -bS to several local deliveries
+exim -bS -odi
+mail from:someone@some.where
+rcpt to:blackhole@HOSTNAME
+data
+from: me
+To: blackhole
+
+This is some text
+.
+mail from:CALLER@HOSTNAME
+rcpt to:devnull@HOSTNAME
+data
+from: me
+to: devnull
+
+More text
+.
+MAIL From:<someone@some.where>
+rCpT TO:<CALLER@HOSTNAME>
+rcpt to:blackhole@HOSTNAME
+DATA
+From:<someone@some.where>
+To: Recipients not given:;
+
+Yet more text.
+.
+quit

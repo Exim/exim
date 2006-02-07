@@ -1,0 +1,6 @@
+# :blackhole: with deferred other address
+exim -odi blackhole devnull other
+.
+****
+exim -q
+****

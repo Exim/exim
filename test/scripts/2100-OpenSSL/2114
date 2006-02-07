@@ -1,0 +1,137 @@
+# TLS server: mandatory, optional, and revoked certificates
+exim -DSERVER=server -bd -oX PORT_D
+****
+# No certificate, certificate required
+client-ssl HOSTIPV4 PORT_D
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+****
+# No certificate, certificate optional at TLS time, required by ACL
+client-ssl 127.0.0.1 PORT_D
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+helo rhu.barb
+??? 250
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@test.ex>
+??? 550
+quit
+??? 221
+****
+# Good certificate, certificate required
+client-ssl HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+quit
+??? 221
+****
+# Good certificate, certificate optional at TLS time, checked by ACL
+client-ssl 127.0.0.1 PORT_D aux-fixed/cert2 aux-fixed/cert2
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+quit
+??? 221
+****
+# Bad certificate, certificate required
+client-ssl HOSTIPV4 PORT_D aux-fixed/cert1 aux-fixed/cert1
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+****
+# Bad certificate, certificate optional at TLS time, reject at ACL time
+client-ssl 127.0.0.1 PORT_D aux-fixed/cert1 aux-fixed/cert1
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@test.ex>
+??? 550-
+??? 550
+quit
+??? 221
+****
+killdaemon
+exim -DCRL=DIR/aux-fixed/crl.pem -DSERVER=server -bd -oX PORT_D
+****
+# Good but revoked certificate, certificate required
+client-ssl HOSTIPV4 PORT_D aux-fixed/cert2 aux-fixed/cert2
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+****
+# Revoked certificate, certificate optional at TLS time, reject at ACL time
+client-ssl 127.0.0.1 PORT_D aux-fixed/cert1 aux-fixed/cert1
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@test.ex>
+??? 550-
+??? 550
+quit
+??? 221
+****
+killdaemon

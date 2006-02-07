@@ -1,0 +1,10 @@
+# use of file= in appendfile with filter setting the folder
+exim -odi t1
+****
+# Batched multiple deliveries (it doesn't batch)
+exim -odi t11 t12
+****
+# Error message for failure before full path is set
+exim -odi t2
+****
+no_msglog_check

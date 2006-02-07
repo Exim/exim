@@ -1,0 +1,35 @@
+# exim quota + warn threshold
+exim -odi userx
+This is a test message
+****
+exim -odi userx
+quota: 0
+threshold: 10
+This is a test message
+****
+exim -odi userx
+quota: 10K
+threshold: 900
+A test message
+****
+exim -odi userx
+quota: 2200
+threshold: 90%
+This is a test message
+****
+write test-data 100x60
+++++
+****
+exim -odi userx <test-data
+****
+exim -odi userx <test-data
+****
+millisleep 500
+exim -odi usery
+quota: 100
+threshold: 10
+This is a test message
+****
+exim -odi userz
+threshold: 330
+****

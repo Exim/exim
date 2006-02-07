@@ -1,0 +1,6 @@
+# MX -> one-component name
+need_ipv4
+#
+2
+exim -d -bt x@mxt1c.test.ex
+****

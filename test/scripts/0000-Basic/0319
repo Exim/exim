@@ -1,0 +1,11 @@
+# filter does significant delivery
+exim -odi userx@test.ex
+subject: file
+
+This is the first message.
+****
+exim -odi userx@test.ex
+subject: discard
+
+This is the second message.
+****

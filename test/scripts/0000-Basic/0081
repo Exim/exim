@@ -1,0 +1,11 @@
+# Concatenated headers in expansion
+exim -v -odi userx
+X-one: This is the first text.
+To: userx
+X-one: This is the second text.
+From: userx
+X-one: This is the third text.
+Subject: testing, testing
+X-one: This is the fourth text.
+
+This is the message body.

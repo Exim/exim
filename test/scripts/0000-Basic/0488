@@ -1,0 +1,11 @@
+# Multiple headers in one warn message
+exim -odq -bs
+MAIL FROM:<>
+RCPT TO:<userx@test.ex>
+DATA
+.
+QUIT
+****
+exim -Mvh $msg1
+****
+no_msglog_check

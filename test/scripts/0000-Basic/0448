@@ -1,0 +1,23 @@
+# rewrite to empty sender
+exim -f postmaster@my.domain userx
+****
+exim -bs
+ehlo x.y.z
+mail from:<postmaster@my.domain>
+rcpt to:<userx@test.ex>
+data
+1234
+.
+quit
+****
+# This one provokes a sender verify (the above one doesn't)
+exim -bs
+ehlo x.y.z
+mail from:<postmaster@my.domain>
+rcpt to:<usery@test.ex>
+data
+1234
+.
+quit
+****
+no_msglog_check

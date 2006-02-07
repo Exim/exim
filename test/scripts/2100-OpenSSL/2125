@@ -1,0 +1,10 @@
+# TLS server: tls_require_ciphers
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim userx@test.ex
+Testing
+****
+exim -qf
+****
+killdaemon
+no_msglog_check

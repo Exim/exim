@@ -1,0 +1,21 @@
+# percent hack and rcpt addresses
+need_ipv4
+#
+server PORT_S
+220
+EHLO
+220 OK
+MAIL
+250 OK
+RCPT
+250 OK
+DATA
+334 send more
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi Aa%Bb@Cc
+To: aa%bb@cc
+****

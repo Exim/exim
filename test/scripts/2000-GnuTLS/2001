@@ -1,0 +1,13 @@
+# TLS client: TLS setup fails - don't retry in clear
+gnutls
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim CALLER@test.ex
+Testing
+****
+exim -DOPTION=hosts_require_tls=127.0.0.1 -qf
+****
+exim -DOPTION=tls_tempfail_tryclear=false -qf
+****
+killdaemon
+no_msglog_check

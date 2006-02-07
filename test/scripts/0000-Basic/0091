@@ -1,0 +1,33 @@
+# sender_verify_hosts
+exim -bh V4NET.0.0.1
+mail from:<junk@jink.jonk.test.ex>
+rcpt to:<root@test.ex>
+data
+From: <junk@jink.jonk.test.ex>
+.
+quit
+****
+exim -bh V4NET.0.0.2
+mail from:<junk@jink.jonk.test.ex>
+rcpt to:<root@test.ex>
+data
+.
+quit
+****
+exim -bh V4NET.0.0.2
+mail from:<userx@test.ex>
+rcpt to:<root@test.ex>
+data
+From: <junk@jink.jonk.test.ex>
+.
+quit
+****
+exim -bh V4NET.0.0.2
+mail from:<userx@test.ex>
+rcpt to:<root@test.ex>
+data
+From: <userx@test.ex>
+.
+quit
+****
+no_msglog_check

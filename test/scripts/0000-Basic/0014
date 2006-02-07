@@ -1,0 +1,42 @@
+# Rewriting
+exim -brw userx@myhost.test.ex
+****
+exim -brw abcd@question
+****
+exim -brw pqr@quiggly
+****
+exim -brw nopqr@quince
+****
+exim -odi userx
+From: abcd@question
+To: userx, xpqr@query.query
+****
+exim -odq hhhh@h.h.h.h
+****
+exim -brw root@box1.plc.example
+****
+exim -brw jules@box1.plc.example
+****
+exim -brw jules@box2.plc.example
+****
+exim -brw jules@box3.plc.example
+****
+exim -odi -f jules@box1.plc.example userx
+From: jules@box1.plc.example
+To: userx, jules@box1.plc.example,
+  jules@box2.plc.example,
+  jules@box3.plc.example 
+Reply-to: jules@box3.plc.example   
+****
+exim -odi -bs -oMa 10.0.0.2
+mail from:<jules@box3.plc.example>
+rcpt to:<userx@test.ex>
+quit
+****
+exim -brw abc@X.one.two
+****
+exim -brw '"abc"@X.one.two'
+****
+exim -brw '"abc@xyz"@X.one.two'
+****
+no_msglog_check

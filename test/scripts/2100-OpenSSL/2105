@@ -1,0 +1,27 @@
+# TLS server: accept for relay if encrypted
+exim -DSERVER=server -bd -oX PORT_D
+****
+client-ssl 127.0.0.1 PORT_D
+??? 220
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@remote.test.ex>
+??? 550
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+starttls
+??? 220
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@remote.test.ex>
+??? 250
+quit
+??? 221
+****
+killdaemon
+exim -qf
+****

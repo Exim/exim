@@ -1,0 +1,25 @@
+# ACL for QUIT
+exim -bs
+mail from:<x@y>
+rcpt to:<a@y>
+rcpt to:<b@y>
+data
+.
+mail from:<x@y>
+rcpt to:<c@y>
+rset
+mail from:<x@y>
+rset
+mail from:<x@y>
+rcpt to:<d@y>
+data
+.
+quit
+****
+exim -bs -DLAST='deny message = Your message here'
+quit
+****
+exim -bs -DLAST=''
+mail from:<a@b>
+quit
+****

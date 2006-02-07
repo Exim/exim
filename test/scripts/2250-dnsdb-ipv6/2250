@@ -1,0 +1,6 @@
+# dnsdb ipv6 lookup in string expansions
+
+exim -be
+ptr=V6NET:0:12:1:a00:20ff:fe86:a062 ${lookup dnsdb {ptr=<;V6NET:0:12:1:a00:20ff:fe86:a062}{$value}{fail}}
+ptr=V6NET:0:12:1:a00:20ff:fe86:a062 ${lookup dnsdb {ptr=V6NET:0:12:1:a00:20ff:fe86:a062}{$value}{fail}}
+****

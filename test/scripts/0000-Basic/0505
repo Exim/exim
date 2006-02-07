@@ -1,0 +1,30 @@
+# check illegally placed ACL control modifiers
+exim -DACL=smtp_data -DCONTROL=submission -bs
+mail from:<>
+rcpt to:<userx@x.y>
+data
+Rhubarb
+.
+quit
+****
+exim -DACL=smtp_predata -DCONTROL=submission -bs
+mail from:<>
+rcpt to:<userx@x.y>
+data
+Rhubarb
+.
+quit
+****
+exim -DACL=smtp_helo -DCONTROL=submission -bs
+ehlo xxx
+quit
+****
+exim -DACL=smtp_quit -DCONTROL=freeze -bs
+quit
+****
+1
+exim -DACL=not_smtp -DCONTROL=enforce_sync -oep userx
+****
+exim -DACL=smtp_connect -DCONTROL=queue_only -bs
+****
+no_msglog_check

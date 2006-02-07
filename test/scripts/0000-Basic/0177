@@ -1,0 +1,51 @@
+# Per-user system-ish filter
+need_ipv4
+#
+exim -odi userx
+Subject: fail this
+This is a message to be failed.
+****
+exim -odi userx
+Subject: freeze this (1)
+This is a message to be frozen.
+****
+exim -odi userx
+Subject: reply to this
+This is a message to be replied to.
+****
+exim -bpa
+****
+exim -q
+****
+exim -qff
+****
+exim -odi userx
+Subject: freeze this (2)
+This is a second message to be frozen.
+****
+exim -qqRff userx
+****
+exim -odi userz
+Subject: freeze this (3)
+This is a third message to be frozen.
+****
+exim -bp
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+350 Send message
+.
+250 OK
+QUIT
+250 OK
+****
+exim -qqRff userz
+****

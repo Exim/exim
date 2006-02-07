@@ -1,0 +1,7 @@
+# no_message_logs
+exim -odi userx
+Testing 1
+****
+exim -DMESSAGE_LOGS=no_message_logs -odi userx
+Testing 2
+****

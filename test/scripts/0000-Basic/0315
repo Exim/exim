@@ -1,0 +1,7 @@
+# same_domain_copy_routing
+need_ipv4
+#
+exim -odi -d-all+route -N x@ten-1.test.ex y@ten-1.test.ex
+****
+exim -odi -d-all+route -N x@ten-2.test.ex y@ten-2.test.ex
+****

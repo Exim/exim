@@ -1,0 +1,4 @@
+# prefix/suffix when router skipped
+2
+exim -bt pre-x@test.ex x-post@test.ex pre-z@test.ex
+****

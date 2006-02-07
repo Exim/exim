@@ -1,0 +1,8 @@
+# homonymic batched addresses with defer (stop duplicate delivery)
+exim -odi toplevel
+****
+exim -qf
+****
+exim -qf
+****
+no_msglog_check

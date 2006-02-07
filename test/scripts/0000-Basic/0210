@@ -1,0 +1,22 @@
+# Unprivileged use of -f <>
+need_ipv4
+#
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 OK
+DATA
+345 Send it
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi -f '<>' file@test.ex pipe@test.ex smtp@test.ex
+This is a test message.
+****

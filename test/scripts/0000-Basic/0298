@@ -1,0 +1,5 @@
+# different logging text for system filter fail messages
+exim -odi failure1
+****
+exim -odi failure2
+****

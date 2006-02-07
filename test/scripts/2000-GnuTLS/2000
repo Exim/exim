@@ -1,0 +1,16 @@
+# TLS client: TLS setup fails - retry in clear
+#
+# For this first GnuTLS test, we do not obey "gnutls", so that Exim has to
+# create the GnuTLS paramter data for itself.
+#
+echo ==> Creating GnuTLS parameter data ... may take some time ... 
+echo ==> Moving the mouse about may help ...
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim CALLER@test.ex
+Testing
+****
+exim -qf
+****
+killdaemon
+no_msglog_check

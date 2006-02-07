@@ -1,0 +1,5 @@
+# @mx_any used in match_domains condition
+need_ipv4
+#
+exim -d -bt ph@mxt1.test.ex
+****

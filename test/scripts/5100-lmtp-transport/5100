@@ -1,0 +1,39 @@
+# LMTP over a pipe (using lmtp transport)
+exim -odi userx
+script: 01
+This is a test message.
+****
+exim -odi userx
+script: 02
+This is a test message.
+****
+exim -odi userx
+script: 03
+This is a test message.
+****
+exim -odi userx
+script: 04
+This is a test message.
+****
+exim -odi userx jack jill tom dick harry
+script: 05
+This is a test message.
+****
+dump retry
+exim -odi userx jack jill tom dick harry
+script: 06
+This is a test message.
+****
+exim -odi userx jack jill tom dick harry
+script: 07
+This is a test message.
+****
+exim -odi -DIGNORE_QUOTA=true jack jill
+script: 08
+This is a test message.
+****
+exim -odi -DIGNORE_QUOTA=true jack jill
+script: 09
+This is a test message.
+****
+no_msglog_check

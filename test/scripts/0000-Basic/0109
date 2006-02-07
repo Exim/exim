@@ -1,0 +1,5 @@
+# fallback hosts
+need_ipv4
+#
+exim -odi xx@non-exist.test.ex
+****

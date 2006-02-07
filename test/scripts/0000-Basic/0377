@@ -1,0 +1,10 @@
+# unseen and other redirecting routers that aren't always triggered
+exim -d-all+route -odi aaaa bbbb cccc
+****
+exim -Mvh $msg1
+****
+exim -d-all+route -qf
+****
+exim -d-all+route -qf
+****
+no_msglog_check

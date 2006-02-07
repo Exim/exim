@@ -1,0 +1,8 @@
+# remote delivery config problems
+need_ipv4
+#
+exim -N -odi bad.return bad.return2 no.hosts userx
+****
+exim -qf
+****
+no_msglog_check

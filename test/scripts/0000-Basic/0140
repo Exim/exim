@@ -1,0 +1,7 @@
+# autoreply with non-printing characters
+exim -odi reply1@test.ex
+Subject: first message; non-printer ><
+****
+exim -odi reply2@test.ex
+Subject: first message; non-printer ><
+****

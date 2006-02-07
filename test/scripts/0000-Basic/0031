@@ -1,0 +1,9 @@
+# Hold domains
+exim -odi CALLER@one.test.ex
+This is a test message 1.
+****
+exim -odi CALLER@two.test.ex
+This is a test message 2.
+****
+exim -odi CALLER@myhost.ex
+This is a test message 3.

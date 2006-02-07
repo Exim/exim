@@ -1,0 +1,13 @@
+# pipe, file, and autoreply deliveries from forwardfile
+exim -odi pipe
+Message to pipe.
+****
+exim -odi file
+Message to file.
+****
+exim -odi reply
+Message to reply.
+****
+exim -odi reply
+Message to reply.
+****

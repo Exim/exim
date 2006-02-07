@@ -1,0 +1,3 @@
+# errors_to for local delivery
+exim -odi -d userx@test.ex
+****

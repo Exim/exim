@@ -1,0 +1,13 @@
+# Header concatenation with addresses
+exim -odi userx
+To: userx
+To: usery
+Cc: Him
+Cc: Her
+Subject: one
+Subject: two
+Resent-to: a@b, aa@bb
+Resent-to: c@d
+Reply-to: r@s
+Reply-to: t@u
+****

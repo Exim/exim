@@ -1,0 +1,62 @@
+# verify = header_sender
+exim -bh V4NET.10.10.10
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+data
+From: userx@test.ex
+Reply-to:
+To: userx@test.ex
+Subject: testing
+
+.
+QUIT
+****
+exim -bh V4NET.10.10.10
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+data
+From: <userx@test.ex
+Reply-to:
+Sender: userx@test.ex
+To: userx@test.ex
+Subject: testing
+
+.
+QUIT
+****
+exim -bh V4NET.10.10.10
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+data
+From: badbad@test.ex
+Sender:
+To: userx@test.ex
+Subject: testing
+
+.
+QUIT
+****
+exim -bh V4NET.10.10.10
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+data
+From: badbad@test.ex, userx@test.ex
+Sender:
+To: userx@test.ex
+Subject: testing
+
+.
+QUIT
+****
+exim -bh V4NET.10.10.10
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+data
+From: defer@test.ex
+To: userx@test.ex
+Subject: testing
+
+.
+QUIT
+****
+no_msglog_check

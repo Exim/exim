@@ -1,0 +1,6 @@
+# defer in mx_domains
+need_ipv4
+#
+exim -odi x@mxt7.test.ex x@ten-1.test.ex
+****
+no_msglog_check

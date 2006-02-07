@@ -1,0 +1,20 @@
+# autoreply from filter (including once_repeat)
+exim -odi userx@test.ex
+Subject: first message
+****
+exim -odi userx@test.ex
+Subject: second message
+****
+sleep 5
+exim -odi userx@test.ex
+Subject: third message
+****
+exim -odi userx@test.ex
+Subject: fourth message
+X-nltest: xxxx
+****
+exim -odi userx@test.ex
+Subject: fifth message
+Reply-to: userx,
+  abcd
+****   

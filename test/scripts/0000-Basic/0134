@@ -1,0 +1,33 @@
+# $domain_data and $local_part_data and caseful $local_part handling
+exim -odi unknown@test.ex
+Test message
+.
+****
+exim -odi userx@unknown.test.ex
+Test message
+.
+****
+exim -odi unknown@test.ex userx@test.ex 
+Test message
+.
+****
+exim -odi userx@unknown.domain
+Test message
+.
+****
+exim -odi userx@known.domain
+Test message
+.
+****
+exim -odi UNKNOWN@KNOWN.DOMAIN
+Test to uppercased local part UNKNOWN@KNOWN.DOMAIN
+.
+****
+exim -odi USERX@KNOWN.DOMAIN
+Test to uppercased local part USERX@KNOWN.DOMAIN
+.
+****
+exim -odi PIPE@PIPE.DOMAIN
+Test to uppercased piped address.
+.
+****

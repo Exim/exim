@@ -1,0 +1,6 @@
+# fallback hosts on transport with dnslookup using A record
+need_ipv4
+#
+exim -odi abcd@ten-1.test.ex
+****
+no_msglog_check

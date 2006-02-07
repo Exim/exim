@@ -1,0 +1,13 @@
+# Invalid time in retry rules
+1
+exim -brt a@b
+****
+1
+exim -DRETRY=G,1d,20,1.5 -brt a@b
+****
+1
+exim -DRETRY=F,1,30m -brt a@b
+****
+1
+exim -DRETRY=F,1d,30 -brt a@b
+****

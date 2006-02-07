@@ -1,0 +1,9 @@
+# freeze, move_frozen_messages, split spool
+need_move_frozen_messages
+exim -odi freeze
+****
+exim -odi anything
+****
+# Attempt to remove the subdirectories; this will fail if they still
+# have anything in them, and so provoke an error.
+sudo rmdir spool/input/* spool/msglog/*

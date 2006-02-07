@@ -1,0 +1,3 @@
+# /MX in a list of hosts
+exim -DLIST=mxt8.test.ex/MX -bt x@query.program
+****

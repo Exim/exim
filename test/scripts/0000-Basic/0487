@@ -1,0 +1,12 @@
+# qualification in headers with rewrite in transport
+exim -d -bnq -odi -bs userx
+ehlo x.y
+mail from:<x@y>
+rcpt to:<userx@test.ex>
+data
+From: unqualified
+
+Test message.
+.
+quit
+****

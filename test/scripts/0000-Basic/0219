@@ -1,0 +1,8 @@
+# -be and file permissions
+touch DIR/test-private
+sudo chown EXIMUSER DIR/test-private
+sudo chmod 0600 DIR/test-private
+#
+exim -be
+${lookup{junk}lsearch{DIR/test-private}{$value}fail}
+****

@@ -1,0 +1,7 @@
+# shadow_transport_condition and $local_part
+exim -odi userx
+.
+****
+exim -odi usery
+.
+****

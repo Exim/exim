@@ -1,0 +1,17 @@
+# expandable file/directory transports
+exim -d-all+route -bt /a/b/c
+****
+exim -d-all+route -bt /x/y/z
+****
+exim -bt /a/b/c/
+****
+exim -bt /a/a/b//
+****
+exim -odi -N -f fil@ter /a/b/c
+****
+exim -odi -N -f fil@ter /x/y/z
+****
+exim -odi -N -f fil@ter /a/b/c/
+****
+exim -odi -N -f fil@ter /a/b/c//
+****

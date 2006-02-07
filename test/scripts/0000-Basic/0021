@@ -1,0 +1,50 @@
+# Extra ACLs: not-SMTP/connect/HELO/MAIL
+1
+exim -odi -f userx@test1 userx
+Test message 1.
+.
+****
+exim -odi -f ok@test1 userx
+Test message 2.
+.
+****
+1
+exim -odi -f ok@test2 userx
+Test message 3.
+.
+****
+exim -odi -f ok@test3 userx
+Test message 4.
+.
+****
+1
+exim -odi -f ok@test4 userx
+Test message 5.
+.
+****
+exim -bs -oMa 10.9.8.7
+****
+exim -d-all+acl+lists -bs -oMa 10.9.8.8
+mail from:<bad@test1>
+mail from:<ok@test1>
+rcpt to:<x@y>
+rcpt to:<a@b>
+quit
+****
+exim -bs -oMa 10.9.8.9
+****
+exim -bs
+quit
+****
+exim -bs -oMa 10.9.8.10
+helo x.y.z
+quit
+****
+exim -d-all+acl+lists -odi -bs -oMa 10.9.8.8
+mail from:<ok@test3>
+rcpt to:<x@y>
+data
+Some message
+.
+quit
+****

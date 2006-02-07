@@ -1,0 +1,13 @@
+# caching failed DNS lookups
+1
+exim -d -bt userx@test.again.dns abcd@test.again.dns abcd@ten-1.test.ex usery@test.again.dns userz@test.again.dns xyz@ten-1.test.ex
+****
+1 
+exim -d -bt userx@test.fail.dns abcd@test.fail.dns abcd@ten-1.test.ex usery@test.fail.dns userz@test.fail.dns xyz@ten-1.test.ex
+****
+2 
+exim -d -bt userx@nonexist.test.ex abcd@nonexist.test.ex abcd@ten-1.test.ex usery@nonexist.test.ex userz@nonexist.test.ex xyz@ten-1.test.ex
+****
+1
+exim -d -bt srv@test.again.dns srv@test.fail.dns
+****

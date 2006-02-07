@@ -1,0 +1,18 @@
+# Relay by hostlist lsearch
+exim -bh V4NET.0.0.1
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@anotherhost.example.com>
+data
+.
+quit
+****
+exim -bh V4NET.0.0.2
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@anotherhost.example.com>
+data
+.
+quit
+****
+no_msglog_check

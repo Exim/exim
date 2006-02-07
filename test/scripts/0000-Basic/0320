@@ -1,0 +1,14 @@
+# comments and +caseful in local part lists
+exim -odq -bs
+mail from:<x@y>
+rcpt to:<lp1@z>
+rcpt to:<LP1@z>
+rcpt to:<lp2@z>
+rcpt to:<LP2@z>
+rcpt to:<lp#3@z>
+rcpt to:<lp#4#@z>
+rcpt to:<bad@z>
+rcpt to:<LP10@z>
+rcpt to:<lp10@z>
+quit
+****

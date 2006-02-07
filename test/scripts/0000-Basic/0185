@@ -1,0 +1,27 @@
+# More per-user system-ish filter
+need_ipv4
+#
+exim -odi usery
+Subject: freeze this
+This is a message to be frozen.
+****
+exim -bp
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+350 Send message
+.
+250 OK
+QUIT
+250 OK
+****
+exim -qqRff usery
+****

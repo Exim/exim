@@ -1,0 +1,5 @@
+# $sender_host_name - no auto lookup in query-style lookups
+exim -d -bh 10.0.0.1
+****
+exim -d -bh 10.0.0.2
+****

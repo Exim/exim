@@ -1,0 +1,29 @@
+# senders check while verifying
+need_ipv4
+#
+exim -bh V4NET.0.0.0
+mail from:<ok@sender>
+rcpt to:<oklist@listr.test.ex>
+rset
+mail from:<bad@sender>
+rcpt to:<oklist@listr.test.ex>
+quit
+****
+exim -DSERVER=server -bd -oX PORT_D
+****
+client HOSTIPV4 PORT_D
+??? 220
+mail from:<ok@sender>
+??? 250
+rcpt to:<oklist@listr.test.ex>
+??? 250
+rset
+??? 250
+mail from:<bad@sender>
+??? 250
+rcpt to:<oklist@listr.test.ex>
+??? 250
+quit
+??? 221
+****
+killdaemon

@@ -1,0 +1,11 @@
+# cdb lookup
+exim -be
+${lookup{first}cdb{DIR/aux-fixed/TESTNUM.cdb}}
+${lookup{first}cdb{DIR/aux-fixed/TESTNUM.cdb}{$value}fail}
+${lookup{fail}cdb{DIR/aux-fixed/TESTNUM.cdb}{$value}{failure value}}
+${lookup{fail}cdb{DIR/aux-fixed/TESTNUM.cdb}{$value}fail}
+${lookup{second}cdb{DIR/aux-fixed/TESTNUM.cdb}{$value}fail}
+${extract{A}{${lookup{second}cdb{DIR/aux-fixed/TESTNUM.cdb}{$value}fail}}}
+${extract{B}{${lookup{second}cdb{DIR/aux-fixed/TESTNUM.cdb}{$value}fail}}}
+${extract{C}{${lookup{second}cdb{DIR/aux-fixed/TESTNUM.cdb}{$value}fail}}{$value}fail}
+****

@@ -1,0 +1,13 @@
+# Retry after queue and -Mc
+need_ipv4
+#
+exim -odq x@y
+Testing.
+****
+exim -Mc $msg1
+****
+dump retry
+exim -Mc $msg1
+****
+dump retry
+no_msglog_check

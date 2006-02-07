@@ -1,0 +1,55 @@
+# return_path on appendfile and smtp transports
+need_ipv4
+#
+exim -odi -f abc@x.y.z userx
+Test message
+****
+exim -odi -f xyz@x.y.z userx
+Test message 2
+****
+server PORT_S 3
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Go ahead
+.
+250 OK
+QUIT
+250 OK
+*eof
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Go ahead
+.
+250 OK
+QUIT
+250 OK
+*eof
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+550 Recipient not OK
+QUIT
+250 OK
+****
+exim -odi -f pqr@x.y.z userx phil fail
+Test message 3
+****

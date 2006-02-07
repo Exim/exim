@@ -1,0 +1,6 @@
+# ETRN (non-existent command)
+exim -bs -oMa 127.0.0.1
+etrn #some.random.domain
+quit
+****
+sleep 1

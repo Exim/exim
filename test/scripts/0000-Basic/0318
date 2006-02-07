@@ -1,0 +1,8 @@
+# file name in directory
+exim -odi userx@test.ex
+This is the first message.
+****
+exim -odi userx@test.ex
+This is the second message.
+****
+no_msglog_check

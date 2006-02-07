@@ -1,0 +1,33 @@
+# SIZE and check_spool_space
+exim -odq -bs
+EHLO some.host
+MAIL FROM:<userx@test.ex> SIZE=1000000000
+RSET
+MAIL FROM:<userx@test.ex> SIZE=10
+RSET
+MAIL FROM:<userx@test.ex>
+RSET
+MAIL FROM:<userx@test.ex> SIZE=5000000000
+QUIT
+****
+exim -bh 1.2.3.4
+EHLO some.host
+QuIt
+****
+exim -bh 5.6.7.8
+EHLO some.host
+QuIt
+****
+exim -DCSS= -odq -bs
+EHLO some.host
+MAIL FROM:<userx@test.ex> SIZE=1000000000
+RSET
+MAIL FROM:<userx@test.ex> SIZE=10
+RSET
+MAIL FROM:<userx@test.ex>
+RSET
+MAIL FROM:<userx@test.ex> SIZE=5000000000
+RSET
+MAIL FROM:<userx@test.ex> SIZE=50000000000000000000000
+QUIT
+****

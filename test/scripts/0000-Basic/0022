@@ -1,0 +1,146 @@
+# Extra ACLs: freeze/defer/drop/queue/delay/$host_data
+exim -d -bh V4NET.9.8.7
+mail from:<x@y>
+rcpt to:<warn_empty@test.ex>
+data
+Testing
+.
+quit
+****
+exim -d -bh V4NET.9.8.7
+mail from:<x@y>
+rcpt to:<warn_log@test.ex>
+data
+Testing
+.
+quit
+****
+exim -d -bh V4NET.9.8.7
+mail from:<x@y>
+rcpt to:<warn_user@test.ex>
+data
+Testing
+.
+quit
+****
+exim -bh V4NET.9.8.7
+mail from:<x@y>
+rcpt to:<defer@y>
+rcpt to:<accept@y>
+rcpt to:<drop@y>
+rcpt to:<rhubarb@y>
+quit
+****
+exim -bh V4NET.9.8.7
+mail from:<>
+rcpt to:<defer_senders@y>
+quit
+****
+exim -bh V4NET.9.8.7
+mail from:<x@y>
+rcpt to:<delay_accept@y>
+rcpt to:<delay_warn@y>
+quit
+****
+exim -bh V4NET.9.8.7
+mail from:<x@y>
+rcpt to:<host_check@y>
+rcpt to:<host_check@y>
+rcpt to:<host_check2@y>
+rcpt to:<host_check2@y>
+quit
+****
+exim -bs -N -odi
+mail from:<x@y>
+rcpt to:<accept@y>
+rcpt to:<freeze@y>
+data
+Testing
+.
+mail from:<x@y>
+rcpt to:<accept@y>
+data
+Testing 2
+.
+mail from:<x@y>
+rcpt to:<queue_only@y>
+rcpt to:<accept@y>
+data
+Testing 3
+.
+mail from:<x@y>
+rcpt to:<accept@y>
+data
+Testing 4
+.
+quit
+****
+exim -bh V4NET.9.8.7
+mail from:<x@y>
+rcpt to:<nested_drop@y>
+rcpt to:<rhubarb@y>
+quit
+****
+exim -bh V4NET.9.8.7
+mail from:<x@y>
+rcpt to:<nested_drop_require@y>
+rcpt to:<rhubarb@y>
+quit
+****
+exim -bp
+****
+exim -DSERVER=server -odq -bd -oX PORT_D
+****
+client -t5 127.0.0.1 PORT_D
+??? 220
+mail from:<x@y>
+??? 250
+rcpt to:<accept@y>
+??? 250
+rcpt to:<freeze@y>
+??? 250
+data
+??? 354
+Testing
+.
+??? 250
+mail from:<x@y>
+??? 250
+rcpt to:<accept@y>
+??? 250
+data
+??? 354
+Testing 2
+.
+??? 250
+mail from:<x@y>
+??? 250
+rcpt to:<queue_only@y>
+??? 250
+rcpt to:<accept@y>
+??? 250
+data
+??? 354
+Testing 3
+.
+??? 250
+mail from:<x@y>
+??? 250
+rcpt to:<accept@y>
+??? 250
+data
+??? 354
+Testing 4
+.
+??? 250
+mail from:<x@y>
+??? 250
+rcpt to:<delay_accept@y>
+??? 250
+quit
+??? 221
+****
+killdaemon
+exim -bp
+****
+no_msglog_check

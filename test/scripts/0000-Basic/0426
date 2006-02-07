@@ -1,0 +1,17 @@
+# upper case letters in canonical domain name
+need_ipv4
+#
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 Unknown
+QUIT
+250 OK
+****
+exim -d-all+route+host_lookup -odi x@uppercase.test.ex
+Testing
+****

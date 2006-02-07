@@ -1,0 +1,12 @@
+# Local part selection in routers
+exim -odi xx99@test.ex
+This is a test message 1.
+****
+exim -odi yy99@test.ex
+This is a test message 2.
+****
+exim -odi '!one@test.ex'
+This is a test message 3.
+****
+exim -odi '!two@test.ex'
+This is a test message 4.

@@ -1,0 +1,7 @@
+# -bh and non-canonical IPv6 addresses
+exim -bh 2001:ab8:37f:20::1.999
+****
+exim -DHL=host_lookup=* -bh V6NET:1234:5:6:7:8:abc:0d
+****
+exim -bh V6NET:ffff:836f:0a00:000a:0800:200a:c032
+****

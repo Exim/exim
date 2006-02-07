@@ -1,0 +1,5 @@
+# maildir with maildirsize when no quota set
+exim -d -odi userx@test.ex
+Short message
+****
+no_msglog_check

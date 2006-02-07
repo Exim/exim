@@ -1,0 +1,9 @@
+# hosts_max_try and final cutoff
+need_ipv4
+#
+exim -DHOSTS_MAX_TRY=1 -odi userx@mxt97.test.ex
+****
+sleep 4
+exim -DHOSTS_MAX_TRY=1 -q
+****
+no_msglog_check

@@ -1,0 +1,27 @@
+# expansion tests in filter testing
+exim -bf DIR/aux-var/TESTNUM.f-1
+From: a@b
+To: c@d
+
+This is the body of the message.
+It has more than one line in it.
+This is the final line.
+****
+1
+exim -bf DIR/aux-var/TESTNUM.f-2 </dev/null
+****
+exim -bf DIR/aux-fixed/TESTNUM.f-3
+From: a@b
+Reply-to: x@y
+Repeated: this header is repeated
+          and continued
+Repeated: this header is repeated
+          and continued
+Repeated: this header is repeated
+          and continued
+Empty:
+Repeated-empty:
+Repeated-empty:
+Repeated-empty:
+Subject: this is the subject
+****

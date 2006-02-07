@@ -1,0 +1,81 @@
+# recognizing IPv4 address in HELO/EHLO
+need_ipv4
+#
+# Incoming messages will be queued; deliver by queue run at the end.
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+client HOSTIPV4 PORT_D
+??? 220
+ehlo [HOSTIPV4]
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+data
+??? 354
+To: userx@test.ex
+
+EHLO [HOSTIPV4]
+.
+??? 250
+ehlo [IPV4:HOSTIPV4]
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+data
+??? 354
+To: userx@test.ex
+
+EHLO [IPV4:HOSTIPV4]
+.
+??? 250
+ehlo HOSTIPV4
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+data
+??? 354
+To: userx@test.ex
+
+EHLO HOSTIPV4
+.
+??? 250
+ehlo [V4NET.1.2.3]
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+data
+??? 354
+To: userx@test.ex
+
+EHLO [V4NET.1.2.3]
+.
+??? 250
+quit
+??? 221
+****
+killdaemon
+# Wait for delivery process
+millisleep 500
+exim -q
+****

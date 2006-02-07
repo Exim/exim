@@ -1,0 +1,34 @@
+# DBM files and exim_dbmbuild
+# This tests not only the exim_dbmbuild utility, but also dbm lookups.
+
+write test-dbm-input 1x10000=xxxxxxxx:_ 2x512=_
+++++
+****
+dbmbuild test-dbm-input test-dbm-file
+exim -be
+lsearch: ${lookup{xxxxxxxx}lsearch{DIR/test-dbm-input}}
+dbm:     ${lookup{xxxxxxxx}dbm{DIR/test-dbm-file}}
+****
+write test-dbm-input 1x20000=xxxxxxxx:_ 2x512=_
+++++
+****
+dbmbuild test-dbm-input test-dbm-file
+write test-dbm-input 1x19999=xxxxxxxx:_ 4x19999=_ 1x50=_
+++++
+****
+dbmbuild test-dbm-input test-dbm-file
+write test-dbm-input
+abc:        [abc]
+#ignored
+"abc:"      [abc:]
+"#xyz:":    [#xyz:]
+"a \"b\" c" [a "b" c]
+++++
+****
+dbmbuild test-dbm-input test-dbm-file
+exim -be
+${lookup{abc}dbm{DIR/test-dbm-file}}
+${lookup{abc:}dbm{DIR/test-dbm-file}}
+${lookup{#xyz:}dbm{DIR/test-dbm-file}}
+${lookup{a "b" c}dbm{DIR/test-dbm-file}}
+****

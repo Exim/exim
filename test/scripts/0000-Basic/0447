@@ -1,0 +1,33 @@
+# timeout_connect etc.
+need_ipv4
+#
+exim -brt a.c auth_failed
+****
+exim -brt a.c timeout
+****
+exim -brt a.c timeout_connect
+****
+exim -DINSERT="* timeout_A F,1d,30s" -brt a.c timeout_a
+****
+exim -DINSERT="* timeout_connect_A F,1d,29s" -brt a.c timeout_connect_a
+****
+# Hits the timeout_connect line
+exim -odi userx
+****
+dump retry
+sudo rm spool/db/*
+# Hits the inserted line - any timeout for A
+exim -DINSERT="* timeout_A F,1d,30s" -qf
+****
+dump retry
+sudo rm spool/db/*
+# Hits the inserted line - timeout_connect for A
+exim -DINSERT="* timeout_connect_A F,1d,29s" -qf
+****
+dump retry
+sudo rm spool/db/*
+exim -odi userx@xx.test.again.dns
+****
+dump retry
+sudo rm spool/db/*
+no_msglog_check

@@ -1,0 +1,6 @@
+# named address lists
+exim -d -f CALLER@test.ex -bt CALLER@test.ex
+****
+2
+exim -d -f user1@fun.1 -bt CALLER@test.ex
+****

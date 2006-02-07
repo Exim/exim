@@ -1,0 +1,31 @@
+# Address headers containing spaces only
+exim -odi userx
+From:                      
+To:                         
+
+Testing
+****
+exim -odi userx
+To: abcd
+To:         
+To: xyz
+To: pqr
+
+Testing 2
+****
+exim -odi userx
+To:         
+To: abcd
+To: xyz
+To: pqr
+
+Testing 3
+****
+exim -odi userx
+To: abcd
+To: xyz
+To: pqr
+To:         
+
+Testing 4
+****

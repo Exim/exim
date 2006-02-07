@@ -1,0 +1,12 @@
+# Preservation of ACL variables                             
+exim -v -odi -bs -oMa 1.2.3.4 -oMs host.name
+mail from:<>
+rcpt to:<x@y>
+data
+.
+mail from:<>
+rcpt to:<a@b>
+data
+.
+quit
+****

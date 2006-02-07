@@ -1,0 +1,4 @@
+# expansion of router_home_directory
+exim -odi -d+expand CALLER@test.ex usery@test.ex userz rd+CALLER rd+usery
+****
+no_message_check

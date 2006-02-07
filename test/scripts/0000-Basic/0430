@@ -1,0 +1,30 @@
+# /MX in a list of hosts
+exim -DLIST=ten-1.test.ex:mxt8.test.ex/MX -bt x@manual.route
+****
+exim -DLIST=ten-1.test.ex:mxt8.test.ex/MX:ten-6.test.ex -bt x@manual.route
+****
+exim -DLIST=mxt8.test.ex/MX:ten-6.test.ex -bt x@manual.route
+****
+exim -DLIST=mxt8.test.ex/MX -bt x@random.manual.route
+****
+exim -DLIST=ten-1.test.ex:mxt8.test.ex/MX -bt x@random.manual.route
+****
+exim -DLIST=ten-1.test.ex:mxt8.test.ex/MX:ten-6.test.ex -bt x@random.manual.route y@random.manual.route
+****
+exim -DLIST=mxt8.test.ex/MX:ten-6.test.ex -bt x@random.manual.route
+****
+exim -DLIST=ten-1.test.ex:mxt5.test.ex/MX:ten-6.test.ex -bt x@manual.route
+****
+1
+exim -DLIST=mxt5.test.ex/MX:ten-6.test.ex -bt x@manual.route
+****
+exim -DSELF=send -DLIST=mxt5.test.ex/MX:ten-6.test.ex -bt x@manual.route
+****
+2
+exim -DSELF=pass -DLIST=mxt5.test.ex/MX:ten-6.test.ex -bt x@manual.route
+****
+1
+exim -DLIST=mxt11.test.ex/MX:ten-6.test.ex -bt x@random.manual.route
+****
+exim -DLIST=mxt11a.test.ex/MX:ten-6.test.ex -bt x@random.manual.route
+****

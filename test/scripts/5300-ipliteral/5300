@@ -1,0 +1,23 @@
+# domain literals (IPv4)
+need_ipv4
+#
+exim -bt x@[V4NET.9.8.7] x@[127.0.0.1]
+****
+1
+exim -DALLOW=false -odq -f 'x@[10.9.8.7]' zz
+****
+0
+exim -odq -f 'y@[10.9.8.7]' zz
+****
+0
+exim -bp
+****
+0
+exim -odq -bs
+MAIL FROM:<>
+RCPT TO:<x@[1.2.3.4]>
+RCPT TO:<x@[ipv4:1.2.3.4]>
+quit
+****
+no_msglog_check
+

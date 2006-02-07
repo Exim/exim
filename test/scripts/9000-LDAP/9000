@@ -1,0 +1,175 @@
+# LDAP lookups - expects specific data
+#
+LDAPTLS_REQCERT=never exim -be
+Expect "Hazel"
+\${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{\$value}fail}
+${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+
+DN is: $ldap_dn
+
+Expect "Hazel" (Unix socket interface)
+\${lookup ldap {ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+
+Expect syntax failure
+${lookup ldap {X=y ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+
+Expect "Hazel"
+\${lookup ldap {time=1 ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{\$value}fail}
+${lookup ldap {time=1 ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+
+Expect "manager" followed by "Hazel" 5 times
+\${lookup ldapm {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{\$value}fail}
+${lookup ldapm {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+
+DN is: $ldap_dn
+
+Expect  "manager" followed by "Hazel"
+\${lookup ldapm {Size=2 ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{\$value}fail}
+${lookup ldapm {Size=2 ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+
+Expect "manager" followed by "Hazel" 5 times
+\${lookup ldapm {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{\$value}fail}
+${lookup ldapm {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+
+Expect "manager"
+\${lookup ldap {size=1 ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{\$value}fail}
+${lookup ldap {size=1 ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+
+Expect too many results error
+${lookup ldap {size=0 time=0 ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+
+Expect "manager"
+\${lookup ldap {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{\$value}fail}
+${lookup ldap {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+
+Expect invalid credentials
+\${lookup ldap {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{\$value}fail}
+${lookup ldap {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+
+cn="Philip Hazel" sn=Hazel
+\${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?sn,cn?sub?(cn=Philip%20Hazel)}{\$value}fail}
+${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?sn,cn?sub?(cn=Philip%20Hazel)}{$value}fail}
+
+cn="Philip Hazel" sn=Hazel objectClass=person
+\${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK??sub?(cn=Philip%20Hazel)}{\$value}fail}
+${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK??sub?(cn=Philip%20Hazel)}{$value}fail}
+
+P Hazel, Phil Hazel
+\${lookup ldapm {ldap:///o=University%20of%20Cambridge,c=UK?cn?sub?(cn=Phil%20Hazel)}{\$value}fail}
+${lookup ldapm {ldap:///o=University%20of%20Cambridge,c=UK?cn?sub?(cn=Phil%20Hazel)}{$value}fail}
+
+cn="P Hazel" cn="Phil Hazel" sn=Hazel objectClass=person
+\${lookup ldapm {ldap:///o=University%20of%20Cambridge,c=UK??sub?(cn=Phil%20Hazel)}{\$value}fail}
+${lookup ldapm {ldap:///o=University%20of%20Cambridge,c=UK??sub?(cn=Phil%20Hazel)}{$value}fail}
+
+cn=P Hazel, o=University of Cambridge, c=UK
+\${lookup ldapdn {ldap:///o=University%20of%20Cambridge,c=UK??sub?(cn=manager)}{\$value}fail}
+${lookup ldapdn {ldap:///o=University%20of%20Cambridge,c=UK??sub?(cn=manager)}{$value}fail}
+
+Expect too many results error
+${lookup ldapdn {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+
+Expect "yes"
+\${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+
+Expect "no"
+\${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+
+Expect "no"
+\${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass= ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass= ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+
+Expect "no"
+\${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+
+Expect failure to contact server
+\${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldaps://127.0.0.1:9999/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldaps://127.0.0.1:9999/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+
+Expect "yes"
+\${if ldapauth { size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+${if ldapauth { size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+
+Expect "yes"
+\${if ldapauth { size=1 time=0 user=cn%3dmanager%2co%3DUniversity%20of%20Cambridge%2Cc%3dUK pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+${if ldapauth { size=1 time=0 user=cn%3dmanager%2co%3DUniversity%20of%20Cambridge%2Cc%3dUK pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+
+Expect syntax error
+\${lookup ldap {ldapz:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {ldapz:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+
+Expect error for missing user
+\${if ldapauth {size=1 time=0 pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+${if ldapauth {size=1 time=0 pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+
+Expect error for missing password
+\${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+
+Expect "no" because of empty password
+\${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass="" ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass="" ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+
+Expect "FAILED" because no such object
+\${lookup ldap {ldap:///o=JUNK}{$value}{FAILED}}
+${lookup ldap {ldap:///o=JUNK}{$value}{FAILED}}
+
+Expect "P*Hazel (starry)"
+\${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?cn?sub?(cn=P%5C2AHazel*)}{\$value}fail}
+${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?cn?sub?(cn=P%5C2AHazel*)}{$value}fail}
+
+DN is: $ldap_dn
+
+Expect "P\,Hazel"
+\${lookup ldap {ldap:///cn=P%5C%2CHazel,o=University%20of%20Cambridge,c=UK?cn?sub?(cn=*)}{\$value}fail}
+${lookup ldap {ldap:///cn=P%5C%2CHazel,o=University%20of%20Cambridge,c=UK?cn?sub?(cn=*)}{$value}fail}
+****
+exim -d -be
+Expect syntax error
+\${if ldapauth { soze=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+${if ldapauth { soze=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+****
+exim -d -be
+Expect syntax error
+\${if ldapauth { size=1 time=0 user"cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+${if ldapauth { size=1 time=0 user"cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+****
+LDAPTLS_REQCERT=never exim -d-all+lookup -be
+Expect 5 x "Hazel"
+${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {ldap://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {ldaps://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+
+Expect 2 x "Hazel" (using ldaps)
+\${lookup ldap {user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {user="cn=manager,o=University of Cambridge,c=UK" pass="secret" ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+****
+exim -DLDAPSERVERS=ldap_default_servers=127.0.0.1 -d-all+lookup -be
+Expect 2 x "Hazel"
+${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+****
+LDAPTLS_REQCERT=never exim -DLDAPSERVERS=ldap_default_servers=/tmp/ldap.sock -d-all+lookup -be
+Expect 3 x "Hazel"
+${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {dereference=always ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+
+Expect errors
+\${lookup ldap {ldapi://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {ldapi://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+
+\${lookup ldap {user="cn=manager,o=University of Cambridge,c=UK" pass="se\"cret" ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+${lookup ldap {user="cn=manager,o=University of Cambridge,c=UK" pass=${quote:se"cret} ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+****
+exim -be
+Expect ldap_search to fail
+${lookup ldap {ldap:///o=top?mailRoutingAddress,mailHost,objectClass?sub?(&(mailLocalAddress=3-1546081-domain.net?wendling@stderr.efficientimpacte.com)(objectClass=inetLocalMailRecipient))}{$value}fail}
+****

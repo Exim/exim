@@ -1,0 +1,5 @@
+# @mx_xxx with domain widening
+need_ipv4
+#
+exim -d -bt x@ten-1
+****

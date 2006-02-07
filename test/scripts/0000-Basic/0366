@@ -1,0 +1,14 @@
+# hosts_max_try
+need_ipv4
+#
+exim -brt userx@mxt99.text.ex ten-1.test.ex
+****
+exim -odi userx@mxt99.test.ex
+****
+sleep 3
+exim -q
+****
+sleep 1
+exim -q
+****
+no_msglog_check

@@ -1,0 +1,15 @@
+# -Mg -Mf -Mt
+exim -odq someone@somewhere
+Some message or other.
+****
+exim -Mf $msg1
+****
+exim -Mt $msg1
+****
+exim -odi -Mg $msg1
+****
+exim -odq -f '<>' someone@somewhere
+Another message or some.
+****
+exim -odi -Mg $msg1
+****

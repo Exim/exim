@@ -1,0 +1,19 @@
+# Recipient errors and hosts_max_try
+need_ipv4
+#
+exim -odq x@y
+****
+sleep 2
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+451 Temporary error
+QUIT
+250 OK
+****
+exim -odi -d-deliver-transport -M $msg1
+****

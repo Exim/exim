@@ -1,0 +1,12 @@
+# acl variables
+exim -d -bh V4NET.0.0.0
+ehlo something
+mail from:<x@y>
+rcpt to:<x@y>
+data
+.
+vrfy x@y
+mail from:<x@y>
+quit
+****
+no_msglog_check

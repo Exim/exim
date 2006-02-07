@@ -1,0 +1,49 @@
+# ACL "discard" verb
+1
+exim -bs
+helo xxx
+****
+# The -odi's below aren't for real - they are just testing that -odi cannot
+# override queue_only because no_queue_only_override is set.
+1
+exim -odi x@y
+discard: yes
+.
+****
+exim -odi -bs
+mail from:<discard@x.y>
+rcpt to:<a@b>
+rcpt to:<discard@p.q>
+data
+Testing
+.
+mail from:<ok@x.y>
+rcpt to:<a@b>
+rcpt to:<discard@p.q>
+rcpt to:<nested_discard@p.q>
+data
+Testing
+.
+mail from:<ok@x.y>
+rcpt to:<discard@p.q>
+data
+Testing
+.
+mail from:<ok@x.y>
+rcpt to:<a@b>
+data
+discard: yes
+
+Testing
+.
+mail from:<ok@x.y>
+rcpt to:<data_message_discard@b>
+data
+.
+quit
+****
+1
+exim data_message_discard@y
+.
+****
+no_msglog_check

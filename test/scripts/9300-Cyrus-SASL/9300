@@ -1,0 +1,22 @@
+# Cyrus SASL authentication (server only)
+exim -DSERVER=server -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+EHLO xxxx
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+AUTH PLAIN AHBoMTAAc2VjcmV0
+??? 535
+AUTH ANONYMOUS
+??? 334
+ph10
+??? 235
+quit
+??? 221
+****
+killdaemon
+no_msglog_check

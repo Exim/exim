@@ -1,0 +1,95 @@
+# sender_reject (various, including @@)
+exim -bh 1.2.3.4
+mail from:<userx@somehost.example.com>
+rcpt to:<x@test.ex>
+rset
+mail from:<x@b.c>
+rcpt to:<x@test.ex>
+rset
+mail from:<y@b.c>
+rcpt to:<x@test.ex>
+rset
+mail from:<philip@xy.z>
+rcpt to:<x@test.ex>
+rset
+mail from:<quilt@patch.work>
+rcpt to:<x@test.ex>
+rset
+mail from:<philip@a.b.c>
+rcpt to:<x@test.ex>
+rset
+mail from:<xx@abc.def>
+rcpt to:<x@test.ex>
+rset
+mail from:<abc@d.e.f>
+rcpt to:<x@test.ex>
+rset
+mail from:<xyz@d.e.f>
+rcpt to:<x@test.ex>
+rset
+mail from:<yy@abc.def>
+rcpt to:<x@test.ex>
+rset
+mail from:<abc@z.z>
+rcpt to:<x@test.ex>
+rset
+mail from:<cba@z.z>
+rcpt to:<x@test.ex>
+rset
+mail from:<xyz@z.z>
+rcpt to:<x@test.ex>
+rset
+mail from:<12345678@p.q.r>
+rcpt to:<x@test.ex>
+rset
+mail from:<12345678@z.z>
+rcpt to:<x@test.ex>
+rset
+mail from:<1234@p.q.r>
+rcpt to:<x@test.ex>
+rset
+mail from:<1234@m.n.o>
+rcpt to:<userx@test.ex>
+rcpt to:<postmaster@test.ex>
+rcpt to:<postmaster@myhost.ex>
+rset
+mail from:<rr01@a.b.c>
+rcpt to:<userx@test.ex>
+rset
+mail from:<qqq@a.b.c>
+rcpt to:<userx@test.ex>
+rset
+mail from:<qq@a.b.c>
+rcpt to:<userx@test.ex>
+rset
+mail from:<!excl@z.z>
+rcpt to:<userx@test.ex>
+rset
+mail from:<sh#rp@y.p.s>
+rcpt to:<userx@test.ex>
+rset
+mail from:<abc@xx.yy>
+rcpt to:<x@test.ex>
+rset
+mail from:<xyzbc@xx.yy>
+rcpt to:<x@test.ex>
+rset
+mail from:<aabc@xx.yy>
+rcpt to:<x@test.ex>
+rset
+mail from:<x@bb.cc>
+rcpt to:<x@test.ex>
+rset
+mail from:<y@bb.cc>
+rcpt to:<x@test.ex>
+rset
+mail from:<x@bbb.ccc>
+rcpt to:<x@test.ex>
+rset
+mail from:<y@bbb.ccc>
+rcpt to:<x@test.ex>
+rset
+mail from:<z@bbb.ccc>
+rcpt to:<x@test.ex>
+rset
+quit

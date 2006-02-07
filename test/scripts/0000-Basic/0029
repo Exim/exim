@@ -1,0 +1,15 @@
+# ACL with sender=address
+exim -bs
+mail from:<ok@test.ex>
+rcpt to:<a@b1>
+rset
+mail from:<notok@test.ex>
+rcpt to:<a@b2>
+rset
+mail from:<notok@abc.test.ex>
+rcpt to:<a@b3>
+rset
+mail from:<notok@xyz.test.ex>
+rcpt to:<a@b4>
+quit
+****

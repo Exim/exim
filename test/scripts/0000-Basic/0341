@@ -1,0 +1,15 @@
+# batching and errors_to (local and remote delivery)
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim userx@test.ex usery@test.ex
+****
+exim -qf
+****
+exim userx@xxx usery@xxx
+****
+exim -qf
+****
+killdaemon
+no_msglog_check

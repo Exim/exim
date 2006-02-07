@@ -1,0 +1,11 @@
+# smtp translate_ip_address
+exim -d-all+route -bt userx@black-1.test.ex
+****
+exim -d-all+route -bt userx@myhost.test.ex
+****
+exim -d-all+route -bt userx@ten-1.test.ex
+****
+exim -d-all+route -bt userx@other1.test.ex
+****
+1
+exim -d-all+route -bt userx@other99.test.ex

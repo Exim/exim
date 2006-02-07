@@ -1,0 +1,15 @@
+# predata ACL
+exim -odi -bs
+mail from:<x@y>
+rcpt to:<userx@y>
+data
+quit
+****
+exim -odi -bs
+mail from:<postmaster@y>
+rcpt to:<userx@y>
+data
+Subject: testing
+.
+quit
+****

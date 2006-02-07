@@ -1,0 +1,9 @@
+# errors_to and one_time
+exim -odi userx
+****
+exim -bp
+****
+exim -Mvh $msg1
+****
+exim -qf
+****

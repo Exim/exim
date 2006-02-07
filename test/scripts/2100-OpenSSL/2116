@@ -1,0 +1,15 @@
+# TLS client: timeout while setting up TLS
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-STARTTLS
+250 HELP
+STARTTLS
+220 Go ahead
+*sleep 2
+****
+exim -odi userx@domain1
+Test message
+****
+no_msglog_check

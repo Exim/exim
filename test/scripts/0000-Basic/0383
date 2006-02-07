@@ -1,0 +1,11 @@
+# $thisaddress passed to a pipe
+exim -odi alice
+To: alice@test.ex
+****
+exim -odi jabberwocky
+To: jabberwocky@test.ex
+****
+exim -odi redking
+To: redking@test.ex
+****
+no_msglog_check

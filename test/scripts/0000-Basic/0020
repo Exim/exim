@@ -1,0 +1,9 @@
+# -bh and megahomed hosts
+#
+# Note that we use an explicit address in the 10.250.0.0/16 network, because
+# that is what is used by the testing code in Exim when it generates 2048 IP
+# addresses for the absurdly multi-homed host.
+#
+exim -bh 10.250.104.7
+quit
+****

@@ -1,0 +1,4 @@
+# redirect with forced lookup fail and no_more
+2
+exim -bt xxx
+****

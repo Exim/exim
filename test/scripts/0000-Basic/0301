@@ -1,0 +1,54 @@
+# SMTP synchronization checks disabled, with and without PIPELINING
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+ehlo abcd\r\nmail from:<userx@test.ex>
+??? 250-
+??? 250-
+??? 250-
+??? 250
+??? 250
+quit
+??? 221
+****
+client 127.0.0.1 PORT_D
+??? 220
+ehlo abcd
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>\r\ndata
+??? 250
+??? 250
+??? 354
+the message
+.\r\nmail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>\r\ndata\r\nthe message
+??? 250
+??? 250
+??? 250
+??? 354
+.
+??? 250
+quit
+??? 221
+****
+# For this one, the check will be dyamically turned on again
+client 127.0.0.1 PORT_D
+??? 220
+ehlo en.force
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>\r\ndata\r\nthe message
+.
+??? 250
+??? 250
+??? 554
+****
+killdaemon
+no_msglog_check

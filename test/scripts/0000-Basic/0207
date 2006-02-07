@@ -1,0 +1,9 @@
+# timeout_frozen_after without ignore_bounce_errors_after
+sudo exim -odi -f unknown@test.ex nonexist@test.ex freeze@test.ex
+****
+sudo exim -Mf $msg1
+****
+sleep 2
+exim -q
+****
+no_msglog_check

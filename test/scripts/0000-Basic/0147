@@ -1,0 +1,13 @@
+# Continuation lines and long lines and macro (re)definition
+need_ipv4
+#
+exim -bP percent_hack_domains hold_domains queue_domains host_lookup queue_smtp_domains hosts_treat_as_local ignore_fromline_hosts delay_warning_condition
+****
+exim -brw x@junk.junk
+****
+exim -brt x@junk.junk
+****
+exim -bP router R1
+****
+exim -bs
+****

@@ -1,0 +1,6 @@
+# fallback hosts and self=send on manualroute
+need_ipv4
+#
+exim -odi abcd@x.y.z
+****
+no_msglog_check

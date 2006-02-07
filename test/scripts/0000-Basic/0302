@@ -1,0 +1,18 @@
+# -qi (deliver messages not yet tried)
+exim abcd defer
+message 1
+****
+exim -qi
+****
+exim -bp
+****
+exim wxyz
+message 2
+****
+exim -qi
+****
+exim -qif
+****
+exim -qf
+****
+no_msglog_check

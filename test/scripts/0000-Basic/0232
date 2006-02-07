@@ -1,0 +1,3 @@
+# Inline filter text
+exim -bt filter1.test.ex
+****

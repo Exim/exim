@@ -1,0 +1,16 @@
+# redirect router no_rewrite / no transport / :defer: etc
+exim -odi '"xyz@x.y.z"@test.ex'
+Message sent to "xyz@x.y.z"@test.ex.
+****
+exim -odi '"abc@x.y.z"@test.ex'
+Message sent to "abc@x.y.z"@test.ex.
+****
+exim -odi '":blackhole:"@special'
+Message sent to ":blackhole:"@special
+****
+exim -odi '":defer: defer message"@special'
+Message sent to ":defer: defer message"@special
+****
+exim -odi '":fail: fail message"@special'
+Message sent to ":fail: fail message"@special
+****

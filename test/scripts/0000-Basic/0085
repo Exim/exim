@@ -1,0 +1,6 @@
+# domains, local_parts, sender, and require_files expansions
+2
+exim -d -f abc@d.e.f -bv x@y.z x@smart.domain x@test.ex x@myhost.test.ex
+****
+2
+exim -d -bv x@y.z x@smart.domain x@test.ex x@myhost.test.ex

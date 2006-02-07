@@ -1,0 +1,15 @@
+# received_headers_max
+exim -odi userx usery
+Received: from here to eternity
+Received: another time
+
+Test junk data
+.
+****
+exim -odi -f '<>' userx usery
+Received: from here to eternity
+Received: another time
+
+Test junk data
+.
+****

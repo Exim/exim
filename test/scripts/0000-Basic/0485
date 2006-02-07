@@ -1,0 +1,18 @@
+# $host_data in multiple messages in one connection
+exim -odi -bs -oMa 1.2.3.4
+ehlo x.y.z
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+This is a test message.
+.
+mail from:<>
+rset
+mail from:<nonnull@non.null>
+rcpt to:<userx@test.ex>
+data
+This is a test message.
+.
+mail from:<third@non.null>
+quit
+****

@@ -1,0 +1,5 @@
+# removal of duplicate IP addresses
+need_ipv4
+#
+exim -d-all+host_lookup -bt x@mxt9.test.ex x@mxt14.test.ex x@manualroute
+****

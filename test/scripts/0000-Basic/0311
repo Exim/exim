@@ -1,0 +1,16 @@
+# return-path, delivery-date, envelope-to removal
+exim -odq xx
+return-path: x@y
+Delivery-date: Mon, 08 May 2000 11:07:20 +0100
+envelope-to: p@q
+****
+exim -Mvh $msg1
+****
+exim -DDYNAMIC_OPTION=return_path_remove=no -odq xx
+return-path: x@y
+Delivery-date: Mon, 08 May 2000 11:07:20 +0100
+envelope-to: p@q
+****
+exim -Mvh $msg2
+****
+no_msglog_check

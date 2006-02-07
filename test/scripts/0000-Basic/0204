@@ -1,0 +1,9 @@
+# -N
+exim -odi -N userx@test.ex
+Lost
+****
+exim -N -odq userx@test.ex
+Should be lost
+****
+exim -qf
+****

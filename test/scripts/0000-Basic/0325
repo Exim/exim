@@ -1,0 +1,8 @@
+# $domain_data and $local_part_data
+exim -v -bt xxx@a.b.c
+****
+exim -bh V4NET.0.0.0
+mail from:a@b.c
+rcpt to:xxx@a.b.c
+quit
+****

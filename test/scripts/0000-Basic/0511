@@ -1,0 +1,68 @@
+# very long messages from remote deliveries
+need_ipv4
+#
+server PORT_S
+220 Welcome 
+EHLO
+250-Hello there
+250 SIZE
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550 Final line.
+QUIT
+221 BYE
+****
+exim -odi userx ph11 ph12 ph13 ph14 ph15 ph16 ph17 ph18 ph19 ph20 ph21 ph22 ph23 ph24 ph25
+****
+no_msglog_check

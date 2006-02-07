@@ -1,0 +1,16 @@
+# pipe transport
+exim -odi pipe
+Some message text.
+****
+exim -odi prefixed+pipe
+Text
+****
+exim -odi pipe-suffixed
+Text
+****
+exim -odi prefixed+pipe-suffixed
+Text
+****
+exim -DMESSAGE_LOGS=false -odi pipe
+Some message text.
+****

@@ -1,0 +1,15 @@
+# smtp_return_error_details and sender verify defer
+need_ipv4
+#
+exim -bs
+mail from:<x@host.test.again.dns>
+rcpt to:<x@y>
+rcpt to:<a@b>
+quit
+****
+exim -DRETURN_ERROR_DETAILS=true -bs
+mail from:<x@host.test.again.dns>
+rcpt to:<x@y>
+rcpt to:<a@b>
+quit
+****

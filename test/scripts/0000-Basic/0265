@@ -1,0 +1,3 @@
+# error message when filter disabled
+1
+exim -bt userx@x.y

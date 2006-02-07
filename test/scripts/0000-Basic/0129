@@ -1,0 +1,4 @@
+# $domain_data
+2
+exim -v -bv xxx@test.ex xxx@one.test.ex
+****

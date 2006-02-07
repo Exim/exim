@@ -1,0 +1,5 @@
+# one_time in aliasfile
+exim -odi first
+****
+exim -qf
+****

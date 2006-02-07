@@ -1,0 +1,12 @@
+# percent hack
+2
+exim -bt 
+x%y@testhack.test.ex 
+x%y@test.ex 
+x%y%testhack2.test.ex@testhack.test.ex
+X%test.ex@testhack.test.ex
+****
+exim -odi x%testhack.test.ex@testhack2.test.ex x@testhack.test.ex
+****
+exim -odi redirect@test.ex
+****

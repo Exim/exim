@@ -1,0 +1,4 @@
+# never_mail in autoreply transport
+exim -odi xyz@test.ex
+Testing original message
+****

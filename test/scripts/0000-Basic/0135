@@ -1,0 +1,26 @@
+# ultimate address timeout
+need_ipv4
+#
+exim -odq a@unknown.ex b@known.ex c@test.ex d@test.ex
+Test message
+.
+****
+sleep 3
+exim -odi -q
+****
+exim -odi -q
+****
+sleep 4
+exim -odi -q
+****
+# Remove so that next message does not arrive before 
+# the time of first failure.
+sudo rm DIR/spool/db/retry
+exim -odq -f '<>' b@known.ex
+test 2
+.
+****
+sleep 3
+exim -odi -q
+****
+no_message_check

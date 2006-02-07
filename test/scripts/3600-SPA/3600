@@ -1,0 +1,45 @@
+# SPA authentication (server and client)
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -f ok@test.ex x@y
+****
+exim -q
+****
+exim -Mes $msg1 bad@test.ex
+****
+exim -q
+****
+client -t3 127.0.0.1 PORT_D
+??? 220
+EHLO xxxx
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+AUTH NTLM
+??? 334
+teststring
+??? 535
+quit
+??? 221
+****
+client -t3 127.0.0.1 PORT_D
+??? 220
+EHLO xxxx
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+AUTH NTLM
+??? 334
+dGVzdHN0cmluZw==
+??? 334
+teststring
+??? 535
+quit
+??? 221
+****
+killdaemon
+no_msglog_check

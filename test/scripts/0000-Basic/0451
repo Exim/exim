@@ -1,0 +1,11 @@
+# verify sender at DATA time
+exim -odq -bs
+ehlo a.b.c.d
+mail from:<bad@test.ex>
+rcpt to:<good@test.ex>
+data
+This is a message.
+.
+quit
+****
+no_msglog_check

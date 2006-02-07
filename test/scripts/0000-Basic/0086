@@ -1,0 +1,120 @@
+# verify = header_syntax
+exim -bh V4NET.10.10.10
+mail from:<userx@exim.test.ex>
+rcpt to:<userx@test.ex>
+data
+From: userx@exim.test.ex
+To: userx@test.ex
+Cc: <abcd@x.y.z
+Subject: testing
+
+.
+QUIT
+****
+exim -bh V4NET.10.10.10
+mail from:<userx@exim.test.ex>
+rcpt to:<userx@test.ex>
+data
+From: userx@exim.test.ex
+To: userx@test.ex
+Cc: <abcd@x.y.z
+Resent-From: postmaster@x.y.z
+Reply-To: <xyz@a.b.c.d
+Subject: testing
+
+.
+QUIT
+****
+exim -bh V4NET.10.10.10
+mail from:<userx@exim.test.ex>
+rcpt to:<userx@test.ex>
+data
+From: userx@exim.test.ex
+To: userx@test.ex
+Cc: <abcd@x.y.z>
+Resent-From: postmaster@x.y.z
+Resent-To: <xyz@a.b.c.d
+Subject: testing
+
+.
+QUIT
+****
+exim -bh V4NET.10.10.10
+mail from:<userx@exim.test.ex>
+rcpt to:<userx@test.ex>
+data
+From: userx@exim.test.ex
+To: userx@test.ex
+Cc: "abcd@x.y.z (missing quote),
+  longlonglonglonglong@long.long.long.long.long.long.long.long,
+  listlistlistlistlist@list.list.list.list.list.list.list.list,
+  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,
+  addressesaddresses@addresses.addresses.addresses.addresses,   
+  longlonglonglonglong@long.long.long.long.long.long.long.long,
+  listlistlistlistlist@list.list.list.list.list.list.list.list,
+  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,
+  addressesaddresses@addresses.addresses.addresses.addresses,   
+  longlonglonglonglong@long.long.long.long.long.long.long.long,
+  listlistlistlistlist@list.list.list.list.list.list.list.list,
+  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,
+  addressesaddresses@addresses.addresses.addresses.addresses,   
+  longlonglonglonglong@long.long.long.long.long.long.long.long,
+  listlistlistlistlist@list.list.list.list.list.list.list.list,
+  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,
+  addressesaddresses@addresses.addresses.addresses.addresses,   
+  longlonglonglonglong@long.long.long.long.long.long.long.long,
+  listlistlistlistlist@list.list.list.list.list.list.list.list,
+  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,
+  addressesaddresses@addresses.addresses.addresses.addresses,   
+  longlonglonglonglong@long.long.long.long.long.long.long.long,
+  listlistlistlistlist@list.list.list.list.list.list.list.list,
+  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,
+  addressesaddresses@addresses.addresses.addresses.addresses,   
+  longlonglonglonglong@long.long.long.long.long.long.long.long,
+  listlistlistlistlist@list.list.list.list.list.list.list.list,
+  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,
+  addressesaddresses@addresses.addresses.addresses.addresses,   
+  longlonglonglonglong@long.long.long.long.long.long.long.long,
+  listlistlistlistlist@list.list.list.list.list.list.list.list,
+  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,
+  addressesaddresses@addresses.addresses.addresses.addresses,   
+  longlonglonglonglong@long.long.long.long.long.long.long.long,
+  listlistlistlistlist@list.list.list.list.list.list.list.list,
+  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,
+  addressesaddresses@addresses.addresses.addresses.addresses,   
+  longlonglonglonglong@long.long.long.long.long.long.long.long,
+  listlistlistlistlist@list.list.list.list.list.list.list.list,
+  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,
+  addressesaddresses@addresses.addresses.addresses.addresses,   
+  longlonglonglonglong@long.long.long.long.long.long.long.long,
+  listlistlistlistlist@list.list.list.list.list.list.list.list,
+  ofofofofofofofofofof@of.of.of.of.of.of.of.of.of.of.of.of.of,
+  addressesaddresses@addresses.addresses.addresses.addresses
+.
+QUIT
+****
+exim -bh V4NET.10.10.10
+mail from:<userx@exim.test.ex>
+rcpt to:<userx@test.ex>
+data
+From: userx@exim.test.ex
+To: userx@test.ex
+Cc: <abcd>
+Subject: testing
+
+.
+QUIT
+****
+exim -bh V4NET.10.10.9
+mail from:<userx@exim.test.ex>
+rcpt to:<userx@test.ex>
+data
+From: userx@exim.test.ex
+To: userx@test.ex
+Cc: <abcd>
+Subject: testing
+
+.
+QUIT
+****
+no_msglog_check

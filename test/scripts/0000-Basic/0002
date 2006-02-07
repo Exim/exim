@@ -1,0 +1,678 @@
+# Common string expansions
+#
+# This is the main string expansion test that tests those expansions that will
+# be present in the basic Exim binary which we require in order to run these
+# tests at all. Specialized expansion tests also exist for optional features
+# in other test scripts.
+
+exim -be
+
+# These expansions can test variables in the configuration, but as there
+# is no message being processed, there is no message-related data. But
+# that of course gets tested in plenty of other places.
+
+# Some fixed variables
+
+exim_path: $exim_path
+primary_hostname: $primary_hostname
+primary_hostname: ${primary_hostname}
+qualify_domain: $qualify_domain
+bounce_return_size_limit: ${bounce_return_size_limit}
+spool_directory: $spool_directory
+unknown: ${unknown}
+h_subject: $h_subject:(should be empty)
+h_subject:$h_subject (should be empty)
+header in curlies: ${header_subject:} (should fail)
+
+# \$message_headers should be empty
+message_headers: >$message_headers<
+
+# Continuation
+x\
+y
+x\
+             y
+
+# Overlong names and overbig numbers
+
++$aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
++${aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}
++$11111111111111111111111111111111111
++${11111111111111111111111111111111111}
+
+# Operators
+
+addrss: ${address:local-part@dom.ain}
+addrss: ${address:Exim Person <local-part@dom.ain> (that's me)}
+domain: ${domain:local-part@dom.ain}
+domain: ${domain:Exim Person <local-part@dom.ain> (that's me)}
+escape: ${escape:B7·F2ò}
+eval:   ${eval:1+1}
+eval:   ${eval:1+2*3}
+eval:   ${eval:(1+2)*3}
+eval:   ${eval:3/2*4}
+eval:   ${eval:3*4/2}
+eval:   ${eval:42}
+eval:   ${eval:}
+eval:   ${eval:-2}
+eval:   ${eval:-2 - -3}
+eval:   ${eval:-2 - (-3)}
+eval:   ${eval:-2 - (-3}
+eval:   ${eval:-2 - -3)}
+eval:   ${eval:-2 --3}
+eval:   ${eval:-2 -+3}
+eval:   ${eval:-2 -+-3}
+eval:   ${eval:(2*(1+1))/2 + 40K}
+eval:   ${eval:077}
+eval:   ${eval:08}
+eval10: ${eval10:077}
+eval10: ${eval10:08}
+expand: \$primary_hostname ${expand:\$primary_hostname}
+hash:   ${hash_3:monty} ${hash_5:monty} ${hash_4_62:monty python}
+hash:   ${hash_3:abc}X ${hash_3:ab}X ${hash_3:a}X ${hash_3:}X
+hex2b64:${hex2b64:12345678}
+hex2b64:${hex2b64:abcdef}
+hex2b64:${hex2b64:ABCDEF}
+hex2b64:${hex2b64:1a2b3c4d5e6f}
+hex2b64:${hex2b64:1a2b3c4d5e6}
+hex2b64:${hex2b64:1a2b3c4d5e6g}
+hex2b64:${hex2b64:${md5:the quick brown fox}}
+hex2b64:${hex2b64:${sha1:the quick brown fox}}
+
+The base62 operator is actually a base36 operator in the Darwin and Cygwin
+environments. Write cunning tests that produce the same output in both cases,
+while doing a reasonable check.
+
+base62:  ${if or {\
+                 {eq {${base62:12345}}{0003D7}}\
+                 {eq {${base62:12345}}{0009IX}}\
+                 }{OK}{NOT OK}} 
+base62d: ${if or {\
+                 {eq {${base62d:0003D7}}{12345}}\
+                 {eq {${base62d:0009IX}}{12345}}\
+                 }{OK}{NOT OK}} 
+base62d: ${if or {\
+                 {eq {${base62d:3D7}}{12345}}\
+                 {eq {${base62d:9IX}}{12345}}\
+                 }{OK}{NOT OK}} 
+base62 error: ${base62:12345x}
+base62d error:${base62d:0003D7.}
+
+hmac:   ${hmac{md5}{somesecret}{mail.example.com 2002-10-17 11:30:59}}
+hmac:   ${hmac{sha1}{somesecret}{mail.example.com 2002-10-17 11:30:59}}
+md5:    ${md5:the quick brown fox jumps over the lazy dog}
+sha1:   ${sha1:}
+sha1:   ${sha1:abc}
+mask:   ${mask:192.168.10.206/28}
+mask:   ${mask:192.168.10.206/32}
+mask:   ${mask:192.168.10.206/33}
+mask:   ${mask:192.168.10.206/0}
+mask:   ${mask:192.168.10.206}
+mask:   ${mask:a.b.c.d}
+nhash:  ${nhash_24:monty} ${nhash_8_63:monty python}
+lc/uc:  ${lc:The Quick} ${uc: Brown Fox}
+length: ${length_10:The quick brown fox} ${l_10:abc}
+lclpt:  ${local_part:local-part@dom.ain}
+lclpt:  ${local_part:Exim Person <local-part@dom.ain> (that's me)}
+quote:  ${quote:aZ09_.-Q} ${quote:ab*cd} ${quote:ab\cd"ef}
+quote:  ${quote:nl(\n)}
+quote:  ${quote:cr(\r)}
+quote:  ${quote:tab(\t)}
+quote:  ${quote:xff(\xff)}
+quote:  Empty>${quote:}<
+quote_local_part: ${quote_local_part:abcd}
+quote_local_part: ${quote_local_part:O'Reilly}
+quote_local_part: ${quote_local_part:a space}
+quote_local_part: ${quote_local_part:.something}
+quote_local_part: ${quote_local_part:something.}
+quote_local_part: ${quote_local_part:joe.bloggs}
+quote_local_part: ${quote_local_part:a!b}
+quote_local_part: ${quote_local_part:x@y}
+quote_local_part: ${quote_local_part:ab*cd}
+quote_local_part: ${quote_local_part:x:y}
+quote_local_part: ${quote_local_part:ab\cd"ef}
+quote_local_part: ${quote_local_part:}
+rxquote:${rxquote:aZ09_,-Q} ${rxquote:ab*cd} ${rxquote:ab\cd"ef}
+substr: ${substr_3_2:rhubarb} ${s_-5_2:1234567} ${s_-5_2:12} ${s_-3_2:12}
+substr: ${s_3:rhubarb} ${s_-2:rhubarb}
+substr: ${s_1:}
+substr: ${substr_10:abc}
+str2b64:${str2b64:abcd}
+str2b64:${str2b64:The quick brown \n fox}
+strlen: ${strlen:}
+strlen: ${strlen:a}
+strlen: ${strlen:abcdefgh}
+time_interval: ${time_interval:0}
+time_interval: ${time_interval:44}
+time_interval: ${time_interval:999999}
+time_interval: ${time_interval:-1}
+time_interval: ${time_interval:rhubarb}
+
+# stat is a bit tricky, but some of the fields of the aux-var directory
+# should be the same on all systems
+
+stat:   ${extract{mode}{${stat:DIR/aux-var}}}
+stat:   ${extract{smode}{${stat:DIR/aux-var}}}
+stat:   ${stat:/a/non/existent/file}
+
+# "Operators" that have expanded arguments
+
+hash:   ${hash{3}{monty}} ${hash{5}{monty}} ${hash{4}{62}{monty python}}
+hash:   ${hash{3}{abc}}X ${hash{3}{ab}}X ${hash{3}{a}}X ${hash{3}{}}X
+nhash:  ${nhash{24}{monty}} ${nhash{8}{63}{monty python}}
+length: ${length{10}{The quick brown fox}} ${length{10}{abc}}
+substr: ${substr{3}{2}{rhubarb}} ${substr{-5}{2}{1234567}} ${substr{-5}{2}{12}} ${substr{-3}{2}{12}}
+substr: ${substr{${if eq{1}{1}{-8}}}{${if eq{1}{0}{25}{1}}}{abcde}}
+
+# Error forms
+
+${hash{one}}
+${hash{nonnumber}{abcd}}
+${hash{3}{2}{4}{abcd}}
+${substr{-3}{-2}{abcd}}
+
+# Skipped operators
+
+addrss: ${if eq {1}{2}{${address:invalid}}{NO}}
+domain: ${if eq {1}{2}{${domain:invalid}}{NO}}
+escape: ${if eq {1}{2}{${escape:invalid}}{NO}}
+expand: ${if eq {1}{2}{\$primary_hostname ${expand:\$invalid}}{NO}}
+hash:   ${if eq {1}{2}{${hash_3:invalid}}{NO}}
+md5:    ${if eq {1}{2}{${md5:invalid}}{NO}}
+mask:   ${if eq {1}{2}{${mask:invalid}}{NO}}
+
+# Conditions
+
+2=2:    ${if ={2}{2}{y}{n}}
+2==2:   ${if =={2}{2}{y}{n}}
+3=2:    ${if ={3}{2}{y}{n}}
+2==3:   ${if =={2}{3}{y}{n}}
+!2=2:   ${if !={2}{2}{y}{n}}
+!2==2:  ${if !=={2}{2}{y}{n}}
+!3=2:   ${if !={3}{2}{y}{n}}
+!2==3:  ${if !=={2}{3}{y}{n}}
+2>3:    ${if >{2}{3}{y}{n}}
+3>3:    ${if >{3}{3}{y}{n}}
+4>3:    ${if >{4}{3}{y}{n}}
+2>=3:   ${if >={2}{3}{y}{n}}
+3>=3:   ${if >={3}{3}{y}{n}}
+4>=3:   ${if >={4}{3}{y}{n}}
+2<3:    ${if <{2}{3}{y}{n}}
+3<3:    ${if <{3}{3}{y}{n}}
+4<3:    ${if <{4}{3}{y}{n}}
+2<=3:   ${if <={2}{3}{y}{n}}
+3<=3:   ${if <={3}{3}{y}{n}}
+4<=3:   ${if <={4}{3}{y}{n}}
+5<=3:   ${if <={ 5 } { 3 } {y}{n}}
+
+5>3k:   ${if >{5 } {3k }{y}{n}}
+5>3m:   ${if >{5 } {3m }{y}{n}}
+5>3z:   ${if >{5 } {3z }{y}{n}}
+5>a:    ${if >{ 5 } {a}{y}{n}}
+
+def:y   ${if def:tod_log{y}{n}}
+def:n   ${if def:host{y}{n}}
+def:f   ${if def:post{y}{n}}
+def:h_f ${if def:h_xxx {y}{n}}
+def:h_f ${if def:h_xxx:{y}{n}}
+def:d:  ${if def:tod_log:{y}{n}}
+
+exists: ${if exists{/etc/passwd}{y}{n}}
+exists: ${if exists{/doesnt}{y}{n}}
+
+eq:     ${if eq{abc}{abc}{y}{n}}
+eq:     ${if eq{abc}{xyz}{y}{n}}
+!eq:    ${if !eq{abc}{abc}{y}{n}}
+!eq:    ${if !eq{abc}{xyz}{y}{n}}
+
+eqi:    ${if eqi{abc}{abc}{y}{n}}
+eqi:    ${if eqi{abc}{ABC}{y}{n}}
+eqi:    ${if eqi{abc}{xyz}{y}{n}}
+!eqi:   ${if !eqi{abc}{abc}{y}{n}}
+!eqi:   ${if !eqi{abc}{aBc}{y}{n}}
+!eqi:   ${if !eqi{abc}{xyz}{y}{n}}
+
+lt:     ${if lt{ABC}{abc}{y}{n}}
+lti:    ${if lti{ABC}{abc}{y}{n}}
+le:     ${if le{ABC}{abc}{y}{n}}
+lei:    ${if lei{ABC}{abc}{y}{n}}
+gt:     ${if gt{ABC}{abc}{y}{n}}
+gti:    ${if gti{ABC}{abc}{y}{n}}
+ge:     ${if ge{ABC}{abc}{y}{n}}
+gei:    ${if gei{ABC}{abc}{y}{n}}
+
+isip:   ${if isip {1.2.3.4}{y}{n}}  1.2.3.4
+isip4:  ${if isip4{1.2.3.4}{y}{n}}  1.2.3.4
+isip6:  ${if isip6{1.2.3.4}{y}{n}}  1.2.3.4
+isip:   ${if isip {1:2:3:4}{y}{n}}  1:2:3:4
+isip4:  ${if isip4{1:2:3:4}{y}{n}}  1:2:3:4
+isip6:  ${if isip6{1:2:3:4}{y}{n}}  1:2:3:4
+isip:   ${if isip {::1}{y}{n}}      ::1
+isip4:  ${if isip4{::1}{y}{n}}      ::1
+isip6:  ${if isip6{::1}{y}{n}}      ::1
+isip:   ${if isip {fe80::a00:20ff:fe86:a061}{y}{n}}  fe80::a00:20ff:fe86:a061
+isip4:  ${if isip4{fe80::a00:20ff:fe86:a061}{y}{n}}  fe80::a00:20ff:fe86:a061
+isip6:  ${if isip6{fe80::a00:20ff:fe86:a061}{y}{n}}  fe80::a00:20ff:fe86:a061
+isip:   ${if isip {rhubarb}{y}{n}}  rhubarb
+isip4:  ${if isip4{rhubarb}{y}{n}}  rhubarb
+isip6:  ${if isip6{rhubarb}{y}{n}}  rhubarb
+
+match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+match:  ${if match{abcd}{^\N([ab]+)(\w+)$\N}{$2$1}fail}
+match:  ${if match{abcd}{^([ab]+)(\\w+)\$}{$2$1}fail}
+match:  ${if match{wxyz}{^([ab]+)(\\w+)\$}{$2$1}fail}
+match:  ${if match{abcd}{^([ab]+)(\\w+)\$}{$2[${if match{xyz}{(.*)}{$1}fail}]$1}fail}
+
+match_domain:    ${if match_domain{a.b.c}{x.y.z:a.b.c:p.q.r}{yes}{no}}
+match_domain:    ${if match_domain{a.b.c}{x.y.z:p.q.r}{yes}{no}}
+match_domain:    ${if match_domain{5.aa.bb}{+dlist}{yes}{no}}
+match_domain:    ${if match_domain{xxxyz}{+dlist}{yes}{no}}
+match_domain:    ${if match_domain{xyz}{+dlist}{yes}{no}}
+
+match_address:   ${if match_address{x@y.z}{p@q:*@y.z}{yes}{no}}
+match_address:   ${if match_address{x@y.z}{p@q:x@*.z}{yes}{no}}
+
+match_local_part:${if match_local_part{jo}{jack:jill:jo:john}{yes}{no}}
+match_local_part:${if match_local_part{jo}{\N^\w\N}{yes}{no}}
+
+match_ip:        01 ${if match_ip{1.2.3.4}{4.5.6.7:1.2.3.4}}
+match_ip:        02 ${if match_ip{1.2.3.4}{4.5.6.7:1.2.3.6}}
+match_ip:        03 ${if match_ip{1.2.3.4}{4.5.6.7:1.2.3.6/24}}
+match_ip:        04 ${if match_ip{1.2.3.4}{4.5.6.7:1.2.3.6:*}}
+match_ip:        05 ${if match_ip{1.2.3.4}{4.5.6.7:1.2.3.6:name}}
+match_ip:        06 ${if match_ip{1.2.3.4}{:4.5.6.7}}
+match_ip:        07 ${if match_ip{}{:4.5.6.7}}
+match_ip:        08 ${if match_ip{V4NET.11.12.13}{+hlist}}
+match_ip:        09 ${if match_ip{V4NET.11.12.14}{+hlist}}
+match_ip:        10 ${if match_ip{192.168.3.4}{+hlist}}
+match_ip:        11 ${if match_ip{somename}{+hlist}}
+match_ip:        12 ${if match_ip{1.2.3.4}{lsearch;DIR/aux-fixed/0002.matchip}}
+match_ip:        13 ${if match_ip{1.2.3.4}{net-lsearch;DIR/aux-fixed/0002.matchip}}
+match_ip:        14 ${if match_ip{5.6.7.8}{net24-lsearch;DIR/aux-fixed/0002.matchip}}
+
+queue_running:  ${if queue_running{y}{n}}
+first_delivery: ${if first_delivery{y}{n}}
+
+queue_running after or: ${if or{{eq {0}{0}}{queue_running}}{y}{n}}
+first_delivery after or: ${if or{{eq {0}{0}}{first_delivery}}{y}{n}}
+
+# Default values for both if strings
+
+\${if eq{1}{1}}  >${if eq{1}{1}}<
+\${if eq{1}{2}}  >${if eq{1}{2}}<
+
+# Lookups: DIR is the testing directory. In this test we can only use the
+# lookups that are required in all cases.
+
+${lookup{postmaster}lsearch{DIR/aux-fixed/0002.aliases}{$value}fail}
+
+${lookup{x@y}lsearch*@{DIR/aux-fixed/0002.starat}{$value}fail}
+${lookup{x@z}lsearch*{DIR/aux-fixed/0002.starat}{$value}fail}
+${lookup{x@z}lsearch*@{DIR/aux-fixed/0002.starat}{$value}fail}
+${lookup{x@w}lsearch*@{DIR/aux-fixed/0002.starat}{$value}fail}
+
+${lookup{a.b.c.d}partial-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{x.y.z}partial-lsearch{DIR/aux-fixed/0002.domains}{$value}{failed x.y.z}}
+${lookup{p.q}partial-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{o.p.q}partial-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{m.n.o.p.q}partial-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{x.y.z}partial1-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
+${lookup{x.y.z}partial0-lsearch{DIR/aux-fixed/0002.domains}{$value}fail}
+
+q1:  ${lookup{abc}lsearch{DIR/aux-fixed/0002.quoted}}
+q2:  ${lookup{xyz}lsearch{DIR/aux-fixed/0002.quoted}}
+q3:  ${lookup{pqr}lsearch{DIR/aux-fixed/0002.quoted}}
+q4:  ${lookup{a:b}lsearch{DIR/aux-fixed/0002.quoted}}
+q5:  ${lookup{"quoted"}lsearch{DIR/aux-fixed/0002.quoted}}
+q6:  ${lookup{white space}lsearch{DIR/aux-fixed/0002.quoted}}
+q7:  ${lookup{b\\s}lsearch{DIR/aux-fixed/0002.quoted}}
+
+abc:   ${lookup{abc}wildlsearch{DIR/aux-var/0002.wild}}
+a.b.c: ${lookup{a.b.c}wildlsearch{DIR/aux-var/0002.wild}}
+ab.c:  ${lookup{ab.c}wildlsearch{DIR/aux-var/0002.wild}}
+xyz:   ${lookup{xyz}wildlsearch{DIR/aux-var/0002.wild}}
+Xyz:   ${lookup{Xyz}wildlsearch{DIR/aux-var/0002.wild}}
+Zyz:   ${lookup{Zyz}wildlsearch{DIR/aux-var/0002.wild}}
+a b:   ${lookup{a b}wildlsearch{DIR/aux-var/0002.wild}}
+a  b:  ${lookup{a  b}wildlsearch{DIR/aux-var/0002.wild}}
+a:b:   ${lookup{a:b}wildlsearch{DIR/aux-var/0002.wild}}
+a.b:   ${lookup{a.b}wildlsearch{DIR/aux-var/0002.wild}}
+a..b:  ${lookup{a..b}wildlsearch{DIR/aux-var/0002.wild}}
+a9b:   ${lookup{a9b}wildlsearch{DIR/aux-var/0002.wild}}
+a99b:  ${lookup{a99b}wildlsearch{DIR/aux-var/0002.wild}}
+
+# Should give the same results as above because expansion does nothing
+
+abc:   ${lookup{abc}nwildlsearch{DIR/aux-var/0002.wild}}
+a.b.c: ${lookup{a.b.c}nwildlsearch{DIR/aux-var/0002.wild}}
+ab.c:  ${lookup{ab.c}nwildlsearch{DIR/aux-var/0002.wild}}
+xyz:   ${lookup{xyz}nwildlsearch{DIR/aux-var/0002.wild}}
+Xyz:   ${lookup{Xyz}nwildlsearch{DIR/aux-var/0002.wild}}
+Zyz:   ${lookup{Zyz}nwildlsearch{DIR/aux-var/0002.wild}}
+a b:   ${lookup{a b}nwildlsearch{DIR/aux-var/0002.wild}}
+a  b:  ${lookup{a  b}nwildlsearch{DIR/aux-var/0002.wild}}
+a:b:   ${lookup{a:b}nwildlsearch{DIR/aux-var/0002.wild}}
+
+# Should fail because of no expansion
+
+a.b:   ${lookup{a.b}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NO}}
+a..b:  ${lookup{a..b}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NO}}
+a9b:   ${lookup{a9b}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NO}}
+a99b:  ${lookup{a99b}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NO}}
+
+# But these should succeed
+
+a\\:b:  ${lookup{a\\:b}nwildlsearch{DIR/aux-var/0002.wild}}
+a\\:Xb: ${lookup{a\\:Xb}nwildlsearch{DIR/aux-var/0002.wild}}
+
+# IP address (CIDR) lookups
+
+1.2.3.4:      ${lookup{1.2.3.4}iplsearch{DIR/aux-fixed/0002.iplsearch}}
+1.2.3.5:      ${lookup{1.2.3.5}iplsearch{DIR/aux-fixed/0002.iplsearch}}
+1.2.3.5:      ${lookup{1.2.3.5}iplsearch*{DIR/aux-fixed/0002.iplsearch}}
+abcd::cdab:   ${lookup{abcd::cdab}iplsearch{DIR/aux-fixed/0002.iplsearch}}
+192.168.1.2:  ${lookup{192.168.1.2}iplsearch{DIR/aux-fixed/0002.iplsearch}}
+192.168.5.6:  ${lookup{192.168.5.6}iplsearch{DIR/aux-fixed/0002.iplsearch}}
+abcd:abcd::   ${lookup{abcd:abcd::}iplsearch{DIR/aux-fixed/0002.iplsearch}}
+abcd:abcd:1:: ${lookup{abcd:abcd:1::}iplsearch{DIR/aux-fixed/0002.iplsearch}}
+abcd:abcd::3  ${lookup{abcd:abcd::3}iplsearch{DIR/aux-fixed/0002.iplsearch}}
+rhubarb       ${lookup{rhubarb}iplsearch{DIR/aux-fixed/0002.iplsearch}}
+
+
+# Nested Lookups - style 1
+
+${lookup{${lookup{key1}lsearch{DIR/aux-fixed/0002.rec}{$value}{key1f}}}lsearch{DIR/aux-fixed/0002.rec}{$value}fail}
+${lookup{${lookup{key3}lsearch{DIR/aux-fixed/0002.rec}{$value}{key1f}}}lsearch{DIR/aux-fixed/0002.rec}{$value}fail}
+
+# Nested Lookups - style 2
+
+${lookup{key1}lsearch{DIR/aux-fixed/0002.rec}{${lookup{$value}lsearch{DIR/aux-fixed/0002.rec}{$value}{failed for $value}}}{failed for key1}}
+${lookup{key3}lsearch{DIR/aux-fixed/0002.rec}{${lookup{$value}lsearch{DIR/aux-fixed/0002.rec}{$value}{failed for $value}}}{failed for key1}}
+
+# Other nesting tests
+
+${lookup{one}lsearch{DIR/aux-fixed/0002.alias1}{$value${lookup{one}lsearch{DIR/aux-fixed/0002.alias2}{,$value}}}{${lookup{one}lsearch{DIR/aux-fixed/0002.alias2}{$value}fail}}}
+${lookup{two}lsearch{DIR/aux-fixed/0002.alias1}{$value${lookup{two}lsearch{DIR/aux-fixed/0002.alias2}{,$value}}}{${lookup{two}lsearch{DIR/aux-fixed/0002.alias2}{$value}fail}}}
+${lookup{both}lsearch{DIR/aux-fixed/0002.alias1}{$value${lookup{both}lsearch{DIR/aux-fixed/0002.alias2}{,$value}}}{${lookup{both}lsearch{DIR/aux-fixed/0002.alias2}{$value}fail}}}
+${lookup{neither}lsearch{DIR/aux-fixed/0002.alias1}{$value${lookup{neither}lsearch{DIR/aux-fixed/0002.alias2}{,$value}}}{${lookup{neither}lsearch{DIR/aux-fixed/0002.alias2}{$value}fail}}}
+
+# Lookup quotes for standardly expected lookups
+
+lsearch ${quote_lsearch: !@#\$%^&*()_-+=|\\~`1234567890\{[\}]qwertyuiop:;"'asdfghjkl<,>.?/zxcvbnm}
+xxx     ${quote_xxx: !@#\$%^&*()_-+=|\\~`1234567890\{[\}]qwertyuiop:;"'asdfghjkl<,>.?/zxcvbnm}
+
+# Extract
+
+${extract{B}{A=1 B=2 C=3}}
+${extract{ B }{A=1 B=2 C=3}{$value}{NOT FOUND}}
+${extract{2}{:}{1:2:3}}
+${extract{ 2 }{:}{1:2:3}{$value}{NOT FOUND}}
+Empty:<${extract{D}{A=1 B=2 C=3}}>
+Empty:<${extract{4}{:}{1:2:3}}>
+${extract{C}{A=1 B=2 C=3}{<$value>}}
+${extract{3}{:}{1:2:3}{<$value>}}
+Empty:<${extract{Z}{A=1 B=2 C=3}{<$value>}}>
+Empty:<${extract{4}{:}{1:2:3}{<$value>}}>
+${extract{Z}{A=1 B=2 C=3}{<$value>}{no Z}}
+${extract{4}{:}{1:2:3}{<$value>}{no 4}}
+${extract{Z}{A=1 B=2 C=3}{<$value>}fail}
+${extract{4}{:}{1:2:3}{<$value>}fail}
+${extract{K4}{${sg{1=A 4=D 3=C}{(\\d+)=}{K\$1=}}}}
+${extract{0}{:}{a:b:c:d:e}{$value}{FAIL}}
+${extract{1}{:}{a:b:c:d:e}{$value}{FAIL}}
+${extract{-1}{:}{a:b:c:d:e}{$value}{FAIL}}
+${extract{-5}{:}{a:b:c:d:e}{$value}{FAIL}}
+${extract{-6}{:}{a:b:c:d:e}{$value}{FAIL}}
+${extract{-3}{:,}{a,,b::c}}
+${extract{2}{:,}{a,,b::c}}
+${extract{3}{:,}{a,,b::c}}
+${extract{a-b}{X = "one two" a-b "three four" 5=99}}
+${extract{}{X=3}}
+${extract{ }{X=3}}
+${extract{ 2 }{ }{a b c}}
+
+# Translation
+
+abcdea aaa xyz ${tr{abcdea}{aaa}{xyz}}
+abcdea a   z   ${tr{abcdea}{a}{z}}
+abcdea a       ${tr{abcdea}{a}{}}
+abcdea abc z   ${tr{abcdea}{abc}{z}}
+
+# RFC 2047
+
+abcd      ${rfc2047:abcd}
+<:abcd:>  ${rfc2047:<:abcd:>}
+<:ab cd:> ${rfc2047:<:ab cd:>}
+Long:     ${rfc2047: here we go: a string that is going to be encoded: it will go over the 75-char limit}
+Long:     ${rfc2047: here we go: a string that is going to be encoded: it will go over the 75-char limit by a long way; in fact this one will go over the 150 character limit}
+
+
+# UTF-8
+
+abcd      ${from_utf8:abcd}
+aÀÿd      ${from_utf8:aÃ€Ã¿d}
+toobig    ${from_utf8:aÄ€d}
+
+# Substitution
+
+\${sg{abcdefabcdef}{abc}{xyz}}          =${sg{abcdefabcdef}{abc}{xyz}}
+\${sg{ab:xy::z}{:}{::}}                 =${sg{ab:xy::z}{:}{::}}
+\${sg{abcdefabcdef}{(..)[^c]}{>\$1<}}    =${sg{abcdefabcdef}{(..)[^c]}{>$1<}}
+\${sg{abcdefabcdef}{(..)[^c]}{>\\\$1<}}   =${sg{abcdefabcdef}{(..)[^c]}{>\$1<}}
+\${sg{abcdefabcdef}{(..)[^c]}{>\\N\$1\\N<}}=${sg{abcdefabcdef}{(..)[^c]}{>\N$1\N<}}
+\${sg{abbab}{a*}{+}}                    =${sg{abbab}{a*}{+}}
+
+# File insertion
+
+${readfile}
+${readfile{DIR/aux-fixed/0002.readfile}}
+${readfile{DIR/aux-fixed/0002.readfile}{}}
+${readfile{DIR/aux-fixed/0002.readfile}{:}}
+${readfile{DIR/aux-fixed/0002.readfile}{ - }}
+${readfile{/non/exist/file}}
+${if exists{/non/exist/file}{${readfile{/non/exist/file}}}{non-exist}}
+>${readfile{DIR/aux-fixed/0002.readfile}{!}}\
+    <
+
+# Calling a command
+
+${run{DIR/aux-fixed/0002.runfile 0}}
+RC=$runrc
+${run{DIR/aux-fixed/0002.runfile 0}{1}{2}}
+RC=$runrc
+${run{DIR/aux-fixed/0002.runfile 0}{$value}{2}}
+RC=$runrc
+${run{DIR/aux-fixed/0002.runfile 1}{$value}{2}}
+RC=$runrc
+${run{DIR/aux-fixed/0002.runfile 1}{$value}{$value}}
+RC=$runrc
+${run{DIR/test-nonexist}{Y}{N}}
+RC=$runrc
+>>${run{DIR/bin/iefbr14}}<<
+RC=$runrc
+${if eq{1}{2}{${run{/non/exist}}}{1!=2}}
+RC=$runrc
+
+# PRVS
+
+${prvs{userx@test.ex}{secret}}
+${prvs{userx@test.ex}{secret}{1}}
+${prvs{userx@test.ex}{secret}{8}}
+
+# Syntax errors
+
+${prvs{userx@test.ex}{secret}{12}}
+${prvs{userx@test.ex}{secret}{rhubarb}}
+${prvs{userx@test.ex}{secret}{}}
+
+# Correct checks; can't put explicit addresses in the tests, because they
+# will change over time. 
+
+${prvscheck{${prvs{userx@test.ex}{secret}}}{secret}}
+result=$prvscheck_result
+
+${prvscheck{${prvs{userx@test.ex}{secret}{1}}}{secret}\
+{>$prvscheck_result< >$prvscheck_address< >$prvscheck_keynum<}}
+result=$prvscheck_result
+
+${prvscheck{${prvs{userx@test.ex}{secret}{8}}}{secret}{}}
+result=$prvscheck_result
+
+# Incorrect secret
+
+${prvscheck{${prvs{userx@test.ex}{secret}}}{socrot}}
+result=$prvscheck_result
+
+${prvscheck{${prvs{userx@test.ex}{secret}}}{socrot}{$prvscheck_keynum}}
+result=$prvscheck_result
+
+# Non-prvs address
+
+>>${prvscheck{userx@test.ex}{secret}}<<
+result=$prvscheck_result
+
+# Syntax errors
+
+${tod_log
+${tod_log+6
+${expand:abcd
+${expand:abcd${tod_log}
+${hmac{xxx}{a}{b}}
+${if and {xyz}{a}{b}}
+${if and {{xya}}{a}{b}}
+${if and {{${lookup{x}lsearch{/a/b}}}}{a}{b}}
+${if eq {$h_xyz}{1}{y}{n}}
+${if or {eq {}{}{yes}{no}}
+${if or {{eq {}{}{yes}{no}}
+${if or {{eq {}{}}{yes}{no}}
+${substr_1_:12345}
+${substr__3:12345}
+
+# Miscellaneous (for bug fixes, etc)
+
+${if ={1}{1} {true}{${if ={1}{1} {true}{${if ={1}{1}{true}fail}}}}}
+
+****
+# Test "escape" with print_topbitchars
+exim -be -DPTBC=print_topbitchars
+escape: ${escape:B7·F2ò}
+****
+# Checkout expansion debugging
+exim -d-all+expand -be
+primary_hostname: $primary_hostname
+match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
+****
+# Sender host name and address etc, all unset
+exim -be
+-oMa  sender_host_address = $sender_host_address
+      sender_host_port = $sender_host_port
+-oMaa sender_host_authenticated = $sender_host_authenticated
+-oMai authenticated_id = $authenticated_id
+-oMas authenticated_sender = $authenticated_sender
+-oMi  interface_address = $interface_address
+      interface_port = $interface_port
+-oMr  received_protocol = $received_protocol
+-oMs  sender_host_name = $sender_host_name
+-oMt  sender_ident = $sender_ident
+****
+# Sender host name and address etc, all set except host name.
+exim -d-all+expand -be -oMa V4NET.0.0.1.1234 -oMaa AAA -oMai philip -oMas xx@yy.zz -oMi 1.1.1.1.99 -oMr special -oMt me
+-oMa  sender_host_address = $sender_host_address
+      sender_host_port = $sender_host_port
+-oMaa sender_host_authenticated = $sender_host_authenticated
+-oMai authenticated_id = $authenticated_id
+-oMas authenticated_sender = $authenticated_sender
+-oMi  interface_address = $interface_address
+      interface_port = $interface_port
+-oMr  received_protocol = $received_protocol
+-oMt  sender_ident = $sender_ident
+****
+# Sender host name explicitly set
+exim -be -oMa V4NET.0.0.1.1234 -oMs my.host.name
+-oMa  sender_host_address = $sender_host_address
+      sender_host_port = $sender_host_port
+-oMs  sender_host_name = $sender_host_name
+****
+# Sender host name lookup fails (V4NET.11.12.13 is not reverse registered)
+exim -be -oMa V4NET.11.12.13
+-oMs  sender_host_name = $sender_host_name
+      host_lookup_failed = $host_lookup_failed
+****
+# Sender host name and protocol set by Sendmail-compatible option
+exim -be -pspecial:host.name
+-p  received_protocol = $received_protocol
+-p  sender_host_name = $sender_host_name
+****
+# Sender host name and address etc, all set except host name,
+# which should therefore be looked up from the address, but not if
+# we are skipping. The debug output for this test will show when
+# the lookup occurs.
+exim -d-all+host_lookup+expand -be -oMa V4NET.0.0.1.1234 -oMaa AAA -oMai philip -oMas xx@yy.zz -oMi 1.1.1.1.99 -oMr special -oMt me
+-oMa  sender_host_address = $sender_host_address
+      sender_host_port = $sender_host_port
+-oMaa sender_host_authenticated = $sender_host_authenticated
+-oMai authenticated_id = $authenticated_id
+-oMas authenticated_sender = $authenticated_sender
+-oMi  interface_address = $interface_address
+      interface_port = $interface_port
+-oMr  received_protocol = $received_protocol
+----> No lookup yet: ${if eq{black}{white}{$sender_host_name}{No}}
+-oMs  sender_host_name = $sender_host_name
+-oMt  sender_ident = $sender_ident
+****
+# Test no auto host name lookup for query-style lookups
+exim -d -bh V4NET.0.0.1
+****
+exim -d -bh V4NET.0.0.2
+****
+# Test $reply_address
+exim -bh V4NET.0.0.0
+mail from:<>
+rcpt to:<some@body>
+data
+.
+mail from:<>
+rcpt to:<some@body>
+data
+From: a@b
+.
+mail from:<>
+rcpt to:<some@body>
+data
+From: a@b
+Reply-to: c@d
+.
+mail from:<>
+rcpt to:<some@body>
+data
+Reply-to:
+.
+mail from:<>
+rcpt to:<some@body>
+data
+Reply-to:
+From: x@y
+.
+quit
+****
+# Check RFC 2047 decoding with (default) length check
+exim -bh V4NET.0.0.0
+mail from:<>
+rcpt to:<some@body>
+data
+Subject: =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_it_will_go_over_the_75-char_limit_by_a_long_way=3B_in_fact_this_one_will_go_over_the_150_character_limit?=
+.
+quit
+****
+# Check RFC 2047 decoding with length check disabled
+exim -DLENCHECK=check_rfc2047_length=false -bh V4NET.0.0.0
+mail from:<>
+rcpt to:<some@body>
+data
+Subject: =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_it_will_go_over_the_75-char_limit_by_a_long_way=3B_in_fact_this_one_will_go_over_the_150_character_limit?=
+.
+quit
+****

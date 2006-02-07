@@ -1,0 +1,9 @@
+# $message_headers
+write test-data 655x100=__continued...
+X-Long: This is a very long header
+++++
+  This is the final line which should get chopped.
+X-Long: This is another header with the same name.   
+****   
+exim -odi userx <test-data
+****

@@ -1,0 +1,4 @@
+# self = pass with unseen filter
+exim -odi userx@not.test.ex
+Test message
+.

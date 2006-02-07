@@ -1,0 +1,16 @@
+# ACL with -bs
+exim -odi -bs
+mail from:<x@y>
+rcpt to:<userx@test.ex>
+rcpt to:<x@y>
+rcpt to:<x@ten-1.test.ex>
+rset
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+rcpt to:<x@y>
+rcpt to:<x@ten-1.test.ex>
+data
+Message 1
+.
+quit
+****

@@ -1,0 +1,92 @@
+# ACL test of "standard" configuration
+#
+# Not a relay host, no authentication, sender address fails to verify.
+# accept postmaster@test.ex (postmaster at local domain)
+# deny   userx@test.ex (good address in local domain, but sender verify failed)
+# deny   x@y (bad address, but sender verify failed)
+# deny   x@ten-1.test.ex (good relay address, but sender verify failed)
+# deny   x@ten-2.test.ex (good address, but sender verify failed)
+#
+exim -odi -oMa V4NET.0.0.0 -bs
+mail from:<x@y>
+rcpt to:<postmaster@test.ex>
+rcpt to:<userx@test.ex>
+rcpt to:<x@y>
+rcpt to:<x@ten-1.test.ex>
+rcpt to:<x@ten-2.test.ex>
+data
+Message 1
+.
+quit
+****
+# Not a relay host, no authentication, sender address does verify.
+# accept postmaster@test.ex (postmaster at local domain)
+# accept userx@test.ex (good address in local domain)
+# deny   x@y (bad address)
+# accept x@ten-1.test.ex (good relay address)
+# deny   x@ten-2.test.ex (good address, but not relay domain or host)
+exim -odi -oMa V4NET.0.0.0 -bs
+mail from:<userx@test.ex>
+rcpt to:<postmaster@test.ex>
+rcpt to:<userx@test.ex>
+rcpt to:<x@y>
+rcpt to:<x@ten-1.test.ex>
+rcpt to:<x@ten-2.test.ex>
+data
+Message 2
+.
+quit
+****
+# Relay host, no authentication, sender address does verify.
+# deny   bad@test.ex (bad address in local domain)
+# deny   x@y (bad address)
+# accept x@ten-1.test.ex (good relay address)
+# accept x@ten-2.test.ex (good non-relay address, relay host)
+exim -odi -oMa V4NET.255.255.0 -bs
+mail from:<userx@test.ex>
+rcpt to:<bad@test.ex>
+rcpt to:<x@y>
+rcpt to:<x@ten-1.test.ex>
+rcpt to:<x@ten-2.test.ex>
+data
+Message 3
+.
+quit
+****
+# Host on serious black list
+# accept postmaster@test.ex (postmaster at local domain)
+# deny   anything else
+exim -odi -oMa V4NET.11.12.13 -bs
+mail from:<userx@test.ex>
+rcpt to:<postmaster@test.ex>
+rcpt to:<userx@test.ex>
+rcpt to:<x@ten-1.test.ex>
+data
+Message 4
+.
+quit
+****
+# Host on warning black list
+# accept postmaster@test.ex (postmaster at local domain)
+# deny   anything else
+exim -odi -oMa V4NET.11.12.16 -bs
+mail from:<userx@test.ex>
+rcpt to:<postmaster@test.ex>
+rcpt to:<userx@test.ex>
+rcpt to:<x@ten-1.test.ex>
+data
+Message 5
+.
+quit
+****
+# Local SMTP - should accept everything
+#
+exim -odi -bs
+mail from:<x@y>
+rcpt to:<postmaster@test.ex>
+rcpt to:<userx@test.ex>
+rcpt to:<x@y>
+rcpt to:<x@ten-1.test.ex>
+rcpt to:<x@ten-2.test.ex>
+quit
+****

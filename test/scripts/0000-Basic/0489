@@ -1,0 +1,18 @@
+# parse_fix_phrase
+exim -d-all+receive -F 'Phil Q. Hazel' X
+****
+exim -d-all+receive -F 'John "Jack" Smith' X
+****
+exim -d-all+receive -F 'John "Jack" Q. Smith' X
+****
+exim -d-all+receive -F 'John (Jack) Q. Smith' X
+****
+exim -d-all+receive -F 'John ("Jack") Q. Smith' X
+****
+exim -d-all+receive -F 'John (\"Jack\") Q. Smith' X
+****
+exim -d-all+receive -F 'Phil \"Q Hazel' X
+****
+exim -d-all+receive -F 'Phil \"Q "X." Hazel' X
+****
+no_msglog_check

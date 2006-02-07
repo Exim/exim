@@ -1,0 +1,218 @@
+# plaintext server tests
+exim -bh 10.0.0.2
+mail from:<junk@jink.jonk.test.ex>
+rset
+vrfy userx@test.ex
+expn list@test.ex
+etrn #abcd
+quit
+****
+exim -bh 10.0.0.1
+ehlo test.host
+vrfy userx@test.ex
+expn list@test.ex
+etrn abcd
+mail from:<junk@jink.jonk.test.ex>
+rcpt to:<userx@test.ex>
+noop
+rset
+auth mylogin dXNlcnggc2VjcmV0
+auth mylogin dXNlcnggc2VjcmV0
+mail from:<junk@jink.jonk.test.ex>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@cus.cam.ac.uk>
+rset
+vrfy userx@test.ex
+expn list@test.ex
+etrn #abcd
+noop
+auth mylogin dXNlcnggc2VjcmV0
+quit
+****
+exim -bh 10.0.0.3
+ehlo test.host
+mail from:<junk@jink.jonk.test.ex>
+rcpt to:<userx@cus.cam.ac.uk>
+rset
+auth mylogin dXNlcnggc2VjcmV0
+mail from:<junk@jink.jonk.test.ex>
+rcpt to:<userx@cus.cam.ac.uk>
+quit
+****
+exim -odi -bs -oMa 10.0.0.3
+ehlo testclient.ex
+mail from:<userx@cus.cam.ac.uk>
+rcpt to:<userx@test.ex>
+data
+Testing unauthenticated.
+.
+mail from:<userx@cus.cam.ac.uk> auth=auth@cus.cam.ac.uk
+rcpt to:<userx@test.ex>
+data
+Testing unauthenticated (2).
+.
+auth mylogin dXNlcnggc2VjcmV0
+mail from:<userx@cus.cam.ac.uk>
+rcpt to:<userx@test.ex>
+data
+Testing authenticated.
+.
+mail from:<userx@cus.cam.ac.uk> auth=auth@cus.cam.ac.uk
+rcpt to:<userx@test.ex>
+data
+Testing authenticated (2).
+.
+mail from:<userx@cus.cam.ac.uk> auth=au+zzth@cus.cam.ac.uk
+rset
+mail from:<userx@cus.cam.ac.uk> auth=<>
+rcpt to:<userx@test.ex>
+data
+Testing authenticated (3).
+.
+quit
+****
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+auth plain AHVzZXJ4AHNlY3JldA==
+quit
+****
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+auth defer AHVzZXJ4AHNlY3JldA==
+quit
+****
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+auth plain 
+AHVzZXJ4AHNlY3JldA==
+quit
+****
+exim -odi -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH LOGIN
+dXNlcng=
+c2VjcmV0
+mail from:<userx@cus.cam.ac.uk>
+rcpt to:<userx@test.ex>
+data
+Testing authenticated.
+.
+quit
+****
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH LOGIN
+dXNlcngAc2VjcmV0
+quit
+****
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH LOGIN dXNlcngAc2VjcmV0
+quit
+****
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH LOGIN dXNlcng=
+c2VjcmV0
+quit
+****
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH LOGIN
+dXNlcng=
+*
+quit
+****
+exim -bh 10.0.0.4
+ehlo test.host
+quit
+****
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+auth plain AGVzZXJ4AHNlY3JldA==
+quit
+****
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+auth explain 
+AHVzZXJ4AHNlY3JldA==
+quit
+****
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+auth expanded
+AHVzZXJ4AHNlY3JldA==
+quit
+****
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+auth expandfail
+AHVzZXJ4AHNlY3JldA==
+quit
+****
+exim -bs -oMa 10.0.0.2
+ehlo test.host
+auth expandfail
+AHVzZXJ4AHNlY3JldA==
+quit
+****
+1
+exim -bs -oMa 10.0.0.1
+ehlo test.host
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+auth expanded AHVzZXJ4AHNlY3JlVw==
+****
+exim -odi -bs -oMa 10.0.0.5
+ehlo testing.testing
+mail from:<x@y>
+rcpt to:<userx@test.ex>
+data
+Without authenticating
+.
+auth mylogin dXNlcnggc2VjcmV0
+mail from:<x@y>
+rcpt to:<userx@test.ex>
+data
+Authentication failed
+.
+auth mylogin dXNlcnggc2VjcmV0
+mail from:<x@y>
+rcpt to:<userx@test.ex>
+data
+Authentication succeeded
+.
+quit
+****
+exim -odi -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH LOGIN
+
+c2VjcmV0
+quit
+****
+exim -d -odi -bs -oMa 10.0.0.5
+ehlo testing.testing
+auth mylogin dXNlcnggc2VjcmV0
+quit
+****
+no_msglog_check

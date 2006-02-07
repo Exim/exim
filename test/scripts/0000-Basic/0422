@@ -1,0 +1,7 @@
+# dnsbl: orphan CNAME and multiple A records
+exim -bh V4NET.13.13.1
+quit
+****
+exim -bh V4NET.13.13.2
+quit
+****

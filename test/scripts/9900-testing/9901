@@ -1,0 +1,26 @@
+# long routing delay in message on reused connection (server timeout)
+# This test is problematical - trying to cause a timeout in a server for the
+# 2nd message down the same connection. Works on Linux, but does different
+# things on FreeBSD.
+#
+need_ipv4
+#
+exim -DCOM=# -DSERVER=server -bd -oX PORT_D
+****
+exim -odi -odqs ok@no.delay
+Message 1
+****
+exim -odi -odqs ok@no.delay
+Message 2
+****
+sudo exim -Mar $msg2 delay@2.test.again.dns
+****
+# Remove the retry data so that we do attempt the routing during
+# delivery. That slows it down enough for the server to time out.
+#
+# sudo rm spool/db/retry
+exim -q -d-all+route+dns
+****
+killdaemon
+dump retry
+no_msglog_check

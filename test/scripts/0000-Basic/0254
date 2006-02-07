@@ -1,0 +1,28 @@
+# resent headers
+exim -odq userx
+From: f
+To: t
+Date: d
+Subject: s
+Resent-From: f
+Resent-To: t
+Resent-Date: d
+Resent-Subject: should not exist
+****
+exim -Mvh $msg1
+****
+exim -odq userx
+From: f
+Resent-From: f
+****
+exim -Mvh $msg2
+****
+exim -odq userx
+From: userx
+To: xx@yy
+Resent-From: userx
+Resent-To: xx@yy
+****
+exim -Mvh $msg3
+****
+no_msglog_check

@@ -1,0 +1,233 @@
+# callout verification (no caching)
+need_ipv4
+#
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+sudo exim -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<ok@localhost>
+RCPT TO:<z@test.ex>
+QUIT
+****
+sudo exim -v -bs -oMa V4NET.0.0.2
+MAIL FROM:<unchecked@localhost>
+RCPT TO:<z@test.ex>
+QUIT
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 Unknown user
+QUIT
+250 OK
+****
+sudo exim -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<bad@localhost>
+RCPT TO:<z@test.ex>
+QUIT
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+450 Temporary error
+QUIT
+250 OK
+****
+sudo exim -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<uncheckable@localhost1>
+RCPT TO:<z@test.ex>
+QUIT
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+550 Error for <>
+QUIT
+250 OK
+****
+sudo exim -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<uncheckable2@localhost1>
+RCPT TO:<z@test.ex>
+QUIT
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+550-Multiline error for <>
+550 Here's the second line
+QUIT
+250 OK
+****
+sudo exim -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<uncheckable@localhost1>
+RCPT TO:<z@test.ex>
+QUIT
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 Recipient not liked
+QUIT
+250 OK
+****
+sudo exim -v -bs -oMa V4NET.0.0.3
+MAIL FROM:<uncheckable@localhost1>
+RCPT TO:<z@remote.domain>
+QUIT
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550-Recipient not liked on two lines
+550 Here's the second
+QUIT
+250 OK
+****
+sudo exim -v -bs -oMa V4NET.0.0.3
+MAIL FROM:<uncheckable@localhost1>
+RCPT TO:<z@remote.domain>
+QUIT
+****
+sudo exim -v -bs -oMa V4NET.0.0.3
+MAIL FROM:<uncheckable@localhost1>
+RCPT TO:<z@remote.domain>
+QUIT
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 Not liked
+QUIT
+250 OK
+****
+sudo exim -v -bs -oMa V4NET.0.0.4
+MAIL FROM:<uncheckable@localhost1>
+RCPT TO:<z@remote.domain>
+DATA
+From: abcd@x.y.z
+.
+QUIT
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 Not liked
+QUIT
+250 OK
+****
+sudo exim -v -bs -oMa V4NET.0.0.4
+MAIL FROM:<uncheckable@localhost1>
+RCPT TO:<z@remote.domain>
+DATA
+From: abcd@x.y.z
+.
+QUIT
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RSET
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+sudo exim -v -bs -oMa V4NET.0.0.5
+MAIL FROM:<ok@localhost1>
+RCPT TO:<z@remote.domain>
+QUIT
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RSET
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 Don't like postmaster
+QUIT
+250 OK
+****
+sudo exim -v -bs -oMa V4NET.0.0.5
+MAIL FROM:<ok@localhost1>
+RCPT TO:<z@remote.domain>
+QUIT
+****
+server PORT_S
+220 Server ready
+LHLO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 Recipient not liked
+QUIT
+250 OK
+****
+sudo exim -v -bs -oMa V4NET.0.0.3
+MAIL FROM:<uncheckable@localhost1>
+RCPT TO:<z@remote.lmtp>
+QUIT
+****
+server PORT_S
+****
+sudo exim -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<bad@localhost1>
+RCPT TO:<z@test.ex>
+QUIT
+****
+sudo exim -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<bad@localhost1>
+RCPT TO:<z@test.ex>
+QUIT
+****

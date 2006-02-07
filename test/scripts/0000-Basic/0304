@@ -1,0 +1,34 @@
+# address lists
+exim -bh 1.2.3.4
+mail from:<>
+rcpt to:<b1@x>
+rcpt to:<b2@x>
+rcpt to:<b9@x>
+rset
+mail from:<x@y>
+rcpt to:<abc@w.x.y.z>
+rcpt to:<abcdef@q.x.y.z>
+rcpt to:<a@b>
+rcpt to:<ok@ok>
+rcpt to:<x@a.b.c>
+rcpt to:<abc@d.e.f>
+rcpt to:<x@d.e.f>
+rcpt to:<abc@at.1>
+rcpt to:<xyz@at.1>
+rcpt to:<abcxyz@at.1>
+rcpt to:<ok@at.1>
+rcpt to:<x@domain.only>
+rcpt to:<x@abc.domain2.only>
+rcpt to:<x@domain2.only>
+rcpt to:<abc@domain3>
+rcpt to:<xyz@x.domain4>
+rcpt to:<abc@x.domain4>
+rcpt to:<xyz@domain3>
+rcpt to:<pqr@myhost.test.ex>
+rcpt to:<xxx@myhost.test.ex>
+rcpt to:<a@domain5>
+rcpt to:<xyz@domain6>
+rcpt to:<abc@domain6>
+rcpt to:<x@domain7>
+quit
+****

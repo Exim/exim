@@ -1,0 +1,7 @@
+# widened domains and duplication
+need_ipv4
+#
+exim -odi -N miles@thishost.test.ex
+****
+exim -odi -d -N kilos@recurse.test.ex
+****

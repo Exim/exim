@@ -1,0 +1,31 @@
+# MX handling
+1
+exim -bt userx@eximtesthost.test.ex
+****
+1
+exim -bt userx@mxt1.test.ex
+****
+2
+exim -bt userx@mxt2.test.ex
+****
+2
+exim -bt userx@mxt3.test.ex
+****
+1
+exim -bt userx@mxt4.test.ex
+****
+1
+exim -bt userx@mxt5.test.ex
+****
+1
+exim -bt userx@mxt5.test.ex
+****
+exim -bt userx@mxt6.test.ex
+****
+exim -bt userx@mxt7.test.ex
+****
+exim -bt userx@mxt7.test.ex
+****
+exim -bt userx@mxt8.test.ex
+****
+exim -bt userx@mxt8.test.ex

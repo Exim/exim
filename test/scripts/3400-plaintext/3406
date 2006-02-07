@@ -1,0 +1,21 @@
+# server_advertise_condition
+exim -bs -oMa 10.0.0.2
+ehlo testing.ex
+auth first
+quit 
+****
+exim -bs -oMa 10.0.0.3
+ehlo testing.ex
+auth first
+quit
+****
+exim -bs -oMa 10.0.0.2
+ehlo testing.ex
+auth second
+quit 
+****
+exim -bs -oMa 10.0.0.3
+ehlo testing.ex
+auth second
+quit
+****

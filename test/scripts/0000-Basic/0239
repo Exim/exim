@@ -1,0 +1,11 @@
+# host list in verify output when routing to a local transport
+exim -v -bv userx@localhost
+****
+exim -bv userx@localhost
+****
+exim -v -bt userx@localhost
+****
+exim -bt userx@localhost
+****
+exim -v -bt userx@smtp
+****

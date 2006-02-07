@@ -1,0 +1,13 @@
+# aliasfile with transport + smartuser with new address and transport
+exim -odi firstuser
+Delivered to firstuser
+.
+****
+exim -odi seconduser@test.ex
+Delivered to seconduser
+.
+****
+exim -odi postmaster
+Delivered to default
+.
+****

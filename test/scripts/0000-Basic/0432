@@ -1,0 +1,56 @@
+# callout with -bh and -bhc
+need_ipv4
+#
+exim -bh 1.2.3.4
+mail from:<x@y>
+quit
+****
+server PORT_S
+220 server ready
+HELO
+250 OK
+MAIL
+250 OK
+RCPT
+250 OK
+QUIT
+220 OK
+****
+exim -d -bhc 1.2.3.4
+mail from:<x@y>
+quit
+****
+exim -d -bhc 1.2.3.4
+mail from:<x@y>
+quit
+****
+exim -bhc 1.2.3.4
+mail from:<x@y>
+quit
+****
+server PORT_S
+220 server ready
+HELO
+250 OK
+MAIL
+250 OK
+RCPT
+250 OK
+QUIT
+220 OK
+****
+exim -bhc 1.2.3.4
+mail from:<a@b>
+quit
+****
+# Timeout stuff
+server PORT_S
+220 server ready
+HELO
+*sleep 2
+*eof
+****
+exim -bhc 1.2.3.4
+mail from:<p1@q>
+quit
+****

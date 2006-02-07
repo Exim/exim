@@ -1,0 +1,18 @@
+# ACL and $message_size
+#
+# SIZE unset - should reject at DATA time
+exim -bs
+mail from:<x@y>
+rcpt to:<userx@test.ex>
+data
+Testing, testing
+.
+quit
+****
+# SIZE set - should reject at RCPT time
+exim -bs
+ehlo Testing
+mail from:<x@y> SIZE=100
+rcpt to:<userx@test.ex>
+quit
+****

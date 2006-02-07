@@ -1,0 +1,11 @@
+# deliver_drop_privilege and setuid=EXIMUSER
+exim -odi CALLER
+Testing
+****
+exim -odi EXIMUSER
+Testing
+****
+exim_exim -odi EXIMUSER
+Testing setuid EXIMUSER
+****
+no_msglog_check

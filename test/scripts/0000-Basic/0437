@@ -1,0 +1,9 @@
+# queue run: close lookups before delivery
+exim -odq userx
+First message
+****
+exim -odq userx
+Second message
+****
+exim -q -d-all+lookup
+****

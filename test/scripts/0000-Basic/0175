@@ -1,0 +1,25 @@
+# Forcing verify failures for specific senders
+need_ipv4
+#
+exim -bh V4NET.0.0.0
+mail from:<user@bad.domain>
+rcpt to:<userx@test.ex>
+data
+.
+quit
+****
+exim -bh V4NET.0.0.0
+mail from:<user@bad.domain2>
+rcpt to:<userx@test.ex>
+data
+.
+quit
+****
+exim -bh V4NET.0.0.0
+mail from:<user@ten-1.test.ex>
+rcpt to:<userx@test.ex>
+data
+.
+quit
+****
+no_msglog_check

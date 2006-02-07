@@ -1,0 +1,22 @@
+# smtp_accept_{max,queue}_per_connection
+exim -odi -v -bs
+mail from:<x@y>
+rcpt to:<one@z>
+data
+.
+mail from:<x@y>
+rcpt to:<two@z>
+data
+.
+mail from:<x@y>
+quit
+****
+exim -odi -v -bs
+mail from:<x@y>
+rset
+mail from:<x@y>
+rset
+mail from:<x@y>
+quit
+****
+no_msglog_check

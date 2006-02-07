@@ -1,0 +1,8 @@
+# headers_add, headers_remove (blank, router and transport)
+exim -odi userx@test.ex
+Subject: First message subject
+****
+exim -odi userx@test.ex
+X-RBL-Warning: A faked up RBL header
+Subject: Second message subject
+Tadd: to be replaced

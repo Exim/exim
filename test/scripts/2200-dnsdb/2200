@@ -1,0 +1,41 @@
+# dnsdb lookup in string expansions
+
+exim -be
+test.ex                    ${lookup dnsdb{test.ex}{$value}fail}
+txt=test.ex                ${lookup dnsdb{txt=test.ex}{$value}fail}
+a=black-1.test.ex          ${lookup dnsdb{a=black-1.test.ex}{$value}fail}
+xxx=test.ex                ${lookup dnsdb{xxx=test.ex}{$value}fail}
+a=localhost.test.ex        ${lookup dnsdb{a=localhost.test.ex}{$value}fail}
+cname=alias-eximtesthost.test.ex ${lookup dnsdb{cname=alias-eximtesthost.test.ex}{$value}fail}
+ns=test.ex                 ${lookup dnsdb{ns=test.ex}{$value}fail}
+zns=x.y.z.test.ex          ${lookup dnsdb{zns=x.y.z.test.ex}{$value}fail}
+mx=mxt1.test.ex            ${lookup dnsdb{mx=mxt1.test.ex}{$value}fail}
+mx=mxt3.test.ex            ${lookup dnsdb{mx=mxt3.test.ex}{$value}fail}
+mxh=mxt1.test.ex           ${lookup dnsdb{mxh=mxt1.test.ex}{$value}fail}
+ptr=V4NET.0.0.1            ${lookup dnsdb{ptr=V4NET.0.0.1}{$value}fail}
+ptr=ptr.test.ex            ${lookup dnsdb{ptr=ptr.test.ex}{$value}fail}
+srv=_smtp._tcp.srv01.test.ex     ${lookup dnsdb{srv=_smtp._tcp.srv01.test.ex}{$value}{fail}}
+srv=_smtp._tcp.nosmtp.test.ex    ${lookup dnsdb{srv=_smtp._tcp.nosmtp.test.ex}{$value}{fail}}
+
+csa=csa1.test.ex           ${lookup dnsdb{csa=csa1.test.ex}}
+csa=csa2.test.ex           ${lookup dnsdb{csa=csa2.test.ex}}
+
+# DNS lookups with multiple items
+
+ten-1:ten2                 ${lookup dnsdb{a=ten-1.test.ex:ten-2.test.ex}}
+ten-1:defer:ten2           ${lookup dnsdb{a=ten-1.test.ex:test.again.dns:ten-2.test.ex}}
+ten-1|ten2                 ${lookup dnsdb{a=<|ten-1.test.ex|ten-2.test.ex}}
+mxt1;mxt2 | output         ${lookup dnsdb{>|mx=<;mxt1.test.ex;mxt2.test.ex}}
+mxt1;mxt2 | output         ${lookup dnsdb{>|mxh=<;mxt1.test.ex;mxt2.test.ex}}
+13/14 rbl                  ${lookup dnsdb{> 13.12.11.V4NET.rbl.test.ex:13.12.11.V4NET.rbl.test.ex}}
+double ptr                 ${lookup dnsdb{ptr=V4NET.0.0.1:V4NET.0.0.2}}
+ten-1:bad                  ${lookup dnsdb{ a = ten-1.test.ex:badbad.test.ex}{$value}{FAILED}}
+bad:bad                    ${lookup dnsdb{ a = <; badbad.test.ex ; badbad.test.ex}{$value}{FAILED}}
+
+defer:defer                ${lookup dnsdb{a=test.again.dns:test.again.dns}}
+defer_lax:ten-1            ${lookup dnsdb{a=test.again.dns:ten-1.test.ex}}
+defer_lax:ten-1            ${lookup dnsdb{defer_lax,a=test.again.dns:ten-1.test.ex}}
+defer_never:ten-1          ${lookup dnsdb{defer_never,a=test.again.dns:ten-1.test.ex}}
+defer_never:defer          ${lookup dnsdb{defer_never,a=test.again.dns:test.again.dns}}
+defer_strict:ten-1         ${lookup dnsdb{defer_strict,a=test.again.dns:ten-1.test.ex}}
+****

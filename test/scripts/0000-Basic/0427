@@ -1,0 +1,540 @@
+# Sieve tests using -bf
+rmfiltertest
+catwrite test-data
+# Sieve filter
+if address ["From","To"] "marian@abcdefgh.example"
+        { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if address :is "From" "marian@abcdefgh.example"
+        { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if address :is "To" "marian@abcdefgh.example"
+        { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if address :contains "To" "abcdefgh"
+        { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if address :matches "To" "*abc?efgh*"
+        { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if true { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if false { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if allof (false,false) { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if allof (true,false) { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if allof (false,true) { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if allof (true,true) { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if anyof (false,false) { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if anyof (true,false) { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if anyof (false,true) { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if anyof (true,true) { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if not anyof (false,false) { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if not anyof (true,false) { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if not anyof (false,true) { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if not anyof (true,true) { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header "to" "MARIAN@abcdefgh.example" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header :comparator "i;octet" "to" "MARIAN@abcdefgh.example" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header :comparator "i;ascii-casemap" "to" "MARIAN@abcdefgh.example" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+require "envelope";
+if envelope "from" "marian@somenet.example" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+require "envelope";
+if envelope "from" "offerqn@bpk.example.com" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if exists [ "X-NotHere", "X-Notheretoo" ] { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if exists [ "X-NotHere", "Delivered-To" ] { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if exists [ "From", "Delivered-To" ] { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header :contains "X-NotHere" "" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header "Delivered-To" "" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header :contains "Delivered-To" "" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header :contains "Delivered-To" "rc@irc.somenet.example" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header "Delivered-To" ["irc@irc.somenet.example"] { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header "Delivered-To" ["irc@irc.somenet.example","irc@01019somenet.example","some.one"] { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header "Mime-Version" "1.0" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if false { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if true { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if true { discard; } else { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if false { keep; } else { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if false { keep; } elsif true { discard; } else { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if true { discard; } elsif true { keep; } else { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if false { keep; }
+	else
+	{ if true { discard; } else { keep; } }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header :matches "to" "MA*AN@abc*fg?.example" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if not header :matches "to" "MA?AN@abc*fg?.example" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header :matches "to" "*marian@abcdefgh.example" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if not header :matches "to" "?marian@abcdefgh.example" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header :matches "to" "marian@abcdefgh.example*" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if not header :matches "to" "marian@abcdefgh.example?" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header :matches "x-special1" "\\?*\\*" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header :matches "x-special1" "*\0*" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if not header :matches "x-special1" "*\0*q" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if not header :matches "x-special2" "\\?*\\*" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if not header :matches "x-special2" "*\0*" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if size :over 400 {
+            discard;
+            }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if size :over 4K {
+            discard;
+            }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if size :under 4K { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if size :under 400 { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if false { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+# Syntax checks
+catwrite test-data
+# no filter line here
+if unknowntest { keep; }
+****
+1
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if test keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if test { keep;
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if true { unknownaction; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if true { fileinto abcdefgh; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+require "fileinto";
+if true { fileinto "abcdefgh"; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header ["to"] [ "marian@abcdefgh.example", "achnee"] { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header "to" [ "egal", "achnee" { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header "to","from"] "egal" { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header ["to","from" "egal" { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header ["to",,"from"] "egal" { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header ["to",] "egal" { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header [,"to"] "egal" { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if unknowntest { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header :matches "to" "egal" { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+if header :unknown "to" "egal" { keep; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
+#
+require ["fileinto", "envelope"];
+
+if header :matches "X-Warning" "* is listed at list.dsbl.org*"
+            {
+            keep;               # keep in "In" folder
+            }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message2
+****
+catwrite test-data
+# Sieve filter
+if header "x-1" "1" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message3
+****
+catwrite test-data
+# Sieve filter
+if not header "x-1" "=?ISO-8859-1?Q?=31?=" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message3
+****
+catwrite test-data
+# Sieve filter
+if header "x-1b" "=?ISO-8859-1?Q?=31=" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message3
+****
+catwrite test-data
+# Sieve filter
+if header "x-b64" "This is BASE64" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message3
+****
+catwrite test-data
+# Sieve filter
+if header "x-b64-broken" "=?iso-8859-1?b?VGhpcyBpcyBCQVNFNjQ?=" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message3
+****
+catwrite test-data
+# Sieve filter
+if header "x-q75total" "0123456789012345678901234567890123456789012345678901234567" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message3
+****
+catwrite test-data
+# Sieve filter
+if header "x-q76total" "=?ISO-8859-1?Q?01234567890123456789012345678901234567890123456789012345678?=" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message3
+****
+catwrite test-data
+# Sieve filter
+if header "X-Wrapped" "eins zwei drei" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message3
+****
+catwrite test-data
+# Sieve filter
+if header "x-nomimewrap" "=?iso-8859-1?q?abc def ghi?=" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message3
+****
+catwrite test-data
+# Sieve filter
+if header "subject" "abcdefghi" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message3
+****
+catwrite test-data
+# Sieve filter
+if header "x-mixed" "abc def" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message3
+****
+catwrite test-data
+#Sieve filter
+if true { stop; fileinto "inbox.never"; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message3
+****

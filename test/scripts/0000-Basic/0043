@@ -1,0 +1,11 @@
+# Sender and recipient verification
+exim -bh V4NET.0.0.97
+ehlo exim.test.ex
+mail from:junkjunk@exim.test.ex
+rcpt to:<postmaster@exim.test.ex>
+rset
+mail from:postmaster@exim.test.ex
+rcpt to:postmaster@exim.test.ex
+rcpt to:junkjunk@exim.test.ex
+rcpt to:fail@exim.test.ex
+quit

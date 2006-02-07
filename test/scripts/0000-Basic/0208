@@ -1,0 +1,29 @@
+# msglog: success, defer, and failure messages
+need_ipv4
+#
+server PORT_S
+220 Welcome
+EHLO
+250 OK
+MAIL
+250 OK
+RCPT
+550 Recipient refused
+QUIT
+250 OK
+****
+exim -odi ok defer fail.transport fail.direct fail.route@unknown.domain
+****
+server PORT_S
+220 Welcome
+EHLO
+250 OK
+MAIL
+250 OK
+RCPT
+550 Recipient refused
+QUIT
+250 OK
+****
+exim -DMESSAGE_LOGS=false -odi ok defer fail.transport fail.direct fail.route@unknown.domain
+****

@@ -1,0 +1,15 @@
+# recipients_max
+1
+exim -odi userx usery
+From: me
+
+Body
+.
+****
+1
+exim -odi -oep userx usery
+From: me
+
+Body
+.
+****

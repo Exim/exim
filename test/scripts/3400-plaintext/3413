@@ -1,0 +1,10 @@
+# smtp_accept_max_nonmail and failing auth
+1
+exim -bs
+ehlo x.y.z
+auth rhubarb
+auth rhubarb
+auth rhubarb
+auth rhubarb
+auth rhubarb
+****

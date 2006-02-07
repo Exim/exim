@@ -1,0 +1,6 @@
+# local delivery config problems
+exim -odi bad.return bad.return2 bad.uid exp.fail userx
+****
+exim -qf
+****
+no_msglog_check

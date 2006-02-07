@@ -1,0 +1,10 @@
+# deliver time scan - pipe using BSMTP
+exim -odi userx
+Test message
+****
+exim -odi userx usery userz
+Another test message
+****
+exim -odi userx userx@non-local.example
+Yet another test message
+****

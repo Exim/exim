@@ -1,0 +1,8 @@
+# port specifications in list of hosts
+need_ipv4
+#
+exim -bt x@y
+****
+exim -odi x@y
+****
+no_msglog_check

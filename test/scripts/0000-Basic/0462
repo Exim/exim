@@ -1,0 +1,43 @@
+# callout verification with/without postmaster and caching
+need_ipv4
+#
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RSET
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 NO
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.1
+MAIL FROM:<Ok@localhost>
+RCPT TO:<checkpm@test.ex>
+RCPT TO:<nocheckpm@test.ex>
+QUIT
+****
+# This one fails the actual address
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 NO
+QUIT
+250 OK
+****
+sudo exim -d-all+verify -v -bs -oMa V4NET.0.0.2
+MAIL FROM:<NOTok@elsewhere>
+RCPT TO:<nocheckpm@test.ex>
+QUIT
+****

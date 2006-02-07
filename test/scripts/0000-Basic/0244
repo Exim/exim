@@ -1,0 +1,7 @@
+# skipping in expansions
+exim -be
+${if eq {0}{0}{OK}{${lookup{x}lsearch{/x/y}}}}
+${if eq {0}{0}{OK}{${extract{key}{${lookup{x}lsearch{/x/y}}}}}}
+${if eq {0}{0}{OK}{${tr{${extract{key}{${lookup{x}lsearch{/x/y}}}}}{x}{y}}}}
+${if eq {0}{0}{OK}{${sg{${extract{key}{${lookup{x}lsearch{/x/y}}}}}{x}{y}}}}
+****

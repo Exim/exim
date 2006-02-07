@@ -1,0 +1,4 @@
+# Non-absolute file name in filter save - transport sets home_directory
+exim -odi userx
+Testing, testing
+****

@@ -1,0 +1,7 @@
+# dlfunc expansion
+exim -be
+${dlfunc{DIR/bin/loaded}{dltest}}
+${dlfunc{DIR/bin/loaded}{dltest}{one argument}}
+${dlfunc{DIR/bin/loaded}{dltest}{1}{2}}
+${dlfunc{DIR/bin/loaded}{dltest}{1}{2}{3}}
+****

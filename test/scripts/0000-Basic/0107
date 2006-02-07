@@ -1,0 +1,9 @@
+# create_file = belowhome
+mkdir test-empty
+ln -s ../test-empty test-mail/link
+exim -odi userx usery userz sub1 sub2 sub3
+To: userx
+
+Testing.
+****
+no_message_check

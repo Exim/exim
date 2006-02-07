@@ -1,0 +1,52 @@
+# TLS client: 4xx response to STARTTLS
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250-STARTTLS
+250 PIPELINING
+STARTTLS
+450 temp problem
+QUIT
+250 OK
+****
+exim -DTRYCLEAR=tls_tempfail_tryclear=false -odi x@y
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250-STARTTLS
+250 PIPELINING
+STARTTLS
+450 temp problem
+MAIL FROM:
+250 OK
+RCPT TO:
+250 OK
+DATA
+354 Go ahead
+.
+250 OK
+QUIT
+250 OK
+****
+exim -qf
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250-STARTTLS
+250 PIPELINING
+STARTTLS
+450 temp problem
+QUIT
+250 OK
+****
+exim -DREQUIRE=hosts_require_tls=* -odi x@y
+****
+no_msglog_check

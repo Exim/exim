@@ -1,0 +1,58 @@
+# verify = not_blind
+exim -odq -bs
+mail from:<>
+rcpt to:<userx@dom.com>
+data
+To: a@b.c, himself <userx@dom.com>
+.
+quit
+****
+exim -odq -bs
+mail from:<>
+rcpt to:<userx@dom.com>
+data
+To: a@b.c, himself <usery@dom.com>
+.
+quit
+****
+exim -DERROR_DETAILS=smtp_return_error_details -odq -bs
+mail from:<>
+rcpt to:<userx@dom.com>
+data
+To: a@b.c, himself <usery@dom.com>
+.
+quit
+****
+exim -odq -bs
+mail from:<>
+rcpt to:<userx@dom.com>
+rcpt to:<usery@dom.com>
+data
+To: a@b.c, himself <usery@dom.com>
+Cc: unqualified, userx@dom.com, x@y.z
+.
+quit
+****
+exim -odq -bs
+mail from:<>
+rcpt to:<userx@dom.com>
+rcpt to:<usery@dom.com>
+rcpt to:<userz@dom.com>
+data
+To: a@b.c, himself <usery@dom.com>
+Cc: unqualified, userx@dom.com, x@y.z
+.
+quit
+****
+exim -odq -bs
+mail from:<>
+rcpt to:<userx@dom.com>
+rcpt to:<usery@dom.com>
+data
+Resent-To: a@b.c, himself <usery@dom.com>
+Resent-Cc: unqualified, userx@dom.com, x@y.z
+To: an@other
+.
+quit
+****
+no_msglog_check

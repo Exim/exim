@@ -1,0 +1,73 @@
+# -Mas -Mai (trusted caller); also -v and auth data
+need_ipv4
+#
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH PLAIN
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+235 Authentication successful
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -v -odi userx@domain.com
+.
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH PLAIN
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+235 Authentication successful
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -v -oMas xxx@yyy -oMai zzz -odi userx@domain.com
+.
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH LOGIN
+AUTH LOGIN
+300 User?
+dXNlcng=
+300 Password?
+c2VjcmV0
+235 Authentication successful
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -v -odi userx@domain.com
+.
+****

@@ -1,0 +1,38 @@
+# autoreply
+exim -odi userx@test.ex
+Subject: first message; non-printer ><
+****
+exim -odi userx@test.ex
+Subject: second message
+****
+exim -DONCE=once= -DRETURN=return_message -odi userx@test.ex
+Subject: third message
+
+This has return_message set.
+****
+exim -DONCE= -DRETURN=return_message -DONLY=body_only -odi userx@test.ex
+Subject: third message
+
+This has return_message set with body_only.
+****
+exim -DONCE= -DRETURN=return_message -DONLY=headers_only -odi userx@test.ex
+Subject: third message
+
+This has return_message set with headers_only.
+****
+# This message has a From: line that is syntactically OK when encoded, but
+# which isn't OK when decoded.
+exim -DONCE= -odi userx@test.ex
+Subject: Encoded from
+From: =?ISO-8859-1?Q?CALLER=40test=2Eex?= <CALLER@test.ex>
+
+This is a test for encoded headers ane $reply_address.
+****
+# This message has a From: line that is syntactically bad, and we process it
+# with a filter.
+exim -DONCE= -odi userx-filter@test.ex
+Subject: Bad from
+From: "something" x@y
+
+This is a test for a bad From: line.
+****

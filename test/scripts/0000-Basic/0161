@@ -1,0 +1,18 @@
+# further "self" tests
+need_ipv4
+#
+exim -d-all+route -bt xx@mxt6.test.ex
+****
+exim -d-all+route -bt myhost.test.ex@mxt1.test.ex
+****
+exim -d-all+route -bt xx@mxt1.test.ex
+****
+2
+exim -d-all+route -bt xx@not.exist
+****
+2
+exim -d-all+route -bt ff@mxt1.test.ex
+****
+2
+exim -d-all+route -bt fff@mxt1.test.ex
+****

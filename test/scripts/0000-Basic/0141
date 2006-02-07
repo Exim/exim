@@ -1,0 +1,12 @@
+# -bv, -bt with trusted things
+2
+exim -bv -oMr prot1 xxx@test.ex
+****
+2
+exim -bt -oMr prot2 xxx@test.ex
+****
+2
+exim -bvs xxx@test.ex
+****
+exim -odi -oMr prot1 xxx@test.ex
+****

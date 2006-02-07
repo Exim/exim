@@ -1,0 +1,34 @@
+# -bs to simple local delivery
+exim -bs -odi
+mail from:someone@some.domain
+rcpt to:CALLER@HOSTNAME
+data
+This is a test message.
+It has three lines.
+This is the last line.
+.
+quit
+****
+exim -bs -odi
+mail from:someone@some.domain
+rcpt to:CALLER@HOSTNAME
+data
+Subject: second
+
+This is a second test message.
+.
+quit
+****
+exim_exim -bs -odq
+mail from:someone@some.domain
+rcpt to:CALLER@HOSTNAME
+data
+Subject: third
+Reply-to: some@body
+
+This is a third test message.
+.
+quit
+****
+exim -q
+****

@@ -1,0 +1,14 @@
+# -R and spool pollution
+exim -odq -f test-local-scan@test.ex userx
+local-scan: accept This is text for the local scan returned header
+  and I am going to make sure that it is quite long
+****
+exim -odq userx
+Message 2
+.
+****
+exim -Rf userx
+****
+sudo perl DIR/aux-fixed/9401.perl
+****
+no_msglog_check

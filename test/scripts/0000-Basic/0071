@@ -1,0 +1,3 @@
+# pipe transport not set
+exim -odi pipe
+Some message text.

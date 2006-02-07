@@ -1,0 +1,29 @@
+# Basic configuration setting
+
+# Check that Exim can handle settings of all the configuration options that
+# are not dependent on optional features in the binary. This catches out error
+# in putting new options in the wrong order. Well, sometimes it does. We get
+# it to print out a sample set of configuration variables.
+
+exim -bP accept_8bitmime \
+         bounce_message_file \
+         callout_domain_negative_expire \
+         daemon_smtp_ports \
+         envelope_to_remove \
+         finduser_retries \
+         gecos_name \
+         headers_charset \
+         ignore_bounce_errors_after \
+         keep_malformed \
+         local_from_check \
+         max_username_length \
+         never_users \
+         percent_hack_domains \
+         qualify_domain \
+         receive_timeout \
+         sender_unqualified_hosts \
+         tcp_nodelay \
+         trusted_users \ 
+         unknown_login \
+         warn_message_file
+****

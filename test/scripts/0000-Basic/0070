@@ -1,0 +1,60 @@
+# helo_verify_hosts and helo_try_verify_hosts
+exim -bh V4NET.0.0.1
+mail from:<userx@cus.cam.ac.uk>
+quit
+****
+exim -bh V4NET.0.0.13
+mail from:<userx@cus.cam.ac.uk>
+rcpt to:<a@b>
+quit
+****
+exim -bh V4NET.0.0.2
+helo [V4NET.0.0.1]
+mail from:<a@b>
+rcpt to:<c@d>
+quit
+****
+exim -bh V4NET.0.0.2
+helo [V4NET.0.0.2]
+mail from:<a@b>
+rcpt to:<c@d>
+quit
+****
+exim -bh V4NET.0.0.1
+helo ten-1.test.ex
+quit
+****
+exim -bh V4NET.0.0.3
+helo ten-3.test.ex
+helo ten-3-alias.test.ex
+helo ten-3xtra.test.ex
+quit
+****
+exim -bh V4NET.0.0.1
+ehlo rhubarb
+quit
+****
+# This is a special IP address that provokes a temporary lookup failure
+exim -DHVH=99.99.99.99 -bh 99.99.99.99
+ehlo rhubarb
+quit
+****
+exim -bh V4NET.0.0.13
+helo [V4NET.0.0.99]
+mail from:<a@b>
+rcpt to:<c@d>
+quit
+****
+exim -bh V4NET.0.0.13
+helo [V4NET.0.0.13]
+mail from:<a@b>
+rcpt to:<c@d>
+quit
+****
+# Temporary lookup when not in helo_try_verify_hosts
+exim -bh 99.99.99.99
+ehlo rhubarb
+mail from:<a@b>
+rcpt to:<c@d>
+quit
+****

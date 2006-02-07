@@ -1,0 +1,7 @@
+# timeout_frozen_after and system filter
+exim -d-all+filter -odi userx
+****
+sleep 1
+exim -d-all+filter -qf
+****
+no_msglog_check

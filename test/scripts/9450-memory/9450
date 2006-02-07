@@ -1,0 +1,3 @@
+# Memory handling for lookups that build long strings
+exim -d-all+memory -bt alias
+****

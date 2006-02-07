@@ -1,0 +1,5 @@
+# redirect and qualify domain
+exim -N -odi r1@test.ex r2@test.ex
+****
+exim -N -DQDG=qualify_domain=qd.text.ex -odi r1@test.ex r2@test.ex
+****

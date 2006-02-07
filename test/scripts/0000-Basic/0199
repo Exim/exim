@@ -1,0 +1,8 @@
+# EXPN remote address becoming local
+exim -bs -oMa 127.0.0.1
+expn somewhere@over.the.rainbow
+expn somewhere@else.where
+expn xxxx@exim.org
+expn xxxx@test.ex
+quit
+****

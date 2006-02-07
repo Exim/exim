@@ -1,0 +1,6 @@
+# Detect 0.0.0.0 as local
+need_ipv4
+#
+1
+exim -bt x@y
+****

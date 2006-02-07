@@ -1,0 +1,8 @@
+# defer in hold_domains, queue_domains
+exim -odi a@test.ex b@other.domain c@hold.remote.ex d@hold2.remote.ex e@queue.go.remote.ex f@queue2.go.remote.ex
+****
+1
+exim -bv a@test.ex b@other.domain 
+****
+no_message_check
+no_msglog_check

@@ -1,0 +1,5 @@
+# VRFY logging failures
+exim -bh 1.1.1.1
+vrfy userx@test.ex
+vrfy junkjunk@test.ex
+quit

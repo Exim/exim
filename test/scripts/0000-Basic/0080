@@ -1,0 +1,12 @@
+# RBL /reject (default warn)
+exim -bh V4NET.11.12.14
+ehlo exim.test.ex
+mail from:postmaster@exim.test.ex
+rcpt to:<postmaster@exim.test.ex>
+rcpt to:list@exim.test.ex
+data
+test data
+.
+quit
+****
+no_msglog_check

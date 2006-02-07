@@ -1,0 +1,73 @@
+# SMTP error details and rejected_header log selector
+need_ipv4
+#
+exim -bs
+mail from:<>
+rcpt to:<x@y>
+data
+From: <bad@syntax
+.
+mail from:<>
+rcpt to:<x@y>
+data
+From: bad@domain
+.
+mail from:<callout@x>
+rcpt to:<x@y>
+rset
+mail from:<nosyntax@x>
+rcpt to:<x@y>
+data
+From: <bad@syntax
+.
+mail from:<>
+rcpt to:<x@y>
+data
+From: <unverifiable@y>
+.
+mail from:<recipcallout@y>
+rcpt to:<callout@y>
+rset
+mail from:<>
+rcpt to:<cantverify.fail@y>
+rset
+mail from:<>
+rcpt to:<cantverify.defer@y>
+rset
+quit
+****
+exim -DDETAILS=true -DSELECTOR=-rejected_header -bs
+mail from:<>
+rcpt to:<x@y>
+data
+From: <bad@syntax
+.
+mail from:<>
+rcpt to:<x@y>
+data
+From: bad@domain
+.
+mail from:<callout@x>
+rcpt to:<x@y>
+rset
+mail from:<nosyntax@x>
+rcpt to:<x@y>
+data
+From: <bad@syntax
+.
+mail from:<>
+rcpt to:<x@y>
+data
+From: <unverifiable@y>
+.
+mail from:<recipcallout@y>
+rcpt to:<callout@y>
+rset
+mail from:<>
+rcpt to:<cantverify.fail@y>
+rset
+rset
+mail from:<>
+rcpt to:<cantverify.defer@y>
+quit
+****

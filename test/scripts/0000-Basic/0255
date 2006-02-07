@@ -1,0 +1,21 @@
+# repeated unknown SMTP commands
+exim -bs
+one
+two
+three
+four
+five
+six
+****
+exim -bh V4NET.0.0.0
+one
+two
+three
+four
+five
+six
+****
+exim -DOPTION=smtp_max_unknown_commands=1 -bh V4NET.0.0.0
+one
+two
+****

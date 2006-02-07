@@ -1,0 +1,4 @@
+# Missing command in pipe transport
+exim -odi userx@test.ex
+****
+no_msglog_check

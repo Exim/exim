@@ -1,0 +1,23 @@
+# closed mailing lists (3 routers)
+exim -odi -f anyone@anywhere list1-request@lists.test.ex
+****
+exim -odi -f sub1@test.ex list1@lists.test.ex
+****
+exim -odi -f anyone@anywhere list1@lists.test.ex
+****
+exim -odi -f anyone@anywhere nonlist@lists.test.ex
+****
+exim -bh 1.2.3.4
+mail from:<anyone@anywhere>
+rcpt to:<list1-request@lists.test.ex>
+rset
+mail from:<sub1@test.ex>
+rcpt to:<list1@lists.test.ex>
+rset
+mail from:<anyone@anywhere>
+rcpt to:<list1@lists.test.ex>
+rset
+mail from:<anyone@anywhere>
+rcpt to:<nonlist@lists.test.ex>
+quit
+****

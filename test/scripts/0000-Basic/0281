@@ -1,0 +1,39 @@
+# @ items in domain lists and host lists
+exim -bh V4NET.1.1.1
+mail from:<x@y>
+rcpt to:<1@myhost.test.ex>
+rcpt to:<1@[127.0.0.1]>
+rcpt to:<1@else.where>
+rcpt to:<2@mxt13.test.ex>
+rcpt to:<2@mxt1.test.ex>
+rcpt to:<2@mxt6.test.ex>
+rcpt to:<2@mxt9.test.ex>
+rcpt to:<2@mxnone.test.ex>
+rcpt to:<3@mxt5.test.ex>
+rcpt to:<3@mxt6.test.ex>
+rcpt to:<3@mxt9.test.ex>
+rcpt to:<3@mxnone.test.ex>
+rcpt to:<4@mxt5.test.ex>
+rcpt to:<4@mxt6.test.ex>
+rcpt to:<4@mxt9.test.ex>
+rcpt to:<4@mxnone.test.ex>
+rcpt to:<5@myhost.test.ex>
+quit
+****
+exim -bh V4NET.10.10.10
+mail from:<x@y>
+rcpt to:<5@myhost.test.ex>
+quit
+****
+exim -bh 127.0.0.1
+mail from:<x@y>
+rcpt to:<5@myhost.test.ex>
+quit
+****
+exim -bh V4NET.1.1.1
+mail from:<x@y>
+rcpt to:<2@mxt3.test.ex>
+rcpt to:<3@mxt3.test.ex>
+rcpt to:<4@mxt3.test.ex>
+quit
+****

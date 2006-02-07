@@ -1,0 +1,4 @@
+# Line breaking in SMTP error message containing a long word
+exim -bh V4NET.13.13.1
+quit
+****

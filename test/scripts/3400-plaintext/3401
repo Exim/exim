@@ -1,0 +1,141 @@
+# plaintext client tests
+need_ipv4
+#
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH LOGIN
+AUTH LOGIN
+334 VXNlciBOYW1l
+dXNlcng
+334 UGFzc3dvcmQ=
+c2VjcmV0
+235 Authentication successful
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx@domain.com
+.
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH PLAIN
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+235 Authentication successful
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx@domain.com
+.
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH PLAIN
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+535 Sorry, authentication failed
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx@domain.com
+.
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH LOGIN
+AUTH LOGIN
+****
+exim -odi userx@domain.com
+.
+****
+# Authentication required, but fails
+# Get rid of retry first
+sudo rm spool/db/*
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH PLAIN
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+535 Sorry, authentication failed
+QUIT
+250 OK
+****
+exim -odi userx@authdomain.com
+.
+****
+# Authentication required, but not offered
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+QUIT
+250 OK
+****
+exim -odi userx@authdomain.com
+.
+****
+# Forced AUTH sender
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH LOGIN
+AUTH LOGIN
+334 VXNlciBOYW1l
+dXNlcng
+334 UGFzc3dvcmQ=
+c2VjcmV0
+235 Authentication successful
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi forcesender@domain.com
+.
+****
+no_msglog_check

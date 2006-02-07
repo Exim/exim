@@ -1,0 +1,9 @@
+# $h_ $bh_ and $rh_ expansions
+exim -bf DIR/aux-fixed/TESTNUM.f
+subject:       lots of leading and trailing space         
+To:    a@b
+To:    c@d
+X-8: (=?iso-8859-8?b?7eXs+SDv4SDp7Oj08A==?=)
+X-9: =?ISO-8859-1?Q?Patrik_F=E4ltstr=F6m?= <xxx>
+X-10: =?US-ASCII?Q?Keith_Moore?= <xxx>
+****

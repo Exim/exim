@@ -1,0 +1,45 @@
+# affixes in RCPT commands
+need_ipv4
+#
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL
+250 OK
+RCPT
+250 OK
+RCPT
+250 OK
+DATA
+354 Go ahead
+.
+250 OK
+QUIT
+220 OK
+****
+exim -odi pre-xxx@a.b  xxx+post@a.b
+****
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL
+250 OK
+RCPT
+250 OK
+RCPT
+250 OK
+DATA
+354 Go ahead
+.
+250 OK
+QUIT
+220 OK
+****
+exim -DAFFIX=rcpt_include_affixes -odi pre-xxx@a.b  xxx+post@a.b
+****
+exim -odi pre.xxx@a.b
+****
+exim -DAFFIX=rcpt_include_affixes -odi pre.xxx@a.b
+****

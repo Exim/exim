@@ -1,0 +1,25 @@
+# expansion of message_size_limit on transport
+exim -odi 50 55 1k 44litres
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+This is a test message. This is a test message.
+****
+no_msglog_check

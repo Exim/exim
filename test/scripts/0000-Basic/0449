@@ -1,0 +1,11 @@
+# queue_only_file
+sudo rm -f DIR/test-data
+exim -odi userx
+Message 1
+****
+touch DIR/test-data
+exim -odi userx
+Message 2
+****
+sudo rm DIR/test-data
+no_msglog_check

@@ -1,0 +1,5 @@
+# deliver to a FIFO (nothing listening)
+mkfifo -m 0600 DIR/test-fifo
+exim -odi userx@test.ex
+Test message
+.

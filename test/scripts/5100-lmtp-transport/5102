@@ -1,0 +1,77 @@
+# LMTP over a socket (using lmtp transport)
+need_ipv4
+#
+server DIR/test.socket
+220
+LHLO
+220 OK
+MAIL
+250 OK
+RCPT
+250 OK
+DATA
+334 send more
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx
+This is a test message.
+****
+server DIR/test.socket
+*sleep 3
+****
+exim -odi userx
+This is a test message.
+****
+server DIR/test.socket
+440 Sorry, there's a problem here
+****
+exim -qf
+****
+server DIR/test.socket
+220 Welcome to this LMTP simulation
+LHLO
+250-Hello there
+250 SIZE
+MAIL FROM
+550 Don't like that sender
+QUIT
+250 OK
+****
+exim -qf
+****
+server DIR/test.socket
+220 Welcome to this LMTP simulation
+LHLO
+250-Hello there
+250 SIZE
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+450 This one is delayed on RCPT
+RCPT TO
+550 This one is unknown on RCPT
+RCPT TO
+250 OK
+DATA
+354 Send it
+.
+250 Number 1 is OK
+450 Number 2 is now delayed
+550 Number 3 is now rejected
+250 Number 6 is OK
+QUIT
+250 OK
+****
+exim -odi lp1 lp2 lp3 lp4 lp5 lp6
+This is a test message
+****
+no_msglog_check

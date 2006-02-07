@@ -1,0 +1,5 @@
+# errors_to verify loop
+exim -bv userx
+****
+exim -bt userx
+****

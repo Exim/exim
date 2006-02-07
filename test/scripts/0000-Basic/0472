@@ -1,0 +1,7 @@
+# $n in system filter -> $sn in user filter with different filter users
+exim -odi userz
+Testing
+****
+exim -DFUSER=system_filter_user=EXIMUSER -odi userz
+Testing 2
+****

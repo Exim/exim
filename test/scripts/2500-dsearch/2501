@@ -1,0 +1,4 @@
+# dsearch in domain list
+2
+exim -bt xxx@okdomain yyy@notokdomain zzz@dom/mod
+****

@@ -1,0 +1,42 @@
+# Partial matching and lookup name decoding
+exim -bs
+mail from:<x@a.b.c>
+rcpt to:<x@y>
+rset
+mail from:<x@b.c.a>
+rcpt to:<x@y>
+quit
+****
+exim -bs -oMa 10.9.8.7
+mail from:<x@b.c.a>
+rcpt to:<x@y>
+quit
+****
+exim -bs -oMa 192.168.4.5
+mail from:<x@b.c.a>
+rcpt to:<x@y>
+quit
+****
+exim -bs -oMa 1.2.3.4
+mail from:<x@b.c.a>
+rcpt to:<x@y>
+quit
+****
+exim -d-all+lookup -be
+ 1 ${lookup{a.b.c}partial-lsearch{DIR/aux-fixed/TESTNUM.1}}
+ 2 ${lookup{x.y.c}partial-lsearch{DIR/aux-fixed/TESTNUM.1}}
+ 3 ${lookup{x.y.c}partial-lsearch*{DIR/aux-fixed/TESTNUM.1}}
+ 4 ${lookup{x.y.c}partial1-lsearch{DIR/aux-fixed/TESTNUM.1}}
+ 5 ${lookup{x@y.c}partial1-lsearch*@{DIR/aux-fixed/TESTNUM.1}}
+ 6 ${lookup{x@y.c}lsearch*@{DIR/aux-fixed/TESTNUM.1}}
+ 7 ${lookup{a.b.c}partial(*.)lsearch{DIR/aux-fixed/TESTNUM.1}} 
+ 8 ${lookup{a.b.c}partial(.)lsearch{DIR/aux-fixed/TESTNUM.1}} 
+ 9 ${lookup{a.b.c}partial()lsearch{DIR/aux-fixed/TESTNUM.1}} 
+10 ${lookup{a.b.c}partial(*)lsearch{DIR/aux-fixed/TESTNUM.1}} 
+11 ${lookup{p.q.r}partial0(*.)lsearch{DIR/aux-fixed/TESTNUM.1}} 
+12 ${lookup{p.q.r}partial0(.)lsearch{DIR/aux-fixed/TESTNUM.1}} 
+13 ${lookup{x.aa.bb}partial0(++)lsearch{DIR/aux-fixed/TESTNUM.1}} 
+14 ${lookup{x.aa.zz}partial0(++)lsearch{DIR/aux-fixed/TESTNUM.1}} 
+15 ${lookup{x.aa.zz}partial1(++)lsearch*{DIR/aux-fixed/TESTNUM.1}} 
+16 ${lookup{a.b.c}partial-lsearch{DIR/aux-fixed/TESTNUM.1}{$value|$0|$1|$2}}
+****

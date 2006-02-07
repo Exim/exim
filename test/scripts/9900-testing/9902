@@ -1,0 +1,15 @@
+# host name lookup order
+# NOT WORKING
+echo THIS TEST DOES NOT WORK
+exim -d-all+lookup+dns -bh V4NET.0.0.1
+quit
+****
+exim -DORDER='host_lookup_order=byaddr:bydns' -d-all+lookup+dns -bh V4NET.0.0.1
+quit
+****
+exim -d-all+lookup+dns -bh 1.2.3.4
+quit
+****
+exim -DORDER='host_lookup_order=byaddr:bydns' -d-all+lookup+dns -bh 1.2.3.4
+quit
+****

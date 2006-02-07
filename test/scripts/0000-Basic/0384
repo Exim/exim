@@ -1,0 +1,8 @@
+# preserve state on 2nd EHLO
+exim -bh V4NET.9.8.7
+EHLO [V4NET.9.8.7]
+MAIL FROM:<x@y>
+EHLO [1.2.3.4]
+RCPT TO:<a@b>
+QUIT
+****

@@ -1,0 +1,39 @@
+# retrying address errors (not first address)
+need_ipv4
+#
+server PORT_S
+220 ESMTP
+EHLO
+250 HELP
+MAIL
+250 OK
+RCPT
+451 Temporary error
+RCPT
+451 Temporary error
+QUIT
+250 OK
+****
+exim -odi -d-all+retry userx usery
+Testing 1
+****
+dump retry
+sleep 4
+server PORT_S
+220 ESMTP
+EHLO
+250 HELP
+MAIL
+250 OK
+RCPT
+451 Temporary error
+RCPT
+451 Temporary error
+QUIT
+250 OK
+****
+exim -q -d-all+retry
+Testing 1
+****
+dump retry
+no_msglog_check

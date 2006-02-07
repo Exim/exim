@@ -1,0 +1,6 @@
+# domain matching in manualroute router
+exim -bt xx@domain1
+****
+exim -bt xx@route1.ex
+****
+exim -bt xx@domain3

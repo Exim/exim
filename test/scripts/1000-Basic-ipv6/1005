@@ -1,0 +1,7 @@
+# dns_ipv4_lookup and gethostbyname
+need_ipv4
+need_ipv6
+#
+1
+exim -bt userx@eximtesthost.ipv6.test.ex
+****

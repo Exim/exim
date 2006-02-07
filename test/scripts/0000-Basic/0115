@@ -1,0 +1,13 @@
+# forwardfile: uid and home directory tests
+exim -odi userx
+Message to userx.
+****
+exim -odi one-userx
+Message to one-userx.
+****
+exim -odi two-userx
+Message to two-userx.
+****
+exim -odi three-userx
+Message to three-userx.
+****

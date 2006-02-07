@@ -1,0 +1,14 @@
+# TLS server & client: no certificate in client
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim userx@test.ex
+Test message
+****
+exim usery@test.ex
+Test message
+****
+exim -qf
+****
+killdaemon
+exim -DSERVER=server -DNOTDAEMON -qf
+****

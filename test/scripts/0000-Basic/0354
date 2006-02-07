@@ -1,0 +1,5 @@
+# No slash path in system filter (user set)
+exim -odi userx
+Testing
+****
+no_msglog_check

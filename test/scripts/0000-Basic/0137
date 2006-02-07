@@ -1,0 +1,26 @@
+# mailbox locking
+exim -odi userx
+Transport: local_delivery
+First message.
+****
+exim_lock -v test-mail/userx
+exim -odi userx
+Transport: local_delivery
+Second message
+****
+exim -qf
+****
+exim_lock -v -fcntl test-mail/userx
+exim -odi userx
+Transport: local_delivery_fcntl
+Third message
+****
+exim -qf
+****
+exim_lock -v -fcntl test-mail/userx
+exim -odi userx
+Transport: local_delivery_fcntl_blocking
+Fourth message
+****
+exim -qf
+****

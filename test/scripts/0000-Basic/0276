@@ -1,0 +1,36 @@
+# 5xx after DATA
+need_ipv4
+#
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+500 NO
+QUIT
+200 OK
+****
+exim -v -odi userx@test.ex
+****
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+500 NO
+QUIT
+200 OK
+****
+exim -v -odi userx@test.ex
+****

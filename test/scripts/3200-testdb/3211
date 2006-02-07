@@ -1,0 +1,16 @@
+# reset search_error_message for next router
+exim -bs
+mail from:<userx@test.ex>
+rcpt to:<userx@test.again.dns>
+quit
+****
+exim -bh 1.2.3.4
+mail from:<userx@test.ex>
+rcpt to:<userx@test.again.dns>
+quit
+****
+exim -bh 1.2.3.4
+mail from:<userx@test.ex>
+rcpt to:<r1-userx@test.again.dns>
+quit
+****

@@ -1,0 +1,42 @@
+# verifying aliases with one or more generated addresses
+2
+exim -bv 
+a 
+b 
+f 
+p 
+x 
+y
+pipe 
+file 
+"smartuser.a@test.ex"@test.ex
+"smartuser.b@test.ex"@test.ex
+"smartuser.b@test.ex,a@test.ex"@test.ex
+****
+exim -bs -oMa V4NET.0.0.0
+mail from:<userx@test.ex>
+rcpt to:<a@test.ex>
+rcpt to:<b@test.ex>
+rcpt to:<f@test.ex>
+rcpt to:<p@test.ex>
+rcpt to:<x@test.ex>
+rcpt to:<y@test.ex>
+rcpt to:<pipe@test.ex>
+rcpt to:<file@test.ex>
+rcpt to:<"smartuser.a@test.ex"@test.ex>
+rcpt to:<"smartuser.b@test.ex"@test.ex>
+rcpt to:<"smartuser.b@test.ex,a@test.ex"@test.ex>
+rset
+vrfy <a@test.ex>
+vrfy <b@test.ex>
+vrfy <f@test.ex>
+vrfy <p@test.ex>
+vrfy <x@test.ex>
+vrfy <y@test.ex>
+vrfy <pipe@test.ex>
+vrfy <file@test.ex>
+vrfy <"smartuser.a@test.ex"@test.ex>
+vrfy <"smartuser.b@test.ex"@test.ex>
+vrfy <"smartuser.b@test.ex,a@test.ex"@test.ex>
+quit
+****

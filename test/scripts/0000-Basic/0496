@@ -1,0 +1,12 @@
+# acl adding positioned headers
+exim -odi -bs
+Mail From:<some@ne>
+rcpt To: <someone@el.se>
+data
+From: some@ne
+To: someone@el.se
+
+Testing message
+.
+quit
+****

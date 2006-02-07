@@ -1,0 +1,14 @@
+# $received_count
+exim -odi userx
+Received: the first received: line
+Received: the second received: line
+****
+exim -odi -bs
+mail from:<>
+rcpt to:userx@test.ex
+data
+Received: the first received: line
+Received: the second received: line
+.
+quit
+****

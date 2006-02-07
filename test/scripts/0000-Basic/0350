@@ -1,0 +1,4 @@
+# $host_address in ignore_target_hosts
+need_ipv4
+#
+exim -bt xx@yy

@@ -1,0 +1,4 @@
+# ignore_enotdir
+exim -d-all+route -odi aaaa bbbb
+****
+no_msglog_check

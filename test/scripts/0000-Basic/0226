@@ -1,0 +1,8 @@
+# redirect: file and pipe addresses
+exim -odi /a/b/c@no.test.ex '|/p/q/r'@no.test.ex
+Message 1
+****
+exim -odi DIR/test-mail/file@yes.test.ex '|DIR/aux-fixed/showenv'@yes.test.ex
+Message 2
+****
+no_msglog_check

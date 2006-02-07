@@ -1,0 +1,48 @@
+# smtp_active_hostname
+need_ipv4
+#
+exim -bh 1.2.3.4 -oMi V4NET.0.0.1
+helo a.b.c
+quit
+****
+exim -bh 1.2.3.4 -oMi V4NET.0.0.2
+helo a.b.c
+quit
+****
+1
+exim -bh 1.2.3.4 -oMi V4NET.0.0.3
+helo a.b.c
+quit
+****
+exim -bh 1.2.3.4 -oMi V4NET.0.0.4
+helo a.b.c
+quit
+****
+exim -DSERVER=server -DIP1=127.0.0.1 -DIP2=HOSTIPV4 -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+helo foobar
+??? 250
+mail from:<>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+data
+??? 354
+.
+??? 250
+quit
+??? 221
+****
+# Wait for it to be delivered
+sleep 1
+client HOSTIPV4 PORT_D
+??? 220
+helo foobar
+??? 250
+quit
+??? 221
+****
+killdaemon
+no_msglog_check

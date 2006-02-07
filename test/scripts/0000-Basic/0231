@@ -1,0 +1,29 @@
+# rewriting at transport time
+need_ipv4
+#
+server PORT_S
+220 OK
+EHLO
+250 OK
+MAIL
+250 OK
+RCPT
+250 OK
+RCPT
+250 OK
+RCPT
+250 OK
+RCPT
+250 OK
+DATA
+354 OK
+.
+250 OK
+QUIT
+220 OK
+****
+exim -odi a@test.ex  b@test.ex  a@domain1  b@domain1  a@domain3  b@domain3
+From:     a@test.ex, b@test.ex, a@domain1, b@domain1, a@domain3, b@domain3
+To:       a@test.ex, b@test.ex, a@domain1, b@domain1, a@domain3, b@domain3
+Reply-to: a@test.ex, b@test.ex, a@domain1, b@domain1, a@domain3, b@domain3
+****

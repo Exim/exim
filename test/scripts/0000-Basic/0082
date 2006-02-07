@@ -1,0 +1,11 @@
+# -bS with -oMr
+exim -bS -odi -oMr testproto
+mail from:userx@cus.cam.ac.uk
+rcpt to:userx@test.ex
+data
+from: me
+To: me
+
+This is some text
+.
+quit

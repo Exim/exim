@@ -1,0 +1,6 @@
+# DNS_AGAIN in manualroute
+need_ipv4
+#
+exim -odi x@remote.domain
+****
+no_msglog_check

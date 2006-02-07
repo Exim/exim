@@ -1,0 +1,28 @@
+# transport filter command fails to execute
+need_ipv4
+#
+exim -odi userx
+transport: t1
+Test 1
+****
+exim -odi userx
+transport: t2
+Test 2
+****
+server PORT_S
+220 Welcome 
+EHLO
+250-Hello there
+250 SIZE
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+354 Send it
+****
+exim -odi userx
+transport: t3
+Test 3
+****
+no_msglog_check

@@ -1,0 +1,13 @@
+# -N in queued mail
+exim -odq -N userx
+****
+exim -odq userx
+****
+exim -R userx
+****
+exim -odq -N userx
+****
+exim -odq userx
+****
+exim -q
+****

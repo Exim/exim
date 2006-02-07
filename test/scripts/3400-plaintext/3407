@@ -1,0 +1,9 @@
+# diagnose duplicate authenticator methods
+1
+exim -bP authenticators
+****
+exim -DOPTION= -bP authenticators
+****
+1
+exim -DOPTION=client_send=zzz -bP authenticators
+****

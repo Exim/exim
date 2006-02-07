@@ -1,0 +1,10 @@
+# filter freeze + send message fails
+exim -odq userx@test.ex
+****
+exim -qf
+****
+exim -Mt $msg1
+****
+exim -qf
+****
+no_msglog_check

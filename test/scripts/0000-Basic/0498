@@ -1,0 +1,39 @@
+# message error: ultimate retry when received_time = first failed time
+need_ipv4
+#
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250 OK
+MAIL FROM
+450 DELAY
+QUIT
+225 OK
+****
+exim -odi userx@x.y
+****
+dump retry
+# This is messy. To test a specific bug we want to set the received time
+# to be the same as the first failed time. Hacked up a perl script to do it.
+#
+sudo perl DIR/aux-fixed/TESTNUM.fudge
+****
+sleep 2
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+345 OK
+.
+*sleep 2
+****
+exim -q
+****
+no_msglog_check

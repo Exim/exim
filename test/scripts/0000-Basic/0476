@@ -1,0 +1,24 @@
+# RSET error for multiple messages
+need_ipv4
+#
+exim -odi -odqs userx@test.ex
+First message
+****
+exim -odi -odqs usery@test.ex
+Second message
+****
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 NO
+>*eof
+****
+exim -d-all+transport+process_info -q
+****
+no_msglog_check

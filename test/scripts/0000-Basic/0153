@@ -1,0 +1,7 @@
+# virtual domains and mailing list basic test of no_more
+2
+exim -bv abcd@test.ex yes@exists.virt.test.ex no@exists.virt.test.ex xx@notexists.virt.test.ex
+****
+2
+exim -bv yes@list.test.ex no@list.test.ex
+****

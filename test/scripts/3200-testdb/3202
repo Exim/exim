@@ -1,0 +1,16 @@
+# ACL defer tests
+exim -bh 1.1.1.1
+mail from:<x@y>
+rcpt to:<x@y>
+quit
+****
+exim -bh 1.1.2.1
+mail from:<x@y>
+rcpt to:<x@y>
+quit
+****
+exim -bh 1.1.3.1
+mail from:<x@y>
+rcpt to:<x@y>
+quit
+****

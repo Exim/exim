@@ -1,0 +1,44 @@
+# CRs in messages
+exim -odi userx
+crheader: includes <> and ends CRLF
+Subject: this is still a header
+
+Text includes <> and ends CRLF
+Text includes <> and ends CRLF
+CR-dot-CR in body:.line continues
+.
+****
+exim -i -odi userx
+crheader: includes <> and ends CRLF
+
+Text includes <> and ends CRLF
+Text includes <> and ends CRLF
+CR-dot-CR in body:.line continues
+.
+****
+exim -odi userx
+crheader: includes <> and ends CRLF
+
+Text includes <> and ends CRLF
+Text includes <> and ends CRLF
+CR-dot-CR in body:.line continues
+.
+****
+exim -odi userx <DIR/aux-fixed/TESTNUM.m1
+****
+exim -odi userx <DIR/aux-fixed/TESTNUM.m2
+****
+exim -i -odi userx <DIR/aux-fixed/TESTNUM.m1
+****
+exim -i -odi userx <DIR/aux-fixed/TESTNUM.m2
+****
+exim -odi userx
+.dotheader: header line starts with a dot
+xxx: dot bare CR:.xyz
+.weird header line
+Not: a header line
+****
+exim -odi -bs <DIR/aux-fixed/TESTNUM.m3
+****
+exim -odi -bs <DIR/aux-fixed/TESTNUM.m4
+****

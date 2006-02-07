@@ -1,0 +1,24 @@
+# much space before : in header line
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+helo foobar
+??? 250
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+data
+??? 3
+From                                                                                                                                                                                                                              : userx
+  
+This is junk 
+.
+??? 5
+quit
+??? 221
+****
+killdaemon

@@ -1,0 +1,9 @@
+# backslash in redirection
+exim -DDATA=abcd -bt t1@d1
+****
+exim -DDATA=\\\\abcd -bt t1@d1
+****
+exim -DDATA=\\\\abcd@test.ex -bt t1@d1
+****
+exim -bt alias1@d2 alias2@d2
+****

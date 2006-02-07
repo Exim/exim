@@ -1,0 +1,115 @@
+# SMTP synchronization checks, with and without PIPELINING
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+ehlo abcd\r\nmail from:<userx@test.ex>
+??? 554
+****
+# The pause (+++ 1) in the middle of this is to be sure the first message is
+# delivered before generating the sync error; without it, there's a race.
+client 127.0.0.1 PORT_D
+??? 220
+ehlo abcd
+??? 250-
+??? 250-
+??? 250-
+??? 250
+rset\r\nmail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>\r\ndata
+??? 250
+??? 250
+??? 250
+??? 354
+the message
+.\r\nmail from:<userx@test.ex>
++++ 1
+rcpt to:<userx@test.ex>\r\ndata\r\nthe message\r\nsecond line
+??? 250
+??? 250
+??? 250
+??? 554
+****
+sleep 1
+# This time, don't send EHLO
+client 127.0.0.1 PORT_D
+??? 220
+helo abcd
+??? 250
+mail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>
+??? 554
+****
+# This shouldn't get advertised pipelining
+client HOSTIPV4 PORT_D
+??? 220
+ehlo abcd
+??? 250-
+??? 250-
+??? 250
+mail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>
+??? 554
+****
+# Check on unrecognized commands
+client HOSTIPV4 PORT_D
+??? 220
+junk0
+??? 500
+junk1\r\njunk2
+??? 554
+****
+# Check on RSET and QUIT
+client 127.0.0.1 PORT_D
+??? 220
+ehlo abcd
+??? 250-
+??? 250-
+??? 250-
+??? 250
+rset\r\nquit
+??? 250
+??? 221
+****
+# Check on RSET and QUIT
+client HOSTIPV4 PORT_D
+??? 220
+ehlo abcd
+??? 250-
+??? 250-
+??? 250
+rset\r\nquit
+??? 554
+****
+# This one disables the check dynamically
+client 127.0.0.1 PORT_D
+??? 220
+ehlo dis.able
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>\r\ndata\r\nthe message\r\nsecond line
+.
+??? 250
+??? 250
+??? 354
+??? 250
+quit
+??? 221
+****
+killdaemon
+# In these next tests, PIPELINING is not advertised, and the server delays for
+# 1s before trying to send the banner to give the client time to send input.
+exim -DPAH= -DDELAY=1s -DSERVER=server -bd -oX PORT_D
+****
+# Send HELO without waiting for greeting
+client -t2 127.0.0.1 PORT_D
+helo abcd
+??? 554
+****
+# Disconnect without waiting for the greeting. This should 
+# test the check for input that happens before sending the
+# banner (there was a bug at one point; missing error check).
+client -t2 127.0.0.1 PORT_D
+****
+killdaemon

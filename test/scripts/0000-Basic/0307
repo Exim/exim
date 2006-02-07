@@ -1,0 +1,9 @@
+# closed mailing lists (2 routers)
+exim -odi -f anyone@anywhere list1-request@lists.test.ex
+****
+exim -odi -f sub1@test.ex list1@lists.test.ex
+****
+exim -odi -f anyone@anywhere list1@lists.test.ex
+****
+exim -odi -f anyone@anywhere nonlist@lists.test.ex
+****

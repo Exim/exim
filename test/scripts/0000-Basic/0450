@@ -1,0 +1,10 @@
+# expanded port option
+need_ipv4
+#
+exim -d-all+transport -odi userx
+Message 1
+****
+exim -d-all+transport -q
+****
+dump retry
+no_msglog_check

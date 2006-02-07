@@ -1,0 +1,4 @@
+# duplicate loops in address graphs
+exim -odi x@dom1 x@dom2
+****
+no_msglog_check

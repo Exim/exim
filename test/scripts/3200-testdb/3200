@@ -1,0 +1,6 @@
+# testdb lookups
+
+exim -be
+match_ip:        12 ${if match_ip{10.11.12.13}{testdb;something}}
+match_ip:        13 ${if match_ip{10.11.12.13}{testdb;fail}}
+****

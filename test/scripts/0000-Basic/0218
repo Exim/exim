@@ -1,0 +1,94 @@
+# PIPELINING (client: multiple messages, with log_sender_on_delivery)
+need_ipv4
+#
+exim a
+Message 1
+****
+exim b
+Message 2
+****
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+351 Send more
+.
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+351 Send more
+.
+250 OK
+QUIT
+250 OK
+****
+exim -d-all+queue_run -v -qq
+.
+****
+# This time, the first one gets a MAIL error. As the message makes no
+# progress, the second one runs separately, and gets a refused connection.
+exim a
+Message 1
+****
+exim b
+Message 2
+****
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+550 NO
+RCPT TO
+503 Unexpected RCPT
+DATA
+503 Unexpected DATA
+QUIT
+250 OK
+****
+exim -d-all+queue_run -v -qq
+.
+****
+# One message and an error message were left on the queue. Add a new 
+# message and try again; this time the first message gets a recipient error.
+exim c
+Message 3
+****
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+550 Unknown
+DATA
+503 Unexpected DATA
+RSET
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+351 OK
+.
+250 OK
+QUIT
+250 OK
+****
+exim -d-all+ident -v -qqf
+.
+****
+no_msglog_check

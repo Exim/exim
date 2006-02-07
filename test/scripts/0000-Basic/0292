@@ -1,0 +1,5 @@
+# manualroute passing hosts to local & remote transports
+need_ipv4
+#
+exim -odi -v -N userx@t1 userx@t2
+****

@@ -1,0 +1,23 @@
+# message size check without SIZE
+exim -odq -bs
+EHLO some.host
+MAIL FROM:<userx@test.ex>
+RCPT TO:<userx@test.ex>
+Data
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+.
+QUIT
+****
+1
+exim -oep -odq userx
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+The quick brown fox jumps over the lazy dog.
+.
+****
+no_msglog_check

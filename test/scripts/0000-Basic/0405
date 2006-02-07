@@ -1,0 +1,8 @@
+# allow_utf8_domains
+need_ipv4
+#
+2
+exim -bt bounce@π.test.ex
+****
+exim -DUTF8=allow_utf8_domains -bt bounce@π.test.ex
+****

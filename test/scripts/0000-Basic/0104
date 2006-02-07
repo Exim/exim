@@ -1,0 +1,9 @@
+# source routed addresses - collapsing
+exim -bt @exim.org:xxx@test.ex '@x.y,@a.b:xxx@test.ex' 'abcde <@x.y,@a.b:xxx@test.ex>'
+****
+exim -odi @x.y,@r.s:a.b@p.q
+To: comment <@x.y,@r.s:a.b@p.q>
+****
+exim -odi @x.y:mmm@ten-1
+To: You <@x.y:mmm@ten-1>
+****

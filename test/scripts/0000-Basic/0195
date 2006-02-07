@@ -1,0 +1,25 @@
+# retry times on local addresses
+exim -odi userx usery userz
+This is a test message.
+****
+dump retry
+sleep 1
+exim -R usery
+****
+dump retry
+sleep 1
+exim -odi usery
+one-defer: set
+second message
+****
+dump retry
+sleep 1
+exim -Mc $msg2
+****
+dump retry
+sleep 1
+exim -q
+****
+dump retry
+no_msglog_check
+no_message_check

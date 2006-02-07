@@ -1,0 +1,22 @@
+# ACL with a "standard" auth configuration
+#
+# Not a relay host, but authenticated, sender address does verify.
+# accept postmaster@test.ex (postmaster at local domain)
+# accept userx@test.ex (good address in local domain)
+# deny   x@y (bad address)
+# accept x@ten-1.test.ex (good relay address)
+# accept x@ten-2.test.ex (good address, not relay domain/host, but authenticated)
+exim -odi -oMa 10.0.0.0 -bs
+ehlo rhu.barb
+auth PLAIN AHBoMTAAc2VjcmV0
+mail from:<userx@test.ex>
+rcpt to:<postmaster@test.ex>
+rcpt to:<userx@test.ex>
+rcpt to:<x@y>
+rcpt to:<x@ten-1.test.ex>
+rcpt to:<x@ten-2.test.ex>
+data
+Message 6
+.
+quit
+****

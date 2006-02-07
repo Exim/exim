@@ -1,0 +1,11 @@
+# warn with log_message but no message
+exim -bs
+mail from:x@y
+rcpt to:x@y
+data
+.
+quit
+****
+exim -Mvh $msg1
+****
+no_msglog_check

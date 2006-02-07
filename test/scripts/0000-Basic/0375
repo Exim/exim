@@ -1,0 +1,89 @@
+# unseen with disable_logging and errors_to = "" or forced fail
+need_ipv4
+#
+server -t 10 PORT_S 7
+220
+EHLO
+220 OK
+MAIL
+250 OK
+RCPT
+250 OK
+DATA
+334 send more
+.
+250 OK
+QUIT
+250 OK
+*eof
+220
+EHLO
+220 OK
+MAIL
+250 OK
+RCPT
+450 soft error
+QUIT
+250 OK
+*eof
+220
+EHLO
+220 OK
+MAIL
+250 OK
+RCPT
+550 hard error
+QUIT
+250 OK
+*eof
+220
+EHLO
+220 OK
+MAIL
+250 OK
+RCPT
+550 hard error
+QUIT
+250 OK
+*eof
+220
+EHLO
+220 OK
+MAIL
+250 OK
+RCPT
+250 OK
+DATA
+334 send more
+.
+250 OK
+QUIT
+250 OK
+*eof
+220
+EHLO
+220 OK
+MAIL
+250 OK
+RCPT
+450 soft error
+QUIT
+250 OK
+*eof
+220
+EHLO
+220 OK
+MAIL
+250 OK
+RCPT
+550 hard error
+QUIT
+250 OK
+****
+exim -d-all+route -odi a1 b1 c1 d1 d2 d3 e1 f1 f2 f3 g1
+****
+exim -qf
+****
+exim -d-all+route -odi h1
+****
+no_msglog_check

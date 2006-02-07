@@ -1,0 +1,61 @@
+# acl warning with verify callout failure
+need_ipv4
+#
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 Unknown
+QUIT
+250 OK
+****
+exim -odi -bs
+mail from:<x@remote>
+rcpt to:<x@local>
+data
+Testing
+.
+quit
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 Unknown
+QUIT
+250 OK
+****
+exim -odi -bs
+mail from:<z@remote>
+rcpt to:<deny@local>
+quit
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 Unknown
+QUIT
+250 OK
+****
+exim -d -odi -bs
+mail from:<qq@remote>
+rcpt to:<abc@local>
+rcpt to:<xyz@local>
+quit
+****
+exim -odi -bs
+mail from:<>
+rcpt to:<abc@local>
+rcpt to:<xyz@local>
+quit
+****

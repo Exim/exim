@@ -1,0 +1,5 @@
+# pass_router
+need_ipv4
+#
+2
+exim -bt x@domain0 x@domain1 x@domain2

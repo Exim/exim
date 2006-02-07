@@ -1,0 +1,10 @@
+# autoreply with once_repeat
+exim -odi userx@test.ex
+Subject: first message
+****
+exim -odi userx@test.ex
+Subject: second message
+****
+sleep 5
+exim -odi userx@test.ex
+Subject: third message

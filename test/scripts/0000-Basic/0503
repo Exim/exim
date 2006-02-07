@@ -1,0 +1,11 @@
+# mailbox_size
+exim -odi userx
+Test 1
+****
+exim -odi -DMSIZE='mailbox_size = 10K' userx
+Test 2
+****
+exim -odi -DMSIZE='mailbox_size = ${if eq{1}{1}{20F}{}}' userx
+test 3
+****
+no_msglog_check

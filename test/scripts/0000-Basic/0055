@@ -1,0 +1,33 @@
+# queue_domains and queue_smtp_domains
+exim -odi -N xxx@unknown.test.ex
+****
+exim -odi -N xxx@local.test.ex
+****
+exim -odq userx@myhost.ex
+****
+exim -ql
+****
+exim -q
+****
+exim -odi -N xxx@ten-1.test.ex
+****
+exim -odi -N xxx@ten-2.test.ex
+****
+exim -q -N
+****
+exim -odq xxx@ten-1.test.ex
+First
+****
+exim -odq yyy@ten-1.test.ex
+Two
+****
+exim -qq -N
+****
+exim -odi -N xxx@ten-2.test.ex
+****
+exim -N -M $msg1
+****
+exim -odi -N xxx@local.test.ex
+****
+exim -N -M $msg1
+****

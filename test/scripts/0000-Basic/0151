@@ -1,0 +1,6 @@
+# control of Sender: (no_local_sender_check)
+exim -odi postmaster
+From: not.the.login@test.ex
+Test message
+.
+****

@@ -1,0 +1,10 @@
+# redirect router with forbids
+1
+exim -bt defer file include
+****
+exim -odi defer file include
+****
+2
+exim -bt unknown
+****
+no_msglog_check

@@ -1,0 +1,13 @@
+# authentication (preservation of $authenticated_id)
+exim -odi -bs -oMa 10.0.0.2
+ehlo testing.ex
+auth plain AHVzZXJ4CgBzZWNyZXQ=
+auth plain AHVzZXJ4AHNlY3JldA==
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+data
+Test data
+.
+quit 
+****
+no_msglog_check

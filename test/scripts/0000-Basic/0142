@@ -1,0 +1,5 @@
+# open file descriptor test
+exim -odi pipe filter
+Test message
+.
+****

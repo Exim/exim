@@ -1,0 +1,5 @@
+# long hostlist string in route_list expansion
+need_ipv4
+#
+exim -bt x@y
+****

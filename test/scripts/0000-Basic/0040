@@ -1,0 +1,3 @@
+# Checking -oMa etc
+exim -odi -f jc@rome -F 'Julius Caesar' -oMa 1.1.1.1 -oMi 2.2.2.2 -oMr latin -oMs forum.rome -oMt jc44bc userx@test.ex
+This is a test message.

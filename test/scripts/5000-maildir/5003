@@ -1,0 +1,71 @@
+# quota and maildir with the maildir++ folder stuff
+mkdir test-mail/dir1 test-mail/dir2 test-mail/dir3
+touch test-mail/dir1/maildirfolder test-mail/dir2/maildirfolder test-mail/dir3/maildirfolder
+exim -odi dir1@test.ex
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+****
+exim -odi dir2@test.ex
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+****
+exim -odi dir3@test.ex
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+****
+no_msglog_check
+no_message_check

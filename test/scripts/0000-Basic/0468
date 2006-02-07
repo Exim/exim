@@ -1,0 +1,14 @@
+# $message_body in multiple SMTP messages
+exim -bs
+mail from:<>
+rcpt to:<x@y>
+data
+This is the FIRST message body.
+.
+mail from:<>
+rcpt to:<x@y>
+data
+This is the SECOND message body.
+.
+quit
+****

@@ -1,0 +1,11 @@
+# child addresses in bounce and delay messages
+exim -odi userxx@test.ex useryx@test.ex
+Subject: first message
+****
+exim -odi userxy@test.ex useryy@test.ex file@test.ex
+Subject: second message
+****
+sleep 1
+exim -odi -qf
+****
+no_msglog_check

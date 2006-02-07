@@ -1,0 +1,25 @@
+# relay by sender and host
+exim -bh V4NET.0.0.1
+mail from:<x@y.z>
+rcpt to:<a@b.c>
+rset
+mail from:<userx@test.ex>
+rcpt to:<a@b.c>
+quit
+****
+exim -bh V4NET.0.0.2
+mail from:<x@y.z>
+rcpt to:<a@b.c>
+rset
+mail from:<userx@test.ex>
+rcpt to:<a@b.c>
+quit
+****
+exim -bh V4NET.0.0.3
+mail from:<x@y.z>
+rcpt to:<a@b.c>
+rset
+mail from:<userx@test.ex>
+rcpt to:<a@b.c>
+quit
+****

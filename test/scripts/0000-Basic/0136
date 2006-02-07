@@ -1,0 +1,21 @@
+# errors_to in user filters and bounce_return_body
+exim -odi -bs
+mail from:<abcd@x.y.z>
+rcpt to:<forwarder@test.ex>
+rcpt to:<forwarder2@test.ex>
+data
+Test message.
+.
+quit
+****
+exim -DBRB=false -odi -bs
+mail from:<abcd@x.y.z>
+rcpt to:<forwarder@test.ex>
+rcpt to:<forwarder2@test.ex>
+data
+Test message.
+Several lines.
+Several lines.
+.
+quit
+****

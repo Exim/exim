@@ -1,0 +1,3 @@
+# appendfile subdirectory without create_directory
+exim -odi userx@test.ex
+Subject: first message

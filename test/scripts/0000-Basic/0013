@@ -1,0 +1,6 @@
+# Data after quoted string
+no_stdout_check
+1
+exim -bV
+****
+

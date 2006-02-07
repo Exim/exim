@@ -1,0 +1,28 @@
+# Sender verification (envelope and header)
+exim -bh 127.0.0.1
+mail from:<unknown@test.ex>
+rcpt to:<userx@test.ex>
+rset
+mail from:<userx@unknown.dom.ain>
+rcpt to:<userx@test.ex>
+rset
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+data
+From: unknown@test.ex
+.
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+data
+From: <>
+.
+mail from:<defer@test.ex>
+rcpt to:<userx@test.ex>
+rset
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+data
+from: <defer@test.ex>
+.
+quit
+****

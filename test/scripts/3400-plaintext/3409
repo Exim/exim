@@ -1,0 +1,15 @@
+# SMTP syntax errors logging
+exim -bs
+ehlo a.b.c
+auth a%b
+auth plain AHVzZXJ4AHNlY3JldA==
+auth plain AHVzZXJ4AHNlY3JldA==
+mail from:<x@y> auth=a+b@c.d
+quit
+****
+exim -bs
+ehlo a.b.c
+mail from:<x@y>
+auth plain AHVzZXJ4AHNlY3JldA==
+quit
+****

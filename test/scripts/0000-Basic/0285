@@ -1,0 +1,102 @@
+# max_rcpt and connection_max_messages (no parallelism)
+need_ipv4
+#
+exim -odq a b c d e f
+.
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250  HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+550 Recipient not OK
+RCPT TO:
+550 Recipient not OK
+RSET
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi -q
+****
+exim -odq a b c d e f g h
+.
+****
+server PORT_S 2
+220 ESMTP
+EHLO
+250-OK
+250  HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+550 Recipient not OK
+RCPT TO:
+550 Recipient not OK
+RSET
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+*eof
+220 ESMTP
+EHLO
+250-OK
+250  HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi -q
+****

@@ -1,0 +1,8 @@
+# pipe/file/reply check recorded delivery
+exim -d-all+route -odi aaaa
+****
+exim -Mvh $msg1
+****
+exim -d-all+route -qf
+****
+no_msglog_check

@@ -1,0 +1,36 @@
+# routing delay in message on existing connection (queue run)
+need_ipv4
+#
+exim -odi -odqs ok@no.delay
+Message 1
+****
+exim -odi -odqs delay@test.again.dns ok@no.delay
+Message 2
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Go ahead
+.
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Go ahead
+.
+250 OK
+QUIT
+250 OK
+****
+exim -q -d-all+route
+****

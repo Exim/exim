@@ -1,0 +1,7 @@
+# -bt and no_address_test
+need_ipv4
+#
+exim -bt x@y
+****
+exim -v -bv x@y
+****

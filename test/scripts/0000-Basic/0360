@@ -1,0 +1,11 @@
+# widened domains
+need_ipv4
+#
+exim -d-all+route -N -odi cms
+.
+****
+exim -bpa
+****
+exim -qf -d-all+route
+****
+no_msglog_check

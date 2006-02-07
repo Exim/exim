@@ -1,0 +1,109 @@
+# Caseful address blocking
+exim -bh 1.1.1.1
+mail from:<a@b.c>
+rcpt to:<x@test.ex>
+rset
+mail from:<a@B.C>
+rcpt to:<x@test.ex>
+rset
+mail from:<A@b.c>
+rcpt to:<x@test.ex>
+rset
+mail from:<A@B.C>
+rcpt to:<x@test.ex>
+rset
+mail from:<x@y.z>
+rcpt to:<x@test.ex>
+rset
+mail from:<x@Y.Z>
+rcpt to:<x@test.ex>
+rset
+mail from:<X@y.z>
+rcpt to:<x@test.ex>
+rset
+mail from:<X@Y.Z>
+rcpt to:<x@test.ex>
+rset
+mail from:<ax@e.f>
+rcpt to:<x@test.ex>
+rset
+mail from:<ay@g.h>
+rcpt to:<x@test.ex>
+rset
+mail from:<bX@E.F>
+rcpt to:<x@test.ex>
+rset
+mail from:<bY@G.H>
+rcpt to:<x@test.ex>
+rset
+mail from:<1@e.f>
+rcpt to:<x@test.ex>
+rset
+mail from:<bz@e.f>
+rcpt to:<x@test.ex>
+rset
+mail from:<q@aa.com>
+rcpt to:<x@test.ex>
+rset
+mail from:<q@AA.COM>
+rcpt to:<x@test.ex>
+rset
+mail from:<Q@bb.com>
+rcpt to:<x@test.ex>
+rset
+mail from:<Q@BB.Com>
+rcpt to:<x@test.ex>
+rset
+mail from:<cc@dd.com>
+rcpt to:<x@test.ex>
+rset
+mail from:<CC@DD.COM>
+rcpt to:<x@test.ex>
+rset
+mail from:<q@Dd.Com>
+rcpt to:<x@test.ex>
+rset
+mail from:<q@nn.com>
+rcpt to:<x@test.ex>
+rset
+mail from:<Q@NN.COM>
+rcpt to:<x@test.ex>
+rset
+mail from:<q@MM.com>
+rcpt to:<x@test.ex>
+rset
+mail from:<q@mm.com>
+rcpt to:<x@test.ex>
+rset
+mail from:<Pp@Qq.com>
+rcpt to:<x@test.ex>
+rset
+mail from:<abcd@aa.bb>
+rcpt to:<x@test.ex>
+rset
+mail from:<ABCD@aa.bb>
+rcpt to:<x@test.ex>
+rset
+mail from:<AbCd@aa.bb>
+rcpt to:<x@test.ex>
+rset
+mail from:<ax@aa.bb>
+rcpt to:<x@test.ex>
+rset
+mail from:<bX@aa.bb>
+rcpt to:<x@test.ex>
+rset
+mail from:<Ay@aa.bb>
+rcpt to:<x@test.ex>
+rset
+mail from:<BY@aa.bb>
+rcpt to:<x@test.ex>
+rset
+mail from:<blocked@xy.zz>
+rcpt to:<x@test.ex>
+rset
+mail from:<BLOCKED@zz.xy>
+rcpt to:<x@test.ex>
+rset
+mail from:<BlOcKeD@zz.xy>
+rcpt to:<x@test.ex>

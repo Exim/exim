@@ -1,0 +1,19 @@
+# require_files and user tests
+sudo chown EXIMUSER:EXIMGROUP DIR/aux-var/TESTNUM.exim
+sudo chmod 0640 DIR/aux-var/TESTNUM.exim
+#
+2
+exim -bt userx@r1 userx@r2 userx@r3 userx@r4 userx@r5 userx@r6 userx@r7 userx@r8
+****
+exim -bs
+vrfy userx@r1
+vrfy userx@r2
+vrfy userx@r3
+vrfy userx@r4
+vrfy userx@r5
+vrfy userx@r6
+vrfy userx@r7
+vrfy userx@r8
+vrfy userx@r9
+quit
+****

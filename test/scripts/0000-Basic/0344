@@ -1,0 +1,5 @@
+# Individual transports in manualroute
+need_ipv4
+#
+exim -bt x@d1 x@d2 x@d30 x@d31
+****

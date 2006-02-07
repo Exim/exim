@@ -1,0 +1,62 @@
+# log_incoming_port and log_incoming_interface and -oMa/-bh with ports
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+client HOSTIPV4 PORT_D
+??? 220
+mail from:<x@y.x>
+??? 250
+rcpt to:<x@test.ex>
+??? 250
+data
+??? 354
+.
+??? 250
+quit
+??? 221
++++ 1
+****
+client 127.0.0.1 PORT_D
+??? 220
+mail from:<x@y.x>
+??? 250
+rcpt to:<x@test.ex>
+??? 250
+data
+??? 354
+.
+??? 250
+quit
+??? 221
++++ 1
+****
+client HOSTIPV4 PORT_D
+??? 220
+helo rhubarb
+??? 250
+mail from:<x@y.x>
+??? 250
+rcpt to:<x@test.ex>
+??? 250
+data
+??? 354
+.
+??? 250
+quit
+??? 221
+****
+killdaemon
+sudo exim -bs -oMa V4NET.9.8.7.1234
+mail from:<x@y.x>
+rcpt to:<x@test.ex>
+data
+-oMa message
+.
+quit
+****
+exim -odi -qf
+****
+exim -bh 192.168.1.2.99
+quit
+****

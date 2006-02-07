@@ -1,0 +1,23 @@
+# more rewriting tests using -brw
+exim -brw x@y
+****
+exim -brw a@b
+****
+exim -brw 2047@x.y
+****
+exim -brw unq1@x.y
+****
+exim -brw unq2@x.y
+****
+exim -brw unq3@x.y
+****
+exim -brw 4@x.y
+****
+exim -brw fw@fw
+****
+exim -brw gw@fw
+****
+exim -brw abc@abc
+****
+exim -brw ABC@abc
+****

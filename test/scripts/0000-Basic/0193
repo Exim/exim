@@ -1,0 +1,4 @@
+# message_size_limit on batched local delivery
+exim -odi userx usery userz
+This is a test message.
+****

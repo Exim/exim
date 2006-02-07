@@ -1,0 +1,11 @@
+# Sender: from trusted caller
+exim -odi userx
+Sender: sender@some.domain
+
+This is a test message from an untrusted caller.
+****
+sudo exim -odi userx
+Sender: sender@some.domain
+
+This is a test message from a trusted caller....
+****

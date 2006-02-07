@@ -1,0 +1,17 @@
+# EXPN to daemon
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+expn postmaster
+??? 250-
+??? 250-
+??? 250
+expn rhubarb
+??? 553
+quit
+??? 221
+****
+killdaemon

@@ -1,0 +1,10 @@
+# check_ancestor, errors_to, headers_{add,remove} in redirect router
+exim -odi userx
+Remove: This header should go
+****
+exim -odi Philip
+Remove: This header should go
+****
+exim -odi philip
+Remove: This header should go
+****

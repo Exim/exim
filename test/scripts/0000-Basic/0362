@@ -1,0 +1,8 @@
+# cached named lists after rewriting for verification
+need_ipv4
+#
+exim -d -bh V4NET.0.0.0
+mail from:<x@y>
+rcpt to:<x@a.b.c>
+quit
+****

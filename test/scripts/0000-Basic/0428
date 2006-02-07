@@ -1,0 +1,87 @@
+# Sieve tests with actual delivery
+exim -odi userx
+Test 1
+****
+exim -odi userx
+Filter: discard;
+Test 2
+****
+exim -odi userx
+Filter: require "fileinto"; fileinto "userx-extra";
+Test 3
+****
+exim -odi userx
+Filter: redirect "redirected@test.ex";
+Test 4
+****
+exim -odi restrict-userx
+Filter: require "fileinto"; fileinto "userx-extra";
+Test 5
+****
+# Syntax error in Sieve filter (missing "require")
+exim -odi restrict-userx
+Filter: fileinto "userx-extra";
+Test 6
+****
+# Test stop inside a block
+exim -odi userx
+Filter: if true { stop; fileinto "inbox.never"; }
+Test 7
+****
+# This should fileinto inbox.JUNK (99 equal 99):
+exim -odi userx
+X-Sieve: 99
+Filter: require["fileinto","comparator-i;ascii-numeric"];
+        if header :comparator "i;ascii-numeric" "X-Sieve" "99" {
+          fileinto "inbox.JUNK";
+          stop;
+        }
+Test 8
+****
+# This should not fileinto inbox.JUNK (98 not equal 99):
+exim -odi userx
+X-Sieve: 99
+Filter: require["fileinto","comparator-i;ascii-numeric"];
+        if header :comparator "i;ascii-numeric" "X-Sieve" "98" {
+          fileinto "inbox.JUNK";
+          stop;
+        }
+Test 9
+****
+# This should fileinto inbox.JUNK (99-suffix equal 99):
+exim -odi userx
+X-Sieve: 99-
+Filter: require["fileinto","comparator-i;ascii-numeric"];
+        if header :comparator "i;ascii-numeric" "X-Sieve" "99" {
+          fileinto "inbox.JUNK";
+          stop;
+        }
+Test 10
+****
+# This should fileinto inbox.JUNK (non-numeric equal non-numeric):
+exim -odi userx
+X-Sieve: -99
+Filter: require["fileinto","comparator-i;ascii-numeric"];
+        if header :comparator "i;ascii-numeric" "X-Sieve" "-99" {
+          fileinto "inbox.JUNK";
+          stop;
+        }
+Test 11
+****
+# This should fileinto inbox.JUNK (non-numeric equal non-numeric):
+exim -odi userx
+X-Sieve: -99
+Filter: require["fileinto","comparator-i;ascii-numeric"];
+        if header :comparator "i;ascii-numeric" "X-Sieve" "-98" {
+          fileinto "inbox.JUNK";
+          stop;
+        }
+Test 12
+****
+# This is a simple test of "vacation"
+exim -odi -f someone@test.ex userx 
+To: userx@test.ex
+Filter: require ["vacation"]; 
+        vacation "I am gone.  Not here.";
+Test 13
+****

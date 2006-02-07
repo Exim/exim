@@ -1,0 +1,4 @@
+# too many environment settings in pipe
+exim -odi userx
+****
+no_msglog_check

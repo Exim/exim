@@ -1,0 +1,11 @@
+# host in MX list more than once
+#
+# The different domains produce the same list of hosts, but in different 
+# orders, to simulate a real nameserver's round robinning.
+#
+exim -d-all+route -bv xxx@mxt9.test.ex
+****
+exim -d-all+route -bv xxx@mxt9a.test.ex
+****
+exim -d-all+route -bv xxx@mxt9b.test.ex
+****

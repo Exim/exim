@@ -1,0 +1,121 @@
+# control = submission (without any authentication)
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<notsubmit@y>
+??? 250
+rcpt to:<x@y>
+??? 250
+data
+??? 354
+.
+??? 250
+mail from:<a@y>
+??? 250
+rcpt to:<x@y>
+??? 250
+data
+??? 354
+.
+??? 250
+mail from:<>
+??? 250
+rcpt to:<x@y>
+??? 250
+data
+??? 354
+.
+??? 250
+mail from:<notsubmit@y>
+??? 250
+rcpt to:<x@y>
+??? 250
+data
+??? 354
+Sender: sender@some.where
+.
+??? 250
+mail from:<a@y>
+??? 250
+rcpt to:<x@y>
+??? 250
+data
+??? 354
+Sender: sender@some.where
+.
+??? 250
+quit
+??? 221
+****
+killdaemon
+# Wait for delivery process
+millisleep 500
+exim -DSERVER=server -DSUBMISSION_OPTIONS=/domain=a.b.c/sender_retain -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<a@y>
+??? 250
+rcpt to:<x@y>
+??? 250
+data
+??? 354
+Sender: sender@some.where
+.
+??? 250
+quit
+??? 221
+****
+killdaemon
+# Wait for delivery process
+millisleep 500
+exim -DSERVER=server -DSUBMISSION_OPTIONS=/domain=a.b.c/name=SomeName -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<a@y>
+??? 250
+rcpt to:<x@y>
+??? 250
+data
+??? 354
+Sender: sender@some.where
+.
+??? 250
+quit
+??? 221
+****
+killdaemon
+exim -Mvh $msg1
+****
+exim -Mvh $msg2
+****
+exim -Mvh $msg3
+****
+exim -Mvh $msg4
+****
+exim -Mvh $msg5
+****
+exim -Mvh $msg6
+****
+exim -Mvh $msg7
+****
+no_msglog_check

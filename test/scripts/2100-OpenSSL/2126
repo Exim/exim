@@ -1,0 +1,8 @@
+# TLS: logging parameters for 2 different recipients
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -odi userx usery
+****
+# Wait to allow delivery to finish before killing the daemon
+sleep 1
+killdaemon

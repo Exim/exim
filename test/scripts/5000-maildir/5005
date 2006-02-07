@@ -1,0 +1,21 @@
+# maildir with maildirsize for quota handling
+exim -d -odi nofile@test.ex
+Message for nofile
+****
+# Create a maildir and put a quota/size file in it, but the quota in the
+# transport will override the value.
+mkdir DIR/test-mail/userx
+write DIR/test-mail/userx/maildirsize
+50S,2C
+****
+# Now try some deliveries 
+exim -d -odi userx@test.ex
+Short message
+****
+exim -d -odi userx@test.ex
+A slightly longer message
+****
+exim -d -odi userx@test.ex
+A slightly longer message
+****
+no_msglog_check

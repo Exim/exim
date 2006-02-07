@@ -1,0 +1,74 @@
+# Relay by hostlist matching host or network
+exim -bh 1.2.3.4
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@anotherhost.example.com>
+data
+.
+quit
+****
+exim -bh 1.2.3.5
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@anotherhost.example.com>
+data
+.
+quit
+****
+exim -bh 1.2.4.5
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@anotherhost.example.com>
+data
+.
+quit
+****
+exim -bh 1.3.2.4
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@anotherhost.example.com>
+data
+.
+quit
+****
+exim -bh 131.111.8.2
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@anotherhost.example.com>
+data
+.
+quit
+****
+exim -bh 192.152.98.3
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@anotherhost.example.com>
+data
+.
+quit
+****
+exim -bh V4NET.0.0.1
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@anotherhost.example.com>
+data
+.
+quit
+****
+exim -bh V4NET.11.12.13
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@anotherhost.example.com>
+data
+.
+quit
+****
+exim -bh V4NET.0.0.3
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@anotherhost.example.com>
+data
+.
+quit
+****
+no_msglog_check

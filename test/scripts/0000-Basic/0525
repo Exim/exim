@@ -1,0 +1,26 @@
+# Timeout while actually writing the data for a message
+need_ipv4
+#
+server PORT_S
+220 Welcome
+EHLO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+354 SEND
+*sleep 3
+****
+write test-data 20000x80
+mail from:<abc@xyz>
+RCPT TO:<def@pqr> 
+DATA
+++++
+.
+quit
+****
+exim -v -odi -bs <test-data
+****
+no_msglog_check

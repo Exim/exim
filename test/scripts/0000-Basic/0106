@@ -1,0 +1,22 @@
+# SMTP outgoing timeout
+need_ipv4
+#
+server PORT_S
+220 ESMTP
+EHLO
+*sleep 4
+****
+exim -odi userx@domain1.com
+.
+****
+sleep 1
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM
+*sleep 4
+****
+exim -odi userx@domain2.com
+.
+****

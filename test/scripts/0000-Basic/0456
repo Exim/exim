@@ -1,0 +1,3 @@
+# errors_to when sender address is empty
+exim -f "" -bt test-bus-error@localhost
+****

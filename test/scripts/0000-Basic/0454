@@ -1,0 +1,25 @@
+# rewrite logging provoked from filter
+need_ipv4
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+helo rhu.barb
+??? 250
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+DATA
+??? 3
+This is a test message.
+.
+??? 250
+QUIT
+??? 221
+****
+killdaemon
+# Wait for delivery process
+sleep 1
+no_msglog_check

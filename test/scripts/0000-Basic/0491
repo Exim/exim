@@ -1,0 +1,16 @@
+# Quoting of local parts in generated From: and Sender:
+exim -odi userx
+****
+exim -odi -DUL=a.b userx
+****
+exim -odi -DUL=.a.b userx
+****
+exim -odi -DUL=a.b. userx
+****
+exim -odi "-DUL=a\"b" userx
+****
+exim -odi userx
+From: x@y
+****
+exim -odi "-DREWRITE=^([^@]+)@([^@]+)@(.*) \$1%\$2@\$3"  userx
+****

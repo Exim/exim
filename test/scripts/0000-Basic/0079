@@ -1,0 +1,40 @@
+# RBL /warn (default reject)
+exim -bh V4NET.11.12.14
+ehlo exim.test.ex
+mail from:postmaster@exim.test.ex
+rcpt to:<postmaster@exim.test.ex>
+rcpt to:list@exim.test.ex
+data
+test data
+.
+quit
+****
+exim -odi -bs -oMa V4NET.11.12.13
+ehlo exim.test.ex
+mail from:<postmaster@exim.test.ex>
+rcpt to:<userx@exim.test.ex>
+data
+test message data
+.
+quit
+****
+exim -odi -bs -oMa V4NET.11.12.14 -oMi 14.12.11.10.PORT_D
+ehlo exim.test.ex
+mail from:<postmaster@exim.test.ex>
+rcpt to:<postmaster@exim.test.ex>
+rcpt to:<userx@exim.test.ex>
+data
+test message data
+.
+quit
+****
+exim -odi -bs
+mail from:<postmaster@exim.test.ex>
+rcpt to:<userx@exim.test.ex>
+data
+sysmail: yes
+Testing mail from system filter
+.
+quit
+****
+no_msglog_check

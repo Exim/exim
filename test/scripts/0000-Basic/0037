@@ -1,0 +1,174 @@
+# filter tests
+#
+# Create a file that is accessible only to the Exim user
+sudo rm -f DIR/test-private
+touch DIR/test-private
+sudo chown EXIMUSER:EXIMGROUP DIR/test-private
+sudo chmod 0600 DIR/test-private
+#
+exim -bf DIR/aux-fixed/TESTNUM.f-1 </dev/null
+****
+1
+exim -bf DIR/aux-fixed/TESTNUM.f-2 </dev/null
+****
+exim -bF DIR/aux-fixed/TESTNUM.f-3 </dev/null
+****
+# Not personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 </dev/null
+****
+# Not personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+****
+# Personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: CALLER@test.ex
+****
+# Not personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: X-CALLER@test.ex
+****
+# Personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: CALLER@test.ex
+Subject: north circular road
+****
+# Not personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: userx@test.ex
+Precedence: bulk
+****
+# Not personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: userx@test.ex
+Precedence: list
+****
+# Not personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: userx@test.ex
+Precedence: junk
+****
+# Personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: abcdefgh@bzzzt.fix.no
+Auto-Submitted: no
+****
+# Not personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: userx@test.ex
+Auto-Submitted: auto-replied
+****
+# Not personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: userx@test.ex
+List-Unsubscribe: xxxx
+****
+# Not personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: userx@test.ex
+From: abcd-request@some.domain
+****
+# Not personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: userx@test.ex
+From: owner-abcd@some.domain
+****
+# Not personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: userx@test.ex
+From: The list manager <majordomo@some.domain>
+****
+# Personal
+exim -bf DIR/aux-fixed/TESTNUM.f-4 -f anon@ymous
+To: abc@xyz.com, Philip <CALLER@test.ex>, pqr@xyz.com
+****
+exim -bf DIR/aux-fixed/TESTNUM.f-6 </dev/null
+****
+exim -bf DIR/aux-var/TESTNUM.f-7 </dev/null
+****
+exim -odi userx
+Subject: Test 1
+Remove-this: should get removed
+****
+exim -odi userx abcd usery
+Subject: should fail this
+
+Fail this.
+****
+exim -odi userx
+Subject: should freeze this
+
+Freeze this.
+****
+exim -odi userx
+Subject: reply to this
+
+Reply to this.
+****
+exim -odi filter-pipe
+Subject: should give filter error (1)
+****
+exim -odi filter-file
+Subject: should give filter error (2)
+****
+exim -odi filter-lookup
+Subject: should give filter error (3)
+****
+exim -odi filter-exists
+Subject: should give filter error (4)
+****
+exim -odi filter-readfile
+Subject: should give filter error (5)
+****
+exim -odi filter-run
+Subject: should give filter error (6)
+****
+exim -odi filter-vacation
+Subject: should give rise to vacation message
+****
+exim -bF DIR/aux-fixed/TESTNUM.f-5 </dev/null
+****
+exim -qf
+****
+exim -bpa
+****
+exim -q
+****
+exim -qff
+****
+exim -odi userx
+Subject: should freeze this
+
+Freeze this (second message).
+****
+exim -qqRff userx
+****
+exim -odi readfile
+Should fail ${readfile in filter.
+****
+exim -bF DIR/aux-var/TESTNUM.F <DIR/aux-fixed/TESTNUM.msg
+****
+exim -odi deliverfromfilter
+Test deliver command in system filter
+****
+exim -bF DIR/aux-var/TESTNUM.F
+Test-headers: first one
+From: x@y
+Test-headers: another one
+More-test-headers : yet another one
+Subject: testing, testing
+****
+exim -odi -d-all+route filter-userx
+****
+exim -odi userx
+Subject: should defer this
+
+Defer this.
+****
+# Vacation to a sender in never_mail
+exim -odi -f never_mail@test.ex filter-vacation
+Subject: should give rise to vacation message
+****
+exim -odi filter-stat
+Subject: should give filter error (7)
+****
+no_msglog_check

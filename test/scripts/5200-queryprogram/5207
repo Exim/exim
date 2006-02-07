@@ -1,0 +1,4 @@
+# check address_data is preserved
+exim -odi userx@r6 userx@r7
+****
+no_msglog_check

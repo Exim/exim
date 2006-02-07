@@ -1,0 +1,92 @@
+# pipe body escapes (including "from hack" and "SMTP dot" tests)
+need_ipv4
+#
+exim -odi userx@test.ex
+Test message
+From the deep abyss
+From
+out of nowhere
+Fromage please
+from is case sensitive
+From: is how headers start
+****
+write test-data 128x64
+++++
+From Bohemia's woods and fields
+****
+exim -odi userx@test.ex <test-data
+****
+write test-data 127x64 1x63
+++++
+From Bohemia's woods and fields
+****
+exim -odi userx@test.ex <test-data
+****
+exim -odi userz@test.ex
+A message containing
+. a line starting with a dot
+.. and one starting with two dots
+From should not be escaped as this is
+going to be delivered using BSMTP.
+****
+server PORT_S
+220 ESMTP
+EHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -oi -odi userx@domain.com
+.dotheader: This is perfectly legal
+
+A message containing
+. a line starting with a dot
+.. and one starting with two dots
+.
+The previous one contains only a dot.
+****
+write test-data 127x64 1x62
+++++
+Frost isn't From.
+****
+exim -odi userx@test.ex <test-data
+****
+exim -odi userx@test.ex
+Last line ending without a newline and with a partial match: 
+From\NONL\
+****
+exim -odi filter-userx@test.ex
+Test message
+From the deep abyss
+From
+out of nowhere
+Fromage please
+from is case sensitive
+From: is how headers start
+****
+exim -odi filter-userx@test.ex
+Last line ending without a newline and with a partial match: 
+From\NONL\
+****
+exim -odi userx@test.ex
+Last line ending without a newline and being a single dot:
+.\NONL\
+****
+exim -odi mmdf-userx@test.ex
+Line consisting of four ^A characters
+
+That should get escaped by adding a space.
+****
+exim -odi userx@test.ex
+Subject: From
+
+From is the very first word of the message.
+From starts the second line.

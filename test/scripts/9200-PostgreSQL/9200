@@ -1,0 +1,25 @@
+# pgsql lookups - expects specific data
+exim -d-all+lookup -be
+${lookup pgsql {select name from them where id='ph10';}}
+${lookup pgsql {select name from them where id='ph10';}}
+${lookup pgsql {select name from them where id='xxxx';}}
+${lookup pgsql {select name from them where id='nothing';}}
+${lookup pgsql {select id,name from them where id='nothing';}}
+${lookup pgsql {delete from them where id='nonexist';}}
+${lookup pgsql {select * from them where id='quote2';}}
+${lookup pgsql {select * from them where id='newline';}}
+${lookup pgsql {select * from them where id='tab';}}
+****
+exim -d -bh 10.0.0.0
+mail from:<a@b>
+rcpt to:<c@d>
+rcpt to:<c@d>
+quit
+****
+exim -odi -d CALLER
+Test message
+.
+****
+exim -DSERVERS=\(/tmp/.s.PGSQL.5432\)/test/ph10/ -d-all+lookup -be
+${lookup pgsql {select name from them where id='CALLER';}}
+****

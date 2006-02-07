@@ -1,0 +1,28 @@
+# exinext and ports/message-ids and IPv6
+need_ipv4
+#
+server PORT_S 2
+220 Server ready
+EHLO
+250-server id
+250 OK
+MAIL FROM
+450 Temporary error
+QUIT
+250 OK
+*eof
+220 Server ready
+EHLO
+250-server id
+250 OK
+MAIL FROM
+450 Temporary error
+QUIT
+250 OK
+****
+exim -odi userx@test.ex
+****
+dump retry
+exinext 127.0.0.1
+exinext ::1
+no_msglog_check

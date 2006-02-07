@@ -1,0 +1,8 @@
+# address list matching an empty address
+exim -bs
+helo x.y.z
+mail from:<>
+rset
+mail from:<x@y>
+quit
+****

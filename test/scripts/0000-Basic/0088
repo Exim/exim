@@ -1,0 +1,3 @@
+# hosts_treat_as_local
+1
+exim -bv xx@ten-1.test.ex xx@ten-99.test.ex xx@mxcased.test.ex

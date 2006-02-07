@@ -1,0 +1,42 @@
+# callout hosts taken from transport
+need_ipv4
+#
+server PORT_S 3
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+450 Temporary error
+QUIT
+250 OK
+*eof
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+450 Temporary error
+QUIT
+250 OK
+*eof
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+450 Temporary error
+QUIT
+250 OK
+****
+exim -odi -bs
+mail from:<r1@domain1>
+rset
+mail from:<r2@domain2>
+rset
+mail from:<r3@domain3>
+quit
+****

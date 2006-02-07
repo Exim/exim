@@ -1,0 +1,4 @@
+# maildir_format forced for address_file
+exim -d -odi userx@test.ex
+Testing
+****

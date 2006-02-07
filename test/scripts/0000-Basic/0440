@@ -1,0 +1,45 @@
+# More than two messages to same host, with transport filter
+need_ipv4
+#
+exim -odi -odqs x1@y1
+First message
+****
+exim -odi -odqs x2@y2
+Second message
+****
+exim -odi -odqs x3@y3
+Third message
+****
+server PORT_S
+220 server ready
+EHLO
+250 OK
+MAIL
+250 OK
+RCPT
+250 OK
+DATA
+354 OK
+.
+250 OK
+MAIL
+250 OK
+RCPT
+250 OK
+DATA
+354 OK
+.
+250 OK
+MAIL
+250 OK
+RCPT
+250 OK
+DATA
+354 OK
+.
+250 OK
+QUIT
+221 OK
+****
+exim -q
+****

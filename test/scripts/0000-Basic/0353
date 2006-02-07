@@ -1,0 +1,5 @@
+# Non-absolute path in system filter (no user set)
+exim -odi userx
+Testing
+****
+no_msglog_check

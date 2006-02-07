@@ -1,0 +1,28 @@
+# $h_ $bh_ and $rh_ expansions
+exim -bf DIR/aux-fixed/TESTNUM.f
+subject:       lots of leading and trailing space         
+To:    a@b
+To:    c@d
+X-1: (=?ISO-8859-1?Q?a?=)
+X-2: (=?ISO-8859-1?Q?a?= b)
+X-3: (=?ISO-8859-1?Q?a?= =?ISO-8859-1?Q?b?=)
+X-4: (=?ISO-8859-1?Q?a?=  =?ISO-8859-1?Q?b?=)
+X-5: (=?ISO-8859-1?Q?a?=  
+     =?ISO-8859-1?Q?b?=)
+X-6: (=?ISO-8859-1?Q?a_b?=)
+X-7: (=?ISO-8859-1?Q?a?= =?ISO-8859-2?Q?_b?=)
+X-8: (=?iso-8859-8?b?7eXs+SDv4SDp7Oj08A==?=)
+X-9: =?ISO-8859-1?Q?Patrik_F=E4ltstr=F6m?= <xxx>
+X-10: =?US-ASCII?Q?Keith_Moore?= <xxx>
+X-11: =?ISO-8859-1?Q?Keld_J=F8rn_Simonsen?= <xxx>
+X-12: =?ISO-8859-1?Q?Andr=E9?= Pirard <xxx>
+X-13: =?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?=
+ =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?=
+X-14: =?ISO-8859-1?Q?X=00Y?=      
+X-15: =?iso-8859-3?Q?=?= =?US-ASCII?Q?ABCD?= Text
+X-16: =?iso-8859-3?B?+2?= =?UTF-8?Q?ABCD?= Text
+X-17: =?UTF-8?Q?xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?=
+X-18: =?UTF-8?Q?xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?=
+X-19: =?iso-8859-3?B?=?= =?UTF-8?Q?ABCD?= Text
+X-20: =?iso-8859-1?Q?a?= =?ISO-8859-1?Q?x y?= bad because of space
+****

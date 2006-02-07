@@ -1,0 +1,19 @@
+# rcpt_4xx from server with no retry
+need_ipv4
+#
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+452 temporary error
+QUIT
+250 OK
+****
+exim -odi userx@x.y
+****
+dump retry
+no_message_check

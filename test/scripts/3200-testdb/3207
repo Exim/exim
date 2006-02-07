@@ -1,0 +1,5 @@
+# defer in domains, local_parts, senders, condition
+exim -odi r1@r1.ex r2@r2.ex r3@r3.ex r4@r4.ex d1@d1.ex d2@d2.ex d3@d3.ex d4@d4.ex 
+****
+no_message_check
+no_msglog_check

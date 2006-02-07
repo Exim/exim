@@ -1,0 +1,19 @@
+# domain list = !* and other ! and percent_hack domains
+exim -bh V4NET.0.0.1
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@anotherhost.example.com>
+rcpt to:<userx@3rdhost.example.com>
+data
+.
+quit
+****
+2
+exim -bv userx%myhost.ex@a.test.ex userx%myhost.ex@b.test.ex 
+****
+2
+exim -bv userx%myhost.ex@d.test.ex userx%myhost.ex@d.test.ex 
+****
+exim -bv userx%myhost.ex@z.test.ex
+****
+no_msglog_check

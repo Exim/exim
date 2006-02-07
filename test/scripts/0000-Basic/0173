@@ -1,0 +1,7 @@
+# deliver time scan - pipe not using BSMTP
+exim -odi userx
+Test message
+****
+exim -odi userx usery userz
+Another test message
+****

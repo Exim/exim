@@ -1,0 +1,41 @@
+# quota and maildir
+exim -odi userx@test.ex
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+****
+exim -odi userx@test.ex
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+This is a message of a reasonable size. Fifty here.
+****
+exim -odi qqq
+.
+****
+exim -odi userx@test.ex
+.
+****
+no_msglog_check

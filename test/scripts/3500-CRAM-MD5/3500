@@ -1,0 +1,35 @@
+# CRAM-MD5 server tests
+
+exim -odi -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH CRAM-MD5
+dGltIGI5MTNhNjAyYzdlZGE3YTQ5NWI0ZTZlNzMzNGQzODkw
+mail from:<userx@some.domain>
+rcpt to:<userx@test.ex>
+data
+Testing authenticated CRAM-MD5.
+.
+quit
+****
+exim -odi -bs -oMa 10.0.0.1
+ehlo test.host
+AUTH CRAM-MD5
+dXNlcnggNzMzYmE4N2U2NGVkN2U0NDFmMDYyYzRhYzZkYjAxMDM=
+quit
+****
+exim -bh 10.0.0.4
+ehlo test.host
+quit
+****
+exim -bh 10.0.0.1
+ehlo test.host
+AUTH CRAM-MD5
+dGltIGI5MTNhNjAyYzdlZGE3YTQ5NWI0ZTZlNzMzNGQzODkw
+mail from:<userx@some.domain>
+rcpt to:<userx@test.ex>
+data
+Testing authenticated CRAM-MD5.
+.
+quit
+****
+no_msglog_check

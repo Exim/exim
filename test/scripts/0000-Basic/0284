@@ -1,0 +1,13 @@
+# batching controls for local delivery
+exim -odi x-t1 y-t1
+.
+****
+exim -odi x-t2 y-t2
+.
+****
+exim -odi x-t3 y-t3 z-t3@other.domain
+.
+****
+exim -odi x-t4 y-t4 xx-t4 yy-t4
+.
+****

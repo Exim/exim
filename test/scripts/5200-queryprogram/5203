@@ -1,0 +1,5 @@
+# open file descriptor test
+exim -odi userx@remote.domain
+Test message
+.
+****

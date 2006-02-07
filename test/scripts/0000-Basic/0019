@@ -1,0 +1,38 @@
+# SMTP syntax errors logging
+exim -bh 10.10.10.10
+helo !@#$%^&*(
+debug
+rhubarb
+mail
+quit
+****
+exim -bs
+helo !@#$%^&*(
+debug
+rhubarb
+mail
+quit
+****
+exim -bs
+etrn abc
+ehlo a.b.c
+rcpt to:<a@b>
+mail from:<x@y>
+data
+rcpt to:<a@b>
+rcpt to:<a@b>
+rcpt to:<a@b>
+rcpt to:<a@b>
+rcpt to:<a@b>
+rcpt to:<a@b>
+rcpt to:<a@b>
+etrn #abc
+rset
+mail from:
+rset
+mail from:<x@y>
+mail from:<x@y>
+rcpt to:
+rset
+quit
+****

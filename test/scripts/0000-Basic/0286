@@ -1,0 +1,153 @@
+# max_rcpt and connection_max_messages (2x parallel)
+need_ipv4
+#
+# There are deliveries in parallel in this script, and the processes that
+# run in parallel may not finish in the same order on different hosts. (Indeed,
+# they always seem to finish in precisely the opposite orders on Linux and
+# FreeBSD.) For that reason, we do a hacked-up sort on the log file right at
+# the end, to ensure that the log lines are always in the same order.
+#
+exim -odq a b c d e f
+.
+****
+server PORT_S 2
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+550 Recipient not OK
+QUIT
+250 OK
+*eof
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+550 Recipient not OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -q
+****
+exim -q
+****
+exim -odq a b c d e f g h
+.
+****
+server PORT_S 2
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+550 Recipient not OK
+RCPT TO:
+550 Recipient not OK
+RSET
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+*eof
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+550 Recipient not OK
+RCPT TO:
+550 Recipient not OK
+RSET
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -q
+****
+exim -q
+****
+# This is the hack to sort the log lines. Search for groups of delivery log
+# lines (**, =>, and -> lines), and sort them according to the local part of
+# the address.
+#
+sudo perl
+open(IN, "DIR/spool/log/mainlog") || 
+  die "Can't open DIR/spool/log/mainlog: $!\n";
+@lines = <IN>;
+close(IN);
+
+for ($i = 0; $i < @lines; $i++)
+  {
+  next unless $lines[$i] =~ / \*\* | => | -> /;
+  for ($j = $i + 1; $j < @lines; $j++)
+    { last if $lines[$j] !~ / \*\* | => | -> /; }     
+    
+  @sublist = splice @lines, $i, $j - $i;
+  @sublist = sort {
+    my($x) = $a =~ /(?: \*\* | => | -> )([^@]+)/;
+    my($y) = $b =~ /(?: \*\* | => | -> )([^@]+)/;
+    return $x cmp $y; 
+    } @sublist;
+       
+  splice @lines, $i, 0, @sublist;
+  $i = $j; 
+  }    
+
+open (OUT, ">DIR/spool/log/mainlog") ||
+  die "Can't open DIR/spool/log/mainlog: $!\n";
+print OUT @lines;
+close(OUT);   
+****

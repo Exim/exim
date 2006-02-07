@@ -1,0 +1,15 @@
+# defer in percent_hack_domains, relay_domains
+exim -bh V4NET.0.0.1
+ehlo remote.host
+mail from:<user@remote.host>
+rcpt to:<a@test.ex>
+rcpt to:<a@other.ex>
+rcpt to:<a%b@testhack.ex>
+rcpt to:<a%b@test.ex>
+rcpt to:<a%b@testhack2.ex>
+rcpt to:<a@yesrelay.ex>
+rcpt to:<a@norelay.ex>
+rcpt to:<a%yesrelay.ex@testhack.ex>
+rcpt to:<a%norelay.ex@testhack.ex>
+quit
+****

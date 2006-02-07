@@ -1,0 +1,192 @@
+# LMTP over TCP/IP (with log_sender_on_delivery)
+need_ipv4
+#
+server PORT_S
+220 ESMTP
+LHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Receiver OK
+DATA
+354 Send it
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx
+This is a test message.
+****
+server PORT_S
+220 ESMTP
+LHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+DATA
+354 Send it
+.
+250 OK
+440 Temporary error
+550 Bad user
+250 OK
+440 Temporary error
+550 Bad user
+QUIT
+250 OK
+****
+exim -odi userx userxx userxy userxz useryx useryy
+This is a test message.
+****
+exim -Mrm $msg1
+****
+# This is a repeat of the previous test, but with pauses between the
+# final responses, so they go out in separate packets, and some multilines.
+server PORT_S
+220 ESMTP
+LHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+DATA
+354 Send it
+.
+250 OK
+440 Temporary error
+550-I don't like this user
+*sleep 1
+550 Bad user
+250-This one's OK
+250 OK
+440-Here's a whole long message, in several lines,
+*sleep 1
+440-just for testing that nothing breaks when
+440-we do this
+440 Temporary error
+550 Bad user
+QUIT
+250 OK
+****
+exim -odi userx userxx userxy userxz useryx useryy
+This is a test message.
+****
+exim -Mrm $msg1
+****
+# This is another repeat of the previous test, but this time some addresses
+# get bounced at RCPT time.
+server PORT_S
+220 ESMTP
+LHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+550 Receiver BAD
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+450 Receiver temporarily bad
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+550 Receiver BAD
+DATA
+354 Send it
+.
+440 Temporary error
+550-I don't like this user
+550 Bad user
+250-This one's OK
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx userxx userxy userxz useryx useryy
+This is a test message.
+****
+# This is to test the ignore_quota feature; first time we don't support it.
+server PORT_S
+220 ESMTP
+LHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+DATA
+354 Send it
+.
+250 OK
+250 OK
+250 OK
+QUIT
+250 OK
+****
+exim -odi -DIGNORE_QUOTA=true userxx userxy userxz
+This is a test message.
+****
+# This is to test the ignore_quota feature; second time we do support it
+server PORT_S
+220 ESMTP
+LHLO
+250-OK
+250-IGNOREQUOTA
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+DATA
+354 Send it
+.
+250 OK
+250 OK
+250 OK
+QUIT
+250 OK
+****
+exim -odi -DIGNORE_QUOTA=true userxx userxy userxz
+This is a test message.
+****
+no_msglog_check

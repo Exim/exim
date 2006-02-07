@@ -1,0 +1,5 @@
+# hosts_treat_as_local and +local_domains
+need_ipv4
+#
+exim -d -bv k@mxt13.test.ex
+****

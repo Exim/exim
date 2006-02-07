@@ -1,0 +1,40 @@
+# .. in header lines (SMTP and otherwise)
+exim -bs
+MAIL FROM:<userx@test.ex>
+RCPT TO:<userx@test.ex>
+DATA
+..: this is legal
+From: me
+..
+This line follows ..
+.
+quit
+****
+exim -bs
+MAIL FROM:<userx@test.ex>
+RCPT TO:<userx@test.ex>
+DATA
+From: me
+
+..
+This line follows ..
+.
+quit
+****
+exim -oi userx@test.ex
+From: me
+..: this really is legal
+.. two dots
+.
+That was one dot with -oi
+****
+exim -oi userx@test.ex
+From: me
+..: this really is legal
+
+.. two dots
+.
+That was one dot with -oi
+****
+exim -qf
+****

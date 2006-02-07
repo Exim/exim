@@ -1,0 +1,117 @@
+# hosts_randomize (smtp transport and manualroute)
+need_ipv4
+#
+server PORT_S 3
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+350 Send message
+.
+250 OK
+QUIT
+250 OK
+*eof
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+350 Send message
+.
+250 OK
+QUIT
+250 OK
+*eof
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+350 Send message
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx@domain1 userx@domain2 userx@domain3
+Test message
+****
+exim -bt x@x x@y x@z
+****
+server PORT_S 2
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+DATA
+350 Send message
+.
+250 OK
+QUIT
+250 OK
+*eof
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+350 Send message
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx@adomain1 userx@adomain2 userx@adomain3
+Test message
+****
+exim -bt x@batch y@batch z@batch x@batch2 y@batch2 x@batch3 y@batch3 x@batch4 y@batch4
+****
+exim -bt userx@bdomain1 userx@bdomain2 userx@bdomain3
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+RCPT TO:
+250 Recipient OK
+DATA
+350 Send message
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx@bdomain1 userx@bdomain2 userx@bdomain3
+Test message
+****

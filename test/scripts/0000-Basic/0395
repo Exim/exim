@@ -1,0 +1,88 @@
+# -bnq and address qualification in local messages
+1
+exim -odi -bnq userx
+From: userx
+To: userx
+****
+exim -odi -bnq userx@origin.ex
+From: philip
+To: userx
+****
+exim -odi -bnq userx@origin.ex
+From: userx@origin.ex
+To: userx@test.ex
+****
+exim -odi userx
+From: userx
+To: userx
+****
+exim -DTRUSTED=CALLER -odi -bnq userx@origin.ex
+From: philip
+To: userx
+****
+# Same tests for BSMTP
+2
+exim -odi -bnq -bS
+mail from: userx
+rcpt to: userx
+data
+From: userx
+To: userx
+.
+quit
+****
+2
+exim -odi -bnq -bS
+mail from: userx@origin.ex
+rcpt to: userx
+data
+From: userx
+To: userx
+.
+quit
+****
+exim -odi -bnq -bS
+mail from: userx@origin.ex
+rcpt to: userx@test.ex
+data
+From: userx
+To: userx
+.
+quit
+****
+exim -odi -bS
+mail from: userx@origin.ex
+rcpt to: userx@test.ex
+data
+From: userx
+To: userx
+.
+quit
+****
+exim -odi -bnq -bs
+mail from: userx@origin.ex
+rcpt to: userx
+data
+From: userx
+To: userx
+.
+quit
+****
+exim -odi -bnq -bs
+mail from: userx@origin.ex
+rcpt to: userx@test.ex
+data
+From: userx
+To: userx
+.
+quit
+****
+exim -odi -bs
+mail from: userx@origin.ex
+rcpt to: userx@test.ex
+data
+From: userx
+To: userx
+.
+quit
+****

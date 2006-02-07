@@ -1,0 +1,9 @@
+# unseen (including address_data passing)
+exim -odi dcopy defer
+Message sent to dcopy.
+****
+exim -odi acopy defer
+Message sent to acopy.
+****
+exim -qf
+****

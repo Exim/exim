@@ -1,0 +1,4 @@
+# domain_data and local_part_data for redirection to file
+exim -N -odi -d userx@test.ex
+****
+no_message_check

@@ -1,0 +1,19 @@
+# Use of -t, with and without resent-
+exim -d-all+receive -odq -t
+To: x@y.z
+Cc: a@b.c
+Bcc: p@q.r
+.
+****
+exim -d-all+receive -odq -t
+To: x@y.z
+Cc: a@b.c
+Bcc: p@q.r
+Resent-to: aa@bb.cc
+Resent-cc: pp@qq.rr
+Resent-bcc: xx@yy.zz
+.
+****
+exim -bp
+****
+no_msglog_check

@@ -1,0 +1,19 @@
+# Taking copies of a domain's mail
+need_ipv4
+#
+exim -odi userx@copy.domain usery@copy.domain
+Test one.
+.
+****
+exim -odi -bs
+mail from:<doesn't@matter>
+rcpt to:<x@copy.domain>
+rcpt to:<y@copy.domain>
+rcpt to:<z@elsewhere>
+data
+Test two.
+.
+quit
+****
+exim -qf
+****

@@ -1,0 +1,13 @@
+# authentication (server_mail_auth_condition)
+exim -bs -oMa 10.0.0.2
+ehlo testing.ex
+auth plain AHVzZXJ4AHNlY3JldA==
+mail from:<userx@test.ex> AUTH=xyz@test.ex
+quit 
+****
+exim -bs -oMa 10.0.0.2
+ehlo testing.ex
+auth plain AHVzZXJ5AGFiPw==
+mail from:<userx@test.ex> AUTH=xyz@test.ex
+quit
+****

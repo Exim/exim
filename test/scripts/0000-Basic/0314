@@ -1,0 +1,5 @@
+# host_reject_connection
+exim -bh V4NET.0.0.1
+****
+exim -bh V4NET.0.0.2
+****

@@ -1,0 +1,41 @@
+# warning messages
+need_ipv4
+#
+exim -odi userx@test.ex defer@test.ex
+Test message
+****
+# -Tqt 11s/ sets the queue time for the message to 11s when deciding
+# on warnings.
+exim -Tqt 11s/ -odi -qf
+****
+exim -odi defer@test.ex defer@another.test.ex
+Test message
+****
+exim -Tqt 20s/13s/ -odi -qf
+****
+exim -odi xxxx@some.domain
+Test message
+****
+exim -Tqt 41s/15s/8s/ -odi -qf
+****
+exim -odi yyyy@connection.refused
+Nother test
+****
+exim -Tqt 42s/16s/9s/5s/ -odi -q
+****
+sleep 3
+exim -Tqt 42s/16s/9s/5s/ -odi -q
+****
+# Now test with custom file
+exim -Tqt 12m/45s/45s/11s/ -DWMF=warn_message_file=DIR/aux-fixed/TESTNUM.wmf -odi -qf
+****
+# Remove the previous 4 messages
+exim -Mrm $msg1 $msg2 $msg3 $msg4
+****
+# Check no warnings for non-warn domain
+exim -odi defer@another.test.ex
+Testing
+****
+exim -Tqt 20s/ -odi -qf
+****
+no_msglog_check

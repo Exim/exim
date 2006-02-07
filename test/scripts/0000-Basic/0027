@@ -1,0 +1,53 @@
+# Nested ACL (per user) and ACL misconfigurations
+#
+# Invalid sender, should reject both
+exim -bs
+mail from:<x@y>
+rcpt to:<userx@test.ex>
+rcpt to:<postmaster@test.ex>
+quit
+****
+# Valid sender, should only reject userx
+exim -bs
+mail from:<userx@test.ex>
+rcpt to:<userx@test.ex>
+rcpt to:<postmaster@test.ex>
+quit
+****
+# ACL misconfigurations at RCPT time
+exim -bs
+mail from:<>
+rcpt to:<"deny verify = header_syntax"@test.ex>
+rcpt to:<"deny verify = junk"@test.ex>
+rcpt to:<"deny vorify = junk"@test.ex>
+rcpt to:<"dony verify = junk"@test.ex>
+rcpt to:<"deny !message = abcd"@test.ex>
+quit
+****
+# ACL misconfiguration at DATA time
+exim -bs
+mail from:<>
+rcpt to:<data@test.ex>
+data
+Subject: data1
+.
+quit
+****
+# ACL misconfiguration at DATA time
+exim -bs
+mail from:<>
+rcpt to:<data@test.ex>
+data
+Subject: data2
+.
+quit
+****
+# ACL misconfiguration at DATA time
+exim -bs
+mail from:<>
+rcpt to:<data@test.ex>
+data
+Subject: data3
+.
+quit
+****

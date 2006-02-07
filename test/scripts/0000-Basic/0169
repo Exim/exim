@@ -1,0 +1,20 @@
+# quota warn threshold when mailbox full
+exim -odi userx
+This is a test message
+****
+exim -odi userx
+quota: 0
+threshold: 10
+This is a test message
+****
+exim -odi userx
+quota: 10
+threshold: 100%
+This is a test message
+****
+exim -d-all+transport -odi userx
+quota: 50M
+threshold: 41%
+Another test
+****
+no_msglog_check

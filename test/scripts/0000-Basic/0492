@@ -1,0 +1,11 @@
+# return_path_on_delivery with parallel deliveries and no deliveries
+need_ipv4
+sortlog
+no_stderr_check
+#
+exim -odi -N a@test.ex b@test.ex
+****
+exim -odi -N b@test.ex a@test.ex
+****
+exim -odi blackhole@test.ex
+****

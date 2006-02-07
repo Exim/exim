@@ -1,0 +1,5 @@
+# Aliases including domains
+exim -bt bar@domain1.ex
+****
+2
+exim -bt foobar@domain1.ex

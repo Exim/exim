@@ -1,0 +1,21 @@
+# non-completing transport filter
+need_ipv4
+#
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+351 Send more
+.
+250 OK
+****
+exim -odi userx
+This is a test message.
+****
+no_msglog_check

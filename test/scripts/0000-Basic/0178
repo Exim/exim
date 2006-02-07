@@ -1,0 +1,20 @@
+# log_subject
+exim -odi userx
+Subject: one-line subject
+****
+exim -odi userx
+Subject: two-line subject,
+  that is, it covers two lines
+****
+exim -odi userx
+Subject: subject containing  backspaces
+****
+exim -odi userx
+Subject: subject contains "quotes" and \backslashes\ and
+   non-prints over multiple
+  lines
+****    
+exim -odi userx
+Subject: =?ISO-8859-1?Q?Patrik_F=E4ltstr=F6m?= ABCD
+****
+no_message_check

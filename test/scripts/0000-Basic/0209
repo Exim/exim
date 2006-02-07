@@ -1,0 +1,72 @@
+# re-use of SMTP channel after 450 error
+need_ipv4
+#
+exim -odi -odqs userz@domain1
+Test message 1
+****
+exim -odi -odqs userz@domain1
+Test message 2
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+450 Temporary error
+QUIT
+250 OK
+****
+exim -q
+****
+exim -Mrm $msg1 $msg2
+****
+exim -odi -odqs userx@domain1 usery@domain1
+Test message 1
+****
+exim -odi -odqs userx@domain1 usery@domain1
+Test message 2
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+450 Temporary error
+RCPT TO:
+250 OK
+DATA
+354 Go ahead
+.
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+450 Temporary error
+RCPT TO:
+250 OK
+DATA
+354 Go ahead
+.
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+450 Temporary error
+QUIT
+250 OK
+****
+exim -q
+****
+exim -q
+****
+exim -q $msg2 $msg2
+****
+exim -Mc $msg1
+****
+no_msglog_check

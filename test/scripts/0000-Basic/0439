@@ -1,0 +1,17 @@
+# ridiculously large message_size_limit
+need_ipv4
+#
+1
+exim -odq userx
+****
+exim -bs
+quit
+****
+exim -DSERVER=server -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 421
+QUIT
+??? 221
+****
+killdaemon

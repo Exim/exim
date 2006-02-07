@@ -1,0 +1,11 @@
+# Envelope-to: and duplicates
+exim -odi onelevel1 onelevel2
+****
+exim -odi top1 top2
+****
+exim -odi top1 top2 onelevel1 onelevel2
+****
+exim -odi batch
+****
+exim -odi clone clone clone c2 c2
+****

@@ -1,0 +1,48 @@
+# Simple ACL ratelimit test
+exim -bh V4NET.9.8.7
+ehlo test.ex
+mail from:<>
+rcpt to:<a@b>
+data
+Here is some data.
+.
+quit
+****               
+exim -bh V4NET.9.8.7
+ehlo test.ex
+mail from:<>
+rcpt to:<a@b>
+data
+Here is some data.
+.
+quit
+****               
+exim -bh V4NET.9.8.7 -DRRATELIMIT=0/1h/per_conn/strict -DDRATELIMIT=0/1h/per_conn/strict
+ehlo test.ex
+mail from:<>
+rcpt to:<a@b>
+data
+Here is some data.
+.
+quit
+****               
+exim -bh V4NET.9.8.7 -DRRATELIMIT=0/1h/per_conn/strict -DDRATELIMIT=0/1h/per_conn/strict
+ehlo test.ex
+mail from:<>
+rcpt to:<a@b>
+data
+Here is some data.
+.
+quit
+****               
+exim -bh V4NET.9.8.7 -DRRATELIMIT=0/1h/per_rcpt -DDRATELIMIT=0/1h/per_conn
+ehlo test.ex
+mail from:<>
+rcpt to:<a@b>
+rcpt to:<b@c>
+rcpt to:<e@f>
+data
+Here is some data.
+.
+quit
+****               

@@ -1,0 +1,10 @@
+# Default uid for delivery and never_users
+exim -odi -d-all+uid somebody
+test
+.
+****
+exim -odi -d-all+uid never
+test to root
+.
+****
+no_msglog_check

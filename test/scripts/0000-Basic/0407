@@ -1,0 +1,25 @@
+# overlong headers and header lines
+write test-data 15000x100=__
+From: x@y
+Subject: this will be very long
+++++
+
+Short message body.
+****
+1
+exim x@y <DIR/test-data
+****
+exim -DHEADER_MAXSIZE=header_maxsize=2M x@y <DIR/test-data
+****
+1
+exim -DHEADER_MAXSIZE=header_maxsize=2M -DHEADER_LINE_MAXSIZE=header_line_maxsize=1024 x@y <DIR/test-data
+****
+exim -DHEADER_LINE_MAXSIZE=header_line_maxsize=20 -bs
+mail from:<x@y>
+rcpt to:<x@y>
+data
+Subject: Here is a line that is going to overflow the small limit
+.
+quit
+****
+no_msglog_check

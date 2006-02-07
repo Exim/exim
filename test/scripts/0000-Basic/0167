@@ -1,0 +1,11 @@
+# rewrite envelope sender or return path to null
+exim -odi userx
+****
+exim -odi -f remove userx
+****
+exim -odi -f trakill userx
+****
+exim -brw error@test.ex
+****
+exim -brw remove@test.ex
+****

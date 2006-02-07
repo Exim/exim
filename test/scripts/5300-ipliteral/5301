@@ -1,0 +1,14 @@
+# domain literals (IPv6)
+need_ipv6
+#
+exim -bt x@[abcd::dcba] x@[IPv6:cba::abc]
+****
+exim -DD6=disable_ipv6 -bt x@[abcd::dcba] x@[IPv6:cba::abc]
+****
+0
+exim -odq -bs
+MAIL FROM:<>
+RCPT TO:<x@[3ffe:ffff:836f:0a00:000a:0800:200a:c031]>
+RCPT TO:<x@[ipv6:3ffe:ffff:836f:0a00:000a:0800:200a:c031]>
+quit
+****

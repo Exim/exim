@@ -1,0 +1,6 @@
+# remote_sort_domains
+#
+exim -odi -N xx@ten-1.net xx@black.com xx@other.edu xx@myhost.com
+****
+exim -odi -N xx@myhost.com xx@ten-1.net xx@other.edu xx@black.com 
+****

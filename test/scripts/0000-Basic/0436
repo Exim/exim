@@ -1,0 +1,3 @@
+# batch_max and multiple domains
+exim -odi a@d1.ex b@d1.ex c@d2.ex d@d2.ex
+****

@@ -1,0 +1,96 @@
+# Affixes in RCPT commands for recipient callouts
+need_ipv4
+#
+server PORT_S 8
+220 Welcome
+HELO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+*eof
+220 Welcome
+HELO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+*eof
+220 Welcome
+HELO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+*eof
+220 Welcome
+HELO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+*eof
+220 Welcome
+HELO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+*eof
+220 Welcome
+HELO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+*eof
+220 Welcome
+HELO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+*eof
+220 Welcome
+HELO
+250 Hi
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+exim -odq -bs
+mail from:<>
+RCPT TO:<abc@include> 
+RCPT TO:<abc@exclude> 
+RCPT TO:<p+abc@include> 
+RCPT TO:<p+abc@exclude> 
+RCPT TO:<abc-s@include> 
+RCPT TO:<abc-s@exclude> 
+RCPT TO:<p+abc-s@include> 
+RCPT TO:<p+abc-s@exclude>
+quit
+****

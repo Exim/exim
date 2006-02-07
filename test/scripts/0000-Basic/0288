@@ -1,0 +1,26 @@
+# serialize_hosts
+need_ipv4
+#
+exim -odq a b 
+.
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+*sleep 2
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -q
+****
+no_msglog_check

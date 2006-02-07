@@ -1,0 +1,3 @@
+# MX pointing to IP address allowed
+exim -bt x@mxt10.test.ex
+****

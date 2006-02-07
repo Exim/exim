@@ -1,0 +1,13 @@
+# errors_to and unseen
+exim -odi -f abc@x.y.z userx
+Test message
+****
+exim -odi -f pqr@x.y.z alias
+Test message
+****
+exim -odi -f gfh@x.y.z forward
+Test message
+****
+exim -odi -f mno@x.y.z smart
+Test message
+****

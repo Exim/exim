@@ -1,0 +1,16 @@
+# From: and Sender: and rewriting
+exim -odq SomeOne
+From: userx@test.ex
+****
+exim -Mvh $msg1
+****
+exim -odq OtherOne
+From: usery@test.ex
+****
+exim -Mvh $msg2
+****
+exim -odq ThirdOne
+****
+exim -Mvh $msg3
+****
+no_msglog_check

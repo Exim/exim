@@ -1,0 +1,14 @@
+# MX pointing to IP address not allowed
+2
+exim -bt x@mxt10.test.ex
+****
+exim -bh V4NET.9.8.7
+mail from:<x@mxt10.test.ex>
+rcpt to:<x@y>
+quit
+****
+exim -bh V4NET.9.8.7
+mail from:<x@ten-1.test.ex>
+rcpt to:<x@mxt10.test.ex>
+quit
+****

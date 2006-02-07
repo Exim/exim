@@ -1,0 +1,23 @@
+# host and domain list caseless matching and HELO checking
+#
+exim -bt userx@test.ex userx@myhost.test.ex
+****
+exim -bh V4NET.0.0.0
+helo @#$%^&*()
+helo abc_xyz
+mail from:<userx@cus.cam.ac.uk>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@else.where>
+rset
+quit
+****
+exim -bh V4NET.0.0.99
+helo @#$%^&*()
+mail from:<root>
+rcpt to:<xx@reLAY.ONE.ex>
+rcpt to:<yy@relay.two.ex>
+quit
+****
+2
+exim -bt abcd@test.ex ABCD@test.ex XYZ@ten-1.test.ex xyz@ten-1.test.ex
+****

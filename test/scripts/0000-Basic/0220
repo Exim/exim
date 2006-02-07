@@ -1,0 +1,43 @@
+# untrusted_set_sender: TRUE
+exim -odi -f foo@bar userx
+****
+exim -odi userx
+From foo@bar Fri Jan  5 12:35 GMT 1996
+****
+exim -odi -bs
+MAIL FROM:<foo@bar>
+RCPT TO:<userx@test.ex>
+DATA
+.
+QUIT
+****
+exim -odi -f foo@bar userx
+From: foobydooby <foo@bar>
+****
+1 
+exim -odi -f '<>' userx
+This message is going to be too large. Create a few lines to make it so.
+This message is going to be too large. Create a few lines to make it so.
+This message is going to be too large. Create a few lines to make it so.
+This message is going to be too large. Create a few lines to make it so.
+This message is going to be too large. Create a few lines to make it so.
+This message is going to be too large. Create a few lines to make it so.
+This message is going to be too large. Create a few lines to make it so.
+This message is going to be too large. Create a few lines to make it so.
+This message is going to be too large. Create a few lines to make it so.
+****
+exim -odq -f '' userx
+****
+exim -odq -f foo@bar userx
+****
+sudo exim -odq -f "<>" userx
+****
+exim -bp
+****
+exim -odi -f bar@foo userx
+****
+exim -odq -f userx-something@myhost.test.ex userx
+****
+exim -odq -f usery-something@myhost.test.ex userx
+****
+no_msglog_check

@@ -1,0 +1,8 @@
+# named local part lists
+exim -d -bt CALLER@test.ex
+****
+exim -d -odi CALLER@test.ex
+****
+2
+exim -d -bt unknown@test.ex
+****

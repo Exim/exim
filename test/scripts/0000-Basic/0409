@@ -1,0 +1,7 @@
+# smtp_banner tests (including empty banner)
+exim -bs
+quit
+****
+exim '-DBANNER=$qualify_domain XYZ' -bs
+quit
+****

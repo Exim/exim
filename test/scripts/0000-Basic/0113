@@ -1,0 +1,5 @@
+# one_time in forwardfile
+exim -odi first
+****
+exim -qf
+****

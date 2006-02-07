@@ -1,0 +1,4 @@
+# System filter munges headers, running as root
+exim -odi userx@test.ex
+Remove: this header should get removed
+****

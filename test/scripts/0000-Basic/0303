@@ -1,0 +1,30 @@
+# helo_lookup_domains (default setting) and helo literals
+exim -bh V4NET.0.0.1
+helo myhost.test.ex
+quit
+****
+exim -bh V4NET.0.0.1
+ehlo [127.0.0.1]
+quit
+****
+exim -bh V4NET.0.0.1
+helo rhubarb.custard
+quit
+****
+exim -d -bh V4NET.2.3.4
+EHLO [V4NET.2.3.4]
+mail from:<>
+rcpt to:<x@y>
+data
+.
+quit
+****
+exim -d -bh V4NET.2.3.4 -oMs host.name.tld
+EHLO [V4NET.2.3.4]
+mail from:<>
+rcpt to:<x@y>
+data
+.
+quit
+****
+no_msglog_check

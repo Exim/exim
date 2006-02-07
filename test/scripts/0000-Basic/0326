@@ -1,0 +1,7 @@
+# prefix/suffix in $original_local_part
+exim -odi pppp-userx@test.ex
+****
+exim -odi userx+ssss@test.ex
+****
+exim -odi userx@test.ex
+****

@@ -1,0 +1,13 @@
+# connection error on and not on queue run, with deliver_drop_privilege
+need_ipv4
+#
+exim -odq V4NET.0.0.1@test.ex
+****
+exim -DSERVER=server -q1h -bd -oX PORT_D
+****
+sleep 1
+exim -odi 127.0.0.1@test.ex
+****
+sleep 1
+killdaemon
+no_msglog_check

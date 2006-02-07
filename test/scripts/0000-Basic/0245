@@ -1,0 +1,12 @@
+# -t with newline in address; also spaces after a "final" dot
+exim -odq -t
+To: <"abc
+   def"@test.ex>, xxx@yyy
+Bcc: aaa@bbb    
+.    
+****
+exim -bp
+****
+exim -Mvh $msg1
+****
+no_msglog_check

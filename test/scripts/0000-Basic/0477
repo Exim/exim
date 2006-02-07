@@ -1,0 +1,6 @@
+# bind to outgoing interface fails
+need_ipv4
+#
+exim -odi userx@test.ex
+****
+no_msglog_check

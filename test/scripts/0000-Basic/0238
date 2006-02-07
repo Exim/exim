@@ -1,0 +1,9 @@
+# require_files with failing expansion or relative path
+need_ipv4
+#
+1
+exim -bt userx@test.ex
+****
+1
+exim -bt xxx@a.b.c
+****

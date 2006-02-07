@@ -1,0 +1,46 @@
+# bare LF in header lines (TCP input)
+need_ipv4
+#
+exim -bd -DSERVER=server -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+DATA
+??? 3
+From: x@y
+To: some@one
+Subject: contains >\n< bare lf
+Aheader: Another header line
+
+This is the message body.
+.
+??? 2
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@test.ex>
+??? 250
+DATA
+??? 3
+From: x@y\nBheader: some text
+To: some@one
+Subject: contains >\n< bare lf
+Aheader: Another header line
+
+This is the message body.
+.
+??? 2
+QUIT
+??? 221
+****
+killdaemon
+# Wait for delivery process
+sleep 1

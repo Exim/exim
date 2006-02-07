@@ -1,0 +1,7 @@
+# $acl_verify_message
+exim -bh 1.2.3.4
+ehlo a.b.c.d
+mail from:<>
+rcpt to:<x@mxt2.test.ex>
+quit
+****

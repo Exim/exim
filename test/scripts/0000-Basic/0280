@@ -1,0 +1,6 @@
+# errors_copy
+exim -odi -f spqr@test.ex spqr@test.ex
+****
+exim -odi -f abcd@test.ex abcd@test.ex
+****
+no_msglog_check

@@ -1,0 +1,4 @@
+# qualify_preserve_domain
+exim -odi userx@a.test.ex, usery@b.test.ex
+Test message
+.

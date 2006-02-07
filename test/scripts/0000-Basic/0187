@@ -1,0 +1,23 @@
+# ignore_target_hosts (bydns)
+exim -bt userx@other2.test.ex
+****
+exim -bt userx@ten-5-6.test.ex
+****
+exim -bt userx@mxt7.test.ex
+****
+exim -bt userx@mxt9.test.ex
+****
+exim -bt userx@eximtesthost.test.ex
+****
+2
+exim -bt userx@localhost
+****
+2
+exim -bt userx@mxt10.test.ex
+****
+2
+exim -bt userx@mxt11.test.ex
+****
+2
+exim -bt userx@mxt12.test.ex
+****

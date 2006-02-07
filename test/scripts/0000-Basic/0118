@@ -1,0 +1,7 @@
+# first_delivery and queue_running
+exim -odi userx
+****
+exim -M $msg1
+****
+exim -qf
+****

@@ -1,0 +1,10 @@
+# verifying and rewriting sender address
+need_ipv4
+#
+exim -d -bh 1.2.3.4
+helo [1.2.3.4]
+mail from:<a@b>
+rcpt to:<c@d>
+rcpt to:<e@f>
+quit
+****

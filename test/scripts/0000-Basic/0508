@@ -1,0 +1,4 @@
+# errors_to and failing pipe
+exim -odi -f '<>' userx
+This is a test message
+****

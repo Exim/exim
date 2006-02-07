@@ -1,0 +1,17 @@
+# -bS Unexpected EOF in headers
+1
+exim -bS -odi
+mail from:someone@some.where
+rcpt to:CALLER@HOSTNAME
+data
+from: someone@some.where
+To: CALLER@HOSTNAME
+Subject: testing
+
+Here is testing data
+..that line started with a dot
+.
+mail from:someone@some.where
+rcpt to:blackhole@HOSTNAME
+data
+from: me

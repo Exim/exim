@@ -1,0 +1,38 @@
+# control of AUTH= on MAIL by ACL
+exim -DS=# -bs
+ehlo xxxx
+mail from:<a@b> auth=c@d
+quit
+****
+exim -bs
+ehlo xxxx
+mail from:<a@b> auth=c@d
+quit
+****
+exim -DACL=accept -bs
+ehlo xxxx
+mail from:<a@b> auth=c@d
+quit
+****
+# No acl_smtp_mailauth, but authenticated
+exim -DS=# -bs
+ehlo xxxx
+auth plain abcd
+mail from:<a@b> auth=c@d
+quit
+****
+# Authenticated but ACL rejects
+exim -bs
+ehlo xxxx
+auth plain abcd
+mail from:<a@b> auth=c@d
+quit
+****
+# ACL allows some only
+exim -DACL=acl1 -bs
+ehlo xxxx
+mail from:<a@b> auth=bad@bad
+rset
+mail from:<a@b> auth=ok@ok
+quit
+****

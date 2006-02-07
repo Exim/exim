@@ -1,0 +1,10 @@
+# check_ancestor with case sensitivity
+exim -odi userx
+Remove: This header should go
+****
+exim -odi UserY
+Remove: This header should go
+****
+exim -odi usery
+Remove: This header should go
+****

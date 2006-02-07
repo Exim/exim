@@ -1,0 +1,6 @@
+# temp_errors in pipe transport
+exim -odi 0@test.ex 10@test.ex 45@test.ex
+****
+exim -odi 0@test2.ex 10@test2.ex 45@test2.ex
+****
+no_msglog_check

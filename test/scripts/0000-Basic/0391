@@ -1,0 +1,6 @@
+# Sender verify rewrite and $sender_address
+exim -d -bh 1.2.3.4
+mail from:<U@W.x.y>
+rcpt to:<B@a.b.c>
+quit
+****

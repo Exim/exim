@@ -1,0 +1,319 @@
+# PIPELINING (client: errors, etc)
+need_ipv4
+#
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+451 Temp error
+RCPT TO
+550 Perm error
+RCPT TO
+250 OK
+DATA
+351 Send more
+.
+250 OK
+****
+exim -odi a b c d
+.
+****
+# Response timeout
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+*sleep 2
+****
+exim -odi a b c
+.
+****
+# Temp error on MAIL
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+451 Temp error
+RCPT TO
+503 No sender given
+RCPT TO
+503 No sender given
+DATA
+503 No envelope
+QUIT
+250 OK
+****
+exim -odi a b
+.
+****
+# Perm error on MAIL
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+550 Perm error
+RCPT TO
+503 No sender given
+RCPT TO
+503 No sender given
+DATA
+503 No envelope
+QUIT
+250 OK
+****
+exim -odi a b
+.
+****
+# All get temp errors
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+451 Temp error 1
+RCPT TO
+451 Temp error 2
+DATA
+503 No recipients
+QUIT
+250 OK
+****
+exim -odi a b
+.
+****
+# All get perm errors
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+551 Perm error 1
+RCPT TO
+551 Perm error 2
+DATA
+503 No recipients
+QUIT
+250 OK
+****
+exim -odi a b
+.
+****
+# Mixed temp and perm
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+451 Temp error 1
+RCPT TO
+551 Perm error 2
+DATA
+503 No recipients
+QUIT
+250 OK
+****
+exim -odi a b
+.
+****
+# Perm error on DATA after good recipients
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+503 Sorry perm data error
+QUIT
+250 OK
+****
+exim -odi a b
+.
+****
+# Temp error on DATA after good recipients
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+403 Sorry temp data error
+QUIT
+250 OK
+****
+exim -odi a b
+.
+****
+# Temp error on DATA after good recipients, but in first block of a
+# multi-block interaction
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+RCPT TO
+550 NO
+DATA
+403 Sorry temp data error
+QUIT
+250 OK
+****
+exim -v -odi a b c d e f g h i j k l m n o p q r s t u v w x y z aa bb cc dd ee ff gg hh ii jj kk ll mm nn oo pp qq rr ss tt uu vv ww xx yy zz
+.
+****
+# Server drops connection after some responses
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+550 NO
+****
+exim -odi a b c d e 
+.
+****
+no_msglog_check

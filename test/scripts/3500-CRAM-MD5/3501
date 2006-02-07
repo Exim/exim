@@ -1,0 +1,28 @@
+# CRAM-MD5 client tests
+need_ipv4
+#
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH CRAM-MD5
+AUTH CRAM-MD5
+334 PDE4OTYuNjk3MTcwOTUyQHBvc3RvZmZpY2UucmVzdG9uLm1jaS5uZXQ+
+dGltIGI5MTNhNjAyYzdlZGE3YTQ5NWI0ZTZlNzMzNGQzODkw
+235 Authentication successful
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx@domain.com
+.
+****
+no_msglog_check

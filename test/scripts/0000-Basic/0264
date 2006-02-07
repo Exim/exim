@@ -1,0 +1,39 @@
+# retry rules and local parts
+exim -odi userx@test.ex
+****
+dump retry
+exim -odi usery@test.ex
+****
+exim -odq userz@test.ex
+****
+exim -q
+****
+exim -odi notuser@test.ex
+****
+dump retry
+exim -odi notuser2@test.ex
+****
+exim -odq notuser3@test.ex
+****
+exim -q
+****
+exim -Mrm $msg1 $msg2 $msg3 $msg4
+****
+exim -odi r3.a@outside
+****
+exim -odq r3.b@outside
+****
+exim -q
+****
+exim -Mrm $msg1 $msg2
+****
+exim -odi r4.a@outside
+****
+exim -odq r4.b@outside
+****
+exim -q
+****
+exim -odi r5.a@r5domain.ex
+****
+no_msglog_check
+no_message_check

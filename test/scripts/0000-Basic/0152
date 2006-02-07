@@ -1,0 +1,41 @@
+# control of Sender: (local_from_{suf,pre}fix)
+exim -odi postmaster
+From: not.the.login@test.ex
+Test message
+.
+****
+exim -odi postmaster
+From: page+CALLER@test.ex
+Test message
+.
+****
+exim -odi postmaster
+From: call+CALLER@test.ex
+Test message
+.
+****
+exim -odi postmaster
+From: call-CALLER@test.ex
+Test message
+.
+****
+exim -odi postmaster
+From: CALLER&page@test.ex
+Test message
+.
+****
+exim -odi postmaster
+From: CALLER&call@test.ex
+Test message
+.
+****
+exim -odi postmaster
+From: CALLER=call@test.ex
+Test message
+.
+****
+exim -odi postmaster
+From: page+CALLER=call@test.ex
+Test message
+.
+****

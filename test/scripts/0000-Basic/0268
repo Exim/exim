@@ -1,0 +1,9 @@
+# redirect and owners/owngroups/modemask
+cp DIR/aux-fixed/TESTNUM.exim DIR/test-owned-by-exim
+sudo chown EXIMUSER:EXIMGROUP DIR/test-owned-by-exim
+2
+exim -bt CALLER@r1 CALLER@r2 CALLER@r3 CALLER@r4 CALLER@r5 CALLER@r6 CALLER@r7 CALLER@r8
+****
+2
+exim -bt CALLER@r9 CALLER@r10 CALLER@r11
+****

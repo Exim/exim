@@ -1,0 +1,5 @@
+# local part case in rewrites
+exim -brw User@a.domain
+****
+exim -d-all+rewrite -brw User@c.domain
+****

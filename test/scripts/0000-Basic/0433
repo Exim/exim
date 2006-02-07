@@ -1,0 +1,21 @@
+# local_interfaces, daemon_smtp_port, and -oX interactions (IPv4)
+need_ipv4
+#
+exim -d -bd -DSERVER=server -DPORT=daemon_smtp_port=PORT_D
+****
+killdaemon
+exim -d -bd -DSERVER=server -DPORT=daemon_smtp_port=PORT_D:PORT_D2
+****
+killdaemon
+exim -d -bd -DSERVER=server -DPORT=daemon_smtp_port=PORT_D:PORT_D2 -DIFACE='local_interfaces = <; 127.0.0.1.PORT_D4 ; 0.0.0.0'
+****
+killdaemon
+exim -d -bd -DSERVER=server -DPORT=daemon_smtp_port=PORT_D:PORT_D2 -DIFACE='local_interfaces = <;  0.0.0.0; 127.0.0.1.PORT_D4'
+****
+killdaemon
+exim -d -bd -DSERVER=server -oX PORT_D3 -DPORT=daemon_smtp_port=PORT_D:PORT_D2 -DIFACE='local_interfaces = <; 127.0.0.1.PORT_D4 ; 0.0.0.0'
+****
+killdaemon
+exim -d -bd -DSERVER=server -oX '<; 0.0.0.0.PORT_D;0.0.0.0.PORT_D2'
+****
+killdaemon

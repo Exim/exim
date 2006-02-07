@@ -1,0 +1,10 @@
+# autoreply with unseen
+exim -odi faq@nl.demon.net
+Test message
+****
+exim -bh 1.2.3.4
+ehlo xxxx
+mail from:<abcd@x.y>
+rcpt to:<faq@nl.demon.net>
+quit
+****

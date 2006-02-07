@@ -1,0 +1,12 @@
+# logging repeated warning messages in ACLs
+exim -bs
+HELO xxx
+MAIL FROM:<>
+RCPT TO:<a@b.c>
+RCPT TO:<x@y.z>
+RSET
+MAIL FROM:<>
+RCPT TO:<a@b.c>
+RCPT TO:<x@y.z>
+QUIT
+****

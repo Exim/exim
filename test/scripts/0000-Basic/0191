@@ -1,0 +1,22 @@
+# transport filter with missing final NL
+need_ipv4
+#
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send message
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx@domain1
+Test message
+****

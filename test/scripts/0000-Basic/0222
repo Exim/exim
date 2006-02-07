@@ -1,0 +1,15 @@
+# autoreply and once and once_file_size
+exim -odi -f foo1 userx
+****
+exim -odi -f foo1 userx
+****
+exim -odi -f foo2 userx
+****
+exim -odi -f foo2 userx
+****
+exim -odi -f foo3 userx
+****
+exim -odi -f foo3 userx
+****
+exim -odi -f foo1 userx
+****

@@ -1,0 +1,13 @@
+# remote host IP address is the local host
+need_ipv4
+#
+exim -bh V4NET.0.0.0
+mail from:<userx@test.ex>
+rcpt to:<userx@not.test.ex>
+quit
+****
+exim -odi userx@not.test.ex
+.
+****
+1
+exim -bt userx@not.test.ex

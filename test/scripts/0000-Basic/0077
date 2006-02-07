@@ -1,0 +1,15 @@
+# host_reject !@ : !localhost
+exim -bh 127.0.0.1
+mail from:<x@test.ex>
+rcpt to:<x@test.ex>
+quit
+****
+exim -bh V4NET.10.10.10
+mail from:<x@test.ex>
+rcpt to:<x@test.ex>
+quit
+****
+exim -bh V4NET.0.0.1
+mail from:<x@test.ex>
+rcpt to:<x@test.ex>
+quit

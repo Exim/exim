@@ -1,0 +1,5 @@
+# Missing IP addresses for 2nd host in smtp router
+need_ipv4
+#
+exim -odi userx
+****

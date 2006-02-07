@@ -1,0 +1,16 @@
+# named host lists
+exim -d -bh V4NET.2.3.4
+quit
+****
+exim -d -bh V4NET.6.7.8
+quit
+****
+exim -d -bh V4NET.10.11.12
+quit
+****
+exim -d -bh V4NET.1.1.1
+quit
+****
+exim -d -bh V4NET.2.2.2
+quit
+****

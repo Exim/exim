@@ -1,0 +1,24 @@
+# Domain selection in routers
+exim -odi userx@test.ex
+This is a test message 1.
+****
+exim -odi userx@bad.ex
+This is a test message 2.
+****
+exim -odi userx@badbad.ex
+This is a test message 3.
+****
+exim -odi userx@domain1.ex
+This is a test message 4.
+****
+exim -odi userx@domain4.ex
+This is a test message 5.
+****
+exim -odi userx@domain2.ex
+This is a test message 6.
+****
+exim -odi userx@xx.domain5.ex
+This is a test message 7.
+****
+exim -odi userx@domain6.yy.ex
+This is a test message 8.

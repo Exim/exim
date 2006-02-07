@@ -1,0 +1,13 @@
+# limits on filter and include file size
+#
+# Make a file that has a huge hole in it
+perl
+open(OUT, ">DIR/test-holey");
+seek OUT, 104857620, 0;
+print OUT "End\n";
+close(OUT);
+****
+#
+exim -odi filter include
+****
+no_msglog_check

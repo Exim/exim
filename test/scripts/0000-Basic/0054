@@ -1,0 +1,6 @@
+# mx_domains
+exim -bt xxx@ten-1.test.ex
+****
+2
+exim -bt xxx@ten-2.test.ex
+****

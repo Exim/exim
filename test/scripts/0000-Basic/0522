@@ -1,0 +1,10 @@
+# Timeouts in pipe with and without a transport filter
+exim -odi nofilter
+****               
+exim -odi filter
+****
+exim -DTIMEOUTDEFER=timeout_defer -odi nofilter
+****               
+exim -DTIMEOUTDEFER=timeout_defer -odi filter
+****
+no_msglog_check

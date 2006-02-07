@@ -1,0 +1,36 @@
+# local_scan() smtp_printf() and smtp_fflush()
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+client -t2 127.0.0.1 PORT_D
+??? 220
+ehlo foobar
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<test-local-scan@y>
+??? 250
+rcpt to:<x@y>
+??? 250
+data
+??? 354
+local-scan: reject rhubarb rhubarb
+.
+??? 550
+mail from:<test-local-scan@y>
+??? 250
+rcpt to:<x@y>
+??? 250
+data
+??? 354
+local-scan: teergrube
+.
+??? 550-
+??? 550-
+****
+# Wait because of the teergrube
+sleep 3
+killdaemon
+no_msglog_check

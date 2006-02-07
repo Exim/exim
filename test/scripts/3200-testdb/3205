@@ -1,0 +1,11 @@
+# lookup defer (senders and hosts conditions in ACL)
+exim -bh 1.2.3.4
+mail from:<userx@external.test.ex>
+rcpt to:<userx@test.ex>
+quit
+****
+exim -bh 4.3.2.1
+mail from:<userx@external.test.ex>
+rcpt to:<userx@test.ex>
+quit
+****

@@ -1,0 +1,12 @@
+# freeze_tell & system filter & ACL
+exim -odi userx
+Rhubarb
+****
+exim -odi -bs
+mail from:<a@test.ex>
+rcpt to:<usery@test.ex>
+data
+Should be frozen
+.
+quit
+****

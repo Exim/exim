@@ -1,0 +1,4 @@
+# create_directory and directory_mode
+exim -odi userx@test.ex
+****
+ls -ld DIR/test-mail/subdir | cut -f 1 -d ' '

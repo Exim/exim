@@ -1,0 +1,6 @@
+# control of Sender: (default, includes Sender:)
+exim -odi postmaster
+From: not.the.login@test.ex
+Test message
+.
+****

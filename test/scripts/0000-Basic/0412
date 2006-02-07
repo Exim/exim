@@ -1,0 +1,23 @@
+# $reply_address
+exim -odi CALLER
+From: CALLER
+
+From set, reply-to non-existent.
+****
+exim -odi CALLER
+From: CALLER
+Reply-to:
+
+From set, reply-to empty
+****
+exim -odi CALLER
+From: CALLER
+Reply-to: usery
+
+From set, reply-to set
+****
+exim -odi CALLER
+From:
+
+From empty, reply-to non-existent
+****

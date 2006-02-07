@@ -1,0 +1,3 @@
+# List delimiters
+exim -d-all+route -bv x@ten y@two x@test1 x@test2 x@test3-4 x@one x@six
+****

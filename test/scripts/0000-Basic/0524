@@ -1,0 +1,17 @@
+# Simple CSA test
+exim -bh V4NET.9.8.7
+ehlo csa1.test.ex
+mail from:<>
+rset
+ehlo csa2.test.ex
+mail from:<>
+quit
+****               
+exim -bh V4NET.9.8.8
+ehlo csa1.test.ex
+mail from:<>
+rset
+ehlo csa2.test.ex
+mail from:<>
+quit
+****               

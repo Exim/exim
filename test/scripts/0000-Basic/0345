@@ -1,0 +1,17 @@
+# quota_xxx in retry rules
+exim -odi a@test.ex
+This is a test message which should be over quota.
+****
+dump retry
+touch -a -t 0205100000 DIR/test-mail/a
+ls -lu DIR/test-mail/a
+sleep 1
+exim -odi -qf
+****
+dump retry
+sleep 1
+exim -odi -qf
+****
+dump retry
+no_message_check
+no_msglog_check

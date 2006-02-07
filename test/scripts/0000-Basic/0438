@@ -1,0 +1,10 @@
+# -oP to override pid file
+need_ipv4
+#
+exim -d -DSERVER=server -bd -oX PORT_D
+****
+killdaemon
+# PID file must be DIR/spool/exim-daemon.* in order for "killdaemon" to work
+exim -d -DSERVER=server -bd -oX PORT_D -oP DIR/spool/exim-daemon.anotherpid
+****
+killdaemon

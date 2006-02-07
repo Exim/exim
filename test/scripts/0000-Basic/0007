@@ -1,0 +1,12 @@
+# -bS syntax error (1st message)
+2
+exim -bS -odi
+mail from:someone@some.where<
+rcpt to:blackhole@HOSTNAME
+data
+from: me
+To: blackhole
+
+This is some text
+.
+quit

@@ -1,0 +1,6 @@
+# hosts_max_try
+need_ipv4
+#
+exim -odi a@test.ex
+****
+no_msglog_check

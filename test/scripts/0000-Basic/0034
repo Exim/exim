@@ -1,0 +1,87 @@
+# smtp_accept_max_nonmail
+1
+exim -bs
+rset
+rset
+rset
+rset
+rset
+****
+1
+exim -bs
+ehlo a.b.c
+ehlo a.b.c
+ehlo a.b.c
+ehlo a.b.c
+ehlo a.b.c
+****
+exim -bs
+rset
+mail from:<x@y>
+rcpt to:<x@y>
+data
+.
+rset
+mail from:<x@y>
+rcpt to:<x@y>
+data
+.
+rset
+mail from:<x@y>
+rcpt to:<x@y>
+data
+.
+rset
+mail from:<x@y>
+rcpt to:<x@y>
+data
+.
+rset
+quit
+****
+1
+exim -bs
+ehlo a.b.c
+mail from:<x@y>
+rcpt to:<x@y>
+data
+.
+ehlo a.b.c
+mail from:<x@y>
+rcpt to:<x@y>
+data
+.
+ehlo a.b.c
+mail from:<x@y>
+rcpt to:<x@y>
+data
+.
+ehlo a.b.c
+ehlo a.b.c
+ehlo a.b.c
+ehlo a.b.c
+ehlo a.b.c
+****
+1
+exim -bs
+noop
+noop
+noop
+noop
+****
+exim -bh 10.0.0.2
+rset
+rset
+rset
+rset
+rset
+****
+exim -bh 10.0.0.1
+rset
+rset
+rset
+rset
+rset
+quit
+****
+no_msglog_check

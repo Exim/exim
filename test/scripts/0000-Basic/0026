@@ -1,0 +1,107 @@
+# ACL checks after DATA
+#
+# Syntax OK, non-null sender => should be accepted
+exim -odq -bs
+mail from:<x@y>
+rcpt to:<x@y>
+data
+Message 1
+.
+quit
+****
+# Syntax error in header => should fail
+exim -odq -bs
+mail from:<x@y>
+rcpt to:<x@y>
+data
+From: @
+
+Message 2
+.
+quit
+****
+# Syntax error in header => should fail even with null sender
+exim -odq -bs
+mail from:<>
+rcpt to:<x@y>
+data
+From: <x@y>, @
+
+Message 3
+.
+quit
+****
+# Null sender, invalid sender in header => fail
+exim -odq -bs
+mail from:<>
+rcpt to:<x@y>
+data
+From: <x@y>
+
+Message 4
+.
+quit
+****
+# Null sender, valid sender in header => accept
+exim -odq -bs
+mail from:<>
+rcpt to:<x@y>
+data
+From: <postmaster@test.ex>
+Reply-to:<x@y>
+
+Message 5
+.
+quit
+****
+# Syntax OK, non-null sender, but bad data => reject
+exim -odq -bs
+mail from:<x@y>
+rcpt to:<x@y>
+data
+Message 6 contains trigger word
+.
+quit
+****
+# Syntax OK, non-null sender, good data
+exim -odi -bs
+mail from:<x@y>
+rcpt to:<userx@test.ex>
+data
+Message 7
+.
+quit
+****
+# -bh test: Syntax error in header => should fail
+exim -bh 10.0.0.0
+mail from:<x@y>
+rcpt to:<x@y>
+data
+From: @
+
+Message 8
+.
+quit
+****
+# -bh test: Syntax OK, non-null sender, but bad data => reject
+exim -bh 10.0.0.0
+mail from:<x@y>
+rcpt to:<x@y>
+data
+Message 9 contains trigger word
+.
+quit
+****
+# Group syntax in reply-to header
+exim -odi -bs
+mail from:<x@y>
+rcpt to:<userx@test.ex>
+data
+to: group name: x@y, p@q;
+reply-to: group name: a@b, c@d;
+
+Message 10
+.
+quit
+****
+no_msglog_check

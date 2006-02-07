@@ -1,0 +1,14 @@
+# TLS client: general
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim CALLER@test.ex
+Test message. Contains FF: ÿ
+****
+exim CALLER@test.ex abcd@test.ex xyz@test.ex
+Test message to two different hosts
+****
+exim -v -qf
+****
+killdaemon
+exim -DSERVER=server -DNOTDAEMON -qf
+****

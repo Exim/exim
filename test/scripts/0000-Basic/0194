@@ -1,0 +1,16 @@
+# pipe returned message for batched local delivery
+exim -odi userx usery userz
+This is a test message.
+****
+exim -odi one two three four five six seven
+Here's another message.
+****
+exim -odi userx usery userz
+ret: 75
+More message
+****
+exim -odi userx usery userz
+ret: 99
+More message 99
+****
+no_msglog_check

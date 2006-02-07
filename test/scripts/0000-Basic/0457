@@ -1,0 +1,6 @@
+# sender_helo_name resetting after reject
+exim -bs
+HELO a.b.c.d
+MAIL FROM:<x@y>
+quit
+****

@@ -1,0 +1,6 @@
+# Default value of return-path in -bt and delivery
+2
+exim -bt userx
+****
+exim -odi userx
+****

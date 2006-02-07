@@ -1,0 +1,15 @@
+# Rewriting because of DNS lookup
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim userx@alias-eximtesthost.test.ex abcd@eximtesthost
+To: userx@alias-eximtesthost.test.ex, abcd@eximtesthost
+
+Test message
+****
+exim -qf
+****
+killdaemon
+exim -DSERVER=server -DNOTDAEMON -qf
+****

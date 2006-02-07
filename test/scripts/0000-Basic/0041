@@ -1,0 +1,14 @@
+# VRFY & EXPN blocking
+exim -bh 1.1.1.1
+vrfy userx@test.ex
+expn postmaster
+quit
+****
+exim -bh 2.2.2.2
+expn list
+quit
+****
+exim -bs
+expn list
+quit
+****

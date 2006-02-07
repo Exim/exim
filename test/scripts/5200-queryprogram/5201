@@ -1,0 +1,16 @@
+# freeze, move_frozen_messages
+need_move_frozen_messages
+exim -odq userx
+****
+sudo exim -Mf $msg1
+****
+exim -q
+****
+exim -odi freeze
+****
+exim -odi anything
+****
+exim -odi notfrozen
+Test
+****
+no_message_check

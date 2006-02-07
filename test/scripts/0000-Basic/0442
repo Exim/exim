@@ -1,0 +1,6 @@
+# multiple .includes and .include_if_exists
+exim -bP routers
+****
+1
+exim -DBAD=".include /non/existent"
+****

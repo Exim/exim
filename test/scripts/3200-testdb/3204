@@ -1,0 +1,5 @@
+# Lookup defer (sender_reject)
+exim -bh 1.2.3.4
+mail from:<userx@somehost.example.com>
+rcpt to:<x@y>
+quit

@@ -1,0 +1,6 @@
+# forced failure in named list
+exim -d -bs
+mail from:<x@y>
+rcpt to:<x@y>
+quit
+****

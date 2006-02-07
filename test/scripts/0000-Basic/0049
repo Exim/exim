@@ -1,0 +1,70 @@
+# Sender: header (untrusted caller)
+exim -odi userx@test.ex
+Sender: Sender in original <sender@original.ex>
+
+This is a test message.
+****
+exim -odi -f userx@outside.ex userx@test.ex
+Sender: Sender in original <sender@original.ex>
+
+This is a test message.
+****
+exim -odi -f userx@outside.ex userx@test.ex
+From userx@elsewhere.ex Fri Jan  5 12:35 GMT 1996 
+Sender: Sender in original <sender@original.ex>
+
+This is a test message.
+****
+exim -odi userx@test.ex
+From userx@elsewhere.ex Fri Jan  5 12:35 GMT 1996 
+Sender: Sender in original <sender@original.ex>
+
+This is a test message.
+****
+exim -bs -odi
+mail from:userx@cus.cam.ac.uk
+rcpt to:userx@test.ex
+data
+Sender: Sender in original <sender@original.ex>
+
+This is a test message.
+.
+quit
+****
+exim -odi userx@test.ex
+Sender: Sender in original <sender@original.ex>
+From: From person <from@some.where>
+
+This is a test message.
+****
+exim -odi -f userx@outside.ex userx@test.ex
+Sender: Sender in original <sender@original.ex>
+From: From person <from@some.where>
+
+This is a test message.
+****
+exim -odi -f userx@outside.ex userx@test.ex
+From userx@elsewhere.ex Fri Jan  5 12:35 GMT 1996 
+Sender: Sender in original <sender@original.ex>
+From: From person <from@some.where>
+
+This is a test message.
+****
+exim -odi userx@test.ex
+From userx@elsewhere.ex Fri Jan  5 12:35 GMT 1996 
+Sender: Sender in original <sender@original.ex>
+From: From person <from@some.where>
+
+This is a test message.
+****
+exim -bs -odi
+mail from:userx@somehost.test.ex
+rcpt to:userx@test.ex
+data
+Sender: Sender in original <sender@original.ex>
+From: From person <from@some.where>
+
+This is a test message.
+.
+quit
+

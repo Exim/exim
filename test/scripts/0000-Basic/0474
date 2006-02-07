@@ -1,0 +1,49 @@
+# handling malformed SMTP return codes
+need_ipv4
+#
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+354 SEND IT
+.
+850 NONSENSE
+QUIT
+250 OK
+****
+exim -odi abcd@xyz
+Test data.
+****
+dump retry
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+850 RUBBISH
+QUIT
+250 OK
+****
+exim -qf
+****
+dump retry
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+850 RUBBISH
+QUIT
+250 OK
+****
+exim -qf
+****
+dump retry
+no_msglog_check

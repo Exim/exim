@@ -1,0 +1,11 @@
+# domain list set to *
+exim -bh V4NET.0.0.1
+mail from:<userx@somehost.example.com>
+rcpt to:<userx@test.ex>
+rcpt to:<userx@otherhost.example.com>
+rcpt to:<userx@3rdhost.example.com>
+data
+.
+quit
+****
+no_msglog_check

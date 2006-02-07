@@ -1,0 +1,7 @@
+# Use of $address_data in ACL
+exim -bs
+mail from:<>
+rcpt to:<ok@test.ex>
+rcpt to:<notok@test.ex>
+quit
+****

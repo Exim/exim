@@ -1,0 +1,9 @@
+# host lookup error from embedded file
+exim -bh V4NET.9.8.7
+helo xxx
+mail from:<x@y>
+quit
+****
+exim -bh V4NET.9.9.9
+quit
+****

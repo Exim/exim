@@ -1,0 +1,360 @@
+# local_scan() miscellaneous tests
+exim -odi -bs
+mail from:<x@y>
+rcpt to:<userx@test.ex>
+data
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: reject
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: reject this message isn't wanted
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: reject this message isn't wanted
+  and we tell it on two lines
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: tempreject
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: tempreject this message isn't wanted just now
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: sendto
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: sendto usery@test.ex
+Testing, testing, was originally to userx.
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: sendto *this is a blackhole message*
+Testing, testing, was originally to userx.
+.
+quit
+****
+1
+exim -odi -f test-local-scan@y userx@test.ex
+local-scan: reject this message isn't wanted
+Testing, testing, local message (1)
+.
+****
+exim -odi -oee -f test-local-scan@y userx@test.ex
+local-scan: reject this message isn't wanted
+Testing, testing, local message (2)
+.
+****
+1
+exim -odi -oep -f test-local-scan@y userx@test.ex
+local-scan: reject this message isn't wanted
+Testing, testing, local message (3)
+.
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: accept A=orses b=mutton
+Testing, testing
+.
+quit
+****
+1
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan:timeout
+test test
+.
+quit
+****
+1
+exim -odi -oep -f test-local-scan@y userx@test.ex
+local-scan: timeout
+test test
+.
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: sendto bounce@test.ex exbounce@test.ex
+Testing, testing, was originally to userx.
+Sent to bounce@test.ex; bounce should go to exbounce.
+.
+quit
+****
+2
+exim -odi -bS
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: reject not wanted -bS
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: accept A=orses b=mutton
+  c=forthighlanders
+  some newlines in here 
+Testing, testing
+.
+quit
+****
+exim -odi -N -d-all+receive -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+.
+quit
+****
+exim -odi -N -d-all+local_scan -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+.
+quit
+****
+2
+exim -odi -bS
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: reject_nologhdr not wanted -bS
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: tempreject_nologhdr
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: accept_expand sender=$sender_address
+Testing, testing
+.
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: accept_expand sender=$rhubarb
+Testing, testing
+.
+quit
+****
+exim -bP local_scan
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: accept_freeze
+Testing, testing
+.
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: accept_queue
+Testing, testing
+.
+quit
+****
+exim -bp
+****
+exim -d-all+local_scan -bh 1.2.3.4
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: accept_freeze
+Testing, testing
+.
+quit
+****
+exim -d-all+local_scan -bh 1.2.3.4
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: accept_test_lists
+Testing, testing
+.
+quit
+****
+1
+exim -d-all+local_scan -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: crash
+Testing, testing
+.
+quit
+****
+ls DIR/spool/input
+exim -odq -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: sendto unqualified
+Testing, testing, was originally to userx.
+Sent to unqualified address
+.
+quit
+****
+exim -bp
+****
+exim -M $msg3
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: header_remove 2 remove-me
+remove-me: this is the first one
+remove-me : this is the second one
+remove-me : this is the third one
+
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: header_remove 0 remove-me
+remove-me: this is the first one
+remove-me : this is the second one
+remove-me : this is the third one
+
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: header_add_at_position TT received X-new: added
+
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: header_add_at_position FT received X-new: added
+
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: header_add_at_position FT From X-new: added
+
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: header_add_at_position FT Non-exist X-new: added
+
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: remove userx@test.ex
+
+Testing, testing
+.
+quit
+****
+exim -odi -bs
+mail from:<test-local-scan@y>
+rcpt to:<userx@test.ex>
+data
+local-scan: remove abcd@test.ex
+
+Testing, testing
+.
+quit
+****
+no_msglog_check

@@ -1,0 +1,58 @@
+# exim quota + warn threshold with maildir
+exim -odi userx
+maildir:maildir_
+This is a test message
+****
+write test-data 100x60
+maildir:maildir_
+++++
+****
+exim -odi userx <test-data
+****
+exim -odi userx <test-data
+****
+exim -odi userx
+maildir:maildir_tagged_
+tag:S370
+This is a test message
+****
+sleep 1
+exim -odi userx
+maildir:maildir_tagged_
+tag:,S=370
+This is a test message
+****
+sleep 1
+exim -odi userx
+maildir:maildir_tagged_
+tag:${if eq{0}{1}{rhubarb}fail}
+This is a test message
+****
+sleep 1
+# deliberate syntax fail
+exim -odi userx
+maildir:maildir_tagged_
+tag:${if eq{0}{1}{rhubarb}
+This is a test message
+****
+sleep 1
+# overlongname
+exim -odi userx
+maildir:maildir_tagged_
+tag:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+This is a test message
+****
+sleep 1
+exim -odi userx
+maildir:maildir_taggedX_
+tag:,S=10694953:2,S
+****
+exim -d-all+transport -odi userx
+maildir:maildir_taggedX_
+tag:,S=412:2,S
+****

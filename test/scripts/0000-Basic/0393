@@ -1,0 +1,7 @@
+# empty transport filter
+exim -d-all+transport -odi userx
+Testing with filter
+****
+exim -DFILTER= -d-all+transport -odi userx
+Testing without filter
+****

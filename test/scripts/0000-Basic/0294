@@ -1,0 +1,44 @@
+# SMTP rate limiting using smtp_ratelimit_xxx settings
+exim -d-all+receive -odq -bs
+mail from:<x@y>
+rcpt to:<one@z>
+rcpt to:<one@z>
+rcpt to:<one@z>
+rcpt to:<one@z>
+rcpt to:<one@z>
+data
+.
+mail from:<x@y>
+rcpt to:<two@z>
+data
+.
+mail from:<x@y>
+quit
+****
+exim -d-all+receive -bh 1.2.3.4
+mail from:<x@y>
+rcpt to:<one@z>
+rcpt to:<one@z>
+quit
+****
+exim -d-all+receive -bh V4NET.9.8.7
+mail from:<x@y>
+rcpt to:<one@z>
+rcpt to:<one@z>
+quit
+****
+exim -d-all+receive -odq -bs
+mail from:<x@y>
+rcpt to:<reject@z>
+rcpt to:<reject@z>
+rcpt to:<reject@z>
+rcpt to:<reject@z>
+rcpt to:<reject@z>
+rset
+mail from:<x@y>
+rcpt to:<reject@z>
+rset
+mail from:<x@y>
+quit
+****
+no_msglog_check

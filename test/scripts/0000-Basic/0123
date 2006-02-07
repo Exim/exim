@@ -1,0 +1,4 @@
+# lookup_open_max
+2
+exim -d -bt x y z
+****

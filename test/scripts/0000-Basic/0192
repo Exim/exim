@@ -1,0 +1,12 @@
+# alternate quota paradigm (and -F encoding)
+exim -odi -F 'Phil Q. Hazel' userx
+This is a test message which should get delivered.
+****
+exim -odi -F 'Mèé spaces: funny, char_acters' userx
+This is a test message which should go over the threshold, but still
+be delivered.
+****
+exim -odi userx
+This is a test message that should fail to be delivered.
+****
+no_msglog_check

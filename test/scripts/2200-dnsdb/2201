@@ -1,0 +1,6 @@
+# query-style lookup in domains, local_parts, senders
+exim -d -bt test.ex@test.ex unknown@test.ex
+****
+2
+exim -f a@b.c -bt test.ex@test.ex unknown@test.ex
+****

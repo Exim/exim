@@ -1,0 +1,18 @@
+# timing of rewriting
+exim -bs
+ehlo x.y.z
+mail from:<writer@wdomain>
+rcpt to:<reader1@rdomain>
+rcpt to:<reader2@rdomain>
+data
+from: writer@wdomain
+to: reader1@rdomain, reader2@rdomain
+.
+mail from:<smtp-writer@wdomain>
+rcpt to:<smtp-reader@rdomain>
+data
+from: smtp-writer@wdomain
+to: smtp-reader@rdomain
+.
+quit
+****

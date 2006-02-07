@@ -1,0 +1,176 @@
+# recipient callouts - sender/postmaster caching and QUIT after timeout
+need_ipv4
+#
+server PORT_S 3
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+*eof
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+*eof
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+550 NOTOK
+QUIT
+250 OK
+****
+exim -bs
+ehlo xxxx
+mail from: s1@test.ex
+rcpt to: r1@test.ex
+rset
+mail from: s1@test.ex
+rcpt to: r1@test.ex
+rset
+mail from: s2@test.ex
+rcpt to: r1@test.ex
+rset
+mail from: s3@other.ex
+rcpt to: r3@other.ex
+rset
+mail from: s4@other.ex
+rcpt to: r4@other.ex
+rset
+quit
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+exim -DUSE_SENDER= -bs
+ehlo xxxx
+mail from: x9@test.ex
+rcpt to: r1@test.ex
+quit
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+exim -DUSE_SENDER=,use_postmaster -bs
+ehlo xxxx
+mail from: x9@test.ex
+rcpt to: r1@test.ex
+quit
+****
+server PORT_S
+220 server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 NO
+QUIT
+250 OK
+****
+exim -bs
+ehlo xxxx
+mail from:<x9@test.ex>
+rcpt to:<r9@test.ex>
+quit
+****
+# A repeat should use the cache
+exim -bs
+ehlo xxxx
+mail from:<x9@test.ex>
+rcpt to:<r9@test.ex>
+quit
+****
+server PORT_S
+220 server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 NO
+QUIT
+250 OK
+****
+# Ditto for sender verify
+exim -DACL_RCPT=acl_rcpt_sender -bs
+ehlo xxxx
+mail from:<x9@test.ex>
+rcpt to:<r9@test.ex>
+quit
+****
+# Repeat for cache
+exim -DACL_RCPT=acl_rcpt_sender -bs
+ehlo xxxx
+mail from:<x9@test.ex>
+rcpt to:<r9@test.ex>
+quit
+****
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+QUIT
+250 OK
+****
+exim -DUSE_SENDER=,defer_ok,random,use_postmaster -bs
+ehlo xxxx
+mail from: x11@two.test.ex
+rcpt to: r11@two.test.ex
+quit
+****
+dump callout
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+*sleep 2
+****
+exim -DUSE_SENDER=  -bs -d-all+verify -v
+ehlo xxxx
+mail from: x11@two.test.ex
+rcpt to: r11@two.test.ex
+quit
+****
+server PORT_S
+*sleep 2
+****
+exim -DUSE_SENDER=  -bs -d-all+verify -v
+ehlo xxxx
+mail from: x11@two.test.ex
+rcpt to: r11@two.test.ex
+quit
+****

@@ -1,0 +1,14 @@
+# -bS Use of HELO/RSET
+exim -bS -odi
+HELO some.domain
+mail from:someone@some.where
+rcpt to:CALLER@HOSTNAME
+RSET
+mail from:someone@some.where
+rcpt to:blackhole@HOSTNAME
+data
+from: me
+to: the.void
+
+This data will get slung...
+.

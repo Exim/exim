@@ -1,0 +1,26 @@
+# smtp_max_synprot_errors
+1
+exim -bs
+helo
+helo
+helo
+helo
+helo
+helo
+****
+1
+exim -DLIMIT=smtp_max_synprot_errors=1 -bs
+mail from:<>
+mail from:<>
+mail from:<>
+****
+exim -bh V4NET.0.0.1
+helo xxxx
+mail from:<>
+rcpt to:<bad syntax@x.y.z>
+rcpt to:<bad syntax@x.y.z>
+rcpt to:<bad syntax@x.y.z>
+rcpt to:<bad syntax@x.y.z>
+rcpt to:<bad syntax@x.y.z>
+quit
+****

@@ -1,0 +1,5 @@
+# system filter to pipe without transport
+exim -odi userx
+This is a test message
+****
+no_msglog_check

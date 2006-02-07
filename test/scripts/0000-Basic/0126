@@ -1,0 +1,3 @@
+# senders precondition in router
+2
+exim -bt userx@test.ex

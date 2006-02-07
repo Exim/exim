@@ -1,0 +1,11 @@
+# local user name containing space
+exim -odq userx
+Testing
+.
+****
+exim -d -bp
+****
+exim -Mvh $msg1
+****
+exim -q
+****

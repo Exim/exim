@@ -1,0 +1,31 @@
+# appendfile auto format recognition
+exim -odi userx@test.ex
+Initial test message, no prefix.
+****
+exim -odi userx@test.ex
+Second test message, no prefix.
+****
+exim -odi usery@test.ex
+Second test message, no prefix.
+****
+exim -odi userz@test.ex
+Second test message, no prefix.
+****
+exim -odi mbx_userz@test.ex
+Test message with mbx_ prefix
+****
+exim -odi userz@test.ex
+Second test message, no prefix.
+****
+write test-mail/tpmissing
+tpmissing text at mailbox start
+****
+exim -odi tpmissing@test.ex
+Test message.
+****
+write test-mail/undefined
+undefined text at mailbox start
+****
+exim -odi undefined@test.ex
+Test message.
+****

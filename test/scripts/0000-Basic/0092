@@ -1,0 +1,41 @@
+# SMTP incoming timeout + receive_timeout
+1
+3 exim -bs
+****
+1
+3 exim -bs
+mail from: userx@test.ex
+rcpt to: userx@test.ex
+data
+****
+1
+3 exim -bh V4NET.0.0.1
+****
+1
+3 exim -bh V4NET.0.0.1
+mail from:userx@test.ex
+rcpt to:userx@test.ex
+data
+The quick brown fox
+****
+1
+3 exim userx@test.ex
+****
+1
+3 exim userx@test.ex
+The quick brown fox
+jumps over the lazy dog.
+****
+1
+3 exim -bh V4NET.0.0.1
+mail from: userx@test.ex
+rcpt to: verify@test.ex
+**** 
+2
+3 exim -bS
+****
+2
+3 exim -bS
+mail from: userx@test.ex
+rcpt to: userx@test.ex
+data

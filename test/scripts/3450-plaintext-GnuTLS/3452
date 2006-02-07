@@ -1,0 +1,15 @@
+# TLS (server: AUTH LOGIN + TLS with multiple messages)
+gnutls
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim userx@test.ex
+Test message 1
+****
+exim userx@test.ex
+Test message 2
+****
+exim -qqf
+****
+killdaemon
+exim -DSERVER=server -DNOTDAEMON -qf
+****

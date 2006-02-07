@@ -1,0 +1,8 @@
+# domain_data for multiple recipient verify in an ACL
+need_ipv4
+#
+exim -d -bs
+mail from:<>
+rcpt to:<abc@domain1>
+quit
+****

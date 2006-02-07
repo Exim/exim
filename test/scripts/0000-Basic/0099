@@ -1,0 +1,41 @@
+# retry data
+exim -odi userx@far.away.ex
+Test message
+****
+dump retry
+sleep 1
+exim -odi -q
+****
+dump retry
+sleep 3
+exim -odi -q
+****
+dump retry
+exim -brt x@dark.star.ex
+****
+exim -brt x@a.b.c
+****
+exim -brt x@x.y.z
+****
+exim -brt x@9CDE.ex
+****
+exim -brt x@Q.abcd.ex
+****
+exim -brt x@literal.ex
+****
+exim -brt x@look.up
+****
+exim -brt x@[127.0.0.1]
+****
+exim -brt x@primary.test.ex
+****
+exim -brt x@rcpt4xx.test.ex rcpt_4xx
+****
+exim -brt x@rcpt45x.test.ex rcpt_45x
+****
+exim -brt x@rcpt463.test.ex rcpt_463
+****
+exim -f "" -brt x@Q.abcd.ex
+****
+exim -f "d@e.f" -brt x@Q.abcd.ex
+****

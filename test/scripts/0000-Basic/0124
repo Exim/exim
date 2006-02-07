@@ -1,0 +1,9 @@
+# host lookup failure error message
+exim -bh V4NET.0.0.97
+mail from:<userx@test.ex>
+rcpt to:<userx@external.test.ex>
+rset
+mail from:<userx@test.ex>
+rcpt to:<userx@external.test.ex>
+quit
+****

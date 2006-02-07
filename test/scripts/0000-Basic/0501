@@ -1,0 +1,6 @@
+# control = case{ful,less}_local_part
+exim -odi -bs
+mail from:<x@y>
+rcpt to:<Phil.Hazel@y>
+quit
+****

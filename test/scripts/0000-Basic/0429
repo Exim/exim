@@ -1,0 +1,15 @@
+# hosts_avoid_esmtp
+need_ipv4
+#
+exim x@y
+****
+server PORT_S
+220 Server ready
+HELO
+550 No
+QUIT
+250 OK
+****
+exim -q
+****
+no_msglog_check

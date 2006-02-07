@@ -1,0 +1,169 @@
+# Error messages for outgoing pipelining and non-pipelining
+need_ipv4
+#
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+>
+QUIT
+250 OK
+****
+exim -odi x@test.ex
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+>
+DATA
+550 Failed DATA
+QUIT
+250 OK
+****
+exim -odi x@test.ex
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:
+>
+RCPT TO:
+550 Can't send RCPT
+DATA
+550 Can't send DATA
+QUIT
+250 OK
+****
+exim -odi x@test.ex
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 First RCPT OK
+RCPT TO:
+>
+250 Second RCPT malformed
+RCPT TO:
+250 Third RCPT OK
+DATA
+550 Failed DATA
+QUIT
+250 OK
+****
+exim -odi x@test.ex y@test.ex z@test.ex
+****
+# Temporarily reject all recipients in pipelining, and also data;
+# the client shouldn't bother with the data error.
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+450 Recipient bad
+RCPT TO:
+450 Recipient bad
+DATA
+550 Data not expected
+QUIT
+250 OK
+****
+exim -odi a@test.ex b@test.ex
+****
+#
+########### NON PIPELINING ##########
+#
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+>
+QUIT
+250 OK
+****
+exim -odi x@test.ex
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+>
+DATA
+550 Failed DATA
+QUIT
+250 OK
+****
+exim -odi x@test.ex
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+>
+RCPT TO:
+550 Can't send RCPT
+DATA
+550 Can't send DATA
+QUIT
+250 OK
+****
+exim -odi x@test.ex
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 First RCPT OK
+RCPT TO:
+>
+250 Second RCPT malformed
+RCPT TO:
+250 Third RCPT OK
+DATA
+550 Failed DATA
+QUIT
+250 OK
+****
+exim -odi x@test.ex y@test.ex z@test.ex
+****

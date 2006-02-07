@@ -1,0 +1,10 @@
+# expansion in domain lists
+exim -bh V4NET.2.3.4
+mail from:<x@y>
+rcpt to:<x@ten-1.test.ex>
+rcpt to:<x@junk.junk>
+quit
+****
+2
+exim -bv x@ten-1.test.ex x@junk.junk
+****

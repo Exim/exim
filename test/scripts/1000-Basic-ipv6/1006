@@ -1,0 +1,27 @@
+# disable_ipv6
+need_ipv4
+need_ipv6
+#
+exim -d-all+dns -bt dnslookup@mx46.test.ex \
+     manualroute@test.ex \
+     dnslookup@v6.test.ex 
+****
+2
+exim -DD6=disable_ipv6 -d-all+dns -bt dnslookup@mx46.test.ex \
+     manualroute@test.ex \
+     dnslookup@v6.test.ex 
+****
+exim -DSERVER=server -bd -oX PORT_D
+****
+client HOSTIPV6 PORT_D
+??? 220
+quit
+??? 221
+****
+killdaemon
+exim -DSERVER=server -DD6=disable_ipv6 -bd -oX PORT_D
+****
+1
+client HOSTIPV6 PORT_D
+****
+killdaemon

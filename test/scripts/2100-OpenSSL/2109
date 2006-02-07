@@ -1,0 +1,10 @@
+# TLS client: hosts_avoid_tls
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim userx@test.ex
+Test message
+****
+exim -qf
+****
+killdaemon
+no_msglog_check

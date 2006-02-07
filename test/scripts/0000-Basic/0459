@@ -1,0 +1,6 @@
+# unwanted search error messages in ACLs
+exim -bs
+mail from:<>
+rcpt to:outer@xx
+quit
+****

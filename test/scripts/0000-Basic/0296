@@ -1,0 +1,9 @@
+# 'fail' in system filter
+exim -odi failure
+Test junk data
+.
+****
+exim -odi -f '<>' failure
+Test junk data
+.
+****

@@ -1,0 +1,38 @@
+# queue_only is set in the configuration
+need_ipv4
+#
+exim userx@domain.com
+.
+****
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+452 Temporary error
+QUIT
+250 OK
+****
+exim -q
+****
+sleep 4
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+452 Temporary error
+QUIT
+250 OK
+****
+exim -q
+****
+exim -q
+****
+no_msglog_check
