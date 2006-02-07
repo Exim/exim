@@ -1,0 +1,37 @@
+# Exim test configuration 0315
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+remote_max_parallel = 1
+
+# ------ Routers ------
+
+begin routers
+
+r1:
+  driver = dnslookup
+  domains = ten-1.test.ex
+  transport = t1
+  same_domain_copy_routing
+
+r2:
+  driver = dnslookup
+  transport = t1
+
+
+# ------ Transports ------
+
+begin transports
+
+t1:
+  driver = smtp
+
+# End

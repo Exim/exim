@@ -1,0 +1,37 @@
+# Exim test configuration 0129
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : *.test.ex
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+fail_remote_domains:
+  driver = redirect
+  domains = ! +local_domains
+  allow_fail
+  data = :fail: unrouteable mail domain "$domain"
+
+checking:
+  driver = redirect
+  allow_defer
+  allow_fail
+  data = :fail: Just testing
+  debug_print = Domain data is "$domain_data"
+  domains = lsearch;DIR/aux-fixed/TESTNUM.domains
+  retry_use_local_part
+
+
+# End

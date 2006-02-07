@@ -1,0 +1,12 @@
+From postmaster@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <postmaster@y>)
+	id 10HmaX-0005vi-00
+	for userx@y; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: testing
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: postmaster@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-warning: this is a test warning (userx@y)
+
+

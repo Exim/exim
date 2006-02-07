@@ -1,0 +1,92 @@
+# Exim test configuration 0274
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/${if eq{$address_data}{}{$local_part}{$address_data}}
+  user = CALLER
+
+# ----- Routers -----
+
+begin routers
+
+# Delivered without changing address_data
+
+nodata:
+  driver = accept
+  local_parts = nodata
+  transport = t1
+
+# Passed to transport
+r1:
+  driver = accept
+  domains = r1
+  address_data = abcd
+  transport = t1
+
+# Passed on after decline
+
+r2:
+  driver = redirect
+  domains = r2
+  address_data = xyz
+  file = /nonexist
+
+r2a:
+  driver = accept
+  domains = r2
+  transport = t1
+
+# Force fail declines
+
+r3:
+  driver = accept
+  domains = r3
+  address_data = ${if eq {1}{0}{xxx}fail}
+  transport= t1
+
+r3a:
+  driver = accept
+  domains = r3
+  transport = t1
+
+# Unforced fail defers
+
+r4:
+  driver = accept
+  domains = r4
+  address_data = ${if
+  transport = t1
+
+# Check that redirect preserves
+
+r5:
+  driver = redirect
+  domains = r5
+  address_data = redirect
+  data = nodata@test.ex
+
+
+# ----- Retry -----
+
+begin retry
+
+*                *   F,5d,5m
+
+# End

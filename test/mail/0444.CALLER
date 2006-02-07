@@ -1,0 +1,43 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: Mailer-Daemon@test.ex
+Reply-To: postmaster@test.ex
+To: CALLER@test.ex
+Subject: Submission of mail from CALLER@test.ex directly to the XXX hosts
+In-Reply-To: <E10HmaX-0005vi-00@myhost.test.ex>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Sender: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+You sent the message below from the host
+
+  some.host.name
+
+directly to one of the XXX hosts. It will be delivered without any further
+action on your part.
+
+However, this indicates some mis-configuration, as new mail should be sent
+(if XXX is involved at all) to smtp.xxx.example, which no longer refers
+to the XXX hosts. It may be that your mail user agent has been configured to
+use (for example) xxx.example or pop.xxx.example where smtp.xxx.example
+would have been correct.
+
+Eventually attempts to send messages directly to the XXX hosts in this way
+will be rejected. You should modify the configuration of your mail user agent
+to correct the fault described above.
+
+------ This is a copy of the message, including all the headers.
+
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is a test message.
+

@@ -1,0 +1,78 @@
+# Exim test configuration 3600
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_recipient
+queue_only
+trusted_users = CALLER
+
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  deny     message = authentication required
+          !authenticated = *
+  accept
+
+
+# ----- Authentication -----
+
+begin authenticators
+
+# Forced expansion failure
+spabad:
+  driver = spa
+  public_name = NTLMX
+  client_password = ${if eq{1}{0}{xxx}fail}
+  client_username = username
+  server_password = ok@test.ex
+
+spa:
+  driver = spa
+  public_name = NTLM
+  client_password = $sender_address
+  client_username = username
+  server_password = ok@test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  hosts = 127.0.0.1
+  port = PORT_D
+  allow_localhost
+  hosts_require_auth = *
+
+
+# ----- Retry -----
+
+begin retry
+
+*  *  F,1d,1d
+
+# End

@@ -1,0 +1,5 @@
+1999-03-02 09:44:33 U=CALLER sender verify fail for <x@y>: Unrouteable address
+1999-03-02 09:44:33 U=CALLER rejected DATA: sender verify failed (route): Sender verify failed
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= postmaster@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@y> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

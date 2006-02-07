@@ -1,0 +1,4 @@
+1999-03-02 09:44:33 SMTP syntax error in "auth a%b" U=CALLER invalid character in authentication mechanism name
+1999-03-02 09:44:33 SMTP protocol error in "auth plain AHVzZXJ4AHNlY3JldA==" U=CALLER already authenticated
+1999-03-02 09:44:33 SMTP syntax error in "mail from:<x@y> auth=a+b@c.d" U=CALLER invalid data for AUTH
+1999-03-02 09:44:33 SMTP protocol error in "auth plain AHVzZXJ4AHNlY3JldA==" U=CALLER not permitted in mail transaction

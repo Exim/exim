@@ -1,0 +1,14 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** /a/b/c </a/b/c@no.test.ex> R=notallowed: delivery to file forbidden
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** |/p/q/r <|/p/q/r@no.test.ex> R=notallowed: delivery to pipe forbidden
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@test.ex> R=bounces T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** |TESTSUITE/aux-fixed/showenv <|TESTSUITE/aux-fixed/showenv@yes.test.ex> R=allowed T=address_pipe: return message generated
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => TESTSUITE/test-mail/file <TESTSUITE/test-mail/file@yes.test.ex> R=allowed T=address_file
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => CALLER <CALLER@test.ex> R=bounces T=local_delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed

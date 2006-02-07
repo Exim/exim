@@ -1,0 +1,18 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == alwaysdefer@myhost.test.ex <toplevel@myhost.test.ex> R=r0 defer (-1): Always
+1999-03-02 09:44:33 10HmaX-0005vi-00 == alwaysdefer@myhost.test.ex <toplevel@myhost.test.ex> R=r0 defer (-1): Always
+1999-03-02 09:44:33 10HmaX-0005vi-00 == alwaysdefer@myhost.test.ex <toplevel@myhost.test.ex> R=r0 defer (-1): Always
+1999-03-02 09:44:33 10HmaX-0005vi-00 == deferfirsttime@myhost.test.ex <toplevel@myhost.test.ex> R=r3 defer (-1): Defer the first time
+1999-03-02 09:44:33 10HmaX-0005vi-00 => second <toplevel@myhost.test.ex> R=r4 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> third <toplevel@myhost.test.ex> R=r4 T=t1
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 == alwaysdefer@myhost.test.ex <toplevel@myhost.test.ex> R=r0 defer (-1): Always
+1999-03-02 09:44:33 10HmaX-0005vi-00 == alwaysdefer@myhost.test.ex <toplevel@myhost.test.ex> R=r0 defer (-1): Always
+1999-03-02 09:44:33 10HmaX-0005vi-00 == alwaysdefer@myhost.test.ex <toplevel@myhost.test.ex> R=r0 defer (-1): Always
+1999-03-02 09:44:33 10HmaX-0005vi-00 => deferfirsttime <toplevel@myhost.test.ex> R=r4 T=t1
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 == alwaysdefer@myhost.test.ex <toplevel@myhost.test.ex> R=r0 defer (-1): Always
+1999-03-02 09:44:33 10HmaX-0005vi-00 == alwaysdefer@myhost.test.ex <toplevel@myhost.test.ex> R=r0 defer (-1): Always
+1999-03-02 09:44:33 10HmaX-0005vi-00 == alwaysdefer@myhost.test.ex <toplevel@myhost.test.ex> R=r0 defer (-1): Always
+1999-03-02 09:44:33 End queue run: pid=pppp -qf

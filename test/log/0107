@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=mboxuser T=appendfile defer (-34): mailbox TESTSUITE/test-empty/userx does not exist, but creation outside the home directory is not permitted
+1999-03-02 09:44:33 10HmaX-0005vi-00 == usery@test.ex R=mboxuser T=appendfile defer (-34): mailbox TESTSUITE/test-mail/../test-empty/usery does not exist, but creation outside the home directory is not permitted
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userz <userz@test.ex> R=mboxuser T=appendfile
+1999-03-02 09:44:33 10HmaX-0005vi-00 => sub1 <sub1@test.ex> R=mboxuser T=appendfile
+1999-03-02 09:44:33 10HmaX-0005vi-00 == sub2@test.ex R=mboxuser T=appendfile defer (2): No such file or directory: creating lock file hitching post TESTSUITE/test-empty/s/sub2.lock.test.ex.dddddddd.pppppppp (euid=CALLER_UID egid=CALLER_GID)
+1999-03-02 09:44:33 10HmaX-0005vi-00 == sub3@test.ex R=mboxuser T=appendfile defer (-34): mailbox TESTSUITE/test-mail/link/sub3 does not exist, but creation outside the home directory is not permitted

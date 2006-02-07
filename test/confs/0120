@@ -1,0 +1,56 @@
+# Exim test configuration 0120
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_recipient
+acl_smtp_data = check_message
+
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+blackhole:
+  driver = redirect
+  allow_defer
+  allow_fail
+  data = :blackhole:
+  local_parts = CALLER
+  retry_use_local_part
+
+force_defer:
+  driver = redirect
+  allow_defer
+  allow_fail
+  condition = ${if < {$message_age}{2}{yes}{no}}
+  data = :defer: forced defer
+  retry_use_local_part
+
+force_fail:
+  driver = redirect
+  allow_defer
+  allow_fail
+  data = :fail: forced fail after $message_age seconds
+  retry_use_local_part
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

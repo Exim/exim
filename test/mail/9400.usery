@@ -1,0 +1,14 @@
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbP-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: sendto usery@test.ex
+Message-Id: <E10HmbP-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing, wa
+
+Testing, testing, was originally to userx.
+

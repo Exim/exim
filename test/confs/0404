@@ -1,0 +1,53 @@
+# Exim test configuration 0404
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+primary_hostname = mail.test.ex
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  local_parts = sender
+  transport = t2
+
+r2:
+  driver = redirect
+  allow_filter
+  data = #Exim filter\nmail text rhubarb\nseen finish
+  reply_transport = t1
+  user = CALLER
+  initgroups
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = autoreply
+
+t2:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,1d,10m
+
+# End

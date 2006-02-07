@@ -1,0 +1,19 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => x-t1 <x-t1@test.ex> R=all T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> y-t1 <y-t1@test.ex> R=all T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => x-t2 <x-t2@test.ex> R=all T=t2
+1999-03-02 09:44:33 10HmaY-0005vi-00 => y-t2 <y-t2@test.ex> R=all T=t2
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => x-t3 <x-t3@test.ex> R=all T=t3
+1999-03-02 09:44:33 10HmaZ-0005vi-00 -> y-t3 <y-t3@test.ex> R=all T=t3
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => z-t3 <z-t3@other.domain> R=all T=t3
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => x-t4 <x-t4@test.ex> R=all T=t4
+1999-03-02 09:44:33 10HmbA-0005vi-00 -> xx-t4 <xx-t4@test.ex> R=all T=t4
+1999-03-02 09:44:33 10HmbA-0005vi-00 => y-t4 <y-t4@test.ex> R=all T=t4
+1999-03-02 09:44:33 10HmbA-0005vi-00 -> yy-t4 <yy-t4@test.ex> R=all T=t4
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed

@@ -1,0 +1,48 @@
+# Exim test configuration 9401
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+queue_run_in_order
+trusted_users = CALLER
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  condition = ${if first_delivery{true}{false}}
+  allow_defer
+  data = :defer: first delivery defer forced
+
+r2:
+  driver = accept
+  transport = t1
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+  headers_add = X-lsd: >$local_scan_data<
+
+# ----- Retry -----
+
+begin retry
+
+*   *   F,3s,1s; G,1h,2s,2
+
+# End

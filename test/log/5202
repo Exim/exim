@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 Frozen by the system filter
+1999-03-02 09:44:33 10HmaX-0005vi-00 moved from input, msglog to Finput, Fmsglog
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 == anything@test.ex R=freeze_all defer (-1): forced freeze
+1999-03-02 09:44:33 10HmaY-0005vi-00 Frozen
+1999-03-02 09:44:33 10HmaY-0005vi-00 moved from input, msglog to Finput, Fmsglog

@@ -1,0 +1,90 @@
+# Exim test configuration 0185
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+acl_smtp_rcpt = check_recipient
+qualify_domain = test.ex
+
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  accept  hosts = :
+  accept  domains = +local_domains
+  deny    message = relay not permitted
+
+
+# ----- Routers -----
+
+begin routers
+
+all_R:
+  driver = manualroute
+  domains = ! +local_domains
+  route_list = * 127.0.0.1 byname
+  self = send
+  transport = smtp
+  no_more
+
+filter:
+  driver = redirect
+  allow_filter
+  allow_freeze
+  no_check_local_user
+  file = DIR/aux-var/TESTNUM.filter
+  owners =
+  reply_transport = autoreply
+  retry_use_local_part
+  user = CALLER
+
+alias:
+  driver = redirect
+  allow_defer
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.alias}}
+  retry_use_local_part
+
+all_L:
+  driver = accept
+  retry_use_local_part
+  transport = appendfile
+
+
+# ----- Transports -----
+
+begin transports
+
+appendfile:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+autoreply:
+  driver = autoreply
+  user = CALLER
+
+smtp:
+  driver = smtp
+  port = PORT_S
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

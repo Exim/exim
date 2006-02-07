@@ -1,0 +1,16 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp -R userx
+1999-03-02 09:44:33 10HmaX-0005vi-00 *> userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -R userx
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaZ-0005vi-00 *> userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp

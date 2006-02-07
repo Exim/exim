@@ -1,0 +1,47 @@
+# Exim test configuration 0432
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+# This isn't relevant - it's just here to test that -odi
+# can override it.
+
+acl_smtp_mail = mail
+
+
+# ----- ACLs -----
+
+begin acl
+
+mail:
+  accept verify = sender/callout=1s,maxwait=1s
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  hosts = <; 127.0.0.1 ;
+  port = PORT_S
+  allow_localhost
+
+# End

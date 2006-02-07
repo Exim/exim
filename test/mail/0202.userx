@@ -1,0 +1,57 @@
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+.: this is legal
+From: me@test.ex
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+Sender: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+This line follows ..
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: me@test.ex
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+Sender: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+This line follows ..
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: me@test.ex
+..: this really is legal
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Sender: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.. two dots
+.
+That was one dot with -oi
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbA-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: me@test.ex
+..: this really is legal
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+Sender: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.. two dots
+.
+That was one dot with -oi
+

@@ -1,0 +1,8 @@
+1999-03-02 09:44:33 H=[V4NET.0.0.0] U=CALLER F=<userx@test.ex> rejected RCPT <b@test.ex>: Unrouteable address
+1999-03-02 09:44:33 H=[V4NET.0.0.0] U=CALLER F=<userx@test.ex> rejected RCPT <f@test.ex>: bad user
+1999-03-02 09:44:33 H=[V4NET.0.0.0] U=CALLER F=<userx@test.ex> rejected RCPT <x@test.ex>: Unrouteable address
+1999-03-02 09:44:33 H=[V4NET.0.0.0] U=CALLER F=<userx@test.ex> rejected RCPT <"smartuser.b@test.ex"@test.ex>: Unrouteable address
+1999-03-02 09:44:33 VRFY failed for <b@test.ex> H=[V4NET.0.0.0] U=CALLER
+1999-03-02 09:44:33 VRFY failed for <f@test.ex> H=[V4NET.0.0.0] U=CALLER
+1999-03-02 09:44:33 VRFY failed for <x@test.ex> H=[V4NET.0.0.0] U=CALLER
+1999-03-02 09:44:33 VRFY failed for <"smartuser.b@test.ex"@test.ex> H=[V4NET.0.0.0] U=CALLER

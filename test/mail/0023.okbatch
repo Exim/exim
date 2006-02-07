@@ -1,0 +1,44 @@
+From rcpttest@test.ex Tue Mar 02 09:44:33 1999
+Envelope-to: ok1@test.ex,
+ ok2@test.ex,
+ ok3@test.ex
+Received: from [56.56.58.58] (ident=CALLER)
+	by myhost.test.ex with smtp (Exim x.yz)
+	(envelope-from <rcpttest@test.ex>)
+	id 10HmbM-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+xx: rcpt_count = 1
+    rcpt_defer_count = 0
+    rcpt_fail_count  = 0
+    recipients_count = 0
+    local_part = ok1
+xx: rcpt_count = 2
+    rcpt_defer_count = 0
+    rcpt_fail_count  = 0
+    recipients_count = 1
+    local_part = bad1
+xx: rcpt_count = 3
+    rcpt_defer_count = 0
+    rcpt_fail_count  = 1
+    recipients_count = 1
+    local_part = ok2
+xx: rcpt_count = 4
+    rcpt_defer_count = 0
+    rcpt_fail_count  = 1
+    recipients_count = 2
+    local_part = ok3
+xx: rcpt_count = 5
+    rcpt_defer_count = 0
+    rcpt_fail_count  = 1
+    recipients_count = 3
+    local_part = bad2
+xx: rcpt_count = 6
+    rcpt_defer_count = 0
+    rcpt_fail_count  = 2
+    recipients_count = 3
+    local_part = bad3
+X-data-rcpt-count: 6
+X-data-rcpt-defer-count: 0
+X-data-rcpt-fail-count: 3
+X-message-body-size: 0
+
+

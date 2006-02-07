@@ -1,0 +1,165 @@
+# Exim test configuration 0375
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : *.test.ex
+log_selector = +return_path_on_delivery
+remote_max_parallel = 1
+
+
+# ----- Routers -----
+
+begin routers
+
+u1:
+  driver = accept
+  local_parts = ^a\\d
+  transport = ut1
+  errors_to =
+  unseen
+
+ut2:
+  driver = accept
+  local_parts = ^b\\d
+  transport = ut2
+  errors_to = ""
+  unseen
+
+ut3:
+  driver = accept
+  local_parts = ^c\\d
+  transport = ut3
+  errors_to =
+  unseen
+
+ut4:
+  driver = accept
+  local_parts = ^d\\d
+  transport = ut4
+  errors_to =
+  unseen
+
+ut5:
+  driver = accept
+  local_parts = ^e\\d
+  transport = ut5
+  unseen
+
+ut6:
+  driver = accept
+  local_parts = ^f\\d
+  address_data = $sender_address
+  transport = ut6
+  errors_to =
+  unseen
+
+ut7:
+  driver = accept
+  local_parts = ^g\\d
+  address_data = $bad expansion
+  transport = ut6
+  errors_to =
+  unseen
+  disable_logging
+
+ut8:
+  driver = accept
+  local_parts = ^h\\d
+  transport = ut1
+  errors_to = ${if eq{0}{1}{x@y}fail}
+  unseen
+
+real:
+  driver = accept
+  transport = real
+
+
+# ----- Transports -----
+
+begin transports
+
+# Successful local transport
+ut1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part-u
+  user = CALLER
+  return_path_add
+  envelope_to_add
+  disable_logging
+
+# Hard unsuccessful local transport
+
+ut2:
+  driver = pipe
+  command = /non/existent/file
+  user = CALLER
+  disable_logging
+
+# Soft unsuccessful local transport
+
+ut3:
+  driver = pipe
+  command = /non/existent/file
+  temp_errors = *
+  user = CALLER
+  disable_logging
+
+# Remote transport - all types
+
+ut4:
+  driver = smtp
+  hosts = 127.0.0.1
+  port = PORT_S
+  allow_localhost
+  max_rcpt = 1
+  disable_logging
+
+# Another remote transport with return_path set empty
+
+ut5:
+  driver = smtp
+  hosts = 127.0.0.1
+  port = PORT_S
+  allow_localhost
+  max_rcpt = 1
+  disable_logging
+  return_path =
+
+# Another remote transport with return_path reinstating original
+
+ut6:
+  driver = smtp
+  hosts = 127.0.0.1
+  port = PORT_S
+  allow_localhost
+  max_rcpt = 1
+  disable_logging
+  return_path = $address_data
+
+# Real delivery
+real:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+  return_path_add
+  envelope_to_add
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

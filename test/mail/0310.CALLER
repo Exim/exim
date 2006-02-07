@@ -1,0 +1,21 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: abcd@myhost.test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: CALLER@myhost.test.ex
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  abcd@myhost.test.ex
+    mailbox is full: retry timeout exceeded
+
+

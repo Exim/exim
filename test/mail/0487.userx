@@ -1,0 +1,12 @@
+From x@y Tue Mar 02 09:44:33 1999
+Received: from CALLER (helo=x.y)
+	by myhost.test.ex with local-esmtp (Exim x.yz)
+	(envelope-from <x@y>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: unqualified
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message.
+

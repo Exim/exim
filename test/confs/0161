@@ -1,0 +1,72 @@
+# Exim test configuration 0161
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : myhost.test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+failuphost:
+  driver = dnslookup
+  caseful_local_part
+  domains = ! +local_domains
+  local_parts = ff
+  self = fail
+  transport = remote_smtp
+
+lookuphost:
+  driver = dnslookup
+  domains = ! +local_domains
+  no_more
+  self = pass
+  transport = remote_smtp
+
+fail:
+  driver = manualroute
+  caseful_local_part
+  debug_print = "self_hostname=$self_hostname\n"
+  domains = ! +local_domains
+  host_find_failed = fail
+  local_parts = fff
+  route_list = * $local_part byname
+  transport = remote_smtp
+
+self:
+  driver = manualroute
+  debug_print = "self_hostname=$self_hostname\n"
+  domains = ! +local_domains
+  host_find_failed = pass
+  no_more
+  route_list = * $local_part byname
+  transport = remote_smtp
+
+self2:
+  driver = manualroute
+  debug_print = "self_hostname=$self_hostname\n"
+  domains = ! +local_domains
+  route_list = * myhost.test.ex byname
+  transport = remote_smtp
+  no_more
+
+
+# ----- Transports -----
+
+begin transports
+
+remote_smtp:
+  driver = smtp
+
+
+# End

@@ -1,0 +1,13 @@
+# Exim filter
+
+if error_message then finish
+
+elif $h_x-warning: contains "blacklist"
+then
+unseen save DIR/test-mail/rbl
+endif
+
+if $h_sysmail: contains yes
+then
+mail to userx@exim.test.ex text "testing testing"
+endif                           

@@ -1,0 +1,4 @@
+# Exim filter
+
+testprint 
+"${if eq {1}{0}{yes}{${lookup{key1}lsearch{DIR/aux-fixed/junkjunk}{$value}{notfound}}}}"

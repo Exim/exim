@@ -1,0 +1,54 @@
+# Exim test configuration 0029
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_rcpt
+
+
+# ------ ACL ------
+
+begin acl
+
+check_rcpt:
+  require  verify = sender
+           verify = sender=\
+                    ${if eq {${domain:$sender_address}}{test.ex}\
+                    {${local_part:$sender_address}@abc.test.ex}\
+                    {$sender_address}}
+  accept
+
+
+# ------ Routers ------
+
+begin routers
+
+r1:
+  driver = accept
+  domains = test.ex : xyz.test.ex
+  transport = t1
+
+r2:
+  driver = accept
+  domains = abc.test.ex
+  local_parts = ok
+  transport = t1
+
+
+# ------ Transports ------
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = /dev/null
+
+# End

@@ -1,0 +1,17 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+220 Welcome to this LMTP simulation
+LHLO
+<<< LHLO myhost.test.ex
+250-Hello there
+250 SIZE
+MAIL FROM
+<<< MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO
+<<< RCPT TO:<userx@myhost.test.ex>
+250 OK
+DATA
+<<< DATA
+354 Send it
+.
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@myhost.test.ex R=r1 T=t1 defer (-1): transport filter process failed (127): unable to execute command

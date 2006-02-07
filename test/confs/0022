@@ -1,0 +1,100 @@
+# Exim test configuration 0022
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+hostlist some_hosts = net-lsearch;DIR/aux-var/TESTNUM.hosts
+
+acl_smtp_rcpt = $local_part
+log_selector = +smtp_connection
+hosts_connection_nolog = : 127.0.0.1
+qualify_domain = test.ex
+
+
+# ----- ACLs -----
+
+begin acl
+
+accept:
+  accept
+
+# Check "warn" with and without messages
+
+warn_empty:
+  warn
+  accept
+
+warn_log:
+  warn     log_message = warn log message
+  accept
+
+warn_user:
+  warn     message = warn user message
+  accept
+
+drop:
+  drop     message = forcibly dropped
+
+nested_drop:
+  accept   endpass
+           acl = drop
+
+nested_drop_require:
+  require  acl = drop
+
+defer:
+  defer    message = forcibly deferred
+
+defer_senders:
+  defer    senders = :
+
+delay_accept:
+  accept   delay = 1s
+
+delay_warn:
+  warn     delay = 1s
+  accept
+
+freeze:
+  accept   control = freeze
+
+queue_only:
+  accept   control = queue_only
+
+host_check:
+  deny     hosts = net-lsearch;DIR/aux-var/TESTNUM.hosts
+           message = host data >$host_data<
+
+host_check2:
+  deny     message = host data >$host_data<
+           hosts = +some_hosts
+
+
+# ----- Routers -----
+
+begin routers
+
+accept:
+  driver = accept
+  transport = appendfile
+
+# ----- Transports -----
+
+begin transports
+
+appendfile:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

@@ -1,0 +1,41 @@
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Return-path: <CALLER@test.ex>
+Envelope-to: userz@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbA-0005vi-00
+	for userz@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Second test message, no prefix.
+
+07-Mar-2000 12:21:52 +0100,ddd;000000000000-00000000
+Return-path: <CALLER@test.ex>
+Envelope-to: mbx_userz@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbB-0005vi-00
+	for mbx_userz@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message with mbx_ prefix
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Return-path: <CALLER@test.ex>
+Envelope-to: userz@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbC-0005vi-00
+	for userz@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Second test message, no prefix.
+

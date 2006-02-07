@@ -1,0 +1,37 @@
+# Exim test configuration 0382
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+log_timezone
+qualify_domain = test.ex
+system_filter = DIR/aux-fixed/TESTNUM.F
+timeout_frozen_after = 1s
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  senders = !:
+  allow_fail
+  data = :fail: forced fail
+
+
+# ----- Retry -----
+
+begin retry
+
+*  *  F,1d,1s
+
+# End

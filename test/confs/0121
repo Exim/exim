@@ -1,0 +1,71 @@
+# Exim test configuration 0121
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_recipient
+acl_smtp_data = check_message
+
+domainlist local_domains = test.ex
+domainlist relay_domains = test.ex
+qualify_domain = test.ex
+
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  require verify = sender
+  accept  domains = +local_domains
+  accept  domains = +relay_domains
+  deny    message = relay not permitted
+
+check_message:
+  require verify = header_sender
+  accept
+
+
+# ----- Routers -----
+
+begin routers
+
+fail_remote_domains:
+  driver = redirect
+  domains = ! +local_domains
+  allow_fail
+  data = :fail: unrouteable mail domain "$domain"
+
+defer:
+  driver = redirect
+  allow_defer
+  allow_fail
+  data = :defer: forced defer
+  local_parts = defer
+  retry_use_local_part
+
+userx:
+  driver = accept
+  local_parts = userx
+  retry_use_local_part
+  transport = appendfile
+
+
+# ----- Transports -----
+
+begin transports
+
+appendfile:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+
+# End

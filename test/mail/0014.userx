@@ -1,0 +1,23 @@
+From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: aaa@bbb
+To: userx@myhost.test.ex, 1=x@zzery.query
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+From J.Caesar@plc.example Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <J.Caesar@plc.example>)
+	id 10HmaZ-0005vi-00
+	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: J.Caesar@plc.example
+To: userx@myhost.test.ex, J.Caesar@plc.example,
+  J.Calendar@plc.example,
+  unknown@plc.example 
+Reply-to: J.Caesar@plc.example   
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+

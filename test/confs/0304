@@ -1,0 +1,66 @@
+# Exim test configuration 0304
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = acl1
+
+# ----- ACLs -----
+
+begin acl
+
+acl1:
+  deny   message = failed 1
+         recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
+
+  deny   message = failed 2
+         recipients = lsearch*@;DIR/aux-fixed/TESTNUM.d1
+
+  deny   message = failed 3
+         recipients = @@lsearch;DIR/aux-fixed/TESTNUM.d2
+
+  deny   message = failed 4
+         recipients = domain.only : *.domain2.only
+
+  deny   message = failed 5
+         recipients = abc@domain3 : xyz@*.domain4
+
+  deny   message = failed 6
+         recipients = pqr@@
+
+  deny   message = failed 7
+         senders = :
+         recipients = b1@x
+
+  deny   message = failed 8
+         senders = ^\$
+         recipients = b2@x
+
+  deny   message = failed 9
+         recipients = *@lsearch;DIR/aux-fixed/TESTNUM.d3
+
+  deny   message = failed 10
+         recipients = xyz@lsearch;DIR/aux-fixed/TESTNUM.d4
+
+  deny   message = failed 11
+         recipients = lsearch*@;DIR/aux-fixed/TESTNUM.d5
+
+  accept
+
+
+
+# ----- Retry -----
+
+begin retry
+
+*                *   F,5d,5m
+
+# End

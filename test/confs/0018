@@ -1,0 +1,26 @@
+# Exim test configuration 0018
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_etrn = check_etrn
+no_smtp_etrn_serialize
+log_selector = -etrn
+
+# ----- ACL -----
+
+begin acl
+
+check_etrn:
+  deny   hosts = !localhost
+  warn   log_message = accepted $smtp_command
+  accept
+
+# End

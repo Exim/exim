@@ -1,0 +1,23 @@
+From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: "Phil Q. Hazel" <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is a test message which should get delivered.
+
+From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaY-0005vi-00
+	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: =?ISO-8859-1?Q?M=E8=E9_spaces=3A_funny=2C_char=5Facters?= <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is a test message which should go over the threshold, but still
+be delivered.
+

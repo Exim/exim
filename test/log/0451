@@ -1,0 +1,2 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER sender verify fail for <CALLER@test.ex>: custom message
+1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<CALLER@test.ex> rejected after DATA: Sender verify failed

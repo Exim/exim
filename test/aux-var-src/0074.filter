@@ -1,0 +1,18 @@
+# Exim filter
+
+if error_message then finish endif
+
+if $h_x-nltest: is not "" then
+  mail to "userx,\n abey seedy <abcd>" text "Testing, testing"
+  finish
+endif    
+
+if $h_reply-to: is not "" then
+  mail text "To reply-to"
+  finish
+endif      
+
+mail
+  text "Auto reply to $h_subject:"
+  once DIR/test-mail/oncelog
+  once_repeat 4s  

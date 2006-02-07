@@ -1,0 +1,10 @@
+1999-03-02 09:44:33 no host name found for IP address V4NET.11.12.13
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= userx@test.ex H=[V4NET.11.12.13] U=root P=smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=localuser T=appendfile
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= userx@test.ex H=[99.99.99.99] U=root P=smtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=localuser T=appendfile
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= userx@test.ex H=x.test.again.dns [V4NET.99.99.96] U=root P=smtp S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@test.ex> R=localuser T=appendfile
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed

@@ -1,0 +1,46 @@
+# Exim test configuration 0442
+
+BAD=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+######################################################################
+#                       ACL CONFIGURATION                            #
+#         Specifies access control lists for incoming SMTP mail      #
+######################################################################
+
+.include DIR/aux-fixed/TESTNUM.acl
+
+
+######################################################################
+#                      ROUTERS CONFIGURATION                         #
+#               Specifies how addresses are handled                  #
+######################################################################
+
+.include	DIR/aux-fixed/TESTNUM.routers
+
+
+######################################################################
+#                      TRANSPORTS CONFIGURATION                      #
+######################################################################
+
+.include_if_exists DIR/aux-fixed/TESTNUM.transports
+
+.include_if_exists	/junk/not/exist
+
+BAD
+
+
+# End

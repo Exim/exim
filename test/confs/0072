@@ -1,0 +1,65 @@
+# Exim test configuration 0072
+
+ONCE=once=DIR/spool/autolog
+ONLY=
+RETURN=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+filter:
+  driver = redirect
+  local_parts = userx-filter
+  allow_filter
+  data = #Exim filter\n seen mail text "This is an autoreply."
+  user = EXIMUSER
+
+
+reply:
+  driver = accept
+  retry_use_local_part
+  senders = !
+  transport = reply
+
+localuser:
+  driver = accept
+  check_local_user
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+reply:
+  driver = autoreply
+  text = "Test auto reply to ${escape:$h_subject:}"
+  to = $reply_address
+  user = EXIMUSER
+  ONCE
+  RETURN
+  ONLY
+
+local_delivery:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+
+
+# End

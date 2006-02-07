@@ -1,0 +1,74 @@
+# Exim test configuration 0115
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_recipient
+acl_smtp_data = check_message
+
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+forward1:
+  driver = redirect
+  file = DIR/aux-var/TESTNUM.forward
+  file_transport = appendfile
+  local_parts = userx
+  local_part_prefix = one-
+  transport_home_directory = DIR/aux-fixed
+
+forward2:
+  driver = redirect
+  file = DIR/aux-var/TESTNUM.forward
+  file_transport = appendfile
+  local_parts = userx
+  local_part_prefix = two-
+  transport_home_directory = /tmp
+
+forward3:
+  driver = redirect
+  file = DIR/aux-var/TESTNUM.forward
+  file_transport = appendfile
+  local_parts = userx
+  local_part_prefix = three-
+
+forward:
+  driver = redirect
+  allow_filter
+  local_parts = userx
+  file = DIR/aux-var/TESTNUM.forward
+  file_transport = appendfile
+  user = CALLER
+
+
+# ----- Transports -----
+
+begin transports
+
+appendfile:
+  driver = appendfile
+  headers_add = Home-Dir: $home
+  user = CALLER
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

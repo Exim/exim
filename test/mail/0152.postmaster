@@ -1,0 +1,91 @@
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: not.the.login@test.ex
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+Sender: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: page+CALLER@test.ex
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: call+CALLER@test.ex
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Sender: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbA-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: call-CALLER@test.ex
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbB-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: CALLER&page@test.ex
+Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbC-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: CALLER&call@test.ex
+Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
+Sender: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbD-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: CALLER=call@test.ex
+Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbE-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: page+CALLER=call@test.ex
+Message-Id: <E10HmbE-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+

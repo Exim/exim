@@ -1,0 +1,22 @@
+MAIL FROM:<CALLER@test.ex>
+RCPT TO:<userw@test.ex>
+DATA
+X-Filtered: just checking
+Return-path: <CALLER@test.ex>
+Envelope-to: userw@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbC-0005vi-00
+	for userw@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+A message containing
+.. a line starting with a dot
+... and one starting with two dots
+From should not be escaped as this is
+going to be delivered using BSMTP,
+via a filter.
+.

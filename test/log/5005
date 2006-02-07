@@ -1,0 +1,10 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => nofile <nofile@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@test.ex R=r1 T=t1 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@test.ex R=r1 T=t1 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)

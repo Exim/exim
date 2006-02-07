@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == b@other.domain defer (-35): hold_domains lookup deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == c@hold.remote.ex defer (-23): domain is held
+1999-03-02 09:44:33 10HmaX-0005vi-00 == d@hold2.remote.ex defer (-35): hold_domains lookup deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == f@queue2.go.remote.ex routing defer (-35): queue_domains lookup deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == e@queue.go.remote.ex routing defer (-55): domain is in queue_domains
+1999-03-02 09:44:33 10HmaX-0005vi-00 => a <a@test.ex> R=all T=local_delivery

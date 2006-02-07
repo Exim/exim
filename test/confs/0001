@@ -1,0 +1,612 @@
+# Exim test configuration 0001
+
+# This configuration sets every option that is not dependent on optional code
+# in the binary, except for exim_user and exim_group, because setting them can
+# mess up the creation of the spool directory etc.
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+
+accept_8bitmime
+acl_not_smtp = check_local_message
+acl_smtp_auth = check_auth
+acl_smtp_connect = check_connect
+acl_smtp_data = check_message
+acl_smtp_etrn = check_etrn
+acl_smtp_expn = check_expn
+acl_smtp_helo = check_helo
+acl_smtp_mail = check_mail
+acl_smtp_mailauth = check_mailauth
+acl_smtp_quit = check_quit
+acl_smtp_predata = check_predata
+acl_smtp_rcpt = check_recipient
+acl_smtp_vrfy = check_vrfy
+admin_groups = 1234
+allow_mx_to_ip
+allow_utf8_domains
+auth_advertise_hosts = a.a.h
+auto_thaw = 1d
+bi_command =
+bounce_message_file =
+bounce_message_text =
+bounce_return_body = false
+no_bounce_return_message
+return_size_limit = 12K
+bounce_return_size_limit = 10K
+callout_domain_negative_expire = 1h
+callout_domain_positive_expire = 1d
+callout_negative_expire = 5h
+callout_positive_expire = 1w
+callout_random_local_part = xxx\
+                            xx
+check_log_inodes = 0
+check_log_space = 0
+check_spool_inodes = 0
+check_spool_space = 0
+daemon_smtp_port =
+daemon_smtp_ports =
+daemon_startup_retries = 3
+daemon_startup_sleep = 8s
+delay_warning = 1d
+delay_warning_condition = ${if match{$h_precedence:}{(?i)bulk|list}{no}{yes}}
+deliver_drop_privilege
+deliver_queue_load_max = 6.2
+delivery_date_remove
+dns_again_means_nonexist = *.esri.com:jeni.com
+dns_check_names_pattern = ^.*$
+dns_ipv4_lookup = *
+dns_retrans = 0s
+dns_retry = 0
+drop_cr
+envelope_to_remove
+errors_copy =
+errors_reply_to = postmaster@cam.ac.uk
+extra_local_interfaces = 1.2.3.4
+no_extract_addresses_remove_arguments
+finduser_retries = 0
+allow_domain_literals
+freeze_tell = postmaster
+headers_charset = UTF-8
+header_maxsize = 2M
+header_line_maxsize = 2K
+helo_accept_junk_hosts =
+helo_allow_chars = _
+helo_lookup_domains =
+helo_verify_hosts = localhost
+helo_try_verify_hosts = 1.2.3.4
+hold_domains =
+host_lookup = a.b.c.d
+host_reject_connection = 10.9.8.7
+hosts_connection_nolog = 127.0.0.1
+hosts_treat_as_local =
+ignore_bounce_errors_after = 2m
+ignore_fromline_hosts = a.b.c.d
+ignore_fromline_local
+keep_malformed = 4d
+no_local_from_check
+local_from_prefix = *-
+local_from_suffix = =*
+local_interfaces =
+local_scan_timeout = 10s
+local_sender_retain
+localhost_number = "3 "
+log_selector =  \
+              +address_rewrite \
+              -all \
+              +all_parents \
+              +arguments \
+              -connection_reject \
+              -delay_delivery \
+              +incoming_interface \
+              +incoming_port \
+              +lost_incoming_connection \
+              -queue_run \
+              +received_recipients \
+              +received_sender \
+              -retry_defer \
+              +return_path_on_delivery \
+              +sender_on_delivery \
+              +size_reject \
+              -skip_delivery \
+              +smtp_confirmation \
+              +smtp_connection \
+              +smtp_syntax_error \
+              +subject \
+              +tls_cipher \
+              +tls_peerdn
+log_timezone
+lookup_open_max = 16
+max_username_length = 8
+message_body_visible = 500
+message_id_header_domain = a.b.c
+message_id_header_text = x.y.z
+no_message_logs
+message_size_limit = 500K
+mua_wrapper
+never_users = root:0
+percent_hack_domains =
+pipelining_advertise_hosts = *.b.c
+pid_file_path = /some/thing
+no_preserve_message_logs
+primary_hostname = some.host.name
+no_print_topbitchars
+process_log_path = /a/b/c/d
+prod_requires_admin
+qualify_domain = some.dom.ain
+qualify_recipient = some.dom.ain
+queue_domains = a.b.c
+queue_list_requires_admin
+no_queue_only
+no_queue_only_override
+queue_only_file = /var/spool/exim/queue_only
+queue_only_load = 8.2
+no_queue_run_in_order
+queue_run_max = 5
+queue_smtp_domains = x.y.z
+receive_timeout = 0s
+received_header_text = Received: ${if def:sender_rcvhost {from ${sender_rcvhost}\n\t}{${if def:sender_ident {from ${sender_ident} }}${if def:sender_helo_name {(helo=${sender_helo_name})\n\t}}}}by ${primary_hostname} ${if def:received_protocol {with ${received_protocol}}} (Exim ${version_number} #${compile_number})\n\tid ${message_id}${if def:received_for {\n\tfor $received_for}}
+received_headers_max = 30
+recipient_unqualified_hosts = localhost:some.host.name
+recipients_max = 0
+no_recipients_max_reject
+remote_max_parallel = 1
+remote_sort_domains =
+retry_data_expire = 24h
+retry_interval_max = 1d
+return_path_remove
+rfc1413_hosts =
+sender_unqualified_hosts = localhost:some.host.name
+smtp_accept_keepalive
+smtp_accept_max = 20
+smtp_accept_max_nonmail = 40
+smtp_accept_max_nonmail_hosts = !	*.b.c
+smtp_accept_max_per_connection = 20
+smtp_accept_max_per_host = 4
+smtp_accept_queue = 0
+smtp_accept_queue_per_connection = 10
+smtp_active_hostname = x.y.z
+no_smtp_enforce_sync
+smtp_max_synprot_errors = 11
+smtp_max_unknown_commands = 10
+smtp_ratelimit_hosts = *
+smtp_ratelimit_mail = 1, 1s, 2, 10s
+smtp_ratelimit_rcpt = 10, 2s, 5, 5m
+smtp_accept_reserve = 0
+smtp_banner = ${primary_hostname} ESMTP Exim ${version_number} #${compile_number} ${tod_full}
+smtp_check_spool_space
+smtp_connect_backlog = 5
+smtp_etrn_command =
+smtp_etrn_serialize
+smtp_load_reserve = 2
+smtp_receive_timeout = 1m
+smtp_reserve_hosts =
+smtp_return_error_details
+no_split_spool_directory
+no_strip_excess_angle_brackets
+no_strip_trailing_dot
+no_syslog_duplication
+syslog_facility = uucp
+syslog_processname = mta-exim
+no_syslog_timestamp
+system_filter = /home/exim/test/filter
+system_filter_directory_transport =
+system_filter_file_transport =
+system_filter_group = mail
+system_filter_pipe_transport =
+system_filter_reply_transport =
+system_filter_user = 99
+tcp_nodelay = false
+timeout_frozen_after = 7d
+timezone = EDT
+trusted_groups = 42
+trusted_users = ${readfile{DIR/aux-fixed/TESTNUM.trusted}{:}}
+unknown_login = unknownlogin
+unknown_username = Exim Testing
+untrusted_set_sender = *
+uucp_from_pattern = ^From\s+(\S+)\s+(?:[a-zA-Z]{3},?\s+)?(?:[a-zA-Z]{3}\s+\d?\d|\d?\d\s+[a-zA-Z]{3}\s+\d\d(?:\d\d)?)\s+\d\d?:\d\d?
+uucp_from_sender = $1
+warn_message_file = /home/exim/test/warnmsg_file
+write_rejectlog = false
+
+
+# ----- Routers -----
+
+begin routers
+
+# The manualroute router
+
+manualroute:
+  driver = manualroute
+  address_data = domainlist address data
+  cannot_route_message = can't route this address
+  caseful_local_part
+  condition =
+  debug_print =
+  disable_logging
+  domains =
+  errors_to =
+  no_fail_verify_recipient
+  no_fail_verify_sender
+  fallback_hosts = localhost
+  group = mail
+  headers_add =
+  headers_remove =
+  host_find_failed = freeze
+  hosts_randomize
+  no_initgroups
+  local_parts =
+  more
+  no_pass_on_timeout
+  pass_router = manualroute2
+  redirect_router = manualroute2
+  require_files =
+  route_data = ${lookup{$local_part}lsearch{/}}
+  router_home_directory = /usr
+  self = freeze
+  senders =
+  transport = smtp
+  no_unseen
+  user = root
+  no_verify_only
+  verify_recipient
+  verify_sender
+
+# Manualroute2 router, for mutually exclusive options
+
+manualroute2:
+  driver = manualroute
+  domains = ! +local_domains
+  route_list = ^fax(\.cl(\.cam(\.ac\.uk)?)?)?$ cl.cam.ac.uk; \
+               *.uucp  britain.eu.net
+
+# The redirect router, in "alias" mode
+
+alias:
+  driver = redirect
+  address_data = aliasfile address data
+  allow_fail
+  allow_freeze
+  caseful_local_part
+  no_check_ancestor
+  condition =
+  data = ${lookup{$local_part}lsearch{/etc/aliases}}
+  debug_print =
+  directory_transport = dummy
+  domains =
+  errors_to =
+  expn
+  no_fail_verify_recipient
+  no_fail_verify_sender
+  fallback_hosts =
+  file_transport = dummy
+  forbid_blackhole
+  no_forbid_file
+  forbid_include
+  no_forbid_pipe
+  group = 100
+  headers_add =
+  headers_remove =
+  hide_child_in_errmsg
+  include_directory = /i/n/c
+  no_initgroups
+  local_part_prefix =
+  no_local_part_prefix_optional
+  local_part_suffix =
+  no_local_part_suffix_optional
+  local_parts =
+  more
+  no_one_time
+  pipe_transport = dummy
+  no_qualify_preserve_domain
+  no_repeat_use
+  qualify_domain = xxxx
+  redirect_router = aliasfile2
+  require_files =
+  retry_use_local_part
+  no_rewrite
+  senders =
+  sieve_vacation_directory = /thing/thong
+  sieve_subaddress = rhubarb
+  sieve_useraddress = custard
+  no_skip_syntax_errors
+  syntax_errors_to =
+  transport_current_directory =
+  transport_home_directory =
+  no_unseen
+  user = 100
+  no_verify_only
+  verify_recipient
+  verify_sender
+
+# Aliasfile2 for mutually exclusive options
+
+aliasfile2:
+  driver = redirect
+  allow_defer
+  caseful_local_part
+  check_group
+  check_owner
+  file = /some/file
+  retry_use_local_part
+
+# The redirect router in "forward" mode
+
+forward:
+  driver = redirect
+  allow_filter
+  forbid_exim_filter
+  forbid_sieve_filter
+  caseful_local_part
+  check_ancestor
+  check_local_user
+  condition =
+  debug_print =
+  directory_transport = dummy
+  domains =
+  errors_to =
+  expn
+  no_fail_verify_recipient
+  no_fail_verify_sender
+  fallback_hosts =
+  file = //.forward2
+  file_transport = dummy
+  no_forbid_file
+  forbid_blackhole
+  forbid_filter_existstest
+  no_forbid_filter_logwrite
+  forbid_filter_dlfunc
+  forbid_filter_lookup
+  forbid_filter_readfile
+  forbid_filter_readsocket
+  forbid_filter_reply
+  forbid_filter_run
+  no_forbid_include
+  no_forbid_pipe
+  group = mail
+  headers_add =
+  headers_remove =
+  hide_child_in_errmsg
+  no_ignore_eacces
+  no_ignore_enotdir
+  no_initgroups
+  local_part_prefix = xxx-
+  local_part_prefix_optional
+  local_part_suffix =
+  no_local_part_suffix_optional
+  local_parts =
+  modemask = 022
+  more
+  no_one_time
+  owners = root
+  owngroups = mail
+  pipe_transport = dummy
+  no_qualify_preserve_domain
+  redirect_router = aliasfile2
+  reply_transport = dummy
+  require_files =
+  rewrite
+  senders =
+  no_skip_syntax_errors
+  syntax_errors_text = rhubarb
+  syntax_errors_to =
+  transport_current_directory =
+  transport_home_directory =
+  no_unseen
+  user = root
+  no_verify_only
+  no_verify_recipient
+  no_verify_sender
+
+# The accept router
+
+localuser:
+  driver = accept
+  no_address_test
+  caseful_local_part
+  check_local_user
+  condition =
+  debug_print =
+  domains =
+  errors_to =
+  expn
+  no_fail_verify_recipient
+  no_fail_verify_sender
+  fallback_hosts =
+  group = mail
+  headers_add = X-added: by localuser
+  headers_remove =
+  no_initgroups
+  local_part_prefix =
+  no_local_part_prefix_optional
+  local_part_suffix =
+  no_local_part_suffix_optional
+  local_parts =
+  no_log_as_local
+  more
+  redirect_router = smartuser
+  require_files =
+  senders =
+  transport = ${if eq{$local_part}{caller}{local_mbx_delivery}{local_delivery}}
+  transport_current_directory =
+  transport_home_directory =
+  no_unseen
+  user = 99
+  no_verify_only
+  verify_recipient
+  verify_sender
+
+# The redirect router in "smartuser" mode
+
+smartuser:
+  driver = redirect
+  caseful_local_part
+  condition =
+  data = user@domain
+  debug_print =
+  domains =
+  errors_to =
+  expn
+  no_fail_verify_recipient
+  no_fail_verify_sender
+  fallback_hosts =
+  file_transport = dummy
+  forbid_file
+  forbid_pipe
+  group = mail
+  headers_add =
+  headers_remove =
+  hide_child_in_errmsg
+  no_initgroups
+  local_part_prefix =
+  no_local_part_prefix_optional
+  local_part_suffix =
+  no_local_part_suffix_optional
+  local_parts = abcd
+  log_as_local
+  more
+  pipe_transport = dummy
+  qualify_preserve_domain
+  redirect_router = localuser
+  require_files =
+  retry_use_local_part
+  no_rewrite
+  senders =
+  no_unseen
+  user = root
+  no_verify_only
+  verify_recipient
+  verify_sender
+
+
+# ----- Transports -----
+
+# Dummy transport, to refer back to
+
+begin transports
+
+dummy:
+  driver = pipe
+  disable_logging
+
+# Appendfile Transport
+
+appendfile:
+  driver = appendfile
+  allow_fifo
+  no_allow_symlink
+  batch_max = 100
+  batch_id = rhubarb
+  body_only
+  no_check_group
+  no_check_owner
+  check_string = abcd
+  create_directory
+  create_file = anywhere
+  current_directory =
+  debug_print =
+  delivery_date_add
+  directory_mode = 0700
+  envelope_to_add
+  escape_string = xyz
+  file = /home/$local_part/inbox
+  file_format = "From : appendfile"
+  no_file_must_exist
+  group = mail
+  headers_add = X-original-domain: $original_domain\nX-original-localp: $original_local_part
+  headers_remove =
+  headers_rewrite = a@b c@d
+  lock_fcntl_timeout = 10s
+  lock_interval = 3s
+  lock_retries = 10
+  lockfile_mode = 0600
+  lockfile_timeout = 30m
+  mailbox_size = 1000
+  mailbox_filecount = 9999
+  message_size_limit = 1M
+  mode = 0600
+  mode_fail_narrower
+  no_notify_comsat
+  message_prefix = From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
+  quota =
+  no_quota_is_inclusive
+  quota_size_regex = (\d+)$
+  quota_warn_message = "A warning message"
+  quota_warn_threshold =
+  rcpt_include_affixes
+  retry_use_local_part
+  return_path = xxxx
+  return_path_add
+  shadow_condition = $h_return-receipt-to
+  shadow_transport = dummy
+  message_suffix = \n
+  transport_filter =
+  transport_filter_timeout = 10s
+  no_use_crlf
+  use_fcntl_lock
+  use_lockfile
+  user = root
+
+# For options that are mutually exclusive with those above
+
+appendfile2:
+  driver = appendfile
+  directory = /etc
+  directory_file = afilename
+  quota_directory = /some/directory
+  quota = 1M
+  quota_filecount = 10
+  use_bsmtp
+
+# Ditto
+
+appendfile4:
+  driver = appendfile
+  directory = /etc
+
+# Smtp transport
+
+smtp:
+  driver = smtp
+  authenticated_sender = abcde
+  no_allow_localhost
+  command_timeout = 5m
+  connect_timeout = 0s
+  connection_max_messages = 0
+  data_timeout = 5m
+  debug_print =
+  delay_after_cutoff
+  no_delivery_date_add
+  dns_qualify_single
+  no_dns_search_parents
+  no_envelope_to_add
+  fallback_hosts = localhost
+  final_timeout = 10m
+  no_gethostbyname
+  headers_add =
+  headers_remove =
+  helo_data = some.text
+  hosts = localhost
+  hosts_avoid_esmtp = x.y.z
+  hosts_max_try = 10
+  hosts_max_try_hardlimit = 20
+  hosts_override
+  hosts_randomize
+  hosts_require_auth = *
+  hosts_try_auth = *
+  interface = 127.0.0.1
+  max_rcpt = 0
+  multi_domain
+  port = 25
+  retry_include_ip_address
+  no_return_path_add
+  serialize_hosts =
+  size_addition = -1
+  transport_filter =
+
+# End

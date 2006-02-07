@@ -1,0 +1,39 @@
+# Exim test configuration 5202
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+system_filter = DIR/aux-fixed/TESTNUM.filter
+move_frozen_messages
+split_spool_directory
+
+
+# ----- Routers -----
+
+begin routers
+
+freeze_all:
+  driver = queryprogram
+  retry_use_local_part
+  command = /bin/echo freeze forced freeze
+  command_user = CALLER
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

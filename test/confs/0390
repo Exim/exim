@@ -1,0 +1,79 @@
+# Exim test configuration 0390
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+.ifdef AA
+accept_8bitmime
+.endif
+
+.ifndef AA
+acl_not_smtp = xxx
+.endif
+
+.ifdef AA BB
+acl_smtp_auth = xxx
+.endif
+
+.ifdef AA
+acl_smtp_connect = xxx
+.elifdef BB
+acl_smtp_connect = yyy
+.endif
+
+.ifndef AA
+acl_smtp_data = xxx
+.elifndef BB
+acl_smtp_data = yyy
+.endif
+
+.ifdef AA
+acl_smtp_etrn = xxx
+.else
+acl_smtp_etrn = yyy
+.endif
+
+.ifdef AA
+  .ifdef BB
+  acl_smtp_expn = xxx
+  .endif
+acl_smtp_mail = xxx
+.else
+  .ifdef BB
+  acl_smtp_expn = yyy
+  .else
+  acl_smtp_expn = zzz
+  .endif
+acl_smtp_mail = yyy
+.endif
+
+# ----- Transports -----
+
+begin transports
+
+.ifdef AA
+t1:
+  driver = pipe
+  batch_max = 10
+  command = /x/y
+
+.else
+t1:
+  driver = pipe
+  batch_max = 20
+  command = /x/y
+.endif
+
+
+
+
+
+# End

@@ -1,0 +1,31 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 plain authenticator failed H=127.0.0.1 [127.0.0.1] 535 Sorry, authentication failed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 Remote host 127.0.0.1 [127.0.0.1] closed connection in response to AUTH LOGIN
+1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@domain.com R=try T=smtp_try defer (-18): Remote host 127.0.0.1 [127.0.0.1] closed connection in response to AUTH LOGIN
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 plain authenticator failed H=127.0.0.1 [127.0.0.1] 535 Sorry, authentication failed
+1999-03-02 09:44:33 10HmbB-0005vi-00 == userx@authdomain.com R=force T=smtp_force defer (-42): authentication required but authentication attempt(s) failed
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** userx@authdomain.com: retry timeout exceeded
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 ** CALLER@myhost.test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmbC-0005vi-00 Frozen (delivery error message)
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 == userx@authdomain.com R=force T=smtp_force defer (-42): authentication required but server did not advertise AUTH support
+1999-03-02 09:44:33 10HmbD-0005vi-00 ** userx@authdomain.com: retry timeout exceeded
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> R=10HmbD-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 ** CALLER@myhost.test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmbE-0005vi-00 Frozen (delivery error message)
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 => forcesender@domain.com R=try T=smtp_try H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed

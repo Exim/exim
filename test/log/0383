@@ -1,0 +1,20 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 original recipients ignored (system filter)
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** |TESTSUITE/aux-fixed/showenv $thisaddress $1 <system-filter> T=t1: return message generated
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@test.ex> R=r1 T=t2
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 original recipients ignored (system filter)
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** |TESTSUITE/aux-fixed/showenv $1 <system-filter> T=t1: return message generated
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => CALLER <CALLER@test.ex> R=r1 T=t2
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** |TESTSUITE/aux-fixed/showenv $thisaddress $1 <redking@test.ex> R=r0 T=t1: return message generated
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 => CALLER <CALLER@test.ex> R=r1 T=t2
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed

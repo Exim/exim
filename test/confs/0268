@@ -1,0 +1,101 @@
+# Exim test configuration 0268
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  domains = r1
+  check_local_user
+  allow_fail
+  file = DIR/test-owned-by-exim
+
+r2:
+  driver = redirect
+  domains = r2
+  check_local_user
+  allow_fail
+  file = DIR/test-owned-by-exim
+  owners = root : EXIMUSER
+
+r3:
+  driver = redirect
+  domains = r3
+  allow_fail
+  file = DIR/test-owned-by-exim
+  owners = root
+
+r4:
+  driver = redirect
+  domains = r4
+  allow_fail
+  file = DIR/test-owned-by-exim
+
+r5:
+  driver = redirect
+  domains = r5
+  check_local_user
+  allow_fail
+  file = DIR/test-owned-by-exim
+  no_check_owner
+
+r6:
+  driver = redirect
+  domains = r6
+  check_local_user
+  allow_fail
+  file = DIR/test-owned-by-exim
+  no_check_owner
+  modemask = 0
+
+r7:
+  driver = redirect
+  domains = r7
+  check_local_user
+  allow_fail
+  file = DIR/test-owned-by-exim
+  no_check_owner
+  no_check_group
+  modemask = 0
+
+r8:
+  driver = redirect
+  domains = r8
+  allow_fail
+  file = DIR/test-owned-by-exim
+
+r9:
+  driver = redirect
+  domains = r9
+  allow_fail
+  file = DIR/test-owned-by-exim
+  owngroups = CALLER : EXIMGROUP
+
+r10:
+  driver = redirect
+  domains = r10
+  file = DIR/test-owned-by-exim
+  owngroups = CALLER
+
+r11:
+  driver = redirect
+  domains = r11
+  file = DIR/test-owned-by-exim
+  owngroups = CALLER : EXIMGROUP
+  modemask = 007
+
+# End

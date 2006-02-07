@@ -1,0 +1,36 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 ** userx@bad.ex: Unrouteable address
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER <CALLER@myhost.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 ** userx@badbad.ex R=fail_remote_domains: unrouteable mail domain "badbad.ex" (:fail:)
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 => CALLER <CALLER@myhost.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 => userx <userx@domain1.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 ** userx@domain4.ex: Unrouteable address
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> R=10HmbD-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 => CALLER <CALLER@myhost.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 ** userx@domain2.ex R=fail_remote_domains: unrouteable mail domain "domain2.ex" (:fail:)
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> R=10HmbF-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbG-0005vi-00 => CALLER <CALLER@myhost.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbH-0005vi-00 => userx <userx@xx.domain5.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbI-0005vi-00 => userx <userx@domain6.yy.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbI-0005vi-00 Completed

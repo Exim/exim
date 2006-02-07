@@ -1,0 +1,18 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userz@myhost.test.ex R=defer defer (-1): forcibly deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == usery@myhost.test.ex R=defer defer (-1): forcibly deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@myhost.test.ex R=defer defer (-1): forcibly deferred
+1999-03-02 09:44:33 Start queue run: pid=pppp -R usery
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userz@myhost.test.ex R=defer defer (-1): forcibly deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == usery@myhost.test.ex R=defer defer (-1): forcibly deferred
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@myhost.test.ex R=defer defer (-1): forcibly deferred
+1999-03-02 09:44:33 End queue run: pid=pppp -R usery
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 == usery@myhost.test.ex R=defer defer (-1): forcibly deferred
+1999-03-02 09:44:33 10HmaY-0005vi-00 => usery <usery@myhost.test.ex> R=all T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@myhost.test.ex routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userz@myhost.test.ex routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmaX-0005vi-00 == usery@myhost.test.ex R=defer defer (-1): forcibly deferred
+1999-03-02 09:44:33 End queue run: pid=pppp

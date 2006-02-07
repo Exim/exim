@@ -1,0 +1,20 @@
+From CALLER@exim.test.ex Tue Mar 02 09:44:33 1999
+Return-path: <CALLER@exim.test.ex>
+Envelope-to: userx@exim.test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@exim.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@exim.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-one: This is the first text.
+To: userx@exim.test.ex
+X-one: This is the second text.
+From: userx@exim.test.ex
+X-one: This is the third text.
+Subject: testing, testing
+X-one: This is the fourth text.
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is the message body.
+

@@ -1,0 +1,35 @@
+# Exim test configuration 9450
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+
+# ----- Routers -----
+
+begin routers
+
+alias:
+  driver = redirect
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.alias}}
+
+null:
+  driver = redirect
+  data = :blackhole:
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10m
+
+
+# End

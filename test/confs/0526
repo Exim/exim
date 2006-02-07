@@ -1,0 +1,29 @@
+# Exim test configuration 0526
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_connect = check_connect
+
+
+# ----- ACLs -----
+
+begin acl
+
+check_connect:
+  warn  logwrite = START: >$acl_c0< >${if def:acl_c0{}{not }}defined<
+        set acl_c0 = 0
+        logwrite = SET 0: >$acl_c0< >${if def:acl_c0{}{not }}defined<
+        set acl_c0 = 1
+        logwrite = SET 1: >$acl_c0< >${if def:acl_c0{}{not }}defined<
+  accept
+
+# End

@@ -1,0 +1,34 @@
+# Exim test configuration 0065
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_recipient
+domainlist local_domains = test.ex : myhost.ex
+domainlist relay_domains = test.ex
+hostlist relay_hosts = "1.2.3.4 : !1.2.3.0/24 : 1.2.0.0/16 : \
+                     net16-lsearch;DIR/aux-fixed/TESTNUM.nets : \
+                     net24-lsearch;DIR/aux-fixed/TESTNUM.nets : \
+                     net-lsearch;DIR/aux-fixed/TESTNUM.nets"
+
+
+# ------ ACL ------
+
+begin acl
+
+check_recipient:
+  accept  domains = +local_domains
+  accept  domains = +relay_domains
+  accept  hosts = +relay_hosts
+  deny    message = relay not permitted
+
+
+# End

@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@nl.demon.net U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => /dev/null (faq@nl.demon.net) <faq@nl.demon.net> R=algemeen_aliases T=**bypassed**
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@nl.demon.net> R=rest T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 => faq <faq@nl.demon.net> R=auto_antwoord T=stuur_auto_antwoord
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

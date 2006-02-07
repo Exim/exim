@@ -1,0 +1,37 @@
+# Exim test configuration 0141
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+ignore_bounce_errors_after = 0s
+
+
+# ----- Routers -----
+
+begin routers
+
+ok:
+  driver = redirect
+  allow_defer
+  allow_fail
+  condition = ${if match{$received_protocol}{^prot\\d\$}{1}{0}}
+  data = :fail: Forced failure
+  retry_use_local_part
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,1d,15m
+
+
+# End

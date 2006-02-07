@@ -1,0 +1,61 @@
+# Exim test configuration 0461
+
+FALLBACK=fallback_hosts = 127.0.0.1
+ROUTE_DATA=V4NET.0.0.1
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+r0:
+  driver = accept
+  senders = :
+  transport = t2
+
+r1:
+  driver = manualroute
+  route_data = ROUTE_DATA
+  transport = t1
+  FALLBACK
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  port = PORT_S
+  connect_timeout = 1s
+  allow_localhost
+
+t2:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+
+# ----- Retry -----
+
+begin retry
+
+V4NET.0.0.1  * F,1s,1s
+V4NET.0.0.2  * F,1s,2s
+*            * F,1d,1s
+
+
+# End

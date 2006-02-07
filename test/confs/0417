@@ -1,0 +1,46 @@
+# Exim test configuration 0417
+
+RETURN_ERROR_DETAILS = false
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+primary_hostname = mail.test.ex
+qualify_domain = test.ex
+
+acl_smtp_rcpt = rcpt
+smtp_return_error_details = RETURN_ERROR_DETAILS
+
+
+# ----- ACLs -----
+
+begin acl
+
+rcpt:
+  require verify = sender
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = dnslookup
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+
+# End

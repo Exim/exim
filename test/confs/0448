@@ -1,0 +1,39 @@
+# Exim test configuration 0448
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+acl_smtp_rcpt = rcpt
+queue_only = true
+trusted_users = CALLER
+
+
+# ----- ACL -----
+
+begin acl
+
+rcpt:
+  accept   local_parts = CALLER
+  accept   verify = sender
+
+
+# ----- Rewrite ------
+
+begin rewrite
+
+^postmaster\@my\.domain     <>    S
+
+postmaster@my.domain        <>    F
+
+# End

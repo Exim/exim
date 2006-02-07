@@ -1,0 +1,61 @@
+# Exim test configuration 0048
+
+MESSAGE_LOGS = true
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+message_logs = MESSAGE_LOGS
+
+
+# ----- Routers -----
+
+begin routers
+
+system_aliases:
+  driver = redirect
+  allow_defer
+  local_part_prefix = *+
+  local_part_suffix = -*
+  local_part_prefix_optional
+  local_part_suffix_optional
+  transport_home_directory = DIR/
+  data = ${lookup{$local_part}lsearch{DIR/aux-var/TESTNUM.aliases}}
+  pipe_transport = address_pipe
+  retry_use_local_part
+
+localuser:
+  driver = accept
+  local_parts = CALLER
+  transport = local_delivery
+  user = CALLER
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+
+address_pipe:
+  driver = pipe
+  environment = "A=a:B=b : C=c : COLON=:: : ME=$local_part"
+  log_output
+  return_output
+  user = EXIMUSER
+
+
+# End

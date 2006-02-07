@@ -1,0 +1,61 @@
+# Exim test configuration 0118
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_recipient
+acl_smtp_data = check_message
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+first:
+  driver = redirect
+  allow_defer
+  condition = ${if first_delivery{yes}{no}}
+  data = :defer: force defer on first delivery
+  retry_use_local_part
+
+second:
+  driver = redirect
+  allow_defer
+  condition = ${if queue_running{no}{yes}}
+  data = :defer: force defer on non-queue run
+  retry_use_local_part
+
+third:
+  driver = accept
+  retry_use_local_part
+  transport = appendfile
+
+
+# ----- Transports -----
+
+begin transports
+
+appendfile:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

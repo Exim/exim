@@ -1,0 +1,70 @@
+# Exim test configuration 0364
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  domains = \N^[^.]+$\N
+  address_data = $domain
+  data = $local_part@$domain.test.ex
+  redirect_router = r2
+
+r2:
+  driver = dnslookup
+  domains = !thishost.test.ex
+  transport = t1
+
+r3:
+  driver = redirect
+  domains = !thishost.test.ex
+  condition = ${if eq{$address_data}{}{no}{yes}}
+  address_data =
+  data = $local_part@$original_domain.sub.test.ex
+  redirect_router = r2
+
+r4:
+  driver = redirect
+  domains = !thishost.test.ex
+  allow_fail
+  data = :fail:Can't route to $domain
+
+r5:
+  driver = accept
+  transport = t2
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+
+t2:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+
+# ----- Retry -----
+
+begin retry
+
+*   *   F,3s,1s; G,1h,2s,2
+
+# End

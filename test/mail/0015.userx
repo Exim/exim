@@ -1,0 +1,118 @@
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Return-path: <CALLER@test.ex>
+Envelope-to: page+userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+	for page+userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-local_part: userx
+X-local_part_prefix: page+
+
+Some message text.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: userx@test.ex
+In-Reply-To: <E10HmaX-0005vi-00@the.local.host.name>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-local_part: userx
+X-local_part_prefix: 
+
+callpager -r 108 PAGE:Some message text. 
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Return-path: <CALLER@test.ex>
+Envelope-to: page+ux@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbA-0005vi-00
+	for page+ux@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-local_part: userx
+X-local_part_prefix: page+
+
+Some more message text.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	id 10HmbB-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: userx@test.ex
+In-Reply-To: <E10HmbA-0005vi-00@the.local.host.name>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-local_part: userx
+X-local_part_prefix: 
+
+callpager -r 108 PAGE:Some more message text. 
+
+MAIL FROM:<CALLER@test.ex>
+RCPT TO:<userx@Test.Ex>
+DATA
+Return-path: <CALLER@test.ex>
+Envelope-to: B+userx@Test.Ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbD-0005vi-00
+	for B+userx@Test.Ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-local_part: userx
+X-local_part_prefix: b+
+
+Text.
+.
+MAIL FROM:<CALLER@test.ex>
+RCPT TO:<userx@Test.Ex>
+DATA
+Return-path: <CALLER@test.ex>
+Envelope-to: userx-B@Test.Ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbF-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbF-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-local_part: userx
+X-local_part_prefix: 
+
+.
+MAIL FROM:<CALLER@test.ex>
+RCPT TO:<userx@Test.Ex>
+DATA
+Return-path: <CALLER@test.ex>
+Envelope-to: X+userx-B@Test.Ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbF-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbF-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-local_part: userx
+X-local_part_prefix: x+
+
+.

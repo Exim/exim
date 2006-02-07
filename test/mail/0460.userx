@@ -1,0 +1,30 @@
+From userx@test.ex Tue Mar 02 09:44:33 1999
+Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <userx@test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: x@y
+To: some@one
+Subject: contains >
+ < bare lf
+Aheader: Another header line
+
+This is the message body.
+
+From userx@test.ex Tue Mar 02 09:44:33 1999
+Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <userx@test.ex>)
+	id 10HmaY-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: x@y
+Bheader: some text
+To: some@one
+Subject: contains >
+
+< bare lf
+Aheader: Another header line
+
+This is the message body.
+

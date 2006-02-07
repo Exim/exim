@@ -1,0 +1,51 @@
+# Exim test configuration 0238
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+rrr:
+  driver = manualroute
+  domains = ! +local_domains
+  require_files = un/qualified
+  route_list = * $domain byname
+  transport = smtp
+
+localuser:
+  driver = accept
+  local_parts = userx
+  require_files = ${if eq{$local_part}
+  transport = smtp
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

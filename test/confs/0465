@@ -1,0 +1,27 @@
+# Exim test configuration 0465
+
+STD=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = check_data
+queue_only
+trusted_users = CALLER
+STD
+
+
+begin acl
+check_data:
+  accept  verify = header_syntax
+
+# End

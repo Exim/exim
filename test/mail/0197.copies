@@ -1,0 +1,26 @@
+MAIL FROM:<CALLER@the.local.host.name>
+RCPT TO:<userx@copy.domain>
+RCPT TO:<usery@copy.domain>
+DATA
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@the.local.host.name>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test one.
+.
+MAIL FROM:<doesn't@matter>
+RCPT TO:<x@copy.domain>
+RCPT TO:<y@copy.domain>
+DATA
+Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+	(envelope-from <doesn't@matter>)
+	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: doesn't@matter
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test two.
+.

@@ -1,0 +1,9 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=r0 defer (-1): ".forward" is not an absolute path
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** userx@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 == CALLER@test.ex R=r0 defer (-1): ".forward" is not an absolute path
+1999-03-02 09:44:33 10HmaY-0005vi-00 ** CALLER@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmaY-0005vi-00 CALLER@test.ex: error ignored
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

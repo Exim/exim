@@ -1,0 +1,21 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= "abc@xyz"@myhost.test.ex U=abc@xyz P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= a.b@myhost.test.ex U=a.b P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= ".a.b"@myhost.test.ex U=.a.b P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= "a.b."@myhost.test.ex U=a.b. P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= "a\"b"@myhost.test.ex U=a"b P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 => userx <userx@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= "abc@xyz"@myhost.test.ex U=abc@xyz P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 => userx <userx@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= "abc%xyz"@myhost.test.ex U=abc@xyz P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 => userx <userx@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed

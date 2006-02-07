@@ -1,0 +1,47 @@
+# Exim test configuration 0456
+
+HOSTS_MAX_TRY=4
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+ignore_bounce_errors_after = 0s
+qualify_domain = test.ex
+
+# ----- Routers -----
+
+begin routers
+
+test_bus_error:
+  driver = redirect
+  local_parts = test-bus-error
+  errors_to = owner-bus-error@localhost
+  data = postmaster@localhost
+
+accept:
+  driver = accept
+  transport = t1
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# ----- Retry -----
+
+begin retry
+
+*                *  F,4s,1s
+
+# End

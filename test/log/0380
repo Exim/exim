@@ -1,0 +1,3 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == aaaa@myhost.test.ex R=r1 defer (-1): failed to stat TESTSUITE/non-exist/. (No such file or directory)
+1999-03-02 09:44:33 10HmaX-0005vi-00 => bbbb <bbbb@myhost.test.ex> R=r3 T=t1

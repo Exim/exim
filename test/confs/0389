@@ -1,0 +1,31 @@
+# Exim test configuration 0389
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = rcpt
+queue_only
+
+# ----- ACL -----
+
+begin acl
+
+rcpt:
+  warn log_message = log warning message: $acl_verify_message
+       !verify = sender
+       set acl_m0 = >$acl_verify_message<
+       logwrite = "acl_verify_message=$acl_verify_message"
+       logwrite = "acl_m0=$acl_m0"
+
+accept
+
+
+# End

@@ -1,0 +1,24 @@
+From userx@test.ex Tue Mar 02 09:44:33 1999
+Received: from [32.32.32.32] (ident=CALLER)
+	by myhost.test.ex with smtp (Exim x.yz)
+	(envelope-from <userx@test.ex>)
+	id 10HmaY-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Start: domain=test.ex local_part=userx
+Vr: domain=test.ex local_part=userx
+X-message-body-size: 28
+
+Test without verify sender.
+
+From userx@test.ex Tue Mar 02 09:44:33 1999
+Received: from [55.55.55.55] (ident=CALLER)
+	by myhost.test.ex with smtp (Exim x.yz)
+	(envelope-from <userx@test.ex>)
+	id 10HmaZ-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-rcpt-added: An added header at RCPT time
+X-data-added: Header added at data time
+X-message-body-size: 24
+
+ACL header adding test.
+

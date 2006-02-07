@@ -1,0 +1,9 @@
+1999-03-02 09:44:33 U=CALLER sender verify fail for <x@y>: Unrouteable address
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <userx@test.ex>: Sender verify failed
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <x@y>: Sender verify failed
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <x@ten-1.test.ex>: Sender verify failed
+1999-03-02 09:44:33 U=CALLER F=<userx@test.ex> rejected RCPT <x@y>: Unrouteable address
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=r2 T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 => x@ten-1.test.ex R=r1 T=dev_null H=ten-1.test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

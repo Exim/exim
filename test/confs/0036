@@ -1,0 +1,52 @@
+# Exim test configuration 0036
+
+SERVER =
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+queue_only
+queue_run_in_order
+remote_max_parallel = 1
+
+
+# ----- Routers -----
+
+begin routers
+
+server:
+  driver = manualroute
+  condition = ${if eq {SERVER}{server}{yes}{no}}
+  route_list = *
+  transport = local_delivery
+
+lookuphost:
+  driver = dnslookup
+  self = send
+  transport = send_to_server
+  no_more
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+send_to_server:
+  driver = smtp
+  port = PORT_D
+
+# End

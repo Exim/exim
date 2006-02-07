@@ -1,0 +1,32 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** userx@myhost.test.ex R=all T=pipe: return message generated
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** usery@myhost.test.ex R=all T=pipe: return message generated
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** userz@myhost.test.ex R=all T=pipe: return message generated
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounce T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** one@myhost.test.ex R=all T=pipe: return message generated
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** two@myhost.test.ex R=all T=pipe: return message generated
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** three@myhost.test.ex R=all T=pipe: return message generated
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** four@myhost.test.ex R=all T=pipe: return message generated
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** five@myhost.test.ex R=all T=pipe: return message generated
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** six@myhost.test.ex R=all T=pipe: return message generated
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** seven@myhost.test.ex R=all T=pipe: return message generated
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounce T=local_delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 == userx@myhost.test.ex R=all T=piperet defer (0): Child process of piperet transport returned 75 (could mean temporary error) from command: TESTSUITE/aux-fixed/0194.ret
+1999-03-02 09:44:33 10HmbB-0005vi-00 == usery@myhost.test.ex R=all T=piperet defer (0): Child process of piperet transport returned 75 (could mean temporary error) from command: TESTSUITE/aux-fixed/0194.ret
+1999-03-02 09:44:33 10HmbB-0005vi-00 == userz@myhost.test.ex R=all T=piperet defer (0): Child process of piperet transport returned 75 (could mean temporary error) from command: TESTSUITE/aux-fixed/0194.ret
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 ** userx@myhost.test.ex R=all T=piperet: Child process of piperet transport returned 99 from command: TESTSUITE/aux-fixed/0194.ret
+1999-03-02 09:44:33 10HmbC-0005vi-00 ** usery@myhost.test.ex R=all T=piperet: Child process of piperet transport returned 99 from command: TESTSUITE/aux-fixed/0194.ret
+1999-03-02 09:44:33 10HmbC-0005vi-00 ** userz@myhost.test.ex R=all T=piperet: Child process of piperet transport returned 99 from command: TESTSUITE/aux-fixed/0194.ret
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= <> R=10HmbC-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounce T=local_delivery
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed

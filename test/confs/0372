@@ -1,0 +1,68 @@
+# Exim test configuration 0372
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = a1
+acl_smtp_connect = a2
+
+system_filter = DIR/aux-var/TESTNUM.F
+trusted_users = CALLER
+
+
+# ----- ACL -----
+
+begin acl
+
+a1:
+  accept local_parts = x
+         set acl_m0  = value for m0 is local_part: $local_part
+         set acl_m5  = value for m5 contains newline\nthere!
+         set acl_m9  = value for m9 is domain: $domain
+
+  accept local_parts = a
+         set acl_m0  = value for m0 is local_part: $local_part
+         set acl_m9  = value for m9 is domain: $domain
+
+a2:
+  accept set acl_c0  = value for c0 is ip: $sender_host_address
+         set acl_c5  = c5 has a newline\nthere!
+         set acl_c9  = value for c9 is name: $sender_host_name
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  debug_print = acl_c0="$acl_c0"\nacl_c1="$acl_c1"\nacl_c2="$acl_c2"\n\
+                acl_c3="$acl_c3"\nacl_c4="$acl_c4"\nacl_c5="$acl_c5"\n\
+                acl_c6="$acl_c6"\nacl_c7="$acl_c7"\nacl_c8="$acl_c8"\n\
+                acl_c9="$acl_c9"\nacl_m0="$acl_m0"\nacl_m1="$acl_m1"\n\
+                acl_m2="$acl_m2"\nacl_m3="$acl_m3"\nacl_m4="$acl_m4"\n\
+                acl_m5="$acl_m5"\nacl_m6="$acl_m6"\nacl_m7="$acl_m7"\n\
+                acl_m8="$acl_m8"\nacl_m9="$acl_m9"
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+
+# End

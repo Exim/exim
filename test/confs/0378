@@ -1,0 +1,79 @@
+# Exim test configuration 0378
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+bounce:
+  driver = redirect
+  senders = :
+  data = :blackhole:
+
+defer:
+  driver = redirect
+  local_parts = ^defer
+  allow_defer
+  data = :defer: forced defer
+
+aaaa_2nd_time:
+  driver = redirect
+  local_parts = aaaa
+  condition = ${if first_delivery{no}{yes}}
+  data = aaaa@$domain
+
+aaaa:
+  driver = redirect
+  local_parts = aaaa
+  allow_filter
+  file_transport = t1
+  pipe_transport = t2
+  reply_transport = t3
+  user = CALLER
+  data = "# Exim filter\n\
+          deliver defer_aaaa@$domain\n\
+          save DIR/test-mail/file\n\
+          pipe \"/bin/sh -c exit\"\n\
+          mail subject autoreply\n\
+               text \"This is an autoreply\""
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  user = CALLER
+
+t2:
+  driver = pipe
+  user = CALLER
+
+t3:
+  driver = autoreply
+  user = CALLER
+  initgroups
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

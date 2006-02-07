@@ -1,0 +1,54 @@
+# Exim test configuration 3412
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+bounce_sender_authentication = mailer-daemon@test.ex
+trusted_users = CALLER
+
+
+# ----- Authentication -----
+
+begin authenticators
+
+plain:
+  driver = plaintext
+  public_name = PLAIN
+  client_send = ^userx^secret
+
+
+# ----- Routers -----
+
+begin routers
+
+local:
+  driver = redirect
+  domains = test.ex
+  allow_fail
+  data = :fail: no deliveries made locally
+
+remote:
+  driver = accept
+  transport = smtp
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  port = PORT_S
+  hosts_try_auth = *
+
+# End

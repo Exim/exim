@@ -1,0 +1,49 @@
+# Exim test configuration 0326
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+# ----- ACLs -----
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  allow_filter
+  local_part_prefix = *-
+  local_part_prefix_optional
+  local_part_suffix = +*
+  local_part_suffix_optional
+  file = DIR/aux-var/TESTNUM.filter
+  user = EXIMUSER
+  headers_add = "OLP: $original_local_part"
+
+r2:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

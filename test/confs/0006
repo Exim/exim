@@ -1,0 +1,52 @@
+# Exim test configuration 0006
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+trusted_users = CALLER
+
+
+# ----- Routers -----
+
+begin routers
+
+system_aliases:
+  driver = redirect
+  allow_defer
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/0006-aliases}}
+  file_transport = address_file
+  retry_use_local_part
+
+localuser:
+  driver = accept
+  check_local_user
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+  headers_add = \nMessage Headers:\n$message_headers\n
+
+address_file:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  return_path_add
+
+# End

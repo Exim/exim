@@ -1,0 +1,49 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => usery <usery@test.ex> R=hackfree_localuser T=hackfree_local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 => userz <userz@test.ex> R=bsmtp_localuser T=bsmtp_local_delivery
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 => userw <userw@test.ex> R=bsmtp_localuser_filtered T=bsmtp_local_delivery_filtered
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 => userx@domain.com R=rest T=smtp H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 => userx <userx@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 => userx <userx@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbG-0005vi-00 => userx <filter-userx@test.ex> R=filtered_localuser T=filtered_local_delivery
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbH-0005vi-00 => userx <filter-userx@test.ex> R=filtered_localuser T=filtered_local_delivery
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbI-0005vi-00 => userx <userx@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbJ-0005vi-00 => userx <mmdf-userx@test.ex> R=mmdf_localuser T=mmdf_local_delivery
+1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbK-0005vi-00 => userx <batch-userx@test.ex> R=batch_localuser T=batch_local_delivery
+1999-03-02 09:44:33 10HmbK-0005vi-00 -> userz <batch-userz@test.ex> R=batch_localuser T=batch_local_delivery
+1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbL-0005vi-00 => userx <userx@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbM-0005vi-00 => userx@filtered.com R=filtered T=filtered_smtp H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmbM-0005vi-00 Completed

@@ -1,0 +1,59 @@
+# Exim test configuration 0416
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+primary_hostname = mail.test.ex
+qualify_domain = test.ex
+queue_only
+no_queue_only_override
+
+acl_smtp_helo = helo
+acl_smtp_mail = mail
+acl_smtp_rcpt = ${if eq{$local_part}{nested_discard}{nested_rcpt}{rcpt}}
+acl_smtp_data = data
+acl_not_smtp = notsmtp
+
+log_selector = +received_recipients
+
+
+# ----- ACLs -----
+
+begin acl
+
+helo:
+  discard
+
+mail:
+  discard senders = discard@x.y
+          log_message = discard message 2
+  accept
+
+rcpt:
+  discard local_parts = discard
+          log_message = discard message 1
+  accept
+
+nested_rcpt:
+  accept  acl = helo
+
+data:
+  discard condition = ${if match{$recipients}{data_message_discard}}
+          log_message = discard message 3
+  discard condition = $h_discard:
+  accept
+
+notsmtp:
+  discard condition = ${if match{$recipients}{data_message_discard}}
+          log_message = discard message 4
+  discard condition = $h_discard:
+  accept
+
+# End

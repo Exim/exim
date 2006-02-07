@@ -1,0 +1,52 @@
+# Exim test configuration 0414
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+primary_hostname = mail.test.ex
+qualify_domain = test.ex
+
+domainlist A = lsearch;DIR/aux-fixed/TESTNUM.list1
+domainlist B = lsearch;DIR/aux-fixed/TESTNUM.list2
+domainlist C = +A : +B
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = t1
+  domains = !+C
+  debug_print = domain_data=$domain_data
+
+r2:
+  driver = accept
+  transport = t1
+  domains = +B
+  debug_print = domain_data=$domain_data
+
+r3:
+  driver = accept
+  transport = t1
+  domains = +A
+  debug_print = domain_data=$domain_data
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+# End

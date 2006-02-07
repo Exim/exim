@@ -1,0 +1,47 @@
+# Exim test configuration 0496
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_rcpt
+
+
+# ----- ACL -----
+
+begin acl
+
+check_rcpt:
+  warn     message = data1 data1\ndata2 data2
+  warn     message = :after_received:After-Received: some text\n\
+                     :at_start:At-Start: some text\n\
+                     :at_end:  At-End: some text
+  accept
+
+
+# ----- Routers -----
+
+begin routers
+
+r9:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

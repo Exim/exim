@@ -1,0 +1,190 @@
+From x@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <x@y>)
+	id 10HmbM-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbM-0005vi-00@myhost.test.ex>
+From: x@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Testing, testing
+
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbN-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbN-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+
+Testing, testing
+
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbT-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: accept A=orses b=mutton
+Message-Id: <E10HmbT-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing
+LSD: A=orses b=mutton 
+
+Testing, testing
+
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbW-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: accept A=orses b=mutton
+  c=forthighlanders
+  some newlines in here 
+Message-Id: <E10HmbW-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing
+LSD: A=orses b=mutton   c=forthighlanders   some newlines in here  
+
+Testing, testing
+
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbY-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: accept_expand sender=$sender_address
+Message-Id: <E10HmbY-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing
+LSD: sender=test-local-scan@y 
+
+Testing, testing
+
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbZ-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: accept_expand sender=$rhubarb
+Message-Id: <E10HmbZ-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing
+LSD: unknown variable name "rhubarb"
+
+Testing, testing
+
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmcD-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: header_remove 2 remove-me
+remove-me: this is the first one
+remove-me : this is the third one
+Message-Id: <E10HmcD-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing
+
+Testing, testing
+
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmcE-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: header_remove 0 remove-me
+Message-Id: <E10HmcE-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing
+
+Testing, testing
+
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmcF-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-new: added
+local-scan: header_add_at_position TT received X-new: added
+Message-Id: <E10HmcF-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing
+
+Testing, testing
+
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+X-new: added
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmcG-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: header_add_at_position FT received X-new: added
+Message-Id: <E10HmcG-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing
+
+Testing, testing
+
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmcH-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: header_add_at_position FT From X-new: added
+Message-Id: <E10HmcH-0005vi-00@myhost.test.ex>
+X-new: added
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing
+
+Testing, testing
+
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+X-new: added
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmcI-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: header_add_at_position FT Non-exist X-new: added
+Message-Id: <E10HmcI-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing
+
+Testing, testing
+
+From test-local-scan@y Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmcK-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: remove abcd@test.ex
+remove-rc: FALSE
+Message-Id: <E10HmcK-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing
+
+Testing, testing
+

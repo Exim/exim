@@ -1,0 +1,2 @@
+1999-03-02 09:44:33 ETRN #some.random.domain received from [127.0.0.1] U=CALLER
+1999-03-02 09:44:33 exec of "/some/non-existent/file" (ETRN) failed: No such file or directory

@@ -1,0 +1,41 @@
+# Exim test configuration 0040
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+log_selector = +received_recipients
+trusted_users = CALLER
+
+
+# ----- Routers -----
+
+begin routers
+
+localuser:
+  driver = accept
+  local_parts = userx
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  headers_add = "X-interface: $interface_address"
+  return_path_add
+  user = CALLER
+
+
+# End

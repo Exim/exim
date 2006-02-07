@@ -1,0 +1,69 @@
+# Exim test configuration 0266
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+queue_run_in_order
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+  envelope_to_add
+  return_path_add
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  skip_syntax_errors
+  local_parts = ^list
+  syntax_errors_to = postmaster@test.ex
+  file = DIR/aux-fixed/TESTNUM.$local_part
+
+r1a:
+  driver = redirect
+  skip_syntax_errors
+  local_parts = ^nmlist
+  syntax_errors_to = postmaster@test.ex
+  file = DIR/aux-fixed/TESTNUM.$local_part
+  no_more
+
+r2:
+  driver = redirect
+  skip_syntax_errors
+  local_parts = ^filter
+  syntax_errors_to = postmaster@test.ex
+  syntax_errors_text = "There's an error in your filter file.\n\
+                        The file has been ignored."
+  file = DIR/aux-fixed/TESTNUM.$local_part
+  allow_filter
+  router_home_directory = DIR
+  user = CALLER
+
+r3:
+  driver = accept
+  transport = t1
+
+# ----- Retry -----
+
+begin retry
+
+*                *   F,5d,5m
+
+# End

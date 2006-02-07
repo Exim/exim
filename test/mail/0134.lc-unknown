@@ -1,0 +1,40 @@
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+	for unknown@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+router: defaulted
+domain_data: 
+local_part_data: 
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+router: defaulted
+domain_data: 
+local_part_data: 
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbC-0005vi-00
+	for UNKNOWN@KNOWN.DOMAIN; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+domain_data: 
+local_part_data: 
+
+Test to uppercased local part UNKNOWN@KNOWN.DOMAIN
+

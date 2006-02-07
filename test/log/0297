@@ -1,0 +1,16 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= fil@ter U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 original recipients ignored (system filter)
+1999-03-02 09:44:33 10HmaX-0005vi-00 *> /a/b/c <system-filter> T=tf1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= fil@ter U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 original recipients ignored (system filter)
+1999-03-02 09:44:33 10HmaY-0005vi-00 *> /x/y/z <system-filter> T=tf2
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= fil@ter U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 original recipients ignored (system filter)
+1999-03-02 09:44:33 10HmaZ-0005vi-00 *> /a/b/c/ <system-filter> T=td1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= fil@ter U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 original recipients ignored (system filter)
+1999-03-02 09:44:33 10HmbA-0005vi-00 *> /a/b/c// <system-filter> T=td2
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed

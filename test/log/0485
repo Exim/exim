@@ -1,0 +1,17 @@
+1999-03-02 09:44:33 at HELO: >LOOKEDUPDATA<
+1999-03-02 09:44:33 at MAIL: >LOOKEDUPDATA<
+1999-03-02 09:44:33 at RCPT: >LOOKEDUPDATA<
+1999-03-02 09:44:33 Expansions: myhost.test.ex, userx@test.ex
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= <> H=(x.y.z) [1.2.3.4] U=CALLER P=esmtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 at MAIL: >LOOKEDUPDATA<
+1999-03-02 09:44:33 at MAIL: >LOOKEDUPDATA<
+1999-03-02 09:44:33 at MAIL (non-null): >LOOKEDUPDATA2<
+1999-03-02 09:44:33 at RCPT: >LOOKEDUPDATA2<
+1999-03-02 09:44:33 Expansions: myhost.test.ex, userx@test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= nonnull@non.null H=(x.y.z) [1.2.3.4] U=CALLER P=esmtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 at MAIL: >LOOKEDUPDATA2<
+1999-03-02 09:44:33 at MAIL (non-null): >LOOKEDUPDATA2<

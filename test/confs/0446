@@ -1,0 +1,54 @@
+# Exim test configuration 0446
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+acl_smtp_rcpt = accept
+acl_smtp_data = smtp_data
+acl_not_smtp  = not_smtp
+
+
+#----- ACL -----
+
+begin acl
+
+smtp_data:
+  warn  message = X-ACL: $received_count
+  accept
+
+not_smtp:
+  warn  message = X-ACL: $received_count
+  accept
+
+
+#----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = t1
+  headers_add = X-Router: $received_count
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

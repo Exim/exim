@@ -1,0 +1,51 @@
+# Exim test configuration 0241
+
+exim_path = EXIM_PATH/junk
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+system_filter = DIR/aux-fixed/TESTNUM.filter
+system_filter_reply_transport = address_reply
+
+
+# ----- Routers -----
+
+begin routers
+
+all:
+  driver = accept
+  retry_use_local_part
+  transport = local
+
+
+# ----- Transports -----
+
+begin transports
+
+local:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+address_reply:
+  driver = autoreply
+  user = EXIMUSER
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

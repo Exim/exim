@@ -1,0 +1,37 @@
+# Exim test configuration 0506
+
+ALLOW=allow_filter
+FORBID=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+log_selector = +queue_time_overall
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  user = EXIMUSER
+  ALLOW
+  FORBID
+  file = DIR/aux-fixed/TESTNUM.$local_part
+
+
+# ----- Retry -----
+
+begin retry
+
+* *    F,1d,1h
+
+# End

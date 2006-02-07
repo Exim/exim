@@ -1,0 +1,25 @@
+# Exim test configuration 0308
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+# Use first three components of address to select ACL
+acl_smtp_rcpt = acl_${sg{${tr{$sender_host_address}{.}{_}}}{^(.*)_.*\$}{\$1}}
+
+# ----- ACLs -----
+
+begin acl
+
+acl_V4NET_0_0:
+  accept   hosts = *.test.ex
+  accept   hosts = V4NET.0.0.97
+
+# End

@@ -1,0 +1,54 @@
+# Exim test configuration 3403
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+
+# ----- Authentication -----
+
+begin authenticators
+
+plain1:
+  driver = plaintext
+  public_name = PLAIN
+  server_condition = \
+    ${if or {\
+      {and {{eq{$2}{userx}}{eq{$3}{secret}}}}\
+      {and {{eq{$2}{usery}}{eq{$3}{ab?}}}}\
+    }\
+    {yes}{no}}
+  server_set_id = $2
+  server_mail_auth_condition = ${if eq{$authenticated_id}{userx}{yes}}
+
+
+# ----- Routers -----
+
+begin routers
+
+d1:
+  driver = accept
+  headers_add = aid: $authenticated_id
+  retry_use_local_part
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

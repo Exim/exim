@@ -1,0 +1,52 @@
+# Exim test configuration 0073
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+reply:
+  driver = accept
+  retry_use_local_part
+  senders = !
+  transport = reply
+
+localuser:
+  driver = accept
+  check_local_user
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+reply:
+  driver = autoreply
+  once = DIR/spool/autolog
+  once_repeat = ${if eq {0}{0}{4s}fail}
+  text = "Test auto reply to $h_subject:"
+  to = $reply_address
+  user = EXIMUSER
+
+local_delivery:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+
+
+# End

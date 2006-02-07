@@ -1,0 +1,84 @@
+# Exim test configuration 0377
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+defer:
+  driver = redirect
+  local_parts = ^defer
+  allow_defer
+  data = :defer: forced defer
+
+unseen_aaaa:
+  driver = redirect
+  local_parts = aaaa
+  condition = ${if first_delivery{yes}{no}}
+  data = defer_aaaa@$domain
+  unseen
+
+seen_aaaa:
+  driver = accept
+  local_parts = aaaa
+  transport = t1
+
+bbbb:
+  driver = redirect
+  local_parts = bbbb
+  condition = ${if first_delivery{yes}{no}}
+  data = bbbb@$domain, defer_bbbb@$domain
+
+bbbb_0:
+  driver = accept
+  local_parts = bbbb
+  transport = t1
+
+cccc_2nd_time:
+  driver = redirect
+  local_parts = cccc
+  condition = ${if first_delivery{no}{yes}}
+  data = $local_part@$domain
+
+cccc_redirect:
+  driver = redirect
+  local_parts = cccc
+  data = cccc@$domain, defer_cccc@$domain
+
+cccc_accept:
+  driver = accept
+  local_parts = cccc
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

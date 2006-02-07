@@ -1,0 +1,50 @@
+# Exim test configuration 0263
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+
+# ----- Routers -----
+
+begin routers
+
+# Skip for domain0, pass for domain1, decline for domain2
+r1:
+  driver = manualroute
+  domains = domain1:domain2
+  route_list = domain1 127.0.0.1 byname
+  self = pass
+  pass_router = pr1
+  no_more
+
+r2:
+  driver = accept
+  transport = t1
+
+pr1:
+  driver = accept
+  transport = t1
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,10s
+
+# End

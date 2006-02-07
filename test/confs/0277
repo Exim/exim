@@ -1,0 +1,22 @@
+# Exim test configuration 0277
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+hostlist lookup_hosts = V4NET.2.3.4
+hostlist never_hosts = V4NET.6.7.8
+hostlist n1_hosts = V4NET.1.1.1
+hostlist n2_hosts = <; V4NET.2.2.2 ; +n1_hosts
+
+host_lookup = +lookup_hosts : !+never_hosts
+sender_unqualified_hosts = +lookup_hosts : !+n2_hosts
+
+# End

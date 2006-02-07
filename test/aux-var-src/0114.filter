@@ -1,0 +1,15 @@
+# Exim filter
+
+if $local_part is null then
+  save /dev/null
+elif $local_part is file then
+  save DIR/test-mail/file
+elif $local_part is pipe then
+  pipe "/bin/sh -c \"cat >DIR/test-mail/pipe\""
+elif $local_part is reply then
+  seen mail 
+    to "A. File <file>, No One <null>"
+    subject autoreply
+    text "Test Text"
+    once DIR/test-once
+endif

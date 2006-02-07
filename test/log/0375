@@ -1,0 +1,19 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => a1 <a1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+1999-03-02 09:44:33 10HmaX-0005vi-00 => b1 <b1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+1999-03-02 09:44:33 10HmaX-0005vi-00 => c1 <c1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+1999-03-02 09:44:33 10HmaX-0005vi-00 => d1 <d1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+1999-03-02 09:44:33 10HmaX-0005vi-00 => d2 <d2@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+1999-03-02 09:44:33 10HmaX-0005vi-00 => d3 <d3@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+1999-03-02 09:44:33 10HmaX-0005vi-00 => e1 <e1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+1999-03-02 09:44:33 10HmaX-0005vi-00 => f1 <f1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+1999-03-02 09:44:33 10HmaX-0005vi-00 => f2 <f2@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+1999-03-02 09:44:33 10HmaX-0005vi-00 => f3 <f3@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@myhost.test.ex> P=<> R=real T=real
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => h1 <h1@myhost.test.ex> P=<CALLER@myhost.test.ex> R=real T=real
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed

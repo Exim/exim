@@ -1,0 +1,63 @@
+# Exim test configuration 0187
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+qualify_domain = test.ex
+allow_mx_to_ip
+
+# ----- Routers -----
+
+begin routers
+
+domainlist:
+  driver = manualroute
+  domains = ! +local_domains
+  ignore_target_hosts = !V4NET.0.0.5 : V4NET.0.0.0/8
+  route_list = ten-5-6.test.ex $domain bydns
+  transport = smtp
+
+lookuphost:
+  driver = dnslookup
+  domains = ^mxt
+  ignore_target_hosts = V4NET.0.0.2 : V4NET.0.0.1 : 127.0.0.0/8 : ::::1
+  no_more
+  transport = smtp
+
+lookuphost2:
+  driver = dnslookup
+  domains = ! +local_domains
+  ignore_target_hosts = ${if eq{$domain}{other2.test.ex}{V4NET.12.3.2}} : \
+    127.0.0.1 : ::::1
+  self = send
+  transport = smtp
+  no_more
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

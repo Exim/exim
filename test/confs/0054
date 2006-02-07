@@ -1,0 +1,35 @@
+# Exim test configuration 0054
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+trusted_users = CALLER
+
+# ----- Main settings -----
+
+
+# ----- Routers -----
+
+begin routers
+
+lookuphost:
+  driver = dnslookup
+  mx_domains = !ten-1.test.ex : *.test.ex
+  transport = smtp
+  no_more
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+
+
+# End

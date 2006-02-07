@@ -1,0 +1,11 @@
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00
+	for mmm@ten-1; Tue, 2 Mar 1999 09:44:33 +0000
+To: You <mmm@ten-1.test.ex>
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+

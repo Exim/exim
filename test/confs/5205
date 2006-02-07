@@ -1,0 +1,36 @@
+# Exim test configuration 5205
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+
+# ----- Routers -----
+
+begin routers
+
+queryprogram:
+  driver = queryprogram
+  command = /bin/echo ACCEPT transport=smtp hosts=ten-3.test.ex lookup=byname
+  command_user = nobody
+  domains = ten-3.test.ex
+  ignore_target_hosts = V4NET.0.0.0/8
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+
+# End

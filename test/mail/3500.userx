@@ -1,0 +1,14 @@
+From userx@some.domain Tue Mar 02 09:44:33 1999
+Return-path: <userx@some.domain>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [10.0.0.1] (helo=test.host ident=CALLER)
+	by myhost.test.ex with esmtpa (Exim x.yz)
+	(envelope-from <userx@some.domain>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Host-Authenticated: cram_md5
+X-Authenticated-ID: tim
+
+Testing authenticated CRAM-MD5.
+

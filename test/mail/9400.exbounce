@@ -1,0 +1,41 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbV-0005vi-00
+	for exbounce@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: bounce@test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: exbounce@test.ex
+Subject: Mail delivery failed
+Message-Id: <E10HmbV-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This message was created automatically by mail delivery software.
+
+A message sent by
+
+  <test-local-scan@y>
+
+could not be delivered to one or more of its recipients. The following
+address(es) failed:
+
+  bounce@test.ex
+    bounced (:fail:)
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <test-local-scan@y>
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbU-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: sendto bounce@test.ex exbounce@test.ex
+Message-Id: <E10HmbU-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing, wa
+
+Testing, testing, was originally to userx.
+Sent to bounce@test.ex; bounce should go to exbounce.
+

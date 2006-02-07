@@ -1,0 +1,18 @@
+From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
+At-Start: some text
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for someone@el.se; Tue, 2 Mar 1999 09:44:33 +0000
+After-Received: some text
+From: some@ne
+To: someone@el.se
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+Sender: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-ACL-Warn: data1 data1
+X-ACL-Warn: data2 data2
+At-End: some text
+
+Testing message
+

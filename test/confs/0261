@@ -1,0 +1,57 @@
+# Exim test configuration 0261
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+remote_max_parallel = 1
+
+# ----- Transports -----
+
+begin transports
+
+remote_delivery:
+  driver = smtp
+  hosts = V4NET.0.0.1
+
+bad_return:
+  driver = smtp
+  hosts = V4NET.0.0.0
+  return_path = ${if
+
+no_hosts:
+  driver = smtp
+
+# ----- Routers -----
+
+begin routers
+
+bad_return:
+  driver = accept
+  local_parts = bad.return : bad.return2
+  transport = bad_return
+
+no_hosts:
+  driver = accept
+  local_parts = no.hosts
+  transport = no_hosts
+
+good:
+  driver = accept
+  transport = remote_delivery
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,10s
+
+# End

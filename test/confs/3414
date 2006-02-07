@@ -1,0 +1,44 @@
+# Exim test configuration 3414
+
+ACL=
+S=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_mail = mail
+S acl_smtp_mailauth=ACL
+
+
+# ----- ACLs -----
+
+begin acl
+
+acl1:
+  accept condition = ${if eq{$authenticated_sender}{ok@ok}{1}{0}}
+
+mail:
+  warn    log_message = \$authenticated_sender=$authenticated_sender
+  accept
+
+
+# ----- Authenticators -----
+
+begin authenticators
+
+ok:
+  driver = plaintext
+  public_name = PLAIN
+  server_prompts = :
+  server_condition = true
+
+
+# End

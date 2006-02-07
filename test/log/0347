@@ -1,0 +1,5 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => x <x@dom1> R=r2 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> x <x@dom2> R=r2 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> x <x@dom3> R=r2 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

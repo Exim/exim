@@ -1,0 +1,58 @@
+# Exim test configuration 0338
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+queue_run_in_order
+
+
+# ----- Routers -----
+
+begin routers
+
+alias:
+  driver = redirect
+  local_parts = !\N^a\d\-\N
+  data = a1-$local_part@$domain, a2-$local_part@$domain
+  errors_to = postmaster@$domain
+  one_time
+
+defer:
+  driver = redirect
+  local_parts = ^a1-
+  condition = ${if first_delivery{yes}{no}}
+  allow_defer
+  data = :defer: forced defer
+
+accept:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  return_path_add
+  user = CALLER
+
+
+# ----- Retry -----
+
+begin retry
+
+*  *  F,5m,1d
+
+# End

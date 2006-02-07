@@ -1,0 +1,83 @@
+# Exim test configuration 0376
+
+PEX=10s
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+acl_smtp_rcpt = check_recipient
+acl_smtp_data = check_data
+callout_positive_expire = 1s
+callout_domain_positive_expire = PEX
+
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  deny    hosts   = V4NET.0.0.1
+          log_message = ($sender_verify_failure)
+         !verify  = sender/callout
+  deny    hosts   = V4NET.0.0.2
+         !verify  = sender/callout=postmaster
+  deny    hosts   = V4NET.0.0.3
+         !verify  = sender/callout=random
+  deny    hosts   = V4NET.0.0.4
+         !verify  = sender/callout=random,postmaster
+  deny    hosts   = V4NET.0.0.5
+         !verify  = sender/callout=1s,random
+  deny   hosts    = V4NET.0.0.6
+         !verify  = sender/callout=postmaster_mailfrom=pmsend@a.domain
+  deny    hosts   = V4NET.0.0.9
+         !verify  = sender/callout=fullpostmaster
+  deny    hosts   = V4NET.0.0.10
+         !verify  = recipient/callout=postmaster_mailfrom=pmsend@b.domain,\
+                      use_postmaster,random/defer_ok
+  accept
+
+check_data:
+  deny   hosts    = V4NET.0.0.7
+         !verify  = header_sender/callout=mailfrom=somesender@a.domain
+  deny   hosts    = V4NET.0.0.8
+         !verify  = header_sender/callout=1s,defer_ok
+  accept
+
+# ----- Routers -----
+
+begin routers
+
+all:
+  driver = manualroute
+  route_list = * 127.0.0.1
+  self = send
+  transport = smtp
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

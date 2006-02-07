@@ -1,0 +1,53 @@
+# Exim test configuration 0016
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+userforward:
+  driver = redirect
+  allow_filter
+  user = CALLER
+  local_parts = userx : CALLER
+  file = DIR/aux-fixed/0016.filter.$local_part
+  local_part_suffix = +*
+  local_part_suffix_optional
+  reply_transport = address_reply
+
+localuser:
+  driver = accept
+  local_parts = userx : CALLER
+  local_part_suffix = +*
+  local_part_suffix_optional
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  user = CALLER
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+
+address_reply:
+  driver = autoreply
+
+# End

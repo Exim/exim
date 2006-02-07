@@ -1,0 +1,66 @@
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Return-path: <CALLER@test.ex>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by mail.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@mail.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test 1
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Return-path: <CALLER@test.ex>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by mail.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbF-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Filter: if true { stop; fileinto "inbox.never"; }
+Message-Id: <E10HmbF-0005vi-00@mail.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test 7
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Return-path: <CALLER@test.ex>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by mail.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbH-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Sieve: 99
+Filter: require["fileinto","comparator-i;ascii-numeric"];
+        if header :comparator "i;ascii-numeric" "X-Sieve" "98" {
+          fileinto "inbox.JUNK";
+          stop;
+        }
+Message-Id: <E10HmbH-0005vi-00@mail.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test 9
+
+From someone@test.ex Tue Mar 02 09:44:33 1999
+Return-path: <someone@test.ex>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by mail.test.ex with local (Exim x.yz)
+	(envelope-from <someone@test.ex>)
+	id 10HmbL-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: userx@test.ex
+Filter: require ["vacation"]; 
+        vacation "I am gone.  Not here.";
+Message-Id: <E10HmbL-0005vi-00@mail.test.ex>
+From: someone@test.ex
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test 13
+

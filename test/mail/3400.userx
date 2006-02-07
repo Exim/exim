@@ -1,0 +1,119 @@
+From userx@cus.cam.ac.uk Tue Mar 02 09:44:33 1999
+Return-path: <userx@cus.cam.ac.uk>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [10.0.0.3] (helo=testclient.ex ident=CALLER)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <userx@cus.cam.ac.uk>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+
+Testing unauthenticated.
+
+From userx@cus.cam.ac.uk Tue Mar 02 09:44:33 1999
+Return-path: <userx@cus.cam.ac.uk>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [10.0.0.3] (helo=testclient.ex ident=CALLER)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <userx@cus.cam.ac.uk>)
+	id 10HmaY-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+
+Testing unauthenticated (2).
+
+From userx@cus.cam.ac.uk Tue Mar 02 09:44:33 1999
+Return-path: <userx@cus.cam.ac.uk>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [10.0.0.3] (helo=testclient.ex ident=CALLER)
+	by myhost.test.ex with esmtpa (Exim x.yz)
+	(envelope-from <userx@cus.cam.ac.uk>)
+	id 10HmaZ-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Host-Authenticated: mylogin
+
+Testing authenticated.
+
+From userx@cus.cam.ac.uk Tue Mar 02 09:44:33 1999
+Return-path: <userx@cus.cam.ac.uk>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [10.0.0.3] (helo=testclient.ex ident=CALLER)
+	by myhost.test.ex with esmtpa (Exim x.yz)
+	(envelope-from <userx@cus.cam.ac.uk>)
+	id 10HmbA-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Host-Authenticated: mylogin
+X-Authenticated-Sender: auth@cus.cam.ac.uk
+
+Testing authenticated (2).
+
+From userx@cus.cam.ac.uk Tue Mar 02 09:44:33 1999
+Return-path: <userx@cus.cam.ac.uk>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [10.0.0.3] (helo=testclient.ex ident=CALLER)
+	by myhost.test.ex with esmtpa (Exim x.yz)
+	(envelope-from <userx@cus.cam.ac.uk>)
+	id 10HmbB-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Host-Authenticated: mylogin
+
+Testing authenticated (3).
+
+From userx@cus.cam.ac.uk Tue Mar 02 09:44:33 1999
+Return-path: <userx@cus.cam.ac.uk>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [10.0.0.1] (helo=test.host ident=CALLER)
+	by myhost.test.ex with esmtpa (Exim x.yz)
+	(envelope-from <userx@cus.cam.ac.uk>)
+	id 10HmbC-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Host-Authenticated: login
+X-Authenticated-ID: userx
+
+Testing authenticated.
+
+From x@y Tue Mar 02 09:44:33 1999
+Return-path: <x@y>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [10.0.0.5] (helo=testing.testing ident=CALLER)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <x@y>)
+	id 10HmbD-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+authentication-failed: 0
+
+Without authenticating
+
+From x@y Tue Mar 02 09:44:33 1999
+Return-path: <x@y>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [10.0.0.5] (helo=testing.testing ident=CALLER)
+	by myhost.test.ex with esmtpa (Exim x.yz)
+	(envelope-from <x@y>)
+	id 10HmbE-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+authentication-failed: 0
+X-Host-Authenticated: mylogin
+
+Authentication failed
+
+From x@y Tue Mar 02 09:44:33 1999
+Return-path: <x@y>
+Envelope-to: userx@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from [10.0.0.5] (helo=testing.testing ident=CALLER)
+	by myhost.test.ex with esmtpa (Exim x.yz)
+	(envelope-from <x@y>)
+	id 10HmbF-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+authentication-failed: 1
+X-Host-Authenticated: mylogin
+
+Authentication succeeded
+

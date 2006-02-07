@@ -1,0 +1,37 @@
+# Exim test configuration 0313
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  local_parts = filter
+  file = DIR/test-holey
+  allow_filter
+  user = CALLER
+
+r2:
+  driver = redirect
+  local_parts = include
+  data = :include:DIR/test-holey
+
+
+# ------ Retry ------
+
+begin retry
+
+*  *  F,1d,1h
+
+# End

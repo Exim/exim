@@ -1,0 +1,20 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => rewritten <"xyz@x.y.z"@test.ex> R=accept T=appendfile
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 ** wasabc@x.y.zwas <"abc@x.y.z"@test.ex>: Unrouteable address
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER <CALLER@test.ex> R=accept T=appendfile
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => :blackhole: <":blackhole:"@special> R=special
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 == :defer: defer message@special <":defer: defer message"@special> R=special defer (-1): defer message
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 ** :fail: fail message@special <":fail: fail message"@special> R=special: fail message
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= <> R=10HmbC-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 => CALLER <CALLER@test.ex> R=accept T=appendfile
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed

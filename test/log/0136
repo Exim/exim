@@ -1,0 +1,24 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= abcd@x.y.z U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == forwarder2@test.ex R=forward defer (-17): error in filter file: errors_to must point to the caller's address
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** unknown@test.ex <forwarder@test.ex> R=unknown: Address unknown (:fail:)
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** forwarder2@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 ** abcd@x.y.z R=fail_remote_domains: unrouteable mail domain "x.y.z" (:fail:)
+1999-03-02 09:44:33 10HmaY-0005vi-00 abcd@x.y.z: error ignored
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => forwarder <forwarder@test.ex> R=smart T=local_delivery
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= abcd@x.y.z U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 == forwarder2@test.ex R=forward defer (-17): error in filter file: errors_to must point to the caller's address
+1999-03-02 09:44:33 10HmbA-0005vi-00 ** unknown@test.ex <forwarder@test.ex> R=unknown: Address unknown (:fail:)
+1999-03-02 09:44:33 10HmbA-0005vi-00 ** forwarder2@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** abcd@x.y.z R=fail_remote_domains: unrouteable mail domain "x.y.z" (:fail:)
+1999-03-02 09:44:33 10HmbB-0005vi-00 abcd@x.y.z: error ignored
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 => forwarder <forwarder@test.ex> R=smart T=local_delivery
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed

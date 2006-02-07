@@ -1,0 +1,74 @@
+# Exim test configuration 0251
+
+SERVER =
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_recipient
+
+domainlist local_domains = test.ex : *.test.ex
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  deny    message = unrouteable address
+         !verify = recipient
+  accept  domains = +local_domains
+  deny    message = relay not permitted
+
+
+# ----- Routers -----
+
+begin routers
+
+exeter_listr:
+  driver = redirect
+  no_check_local_user
+  domains = listr.test.ex
+  errors_to = ${local_part}-request@test.ex
+  file = DIR/aux-fixed/TESTNUM.list.${local_part}
+  forbid_file
+  forbid_pipe
+  one_time
+  require_files = DIR/aux-fixed/TESTNUM.restrict.${local_part}
+  retry_use_local_part
+  senders = ${if exists{DIR/aux-fixed/TESTNUM.restrict.${local_part}} \
+    {DIR/aux-fixed/TESTNUM.restrict.${local_part}}{zzzz}}
+  syntax_errors_to = ${local_part}-request@test.ex
+
+exeter_listf:
+  driver = accept
+  domains = listr.test.ex
+  no_more
+  retry_use_local_part
+  transport = not_allowed
+
+
+# ----- Transports -----
+
+begin transports
+
+not_allowed:
+  driver = autoreply
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

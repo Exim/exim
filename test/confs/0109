@@ -1,0 +1,47 @@
+# Exim test configuration 094
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+remote:
+  driver = manualroute
+  fallback_hosts = HOSTIPV4
+  route_list = * 127.0.0.1
+  self = send
+  transport = smtp
+  no_more
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_N
+  allow_localhost
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

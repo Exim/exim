@@ -1,0 +1,52 @@
+# Exim test configuration 2120
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+log_selector = +tls_peerdn
+
+queue_only
+queue_run_in_order
+
+tls_advertise_hosts = *
+
+
+# ----- Routers -----
+
+begin routers
+
+abc:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  hosts = 127.0.0.1
+  allow_localhost
+  port = PORT_D
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,1d,1d
+
+# End

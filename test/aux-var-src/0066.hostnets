@@ -1,0 +1,6 @@
+1.2.3.4
+!1.2.3.0/24
+1.2.0.0/16
+net16-lsearch;DIR/aux-fixed/0066.nets
+net24-lsearch;DIR/aux-fixed/0066.nets
+*-1.test.ex

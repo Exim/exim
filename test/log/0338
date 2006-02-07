@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == a1-userx@test.ex <userx@test.ex> R=defer defer (-1): forced defer
+1999-03-02 09:44:33 10HmaX-0005vi-00 => a2-userx <userx@test.ex> R=accept T=t1
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 => a1-userx <userx@test.ex> R=accept T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf

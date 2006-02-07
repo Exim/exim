@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == include@test.ex R=alias defer (-17): error in redirect data: included files not permitted
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@test.ex R=alias defer (-17): error in redirect data: ":defer: forced to defer" is not permitted
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** /dev/null <file@test.ex> R=alias T=appendfile: delivery to file forbidden
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 ** CALLER@test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmaY-0005vi-00 Frozen (delivery error message)

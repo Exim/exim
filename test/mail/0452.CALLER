@@ -1,0 +1,52 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER@test.ex
+Subject: Auto generated
+In-Reply-To: <E10HmaX-0005vi-00@myhost.test.ex>
+Auto-Submitted: auto-replied
+h1: the first added header
+h2: the second added header
+ continued on another line
+h3: the third added header
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is some body text
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbA-0005vi-00
+	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: userx@test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: CALLER@test.ex
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  userx@test.ex
+    retry timeout exceeded
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <CALLER@test.ex>
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+fno: 2
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Another message 
+

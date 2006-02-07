@@ -1,0 +1,13 @@
+MAIL FROM:<abc=userx+myhost.test.ex@verp.domain>
+RCPT TO:<userx@myhost.test.ex>
+DATA
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <xyz@x.y.z>)
+	id 10HmaY-0005vi-00
+	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: xyz@x.y.z
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message 2
+.

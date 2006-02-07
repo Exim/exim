@@ -1,0 +1,40 @@
+# Exim test configuration 0302
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+log_selector = +delivery_size
+queue_only
+
+
+# ------ Routers ------
+
+begin routers
+
+r1:
+  driver = redirect
+  local_parts = ^defer
+  allow_defer
+  data = :defer: forced defer
+  retry_use_local_part
+
+r2:
+  driver = redirect
+  data = :blackhole:
+
+
+# ------ Retry ------
+
+begin retry
+
+* * F,1d,10m
+
+# End

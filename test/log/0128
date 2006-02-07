@@ -1,0 +1,2 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@test.ex R=reply T=reply defer (0): Failed to open DBM file TESTSUITE/spool when sending message from reply transport: Is a directory

@@ -1,0 +1,66 @@
+# Exim test configuration 0279
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+addresslist local_addresses = CALLER@test.ex
+addresslist never_addresses = never@test.ex
+addresslist n1_addresses = never1@test.ex
+addresslist n2_addresses = <; never2@test.ex ; +n1_addresses
+
+domainlist funny_domains = fun.1 : fun.2
+
+qualify_domain = test.ex
+trusted_users = CALLER
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+# ----- Routers -----
+
+begin routers
+
+rr1:
+  driver = redirect
+  senders = user1@+funny_domains
+  allow_fail
+  data = :fail: matched *@+funny_domains
+
+r1:
+  driver = manualroute
+  senders = +never_addresses : +n1_addresses : ! +local_addresses
+  route_list = never
+  transport = t1
+
+r2:
+  driver = dnslookup
+  senders = +never_addresses : +n2_addresses : !+local_addresses
+  transport = t1
+
+r3:
+  driver = accept
+  check_local_user
+  senders = +local_addresses
+  transport = t1
+
+# ----- Retry -----
+
+begin retry
+
+*                *   F,5d,5m
+
+# End

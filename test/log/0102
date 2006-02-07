@@ -1,0 +1,32 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => usery <bsmtp_usery@test.ex> R=localuser T=bsmtp_local_delivery
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => usery <usery@test.ex> R=localuser T=bsmtp_local_delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 => userz <mmdf_userz@test.ex> R=localuser T=mmdf_local_delivery
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 => userz <userz@test.ex> R=localuser T=mmdf_local_delivery
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 => userz <userz@test.ex> R=localuser T=mmdf_local_delivery
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 == tpmissing@test.ex R=localuser T=local_delivery defer (-30): tpmissing transport (for tpmissing format) not found
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 == undefined@test.ex R=localuser T=local_delivery defer (-33): mailbox file format unrecognized
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbG-0005vi-00 => userx <batch-userx@test.ex> R=batch T=batch_bsmtp1
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbH-0005vi-00 => userx <batch-userx@test.ex> R=batch T=batch_bsmtp2
+1999-03-02 09:44:33 10HmbH-0005vi-00 -> usery <batch-usery@test.ex> R=batch T=batch_bsmtp2
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed

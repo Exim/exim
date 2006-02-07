@@ -1,0 +1,24 @@
+# Exim filter
+
+if $local_part is filter-pipe then
+  pipe "cat"
+elif $local_part is filter-file then
+  save /tmp/junk
+elif $local_part is filter-lookup then
+  deliver ${lookup{$local_part}lsearch{/etc/passwd}{$value}fail}
+elif $local_part is filter-exists then
+  deliver "${if exists{/tmp/junk}{abc}{def}}"
+elif $local_part is filter-stat then
+  deliver "${if eq{${stat:/tmp/junk}}{}{abc}{def}}"
+elif $local_part is filter-readfile then
+  deliver ${readfile{/some/file}}   
+elif $local_part is filter-run then
+  deliver ${run{/some/script}}   
+elif $local_part is filter-vacation then
+  seen vacation text "this is vacation text" 
+                file /dev/null
+                log  /dev/null
+                once DIR/test-once
+elif $local_part is filter-userx then
+  deliver userx                
+endif            

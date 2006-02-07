@@ -1,0 +1,71 @@
+# Exim test configuration 0260
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+bad_return:
+  driver = appendfile
+  batch_max = 100
+  file = DIR/test-mail/bad_return
+  user = CALLER
+  return_path = ${if
+
+bad_uid:
+  driver = appendfile
+  file = DIR/test-mail/bad_uid
+
+exp_fail:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+  home_directory = ${if rhubarb
+
+# ----- Routers -----
+
+begin routers
+
+bad_return:
+  driver = accept
+  local_parts = bad.return : bad.return2
+  transport = bad_return
+
+bad_uid:
+  driver = accept
+  local_parts = bad.uid
+  transport = bad_uid
+
+exp_fail:
+  driver = accept
+  local_parts = exp.fail
+  transport = exp_fail
+
+good:
+  driver = accept
+  transport = local_delivery
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,10s
+
+# End

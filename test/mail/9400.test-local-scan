@@ -1,0 +1,64 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbR-0005vi-00
+	for test-local-scan@y; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: test-local-scan@y
+Subject: Mail failure - rejected by local scanning code
+Message-Id: <E10HmbR-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+A message that you sent was rejected by the local scanning code that
+checks incoming messages on this system. The following error was given:
+
+  this message isn't wanted
+
+
+------ This is a copy of your message, including all the headers. ------
+
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbE-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: reject this message isn't wanted
+Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing, lo
+
+Testing, testing, local message (1)
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbS-0005vi-00
+	for test-local-scan@y; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: test-local-scan@y
+Subject: Mail failure - rejected by local scanning code
+Message-Id: <E10HmbS-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+A message that you sent was rejected by the local scanning code that
+checks incoming messages on this system. The following error was given:
+
+  this message isn't wanted
+
+
+------ This is a copy of your message, including all the headers. ------
+
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbF-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+local-scan: reject this message isn't wanted
+Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
+From: test-local-scan@y
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+local-scan-seen: yes
+local-scan-body-start: Testing, testing, lo
+
+Testing, testing, local message (2)
+

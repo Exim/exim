@@ -1,0 +1,4 @@
+1999-03-02 09:44:33 "acl_verify_message=Sender verify failed"
+1999-03-02 09:44:33 "acl_m0=>Sender verify failed<"
+1999-03-02 09:44:33 U=CALLER Warning: log warning message: Sender verify failed
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss

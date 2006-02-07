@@ -1,0 +1,8 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@anydom U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => alice-2 <bob@anydom> R=r9 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 => alice-1 <alice@anydom> R=r9 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@anydom U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => alice-2 <bob@anydom> R=r9 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 => alice-1 <alice@anydom> R=r9 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

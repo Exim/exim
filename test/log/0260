@@ -1,0 +1,16 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 Failed to expand return path "${if" in bad_return transport: condition name expected, but found ""
+1999-03-02 09:44:33 10HmaX-0005vi-00 == bad.return@test.ex R=bad_return T=bad_return defer (-27): Failed to expand return path "${if" in bad_return transport: condition name expected, but found ""
+1999-03-02 09:44:33 10HmaX-0005vi-00 == bad.return2@test.ex R=bad_return T=bad_return defer (-27): Failed to expand return path "${if" in bad_return transport: condition name expected, but found ""
+1999-03-02 09:44:33 10HmaX-0005vi-00 == bad.uid@test.ex R=bad_uid T=bad_uid defer (13): Permission denied: creating lock file hitching post TESTSUITE/test-mail/bad_uid.lock.test.ex.dddddddd.pppppppp (euid=EXIM_UID egid=EXIM_GID)
+1999-03-02 09:44:33 10HmaX-0005vi-00 home directory "${if rhubarb" failed to expand for exp_fail transport: unknown condition "rhubarb"
+1999-03-02 09:44:33 10HmaX-0005vi-00 == exp.fail@test.ex R=exp_fail T=exp_fail defer (-27): home directory "${if rhubarb" failed to expand for exp_fail transport: unknown condition "rhubarb"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=good T=local_delivery
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 Failed to expand return path "${if" in bad_return transport: condition name expected, but found ""
+1999-03-02 09:44:33 10HmaX-0005vi-00 == bad.return@test.ex R=bad_return T=bad_return defer (-27): Failed to expand return path "${if" in bad_return transport: condition name expected, but found ""
+1999-03-02 09:44:33 10HmaX-0005vi-00 == bad.return2@test.ex R=bad_return T=bad_return defer (-27): Failed to expand return path "${if" in bad_return transport: condition name expected, but found ""
+1999-03-02 09:44:33 10HmaX-0005vi-00 == bad.uid@test.ex R=bad_uid T=bad_uid defer (13): Permission denied: creating lock file hitching post TESTSUITE/test-mail/bad_uid.lock.test.ex.dddddddd.pppppppp (euid=EXIM_UID egid=EXIM_GID)
+1999-03-02 09:44:33 10HmaX-0005vi-00 home directory "${if rhubarb" failed to expand for exp_fail transport: unknown condition "rhubarb"
+1999-03-02 09:44:33 10HmaX-0005vi-00 == exp.fail@test.ex R=exp_fail T=exp_fail defer (-27): home directory "${if rhubarb" failed to expand for exp_fail transport: unknown condition "rhubarb"
+1999-03-02 09:44:33 End queue run: pid=pppp -qf

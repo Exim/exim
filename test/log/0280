@@ -1,0 +1,14 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= spqr@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** spqr@test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 ** spqr@test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Frozen (delivery error message)
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= abcd@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** abcd@test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 ** abcd@test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmbA-0005vi-00 => CALLER <CALLER@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbA-0005vi-00 Frozen (delivery error message)
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed

@@ -1,0 +1,60 @@
+# Exim test configuration 0520
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = anydom
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  local_parts = alice
+  data = alice-1
+
+r2:
+  driver = redirect
+  local_parts = alice-1
+  data = alice-2
+
+r3:
+  driver = redirect
+  local_parts = alice-2
+  data = alice-1
+
+r4:
+  driver = redirect
+  local_parts = bob
+  data = bob-1
+
+r5:
+  driver = redirect
+  local_parts = bob-1
+  data = alice-2
+
+r9:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+# End

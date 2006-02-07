@@ -1,0 +1,46 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 r1 router: skipped error: domain missing or malformed in "@@test.ex (This has a syntax error)"
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=root P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => postmaster <postmaster@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <list@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 => spqr <list@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 r1 router: skipped error: domain missing or malformed in "@@test.ex (This has a syntax error)"
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=root P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => postmaster <postmaster@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => list2 <list2@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 r2 router: skipped error: unknown filtering command "syntax" near line 3 of filter file
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=root P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 => postmaster <postmaster@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 => filter <filter@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 r1a router: skipped error: domain missing or malformed in "@@test.ex (This has a syntax error)"
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> R=10HmbD-0005vi-00 U=root P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 => postmaster <postmaster@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 ** nmlist@test.ex: syntax error in redirection data
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= <> R=10HmbD-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 => CALLER <CALLER@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbG-0005vi-00 r2 router: skipped error: malformed address "@@in.valid" in filter file: domain missing or malformed
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> R=10HmbG-0005vi-00 U=root P=local S=sss
+1999-03-02 09:44:33 10HmbH-0005vi-00 => postmaster <postmaster@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbG-0005vi-00 => filter2 <filter2@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbI-0005vi-00 r2 router: skipped error: failed to open filter log file "test-private": Permission denied (euid=CALLER_UID egid=CALLER_GID)
+1999-03-02 09:44:33 10HmbJ-0005vi-00 <= <> R=10HmbI-0005vi-00 U=root P=local S=sss
+1999-03-02 09:44:33 10HmbJ-0005vi-00 => postmaster <postmaster@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-0005vi-00 => filter3 <filter3@test.ex> R=r3 T=t1
+1999-03-02 09:44:33 10HmbI-0005vi-00 Completed

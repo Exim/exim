@@ -1,0 +1,68 @@
+# Exim test configuration 0413
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+primary_hostname = mail.test.ex
+qualify_domain = test.ex
+
+acl_smtp_mail = mail
+
+
+# ----- ACL -----
+
+begin acl
+
+mail:
+  accept   verify = sender/callout
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  local_parts = r1
+  driver = accept
+  transport = t1
+
+r2:
+  local_parts = r2
+  driver = manualroute
+  route_list = * HOSTIPV4
+  self = send
+  transport = t1
+
+r3:
+  local_parts = r3
+  driver = manualroute
+  route_list = * HOSTIPV4
+  self = send
+  transport = t2
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  hosts = 127.0.0.1
+  allow_localhost
+  port = PORT_S
+
+t2:
+  driver = smtp
+  hosts = 127.0.0.1
+  hosts_override
+  allow_localhost
+  port = PORT_S
+
+
+# End

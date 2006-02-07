@@ -1,0 +1,48 @@
+# Exim test configuration 0366
+
+HOSTS_MAX_TRY=5
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+ignore_bounce_errors_after = 0s
+qualify_domain = test.ex
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = dnslookup
+  transport = smtp
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  connect_timeout = 1s
+  hosts_max_try = HOSTS_MAX_TRY
+  port = PORT_N
+
+
+# ----- Retry -----
+
+# Ended up with the same settings, but leave the first because
+# there's a -brt test as well.
+
+begin retry
+
+^[^@]+@ten-      *  F,2s,1s
+*                *  F,2s,1s
+
+# End

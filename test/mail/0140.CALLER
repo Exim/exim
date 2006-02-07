@@ -1,0 +1,52 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: CALLER@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: Reply Person <CALLER@test.ex>
+In-Reply-To: <E10HmaX-0005vi-00@the.local.host.name>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: EXIMUSER@test.ex
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test auto reply to first message; non-printer ><
+this is another line
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: CALLER@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
+	id 10HmbA-0005vi-00
+	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: reply2@test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: CALLER@test.ex
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  reply2@test.ex
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <CALLER@test.ex>
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-0005vi-00
+	for reply2@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: first message; non-printer ><
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+

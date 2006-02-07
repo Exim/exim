@@ -1,0 +1,80 @@
+# Exim test configuration 0027
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+acl_smtp_rcpt = acl_rcpt
+acl_smtp_data = $h_subject:
+
+trusted_users = CALLER
+
+
+# ------ ACLs ------
+
+begin acl
+
+userx:
+  deny   message = deny for userx
+
+postmaster:
+  accept verify = sender
+
+data:
+  accept
+
+data1:
+  accept verify = recipient
+
+data2:
+  accept domains = a.b.c
+
+data3:
+  accept local_parts = a.b.c
+
+acl_rcpt:
+  accept endpass
+         acl = ${tr{$local_part}{:}{\n}}
+  deny   message = this message should not occur
+
+
+# ------ Routers ------
+
+begin routers
+
+r1:
+  driver = dnslookup
+  domains = ! +local_domains
+  transport = dev_null
+  no_more
+
+r2:
+  driver = accept
+  local_parts = userx : postmaster
+  transport = local_delivery
+
+
+# ------ Transports ------
+
+begin transports
+
+dev_null:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

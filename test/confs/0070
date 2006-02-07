@@ -1,0 +1,32 @@
+# Exim test configuration 0070
+
+HVH=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = rcpt
+helo_verify_hosts = ten-1.test.ex : ten-3.test.ex : HVH
+helo_try_verify_hosts = ten-2.test.ex
+log_selector = -host_lookup_failed
+
+
+# ----- ACL -----
+
+begin acl
+
+rcpt:
+  require  message = helo not verified
+           verify = helo
+
+  deny     message = helo did verify
+
+# End

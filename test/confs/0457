@@ -1,0 +1,28 @@
+# Exim test configuration 0457
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_helo = helo
+acl_smtp_mail = mail
+
+
+# ----- ACLs -----
+
+begin acl
+
+helo:
+  deny   message = testing deny
+
+mail:
+  warn   log_message = sender_helo_name is >$sender_helo_name<
+  deny   message = testing deny
+
+# End

@@ -1,0 +1,49 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => TESTSUITE/test-mail/userx <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => discarded <userx@test.ex> R=r2
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => TESTSUITE/test-mail/userx-extra <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => TESTSUITE/test-mail/redirected (redirected@test.ex) <userx@test.ex> R=r0 T=t1
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** save userx-extra <restrict-userx@test.ex> R=r1 T=t1: delivery to file forbidden
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 => CALLER <CALLER@test.ex> R=rb T=t2
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 ** save inbox <restrict-userx@test.ex> R=r1 T=t1: delivery to file forbidden
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> R=10HmbD-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 => CALLER <CALLER@test.ex> R=rb T=t2
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 => TESTSUITE/test-mail/userx <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbG-0005vi-00 => TESTSUITE/test-mail/inbox.JUNK <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbH-0005vi-00 => TESTSUITE/test-mail/userx <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbI-0005vi-00 => TESTSUITE/test-mail/inbox.JUNK <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbJ-0005vi-00 => TESTSUITE/test-mail/inbox.JUNK <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbK-0005vi-00 => TESTSUITE/test-mail/inbox.JUNK <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbL-0005vi-00 <= someone@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbL-0005vi-00 => TESTSUITE/test-mail/userx <userx@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbM-0005vi-00 <= <> R=10HmbL-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbM-0005vi-00 => someone <someone@test.ex> R=rb T=t2
+1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbL-0005vi-00 => >someone@test.ex <userx@test.ex> R=r2 T=t3
+1999-03-02 09:44:33 10HmbL-0005vi-00 Completed

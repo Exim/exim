@@ -1,0 +1,22 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 == a@test.ex R=defer_always defer (-1): forced defer
+1999-03-02 09:44:33 10HmaY-0005vi-00 == b@test.ex R=defer_always defer (-1): forced defer
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == c@test.ex R=defer_always defer (-1): forced defer
+1999-03-02 09:44:33 10HmbA-0005vi-00 == d@test.ex R=defer_always defer (-1): forced defer
+1999-03-02 09:44:33 10HmbB-0005vi-00 == e@test.ex R=defer_always defer (-1): forced defer
+1999-03-02 09:44:33 10HmbC-0005vi-00 == f@test.ex R=defer_always defer (-1): forced defer
+1999-03-02 09:44:33 10HmbD-0005vi-00 == g@test.ex R=defer_always defer (-1): forced defer
+1999-03-02 09:44:33 10HmbE-0005vi-00 == h@test.ex R=defer_always defer (-1): forced defer
+1999-03-02 09:44:33 10HmbF-0005vi-00 == i@test.ex R=defer_always defer (-1): forced defer
+1999-03-02 09:44:33 10HmbG-0005vi-00 == j@test.ex R=defer_always defer (-1): forced defer
+1999-03-02 09:44:33 End queue run: pid=pppp

@@ -1,0 +1,32 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: CALLER@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER_NAME <CALLER@test.ex>
+In-Reply-To: <E10HmaX-0005vi-00@the.local.host.name>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Auto reply to first message
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: CALLER@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	id 10HmbB-0005vi-00
+	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER_NAME <CALLER@test.ex>
+In-Reply-To: <E10HmbA-0005vi-00@the.local.host.name>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Auto reply to third message
+

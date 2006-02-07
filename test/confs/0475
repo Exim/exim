@@ -1,0 +1,23 @@
+# Exim test configuration 0475
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = a1
+
+
+# ----- ACL -----
+
+begin acl
+
+a1:
+  deny hosts = 1.2.3.4 : <; 1.2.3.4::5.6.7.8
+
+# End

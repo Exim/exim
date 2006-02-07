@@ -1,0 +1,8 @@
+1999-03-02 09:44:33 H=[V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => 2 <2@b> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 H=[V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => 2 <2@b> R=r1 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed

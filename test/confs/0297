@@ -1,0 +1,51 @@
+# Exim test configuration 0297
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+system_filter = DIR/aux-fixed/TESTNUM.Filter
+system_filter_file_transport = ${if eq {$address_file}{/a/b/c}{tf1}{tf2}}
+system_filter_directory_transport = ${if match{$address_file}{//\$}{td2}{td1}}
+trusted_users = CALLER
+
+# ------ Routers ------
+
+begin routers
+
+r1:
+  driver = redirect
+  data = $local_part
+  file_transport = ${if eq {$address_file}{/a/b/c}{tf1}{tf2}}
+  directory_transport = ${if match{$address_file}{//\$}{td2}{td1}}
+  user = CALLER
+
+
+# ------ Transports ------
+
+begin transports
+
+tf1:
+  driver = appendfile
+  user = CALLER
+
+tf2:
+  driver = appendfile
+  user = CALLER
+
+td1:
+  driver = appendfile
+  user = CALLER
+
+td2:
+  driver = appendfile
+  user = CALLER
+
+# End

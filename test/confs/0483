@@ -1,0 +1,50 @@
+# Exim test configuration 0483
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = a1
+
+queue_only
+
+# ----- ACL -----
+
+begin acl
+
+a1:
+  require recipients  = lsearch;DIR/aux-fixed/TESTNUM.list
+  require senders     = lsearch;DIR/aux-fixed/TESTNUM.list
+  warn    log_message = sender_data=$sender_data recipient_data=$recipient_data
+  require verify      = recipient
+  accept
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  senders = lsearch;DIR/aux-fixed/TESTNUM.list
+  debug_print = sender_data=$sender_data
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+# End

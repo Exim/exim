@@ -1,0 +1,28 @@
+# Exim test configuration 3201
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+
+# ----- Main settings -----
+
+acl_smtp_connect = connect${substr_7:$sender_host_address}
+
+
+# ----- ACL -----
+
+begin acl
+
+connect1:
+  deny  hosts = testdb;fail
+
+connect2:
+  deny  hosts = net-testdb;fail
+
+# End

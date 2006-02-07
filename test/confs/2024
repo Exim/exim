@@ -1,0 +1,29 @@
+# Exim test configuration 2024
+
+CERT=DIR/aux-fixed/cert1
+TVC=/dev/null
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_recipient
+
+log_selector = +tls_peerdn
+
+tls_advertise_hosts = *
+
+tls_certificate = CERT
+tls_privatekey = CERT
+
+tls_verify_hosts = HOSTIPV4
+tls_verify_certificates = TVC
+
+# End

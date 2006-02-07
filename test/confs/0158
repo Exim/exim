@@ -1,0 +1,49 @@
+# Exim test configuration 0158
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+deliver_drop_privilege
+
+# ----- Routers -----
+
+begin routers
+
+caller:
+  driver = accept
+  retry_use_local_part
+  caseful_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+  user = $local_part
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,1d,15m
+
+
+# End

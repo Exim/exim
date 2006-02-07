@@ -1,0 +1,158 @@
+# Exim test configuration 0100
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+qualify_domain = test.ex
+
+# ----- Routers -----
+
+begin routers
+
+filtered:
+  driver = manualroute
+  domains = ! +local_domains
+  route_list = filtered.com 127.0.0.1 byname
+  self = send
+  transport = filtered_smtp
+
+rest:
+  driver = manualroute
+  domains = ! +local_domains
+  route_list = * 127.0.0.1 byname
+  self = send
+  transport = smtp
+  no_more
+
+batch_localuser:
+  driver = accept
+  local_part_prefix = batch-
+  transport = batch_local_delivery
+
+mmdf_localuser:
+  driver = accept
+  local_part_prefix = mmdf-
+  transport = mmdf_local_delivery
+
+filtered_localuser:
+  driver = accept
+  local_part_prefix = filter-
+  transport = filtered_local_delivery
+
+hackfree_localuser:
+  driver = accept
+  local_parts = usery
+  transport = hackfree_local_delivery
+
+bsmtp_localuser:
+  driver = accept
+  local_parts = userz
+  transport = bsmtp_local_delivery
+
+bsmtp_localuser_filtered:
+  driver = accept
+  local_parts = userw
+  retry_use_local_part
+  transport = bsmtp_local_delivery_filtered
+
+localuser:
+  driver = accept
+  local_parts = userx
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+
+filtered_smtp:
+  driver = smtp
+  port = PORT_S
+  transport_filter = /bin/sh -c "echo 'X-Filtered: just checking'; cat"
+
+local_delivery:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+  current_directory = /
+  user = CALLER
+
+hackfree_local_delivery:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  check_string =
+  return_path_add
+  user = CALLER
+  current_directory = /
+
+bsmtp_local_delivery:
+  driver = appendfile
+  batch_max = 100
+  use_bsmtp
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+  user = CALLER
+  current_directory = /
+
+bsmtp_local_delivery_filtered:
+  driver = appendfile
+  batch_max = 100
+  use_bsmtp
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+  transport_filter = /bin/sh -c "echo 'X-Filtered: just checking'; cat"
+  user = CALLER
+  current_directory = /
+
+batch_local_delivery:
+  driver = appendfile
+  batch_max = 100
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/CALLER
+  return_path_add
+  user = CALLER
+  current_directory = /
+
+filtered_local_delivery:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+  transport_filter = /bin/sh -c "echo 'X-Filtered: just checking'; cat"
+  current_directory = /
+  user = CALLER
+
+mmdf_local_delivery:
+  driver = appendfile
+  check_string = "\1\1\1\1\n"
+  escape_string = "\1\1\1\1 \n"
+  file = DIR/test-mail/$local_part
+  message_prefix = "\1\1\1\1\n"
+  message_suffix = "\1\1\1\1\n"
+  user = CALLER
+  current_directory = /
+
+# End

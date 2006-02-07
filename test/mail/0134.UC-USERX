@@ -1,0 +1,14 @@
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbD-0005vi-00
+	for USERX@KNOWN.DOMAIN; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+domainlist: dd=data for known.domain lpd=data for userx
+domain_data: data for known.domain
+local_part_data: data for userx
+
+Test to uppercased local part USERX@KNOWN.DOMAIN
+

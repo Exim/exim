@@ -1,0 +1,16 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= abc@x.y.z U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@myhost.test.ex> R=z T=t2
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@myhost.test.ex> R=u T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= pqr@x.y.z U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => from-alias <alias@myhost.test.ex> R=z T=t2
+1999-03-02 09:44:33 10HmaY-0005vi-00 => from-alias <alias@myhost.test.ex> R=u T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= gfh@x.y.z U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => from-forward <forward@myhost.test.ex> R=z T=t2
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => from-forward <forward@myhost.test.ex> R=u T=t1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= mno@x.y.z U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => from-smart <smart@myhost.test.ex> R=z T=t2
+1999-03-02 09:44:33 10HmbA-0005vi-00 => from-smart <smart@myhost.test.ex> R=u T=t1
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed

@@ -1,0 +1,32 @@
+1999-03-02 09:44:33 H=[V4NET.0.0.0] U=CALLER sender verify fail for <x@y>: Unrouteable address
+1999-03-02 09:44:33 H=[V4NET.0.0.0] U=CALLER F=<x@y> rejected RCPT <userx@test.ex>: Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.0] U=CALLER F=<x@y> rejected RCPT <x@y>: Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.0] U=CALLER F=<x@y> rejected RCPT <x@ten-1.test.ex>: Sender verify failed
+1999-03-02 09:44:33 H=[V4NET.0.0.0] U=CALLER F=<x@y> rejected RCPT <x@ten-2.test.ex>: Sender verify failed
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= x@y H=[V4NET.0.0.0] U=CALLER P=smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => postmaster <postmaster@test.ex> R=r2 T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 H=[V4NET.0.0.0] U=CALLER F=<userx@test.ex> rejected RCPT <x@y>: Unrouteable address
+1999-03-02 09:44:33 H=[V4NET.0.0.0] U=CALLER F=<userx@test.ex> rejected RCPT <x@ten-2.test.ex>: relay not permitted
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= userx@test.ex H=[V4NET.0.0.0] U=CALLER P=smtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => postmaster <postmaster@test.ex> R=r2 T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=r2 T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 => x@ten-1.test.ex R=r1 T=dev_null H=ten-1.test.ex
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 H=[V4NET.255.255.0] U=CALLER F=<userx@test.ex> rejected RCPT <bad@test.ex>: unknown user
+1999-03-02 09:44:33 H=[V4NET.255.255.0] U=CALLER F=<userx@test.ex> rejected RCPT <x@y>: Unrouteable address
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= userx@test.ex H=[V4NET.255.255.0] U=CALLER P=smtp S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => x@ten-1.test.ex R=r1 T=dev_null H=ten-1.test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => x@ten-2.test.ex R=r1 T=dev_null H=ten-2.test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 H=[V4NET.11.12.13] U=CALLER F=<userx@test.ex> rejected RCPT <userx@test.ex>: rejected because V4NET.11.12.13 is in a black list at rbl.test.ex
+1999-03-02 09:44:33 H=[V4NET.11.12.13] U=CALLER F=<userx@test.ex> rejected RCPT <x@ten-1.test.ex>: rejected because V4NET.11.12.13 is in a black list at rbl.test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= userx@test.ex H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => postmaster <postmaster@test.ex> R=r2 T=local_delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 H=[V4NET.11.12.16] U=CALLER Warning: found in rbl2.test.ex
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= userx@test.ex H=[V4NET.11.12.16] U=CALLER P=smtp S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 => postmaster <postmaster@test.ex> R=r2 T=local_delivery
+1999-03-02 09:44:33 10HmbB-0005vi-00 => userx <userx@test.ex> R=r2 T=local_delivery
+1999-03-02 09:44:33 10HmbB-0005vi-00 => x@ten-1.test.ex R=r1 T=dev_null H=ten-1.test.ex
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed

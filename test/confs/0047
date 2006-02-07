@@ -1,0 +1,34 @@
+# Exim test configuration 0047
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+
+# ----- Routers -----
+
+begin routers
+
+domainlist:
+  driver = manualroute
+  route_list = \
+    domain1                                ten-1.test.ex   byname;\
+    lsearch;;DIR/aux-fixed/TESTNUM.routes  $value          bydns;\
+    ^domain(3)                             ten-$1.test.ex  byname
+  transport = smtp
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+
+# End

@@ -1,0 +1,23 @@
+1999-03-02 09:44:33 at MAIL (1): >writer@wdomain<
+1999-03-02 09:44:33 at MAIL (2): >RW-writer@domain<
+1999-03-02 09:44:33 at RCPT (1): >RW-writer@domain<
+1999-03-02 09:44:33 at RCPT (2): >reader1<
+1999-03-02 09:44:33 at RCPT (3): >reader1<
+1999-03-02 09:44:33 at RCPT (1): >RW-writer@domain<
+1999-03-02 09:44:33 at RCPT (2): >reader2<
+1999-03-02 09:44:33 at RCPT (3): >reader2<
+1999-03-02 09:44:33 10HmaX-0005vi-00 at DATA (1): >RW-writer@domain<
+1999-03-02 09:44:33 10HmaX-0005vi-00 at DATA (2): >RW-reader1@domain, RW-reader2@domain<
+1999-03-02 09:44:33 10HmaX-0005vi-00 at DATA (3): >From: RW-writer@domain<
+1999-03-02 09:44:33 10HmaX-0005vi-00 at DATA (3): >To: RW-reader1@domain, RW-reader2@domain<
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= RW-writer@domain U=CALLER P=local-esmtp S=sss
+1999-03-02 09:44:33 at MAIL (1): >SW-smtp-writer@wdomain<
+1999-03-02 09:44:33 at MAIL (2): >RW-SW-smtp-writer@domain<
+1999-03-02 09:44:33 at RCPT (1): >RW-SW-smtp-writer@domain<
+1999-03-02 09:44:33 at RCPT (2): >sw-smtp-reader<
+1999-03-02 09:44:33 at RCPT (3): >sw-smtp-reader<
+1999-03-02 09:44:33 10HmaY-0005vi-00 at DATA (1): >RW-SW-smtp-writer@domain<
+1999-03-02 09:44:33 10HmaY-0005vi-00 at DATA (2): >RW-SW-smtp-reader@domain<
+1999-03-02 09:44:33 10HmaY-0005vi-00 at DATA (3): >From: RW-smtp-writer@domain<
+1999-03-02 09:44:33 10HmaY-0005vi-00 at DATA (3): >To: RW-smtp-reader@domain<
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= RW-SW-smtp-writer@domain U=CALLER P=local-esmtp S=sss

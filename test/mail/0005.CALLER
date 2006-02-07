@@ -1,0 +1,62 @@
+From someone@some.domain Tue Mar 02 09:44:33 1999
+Return-path: <someone@some.domain>
+Envelope-to: CALLER@the.local.host.name
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+	(envelope-from <someone@some.domain>)
+	id 10HmaX-0005vi-00
+	for CALLER@the.local.host.name; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00.a-b-c-@some.domain>
+From: someone@some.domain
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-acl-message-linecount: 4
+X-local-user: uid=CALLER_UID gid=CALLER_GID
+X-body-linecount: 3
+X-message-linecount: 11
+X-received-count: 1
+
+This is a test message.
+It has three lines.
+This is the last line.
+
+From someone@some.domain Tue Mar 02 09:44:33 1999
+Return-path: <someone@some.domain>
+Envelope-to: CALLER@the.local.host.name
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+	(envelope-from <someone@some.domain>)
+	id 10HmaY-0005vi-00
+	for CALLER@the.local.host.name; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: second
+Message-Id: <E10HmaY-0005vi-00.a-b-c-@some.domain>
+From: someone@some.domain
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-acl-message-linecount: 3
+X-local-user: uid=CALLER_UID gid=CALLER_GID
+X-body-linecount: 1
+X-message-linecount: 10
+X-received-count: 1
+
+This is a second test message.
+
+From someone@some.domain Tue Mar 02 09:44:33 1999
+Return-path: <someone@some.domain>
+Envelope-to: CALLER@the.local.host.name
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+	(envelope-from <someone@some.domain>)
+	id 10HmaZ-0005vi-00
+	for CALLER@the.local.host.name; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: third
+Reply-to: some@body
+Message-Id: <E10HmaZ-0005vi-00.a-b-c-@some.domain>
+From: someone@some.domain
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X-acl-message-linecount: 4
+X-local-user: uid=CALLER_UID gid=CALLER_GID
+X-body-linecount: 1
+X-message-linecount: 11
+X-received-count: 1
+
+This is a third test message.
+

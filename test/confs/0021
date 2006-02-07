@@ -1,0 +1,90 @@
+# Exim test configuration 0021
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+addresslist ok_senders = ok@somewhere : ok@test1 : ok@test3
+domainlist ok_sender_domains = somewhere : test1 : test3
+
+acl_not_smtp = not_smtp_${if eq{$sender_address}{}\
+  {test1}{${domain:$sender_address}}}
+
+acl_smtp_connect = connect
+acl_smtp_helo = helo
+acl_smtp_mail = mail
+acl_smtp_rcpt = rcpt
+
+qualify_domain = test.ex
+trusted_users = CALLER
+
+
+# ----- ACLs -----
+
+begin acl
+
+not_smtp_test1:
+  accept senders = : ok@test1
+         verify = sender
+  deny   message = don't like sender $sender_address
+
+not_smtp_test2:
+  accept hosts = 1.2.3.4
+
+not_smtp_test3:
+  accept verify = reverse_host_lookup
+
+not_smtp_test4:
+  accept verify = certificate
+
+connect:
+  deny   hosts =  : 10.9.8.7
+  drop   log_message = forcibly dropped
+         hosts = 10.9.8.9
+  accept logwrite = $sender_host_address accepted by connect ACL
+
+helo:
+  warn   message = xxx: can't add this header
+         log_message = This warning is from a HELO ACL (command $smtp_command)
+  accept condition = ${if eq{$smtp_command_argument}{a.b.c}{yes}{no}}
+
+mail:
+  warn   message = added header line
+         senders = ok@test3
+  accept senders = ok@test1 : ok@test3
+         verify  = sender
+         logwrite = :main,reject: mail accepted
+
+rcpt:
+  accept senders = +ok_senders
+         sender_domains = +ok_sender_domains
+         logwrite = :panic: rcpt accepted
+
+# ----- Routers -----
+
+begin routers
+
+accept:
+  driver = accept
+  local_parts = !bad
+  transport = appendfile
+
+# ----- Transports -----
+
+begin transports
+
+appendfile:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

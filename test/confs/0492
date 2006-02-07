@@ -1,0 +1,46 @@
+# Exim test configuration 0492
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+log_selector = +return_path_on_delivery
+
+
+# ----- Routers -----
+
+begin routers
+
+bh:
+  driver = redirect
+  local_parts = blackhole
+  data = /dev/null
+  file_transport = t2
+
+r1:
+  driver = accept
+  transport = t1
+  errors_to = ${if eq{$local_part}{a}{a@aa}{b@aa}}
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  hosts = 127.0.0.1
+  allow_localhost
+
+t2:
+  driver = appendfile
+
+
+# End

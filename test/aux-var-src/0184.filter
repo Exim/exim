@@ -1,0 +1,21 @@
+# Exim filter
+
+if error_message or not first_delivery then finish endif
+
+logfile DIR/test-stdout
+
+logwrite "To: contains\n$h_to:\n"
+
+if 
+  $header_to is $header_from or
+  "${lookup{$h_to:}lsearch{DIR/aux-fixed/0184.lsearch}{$value}}" is y or
+  "${lookup{${local_part:$h_to:}}lsearch{DIR/aux-fixed/0184.lsearch}{$value}}" is y
+then
+  logwrite "yyyyyy"
+else
+  logwrite "nnnnnn"
+endif   
+
+mail to "$h_to:\nrhubarb"
+
+seen finish

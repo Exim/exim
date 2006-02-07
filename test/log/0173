@@ -1,0 +1,16 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 original recipients ignored (system filter)
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=scanned-ok S=sss id=E10HmaX-0005vi-00@the.local.host.name
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=all T=appendfile
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 => |TESTSUITE/aux-fixed/resubmit $sender_address $recipients TESTSUITE/ CALLER <system-filter> T=pipe
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 original recipients ignored (system filter)
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=scanned-ok S=sss id=E10HmaZ-0005vi-00@the.local.host.name
+1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@test.ex> R=all T=appendfile
+1999-03-02 09:44:33 10HmbA-0005vi-00 => usery <usery@test.ex> R=all T=appendfile
+1999-03-02 09:44:33 10HmbA-0005vi-00 => userz <userz@test.ex> R=all T=appendfile
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => |TESTSUITE/aux-fixed/resubmit $sender_address $recipients TESTSUITE/ CALLER <system-filter> T=pipe
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed

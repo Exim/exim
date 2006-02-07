@@ -1,0 +1,51 @@
+# Exim test configuration 0371
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+primary_hostname = mail.test.ex
+qualify_domain = test.ex
+
+acl_smtp_connect = connect
+acl_smtp_mail = mail
+acl_smtp_rcpt = rcpt
+acl_smtp_data = data
+acl_smtp_vrfy = vrfy
+
+
+# ----- ACL -----
+
+begin acl
+
+connect:
+  accept set acl_c0 = $acl_c0; connect
+         set acl_c9 = $acl_c9; connect
+
+mail:
+  accept set acl_c0 = $acl_c0; mail
+         set acl_c9 = $acl_c9; mail
+         set acl_m0 = $acl_m0; mail
+
+rcpt:
+  accept set acl_m0 = $acl_m0; rcpt
+         set acl_m9 = $acl_m9; rcpt
+         set acl_c0 = $acl_c0; rcpt
+
+data:
+  accept set acl_m0 = $acl_m0; data
+         set acl_m9 = $acl_m9; data
+
+vrfy:
+  accept set acl_c0 = $acl_c0; vrfy
+         set acl_c9 = $acl_c9; vrfy
+         set acl_m0 = $acl_m0; vrfy
+
+
+# End

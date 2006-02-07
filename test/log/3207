@@ -1,0 +1,9 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == d4@d4.ex R=r4 defer (-1): senders check lookup or other defer
+1999-03-02 09:44:33 10HmaX-0005vi-00 == d3@d3.ex R=r4 defer (-1): senders check lookup or other defer
+1999-03-02 09:44:33 10HmaX-0005vi-00 == d2@d2.ex R=r4 defer (-1): senders check lookup or other defer
+1999-03-02 09:44:33 10HmaX-0005vi-00 == d1@d1.ex R=r4 defer (-1): senders check lookup or other defer
+1999-03-02 09:44:33 10HmaX-0005vi-00 == r4@r4.ex R=r4 defer (-1): senders check lookup or other defer
+1999-03-02 09:44:33 10HmaX-0005vi-00 == r3@r3.ex R=r3 defer (-1): condition check lookup defer
+1999-03-02 09:44:33 10HmaX-0005vi-00 == r2@r2.ex R=r2 defer (-1): local_parts check lookup or other defer
+1999-03-02 09:44:33 10HmaX-0005vi-00 == r1@r1.ex R=r1 defer (-1): domains check lookup or other defer

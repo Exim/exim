@@ -1,0 +1,50 @@
+# Exim test configuration 0288
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+queue_run_in_order
+remote_max_parallel = 2
+
+
+# ----- Routers -----
+
+begin routers
+
+all:
+  driver = manualroute
+  route_list = * 127.0.0.1
+  self = send
+  transport = smtp
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+  max_rcpt = 1
+  connection_max_messages = 1
+  serialize_hosts = 127.0.0.1
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,1h,10m
+
+
+# End

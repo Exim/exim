@@ -1,0 +1,5 @@
+# Exim filter
+
+if error_message then finish endif
+
+if ${readfile{DIR/test-private}} is OK then finish endif

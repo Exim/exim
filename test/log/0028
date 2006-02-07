@@ -1,0 +1,2 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<CALLER@myhost.test.ex> rejected after DATA: message too big - $recipients=userx@test.ex (1)
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <userx@test.ex>: SIZE value too big

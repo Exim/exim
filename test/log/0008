@@ -1,0 +1,3 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= someone@some.where U=CALLER P=local-bsmtp S=sss id=abcd%rxyz@p.q.r
+1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER <CALLER@the.local.host.name> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

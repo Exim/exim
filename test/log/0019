@@ -1,0 +1,18 @@
+1999-03-02 09:44:33 rejected HELO from CALLER: syntactically invalid argument(s): !@#$%^&*(
+1999-03-02 09:44:33 SMTP syntax error in "debug" U=CALLER unrecognized command
+1999-03-02 09:44:33 SMTP syntax error in "rhubarb" U=CALLER unrecognized command
+1999-03-02 09:44:33 SMTP syntax error in "mail" U=CALLER unrecognized command
+1999-03-02 09:44:33 ETRN abc received from CALLER
+1999-03-02 09:44:33 SMTP syntax error in "etrn abc" U=CALLER argument must begin with #
+1999-03-02 09:44:33 SMTP protocol error in "rcpt to:<a@b>" U=CALLER sender not yet given
+1999-03-02 09:44:33 SMTP protocol error in "data" U=CALLER valid RCPT command must precede DATA
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <a@b>
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <a@b>
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <a@b>
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <a@b>
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <a@b>
+1999-03-02 09:44:33 too many recipients: excess temporarily rejected: sender=<x@y> U=CALLER
+1999-03-02 09:44:33 SMTP protocol error in "etrn #abc" U=CALLER ETRN is not permitted inside a transaction
+1999-03-02 09:44:33 SMTP protocol error in "mail from:" U=CALLER MAIL must have an address operand
+1999-03-02 09:44:33 SMTP protocol error in "mail from:<x@y>" U=CALLER sender already given
+1999-03-02 09:44:33 SMTP syntax error in "rcpt to:" U=CALLER RCPT must have an address operand

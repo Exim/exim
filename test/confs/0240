@@ -1,0 +1,110 @@
+# Exim test configuration 0240
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+
+
+
+acl_smtp_rcpt = check_recipient
+acl_smtp_data = check_message
+
+
+domainlist local_domains = test.ex
+
+
+
+qualify_domain = test.ex
+
+
+#!!#######################################################!!#
+#!!# This new section of the configuration contains ACLs #!!#
+#!!# (Access Control Lists) derived from the Exim 3      #!!#
+#!!# policy control options.                             #!!#
+#!!#######################################################!!#
+
+#!!# These ACLs are crudely constructed from Exim 3 options.
+#!!# They are almost certainly not optimal. You should study
+#!!# them and rewrite as necessary.
+
+# ----- ACL -----
+
+begin acl
+
+#!!# ACL that is used after the RCPT command
+check_recipient:
+  # Exim 3 had no checking on -bs messages
+  accept  hosts = :
+  accept  domains = +local_domains
+  deny    message = relay not permitted
+
+#!!# ACL that is used after the DATA command
+check_message:
+  accept
+
+
+# ----- Rewrite -----
+
+# End
+
+#!!#######################################################!!#
+#!!# Here follow routers created from the old routers,   #!!#
+#!!# for handling non-local domains.                     #!!#
+#!!#######################################################!!#
+
+
+
+# ----- Routers -----
+
+begin routers
+
+
+#!!# This new router is put here to fail all domains that
+#!!# were not in local_domains in the Exim 3 configuration.
+
+fail_remote_domains:
+  driver = redirect
+  domains = ! +local_domains
+  data = :fail: unrouteable mail domain "$domain"
+
+
+#!!#######################################################!!#
+#!!# Here follow routers created from the old directors, #!!#
+#!!# for handling local domains.                         #!!#
+#!!#######################################################!!#
+
+# ----- Directors -----
+
+all:
+  driver = accept
+  retry_use_local_part
+  transport = local
+
+
+# ----- Transports -----
+
+begin transports
+
+local:
+  driver = appendfile
+  directory_mode = 3777
+  file = DIR/test-mail/subdir/$local_part
+  user = CALLER
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

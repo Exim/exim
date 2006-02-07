@@ -1,0 +1,31 @@
+# Exim test configuration 1000
+
+HL=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+
+# ----- Main settings -----
+
+acl_smtp_connect = check_connect
+HL
+
+
+# ----- ACL -----
+
+begin acl
+
+check_connect:
+  warn    log_message = matched hostlist
+          hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
+
+  accept  condition = ${if eq{$sender_host_address}{2001:0ab8:037f:0020:0000:0000:0000:0001}}
+
+# End

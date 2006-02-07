@@ -1,0 +1,77 @@
+# Exim test configuration 0253
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+log_selector = +return_path_on_delivery
+trusted_users = CALLER
+remote_max_parallel = 1
+
+
+# ----- Routers -----
+
+begin routers
+
+r0:
+  driver = accept
+  senders = :
+  transport = t0
+
+r1:
+  driver = accept
+  senders = abc@x.y.z
+  transport = t1
+
+r2:
+  driver = accept
+  senders = xyz@x.y.z
+  transport = t2
+
+r3:
+  driver = accept
+  transport = t3
+  errors_to = lmn@myhost.test.ex
+
+
+# ----- Transports -----
+
+begin transports
+
+t0:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+t1:
+  driver = appendfile
+  batch_max = 100
+  file = DIR/test-mail/t1
+  return_path = modified@x.y.z
+  use_bsmtp
+  user = CALLER
+
+t2:
+  driver = appendfile
+  file = DIR/test-mail/t2
+  return_path = abc=$local_part+$domain@verp.domain
+  use_bsmtp
+  user = CALLER
+
+t3:
+  driver = smtp
+  hosts = 127.0.0.1
+  port = PORT_S
+  max_rcpt = 1
+  allow_localhost
+  return_path = pqr=$local_part+$domain@verp.domain
+
+
+# End

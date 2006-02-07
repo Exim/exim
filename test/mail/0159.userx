@@ -1,0 +1,36 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from [ip4.ip4.ip4.ip4]
+	by myhost.test.ex with esmtp (Exim x.yz)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: userx@test.ex
+
+EHLO [ip4.ip4.ip4.ip4]
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from [ip4.ip4.ip4.ip4]
+	by myhost.test.ex with esmtp (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: userx@test.ex
+
+EHLO [IPV4:ip4.ip4.ip4.ip4]
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from [ip4.ip4.ip4.ip4] (helo=ip4.ip4.ip4.ip4)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	id 10HmaZ-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: userx@test.ex
+
+EHLO ip4.ip4.ip4.ip4
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from [ip4.ip4.ip4.ip4] (helo=[V4NET.1.2.3])
+	by myhost.test.ex with esmtp (Exim x.yz)
+	id 10HmbA-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: userx@test.ex
+
+EHLO [V4NET.1.2.3]
+

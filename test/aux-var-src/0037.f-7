@@ -1,0 +1,22 @@
+# Exim filter
+
+testprint "Testing \        
+          <"
+
+testprint          
+  ">${sg{\
+       ${readfile{DIR/aux-fixed/abcd-xyz}{|}}\
+       }\
+       {\\N\\|(\\||\$)\\N}\
+       {$1}\
+    }<"
+
+if "something       seven" matches 
+  "${sg{\
+       ${readfile{DIR/aux-fixed/abcd-xyz}{|}}\
+       }\
+       {\\N\\|(\\||\$)\\N}\
+       {$1}\
+    }"
+
+then testprint "yes" else testprint "no" endif

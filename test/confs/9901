@@ -1,0 +1,69 @@
+# Exim test configuration 9901
+
+COM=
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+qualify_domain = test.ex
+queue_run_in_order
+smtp_receive_timeout = 1s
+
+
+# ----- Routers -----
+
+begin routers
+
+# These are commented out for the server
+
+COM r1:
+COM   driver = accept
+COM   domains = no.delay
+COM   transport = t1
+
+COM r2:
+COM   driver = dnslookup
+COM   transport = t1
+
+# This is the only one available for the server
+
+r3:
+  driver = accept
+  transport = t2
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  hosts_override
+  port = PORT_D
+
+t2:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,1d,10m
+
+
+# End

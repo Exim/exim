@@ -1,0 +1,72 @@
+# Exim test configuration 0486
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_mail = acl_check_mail
+acl_smtp_rcpt = acl_check_rcpt
+acl_smtp_data = acl_check_data
+queue_only
+trusted_users = CALLER
+
+
+# ----- ACLs -----
+
+begin acl
+
+acl_check_mail:
+  warn     logwrite = at MAIL (1): >$sender_address<
+  require  verify   = sender
+  warn     logwrite = at MAIL (2): >$sender_address<
+  accept
+
+acl_check_rcpt:
+  warn     logwrite = at RCPT (1): >$sender_address<
+  warn     logwrite = at RCPT (2): >$local_part<
+  require  verify   = recipient
+  warn     logwrite = at RCPT (3): >$local_part<
+  accept
+
+acl_check_data:
+  warn     logwrite = at DATA (1): >$sender_address<
+  warn     logwrite = at DATA (2): >$recipients<
+  warn     logwrite = at DATA (3): >From: $h_from:<
+  warn     logwrite = at DATA (3): >To: $h_to:<
+  accept
+
+
+#----- Rewrite -----
+
+begin rewrite
+^<(smtp.*)   <SW-$1                         S
+*@*          RW-$local_part@domain
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+
+# End

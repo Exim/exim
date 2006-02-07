@@ -1,0 +1,16 @@
+# Exim filter
+
+testprint "${if eq {1}{1}{yes}{no}}"
+testprint "${if eq {1}{01}{yes}{no}}"
+testprint "${if == {1}{01}{yes}{no}}"
+
+testprint 
+"${if eq {1}{1}{yes}{${lookup{key1}lsearch{DIR/aux-fixed/junkjunk}{$value}{notfound}}}}"
+
+testprint 
+"${if eq {1}{1}{yes}{${lookup{key1}lsearch{DIR/aux-fixed/0093.lsearch}{$value}{notfound}}}}"
+
+testprint 
+"${if eq {1}{0}{yes}{${lookup{key1}lsearch{DIR/aux-fixed/0093.lsearch}{$value}{notfound}}}}"
+
+testprint "body_linecount=$body_linecount"

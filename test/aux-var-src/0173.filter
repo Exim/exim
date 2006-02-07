@@ -1,0 +1,7 @@
+# Demo Exim filter for virus check
+
+if error_message then finish endif
+
+if $received_protocol is not scanned-ok then
+  pipe "DIR/aux-fixed/resubmit $sender_address $recipients DIR/ CALLER"
+endif   

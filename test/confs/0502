@@ -1,0 +1,49 @@
+# Exim test configuration 0502
+
+LAST=accept message = Your message here
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+queue_only
+
+acl_smtp_data = check_data
+acl_smtp_mail = check_mail
+acl_smtp_quit = check_quit
+acl_smtp_rcpt = check_rcpt
+
+# ------ ACLs ------
+
+begin acl
+
+check_data:
+  warn  set acl_c0 = ${eval:$acl_c0+1}
+        set acl_c3 = ${eval:$acl_c3+$acl_m0}
+  accept
+
+check_mail:
+  warn  set acl_c1 = ${eval:$acl_c1+1}
+  accept
+
+check_quit:
+  warn     logwrite = Messages received: $acl_c1
+           logwrite = Messages accepted: $acl_c0
+           logwrite = Recipients:        $acl_c2
+           logwrite = Accepted:          $acl_c3
+  LAST
+
+check_rcpt:
+  warn  set acl_c2 = ${eval:$acl_c2+1}
+        set acl_m0 = ${eval:$acl_m0+1}
+  accept
+
+# End

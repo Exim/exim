@@ -1,0 +1,6 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=d2 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 => >CALLER@myhost.test.ex <filter@myhost.test.ex> R=d1 T=t2
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

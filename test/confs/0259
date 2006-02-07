@@ -1,0 +1,38 @@
+# Exim test configuration 0259
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+begin routers
+
+all:
+  driver = manualroute
+  domains = ! test.ex
+  route_list = * 127.0.0.1 byname
+  self = send
+  transport = smtp
+  no_more
+
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+
+
+begin retry
+
+* * F,5d,10s
+
+# End

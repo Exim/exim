@@ -1,0 +1,114 @@
+# Exim test configuration 0197
+
+# Remove connection timeout when copying for real use,
+# and these settings.
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+queue_run_in_order
+trusted_users = CALLER
+
+
+# Exim configuration to pass all messages on to a fixed host, taking
+# copies of them for subsequent configuration testing.
+
+# This is the file the copies will be saved in.
+
+COPYFILE = DIR/test-mail/copies
+
+# This is the user that the copying delivery will run under.
+
+COPYUSER = CALLER
+
+# These are the domains whose mail will be copied.
+
+COPYDOMAINS = copy.domain
+
+# This is the list of domains that this server will relay.
+
+RELAYDOMAINS = COPYDOMAINS
+
+# This is the host that messages are relayed to. It can be a colon-separated
+# list of hosts - they are tried in order.
+
+NEXTHOST = V4NET.0.0.1
+
+
+# ----- Main settings -----
+
+# This is a list of domains which the host is going to relay. Mail addressed
+# to other domains will be rejected
+
+domainlist relay_domains = RELAYDOMAINS
+
+acl_smtp_rcpt = check_recipient
+
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  accept  hosts = :
+  accept  domains = +relay_domains
+  deny    message = relay not permitted
+
+
+# ----- Routers -----
+
+begin routers
+
+# This router takes a copy of messages for a specific domain.
+
+checkcopy:
+  driver = manualroute
+  route_list = COPYDOMAINS
+  transport = makecopy
+  unseen
+
+# This router passes all addresses to the passing-on transport.
+
+passall:
+  driver = manualroute
+  route_list = * NEXTHOST byname
+  transport = pass_on
+
+
+# ----- Transports -----
+
+# This transport is used for doing the deliveries arising from taking copies
+# of each message passing through the system, for specific domains.
+
+begin transports
+
+makecopy:
+  driver = appendfile
+  batch_max = 100
+  use_bsmtp
+  file = COPYFILE
+  message_prefix =
+  message_suffix =
+  user = COPYUSER
+
+# This transport is used for passing the message on to the next host.
+
+pass_on:
+  driver = smtp
+  connect_timeout = 1s
+
+
+# ----- Retry -----
+
+
+begin retry
+
+*    *    F,2h,15m; G,16h,1h,1.5; F,4d,8h
+
+
+# End

@@ -1,0 +1,81 @@
+# Exim test configuration 0264
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+queue_run_in_order
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+  quota = ${if eq{$local_part}{userx}{3}{10000}}
+  current_directory = /
+
+local_delivery2:
+  driver = appendfile
+  retry_use_local_part = false
+  file = DIR/test-mail/$local_part
+  user = CALLER
+  quota = 3
+  current_directory = /
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  local_parts = userx : usery : userz
+  domains = test.ex
+  transport = local_delivery
+
+r2:
+  driver = accept
+  domains = test.ex
+  transport = local_delivery2
+
+r3:
+  driver = redirect
+  retry_use_local_part
+  local_parts = ^r3
+  allow_defer
+  data = :defer: not just now
+
+r4:
+  driver = redirect
+  local_parts = ^r4
+  allow_defer
+  data = :defer: not just now
+
+r5:
+  driver = redirect
+  local_parts = ^r5
+  allow_defer
+  data = :defer: not just now
+
+# ----- Retry -----
+
+begin retry
+
+^\\*@r5domain.ex        *   F,10d,30m
+"userx@test.ex"         *   F,10d,10m
+test.ex                 *   F,20d,20m
+
+*                       *   F,5d,5m
+
+# End

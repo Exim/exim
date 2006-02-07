@@ -1,0 +1,72 @@
+# Exim test configuration 0116
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+queue_run_in_order
+
+
+# ----- Routers -----
+
+begin routers
+
+copydeliver:
+  driver = accept
+  local_parts = dcopy
+  retry_use_local_part
+  transport = appendfile
+  address_data = data from copydeliver
+  unseen
+
+copyalias:
+  driver = redirect
+  allow_defer
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.alias}}
+  local_parts = acopy
+  retry_use_local_part
+  address_data = data from copyalias
+  unseen = ${if eq {0}{0}{yes}{no}}
+
+alias:
+  driver = redirect
+  allow_defer
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.alias}}
+  local_parts = defer
+  retry_use_local_part
+  unseen = ${if eq {0}{1}{yes}{no}}
+
+deliver:
+  driver = accept
+  retry_use_local_part
+  transport = appendfile
+  unseen = ${if eq {0}{1}{yes}{no}}
+
+
+# ----- Transports -----
+
+begin transports
+
+appendfile:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+  headers_add = Added: $address_data
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

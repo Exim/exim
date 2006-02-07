@@ -1,0 +1,15 @@
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 (IPv6 and IPv4)
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= <> H=([ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]) [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6] P=esmtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=([IPV6:ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]) [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6] P=esmtp S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> H=([IPV6:V6NET:0:12:1:a00:20ff:fe86:a062]) [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6] P=esmtp S=sss
+1999-03-02 09:44:33 rejected EHLO from ([IPV6:V6NET:0:12:1:a00:20ff:fe86:a062]) [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]: syntactically invalid argument(s): ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6

@@ -1,0 +1,76 @@
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From:                      
+To:                         
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+Sender: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Found: abcd no
+Found: xyz no
+TO: ><
+
+Testing
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: abcd@test.ex
+To:         
+To: xyz@test.ex
+To: pqr@test.ex
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Found: abcd yes
+Found: xyz yes
+TO: >abcd@test.ex,
+xyz@test.ex,
+pqr@test.ex<
+
+Testing 2
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To:         
+To: abcd@test.ex
+To: xyz@test.ex
+To: pqr@test.ex
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Found: abcd yes
+Found: xyz yes
+TO: >abcd@test.ex,
+xyz@test.ex,
+pqr@test.ex<
+
+Testing 3
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbA-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: abcd@test.ex
+To: xyz@test.ex
+To: pqr@test.ex
+To:         
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Found: abcd yes
+Found: xyz yes
+TO: >abcd@test.ex,
+xyz@test.ex,
+pqr@test.ex<
+
+Testing 4
+

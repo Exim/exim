@@ -1,0 +1,82 @@
+# Exim test configuration 0402
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+primary_hostname = mail.test.ex
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  local_parts = CALLER
+  router_home_directory = /non-exist/$local_part
+  transport = t1
+
+r2:
+  driver = accept
+  local_parts = usery
+  router_home_directory = /non-exist/$domain
+  transport_home_directory = /non-exist/$local_part
+  transport = t1
+
+r3:
+  driver = accept
+  local_parts = userz
+  router_home_directory = /non-exist/$domain
+  transport_home_directory = /non-exist/junk
+  transport = t2
+
+r4:
+  driver = redirect
+  local_parts = CALLER
+  local_part_prefix = *+
+  router_home_directory = /non-exist/$local_part
+  file_transport = ft1
+  data = DIR/test-mail/junk
+
+r5:
+  driver = redirect
+  local_parts = usery
+  local_part_prefix = *+
+  router_home_directory = /non-exist/$domain
+  transport_home_directory = /non-exist/$local_part
+  file_transport = ft1
+  data = DIR/test-mail/junk
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+  current_directory = /
+
+ft1:
+  driver = appendfile
+  user = CALLER
+  current_directory = /
+
+t2:
+  driver = appendfile
+  file = /dev/null
+  home_directory = /$local_part
+  user = CALLER
+  current_directory = /
+
+
+# End

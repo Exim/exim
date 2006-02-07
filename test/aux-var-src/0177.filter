@@ -1,0 +1,36 @@
+# Exim Filter
+
+# Test per-user filter with privilege
+
+logfile DIR/test-stderr
+
+if first_delivery then
+  logwrite "$message_id \"$h_subject:\" first delivery\n"
+else   
+  logwrite "$message_id \"$h_subject:\" not first delivery\n"
+endif
+
+if error_message or $local_part is usery then finish endif
+
+if $h_subject IS NOT "Fail This" then
+  logwrite "$message_id subject is not \"Fail This\""
+endif   
+
+if $h_subject contains "fail this" then 
+  mail to usery text "failing $local_part@$domain" 
+    subject "auto fail message" 
+  fail text "subject was \"$h_subject:\" (filter fail)"
+endif   
+
+if $h_subject contains "freeze this" then 
+  mail to usery text "freezing $local_part@$domain"
+    subject "auto freeze message" 
+  freeze "subject was \"$h_subject:\""
+else   
+
+if $h_subject matches ^reply then
+  mail to usery
+  subject "An auto reply: qualify_domain=$qualify_domain"
+  text "This is a text line"
+endif
+endif

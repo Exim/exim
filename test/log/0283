@@ -1,0 +1,9 @@
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 ** somebody@myhost.test.ex R=rest T=t1: return message generated
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=caller T=t2
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 User 0 set for t3 transport is on the never_users list
+1999-03-02 09:44:33 10HmaX-0005vi-00 == never@myhost.test.ex R=never T=t3 defer (-29): User 0 set for t3 transport is on the never_users list

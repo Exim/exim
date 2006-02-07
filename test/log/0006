@@ -1,0 +1,10 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= someone@some.where U=CALLER P=local-bsmtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => :blackhole: <blackhole@the.local.host.name> R=system_aliases
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@the.local.host.name U=CALLER P=local-bsmtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => /dev/null <devnull@the.local.host.name> R=system_aliases T=**bypassed**
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= someone@some.where U=CALLER P=local-bsmtp S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => :blackhole: <blackhole@the.local.host.name> R=system_aliases
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER <CALLER@the.local.host.name> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed

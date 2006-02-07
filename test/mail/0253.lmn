@@ -1,0 +1,37 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbA-0005vi-00
+	for lmn@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: fail@myhost.test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: lmn@myhost.test.ex
+Subject: Mail delivery failed
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This message was created automatically by mail delivery software.
+
+A message sent by
+
+  <pqr@x.y.z>
+
+could not be delivered to one or more of its recipients. The following
+address(es) failed:
+
+  fail@myhost.test.ex
+    SMTP error from remote mail server after RCPT TO:<fail@myhost.test.ex>:
+  host 127.0.0.1 [127.0.0.1]: 550 Recipient not OK
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <pqr@x.y.z>
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <pqr@x.y.z>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: pqr@x.y.z
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message 3
+

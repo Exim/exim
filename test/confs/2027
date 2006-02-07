@@ -1,0 +1,60 @@
+# Exim test configuration 2027
+
+SERVER =
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+queue_only
+queue_run_in_order
+
+tls_advertise_hosts = *
+tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_try_verify_hosts = 127.0.0.1
+tls_verify_hosts = HOSTIPV4
+tls_verify_certificates = DIR/aux-fixed/cert1
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver = accept
+  condition = ${if eq {SERVER}{server}{no}{yes}}
+  retry_use_local_part
+  transport = send_to_server
+
+server:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  headers_add = TLS: cipher=$tls_cipher peerdn=$tls_peerdn
+  user = CALLER
+
+send_to_server:
+  driver = smtp
+  allow_localhost
+  hosts = ${if eq{$local_part}{userx}{127.0.0.1}{HOSTIPV4}}
+  port = PORT_D
+
+# End

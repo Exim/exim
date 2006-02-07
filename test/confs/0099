@@ -1,0 +1,59 @@
+# Exim test configuration 0099
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+primary_hostname = primary.test.ex
+qualify_domain = test.ex
+retry_data_expire = 2s
+
+
+# ----- Routers -----
+
+begin routers
+
+all:
+  driver = manualroute
+  route_list = "* 127.0.0.1 byname"
+  self = send
+  transport = smtp
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = 999
+
+
+# ----- Retry -----
+
+begin retry
+
+*       *     senders=:                    G,1d,1m,1.5
+*       *     senders = "a@b.c : d@e.f"    G,2d,2m,1.5
+
+rcpt45x.test.ex              rcpt_45x      F,10d,2m
+rcpt463.test.ex              rcpt_463      F,10d,3m
+rcpt4xx.test.ex              rcpt_4xx      F,10d,1m
+
+*@\N^\d                      *             F,5d,1m
+*@*.abcd.ex                  *             F,5d,2m
+*@literal.ex                 *             F,5d,3m
+*@lsearch;DIR/aux-fixed/TESTNUM.rlist2 *             F,5d,4m
+*@@[]                        *             F,5d,5m
+*@@                          *             F,5d,6m
+lsearch*@;DIR/aux-fixed/TESTNUM.rlist  *             F,1d,3m
+*.star.ex                    *             F,3d,10m
+*                            *             F,2d,15m
+
+# End

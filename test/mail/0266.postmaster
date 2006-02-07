@@ -1,0 +1,126 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: postmaster@test.ex
+Received: from root by myhost.test.ex with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: postmaster@test.ex
+Subject: error(s) in forwarding or filtering
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+The r1 router encountered the following error(s):
+
+  domain missing or malformed in the address
+  "@@test.ex (This has a syntax error)"
+
+Other addresses were processed normally.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: postmaster@test.ex
+Received: from root by myhost.test.ex with local (Exim x.yz)
+	id 10HmbA-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: postmaster@test.ex
+Subject: error(s) in forwarding or filtering
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+The r1 router encountered the following error(s):
+
+  domain missing or malformed in the address
+  "@@test.ex (This has a syntax error)"
+
+No valid addresses were generated.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: postmaster@test.ex
+Received: from root by myhost.test.ex with local (Exim x.yz)
+	id 10HmbC-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: postmaster@test.ex
+Subject: error(s) in forwarding or filtering
+Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+There's an error in your filter file.
+The file has been ignored.
+
+The r2 router encountered the following error(s):
+
+  unknown filtering command "syntax" near line 3 of filter file
+
+No valid addresses were generated.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: postmaster@test.ex
+Received: from root by myhost.test.ex with local (Exim x.yz)
+	id 10HmbE-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: postmaster@test.ex
+Subject: error(s) in forwarding or filtering
+Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+The r1a router encountered the following error(s):
+
+  domain missing or malformed in the address
+  "@@test.ex (This has a syntax error)"
+
+No valid addresses were generated.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: postmaster@test.ex
+Received: from root by myhost.test.ex with local (Exim x.yz)
+	id 10HmbH-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: postmaster@test.ex
+Subject: error(s) in forwarding or filtering
+Message-Id: <E10HmbH-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+There's an error in your filter file.
+The file has been ignored.
+
+The r2 router encountered the following error(s):
+
+  malformed address "@@in.valid" in filter file: domain missing or malformed
+
+No valid addresses were generated.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: postmaster@test.ex
+Received: from root by myhost.test.ex with local (Exim x.yz)
+	id 10HmbJ-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: postmaster@test.ex
+Subject: error(s) in forwarding or filtering
+Message-Id: <E10HmbJ-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+There's an error in your filter file.
+The file has been ignored.
+
+The r2 router encountered the following error(s):
+
+  failed to open filter log file "test-private": Permission denied (euid=CALLER_UID egid=CALLER_GID)
+
+No valid addresses were generated.
+

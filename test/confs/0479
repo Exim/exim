@@ -1,0 +1,54 @@
+# Exim test configuration 0479
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = rcpt
+
+
+# ----- ACLs -----
+
+begin acl
+
+rcpt:
+  require logwrite = sender address is <$sender_address>
+          verify   = sender
+  accept
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  port = PORT_S
+  hosts = 127.0.0.1
+  allow_localhost
+  connect_timeout = 1s
+
+
+# ----- Rewrite -----
+
+begin rewrite
+
+a@b   rewritten-a@rewritten-b
+
+
+# End

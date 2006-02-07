@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= x@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => one <one@z> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= x@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 no immediate delivery: more than 1 messages received in one connection
+1999-03-02 09:44:33 rejected MAIL command U=CALLER: too many messages in one connection
+1999-03-02 09:44:33 rejected MAIL command U=CALLER: too many messages in one connection

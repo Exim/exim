@@ -1,0 +1,53 @@
+# Exim test configuration 0199
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_expn = check_expn
+domainlist local_domains = test.ex : *.test.ex
+trusted_users = CALLER
+
+
+# ----- ACL -----
+
+begin acl
+
+check_expn:
+  accept  hosts = 127.0.0.1
+
+
+# ----- Routers -----
+
+begin routers
+
+make_local:
+  driver = manualroute
+  domains = over.the.rainbow
+  pass_router = expand
+  route_list = * 127.0.0.1 byname
+  self = pass
+
+fail_remote_domains:
+  driver = redirect
+  domains = ! +local_domains
+  allow_fail
+  data = :fail: unrouteable mail domain "$domain"
+
+expand:
+  driver = redirect
+  allow_defer
+  allow_fail
+  data = a,b,c
+  local_parts = somewhere
+  retry_use_local_part
+
+
+# End

@@ -1,0 +1,92 @@
+1999-03-02 09:44:33 10HmbM-0005vi-00 <= x@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbM-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbN-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbN-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 F=test-local-scan@y U=CALLER P=local-smtp rejected by local_scan(): Administrative prohibition
+1999-03-02 09:44:33 10HmbA-0005vi-00 F=test-local-scan@y U=CALLER P=local-smtp rejected by local_scan(): this message isn't wanted\n
+1999-03-02 09:44:33 10HmbB-0005vi-00 F=test-local-scan@y U=CALLER P=local-smtp rejected by local_scan(): this message isn't wanted\n  and we tell it on two lines\n
+1999-03-02 09:44:33 10HmbC-0005vi-00 F=test-local-scan@y U=CALLER P=local-smtp temporarily rejected by local_scan(): Temporary local problem
+1999-03-02 09:44:33 10HmbD-0005vi-00 F=test-local-scan@y U=CALLER P=local-smtp temporarily rejected by local_scan(): this message isn't wanted just now\n
+1999-03-02 09:44:33 10HmbO-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbO-0005vi-00 => blackhole (local_scan discarded recipients)
+1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbP-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbP-0005vi-00 => usery <usery@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmbP-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbQ-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbQ-0005vi-00 => blackhole *this is a blackhole message* 
+1999-03-02 09:44:33 10HmbQ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-0005vi-00 F=test-local-scan@y U=CALLER P=local rejected by local_scan(): this message isn't wanted\n
+1999-03-02 09:44:33 10HmbR-0005vi-00 <= <> R=10HmbE-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbR-0005vi-00 => test-local-scan <test-local-scan@y> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmbR-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 F=test-local-scan@y U=CALLER P=local rejected by local_scan(): this message isn't wanted\n
+1999-03-02 09:44:33 10HmbS-0005vi-00 <= <> R=10HmbF-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbS-0005vi-00 => test-local-scan <test-local-scan@y> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmbS-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbG-0005vi-00 F=test-local-scan@y U=CALLER P=local rejected by local_scan(): this message isn't wanted\n
+1999-03-02 09:44:33 10HmbT-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbT-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmbT-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-0005vi-00 local_scan() function timed out - message temporarily rejected (size 29)
+1999-03-02 09:44:33 10HmbI-0005vi-00 local_scan() function timed out - message temporarily rejected (size 30)
+1999-03-02 09:44:33 10HmbU-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbU-0005vi-00 ** bounce@test.ex R=r0: bounced (:fail:)
+1999-03-02 09:44:33 10HmbV-0005vi-00 <= <> R=10HmbU-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbV-0005vi-00 => exbounce <exbounce@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmbV-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbU-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbJ-0005vi-00 F=test-local-scan@y U=CALLER P=local-bsmtp rejected by local_scan(): not wanted -bS\n
+1999-03-02 09:44:33 10HmbW-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbW-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmbW-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbX-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbX-0005vi-00 *> userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmbX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 test write to LOG_MAIN
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 *> userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbK-0005vi-00 F=test-local-scan@y U=CALLER P=local-bsmtp rejected by local_scan(): not wanted -bS\n
+1999-03-02 09:44:33 10HmbL-0005vi-00 F=test-local-scan@y U=CALLER P=local-smtp temporarily rejected by local_scan(): Temporary local problem
+1999-03-02 09:44:33 10HmbY-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbY-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmbY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbZ-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbZ-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmbZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcA-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmcA-0005vi-00 frozen by local_scan()
+1999-03-02 09:44:33 10HmcB-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmcB-0005vi-00 no immediate delivery: queued by local_scan()
+1999-03-02 09:44:33 10HmaY-0005vi-00 test write to LOG_MAIN
+1999-03-02 09:44:33 10HmaY-0005vi-00 local_scan() function crashed with signal 11 - message temporarily rejected (size 35)
+1999-03-02 09:44:33 10HmcC-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmcC-0005vi-00 => unqualified <unqualified@myhost.test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmcC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcD-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmcD-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmcD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcE-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmcE-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmcE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcF-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmcF-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmcF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcG-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmcG-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmcG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcH-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmcH-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmcH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcI-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmcI-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmcI-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcJ-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmcJ-0005vi-00 => blackhole (local_scan discarded recipients)
+1999-03-02 09:44:33 10HmcJ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcK-0005vi-00 <= test-local-scan@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmcK-0005vi-00 => userx <userx@test.ex> R=r1 T=local_delivery
+1999-03-02 09:44:33 10HmcK-0005vi-00 Completed

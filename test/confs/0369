@@ -1,0 +1,54 @@
+# Exim test configuration 0369
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+
+# ------ Routers ------
+
+begin routers
+
+r1:
+  driver = accept
+  domains = test.ex
+  transport = t1
+
+r2:
+  driver = accept
+  domains = test2.ex
+  transport = t2
+  cannot_route_message = I can't route to $local_part
+
+
+# ------ Transports ------
+
+begin transports
+
+t1:
+  driver = pipe
+  command = /bin/sh -c 'exit $local_part'
+  user = CALLER
+  temp_errors = 45 : 56
+
+t2:
+  driver = pipe
+  command = /bin/sh -c 'exit $local_part'
+  user = CALLER
+  temp_errors = *
+
+
+# ------ Retry ------
+
+begin retry
+
+* * F,1d,15m
+
+# End

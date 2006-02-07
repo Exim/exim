@@ -1,0 +1,72 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: CALLER@myhost.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from EXIMUSER by myhost.ex with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for CALLER@myhost.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: xx99@test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.ex>
+To: CALLER@myhost.ex
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmaY-0005vi-00@myhost.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  xx99@test.ex
+    Unrouteable address
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <CALLER@myhost.ex>
+Received: from CALLER by myhost.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.ex>)
+	id 10HmaX-0005vi-00
+	for xx99@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.ex>
+From: CALLER_NAME <CALLER@myhost.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is a test message 1.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: CALLER@myhost.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from EXIMUSER by myhost.ex with local (Exim x.yz)
+	id 10HmbC-0005vi-00
+	for CALLER@myhost.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: !two@test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.ex>
+To: CALLER@myhost.ex
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbC-0005vi-00@myhost.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  !two@test.ex
+    Unrouteable address
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <CALLER@myhost.ex>
+Received: from CALLER by myhost.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.ex>)
+	id 10HmbB-0005vi-00
+	for !two@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbB-0005vi-00@myhost.ex>
+From: CALLER_NAME <CALLER@myhost.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is a test message 4.
+

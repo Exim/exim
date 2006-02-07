@@ -1,0 +1,40 @@
+# Exim test configuration 0191
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+
+# ----- Routers -----
+
+begin routers
+
+others:
+  driver = manualroute
+  domains = ! +local_domains
+  route_list = * 127.0.0.1 byname
+  self = send
+  transport = smtp
+  no_more
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+  transport_filter = \
+    /bin/sh -c "cat >/dev/null; /bin/echo -n Line without end"
+
+
+# End

@@ -1,0 +1,71 @@
+# Exim test configuration 0278
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+localpartlist local_localparts = CALLER
+localpartlist never_localparts = never
+localpartlist n1_localparts = never1
+localpartlist n2_localparts = <; never2 ; +n1_localparts
+localpartlist expanded = $domain
+localpartlist unexpanded = unexpanded
+
+qualify_domain = test.ex
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = manualroute
+  local_parts = +never_localparts : +n1_localparts : ! +local_localparts
+  route_list = never
+  transport = t1
+
+r2:
+  driver = dnslookup
+  local_parts = +never_localparts : +n2_localparts : !+local_localparts
+  transport = t1
+
+r3:
+  driver = accept
+  check_local_user
+  local_parts = +local_localparts
+  transport = t1
+
+r4:
+  driver = accept
+  local_parts = +local_localparts : +expanded : +unexpanded
+  transport = t1
+
+# Same, to check not caching when expanding
+
+r5:
+  driver = accept
+  local_parts = +local_localparts : +expanded : +unexpanded
+  transport = t1
+
+# ----- Retry -----
+
+begin retry
+
+*                *   F,5d,5m
+
+# End

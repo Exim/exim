@@ -1,0 +1,48 @@
+# Exim test configuration 0491
+
+UL=abc@xyz
+REWRITE=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+# When running in the test harness, this setting overrides the real login
+# (normally it acts only if no login name can be found).
+
+unknown_login = UL
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+
+# ----- Rewrite -----
+
+begin rewrite
+
+REWRITE
+
+# End

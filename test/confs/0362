@@ -1,0 +1,76 @@
+# Exim test configuration 0362
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = *.test.ex
+domainlist relay_domains = a.b.c
+
+acl_smtp_rcpt = check_rcpt
+qualify_domain = test.ex
+
+log_selector = +address_rewrite
+
+
+# ----- ACL -----
+
+begin ACL
+
+check_rcpt:
+  accept  domains = +local_domains
+  accept  domains = +relay_domains
+          verify  = recipient
+
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = manualroute
+  domains = +relay_domains
+  route_list = a.b.c   V4NET.9.8.7
+  transport = t1
+  no_more
+
+r2:
+  driver = accept
+  domains = +local_domains
+  transport = t2
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+
+t2:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+
+# ----- Rewrite -----
+
+begin rewrite
+
+x@a.b.c  x@x.test.ex
+
+
+# ----- Retry -----
+
+begin retry
+
+*   *   F,3s,1s; G,1h,2s,2
+
+# End

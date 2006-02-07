@@ -1,0 +1,23 @@
+From someone@some.where Tue Mar 02 09:44:33 1999
+Return-path: <someone@some.where>
+Envelope-to: CALLER@the.local.host.name
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local-bsmtp (Exim x.yz)
+	(envelope-from <someone@some.where>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+From:<someone@some.where>
+To: Recipients not given:;
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Message Headers:
+Received: from CALLER by the.local.host.name with local-bsmtp (Exim x.yz)
+	(envelope-from <someone@some.where>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+From:<someone@some.where>
+To: Recipients not given:;
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Yet more text.
+

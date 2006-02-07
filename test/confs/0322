@@ -1,0 +1,43 @@
+# Exim test configuration 0322
+
+LS=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+log_selector = LS
+
+# ----- Routers -----
+
+begin routers
+
+null:
+  driver = redirect
+  senders = :
+  data = :blackhole:
+
+remote:
+  driver = accept
+  transport = smtp
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  allow_localhost
+  hosts = 127.0.0.1
+  port = PORT_S
+
+
+# End

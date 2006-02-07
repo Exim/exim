@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => TESTSUITE/test-mail/junk <rd+usery@test.ex> R=r5 T=ft1
+1999-03-02 09:44:33 10HmaX-0005vi-00 => TESTSUITE/test-mail/junk <rd+CALLER@test.ex> R=r4 T=ft1
+1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER <CALLER@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 => usery <usery@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userz <userz@test.ex> R=r3 T=t2
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

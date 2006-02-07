@@ -1,0 +1,24 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
+	id 10HmaX-0005vi-00
+	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: CALLER@test.ex
+Subject: Mail failure - malformed recipient address
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+A message that you sent contained a recipient address that was incorrectly
+constructed:
+
+  userx  unqualified recipient address not allowed
+
+The message has not been delivered to any recipients.
+
+------ This is a copy of your message, including all the headers. ------
+
+
+From: userx
+To: userx
+

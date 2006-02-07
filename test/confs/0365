@@ -1,0 +1,90 @@
+# Exim test configuration 0365
+
+DETAILS=false
+SELECTOR=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_data = acl_data
+acl_smtp_rcpt = acl_rcpt
+log_selector = SELECTOR
+qualify_domain = test.ex
+queue_run_in_order
+smtp_return_error_details = DETAILS
+trusted_users = CALLER
+
+
+# ----- ACL -----
+
+begin acl
+
+acl_data:
+  accept   senders = ^nosyntax@
+           verify  = header_sender
+
+  accept   senders = !^nosyntax@
+           verify  = header_syntax
+           verify  = header_sender
+
+
+acl_rcpt:
+  accept   local_parts = ^cantverify
+           endpass
+           verify  = recipient
+
+  accept   senders = ^nosyntax@
+
+  accept   senders = ^recipcallout@
+           endpass
+           verify  = recipient/callout=1s
+
+  accept   verify  = sender/callout=1s
+
+
+# ----- Routers -----
+
+begin routers
+
+verify:
+  driver = accept
+  transport = smtp
+  local_parts = ok
+
+callout:
+  driver = manualroute
+  transport = smtp
+  local_parts = callout
+  route_data = V4NET.0.0.0
+
+foo:
+  driver = redirect
+  local_parts = ^cantverify
+  data = newname
+
+test:
+  driver = redirect
+  local_parts = newname
+  data = ${if match{$original_local_part}{fail}\
+         {:fail: failure message}\
+         {:defer: defer message}}
+  allow_fail
+  allow_defer
+
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+
+# End

@@ -1,0 +1,30 @@
+# Exim test configuration 3413
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+smtp_accept_max_nonmail = 3
+
+# Set this large to avoid it biting first
+smtp_max_synprot_errors = 20
+
+# ----- Authenticators -----
+
+begin authenticators
+
+plain:
+  driver = plaintext
+  public_name = PLAIN
+  server_condition = "\
+    ${if and {{eq{$2}{userx}}{eq{$3}{secret}}}{yes}{no}}"
+  server_set_id = $2
+
+# End

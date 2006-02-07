@@ -1,0 +1,17 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= ok@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 => x@y R=r1 T=t1 H=127.0.0.1 [127.0.0.1]
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmaY-0005vi-00 sender address changed to <bad@test.ex> by CALLER
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaY-0005vi-00 spa authenticator failed H=127.0.0.1 [127.0.0.1] 535 Incorrect authentication data
+1999-03-02 09:44:33 10HmaY-0005vi-00 == x@y R=r1 T=t1 defer (-42): authentication required but authentication attempt(s) failed
+1999-03-02 09:44:33 End queue run: pid=pppp
+
+******** SERVER ********
+1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= ok@test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtpa A=spa S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 spa authenticator failed for localhost (myhost.test.ex) [127.0.0.1]: 535 Incorrect authentication data
+1999-03-02 09:44:33 spa authenticator failed for (xxxx) [127.0.0.1]: 535 Incorrect authentication data
+1999-03-02 09:44:33 spa authenticator failed for (xxxx) [127.0.0.1]: 535 Incorrect authentication data

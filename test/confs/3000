@@ -1,0 +1,28 @@
+# Exim test configuration 3000
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+qualify_domain = test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_rcpt
+perl_startup = do 'DIR/aux-fixed/TESTNUM.pl'
+queue_only = true
+
+
+# ----- ACLs -----
+
+begin acl
+
+check_rcpt:
+  accept condition = ${if !eq {${perl{foo_warn}}}{}}
+
+
+# End

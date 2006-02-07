@@ -1,0 +1,106 @@
+# Exim test configuration 0014
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : myhost.test.ex
+domainlist relay_domains = test.ex
+
+acl_smtp_rcpt = check_recipient
+
+trusted_users = CALLER
+
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  accept  hosts = :
+  require verify = sender
+  accept  domains = +local_domains
+  accept  domains = +relay_domains
+  deny    message = relay not permitted
+
+
+# ----- Rewrite -----
+
+begin rewrite
+
+*@*.one.two   $1@one.two
+abcd@^qu      aaa@bbb
+*pqr@^qu(.*)  1=$1@zz$2
+hhhh@h.h.h.h  "${if eq {$h_to:}{x@y}{yes}{no}}@j.j.j"
+
+########################################################
+# Fancy example of a supposed outgoing gateway rewrite #
+########################################################
+
+# No rewrite unless domain is *.plc.example
+
+^(?>.*)(?<!\.plc\.example)  *
+
+# Handle root specially except envelope to
+
+root@*.plc.example "admin@plc.example (root@$1)"  whFq
+
+# Failure in envelope sender is bad - should fail to verify
+
+*@*.plc.example ${lookup{$local_part@$2}lsearch\
+  {DIR/aux-fixed/0014.usernames}\
+  {$value}{"$1@$2.plc.example-is-not-known"}}@plc.example  Fq
+
+# Use envelope for failing header sender
+
+*@*.plc.example "${lookup{$local_part@$2}lsearch\
+  {DIR/aux-fixed/0014.usernames}{$value@plc.example}\
+  {$sender_address}}"     fsrq
+
+# Other failures => `unknown'
+*@*.plc.example "${lookup{$local_part@$2}lsearch\
+  {DIR/aux-fixed/0014.usernames}{$value}{unknown}}@plc.example"
+
+
+# ----- Routers -----
+
+begin routers
+
+fail:
+  driver = manualroute
+  domains = *.plc.example
+  fail_verify
+  route_list = *
+  verify_only
+
+fail_remote_domains:
+  driver = redirect
+  domains = ! +local_domains
+  allow_fail
+  data = :fail: Unrouteable mail domain "$domain"
+
+userx:
+  driver = accept
+  local_parts = userx
+  retry_use_local_part
+  transport = appendfile
+
+
+# ----- Transports -----
+
+begin transports
+
+appendfile:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  message_suffix =
+  user = CALLER
+
+# End

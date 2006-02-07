@@ -1,0 +1,76 @@
+# Exim test configuration 0198
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+queue_run_in_order
+trusted_users = CALLER
+
+# This test originated as an Exim configuration check local parts before
+# relaying certain domains to a specific host.
+
+# We actually check this not by verifying, but by feeding in a message
+# using BSMTP.
+
+# ----- Main settings -----
+
+domainlist local_domains = copy.domain
+
+NEXTHOST = V4NET.0.0.1
+
+# This is the file containing valid local parts, and its search type.
+
+LOCALPARTFILE = DIR/aux-fixed/TESTNUM.locals
+SEARCHTYPE = lsearch
+
+
+# ----- Routers -----
+
+begin routers
+
+# This router passes all addresses to the passing-on transport. It is
+# used for the domains for which no local part checking is being done.
+
+passall:
+  driver = manualroute
+  domains = ! +local_domains
+  route_list = * NEXTHOST byname
+  transport = pass_on
+  no_more
+
+# This router checks for the existence of the local part in a file; if
+# found, the address is passed on for delivery to the next host.
+
+check_file:
+  driver = accept
+  condition = ${lookup{$local_part}SEARCHTYPE{LOCALPARTFILE}}
+  retry_use_local_part
+  transport = pass_on
+
+
+# ----- Transports -----
+
+# This transport is used for passing the message on to the next host.
+
+begin transports
+
+pass_on:
+  driver = smtp
+  connect_timeout = 1s
+  gethostbyname
+  hosts = NEXTHOST
+
+
+# ----- Retry -----
+
+
+begin retry
+
+*    *    F,2h,15m; G,16h,1h,1.5; F,4d,8h
+
+
+# End

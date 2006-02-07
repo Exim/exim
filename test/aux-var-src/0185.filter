@@ -1,0 +1,18 @@
+# Exim Filter
+
+# More test per-user filter with privilege
+
+if error_message then finish endif
+
+logfile DIR/test-stderr
+
+if first_delivery then
+  logwrite "$message_id \"$h_subject:\" first delivery\n"
+else   
+  logwrite "$message_id \"$h_subject:\" not first delivery\n"
+endif
+
+
+if $h_subject contains "freeze this" then 
+  freeze "subject was \"$h_subject:\""
+endif

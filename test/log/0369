@@ -1,0 +1,11 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => 0 <0@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** 10@test.ex R=r1 T=t1: Child process of t1 transport returned 10 from command: /bin/sh
+1999-03-02 09:44:33 10HmaX-0005vi-00 == 45@test.ex R=r1 T=t1 defer (0): Child process of t1 transport returned 45 from command: /bin/sh
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 ** CALLER@myhost.test.ex: I can't route to CALLER
+1999-03-02 09:44:33 10HmaY-0005vi-00 Frozen (delivery error message)
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => 0 <0@test2.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == 10@test2.ex R=r2 T=t2 defer (0): Child process of t2 transport returned 10 from command: /bin/sh
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == 45@test2.ex R=r2 T=t2 defer (0): Child process of t2 transport returned 45 from command: /bin/sh

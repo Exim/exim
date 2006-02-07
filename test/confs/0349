@@ -1,0 +1,40 @@
+# Exim test configuration 0349
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex
+
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  pipe_transport = t1
+  allow_filter
+  data = "#Exim filter\npipe xxxx\n"
+  user = CALLER
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/${substr_1:$address_pipe}
+  user = CALLER
+
+
+# End

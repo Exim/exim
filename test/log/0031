@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER <CALLER@one.test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 == CALLER@two.test.ex defer (-23): domain is held
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == CALLER@myhost.ex defer (-23): domain is held

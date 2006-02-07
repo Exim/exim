@@ -1,0 +1,17 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from root by myhost.test.ex with local (Exim x.yz)
+	id 10HmbH-0005vi-00
+	for userz@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: userz@myhost.test.ex
+Subject: Your mailbox
+Message-Id: <E10HmbH-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+X:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+This message is automatically created by mail delivery software (Exim).
+
+The size of your mailbox has exceeded a warning threshold that is
+set by the system administrator.
+

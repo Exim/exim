@@ -1,0 +1,37 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 == c@test.ex R=smart T=local_delivery defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/c)
+1999-03-02 09:44:33 10HmaX-0005vi-00 == d@test.ex R=smart T=local_delivery defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/d)
+1999-03-02 09:44:33 10HmaX-0005vi-00 V4NET.0.0.1 [V4NET.0.0.1] Network Error
+1999-03-02 09:44:33 10HmaX-0005vi-00 == a@unknown.ex R=default T=smtp defer (dd): Network Error
+1999-03-02 09:44:33 10HmaX-0005vi-00 V4NET.0.0.0 [V4NET.0.0.0] Network Error
+1999-03-02 09:44:33 10HmaX-0005vi-00 == b@known.ex R=default T=smtp defer (dd): Network Error
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** b@known.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** c@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => :blackhole: <CALLER@test.ex> R=null
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 == d@test.ex R=smart T=local_delivery defer (-52): Retry time not yet reached
+1999-03-02 09:44:33 10HmaX-0005vi-00 == a@unknown.ex R=default T=smtp defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 == d@test.ex R=smart T=local_delivery defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/d)
+1999-03-02 09:44:33 10HmaX-0005vi-00 V4NET.0.0.1 [V4NET.0.0.1] Network Error
+1999-03-02 09:44:33 10HmaX-0005vi-00 == a@unknown.ex R=default T=smtp defer (dd): Network Error
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** a@unknown.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** d@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => :blackhole: <CALLER@test.ex> R=null
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> U=CALLER P=local S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbA-0005vi-00 V4NET.0.0.0 [V4NET.0.0.0] Network Error
+1999-03-02 09:44:33 10HmbA-0005vi-00 == b@known.ex R=default T=smtp defer (dd): Network Error
+1999-03-02 09:44:33 10HmbA-0005vi-00 ** b@known.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmbA-0005vi-00 b@known.ex: error ignored
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp

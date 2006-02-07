@@ -1,0 +1,63 @@
+# Exim test configuration 0123
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+
+acl_smtp_rcpt = check_recipient
+acl_smtp_data = check_message
+
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+
+lookup_open_max = 2
+
+
+# ----- Routers -----
+
+begin routers
+
+l1:
+  driver = redirect
+  allow_defer
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.aliases1}}
+  retry_use_local_part
+
+l2:
+  driver = redirect
+  allow_defer
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.aliases2}}
+  retry_use_local_part
+
+l3:
+  driver = redirect
+  allow_defer
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.aliases3}}
+  retry_use_local_part
+
+c1:
+  driver = redirect
+  allow_defer
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.aliases4}}
+  retry_use_local_part
+
+c2:
+  driver = redirect
+  allow_defer
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.aliases5}}
+  retry_use_local_part
+
+c3:
+  driver = redirect
+  allow_defer
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.aliases6}}
+  retry_use_local_part
+
+# End

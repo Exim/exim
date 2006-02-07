@@ -1,0 +1,44 @@
+# Exim test configuration 0477
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+queue_run_in_order
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = manualroute
+  transport = t1
+  route_list = * 127.0.0.1
+  self = send
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  port = PORT_S
+  interface = 99.99.99.99
+
+
+# ----- Retry -----
+
+begin retry
+
+* *  F,1d,2h
+
+
+# End

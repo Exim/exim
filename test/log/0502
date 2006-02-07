@@ -1,0 +1,15 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 Messages received: 4
+1999-03-02 09:44:33 Messages accepted: 2
+1999-03-02 09:44:33 Recipients:        4
+1999-03-02 09:44:33 Accepted:          3
+1999-03-02 09:44:33 Messages received: 
+1999-03-02 09:44:33 Messages accepted: 
+1999-03-02 09:44:33 Recipients:        
+1999-03-02 09:44:33 Accepted:          
+1999-03-02 09:44:33 ACL for QUIT returned ERROR: "deny" is not allowed in a QUIT ACL
+1999-03-02 09:44:33 Messages received: 1
+1999-03-02 09:44:33 Messages accepted: 
+1999-03-02 09:44:33 Recipients:        
+1999-03-02 09:44:33 Accepted:          

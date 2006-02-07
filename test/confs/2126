@@ -1,0 +1,66 @@
+# Exim test configuration 2126
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_rcpt
+log_selector = +tls_peerdn
+
+tls_advertise_hosts = HOSTIPV4
+tls_certificate = DIR/aux-fixed/cert1
+tls_privatekey = DIR/aux-fixed/cert1
+
+
+# ----- ACLs -----
+
+begin acl
+
+check_rcpt:
+  accept  local_parts = userx
+
+  defer   local_parts = usery
+          hosts       = 127.0.0.1
+
+  accept
+
+
+# ----- Routers -----
+
+begin routers
+
+r0:
+  driver = accept
+  condition = ${if !eq {$sender_host_address}{}}
+  transport = t2
+
+r1:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  hosts = 127.0.0.1 : HOSTIPV4
+  port = PORT_D
+  allow_localhost
+
+t2:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+# End

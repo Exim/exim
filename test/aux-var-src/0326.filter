@@ -1,0 +1,16 @@
+# exim filter
+
+logfile DIR/spool/log/mainlog
+logwrite "Filter entered: original_local_part=$original_local_part"
+logwrite "                  parent_local_part=$parent_local_part"
+
+if 
+  $local_part_prefix is "" and $local_part_suffix is "" 
+then
+  logwrite "No prefix or suffix" 
+else
+  logwrite "Prefix=$local_part_prefix"
+  logwrite "Suffix=$local_part_suffix"
+endif          
+
+deliver $local_part

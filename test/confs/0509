@@ -1,0 +1,29 @@
+# Exim test configuration 0509
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+
+# ----- Main settings -----
+
+acl_smtp_connect = check_connect
+
+
+# ----- ACL -----
+
+begin acl
+
+check_connect:
+   warn  dnslists = rbl.test.ex/<;1.2.3.4;V4NET.11.12.13
+         logwrite = rbl.test.ex/<;1.2.3.4;V4NET.11.12.13
+
+   warn  dnslists = test.ex/a.b.c.d::ten-1
+         logwrite = test.ex/a.b.c.d::ten-1
+
+# End

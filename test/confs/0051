@@ -1,0 +1,52 @@
+# Exim test configuration 0051
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+trusted_users = CALLER
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : \
+    myhost.ex : \
+    bad.ex : \
+    DIR/aux-fixed/TESTNUM.domains : \
+    lsearch;DIR/aux-fixed/TESTNUM.notdomains
+
+
+# ----- Routers -----
+
+begin routers
+
+fail_remote_domains:
+  driver = redirect
+  domains = ! +local_domains
+  allow_fail
+  data = :fail: unrouteable mail domain "$domain" (:fail:)
+
+localuser:
+  driver = accept
+  local_parts = userx : CALLER
+  domains = test.ex : DIR/aux-fixed/TESTNUM.domains :\
+            !lsearch;DIR/aux-fixed/TESTNUM.notdomains : !bad.ex
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+  user = CALLER
+
+# End

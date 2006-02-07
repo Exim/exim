@@ -1,0 +1,29 @@
+# Exim test configuration 0422
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+primary_hostname = mail.test.ex
+qualify_domain = test.ex
+
+acl_smtp_connect = connect
+
+
+# ----- ACL -----
+
+begin acl
+
+connect:
+  deny  message = dnslist_value is $dnslist_value
+        dnslists = rbl.test.ex=127.0.0.2
+  accept
+
+
+# End

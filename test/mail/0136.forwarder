@@ -1,0 +1,73 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
+	id 10HmaZ-0005vi-00
+	for forwarder@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: unknown@test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: forwarder@test.ex
+Subject: Mail delivery failed
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This message was created automatically by mail delivery software.
+
+A message sent by
+
+  <abcd@x.y.z>
+
+could not be delivered to one or more of its recipients. The following
+address(es) failed:
+
+  unknown@test.ex
+    (generated from forwarder@test.ex)
+    Address unknown (:fail:)
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <abcd@x.y.z>
+Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+	(envelope-from <abcd@x.y.z>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: abcd@x.y.z
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
+	id 10HmbC-0005vi-00
+	for forwarder@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: unknown@test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: forwarder@test.ex
+Subject: Mail delivery failed
+Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This message was created automatically by mail delivery software.
+
+A message sent by
+
+  <abcd@x.y.z>
+
+could not be delivered to one or more of its recipients. The following
+address(es) failed:
+
+  unknown@test.ex
+    (generated from forwarder@test.ex)
+    Address unknown (:fail:)
+
+------ This is a copy of the message's headers. ------
+
+Return-path: <abcd@x.y.z>
+Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
+	(envelope-from <abcd@x.y.z>)
+	id 10HmbA-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+From: abcd@x.y.z
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+

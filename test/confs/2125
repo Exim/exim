@@ -1,0 +1,66 @@
+# Exim test configuration 2125
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+log_selector =  +tls_peerdn+tls_certificate_verified
+
+queue_only
+queue_run_in_order
+
+tls_advertise_hosts = *
+
+tls_require_ciphers = ${if eq{$sender_host_address}{HOSTIPV4}\
+                      {AES}{!AES:3DES}}
+
+# Set certificate only if server
+
+tls_certificate = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
+
+
+# ----- Routers -----
+
+begin routers
+
+client:
+  driver = accept
+  condition = ${if eq {SERVER}{server}{no}{yes}}
+  retry_use_local_part
+  transport = send_to_server
+
+
+# ----- Transports -----
+
+begin transports
+
+send_to_server:
+  driver = smtp
+  allow_localhost
+  hosts = HOSTIPV4 : 127.0.0.1
+  hosts_require_tls = HOSTIPV4
+  tls_require_ciphers = DES-CBC3-SHA
+  port = PORT_D
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

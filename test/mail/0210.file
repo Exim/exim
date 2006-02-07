@@ -1,0 +1,15 @@
+HELO x.y.z
+MAIL FROM:<>
+RCPT TO:<file@test.ex>
+DATA
+Return-path: <>
+Envelope-to: file@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is a test message.
+.

@@ -1,0 +1,24 @@
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<xxx@a.b>
+DATA
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaZ-0005vi-00
+	for pre.xxx@a.b; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+MAIL FROM:<CALLER@myhost.test.ex>
+RCPT TO:<pre.xxx@a.b>
+DATA
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbA-0005vi-00
+	for pre.xxx@a.b; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.

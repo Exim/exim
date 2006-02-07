@@ -1,0 +1,48 @@
+# Exim test configuration 0167
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+trusted_users = CALLER
+
+
+# ----- Rewrite -----
+
+begin rewrite
+
+error@*  <>
+
+*@*  "${if eq {$local_part}{remove}{<>}fail}" F
+
+
+# ----- Routers -----
+
+begin routers
+
+user:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path = ${if eq{$return_path}{trakill@test.ex}{}fail}
+  return_path_add
+  user = CALLER
+
+# End

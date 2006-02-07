@@ -1,0 +1,12 @@
+# Exim test configuration 0000
+
+# This configuration is used when the test script is finding out what features
+# are in the Exim binary. It needs to discover where the test suite's spool
+# directory is going to be.
+
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# End

@@ -1,0 +1,13 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer_cccc@myhost.test.ex <cccc@myhost.test.ex> R=defer defer (-1): forced defer
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer_bbbb@myhost.test.ex <bbbb@myhost.test.ex> R=defer defer (-1): forced defer
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer_aaaa@myhost.test.ex <aaaa@myhost.test.ex> R=defer defer (-1): forced defer
+1999-03-02 09:44:33 10HmaX-0005vi-00 => aaaa <aaaa@myhost.test.ex> R=seen_aaaa T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 => bbbb <bbbb@myhost.test.ex> R=bbbb_0 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 => cccc <cccc@myhost.test.ex> R=cccc_accept T=t1
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer_cccc@myhost.test.ex <cccc@myhost.test.ex> R=defer defer (-1): forced defer
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer_cccc@myhost.test.ex <cccc@myhost.test.ex> R=defer defer (-1): forced defer
+1999-03-02 09:44:33 End queue run: pid=pppp -qf

@@ -1,0 +1,47 @@
+# Exim test configuration 0032
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+
+# ----- Main settings -----
+
+
+
+# ----- Routers -----
+
+begin routers
+
+localuser:
+  driver = accept
+  check_local_user
+  transport = local_delivery
+
+others:
+  driver = dnslookup
+  transport = smtp
+  self = fail
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+
+smtp:
+  driver = smtp
+
+
+# End

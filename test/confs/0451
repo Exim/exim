@@ -1,0 +1,47 @@
+# Exim test configuration 0451
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+acl_smtp_rcpt = accept
+acl_smtp_data = data_check
+
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  allow_fail
+  data = ${if eq{$local_part}{good}{}{:fail:custom message}}
+
+r2:
+  driver = accept
+  local_parts = good
+  verify_only
+
+
+
+# ----- ACL -----
+
+begin AcL
+
+data_check:
+  accept   message = message="$acl_verify_message"
+           verify = sender
+
+
+# End

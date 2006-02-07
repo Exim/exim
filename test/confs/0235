@@ -1,0 +1,47 @@
+# Exim test configuration 0235
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = @
+
+
+# ----- Routers -----
+
+begin routers
+
+smartuser:
+  driver = redirect
+  allow_defer
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.aliases}{$value}fail}
+  no_more
+  retry_use_local_part
+
+never:
+  driver = accept
+  retry_use_local_part
+  transport = never
+
+
+# ----- Transports -----
+
+begin transports
+
+never:
+  driver = appendfile
+  file = /dev/null
+  user = CALLER
+
+
+# ----- Retry -----
+
+
+# End

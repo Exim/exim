@@ -1,0 +1,8 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from [127.0.0.1] (helo=foobar)
+	by the.local.host.name with smtp (Exim x.yz)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-sah: host.127.0.0.1
+
+

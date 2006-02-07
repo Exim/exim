@@ -1,0 +1,33 @@
+# Exim test configuration 0035
+
+SERVER=
+SUBMISSION_OPTIONS=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_mail = a1
+acl_smtp_rcpt = accept
+
+queue_only
+trusted_users = CALLER
+
+
+# ----- ACL -----
+
+begin acl
+
+a1:
+  warn senders = ^(?!notsubmit@)
+       control = submissionSUBMISSION_OPTIONS
+  accept
+
+# End

@@ -1,0 +1,46 @@
+# Exim test configuration 0039
+
+QDG=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+QDG
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  local_parts = r1
+  data = newr1
+
+r2:
+  driver = redirect
+  local_parts = r2
+  data = newr2
+  qualify_domain = local.test.ex
+
+ok:
+  driver = accept
+  transport = t1
+
+
+#----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  hosts = V4NET.0.0.0
+
+# End

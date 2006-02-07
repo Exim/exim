@@ -1,0 +1,68 @@
+# Exim test configuration 0230
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+domainlist local_domains = test.ex : *.test.ex
+acl_smtp_rcpt = check_recipient
+log_selector =  \
+              +incoming_port \
+              +incoming_interface \
+              +smtp_connection
+queue_only
+queue_run_in_order
+
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  accept  hosts = :
+  accept  domains = +local_domains
+  deny    message = relay not permitted
+
+
+# ----- Routers -----
+
+begin routers
+
+fail_remote_domains:
+  driver = redirect
+  domains = ! +local_domains
+  data = :fail: unrouteable mail domain "$domain"
+
+server:
+  driver = accept
+  retry_use_local_part
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  headers_add = Port: $sender_host_port
+  user = CALLER
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,10s
+
+# End

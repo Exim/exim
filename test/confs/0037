@@ -1,0 +1,91 @@
+# Exim test configuration 0037
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+message_body_visible = 20
+qualify_domain = test.ex
+freeze_tell = postmaster
+system_filter = DIR/aux-var/TESTNUM.F
+system_filter_reply_transport = address_reply
+trusted_users = CALLER
+
+
+# ----- Routers -----
+
+begin routers
+
+check_vars:
+  driver = accept
+  local_parts = dff
+  headers_add = original_domain=$original_domain\n  \
+                original_local_part=$original_local_part\n  \
+                parent_domain=$parent_domain\n  \
+                parent_local_part=$parent_local_part
+  transport = appendfile
+  user = CALLER
+
+fail_read_filter:
+  driver = redirect
+  local_parts = readfile
+  allow_filter
+  file = DIR/aux-var/TESTNUM.f-readfile
+  user = CALLER
+
+userfilter:
+  driver = redirect
+  allow_filter
+  user = CALLER
+  no_check_local_user
+  router_home_directory = /usr
+  debug_print = \$home = >$home<
+  file = DIR/aux-var/TESTNUM.f-user
+  forbid_file
+  forbid_filter_existstest
+  forbid_filter_lookup
+  forbid_filter_readfile
+  forbid_filter_run
+  forbid_pipe
+  local_parts = ^filter-
+  retry_use_local_part
+  reply_transport = address_reply
+
+user_accept1:
+  driver = accept
+  local_parts = userz : abcd : postmaster
+  retry_use_local_part
+  transport = appendfile
+  user = CALLER
+
+user_accept2:
+  driver = accept
+  local_parts = userx : CALLER
+  transport = appendfile
+
+
+# ----- Transports -----
+
+begin transports
+
+appendfile:
+  driver = appendfile
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+  user = CALLER
+
+address_reply:
+  driver = autoreply
+  never_mail = never_mail@test.ex
+  user = CALLER
+  initgroups
+
+# End

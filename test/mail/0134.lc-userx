@@ -1,0 +1,54 @@
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00
+	for userx@unknown.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+router: defaulted
+domain_data: 
+local_part_data: 
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+smartuser: dd=data for test.ex lpd=data for userx
+domain_data: data for test.ex
+local_part_data: data for userx
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbA-0005vi-00
+	for userx@unknown.domain; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+domain_data: 
+local_part_data: 
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbB-0005vi-00
+	for userx@known.domain; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+domainlist: dd=data for known.domain lpd=data for userx
+domain_data: data for known.domain
+local_part_data: data for userx
+
+Test message
+

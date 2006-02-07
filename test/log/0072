@@ -1,0 +1,37 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=reply T=reply
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@test.ex> R=reply T=reply
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 => CALLER <CALLER@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@test.ex> R=reply T=reply
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= <> R=10HmbC-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 => CALLER <CALLER@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 => userx <userx@test.ex> R=reply T=reply
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= <> R=10HmbE-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 => CALLER <CALLER@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-0005vi-00 => userx <userx@test.ex> R=reply T=reply
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> R=10HmbG-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbH-0005vi-00 => CALLER <CALLER@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbG-0005vi-00 => userx <userx@test.ex> R=reply T=reply
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbI-0005vi-00 ** >**bad-reply** <userx-filter@test.ex> R=filter: filter autoreply generated syntactically invalid recipient
+1999-03-02 09:44:33 10HmbI-0005vi-00 >**bad-reply** <userx-filter@test.ex>: error ignored
+1999-03-02 09:44:33 10HmbI-0005vi-00 Completed

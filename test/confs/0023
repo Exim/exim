@@ -1,0 +1,265 @@
+# Exim test configuration 0023
+
+LOG_SELECTOR=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+addresslist ok_senders = ok@ok.ok
+
+domainlist local_domains = test.ex : *.test.ex
+domainlist relay_domains = relay.test.ex
+
+hostlist ok9_hosts = 9.9.9.9
+
+LOG_SELECTOR
+
+qualify_domain = test.ex
+trusted_users = CALLER
+
+# Use first three components of address to select ACL
+acl_smtp_rcpt = acl_${sg{${tr{$sender_host_address}{.}{_}}}{^(.*)_.*\$}{\$1}}
+acl_smtp_data = data_acl
+
+# ----- ACLs -----
+
+begin acl
+
+data_acl:
+  warn    condition = ${if def:h_x-rcpt-added:{yes}{no}}
+          message   = X-data-added: Header added at data time
+  warn    senders   = rcpttest@test.ex
+          message   = X-data-rcpt-count: $rcpt_count\n\
+                      X-data-rcpt-defer-count: $rcpt_defer_count\n\
+                      X-data-rcpt-fail-count: $rcpt_fail_count
+  warn    message   = X-message-body-size: $message_body_size
+  accept
+
+acl_1_2_3:
+  require domains = !nopass
+
+  require message = $local_part@$domain shall not pass
+          domains = !wontpass
+
+  deny    message = domain explicitly denied
+          log_message = DOMAIN EXPLICITLY DENIED
+          domains = deny.test.ex
+
+  accept  domains = +local_domains
+          endpass
+          message = $domain gets refused
+          domains = !refuse.test.ex
+
+  # Double to check caching
+  accept  domains = +relay_domains
+  accept  domains = +relay_domains
+
+acl_5_6_7:
+  accept  domains = lsearch;DIR/aux-fixed/TESTNUM.doms
+          local_parts = $domain_data
+
+acl_5_6_8:
+  accept  senders = user1@domain1 : domain2 : +ok_senders
+
+acl_5_6_11:
+  accept  condition = ${if match{$local_part}{^x}{yes}{no}}
+  deny    message = "local part of wrong type\n(quotes are literal)
+
+acl_5_6_12:
+  accept  hosts = 5.6.12.1
+          endpass
+          message = failed nested acl
+          acl = acl_5_6_12A
+  accept
+
+acl_5_6_12A:
+  accept  domains = ok
+
+acl_5_6_13:
+  accept  acl = DIR/aux-fixed/TESTNUM.acl1
+
+acl_8_8_8:
+  accept  acl = acl_8_8_8
+
+acl_9_9_9:
+  accept  hosts = +ok9_hosts
+  deny    message = don't like this host
+          hosts = 9.9.9.0/26
+  accept  hosts = 9.9.9.0/24
+
+acl_V4NET_0_0:
+  require verify = reverse_host_lookup
+  accept
+
+acl_V4NET_11_12:
+  deny    message = host in DNS list $dnslist_domain: $dnslist_text
+          log_message = DNSLIST ($dnslist_domain: $dnslist_text)
+          dnslists = rbl.test.ex
+  accept
+
+acl_20_20_20:
+  accept  endpass
+          message = sender verify failure
+          verify = sender
+          message = recipient verify failure
+          verify = recipient
+
+acl_21_21_21:
+  accept
+          verify = sender
+          verify = recipient
+
+acl_22_22_22:
+  accept  recipients = x@y
+
+acl_23_23_23:
+  deny    hosts = 23.23.23.0
+          message = sender must verify
+         !verify = sender
+  accept
+
+acl_24_24_24:
+  warn    message = X-Warn: sender didn't verify
+          condition = yes
+
+acl_25_25_25:
+  deny    message = denying domains=x
+          domains = x
+
+acl_26_26_26:
+  deny    senders = :
+          message = bounce messages can have only one recipient
+          condition = ${if > {$recipients_count}{0}{yes}{no}}
+  accept
+
+# Force host list expansion failure
+acl_27_27_27:
+  deny    hosts = ${if eq {1}{0}{}fail}
+  accept
+
+acl_28_28_28:
+  accept  sender_domains = : okdomain
+
+acl_29_29_29:
+  deny    dnslists = test.ex/$sender_address_domain
+  accept
+
+acl_30_30_30:
+  deny    message  = domain=$dnslist_domain\n\
+                     value=$dnslist_value\n\
+                     text="$dnslist_text"
+          dnslists = test.ex=V4NET.0.0.1,127.0.0.2/$sender_address_domain
+  accept
+
+# This one tests what happens when a lookup key gets too long
+acl_31_31_31:
+  deny    dnslists = test.ex/$sender_address_domain+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END
+  accept
+
+# Settings of $domain and $local_part
+acl_32_32_32:
+  warn    message = Start: domain=$domain local_part=$local_part
+
+  warn    local_parts = userx-vs
+          message = Vs: domain=$domain local_part=$local_part
+          verify = sender
+
+  warn    message = Vr: domain=$domain local_part=$local_part
+          verify = recipient
+
+  accept
+
+acl_33_33_33:
+  accept  endpass
+          message = sender verify failure
+          verify = sender/no_details
+          message = recipient verify failure
+          verify = recipient
+
+# Incomplete DNS lookups
+acl_44_44_44:
+  warn    dnslists = test.again.dns
+  warn    dnslists = +include_unknown : test.again.dns
+  warn    dnslists = +exclude_unknown : test.again.dns
+  warn    dnslists = +defer_unknown : test.again.dns
+  accept
+
+# Adding header at RCPT time and testing at DATA time
+acl_55_55_55:
+  warn    message = X-rcpt-added: An added header at RCPT time
+  accept
+
+acl_56_56_56:
+  warn    message = X-Warn: $local_part
+          condition = ${substr_5:$local_part}
+  accept
+
+acl_56_56_57:
+  accept  message = denied by condition
+          condition = ${substr_5:$local_part}
+
+acl_56_56_58:
+  warn    message = xx: rcpt_count = $rcpt_count\n    \
+                        rcpt_defer_count = $rcpt_defer_count\n    \
+                        rcpt_fail_count  = $rcpt_fail_count\n    \
+                        recipients_count = $recipients_count\n    \
+                        local_part = $local_part
+  accept  local_parts = ^ok
+
+acl_56_56_59:
+  accept  message = ACL message for verification failure\n \
+                    Original was >$acl_verify_message<
+          verify  = recipient
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+t2:
+  driver = appendfile
+  file = DIR/test-mail/okbatch
+  user = CALLER
+  batch_max = 100
+  envelope_to_add
+
+# ----- Routers -----
+
+begin routers
+
+r0:
+  driver = accept
+  local_parts = ^ok
+  transport = t2
+
+r1:
+  driver = accept
+  local_parts = ^userx : ^cond-
+  transport = t1
+
+r2:
+  driver = redirect
+  local_parts = fail
+  allow_fail
+  data = :fail: here is a fail message
+
+# ----- Retry -----
+
+begin retry
+
+*                *   F,5d,5m
+
+# End

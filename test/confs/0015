@@ -1,0 +1,116 @@
+# Exim test configuration 0015
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+
+# ----- Routers -----
+
+begin routers
+
+convert_to_real_name:
+  driver = redirect
+  allow_defer
+  data = "\
+    $local_part_prefix${lookup{$local_part}\
+    lsearch{DIR/aux-fixed/0015.realnames}{$value}fail}@$domain"
+  local_part_prefix = *+
+  local_part_prefix_optional
+  retry_use_local_part
+
+#system_aliases:
+#  driver = redirect
+#  allow_defer
+#  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/0015.aliases}}
+#  retry_use_local_part
+
+userforward:
+  driver = redirect
+  allow_filter
+  local_parts = userx
+  user = CALLER
+  file = DIR/aux-fixed/0015.filter.$local_part
+  local_part_prefix = *+
+  local_part_prefix_optional
+  pipe_transport = address_pipe
+  reply_transport = address_reply
+
+localuser_b:
+  driver = accept
+  local_parts = userx : CALLER
+  local_part_prefix = B+
+  transport = local_delivery_b
+
+localuser_s:
+  driver = accept
+  local_part_prefix = S+
+  transport = delivery_s
+
+localuser_sb:
+  driver = accept
+  local_parts = userx : CALLER
+  local_part_prefix = *+
+  local_part_prefix_optional
+  local_part_suffix = -B
+  transport = local_delivery_b
+
+localuser_ss:
+  driver = accept
+  local_part_suffix = -S
+  transport = delivery_s
+
+localuser:
+  driver = accept
+  local_parts = userx : CALLER
+  local_part_prefix = *+
+  local_part_prefix_optional
+  transport = local_delivery
+
+
+# ----- Transports -----
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  user = CALLER
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+  headers_add = X-local_part: $local_part\n\
+                X-local_part_prefix: $local_part_prefix
+
+local_delivery_b:
+  driver = appendfile
+  user = CALLER
+  delivery_date_add
+  envelope_to_add
+  file = DIR/test-mail/$local_part
+  return_path_add
+  use_bsmtp
+  headers_add = X-local_part: $local_part\n\
+                X-local_part_prefix: $local_part_prefix
+
+delivery_s:
+  driver = smtp
+  hosts = 127.0.0.1
+  port = PORT_S
+  allow_localhost
+
+address_reply:
+  driver = autoreply
+
+address_pipe:
+  driver = pipe
+
+# End

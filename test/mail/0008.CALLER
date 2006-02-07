@@ -1,0 +1,17 @@
+From someone@some.where Tue Mar 02 09:44:33 1999
+Return-path: <someone@some.where>
+Envelope-to: CALLER@the.local.host.name
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by the.local.host.name with local-bsmtp (Exim x.yz)
+	(envelope-from <someone@some.where>)
+	id 10HmaX-0005vi-00
+	for CALLER@the.local.host.name; Tue, 2 Mar 1999 09:44:33 +0000
+from: someone@some.where
+To: CALLER@the.local.host.name
+Subject: testing
+Message-id: abcd%rxyz@p.q.r
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Here is testing data
+.that line started with a dot
+

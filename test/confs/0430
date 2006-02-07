@@ -1,0 +1,46 @@
+# Exim test configuration 0430
+
+LIST=
+SELF=freeze
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+disable_ipv6
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = manualroute
+  domains = manual.route
+  transport = t1
+  route_list = * LIST
+  self = SELF
+
+r2:
+  driver = manualroute
+  domains = random.manual.route
+  transport = t1
+  route_list = * LIST
+  hosts_randomize
+  ignore_target_hosts = 127.0.0.1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+
+# End

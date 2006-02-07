@@ -1,0 +1,73 @@
+# Exim test configuration 3401
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+
+
+# ----- Authentication -----
+
+begin authenticators
+
+login:
+  driver = plaintext
+  public_name = LOGIN
+  client_send = : userx : secret
+
+plain:
+  driver = plaintext
+  public_name = PLAIN
+  client_send = ^userx^secret
+
+
+# ----- Routers -----
+
+begin routers
+
+try:
+  driver = manualroute
+  route_list = domain.com 127.0.0.1 byname
+  self = send
+  transport = smtp_try
+
+force:
+  driver = manualroute
+  route_list = authdomain.com 127.0.0.1 byname
+  self = send
+  transport = smtp_force
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp_try:
+  driver = smtp
+  hosts_try_auth = *
+  port = PORT_S
+  authenticated_sender = ${if eq{$local_part}{forcesender}{force@x.y.z}fail}
+
+smtp_force:
+  driver = smtp
+  hosts_require_auth = *
+  port = PORT_S
+
+
+# ----- Retry -----
+
+
+begin retry
+
+*  auth_failed
+*  *  F,1h,10m
+
+# End

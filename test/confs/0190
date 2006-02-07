@@ -1,0 +1,114 @@
+# Exim test configuration 0190
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+dns_ipv4_lookup = *
+qualify_domain = test.ex
+remote_max_parallel = 1
+
+
+# ----- Routers -----
+
+begin routers
+
+# Specified and randomized in the transport
+
+domainx:
+  driver = manualroute
+  domains = ^domain
+  route_list = * V4NET.9.8.7 byname
+  transport = smtp
+
+# Specified in the router, randomized in the transport
+
+r2:
+  driver = manualroute
+  domains = ^adomain
+  route_list = * "$primary_hostname : 127.0.0.1 : HOSTIPV4" byname
+  self = send
+  transport = smtp3
+
+# Randomized in the router, to check "sameness" testing
+
+r3:
+  driver = manualroute
+  domains = ^bdomain
+  hosts_randomize
+  route_list = * "$primary_hostname : 127.0.0.1 : HOSTIPV4" byname
+  self = send
+  transport = smtp2
+
+# Specified and randomized in the router, with batching
+
+batched:
+  driver = manualroute
+  hosts_randomize
+  route_list = batch  V4NET.0.0.1:V4NET.0.0.2:V4NET.0.0.3:+:\
+                      V4NET.0.0.4:V4NET.0.0.5:V4NET.0.0.6:+:\
+                      V4NET.0.0.7 byname;\
+               batch2 V4NET.0.0.1:V4NET.0.0.2:V4NET.0.0.3:+:\
+                      V4NET.0.0.4:V4NET.0.0.5:V4NET.0.0.6:+:\
+                      V4NET.0.0.7 byname no_randomize;
+  transport = smtp2
+
+batched2:
+  driver = manualroute
+  route_list = batch3 V4NET.0.0.1:V4NET.0.0.2:V4NET.0.0.3:+:\
+                      V4NET.0.0.4:V4NET.0.0.5:V4NET.0.0.6:+:\
+                      V4NET.0.0.7 byname;\
+               batch4 V4NET.0.0.1:V4NET.0.0.2:V4NET.0.0.3:+:\
+                      V4NET.0.0.4:V4NET.0.0.5:V4NET.0.0.6:+:\
+                      V4NET.0.0.7 byname randomize;
+  transport = smtp2
+
+# Specified and randomized in the router, no grouping
+
+others:
+  driver = manualroute
+  hosts_randomize
+  route_list = * V4NET.0.0.1:V4NET.0.0.2:V4NET.0.0.3 byname
+  transport = smtp2
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  allow_localhost
+  hosts = $primary_hostname : 127.0.0.1 : HOSTIPV4
+  hosts_override
+  hosts_randomize
+  max_rcpt = 1
+  connection_max_messages = 1
+  port = PORT_S
+
+smtp2:
+  driver = smtp
+  port = PORT_S
+
+smtp3:
+  driver = smtp
+  hosts_randomize
+  max_rcpt = 2
+  connection_max_messages = 1
+  port = PORT_S
+
+
+# ----- Retry -----
+
+
+begin retry
+
+* * F,5d,1d
+
+
+# End

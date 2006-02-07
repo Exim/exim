@@ -1,0 +1,17 @@
+From userx@test.ex Tue Mar 02 09:44:33 1999
+Received: from [V4NET.0.0.0] (ident=CALLER)
+	by myhost.test.ex with smtp (Exim x.yz)
+	(envelope-from <userx@test.ex>)
+	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+
+Message 2
+
+From userx@test.ex Tue Mar 02 09:44:33 1999
+Received: from [V4NET.11.12.16] (ident=CALLER)
+	by myhost.test.ex with smtp (Exim x.yz)
+	(envelope-from <userx@test.ex>)
+	id 10HmbB-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+X-Warning: V4NET.11.12.16 is in a black list at rbl2.test.ex (127.0.0.2)
+
+Message 5
+

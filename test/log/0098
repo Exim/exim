@@ -1,0 +1,91 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 10HmaX-0005vi-00 == |/non/existing/file <userx@test.ex> R=userforward defer (-30): pipe_transport unset in userforward router
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 10HmaX-0005vi-00 == |/non/existing/file <userx@test.ex> R=userforward defer (-30): pipe_transport unset in userforward router
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss T="Warning: message 10HmaX-0005vi-00 delayed 0 minutes"
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@another.test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 10HmaX-0005vi-00 == |/non/existing/file <userx@test.ex> R=userforward defer (-30): pipe_transport unset in userforward router
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@another.test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss T="Warning: message 10HmaZ-0005vi-00 delayed 0 minutes"
+1999-03-02 09:44:33 10HmbA-0005vi-00 => CALLER <CALLER@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 V4NET.0.0.1 [V4NET.0.0.1] Network Error
+1999-03-02 09:44:33 10HmbB-0005vi-00 == xxxx@some.domain R=all T=smtp defer (dd): Network Error
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 10HmaX-0005vi-00 == |/non/existing/file <userx@test.ex> R=userforward defer (-30): pipe_transport unset in userforward router
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss T="Warning: message 10HmaX-0005vi-00 delayed 0 minutes"
+1999-03-02 09:44:33 10HmbC-0005vi-00 => CALLER <CALLER@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@another.test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 10HmbB-0005vi-00 V4NET.0.0.1 [V4NET.0.0.1] Network Error
+1999-03-02 09:44:33 10HmbB-0005vi-00 == xxxx@some.domain R=all T=smtp defer (dd): Network Error
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 127.0.0.1 [127.0.0.1] Connection refused
+1999-03-02 09:44:33 10HmbD-0005vi-00 == yyyy@connection.refused R=refused T=smtp_connect_refused defer (dd): Connection refused
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@test.ex routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmaX-0005vi-00 == |/non/existing/file <userx@test.ex> R=userforward defer (-30): pipe_transport unset in userforward router
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@test.ex routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@another.test.ex routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmbB-0005vi-00 == xxxx@some.domain R=all T=smtp defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 10HmbD-0005vi-00 == yyyy@connection.refused R=refused T=smtp_connect_refused defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@test.ex routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmaX-0005vi-00 == |/non/existing/file <userx@test.ex> R=userforward defer (-30): pipe_transport unset in userforward router
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@test.ex routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@another.test.ex routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmbB-0005vi-00 == xxxx@some.domain R=all T=smtp defer (-53): retry time not reached for any host
+1999-03-02 09:44:33 10HmbD-0005vi-00 127.0.0.1 [127.0.0.1] Connection refused
+1999-03-02 09:44:33 10HmbD-0005vi-00 == yyyy@connection.refused R=refused T=smtp_connect_refused defer (dd): Connection refused
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 == defer@test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 10HmaX-0005vi-00 == |/non/existing/file <userx@test.ex> R=userforward defer (-30): pipe_transport unset in userforward router
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss T="Warning: message 10HmaX-0005vi-00 delayed by 10 minutes"
+1999-03-02 09:44:33 10HmbE-0005vi-00 => CALLER <CALLER@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@another.test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == defer@test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss T="Warning: message 10HmaZ-0005vi-00 delayed by 0 minutes"
+1999-03-02 09:44:33 10HmbF-0005vi-00 => CALLER <CALLER@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 V4NET.0.0.1 [V4NET.0.0.1] Network Error
+1999-03-02 09:44:33 10HmbB-0005vi-00 == xxxx@some.domain R=all T=smtp defer (dd): Network Error
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss T="Warning: message 10HmbB-0005vi-00 delayed by 0 minutes"
+1999-03-02 09:44:33 10HmbG-0005vi-00 => CALLER <CALLER@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 127.0.0.1 [127.0.0.1] Connection refused
+1999-03-02 09:44:33 10HmbD-0005vi-00 == yyyy@connection.refused R=refused T=smtp_connect_refused defer (dd): Connection refused
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> R=10HmbD-0005vi-00 U=EXIMUSER P=local S=sss T="Warning: message 10HmbD-0005vi-00 delayed by 0 minutes"
+1999-03-02 09:44:33 10HmbH-0005vi-00 => CALLER <CALLER@test.ex> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaX-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbI-0005vi-00 == defer@another.test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbI-0005vi-00 == defer@another.test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 End queue run: pid=pppp -qf

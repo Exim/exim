@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@myhost.test.ex R=r1 T=t1 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/userx)
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@myhost.test.ex R=r1 T=t1 defer (-1): Malformed value "20F" (expansion of "${if eq{1}{1}{20F}{}}") in t1 transport

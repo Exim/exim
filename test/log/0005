@@ -1,0 +1,11 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= someone@some.domain U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER <CALLER@the.local.host.name> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= someone@some.domain U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@the.local.host.name> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= someone@some.domain U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER <CALLER@the.local.host.name> R=localuser T=local_delivery
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp

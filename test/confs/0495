@@ -1,0 +1,90 @@
+# Exim test configuration 0495
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_rcpt
+mua_wrapper = TRUE
+trusted_users = CALLER
+
+# These settings should be ignored
+
+queue_only
+queue_smtp_domains = *
+deliver_drop_privilege = FALSE
+remote_max_parallel = 5
+
+
+# ----- ACL -----
+
+begin acl
+
+# The controls will be ignored
+
+check_rcpt:
+  accept    control = queue_only
+            control = freeze
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.alias}}
+  file_transport = t3
+  allow_fail
+  allow_defer
+
+r2:
+  driver = accept
+  local_parts = otherhost
+  transport = t2
+
+r3:
+  driver = accept
+  local_parts = ^badport
+  transport = t4
+
+r9:
+  driver = accept
+  transport = t1
+  headers_add = ${if eq{$local_part}{addheader}{Added: text}}
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  hosts = 127.0.0.1 : HOSTIPV4
+  port = PORT_S
+  allow_localhost
+  command_timeout = 1s
+
+t2:
+  driver = smtp
+  hosts = V4NET.9.8.7
+  port = PORT_S
+
+t3:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+t4:
+  driver = smtp
+  hosts = V4NET.10.10.10
+  port = nonexistent
+
+# End

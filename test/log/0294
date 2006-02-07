@@ -1,0 +1,8 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= x@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= x@y U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <reject@z>
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <reject@z>
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <reject@z>
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <reject@z>
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <reject@z>
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <reject@z>

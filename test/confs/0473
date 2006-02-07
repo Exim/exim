@@ -1,0 +1,51 @@
+# Exim test configuration 0473
+
+USE_SENDER = ,use_sender
+ACL_RCPT = acl_rcpt
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = ACL_RCPT
+callout_random_local_part = $primary_hostname--testing
+trusted_users = CALLER
+
+
+# ----- ACL -----
+
+begin acl
+
+acl_rcpt:
+  accept   verify  = recipient/callout=1sUSE_SENDER
+
+acl_rcpt_sender:
+  accept   verify  = sender/callout=1s,connect=2s
+
+
+# ----- Routers -----
+
+begin routers
+
+callout:
+  driver = manualroute
+  transport = smtp
+  route_data = 127.0.0.1
+  self = send
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+
+# End

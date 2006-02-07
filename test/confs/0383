@@ -1,0 +1,57 @@
+# Exim test configuration 0383
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+system_filter = DIR/aux-var/TESTNUM.F
+system_filter_pipe_transport = t1
+
+
+# ----- Routers -----
+
+begin routers
+
+r0:
+  driver = redirect
+  local_parts = redking
+  allow_filter
+  file = DIR/aux-var/TESTNUM.f
+  user = CALLER
+  pipe_transport = t1
+
+r1:
+  driver = accept
+  transport = t2
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = pipe
+  return_output
+  user = CALLER
+
+t2:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+
+# ----- Retry -----
+
+begin retry
+
+*  *  F,1d,1s
+
+# End

@@ -1,0 +1,20 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Return-path: <>
+Envelope-to: postmaster@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@test.ex>
+To: postmaster@test.ex
+Subject: Message frozen
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Message 10HmaX-0005vi-00 has been frozen.
+The sender is <CALLER@test.ex>.
+
+The following address(es) have yet to be delivered:
+  userx@test.ex: forced freeze
+

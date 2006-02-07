@@ -1,0 +1,151 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: userz@myhost.test.ex,
+  usery@myhost.test.ex,
+  userx@myhost.test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: CALLER@myhost.test.ex
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  userz@myhost.test.ex
+  usery@myhost.test.ex
+  userx@myhost.test.ex
+
+The following text was generated during the delivery attempts:
+
+------ userz@myhost.test.ex ------
+------ usery@myhost.test.ex ------
+------ userx@myhost.test.ex ------
+
+This is some returned text.
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <CALLER@myhost.test.ex>
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is a test message.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbA-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: seven@myhost.test.ex,
+  six@myhost.test.ex,
+  five@myhost.test.ex,
+  four@myhost.test.ex,
+  three@myhost.test.ex,
+  two@myhost.test.ex,
+  one@myhost.test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: CALLER@myhost.test.ex
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  seven@myhost.test.ex
+  six@myhost.test.ex
+  five@myhost.test.ex
+  four@myhost.test.ex
+  three@myhost.test.ex
+  two@myhost.test.ex
+  one@myhost.test.ex
+
+The following text was generated during the delivery attempts:
+
+------ seven@myhost.test.ex ------
+
+This is some returned text.
+
+------ six@myhost.test.ex ------
+------ five@myhost.test.ex ------
+------ four@myhost.test.ex ------
+
+This is some returned text.
+
+------ three@myhost.test.ex ------
+------ two@myhost.test.ex ------
+------ one@myhost.test.ex ------
+
+This is some returned text.
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <CALLER@myhost.test.ex>
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Here's another message.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbD-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+X-Failed-Recipients: userz@myhost.test.ex,
+  usery@myhost.test.ex,
+  userx@myhost.test.ex
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: CALLER@myhost.test.ex
+Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This message was created automatically by mail delivery software.
+
+A message that you sent could not be delivered to one or more of its
+recipients. This is a permanent error. The following address(es) failed:
+
+  userz@myhost.test.ex
+    local delivery failed
+  usery@myhost.test.ex
+    local delivery failed
+  userx@myhost.test.ex
+    local delivery failed
+
+The following text was generated during the delivery attempts:
+
+------ userz@myhost.test.ex ------
+------ usery@myhost.test.ex ------
+------ userx@myhost.test.ex ------
+
+This script generates this message and returns the value of its argument.
+
+------ This is a copy of the message, including all the headers. ------
+
+Return-path: <CALLER@myhost.test.ex>
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbC-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+ret: 99
+Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+More message 99
+

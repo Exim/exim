@@ -1,0 +1,60 @@
+# Exim test configuration 0447
+
+INSERT=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+
+# ----- Main settings -----
+
+qualify_domain = test.ex
+
+#----- Routers -----
+
+begin routers
+
+r0:
+  driver = dnslookup
+  domains = *.test.again.dns
+  transport = t1
+
+r1:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+# A connection timeout of 999999 turns connection refused into connection
+# timeout when running in the test harness.
+
+t1:
+  driver = smtp
+  hosts = 127.0.0.1
+  port = PORT_S
+  allow_localhost
+  connect_timeout = 999999s
+
+
+# ----- Retry -----
+
+begin retry
+
+INSERT
+#* timeout_dns     F,1d,13s
+* timeout_connect F,1d,1m
+* timeout         F,1d,2m
+* auth_failed     F,1d,10m
+* *               F,1d,3m
+
+
+# End

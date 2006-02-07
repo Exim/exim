@@ -1,0 +1,31 @@
+# Exim test configuration 3202
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+# Use first three components of address to select ACL
+acl_smtp_rcpt = acl_${sg{${tr{$sender_host_address}{.}{_}}}{^(.*)_.*\$}{\$1}}
+
+# ----- ACLs -----
+
+begin acl
+
+acl_1_1_1:
+  accept  hosts = net-testdb;defer
+
+acl_1_1_2:
+  deny    domains = testdb;defer
+
+acl_1_1_3:
+  require local_parts = testdb;defer
+
+
+# End

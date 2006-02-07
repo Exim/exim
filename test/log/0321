@@ -1,0 +1,6 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 ** |/bin/cat /etc/aliases @test.ex <|/bin/cat\ /etc/aliases\ @test.ex> R=r1 T=pipe: Child process of pipe transport returned 127 (could mean unable to exec or command does not exist) from command: /non/exist/command
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@test.ex> R=r2 T=local_delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

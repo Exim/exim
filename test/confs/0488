@@ -1,0 +1,30 @@
+# Exim test configuration 0488
+
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = a1
+queue_only
+
+
+# ----- ACL -----
+
+begin acl
+
+a1:
+  warn message = X-1: first\nX-2: second\nX-3: third
+  warn message = X-1: first
+  warn message = X-4: continued\n with some more text
+  accept
+
+# End

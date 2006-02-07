@@ -1,0 +1,40 @@
+# Exim test configuration 5103
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = $h_transport:
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = lmtp
+  command = DIR/bin/mtpscript DIR/aux-fixed/TESTNUM.script +DIR/spool/log/mainlog
+  transport_filter = /non/existent/file
+
+
+# ----- Retry -----
+
+begin retry
+
+* *  F,1d,1d
+
+# End

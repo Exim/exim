@@ -1,0 +1,56 @@
+# Exim test configuration 0209
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_recipient
+domainlist local_domains = test.ex
+qualify_domain = test.ex
+queue_run_in_order
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  accept  hosts = :
+  accept  domains = +local_domains
+  deny    message = relay not permitted
+
+
+# ----- Routers -----
+
+begin routers
+
+others:
+  driver = manualroute
+  domains = ! +local_domains
+  route_list = * 127.0.0.1 byname
+  self = send
+  transport = smtp
+  no_more
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_S
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,8h
+
+
+# End

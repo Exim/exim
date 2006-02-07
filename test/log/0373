@@ -1,0 +1,1 @@
+1999-03-02 09:44:33 H=[V4NET.0.0.0] U=CALLER temporarily rejected connection in "connect" ACL: failed to expand ACL string "${readsocket{TESTSUITE/test-socket}{QUERY-ACL\n}{2s}{*EOL*}}": socket read timed out

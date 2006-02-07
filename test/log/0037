@@ -1,0 +1,153 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 "Test 1" first delivery
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userz <system-filter> R=user_accept1 T=appendfile
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 "should fail this" first delivery
+1999-03-02 09:44:33 10HmaY-0005vi-00 cancelled by system filter: subject was	"should fail this" (filter fail)
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userz <system-filter> R=user_accept1 T=appendfile
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 "Mail delivery failed: returning message to sender" first delivery
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 "should freeze this" first delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 => userz <system-filter> R=user_accept1 T=appendfile
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 "Message frozen" first delivery
+1999-03-02 09:44:33 10HmbB-0005vi-00 => postmaster <postmaster@test.ex> R=user_accept1 T=appendfile
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbA-0005vi-00 Frozen by the system filter: subject was "should freeze this"\nHere are two extra\nlines of text
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 "reply to this" first delivery
+1999-03-02 09:44:33 10HmbC-0005vi-00 => userz <system-filter> R=user_accept1 T=appendfile
+1999-03-02 09:44:33 10HmbC-0005vi-00 => userx <userx@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= <> R=10HmbC-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 "An auto reply: qualify_domain=test.ex" first delivery
+1999-03-02 09:44:33 10HmbD-0005vi-00 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbC-0005vi-00 => >CALLER@test.ex <system-filter> T=address_reply
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 "should give filter error (1)" first delivery
+1999-03-02 09:44:33 10HmbE-0005vi-00 ** |cat <filter-pipe@test.ex> R=userfilter: delivery to pipe forbidden
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= <> R=10HmbE-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 "Mail delivery failed: returning message to sender" first delivery
+1999-03-02 09:44:33 10HmbF-0005vi-00 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbG-0005vi-00 "should give filter error (2)" first delivery
+1999-03-02 09:44:33 10HmbG-0005vi-00 ** /tmp/junk <filter-file@test.ex> R=userfilter: delivery to file forbidden
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= <> R=10HmbG-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbH-0005vi-00 "Mail delivery failed: returning message to sender" first delivery
+1999-03-02 09:44:33 10HmbH-0005vi-00 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbI-0005vi-00 "should give filter error (3)" first delivery
+1999-03-02 09:44:33 10HmbI-0005vi-00 == filter-lookup@test.ex R=userfilter defer (-17): error in filter file: failed to expand "${lookup{$local_part}lsearch{/etc/passwd}{$value}fail}" in deliver command: lookup expansions are not permitted
+1999-03-02 09:44:33 10HmbI-0005vi-00 ** filter-lookup@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmbJ-0005vi-00 <= <> R=10HmbI-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbJ-0005vi-00 "Mail delivery failed: returning message to sender" first delivery
+1999-03-02 09:44:33 10HmbJ-0005vi-00 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbK-0005vi-00 "should give filter error (4)" first delivery
+1999-03-02 09:44:33 10HmbK-0005vi-00 == filter-exists@test.ex R=userfilter defer (-17): error in filter file: failed to expand "${if exists{/tmp/junk}{abc}{def}}" in deliver command: File existence tests are not permitted
+1999-03-02 09:44:33 10HmbK-0005vi-00 ** filter-exists@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmbL-0005vi-00 <= <> R=10HmbK-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbL-0005vi-00 "Mail delivery failed: returning message to sender" first delivery
+1999-03-02 09:44:33 10HmbL-0005vi-00 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbM-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbM-0005vi-00 "should give filter error (5)" first delivery
+1999-03-02 09:44:33 10HmbM-0005vi-00 == filter-readfile@test.ex R=userfilter defer (-17): error in filter file: failed to expand "${readfile{/some/file}}" in deliver command: file insertions are not permitted
+1999-03-02 09:44:33 10HmbM-0005vi-00 ** filter-readfile@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmbN-0005vi-00 <= <> R=10HmbM-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbN-0005vi-00 "Mail delivery failed: returning message to sender" first delivery
+1999-03-02 09:44:33 10HmbN-0005vi-00 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbO-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbO-0005vi-00 "should give filter error (6)" first delivery
+1999-03-02 09:44:33 10HmbO-0005vi-00 == filter-run@test.ex R=userfilter defer (-17): error in filter file: failed to expand "${run{/some/script}}" in deliver command: running a command is not permitted
+1999-03-02 09:44:33 10HmbO-0005vi-00 ** filter-run@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmbP-0005vi-00 <= <> R=10HmbO-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbP-0005vi-00 "Mail delivery failed: returning message to sender" first delivery
+1999-03-02 09:44:33 10HmbP-0005vi-00 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbP-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbQ-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbQ-0005vi-00 "should give rise to vacation message" first delivery
+1999-03-02 09:44:33 10HmbR-0005vi-00 <= <> R=10HmbQ-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbR-0005vi-00 "On vacation" first delivery
+1999-03-02 09:44:33 10HmbR-0005vi-00 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbR-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbQ-0005vi-00 => >CALLER@test.ex <filter-vacation@test.ex> R=userfilter T=address_reply
+1999-03-02 09:44:33 10HmbQ-0005vi-00 Completed
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbA-0005vi-00 Message is frozen
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 10HmbA-0005vi-00 Message is frozen
+1999-03-02 09:44:33 End queue run: pid=pppp
+1999-03-02 09:44:33 Start queue run: pid=pppp -qff
+1999-03-02 09:44:33 10HmbA-0005vi-00 Unfrozen by forced delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 "should freeze this" not first delivery
+1999-03-02 09:44:33 10HmbA-0005vi-00 => userx <userx@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qff
+1999-03-02 09:44:33 10HmbS-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbS-0005vi-00 "should freeze this" first delivery
+1999-03-02 09:44:33 10HmbS-0005vi-00 => userz <system-filter> R=user_accept1 T=appendfile
+1999-03-02 09:44:33 10HmbT-0005vi-00 <= <> R=10HmbS-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbT-0005vi-00 "Message frozen" first delivery
+1999-03-02 09:44:33 10HmbT-0005vi-00 => postmaster <postmaster@test.ex> R=user_accept1 T=appendfile
+1999-03-02 09:44:33 10HmbT-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbS-0005vi-00 Frozen by the system filter: subject was "should freeze this"\nHere are two extra\nlines of text
+1999-03-02 09:44:33 Start queue run: pid=pppp -qqff -R userx
+1999-03-02 09:44:33 10HmbS-0005vi-00 Unfrozen by forced delivery
+1999-03-02 09:44:33 10HmbS-0005vi-00 "should freeze this" not first delivery
+1999-03-02 09:44:33 10HmbS-0005vi-00 => userx <userx@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbS-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qqff -R userx
+1999-03-02 09:44:33 10HmbU-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbU-0005vi-00 "" first delivery
+1999-03-02 09:44:33 10HmbU-0005vi-00 == readfile@test.ex R=fail_read_filter defer (-17): error in filter file: failed to expand "${readfile{TESTSUITE/test-private}}" in filter file: failed to open TESTSUITE/test-private: Permission denied (euid=CALLER_UID egid=CALLER_GID)
+1999-03-02 09:44:33 10HmbU-0005vi-00 => userz <system-filter> R=user_accept1 T=appendfile
+1999-03-02 09:44:33 10HmbU-0005vi-00 ** readfile@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmbV-0005vi-00 <= <> R=10HmbU-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbV-0005vi-00 "Mail delivery failed: returning message to sender" first delivery
+1999-03-02 09:44:33 10HmbV-0005vi-00 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbV-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbU-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbW-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbW-0005vi-00 original recipients ignored (system filter)
+1999-03-02 09:44:33 10HmbW-0005vi-00 => dff <system-filter> R=check_vars T=appendfile
+1999-03-02 09:44:33 10HmbW-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbX-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbX-0005vi-00 "" first delivery
+1999-03-02 09:44:33 10HmbX-0005vi-00 => userx <filter-userx@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmbX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbY-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbY-0005vi-00 "should defer this" first delivery
+1999-03-02 09:44:33 10HmbY-0005vi-00 Delivery deferred by system filter
+1999-03-02 09:44:33 10HmbY-0005vi-00 => userz <system-filter> R=user_accept1 T=appendfile
+1999-03-02 09:44:33 10HmbZ-0005vi-00 <= never_mail@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbZ-0005vi-00 "should give rise to vacation message" first delivery
+1999-03-02 09:44:33 10HmbZ-0005vi-00 => >never_mail@test.ex <filter-vacation@test.ex> R=userfilter T=address_reply
+1999-03-02 09:44:33 10HmbZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcA-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmcA-0005vi-00 "should give filter error (7)" first delivery
+1999-03-02 09:44:33 10HmcA-0005vi-00 == filter-stat@test.ex R=userfilter defer (-17): error in filter file: failed to expand "${if eq{${stat:/tmp/junk}}{}{abc}{def}}" in deliver command: Use of the stat() expansion is not permitted
+1999-03-02 09:44:33 10HmcA-0005vi-00 ** filter-stat@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmcB-0005vi-00 <= <> R=10HmcA-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmcB-0005vi-00 "Mail delivery failed: returning message to sender" first delivery
+1999-03-02 09:44:33 10HmcB-0005vi-00 => CALLER <CALLER@test.ex> R=user_accept2 T=appendfile
+1999-03-02 09:44:33 10HmcB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmcA-0005vi-00 Completed
