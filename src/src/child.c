@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/child.c,v 1.7 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/child.c,v 1.8 2006/02/07 14:05:17 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -292,14 +292,48 @@ otherwise. Save the old state for resetting on the wait. */
 oldsignal = signal(SIGCHLD, SIG_DFL);
 pid = fork();
 
-/* The child process becomes a process group leader if requested, and then
-organizes the pipes. Any unexpected failure is signalled with EX_EXECFAILED;
-these are all "should never occur" failures, except perhaps for exec failing
-because the command doesn't exist. */
+/* Handle the child process. First, set the required environment. We must do
+this before messing with the pipes, in order to be able to write debugging
+output when things go wrong. */
 
 if (pid == 0)
   {
-  if (make_leader && setpgid(0,0) < 0) goto CHILD_FAILED;
+  signal(SIGUSR1, SIG_IGN);
+
+  if (newgid != NULL && setgid(*newgid) < 0)
+    {
+    DEBUG(D_any) debug_printf("failed to set gid=%ld in subprocess: %s\n",
+      (long int)(*newgid), strerror(errno));
+    goto CHILD_FAILED;
+    }
+
+  if (newuid != NULL && setuid(*newuid) < 0)
+    {
+    DEBUG(D_any) debug_printf("failed to set uid=%ld in subprocess: %s\n",
+      (long int)(*newuid), strerror(errno));
+    goto CHILD_FAILED;
+    }
+
+  (void)umask(newumask);
+
+  if (wd != NULL && Uchdir(wd) < 0)
+    {
+    DEBUG(D_any) debug_printf("failed to chdir to %s: %s\n", wd,
+      strerror(errno));
+    goto CHILD_FAILED;
+    }
+
+  /* Becomes a process group leader if requested, and then organize the pipes.
+  Any unexpected failure is signalled with EX_EXECFAILED; these are all "should
+  never occur" failures, except for exec failing because the command doesn't
+  exist. */
+
+  if (make_leader && setpgid(0,0) < 0)
+    {
+    DEBUG(D_any) debug_printf("failed to set group leader in subprocess: %s\n",
+      strerror(errno));
+    goto CHILD_FAILED;
+    }
 
   (void)close(inpfd[pipe_write]);
   force_fd(inpfd[pipe_read], 0);
@@ -310,17 +344,6 @@ if (pid == 0)
   (void)close(2);
   (void)dup2(1, 2);
 
-  /* Set the required environment. */
-
-  signal(SIGUSR1, SIG_IGN);
-  if (newgid != NULL && setgid(*newgid) < 0) goto CHILD_FAILED;
-  if (newuid != NULL && setuid(*newuid) < 0) goto CHILD_FAILED;
-  (void)umask(newumask);
-
-  /* Set the working directory if required */
-
-  if (wd != NULL && Uchdir(wd) < 0) goto CHILD_FAILED;
-
   /* Now do the exec */
 
   if (envp == NULL) execv(CS argv[0], (char *const *)argv);
@@ -328,7 +351,7 @@ if (pid == 0)
 
   /* Failed to execv. Signal this failure using EX_EXECFAILED. We are
   losing the actual errno we got back, because there is no way to return
-  this. */
+  this information. */
 
   CHILD_FAILED:
   _exit(EX_EXECFAILED);      /* Note: must be _exit(), NOT exit() */

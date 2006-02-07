@@ -19,3 +19,16 @@ PASS@some.host
 postmaster@test.ex
     <-- "REDIRECT postmaster@test.ex"@some.host
   router = pm, transport = null
+
+**** SMTP testing session as if from host V4NET.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello some.name [V4NET.2.3.4]
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+250 OK
+550 cannot route this one (FAIL)
+221 myhost.test.ex closing connection

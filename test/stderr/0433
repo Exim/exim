@@ -27,8 +27,8 @@ pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 LOG: MAIN
-  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1226 (IPv4)
-set_process_info: pppp daemon: no queue runs, listening for SMTP on port 1225 port 1226 (IPv4)
+  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1226
+set_process_info: pppp daemon: no queue runs, listening for SMTP on port 1225 port 1226
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 Exim version x.yz ....
@@ -61,8 +61,8 @@ pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 LOG: MAIN
-  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1226 (IPv4) [127.0.0.1]:1228
-set_process_info: pppp daemon: no queue runs, listening for SMTP on port 1225 port 1226 (IPv4) [127.0.0.1]:1228
+  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1226 [127.0.0.1]:1228
+set_process_info: pppp daemon: no queue runs, listening for SMTP on port 1225 port 1226 [127.0.0.1]:1228
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...
 Exim version x.yz ....
@@ -97,7 +97,7 @@ pid written to TESTSUITE/spool/exim-daemon.pid
 changed uid/gid: running as a daemon
   uid=EXIM_UID gid=EXIM_GID pid=pppp
 LOG: MAIN
-  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1226 (IPv4)
-set_process_info: pppp daemon: no queue runs, listening for SMTP on port 1225 port 1226 (IPv4)
+  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1226
+set_process_info: pppp daemon: no queue runs, listening for SMTP on port 1225 port 1226
 daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
 Listening...

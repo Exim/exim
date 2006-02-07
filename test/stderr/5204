@@ -14,7 +14,7 @@ local_part=DECLINE cannot route this one (DECLINE) domain=some.host
 checking domains
 calling q router
 q router called for "DECLINE cannot route this one (DECLINE)"@some.host: domain = some.host
-uid=EXIM_UID gid=EXIM_GID current_directory=/
+requires uid=EXIM_UID gid=EXIM_GID current_directory=/
 command wrote: DECLINE cannot route this one (DECLINE)
 q router declined for "DECLINE cannot route this one (DECLINE)"@some.host
 "more" is false: skipping remaining routers
@@ -34,7 +34,7 @@ local_part=FAIL cannot route this one (FAIL) domain=some.host
 checking domains
 calling q router
 q router called for "FAIL cannot route this one (FAIL)"@some.host: domain = some.host
-uid=EXIM_UID gid=EXIM_GID current_directory=/
+requires uid=EXIM_UID gid=EXIM_GID current_directory=/
 command wrote: FAIL cannot route this one (FAIL)
 q router forced address failure
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=2 >>>>>>>>>>>>>>>>
@@ -52,7 +52,7 @@ local_part=ERROR cannot route this one (ERROR) domain=some.host
 checking domains
 calling q router
 q router called for "ERROR cannot route this one (ERROR)"@some.host: domain = some.host
-uid=EXIM_UID gid=EXIM_GID current_directory=/
+requires uid=EXIM_UID gid=EXIM_GID current_directory=/
 command wrote: ERROR cannot route this one (ERROR)
 LOG: PANIC
   q router: bad command yield: ERROR cannot route this one (ERROR)
@@ -73,7 +73,7 @@ local_part=DEFER cannot route this one (DEFER) domain=some.host
 checking domains
 calling q router
 q router called for "DEFER cannot route this one (DEFER)"@some.host: domain = some.host
-uid=EXIM_UID gid=EXIM_GID current_directory=/
+requires uid=EXIM_UID gid=EXIM_GID current_directory=/
 command wrote: DEFER cannot route this one (DEFER)
 q router: defer for "DEFER cannot route this one (DEFER)"@some.host
   message: cannot route this one (DEFER)
@@ -92,7 +92,7 @@ local_part=ACCEPT transport = other_smtp hosts=ten-1.test.ex domain=some.host
 checking domains
 calling q router
 q router called for "ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host: domain = some.host
-uid=EXIM_UID gid=EXIM_GID current_directory=/
+requires uid=EXIM_UID gid=EXIM_GID current_directory=/
 command wrote: ACCEPT transport = other_smtp hosts=ten-1.test.ex
 finding IP address for ten-1.test.ex
 doing DNS lookup
@@ -119,7 +119,7 @@ local_part=PASS domain=some.host
 checking domains
 calling q router
 q router called for PASS@some.host: domain = some.host
-uid=EXIM_UID gid=EXIM_GID current_directory=/
+requires uid=EXIM_UID gid=EXIM_GID current_directory=/
 command wrote: PASS
 q router passed for PASS@some.host
 --------> s router <--------
@@ -158,7 +158,7 @@ local_part=FREEZE cannot route this one (FREEZE) domain=some.host
 checking domains
 calling q router
 q router called for "FREEZE cannot route this one (FREEZE)"@some.host: domain = some.host
-uid=EXIM_UID gid=EXIM_GID current_directory=/
+requires uid=EXIM_UID gid=EXIM_GID current_directory=/
 command wrote: FREEZE cannot route this one (FREEZE)
 q router: defer for "FREEZE cannot route this one (FREEZE)"@some.host
   message: cannot route this one (FREEZE)
@@ -177,7 +177,7 @@ local_part=REDIRECT postmaster@test.ex domain=some.host
 checking domains
 calling q router
 q router called for "REDIRECT postmaster@test.ex"@some.host: domain = some.host
-uid=EXIM_UID gid=EXIM_GID current_directory=/
+requires uid=EXIM_UID gid=EXIM_GID current_directory=/
 command wrote: REDIRECT postmaster@test.ex
 rda_interpret (string): postmaster@test.ex
 expanded: postmaster@test.ex
@@ -216,4 +216,49 @@ domain = test.ex
 routed by pm router
   envelope to: postmaster@test.ex
   transport: null
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.2.3.4]
+host in host_lookup? no (option unset)
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+some.name in helo_lookup_domains? no (end of list)
+host in pipelining_advertise_hosts? yes (matched "*")
+processing "accept"
+check verify = recipient
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing "FAIL cannot route this one (FAIL)"@some.host
+--------> b router <--------
+local_part=fail cannot route this one (fail) domain=some.host
+checking senders
+y in ""? no (end of list)
+x@y in ":"? no (end of list)
+b router skipped: senders mismatch
+--------> q router <--------
+local_part=FAIL cannot route this one (FAIL) domain=some.host
+checking domains
+some.host in "test.ex"? no (end of list)
+some.host in "! +local_domains"? yes (end of list)
+calling q router
+q router called for "FAIL cannot route this one (FAIL)"@some.host: domain = some.host
+requires uid=CALLER_UID gid=CALLER_GID current_directory=/
+not running as root: cannot change uid/gid
+subprocess will run with uid=EXIM_UID gid=EXIM_GID
+command wrote: FAIL cannot route this one (FAIL)
+q router forced address failure
+----------- end verify ------------
+accept: condition test failed
+end of inline ACL: implicit DENY
+LOG: MAIN REJECT
+  H=(some.name) [V4NET.2.3.4] F=<x@y> rejected RCPT <"FAIL cannot route this one (FAIL)"@some.host>: cannot route this one (FAIL)
+LOG: smtp_connection MAIN
+  SMTP connection from (some.name) [V4NET.2.3.4] closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

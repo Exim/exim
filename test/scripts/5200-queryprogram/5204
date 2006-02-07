@@ -1,4 +1,4 @@
-# queryprogram
+# queryprogram general tests
 1
 exim -bt '"ACCEPT hosts=localhost lookup=byname"@some.host'
 ****
@@ -25,4 +25,10 @@ exim -d-all+route -bt '"REDIRECT postmaster@test.ex"@some.host'
 ****
 exim -odi '"FAIL cannot route this one (FAIL)"@some.host'
 Test message
+****
+exim -DCOMMAND_USER=CALLER -d-all+route -bh V4NET.2.3.4
+ehlo some.name
+mail from:<x@y>
+rcpt to:<"FAIL cannot route this one (FAIL)"@some.host>
+quit
 ****

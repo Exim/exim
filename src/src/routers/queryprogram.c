@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/queryprogram.c,v 1.7 2006/02/07 11:19:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/queryprogram.c,v 1.8 2006/02/07 14:05:17 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -198,8 +198,12 @@ queryprogram_router_options_block *ob =
   (queryprogram_router_options_block *)(rblock->options_block);
 uschar *current_directory = ob->current_directory;
 ugid_block ugid;
+uid_t curr_uid = getuid();
+gid_t curr_gid = getgid();
 uid_t uid = ob->cmd_uid;
 gid_t gid = ob->cmd_gid;
+uid_t *puid = &uid;
+gid_t *pgid = &gid;
 
 DEBUG(D_route) debug_printf("%s router called for %s: domain = %s\n",
   rblock->name, addr->address, addr->domain);
@@ -250,8 +254,23 @@ if (!ob->cmd_gid_set)
     }
   }
 
-DEBUG(D_route) debug_printf("uid=%ld gid=%ld current_directory=%s\n",
+DEBUG(D_route) debug_printf("requires uid=%ld gid=%ld current_directory=%s\n",
   (long int)uid, (long int)gid, current_directory);
+
+/* If we are not running as root, we will not be able to change uid/gid. */
+
+if (curr_uid != root_uid && (uid != curr_uid || gid != curr_gid))
+  {
+  DEBUG(D_route)
+    {
+    debug_printf("not running as root: cannot change uid/gid\n");
+    debug_printf("subprocess will run with uid=%ld gid=%ld\n",
+      (long int)curr_uid, (long int)curr_gid);
+    }
+  puid = pgid = NULL;
+  }
+
+/* Set up the command to run */
 
 if (!transport_set_up_command(&argvptr, /* anchor for arg list */
     ob->command,                        /* raw command */
@@ -266,7 +285,7 @@ if (!transport_set_up_command(&argvptr, /* anchor for arg list */
 
 /* Create the child process, making it a group leader. */
 
-pid = child_open_uid(argvptr, NULL, 0077, &uid, &gid, &fd_in, &fd_out,
+pid = child_open_uid(argvptr, NULL, 0077, puid, pgid, &fd_in, &fd_out,
   current_directory, TRUE);
 
 if (pid < 0)
