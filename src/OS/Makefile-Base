@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.9 2005/09/16 14:44:11 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.10 2006/02/07 14:20:58 ph10 Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -727,7 +727,7 @@ test_dbfn:   config.h dbfn.c dummies.o sa-globals.o sa-os.o store.o \
 	  tod.o version.o $(LIBS) $(DBMLIB)
 	rm -f dbfn.o
 
-test_host:   config.h child.c host.c dns.c dummies.c sa-globals.o sa-os.o \
+test_host:   config.h child.c host.c dns.c dummies.c sa-globals.o os.o \
 	       store.o string.o tod.o tree.o
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE -DTEST_HOST child.c
 	$(CC) -c $(CFLAGS) $(INCLUDE) -DSTAND_ALONE -DTEST_HOST host.c

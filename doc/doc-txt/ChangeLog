@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.284 2006/02/07 14:05:17 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.285 2006/02/07 14:20:58 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -85,6 +85,9 @@ PH/14 When a uid/gid is specified for the queryprogram router, it cannot be
       (b) The queryprogram router detects when it is not running as root,
           outputs suitable debugging information if -d is set, and then runs
           the subprocess without attempting to change uid/gid.
+
+PH/15 Minor change to Makefile for building test_host (undocumented testing
+      feature).
 
 
 Exim version 4.60
