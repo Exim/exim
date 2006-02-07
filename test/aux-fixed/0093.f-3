@@ -1,0 +1,20 @@
+#Exim filter
+
+testprint "From: is ${if def:h_from:{}{not }}defined"
+testprint "Absent: is ${if def:h_absent:{}{not }}defined"
+testprint "----------------------"
+testprint $message_headers
+testprint "----------------------"
+testprint $message_headers+++more
+testprint "----------------------"
+testprint "+++$message_headers+++"
+testprint "----------------------"
+testprint "From: >$h_from:<"
+testprint $h_repeated:
+testprint "----------------------"
+testprint +++$header_repeated:+++
+testprint "----------------------"
+testprint reply_address=$reply_address
+testprint empty=>$h_empty:<
+testprint repeated-empty=>$h_repeated-empty:<
+testprint "----------------------"

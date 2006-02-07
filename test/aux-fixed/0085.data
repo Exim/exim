@@ -1,0 +1,3 @@
+smart.domain:  x : y : abc@d.e.f
+test.ex:       x : y : abc@d.e.f
+test.ex.files: /etc/passwd

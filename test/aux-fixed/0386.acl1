@@ -1,0 +1,8 @@
+accept  hosts = :
+deny    local_parts   = ^.*[@%!/|]
+require log_message     = Invalid sender
+        message = Couldn't verify the sender
+# This is a comment         
+        verify  = sender/defer_ok
+
+deny    message       = No such user here

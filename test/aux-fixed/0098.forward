@@ -1,0 +1,7 @@
+# Exim filter
+
+if error_message then finish endif
+
+# This forward is to a pipe that isn't going to work
+
+pipe /non/existing/file

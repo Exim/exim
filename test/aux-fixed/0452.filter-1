@@ -1,0 +1,12 @@
+# Exim filter
+
+mail 
+  to $sender_address
+  subject "Auto generated"
+  text    "This is some body text"
+  extra_headers "h1: the first added header\n\
+                 h2: the second added header\n \
+                   continued on another line\n\
+                 h3: the third added header"
+           
+# End           

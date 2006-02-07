@@ -1,0 +1,8 @@
+# This is an ACL in a file for testing continuations
+
+deny  message = This is a message which \   
+                is continued over several \
+  # comment
+                lines, with an interspersed comment\
+                
+deny  message = This line should not be joined onto the above 

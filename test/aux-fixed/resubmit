@@ -1,0 +1,23 @@
+#! /usr/bin/perl -w
+
+# A test script that reads a message and resubmits it to Exim (having 
+# notionally checked it - but there's no checking here).
+
+# The message is on the standard input.
+# The sender is in the first argument.
+# The recipients are comma separated in the second argument.
+# The number of the test is in the third argument - so we can call Exim
+# with the appropriate configuration file.
+
+($sender,$recipients,$dir,$caller) = @ARGV;
+
+$cmd = 
+  "$dir/eximdir/exim -C $dir/test-config -DCALLER=$caller -DDIR=$dir " .
+  "-DEXIM_PATH=$dir/eximdir/exim " . 
+  "-odi -oi -oMr scanned-ok -f $sender '$recipients'";
+
+open(OUT, "|$cmd") || die "Failed to set up Exim process\n";
+print OUT while (<STDIN>);
+close(OUT);
+
+# End

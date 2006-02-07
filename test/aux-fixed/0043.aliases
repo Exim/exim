@@ -1,0 +1,2 @@
+postmaster: userx
+fail:       :fail: this alias is forced to fail

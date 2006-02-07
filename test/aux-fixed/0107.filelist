@@ -1,0 +1,12 @@
+# These are used relative to the test suite directory
+userx:   test-empty/userx
+usery:   test-mail/../test-empty/usery
+sub1:    test-mail/s/sub1
+sub2:    test-empty/s/sub2
+sub3:    test-mail/link/sub3
+
+maildir-userx:   test-empty
+maildir-usery:   test-mail/../test-empty
+maildir-sub1:    test-mail/s
+maildir-sub2:    test-empty/s
+maildir-sub3:    test-mail/link

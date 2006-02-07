@@ -1,0 +1,4 @@
+# Exim filter
+
+testprint "Body: $message_body"
+testprint "End:  $message_body_end"

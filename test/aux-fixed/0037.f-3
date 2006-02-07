@@ -1,0 +1,5 @@
+# Exim filter
+
+deliver root@$qualify_domain errors_to root@$primary_hostname
+
+testprint End

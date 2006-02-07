@@ -1,0 +1,9 @@
+# List of addresses to reject.
+# Must have space after # because it is legal in
+# local parts.
+#
+rr01@a.b.c    # comment
+!^qqq
+^qq
+^!excl
+sh#rp@y.p.s

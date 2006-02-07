@@ -1,0 +1,9 @@
+# Exim filter - testing user filter
+
+testprint "--------User filter---------"
+testprint "Sender:  $sender_address"
+testprint "Subject:  $header_Subject:"
+testprint "Body:     $message_body"
+testprint "X-Header: $h_X-Header:"
+testprint "sn1:      $sn1"
+

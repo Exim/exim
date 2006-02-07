@@ -1,0 +1,7 @@
+# Exim filter
+
+testprint "Before fail"
+
+fail text "This is a forced failure"
+
+testprint End

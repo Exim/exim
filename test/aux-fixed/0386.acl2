@@ -1,0 +1,7 @@
+# Warn with a message that involves an expansion
+
+warn    message     = X-Warning: $sender_host_address is listed at $dnslist_domain\nX-Warning: $dnslist_text
+        log_message = found in $dnslist_domain: $dnslist_text
+ 
+        dnslists    = rbl.test.ex 
+accept

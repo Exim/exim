@@ -1,0 +1,5 @@
+#Exim filter
+
+if error_message then finish endif
+
+deliver unknown@test.ex errors_to forwarder@test.ex

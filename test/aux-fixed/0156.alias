@@ -1,0 +1,7 @@
+defer:      :defer: forced to defer
+fail:       :fail:  forced to fail
+blackhole:  :blackhole: black holed
+unknown:    :unknown:
+include:    :include:/etc/aliases
+pipe:       |/bin/date
+file:       /dev/null

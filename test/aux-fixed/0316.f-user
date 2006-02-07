@@ -1,0 +1,22 @@
+# Exim filter
+
+if foranyaddress "a@b, c@d" ( $thisaddress matches ^c ) then
+  testprint "1 Matched $thisaddress"
+endif   
+
+if foranyaddress "Group name: a@b, c@d;, cc@dd" ( $thisaddress matches ^c ) 
+then
+  testprint "2 Matched $thisaddress"
+endif   
+    
+if foranyaddress "Group name: a@b, c@d;, cc@dd" ( $thisaddress matches ^cc ) 
+then
+  testprint "3 Matched $thisaddress"
+endif   
+    
+if foranyaddress "Group name: a@b, c@d;, cc@dd, N2: e@f;, ee@ff" 
+  ( $thisaddress matches ^e ) 
+then
+  testprint "4 Matched $thisaddress"
+endif   
+    

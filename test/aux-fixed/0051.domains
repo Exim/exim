@@ -1,0 +1,5 @@
+# This is a comment
+domain1.ex
+!domain2.ex
+*.domain5.ex
+^domain6\..*\.ex

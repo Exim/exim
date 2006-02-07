@@ -1,0 +1,9 @@
+"xyz":          "xyz":
+"pqr"  :        "pqr"  :
+a:b             a:b unquoted
+"a:b"           "a:b"
+                abc continued data (make sure not key)
+"abc"           "abc"
+"\"quoted\""    "\"quoted\""       
+"white space"   "white space"
+"b\\s"          "b\\s"

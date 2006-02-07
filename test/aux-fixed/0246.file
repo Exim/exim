@@ -1,0 +1,3 @@
+>>>>>>>>>>>>>>
+${if exists{/source/exim4/AutoTest/aux/284.data}{${lookup{1}lsearch{/source/exim4/AutoTest/aux/284.data}{$value}{NOT FOUND}}}{NOT EXISTS}} 
+>>>>>>>>>>>>>>

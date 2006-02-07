@@ -1,0 +1,13 @@
+# Exim filter
+
+if personal alias abcdefgh@ifi.uio.no alias abcdefgh@student.matnat.uio.no 
+  alias xyz@fix.no alias xyzabcd@skjaeveland.com alias abcdefgh@e.fix.no 
+  alias abcdefgh@skjermbrev.com alias abcdefgh@b.b.cl 
+  alias abcdefgh@bzzzt.fix.no
+then
+  testprint "Personal"
+else
+  testprint "Not personal"
+endif      
+
+testprint "\\$home = $home"

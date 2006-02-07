@@ -1,0 +1,6 @@
+# Exim filter
+
+# The filter restricts strings to 1024, but we can get a longer one by
+# substituting a header line.
+
+freeze "X-Long header is >$h_X-Long:<"

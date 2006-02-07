@@ -1,0 +1,5 @@
+lp1 # this is a comment
+lp2
+# The # in the next line is not a comment
+lp#3
+lp#4# # but this is a comment

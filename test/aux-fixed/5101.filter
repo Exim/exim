@@ -1,0 +1,4 @@
+#! /bin/sh
+
+cat
+echo "Here's a new line."

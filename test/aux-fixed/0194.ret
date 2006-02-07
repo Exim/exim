@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo This script generates this message and returns the value of its argument.
+
+exit $1

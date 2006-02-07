@@ -1,0 +1,8 @@
+220 Welcome to this LMTP simulation
+LHLO
+250-Hello there
+250 SIZE
+MAIL FROM
+550 Don't like that sender
+QUIT
+250 OK

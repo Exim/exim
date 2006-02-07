@@ -1,0 +1,4 @@
+postmaster:    pm@p.q
+file:          /some/file
+fail:          :fail: forcible fail message
+defer:         :defer: forcible defer message

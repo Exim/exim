@@ -1,0 +1,7 @@
+#! /bin/sh
+
+echo abcd
+echo 1234
+
+exit $1
+

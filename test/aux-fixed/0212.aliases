@@ -1,0 +1,8 @@
+a:     a1, a2, a3
+a3:    :fail: bad user
+b:     b1
+f:     f1
+f1:    :fail: bad user
+p:     userx
+pipe:  |/bin/nosuchfile
+file:  /tmp/junk

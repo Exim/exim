@@ -1,0 +1,27 @@
+220 Welcome to this LMTP simulation
+LHLO
+250-Hello there
+250 SIZE
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+450 This one is delayed on RCPT
+RCPT TO
+550 This one is unknown on RCPT
+RCPT TO
+250 OK
+DATA
+354 Send it
+.
+250 Number 1 is OK
+450 Number 2 is now delayed
+550 Number 3 is now rejected
+250 Number 6 is OK
+QUIT
+250 OK

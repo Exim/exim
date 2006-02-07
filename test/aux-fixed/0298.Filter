@@ -1,0 +1,14 @@
+# Exim filter
+
+if error_message then finish endif
+
+if $recipients contains failure1 then
+
+fail "<<MSG1>>This message is being failed and there's a long and tortuous\n\
+      explanation about is that is being sent back to the user."
+      
+else
+
+fail "<<MSG2>>"
+
+endif 

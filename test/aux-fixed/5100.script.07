@@ -1,0 +1,20 @@
+220 Welcome to this LMTP simulation
+LHLO
+250-Hello there
+250 SIZE
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+450 This one is delayed on RCPT
+RCPT TO
+550 This one is unknown on RCPT
+RCPT TO
+250 OK
+DATA
+*sleep 5

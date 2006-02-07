@@ -1,0 +1,11 @@
+# Exim filter
+
+if error_message then finish endif
+
+if 
+  $local_part_suffix contains "page"
+then
+  unseen mail to userx text "callpager -r 108 PAGE:${l_50:$message_body}"
+endif
+
+# End   

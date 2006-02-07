@@ -1,0 +1,7 @@
+intermediate: final
+top1:         intermediate
+top2:         intermediate
+onelevel1:    final
+onelevel2:    final
+batch:        batch-a, batch-b
+c2:           clone

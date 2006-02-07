@@ -1,0 +1,80 @@
+# Exim filter
+
+add 1 to n3
+add 3 to n4
+add $n3 to n4
+add $n4 to n4
+add 6 to n$n3
+testprint "n0=$n0 n1=$n1 n3=$n3 n4=$n4"
+
+testprint "${run{/bin/sh -c 'pwd'}}"
+
+deliver root@$qualify_domain
+save /tmp/$primary_hostname 444
+save /tmp/$qualify_domain 
+pipe "/tmp/$primary_hostname"
+
+logfile /tmp/logfile logwrite "this is log text: $qualify_domain"
+
+if $qualify_domain contains $qualify_domain then
+  testprint "yes"
+else
+  testprint "no"
+endif      
+
+if $qualify_domain CONTAINS $qualify_domain then
+  testprint "yes"
+else
+  testprint "no"
+endif      
+
+if $qualify_domain contains ${uc:$qualify_domain} then
+  testprint "yes"
+else
+  testprint "no"
+endif      
+
+if $qualify_domain does not contain ${uc:$qualify_domain} then
+  testprint "no"
+else
+  testprint "yes"
+endif      
+
+if $qualify_domain DOES NOT CONTAIN ${uc:$qualify_domain} then
+  testprint "no"
+else
+  testprint "yes"
+endif      
+
+if $qualify_domain CONTAINS ${uc:$qualify_domain} then
+  testprint "yes"
+else
+  testprint "no"
+endif      
+
+if $qualify_domain is $qualify_domain then
+  testprint "qualify_domain is qualify_domain"
+else   
+  testprint "NOT qualify_domain is qualify_domain"
+endif   
+
+if $qualify_domain IS $qualify_domain then
+  testprint "qualify_domain IS qualify_domain"
+else   
+  testprint "NOT qualify_domain IS qualify_domain"
+endif   
+
+if $qualify_domain is not $qualify_domain then
+  testprint "qualify_domain is not qualify_domain"
+else   
+  testprint "NOT qualify_domain is not qualify_domain"
+endif   
+
+if $qualify_domain IS NOT $qualify_domain then
+  testprint "qualify_domain IS NOT qualify_domain"
+else   
+  testprint "NOT qualify_domain IS NOT qualify_domain"
+endif   
+
+
+

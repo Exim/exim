@@ -1,0 +1,21 @@
+# Exim system filter file for XXX
+
+if $h_X-XXX-Original-Host: is not "" then
+  unseen mail to $return_path from Mailer-Daemon reply_to postmaster
+  subject "Submission of mail from $return_path directly to the XXX hosts"
+  text "You sent the message below from the host\n\
+        \n  $h_X-XXX-Original-Host:\n\n\
+        directly to one of the XXX hosts. It will be delivered without any further\n\
+        action on your part.\n\n\
+        However, this indicates some mis-configuration, as new mail should be sent\n\
+        (if XXX is involved at all) to smtp.xxx.example, which no longer refers\n\
+        to the XXX hosts. It may be that your mail user agent has been configured to\n\
+        use (for example) xxx.example or pop.xxx.example where smtp.xxx.example\n\
+        would have been correct.\n\n\
+        Eventually attempts to send messages directly to the XXX hosts in this way\n\
+        will be rejected. You should modify the configuration of your mail user agent\n\
+        to correct the fault described above."
+  return message
+  headers remove X-XXX-Original-Host
+endif
+

@@ -1,0 +1,19 @@
+# Exim filter
+
+if 
+  $sender_host_authenticated is not "" 
+then
+  headers add "X-Host-Authenticated: $sender_host_authenticated"
+endif   
+
+if
+  $authenticated_sender is not ""
+then
+  headers add "X-Authenticated-Sender: $authenticated_sender"
+endif      
+
+if
+  $authenticated_id is not ""
+then
+  headers add "X-Authenticated-ID: $authenticated_id"
+endif      

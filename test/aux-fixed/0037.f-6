@@ -1,0 +1,11 @@
+# Exim filter
+
+if $h_subject: is "This is a very long string which isn't likely to occur when\
+  testing for a fixed string, but might happen if a long and complicated\
+  regular expression and/or lookup gets used in somebody's filter file.\
+  Originally the limit was 256 characters, but now we have increased it to\
+  a larger figure. This should exceed the old limit and check that the new\
+  limit is in place."
+then
+  testprint "Won't happen"
+endif   

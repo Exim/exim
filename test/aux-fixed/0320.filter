@@ -1,0 +1,11 @@
+# Exim filter
+
+if error_message then finish endif
+
+if $h_subject: contains "discard" then seen finish endif
+
+if $h_subject: contains "file" then
+  save /source/exim4/AutoTest/test-mail/saved
+endif   
+
+finish

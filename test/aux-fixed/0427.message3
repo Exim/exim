@@ -1,0 +1,20 @@
+From offerqn@bpk.example.com Wed Feb 05 10:47:05 2003
+Subject: =?iso-8859-1?q?abcdef?=
+	=?iso-8859-1?q?ghi?=
+X-0: =?ISO-8859-1?Q?=00?=
+X-1: =?ISO-8859-1?Q?=31?=
+X-1b: =?ISO-8859-1?Q?=31=
+X-Wrapped: eins
+        zwei
+	drei
+X-NoMimeWrap: =?iso-8859-1?q?abc
+		def
+                ghi?=
+X-Mixed:  =?iso-8859-1?q?abc?=
+	def
+X-B64: =?iso-8859-1?b?VGhpcyBpcyBCQVNFNjQ=?=
+X-B64-Broken: =?iso-8859-1?b?VGhpcyBpcyBCQVNFNjQ?=
+X-Q75total: =?ISO-8859-1?Q?0123456789012345678901234567890123456789012345678901234567?=
+X-Q76total: =?ISO-8859-1?Q?01234567890123456789012345678901234567890123456789012345678?=
+
+empty body

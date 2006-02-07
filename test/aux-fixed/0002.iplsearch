@@ -1,0 +1,5 @@
+1.2.3.4:           data for 1.2.3.4
+"abcd::cdab":      data for abcd::cdab
+192.168.0.0/16     data for 192.168.0.0/16
+*:                 data for *
+"abcd:abcd::/32"   data for abcd:abcd::/32

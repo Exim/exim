@@ -1,0 +1,10 @@
+# Exim filter
+
+if error_message then finish endif
+
+mail 
+  to postmaster 
+  subject "Filter is freezing"
+  text "I've frozen something"   
+
+freeze "everything's freezing today"

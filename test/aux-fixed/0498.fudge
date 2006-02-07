@@ -1,0 +1,59 @@
+# This is a little perl script for test 581. It reads the first failed time
+# from test-stdout, turns it back into an integer, and forces the received
+# time in the -H file of the current message.
+
+use Time::Local;
+
+opendir(DIR, "spool/input");
+while (($_ = readdir(DIR)))
+  {
+  if (/.*-H$/)
+    {
+    $hfile = $_;
+    break;
+    }    
+  }
+closedir(DIR);    
+
+@months = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+
+open(IN, "test-stdout") || die "can't open test-stdout\n";
+
+$_ = <IN>;
+$_ = <IN>;
+$_ = <IN>;
+
+close(IN);
+
+($mday,$mon,$year,$hour,$min,$sec) = 
+  /(\d\d)-(\w\w\w)-(\d\d\d\d) (\d\d):(\d\d):(\d\d)/;
+  
+for ($i = 0; $i < 12; $i++)
+  {
+  if ($mon eq $months[$i])
+    {
+    $mon = $i;
+    break;  
+    }   
+  }
+  
+$t = timelocal($sec,$min,$hour,$mday,$mon,$year);
+
+open(IN, "spool/input/$hfile") || die "can't open spool/input/$hfile";
+
+open(OUT, ">test-H");
+
+$_ = <IN>; print OUT;
+$_ = <IN>; print OUT;
+$_ = <IN>; print OUT;
+$_ = <IN>;
+print OUT "$t 0\n";
+print OUT while (<IN>);
+
+close(IN);
+close(OUT);
+
+rename("test-H", "spool/input/$hfile") || die "rename failed\n";
+
+# End

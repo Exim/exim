@@ -1,0 +1,10 @@
+# Exim filter - testing system filter
+
+testprint "--------System filter---------"
+testprint "Sender:  $sender_address"
+testprint "Subject: $h_Subject:"
+testprint "Body:    $message_body"
+
+headers add "X-Header: Added in a system filter"
+add 3 to n1
+testprint "n1:      $n1"

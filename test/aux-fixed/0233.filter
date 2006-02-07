@@ -1,0 +1,6 @@
+if error_message then finish endif
+
+if $recipients contains userx then
+  mail to postmaster subject "System filter has frozen"
+  freeze "system filter freezes"
+endif   

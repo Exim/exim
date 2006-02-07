@@ -1,0 +1,38 @@
+#! /bin/sh
+
+# This script outputs certain information about the environment, for use when
+# testing pipe transports.
+
+echo Test pipe script
+echo Running as: `whoami`
+echo ------------------
+echo Args:
+while [ "$1" != "" ]; do
+  echo "  $1"
+  shift
+done
+echo ----------current-----------
+pwd
+echo ----------env-----------
+echo A=$A
+echo B=$B
+echo C=$C
+echo COLON=$COLON
+echo DOMAIN=$DOMAIN
+echo HOME=$HOME
+echo LOCAL_PART=$LOCAL_PART
+echo LOCAL_PART_PREFIX=$LOCAL_PART_PREFIX
+echo LOCAL_PART_SUFFIX=$LOCAL_PART_SUFFIX
+echo LOGNAME=$LOGNAME
+echo ME=$ME
+echo MESSAGE_ID=$MESSAGE_ID
+echo PATH=$PATH
+echo QUALIFY_DOMAIN=$QUALIFY_DOMAIN
+echo RECIPIENT=$RECIPIENT
+echo SENDER=$SENDER
+echo SHELL=$SHELL
+echo USER=$USER
+echo ----------cat-----------
+cat
+echo ------------------
+

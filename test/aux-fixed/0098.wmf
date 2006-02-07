@@ -1,0 +1,10 @@
+Subject: Warning: message $message_id delayed by $warn_message_delay
+****
+warn_message_delay      = $warn_message_delay
+warn_message_recipients = $warn_message_recipient
+warn_message_recipients = $warn_message_recipients
+warnmsg_delay           = $warnmsg_delay
+warnmsg_recipient       = $warnmsg_recipient
+warnmsg_recipients      = $warnmsg_recipients
+****
+Final stuff.
