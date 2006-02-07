@@ -17,6 +17,8 @@ local_part=ph domain=mxt1.test.ex
 checking domains
 DNS lookup of mxt1.test.ex (MX) using fakens
 DNS lookup of mxt1.test.ex (MX) succeeded
+DNS lookup of eximtesthost.test.ex (A) using fakens
+DNS lookup of eximtesthost.test.ex (A) succeeded
 local host has lowest MX
 host_find_bydns yield = HOST_FOUND_LOCAL (3); returned hosts:
   eximtesthost.test.ex ip4.ip4.ip4.ip4 MX=5 
@@ -25,6 +27,9 @@ mxt1.test.ex in "+anymx"? yes (matched "+anymx")
 checking "condition"
 DNS lookup of mxt1.test.ex (MX) using fakens
 DNS lookup of mxt1.test.ex (MX) succeeded
+DNS lookup of eximtesthost.test.ex-AAAA: using cached value DNS_NODATA
+DNS lookup of eximtesthost.test.ex (A) using fakens
+DNS lookup of eximtesthost.test.ex (A) succeeded
 local host has lowest MX
 host_find_bydns yield = HOST_FOUND_LOCAL (3); returned hosts:
   eximtesthost.test.ex ip4.ip4.ip4.ip4 MX=5 

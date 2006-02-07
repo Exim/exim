@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.20 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.21 2006/02/07 16:36:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2192,10 +2192,10 @@ return yield;
 *        Fill in a host address from the DNS     *
 *************************************************/
 
-/* Given a host item, with its name and mx fields set, and its address field
-set to NULL, fill in its IP address from the DNS. If it is multi-homed, create
-additional host items for the additional addresses, copying all the other
-fields, and randomizing the order.
+/* Given a host item, with its name, port and mx fields set, and its address
+field set to NULL, fill in its IP address from the DNS. If it is multi-homed,
+create additional host items for the additional addresses, copying all the
+other fields, and randomizing the order.
 
 On IPv6 systems, A6 records are sought first (but only if support for A6 is
 configured - they may never become mainstream), then AAAA records are sought,
@@ -2250,7 +2250,6 @@ if (allow_ip && string_is_ip_address(host->name, NULL) != 0)
   #endif
 
   host->address = host->name;
-  host->port = PORT_NONE;
   return HOST_FOUND;
   }
 
@@ -2360,7 +2359,6 @@ for (; i >= 0; i--)
           if (strcmpic(host->name, rr->name) != 0)
             host->name = string_copy_dnsdomain(rr->name);
           host->address = da->address;
-          host->port = PORT_NONE;
           host->sort_key = host->mx * 1000 + random_number(500) + randoffset;
           host->status = hstatus_unknown;
           host->why = hwhy_unknown;
@@ -2395,10 +2393,9 @@ for (; i >= 0; i--)
 
           if (new_sort_key < host->sort_key)
             {
-            *next = *host;
+            *next = *host;                                  /* Copies port */
             host->next = next;
             host->address = da->address;
-            host->port = PORT_NONE;
             host->sort_key = new_sort_key;
             if (thishostlast == host) thishostlast = next;  /* Local last */
             if (*lastptr == host) *lastptr = next;          /* Global last */
@@ -2415,10 +2412,9 @@ for (; i >= 0; i--)
               if (new_sort_key < h->next->sort_key) break;
               h = h->next;
               }
-            *next = *h;
+            *next = *h;                                 /* Copies port */
             h->next = next;
             next->address = da->address;
-            next->port = PORT_NONE;
             next->sort_key = new_sort_key;
             if (h == thishostlast) thishostlast = next; /* Local last */
             if (h == *lastptr) *lastptr = next;         /* Global last */
@@ -2439,15 +2435,15 @@ return (host->address == NULL)? HOST_IGNORED : HOST_FOUND;
 
 
 /*************************************************
-*  Find IP addresses and names for host via DNS  *
+*    Find IP addresses and host names via DNS    *
 *************************************************/
 
-/* The input is a host_item structure with the name filled in and the address
-field set to NULL. This may be in a chain of other host items. The lookup may
-result in more than one IP address, in which case we must created new host
-blocks for the additional addresses, and insert them into the chain. The
-original name may not be fully qualified. Use the fully_qualified_name argument
-to return the official name, as returned by the resolver.
+/* The input is a host_item structure with the name field filled in and the
+address field set to NULL. This may be in a chain of other host items. The
+lookup may result in more than one IP address, in which case we must created
+new host blocks for the additional addresses, and insert them into the chain.
+The original name may not be fully qualified. Use the fully_qualified_name
+argument to return the official name, as returned by the resolver.
 
 Arguments:
   host                  point to initial host item
@@ -2638,7 +2634,7 @@ for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
   {
   int precedence;
   int weight = 0;        /* For SRV records */
-  int port = PORT_NONE;  /* For SRV records */
+  int port = PORT_NONE;
   uschar *s;             /* MUST be unsigned for GETSHORT */
   uschar data[256];
 
@@ -2879,175 +2875,33 @@ if (ind_type == T_SRV)
     }   /* Move on to the next host */
   }
 
-/* Now we have to ensure addresses exist for all the hosts. We have ensured
-above that the names in the host items are all unique. The addresses may have
-been returned in the additional data section of the DNS query. Because it is
-more expensive to scan the returned DNS records (because you have to expand the
-names) we do a single scan over them, and multiple scans of the chain of host
-items (which is typically only 3 or 4 long anyway.) Add extra host items for
-multi-homed hosts. */
+/* Now we have to find IP addresses for all the hosts. We have ensured above
+that the names in all the host items are unique. Before release 4.61 we used to
+process records from the additional section in the DNS packet that returned the
+MX or SRV records. However, a DNS name server is free to drop any resource
+records from the additional section. In theory, this has always been a
+potential problem, but it is exacerbated by the advent of IPv6. If a host had
+several IPv4 addresses and some were not in the additional section, at least
+Exim would try the others. However, if a host had both IPv4 and IPv6 addresses
+and all the IPv4 (say) addresses were absent, Exim would try only for a IPv6
+connection, and never try an IPv4 address. When there was only IPv4
+connectivity, this was a disaster that did in practice occur.
 
-for (rr = dns_next_rr(&dnsa, &dnss, RESET_ADDITIONAL);
-     rr != NULL;
-     rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
-  {
-  dns_address *da;
-  int status = hstatus_unknown;
-  int why = hwhy_unknown;
-  int randoffset;
-
-  if (rr->type != T_A
-  #if HAVE_IPV6
-    && ( disable_ipv6 ||
-         (
-         rr->type != T_AAAA
-         #ifdef SUPPORT_A6
-         && rr->type != T_A6
-         #endif
-         )
-       )
-  #endif
-    ) continue;
-
-  /* Find the first host that matches this record's name. If there isn't
-  one, move on to the next RR. */
-
-  for (h = host; h != last->next; h = h->next)
-    { if (strcmpic(h->name, rr->name) == 0) break; }
-  if (h == last->next) continue;
-
-  /* For IPv4 addresses, add 500 to the random part of the sort key, to ensure
-  they sort after IPv6 addresses. */
-
-  randoffset = (rr->type == T_A)? 500 : 0;
-
-  /* Get the list of textual addresses for this RR. There may be more than one
-  if it is an A6 RR. Then loop to handle multiple addresses from an A6 record.
-  If there are none, nothing will get done - the record is ignored. */
-
-  for (da = dns_address_from_rr(&dnsa, rr); da != NULL; da = da->next)
-    {
-    /* Set status for an ignorable host. */
-
-    #ifndef STAND_ALONE
-    if (ignore_target_hosts != NULL &&
-          verify_check_this_host(&ignore_target_hosts, NULL, h->name,
-            da->address, NULL) == OK)
-      {
-      DEBUG(D_host_lookup)
-        debug_printf("ignored host %s [%s]\n", h->name, da->address);
-      status = hstatus_unusable;
-      why = hwhy_ignored;
-      }
-    #endif
-
-    /* If the address is already set for this host, it may be that
-    we just have a duplicate DNS record. Alternatively, this may be
-    a multi-homed host. Search all items with the same host name
-    (they will all be together) and if this address is found, skip
-    to the next RR. */
-
-    if (h->address != NULL)
-      {
-      int new_sort_key;
-      host_item *thishostlast;
-      host_item *hh = h;
-
-      do
-        {
-        if (hh->address != NULL && Ustrcmp(CS da->address, hh->address) == 0)
-          goto DNS_NEXT_RR;         /* Need goto to escape from inner loop */
-        thishostlast = hh;
-        hh = hh->next;
-        }
-      while (hh != last->next && strcmpic(hh->name, rr->name) == 0);
-
-      /* We have a multi-homed host, since we have a new address for
-      an existing name. Create a copy of the current item, and give it
-      the new address. RRs can be in arbitrary order, but one is supposed
-      to randomize the addresses of multi-homed hosts, so compute a new
-      sorting key and do that. [Latest SMTP RFC says not to randomize multi-
-      homed hosts, but to rely on the resolver. I'm not happy about that -
-      caching in the resolver will not rotate as often as the name server
-      does.] */
-
-      new_sort_key = h->mx * 1000 + random_number(500) + randoffset;
-      hh = store_get(sizeof(host_item));
-
-      /* New address goes first: insert the new block after the first one
-      (so as not to disturb the original pointer) but put the new address
-      in the original block. */
-
-      if (new_sort_key < h->sort_key)
-        {
-        *hh = *h;                       /* Note: copies the port */
-        h->next = hh;
-        h->address = da->address;
-        h->sort_key = new_sort_key;
-        h->status = status;
-        h->why = why;
-        }
-
-      /* Otherwise scan down the addresses for this host to find the
-      one to insert after. */
-
-      else
-        {
-        while (h != thishostlast)
-          {
-          if (new_sort_key < h->next->sort_key) break;
-          h = h->next;
-          }
-        *hh = *h;                       /* Note: copies the port */
-        h->next = hh;
-        hh->address = da->address;
-        hh->sort_key = new_sort_key;
-        hh->status = status;
-        hh->why = why;
-        }
-
-      if (h == last) last = hh;         /* Inserted after last */
-      }
-
-    /* The existing item doesn't have its address set yet, so just set it.
-    Ensure that an IPv4 address gets its sort key incremented in case an IPv6
-    address is found later. */
-
-    else
-      {
-      h->address = da->address;         /* Port should be set already */
-      h->status = status;
-      h->why = why;
-      h->sort_key += randoffset;
-      }
-    }    /* Loop for addresses extracted from one RR */
-
-  /* Carry on to the next RR. It would be nice to be able to be able to stop
-  when every host on the list has an address, but we can't be sure there won't
-  be an additional address for a multi-homed host further down the list, so
-  we have to continue to the end. */
-
-  DNS_NEXT_RR: continue;
-  }
-
-/* Set the default yield to failure */
-
-yield = HOST_FIND_FAILED;
-
-/* If we haven't found all the addresses in the additional section, we
-need to search for A or AAAA records explicitly. The names shouldn't point to
-CNAMES, but we use the general lookup function that handles them, just
-in case. If any lookup gives a soft error, change the default yield.
+So, from release 4.61 onwards, we always search for A and AAAA records
+explicitly. The names shouldn't point to CNAMES, but we use the general lookup
+function that handles them, just in case. If any lookup gives a soft error,
+change the default yield.
 
 For these DNS lookups, we must disable qualify_single and search_parents;
 otherwise invalid host names obtained from MX or SRV records can cause trouble
 if they happen to match something local. */
 
-dns_init(FALSE, FALSE);
+yield = HOST_FIND_FAILED;    /* Default yield */
+dns_init(FALSE, FALSE);      /* Disable qualify_single and search_parents */
 
 for (h = host; h != last->next; h = h->next)
   {
-  if (h->address != NULL || h->status == hstatus_unusable) continue;
+  if (h->address != NULL) continue;  /* Inserted by a multihomed host */
   rc = set_address_from_dns(h, &last, ignore_target_hosts, allow_mx_to_ip, NULL);
   if (rc != HOST_FOUND)
     {

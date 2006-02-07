@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.285 2006/02/07 14:20:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.286 2006/02/07 16:36:25 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -88,6 +88,16 @@ PH/14 When a uid/gid is specified for the queryprogram router, it cannot be
 
 PH/15 Minor change to Makefile for building test_host (undocumented testing
       feature).
+
+PH/16 As discussed on the list in Nov/Dec: Exim no longer looks at the
+      additional section of a DNS packet that returns MX or SRV records.
+      Instead, it always explicitly searches for A/AAAA records. This avoids
+      major problems that occur when a DNS server includes only records of one
+      type (A or AAAA) in an MX/SRV packet. A byproduct of this change has
+      fixed another bug: if SRV records were looked up and the corresponding
+      address records were *not* found in the additional section, the port
+      values from the SRV records were lost.
+
 
 
 Exim version 4.60

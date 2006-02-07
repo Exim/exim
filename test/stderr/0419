@@ -24,6 +24,10 @@ dnslookup router called for k@mxt13.test.ex
   domain = mxt13.test.ex
 DNS lookup of mxt13.test.ex (MX) using fakens
 DNS lookup of mxt13.test.ex (MX) succeeded
+DNS lookup of other1.test.ex (A) using fakens
+DNS lookup of other1.test.ex (A) succeeded
+DNS lookup of other2.test.ex (A) using fakens
+DNS lookup of other2.test.ex (A) succeeded
 other1.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!other1.test.ex")
 other1.test.ex in hosts_treat_as_local? no (end of list)
 other2.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? yes (matched "*.test.ex")
