@@ -1,0 +1,38 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+>>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
+--------> userx@myhost.test.ex <--------
+appendfile transport entered
+appendfile: mode=600 notify_comsat=0 quota=52428800 warning=41%
+  file=TESTSUITE/test-mail/userx format=unix
+  message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
+  message_suffix=\n
+  maildir_use_size_file=no
+  locking by lockfile fcntl 
+lock name: TESTSUITE/test-mail/userx.lock
+hitch name: TESTSUITE/test-mail/userx.lock.test.ex.dddddddd.pppppppp
+lock file created
+mailbox TESTSUITE/test-mail/userx is locked
+writing to file TESTSUITE/test-mail/userx
+Exim quota = 52428800 old size = sssss this message = sss (included)
+  file count quota = 0 count = 0
+writing data block fd=6 size=sss timeout=0
+writing data block fd=6 size=sss timeout=0
+writing data block fd=6 size=sss timeout=0
+quota = 52428800 threshold = 21495808 old size = sssss message size = sss
+appendfile yields 0 with errno=dd more_errno=dd
+appendfile transport returned OK for userx@myhost.test.ex
+added retry item for T:userx@myhost.test.ex: errno=dd more_errno=dd flags=1
+LOG: MAIN
+  => userx <userx@myhost.test.ex> R=localuser T=appendfile
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

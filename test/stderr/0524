@@ -1,0 +1,48 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> csa1.test.ex in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> using ACL "check_mail"
+>>> processing "accept"
+>>> check verify = csa
+>>> accept: condition test succeeded
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> csa2.test.ex in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> using ACL "check_mail"
+>>> processing "accept"
+>>> check verify = csa
+>>> accept: condition test failed
+>>> accept: endpass encountered - denying access
+LOG: H=(csa2.test.ex) [V4NET.9.8.7] rejected MAIL <>: client SMTP authorization failed (host name not authorized)
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> csa1.test.ex in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> using ACL "check_mail"
+>>> processing "accept"
+>>> check verify = csa
+>>> accept: condition test failed
+>>> accept: endpass encountered - denying access
+LOG: H=(csa1.test.ex) [V4NET.9.8.8] rejected MAIL <>: client SMTP authorization failed (client address mismatch)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> csa2.test.ex in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> using ACL "check_mail"
+>>> processing "accept"
+>>> check verify = csa
+>>> accept: condition test failed
+>>> accept: endpass encountered - denying access
+LOG: H=(csa2.test.ex) [V4NET.9.8.8] rejected MAIL <>: client SMTP authorization failed (host name not authorized)

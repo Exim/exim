@@ -1,0 +1,10 @@
+LOG: MAIN
+  remote host address is the local host: eximtesthost.test.ex (while routing <userx@eximtesthost.test.ex>)
+LOG: MAIN
+  lowest numbered MX record points to local host: mxt1.test.ex (while routing <userx@mxt1.test.ex>)
+LOG: MAIN
+  lowest numbered MX record points to local host: mxt4.test.ex (while routing <userx@mxt4.test.ex>)
+LOG: MAIN
+  lowest numbered MX record points to local host: mxt5.test.ex (while routing <userx@mxt5.test.ex>)
+LOG: MAIN
+  lowest numbered MX record points to local host: mxt5.test.ex (while routing <userx@mxt5.test.ex>)

@@ -1,0 +1,291 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<a@test.ex>
+250 OK
+RCPT TO:<b@test.ex>
+451 Temp error
+RCPT TO:<c@test.ex>
+550 Perm error
+RCPT TO:<d@test.ex>
+250 OK
+DATA
+351 Send more
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<a@test.ex>
+250 OK
+*sleep 2
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+451 Temp error
+RCPT TO:<a@test.ex>
+503 No sender given
+RCPT TO:<b@test.ex>
+503 No sender given
+DATA
+503 No envelope
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+550 Perm error
+RCPT TO:<a@test.ex>
+503 No sender given
+RCPT TO:<b@test.ex>
+503 No sender given
+DATA
+503 No envelope
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<a@test.ex>
+451 Temp error 1
+RCPT TO:<b@test.ex>
+451 Temp error 2
+DATA
+503 No recipients
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<a@test.ex>
+551 Perm error 1
+RCPT TO:<b@test.ex>
+551 Perm error 2
+DATA
+503 No recipients
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<a@test.ex>
+451 Temp error 1
+RCPT TO:<b@test.ex>
+551 Perm error 2
+DATA
+503 No recipients
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<a@test.ex>
+250 OK
+RCPT TO:<b@test.ex>
+250 OK
+DATA
+503 Sorry perm data error
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<a@test.ex>
+250 OK
+RCPT TO:<b@test.ex>
+250 OK
+DATA
+403 Sorry temp data error
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<a@test.ex>
+250 OK
+RCPT TO:<b@test.ex>
+550 NO
+RCPT TO:<c@test.ex>
+550 NO
+RCPT TO:<d@test.ex>
+550 NO
+RCPT TO:<e@test.ex>
+550 NO
+RCPT TO:<f@test.ex>
+550 NO
+RCPT TO:<g@test.ex>
+550 NO
+RCPT TO:<h@test.ex>
+550 NO
+RCPT TO:<i@test.ex>
+550 NO
+RCPT TO:<j@test.ex>
+550 NO
+RCPT TO:<k@test.ex>
+550 NO
+RCPT TO:<l@test.ex>
+550 NO
+RCPT TO:<m@test.ex>
+550 NO
+RCPT TO:<n@test.ex>
+550 NO
+RCPT TO:<o@test.ex>
+550 NO
+RCPT TO:<p@test.ex>
+550 NO
+RCPT TO:<q@test.ex>
+550 NO
+RCPT TO:<r@test.ex>
+550 NO
+RCPT TO:<s@test.ex>
+550 NO
+RCPT TO:<t@test.ex>
+550 NO
+RCPT TO:<u@test.ex>
+550 NO
+RCPT TO:<v@test.ex>
+550 NO
+RCPT TO:<w@test.ex>
+550 NO
+RCPT TO:<x@test.ex>
+550 NO
+RCPT TO:<y@test.ex>
+550 NO
+RCPT TO:<z@test.ex>
+550 NO
+RCPT TO:<aa@test.ex>
+550 NO
+RCPT TO:<bb@test.ex>
+550 NO
+RCPT TO:<cc@test.ex>
+550 NO
+RCPT TO:<dd@test.ex>
+550 NO
+RCPT TO:<ee@test.ex>
+550 NO
+RCPT TO:<ff@test.ex>
+550 NO
+RCPT TO:<gg@test.ex>
+550 NO
+RCPT TO:<hh@test.ex>
+550 NO
+RCPT TO:<ii@test.ex>
+550 NO
+RCPT TO:<jj@test.ex>
+550 NO
+RCPT TO:<kk@test.ex>
+550 NO
+RCPT TO:<ll@test.ex>
+550 NO
+RCPT TO:<mm@test.ex>
+550 NO
+RCPT TO:<nn@test.ex>
+550 NO
+RCPT TO:<oo@test.ex>
+550 NO
+RCPT TO:<pp@test.ex>
+550 NO
+RCPT TO:<qq@test.ex>
+550 NO
+RCPT TO:<rr@test.ex>
+550 NO
+RCPT TO:<ss@test.ex>
+550 NO
+RCPT TO:<tt@test.ex>
+550 NO
+RCPT TO:<uu@test.ex>
+550 NO
+RCPT TO:<vv@test.ex>
+550 NO
+RCPT TO:<ww@test.ex>
+550 NO
+RCPT TO:<xx@test.ex>
+550 NO
+RCPT TO:<yy@test.ex>
+550 NO
+RCPT TO:<zz@test.ex>
+550 NO
+DATA
+403 Sorry temp data error
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<a@test.ex>
+250 OK
+RCPT TO:<b@test.ex>
+550 NO
+End of script

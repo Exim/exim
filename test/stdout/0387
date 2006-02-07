@@ -1,0 +1,36 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+550 Administrative prohibition
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 Administrative prohibition
+221 myhost.test.ex closing connection
+>  1 [*.b.c]
+>  2 
+>  3 [*]
+>  4 [*.c]
+>  5 [*.c]
+>  6 [*@y.c]
+>  7 [*.b.c]
+>  8 [.b.c]
+>  9 [b.c]
+> 10 [*b.c]
+> 11 [*]
+> 12 [.]
+> 13 [++aa.bb]
+> 14 [++]
+> 15 [*]
+> 16 [*.b.c]||a|b.c
+> 

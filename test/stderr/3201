@@ -1,0 +1,84 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [10.0.0.1]
+sender_rcvhost = [10.0.0.1]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [10.0.0.1]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [10.0.0.1]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+using ACL "connect1"
+processing "deny"
+check hosts = testdb;fail
+search_open: testdb "NULL"
+search_find: file="NULL"
+  key="fail" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=testdb key="fail"
+database lookup required for fail
+testdb lookup forced FAIL
+lookup failed
+host in "testdb;fail"? no (end of list)
+deny: condition test failed
+end of ACL "connect1": implicit DENY
+SMTP>> 550 Administrative prohibition
+LOG: MAIN REJECT
+  H=[10.0.0.1] rejected connection in "connect" ACL
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [10.0.0.2]
+sender_rcvhost = [10.0.0.2]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [10.0.0.2]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [10.0.0.2]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+using ACL "connect2"
+processing "deny"
+check hosts = net-testdb;fail
+search_open: testdb "NULL"
+search_find: file="NULL"
+  key="fail" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=testdb key="fail"
+database lookup required for fail
+testdb lookup forced FAIL
+lookup failed
+host in "net-testdb;fail"? no (end of list)
+deny: condition test failed
+end of ACL "connect2": implicit DENY
+SMTP>> 550 Administrative prohibition
+LOG: MAIN REJECT
+  H=[10.0.0.2] rejected connection in "connect" ACL
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

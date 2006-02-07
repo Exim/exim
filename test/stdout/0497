@@ -1,0 +1,20 @@
++++++++++++++++++++++++++++
+  R:userx@x.y -44 13377 SMTP error from remote mail server after RCPT TO:<userx@x.y>: host 127.0.0.1 [127.0.0.1]: 452 temporary error
+first failed = time last try = time2 next try = time2 + 0 *
+  T:127.0.0.1:127.0.0.1:1224 dd 65 Connection refused
+first failed = time last try = time2 next try = time2 + 900
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<userx@x.y>
+452 temporary error
+QUIT
+250 OK
+End of script

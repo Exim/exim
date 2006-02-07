@@ -1,0 +1,68 @@
+> Subroutine foo called with args: 
+> Subroutine foo called with args: arg1
+> Failed: Perl subroutine "foo_undef" returned undef to force failure
+> Failed: expiring... at TESTSUITE/aux-fixed/3000.pl line 7.
+
+> Wrote warning
+> Failed: Undefined subroutine &main::unknown called.
+
+> myhost.test.ex
+> Failed: syntax error in Exim::expand_string argument: unknown variable name "notexists" at TESTSUITE/aux-fixed/3000.pl line 9.
+
+> 
+> Failed: missing or misplaced { or }
+> Subroutine foo called with args: 1 2 3 4 5 6 7 8
+> Failed: Too many arguments for "perl" (max is 9)
+> 
+> 42
+> 30
+> 3
+> 2/8
+> 
+> Tue, 2 Mar 1999 09:44:33 +0000 // Changed locale // Tue, 2 Mar 1999 09:44:33 +0000
+> 
+> Subroutine foo called with args: arg1
+> Failed: Perl subroutine "foo_undef" returned undef to force failure
+> Wrote debug
+> Wrote log
+> 
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at x.y.z
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 10.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello x.y.z [10.0.0.1]
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> helo x.y.z
+??? 250
+<<< 250 myhost.test.ex Hello x.y.z [127.0.0.1]
+>>> mail from:<>
+??? 250
+<<< 250 OK
+>>> rcpt to:<abc@x.y.z>
+??? 250
+<<< 250 Accepted
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+> Discarded warnings
+> Wrote warning
+> 

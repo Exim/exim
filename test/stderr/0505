@@ -1,0 +1,2 @@
+1999-03-02 09:44:33 ACL for QUIT returned ERROR: cannot use "control=freeze" in QUIT ACL
+exim: message rejected by non-SMTP ACL: local configuration problem

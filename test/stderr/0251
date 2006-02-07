@@ -1,0 +1,52 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "deny"
+>>> check !verify = recipient
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing oklist@listr.test.ex
+>>> listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
+>>> sender in "sender"? yes (matched "sender")
+>>> ok@sender in "TESTSUITE/aux-fixed/0251.restrict.oklist"? yes (matched "ok@sender" in TESTSUITE/aux-fixed/0251.restrict.oklist)
+>>> calling exeter_listr router
+>>> routed by exeter_listr router
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing xxx@listr.test.ex
+>>> listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
+>>> sender in "zzzz"? no (end of list)
+>>> ok@sender in "zzzz"? no (end of list)
+>>> listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
+>>> calling exeter_listf router
+>>> routed by exeter_listf router
+>>> ----------- end verify ------------
+>>> deny: condition test failed
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> listr.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
+>>> listr.test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "deny"
+>>> check !verify = recipient
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing oklist@listr.test.ex
+>>> listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
+>>> bad@sender in "TESTSUITE/aux-fixed/0251.restrict.oklist"? no (end of list)
+>>> listr.test.ex in "listr.test.ex"? yes (matched "listr.test.ex")
+>>> calling exeter_listf router
+>>> routed by exeter_listf router
+>>> ----------- end verify ------------
+>>> deny: condition test failed
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> listr.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
+>>> listr.test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+
+******** SERVER ********

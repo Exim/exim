@@ -1,0 +1,4 @@
+501 malformed address: < may not follow someone@some.where
+Transaction started in line 0
+Error detected in line 1
+mail from:someone@some.where<

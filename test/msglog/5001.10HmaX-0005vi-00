@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 Received from CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 maildir-userx@test.ex R=maildiruser T=maildir defer (-34): tried to create file in TESTSUITE/test-empty, but file creation outside the home directory is not permitted
+1999-03-02 09:44:33 maildir-usery@test.ex R=maildiruser T=maildir defer (-34): tried to create file in TESTSUITE/test-mail/../test-empty, but file creation outside the home directory is not permitted
+1999-03-02 09:44:33 maildir-userz@test.ex: maildir transport succeeded
+1999-03-02 09:44:33 maildir-sub1@test.ex: maildir transport succeeded
+1999-03-02 09:44:33 maildir-sub2@test.ex R=maildiruser T=maildir defer (-34): tried to create file in TESTSUITE/test-empty/s, but file creation outside the home directory is not permitted
+1999-03-02 09:44:33 maildir-sub3@test.ex R=maildiruser T=maildir defer (-34): tried to create file in TESTSUITE/test-mail/link, but file creation outside the home directory is not permitted

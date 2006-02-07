@@ -1,0 +1,10 @@
+
+**** SMTP testing session as if from host V4NET.13.13.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+550-xxxxxxxxxxxxxx has refused this message because it looks like it is
+550-infected with the Sobig.E worm. See http://www.xxxx.xxx/xxxxxxxx/xxxx/xxxx/w32.sobig.e@xx.html
+550-for details. If you feel this determination is in error, please forward the
+550-entire message to postmaster@xxxxxxxxxxxxx.com and include code "xx#1" in
+550 the Subject

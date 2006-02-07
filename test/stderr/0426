@@ -1,0 +1,95 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: x@uppercase.test.ex
+unique = x@uppercase.test.ex
+x@uppercase.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@uppercase.test.ex
+--------> r0 router <--------
+local_part=x domain=uppercase.test.ex
+checking senders
+r0 router skipped: senders mismatch
+--------> r1 router <--------
+local_part=x domain=uppercase.test.ex
+calling r1 router
+r1 router called for x@uppercase.test.ex
+  domain = uppercase.test.ex
+local host found for non-MX address
+fully qualified name = UpperCase.test.ex
+uppercase.test.ex 127.0.0.1 mx=-1 sort=xx 
+remote host address is the local host: uppercase.test.ex: configured to try delivery anyway
+set transport t1
+queued for t1 transport: local_part = x
+domain = uppercase.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: x@UpperCase.test.ex
+  transport: t1
+  host uppercase.test.ex [127.0.0.1]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    x@UpperCase.test.ex
+  Failed addresses:
+  Deferred addresses:
+locking TESTSUITE/spool/db/retry.lockfile
+locking TESTSUITE/spool/db/wait-t1.lockfile
+LOG: MAIN
+  ** x@uppercase.test.ex R=r1 T=t1: SMTP error from remote mail server after RCPT TO:<x@UpperCase.test.ex>: host uppercase.test.ex [127.0.0.1]: 550 Unknown
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: MAIN
+  <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: CALLER@test.ex
+unique = CALLER@test.ex
+CALLER@test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing CALLER@test.ex
+--------> r0 router <--------
+local_part=CALLER domain=test.ex
+checking senders
+calling r0 router
+rda_interpret (string): :blackhole:
+expanded: :blackhole:
+file is not a filter file
+parse_forward_list: :blackhole:
+extract item: :blackhole:
+address :blackhole:d
+LOG: MAIN
+  => :blackhole: <CALLER@test.ex> R=r0
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

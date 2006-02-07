@@ -1,0 +1,4 @@
+x@y
+  router = r2, transport = t2
+x@y
+  router = r1, transport = t1

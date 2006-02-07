@@ -1,0 +1,46 @@
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-var/0093.f-1"
+
+Testprint: yes
+Testprint: no
+Testprint: yes
+Testprint: yes
+Testprint: yes
+Testprint: data for key1
+Testprint: body_linecount=3
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Warning: no message headers read
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-var/0093.f-2"
+
+Filter error: failed to expand "${if eq {1}{0}{yes}{${lookup{key1}lsearch{TESTSUITE/aux-fixed/junkjunk}{$value}{notfound}}}}" in testprint command: failed to open TESTSUITE/aux-fixed/junkjunk for linear search: No such file or directory
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0093.f-3"
+
+Testprint: From: is defined
+Testprint: Absent: is not defined
+Testprint: ----------------------
+Testprint: From: a@b\nReply-to: x@y\nRepeated: this header is repeated\n          and continued\nRepeated: this header is repeated\n          and continued\nRepeated: this header is repeated\n          and continued\nEmpty:\nRepeated-empty:\nRepeated-empty:\nRepeated-empty:\nSubject: this is the subject\nMessage-Id: <E10HmaX-0005vi-00@the.local.host.name>\nSender: CALLER_NAME <CALLER@test.ex>\nDate: Tue, 2 Mar 1999 09:44:33 +0000
+Testprint: ----------------------
+Testprint: From: a@b\nReply-to: x@y\nRepeated: this header is repeated\n          and continued\nRepeated: this header is repeated\n          and continued\nRepeated: this header is repeated\n          and continued\nEmpty:\nRepeated-empty:\nRepeated-empty:\nRepeated-empty:\nSubject: this is the subject\nMessage-Id: <E10HmaX-0005vi-00@the.local.host.name>\nSender: CALLER_NAME <CALLER@test.ex>\nDate: Tue, 2 Mar 1999 09:44:33 +0000+++more
+Testprint: ----------------------
+Testprint: +++From: a@b\nReply-to: x@y\nRepeated: this header is repeated\n          and continued\nRepeated: this header is repeated\n          and continued\nRepeated: this header is repeated\n          and continued\nEmpty:\nRepeated-empty:\nRepeated-empty:\nRepeated-empty:\nSubject: this is the subject\nMessage-Id: <E10HmaX-0005vi-00@the.local.host.name>\nSender: CALLER_NAME <CALLER@test.ex>\nDate: Tue, 2 Mar 1999 09:44:33 +0000+++
+Testprint: ----------------------
+Testprint: From: >a@b<
+Testprint: this header is repeated\n          and continued\nthis header is repeated\n          and continued\nthis header is repeated\n          and continued
+Testprint: ----------------------
+Testprint: +++this header is repeated\n          and continued\nthis header is repeated\n          and continued\nthis header is repeated\n          and continued+++
+Testprint: ----------------------
+Testprint: reply_address=x@y
+Testprint: empty=><
+Testprint: repeated-empty=><
+Testprint: ----------------------
+Filtering did not set up a significant delivery.
+Normal delivery will occur.

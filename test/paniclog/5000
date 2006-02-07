@@ -1,0 +1,1 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@myhost.test.ex R=localuser T=maildir_tagged_appendfile defer (-1): Expansion of "${expand:$h_tag:}" (maildir_tag for maildir_tagged_appendfile transport) failed: internal expansion of "${if eq{0}{1}{rhubarb}" failed: syntax error in "if" item - "fail" expected

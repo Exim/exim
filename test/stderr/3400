@@ -1,0 +1,379 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "check_vrfy"
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "10.0.0.1"? no (end of list)
+>>> host in "+auth_hosts"? no (end of list)
+>>> deny: condition test failed
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing userx@test.ex
+>>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> userx in "userx"? yes (matched "userx")
+>>> calling localuser router
+>>> routed by localuser router
+>>> using ACL "check_expn"
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? no (end of list)
+>>> deny: condition test failed
+>>> processing "accept"
+>>> check hosts = 10.0.0.0/24
+>>> host in "10.0.0.0/24"? yes (matched "10.0.0.0/24")
+>>> accept: condition test succeeded
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing list@test.ex
+>>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> list in "userx"? no (end of list)
+>>> no more routers
+LOG: ETRN #abcd received from [10.0.0.2]
+>>> using ACL "check_etrn"
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? no (end of list)
+>>> deny: condition test failed
+>>> processing "require"
+>>> check hosts = 10.0.0.0/24
+>>> host in "10.0.0.0/24"? yes (matched "10.0.0.0/24")
+>>> require: condition test succeeded
+>>> processing "warn"
+>>> warn: condition test succeeded
+LOG: H=[10.0.0.2] Warning: accepted ETRN #abcd
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> ETRN command is: exim -R
+>>> ETRN command execution skipped
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test.host in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in "10.0.0.1"? yes (matched "10.0.0.1")
+>>> host in auth_advertise_hosts? yes (matched "+auth_hosts")
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "check_vrfy"
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>> check !authenticated = *
+>>> deny: condition test succeeded
+LOG: H=(test.host) [10.0.0.1] rejected VRFY userx@test.ex: authentication required
+>>> using ACL "check_expn"
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>> check !authenticated = *
+>>> deny: condition test succeeded
+LOG: H=(test.host) [10.0.0.1] rejected EXPN list@test.ex: authentication required
+LOG: ETRN abcd received from (test.host) [10.0.0.1]
+>>> using ACL "check_etrn"
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>> check !authenticated = *
+>>> deny: condition test succeeded
+LOG: H=(test.host) [10.0.0.1] rejected ETRN abcd: authentication required
+>>> using ACL "check_recipient"
+>>> processing "warn"
+>>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"? no (end of list)
+>>> warn: condition test failed
+>>> processing "accept"
+>>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = :
+>>> host in ":"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>> check !authenticated = *
+>>> deny: condition test succeeded
+LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@test.ex>: authentication required
+>>> mylogin authenticator:
+>>>   $1 = userx secret
+>>> +++MYLOGIN $1="userx secret" $2="" $3=""
+>>> expanded string: yes
+>>> using ACL "check_recipient"
+>>> processing "warn"
+>>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"? no (end of list)
+>>> warn: condition test failed
+>>> processing "accept"
+>>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = :
+>>> host in ":"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>> check !authenticated = *
+>>> mylogin in "*"? yes (matched "*")
+>>> deny: condition test failed
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "warn"
+>>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"? no (end of list)
+>>> warn: condition test failed
+>>> processing "accept"
+>>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = :
+>>> host in ":"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>> check !authenticated = *
+>>> mylogin in "*"? yes (matched "*")
+>>> deny: condition test failed
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> cus.cam.ac.uk in "test.ex : *.test.ex"? no (end of list)
+>>> cus.cam.ac.uk in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+>>> host in "10.0.0.4"? no (end of list)
+>>> host in "+relay_hosts"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +auth_relay_hosts
+>>> host in "10.0.0.3 : 10.0.0.4"? no (end of list)
+>>> host in "+auth_relay_hosts"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cus.cam.ac.uk>: relay not permitted
+>>> using ACL "check_vrfy"
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>> check !authenticated = *
+>>> mylogin in "*"? yes (matched "*")
+>>> deny: condition test failed
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing userx@test.ex
+>>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> userx in "userx"? yes (matched "userx")
+>>> calling localuser router
+>>> routed by localuser router
+>>> using ACL "check_expn"
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>> check !authenticated = *
+>>> mylogin in "*"? yes (matched "*")
+>>> deny: condition test failed
+>>> processing "accept"
+>>> check hosts = 10.0.0.0/24
+>>> host in "10.0.0.0/24"? yes (matched "10.0.0.0/24")
+>>> accept: condition test succeeded
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing list@test.ex
+>>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> list in "userx"? no (end of list)
+>>> no more routers
+LOG: ETRN #abcd received from (test.host) [10.0.0.1]
+>>> using ACL "check_etrn"
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
+>>> check !authenticated = *
+>>> mylogin in "*"? yes (matched "*")
+>>> deny: condition test failed
+>>> processing "require"
+>>> check hosts = 10.0.0.0/24
+>>> host in "10.0.0.0/24"? yes (matched "10.0.0.0/24")
+>>> require: condition test succeeded
+>>> processing "warn"
+>>> warn: condition test succeeded
+LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> ETRN command is: exim -R
+>>> ETRN command execution skipped
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test.host in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in "10.0.0.1"? no (end of list)
+>>> host in "10.0.0.4"? no (end of list)
+>>> host in "10.0.0.3 : 10.0.0.4"? yes (matched "10.0.0.3")
+>>> host in auth_advertise_hosts? yes (matched "+auth_relay_hosts")
+>>> using ACL "check_recipient"
+>>> processing "warn"
+>>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"? no (end of list)
+>>> warn: condition test failed
+>>> processing "accept"
+>>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = :
+>>> host in ":"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? no (end of list)
+>>> deny: condition test failed
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> cus.cam.ac.uk in "test.ex : *.test.ex"? no (end of list)
+>>> cus.cam.ac.uk in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+>>> host in "+relay_hosts"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +auth_relay_hosts
+>>> host in "+auth_relay_hosts"? yes (matched "+auth_relay_hosts" - cached)
+>>> check authenticated = *
+>>> accept: condition test failed
+>>> accept: endpass encountered - denying access
+LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cus.cam.ac.uk>: authentication required
+>>> mylogin authenticator:
+>>>   $1 = userx secret
+>>> +++MYLOGIN $1="userx secret" $2="" $3=""
+>>> expanded string: yes
+>>> using ACL "check_recipient"
+>>> processing "warn"
+>>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"? no (end of list)
+>>> warn: condition test failed
+>>> processing "accept"
+>>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = :
+>>> host in ":"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> check hosts = +auth_hosts
+>>> host in "+auth_hosts"? no (end of list)
+>>> deny: condition test failed
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> cus.cam.ac.uk in "test.ex : *.test.ex"? no (end of list)
+>>> cus.cam.ac.uk in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+>>> host in "+relay_hosts"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +auth_relay_hosts
+>>> host in "+auth_relay_hosts"? yes (matched "+auth_relay_hosts" - cached)
+>>> check authenticated = *
+>>> mylogin in "*"? yes (matched "*")
+>>> accept: condition test succeeded
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test.host in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in "10.0.0.1"? no (end of list)
+>>> host in "10.0.0.4"? yes (matched "10.0.0.4")
+>>> host in auth_advertise_hosts? no (matched "!+relay_hosts")
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+finduser used cached passwd data for CALLER
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = NULL
+sender_fullhost = [10.0.0.5]
+sender_rcvhost = [10.0.0.5] (ident=CALLER)
+set_process_info: pppp handling incoming connection from [10.0.0.5] via -oMa
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [10.0.0.5] U=CALLER
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< ehlo testing.testing
+testing.testing in helo_lookup_domains? no (end of list)
+sender_fullhost = (testing.testing) [10.0.0.5]
+sender_rcvhost = [10.0.0.5] (helo=testing.testing ident=CALLER)
+set_process_info: pppp handling incoming connection from (testing.testing) [10.0.0.5] U=CALLER
+host in pipelining_advertise_hosts? yes (matched "*")
+host in "10.0.0.1"? no (end of list)
+host in "10.0.0.4"? no (end of list)
+host in "10.0.0.3 : 10.0.0.4"? no (end of list)
+host in auth_advertise_hosts? yes (matched "10.0.0.5")
+SMTP>> 250-myhost.test.ex Hello CALLER at testing.testing [10.0.0.5]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+SMTP<< auth mylogin dXNlcnggc2VjcmV0
+mylogin authenticator:
+  $1 = userx secret
++++MYLOGIN $1="userx secret" $2="" $3=""
+expanded string: yes
+SMTP>> 235 Authentication succeeded
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

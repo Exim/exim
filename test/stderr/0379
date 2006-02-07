@@ -1,0 +1,171 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: defer@myhost.test.ex
+unique = defer@myhost.test.ex
+defer@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: aaaa@myhost.test.ex
+unique = aaaa@myhost.test.ex
+aaaa@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing aaaa@myhost.test.ex
+--------> defer router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> aaaa_redirect router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+calling aaaa_redirect router
+rda_interpret (string): bbbb@$domain, cccc@$domain
+expanded: bbbb@myhost.test.ex, cccc@myhost.test.ex
+file is not a filter file
+parse_forward_list: bbbb@myhost.test.ex, cccc@myhost.test.ex
+extract item: bbbb@myhost.test.ex
+extract item: cccc@myhost.test.ex
+aaaa_redirect router generated cccc@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+aaaa_redirect router generated bbbb@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by aaaa_redirect router
+  envelope to: aaaa@myhost.test.ex
+  transport: <none>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing defer@myhost.test.ex
+--------> defer router <--------
+local_part=defer domain=myhost.test.ex
+checking local_parts
+calling defer router
+rda_interpret (string): :defer: forced defer
+expanded: :defer: forced defer
+file is not a filter file
+parse_forward_list: :defer: forced defer
+extract item: :defer: forced defer
+defer router: defer for defer@myhost.test.ex
+  message: forced defer
+LOG: MAIN
+  == defer@myhost.test.ex R=defer defer (-1): forced defer
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: bbbb@myhost.test.ex
+unique = bbbb@myhost.test.ex
+bbbb@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: cccc@myhost.test.ex
+unique = cccc@myhost.test.ex
+cccc@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing cccc@myhost.test.ex
+--------> defer router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> aaaa_redirect router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+aaaa_redirect router skipped: local_parts mismatch
+--------> bc router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+calling bc router
+bc router called for cccc@myhost.test.ex
+  domain = myhost.test.ex
+set transport t1
+queued for t1 transport: local_part = cccc
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by bc router
+  envelope to: cccc@myhost.test.ex
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing bbbb@myhost.test.ex
+--------> defer router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> aaaa_redirect router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+aaaa_redirect router skipped: local_parts mismatch
+--------> bc router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+calling bc router
+bc router called for bbbb@myhost.test.ex
+  domain = myhost.test.ex
+queued for t1 transport: local_part = bbbb
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by bc router
+  envelope to: bbbb@myhost.test.ex
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    bbbb@myhost.test.ex
+    cccc@myhost.test.ex
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+    defer@myhost.test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => bbbb <aaaa@myhost.test.ex> R=bc T=t1
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => cccc <aaaa@myhost.test.ex> R=bc T=t1
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp -qf
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: defer@myhost.test.ex
+unique = defer@myhost.test.ex
+defer@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing defer@myhost.test.ex
+--------> defer router <--------
+local_part=defer domain=myhost.test.ex
+checking local_parts
+calling defer router
+rda_interpret (string): :defer: forced defer
+expanded: :defer: forced defer
+file is not a filter file
+parse_forward_list: :defer: forced defer
+extract item: :defer: forced defer
+defer router: defer for defer@myhost.test.ex
+  message: forced defer
+LOG: MAIN
+  == defer@myhost.test.ex R=defer defer (-1): forced defer
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+    defer@myhost.test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: queue_run MAIN
+  End queue run: pid=pppp -qf
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

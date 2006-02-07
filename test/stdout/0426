@@ -1,0 +1,14 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO mail.test.ex
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<x@UpperCase.test.ex>
+550 Unknown
+QUIT
+250 OK
+End of script

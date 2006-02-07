@@ -1,0 +1,4 @@
+userx@test.ex cannot be resolved at this time:
+  failed to expand "${if eq{$local_part}" for require_files: missing 2nd string in {} after "eq"
+xxx@a.b.c cannot be resolved at this time:
+  require_files: "un/qualified" is not absolute

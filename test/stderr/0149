@@ -1,0 +1,187 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@ten
+--------> domainlist1 router <--------
+local_part=x domain=ten
+checking domains
+calling domainlist1 router
+domainlist1 router called for x@ten
+  domain = ten
+route_item = ten <+V4NET.0.0.0+V4NET.0.0.1 byname
+original list of hosts = "<+V4NET.0.0.0+V4NET.0.0.1" options = byname
+expanded list of hosts = "<+V4NET.0.0.0+V4NET.0.0.1" options = byname
+finding IP address for V4NET.0.0.0
+calling host_find_byname
+finding IP address for V4NET.0.0.1
+calling host_find_byname
+queued for <unset> transport: local_part = x
+domain = ten
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by domainlist1 router
+  envelope to: x@ten
+  transport: <none>
+  host V4NET.0.0.0 [V4NET.0.0.0]
+  host V4NET.0.0.1 [V4NET.0.0.1]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing y@two
+--------> domainlist1 router <--------
+local_part=y domain=two
+checking domains
+calling domainlist1 router
+domainlist1 router called for y@two
+  domain = two
+route_item = ten <+V4NET.0.0.0+V4NET.0.0.1 byname
+route_item = two   V4NET.0.0.2:V4NET.0.0.4 byname
+original list of hosts = "V4NET.0.0.2:V4NET.0.0.4" options = byname
+expanded list of hosts = "V4NET.0.0.2:V4NET.0.0.4" options = byname
+finding IP address for V4NET.0.0.2
+calling host_find_byname
+finding IP address for V4NET.0.0.4
+calling host_find_byname
+queued for <unset> transport: local_part = y
+domain = two
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by domainlist1 router
+  envelope to: y@two
+  transport: <none>
+  host V4NET.0.0.2 [V4NET.0.0.2]
+  host V4NET.0.0.4 [V4NET.0.0.4]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@test1
+--------> domainlist1 router <--------
+local_part=x domain=test1
+checking domains
+domainlist1 router skipped: domains mismatch
+--------> domainlist2 router <--------
+local_part=x domain=test1
+checking domains
+domainlist2 router skipped: domains mismatch
+--------> local router <--------
+local_part=x domain=test1
+calling local router
+local router called for x@test1
+  domain = test1
+set transport local_delivery
+queued for local_delivery transport: local_part = x
+domain = test1
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by local router
+  envelope to: x@test1
+  transport: local_delivery
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@test2
+--------> domainlist1 router <--------
+local_part=x domain=test2
+checking domains
+domainlist1 router skipped: domains mismatch
+--------> domainlist2 router <--------
+local_part=x domain=test2
+checking domains
+domainlist2 router skipped: domains mismatch
+--------> local router <--------
+local_part=x domain=test2
+calling local router
+local router called for x@test2
+  domain = test2
+queued for local_delivery transport: local_part = x
+domain = test2
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by local router
+  envelope to: x@test2
+  transport: local_delivery
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@test3-4
+--------> domainlist1 router <--------
+local_part=x domain=test3-4
+checking domains
+domainlist1 router skipped: domains mismatch
+--------> domainlist2 router <--------
+local_part=x domain=test3-4
+checking domains
+domainlist2 router skipped: domains mismatch
+--------> local router <--------
+local_part=x domain=test3-4
+calling local router
+local router called for x@test3-4
+  domain = test3-4
+queued for local_delivery transport: local_part = x
+domain = test3-4
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by local router
+  envelope to: x@test3-4
+  transport: local_delivery
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@one
+--------> domainlist1 router <--------
+local_part=x domain=one
+checking domains
+calling domainlist1 router
+domainlist1 router called for x@one
+  domain = one
+route_item = ten <+V4NET.0.0.0+V4NET.0.0.1 byname
+route_item = two   V4NET.0.0.2:V4NET.0.0.4 byname
+domainlist1 router declined for x@one
+--------> domainlist2 router <--------
+local_part=x domain=one
+checking domains
+calling domainlist2 router
+domainlist2 router called for x@one
+  domain = one
+route_item = six <+V4NET.0.0.6+V4NET.0.0.7 byname
+route_item = one   V4NET.0.0.2:V4NET.0.0.4 byname
+original list of hosts = "V4NET.0.0.2:V4NET.0.0.4" options = byname
+expanded list of hosts = "V4NET.0.0.2:V4NET.0.0.4" options = byname
+finding IP address for V4NET.0.0.2
+calling host_find_byname
+finding IP address for V4NET.0.0.4
+calling host_find_byname
+queued for <unset> transport: local_part = x
+domain = one
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by domainlist2 router
+  envelope to: x@one
+  transport: <none>
+  host V4NET.0.0.2 [V4NET.0.0.2]
+  host V4NET.0.0.4 [V4NET.0.0.4]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@six
+--------> domainlist1 router <--------
+local_part=x domain=six
+checking domains
+calling domainlist1 router
+domainlist1 router called for x@six
+  domain = six
+route_item = ten <+V4NET.0.0.0+V4NET.0.0.1 byname
+route_item = two   V4NET.0.0.2:V4NET.0.0.4 byname
+domainlist1 router declined for x@six
+--------> domainlist2 router <--------
+local_part=x domain=six
+checking domains
+calling domainlist2 router
+domainlist2 router called for x@six
+  domain = six
+route_item = six <+V4NET.0.0.6+V4NET.0.0.7 byname
+original list of hosts = "<+V4NET.0.0.6+V4NET.0.0.7" options = byname
+expanded list of hosts = "<+V4NET.0.0.6+V4NET.0.0.7" options = byname
+finding IP address for V4NET.0.0.6
+calling host_find_byname
+finding IP address for V4NET.0.0.7
+calling host_find_byname
+queued for <unset> transport: local_part = x
+domain = six
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by domainlist2 router
+  envelope to: x@six
+  transport: <none>
+  host V4NET.0.0.6 [V4NET.0.0.6]
+  host V4NET.0.0.7 [V4NET.0.0.7]
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

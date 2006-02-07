@@ -1,0 +1,32 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "acl_1_2_3_4"
+>>> processing "deny"
+>>> check senders = testdb;defer
+>>> userx@external.test.ex in "testdb;defer"? lookup deferred for testdb;defer
+>>> deny: condition test deferred
+LOG: H=[1.2.3.4] F=<userx@external.test.ex> temporarily rejected RCPT <userx@test.ex>: testdb lookup forced DEFER
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "acl_4_3_2_1"
+>>> processing "accept"
+>>> check hosts = :
+>>> host in ":"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> check hosts = testdb;defer
+>>> host in "testdb;defer"? lookup deferred for testdb;defer
+>>> deny: condition test deferred
+LOG: H=[4.3.2.1] F=<userx@external.test.ex> temporarily rejected RCPT <userx@test.ex>: testdb lookup forced DEFER

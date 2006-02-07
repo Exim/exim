@@ -1,0 +1,8 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-<a@myhost.test.ex>
+250-<b@myhost.test.ex>
+250 <c@myhost.test.ex>
+553 somewhere@else.where is undeliverable
+553 xxxx@exim.org is undeliverable
+553 xxxx@test.ex is undeliverable
+221 myhost.test.ex closing connection

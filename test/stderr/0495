@@ -1,0 +1,14 @@
+Delivery failed: Connection refused
+Delivery failed: SMTP error from remote mail server after RCPT TO:<b@x.y>: host 127.0.0.1 [127.0.0.1]: 550 NOTOK
+Delivery failed: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 550 BAD MAIL
+Delivery failed: SMTP error from remote mail server after MAIL FROM:<CALLER@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 450 TEMPORARY MAIL FAIL
+routing file@x.y yielded a local delivery
+routing fail@x.y yielded a failed delivery: forcible fail message
+routing defer@x.y yielded a deferred delivery: forcible defer message
+delivery to smarthost failed (configuration problem)
+delivery to smarthost failed (configuration problem)
+Daemon cannot be run when mua_wrapper is set
+Delivery failed: Connection refused
+Delivery failed: Connection timed out: SMTP timeout while connected to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] after RCPT TO:<b@x.y>
+Delivery failed: TCP port "nonexistent" is not defined for t4 transport
+Delivery failed: SMTP error from remote mail server after RCPT TO:<a@x.y>: host 127.0.0.1 [127.0.0.1]: 550 SORRY

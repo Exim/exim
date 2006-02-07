@@ -1,0 +1,212 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing kilos@thishost
+--------> r1 router <--------
+local_part=kilos domain=thishost
+checking domains
+processing address_data
+calling r1 router
+rda_interpret (string): $local_part@$domain.test.ex
+expanded: kilos@thishost.test.ex
+file is not a filter file
+parse_forward_list: kilos@thishost.test.ex
+extract item: kilos@thishost.test.ex
+r1 router generated kilos@thishost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by r1 router
+  envelope to: kilos@thishost
+  transport: <none>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing kilos@thishost.test.ex
+--------> r2 router <--------
+local_part=kilos domain=thishost.test.ex
+checking domains
+r2 router skipped: domains mismatch
+--------> r3 router <--------
+local_part=kilos domain=thishost.test.ex
+checking domains
+r3 router skipped: domains mismatch
+--------> r4 router <--------
+local_part=kilos domain=thishost.test.ex
+checking domains
+r4 router skipped: domains mismatch
+--------> r5 router <--------
+local_part=kilos domain=thishost.test.ex
+calling r5 router
+r5 router called for kilos@thishost.test.ex
+  domain = thishost.test.ex
+set transport t2
+queued for t2 transport: local_part = kilos
+domain = thishost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r5 router
+  envelope to: kilos@thishost.test.ex
+  transport: t2
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing solik@otherhost
+--------> r1 router <--------
+local_part=solik domain=otherhost
+checking domains
+processing address_data
+calling r1 router
+rda_interpret (string): $local_part@$domain.test.ex
+expanded: solik@otherhost.test.ex
+file is not a filter file
+parse_forward_list: solik@otherhost.test.ex
+extract item: solik@otherhost.test.ex
+r1 router generated solik@otherhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by r1 router
+  envelope to: solik@otherhost
+  transport: <none>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing solik@otherhost.test.ex
+--------> r2 router <--------
+local_part=solik domain=otherhost.test.ex
+checking domains
+calling r2 router
+r2 router called for solik@otherhost.test.ex
+  domain = otherhost.test.ex
+r2 router declined for solik@otherhost.test.ex
+--------> r3 router <--------
+local_part=solik domain=otherhost.test.ex
+checking domains
+checking "condition"
+processing address_data
+calling r3 router
+rda_interpret (string): $local_part@$original_domain.sub.test.ex
+expanded: solik@otherhost.sub.test.ex
+file is not a filter file
+parse_forward_list: solik@otherhost.sub.test.ex
+extract item: solik@otherhost.sub.test.ex
+r3 router generated solik@otherhost.sub.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by r3 router
+  envelope to: solik@otherhost.test.ex
+  transport: <none>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing solik@otherhost.sub.test.ex
+--------> r2 router <--------
+local_part=solik domain=otherhost.sub.test.ex
+checking domains
+calling r2 router
+r2 router called for solik@otherhost.sub.test.ex
+  domain = otherhost.sub.test.ex
+r2 router declined for solik@otherhost.sub.test.ex
+--------> r3 router <--------
+local_part=solik domain=otherhost.sub.test.ex
+checking domains
+checking "condition"
+r3 router skipped: condition failure
+--------> r4 router <--------
+local_part=solik domain=otherhost.sub.test.ex
+checking domains
+calling r4 router
+rda_interpret (string): :fail:Can't route to $domain
+expanded: :fail:Can't route to otherhost.sub.test.ex
+file is not a filter file
+parse_forward_list: :fail:Can't route to otherhost.sub.test.ex
+extract item: :fail:Can't route to otherhost.sub.test.ex
+r4 router forced address failure
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing xxx@ten-1
+--------> r1 router <--------
+local_part=xxx domain=ten-1
+checking domains
+processing address_data
+calling r1 router
+rda_interpret (string): $local_part@$domain.test.ex
+expanded: xxx@ten-1.test.ex
+file is not a filter file
+parse_forward_list: xxx@ten-1.test.ex
+extract item: xxx@ten-1.test.ex
+r1 router generated xxx@ten-1.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by r1 router
+  envelope to: xxx@ten-1
+  transport: <none>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing xxx@ten-1.test.ex
+--------> r2 router <--------
+local_part=xxx domain=ten-1.test.ex
+checking domains
+calling r2 router
+r2 router called for xxx@ten-1.test.ex
+  domain = ten-1.test.ex
+set transport t1
+queued for t1 transport: local_part = xxx
+domain = ten-1.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r2 router
+  envelope to: xxx@ten-1.test.ex
+  transport: t1
+  host ten-1.test.ex [V4NET.0.0.1]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing xxx@testsub
+--------> r1 router <--------
+local_part=xxx domain=testsub
+checking domains
+processing address_data
+calling r1 router
+rda_interpret (string): $local_part@$domain.test.ex
+expanded: xxx@testsub.test.ex
+file is not a filter file
+parse_forward_list: xxx@testsub.test.ex
+extract item: xxx@testsub.test.ex
+r1 router generated xxx@testsub.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by r1 router
+  envelope to: xxx@testsub
+  transport: <none>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing xxx@testsub.test.ex
+--------> r2 router <--------
+local_part=xxx domain=testsub.test.ex
+checking domains
+calling r2 router
+r2 router called for xxx@testsub.test.ex
+  domain = testsub.test.ex
+r2 router declined for xxx@testsub.test.ex
+--------> r3 router <--------
+local_part=xxx domain=testsub.test.ex
+checking domains
+checking "condition"
+processing address_data
+calling r3 router
+rda_interpret (string): $local_part@$original_domain.sub.test.ex
+expanded: xxx@testsub.sub.test.ex
+file is not a filter file
+parse_forward_list: xxx@testsub.sub.test.ex
+extract item: xxx@testsub.sub.test.ex
+r3 router generated xxx@testsub.sub.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by r3 router
+  envelope to: xxx@testsub.test.ex
+  transport: <none>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing xxx@testsub.sub.test.ex
+--------> r2 router <--------
+local_part=xxx domain=testsub.sub.test.ex
+checking domains
+calling r2 router
+r2 router called for xxx@testsub.sub.test.ex
+  domain = testsub.sub.test.ex
+queued for t1 transport: local_part = xxx
+domain = testsub.sub.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r2 router
+  envelope to: xxx@testsub.sub.test.ex
+  transport: t1
+  host testsub.sub.test.ex [V4NET.99.0.3]
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=2 >>>>>>>>>>>>>>>>

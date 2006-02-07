@@ -1,0 +1,82 @@
+Connecting to ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]
+??? 250-
+<<< 250-myhost.test.ex Hello [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6] [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250
+<<< 250 HELP
+>>> mail from:<>
+??? 250
+<<< 250 OK
+>>> rcpt to:<userx@test.ex>
+??? 250
+<<< 250 Accepted
+>>> data
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> To: userx@test.ex
+>>> 
+>>> EHLO [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]
+>>> .
+??? 250
+<<< 250 OK id=10HmaX-0005vi-00
+>>> ehlo [IPV6:ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]
+??? 250-
+<<< 250-myhost.test.ex Hello [IPV6:ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6] [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250
+<<< 250 HELP
+>>> mail from:<>
+??? 250
+<<< 250 OK
+>>> rcpt to:<userx@test.ex>
+??? 250
+<<< 250 Accepted
+>>> data
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> To: userx@test.ex
+>>> 
+>>> EHLO [IPV6:ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]
+>>> .
+??? 250
+<<< 250 OK id=10HmaY-0005vi-00
+>>> ehlo [IPV6:V6NET:0:12:1:a00:20ff:fe86:a062]
+??? 250-
+<<< 250-myhost.test.ex Hello [IPV6:V6NET:0:12:1:a00:20ff:fe86:a062] [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250
+<<< 250 HELP
+>>> mail from:<>
+??? 250
+<<< 250 OK
+>>> rcpt to:<userx@test.ex>
+??? 250
+<<< 250 Accepted
+>>> data
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> To: userx@test.ex
+>>> 
+>>> EHLO [IPV6:V6NET:0:12:1:a00:20ff:fe86:a062]
+>>> .
+??? 250
+<<< 250 OK id=10HmaZ-0005vi-00
+>>> ehlo ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6
+??? 501
+<<< 501 Syntactically invalid EHLO argument(s)
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script

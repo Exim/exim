@@ -1,0 +1,7 @@
+1999-03-02 09:44:33 H=[56.56.57.57] U=CALLER F=<userx@test.ex> temporarily rejected RCPT <cond-rhubarb@test.ex>: invalid "condition" value "rhubarb"
+1999-03-02 09:44:33 H=[56.56.58.58] U=CALLER F=<rcpttest@test.ex> rejected RCPT <bad1@test.ex>
+1999-03-02 09:44:33 H=[56.56.58.58] U=CALLER F=<rcpttest@test.ex> rejected RCPT <bad2@test.ex>
+1999-03-02 09:44:33 H=[56.56.58.58] U=CALLER F=<rcpttest@test.ex> rejected RCPT <bad3@test.ex>
+1999-03-02 09:44:33 H=[56.56.59.59] U=CALLER F=<rcpttest@test.ex> rejected RCPT <fail@test.ex>: here is a fail message
+1999-03-02 09:44:33 H=[V4NET.11.12.13] U=CALLER F=<x@y> rejected RCPT <x@y>: DNSLIST (rbl.test.ex: This is a test blacklisting message)
+1999-03-02 09:44:33 H=[V4NET.11.12.13] U=CALLER F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This is a test blacklisting message)

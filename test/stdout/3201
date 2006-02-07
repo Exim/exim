@@ -1,0 +1,12 @@
+
+**** SMTP testing session as if from host 10.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+550 Administrative prohibition
+
+**** SMTP testing session as if from host 10.0.0.2
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+550 Administrative prohibition

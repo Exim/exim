@@ -1,0 +1,2 @@
+1999-03-02 09:44:33 U=CALLER sender verify fail for <x@y>: Unrouteable address
+1999-03-02 09:44:33 U=CALLER rejected DATA: sender verify failed (route): Sender verify failed

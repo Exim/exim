@@ -1,0 +1,324 @@
+Exim version x.yz ....
+changed uid/gid: -C, -D, -be or -bf forces real uid
+  uid=CALLER_UID gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+LDAP query error: unknown parameter "soze=" precedes LDAP URL
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: -C, -D, -be or -bf forces real uid
+  uid=CALLER_UID gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+LDAP query error: unknown parameter "user"cn=" precedes LDAP URL
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+search_open: ldap "NULL"
+search_find: file="NULL"
+  key="ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=NULL pass=NULL size=sss time=0 connect=0 dereference=0
+perform_ldap_search: ldap URL = "ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=NULL port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=NULL port=389
+ldap_initialize with URL ldap://:389/
+initialized for LDAP (v3) server NULL:389
+LDAP_OPT_X_TLS_TRY set
+binding with user=NULL password=NULL
+Start search
+ldap_result loop
+LDAP entry loop
+LDAP attr loop sn:Hazel
+search ended by ldap_result yielding 101
+ldap_parse_result: 0
+ldap_parse_result yielded 0: Success
+LDAP search: returning: Hazel
+lookup yielded: Hazel
+search_open: ldap "NULL"
+  cached open
+search_find: file="NULL"
+  key="ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=NULL pass=NULL size=sss time=0 connect=0 dereference=0
+perform_ldap_search: ldap URL = "ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=NULL port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=/tmp/ldap.sock port=0
+ldap_initialize with URL ldapi://%2Ftmp%2Fldap.sock
+initialized for LDAP (v3) server /tmp/ldap.sock
+binding with user=NULL password=NULL
+Start search
+ldap_result loop
+LDAP entry loop
+LDAP attr loop sn:Hazel
+search ended by ldap_result yielding 101
+ldap_parse_result: 0
+ldap_parse_result yielded 0: Success
+LDAP search: returning: Hazel
+lookup yielded: Hazel
+search_open: ldap "NULL"
+  cached open
+search_find: file="NULL"
+  key="ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+cached data used for lookup of ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+lookup yielded: Hazel
+search_open: ldap "NULL"
+  cached open
+search_find: file="NULL"
+  key="ldap://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="ldap://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for ldap://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=NULL pass=NULL size=sss time=0 connect=0 dereference=0
+perform_ldap_search: ldap URL = "ldap://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=NULL port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=/tmp/ldap.sock port=389
+re-using cached connection to LDAP server /tmp/ldap.sock
+Start search
+ldap_result loop
+LDAP entry loop
+LDAP attr loop sn:Hazel
+search ended by ldap_result yielding 101
+ldap_parse_result: 0
+ldap_parse_result yielded 0: Success
+LDAP search: returning: Hazel
+lookup yielded: Hazel
+search_open: ldap "NULL"
+  cached open
+search_find: file="NULL"
+  key="ldaps://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="ldaps://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for ldaps://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=NULL pass=NULL size=sss time=0 connect=0 dereference=0
+perform_ldap_search: ldap URL = "ldaps://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=NULL port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=/tmp/ldap.sock port=636
+re-using cached connection to LDAP server /tmp/ldap.sock
+Start search
+ldap_result loop
+LDAP entry loop
+LDAP attr loop sn:Hazel
+search ended by ldap_result yielding 101
+ldap_parse_result: 0
+ldap_parse_result yielded 0: Success
+LDAP search: returning: Hazel
+lookup yielded: Hazel
+search_open: ldap "NULL"
+  cached open
+search_find: file="NULL"
+  key="user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=cn=manager,o=University of Cambridge,c=UK pass=secret size=sss time=0 connect=0 dereference=0
+perform_ldap_search: ldap URL = "ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=NULL port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=127.0.0.1 port=636
+ldap_initialize with URL ldaps://127.0.0.1:636/
+initialized for LDAP (v3) server 127.0.0.1:636
+LDAP_OPT_X_TLS_HARD set
+binding with user=cn=manager,o=University of Cambridge,c=UK password=secret
+Start search
+ldap_result loop
+LDAP entry loop
+LDAP attr loop sn:Hazel
+search ended by ldap_result yielding 101
+ldap_parse_result: 0
+ldap_parse_result yielded 0: Success
+LDAP search: returning: Hazel
+lookup yielded: Hazel
+search_open: ldap "NULL"
+  cached open
+search_find: file="NULL"
+  key="user="cn=manager,o=University of Cambridge,c=UK" pass="secret" ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="user="cn=manager,o=University of Cambridge,c=UK" pass="secret" ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for user="cn=manager,o=University of Cambridge,c=UK" pass="secret" ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=cn=manager,o=University of Cambridge,c=UK pass=secret size=sss time=0 connect=0 dereference=0
+perform_ldap_search: ldap URL = "ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=NULL port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=127.0.0.1 port=636
+re-using cached connection to LDAP server 127.0.0.1:636
+Start search
+ldap_result loop
+LDAP entry loop
+LDAP attr loop sn:Hazel
+search ended by ldap_result yielding 101
+ldap_parse_result: 0
+ldap_parse_result yielded 0: Success
+LDAP search: returning: Hazel
+lookup yielded: Hazel
+search_tidyup called
+unbind LDAP connection to 127.0.0.1:636
+unbind LDAP connection to /tmp/ldap.sock:389
+unbind LDAP connection to NULL:389
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+search_open: ldap "NULL"
+search_find: file="NULL"
+  key="ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=NULL pass=NULL size=sss time=0 connect=0 dereference=0
+perform_ldap_search: ldap URL = "ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=127.0.0.1 port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=127.0.0.1 port=0
+ldap_initialize with URL ldap://127.0.0.1:389/
+initialized for LDAP (v3) server 127.0.0.1:389
+LDAP_OPT_X_TLS_TRY set
+binding with user=NULL password=NULL
+Start search
+ldap_result loop
+LDAP entry loop
+LDAP attr loop sn:Hazel
+search ended by ldap_result yielding 101
+ldap_parse_result: 0
+ldap_parse_result yielded 0: Success
+LDAP search: returning: Hazel
+lookup yielded: Hazel
+search_open: ldap "NULL"
+  cached open
+search_find: file="NULL"
+  key="ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=NULL pass=NULL size=sss time=0 connect=0 dereference=0
+perform_ldap_search: ldap URL = "ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=NULL port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=/tmp/ldap.sock port=0
+ldap_initialize with URL ldapi://%2Ftmp%2Fldap.sock
+initialized for LDAP (v3) server /tmp/ldap.sock
+binding with user=NULL password=NULL
+Start search
+ldap_result loop
+LDAP entry loop
+LDAP attr loop sn:Hazel
+search ended by ldap_result yielding 101
+ldap_parse_result: 0
+ldap_parse_result yielded 0: Success
+LDAP search: returning: Hazel
+lookup yielded: Hazel
+search_tidyup called
+unbind LDAP connection to /tmp/ldap.sock:389
+unbind LDAP connection to 127.0.0.1:389
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+search_open: ldap "NULL"
+search_find: file="NULL"
+  key="ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=NULL pass=NULL size=sss time=0 connect=0 dereference=0
+perform_ldap_search: ldap URL = "ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=/tmp/ldap.sock port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=/tmp/ldap.sock port=0
+ldap_initialize with URL ldapi://%2Ftmp%2Fldap.sock
+initialized for LDAP (v3) server /tmp/ldap.sock
+binding with user=NULL password=NULL
+Start search
+ldap_result loop
+LDAP entry loop
+LDAP attr loop sn:Hazel
+search ended by ldap_result yielding 101
+ldap_parse_result: 0
+ldap_parse_result yielded 0: Success
+LDAP search: returning: Hazel
+lookup yielded: Hazel
+search_open: ldap "NULL"
+  cached open
+search_find: file="NULL"
+  key="ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=NULL pass=NULL size=sss time=0 connect=0 dereference=0
+perform_ldap_search: ldap URL = "ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=NULL port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=/tmp/ldap.sock port=0
+re-using cached connection to LDAP server /tmp/ldap.sock
+Start search
+ldap_result loop
+LDAP entry loop
+LDAP attr loop sn:Hazel
+search ended by ldap_result yielding 101
+ldap_parse_result: 0
+ldap_parse_result yielded 0: Success
+LDAP search: returning: Hazel
+lookup yielded: Hazel
+search_open: ldap "NULL"
+  cached open
+search_find: file="NULL"
+  key="dereference=always ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="dereference=always ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for dereference=always ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=NULL pass=NULL size=sss time=0 connect=0 dereference=3
+perform_ldap_search: ldap URL = "ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=/tmp/ldap.sock port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=/tmp/ldap.sock port=0
+re-using cached connection to LDAP server /tmp/ldap.sock
+Start search
+ldap_result loop
+LDAP entry loop
+LDAP attr loop sn:Hazel
+search ended by ldap_result yielding 101
+ldap_parse_result: 0
+ldap_parse_result yielded 0: Success
+LDAP search: returning: Hazel
+lookup yielded: Hazel
+search_open: ldap "NULL"
+  cached open
+search_find: file="NULL"
+  key="ldapi://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="ldapi://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for ldapi://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=NULL pass=NULL size=sss time=0 connect=0 dereference=0
+perform_ldap_search: ldap URL = "ldapi://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=NULL port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=127.0.0.1 port=0
+ldapi requires an absolute path ("127.0.0.1" given)
+lookup deferred: ldapi requires an absolute path ("127.0.0.1" given)
+search_open: ldap "NULL"
+  cached open
+search_find: file="NULL"
+  key="user="cn=manager,o=University of Cambridge,c=UK" pass="se\"cret" ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=ldap key="user="cn=manager,o=University of Cambridge,c=UK" pass="se\"cret" ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)"
+database lookup required for user="cn=manager,o=University of Cambridge,c=UK" pass="se\"cret" ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)
+LDAP parameters: user=cn=manager,o=University of Cambridge,c=UK pass=se"cret size=sss time=0 connect=0 dereference=0
+perform_ldap_search: ldap URL = "ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" server=NULL port=0 sizelimit=0 timelimit=0 tcplimit=0
+after ldap_url_parse: host=127.0.0.1 port=636
+ldap_initialize with URL ldaps://127.0.0.1:636/
+initialized for LDAP (v3) server 127.0.0.1:636
+LDAP_OPT_X_TLS_HARD set
+binding with user=cn=manager,o=University of Cambridge,c=UK password=se"cret
+failed to bind the LDAP connection to server 127.0.0.1:636 - LDAP error 49: Invalid credentials
+lookup deferred: failed to bind the LDAP connection to server 127.0.0.1:636 - LDAP error 49: Invalid credentials
+search_tidyup called
+unbind LDAP connection to 127.0.0.1:636
+unbind LDAP connection to /tmp/ldap.sock:389
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

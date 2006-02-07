@@ -1,0 +1,37 @@
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 failed 7
+550 failed 8
+250 Accepted
+250 Reset OK
+250 OK
+550 failed 1
+550 failed 1
+550 failed 1
+250 Accepted
+550 failed 2
+550 failed 2
+250 Accepted
+550 failed 3
+550 failed 3
+550 failed 3
+250 Accepted
+550 failed 4
+550 failed 4
+250 Accepted
+550 failed 5
+550 failed 5
+250 Accepted
+250 Accepted
+550 failed 6
+250 Accepted
+550 failed 9
+550 failed 10
+250 Accepted
+550 failed 11
+221 myhost.test.ex closing connection

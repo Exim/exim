@@ -1,0 +1,13 @@
+
+**** SMTP testing session as if from host V4NET.13.13.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+221 mail.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.13.13.2
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+550 dnslist_value is 127.0.0.1, 127.0.0.2

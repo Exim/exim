@@ -1,0 +1,114 @@
+
+**** SMTP testing session as if from host 1.1.1.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+550 Administrative prohibition
+421 the.local.host.name lost input connection

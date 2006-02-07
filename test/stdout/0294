@@ -1,0 +1,48 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+250 Accepted
+250 Accepted
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaY-0005vi-00
+250 OK
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.9.8.7
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 Administrative prohibition
+550 Administrative prohibition
+550 Administrative prohibition
+550 Administrative prohibition
+550 Administrative prohibition
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+221 myhost.test.ex closing connection

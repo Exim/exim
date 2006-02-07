@@ -1,0 +1,32 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "rcpt"
+>>> processing "deny"
+>>> check !verify = sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing lp1@x.y
+>>> +++ sender_address=<>
+>>> calling bad_addresses router
+>>> bad_addresses router forced address failure
+>>> ----------- end verify ------------
+>>> deny: condition test succeeded
+LOG: H=[1.2.3.4] sender verify fail for <lp1@x.y>: 
+LOG: H=[1.2.3.4] F=<lp1@x.y> rejected RCPT <zz@x.y>: Sender verify failed
+>>> using ACL "rcpt"
+>>> processing "deny"
+>>> check !verify = sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing lp2@x.y
+>>> +++ sender_address=<>
+>>> calling bad_addresses router
+>>> bad_addresses router forced address failure
+>>> ----------- end verify ------------
+>>> deny: condition test succeeded
+LOG: H=[1.2.3.4] sender verify fail for <lp2@x.y>: This is a message
+LOG: H=[1.2.3.4] F=<lp2@x.y> rejected RCPT <zz@x.y>: Sender verify failed

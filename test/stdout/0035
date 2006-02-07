@@ -1,0 +1,286 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-myhost.test.ex Hello rhu.barb [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250
+<<< 250 HELP
+>>> mail from:<notsubmit@y>
+??? 250
+<<< 250 OK
+>>> rcpt to:<x@y>
+??? 250
+<<< 250 Accepted
+>>> data
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> .
+??? 250
+<<< 250 OK id=10HmaX-0005vi-00
+>>> mail from:<a@y>
+??? 250
+<<< 250 OK
+>>> rcpt to:<x@y>
+??? 250
+<<< 250 Accepted
+>>> data
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> .
+??? 250
+<<< 250 OK id=10HmaY-0005vi-00
+>>> mail from:<>
+??? 250
+<<< 250 OK
+>>> rcpt to:<x@y>
+??? 250
+<<< 250 Accepted
+>>> data
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> .
+??? 250
+<<< 250 OK id=10HmaZ-0005vi-00
+>>> mail from:<notsubmit@y>
+??? 250
+<<< 250 OK
+>>> rcpt to:<x@y>
+??? 250
+<<< 250 Accepted
+>>> data
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Sender: sender@some.where
+>>> .
+??? 250
+<<< 250 OK id=10HmbA-0005vi-00
+>>> mail from:<a@y>
+??? 250
+<<< 250 OK
+>>> rcpt to:<x@y>
+??? 250
+<<< 250 Accepted
+>>> data
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Sender: sender@some.where
+>>> .
+??? 250
+<<< 250 OK id=10HmbB-0005vi-00
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-myhost.test.ex Hello rhu.barb [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250
+<<< 250 HELP
+>>> mail from:<a@y>
+??? 250
+<<< 250 OK
+>>> rcpt to:<x@y>
+??? 250
+<<< 250 Accepted
+>>> data
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Sender: sender@some.where
+>>> .
+??? 250
+<<< 250 OK id=10HmbC-0005vi-00
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-myhost.test.ex Hello rhu.barb [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250
+<<< 250 HELP
+>>> mail from:<a@y>
+??? 250
+<<< 250 OK
+>>> rcpt to:<x@y>
+??? 250
+<<< 250 Accepted
+>>> data
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> Sender: sender@some.where
+>>> .
+??? 250
+<<< 250 OK id=10HmbD-0005vi-00
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+10HmaX-0005vi-00-H
+CALLER UID GID
+<notsubmit@y>
+ddddddddd 0
+-helo_name rhu.barb
+-host_address 127.0.0.1.9999
+-interface_address 127.0.0.1.1225
+-received_protocol esmtp
+-body_linecount 0
+-deliver_firsttime
+XX
+1
+x@y
+
+dddP Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <notsubmit@y>)
+	id 10HmaX-0005vi-00
+	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+10HmaY-0005vi-00-H
+CALLER UID GID
+<a@y>
+ddddddddd 0
+-helo_name rhu.barb
+-host_address 127.0.0.1.9999
+-interface_address 127.0.0.1.1225
+-received_protocol esmtp
+-body_linecount 0
+-deliver_firsttime
+XX
+1
+x@y
+
+dddP Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <a@y>)
+	id 10HmaY-0005vi-00
+	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+047I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+dddF From: a@y
+038  Date: Tue, 2 Mar 1999 09:44:33 +0000
+10HmaZ-0005vi-00-H
+CALLER UID GID
+<>
+ddddddddd 0
+-helo_name rhu.barb
+-host_address 127.0.0.1.9999
+-interface_address 127.0.0.1.1225
+-received_protocol esmtp
+-body_linecount 0
+-deliver_firsttime
+XX
+1
+x@y
+
+dddP Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	id 10HmaZ-0005vi-00
+	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+047I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+038  Date: Tue, 2 Mar 1999 09:44:33 +0000
+10HmbA-0005vi-00-H
+CALLER UID GID
+<notsubmit@y>
+ddddddddd 0
+-helo_name rhu.barb
+-host_address 127.0.0.1.9999
+-interface_address 127.0.0.1.1225
+-received_protocol esmtp
+-body_linecount 0
+-deliver_firsttime
+XX
+1
+x@y
+
+dddP Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <notsubmit@y>)
+	id 10HmbA-0005vi-00
+	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+dddS Sender: sender@some.where
+10HmbB-0005vi-00-H
+CALLER UID GID
+<a@y>
+ddddddddd 0
+-helo_name rhu.barb
+-host_address 127.0.0.1.9999
+-interface_address 127.0.0.1.1225
+-received_protocol esmtp
+-body_linecount 0
+-deliver_firsttime
+XX
+1
+x@y
+
+dddP Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <a@y>)
+	id 10HmbB-0005vi-00
+	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+ddd* Sender: sender@some.where
+047I Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+dddF From: a@y
+038  Date: Tue, 2 Mar 1999 09:44:33 +0000
+10HmbC-0005vi-00-H
+CALLER UID GID
+<a@y>
+ddddddddd 0
+-helo_name rhu.barb
+-host_address 127.0.0.1.9999
+-interface_address 127.0.0.1.1225
+-received_protocol esmtp
+-body_linecount 0
+-deliver_firsttime
+XX
+1
+x@y
+
+dddP Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <a@y>)
+	id 10HmbC-0005vi-00
+	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+dddS Sender: sender@some.where
+047I Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+dddF From: a@y
+038  Date: Tue, 2 Mar 1999 09:44:33 +0000
+10HmbD-0005vi-00-H
+CALLER UID GID
+<a@y>
+ddddddddd 0
+-helo_name rhu.barb
+-host_address 127.0.0.1.9999
+-interface_address 127.0.0.1.1225
+-received_protocol esmtp
+-body_linecount 0
+-deliver_firsttime
+XX
+1
+x@y
+
+dddP Received: from [127.0.0.1] (helo=rhu.barb)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <a@y>)
+	id 10HmbD-0005vi-00
+	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+ddd* Sender: sender@some.where
+047I Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
+dddF From: SomeName <a@y>
+038  Date: Tue, 2 Mar 1999 09:44:33 +0000

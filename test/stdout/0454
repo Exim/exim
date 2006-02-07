@@ -1,0 +1,23 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> helo rhu.barb
+??? 250
+<<< 250 myhost.test.ex Hello rhu.barb [127.0.0.1]
+>>> mail from:<userx@test.ex>
+??? 250
+<<< 250 OK
+>>> rcpt to:<userx@test.ex>
+??? 250
+<<< 250 Accepted
+>>> DATA
+??? 3
+<<< 354 Enter message, ending with "." on a line by itself
+>>> This is a test message.
+>>> .
+??? 250
+<<< 250 OK id=10HmaX-0005vi-00
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script

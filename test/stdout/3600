@@ -1,0 +1,52 @@
+Message 10HmaY-0005vi-00 has been modified
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO xxxx
+??? 250-
+<<< 250-myhost.test.ex Hello xxxx [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-AUTH NTLMX NTLM
+??? 250
+<<< 250 HELP
+>>> AUTH NTLM
+??? 334
+<<< 334 NTLM supported
+>>> teststring
+??? 535
+<<< 535 Incorrect authentication data
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO xxxx
+??? 250-
+<<< 250-myhost.test.ex Hello xxxx [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-AUTH NTLMX NTLM
+??? 250
+<<< 250 HELP
+>>> AUTH NTLM
+??? 334
+<<< 334 NTLM supported
+>>> dGVzdHN0cmluZw==
+??? 334
+<<< 334 TlRMTVNTUAACAAAAAAAAAAAoAAABggAAAEbBRwqFwwIAAAAAAAAAAAAt1sgAAAAA
+>>> teststring
+??? 535
+<<< 535 Incorrect authentication data
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script

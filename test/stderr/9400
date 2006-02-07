@@ -1,0 +1,221 @@
+exim: message rejected by local scan code: this message isn't wanted
+
+An error was detected while processing a file of BSMTP input.
+The error message was:
+
+  550 not wanted -bS
+
+
+The SMTP transaction started in line 0.
+The error was detected in line 7.
+0 previous messages were successfully processed.
+The rest of the batch was abandoned.
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = NULL
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<test-local-scan@y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<userx@test.ex>
+SMTP>> 250 Accepted
+SMTP<< data
+SMTP>> 354 Enter message, ending with "." on a line by itself
+>>Headers received:
+
+>>Headers after rewriting and local additions:
+I Message-Id: <E10HmbX-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Data file written for message 10HmbX-0005vi-00
+>>Generated Received: header line
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+calling local_scan(); timeout=1
+local_scan() called: message_id=10HmbX-0005vi-00
+local_scan() returned 0 NULL
+Writing spool header file
+Size of headers = sss
+LOG: MAIN
+  <= test-local-scan@y U=CALLER P=local-smtp S=sss
+SMTP>> 250 OK id=10HmbX-0005vi-00
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+delivering 10HmbX-0005vi-00
+LOG: MAIN
+  *> userx <userx@test.ex> R=r1 T=local_delivery
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+smtp_setup_msg entered
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+local_scan() called: message_id=10HmaX-0005vi-00
+D_local_scan is set
+local_scan_int = 24
+local_scan_string = the quick brown fox
+host_checking = 0
+b64encode: dGhlIGNhdCBzYXQgb24gdGhlIG1hdA==
+b64decode: 22 the cat sat on the mat
+LOG: MAIN
+  test write to LOG_MAIN
+LOG: REJECT
+  test write to LOG_REJECT
+LOG: PANIC
+  test write to LOG_PANIC
+LOG: MAIN
+  <= test-local-scan@y U=CALLER P=local-smtp S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+delivering 10HmaX-0005vi-00
+LOG: MAIN
+  *> userx <userx@test.ex> R=r1 T=local_delivery
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+An error was detected while processing a file of BSMTP input.
+The error message was:
+
+  550 not wanted -bS
+
+
+The SMTP transaction started in line 0.
+The error was detected in line 7.
+0 previous messages were successfully processed.
+The rest of the batch was abandoned.
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4]
+host in host_lookup? no (option unset)
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+processing "accept"
+accept: condition test succeeded
+host in ignore_fromline_hosts? no (option unset)
+local_scan() called: message_id=10HmcL-0005vi-00
+D_local_scan is set
+local_scan_int = 24
+local_scan_string = the quick brown fox
+host_checking = 1
+b64encode: dGhlIGNhdCBzYXQgb24gdGhlIG1hdA==
+b64decode: 22 the cat sat on the mat
+LOG: MAIN
+  test write to LOG_MAIN
+LOG: REJECT
+  test write to LOG_REJECT
+LOG: PANIC
+  test write to LOG_PANIC
+LOG: MAIN
+  <= test-local-scan@y H=[1.2.3.4] P=smtp S=sss
+LOG: MAIN
+  frozen by local_scan()
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4] closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4]
+host in host_lookup? no (option unset)
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+processing "accept"
+accept: condition test succeeded
+host in ignore_fromline_hosts? no (option unset)
+local_scan() called: message_id=10HmcM-0005vi-00
+D_local_scan is set
+local_scan_int = 24
+local_scan_string = the quick brown fox
+host_checking = 1
+b64encode: dGhlIGNhdCBzYXQgb24gdGhlIG1hdA==
+b64decode: 22 the cat sat on the mat
+LOG: MAIN
+  test write to LOG_MAIN
+LOG: REJECT
+  test write to LOG_REJECT
+LOG: PANIC
+  test write to LOG_PANIC
+a.b.c in "x.y.z:*.b.c"? yes (matched "*.b.c")
+domain OK
+a.b.d in "x.y.z:*.b.c"? no (end of list)
+domain FAIL
+abc in "!xyz:^A:pqr"? yes (matched "^A")
+locprt OK
+abc in "!xyz:^A:pqr"? no (end of list)
+locprt FAIL
+abc in "!xyz:^B:pqr"? no (end of list)
+locprt FAIL
+b in "b"? yes (matched "b")
+a@b in "*@b"? yes (matched "*@b")
+address OK
+host in "1.2.3.4"? yes (matched "1.2.3.4")
+host OK
+5.6.7.9 in "1.2.3.4:5.6.7.8/24"? yes (matched "5.6.7.8/24")
+host OK
+LOG: MAIN
+  <= test-local-scan@y H=[1.2.3.4] P=smtp S=sss
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4] closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+local_scan() called: message_id=10HmaY-0005vi-00
+D_local_scan is set
+local_scan_int = 24
+local_scan_string = the quick brown fox
+host_checking = 0
+b64encode: dGhlIGNhdCBzYXQgb24gdGhlIG1hdA==
+b64decode: 22 the cat sat on the mat
+LOG: MAIN
+  test write to LOG_MAIN
+LOG: REJECT
+  test write to LOG_REJECT
+LOG: PANIC
+  test write to LOG_PANIC
+local_scan forced to crash...
+LOG: MAIN REJECT
+  local_scan() function crashed with signal 11 - message temporarily rejected (size 35)
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=1 >>>>>>>>>>>>>>>>

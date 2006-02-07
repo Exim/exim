@@ -1,0 +1,4 @@
+1999-03-02 09:44:33 Received from <> U=CALLER P=local S=sss
+1999-03-02 09:44:33 routing failed for userx@myhost.test.ex: Too many "Received" headers - suspected mail loop
+1999-03-02 09:44:33 routing failed for usery@myhost.test.ex: Too many "Received" headers - suspected mail loop
+*** Frozen (delivery error message)

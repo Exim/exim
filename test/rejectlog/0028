@@ -1,0 +1,11 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<CALLER@myhost.test.ex> rejected after DATA: message too big - $recipients=userx@test.ex (1)
+Envelope-from: <CALLER@myhost.test.ex>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 U=CALLER F=<x@y> rejected RCPT <userx@test.ex>: SIZE value too big

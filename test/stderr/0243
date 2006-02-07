@@ -1,0 +1,30 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> xxxx in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> using ACL "check_recipient"
+>>> processing "deny"
+>>> check !verify = recipient
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing faq@nl.demon.net
+>>> nl.demon.net in "*.demon.net"? yes (matched "*.demon.net")
+>>> calling auto_antwoord router
+>>> routed by auto_antwoord router (unseen)
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing faq@nl.demon.net
+>>> nl.demon.net in "nl.demon.net:*.nl.demon.net:fax-gw.demon.nl: www-3.demon.nl : localhost"? yes (matched "nl.demon.net")
+>>> calling algemeen_aliases router
+>>> routed by algemeen_aliases router
+>>> ----------- end verify ------------
+>>> deny: condition test failed
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> nl.demon.net in "nl.demon.net"? yes (matched "nl.demon.net")
+>>> nl.demon.net in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded

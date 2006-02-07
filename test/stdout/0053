@@ -1,0 +1,5 @@
+userx@test.ex
+    <-- bar@domain1.ex
+  router = localuser, transport = local_delivery
+foobar@domain1.ex is undeliverable:
+  Unrouteable address

@@ -1,0 +1,128 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:<CALLER@myhost.test.ex>
+250 Sender OK
+RCPT TO:<x@test.ex>
+250 Recipient OK
+DATA
+>
+Unexpected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:<CALLER@myhost.test.ex>
+250 Sender OK
+RCPT TO:<x@test.ex>
+>
+DATA
+550 Failed DATA
+Unexpected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:<CALLER@myhost.test.ex>
+>
+RCPT TO:<x@test.ex>
+550 Can't send RCPT
+DATA
+550 Can't send DATA
+Unexpected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:<CALLER@myhost.test.ex>
+250 Sender OK
+RCPT TO:<x@test.ex>
+250 First RCPT OK
+RCPT TO:<y@test.ex>
+>
+250 Second RCPT malformed
+RCPT TO:<z@test.ex>
+250 Third RCPT OK
+DATA
+550 Failed DATA
+Unexpected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:<CALLER@myhost.test.ex>
+250 Sender OK
+RCPT TO:<a@test.ex>
+450 Recipient bad
+RCPT TO:<b@test.ex>
+450 Recipient bad
+DATA
+550 Data not expected
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250 HELP
+MAIL FROM:<CALLER@myhost.test.ex>
+250 Sender OK
+RCPT TO:<x@test.ex>
+250 Recipient OK
+DATA
+>
+Unexpected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250 HELP
+MAIL FROM:<CALLER@myhost.test.ex>
+250 Sender OK
+RCPT TO:<x@test.ex>
+>
+Unexpected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250 HELP
+MAIL FROM:<CALLER@myhost.test.ex>
+>
+Unexpected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250 HELP
+MAIL FROM:<CALLER@myhost.test.ex>
+250 Sender OK
+RCPT TO:<x@test.ex>
+250 First RCPT OK
+RCPT TO:<y@test.ex>
+>
+250 Second RCPT malformed
+Unexpected EOF read from client

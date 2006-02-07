@@ -1,0 +1,6 @@
+pre-x@test.ex
+  router = r3, transport = t1
+x-post@test.ex
+  router = r3, transport = t1
+pre-z@test.ex is undeliverable:
+  Unrouteable address

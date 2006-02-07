@@ -1,0 +1,4 @@
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss

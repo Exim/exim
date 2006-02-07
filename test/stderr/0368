@@ -1,0 +1,28 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+discarded duplicate host ten-1.test.ex (MX=8)
+fully qualified name = mxt9.test.ex
+host_find_bydns yield = HOST_FOUND (2); returned hosts:
+  ten-1.test.ex V4NET.0.0.1 MX=5 
+  ten-2.test.ex V4NET.0.0.2 MX=6 
+  ten-3.test.ex V4NET.0.0.3 MX=7 
+duplicate IP address V4NET.0.0.5 (MX=5) removed
+duplicate IP address V4NET.0.0.6 (MX=6) removed
+fully qualified name = mxt14.test.ex
+host_find_bydns yield = HOST_FOUND (2); returned hosts:
+  ten-5-6.test.ex V4NET.0.0.5 MX=4 
+  ten-5-6.test.ex V4NET.0.0.6 MX=4 
+finding IP address for ten-1.test.ex
+doing DNS lookup
+fully qualified name = ten-1.test.ex
+ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+finding IP address for ten-1.test.ex
+doing DNS lookup
+fully qualified name = ten-1.test.ex
+ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+finding IP address for ten-2.test.ex
+doing DNS lookup
+fully qualified name = ten-2.test.ex
+ten-2.test.ex V4NET.0.0.2 mx=-1 sort=xx 
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

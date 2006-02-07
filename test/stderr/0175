@@ -1,0 +1,90 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "require"
+>>> check verify = sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing user@bad.domain
+>>> bad.domain in "test.ex"? no (end of list)
+>>> bad.domain in "! +local_domains"? yes (end of list)
+>>> calling fail_sender router
+>>> bad.domain in "bad.domain"? yes (matched "bad.domain")
+>>> local host found for non-MX address
+>>> fully qualified name = localhost
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=localhost address=127.0.0.1
+>>> fail_sender router forced address failure
+>>> ----------- end verify ------------
+>>> require: condition test failed
+LOG: H=[V4NET.0.0.0] sender verify fail for <user@bad.domain>: remote host address is the local host
+LOG: H=[V4NET.0.0.0] F=<user@bad.domain> rejected RCPT <userx@test.ex>: Sender verify failed
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "require"
+>>> check verify = sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing user@bad.domain2
+>>> bad.domain2 in "test.ex"? no (end of list)
+>>> bad.domain2 in "! +local_domains"? yes (end of list)
+>>> calling fail_sender router
+>>> bad.domain2 in "bad.domain"? no (end of list)
+>>> fail_sender router declined for user@bad.domain2
+>>> bad.domain2 in "! +local_domains"? yes (end of list)
+>>> calling fail_sender2 router
+>>> bad.domain2 in "bad.domain2"? yes (matched "bad.domain2")
+>>> local host found for non-MX address
+>>> fully qualified name = localhost
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=localhost address=127.0.0.1
+>>> ----------- end verify ------------
+>>> require: condition test failed
+LOG: H=[V4NET.0.0.0] sender verify fail for <user@bad.domain2>: fail_sender2 router forced verify failure
+LOG: H=[V4NET.0.0.0] F=<user@bad.domain2> rejected RCPT <userx@test.ex>: Sender verify failed
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "require"
+>>> check verify = sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing user@ten-1.test.ex
+>>> ten-1.test.ex in "test.ex"? no (end of list)
+>>> ten-1.test.ex in "! +local_domains"? yes (end of list)
+>>> calling fail_sender router
+>>> ten-1.test.ex in "bad.domain"? no (end of list)
+>>> fail_sender router declined for user@ten-1.test.ex
+>>> ten-1.test.ex in "! +local_domains"? yes (end of list)
+>>> calling fail_sender2 router
+>>> ten-1.test.ex in "bad.domain2"? no (end of list)
+>>> fail_sender2 router declined for user@ten-1.test.ex
+>>> ten-1.test.ex in "! +local_domains"? yes (end of list)
+>>> calling lookuphost router
+>>> routed by lookuphost router
+>>> ----------- end verify ------------
+>>> require: condition test succeeded
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+LOG: 10HmaX-0005vi-00 <= user@ten-1.test.ex H=[V4NET.0.0.0] P=smtp S=sss

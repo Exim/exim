@@ -1,0 +1,252 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-Verification failed for <bad@localhost>
+550-Called:   127.0.0.1
+550-Sent:     RCPT TO:<bad@localhost>
+550-Response: 550 Unknown user
+550 Sender verify failed
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+451 Could not complete sender verify callout
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 Sender verify failed
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-Callback setup failed while verifying <uncheckable@localhost1>
+550-Called:   127.0.0.1
+550-Sent:     MAIL FROM:<>
+550-Response: 550-Multiline error for <>
+550-550 Here's the second line
+550-The initial connection, or a HELO or MAIL FROM:<> command was
+550-rejected. Refusing MAIL FROM:<> does not help fight spam, disregards
+550-RFC requirements, and stops you from receiving standard bounce
+550-messages. This host does not accept mail from domains whose servers
+550-refuse bounces.
+550 Sender verify failed
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-Callout verification failed:
+550 550 Recipient not liked
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-Callout verification failed:
+550-550-Recipient not liked on two lines
+550 550 Here's the second
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+451 Could not complete recipient verify callout
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 Administrative prohibition
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 Administrative prohibition
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 relay not permitted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-Postmaster verification failed while checking <ok@localhost1>
+550-Called:   127.0.0.1
+550-Sent:     RCPT TO:<postmaster@localhost1>
+550-Response: 550 Don't like postmaster
+550-Several RFCs state that you are required to have a postmaster
+550-mailbox for each mail domain. This host does not accept mail
+550-from domains whose servers reject the postmaster address.
+550 Sender verify failed
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-Callout verification failed:
+550 550 Recipient not liked
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+451 Could not complete sender verify callout
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+451 Could not complete sender verify callout
+221 myhost.test.ex closing connection
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<ok@localhost>
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<bad@localhost>
+550 Unknown user
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<uncheckable@localhost1>
+450 Temporary error
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+550 Error for <>
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+550-Multiline error for <>
+550 Here's the second line
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<z@remote.domain>
+550 Recipient not liked
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<z@remote.domain>
+550-Recipient not liked on two lines
+550 Here's the second
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<abcd@x.y.z>
+550 Not liked
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<abcd@x.y.z>
+550 Not liked
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<ok@localhost1>
+250 OK
+RSET
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<postmaster@localhost1>
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<ok@localhost1>
+250 OK
+RSET
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<postmaster@localhost1>
+550 Don't like postmaster
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+LHLO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<z@remote.lmtp>
+550 Recipient not liked
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+End of script

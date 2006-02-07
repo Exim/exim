@@ -1,0 +1,15 @@
+
+**** SMTP testing session as if from host V4NET.9.8.7
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 mail.test.ex Hello xxx [V4NET.9.8.7]
+550 Administrative prohibition
+221 mail.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.9.9.9
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+550 Administrative prohibition

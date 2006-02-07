@@ -1,0 +1,2 @@
+1999-03-02 09:44:33 H=[10.0.0.2] U=CALLER sender verify fail for <"jules@box3.plc.example-is-not-known"@plc.example>: Unrouteable mail domain "plc.example"
+1999-03-02 09:44:33 H=[10.0.0.2] U=CALLER F=<jules@box3.plc.example> rejected RCPT <userx@test.ex>: Sender verify failed

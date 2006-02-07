@@ -1,0 +1,80 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+sender_fullhost = [V4NET.0.0.0]
+sender_rcvhost = [V4NET.0.0.0]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.0.0.0]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [V4NET.0.0.0]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<x@a.b.c>
+using ACL "check_rcpt"
+processing "accept"
+check domains = +local_domains
+a.b.c in "*.test.ex"? no (end of list)
+a.b.c in "+local_domains"? no (end of list)
+accept: condition test failed
+processing "accept"
+check domains = +relay_domains
+a.b.c in "a.b.c"? yes (matched "a.b.c")
+a.b.c in "+relay_domains"? yes (matched "+relay_domains")
+check verify = recipient
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying x@a.b.c
+address match: subject=x@a.b.c pattern=x@a.b.c
+a.b.c in "a.b.c"? yes (matched "a.b.c")
+x@a.b.c in "x@a.b.c"? yes (matched "x@a.b.c")
+LOG: address_rewrite MAIN
+  "x@a.b.c" from env-to rewritten as "x@x.test.ex" by rule 1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering x@x.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@x.test.ex
+--------> r1 router <--------
+local_part=x domain=x.test.ex
+checking domains
+x.test.ex in "a.b.c"? no (end of list)
+x.test.ex in "+relay_domains"? no (end of list)
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=x domain=x.test.ex
+checking domains
+x.test.ex in "*.test.ex"? yes (matched "*.test.ex")
+x.test.ex in "+local_domains"? yes (matched "+local_domains")
+calling r2 router
+r2 router called for x@x.test.ex
+  domain = x.test.ex
+set transport t2
+queued for t2 transport: local_part = x
+domain = x.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r2 router
+  envelope to: x@x.test.ex
+  transport: t2
+----------- end verify ------------
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< quit
+SMTP>> 221 the.local.host.name closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.0.0.0] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -1,0 +1,27 @@
+dnslookup@mx46.test.ex
+  router = r1, transport = smtp
+  host 46.test.ex [V4NET.0.0.4] MX=46
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] MX=46
+manualroute@test.ex
+  router = r2, transport = smtp
+  host 46.test.ex [V6NET:ffff:836f:a00:a:800:200a:c031] 
+  host 46.test.ex [V4NET.0.0.4]                          
+dnslookup@v6.test.ex
+  router = r1, transport = smtp
+  host v6.test.ex [V6NET:ffff:836f:a00:a:800:200a:c032] 
+dnslookup@mx46.test.ex
+  router = r1, transport = smtp
+  host 46.test.ex [V4NET.0.0.4] MX=46
+manualroute@test.ex
+  router = r2, transport = smtp
+  host 46.test.ex [V4NET.0.0.4] 
+dnslookup@v6.test.ex is undeliverable:
+  Unrouteable address
+Connecting to ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225 ... failed: Connection refused

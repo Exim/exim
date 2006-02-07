@@ -1,0 +1,245 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+delivering 10HmaX-0005vi-00
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: cms@test.ex
+unique = cms@test.ex
+cms@test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing cms@test.ex
+--------> v0 router <--------
+local_part=cms domain=test.ex
+v0 router skipped: verify_only set
+--------> r1 router <--------
+local_part=cms domain=test.ex
+checking domains
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=cms domain=test.ex
+calling r2 router
+rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}
+expanded: unknown@recurse.test.ex, defer
+file is not a filter file
+parse_forward_list: unknown@recurse.test.ex, defer
+extract item: unknown@recurse.test.ex
+extract item: defer
+------ Verifying errors address postmaster@test.ex ------
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing postmaster@test.ex
+--------> v0 router <--------
+local_part=postmaster domain=test.ex
+checking local_parts
+calling v0 router
+v0 router called for postmaster@test.ex
+  domain = test.ex
+queued for <unset> transport: local_part = postmaster
+domain = test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by v0 router
+  envelope to: postmaster@test.ex
+  transport: <none>
+------ End verifying errors address postmaster@test.ex ------
+r2 router generated defer@test.ex
+  errors_to=postmaster@test.ex transport=NULL
+  uid=unset gid=unset home=NULL
+r2 router generated unknown@recurse.test.ex
+  errors_to=postmaster@test.ex transport=NULL
+  uid=unset gid=unset home=NULL
+routed by r2 router
+  envelope to: cms@test.ex
+  transport: <none>
+  errors to postmaster@test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: unknown@recurse.test.ex
+unique = unknown@recurse.test.ex
+unknown@recurse.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: defer@test.ex
+unique = defer@test.ex
+defer@test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing defer@test.ex
+--------> v0 router <--------
+local_part=defer domain=test.ex
+v0 router skipped: verify_only set
+--------> r1 router <--------
+local_part=defer domain=test.ex
+checking domains
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=defer domain=test.ex
+calling r2 router
+rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}
+expanded: :defer: Forcibly deferred
+file is not a filter file
+parse_forward_list: :defer: Forcibly deferred
+extract item: :defer: Forcibly deferred
+r2 router: defer for defer@test.ex
+  message: Forcibly deferred
+LOG: MAIN
+  == defer@test.ex <cms@test.ex> R=r2 defer (-1): Forcibly deferred
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing unknown@recurse.test.ex
+--------> v0 router <--------
+local_part=unknown domain=recurse.test.ex
+v0 router skipped: verify_only set
+--------> r1 router <--------
+local_part=unknown domain=recurse.test.ex
+checking domains
+calling r1 router
+r1 router called for unknown@recurse.test.ex
+  domain = recurse.test.ex
+r1 router widened recurse.test.ex to recurse.test.ex.test.ex
+domain changed to recurse.test.ex.test.ex
+rewriting header lines
+re-routed to unknown@recurse.test.ex.test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: unknown@recurse.test.ex.test.ex
+unique = unknown@recurse.test.ex.test.ex
+unknown@recurse.test.ex.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing unknown@recurse.test.ex.test.ex
+--------> v0 router <--------
+local_part=unknown domain=recurse.test.ex.test.ex
+v0 router skipped: verify_only set
+--------> r1 router <--------
+local_part=unknown domain=recurse.test.ex.test.ex
+checking domains
+calling r1 router
+r1 router called for unknown@recurse.test.ex.test.ex
+  domain = recurse.test.ex.test.ex
+set transport t1
+queued for t1 transport: local_part = unknown
+domain = recurse.test.ex.test.ex
+  errors_to=postmaster@test.ex
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: unknown@recurse.test.ex.test.ex
+  transport: t1
+  errors to postmaster@test.ex
+  host recurse.test.ex.test.ex [V4NET.99.0.2]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    unknown@recurse.test.ex.test.ex
+  Failed addresses:
+  Deferred addresses:
+    defer@test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  *> unknown@recurse.test.ex.test.ex <cms@test.ex> R=r1 T=t1 H=recurse.test.ex.test.ex [V4NET.99.0.2]
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp -qf
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: cms@test.ex
+unique = cms@test.ex
+cms@test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing cms@test.ex
+--------> v0 router <--------
+local_part=cms domain=test.ex
+v0 router skipped: verify_only set
+--------> r1 router <--------
+local_part=cms domain=test.ex
+checking domains
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=cms domain=test.ex
+calling r2 router
+rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}
+expanded: unknown@recurse.test.ex, defer
+file is not a filter file
+parse_forward_list: unknown@recurse.test.ex, defer
+extract item: unknown@recurse.test.ex
+extract item: defer
+------ Verifying errors address postmaster@test.ex ------
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing postmaster@test.ex
+--------> v0 router <--------
+local_part=postmaster domain=test.ex
+checking local_parts
+calling v0 router
+v0 router called for postmaster@test.ex
+  domain = test.ex
+queued for <unset> transport: local_part = postmaster
+domain = test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by v0 router
+  envelope to: postmaster@test.ex
+  transport: <none>
+------ End verifying errors address postmaster@test.ex ------
+r2 router generated defer@test.ex
+  errors_to=postmaster@test.ex transport=NULL
+  uid=unset gid=unset home=NULL
+r2 router generated unknown@recurse.test.ex
+  errors_to=postmaster@test.ex transport=NULL
+  uid=unset gid=unset home=NULL
+routed by r2 router
+  envelope to: cms@test.ex
+  transport: <none>
+  errors to postmaster@test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: unknown@recurse.test.ex
+unique = unknown@recurse.test.ex
+unknown@recurse.test.ex was previously delivered: discarded
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: defer@test.ex
+unique = defer@test.ex
+defer@test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing defer@test.ex
+--------> v0 router <--------
+local_part=defer domain=test.ex
+v0 router skipped: verify_only set
+--------> r1 router <--------
+local_part=defer domain=test.ex
+checking domains
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=defer domain=test.ex
+calling r2 router
+rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0360.aliases}}
+expanded: :defer: Forcibly deferred
+file is not a filter file
+parse_forward_list: :defer: Forcibly deferred
+extract item: :defer: Forcibly deferred
+r2 router: defer for defer@test.ex
+  message: Forcibly deferred
+LOG: MAIN
+  == defer@test.ex <cms@test.ex> R=r2 defer (-1): Forcibly deferred
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+    defer@test.ex
+LOG: queue_run MAIN
+  End queue run: pid=pppp -qf
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

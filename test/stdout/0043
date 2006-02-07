@@ -1,0 +1,20 @@
+
+**** SMTP testing session as if from host V4NET.0.0.97
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-the.local.host.name Hello exim.test.ex [V4NET.0.0.97]
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+250 OK
+550-Verification failed for <junkjunk@exim.test.ex>
+550-Unrouteable address
+550 Sender verify failed
+250 Reset OK
+250 OK
+250 Accepted
+550 unrouteable address
+550 unrouteable address
+221 the.local.host.name closing connection

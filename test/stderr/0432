@@ -1,0 +1,288 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "mail"
+>>> processing "accept"
+>>> check verify = sender/callout=1s,maxwait=1s
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing x@y
+>>> calling r1 router
+>>> routed by r1 router
+>>> local host found for non-MX address
+>>> fully qualified name = 127.0.0.1
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=127.0.0.1 address=127.0.0.1
+>>> Attempting full verification using callout
+>>> ... callout omitted by default when host testing
+>>> (Use -bhc if you want the callouts to happen.)
+>>> ----------- end verify ------------
+>>> accept: condition test succeeded
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [1.2.3.4]
+sender_rcvhost = [1.2.3.4]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [1.2.3.4]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+using ACL "mail"
+processing "accept"
+check verify = sender/callout=1s,maxwait=1s
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying x@y
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering x@y
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@y
+--------> r1 router <--------
+local_part=x domain=y
+calling r1 router
+r1 router called for x@y
+  domain = y
+set transport t1
+queued for t1 transport: local_part = x
+domain = y
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: x@y
+  transport: t1
+using host_fake_gethostbyname for 127.0.0.1 (IPv4)
+local host found for non-MX address
+fully qualified name = 127.0.0.1
+MUNGED: ::1 will be omitted in what follows
+get[host|ipnode]byname[2] looked up these IP addresses:
+  name=127.0.0.1 address=127.0.0.1
+Attempting full verification using callout
+locking TESTSUITE/spool/db/callout.lockfile
+locked TESTSUITE/spool/db/callout.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/callout)
+returned from EXIM_DBOPEN
+opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
+dbfn_read: key=y
+callout cache: no domain record found
+dbfn_read: key=x@y
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<x@y>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+locking TESTSUITE/spool/db/callout.lockfile
+locked TESTSUITE/spool/db/callout.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/callout)
+returned from EXIM_DBOPEN
+opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
+dbfn_write: key=y
+wrote callout cache domain record:
+  result=1 postmaster=0 random=0
+dbfn_write: key=x@y
+wrote positive callout cache address record
+----------- end verify ------------
+sender x@y verified ok
+accept: condition test succeeded
+SMTP>> 250 OK
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [1.2.3.4]
+sender_rcvhost = [1.2.3.4]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [1.2.3.4]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+using ACL "mail"
+processing "accept"
+check verify = sender/callout=1s,maxwait=1s
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying x@y
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering x@y
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@y
+--------> r1 router <--------
+local_part=x domain=y
+calling r1 router
+r1 router called for x@y
+  domain = y
+set transport t1
+queued for t1 transport: local_part = x
+domain = y
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: x@y
+  transport: t1
+using host_fake_gethostbyname for 127.0.0.1 (IPv4)
+local host found for non-MX address
+fully qualified name = 127.0.0.1
+MUNGED: ::1 will be omitted in what follows
+get[host|ipnode]byname[2] looked up these IP addresses:
+  name=127.0.0.1 address=127.0.0.1
+Attempting full verification using callout
+locking TESTSUITE/spool/db/callout.lockfile
+locked TESTSUITE/spool/db/callout.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/callout)
+returned from EXIM_DBOPEN
+opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
+dbfn_read: key=y
+callout cache: found domain record
+dbfn_read: key=x@y
+callout cache: found address record
+callout cache: address record is positive
+----------- end verify ------------
+sender x@y verified ok
+accept: condition test succeeded
+SMTP>> 250 OK
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "mail"
+>>> processing "accept"
+>>> check verify = sender/callout=1s,maxwait=1s
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing x@y
+>>> calling r1 router
+>>> routed by r1 router
+>>> local host found for non-MX address
+>>> fully qualified name = 127.0.0.1
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=127.0.0.1 address=127.0.0.1
+>>> Attempting full verification using callout
+>>> callout cache: found domain record
+>>> callout cache: found address record
+>>> callout cache: address record is positive
+>>> ----------- end verify ------------
+>>> accept: condition test succeeded
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "mail"
+>>> processing "accept"
+>>> check verify = sender/callout=1s,maxwait=1s
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing a@b
+>>> calling r1 router
+>>> routed by r1 router
+>>> local host found for non-MX address
+>>> fully qualified name = 127.0.0.1
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=127.0.0.1 address=127.0.0.1
+>>> Attempting full verification using callout
+>>> callout cache: no domain record found
+>>> callout cache: no address record found
+>>> interface=NULL port=1224
+>>> Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+>>>   SMTP<< 220 server ready
+>>>   SMTP>> HELO myhost.test.ex
+>>>   SMTP<< 250 OK
+>>>   SMTP>> MAIL FROM:<>
+>>>   SMTP<< 250 OK
+>>>   SMTP>> RCPT TO:<a@b>
+>>>   SMTP<< 250 OK
+>>>   SMTP>> QUIT
+>>> wrote callout cache domain record:
+>>>   result=1 postmaster=0 random=0
+>>> wrote positive callout cache address record
+>>> ----------- end verify ------------
+>>> accept: condition test succeeded
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "mail"
+>>> processing "accept"
+>>> check verify = sender/callout=1s,maxwait=1s
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing p1@q
+>>> calling r1 router
+>>> routed by r1 router
+>>> local host found for non-MX address
+>>> fully qualified name = 127.0.0.1
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=127.0.0.1 address=127.0.0.1
+>>> Attempting full verification using callout
+>>> callout cache: no domain record found
+>>> callout cache: no address record found
+>>> interface=NULL port=1224
+>>> Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+>>>   SMTP<< 220 server ready
+>>>   SMTP>> HELO myhost.test.ex
+>>> SMTP timeout
+>>> ----------- end verify ------------
+>>> accept: condition test deferred
+LOG: H=[1.2.3.4] sender verify defer for <p1@q>: Could not complete sender verify callout
+LOG: H=[1.2.3.4] temporarily rejected MAIL <p1@q>: Could not complete sender verify callout

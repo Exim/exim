@@ -1,0 +1,26 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<fail.transport@test.ex>
+550 Recipient refused
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<fail.transport@test.ex>
+550 Recipient refused
+QUIT
+250 OK
+End of script

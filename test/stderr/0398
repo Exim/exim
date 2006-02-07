@@ -1,0 +1,237 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+set_process_info: pppp accepting a local SMTP message from <CALLER@test.ex>
+ in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+SMTP>> 220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<qq@remote>
+SMTP>> 250 OK
+SMTP<< rcpt to:<abc@local>
+using ACL "rcpt"
+processing "deny"
+check senders = qq@remote
+address match: subject=qq@remote pattern=qq@remote
+remote in "remote"? yes (matched "remote")
+qq@remote in "qq@remote"? yes (matched "qq@remote")
+check !verify = sender
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying qq@remote
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering qq@remote
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing qq@remote
+--------> r1 router <--------
+local_part=qq domain=remote
+checking domains
+remote in "local"? no (end of list)
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=qq domain=remote
+checking domains
+remote in "remote"? yes (matched "remote")
+calling r2 router
+r2 router called for qq@remote
+  domain = remote
+route_item = * 127.0.0.1
+remote in "*"? yes (matched "*")
+original list of hosts = "127.0.0.1" options = 
+expanded list of hosts = "127.0.0.1" options = 
+set transport t2
+finding IP address for 127.0.0.1
+calling host_find_byname
+using host_fake_gethostbyname for 127.0.0.1 (IPv4)
+local host found for non-MX address
+fully qualified name = 127.0.0.1
+MUNGED: ::1 will be omitted in what follows
+get[host|ipnode]byname[2] looked up these IP addresses:
+  name=127.0.0.1 address=127.0.0.1
+remote host address is the local host: remote: configured to try delivery anyway
+queued for t2 transport: local_part = qq
+domain = remote
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r2 router
+  envelope to: qq@remote
+  transport: t2
+  host 127.0.0.1 [127.0.0.1]
+----------- end verify ------------
+sender qq@remote verified ok
+deny: condition test failed
+processing "warn"
+check senders = qq@remote
+address match: subject=qq@remote pattern=qq@remote
+remote in "remote"? yes (matched "remote")
+qq@remote in "qq@remote"? yes (matched "qq@remote")
+check !verify = sender/callout
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying qq@remote
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering qq@remote
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing qq@remote
+--------> r1 router <--------
+local_part=qq domain=remote
+checking domains
+remote in "local"? no (end of list)
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=qq domain=remote
+checking domains
+remote in "remote"? yes (matched "remote")
+calling r2 router
+r2 router called for qq@remote
+  domain = remote
+route_item = * 127.0.0.1
+remote in "*"? yes (matched "*")
+original list of hosts = "127.0.0.1" options = 
+expanded list of hosts = "127.0.0.1" options = 
+finding IP address for 127.0.0.1
+calling host_find_byname
+using host_fake_gethostbyname for 127.0.0.1 (IPv4)
+local host found for non-MX address
+fully qualified name = 127.0.0.1
+MUNGED: ::1 will be omitted in what follows
+get[host|ipnode]byname[2] looked up these IP addresses:
+  name=127.0.0.1 address=127.0.0.1
+remote host address is the local host: remote: configured to try delivery anyway
+queued for t2 transport: local_part = qq
+domain = remote
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r2 router
+  envelope to: qq@remote
+  transport: t2
+  host 127.0.0.1 [127.0.0.1]
+Attempting full verification using callout
+locking TESTSUITE/spool/db/callout.lockfile
+locked TESTSUITE/spool/db/callout.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/callout)
+returned from EXIM_DBOPEN
+opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
+dbfn_read: key=remote
+callout cache: found domain record
+dbfn_read: key=qq@remote
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO mail.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<qq@remote>
+  SMTP<< 550 Unknown
+  SMTP>> QUIT
+locking TESTSUITE/spool/db/callout.lockfile
+locked TESTSUITE/spool/db/callout.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/callout)
+returned from EXIM_DBOPEN
+opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR|O_CREAT
+dbfn_write: key=remote
+wrote callout cache domain record:
+  result=1 postmaster=0 random=0
+dbfn_write: key=qq@remote
+wrote negative callout cache address record
+----------- end verify ------------
+warn: condition test succeeded
+LOG: MAIN
+  U=CALLER Warning: Sender verify failed: response to "RCPT TO:<qq@remote>" from 127.0.0.1 [127.0.0.1] was: 550 Unknown
+processing "accept"
+check senders = qq@remote
+address match: subject=qq@remote pattern=qq@remote
+remote in "remote"? yes (matched "remote")
+qq@remote in "qq@remote"? yes (matched "qq@remote")
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< rcpt to:<xyz@local>
+using ACL "rcpt"
+processing "deny"
+check senders = qq@remote
+address match: subject=qq@remote pattern=qq@remote
+remote in "remote"? yes (matched "remote")
+qq@remote in "qq@remote"? yes (matched "qq@remote")
+check !verify = sender
+using cached sender verify result
+deny: condition test failed
+processing "warn"
+check senders = qq@remote
+address match: subject=qq@remote pattern=qq@remote
+remote in "remote"? yes (matched "remote")
+qq@remote in "qq@remote"? yes (matched "qq@remote")
+check !verify = sender/callout
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying qq@remote
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering qq@remote
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing qq@remote
+--------> r1 router <--------
+local_part=qq domain=remote
+checking domains
+remote in "local"? no (end of list)
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=qq domain=remote
+checking domains
+remote in "remote"? yes (matched "remote")
+calling r2 router
+r2 router called for qq@remote
+  domain = remote
+route_item = * 127.0.0.1
+remote in "*"? yes (matched "*")
+original list of hosts = "127.0.0.1" options = 
+expanded list of hosts = "127.0.0.1" options = 
+finding IP address for 127.0.0.1
+calling host_find_byname
+using host_fake_gethostbyname for 127.0.0.1 (IPv4)
+local host found for non-MX address
+fully qualified name = 127.0.0.1
+MUNGED: ::1 will be omitted in what follows
+get[host|ipnode]byname[2] looked up these IP addresses:
+  name=127.0.0.1 address=127.0.0.1
+remote host address is the local host: remote: configured to try delivery anyway
+queued for t2 transport: local_part = qq
+domain = remote
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r2 router
+  envelope to: qq@remote
+  transport: t2
+  host 127.0.0.1 [127.0.0.1]
+Attempting full verification using callout
+locking TESTSUITE/spool/db/callout.lockfile
+locked TESTSUITE/spool/db/callout.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/callout)
+returned from EXIM_DBOPEN
+opened hints database TESTSUITE/spool/db/callout: flags=O_RDWR
+dbfn_read: key=remote
+callout cache: found domain record
+dbfn_read: key=qq@remote
+callout cache: found address record
+callout cache: address record is negative
+----------- end verify ------------
+warn: condition test succeeded
+LOG: MAIN
+  U=CALLER Warning: Sender verify failed
+processing "accept"
+check senders = qq@remote
+address match: subject=qq@remote pattern=qq@remote
+remote in "remote"? yes (matched "remote")
+qq@remote in "qq@remote"? yes (matched "qq@remote")
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< quit
+SMTP>> 221 mail.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

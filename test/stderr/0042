@@ -1,0 +1,27 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing userx@test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> userx in "userx"? yes (matched "userx")
+>>> calling localuser router
+>>> routed by localuser router
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing junkjunk@test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> junkjunk in "userx"? no (end of list)
+>>> no more routers
+LOG: VRFY failed for junkjunk@test.ex H=[1.1.1.1]

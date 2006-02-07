@@ -1,0 +1,26 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO the.local.host.name
+250-OK
+250 HELP
+MAIL FROM:<>
+250 Sender OK
+RCPT TO:<smtp@test.ex>
+250 OK
+DATA
+345 Send it
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is a test message.
+.
+250 OK
+QUIT
+250 OK
+End of script

@@ -1,0 +1,21 @@
+accept_8bitmime
+bounce_message_file = 
+callout_domain_negative_expire = 1h
+daemon_smtp_ports = 
+envelope_to_remove
+finduser_retries = 0
+gecos_name = CALLER_NAME
+headers_charset = UTF-8
+ignore_bounce_errors_after = 2m
+keep_malformed = 4d
+no_local_from_check
+max_username_length = 8
+never_users = root:root
+percent_hack_domains = 
+qualify_domain = some.dom.ain
+receive_timeout = 0s
+sender_unqualified_hosts = localhost:some.host.name
+no_tcp_nodelay
+trusted_users = 1234:5678
+unknown_login = unknownlogin
+warn_message_file = /home/exim/test/warnmsg_file

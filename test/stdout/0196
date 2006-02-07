@@ -1,0 +1,17 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> expn postmaster
+??? 250-
+<<< 250-<a@myhost.test.ex>
+??? 250-
+<<< 250-<b@myhost.test.ex>
+??? 250
+<<< 250 <c@myhost.test.ex>
+>>> expn rhubarb
+??? 553
+<<< 553 custard@myhost.test.ex is undeliverable
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script

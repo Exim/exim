@@ -1,0 +1,12 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "connect"
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: H=[V4NET.13.13.1] rejected connection in "connect" ACL: xxxxxxxxxxxxxx has refused this message because it looks like it is infected with the Sobig.E worm. See http://www.xxxx.xxx/xxxxxxxx/xxxx/xxxx/w32.sobig.e@xx.html for details. If you feel this determination is in error, please forward the entire message to postmaster@xxxxxxxxxxxxx.com and include code "xx#1" in the Subject

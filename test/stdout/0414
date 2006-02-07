@@ -1,0 +1,4 @@
+x@b.domain
+  router = r2, transport = t1
+x@a.domain
+  router = r3, transport = t1

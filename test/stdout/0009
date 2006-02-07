@@ -1,0 +1,4 @@
+501 '>' missing at end of address
+Transaction started in line 10
+Error detected in line 12
+rcpt to:<blackhole@the.local.host.name

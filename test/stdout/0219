@@ -1,0 +1,2 @@
+> Failed: failed to open TESTSUITE/test-private for linear search: Permission denied (euid=CALLER_UID egid=CALLER_GID)
+> 

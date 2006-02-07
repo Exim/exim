@@ -1,0 +1,82 @@
+Exim version x.yz ....
+search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
+search_find: file="TESTSUITE/aux-fixed/0437.ls"
+  key="spool" partial=-1 affix=NULL starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0437.ls
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
+  type=lsearch key="spool"
+file lookup required for spool
+  in TESTSUITE/aux-fixed/0437.ls
+lookup yielded: spool
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp
+search_tidyup called
+search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
+search_find: file="TESTSUITE/aux-fixed/0437.ls"
+  key="transport" partial=-1 affix=NULL starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0437.ls
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
+  type=lsearch key="transport"
+file lookup required for transport
+  in TESTSUITE/aux-fixed/0437.ls
+lookup yielded: t1
+search_tidyup called
+search_tidyup called
+search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
+search_find: file="TESTSUITE/aux-fixed/0437.ls"
+  key="file" partial=-1 affix=NULL starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0437.ls
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
+  type=lsearch key="file"
+file lookup required for file
+  in TESTSUITE/aux-fixed/0437.ls
+lookup yielded: file
+search_tidyup called
+LOG: MAIN
+  => userx <userx@myhost.test.ex> R=r1 T=t1
+LOG: MAIN
+  Completed
+search_tidyup called
+search_tidyup called
+search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
+search_find: file="TESTSUITE/aux-fixed/0437.ls"
+  key="transport" partial=-1 affix=NULL starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0437.ls
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
+  type=lsearch key="transport"
+file lookup required for transport
+  in TESTSUITE/aux-fixed/0437.ls
+lookup yielded: t1
+search_tidyup called
+search_tidyup called
+search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
+search_find: file="TESTSUITE/aux-fixed/0437.ls"
+  key="file" partial=-1 affix=NULL starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0437.ls
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
+  type=lsearch key="file"
+file lookup required for file
+  in TESTSUITE/aux-fixed/0437.ls
+lookup yielded: file
+search_tidyup called
+LOG: MAIN
+  => userx <userx@myhost.test.ex> R=r1 T=t1
+LOG: MAIN
+  Completed
+search_tidyup called
+LOG: queue_run MAIN
+  End queue run: pid=pppp
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

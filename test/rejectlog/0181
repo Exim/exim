@@ -1,0 +1,12 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 rejected from <CALLER@myhost.test.ex> U=CALLER: message too big: read=225 max=100
+Envelope-from: <CALLER@myhost.test.ex>
+Envelope-to: <userx@test.ex>
+I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 10HmaY-0005vi-00 rejected from <CALLER@myhost.test.ex> U=CALLER: message too big: read=101 max=100
+Envelope-from: <CALLER@myhost.test.ex>
+Envelope-to: <userx@myhost.test.ex>
+I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000

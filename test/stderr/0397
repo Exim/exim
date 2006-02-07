@@ -1,0 +1,4 @@
+1999-03-02 09:44:33 Cannot open main log file "/non/existent/path/to/force/failure/main": No such file or directory: euid=uuuu egid=EXIM_GID
+1999-03-02 09:44:33 Start queue run: pid=pppp
+1999-03-02 09:44:33 Cannot open main log file "/non/existent/path/to/force/failure/main": No such file or directory: euid=uuuu egid=EXIM_GID
+exim: could not open panic log - aborting: see message(s) above

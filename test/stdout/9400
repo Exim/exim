@@ -1,0 +1,238 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbM-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbN-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 Administrative prohibition
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 this message isn't wanted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550-this message isn't wanted
+550 and we tell it on two lines
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+451 Temporary local problem
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+451 this message isn't wanted just now
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbO-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbP-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbQ-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbT-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+421 myhost.test.ex local verification problem - closing connection.
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbU-0005vi-00
+221 myhost.test.ex closing connection
+550 not wanted -bS
+
+Transaction started in line 0
+Error detected in line 7
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbW-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbX-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+221 myhost.test.ex closing connection
+550 not wanted -bS
+
+Transaction started in line 0
+Error detected in line 7
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+451 Temporary local problem
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbY-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbZ-0005vi-00
+221 myhost.test.ex closing connection
+local_scan_int = 24
+local_scan_string = the quick brown fox
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcA-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcB-0005vi-00
+221 myhost.test.ex closing connection
+ 0m   sss 10HmcA-0005vi-00 <test-local-scan@y> *** frozen ***
+          userx@test.ex
+
+ 0m   sss 10HmcB-0005vi-00 <test-local-scan@y>
+          userx@test.ex
+
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcL-0005vi-00
+
+**** SMTP testing: that is not a real message id!
+
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcM-0005vi-00
+
+**** SMTP testing: that is not a real message id!
+
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+421 myhost.test.ex local verification problem - closing connection.
+10HmcA-0005vi-00-D
+10HmcA-0005vi-00-H
+10HmcB-0005vi-00-D
+10HmcB-0005vi-00-H
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcC-0005vi-00
+221 myhost.test.ex closing connection
+ 0m   sss 10HmcA-0005vi-00 <test-local-scan@y> *** frozen ***
+          userx@test.ex
+
+ 0m   sss 10HmcB-0005vi-00 <test-local-scan@y>
+          userx@test.ex
+
+ 0m   sss 10HmcC-0005vi-00 <test-local-scan@y>
+          unqualified@myhost.test.ex
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcD-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcE-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcF-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcG-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcH-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcI-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcJ-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmcK-0005vi-00
+221 myhost.test.ex closing connection

@@ -1,0 +1,81 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: ok@no.delay
+unique = ok@no.delay
+ok@no.delay: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing ok@no.delay
+--------> r1 router <--------
+local_part=ok domain=no.delay
+checking domains
+calling r1 router
+r1 router called for ok@no.delay
+  domain = no.delay
+set transport t1
+queued for t1 transport: local_part = ok
+domain = no.delay
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: ok@no.delay
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    ok@no.delay
+  Failed addresses:
+  Deferred addresses:
+locking TESTSUITE/spool/db/retry.lockfile
+locking TESTSUITE/spool/db/wait-t1.lockfile
+LOG: MAIN
+  => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1]
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: delay@test.again.dns
+unique = delay@test.again.dns
+LOG: retry_defer MAIN
+  == delay@test.again.dns routing defer (-51): reusing SMTP connection skips previous routing defer
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: ok@no.delay
+unique = ok@no.delay
+ok@no.delay: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing ok@no.delay
+--------> r1 router <--------
+local_part=ok domain=no.delay
+checking domains
+calling r1 router
+r1 router called for ok@no.delay
+  domain = no.delay
+set transport t1
+queued for t1 transport: local_part = ok
+domain = no.delay
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: ok@no.delay
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    ok@no.delay
+  Failed addresses:
+  Deferred addresses:
+    delay@test.again.dns
+locking TESTSUITE/spool/db/retry.lockfile
+locking TESTSUITE/spool/db/wait-t1.lockfile
+LOG: MAIN
+  => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1]*
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

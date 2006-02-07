@@ -1,0 +1,154 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+Single queue run
+LOG: queue_run MAIN
+  Start queue run: pid=pppp -qq
+queue running combined directories
+delivering 10HmaX-0005vi-00 (queue run pid ppppp)
+delivering 10HmaY-0005vi-00 (queue run pid ppppp)
+queue running combined directories
+delivering 10HmaX-0005vi-00 (queue run pid ppppp)
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-OK
+         250 PIPELINING
+  SMTP>> MAIL FROM:<CALLER@test.ex>
+  SMTP>> RCPT TO:<a@test.ex>
+  SMTP>> DATA
+  SMTP<< 250 OK
+  SMTP<< 250 OK
+  SMTP<< 351 Send more
+  SMTP>> writing message and terminating "."
+  SMTP<< 250 OK
+LOG: MAIN
+  => a@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]
+LOG: MAIN
+  Completed
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+delivering 10HmaY-0005vi-00 (queue run pid ppppp)
+  SMTP>> MAIL FROM:<CALLER@test.ex>
+  SMTP>> RCPT TO:<b@test.ex>
+  SMTP>> DATA
+  SMTP<< 250 OK
+  SMTP<< 250 OK
+  SMTP<< 351 Send more
+  SMTP>> writing message and terminating "."
+  SMTP<< 250 OK
+  SMTP>> QUIT
+LOG: MAIN
+  => b@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]*
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: queue_run MAIN
+  End queue run: pid=pppp -qq
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+Single queue run
+LOG: queue_run MAIN
+  Start queue run: pid=pppp -qq
+queue running combined directories
+delivering 10HmaZ-0005vi-00 (queue run pid ppppp)
+delivering 10HmbA-0005vi-00 (queue run pid ppppp)
+queue running combined directories
+delivering 10HmaZ-0005vi-00 (queue run pid ppppp)
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-OK
+         250 PIPELINING
+  SMTP>> MAIL FROM:<CALLER@test.ex>
+  SMTP>> RCPT TO:<a@test.ex>
+  SMTP>> DATA
+  SMTP<< 550 NO
+  SMTP<< 503 Unexpected RCPT
+  SMTP<< 503 Unexpected DATA
+  SMTP>> QUIT
+LOG: MAIN
+  ** a@test.ex F=<CALLER@test.ex> R=client T=send_to_server: SMTP error from remote mail server after MAIL FROM:<CALLER@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: MAIN
+  <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: MAIN
+  Completed
+delivering 10HmbA-0005vi-00 (queue run pid ppppp)
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
+LOG: MAIN
+  127.0.0.1 [127.0.0.1] Connection refused
+LOG: MAIN
+  == b@test.ex R=client T=send_to_server defer (dd): Connection refused
+LOG: queue_run MAIN
+  End queue run: pid=pppp -qq
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp -qqf
+delivering 10HmbA-0005vi-00 (queue run pid ppppp)
+delivering 10HmbB-0005vi-00 (queue run pid ppppp)
+LOG: MAIN
+  ** CALLER@test.ex F=<> R=bounce: just discard
+LOG: MAIN
+  CALLER@test.ex: error ignored
+LOG: MAIN
+  Completed
+delivering 10HmbC-0005vi-00 (queue run pid ppppp)
+delivering 10HmbA-0005vi-00 (queue run pid ppppp)
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-OK
+         250 PIPELINING
+  SMTP>> MAIL FROM:<CALLER@test.ex>
+  SMTP>> RCPT TO:<b@test.ex>
+  SMTP>> DATA
+  SMTP<< 250 OK
+  SMTP<< 550 Unknown
+  SMTP<< 503 Unexpected DATA
+  SMTP>> RSET
+  SMTP<< 250 OK
+LOG: MAIN
+  ** b@test.ex F=<CALLER@test.ex> R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<b@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 Unknown
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: MAIN
+  <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: MAIN
+  Completed
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+delivering 10HmbC-0005vi-00 (queue run pid ppppp)
+  SMTP>> MAIL FROM:<CALLER@test.ex>
+  SMTP>> RCPT TO:<c@test.ex>
+  SMTP>> DATA
+  SMTP<< 250 OK
+  SMTP<< 250 OK
+  SMTP<< 351 OK
+  SMTP>> writing message and terminating "."
+  SMTP<< 250 OK
+  SMTP>> QUIT
+LOG: MAIN
+  => c@test.ex F=<CALLER@test.ex> R=client T=send_to_server H=127.0.0.1 [127.0.0.1]*
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: queue_run MAIN
+  End queue run: pid=pppp -qqf
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

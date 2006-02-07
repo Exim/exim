@@ -1,0 +1,173 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test.ex in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> using ACL "check_rcpt"
+>>> processing "warn"
+>>> check ratelimit = 0/1h/strict
+>>> ratelimit condition limit=0 period=3600 key=1h/strict / V4NET.9.8.7
+>>> ratelimit initializing new key's data
+>>> ratelimit computed rate 0.0
+>>> warn: condition test succeeded
+LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "warn"
+>>> check ratelimit = 0/1h/per_byte/strict
+>>> ratelimit condition limit=0 period=3600 key=1h/per_byte/strict / V4NET.9.8.7
+>>> ratelimit initializing new key's data
+>>> ratelimit computed rate 0.0
+>>> warn: condition test succeeded
+LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test.ex in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> using ACL "check_rcpt"
+>>> processing "warn"
+>>> check ratelimit = 0/1h/strict
+>>> ratelimit condition limit=0 period=3600 key=1h/strict / V4NET.9.8.7
+>>> ratelimit computed rate 1.0
+>>> warn: condition test succeeded
+LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "warn"
+>>> check ratelimit = 0/1h/per_byte/strict
+>>> ratelimit condition limit=0 period=3600 key=1h/per_byte/strict / V4NET.9.8.7
+>>> ratelimit computed rate 19.0
+>>> warn: condition test succeeded
+LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=19.0 sender_rate_limit=0 sender_rate_period=1h
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test.ex in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> using ACL "check_rcpt"
+>>> processing "warn"
+>>> check ratelimit = 0/1h/per_conn/strict
+>>> ratelimit condition limit=0 period=3600 key=1h/per_conn/strict / V4NET.9.8.7
+>>> ratelimit initializing new key's data
+>>> ratelimit computed rate 0.0
+>>> warn: condition test succeeded
+LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "warn"
+>>> check ratelimit = 0/1h/per_conn/strict
+>>> ratelimit condition limit=0 period=3600 key=1h/per_conn/strict / V4NET.9.8.7
+>>> ratelimit found pre-computed rate 0.0
+>>> warn: condition test succeeded
+LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test.ex in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> using ACL "check_rcpt"
+>>> processing "warn"
+>>> check ratelimit = 0/1h/per_conn/strict
+>>> ratelimit condition limit=0 period=3600 key=1h/per_conn/strict / V4NET.9.8.7
+>>> ratelimit computed rate 1.0
+>>> warn: condition test succeeded
+LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "warn"
+>>> check ratelimit = 0/1h/per_conn/strict
+>>> ratelimit condition limit=0 period=3600 key=1h/per_conn/strict / V4NET.9.8.7
+>>> ratelimit found pre-computed rate 1.0
+>>> warn: condition test succeeded
+LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test.ex in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> using ACL "check_rcpt"
+>>> processing "warn"
+>>> check ratelimit = 0/1h/per_rcpt
+>>> ratelimit condition limit=0 period=3600 key=1h/per_rcpt / V4NET.9.8.7
+>>> ratelimit initializing new key's data
+>>> ratelimit computed rate 0.0
+>>> warn: condition test succeeded
+LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> using ACL "check_rcpt"
+>>> processing "warn"
+>>> check ratelimit = 0/1h/per_rcpt
+>>> ratelimit condition limit=0 period=3600 key=1h/per_rcpt / V4NET.9.8.7
+>>> ratelimit initializing new key's data
+>>> ratelimit computed rate 0.0
+>>> warn: condition test succeeded
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> using ACL "check_rcpt"
+>>> processing "warn"
+>>> check ratelimit = 0/1h/per_rcpt
+>>> ratelimit condition limit=0 period=3600 key=1h/per_rcpt / V4NET.9.8.7
+>>> ratelimit initializing new key's data
+>>> ratelimit computed rate 0.0
+>>> warn: condition test succeeded
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "warn"
+>>> check ratelimit = 0/1h/per_conn
+>>> ratelimit condition limit=0 period=3600 key=1h/per_conn / V4NET.9.8.7
+>>> ratelimit initializing new key's data
+>>> ratelimit computed rate 0.0
+>>> warn: condition test succeeded
+LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA

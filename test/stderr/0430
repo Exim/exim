@@ -1,0 +1,2 @@
+LOG: MAIN
+  lowest numbered MX record points to local host: manual.route (while routing <x@manual.route>)

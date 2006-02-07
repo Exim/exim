@@ -1,0 +1,34 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@the.local.host.name
+set_process_info: pppp accepting a local SMTP message from <CALLER@the.local.host.name>
+ in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+SMTP>> 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<x@y>
+processing "accept"
+check domains = +fail
+expansion of "${if eq {x}{y}{}fail}" forced failure: assume not in this list
+y in "+fail"? no (end of list)
+accept: condition test failed
+end of inline ACL: implicit DENY
+SMTP>> 550 Administrative prohibition
+LOG: MAIN REJECT
+  U=CALLER F=<x@y> rejected RCPT <x@y>
+created log directory TESTSUITE/spool/log
+SMTP<< quit
+SMTP>> 221 the.local.host.name closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

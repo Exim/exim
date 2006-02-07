@@ -1,0 +1,71 @@
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0406.f"
+
+Testprint: subject = >lots of leading and trailing space<
+Testprint: raw subject = >       lots of leading and trailing space         \n<
+Testprint: to = >a@b,\nc@d<
+Testprint: raw to = >    a@b\n    c@d\n<
+Testprint: rX-1: > (=?ISO-8859-1?Q?a?=)\n<
+Testprint: bX-1: >(a)<
+Testprint:  X-1: >(a)<
+Testprint: rX-2: > (=?ISO-8859-1?Q?a?= b)\n<
+Testprint: bX-2: >(a b)<
+Testprint:  X-2: >(a b)<
+Testprint: rX-3: > (=?ISO-8859-1?Q?a?= =?ISO-8859-1?Q?b?=)\n<
+Testprint: bX-3: >(ab)<
+Testprint:  X-3: >(ab)<
+Testprint: rX-4: > (=?ISO-8859-1?Q?a?=  =?ISO-8859-1?Q?b?=)\n<
+Testprint: bX-4: >(ab)<
+Testprint:  X-4: >(ab)<
+Testprint: rX-5: > (=?ISO-8859-1?Q?a?=  \n     =?ISO-8859-1?Q?b?=)\n<
+Testprint: bX-5: >(ab)<
+Testprint:  X-5: >(ab)<
+Testprint: rX-6: > (=?ISO-8859-1?Q?a_b?=)\n<
+Testprint: bX-6: >(a b)<
+Testprint:  X-6: >(a b)<
+Testprint: rX-7: > (=?ISO-8859-1?Q?a?= =?ISO-8859-2?Q?_b?=)\n<
+Testprint: bX-7: >(a b)<
+Testprint:  X-7: >(a b)<
+Testprint: rX-8: > (=?iso-8859-8?b?7eXs+SDv4SDp7Oj08A==?=)\n<
+Testprint: bX-8: >(\355\345\354\371 \357\341 \351\354\350\364\360)<
+Testprint:  X-8: >(\355\345\354\371 \357\341 \351\354\350\364\360)<
+Testprint: rX-9: > =?ISO-8859-1?Q?Patrik_F=E4ltstr=F6m?= <xxx>\n<
+Testprint: bX-9: >Patrik F\344ltstr\366m <xxx><
+Testprint:  X-9: >Patrik F\344ltstr\366m <xxx><
+Testprint: rX-10: > =?US-ASCII?Q?Keith_Moore?= <xxx>\n<
+Testprint: bX-10: >Keith Moore <xxx><
+Testprint:  X-10: >Keith Moore <xxx><
+Testprint: rX-11: > =?ISO-8859-1?Q?Keld_J=F8rn_Simonsen?= <xxx>\n<
+Testprint: bX-11: >Keld J\370rn Simonsen <xxx><
+Testprint:  X-11: >Keld J\370rn Simonsen <xxx><
+Testprint: rX-12: > =?ISO-8859-1?Q?Andr=E9?= Pirard <xxx>\n<
+Testprint: bX-12: >Andr\351 Pirard <xxx><
+Testprint:  X-12: >Andr\351 Pirard <xxx><
+Testprint: rX-13: > =?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?=\n =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?=\n<
+Testprint: bX-13: >If you can read this you understand the example.<
+Testprint:  X-13: >If you can read this you understand the example.<
+Testprint: rX-14: > =?ISO-8859-1?Q?X=00Y?=      \n<
+Testprint: bX-14: >X?Y<
+Testprint:  X-14: >X?Y<
+Testprint: rX-15: > =?iso-8859-3?Q?=?= =?US-ASCII?Q?ABCD?= Text\n<
+Testprint: bX-15: >=?iso-8859-3?Q?=?= ABCD Text<
+Testprint:  X-15: >=?iso-8859-3?Q?=?= ABCD Text<
+Testprint: rX-16: > =?iso-8859-3?B?+2?= =?UTF-8?Q?ABCD?= Text\n<
+Testprint: bX-16: >=?iso-8859-3?B?+2?= ABCD Text<
+Testprint:  X-16: >=?iso-8859-3?B?+2?= ABCD Text<
+Testprint: rX-17: > =?UTF-8?Q?xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?=\n<
+Testprint: bX-17: >xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx<
+Testprint:  X-17: >xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx<
+Testprint: rX-18: > =?UTF-8?Q?xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?=\n<
+Testprint: bX-18: >=?UTF-8?Q?xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?=<
+Testprint:  X-18: >=?UTF-8?Q?xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx?=<
+Testprint: rX-19: > =?iso-8859-3?B?=?= =?UTF-8?Q?ABCD?= Text\n<
+Testprint: bX-19: >=?iso-8859-3?B?=?= ABCD Text<
+Testprint:  X-19: >=?iso-8859-3?B?=?= ABCD Text<
+Testprint: rX-20: > =?iso-8859-1?Q?a?= =?ISO-8859-1?Q?x y?= bad because of space\n<
+Testprint: bX-20: >a =?ISO-8859-1?Q?x y?= bad because of space<
+Testprint:  X-20: >a =?ISO-8859-1?Q?x y?= bad because of space<
+Filtering did not set up a significant delivery.
+Normal delivery will occur.

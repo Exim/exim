@@ -1,0 +1,1 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@myhost.test.ex R=r1 T=t1 defer (-1): Malformed value "20F" (expansion of "${if eq{1}{1}{20F}{}}") in t1 transport

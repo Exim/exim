@@ -1,0 +1,106 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@black-1.test.ex
+--------> lookuphost router <--------
+local_part=userx domain=black-1.test.ex
+checking domains
+calling lookuphost router
+lookuphost router called for userx@black-1.test.ex
+  domain = black-1.test.ex
+set transport smtp
+queued for smtp transport: local_part = userx
+domain = black-1.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+black-1.test.ex [V4NET.11.12.13] translated to 1.2.3.4
+routed by lookuphost router
+  envelope to: userx@black-1.test.ex
+  transport: smtp
+  host black-1.test.ex [1.2.3.4]
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@myhost.test.ex
+--------> lookuphost router <--------
+local_part=userx domain=myhost.test.ex
+checking domains
+calling lookuphost router
+lookuphost router called for userx@myhost.test.ex
+  domain = myhost.test.ex
+set transport smtp
+queued for smtp transport: local_part = userx
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+myhost.test.ex [V4NET.10.10.10] translated to V4NET.10.10.11
+routed by lookuphost router
+  envelope to: userx@myhost.test.ex
+  transport: smtp
+  host myhost.test.ex [V4NET.10.10.11]
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@ten-1.test.ex
+--------> lookuphost router <--------
+local_part=userx domain=ten-1.test.ex
+checking domains
+calling lookuphost router
+lookuphost router called for userx@ten-1.test.ex
+  domain = ten-1.test.ex
+set transport smtp
+queued for smtp transport: local_part = userx
+domain = ten-1.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+ten-1.test.ex [V4NET.0.0.1] translated to other2.test.ex
+routed by lookuphost router
+  envelope to: userx@ten-1.test.ex
+  transport: smtp
+  host other2.test.ex [V4NET.12.3.1]
+  host other2.test.ex [V4NET.12.3.2]
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@other1.test.ex
+--------> lookuphost router <--------
+local_part=userx domain=other1.test.ex
+checking domains
+calling lookuphost router
+lookuphost router called for userx@other1.test.ex
+  domain = other1.test.ex
+set transport smtp
+queued for smtp transport: local_part = userx
+domain = other1.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by lookuphost router
+  envelope to: userx@other1.test.ex
+  transport: smtp
+  host other1.test.ex [V4NET.12.4.5]
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@other99.test.ex
+--------> lookuphost router <--------
+local_part=userx domain=other99.test.ex
+checking domains
+calling lookuphost router
+lookuphost router called for userx@other99.test.ex
+  domain = other99.test.ex
+set transport smtp
+queued for smtp transport: local_part = userx
+domain = other99.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+other99.test.ex [V4NET.99.0.1] translated to non-exist.test.ex
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=1 >>>>>>>>>>>>>>>>

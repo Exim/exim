@@ -1,0 +1,76 @@
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+delivering 10HmaX-0005vi-00
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 ESMTP
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-OK
+         250-HELP
+         250 AUTH PLAIN
+  SMTP>> AUTH PLAIN ********************
+  SMTP<< 235 Authentication successful
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> AUTH=CALLER@myhost.test.ex
+  SMTP<< 250 Sender OK
+  SMTP>> RCPT TO:<userx@domain.com>
+  SMTP<< 250 Recipient OK
+  SMTP>> DATA
+  SMTP<< 354 Send data
+  SMTP>> writing message and terminating "."
+  SMTP<< 250 OK
+  SMTP>> QUIT
+LOG: MAIN
+  => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]
+LOG: MAIN
+  Completed
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+delivering 10HmaY-0005vi-00
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 ESMTP
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-OK
+         250-HELP
+         250 AUTH PLAIN
+  SMTP>> AUTH PLAIN ********************
+  SMTP<< 235 Authentication successful
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> AUTH=xxx@yyy
+  SMTP<< 250 Sender OK
+  SMTP>> RCPT TO:<userx@domain.com>
+  SMTP<< 250 Recipient OK
+  SMTP>> DATA
+  SMTP<< 354 Send data
+  SMTP>> writing message and terminating "."
+  SMTP<< 250 OK
+  SMTP>> QUIT
+LOG: MAIN
+  => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]
+LOG: MAIN
+  Completed
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+delivering 10HmaZ-0005vi-00
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 ESMTP
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-OK
+         250-HELP
+         250 AUTH LOGIN
+  SMTP>> AUTH LOGIN
+  SMTP<< 300 User?
+  SMTP>> ********
+  SMTP<< 300 Password?
+  SMTP>> ********
+  SMTP<< 235 Authentication successful
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> AUTH=CALLER@myhost.test.ex
+  SMTP<< 250 Sender OK
+  SMTP>> RCPT TO:<userx@domain.com>
+  SMTP<< 250 Recipient OK
+  SMTP>> DATA
+  SMTP<< 354 Send data
+  SMTP>> writing message and terminating "."
+  SMTP<< 250 OK
+  SMTP>> QUIT
+LOG: MAIN
+  => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]
+LOG: MAIN
+  Completed

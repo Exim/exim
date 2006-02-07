@@ -1,0 +1,143 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: userx@test.ex
+no domain retry record
+no address retry record
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    userx@test.ex
+  Failed addresses:
+  Deferred addresses:
+checking status of 127.0.0.1
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+added retry item for R:userx@test.ex: errno=-44 more_errno=dd,A flags=0
+locking TESTSUITE/spool/db/wait-t1.lockfile
+reading retry information for R:userx@test.ex from subprocess
+  added retry item
+LOG: MAIN
+  == userx@test.ex R=r1 T=t1 defer (-44): SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+Processing retry items
+Succeeded addresses:
+Failed addresses:
+Deferred addresses:
+userx@test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+retry for R:userx@test.ex = *
+Writing retry data for R:userx@test.ex
+  first failed=dddd last try=dddd next try=+1 expired=0
+  errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+end of retry processing
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: userx@test.ex
+no domain retry record
+added retry item for R:userx@test.ex: errno=-1 more_errno=dd flags=1
+added retry item for R:test.ex: errno=-1 more_errno=dd flags=1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    userx@test.ex
+  Failed addresses:
+  Deferred addresses:
+checking status of 127.0.0.1
+locking TESTSUITE/spool/db/retry.lockfile
+no host retry record
+no message retry record
+added retry item for R:userx@test.ex: errno=-44 more_errno=dd,A flags=0
+locking TESTSUITE/spool/db/wait-t1.lockfile
+reading retry information for R:userx@test.ex from subprocess
+  existing delete item dropped
+  added retry item
+reading retry information for R:test.ex from subprocess
+  existing delete item dropped
+  added delete item
+reading retry information for R:userx@test.ex from subprocess
+  delete item not added: non-delete item exists
+LOG: MAIN
+  == userx@test.ex R=r1 T=t1 defer (-44): SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+Processing retry items
+Succeeded addresses:
+Failed addresses:
+Deferred addresses:
+userx@test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+deleted retry information for R:test.ex
+retry for R:userx@test.ex = *
+Writing retry data for R:userx@test.ex
+  first failed=dddd last try=dddd next try=+1 expired=0
+  errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+end of retry processing
+LOG: queue_run MAIN
+  End queue run: pid=pppp
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: userx@test.ex
+no domain retry record
+added retry item for R:userx@test.ex: errno=-1 more_errno=dd flags=1
+added retry item for R:test.ex: errno=-1 more_errno=dd flags=1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    userx@test.ex
+  Failed addresses:
+  Deferred addresses:
+checking status of 127.0.0.1
+locking TESTSUITE/spool/db/retry.lockfile
+no host retry record
+no message retry record
+added retry item for R:userx@test.ex: errno=-44 more_errno=dd,A flags=0
+locking TESTSUITE/spool/db/wait-t1.lockfile
+reading retry information for R:userx@test.ex from subprocess
+  existing delete item dropped
+  added retry item
+reading retry information for R:test.ex from subprocess
+  existing delete item dropped
+  added delete item
+reading retry information for R:userx@test.ex from subprocess
+  delete item not added: non-delete item exists
+LOG: MAIN
+  == userx@test.ex R=r1 T=t1 defer (-44): SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+Processing retry items
+Succeeded addresses:
+Failed addresses:
+Deferred addresses:
+userx@test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+deleted retry information for R:test.ex
+retry for R:userx@test.ex = *
+Writing retry data for R:userx@test.ex
+  first failed=dddd last try=dddd next try=+2 expired=0
+  errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+end of retry processing
+LOG: queue_run MAIN
+  End queue run: pid=pppp
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

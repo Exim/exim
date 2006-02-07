@@ -1,0 +1,81 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+LOG: SMTP command timeout on connection from [V4NET.0.0.1]
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check hosts = :
+>>> host in ":"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> check recipients = verify@test.ex
+>>> userx@test.ex in "verify@test.ex"? no (end of list)
+>>> deny: condition test failed
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+LOG: SMTP data timeout (message abandoned) on connection from [V4NET.0.0.1] F=<userx@test.ex>
+exim: timed out while reading - message abandoned
+exim: timed out while reading - message abandoned
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check hosts = :
+>>> host in ":"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> check recipients = verify@test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> verify@test.ex in "verify@test.ex"? yes (matched "verify@test.ex")
+>>> check !verify = recipient
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing verify@test.ex
+>>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> calling forward router
+>>> forward router declined for verify@test.ex
+>>> no more routers
+>>> ----------- end verify ------------
+>>> deny: condition test succeeded
+LOG: H=[V4NET.0.0.1] F=<userx@test.ex> rejected RCPT verify@test.ex: Unrouteable address
+LOG: SMTP command timeout on connection from [V4NET.0.0.1]
+An error was detected while processing a file of BSMTP input.
+The error message was:
+
+  421 SMTP command timeout
+
+The SMTP transaction started in line 0.
+The error was detected in line 0.
+0 previous messages were successfully processed.
+The rest of the batch was abandoned.
+An error was detected while processing a file of BSMTP input.
+The error message was:
+
+  421 SMTP incoming data timeout - message abandoned
+
+The SMTP transaction started in line 0.
+The error was detected in line 3.
+0 previous messages were successfully processed.
+The rest of the batch was abandoned.

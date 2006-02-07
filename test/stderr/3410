@@ -1,0 +1,76 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "acl_5_6_9"
+>>> processing "accept"
+>>> check authenticated = *
+>>> accept: condition test failed
+>>> accept: endpass encountered - denying access
+LOG: H=[5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
+>>> rhu.barb in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in auth_advertise_hosts? yes (matched "*")
+>>> auth1 authenticator:
+>>>   $1 = 
+>>>   $2 = userx
+>>>   $3 = secret
+>>> expanded string: yes
+>>> using ACL "acl_5_6_9"
+>>> processing "accept"
+>>> check authenticated = *
+>>> auth1 in "*"? yes (matched "*")
+>>> accept: condition test succeeded
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "acl_5_6_10"
+>>> processing "accept"
+>>> check authenticated = auth1
+>>> accept: condition test failed
+>>> end of ACL "acl_5_6_10": implicit DENY
+LOG: H=[5.6.10.1] F=<x@y> rejected RCPT <x@y>
+>>> rhu.barb in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in auth_advertise_hosts? yes (matched "*")
+>>> auth1 authenticator:
+>>>   $1 = 
+>>>   $2 = userx
+>>>   $3 = secret
+>>> expanded string: yes
+>>> using ACL "acl_5_6_10"
+>>> processing "accept"
+>>> check authenticated = auth1
+>>> auth1 in "auth1"? yes (matched "auth1")
+>>> accept: condition test succeeded
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> rhu.barb in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in auth_advertise_hosts? yes (matched "*")
+>>> auth2 authenticator:
+>>>   $1 = userx
+>>>   $2 = secret
+>>> expanded string: yes
+>>> using ACL "acl_5_6_10"
+>>> processing "accept"
+>>> check authenticated = auth1
+>>> auth2 in "auth1"? no (end of list)
+>>> accept: condition test failed
+>>> end of ACL "acl_5_6_10": implicit DENY
+LOG: H=(rhu.barb) [5.6.10.1] F=<x@y> rejected RCPT <x@y>

@@ -1,0 +1,67 @@
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+delivering 10HmaX-0005vi-00
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-server id
+         250-PIPELINING
+         250 OK
+  SMTP>> MAIL FROM:<CALLER@test.ex>
+  SMTP>> RCPT TO:<userx@test.ex>
+  SMTP>> DATA
+  SMTP<< 250 OK
+  SMTP<< 250 OK
+  SMTP<< 500 NO
+  SMTP>> QUIT
+LOG: MAIN
+  ** userx@test.ex R=r1 T=t1: SMTP error from remote mail server after pipelined DATA: host 127.0.0.1 [127.0.0.1]: 500 NO
+LOG: MAIN
+  <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+delivering 10HmaY-0005vi-00
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
+LOG: MAIN
+  127.0.0.1 [127.0.0.1] Connection refused
+LOG: MAIN
+  == CALLER@test.ex R=r1 T=t1 defer (dd): Connection refused
+LOG: MAIN
+  ** CALLER@test.ex: retry timeout exceeded
+LOG: MAIN
+  CALLER@test.ex: error ignored
+LOG: MAIN
+  Completed
+LOG: MAIN
+  Completed
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+delivering 10HmaZ-0005vi-00
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-server id
+         250 OK
+  SMTP>> MAIL FROM:<CALLER@test.ex>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<userx@test.ex>
+  SMTP<< 250 OK
+  SMTP>> DATA
+  SMTP<< 500 NO
+  SMTP>> QUIT
+LOG: MAIN
+  ** userx@test.ex R=r1 T=t1: SMTP error from remote mail server after DATA: host 127.0.0.1 [127.0.0.1]: 500 NO
+LOG: MAIN
+  <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
+delivering 10HmbA-0005vi-00
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
+LOG: MAIN
+  127.0.0.1 [127.0.0.1] Connection refused
+LOG: MAIN
+  == CALLER@test.ex R=r1 T=t1 defer (dd): Connection refused
+LOG: MAIN
+  ** CALLER@test.ex: retry timeout exceeded
+LOG: MAIN
+  CALLER@test.ex: error ignored
+LOG: MAIN
+  Completed
+LOG: MAIN
+  Completed

@@ -1,0 +1,22 @@
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-the.local.host.name Hello CALLER at a.b.c
+250-SIZE 52428800
+250-ETRN
+250-PIPELINING
+250-AUTH PLAIN
+250 HELP
+501 invalid character in authentication mechanism name
+235 Authentication succeeded
+503 already authenticated
+501 invalid data for AUTH
+221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-the.local.host.name Hello CALLER at a.b.c
+250-SIZE 52428800
+250-ETRN
+250-PIPELINING
+250-AUTH PLAIN
+250 HELP
+250 OK
+503 not permitted in mail transaction
+221 the.local.host.name closing connection

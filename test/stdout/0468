@@ -1,0 +1,12 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550-message body <This is the FIRST message body. > message end <This is the
+550 FIRST message body. >
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550-message body <This is the SECOND message body. > message end <This is the
+550 SECOND message body. >
+221 myhost.test.ex closing connection

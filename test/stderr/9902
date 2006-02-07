@@ -1,0 +1,105 @@
+Exim version x.yz ....
+admin user
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.0.0.1]
+host in host_lookup? yes (matched "*")
+looking up host name for V4NET.0.0.1
+passing 1.0.0.10.in-addr.arpa on to res_search()
+DNS lookup of 1.0.0.10.in-addr.arpa (PTR) succeeded
+IP address lookup yielded ten-1.test.ex
+passing ten-1.test.ex on to res_search()
+DNS lookup of ten-1.test.ex (AAAA) gave NO_DATA
+returning DNS_NODATA
+passing ten-1.test.ex on to res_search()
+DNS lookup of ten-1.test.ex (A) succeeded
+gethostbyname2 looked up these IP addresses:
+  name=ten-1.test.ex address=V4NET.0.0.1
+checking addresses for ten-1.test.ex
+  V4NET.0.0.1 OK
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from ten-1.test.ex [V4NET.0.0.1] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+admin user
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.0.0.1]
+host in host_lookup? yes (matched "*")
+looking up host name for V4NET.0.0.1
+IP address lookup using gethostbyaddr()
+IP address lookup yielded ten-1.test.ex
+passing ten-1.test.ex on to res_search()
+DNS lookup of ten-1.test.ex (AAAA) gave NO_DATA
+returning DNS_NODATA
+passing ten-1.test.ex on to res_search()
+DNS lookup of ten-1.test.ex (A) succeeded
+gethostbyname2 looked up these IP addresses:
+  name=ten-1.test.ex address=V4NET.0.0.1
+checking addresses for ten-1.test.ex
+  V4NET.0.0.1 OK
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from ten-1.test.ex [V4NET.0.0.1] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+admin user
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4]
+host in host_lookup? yes (matched "*")
+looking up host name for 1.2.3.4
+passing 4.3.2.1.in-addr.arpa on to res_search()
+DNS lookup of 4.3.2.1.in-addr.arpa (PTR) gave HOST_NOT_FOUND
+returning DNS_NOMATCH
+IP address lookup using gethostbyaddr()
+IP address lookup failed: h_errno=1
+LOG: host_lookup_failed MAIN
+  no host name found for IP address 1.2.3.4
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+admin user
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4]
+host in host_lookup? yes (matched "*")
+looking up host name for 1.2.3.4
+IP address lookup using gethostbyaddr()
+IP address lookup failed: h_errno=1
+passing 4.3.2.1.in-addr.arpa on to res_search()
+DNS lookup of 4.3.2.1.in-addr.arpa (PTR) gave HOST_NOT_FOUND
+returning DNS_NOMATCH
+LOG: host_lookup_failed MAIN
+  no host name found for IP address 1.2.3.4
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

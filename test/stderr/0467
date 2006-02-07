@@ -1,0 +1,36 @@
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+delivering 10HmaX-0005vi-00
+LOG: MAIN
+  *> x@srv01.test.ex R=r1 T=t1 H=ten-1.test.ex [V4NET.0.0.1]:25
+LOG: MAIN
+  Completed
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+delivering 10HmaY-0005vi-00
+LOG: MAIN
+  *> x@srv03.test.ex R=r1 T=t1 H=ten-4.test.ex [V4NET.0.0.4]:88
+LOG: MAIN
+  Completed
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+delivering 10HmaZ-0005vi-00
+Transport port=25 replaced by host-specific port=1224
+Connecting to localhost.test.ex [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-server id
+         250 OK
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<x@srv27.test.ex>
+  SMTP<< 250 OK
+  SMTP>> DATA
+  SMTP<< 354 OK
+  SMTP>> writing message and terminating "."
+  SMTP<< 250 OK
+  SMTP>> QUIT
+LOG: MAIN
+  => x@srv27.test.ex R=r1 T=t1 H=localhost.test.ex [127.0.0.1]:1224
+LOG: MAIN
+  Completed

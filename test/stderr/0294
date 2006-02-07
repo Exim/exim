@@ -1,0 +1,225 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = NULL
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<one@z>
+SMTP>> 250 Accepted
+SMTP<< rcpt to:<one@z>
+rate limit RCPT: delay 0.25 sec
+SMTP>> 250 Accepted
+SMTP<< rcpt to:<one@z>
+rate limit RCPT: delay 0.263 sec
+SMTP>> 250 Accepted
+SMTP<< rcpt to:<one@z>
+rate limit RCPT: delay 0.276 sec
+SMTP>> 250 Accepted
+SMTP<< rcpt to:<one@z>
+rate limit RCPT: delay 0.289 sec
+SMTP>> 250 Accepted
+SMTP<< data
+SMTP>> 354 Enter message, ending with "." on a line by itself
+>>Headers received:
+
+>>Headers after rewriting and local additions:
+I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+F From: x@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Data file written for message 10HmaX-0005vi-00
+>>Generated Received: header line
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <x@y>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+calling local_scan(); timeout=300
+local_scan() returned 0 NULL
+Writing spool header file
+Size of headers = sss
+LOG: MAIN
+  <= x@y U=CALLER P=local-smtp S=sss
+created log directory TESTSUITE/spool/log
+SMTP>> 250 OK id=10HmaX-0005vi-00
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+rate limit MAIL: delay 1 sec
+SMTP>> 250 OK
+SMTP<< rcpt to:<two@z>
+SMTP>> 250 Accepted
+SMTP<< data
+SMTP>> 354 Enter message, ending with "." on a line by itself
+>>Headers received:
+
+>>Headers after rewriting and local additions:
+I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+F From: x@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Data file written for message 10HmaY-0005vi-00
+>>Generated Received: header line
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <x@y>)
+	id 10HmaY-0005vi-00
+	for two@z; Tue, 2 Mar 1999 09:44:33 +0000
+calling local_scan(); timeout=300
+local_scan() returned 0 NULL
+Writing spool header file
+Size of headers = sss
+LOG: MAIN
+  <= x@y U=CALLER P=local-smtp S=sss
+SMTP>> 250 OK id=10HmaY-0005vi-00
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+rate limit MAIL: delay 2 sec
+SMTP>> 250 OK
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4]
+host in host_lookup? no (option unset)
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<one@z>
+processing "deny"
+check local_parts = reject
+one in "reject"? no (end of list)
+deny: condition test failed
+processing "accept"
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< rcpt to:<one@z>
+host in smtp_ratelimit_hosts? no (end of list)
+processing "deny"
+check local_parts = reject
+one in "reject"? no (end of list)
+deny: condition test failed
+processing "accept"
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4] closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.9.8.7]
+host in host_lookup? no (option unset)
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<one@z>
+processing "deny"
+check local_parts = reject
+one in "reject"? no (end of list)
+deny: condition test failed
+processing "accept"
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< rcpt to:<one@z>
+host in smtp_ratelimit_hosts? yes (matched "V4NET.9.8.7")
+rate limit RCPT: delay 0.25 sec
+processing "deny"
+check local_parts = reject
+one in "reject"? no (end of list)
+deny: condition test failed
+processing "accept"
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.9.8.7] closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = NULL
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<reject@z>
+SMTP>> 550 Administrative prohibition
+LOG: MAIN REJECT
+  U=CALLER F=<x@y> rejected RCPT <reject@z>
+SMTP<< rcpt to:<reject@z>
+rate limit RCPT: delay 0.25 sec
+SMTP>> 550 Administrative prohibition
+LOG: MAIN REJECT
+  U=CALLER F=<x@y> rejected RCPT <reject@z>
+SMTP<< rcpt to:<reject@z>
+rate limit RCPT: delay 0.263 sec
+SMTP>> 550 Administrative prohibition
+LOG: MAIN REJECT
+  U=CALLER F=<x@y> rejected RCPT <reject@z>
+SMTP<< rcpt to:<reject@z>
+rate limit RCPT: delay 0.276 sec
+SMTP>> 550 Administrative prohibition
+LOG: MAIN REJECT
+  U=CALLER F=<x@y> rejected RCPT <reject@z>
+SMTP<< rcpt to:<reject@z>
+rate limit RCPT: delay 0.289 sec
+SMTP>> 550 Administrative prohibition
+LOG: MAIN REJECT
+  U=CALLER F=<x@y> rejected RCPT <reject@z>
+SMTP<< rset
+SMTP>> 250 Reset OK
+SMTP<< mail from:<x@y>
+rate limit MAIL: delay 1 sec
+SMTP>> 250 OK
+SMTP<< rcpt to:<reject@z>
+SMTP>> 550 Administrative prohibition
+LOG: MAIN REJECT
+  U=CALLER F=<x@y> rejected RCPT <reject@z>
+SMTP<< rset
+SMTP>> 250 Reset OK
+SMTP<< mail from:<x@y>
+rate limit MAIL: delay 2 sec
+SMTP>> 250 OK
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

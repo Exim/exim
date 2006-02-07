@@ -1,0 +1,20 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: address_rewrite MAIN
+  "User@c.domain" from sender: rewritten as "User@d.domain" by rule 2
+LOG: address_rewrite MAIN
+  "User@c.domain" from from: rewritten as "User@d.domain" by rule 2
+LOG: address_rewrite MAIN
+  "User@c.domain" from to: rewritten as "User@d.domain" by rule 2
+LOG: address_rewrite MAIN
+  "User@c.domain" from cc: rewritten as "User@d.domain" by rule 2
+LOG: address_rewrite MAIN
+  "User@c.domain" from bcc: rewritten as "User@d.domain" by rule 2
+LOG: address_rewrite MAIN
+  "User@c.domain" from reply-to: rewritten as "User@d.domain" by rule 2
+LOG: address_rewrite MAIN
+  "User@c.domain" from env-from rewritten as "User@d.domain" by rule 2
+LOG: address_rewrite MAIN
+  "User@c.domain" from env-to rewritten as "User@d.domain" by rule 2
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

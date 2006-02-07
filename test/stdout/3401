@@ -1,0 +1,152 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 AUTH LOGIN
+AUTH LOGIN
+334 VXNlciBOYW1l
+dXNlcng=
+334 UGFzc3dvcmQ=
+c2VjcmV0
+235 Authentication successful
+MAIL FROM:<CALLER@myhost.test.ex> AUTH=CALLER@myhost.test.ex
+250 Sender OK
+RCPT TO:<userx@domain.com>
+250 Recipient OK
+DATA
+354 Send data
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@domain.com; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 AUTH PLAIN
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+235 Authentication successful
+MAIL FROM:<CALLER@myhost.test.ex> AUTH=CALLER@myhost.test.ex
+250 Sender OK
+RCPT TO:<userx@domain.com>
+250 Recipient OK
+DATA
+354 Send data
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaY-0005vi-00
+	for userx@domain.com; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 AUTH PLAIN
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+535 Sorry, authentication failed
+MAIL FROM:<CALLER@myhost.test.ex>
+250 Sender OK
+RCPT TO:<userx@domain.com>
+250 Recipient OK
+DATA
+354 Send data
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaZ-0005vi-00
+	for userx@domain.com; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 AUTH LOGIN
+AUTH LOGIN
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 AUTH PLAIN
+AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+535 Sorry, authentication failed
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250 HELP
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 AUTH LOGIN
+AUTH LOGIN
+334 VXNlciBOYW1l
+dXNlcng=
+334 UGFzc3dvcmQ=
+c2VjcmV0
+235 Authentication successful
+MAIL FROM:<CALLER@myhost.test.ex> AUTH=force@x.y.z
+250 Sender OK
+RCPT TO:<forcesender@domain.com>
+250 Recipient OK
+DATA
+354 Send data
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbF-0005vi-00
+	for forcesender@domain.com; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+QUIT
+250 OK
+End of script

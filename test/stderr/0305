@@ -1,0 +1,22 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "acl1"
+>>> processing "accept"
+>>> check domains = +ok_domains
+>>> ten-1.test.ex in "ten-1.test.ex"? yes (matched "ten-1.test.ex")
+>>> ten-1.test.ex in "+ok_domains"? yes (matched "+ok_domains")
+>>> accept: condition test succeeded
+>>> using ACL "acl1"
+>>> processing "accept"
+>>> check domains = +ok_domains
+>>> junk.junk in ""? no (end of list)
+>>> junk.junk in "+ok_domains"? no (end of list)
+>>> accept: condition test failed
+>>> end of ACL "acl1": implicit DENY
+LOG: H=[V4NET.2.3.4] F=<x@y> rejected RCPT <x@junk.junk>

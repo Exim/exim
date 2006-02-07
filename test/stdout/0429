@@ -1,0 +1,10 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO myhost.test.ex
+550 No
+QUIT
+250 OK
+End of script

@@ -1,0 +1,5 @@
++++++++++++++++++++++++++++
+  T:127.0.0.1:127.0.0.1:1225 dd 65 Connection refused
+first failed = time last try = time2 next try = time2 + 600
+  T:127.0.0.1:127.0.0.1:1226 dd 65 Connection refused
+first failed = time last try = time2 next try = time2 + 600

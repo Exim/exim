@@ -1,0 +1,16 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+*sleep 4
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+*sleep 4
+End of script

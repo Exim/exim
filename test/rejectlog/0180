@@ -1,0 +1,5 @@
+1999-03-02 09:44:33 rejected MAIL FROM:<userx@test.ex> U=CALLER: message too big: size=1000000000 max=100
+1999-03-02 09:44:33 rejected MAIL FROM:<userx@test.ex> U=CALLER: message too big: size>=2147483647 max=100
+1999-03-02 09:44:33 rejected MAIL FROM:<userx@test.ex> U=CALLER: message too big: size=1000000000 max=100
+1999-03-02 09:44:33 rejected MAIL FROM:<userx@test.ex> U=CALLER: message too big: size>=2147483647 max=100
+1999-03-02 09:44:33 rejected MAIL FROM:<userx@test.ex> U=CALLER: message too big: size>=2147483647 max=100

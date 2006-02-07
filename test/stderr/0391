@@ -1,0 +1,64 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [1.2.3.4]
+sender_rcvhost = [1.2.3.4]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [1.2.3.4]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<U@W.x.y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<B@a.b.c>
+using ACL "acl_rcpt"
+processing "accept"
+check verify = sender
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying U@W.x.y
+address match: subject=U@w.x.y pattern=*@*.x.y
+w.x.y in "*.x.y"? yes (matched "*.x.y")
+U@W.x.y in "*@*.x.y"? yes (matched "*@*.x.y")
+LOG: address_rewrite MAIN
+  "U@W.x.y" from env-from rewritten as "U@x.y" by rule 1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering U@x.y
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing U@x.y
+--------> r1 router <--------
+local_part=u domain=x.y
+sender_address=<> local_part=u domain=x.y
+calling r1 router
+r1 router called for U@x.y
+  domain = x.y
+queued for <unset> transport: local_part = u
+domain = x.y
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: U@x.y
+  transport: <none>
+----------- end verify ------------
+sender U@W.x.y verified ok as U@x.y
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

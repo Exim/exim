@@ -1,0 +1,312 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: aaaa@myhost.test.ex
+unique = aaaa@myhost.test.ex
+aaaa@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing aaaa@myhost.test.ex
+--------> bounce router <--------
+local_part=aaaa domain=myhost.test.ex
+checking senders
+bounce router skipped: senders mismatch
+--------> defer router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> aaaa_2nd_time router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+checking "condition"
+aaaa_2nd_time router skipped: condition failure
+--------> aaaa router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+calling aaaa router
+rda_interpret (string): # Exim filter
+deliver defer_aaaa@$domain
+save TESTSUITE/test-mail/file
+pipe "/bin/sh -c exit"
+mail subject autoreply
+text "This is an autoreply"
+expanded: # Exim filter
+deliver defer_aaaa@myhost.test.ex
+save TESTSUITE/test-mail/file
+pipe "/bin/sh -c exit"
+mail subject autoreply
+text "This is an autoreply"
+data is an Exim filter program
+Filter: start of processing
+Filter: end of processing
+rda_interpret: subprocess yield=0 error=NULL
+set transport t3
+aaaa router generated >CALLER@myhost.test.ex
+  pipe, file, or autoreply
+  errors_to=NULL transport=t3
+  uid=CALLER_UID gid=CALLER_GID home=NULL
+set transport t2
+aaaa router generated |/bin/sh -c exit
+  pipe, file, or autoreply
+  errors_to=NULL transport=t2
+  uid=CALLER_UID gid=CALLER_GID home=NULL
+set transport t1
+aaaa router generated TESTSUITE/test-mail/file
+  pipe, file, or autoreply
+  errors_to=NULL transport=t1
+  uid=CALLER_UID gid=CALLER_GID home=NULL
+aaaa router generated defer_aaaa@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by aaaa router
+  envelope to: aaaa@myhost.test.ex
+  transport: <none>
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: defer_aaaa@myhost.test.ex
+unique = defer_aaaa@myhost.test.ex
+defer_aaaa@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: TESTSUITE/test-mail/file
+unique = TESTSUITE/test-mail/file:aaaa@myhost.test.ex
+queued for t1 transport
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: |/bin/sh -c exit
+unique = |/bin/sh -c exit:aaaa@myhost.test.ex
+queued for t2 transport
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: >CALLER@myhost.test.ex
+unique = >CALLER@myhost.test.ex:aaaa@myhost.test.ex
+queued for t3 transport
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing defer_aaaa@myhost.test.ex
+--------> bounce router <--------
+local_part=defer_aaaa domain=myhost.test.ex
+checking senders
+bounce router skipped: senders mismatch
+--------> defer router <--------
+local_part=defer_aaaa domain=myhost.test.ex
+checking local_parts
+calling defer router
+rda_interpret (string): :defer: forced defer
+expanded: :defer: forced defer
+file is not a filter file
+parse_forward_list: :defer: forced defer
+extract item: :defer: forced defer
+defer router: defer for defer_aaaa@myhost.test.ex
+  message: forced defer
+LOG: MAIN
+  == defer_aaaa@myhost.test.ex <aaaa@myhost.test.ex> R=defer defer (-1): forced defer
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    >CALLER@myhost.test.ex
+    |/bin/sh -c exit
+    TESTSUITE/test-mail/file
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+    defer_aaaa@myhost.test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= <> R=10HmaX-0005vi-00 U=CALLER P=local S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: CALLER@myhost.test.ex
+unique = CALLER@myhost.test.ex
+CALLER@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing CALLER@myhost.test.ex
+--------> bounce router <--------
+local_part=CALLER domain=myhost.test.ex
+checking senders
+calling bounce router
+rda_interpret (string): :blackhole:
+expanded: :blackhole:
+file is not a filter file
+parse_forward_list: :blackhole:
+extract item: :blackhole:
+address :blackhole:d
+LOG: MAIN
+  => :blackhole: <CALLER@myhost.test.ex> R=bounce
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: MAIN
+  => >CALLER@myhost.test.ex <aaaa@myhost.test.ex> R=aaaa T=t3
+locking TESTSUITE/spool/db/retry.lockfile
+transport error EPIPE ignored
+LOG: MAIN
+  => |/bin/sh -c exit <aaaa@myhost.test.ex> R=aaaa T=t2
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => TESTSUITE/test-mail/file <aaaa@myhost.test.ex> R=aaaa T=t1
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp -qf
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: aaaa@myhost.test.ex
+unique = aaaa@myhost.test.ex
+aaaa@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing aaaa@myhost.test.ex
+--------> bounce router <--------
+local_part=aaaa domain=myhost.test.ex
+checking senders
+bounce router skipped: senders mismatch
+--------> defer router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> aaaa_2nd_time router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+checking "condition"
+calling aaaa_2nd_time router
+rda_interpret (string): aaaa@$domain
+expanded: aaaa@myhost.test.ex
+file is not a filter file
+parse_forward_list: aaaa@myhost.test.ex
+extract item: aaaa@myhost.test.ex
+aaaa_2nd_time router generated aaaa@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by aaaa_2nd_time router
+  envelope to: aaaa@myhost.test.ex
+  transport: <none>
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: aaaa@myhost.test.ex
+unique = \0\aaaa@myhost.test.ex
+aaaa@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing aaaa@myhost.test.ex
+--------> bounce router <--------
+local_part=aaaa domain=myhost.test.ex
+checking senders
+bounce router skipped: senders mismatch
+--------> defer router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> aaaa_2nd_time router <--------
+aaaa_2nd_time router skipped: previously routed aaaa@myhost.test.ex
+--------> aaaa router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+calling aaaa router
+rda_interpret (string): # Exim filter
+deliver defer_aaaa@$domain
+save TESTSUITE/test-mail/file
+pipe "/bin/sh -c exit"
+mail subject autoreply
+text "This is an autoreply"
+expanded: # Exim filter
+deliver defer_aaaa@myhost.test.ex
+save TESTSUITE/test-mail/file
+pipe "/bin/sh -c exit"
+mail subject autoreply
+text "This is an autoreply"
+data is an Exim filter program
+Filter: start of processing
+Filter: end of processing
+rda_interpret: subprocess yield=0 error=NULL
+set transport t3
+aaaa router generated >CALLER@myhost.test.ex
+  pipe, file, or autoreply
+  errors_to=NULL transport=t3
+  uid=CALLER_UID gid=CALLER_GID home=NULL
+set transport t2
+aaaa router generated |/bin/sh -c exit
+  pipe, file, or autoreply
+  errors_to=NULL transport=t2
+  uid=CALLER_UID gid=CALLER_GID home=NULL
+set transport t1
+aaaa router generated TESTSUITE/test-mail/file
+  pipe, file, or autoreply
+  errors_to=NULL transport=t1
+  uid=CALLER_UID gid=CALLER_GID home=NULL
+aaaa router generated defer_aaaa@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by aaaa router
+  envelope to: aaaa@myhost.test.ex
+  transport: <none>
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: defer_aaaa@myhost.test.ex
+unique = defer_aaaa@myhost.test.ex
+defer_aaaa@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: TESTSUITE/test-mail/file
+unique = TESTSUITE/test-mail/file:aaaa@myhost.test.ex
+TESTSUITE/test-mail/file was previously delivered: discarded
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: |/bin/sh -c exit
+unique = |/bin/sh -c exit:aaaa@myhost.test.ex
+|/bin/sh -c exit was previously delivered: discarded
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: >CALLER@myhost.test.ex
+unique = >CALLER@myhost.test.ex:aaaa@myhost.test.ex
+>CALLER@myhost.test.ex was previously delivered: discarded
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing defer_aaaa@myhost.test.ex
+--------> bounce router <--------
+local_part=defer_aaaa domain=myhost.test.ex
+checking senders
+bounce router skipped: senders mismatch
+--------> defer router <--------
+local_part=defer_aaaa domain=myhost.test.ex
+checking local_parts
+calling defer router
+rda_interpret (string): :defer: forced defer
+expanded: :defer: forced defer
+file is not a filter file
+parse_forward_list: :defer: forced defer
+extract item: :defer: forced defer
+defer router: defer for defer_aaaa@myhost.test.ex
+  message: forced defer
+LOG: MAIN
+  == defer_aaaa@myhost.test.ex <aaaa@myhost.test.ex> R=defer defer (-1): forced defer
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+    defer_aaaa@myhost.test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: queue_run MAIN
+  End queue run: pid=pppp -qf
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

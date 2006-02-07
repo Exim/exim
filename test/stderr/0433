@@ -1,0 +1,103 @@
+
+******** SERVER ********
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+listening on all interfaces (IPv4) port 1225
+pid written to TESTSUITE/spool/exim-daemon.pid
+changed uid/gid: running as a daemon
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+LOG: MAIN
+  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
+set_process_info: pppp daemon: no queue runs, listening for SMTP on port 1225
+daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
+Listening...
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+listening on all interfaces (IPv4) port 1225
+listening on all interfaces (IPv4) port 1226
+pid written to TESTSUITE/spool/exim-daemon.pid
+changed uid/gid: running as a daemon
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+LOG: MAIN
+  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1226 (IPv4)
+set_process_info: pppp daemon: no queue runs, listening for SMTP on port 1225 port 1226 (IPv4)
+daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
+Listening...
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+listening on 127.0.0.1 port 1228
+listening on all interfaces (IPv4) port 1225
+listening on all interfaces (IPv4) port 1226
+pid written to TESTSUITE/spool/exim-daemon.pid
+changed uid/gid: running as a daemon
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+LOG: MAIN
+  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on [127.0.0.1]:1228 port 1225 (IPv4) port 1226 (IPv4)
+set_process_info: pppp daemon: no queue runs, listening for SMTP on [127.0.0.1]:1228 port 1225 (IPv4) port 1226 (IPv4)
+daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
+Listening...
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+listening on all interfaces (IPv4) port 1225
+listening on all interfaces (IPv4) port 1226
+listening on 127.0.0.1 port 1228
+pid written to TESTSUITE/spool/exim-daemon.pid
+changed uid/gid: running as a daemon
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+LOG: MAIN
+  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1226 (IPv4) [127.0.0.1]:1228
+set_process_info: pppp daemon: no queue runs, listening for SMTP on port 1225 port 1226 (IPv4) [127.0.0.1]:1228
+daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
+Listening...
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+daemon_smtp_port overridden by -oX:
+  <: 1227
+listening on 127.0.0.1 port 1228
+listening on all interfaces (IPv4) port 1227
+pid written to TESTSUITE/spool/exim-daemon.pid
+changed uid/gid: running as a daemon
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+LOG: MAIN
+  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on [127.0.0.1]:1228 port 1227 (IPv4)
+set_process_info: pppp daemon: no queue runs, listening for SMTP on [127.0.0.1]:1228 port 1227 (IPv4)
+daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
+Listening...
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+local_interfaces overridden by -oX:
+  <; 0.0.0.0.1225; 0.0.0.0.1226
+listening on all interfaces (IPv4) port 1225
+listening on all interfaces (IPv4) port 1226
+pid written to TESTSUITE/spool/exim-daemon.pid
+changed uid/gid: running as a daemon
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+LOG: MAIN
+  exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225 port 1226 (IPv4)
+set_process_info: pppp daemon: no queue runs, listening for SMTP on port 1225 port 1226 (IPv4)
+daemon running with uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
+Listening...

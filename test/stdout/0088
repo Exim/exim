@@ -1,0 +1,6 @@
+xx@ten-1.test.ex cannot be resolved at this time:
+  remote host address is the local host
+xx@ten-99.test.ex cannot be resolved at this time:
+  remote host address is the local host
+xx@mxcased.test.ex cannot be resolved at this time:
+  lowest numbered MX record points to local host

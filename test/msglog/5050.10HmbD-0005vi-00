@@ -1,0 +1,2 @@
+1999-03-02 09:44:33 Received from CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 tpmissing@test.ex R=localuser T=local_delivery defer (-30): tpmissing transport (for tpmissing format) not found

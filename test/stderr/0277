@@ -1,0 +1,203 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [V4NET.2.3.4]
+sender_rcvhost = [V4NET.2.3.4]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.2.3.4]
+host in "V4NET.2.3.4"? yes (matched "V4NET.2.3.4")
+host in host_lookup? yes (matched "+lookup_hosts")
+looking up host name for V4NET.2.3.4
+DNS lookup of 4.3.2.V4NET.in-addr.arpa (PTR) using fakens
+DNS lookup of 4.3.2.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
+returning DNS_NOMATCH
+LOG: host_lookup_failed MAIN
+  no host name found for IP address V4NET.2.3.4
+sender_fullhost = [V4NET.2.3.4]
+sender_rcvhost = [V4NET.2.3.4]
+set_process_info: pppp handling incoming connection from [V4NET.2.3.4]
+host in host_reject_connection? no (option unset)
+cached yes match for +lookup_hosts
+host in sender_unqualified_hosts? yes (matched "+lookup_hosts" - cached)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.2.3.4] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [V4NET.6.7.8]
+sender_rcvhost = [V4NET.6.7.8]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.6.7.8]
+host in "V4NET.2.3.4"? no (end of list)
+host in "V4NET.6.7.8"? yes (matched "V4NET.6.7.8")
+host in host_lookup? no (matched "!+never_hosts")
+set_process_info: pppp handling incoming connection from [V4NET.6.7.8]
+host in host_reject_connection? no (option unset)
+cached no match for +lookup_hosts
+host in "V4NET.1.1.1"? no (end of list)
+host in "<; V4NET.2.2.2 ; +n1_hosts"? no (end of list)
+host in sender_unqualified_hosts? yes (end of list)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.6.7.8] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [V4NET.10.11.12]
+sender_rcvhost = [V4NET.10.11.12]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.10.11.12]
+host in "V4NET.2.3.4"? no (end of list)
+host in "V4NET.6.7.8"? no (end of list)
+host in host_lookup? yes (end of list)
+looking up host name for V4NET.10.11.12
+DNS lookup of 12.11.10.V4NET.in-addr.arpa (PTR) using fakens
+DNS lookup of 12.11.10.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
+returning DNS_NOMATCH
+LOG: host_lookup_failed MAIN
+  no host name found for IP address V4NET.10.11.12
+sender_fullhost = [V4NET.10.11.12]
+sender_rcvhost = [V4NET.10.11.12]
+set_process_info: pppp handling incoming connection from [V4NET.10.11.12]
+host in host_reject_connection? no (option unset)
+cached no match for +lookup_hosts
+host in "V4NET.1.1.1"? no (end of list)
+host in "<; V4NET.2.2.2 ; +n1_hosts"? no (end of list)
+host in sender_unqualified_hosts? yes (end of list)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.10.11.12] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [V4NET.1.1.1]
+sender_rcvhost = [V4NET.1.1.1]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.1.1.1]
+host in "V4NET.2.3.4"? no (end of list)
+host in "V4NET.6.7.8"? no (end of list)
+host in host_lookup? yes (end of list)
+looking up host name for V4NET.1.1.1
+DNS lookup of 1.1.1.V4NET.in-addr.arpa (PTR) using fakens
+DNS lookup of 1.1.1.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
+returning DNS_NOMATCH
+LOG: host_lookup_failed MAIN
+  no host name found for IP address V4NET.1.1.1
+sender_fullhost = [V4NET.1.1.1]
+sender_rcvhost = [V4NET.1.1.1]
+set_process_info: pppp handling incoming connection from [V4NET.1.1.1]
+host in host_reject_connection? no (option unset)
+cached no match for +lookup_hosts
+host in "V4NET.1.1.1"? yes (matched "V4NET.1.1.1")
+host in "<; V4NET.2.2.2 ; +n1_hosts"? yes (matched "+n1_hosts")
+host in sender_unqualified_hosts? no (matched "!+n2_hosts")
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.1.1.1] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [V4NET.2.2.2]
+sender_rcvhost = [V4NET.2.2.2]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.2.2.2]
+host in "V4NET.2.3.4"? no (end of list)
+host in "V4NET.6.7.8"? no (end of list)
+host in host_lookup? yes (end of list)
+looking up host name for V4NET.2.2.2
+DNS lookup of 2.2.2.V4NET.in-addr.arpa (PTR) using fakens
+DNS lookup of 2.2.2.V4NET.in-addr.arpa (PTR) gave HOST_NOT_FOUND
+returning DNS_NOMATCH
+LOG: host_lookup_failed MAIN
+  no host name found for IP address V4NET.2.2.2
+sender_fullhost = [V4NET.2.2.2]
+sender_rcvhost = [V4NET.2.2.2]
+set_process_info: pppp handling incoming connection from [V4NET.2.2.2]
+host in host_reject_connection? no (option unset)
+cached no match for +lookup_hosts
+host in "<; V4NET.2.2.2 ; +n1_hosts"? yes (matched "V4NET.2.2.2")
+host in sender_unqualified_hosts? no (matched "!+n2_hosts")
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.2.2.2] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -1,0 +1,15 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<userx@myhost.test.ex>
+250 OK
+DATA
+351 Send more
+Unexpected EOF read from client

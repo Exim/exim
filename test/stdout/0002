@@ -1,0 +1,656 @@
+> 
+> # These expansions can test variables in the configuration, but as there
+> # is no message being processed, there is no message-related data. But
+> # that of course gets tested in plenty of other places.
+> 
+> # Some fixed variables
+> 
+> exim_path: TESTSUITE/eximdir/exim
+> primary_hostname: myhost.test.ex
+> primary_hostname: myhost.test.ex
+> qualify_domain: myhost.test.ex
+> bounce_return_size_limit: 102400
+> spool_directory: TESTSUITE/spool
+> Failed: unknown variable in "${unknown}"
+> h_subject: (should be empty)
+> h_subject: (should be empty)
+> Failed: unknown expansion operator "header_subject"
+> 
+> # $message_headers should be empty
+> message_headers: ><
+> 
+> # Continuation
+> xy
+> xy
+> 
+> # Overlong names and overbig numbers
+> 
+> Failed: unknown variable name "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+> Failed: unknown variable in "${aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa}"
+> +
+> +
+> 
+> # Operators
+> 
+> addrss: local-part@dom.ain
+> addrss: local-part@dom.ain
+> domain: dom.ain
+> domain: dom.ain
+> escape: B7\267F2\362
+> eval:   2
+> eval:   7
+> eval:   9
+> eval:   4
+> eval:   6
+> eval:   42
+> Failed: error in expression evaluation: expecting number or opening parenthesis (after processing "")
+> eval:   -2
+> eval:   1
+> eval:   1
+> Failed: error in expression evaluation: expecting closing parenthesis (after processing "-2 - (-3")
+> Failed: error in expression evaluation: expecting + or - (after processing "-2 - -3")
+> eval:   1
+> eval:   -5
+> Failed: error in expression evaluation: expecting number or opening parenthesis (after processing "-2 -")
+> eval:   40962
+> eval:   63
+> Failed: error in expression evaluation: expecting + or - (after processing "0")
+> eval10: 77
+> eval10: 8
+> expand: $primary_hostname myhost.test.ex
+> hash:   jmg monty fbWx
+> hash:   abcX abX aX X
+> hex2b64:EjRWeA==
+> hex2b64:q83v
+> hex2b64:q83v
+> hex2b64:Gis8TV5v
+> Failed: "1a2b3c4d5e6" contains an odd number of characters
+> Failed: "1a2b3c4d5e6g" is not a hex string
+> hex2b64:MPPJPkZDbetYunCBao7BJA==
+> hex2b64:ztcfpyNSMb7Tg/rP3EHE3cwi7PE=
+> 
+> The base62 operator is actually a base36 operator in the Darwin and Cygwin
+> environments. Write cunning tests that produce the same output in both cases,
+> while doing a reasonable check.
+> 
+> base62:  OK
+> base62d: OK
+> base62d: OK
+> Failed: argument for base62 operator is "12345x", which is not a decimal number
+> Failed: argument for base62d operator is "0003D7.", which is not a base 36/62 number
+> 
+> hmac:   dd97e3ba5d1a61b5006108f8c8252953
+> hmac:   0210cf9d274b53f1550f657c378b29e8bfed1064
+> md5:    77add1d5f41223d5582fca736a5cb335
+> sha1:   DA39A3EE5E6B4B0D3255BFEF95601890AFD80709
+> sha1:   A9993E364706816ABA3E25717850C26C9CD0D89D
+> mask:   192.168.10.192/28
+> mask:   192.168.10.206/32
+> Failed: mask value too big in "192.168.10.206/33"
+> mask:   0.0.0.0/0
+> Failed: missing mask value in "192.168.10.206"
+> Failed: "a.b.c.d" is not an IP address
+> nhash:  19 0/61
+> lc/uc:  the quick  BROWN FOX
+> length: The quick  abc
+> lclpt:  local-part
+> lclpt:  local-part
+> quote:  aZ09_.-Q "ab*cd" "abcd\"ef"
+> quote:  "nl(\n)"
+> quote:  "cr(\r)"
+> quote:  "tab(	)"
+> quote:  "xff(ÿ)"
+> quote:  Empty>""<
+> quote_local_part: abcd
+> quote_local_part: O'Reilly
+> quote_local_part: "a space"
+> quote_local_part: ".something"
+> quote_local_part: "something."
+> quote_local_part: joe.bloggs
+> quote_local_part: a!b
+> quote_local_part: "x@y"
+> quote_local_part: ab*cd
+> quote_local_part: "x:y"
+> quote_local_part: "abcd\"ef"
+> quote_local_part: ""
+> rxquote:aZ09\_\,\-Q ab\*cd abcd\"ef
+> substr: ba 34  1
+> substr: barb rhuba
+> substr: 
+> substr: 
+> str2b64:YWJjZA==
+> str2b64:VGhlIHF1aWNrIGJyb3duIAogZm94
+> strlen: 0
+> strlen: 1
+> strlen: 8
+> time_interval: 0s
+> time_interval: 44s
+> time_interval: 1w4d13h46m39s
+> Failed: string "-1" is not a positive number in "time_interval" operator
+> Failed: string "rhubarb" is not a positive number in "time_interval" operator
+> 
+> # stat is a bit tricky, but some of the fields of the aux-var directory
+> # should be the same on all systems
+> 
+> stat:   40755
+> stat:   drwxr-xr-x
+> Failed: stat(/a/non/existent/file) failed: No such file or directory
+> 
+> # "Operators" that have expanded arguments
+> 
+> hash:   jmg monty fbWx
+> hash:   abcX abX aX X
+> nhash:  19 0/61
+> length: The quick  abc
+> substr: ba 34  1
+> substr: 
+> 
+> # Error forms
+> 
+> Failed: missing or misplaced { or }
+> Failed: "nonnumber" is not a number (in "hash" expansion)
+> Failed: Too many arguments for "hash" (max is 3)
+> Failed: "-2" is not a positive number (in "substr" expansion)
+> 
+> # Skipped operators
+> 
+> addrss: NO
+> domain: NO
+> escape: NO
+> expand: NO
+> hash:   NO
+> md5:    NO
+> mask:   NO
+> 
+> # Conditions
+> 
+> 2=2:    y
+> 2==2:   y
+> 3=2:    n
+> 2==3:   n
+> !2=2:   n
+> !2==2:  n
+> !3=2:   y
+> !2==3:  y
+> 2>3:    n
+> 3>3:    n
+> 4>3:    y
+> 2>=3:   n
+> 3>=3:   y
+> 4>=3:   y
+> 2<3:    y
+> 3<3:    n
+> 4<3:    n
+> 2<=3:   y
+> 3<=3:   y
+> 4<=3:   n
+> 5<=3:   n
+> 
+> 5>3k:   n
+> 5>3m:   n
+> Failed: "3z " is not a number
+> Failed: "a" is not a number
+> 
+> def:y   y
+> def:n   n
+> Failed: unknown variable "post" after "def:"
+> def:h_f n
+> def:h_f n
+> Failed: missing or misplaced { or }
+> 
+> exists: y
+> exists: n
+> 
+> eq:     y
+> eq:     n
+> !eq:    n
+> !eq:    y
+> 
+> eqi:    y
+> eqi:    y
+> eqi:    n
+> !eqi:   n
+> !eqi:   n
+> !eqi:   y
+> 
+> lt:     y
+> lti:    n
+> le:     y
+> lei:    y
+> gt:     n
+> gti:    n
+> ge:     n
+> gei:    y
+> 
+> isip:   y  1.2.3.4
+> isip4:  y  1.2.3.4
+> isip6:  n  1.2.3.4
+> isip:   n  1:2:3:4
+> isip4:  n  1:2:3:4
+> isip6:  n  1:2:3:4
+> isip:   y      ::1
+> isip4:  n      ::1
+> isip6:  y      ::1
+> isip:   y  fe80::a00:20ff:fe86:a061
+> isip4:  n  fe80::a00:20ff:fe86:a061
+> isip6:  y  fe80::a00:20ff:fe86:a061
+> isip:   n  rhubarb
+> isip4:  n  rhubarb
+> isip6:  n  rhubarb
+> 
+> match:  cdab
+> match:  cdab
+> match:  cdab
+> Failed: "if" failed and "fail" requested
+> match:  cd[xyz]ab
+> 
+> match_domain:    yes
+> match_domain:    no
+> match_domain:    yes
+> match_domain:    yes
+> match_domain:    no
+> 
+> match_address:   yes
+> match_address:   yes
+> 
+> match_local_part:yes
+> match_local_part:yes
+> 
+> match_ip:        01 true
+> match_ip:        02 
+> match_ip:        03 true
+> match_ip:        04 true
+> match_ip:        05 
+> match_ip:        06 
+> match_ip:        07 true
+> match_ip:        08 true
+> match_ip:        09 
+> match_ip:        10 true
+> Failed: "somename" is not an IP address
+> match_ip:        12 true
+> match_ip:        13 true
+> match_ip:        14 true
+> 
+> queue_running:  n
+> first_delivery: n
+> 
+> queue_running after or: y
+> first_delivery after or: y
+> 
+> # Default values for both if strings
+> 
+> ${if eq{1}{1}}  >true<
+> ${if eq{1}{2}}  ><
+> 
+> # Lookups: DIR is the testing directory. In this test we can only use the
+> # lookups that are required in all cases.
+> 
+> CALLER
+> 
+> ==X@Y
+> ==*
+> ==*@Z
+> ==*
+> 
+> data for a.b.c.d
+> failed x.y.z
+> data for *.p.q
+> data for *.p.q
+> data for *.p.q
+> Failed: "lookup" failed and "fail" requested
+> data for *
+> 
+> q1:  "abc"
+> q2:  "xyz":
+> q3:  "pqr"  :
+> q4:  "a:b" abc continued data (make sure not key)
+> q5:  "\"quoted\""
+> q6:  "white space"
+> q7:  "b\\s"
+> 
+> abc:   abc
+> a.b.c: *.b.c
+> ab.c:  *b.c
+> xyz:   ^X
+> Xyz:   ^X
+> Zyz:   ^Z
+> a b:   "^a +b"
+> a  b:  "^a +b"
+> a:b:   lookup succeeded
+> a.b:   ^a\\.+b
+> a..b:  ^a\\.+b
+> a9b:   \N^a\d+b
+> a99b:  \N^a\d+b
+> 
+> # Should give the same results as above because expansion does nothing
+> 
+> abc:   abc
+> a.b.c: *.b.c
+> ab.c:  *b.c
+> xyz:   ^X
+> Xyz:   ^X
+> Zyz:   ^Z
+> a b:   "^a +b"
+> a  b:  "^a +b"
+> a:b:   lookup succeeded
+> 
+> # Should fail because of no expansion
+> 
+> a.b:   NO
+> a..b:  NO
+> a9b:   NO
+> a99b:  NO
+> 
+> # But these should succeed
+> 
+> a\:b:  ^a\\.+b
+> a\:Xb: ^a\\.+b
+> 
+> # IP address (CIDR) lookups
+> 
+> 1.2.3.4:      data for 1.2.3.4
+> 1.2.3.5:      
+> 1.2.3.5:      data for *
+> abcd::cdab:   data for abcd::cdab
+> 192.168.1.2:  data for 192.168.0.0/16
+> 192.168.5.6:  data for 192.168.0.0/16
+> abcd:abcd::   data for abcd:abcd::/32
+> abcd:abcd:1:: data for abcd:abcd::/32
+> abcd:abcd::3  data for abcd:abcd::/32
+> Failed: lookup of "rhubarb" gave DEFER: "rhubarb" is not a valid iplsearch key (an IP address, with optional CIDR mask, is wanted): in a host list, use net-iplsearch as the search type
+> 
+> 
+> # Nested Lookups - style 1
+> 
+> The data for key1->key2
+> Failed: "lookup" failed and "fail" requested
+> 
+> # Nested Lookups - style 2
+> 
+> The data for key1->key2
+> failed for key4
+> 
+> # Other nesting tests
+> 
+> 1-in-1
+> 2-in-2
+> both-in-1,both-in-2
+> Failed: "lookup" failed and "fail" requested
+> 
+> # Lookup quotes for standardly expected lookups
+> 
+> lsearch  !@#$%^&*()_-+=|\~`1234567890{[}]qwertyuiop:;"'asdfghjkl<,>.?/zxcvbnm
+> Failed: unknown lookup type "xxx"
+> 
+> # Extract
+> 
+> 2
+> 2
+> 2
+> 2
+> Empty:<>
+> Empty:<>
+> <3>
+> <3>
+> Empty:<>
+> Empty:<>
+> no Z
+> no 4
+> Failed: "extract" failed and "fail" requested
+> Failed: "extract" failed and "fail" requested
+> D
+> a:b:c:d:e
+> a
+> e
+> a
+> FAIL
+> b
+> 
+> b
+> three four
+> Failed: first argument of "extract" must not be empty
+> Failed: first argument of "extract" must not be empty
+> b
+> 
+> # Translation
+> 
+> abcdea aaa xyz zbcdez
+> abcdea a   z   zbcdez
+> abcdea a       abcdea
+> abcdea abc z   zzzdez
+> 
+> # RFC 2047
+> 
+> abcd      abcd
+> <:abcd:>  =?iso-8859-8?Q?=3C=3Aabcd=3A=3E?=
+> <:ab cd:> =?iso-8859-8?Q?=3C=3Aab_cd=3A=3E?=
+> Long:     =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_i?= =?iso-8859-8?Q?t_will_go_over_the_75-char_limit?=
+> Long:     =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_i?= =?iso-8859-8?Q?t_will_go_over_the_75-char_limit_by_a_long_way=3B_in_fac?= =?iso-8859-8?Q?t_this_one_will_go_over_the_150_character_limit?=
+> 
+> 
+> # UTF-8
+> 
+> abcd      abcd
+> aÀÿd      aÀÿd
+> toobig    a_d
+> 
+> # Substitution
+> 
+> ${sg{abcdefabcdef}{abc}{xyz}}          =xyzdefxyzdef
+> ${sg{ab:xy::z}{:}{::}}                 =ab::xy::::z
+> ${sg{abcdefabcdef}{(..)[^c]}{>$1<}}    =a><><><ef
+> ${sg{abcdefabcdef}{(..)[^c]}{>\$1<}}   =a>bc<>ef<>bc<ef
+> ${sg{abcdefabcdef}{(..)[^c]}{>\N$1\N<}}=a>bc<>ef<>bc<ef
+> ${sg{abbab}{a*}{+}}                    =++b+b++b+
+> 
+> # File insertion
+> 
+> Failed: missing or misplaced { or }
+> abcde
+12345
+
+xyz
+
+> abcde12345xyz
+> abcde:12345::xyz:
+> abcde - 12345 -  - xyz - 
+> Failed: failed to open /non/exist/file: No such file or directory
+> non-exist
+> >abcde!12345!!xyz!<
+> 
+> # Calling a command
+> 
+> abcd
+1234
+
+> RC=0
+> 1
+> RC=0
+> abcd
+1234
+
+> RC=0
+> 2
+> RC=1
+> abcd
+1234
+
+> RC=1
+> N
+> RC=127
+> >><<
+> RC=0
+> 1!=2
+> RC=0
+> 
+> # PRVS
+> 
+> prvs=userx/xxxxxxxxxx@test.ex
+> prvs=userx/xxxxxxxxxx@test.ex
+> prvs=userx/xxxxxxxxxx@test.ex
+> 
+> # Syntax errors
+> 
+> Failed: prvs second argument must be a single digit
+> Failed: prvs second argument must be a single digit
+> Failed: prvs second argument must be a single digit
+> 
+> # Correct checks; can't put explicit addresses in the tests, because they
+> # will change over time.
+> 
+> userx@test.ex
+> result=1
+> 
+> >1< >userx@test.ex< >1<
+> result=1
+> 
+> userx@test.ex
+> result=1
+> 
+> # Incorrect secret
+> 
+> userx@test.ex
+> result=
+> 
+> 0
+> result=
+> 
+> # Non-prvs address
+> 
+> >><<
+> result=
+> 
+> # Syntax errors
+> 
+> Failed: "${tod_log" is not a known operator (or a } is missing in a variable reference)
+> Failed: "${tod_log" is not a known operator (or a } is missing in a variable reference)
+> Failed: missing } at end of string
+> Failed: missing } at end of string
+> Failed: hmac algorithm "xxx" is not recognised
+> Failed: each subcondition inside an "and{...}" condition must be in its own {}
+> Failed: unknown condition "xya" inside "and{...}" condition
+> Failed: condition name expected, but found "${lookup{x}lsear" inside "and{...}" condition
+> Failed: missing } at end of string - could be header name not terminated by colon
+> Failed: each subcondition inside an "or{...}" condition must be in its own {}
+> Failed: missing } at end of condition inside "or" group
+> Failed: unknown condition "yes" inside "or{...}" condition
+> Failed: non-digit after underscore in "substr_1_"
+> Failed: non-digit after underscore in "substr__3"
+> 
+> # Miscellaneous (for bug fixes, etc)
+> 
+> true
+> 
+> 
+> escape: B7·F2ò
+> 
+> primary_hostname: myhost.test.ex
+> match:  cdab
+> Failed: "if" failed and "fail" requested
+> yes
+> match_address:   no
+> 
+> -oMa  sender_host_address = 
+>       sender_host_port = 0
+> -oMaa sender_host_authenticated = 
+> -oMai authenticated_id = CALLER
+> -oMas authenticated_sender = CALLER@myhost.test.ex
+> -oMi  interface_address = 
+>       interface_port = -1
+> -oMr  received_protocol = 
+> -oMs  sender_host_name = 
+> -oMt  sender_ident = CALLER
+> 
+> -oMa  sender_host_address = V4NET.0.0.1
+>       sender_host_port = 1234
+> -oMaa sender_host_authenticated = AAA
+> -oMai authenticated_id = philip
+> -oMas authenticated_sender = xx@yy.zz
+> -oMi  interface_address = 1.1.1.1
+>       interface_port = 99
+> -oMr  received_protocol = special
+> -oMt  sender_ident = me
+> 
+> -oMa  sender_host_address = V4NET.0.0.1
+>       sender_host_port = 1234
+> -oMs  sender_host_name = my.host.name
+> 
+> -oMs  sender_host_name = 
+>       host_lookup_failed = 1
+> 
+> -p  received_protocol = special
+> -p  sender_host_name = host.name
+> 
+> -oMa  sender_host_address = V4NET.0.0.1
+>       sender_host_port = 1234
+> -oMaa sender_host_authenticated = AAA
+> -oMai authenticated_id = philip
+> -oMas authenticated_sender = xx@yy.zz
+> -oMi  interface_address = 1.1.1.1
+>       interface_port = 99
+> -oMr  received_protocol = special
+> ----> No lookup yet: No
+> -oMs  sender_host_name = ten-1.test.ex
+> -oMt  sender_ident = me
+> 
+
+**** SMTP testing session as if from host V4NET.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+550 Administrative prohibition
+
+**** SMTP testing session as if from host V4NET.0.0.2
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+550 Administrative prohibition
+
+**** SMTP testing session as if from host V4NET.0.0.0
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 reply_address=<>
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 reply_address=<a@b>
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 reply_address=<c@d>
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 reply_address=<>
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 reply_address=<x@y>
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.0
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 reply_address=<>
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.0
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 reply_address=<>
+221 myhost.test.ex closing connection

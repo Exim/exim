@@ -1,0 +1,57 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+550-Verification failed for <x@y>
+550-Unrouteable address
+550 Sender verify failed
+550 Sender verify failed
+550 Sender verify failed
+550 Sender verify failed
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+550 Unrouteable address
+250 Accepted
+550 relay not permitted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaY-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 unknown user
+550 Unrouteable address
+250 Accepted
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaZ-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+550-rejected because V4NET.11.12.13 is in a black list at rbl.test.ex
+550 This is a test blacklisting message
+550-rejected because V4NET.11.12.13 is in a black list at rbl.test.ex
+550 This is a test blacklisting message
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbA-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbB-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+250 Accepted
+250 Accepted
+250 Accepted
+221 myhost.test.ex closing connection

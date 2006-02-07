@@ -1,0 +1,146 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: ok@no.delay
+unique = ok@no.delay
+ok@no.delay: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing ok@no.delay
+--------> r1 router <--------
+local_part=ok domain=no.delay
+checking domains
+calling r1 router
+r1 router called for ok@no.delay
+  domain = no.delay
+set transport t1
+queued for t1 transport: local_part = ok
+domain = no.delay
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: ok@no.delay
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    ok@no.delay
+  Failed addresses:
+  Deferred addresses:
+locking TESTSUITE/spool/db/retry.lockfile
+locking TESTSUITE/spool/db/wait-t1.lockfile
+LOG: MAIN
+  => ok@no.delay R=r1 T=t1 H=127.0.0.1 [127.0.0.1]
+LOG: MAIN
+  Completed
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: ok@no.delay
+unique = ok@no.delay
+ok@no.delay: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: delay@2.test.again.dns
+unique = delay@2.test.again.dns
+delay@2.test.again.dns: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing delay@2.test.again.dns
+--------> r1 router <--------
+local_part=delay domain=2.test.again.dns
+checking domains
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=delay domain=2.test.again.dns
+calling r2 router
+r2 router called for delay@2.test.again.dns
+  domain = 2.test.again.dns
+Return from DNS lookup of 2.test.again.dns (MX) faked for testing
+delaying 2 seconds
+DNS lookup of 2.test.again.dns (MX) gave TRY_AGAIN
+returning DNS_AGAIN
+r2 router: defer for delay@2.test.again.dns
+  message: host lookup did not complete
+LOG: MAIN
+  == delay@2.test.again.dns R=r2 defer (-1): host lookup did not complete
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing ok@no.delay
+--------> r1 router <--------
+local_part=ok domain=no.delay
+checking domains
+calling r1 router
+r1 router called for ok@no.delay
+  domain = no.delay
+set transport t1
+queued for t1 transport: local_part = ok
+domain = no.delay
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: ok@no.delay
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    ok@no.delay
+  Failed addresses:
+  Deferred addresses:
+    delay@2.test.again.dns
+locking TESTSUITE/spool/db/retry.lockfile
+locking TESTSUITE/spool/db/wait-t1.lockfile
+LOG: MAIN
+  == ok@no.delay R=r1 T=t1 defer (0): SMTP error from remote mail server after MAIL FROM:<CALLER@test.ex> SIZE=ssss: host 127.0.0.1 [127.0.0.1]: 421 myhost.test.ex: SMTP command timeout - closing connection
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: ok@no.delay
+unique = ok@no.delay
+ok@no.delay: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: delay@2.test.again.dns
+unique = delay@2.test.again.dns
+LOG: retry_defer MAIN
+  == delay@2.test.again.dns routing defer (-51): retry time not reached
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing ok@no.delay
+--------> r1 router <--------
+local_part=ok domain=no.delay
+checking domains
+calling r1 router
+r1 router called for ok@no.delay
+  domain = no.delay
+set transport t1
+queued for t1 transport: local_part = ok
+domain = no.delay
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: ok@no.delay
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    ok@no.delay
+  Failed addresses:
+  Deferred addresses:
+    delay@2.test.again.dns
+locking TESTSUITE/spool/db/retry.lockfile
+locking TESTSUITE/spool/db/wait-t1.lockfile
+LOG: retry_defer MAIN
+  == ok@no.delay R=r1 T=t1 defer (-53): retry time not reached for any host
+LOG: queue_run MAIN
+  End queue run: pid=pppp
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+
+******** SERVER ********

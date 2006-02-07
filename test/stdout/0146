@@ -1,0 +1,3 @@
+x@mxt10.test.ex
+  router = domainlist, transport = smtp
+  host V4NET.0.0.1 [V4NET.0.0.1] MX=5

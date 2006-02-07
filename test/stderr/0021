@@ -1,0 +1,186 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+host in host_lookup? no (option unset)
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+using ACL "connect"
+processing "deny"
+check hosts = : 10.9.8.7
+host in ": 10.9.8.7"? no (end of list)
+deny: condition test failed
+processing "drop"
+check hosts = 10.9.8.9
+host in "10.9.8.9"? no (end of list)
+drop: condition test failed
+processing "accept"
+check logwrite = $sender_host_address accepted by connect ACL
+               = 10.9.8.8 accepted by connect ACL
+LOG: MAIN
+  10.9.8.8 accepted by connect ACL
+accept: condition test succeeded
+using ACL "mail"
+processing "warn"
+check senders = ok@test3
+address match: subject=bad@test1 pattern=ok@test3
+bad@test1 in "ok@test3"? no (end of list)
+warn: condition test failed
+processing "accept"
+check senders = ok@test1 : ok@test3
+address match: subject=bad@test1 pattern=ok@test1
+address match: subject=bad@test1 pattern=ok@test3
+bad@test1 in "ok@test1 : ok@test3"? no (end of list)
+accept: condition test failed
+end of ACL "mail": implicit DENY
+LOG: MAIN REJECT
+  H=[10.9.8.8] U=CALLER rejected MAIL <bad@test1>
+using ACL "mail"
+processing "warn"
+check senders = ok@test3
+address match: subject=ok@test1 pattern=ok@test3
+test1 in "test3"? no (end of list)
+ok@test1 in "ok@test3"? no (end of list)
+warn: condition test failed
+processing "accept"
+check senders = ok@test1 : ok@test3
+address match: subject=ok@test1 pattern=ok@test1
+test1 in "test1"? yes (matched "test1")
+ok@test1 in "ok@test1 : ok@test3"? yes (matched "ok@test1")
+check verify = sender
+ok in "!bad"? yes (end of list)
+----------- end verify ------------
+sender ok@test1 verified ok
+check logwrite = :main,reject: mail accepted
+LOG: MAIN REJECT
+  mail accepted
+accept: condition test succeeded
+using ACL "rcpt"
+processing "accept"
+check senders = +ok_senders
+address match: subject=ok@test1 pattern=ok@somewhere
+test1 in "somewhere"? no (end of list)
+address match: subject=ok@test1 pattern=ok@test1
+test1 in "test1"? yes (matched "test1")
+ok@test1 in "ok@somewhere : ok@test1 : ok@test3"? yes (matched "ok@test1")
+ok@test1 in "+ok_senders"? yes (matched "+ok_senders")
+check sender_domains = +ok_sender_domains
+test1 in "somewhere : test1 : test3"? yes (matched "test1")
+test1 in "+ok_sender_domains"? yes (matched "+ok_sender_domains")
+check logwrite = :panic: rcpt accepted
+LOG: PANIC
+  rcpt accepted
+accept: condition test succeeded
+using ACL "rcpt"
+processing "accept"
+check senders = +ok_senders
+cached yes match for +ok_senders
+cached lookup data = NULL
+ok@test1 in "+ok_senders"? yes (matched "+ok_senders" - cached)
+check sender_domains = +ok_sender_domains
+cached yes match for +ok_sender_domains
+test1 in "+ok_sender_domains"? yes (matched "+ok_sender_domains" - cached)
+check logwrite = :panic: rcpt accepted
+LOG: PANIC
+  rcpt accepted
+accept: condition test succeeded
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+1999-03-02 09:44:33 ACL "warn" with "message" setting found in a non-message (EHLO or HELO) ACL: cannot specify header lines here: message ignored
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+host in host_lookup? no (option unset)
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+using ACL "connect"
+processing "deny"
+check hosts = : 10.9.8.7
+host in ": 10.9.8.7"? no (end of list)
+deny: condition test failed
+processing "drop"
+check hosts = 10.9.8.9
+host in "10.9.8.9"? no (end of list)
+drop: condition test failed
+processing "accept"
+check logwrite = $sender_host_address accepted by connect ACL
+               = 10.9.8.8 accepted by connect ACL
+LOG: MAIN
+  10.9.8.8 accepted by connect ACL
+accept: condition test succeeded
+using ACL "mail"
+processing "warn"
+check senders = ok@test3
+address match: subject=ok@test3 pattern=ok@test3
+test3 in "test3"? yes (matched "test3")
+ok@test3 in "ok@test3"? yes (matched "ok@test3")
+warn: condition test succeeded
+processing "accept"
+check senders = ok@test1 : ok@test3
+address match: subject=ok@test3 pattern=ok@test1
+test3 in "test1"? no (end of list)
+address match: subject=ok@test3 pattern=ok@test3
+test3 in "test3"? yes (matched "test3")
+ok@test3 in "ok@test1 : ok@test3"? yes (matched "ok@test3")
+check verify = sender
+ok in "!bad"? yes (end of list)
+----------- end verify ------------
+sender ok@test3 verified ok
+check logwrite = :main,reject: mail accepted
+LOG: MAIN REJECT
+  mail accepted
+accept: condition test succeeded
+using ACL "rcpt"
+processing "accept"
+check senders = +ok_senders
+address match: subject=ok@test3 pattern=ok@somewhere
+test3 in "somewhere"? no (end of list)
+address match: subject=ok@test3 pattern=ok@test1
+test3 in "test1"? no (end of list)
+address match: subject=ok@test3 pattern=ok@test3
+test3 in "test3"? yes (matched "test3")
+ok@test3 in "ok@somewhere : ok@test1 : ok@test3"? yes (matched "ok@test3")
+ok@test3 in "+ok_senders"? yes (matched "+ok_senders")
+check sender_domains = +ok_sender_domains
+test3 in "somewhere : test1 : test3"? yes (matched "test3")
+test3 in "+ok_sender_domains"? yes (matched "+ok_sender_domains")
+check logwrite = :panic: rcpt accepted
+LOG: PANIC
+  rcpt accepted
+accept: condition test succeeded
+host in ignore_fromline_hosts? no (option unset)
+>>Headers added by MAIL or RCPT ACL:
+  X-ACL-Warn: added header line
+>>
+LOG: MAIN
+  <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+skipping ACL configuration - not needed
+x in "!bad"? yes (end of list)
+LOG: MAIN
+  => x <x@y> R=accept T=appendfile
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

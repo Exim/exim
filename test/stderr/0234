@@ -1,0 +1,33 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> d in "@mx_any"? no (end of list)
+>>> d in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: H=[V4NET.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> local host has lowest MX
+>>> mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
+>>> mxt1.test.ex in "+relay_domains"? yes (matched "+relay_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> local host in host list - removed hosts:
+>>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6
+>>>   ten-2.test.ex V4NET.0.0.2 6
+>>> mxt6.test.ex in "@mx_any"? yes (matched "@mx_any")
+>>> mxt6.test.ex in "+relay_domains"? yes (matched "+relay_domains")
+>>> accept: condition test succeeded

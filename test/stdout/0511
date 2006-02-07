@@ -1,0 +1,65 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250-Hello there
+250 SIZE
+MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+250 OK
+RCPT TO:<userx@myhost.test.ex>
+250 OK
+RCPT TO:<ph11@myhost.test.ex>
+250 OK
+RCPT TO:<ph12@myhost.test.ex>
+250 OK
+RCPT TO:<ph13@myhost.test.ex>
+250 OK
+RCPT TO:<ph14@myhost.test.ex>
+250 OK
+RCPT TO:<ph15@myhost.test.ex>
+250 OK
+RCPT TO:<ph16@myhost.test.ex>
+250 OK
+RCPT TO:<ph17@myhost.test.ex>
+250 OK
+RCPT TO:<ph18@myhost.test.ex>
+250 OK
+RCPT TO:<ph19@myhost.test.ex>
+250 OK
+RCPT TO:<ph20@myhost.test.ex>
+250 OK
+RCPT TO:<ph21@myhost.test.ex>
+250 OK
+RCPT TO:<ph22@myhost.test.ex>
+250 OK
+RCPT TO:<ph23@myhost.test.ex>
+250 OK
+RCPT TO:<ph24@myhost.test.ex>
+250 OK
+RCPT TO:<ph25@myhost.test.ex>
+250 OK
+DATA
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550-This is a very long error message, very long indeed, indeed, indeed.
+550 Final line.
+QUIT
+221 BYE
+End of script

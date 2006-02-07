@@ -1,0 +1,52 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<abc@x.y.z>
+250 OK
+DATA
+354 Send more
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+	for abc@x.y.z; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+.
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<abc@x.y.z>
+250 OK
+DATA
+354 Send more
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00
+	for abc@x.y.z; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: Test message
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+QUIT
+250 OK
+End of script

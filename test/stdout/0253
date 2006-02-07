@@ -1,0 +1,66 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:<pqr=userx+myhost.test.ex@verp.domain>
+250 Sender OK
+RCPT TO:<userx@myhost.test.ex>
+250 Recipient OK
+DATA
+354 Go ahead
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <pqr@x.y.z>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: pqr@x.y.z
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message 3
+.
+250 OK
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250-HELP
+250 PIPELINING
+MAIL FROM:<pqr=phil+myhost.test.ex@verp.domain>
+250 Sender OK
+RCPT TO:<phil@myhost.test.ex>
+250 Recipient OK
+DATA
+354 Go ahead
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <pqr@x.y.z>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: pqr@x.y.z
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message 3
+.
+250 OK
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250 OK
+MAIL FROM:<pqr=fail+myhost.test.ex@verp.domain>
+250 Sender OK
+RCPT TO:<fail@myhost.test.ex>
+550 Recipient not OK
+QUIT
+250 OK
+End of script

@@ -1,0 +1,76 @@
+LOG: MAIN
+  <= CALLER@myhost.ex U=CALLER P=local S=sss
+delivering 10HmaX-0005vi-00
+LOG: MAIN
+  ** xxx@unknown.test.ex: unknown.test.ex is not local, and can't route by DNS
+LOG: MAIN
+  <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+delivering 10HmaY-0005vi-00
+LOG: MAIN
+  *> CALLER <CALLER@myhost.ex> R=localuser T=local_delivery
+LOG: MAIN
+  Completed
+LOG: MAIN
+  Completed
+LOG: MAIN
+  <= CALLER@myhost.ex U=CALLER P=local S=sss
+delivering 10HmaZ-0005vi-00
+LOG: retry_defer MAIN
+  == xxx@local.test.ex routing defer (-55): domain is in queue_domains
+LOG: MAIN
+  <= CALLER@myhost.ex U=CALLER P=local S=sss
+delivering 10HmbB-0005vi-00
+LOG: MAIN
+  *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1]
+LOG: MAIN
+  Completed
+LOG: MAIN
+  <= CALLER@myhost.ex U=CALLER P=local S=sss
+delivering 10HmbC-0005vi-00
+LOG: MAIN
+  == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
+LOG: queue_run MAIN
+  Start queue run: pid=pppp
+delivering 10HmbC-0005vi-00 (queue run pid ppppp)
+LOG: MAIN
+  *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2]
+LOG: MAIN
+  Completed
+LOG: queue_run MAIN
+  End queue run: pid=pppp
+LOG: queue_run MAIN
+  Start queue run: pid=pppp -qq
+delivering 10HmbD-0005vi-00 (queue run pid ppppp)
+delivering 10HmbE-0005vi-00 (queue run pid ppppp)
+delivering 10HmbD-0005vi-00 (queue run pid ppppp)
+LOG: MAIN
+  *> xxx@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1]
+LOG: MAIN
+  Completed
+delivering 10HmbE-0005vi-00 (queue run pid ppppp)
+LOG: MAIN
+  *> yyy@ten-1.test.ex R=lookuphost T=smtp H=ten-1.test.ex [V4NET.0.0.1]
+LOG: MAIN
+  Completed
+LOG: queue_run MAIN
+  End queue run: pid=pppp -qq
+LOG: MAIN
+  <= CALLER@myhost.ex U=CALLER P=local S=sss
+delivering 10HmbF-0005vi-00
+LOG: MAIN
+  == xxx@ten-2.test.ex R=lookuphost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
+delivering 10HmbF-0005vi-00
+LOG: MAIN
+  *> xxx@ten-2.test.ex R=lookuphost T=smtp H=ten-2.test.ex [V4NET.0.0.2]
+LOG: MAIN
+  Completed
+LOG: MAIN
+  <= CALLER@myhost.ex U=CALLER P=local S=sss
+delivering 10HmbG-0005vi-00
+LOG: retry_defer MAIN
+  == xxx@local.test.ex routing defer (-55): domain is in queue_domains
+delivering 10HmbG-0005vi-00
+LOG: MAIN
+  *> xxx@local.test.ex R=localreally T=local_delivery
+LOG: MAIN
+  Completed

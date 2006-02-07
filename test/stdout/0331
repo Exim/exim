@@ -1,0 +1,90 @@
+    SMTP: p@q
+  sender: x@y
+    from: x@y
+      to: x@y
+      cc: x@y
+     bcc: x@y
+reply-to: x@y
+env-from: x@y
+  env-to: x@y
+    SMTP: p@q
+  sender: a@b
+    from: a@b
+      to: a@b
+      cc: a@b
+     bcc: a@b
+reply-to: a@b
+env-from: a@b
+  env-to: a@b
+  sender: =?ISO-8859-1?Q?A=C4=C5=C6Z?= <2047@x.y>
+    from: =?ISO-8859-1?Q?A=C4=C5=C6Z?= <2047@x.y>
+      to: =?ISO-8859-1?Q?A=C4=C5=C6Z?= <2047@x.y>
+      cc: =?ISO-8859-1?Q?A=C4=C5=C6Z?= <2047@x.y>
+     bcc: =?ISO-8859-1?Q?A=C4=C5=C6Z?= <2047@x.y>
+reply-to: =?ISO-8859-1?Q?A=C4=C5=C6Z?= <2047@x.y>
+env-from: 2047@x.y
+  env-to: 2047@x.y
+  sender: unq1@x.y
+    from: unq1@x.y
+      to: unq1@x.y
+      cc: unq1@x.y
+     bcc: unq1@x.y
+reply-to: unq1@x.y
+env-from: unq1@x.y
+  env-to: unq1@x.y
+  sender: a phrase <unq2@test.ex>
+    from: a phrase <unq2@test.ex>
+      to: a phrase <unq2@test.ex>
+      cc: a phrase <unq2@test.ex>
+     bcc: a phrase <unq2@test.ex>
+reply-to: a phrase <unq2@test.ex>
+env-from: unq2@test.ex
+  env-to: unq2@test.ex
+  sender: unq3@test.ex
+    from: unq3@test.ex
+      to: unq3@test.ex
+      cc: unq3@test.ex
+     bcc: unq3@test.ex
+reply-to: unq3@test.ex
+env-from: unq3@test.ex
+  env-to: unq3@test.ex
+  sender: "a 4. phrase" <4@22> =?ISO-8859-1?Q?=28a_comment_A=C4=C5=C6Z=29?=
+    from: "a 4. phrase" <4@22> =?ISO-8859-1?Q?=28a_comment_A=C4=C5=C6Z=29?=
+      to: "a 4. phrase" <4@22> =?ISO-8859-1?Q?=28a_comment_A=C4=C5=C6Z=29?=
+      cc: "a 4. phrase" <4@22> =?ISO-8859-1?Q?=28a_comment_A=C4=C5=C6Z=29?=
+     bcc: "a 4. phrase" <4@22> =?ISO-8859-1?Q?=28a_comment_A=C4=C5=C6Z=29?=
+reply-to: "a 4. phrase" <4@22> =?ISO-8859-1?Q?=28a_comment_A=C4=C5=C6Z=29?=
+env-from: 4@22
+  env-to: 4@22
+  sender: fw@fw
+    from: harry <harry@we.de>
+      to: fw@fw
+      cc: fw@fw
+     bcc: fw@fw
+reply-to: fw@fw
+env-from: fw@fw
+  env-to: fw@fw
+  sender: gw@fw
+    from: =?ISO-8859-1?Q?h=E4rry?= <harry@we.de>
+      to: gw@fw
+      cc: gw@fw
+     bcc: gw@fw
+reply-to: gw@fw
+env-from: gw@fw
+  env-to: gw@fw
+  sender: was-abc@abc
+    from: was-abc@abc
+      to: was-abc@abc
+      cc: was-abc@abc
+     bcc: was-abc@abc
+reply-to: was-abc@abc
+env-from: was-abc@abc
+  env-to: was-abc@abc
+  sender: ABC@abc
+    from: ABC@abc
+      to: ABC@abc
+      cc: ABC@abc
+     bcc: ABC@abc
+reply-to: ABC@abc
+env-from: ABC@abc
+  env-to: ABC@abc

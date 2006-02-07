@@ -1,0 +1,6 @@
+LOG: PANIC DIE
+  Exim configuration error:
+  two server authenticators (a1 and a2) have the same public name (PLAIN)
+LOG: PANIC DIE
+  Exim configuration error:
+  two client authenticators (a3 and a4) have the same public name (LOGIN)

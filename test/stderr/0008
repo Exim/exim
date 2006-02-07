@@ -1,0 +1,13 @@
+An error was detected while processing a file of BSMTP input.
+The error message was:
+
+  501 malformed address: < may not follow someone@some.where
+
+The SMTP transaction started in line 11.
+The error was detected in line 12.
+The SMTP command at fault was:
+
+   mail from:someone@some.where<
+
+1 previous message was successfully processed.
+The rest of the batch was abandoned.

@@ -1,0 +1,269 @@
+x@x
+  router = others, transport = smtp2
+  host V4NET.0.0.3 [V4NET.0.0.3] 
+  host V4NET.0.0.2 [V4NET.0.0.2] 
+  host V4NET.0.0.1 [V4NET.0.0.1] 
+x@y
+  router = others, transport = smtp2
+  host V4NET.0.0.1 [V4NET.0.0.1] 
+  host V4NET.0.0.2 [V4NET.0.0.2] 
+  host V4NET.0.0.3 [V4NET.0.0.3] 
+x@z
+  router = others, transport = smtp2
+  host V4NET.0.0.3 [V4NET.0.0.3] 
+  host V4NET.0.0.2 [V4NET.0.0.2] 
+  host V4NET.0.0.1 [V4NET.0.0.1] 
+x@batch
+  router = batched, transport = smtp2
+  host V4NET.0.0.3 [V4NET.0.0.3] 
+  host V4NET.0.0.2 [V4NET.0.0.2] 
+  host V4NET.0.0.1 [V4NET.0.0.1] 
+  host V4NET.0.0.4 [V4NET.0.0.4] 
+  host V4NET.0.0.5 [V4NET.0.0.5] 
+  host V4NET.0.0.6 [V4NET.0.0.6] 
+  host V4NET.0.0.7 [V4NET.0.0.7] 
+y@batch
+  router = batched, transport = smtp2
+  host V4NET.0.0.2 [V4NET.0.0.2] 
+  host V4NET.0.0.1 [V4NET.0.0.1] 
+  host V4NET.0.0.3 [V4NET.0.0.3] 
+  host V4NET.0.0.6 [V4NET.0.0.6] 
+  host V4NET.0.0.4 [V4NET.0.0.4] 
+  host V4NET.0.0.5 [V4NET.0.0.5] 
+  host V4NET.0.0.7 [V4NET.0.0.7] 
+z@batch
+  router = batched, transport = smtp2
+  host V4NET.0.0.1 [V4NET.0.0.1] 
+  host V4NET.0.0.3 [V4NET.0.0.3] 
+  host V4NET.0.0.2 [V4NET.0.0.2] 
+  host V4NET.0.0.5 [V4NET.0.0.5] 
+  host V4NET.0.0.4 [V4NET.0.0.4] 
+  host V4NET.0.0.6 [V4NET.0.0.6] 
+  host V4NET.0.0.7 [V4NET.0.0.7] 
+x@batch2
+  router = batched, transport = smtp2
+  host V4NET.0.0.1 [V4NET.0.0.1] 
+  host V4NET.0.0.2 [V4NET.0.0.2] 
+  host V4NET.0.0.3 [V4NET.0.0.3] 
+  host V4NET.0.0.4 [V4NET.0.0.4] 
+  host V4NET.0.0.5 [V4NET.0.0.5] 
+  host V4NET.0.0.6 [V4NET.0.0.6] 
+  host V4NET.0.0.7 [V4NET.0.0.7] 
+y@batch2
+  router = batched, transport = smtp2
+  host V4NET.0.0.1 [V4NET.0.0.1] 
+  host V4NET.0.0.2 [V4NET.0.0.2] 
+  host V4NET.0.0.3 [V4NET.0.0.3] 
+  host V4NET.0.0.4 [V4NET.0.0.4] 
+  host V4NET.0.0.5 [V4NET.0.0.5] 
+  host V4NET.0.0.6 [V4NET.0.0.6] 
+  host V4NET.0.0.7 [V4NET.0.0.7] 
+x@batch3
+  router = batched2, transport = smtp2
+  host V4NET.0.0.1 [V4NET.0.0.1] 
+  host V4NET.0.0.2 [V4NET.0.0.2] 
+  host V4NET.0.0.3 [V4NET.0.0.3] 
+  host V4NET.0.0.4 [V4NET.0.0.4] 
+  host V4NET.0.0.5 [V4NET.0.0.5] 
+  host V4NET.0.0.6 [V4NET.0.0.6] 
+  host V4NET.0.0.7 [V4NET.0.0.7] 
+y@batch3
+  router = batched2, transport = smtp2
+  host V4NET.0.0.1 [V4NET.0.0.1] 
+  host V4NET.0.0.2 [V4NET.0.0.2] 
+  host V4NET.0.0.3 [V4NET.0.0.3] 
+  host V4NET.0.0.4 [V4NET.0.0.4] 
+  host V4NET.0.0.5 [V4NET.0.0.5] 
+  host V4NET.0.0.6 [V4NET.0.0.6] 
+  host V4NET.0.0.7 [V4NET.0.0.7] 
+x@batch4
+  router = batched2, transport = smtp2
+  host V4NET.0.0.1 [V4NET.0.0.1] 
+  host V4NET.0.0.2 [V4NET.0.0.2] 
+  host V4NET.0.0.3 [V4NET.0.0.3] 
+  host V4NET.0.0.5 [V4NET.0.0.5] 
+  host V4NET.0.0.4 [V4NET.0.0.4] 
+  host V4NET.0.0.6 [V4NET.0.0.6] 
+  host V4NET.0.0.7 [V4NET.0.0.7] 
+y@batch4
+  router = batched2, transport = smtp2
+  host V4NET.0.0.2 [V4NET.0.0.2] 
+  host V4NET.0.0.1 [V4NET.0.0.1] 
+  host V4NET.0.0.3 [V4NET.0.0.3] 
+  host V4NET.0.0.5 [V4NET.0.0.5] 
+  host V4NET.0.0.6 [V4NET.0.0.6] 
+  host V4NET.0.0.4 [V4NET.0.0.4] 
+  host V4NET.0.0.7 [V4NET.0.0.7] 
+userx@bdomain1
+  router = r3, transport = smtp2
+  host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4] 
+  host 127.0.0.1 [127.0.0.1]      
+  host the.local.host.name [ip4.ip4.ip4.ip4] 
+userx@bdomain2
+  router = r3, transport = smtp2
+  host the.local.host.name [ip4.ip4.ip4.ip4] 
+  host 127.0.0.1 [127.0.0.1]      
+  host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4] 
+userx@bdomain3
+  router = r3, transport = smtp2
+  host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4] 
+  host 127.0.0.1 [127.0.0.1]      
+  host the.local.host.name [ip4.ip4.ip4.ip4] 
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+220 ESMTP
+EHLO the.local.host.name
+250-OK
+250 HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<userx@domain1>
+250 Recipient OK
+DATA
+350 Send message
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+.
+250 OK
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+220 ESMTP
+EHLO the.local.host.name
+250-OK
+250 HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<userx@domain2>
+250 Recipient OK
+DATA
+350 Send message
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+.
+250 OK
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO the.local.host.name
+250-OK
+250 HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<userx@domain3>
+250 Recipient OK
+DATA
+350 Send message
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+.
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO the.local.host.name
+250-OK
+250 HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<userx@adomain1>
+250 Recipient OK
+RCPT TO:<userx@adomain2>
+250 Recipient OK
+DATA
+350 Send message
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+.
+250 OK
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO the.local.host.name
+250-OK
+250 HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<userx@adomain3>
+250 Recipient OK
+DATA
+350 Send message
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+.
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+220 ESMTP
+EHLO the.local.host.name
+250-OK
+250 HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<userx@bdomain1>
+250 Recipient OK
+RCPT TO:<userx@bdomain2>
+250 Recipient OK
+RCPT TO:<userx@bdomain3>
+250 Recipient OK
+DATA
+350 Send message
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test message
+.
+250 OK
+QUIT
+250 OK
+End of script

@@ -1,0 +1,437 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="a.b.c" partial=2 affix=*. starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="a.b.c"
+file lookup required for a.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.a.b.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.a.b.c"
+file lookup required for *.a.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.b.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.b.c"
+file lookup required for *.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [*.b.c]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="x.y.c" partial=2 affix=*. starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="x.y.c"
+file lookup required for x.y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.x.y.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.x.y.c"
+file lookup required for *.x.y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.y.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.y.c"
+file lookup required for *.y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="x.y.c" partial=2 affix=*. starflags=1
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="x.y.c"
+cached data used for lookup of x.y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.x.y.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.x.y.c"
+cached data used for lookup of *.x.y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.y.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.y.c"
+cached data used for lookup of *.y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying to match *
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*"
+file lookup required for *
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [*]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="x.y.c" partial=1 affix=*. starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="x.y.c"
+cached data used for lookup of x.y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.x.y.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.x.y.c"
+cached data used for lookup of *.x.y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.y.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.y.c"
+cached data used for lookup of *.y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.c"
+file lookup required for *.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [*.c]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="x@y.c" partial=1 affix=*. starflags=2
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="x@y.c"
+file lookup required for x@y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.x@y.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.x@y.c"
+file lookup required for *.x@y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.c"
+cached data used for lookup of *.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [*.c]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="x@y.c" partial=-1 affix=NULL starflags=2
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="x@y.c"
+cached data used for lookup of x@y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying default match *@y.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*@y.c"
+file lookup required for *@y.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [*@y.c]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="a.b.c" partial=2 affix=*. starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="a.b.c"
+cached data used for lookup of a.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.a.b.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.a.b.c"
+cached data used for lookup of *.a.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.b.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.b.c"
+cached data used for lookup of *.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [*.b.c]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="a.b.c" partial=2 affix=. starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="a.b.c"
+cached data used for lookup of a.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match .a.b.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key=".a.b.c"
+file lookup required for .a.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match .b.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key=".b.c"
+file lookup required for .b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [.b.c]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="a.b.c" partial=2 affix= starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="a.b.c"
+cached data used for lookup of a.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match b.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="b.c"
+file lookup required for b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [b.c]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="a.b.c" partial=2 affix=* starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="a.b.c"
+cached data used for lookup of a.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *a.b.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*a.b.c"
+file lookup required for *a.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *b.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*b.c"
+file lookup required for *b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [*b.c]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="p.q.r" partial=0 affix=*. starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="p.q.r"
+file lookup required for p.q.r
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.p.q.r
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.p.q.r"
+file lookup required for *.p.q.r
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.q.r
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.q.r"
+file lookup required for *.q.r
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.r
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.r"
+file lookup required for *.r
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*"
+cached data used for lookup of *
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [*]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="p.q.r" partial=0 affix=. starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="p.q.r"
+cached data used for lookup of p.q.r
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match .p.q.r
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key=".p.q.r"
+file lookup required for .p.q.r
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match .q.r
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key=".q.r"
+file lookup required for .q.r
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match .r
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key=".r"
+file lookup required for .r
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match .
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="."
+file lookup required for .
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [.]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="x.aa.bb" partial=0 affix=++ starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="x.aa.bb"
+file lookup required for x.aa.bb
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match ++x.aa.bb
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="++x.aa.bb"
+file lookup required for ++x.aa.bb
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match ++aa.bb
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="++aa.bb"
+file lookup required for ++aa.bb
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [++aa.bb]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="x.aa.zz" partial=0 affix=++ starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="x.aa.zz"
+file lookup required for x.aa.zz
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match ++x.aa.zz
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="++x.aa.zz"
+file lookup required for ++x.aa.zz
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match ++aa.zz
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="++aa.zz"
+file lookup required for ++aa.zz
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match ++zz
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="++zz"
+file lookup required for ++zz
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match ++
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="++"
+file lookup required for ++
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [++]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="x.aa.zz" partial=1 affix=++ starflags=1
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="x.aa.zz"
+cached data used for lookup of x.aa.zz
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match ++x.aa.zz
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="++x.aa.zz"
+cached data used for lookup of ++x.aa.zz
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match ++aa.zz
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="++aa.zz"
+cached data used for lookup of ++aa.zz
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match ++zz
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="++zz"
+cached data used for lookup of ++zz
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying to match *
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*"
+cached data used for lookup of *
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [*]
+search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0387.1"
+  key="a.b.c" partial=2 affix=*. starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0387.1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="a.b.c"
+cached data used for lookup of a.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.a.b.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.a.b.c"
+cached data used for lookup of *.a.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup failed
+trying partial match *.b.c
+internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
+  type=lsearch key="*.b.c"
+cached data used for lookup of *.b.c
+  in TESTSUITE/aux-fixed/0387.1
+lookup yielded: [*.b.c]
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

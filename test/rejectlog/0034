@@ -1,0 +1,4 @@
+1999-03-02 09:44:33 SMTP call from CALLER dropped: too many nonmail commands (last was "rset")
+1999-03-02 09:44:33 SMTP call from CALLER dropped: too many nonmail commands (last was "ehlo")
+1999-03-02 09:44:33 SMTP call from CALLER dropped: too many nonmail commands (last was "ehlo")
+1999-03-02 09:44:33 SMTP call from CALLER dropped: too many nonmail commands (last was "noop")

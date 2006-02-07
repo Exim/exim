@@ -1,0 +1,132 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing x@b.domain
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering x@b.domain
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@b.domain
+--------> r1 router <--------
+local_part=x domain=b.domain
+checking domains
+search_open: lsearch "TESTSUITE/aux-fixed/0414.list1"
+search_find: file="TESTSUITE/aux-fixed/0414.list1"
+  key="b.domain" partial=-1 affix=NULL starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0414.list1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
+  type=lsearch key="b.domain"
+file lookup required for b.domain
+  in TESTSUITE/aux-fixed/0414.list1
+lookup failed
+b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"? no (end of list)
+search_open: lsearch "TESTSUITE/aux-fixed/0414.list2"
+search_find: file="TESTSUITE/aux-fixed/0414.list2"
+  key="b.domain" partial=-1 affix=NULL starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0414.list2
+  :TESTSUITE/aux-fixed/0414.list1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
+  type=lsearch key="b.domain"
+file lookup required for b.domain
+  in TESTSUITE/aux-fixed/0414.list2
+lookup yielded: b.domain-data
+b.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"? yes (matched "lsearch;TESTSUITE/aux-fixed/0414.list2")
+data from lookup saved for cache for +B: b.domain-data
+b.domain in "+A : +B"? yes (matched "+B")
+data from lookup saved for cache for +C: b.domain-data
+b.domain in "!+C"? no (matched "!+C")
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=x domain=b.domain
+checking domains
+cached yes match for +B
+cached lookup data = b.domain-data
+b.domain in "+B"? yes (matched "+B" - cached)
+domain_data=b.domain-data
+calling r2 router
+r2 router called for x@b.domain
+  domain = b.domain
+set transport t1
+queued for t1 transport: local_part = x
+domain = b.domain
+  errors_to=NULL
+  domain_data=b.domain-data localpart_data=NULL
+routed by r2 router
+  envelope to: x@b.domain
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing x@a.domain
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering x@a.domain
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@a.domain
+--------> r1 router <--------
+local_part=x domain=a.domain
+checking domains
+search_open: lsearch "TESTSUITE/aux-fixed/0414.list1"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0414.list1"
+  key="a.domain" partial=-1 affix=NULL starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0414.list1
+  :TESTSUITE/aux-fixed/0414.list2
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0414.list1"
+  type=lsearch key="a.domain"
+file lookup required for a.domain
+  in TESTSUITE/aux-fixed/0414.list1
+lookup yielded: a.domain-data
+a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list1"? yes (matched "lsearch;TESTSUITE/aux-fixed/0414.list1")
+data from lookup saved for cache for +A: a.domain-data
+a.domain in "+A : +B"? yes (matched "+A")
+data from lookup saved for cache for +C: a.domain-data
+a.domain in "!+C"? no (matched "!+C")
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=x domain=a.domain
+checking domains
+search_open: lsearch "TESTSUITE/aux-fixed/0414.list2"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/0414.list2"
+  key="a.domain" partial=-1 affix=NULL starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0414.list2
+  :TESTSUITE/aux-fixed/0414.list1
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0414.list2"
+  type=lsearch key="a.domain"
+file lookup required for a.domain
+  in TESTSUITE/aux-fixed/0414.list2
+lookup failed
+a.domain in "lsearch;TESTSUITE/aux-fixed/0414.list2"? no (end of list)
+a.domain in "+B"? no (end of list)
+r2 router skipped: domains mismatch
+--------> r3 router <--------
+local_part=x domain=a.domain
+checking domains
+cached yes match for +A
+cached lookup data = a.domain-data
+a.domain in "+A"? yes (matched "+A" - cached)
+domain_data=a.domain-data
+calling r3 router
+r3 router called for x@a.domain
+  domain = a.domain
+set transport t1
+queued for t1 transport: local_part = x
+domain = a.domain
+  errors_to=NULL
+  domain_data=a.domain-data localpart_data=NULL
+routed by r3 router
+  envelope to: x@a.domain
+  transport: t1
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

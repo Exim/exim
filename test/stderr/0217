@@ -1,0 +1,230 @@
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+delivering 10HmbL-0005vi-00
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-OK
+         250 PIPELINING
+  SMTP>> MAIL FROM:<CALLER@test.ex>
+  SMTP>> RCPT TO:<a@test.ex>
+  SMTP>> RCPT TO:<b@test.ex>
+  SMTP>> RCPT TO:<c@test.ex>
+  SMTP>> RCPT TO:<d@test.ex>
+  SMTP>> RCPT TO:<e@test.ex>
+  SMTP>> RCPT TO:<f@test.ex>
+  SMTP>> RCPT TO:<g@test.ex>
+  SMTP>> RCPT TO:<h@test.ex>
+  SMTP>> RCPT TO:<i@test.ex>
+  SMTP>> RCPT TO:<j@test.ex>
+  SMTP>> RCPT TO:<k@test.ex>
+  SMTP>> RCPT TO:<l@test.ex>
+  SMTP>> RCPT TO:<m@test.ex>
+  SMTP>> RCPT TO:<n@test.ex>
+  SMTP>> RCPT TO:<o@test.ex>
+  SMTP>> RCPT TO:<p@test.ex>
+  SMTP>> RCPT TO:<q@test.ex>
+  SMTP>> RCPT TO:<r@test.ex>
+  SMTP>> RCPT TO:<s@test.ex>
+  SMTP>> RCPT TO:<t@test.ex>
+  SMTP>> RCPT TO:<u@test.ex>
+  SMTP>> RCPT TO:<v@test.ex>
+  SMTP>> RCPT TO:<w@test.ex>
+  SMTP>> RCPT TO:<x@test.ex>
+  SMTP>> RCPT TO:<y@test.ex>
+  SMTP>> RCPT TO:<z@test.ex>
+  SMTP>> RCPT TO:<aa@test.ex>
+  SMTP>> RCPT TO:<bb@test.ex>
+  SMTP>> RCPT TO:<cc@test.ex>
+  SMTP>> RCPT TO:<dd@test.ex>
+  SMTP>> RCPT TO:<ee@test.ex>
+  SMTP>> RCPT TO:<ff@test.ex>
+  SMTP>> RCPT TO:<gg@test.ex>
+  SMTP>> RCPT TO:<hh@test.ex>
+  SMTP>> RCPT TO:<ii@test.ex>
+  SMTP>> RCPT TO:<jj@test.ex>
+  SMTP>> RCPT TO:<kk@test.ex>
+  SMTP>> RCPT TO:<ll@test.ex>
+  SMTP>> RCPT TO:<mm@test.ex>
+  SMTP>> RCPT TO:<nn@test.ex>
+  SMTP>> RCPT TO:<oo@test.ex>
+  SMTP>> RCPT TO:<pp@test.ex>
+  SMTP>> RCPT TO:<qq@test.ex>
+  SMTP>> RCPT TO:<rr@test.ex>
+  SMTP>> RCPT TO:<ss@test.ex>
+  SMTP>> RCPT TO:<tt@test.ex>
+  SMTP>> RCPT TO:<uu@test.ex>
+  SMTP<< 250 OK
+  SMTP<< 250 OK
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP>> RCPT TO:<vv@test.ex>
+  SMTP>> RCPT TO:<ww@test.ex>
+  SMTP>> RCPT TO:<xx@test.ex>
+  SMTP>> RCPT TO:<yy@test.ex>
+  SMTP>> RCPT TO:<zz@test.ex>
+  SMTP>> DATA
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 550 NO
+  SMTP<< 403 Sorry temp data error
+  SMTP>> QUIT
+LOG: MAIN
+  == a@test.ex R=client T=send_to_server defer (0): SMTP error from remote mail server after pipelined DATA: host 127.0.0.1 [127.0.0.1]: 403 Sorry temp data error
+LOG: MAIN
+  ** b@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<b@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** c@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<c@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** d@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<d@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** e@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<e@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** f@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<f@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** g@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<g@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** h@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<h@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** i@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<i@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** j@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<j@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** k@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<k@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** l@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<l@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** m@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<m@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** n@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<n@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** o@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<o@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** p@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<p@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** q@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<q@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** r@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<r@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** s@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<s@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** t@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<t@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** u@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<u@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** v@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<v@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** w@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<w@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** x@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<x@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** y@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<y@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** z@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<z@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** aa@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<aa@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** bb@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<bb@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** cc@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<cc@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** dd@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<dd@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** ee@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<ee@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** ff@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<ff@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** gg@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<gg@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** hh@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<hh@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** ii@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<ii@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** jj@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<jj@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** kk@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<kk@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** ll@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<ll@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** mm@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<mm@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** nn@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<nn@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** oo@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<oo@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** pp@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<pp@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** qq@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<qq@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** rr@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<rr@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** ss@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<ss@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** tt@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<tt@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** uu@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<uu@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** vv@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<vv@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** ww@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<ww@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** xx@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<xx@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** yy@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<yy@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  ** zz@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<zz@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+LOG: MAIN
+  <= <> R=10HmbL-0005vi-00 U=EXIMUSER P=local S=sss
+delivering 10HmbM-0005vi-00
+LOG: MAIN
+  ** CALLER@test.ex R=bounce: just discard
+LOG: MAIN
+  CALLER@test.ex: error ignored
+LOG: MAIN
+  Completed

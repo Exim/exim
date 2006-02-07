@@ -1,0 +1,12 @@
+Warning: no message headers read
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0316.f-user"
+
+Testprint: 1 Matched c@d
+Testprint: 2 Matched c@d
+Testprint: 3 Matched cc@dd
+Testprint: 4 Matched e@f
+Filtering did not set up a significant delivery.
+Normal delivery will occur.

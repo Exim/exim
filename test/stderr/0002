@@ -1,0 +1,350 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+expanding: primary_hostname: $primary_hostname
+   result: primary_hostname: myhost.test.ex
+expanding: abcd
+   result: abcd
+expanding: \N^([ab]+)(\w+)$\N
+   result: ^([ab]+)(\w+)$
+condition: match{abcd}{\N^([ab]+)(\w+)$\N}
+   result: true
+expanding: $2$1
+   result: cdab
+expanding: match:  ${if match{abcd}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+   result: match:  cdab
+expanding: wxyz
+   result: wxyz
+expanding: \N^([ab]+)(\w+)$\N
+   result: ^([ab]+)(\w+)$
+condition: match{wxyz}{\N^([ab]+)(\w+)$\N}
+   result: false
+expanding: $2$1
+   result: 
+skipping: result is not used
+failed to expand: match:  ${if match{wxyz}{\N^([ab]+)(\w+)$\N}{$2$1}fail}
+   error message: "if" failed and "fail" requested
+failure was forced
+expanding: 1
+   result: 1
+expanding: 1
+   result: 1
+condition: eq {1}{1}
+   result: true
+expanding: yes
+   result: yes
+expanding: xx
+   result: xx
+skipping: result is not used
+expanding: /non/exist
+   result: /non/exist
+skipping: result is not used
+expanding: ${lookup{xx}lsearch{/non/exist}}
+   result: 
+skipping: result is not used
+expanding: ${if eq {1}{1}{yes}{${lookup{xx}lsearch{/non/exist}}}}
+   result: yes
+expanding: a.b.c
+   result: a.b.c
+expanding: a.b.c
+   result: a.b.c
+LOG: MAIN PANIC
+  no @ found in the subject of an address list match: subject="a.b.c" pattern="a.b.c"
+condition: match_address{a.b.c}{a.b.c}
+   result: false
+expanding: yes
+   result: yes
+skipping: result is not used
+expanding: no
+   result: no
+expanding: match_address:   ${if match_address{a.b.c}{a.b.c}{yes}{no}}
+   result: match_address:   no
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+expanding: -oMa  sender_host_address = $sender_host_address
+   result: -oMa  sender_host_address = V4NET.0.0.1
+expanding:       sender_host_port = $sender_host_port
+   result:       sender_host_port = 1234
+expanding: -oMaa sender_host_authenticated = $sender_host_authenticated
+   result: -oMaa sender_host_authenticated = AAA
+expanding: -oMai authenticated_id = $authenticated_id
+   result: -oMai authenticated_id = philip
+expanding: -oMas authenticated_sender = $authenticated_sender
+   result: -oMas authenticated_sender = xx@yy.zz
+expanding: -oMi  interface_address = $interface_address
+   result: -oMi  interface_address = 1.1.1.1
+expanding:       interface_port = $interface_port
+   result:       interface_port = 99
+expanding: -oMr  received_protocol = $received_protocol
+   result: -oMr  received_protocol = special
+expanding: -oMt  sender_ident = $sender_ident
+   result: -oMt  sender_ident = me
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+1999-03-02 09:44:33 no host name found for IP address V4NET.11.12.13
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+expanding: -oMa  sender_host_address = $sender_host_address
+   result: -oMa  sender_host_address = V4NET.0.0.1
+expanding:       sender_host_port = $sender_host_port
+   result:       sender_host_port = 1234
+expanding: -oMaa sender_host_authenticated = $sender_host_authenticated
+   result: -oMaa sender_host_authenticated = AAA
+expanding: -oMai authenticated_id = $authenticated_id
+   result: -oMai authenticated_id = philip
+expanding: -oMas authenticated_sender = $authenticated_sender
+   result: -oMas authenticated_sender = xx@yy.zz
+expanding: -oMi  interface_address = $interface_address
+   result: -oMi  interface_address = 1.1.1.1
+expanding:       interface_port = $interface_port
+   result:       interface_port = 99
+expanding: -oMr  received_protocol = $received_protocol
+   result: -oMr  received_protocol = special
+expanding: black
+   result: black
+expanding: white
+   result: white
+condition: eq{black}{white}
+   result: false
+expanding: $sender_host_name
+   result: 
+skipping: result is not used
+expanding: No
+   result: No
+expanding: ----> No lookup yet: ${if eq{black}{white}{$sender_host_name}{No}}
+   result: ----> No lookup yet: No
+looking up host name for V4NET.0.0.1
+IP address lookup yielded ten-1.test.ex
+using host_fake_gethostbyname for ten-1.test.ex (IPv4)
+MUNGED: ::1 will be omitted in what follows
+get[host|ipnode]byname[2] looked up these IP addresses:
+  name=ten-1.test.ex address=V4NET.0.0.1
+checking addresses for ten-1.test.ex
+  V4NET.0.0.1 OK
+sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
+sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1] ident=me)
+expanding: -oMs  sender_host_name = $sender_host_name
+   result: -oMs  sender_host_name = ten-1.test.ex
+expanding: -oMt  sender_ident = $sender_ident
+   result: -oMt  sender_ident = me
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [V4NET.0.0.1]
+sender_rcvhost = [V4NET.0.0.1]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.0.0.1]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [V4NET.0.0.1]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+using ACL "connect1"
+processing "deny"
+check hosts = partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
+sender host name required, to match against partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
+looking up host name for V4NET.0.0.1
+DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) using fakens
+DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) succeeded
+IP address lookup yielded ten-1.test.ex
+using host_fake_gethostbyname for ten-1.test.ex (IPv4)
+DNS lookup of ten-1.test.ex (A) using fakens
+DNS lookup of ten-1.test.ex (A) succeeded
+MUNGED: ::1 will be omitted in what follows
+get[host|ipnode]byname[2] looked up these IP addresses:
+  name=ten-1.test.ex address=V4NET.0.0.1
+checking addresses for ten-1.test.ex
+  V4NET.0.0.1 OK
+sender_fullhost = ten-1.test.ex [V4NET.0.0.1]
+sender_rcvhost = ten-1.test.ex ([V4NET.0.0.1])
+search_open: lsearch "TESTSUITE/aux-fixed/0002.lsearch"
+search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
+  key="ten-1.test.ex" partial=2 affix=*. starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0002.lsearch
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
+  type=lsearch key="ten-1.test.ex"
+file lookup required for ten-1.test.ex
+  in TESTSUITE/aux-fixed/0002.lsearch
+lookup yielded: 
+host in "partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch"? yes (matched "partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch")
+deny: condition test succeeded
+SMTP>> 550 Administrative prohibition
+LOG: MAIN REJECT
+  H=ten-1.test.ex [V4NET.0.0.1] rejected connection in "connect" ACL
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [V4NET.0.0.2]
+sender_rcvhost = [V4NET.0.0.2]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.0.0.2]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [V4NET.0.0.2]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+using ACL "connect2"
+processing "deny"
+check hosts = net-lsearch;TESTSUITE/aux-fixed/0002.lsearch
+search_open: lsearch "TESTSUITE/aux-fixed/0002.lsearch"
+search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
+  key="V4NET.0.0.2" partial=-1 affix=NULL starflags=0
+LRU list:
+  :TESTSUITE/aux-fixed/0002.lsearch
+  End
+internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
+  type=lsearch key="V4NET.0.0.2"
+file lookup required for V4NET.0.0.2
+  in TESTSUITE/aux-fixed/0002.lsearch
+lookup failed
+host in "net-lsearch;TESTSUITE/aux-fixed/0002.lsearch"? no (end of list)
+deny: condition test failed
+end of ACL "connect2": implicit DENY
+SMTP>> 550 Administrative prohibition
+LOG: MAIN REJECT
+  H=[V4NET.0.0.2] rejected connection in "connect" ACL
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "connect0"
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> using ACL "check_data"
+>>> processing "warn"
+>>> check logwrite = Subject is: "$h_subject:"
+>>>                = Subject is: ""
+LOG: 10HmaX-0005vi-00 Subject is: ""
+>>> warn: condition test succeeded
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: 10HmaX-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "warn"
+>>> check logwrite = Subject is: "$h_subject:"
+>>>                = Subject is: ""
+LOG: 10HmaY-0005vi-00 Subject is: ""
+>>> warn: condition test succeeded
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: 10HmaY-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<a@b>
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "warn"
+>>> check logwrite = Subject is: "$h_subject:"
+>>>                = Subject is: ""
+LOG: 10HmaZ-0005vi-00 Subject is: ""
+>>> warn: condition test succeeded
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: 10HmaZ-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<c@d>
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "warn"
+>>> check logwrite = Subject is: "$h_subject:"
+>>>                = Subject is: ""
+LOG: 10HmbA-0005vi-00 Subject is: ""
+>>> warn: condition test succeeded
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: 10HmbA-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "warn"
+>>> check logwrite = Subject is: "$h_subject:"
+>>>                = Subject is: ""
+LOG: 10HmbB-0005vi-00 Subject is: ""
+>>> warn: condition test succeeded
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: 10HmbB-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<x@y>
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "connect0"
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "warn"
+>>> check logwrite = Subject is: "$h_subject:"
+>>>                = Subject is: "=?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_it_will_go_over_the_75-char_limit_by_a_long_way=3B_in_fact_this_one_will_go_over_the_150_character_limit?="
+LOG: 10HmbC-0005vi-00 Subject is: "=?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_it_will_go_over_the_75-char_limit_by_a_long_way=3B_in_fact_this_one_will_go_over_the_150_character_limit?="
+>>> warn: condition test succeeded
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: 10HmbC-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "connect0"
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_data"
+>>> processing "warn"
+>>> check logwrite = Subject is: "$h_subject:"
+>>>                = Subject is: " here we go: a string that is going to be encoded: it will go over the 75-char limit by a long way; in fact this one will go over the 150 character limit"
+LOG: 10HmbD-0005vi-00 Subject is: " here we go: a string that is going to be encoded: it will go over the 75-char limit by a long way; in fact this one will go over the 150 character limit"
+>>> warn: condition test succeeded
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: 10HmbD-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>

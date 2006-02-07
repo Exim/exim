@@ -1,0 +1,48 @@
+x@nosrv.test.ex is undeliverable:
+  Unrouteable address
+x@srv01.test.ex
+  router = r1, transport = t1
+  host ten-1.test.ex [V4NET.0.0.1] MX=0 port=25
+x@mx246.test.ex
+  router = r1, transport = t1
+  host ten-1.test.ex [V4NET.0.0.1] MX=10
+  host v6.test.ex [unknown] MX=10 ** unusable **
+x@srv02.test.ex
+  router = r1, transport = t1
+  host ten-1.test.ex [V4NET.0.0.1] MX=1 port=99
+  host ten-2.test.ex [V4NET.0.0.2] MX=1 port=99
+  host ten-3.test.ex [V4NET.0.0.3] MX=3 port=66
+x@nosmtp.test.ex is undeliverable:
+  an MX or SRV record indicated no SMTP service
+x@srv03.test.ex is undeliverable:
+  Unrouteable address
+x@srv03.test.ex
+  router = r1, transport = t1
+  host ten-4.test.ex [V4NET.0.0.4] MX=0 port=88
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<x@srv27.test.ex>
+250 OK
+DATA
+354 OK
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaZ-0005vi-00
+	for x@srv27.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+QUIT
+250 OK
+End of script

@@ -1,0 +1,12 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+LOG: rejected HELO from [10.10.10.10]: syntactically invalid argument(s): !@#$%^&*(
+LOG: SMTP syntax error in "debug" H=[10.10.10.10] unrecognized command
+LOG: SMTP syntax error in "rhubarb" H=[10.10.10.10] unrecognized command
+LOG: SMTP syntax error in "mail" H=[10.10.10.10] unrecognized command

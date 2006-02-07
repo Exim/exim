@@ -1,0 +1,350 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>> anotherhost.example.com in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> anotherhost.example.com in "test.ex"? no (end of list)
+>>> anotherhost.example.com in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=black-1.test.ex address=V4NET.11.12.13
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>> host in "!TESTSUITE/aux-fixed/0066.nothosts : TESTSUITE/aux-var/0066.hostnets"? yes (matched "1.2.3.4" in TESTSUITE/aux-var/0066.hostnets)
+>>> host in "+relay_hosts"? yes (matched "+relay_hosts")
+>>> accept: condition test succeeded
+LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=[1.2.3.4] P=smtp S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>> anotherhost.example.com in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> anotherhost.example.com in "test.ex"? no (end of list)
+>>> anotherhost.example.com in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=black-1.test.ex address=V4NET.11.12.13
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>> host in "!TESTSUITE/aux-fixed/0066.nothosts : TESTSUITE/aux-var/0066.hostnets"? yes (matched "!1.2.3.0/24" in TESTSUITE/aux-var/0066.hostnets)
+>>> host in "+relay_hosts"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: H=[1.2.3.5] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
+LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=[1.2.3.5] P=smtp S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>> anotherhost.example.com in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> anotherhost.example.com in "test.ex"? no (end of list)
+>>> anotherhost.example.com in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=black-1.test.ex address=V4NET.11.12.13
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>> host in "!TESTSUITE/aux-fixed/0066.nothosts : TESTSUITE/aux-var/0066.hostnets"? yes (matched "1.2.0.0/16" in TESTSUITE/aux-var/0066.hostnets)
+>>> host in "+relay_hosts"? yes (matched "+relay_hosts")
+>>> accept: condition test succeeded
+LOG: 10HmaZ-0005vi-00 <= userx@somehost.example.com H=[1.2.4.5] P=smtp S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>> anotherhost.example.com in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> anotherhost.example.com in "test.ex"? no (end of list)
+>>> anotherhost.example.com in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=black-1.test.ex address=V4NET.11.12.13
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>> sender host name required, to match against *-1.test.ex
+>>> looking up host name for 1.3.2.4
+LOG: no host name found for IP address 1.3.2.4
+>>> host in "!TESTSUITE/aux-fixed/0066.nothosts : TESTSUITE/aux-var/0066.hostnets"? no (failed to find host name for 1.3.2.4)
+>>> host in "+relay_hosts"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: H=[1.3.2.4] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
+LOG: 10HmbA-0005vi-00 <= userx@somehost.example.com H=[1.3.2.4] P=smtp S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>> anotherhost.example.com in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> anotherhost.example.com in "test.ex"? no (end of list)
+>>> anotherhost.example.com in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=black-1.test.ex address=V4NET.11.12.13
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>> host in "!TESTSUITE/aux-fixed/0066.nothosts : TESTSUITE/aux-var/0066.hostnets"? yes (matched "net16-lsearch;TESTSUITE/aux-fixed/0066.nets" in TESTSUITE/aux-var/0066.hostnets)
+>>> host in "+relay_hosts"? yes (matched "+relay_hosts")
+>>> accept: condition test succeeded
+LOG: 10HmbB-0005vi-00 <= userx@somehost.example.com H=[131.111.8.2] P=smtp S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>> anotherhost.example.com in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> anotherhost.example.com in "test.ex"? no (end of list)
+>>> anotherhost.example.com in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=black-1.test.ex address=V4NET.11.12.13
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>> host in "!TESTSUITE/aux-fixed/0066.nothosts : TESTSUITE/aux-var/0066.hostnets"? yes (matched "net24-lsearch;TESTSUITE/aux-fixed/0066.nets" in TESTSUITE/aux-var/0066.hostnets)
+>>> host in "+relay_hosts"? yes (matched "+relay_hosts")
+>>> accept: condition test succeeded
+LOG: 10HmbC-0005vi-00 <= userx@somehost.example.com H=[192.152.98.3] P=smtp S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>> anotherhost.example.com in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> anotherhost.example.com in "test.ex"? no (end of list)
+>>> anotherhost.example.com in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=black-1.test.ex address=V4NET.11.12.13
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>> sender host name required, to match against *-1.test.ex
+>>> looking up host name for V4NET.0.0.1
+>>> IP address lookup yielded ten-1.test.ex
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>> checking addresses for ten-1.test.ex
+>>>   V4NET.0.0.1 OK
+>>> host in "!TESTSUITE/aux-fixed/0066.nothosts : TESTSUITE/aux-var/0066.hostnets"? yes (matched "*-1.test.ex" in TESTSUITE/aux-var/0066.hostnets)
+>>> host in "+relay_hosts"? yes (matched "+relay_hosts")
+>>> accept: condition test succeeded
+LOG: 10HmbD-0005vi-00 <= userx@somehost.example.com H=ten-1.test.ex [V4NET.0.0.1] P=smtp S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>> anotherhost.example.com in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> anotherhost.example.com in "test.ex"? no (end of list)
+>>> anotherhost.example.com in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=black-1.test.ex address=V4NET.11.12.13
+>>> host in "!TESTSUITE/aux-fixed/0066.nothosts : TESTSUITE/aux-var/0066.hostnets"? no (matched "black-1.test.ex" in TESTSUITE/aux-fixed/0066.nothosts)
+>>> host in "+relay_hosts"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: H=[V4NET.11.12.13] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
+LOG: 10HmbE-0005vi-00 <= userx@somehost.example.com H=[V4NET.11.12.13] P=smtp S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>> anotherhost.example.com in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> anotherhost.example.com in "test.ex"? no (end of list)
+>>> anotherhost.example.com in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=black-1.test.ex address=V4NET.11.12.13
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>> host in "!TESTSUITE/aux-fixed/0066.nothosts : TESTSUITE/aux-var/0066.hostnets"? no (matched "!ten-3.test.ex" in TESTSUITE/aux-fixed/0066.nothosts)
+>>> host in "+relay_hosts"? yes (matched "+relay_hosts")
+>>> accept: condition test succeeded
+LOG: 10HmbF-0005vi-00 <= userx@somehost.example.com H=[V4NET.0.0.3] P=smtp S=sss

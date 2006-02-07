@@ -1,0 +1,24 @@
+
+******** SERVER ********
+1999-03-02 09:44:33 10HmaX-0005vi-00 F=test-local-scan@y H=(foobar) [127.0.0.1] P=esmtp rejected by local_scan(): rhubarb rhubarb\n
+Envelope-from: <test-local-scan@y>
+Envelope-to: <x@y>
+P Received: from [127.0.0.1] (helo=foobar)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmaX-0005vi-00
+	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: reject rhubarb rhubarb
+  local-scan-seen: yes
+  local-scan-empty-body:
+1999-03-02 09:44:33 10HmaY-0005vi-00 F=test-local-scan@y H=(foobar) [127.0.0.1] P=esmtp rejected by local_scan(): Administrative prohibition
+Envelope-from: <test-local-scan@y>
+Envelope-to: <x@y>
+P Received: from [127.0.0.1] (helo=foobar)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmaY-0005vi-00
+	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: teergrube
+  local-scan-seen: yes
+  local-scan-empty-body:

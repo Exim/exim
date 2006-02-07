@@ -1,0 +1,94 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<a@test.ex>
+250 OK
+DATA
+351 Send more
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+	for a@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Message 1
+.
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<b@test.ex>
+250 OK
+DATA
+351 Send more
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00
+	for b@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Message 2
+.
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+550 NO
+RCPT TO:<a@test.ex>
+503 Unexpected RCPT
+DATA
+503 Unexpected DATA
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<b@test.ex>
+550 Unknown
+DATA
+503 Unexpected DATA
+RSET
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<c@test.ex>
+250 OK
+DATA
+351 OK
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbC-0005vi-00
+	for c@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Message 3
+.
+250 OK
+QUIT
+250 OK
+End of script

@@ -1,0 +1,10 @@
+> x%y@testhack.test.ex is undeliverable:
+  unrouteable mail domain "y"
+> x%y@test.ex
+  router = local_domains, transport = local_delivery
+> x%y%testhack2.test.ex@testhack.test.ex is undeliverable:
+  unrouteable mail domain "y"
+> X@test.ex
+    <-- X%test.ex@testhack.test.ex
+  router = local_domains, transport = local_delivery
+> 

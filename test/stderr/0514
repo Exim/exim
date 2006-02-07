@@ -1,0 +1,16 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+set_process_info: pppp listing the queue
+reading spool file 10HmaX-0005vi-00-H
+user=spaced user uid=CALLER_UID gid=CALLER_GID sender="spaced user"@myhost.test.ex
+sender_local=1 ident=spaced user
+Non-recipients:
+Empty Tree
+---- End of tree ----
+recipients_count=1
+body_linecount=1 message_linecount=0

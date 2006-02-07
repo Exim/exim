@@ -1,0 +1,45 @@
+220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+451 Could not complete sender verify callout
+250 Reset OK
+451 Could not complete sender verify callout
+250 Reset OK
+451 Could not complete sender verify callout
+221 mail.test.ex closing connection
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO mail.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<r1@domain1>
+450 Temporary error
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+220 Server ready
+HELO mail.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<r2@domain2>
+450 Temporary error
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+HELO mail.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<r3@domain3>
+450 Temporary error
+QUIT
+250 OK
+End of script

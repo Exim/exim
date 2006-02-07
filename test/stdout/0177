@@ -1,0 +1,36 @@
+ 0m   sss 10HmbA-0005vi-00 <CALLER@test.ex> *** frozen ***
+          userx@test.ex
+       +D >usery:userx@test.ex
+
+ 0m   sss 10HmbG-0005vi-00 <CALLER@test.ex> *** frozen ***
+          userz@test.ex
+
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO the.local.host.name
+250-OK
+250 HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<userx@non.local.domain>
+250 Recipient OK
+DATA
+350 Send message
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbG-0005vi-00
+	for userz@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Subject: freeze this (3)
+Message-Id: <E10HmbG-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is a third message to be frozen.
+.
+250 OK
+QUIT
+250 OK
+End of script

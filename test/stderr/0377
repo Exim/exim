@@ -1,0 +1,797 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: aaaa@myhost.test.ex
+unique = aaaa@myhost.test.ex
+aaaa@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: bbbb@myhost.test.ex
+unique = bbbb@myhost.test.ex
+bbbb@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: cccc@myhost.test.ex
+unique = cccc@myhost.test.ex
+cccc@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing cccc@myhost.test.ex
+--------> defer router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+unseen_aaaa router skipped: local_parts mismatch
+--------> seen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+seen_aaaa router skipped: local_parts mismatch
+--------> bbbb router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb router skipped: local_parts mismatch
+--------> bbbb_0 router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb_0 router skipped: local_parts mismatch
+--------> cccc_2nd_time router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+checking "condition"
+cccc_2nd_time router skipped: condition failure
+--------> cccc_redirect router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+calling cccc_redirect router
+rda_interpret (string): cccc@$domain, defer_cccc@$domain
+expanded: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
+file is not a filter file
+parse_forward_list: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
+extract item: cccc@myhost.test.ex
+extract item: defer_cccc@myhost.test.ex
+cccc_redirect router generated defer_cccc@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+cccc_redirect router generated cccc@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by cccc_redirect router
+  envelope to: cccc@myhost.test.ex
+  transport: <none>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing bbbb@myhost.test.ex
+--------> defer router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+unseen_aaaa router skipped: local_parts mismatch
+--------> seen_aaaa router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+seen_aaaa router skipped: local_parts mismatch
+--------> bbbb router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+checking "condition"
+calling bbbb router
+rda_interpret (string): bbbb@$domain, defer_bbbb@$domain
+expanded: bbbb@myhost.test.ex, defer_bbbb@myhost.test.ex
+file is not a filter file
+parse_forward_list: bbbb@myhost.test.ex, defer_bbbb@myhost.test.ex
+extract item: bbbb@myhost.test.ex
+extract item: defer_bbbb@myhost.test.ex
+bbbb router generated defer_bbbb@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+bbbb router generated bbbb@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by bbbb router
+  envelope to: bbbb@myhost.test.ex
+  transport: <none>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing aaaa@myhost.test.ex
+--------> defer router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+checking "condition"
+calling unseen_aaaa router
+rda_interpret (string): defer_aaaa@$domain
+expanded: defer_aaaa@myhost.test.ex
+file is not a filter file
+parse_forward_list: defer_aaaa@myhost.test.ex
+extract item: defer_aaaa@myhost.test.ex
+unseen_aaaa router generated defer_aaaa@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by unseen_aaaa router (unseen)
+  envelope to: aaaa@myhost.test.ex
+  transport: <none>
+"unseen" set: replicated aaaa@myhost.test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: aaaa@myhost.test.ex
+unique = \0\aaaa@myhost.test.ex
+aaaa@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: defer_aaaa@myhost.test.ex
+unique = defer_aaaa@myhost.test.ex
+defer_aaaa@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: bbbb@myhost.test.ex
+unique = \0\bbbb@myhost.test.ex
+bbbb@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: defer_bbbb@myhost.test.ex
+unique = defer_bbbb@myhost.test.ex
+defer_bbbb@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: cccc@myhost.test.ex
+unique = \0\cccc@myhost.test.ex
+cccc@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: defer_cccc@myhost.test.ex
+unique = defer_cccc@myhost.test.ex
+defer_cccc@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing defer_cccc@myhost.test.ex
+--------> defer router <--------
+local_part=defer_cccc domain=myhost.test.ex
+checking local_parts
+calling defer router
+rda_interpret (string): :defer: forced defer
+expanded: :defer: forced defer
+file is not a filter file
+parse_forward_list: :defer: forced defer
+extract item: :defer: forced defer
+defer router: defer for defer_cccc@myhost.test.ex
+  message: forced defer
+LOG: MAIN
+  == defer_cccc@myhost.test.ex <cccc@myhost.test.ex> R=defer defer (-1): forced defer
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing cccc@myhost.test.ex
+--------> defer router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+unseen_aaaa router skipped: local_parts mismatch
+--------> seen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+seen_aaaa router skipped: local_parts mismatch
+--------> bbbb router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb router skipped: local_parts mismatch
+--------> bbbb_0 router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb_0 router skipped: local_parts mismatch
+--------> cccc_2nd_time router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+checking "condition"
+cccc_2nd_time router skipped: condition failure
+--------> cccc_redirect router <--------
+cccc_redirect router skipped: previously routed cccc@myhost.test.ex
+--------> cccc_accept router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+calling cccc_accept router
+cccc_accept router called for cccc@myhost.test.ex
+  domain = myhost.test.ex
+set transport t1
+queued for t1 transport: local_part = cccc
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by cccc_accept router
+  envelope to: cccc@myhost.test.ex
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing defer_bbbb@myhost.test.ex
+--------> defer router <--------
+local_part=defer_bbbb domain=myhost.test.ex
+checking local_parts
+calling defer router
+rda_interpret (string): :defer: forced defer
+expanded: :defer: forced defer
+file is not a filter file
+parse_forward_list: :defer: forced defer
+extract item: :defer: forced defer
+defer router: defer for defer_bbbb@myhost.test.ex
+  message: forced defer
+LOG: MAIN
+  == defer_bbbb@myhost.test.ex <bbbb@myhost.test.ex> R=defer defer (-1): forced defer
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing bbbb@myhost.test.ex
+--------> defer router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+unseen_aaaa router skipped: local_parts mismatch
+--------> seen_aaaa router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+seen_aaaa router skipped: local_parts mismatch
+--------> bbbb router <--------
+bbbb router skipped: previously routed bbbb@myhost.test.ex
+--------> bbbb_0 router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+calling bbbb_0 router
+bbbb_0 router called for bbbb@myhost.test.ex
+  domain = myhost.test.ex
+set transport t1
+queued for t1 transport: local_part = bbbb
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by bbbb_0 router
+  envelope to: bbbb@myhost.test.ex
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing defer_aaaa@myhost.test.ex
+--------> defer router <--------
+local_part=defer_aaaa domain=myhost.test.ex
+checking local_parts
+calling defer router
+rda_interpret (string): :defer: forced defer
+expanded: :defer: forced defer
+file is not a filter file
+parse_forward_list: :defer: forced defer
+extract item: :defer: forced defer
+defer router: defer for defer_aaaa@myhost.test.ex
+  message: forced defer
+LOG: MAIN
+  == defer_aaaa@myhost.test.ex <aaaa@myhost.test.ex> R=defer defer (-1): forced defer
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing aaaa@myhost.test.ex
+--------> seen_aaaa router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+calling seen_aaaa router
+seen_aaaa router called for aaaa@myhost.test.ex
+  domain = myhost.test.ex
+set transport t1
+queued for t1 transport: local_part = aaaa
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by seen_aaaa router
+  envelope to: aaaa@myhost.test.ex
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    aaaa@myhost.test.ex
+    bbbb@myhost.test.ex
+    cccc@myhost.test.ex
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+    defer_aaaa@myhost.test.ex
+    defer_bbbb@myhost.test.ex
+    defer_cccc@myhost.test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => aaaa <aaaa@myhost.test.ex> R=seen_aaaa T=t1
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => bbbb <bbbb@myhost.test.ex> R=bbbb_0 T=t1
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => cccc <cccc@myhost.test.ex> R=cccc_accept T=t1
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp -qf
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: aaaa@myhost.test.ex
+unique = aaaa@myhost.test.ex
+aaaa@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: bbbb@myhost.test.ex
+unique = bbbb@myhost.test.ex
+bbbb@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: cccc@myhost.test.ex
+unique = cccc@myhost.test.ex
+cccc@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing cccc@myhost.test.ex
+--------> defer router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+unseen_aaaa router skipped: local_parts mismatch
+--------> seen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+seen_aaaa router skipped: local_parts mismatch
+--------> bbbb router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb router skipped: local_parts mismatch
+--------> bbbb_0 router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb_0 router skipped: local_parts mismatch
+--------> cccc_2nd_time router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+checking "condition"
+calling cccc_2nd_time router
+rda_interpret (string): $local_part@$domain
+expanded: cccc@myhost.test.ex
+file is not a filter file
+parse_forward_list: cccc@myhost.test.ex
+extract item: cccc@myhost.test.ex
+cccc_2nd_time router generated cccc@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by cccc_2nd_time router
+  envelope to: cccc@myhost.test.ex
+  transport: <none>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing bbbb@myhost.test.ex
+--------> defer router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+unseen_aaaa router skipped: local_parts mismatch
+--------> seen_aaaa router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+seen_aaaa router skipped: local_parts mismatch
+--------> bbbb router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+checking "condition"
+bbbb router skipped: condition failure
+--------> bbbb_0 router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+calling bbbb_0 router
+bbbb_0 router called for bbbb@myhost.test.ex
+  domain = myhost.test.ex
+set transport t1
+queued for t1 transport: local_part = bbbb
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by bbbb_0 router
+  envelope to: bbbb@myhost.test.ex
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing aaaa@myhost.test.ex
+--------> defer router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+checking "condition"
+unseen_aaaa router skipped: condition failure
+--------> seen_aaaa router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+calling seen_aaaa router
+seen_aaaa router called for aaaa@myhost.test.ex
+  domain = myhost.test.ex
+set transport t1
+queued for t1 transport: local_part = aaaa
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by seen_aaaa router
+  envelope to: aaaa@myhost.test.ex
+  transport: t1
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: cccc@myhost.test.ex
+unique = \0\cccc@myhost.test.ex
+cccc@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing cccc@myhost.test.ex
+--------> defer router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+unseen_aaaa router skipped: local_parts mismatch
+--------> seen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+seen_aaaa router skipped: local_parts mismatch
+--------> bbbb router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb router skipped: local_parts mismatch
+--------> bbbb_0 router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb_0 router skipped: local_parts mismatch
+--------> cccc_2nd_time router <--------
+cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
+--------> cccc_redirect router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+calling cccc_redirect router
+rda_interpret (string): cccc@$domain, defer_cccc@$domain
+expanded: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
+file is not a filter file
+parse_forward_list: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
+extract item: cccc@myhost.test.ex
+extract item: defer_cccc@myhost.test.ex
+cccc_redirect router generated defer_cccc@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+cccc_redirect router generated cccc@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by cccc_redirect router
+  envelope to: cccc@myhost.test.ex
+  transport: <none>
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: cccc@myhost.test.ex
+unique = \1\cccc@myhost.test.ex
+cccc@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: defer_cccc@myhost.test.ex
+unique = defer_cccc@myhost.test.ex
+defer_cccc@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing defer_cccc@myhost.test.ex
+--------> defer router <--------
+local_part=defer_cccc domain=myhost.test.ex
+checking local_parts
+calling defer router
+rda_interpret (string): :defer: forced defer
+expanded: :defer: forced defer
+file is not a filter file
+parse_forward_list: :defer: forced defer
+extract item: :defer: forced defer
+defer router: defer for defer_cccc@myhost.test.ex
+  message: forced defer
+LOG: MAIN
+  == defer_cccc@myhost.test.ex <cccc@myhost.test.ex> R=defer defer (-1): forced defer
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing cccc@myhost.test.ex
+--------> defer router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+unseen_aaaa router skipped: local_parts mismatch
+--------> seen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+seen_aaaa router skipped: local_parts mismatch
+--------> bbbb router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb router skipped: local_parts mismatch
+--------> bbbb_0 router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb_0 router skipped: local_parts mismatch
+--------> cccc_2nd_time router <--------
+cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
+--------> cccc_redirect router <--------
+cccc_redirect router skipped: previously routed cccc@myhost.test.ex
+--------> cccc_accept router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+calling cccc_accept router
+cccc_accept router called for cccc@myhost.test.ex
+  domain = myhost.test.ex
+set transport t1
+queued for t1 transport: local_part = cccc
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by cccc_accept router
+  envelope to: cccc@myhost.test.ex
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    cccc@myhost.test.ex
+    aaaa@myhost.test.ex
+    bbbb@myhost.test.ex
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+    defer_cccc@myhost.test.ex
+cccc@myhost.test.ex was previously delivered (t1 transport): discarded
+aaaa@myhost.test.ex was previously delivered (t1 transport): discarded
+bbbb@myhost.test.ex was previously delivered (t1 transport): discarded
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: queue_run MAIN
+  End queue run: pid=pppp -qf
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp -qf
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: aaaa@myhost.test.ex
+unique = aaaa@myhost.test.ex
+aaaa@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: bbbb@myhost.test.ex
+unique = bbbb@myhost.test.ex
+bbbb@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: cccc@myhost.test.ex
+unique = cccc@myhost.test.ex
+cccc@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing cccc@myhost.test.ex
+--------> defer router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+unseen_aaaa router skipped: local_parts mismatch
+--------> seen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+seen_aaaa router skipped: local_parts mismatch
+--------> bbbb router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb router skipped: local_parts mismatch
+--------> bbbb_0 router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb_0 router skipped: local_parts mismatch
+--------> cccc_2nd_time router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+checking "condition"
+calling cccc_2nd_time router
+rda_interpret (string): $local_part@$domain
+expanded: cccc@myhost.test.ex
+file is not a filter file
+parse_forward_list: cccc@myhost.test.ex
+extract item: cccc@myhost.test.ex
+cccc_2nd_time router generated cccc@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by cccc_2nd_time router
+  envelope to: cccc@myhost.test.ex
+  transport: <none>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing bbbb@myhost.test.ex
+--------> defer router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+unseen_aaaa router skipped: local_parts mismatch
+--------> seen_aaaa router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+seen_aaaa router skipped: local_parts mismatch
+--------> bbbb router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+checking "condition"
+bbbb router skipped: condition failure
+--------> bbbb_0 router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+calling bbbb_0 router
+bbbb_0 router called for bbbb@myhost.test.ex
+  domain = myhost.test.ex
+set transport t1
+queued for t1 transport: local_part = bbbb
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by bbbb_0 router
+  envelope to: bbbb@myhost.test.ex
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing aaaa@myhost.test.ex
+--------> defer router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+checking "condition"
+unseen_aaaa router skipped: condition failure
+--------> seen_aaaa router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+calling seen_aaaa router
+seen_aaaa router called for aaaa@myhost.test.ex
+  domain = myhost.test.ex
+set transport t1
+queued for t1 transport: local_part = aaaa
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by seen_aaaa router
+  envelope to: aaaa@myhost.test.ex
+  transport: t1
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: cccc@myhost.test.ex
+unique = \0\cccc@myhost.test.ex
+cccc@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing cccc@myhost.test.ex
+--------> defer router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+unseen_aaaa router skipped: local_parts mismatch
+--------> seen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+seen_aaaa router skipped: local_parts mismatch
+--------> bbbb router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb router skipped: local_parts mismatch
+--------> bbbb_0 router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb_0 router skipped: local_parts mismatch
+--------> cccc_2nd_time router <--------
+cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
+--------> cccc_redirect router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+calling cccc_redirect router
+rda_interpret (string): cccc@$domain, defer_cccc@$domain
+expanded: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
+file is not a filter file
+parse_forward_list: cccc@myhost.test.ex, defer_cccc@myhost.test.ex
+extract item: cccc@myhost.test.ex
+extract item: defer_cccc@myhost.test.ex
+cccc_redirect router generated defer_cccc@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+cccc_redirect router generated cccc@myhost.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by cccc_redirect router
+  envelope to: cccc@myhost.test.ex
+  transport: <none>
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: cccc@myhost.test.ex
+unique = \1\cccc@myhost.test.ex
+cccc@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: defer_cccc@myhost.test.ex
+unique = defer_cccc@myhost.test.ex
+defer_cccc@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing defer_cccc@myhost.test.ex
+--------> defer router <--------
+local_part=defer_cccc domain=myhost.test.ex
+checking local_parts
+calling defer router
+rda_interpret (string): :defer: forced defer
+expanded: :defer: forced defer
+file is not a filter file
+parse_forward_list: :defer: forced defer
+extract item: :defer: forced defer
+defer router: defer for defer_cccc@myhost.test.ex
+  message: forced defer
+LOG: MAIN
+  == defer_cccc@myhost.test.ex <cccc@myhost.test.ex> R=defer defer (-1): forced defer
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing cccc@myhost.test.ex
+--------> defer router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+defer router skipped: local_parts mismatch
+--------> unseen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+unseen_aaaa router skipped: local_parts mismatch
+--------> seen_aaaa router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+seen_aaaa router skipped: local_parts mismatch
+--------> bbbb router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb router skipped: local_parts mismatch
+--------> bbbb_0 router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+bbbb_0 router skipped: local_parts mismatch
+--------> cccc_2nd_time router <--------
+cccc_2nd_time router skipped: previously routed cccc@myhost.test.ex
+--------> cccc_redirect router <--------
+cccc_redirect router skipped: previously routed cccc@myhost.test.ex
+--------> cccc_accept router <--------
+local_part=cccc domain=myhost.test.ex
+checking local_parts
+calling cccc_accept router
+cccc_accept router called for cccc@myhost.test.ex
+  domain = myhost.test.ex
+set transport t1
+queued for t1 transport: local_part = cccc
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by cccc_accept router
+  envelope to: cccc@myhost.test.ex
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    cccc@myhost.test.ex
+    aaaa@myhost.test.ex
+    bbbb@myhost.test.ex
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+    defer_cccc@myhost.test.ex
+cccc@myhost.test.ex was previously delivered (t1 transport): discarded
+aaaa@myhost.test.ex was previously delivered (t1 transport): discarded
+bbbb@myhost.test.ex was previously delivered (t1 transport): discarded
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: queue_run MAIN
+  End queue run: pid=pppp -qf
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

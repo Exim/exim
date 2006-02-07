@@ -1,0 +1,15 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+EHLO myhost.test.ex
+250-Hello there
+250 SIZE
+MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+250 OK
+RCPT TO:<userx@myhost.test.ex>
+250 OK
+DATA
+354 Send it
+End of script

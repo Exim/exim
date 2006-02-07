@@ -1,0 +1,15 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbA-0005vi-00
+221 myhost.test.ex closing connection
+ 0m   sss 10HmbC-0005vi-00 <> (CALLER)
+          userx@myhost.test.ex
+
+ 0m   sss 10HmbD-0005vi-00 <foo@bar> (CALLER)
+          userx@myhost.test.ex
+
+ 0m   sss 10HmbE-0005vi-00 <>
+          userx@myhost.test.ex
+

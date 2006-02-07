@@ -1,0 +1,50 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@myhost.test.ex R=localuser T=maildir_tagged_appendfile defer (-1): Expansion of "${expand:$h_tag:}" (maildir_tag for maildir_tagged_appendfile transport) failed: internal expansion of "${if eq{0}{1}{rhubarb}" failed: syntax error in "if" item - "fail" expected
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+>>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
+--------> userx@myhost.test.ex <--------
+appendfile transport entered
+appendfile: mode=600 notify_comsat=0 quota=20480 warning=0
+  directory=TESTSUITE/test-mail format=maildir
+  message_prefix=
+  message_suffix=
+  maildir_use_size_file=no
+ensuring maildir directories exist in TESTSUITE/test-mail
+using regex for file sizes: ,S=(\d+):
+quota checks on directory TESTSUITE/test-mail
+MUNGED: the check_dir_size lines have been sorted to ensure consistency
+check_dir_size: dir=TESTSUITE/test-mail sum=dddd count=dd
+check_dir_size: dir=TESTSUITE/test-mail/cur sum=0 count=dd
+check_dir_size: dir=TESTSUITE/test-mail/new sum=dddd count=dd
+check_dir_size: dir=TESTSUITE/test-mail/tmp sum=0 count=dd
+check_dir_size: regex did not match cur
+check_dir_size: regex did not match dddddddddd.HddddddPddddd.myhost.test.ex
+check_dir_size: regex did not match dddddddddd.HddddddPddddd.myhost.test.ex
+check_dir_size: regex did not match dddddddddd.HddddddPddddd.myhost.test.ex
+check_dir_size: regex did not match dddddddddd.HddddddPddddd.myhost.test.ex
+check_dir_size: regex did not match dddddddddd.HddddddPddddd.myhost.test.ex,S=sss
+check_dir_size: regex did not match dddddddddd.HddddddPddddd.myhost.test.ex:Ssss
+check_dir_size: regex did not match new
+check_dir_size: regex did not match tmp
+check_dir_size: size from dddddddddd.HddddddPddddd.myhost.test.ex,S=sss:2,S is ddddd
+delivering in maildir format in TESTSUITE/test-mail
+writing to tmp/MAILDIR.myhost.test.ex
+Exim quota = 20480 old size = sssss this message = sss (included)
+  file count quota = 0 count = 10
+mailbox quota exceeded
+maildir: time since "new" directory modified = 10s
+Exim quota exceeded for tmp/dddddddddd.HddddddPddddd.myhost.test.ex
+appendfile yields 1 with errno=-22 more_errno=dd
+maildir_taggedX_appendfile transport returned DEFER for userx@myhost.test.ex
+added retry item for T:userx@myhost.test.ex: errno=-22 more_errno=dd flags=0
+LOG: MAIN
+  == userx@myhost.test.ex R=localuser T=maildir_taggedX_appendfile defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

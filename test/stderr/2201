@@ -1,0 +1,129 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+finduser used cached passwd data for CALLER
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing test.ex@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering test.ex@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing test.ex@test.ex
+--------> r1 router <--------
+local_part=test.ex domain=test.ex
+checking domains
+search_open: dnsdb "NULL"
+search_find: file="NULL"
+  key="test.ex" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="test.ex"
+database lookup required for test.ex
+dnsdb key: test.ex
+DNS lookup of test.ex (TXT) using fakens
+DNS lookup of test.ex (TXT) succeeded
+lookup yielded: A TXT record for test.ex.
+test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
+checking local_parts
+search_open: dnsdb "NULL"
+  cached open
+search_find: file="NULL"
+  key="test.ex" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="test.ex"
+cached data used for lookup of test.ex
+lookup yielded: A TXT record for test.ex.
+test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
+calling r1 router
+r1 router called for test.ex@test.ex
+  domain = test.ex
+set transport local_delivery
+queued for local_delivery transport: local_part = test.ex
+domain = test.ex
+  errors_to=NULL
+  domain_data=A TXT record for test.ex. localpart_data=A TXT record for test.ex.
+routed by r1 router
+  envelope to: test.ex@test.ex
+  transport: local_delivery
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing unknown@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering unknown@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing unknown@test.ex
+--------> r1 router <--------
+local_part=unknown domain=test.ex
+checking domains
+search_open: dnsdb "NULL"
+  cached open
+search_find: file="NULL"
+  key="test.ex" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="test.ex"
+cached data used for lookup of test.ex
+lookup yielded: A TXT record for test.ex.
+test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
+checking local_parts
+search_open: dnsdb "NULL"
+  cached open
+search_find: file="NULL"
+  key="unknown" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="unknown"
+database lookup required for unknown
+dnsdb key: unknown
+DNS lookup of unknown (TXT) using fakens
+DNS lookup of unknown (TXT) gave HOST_NOT_FOUND
+returning DNS_NOMATCH
+lookup failed
+unknown in "dnsdb;unknown"? no (end of list)
+r1 router skipped: local_parts mismatch
+--------> r2 router <--------
+local_part=unknown domain=test.ex
+checking domains
+search_open: dnsdb "NULL"
+  cached open
+search_find: file="NULL"
+  key="test.ex" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="test.ex"
+cached data used for lookup of test.ex
+lookup yielded: A TXT record for test.ex.
+test.ex in "dnsdb;test.ex"? yes (matched "dnsdb;test.ex")
+checking senders
+address match: subject=CALLER@myhost.test.ex pattern=dnsdb;A=myhost.test.ex
+search_open: dnsdb "NULL"
+  cached open
+search_find: file="NULL"
+  key="A=myhost.test.ex" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=dnsdb key="A=myhost.test.ex"
+database lookup required for A=myhost.test.ex
+dnsdb key: myhost.test.ex
+DNS lookup of myhost.test.ex (A) using fakens
+DNS lookup of myhost.test.ex (A) succeeded
+lookup yielded: V4NET.10.10.10
+CALLER@myhost.test.ex in "dnsdb;A=myhost.test.ex"? yes (matched "dnsdb;A=myhost.test.ex")
+calling r2 router
+r2 router called for unknown@test.ex
+  domain = test.ex
+set transport local_delivery
+queued for local_delivery transport: local_part = unknown
+domain = test.ex
+  errors_to=NULL
+  domain_data=A TXT record for test.ex. localpart_data=NULL
+routed by r2 router
+  envelope to: unknown@test.ex
+  transport: local_delivery
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

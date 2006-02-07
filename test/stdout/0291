@@ -1,0 +1,13 @@
+c@one
+    <-- b@one
+    <-- a@one
+  router = accept, transport = unset
+c@one
+    <-- b@one
+  router = accept, transport = unset
+b@two
+    <-- a@two
+  router = accept, transport = unset
+c@two
+    <-- b@two
+  router = accept, transport = unset

@@ -1,0 +1,10 @@
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1]:1111 I=[127.0.0.1]:1225 F=<userx@test.ex> rejected RCPT <userx@test.ex>
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1]:1112 I=[127.0.0.1]:1225 F=<userx@test.ex> rejected RCPT <userx@test.ex>
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1]:1113 I=[127.0.0.1]:1225 rejected MAIL <deny@test.ex>
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1]:1114 I=[127.0.0.1]:1225 rejected MAIL <deny@test.ex>
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1]:1115 I=[127.0.0.1]:1225 F=<userx@test.ex> rejected RCPT <userx@test.ex>
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1]:1115 I=[127.0.0.1]:1225 F=<userx@test.ex> rejected RCPT <ph11@test.ex>
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1]:1115 I=[127.0.0.1]:1225 F=<userx@test.ex> rejected RCPT <ph12@test.ex>
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1]:1116 I=[127.0.0.1]:1225 F=<userx@test.ex> rejected RCPT <userx@test.ex>
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1]:1116 I=[127.0.0.1]:1225 F=<userx@test.ex> rejected RCPT <ph11@test.ex>
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1]:1116 I=[127.0.0.1]:1225 F=<userx@test.ex> rejected RCPT <ph12@test.ex>

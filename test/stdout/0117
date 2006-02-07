@@ -1,0 +1,6 @@
+xxx@mxt9.test.ex
+  router = lookuphost, transport = unset
+xxx@mxt9a.test.ex
+  router = lookuphost, transport = unset
+xxx@mxt9b.test.ex
+  router = lookuphost, transport = unset

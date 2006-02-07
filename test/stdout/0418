@@ -1,0 +1,5 @@
+220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-This is a message which is continued over several lines, with an
+550 interspersed comment
+221 mail.test.ex closing connection

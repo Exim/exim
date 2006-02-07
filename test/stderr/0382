@@ -1,0 +1,52 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+running system filter
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+system filter returned 1
+LOG: MAIN
+  ** userx@test.ex R=r1: forced fail
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: MAIN
+  <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+running system filter
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+system filter returned 1
+LOG: MAIN
+  ** CALLER@test.ex: Unrouteable address
+LOG: MAIN
+  Frozen (delivery error message)
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp -qf
+LOG: MAIN
+  cancelled by timeout_frozen_after
+LOG: MAIN
+  Completed
+LOG: queue_run MAIN
+  End queue run: pid=pppp -qf
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

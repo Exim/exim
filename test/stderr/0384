@@ -1,0 +1,17 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? yes (matched "*")
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> [V4NET.9.8.7] in helo_lookup_domains? no (end of list)
+>>> verifying EHLO/HELO argument "[V4NET.9.8.7]"
+>>> matched host address
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> [1.2.3.4] in helo_lookup_domains? no (end of list)
+>>> verifying EHLO/HELO argument "[1.2.3.4]"
+LOG: rejected "EHLO [1.2.3.4]" from ([1.2.3.4]) [V4NET.9.8.7]
+>>> processing "accept"
+>>> accept: condition test succeeded

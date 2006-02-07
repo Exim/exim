@@ -1,0 +1,84 @@
+
+******** SERVER ********
+Listening on TESTSUITE/test.socket ... 
+Connection request
+220
+LHLO myhost.test.ex
+220 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<userx@myhost.test.ex>
+250 OK
+DATA
+334 send more
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is a test message.
+.
+250 OK
+QUIT
+250 OK
+End of script
+Listening on TESTSUITE/test.socket ... 
+Connection request
+*sleep 3
+End of script
+Listening on TESTSUITE/test.socket ... 
+Connection request
+440 Sorry, there's a problem here
+End of script
+Listening on TESTSUITE/test.socket ... 
+Connection request
+220 Welcome to this LMTP simulation
+LHLO myhost.test.ex
+250-Hello there
+250 SIZE
+MAIL FROM:<CALLER@myhost.test.ex>
+550 Don't like that sender
+QUIT
+250 OK
+End of script
+Listening on TESTSUITE/test.socket ... 
+Connection request
+220 Welcome to this LMTP simulation
+LHLO myhost.test.ex
+250-Hello there
+250 SIZE
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<lp1@myhost.test.ex>
+250 OK
+RCPT TO:<lp2@myhost.test.ex>
+250 OK
+RCPT TO:<lp3@myhost.test.ex>
+250 OK
+RCPT TO:<lp4@myhost.test.ex>
+450 This one is delayed on RCPT
+RCPT TO:<lp5@myhost.test.ex>
+550 This one is unknown on RCPT
+RCPT TO:<lp6@myhost.test.ex>
+250 OK
+DATA
+354 Send it
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbA-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is a test message
+.
+250 Number 1 is OK
+450 Number 2 is now delayed
+550 Number 3 is now rejected
+250 Number 6 is OK
+QUIT
+250 OK
+End of script

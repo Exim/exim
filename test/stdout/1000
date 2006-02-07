@@ -1,0 +1,19 @@
+
+**** SMTP testing session as if from host 2001:0ab8:037f:0020:0000:0000:0000:0001
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+421 myhost.test.ex lost input connection
+
+**** SMTP testing session as if from host V6NET:1234:0005:0006:0007:0008:0abc:000d
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+550 Administrative prohibition
+
+**** SMTP testing session as if from host V6NET:ffff:836f:0a00:000a:0800:200a:c032
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+550 Administrative prohibition

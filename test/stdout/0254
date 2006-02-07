@@ -1,0 +1,95 @@
+10HmaX-0005vi-00-H
+CALLER UID GID
+<CALLER@myhost.test.ex>
+ddddddddd 0
+-ident CALLER
+-received_protocol local
+-body_linecount 0
+-auth_id CALLER
+-auth_sender CALLER@myhost.test.ex
+-allow_unqualified_recipient
+-allow_unqualified_sender
+-deliver_firsttime
+-local
+XX
+1
+userx@myhost.test.ex
+
+dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+ddd* From: f
+dddF From: f@myhost.test.ex
+ddd* To: t
+021T To: t@myhost.test.ex
+008  Date: d
+011  Subject: s
+ddd* Resent-From: f
+dddF Resent-From: f@myhost.test.ex
+ddd* Resent-To: t
+028T Resent-To: t@myhost.test.ex
+015  Resent-Date: d
+033  Resent-Subject: should not exist
+054I Resent-Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+dddS Resent-Sender: CALLER_NAME <CALLER@myhost.test.ex>
+10HmaY-0005vi-00-H
+CALLER UID GID
+<CALLER@myhost.test.ex>
+ddddddddd 0
+-ident CALLER
+-received_protocol local
+-body_linecount 0
+-auth_id CALLER
+-auth_sender CALLER@myhost.test.ex
+-allow_unqualified_recipient
+-allow_unqualified_sender
+-deliver_firsttime
+-local
+XX
+1
+userx@myhost.test.ex
+
+dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaY-0005vi-00
+	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+ddd* From: f
+dddF From: f@myhost.test.ex
+ddd* Resent-From: f
+dddF Resent-From: f@myhost.test.ex
+054I Resent-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+dddS Resent-Sender: CALLER_NAME <CALLER@myhost.test.ex>
+045  Resent-Date: Tue, 2 Mar 1999 09:44:33 +0000
+10HmaZ-0005vi-00-H
+CALLER UID GID
+<CALLER@myhost.test.ex>
+ddddddddd 0
+-ident CALLER
+-received_protocol local
+-body_linecount 0
+-auth_id CALLER
+-auth_sender CALLER@myhost.test.ex
+-allow_unqualified_recipient
+-allow_unqualified_sender
+-deliver_firsttime
+-local
+XX
+1
+userx@myhost.test.ex
+
+dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaZ-0005vi-00
+	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+ddd* From: userx
+dddF From: userx@myhost.test.ex
+ddd* To: xx@yy
+014T To: xxxx@yyyy
+ddd* Resent-From: userx
+dddF Resent-From: userx@myhost.test.ex
+ddd* Resent-To: xx@yy
+021T Resent-To: xxxx@yyyy
+054I Resent-Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+dddS Resent-Sender: CALLER_NAME <CALLER@myhost.test.ex>
+045  Resent-Date: Tue, 2 Mar 1999 09:44:33 +0000

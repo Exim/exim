@@ -1,0 +1,27 @@
+ 0m   sss 10HmaX-0005vi-00 <"spaced user"@myhost.test.ex>
+          userx@myhost.test.ex
+
+10HmaX-0005vi-00-H
+CALLER UID GID
+<"spaced user"@myhost.test.ex>
+ddddddddd 0
+-ident spaced user
+-received_protocol local
+-body_linecount 1
+-auth_id spaced user
+-auth_sender spaced user@myhost.test.ex
+-allow_unqualified_recipient
+-allow_unqualified_sender
+-deliver_firsttime
+-local
+XX
+1
+userx@myhost.test.ex
+
+dddP Received: from "spaced user" by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <"spaced user"@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+047I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+dddF From: CALLER_NAME <"spaced user"@myhost.test.ex>
+038  Date: Tue, 2 Mar 1999 09:44:33 +0000

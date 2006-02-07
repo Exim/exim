@@ -1,0 +1,18 @@
+userx@black-1.test.ex
+  router = lookuphost, transport = smtp
+  host black-1.test.ex [1.2.3.4] 
+userx@myhost.test.ex
+  router = lookuphost, transport = smtp
+  host myhost.test.ex [V4NET.10.10.11] 
+userx@ten-1.test.ex
+  router = lookuphost, transport = smtp
+  host other2.test.ex [V4NET.12.3.1] 
+  host other2.test.ex [V4NET.12.3.2] 
+userx@other1.test.ex
+  router = lookuphost, transport = smtp
+  host other1.test.ex [V4NET.12.4.5] 
+userx@other99.test.ex cannot be resolved at this time:
+  host non-exist.test.ex not found when translating other99.test.ex [V4NET.99.0.1]
+userx@other99.test.ex
+  router = lookuphost, transport = smtp
+  host non-exist.test.ex [unknown] 

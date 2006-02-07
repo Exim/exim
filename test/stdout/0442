@@ -1,0 +1,45 @@
+
+r1 router:
+address_data = 
+address_test
+cannot_route_message = 
+no_caseful_local_part
+no_check_local_user
+condition = 
+debug_print = 
+no_disable_logging
+domains = 
+driver = accept
+errors_to = 
+expn
+no_fail_verify_recipient
+no_fail_verify_sender
+fallback_hosts = 
+group = 
+headers_add = 
+headers_remove = 
+ignore_target_hosts = 
+no_initgroups
+local_part_prefix = 
+no_local_part_prefix_optional
+local_part_suffix = 
+no_local_part_suffix_optional
+local_parts = 
+log_as_local
+more
+no_pass_on_timeout
+pass_router = 
+redirect_router = 
+require_files = 
+no_retry_use_local_part
+router_home_directory = 
+self = freeze
+senders = 
+transport = t1
+transport_current_directory = 
+transport_home_directory = 
+no_unseen
+user = 
+no_verify_only
+verify_recipient
+verify_sender

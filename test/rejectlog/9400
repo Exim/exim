@@ -1,0 +1,180 @@
+1999-03-02 09:44:33 10HmaZ-0005vi-00 F=test-local-scan@y U=CALLER P=local-smtp rejected by local_scan(): Administrative prohibition
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmaZ-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: reject
+I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan-seen: yes
+  local-scan-body-start: Testing, testing
+1999-03-02 09:44:33 10HmbA-0005vi-00 F=test-local-scan@y U=CALLER P=local-smtp rejected by local_scan(): this message isn't wanted\n
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbA-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: reject this message isn't wanted
+I Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan-seen: yes
+  local-scan-body-start: Testing, testing
+1999-03-02 09:44:33 10HmbB-0005vi-00 F=test-local-scan@y U=CALLER P=local-smtp rejected by local_scan(): this message isn't wanted\n  and we tell it on two lines\n
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbB-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: reject this message isn't wanted
+  and we tell it on two lines
+I Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan-seen: yes
+  local-scan-body-start: Testing, testing
+1999-03-02 09:44:33 10HmbC-0005vi-00 F=test-local-scan@y U=CALLER P=local-smtp temporarily rejected by local_scan(): Temporary local problem
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbC-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: tempreject
+I Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan-seen: yes
+  local-scan-body-start: Testing, testing
+1999-03-02 09:44:33 10HmbD-0005vi-00 F=test-local-scan@y U=CALLER P=local-smtp temporarily rejected by local_scan(): this message isn't wanted just now\n
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbD-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: tempreject this message isn't wanted just now
+I Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan-seen: yes
+  local-scan-body-start: Testing, testing
+1999-03-02 09:44:33 10HmbE-0005vi-00 F=test-local-scan@y U=CALLER P=local rejected by local_scan(): this message isn't wanted\n
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbE-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: reject this message isn't wanted
+I Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan-seen: yes
+  local-scan-body-start: Testing, testing, lo
+1999-03-02 09:44:33 10HmbF-0005vi-00 F=test-local-scan@y U=CALLER P=local rejected by local_scan(): this message isn't wanted\n
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbF-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: reject this message isn't wanted
+I Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan-seen: yes
+  local-scan-body-start: Testing, testing, lo
+1999-03-02 09:44:33 10HmbG-0005vi-00 F=test-local-scan@y U=CALLER P=local rejected by local_scan(): this message isn't wanted\n
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbG-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: reject this message isn't wanted
+I Message-Id: <E10HmbG-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan-seen: yes
+  local-scan-body-start: Testing, testing, lo
+1999-03-02 09:44:33 10HmbH-0005vi-00 local_scan() function timed out - message temporarily rejected (size 29)
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbH-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan:timeout
+I Message-Id: <E10HmbH-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan-seen: yes
+  local-scan-body-start: test test
+1999-03-02 09:44:33 10HmbI-0005vi-00 local_scan() function timed out - message temporarily rejected (size 30)
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbI-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: timeout
+I Message-Id: <E10HmbI-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan-seen: yes
+  local-scan-body-start: test test
+1999-03-02 09:44:33 10HmbJ-0005vi-00 F=test-local-scan@y U=CALLER P=local-bsmtp rejected by local_scan(): not wanted -bS\n
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local-bsmtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmbJ-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: reject not wanted -bS
+I Message-Id: <E10HmbJ-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan-seen: yes
+  local-scan-body-start: Testing, testing
+1999-03-02 09:44:33 10HmaX-0005vi-00 test write to LOG_REJECT
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 10HmbK-0005vi-00 F=test-local-scan@y U=CALLER P=local-bsmtp rejected by local_scan(): not wanted -bS\n
+1999-03-02 09:44:33 10HmbL-0005vi-00 F=test-local-scan@y U=CALLER P=local-smtp temporarily rejected by local_scan(): Temporary local problem
+1999-03-02 09:44:33 10HmaY-0005vi-00 test write to LOG_REJECT
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmaY-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: crash
+I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 10HmaY-0005vi-00 local_scan() function crashed with signal 11 - message temporarily rejected (size 35)
+Envelope-from: <test-local-scan@y>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <test-local-scan@y>)
+	id 10HmaY-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan: crash
+I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+F From: test-local-scan@y
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  local-scan-seen: yes
+  local-scan-body-start: Testing, testing

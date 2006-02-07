@@ -1,0 +1,24 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "rcpt"
+>>> processing "accept"
+>>> check verify = sender/callout=1s
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing x@ten-1.test.ex
+>>> calling r1 router
+>>> routed by r1 router
+>>> Attempting full verification using callout
+>>> callout cache: no domain record found
+>>> callout cache: no address record found
+>>> interface=NULL port=25
+>>> Connecting to ten-1.test.ex [V4NET.0.0.1]:25 ... failed: Network Error
+>>> ----------- end verify ------------
+>>> accept: condition test deferred
+LOG: H=[V4NET.0.0.1] sender verify defer for <x@ten-1.test.ex>: could not connect to ten-1.test.ex [V4NET.0.0.1]: Network Error
+LOG: H=[V4NET.0.0.1] F=<x@ten-1.test.ex> temporarily rejected RCPT x@y: Could not complete sender verify callout

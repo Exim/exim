@@ -1,0 +1,94 @@
+  sender: userx@myhost.test.ex
+    from: userx@myhost.test.ex
+      to: userx@myhost.test.ex
+      cc: userx@myhost.test.ex
+     bcc: userx@myhost.test.ex
+reply-to: userx@myhost.test.ex
+env-from: userx@myhost.test.ex
+  env-to: userx@myhost.test.ex
+  sender: aaa@bbb
+    from: aaa@bbb
+      to: aaa@bbb
+      cc: aaa@bbb
+     bcc: aaa@bbb
+reply-to: aaa@bbb
+env-from: aaa@bbb
+  env-to: aaa@bbb
+  sender: 1=@zziggly
+    from: 1=@zziggly
+      to: 1=@zziggly
+      cc: 1=@zziggly
+     bcc: 1=@zziggly
+reply-to: 1=@zziggly
+env-from: 1=@zziggly
+  env-to: 1=@zziggly
+  sender: 1=no@zzince
+    from: 1=no@zzince
+      to: 1=no@zzince
+      cc: 1=no@zzince
+     bcc: 1=no@zzince
+reply-to: 1=no@zzince
+env-from: 1=no@zzince
+  env-to: 1=no@zzince
+  sender: admin@plc.example (root@box1)
+    from: admin@plc.example (root@box1)
+      to: admin@plc.example (root@box1)
+      cc: admin@plc.example (root@box1)
+     bcc: admin@plc.example (root@box1)
+reply-to: admin@plc.example (root@box1)
+env-from: admin@plc.example
+  env-to: unknown@plc.example
+  sender: J.Caesar@plc.example
+    from: J.Caesar@plc.example
+      to: J.Caesar@plc.example
+      cc: J.Caesar@plc.example
+     bcc: J.Caesar@plc.example
+reply-to: J.Caesar@plc.example
+env-from: J.Caesar@plc.example
+  env-to: J.Caesar@plc.example
+  sender: J.Calendar@plc.example
+    from: J.Calendar@plc.example
+      to: J.Calendar@plc.example
+      cc: J.Calendar@plc.example
+     bcc: J.Calendar@plc.example
+reply-to: J.Calendar@plc.example
+env-from: J.Calendar@plc.example
+  env-to: J.Calendar@plc.example
+  sender: jules@box3.plc.example
+    from: jules@box3.plc.example
+      to: unknown@plc.example
+      cc: unknown@plc.example
+     bcc: unknown@plc.example
+reply-to: jules@box3.plc.example
+env-from: "jules@box3.plc.example-is-not-known"@plc.example
+  env-to: unknown@plc.example
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-Verification failed for <"jules@box3.plc.example-is-not-known"@plc.example>
+550-Unrouteable mail domain "plc.example"
+550 Sender verify failed
+221 myhost.test.ex closing connection
+  sender: abc@one.two
+    from: abc@one.two
+      to: abc@one.two
+      cc: abc@one.two
+     bcc: abc@one.two
+reply-to: abc@one.two
+env-from: abc@one.two
+  env-to: abc@one.two
+  sender: "abc"@one.two
+    from: "abc"@one.two
+      to: "abc"@one.two
+      cc: "abc"@one.two
+     bcc: "abc"@one.two
+reply-to: "abc"@one.two
+env-from: "abc"@one.two
+  env-to: "abc"@one.two
+  sender: "abc@xyz"@one.two
+    from: "abc@xyz"@one.two
+      to: "abc@xyz"@one.two
+      cc: "abc@xyz"@one.two
+     bcc: "abc@xyz"@one.two
+reply-to: "abc@xyz"@one.two
+env-from: "abc@xyz"@one.two
+  env-to: "abc@xyz"@one.two

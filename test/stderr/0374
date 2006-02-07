@@ -1,0 +1,441 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: a1@myhost.test.ex
+unique = a1@myhost.test.ex
+a1@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: b1@myhost.test.ex
+unique = b1@myhost.test.ex
+b1@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: c1@myhost.test.ex
+unique = c1@myhost.test.ex
+c1@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: d1@myhost.test.ex
+unique = d1@myhost.test.ex
+d1@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: d2@myhost.test.ex
+unique = d2@myhost.test.ex
+d2@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: d3@myhost.test.ex
+unique = d3@myhost.test.ex
+d3@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing d3@myhost.test.ex
+--------> u1 router <--------
+local_part=d3 domain=myhost.test.ex
+checking local_parts
+u1 router skipped: local_parts mismatch
+--------> ut2 router <--------
+local_part=d3 domain=myhost.test.ex
+checking local_parts
+ut2 router skipped: local_parts mismatch
+--------> ut3 router <--------
+local_part=d3 domain=myhost.test.ex
+checking local_parts
+ut3 router skipped: local_parts mismatch
+--------> ut4 router <--------
+local_part=d3 domain=myhost.test.ex
+checking local_parts
+calling ut4 router
+ut4 router called for d3@myhost.test.ex
+  domain = myhost.test.ex
+set transport ut4
+queued for ut4 transport: local_part = d3
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by ut4 router (unseen)
+  envelope to: d3@myhost.test.ex
+  transport: ut4
+"unseen" set: replicated d3@myhost.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing d2@myhost.test.ex
+--------> u1 router <--------
+local_part=d2 domain=myhost.test.ex
+checking local_parts
+u1 router skipped: local_parts mismatch
+--------> ut2 router <--------
+local_part=d2 domain=myhost.test.ex
+checking local_parts
+ut2 router skipped: local_parts mismatch
+--------> ut3 router <--------
+local_part=d2 domain=myhost.test.ex
+checking local_parts
+ut3 router skipped: local_parts mismatch
+--------> ut4 router <--------
+local_part=d2 domain=myhost.test.ex
+checking local_parts
+calling ut4 router
+ut4 router called for d2@myhost.test.ex
+  domain = myhost.test.ex
+queued for ut4 transport: local_part = d2
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by ut4 router (unseen)
+  envelope to: d2@myhost.test.ex
+  transport: ut4
+"unseen" set: replicated d2@myhost.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing d1@myhost.test.ex
+--------> u1 router <--------
+local_part=d1 domain=myhost.test.ex
+checking local_parts
+u1 router skipped: local_parts mismatch
+--------> ut2 router <--------
+local_part=d1 domain=myhost.test.ex
+checking local_parts
+ut2 router skipped: local_parts mismatch
+--------> ut3 router <--------
+local_part=d1 domain=myhost.test.ex
+checking local_parts
+ut3 router skipped: local_parts mismatch
+--------> ut4 router <--------
+local_part=d1 domain=myhost.test.ex
+checking local_parts
+calling ut4 router
+ut4 router called for d1@myhost.test.ex
+  domain = myhost.test.ex
+queued for ut4 transport: local_part = d1
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by ut4 router (unseen)
+  envelope to: d1@myhost.test.ex
+  transport: ut4
+"unseen" set: replicated d1@myhost.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing c1@myhost.test.ex
+--------> u1 router <--------
+local_part=c1 domain=myhost.test.ex
+checking local_parts
+u1 router skipped: local_parts mismatch
+--------> ut2 router <--------
+local_part=c1 domain=myhost.test.ex
+checking local_parts
+ut2 router skipped: local_parts mismatch
+--------> ut3 router <--------
+local_part=c1 domain=myhost.test.ex
+checking local_parts
+calling ut3 router
+ut3 router called for c1@myhost.test.ex
+  domain = myhost.test.ex
+set transport ut3
+queued for ut3 transport: local_part = c1
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by ut3 router (unseen)
+  envelope to: c1@myhost.test.ex
+  transport: ut3
+"unseen" set: replicated c1@myhost.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing b1@myhost.test.ex
+--------> u1 router <--------
+local_part=b1 domain=myhost.test.ex
+checking local_parts
+u1 router skipped: local_parts mismatch
+--------> ut2 router <--------
+local_part=b1 domain=myhost.test.ex
+checking local_parts
+calling ut2 router
+ut2 router called for b1@myhost.test.ex
+  domain = myhost.test.ex
+set transport ut2
+queued for ut2 transport: local_part = b1
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by ut2 router (unseen)
+  envelope to: b1@myhost.test.ex
+  transport: ut2
+"unseen" set: replicated b1@myhost.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing a1@myhost.test.ex
+--------> u1 router <--------
+local_part=a1 domain=myhost.test.ex
+checking local_parts
+calling u1 router
+u1 router called for a1@myhost.test.ex
+  domain = myhost.test.ex
+set transport ut1
+queued for ut1 transport: local_part = a1
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by u1 router (unseen)
+  envelope to: a1@myhost.test.ex
+  transport: ut1
+"unseen" set: replicated a1@myhost.test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: a1@myhost.test.ex
+unique = \0\a1@myhost.test.ex
+a1@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: b1@myhost.test.ex
+unique = \0\b1@myhost.test.ex
+b1@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: c1@myhost.test.ex
+unique = \0\c1@myhost.test.ex
+c1@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: d1@myhost.test.ex
+unique = \0\d1@myhost.test.ex
+d1@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: d2@myhost.test.ex
+unique = \0\d2@myhost.test.ex
+d2@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: d3@myhost.test.ex
+unique = \0\d3@myhost.test.ex
+d3@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing d3@myhost.test.ex
+--------> real router <--------
+local_part=d3 domain=myhost.test.ex
+calling real router
+real router called for d3@myhost.test.ex
+  domain = myhost.test.ex
+set transport real
+queued for real transport: local_part = d3
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by real router
+  envelope to: d3@myhost.test.ex
+  transport: real
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing d2@myhost.test.ex
+--------> real router <--------
+local_part=d2 domain=myhost.test.ex
+calling real router
+real router called for d2@myhost.test.ex
+  domain = myhost.test.ex
+queued for real transport: local_part = d2
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by real router
+  envelope to: d2@myhost.test.ex
+  transport: real
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing d1@myhost.test.ex
+--------> real router <--------
+local_part=d1 domain=myhost.test.ex
+calling real router
+real router called for d1@myhost.test.ex
+  domain = myhost.test.ex
+queued for real transport: local_part = d1
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by real router
+  envelope to: d1@myhost.test.ex
+  transport: real
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing c1@myhost.test.ex
+--------> ut4 router <--------
+local_part=c1 domain=myhost.test.ex
+checking local_parts
+ut4 router skipped: local_parts mismatch
+--------> real router <--------
+local_part=c1 domain=myhost.test.ex
+calling real router
+real router called for c1@myhost.test.ex
+  domain = myhost.test.ex
+queued for real transport: local_part = c1
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by real router
+  envelope to: c1@myhost.test.ex
+  transport: real
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing b1@myhost.test.ex
+--------> ut3 router <--------
+local_part=b1 domain=myhost.test.ex
+checking local_parts
+ut3 router skipped: local_parts mismatch
+--------> ut4 router <--------
+local_part=b1 domain=myhost.test.ex
+checking local_parts
+ut4 router skipped: local_parts mismatch
+--------> real router <--------
+local_part=b1 domain=myhost.test.ex
+calling real router
+real router called for b1@myhost.test.ex
+  domain = myhost.test.ex
+queued for real transport: local_part = b1
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by real router
+  envelope to: b1@myhost.test.ex
+  transport: real
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing a1@myhost.test.ex
+--------> ut2 router <--------
+local_part=a1 domain=myhost.test.ex
+checking local_parts
+ut2 router skipped: local_parts mismatch
+--------> ut3 router <--------
+local_part=a1 domain=myhost.test.ex
+checking local_parts
+ut3 router skipped: local_parts mismatch
+--------> ut4 router <--------
+local_part=a1 domain=myhost.test.ex
+checking local_parts
+ut4 router skipped: local_parts mismatch
+--------> real router <--------
+local_part=a1 domain=myhost.test.ex
+calling real router
+real router called for a1@myhost.test.ex
+  domain = myhost.test.ex
+queued for real transport: local_part = a1
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by real router
+  envelope to: a1@myhost.test.ex
+  transport: real
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    a1@myhost.test.ex
+    b1@myhost.test.ex
+    c1@myhost.test.ex
+    d1@myhost.test.ex
+    d2@myhost.test.ex
+    d3@myhost.test.ex
+    a1@myhost.test.ex
+    b1@myhost.test.ex
+    c1@myhost.test.ex
+  Remote deliveries:
+    d1@myhost.test.ex
+    d2@myhost.test.ex
+    d3@myhost.test.ex
+  Failed addresses:
+  Deferred addresses:
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => a1 <a1@myhost.test.ex> R=real T=real
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => b1 <b1@myhost.test.ex> R=real T=real
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => c1 <c1@myhost.test.ex> R=real T=real
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => d1 <d1@myhost.test.ex> R=real T=real
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => d2 <d2@myhost.test.ex> R=real T=real
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => d3 <d3@myhost.test.ex> R=real T=real
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => a1 <a1@myhost.test.ex> R=u1 T=ut1
+locking TESTSUITE/spool/db/retry.lockfile
+transport error EPIPE ignored
+LOG: MAIN
+  ** b1@myhost.test.ex R=ut2 T=ut2: Child process of ut2 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
+locking TESTSUITE/spool/db/retry.lockfile
+transport error EPIPE ignored
+LOG: MAIN
+  == c1@myhost.test.ex R=ut3 T=ut3 defer (0): Child process of ut3 transport returned 127 (could mean unable to exec or command does not exist) from command: /non/existent/file
+locking TESTSUITE/spool/db/retry.lockfile
+locking TESTSUITE/spool/db/wait-ut4.lockfile
+LOG: MAIN
+  => d1@myhost.test.ex R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1]
+locking TESTSUITE/spool/db/retry.lockfile
+locking TESTSUITE/spool/db/wait-ut4.lockfile
+LOG: MAIN
+  == d2@myhost.test.ex R=ut4 T=ut4 defer (-44): SMTP error from remote mail server after RCPT TO:<d2@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 450 soft error
+locking TESTSUITE/spool/db/retry.lockfile
+locking TESTSUITE/spool/db/wait-ut4.lockfile
+LOG: MAIN
+  ** d3@myhost.test.ex R=ut4 T=ut4: SMTP error from remote mail server after RCPT TO:<d3@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 550 hard error
+locking TESTSUITE/spool/db/retry.lockfile
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: MAIN
+  <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: CALLER@myhost.test.ex
+unique = CALLER@myhost.test.ex
+CALLER@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing CALLER@myhost.test.ex
+--------> u1 router <--------
+local_part=CALLER domain=myhost.test.ex
+checking local_parts
+u1 router skipped: local_parts mismatch
+--------> ut2 router <--------
+local_part=CALLER domain=myhost.test.ex
+checking local_parts
+ut2 router skipped: local_parts mismatch
+--------> ut3 router <--------
+local_part=CALLER domain=myhost.test.ex
+checking local_parts
+ut3 router skipped: local_parts mismatch
+--------> ut4 router <--------
+local_part=CALLER domain=myhost.test.ex
+checking local_parts
+ut4 router skipped: local_parts mismatch
+--------> real router <--------
+local_part=CALLER domain=myhost.test.ex
+calling real router
+real router called for CALLER@myhost.test.ex
+  domain = myhost.test.ex
+set transport real
+queued for real transport: local_part = CALLER
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by real router
+  envelope to: CALLER@myhost.test.ex
+  transport: real
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    CALLER@myhost.test.ex
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => CALLER <CALLER@myhost.test.ex> R=real T=real
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

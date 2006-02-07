@@ -1,0 +1,23 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+501 Syntactically invalid HELO argument(s)
+501 Syntactically invalid HELO argument(s)
+501 Syntactically invalid HELO argument(s)
+501 Syntactically invalid HELO argument(s)
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+503 sender already given
+503-sender already given
+503 Too many syntax or protocol errors
+
+**** SMTP testing session as if from host V4NET.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello xxxx [V4NET.0.0.1]
+250 OK
+501 <bad syntax@x.y.z>: "@" or "." expected after "bad"
+501 <bad syntax@x.y.z>: "@" or "." expected after "bad"
+501 <bad syntax@x.y.z>: "@" or "." expected after "bad"
+501-<bad syntax@x.y.z>: "@" or "." expected after "bad"
+501 Too many syntax or protocol errors

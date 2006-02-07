@@ -1,0 +1,13 @@
+x@[V4NET.9.8.7]
+  router = r1, transport = t1
+  host [V4NET.9.8.7] [V4NET.9.8.7] 
+x@[127.0.0.1]
+  router = r3, transport = t1
+ 0m   sss 10HmaX-0005vi-00 <y@[10.9.8.7]>
+          zz@test.ex
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+221 myhost.test.ex closing connection

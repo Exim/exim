@@ -1,0 +1,135 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>> anotherhost.example.com in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> anotherhost.example.com in "test.ex"? no (end of list)
+>>> anotherhost.example.com in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+>>> sender host name required, to match against *-2.test.ex
+>>> looking up host name for V4NET.0.0.1
+>>> IP address lookup yielded ten-1.test.ex
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>> checking addresses for ten-1.test.ex
+>>>   V4NET.0.0.1 OK
+>>> host in "*-2.test.ex : *-3-alias.test.ex"? no (end of list)
+>>> host in "+relay_hosts"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: H=ten-1.test.ex [V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
+>>> using ACL "check_message"
+>>> processing "accept"
+>>> accept: condition test succeeded
+LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=ten-1.test.ex [V4NET.0.0.1] P=smtp S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>> anotherhost.example.com in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> anotherhost.example.com in "test.ex"? no (end of list)
+>>> anotherhost.example.com in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+>>> sender host name required, to match against *-2.test.ex
+>>> looking up host name for V4NET.0.0.2
+>>> IP address lookup yielded ten-2.test.ex
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-2.test.ex address=V4NET.0.0.2
+>>> checking addresses for ten-2.test.ex
+>>>   V4NET.0.0.2 OK
+>>> host in "*-2.test.ex : *-3-alias.test.ex"? yes (matched "*-2.test.ex")
+>>> host in "+relay_hosts"? yes (matched "+relay_hosts")
+>>> accept: condition test succeeded
+>>> using ACL "check_message"
+>>> processing "accept"
+>>> accept: condition test succeeded
+LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=ten-2.test.ex [V4NET.0.0.2] P=smtp S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
+>>> anotherhost.example.com in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +relay_domains
+>>> anotherhost.example.com in "test.ex"? no (end of list)
+>>> anotherhost.example.com in "+relay_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+>>> sender host name required, to match against *-2.test.ex
+>>> looking up host name for V4NET.0.0.3
+>>> IP address lookup yielded ten-3.test.ex
+>>>   alias ten-3-alias.test.ex
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-3.test.ex address=V4NET.0.0.3
+>>> checking addresses for ten-3.test.ex
+>>>   V4NET.0.0.3 OK
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-3-alias.test.ex address=V4NET.0.0.3
+>>> checking addresses for ten-3-alias.test.ex
+>>>   V4NET.0.0.3 OK
+>>> host in "*-2.test.ex : *-3-alias.test.ex"? yes (matched "*-3-alias.test.ex")
+>>> host in "+relay_hosts"? yes (matched "+relay_hosts")
+>>> accept: condition test succeeded
+>>> using ACL "check_message"
+>>> processing "accept"
+>>> accept: condition test succeeded
+LOG: 10HmaZ-0005vi-00 <= userx@somehost.example.com H=ten-3.test.ex [V4NET.0.0.3] P=smtp S=sss

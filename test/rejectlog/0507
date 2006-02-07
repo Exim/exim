@@ -1,0 +1,36 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<CALLER@myhost.test.ex> rejected after DATA: bcc recipient detected
+Envelope-from: <CALLER@myhost.test.ex>
+Envelope-to: <userx@dom.com>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@dom.com; Tue, 2 Mar 1999 09:44:33 +0000
+T To: a@b.c, himself <usery@dom.com>
+I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 10HmaY-0005vi-00 U=CALLER F=<CALLER@myhost.test.ex> rejected after DATA: bcc recipient detected
+Envelope-from: <CALLER@myhost.test.ex>
+Envelope-to: <userx@dom.com>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaY-0005vi-00
+	for userx@dom.com; Tue, 2 Mar 1999 09:44:33 +0000
+T To: a@b.c, himself <usery@dom.com>
+I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 10HmaZ-0005vi-00 U=CALLER F=<CALLER@myhost.test.ex> rejected after DATA: bcc recipient detected
+Envelope-from: <CALLER@myhost.test.ex>
+Envelope-to: <userx@dom.com>
+    <usery@dom.com>
+    <userz@dom.com>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+T To: a@b.c, himself <usery@dom.com>
+* Cc: unqualified, userx@dom.com, x@y.z
+C Cc: unqualified@myhost.test.ex, userx@dom.com, x@y.z
+I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000

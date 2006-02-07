@@ -1,0 +1,449 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select name from them where id='userx';"
+file lookup required for select name from them where id='userx';
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: Ayen Other
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select name from them where id='userx';"
+cached data used for lookup of select name from them where id='userx';
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: Ayen Other
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select name from them where id='xxxx';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select name from them where id='xxxx';"
+file lookup required for select name from them where id='xxxx';
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup forced cache cleanup
+lookup failed
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select name from them where id='nothing';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select name from them where id='nothing';"
+file lookup required for select name from them where id='nothing';
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: 
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select id,name from them where id='nothing';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select id,name from them where id='nothing';"
+file lookup required for select id,name from them where id='nothing';
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: id=nothing name="" 
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select * from them where id='quote2';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select * from them where id='quote2';"
+file lookup required for select * from them where id='quote2';
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: name="\"stquot" id=quote2 
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select * from them where id='newline';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select * from them where id='newline';"
+file lookup required for select * from them where id='newline';
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: name="before
+after" id=newline 
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select * from them where id='tab';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select * from them where id='tab';"
+file lookup required for select * from them where id='tab';
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: name="x	x" id=tab 
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select * from them where id='its';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select * from them where id='its';"
+file lookup required for select * from them where id='its';
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: name=it's id=its 
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select * from them where name='it''s';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select * from them where name='it''s';"
+file lookup required for select * from them where name='it''s';
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: name=it's id=its 
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [10.0.0.0]
+sender_rcvhost = [10.0.0.0]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [10.0.0.0]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [10.0.0.0]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<a@b>
+SMTP>> 250 OK
+SMTP<< rcpt to:<c@d>
+using ACL "check_recipient"
+processing "accept"
+check domains = +local_domains
+d in "@"? no (end of list)
+d in "+local_domains"? no (end of list)
+accept: condition test failed
+processing "accept"
+check hosts = +relay_hosts
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select * from them where id='10.0.0.0'"
+file lookup required for select * from them where id='10.0.0.0'
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup forced cache cleanup
+lookup failed
+host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"? no (end of list)
+host in "+relay_hosts"? no (end of list)
+accept: condition test failed
+processing "deny"
+deny: condition test succeeded
+SMTP>> 550 relay not permitted
+LOG: MAIN REJECT
+  H=[10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
+SMTP<< rcpt to:<c@d>
+using ACL "check_recipient"
+processing "accept"
+check domains = +local_domains
+d in "@"? no (end of list)
+d in "+local_domains"? no (end of list)
+accept: condition test failed
+processing "accept"
+check hosts = +relay_hosts
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select * from them where id='10.0.0.0'" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select * from them where id='10.0.0.0'"
+file lookup required for select * from them where id='10.0.0.0'
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup forced cache cleanup
+lookup failed
+host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"? no (end of list)
+host in "+relay_hosts"? no (end of list)
+accept: condition test failed
+processing "deny"
+deny: condition test succeeded
+SMTP>> 550 relay not permitted
+LOG: MAIN REJECT
+  H=[10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [10.0.0.0] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+sender_fullhost = [10.10.10.10]
+sender_rcvhost = [10.10.10.10]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [10.10.10.10]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [10.10.10.10]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<a@b>
+SMTP>> 250 OK
+SMTP<< rcpt to:<c@d>
+using ACL "check_recipient"
+processing "accept"
+check domains = +local_domains
+d in "@"? no (end of list)
+d in "+local_domains"? no (end of list)
+accept: condition test failed
+processing "accept"
+check hosts = +relay_hosts
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select * from them where id='10.10.10.10'" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select * from them where id='10.10.10.10'"
+file lookup required for select * from them where id='10.10.10.10'
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: name=ok id=10.10.10.10 
+host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
+host in "+relay_hosts"? yes (matched "+relay_hosts")
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< rcpt to:<c@d>
+using ACL "check_recipient"
+processing "accept"
+check domains = +local_domains
+d in "@"? no (end of list)
+d in "+local_domains"? no (end of list)
+accept: condition test failed
+processing "accept"
+check hosts = +relay_hosts
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+  cached open
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select * from them where id='10.10.10.10'" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select * from them where id='10.10.10.10'"
+cached data used for lookup of select * from them where id='10.10.10.10'
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: name=ok id=10.10.10.10 
+host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
+host in "+relay_hosts"? yes (matched "+relay_hosts")
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [10.10.10.10] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+set_process_info: pppp accepting a local non-SMTP message from <CALLER@myhost.test.ex>
+Sender: CALLER@myhost.test.ex
+Recipients:
+  userx
+search_tidyup called
+>>Headers received:
+
+rewrite_one_header: type=F:
+  From: CALLER_NAME <CALLER@myhost.test.ex>
+search_tidyup called
+>>Headers after rewriting and local additions:
+I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Data file written for message 10HmaX-0005vi-00
+>>Generated Received: header line
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+calling local_scan(); timeout=300
+local_scan() returned 0 NULL
+Writing spool header file
+Size of headers = sss
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+search_tidyup called
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xfbb95cfd -odi -Mc 10HmaX-0005vi-00
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=EXIM_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+skipping ACL configuration - not needed
+set_process_info: pppp delivering specified messages
+set_process_info: pppp delivering 10HmaX-0005vi-00
+reading spool file 10HmaX-0005vi-00-H
+user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@myhost.test.ex
+sender_local=1 ident=CALLER
+Non-recipients:
+Empty Tree
+---- End of tree ----
+recipients_count=1
+body_linecount=1 message_linecount=7
+Delivery address list:
+  userx@myhost.test.ex 
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: userx@myhost.test.ex
+unique = userx@myhost.test.ex
+no domain retry record
+no address retry record
+userx@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@myhost.test.ex
+--------> r1 router <--------
+local_part=userx domain=myhost.test.ex
+processing address_data
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select name from them where id='userx'" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select name from them where id='userx'"
+file lookup required for select name from them where id='userx'
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: Ayen Other
+calling r1 router
+r1 router called for userx@myhost.test.ex
+  domain = myhost.test.ex
+set transport t1
+queued for t1 transport: local_part = userx
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: userx@myhost.test.ex
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    userx@myhost.test.ex
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+search_tidyup called
+>>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
+--------> userx@myhost.test.ex <--------
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+no retry data available
+search_tidyup called
+changed uid/gid: local delivery to userx <userx@myhost.test.ex> transport=t1
+  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  home=NULL current=/
+set_process_info: pppp delivering 10HmaX-0005vi-00 to userx using t1
+appendfile transport entered
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select id from them where id='userx'" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select id from them where id='userx'"
+file lookup required for select id from them where id='userx'
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: userx
+appendfile: mode=600 notify_comsat=0 quota=0 warning=0
+  file=TESTSUITE/test-mail/userx format=unix
+  message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
+  message_suffix=\n
+  maildir_use_size_file=no
+  locking by lockfile fcntl 
+lock name: TESTSUITE/test-mail/userx.lock
+hitch name: TESTSUITE/test-mail/userx.lock.test.ex.dddddddd.pppppppp
+lock file created
+mailbox TESTSUITE/test-mail/userx is locked
+writing to file TESTSUITE/test-mail/userx
+writing data block fd=8 size=sss timeout=0
+writing data block fd=8 size=sss timeout=0
+writing data block fd=8 size=sss timeout=0
+appendfile yields 0 with errno=dd more_errno=dd
+search_tidyup called
+journalling userx@myhost.test.ex
+t1 transport returned OK for userx@myhost.test.ex
+post-process userx@myhost.test.ex (0)
+userx@myhost.test.ex delivered
+LOG: MAIN
+  => userx <userx@myhost.test.ex> R=r1 T=t1
+>>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
+changed uid/gid: post-delivery tidying
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
+Processing retry items
+Succeeded addresses:
+userx@myhost.test.ex: no retry items
+Failed addresses:
+Deferred addresses:
+end of retry processing
+LOG: MAIN
+  Completed
+end delivery of 10HmaX-0005vi-00
+search_tidyup called
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
+search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  key="select name from them where id='userx';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="TESTSUITE/aux-fixed/sqlitedb"
+  type=sqlite key="select name from them where id='userx';"
+file lookup required for select name from them where id='userx';
+  in TESTSUITE/aux-fixed/sqlitedb
+lookup yielded: Ayen Other
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

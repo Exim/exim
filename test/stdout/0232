@@ -1,0 +1,6 @@
+prefix-filter1.test.ex@myhost.test.ex
+    <-- filter1.test.ex@myhost.test.ex
+  router = rest, transport = local_delivery
+postmaster@myhost.test.ex
+    <-- filter1.test.ex@myhost.test.ex
+  router = rest, transport = local_delivery

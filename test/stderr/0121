@@ -1,0 +1,141 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "require"
+>>> check verify = sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing unknown@test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> unknown in "defer"? no (end of list)
+>>> unknown in "userx"? no (end of list)
+>>> no more routers
+>>> ----------- end verify ------------
+>>> require: condition test failed
+LOG: H=[127.0.0.1] sender verify fail for <unknown@test.ex>: Unrouteable address
+LOG: H=[127.0.0.1] F=<unknown@test.ex> rejected RCPT <userx@test.ex>: Sender verify failed
+>>> using ACL "check_recipient"
+>>> processing "require"
+>>> check verify = sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing userx@unknown.dom.ain
+>>> unknown.dom.ain in "test.ex"? no (end of list)
+>>> unknown.dom.ain in "! +local_domains"? yes (end of list)
+>>> calling fail_remote_domains router
+>>> fail_remote_domains router forced address failure
+>>> ----------- end verify ------------
+>>> require: condition test failed
+LOG: H=[127.0.0.1] sender verify fail for <userx@unknown.dom.ain>: unrouteable mail domain "unknown.dom.ain"
+LOG: H=[127.0.0.1] F=<userx@unknown.dom.ain> rejected RCPT <userx@test.ex>: Sender verify failed
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "check_recipient"
+>>> processing "require"
+>>> check verify = sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing userx@test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> userx in "defer"? no (end of list)
+>>> userx in "userx"? yes (matched "userx")
+>>> calling userx router
+>>> routed by userx router
+>>> ----------- end verify ------------
+>>> require: condition test succeeded
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_message"
+>>> processing "require"
+>>> check verify = header_sender
+>>> verifying From: header address unknown@test.ex
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing unknown@test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> unknown in "defer"? no (end of list)
+>>> unknown in "userx"? no (end of list)
+>>> no more routers
+>>> require: condition test failed
+LOG: 10HmaX-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
+>>> using ACL "check_recipient"
+>>> processing "require"
+>>> check verify = sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing userx@test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> userx in "defer"? no (end of list)
+>>> userx in "userx"? yes (matched "userx")
+>>> calling userx router
+>>> routed by userx router
+>>> ----------- end verify ------------
+>>> require: condition test succeeded
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_message"
+>>> processing "require"
+>>> check verify = header_sender
+>>> verifying From: header address <>
+>>> require: condition test failed
+LOG: 10HmaY-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: syntax error in 'From:' header when scanning for sender: missing or malformed local part in "<>"
+>>> using ACL "check_recipient"
+>>> processing "require"
+>>> check verify = sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing defer@test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> defer in "defer"? yes (matched "defer")
+>>> calling defer router
+>>> defer router: defer for defer@test.ex
+>>>   message: forced defer
+>>> ----------- end verify ------------
+>>> require: condition test deferred
+LOG: H=[127.0.0.1] sender verify defer for <defer@test.ex>: forced defer
+LOG: H=[127.0.0.1] F=<defer@test.ex> temporarily rejected RCPT <userx@test.ex>: Could not complete sender verify
+>>> using ACL "check_recipient"
+>>> processing "require"
+>>> check verify = sender
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing userx@test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> userx in "defer"? no (end of list)
+>>> userx in "userx"? yes (matched "userx")
+>>> calling userx router
+>>> routed by userx router
+>>> ----------- end verify ------------
+>>> require: condition test succeeded
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "+local_domains"? yes (matched "+local_domains")
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "check_message"
+>>> processing "require"
+>>> check verify = header_sender
+>>> verifying from: header address <defer@test.ex>
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing defer@test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> defer in "defer"? yes (matched "defer")
+>>> calling defer router
+>>> defer router: defer for defer@test.ex
+>>>   message: forced defer
+>>> require: condition test deferred
+LOG: 10HmaZ-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> temporarily rejected after DATA: all attempts to verify a sender in a header line deferred

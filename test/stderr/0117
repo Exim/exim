@@ -1,0 +1,63 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing xxx@mxt9.test.ex
+--------> lookuphost router <--------
+local_part=xxx domain=mxt9.test.ex
+calling lookuphost router
+lookuphost router called for xxx@mxt9.test.ex
+  domain = mxt9.test.ex
+queued for <unset> transport: local_part = xxx
+domain = mxt9.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by lookuphost router
+  envelope to: xxx@mxt9.test.ex
+  transport: <none>
+  host ten-1.test.ex [V4NET.0.0.1] MX=5
+  host ten-2.test.ex [V4NET.0.0.2] MX=6
+  host ten-3.test.ex [V4NET.0.0.3] MX=7
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing xxx@mxt9a.test.ex
+--------> lookuphost router <--------
+local_part=xxx domain=mxt9a.test.ex
+calling lookuphost router
+lookuphost router called for xxx@mxt9a.test.ex
+  domain = mxt9a.test.ex
+queued for <unset> transport: local_part = xxx
+domain = mxt9a.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by lookuphost router
+  envelope to: xxx@mxt9a.test.ex
+  transport: <none>
+  host ten-1.test.ex [V4NET.0.0.1] MX=5
+  host ten-2.test.ex [V4NET.0.0.2] MX=6
+  host ten-3.test.ex [V4NET.0.0.3] MX=7
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing xxx@mxt9b.test.ex
+--------> lookuphost router <--------
+local_part=xxx domain=mxt9b.test.ex
+calling lookuphost router
+lookuphost router called for xxx@mxt9b.test.ex
+  domain = mxt9b.test.ex
+queued for <unset> transport: local_part = xxx
+domain = mxt9b.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by lookuphost router
+  envelope to: xxx@mxt9b.test.ex
+  transport: <none>
+  host ten-1.test.ex [V4NET.0.0.1] MX=5
+  host ten-2.test.ex [V4NET.0.0.2] MX=6
+  host ten-3.test.ex [V4NET.0.0.3] MX=7
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

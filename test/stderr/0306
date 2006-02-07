@@ -1,0 +1,69 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "rcpt"
+>>> processing "accept"
+>>> check verify = recipient
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing list1-request@lists.test.ex
+>>> lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
+>>> calling r1 router
+>>> routed by r1 router
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing manager-list1@test.ex
+>>> test.ex in "lists.test.ex"? no (end of list)
+>>> test.ex in "lists.test.ex"? no (end of list)
+>>> anywhere in ""? no (end of list)
+>>> anyone@anywhere in ":"? no (end of list)
+>>> calling r5 router
+>>> routed by r5 router
+>>> ----------- end verify ------------
+>>> accept: condition test succeeded
+>>> using ACL "rcpt"
+>>> processing "accept"
+>>> check verify = recipient
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing list1@lists.test.ex
+>>> lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
+>>> sub1@test.ex in "lsearch;TESTSUITE/aux-fixed/0306/list1"? yes (matched "lsearch;TESTSUITE/aux-fixed/0306/list1")
+>>> calling r2 router
+>>> routed by r2 router
+>>> ----------- end verify ------------
+>>> accept: condition test succeeded
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "rcpt"
+>>> processing "accept"
+>>> check verify = recipient
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing list1@lists.test.ex
+>>> lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
+>>> anyone@anywhere in "lsearch;TESTSUITE/aux-fixed/0306/list1"? no (end of list)
+>>> lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
+>>> calling r3 router
+>>> r3 router forced address failure
+>>> ----------- end verify ------------
+>>> accept: condition test failed
+>>> accept: endpass encountered - denying access
+LOG: H=[1.2.3.4] F=<anyone@anywhere> rejected RCPT <list1@lists.test.ex>: list1@lists.test.ex is a closed mailing list
+>>> using ACL "rcpt"
+>>> processing "accept"
+>>> check verify = recipient
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing nonlist@lists.test.ex
+>>> lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
+>>> anywhere in "*"? yes (matched "*")
+>>> anyone@anywhere in "*"? yes (matched "*")
+>>> calling r2 router
+>>> r2 router declined for nonlist@lists.test.ex
+>>> lists.test.ex in "lists.test.ex"? yes (matched "lists.test.ex")
+>>> calling r3 router
+>>> r3 router forced address failure
+>>> ----------- end verify ------------
+>>> accept: condition test failed
+>>> accept: endpass encountered - denying access
+LOG: H=[1.2.3.4] F=<anyone@anywhere> rejected RCPT <nonlist@lists.test.ex>: nonlist@lists.test.ex is a closed mailing list

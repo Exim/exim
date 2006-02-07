@@ -1,0 +1,28 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250 HELP
+MAIL FROM:<CALLER@myhost.test.ex>
+250 Sender OK
+RCPT TO:<userx@domain.com>
+452 Temporary error
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250 HELP
+MAIL FROM:<CALLER@myhost.test.ex>
+250 Sender OK
+RCPT TO:<userx@domain.com>
+452 Temporary error
+QUIT
+250 OK
+End of script

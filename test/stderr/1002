@@ -1,0 +1,25 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "acl_rcpt_1"
+>>> processing "require"
+>>> check domains = @ : @[]
+>>> [::1] in "@ : @[]"? yes (matched "@[]")
+>>> require: condition test succeeded
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> using ACL "acl_rcpt_6"
+>>> processing "require"
+>>> check domains = <+ @mx_any/ignore=<;127.0.0.1;::1
+>>> ::1 in "<;127.0.0.1;::1"? yes (matched "::1")
+>>> 127.0.0.1 in "<;127.0.0.1;::1"? yes (matched "127.0.0.1")
+>>> V4NET.0.0.1 in "<;127.0.0.1;::1"? no (end of list)
+>>> ten-1.test.ex in hosts_treat_as_local? no (end of list)
+>>> mxt11a.test.ex in "<+ @mx_any/ignore=<;127.0.0.1;::1"? no (end of list)
+>>> require: condition test failed
+LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <6@mxt11a.test.ex>: domain doesn't match @mx_any/ignore=<;127.0.0.1;::1

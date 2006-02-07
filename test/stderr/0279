@@ -1,0 +1,100 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+finduser used cached passwd data for CALLER
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=
+sender address = CALLER@test.ex
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing CALLER@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering CALLER@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing CALLER@test.ex
+--------> rr1 router <--------
+local_part=CALLER domain=test.ex
+checking senders
+address match: subject=CALLER@test.ex pattern=user1@+funny_domains
+CALLER@test.ex in "user1@+funny_domains"? no (end of list)
+rr1 router skipped: senders mismatch
+--------> r1 router <--------
+local_part=CALLER domain=test.ex
+checking senders
+address match: subject=CALLER@test.ex pattern=never@test.ex
+CALLER@test.ex in "never@test.ex"? no (end of list)
+address match: subject=CALLER@test.ex pattern=never1@test.ex
+CALLER@test.ex in "never1@test.ex"? no (end of list)
+address match: subject=CALLER@test.ex pattern=CALLER@test.ex
+test.ex in "test.ex"? yes (matched "test.ex")
+CALLER@test.ex in "CALLER@test.ex"? yes (matched "CALLER@test.ex")
+CALLER@test.ex in "+never_addresses : +n1_addresses : ! +local_addresses"? no (matched "! +local_addresses")
+r1 router skipped: senders mismatch
+--------> r2 router <--------
+local_part=CALLER domain=test.ex
+checking senders
+cached no match for +never_addresses
+cached lookup data = NULL
+address match: subject=CALLER@test.ex pattern=never2@test.ex
+cached no match for +n1_addresses
+cached lookup data = NULL
+CALLER@test.ex in "<; never2@test.ex ; +n1_addresses"? no (end of list)
+cached yes match for +local_addresses
+cached lookup data = NULL
+CALLER@test.ex in "+never_addresses : +n2_addresses : !+local_addresses"? no (matched "!+local_addresses" - cached)
+r2 router skipped: senders mismatch
+--------> r3 router <--------
+local_part=CALLER domain=test.ex
+checking for local user
+finduser used cached passwd data for CALLER
+checking senders
+cached yes match for +local_addresses
+cached lookup data = NULL
+CALLER@test.ex in "+local_addresses"? yes (matched "+local_addresses" - cached)
+calling r3 router
+r3 router called for CALLER@test.ex
+  domain = test.ex
+set transport t1
+queued for t1 transport: local_part = CALLER
+domain = test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r3 router
+  envelope to: CALLER@test.ex
+  transport: t1
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+finduser used cached passwd data for CALLER
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=
+sender address = user1@fun.1
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing CALLER@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering CALLER@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing CALLER@test.ex
+--------> rr1 router <--------
+local_part=CALLER domain=test.ex
+checking senders
+address match: subject=user1@fun.1 pattern=user1@+funny_domains
+fun.1 in "fun.1 : fun.2"? yes (matched "fun.1")
+fun.1 in "+funny_domains"? yes (matched "+funny_domains")
+user1@fun.1 in "user1@+funny_domains"? yes (matched "user1@+funny_domains")
+calling rr1 router
+rda_interpret (string): :fail: matched *@+funny_domains
+expanded: :fail: matched *@+funny_domains
+file is not a filter file
+parse_forward_list: :fail: matched *@+funny_domains
+extract item: :fail: matched *@+funny_domains
+rr1 router forced address failure
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=2 >>>>>>>>>>>>>>>>

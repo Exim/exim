@@ -1,0 +1,192 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at a.b
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbJ-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at a.b
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+250 OK
+250 Accepted
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbK-0005vi-00
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<a@x.y>
+250 OK
+RCPT TO:<b@x.y>
+250 OK
+DATA
+354 OK
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This should succeed
+.
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<a@x.y>
+250 OK
+RCPT TO:<b@x.y>
+550 NOTOK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+550 BAD MAIL
+RCPT TO:<a@x.y>
+550 NOTOK
+RCPT TO:<b@x.y>
+550 NOTOK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+450 TEMPORARY MAIL FAIL
+RCPT TO:<a@x.y>
+450 NOTOK
+RCPT TO:<b@x.y>
+450 NOTOK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<pm@p.q>
+250 OK
+RCPT TO:<b@x.y>
+250 OK
+DATA
+354 OK
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmbD-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This should succeed (alias to normal address)
+.
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM:<sen@der>
+250 OK
+RCPT TO:<a@x.y>
+250 OK
+RCPT TO:<b@x.y>
+250 OK
+DATA
+354 OK
+Received: from CALLER (helo=a.b)
+	by myhost.test.ex with local-esmtp (Exim x.yz)
+	(envelope-from <sen@der>)
+	id 10HmbJ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbJ-0005vi-00@myhost.test.ex>
+From: sen@der
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This should succeed.
+.
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<a@x.y>
+250 OK
+RCPT TO:<b@x.y>
+*sleep 2
+>*eof
+Listening on port 1224 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<a@x.y>
+250 OK
+RCPT TO:<b@x.y>
+*sleep 2
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<a@x.y>
+550 SORRY
+QUIT
+221 BYE
+End of script

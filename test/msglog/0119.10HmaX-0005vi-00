@@ -1,0 +1,10 @@
+1999-03-02 09:44:33 Received from CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 postmaster@test.ex R=force_defer defer (-1): forced defer
+1999-03-02 09:44:33 postmaster@test.ex R=force_defer defer (-1): forced defer
+1999-03-02 09:44:33 postmaster@test.ex R=force_defer defer (-1): forced defer
+1999-03-02 09:44:33 postmaster@test.ex R=force_defer defer (-1): forced defer
+1999-03-02 09:44:33 postmaster@test.ex R=force_defer defer (-1): forced defer
+1999-03-02 09:44:33 postmaster@test.ex R=force_defer defer (-1): forced defer
+1999-03-02 09:44:33 postmaster@test.ex R=force_defer defer (-1): forced defer
+1999-03-02 09:44:33 postmaster@test.ex R=force_defer defer (-1): forced defer
+1999-03-02 09:44:33 postmaster@test.ex R=force_defer defer (-1): forced defer

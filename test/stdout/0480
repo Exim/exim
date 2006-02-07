@@ -1,0 +1,56 @@
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 host.V4NET.0.0.1 ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 host.V4NET.0.0.1 Hello a.b.c [1.2.3.4]
+221 host.V4NET.0.0.1 closing connection
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello a.b.c [1.2.3.4]
+221 the.local.host.name closing connection
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello a.b.c [1.2.3.4]
+221 the.local.host.name closing connection
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 host.127.0.0.1 ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> helo foobar
+??? 250
+<<< 250 host.127.0.0.1 Hello foobar [127.0.0.1]
+>>> mail from:<>
+??? 250
+<<< 250 OK
+>>> rcpt to:<userx@test.ex>
+??? 250
+<<< 250 Accepted
+>>> data
+??? 354
+<<< 354 Enter message, ending with "." on a line by itself
+>>> .
+??? 250
+<<< 250 OK id=10HmaX-0005vi-00
+>>> quit
+??? 221
+<<< 221 host.127.0.0.1 closing connection
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> helo foobar
+??? 250
+<<< 250 the.local.host.name Hello foobar [ip4.ip4.ip4.ip4]
+>>> quit
+??? 221
+<<< 221 the.local.host.name closing connection
+End of script

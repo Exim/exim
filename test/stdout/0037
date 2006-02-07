@@ -1,0 +1,259 @@
+Warning: no message headers read
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-1"
+
+Add 1 to n3
+Add 3 to n4
+Add 1 to n4
+Add 4 to n4
+Add 6 to n1
+Testprint: n0=0 n1=6 n3=1 n4=8
+Testprint: /\n
+Deliver message to: root@test.ex
+Save message to: /tmp/the.local.host.name 0444
+Save message to: /tmp/test.ex
+Pipe message to: /tmp/$primary_hostname
+Logfile /tmp/logfile
+Logwrite "this is log text: test.ex\n"
+Testprint: yes
+Testprint: yes
+Testprint: yes
+Testprint: yes
+Testprint: no
+Testprint: no
+Testprint: qualify_domain is qualify_domain
+Testprint: qualify_domain IS qualify_domain
+Testprint: NOT qualify_domain is not qualify_domain
+Testprint: NOT qualify_domain IS NOT qualify_domain
+Filtering set up at least one significant delivery or other action.
+No other deliveries will occur.
+Warning: no message headers read
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-2"
+
+Filter error: errors_to must point to the caller's address
+Warning: no message headers read
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-3"
+
+Deliver message to: root@test.ex errors_to root@the.local.host.name
+Testprint: End
+Filtering set up at least one significant delivery or other action.
+No other deliveries will occur.
+Warning: no message headers read
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Not personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Warning: no message headers read
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Not personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Not personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Not personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Not personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Not personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Not personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Not personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Not personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Not personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Not personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = anon@ymous
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-4"
+
+Testprint: Personal
+Testprint: $home = CALLER_HOME
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Warning: no message headers read
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-6"
+
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Warning: no message headers read
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-var/0037.f-7"
+
+Testprint: Testing <
+Testprint: >abcd|xyz<
+Testprint: no
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Warning: no message headers read
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-5"
+
+Testprint: Before fail
+Fail text "This is a forced failure"
+Filtering ended by "fail".
+ 0m   sss 10HmbA-0005vi-00 <CALLER@test.ex> *** frozen ***
+          userx@test.ex
+       +D system-filter
+       +D userz@test.ex
+
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-var/0037.F"
+
+Testprint: message_size      = 186
+Testprint: message_body_size = 137
+Testprint: body_linecount    = 2
+Testprint: message_body      = This is the body of 
+Testprint: message_body_end  = ible in the filter. 
+Logfile TESTSUITE/spool/log/mainlog
+Logwrite "1999-03-02 09:44:33 10HmcC-0005vi-00 "message for filter test" first delivery\n"
+Headers add "X-added: qualify_domain is test.ex"
+Headers remove "remove-this"
+Unseen deliver message to: userz@test.ex errors_to abcd@test.ex
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-var/0037.F"
+
+Testprint: ------------------------------------------------
+Testprint: Test-headers: first one\nFrom: x@y\nTest-headers: another one\nMore-test-headers : yet another one\nSubject: testing, testing\nMessage-Id: <E10HmcD-0005vi-00@the.local.host.name>\nDate: Tue, 2 Mar 1999 09:44:33 +0000
+Testprint: ------------------------------------------------
+Headers remove "test-headers:more-test-headers"
+Headers add "added-header: this is added\nadded-header2: a second line"
+Testprint: From: x@y\nSubject: testing, testing\nMessage-Id: <E10HmcD-0005vi-00@the.local.host.name>\nDate: Tue, 2 Mar 1999 09:44:33 +0000\nadded-header: this is added\nadded-header2: a second line
+Testprint: ------------------------------------------------
+Testprint: message_size      = 122
+Testprint: message_body_size = 0
+Testprint: body_linecount    = 0
+Testprint: message_body      = 
+Testprint: message_body_end  = 
+Logfile TESTSUITE/spool/log/mainlog
+Logwrite "1999-03-02 09:44:33 10HmcD-0005vi-00 "testing, testing" first delivery\n"
+Headers add "X-added: qualify_domain is test.ex"
+Headers remove "remove-this"
+Unseen deliver message to: userz@test.ex errors_to abcd@test.ex
+Filtering did not set up a significant delivery.
+Normal delivery will occur.

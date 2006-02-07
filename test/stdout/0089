@@ -1,0 +1,37 @@
+userx@test.ex
+  router = localuser, transport = dummy
+userx@myhost.test.ex
+  router = localuser, transport = dummy
+
+**** SMTP testing session as if from host V4NET.0.0.0
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+501 Syntactically invalid HELO argument(s)
+250 myhost.test.ex Hello abc_xyz [V4NET.0.0.0]
+250 OK
+250 Accepted
+550 relay not permitted
+250 Reset OK
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.99
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello ten-99.test.ex [V4NET.0.0.99]
+250 OK
+250 Accepted
+550 relay not permitted
+221 myhost.test.ex closing connection
+abcd@test.ex
+  router = select, transport = dummy
+ABCD@test.ex
+  router = select, transport = dummy
+XYZ@ten-1.test.ex
+  router = manual, transport = dummy
+  host ten-1.test.ex [V4NET.0.0.1] 
+xyz@ten-1.test.ex is undeliverable:
+  unrouteable mail domain "ten-1.test.ex"

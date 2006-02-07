@@ -1,0 +1,81 @@
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+451 Could not complete sender verify callout
+221 myhost.test.ex closing connection
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<x@y>
+250 OK
+QUIT
+220 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 server ready
+HELO myhost.test.ex
+250 OK
+MAIL FROM:<>
+250 OK
+RCPT TO:<a@b>
+250 OK
+QUIT
+220 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 server ready
+HELO myhost.test.ex
+*sleep 2
+Expected EOF read from client
+End of script

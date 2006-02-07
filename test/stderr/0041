@@ -1,0 +1,36 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> ACL is NULL: implicit DENY
+LOG: H=[1.1.1.1] rejected VRFY userx@test.ex
+>>> using ACL "check_expn"
+>>> processing "accept"
+>>> check hosts = 2.2.2.2
+>>> host in "2.2.2.2"? no (end of list)
+>>> accept: condition test failed
+>>> end of ACL "check_expn": implicit DENY
+LOG: H=[1.1.1.1] rejected EXPN postmaster
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "check_expn"
+>>> processing "accept"
+>>> check hosts = 2.2.2.2
+>>> host in "2.2.2.2"? yes (matched "2.2.2.2")
+>>> accept: condition test succeeded
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing list@test.ex
+>>> calling system_aliases router
+>>> routed by system_aliases router

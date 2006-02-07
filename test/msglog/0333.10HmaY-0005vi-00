@@ -1,0 +1,4 @@
+1999-03-02 09:44:33 Received from CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 delay@test.again.dns R=r2 defer (-1): host lookup did not complete
+1999-03-02 09:44:33 ok@no.delay R=r1 T=t1 defer (0): SMTP delivery explicitly queued
+1999-03-02 09:44:33 ok@no.delay: t1 transport succeeded

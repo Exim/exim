@@ -1,0 +1,72 @@
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 Administrative prohibition
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 Administrative prohibition
+250 OK
+451 Could not complete sender verify callout
+250 Reset OK
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 Administrative prohibition
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 Administrative prohibition
+250 OK
+451 Could not complete recipient verify callout
+250 Reset OK
+250 OK
+550 failure message
+250 Reset OK
+250 OK
+451 Temporary local problem - please try later
+250 Reset OK
+221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550-Rejected after DATA: '>' missing at end of address:
+550 failing address in "From" header is: <bad@syntax
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550-Rejected after DATA: could not verify "From:" header address
+550 bad@domain: Unrouteable address
+250 OK
+451-could not connect to V4NET.0.0.0 [V4NET.0.0.0]: Network Error
+451-Could not complete sender verify callout for <callout@x>.
+451-The mail server(s) for the domain may be temporarily unreachable, or
+451-they may be permanently unreachable from this server. In the latter case,
+451-you need to change the address or create an MX record for its domain
+451-if it is supposed to be generally accessible from the Internet.
+451 Talk to your mail administrator for details.
+250 Reset OK
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550 Administrative prohibition
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550-Rejected after DATA: could not verify "From:" header address
+550 unverifiable@y: Unrouteable address
+250 OK
+451-Could not complete recipient verify callout for <callout@y>.
+451-The mail server(s) for the domain may be temporarily unreachable, or
+451-they may be permanently unreachable from this server. In the latter case,
+451 the address will never be accepted.
+250 Reset OK
+250 OK
+550 failure message
+250 Reset OK
+250 Reset OK
+250 OK
+451 defer message
+221 the.local.host.name closing connection

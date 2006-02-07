@@ -1,0 +1,69 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> exim.test.ex in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check hosts = :
+>>> host in ":"? no (end of list)
+>>> accept: condition test failed
+>>> processing "warn"
+>>> check dnslists = rbl.test.ex
+>>> DNS list check: rbl.test.ex
+>>> new DNS lookup for 14.12.11.V4NET.rbl.test.ex
+>>> DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
+>>> => that means V4NET.11.12.14 is listed at rbl.test.ex
+>>> warn: condition test succeeded
+LOG: H=(exim.test.ex) [V4NET.11.12.14] Warning: V4NET.11.12.14 is in rbl.test.ex
+>>> processing "warn"
+>>> check recipients = postmaster@exim.test.ex
+>>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
+>>> postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@exim.test.ex")
+>>> check dnslists = rbl2.test.ex
+>>> DNS list check: rbl2.test.ex
+>>> new DNS lookup for 14.12.11.V4NET.rbl2.test.ex
+>>> DNS lookup for 14.12.11.V4NET.rbl2.test.ex succeeded (yielding 127.0.0.2)
+>>> => that means V4NET.11.12.14 is listed at rbl2.test.ex
+>>> warn: condition test succeeded
+LOG: H=(exim.test.ex) [V4NET.11.12.14] Warning: accepting postmaster from host in rbl2.test.ex
+>>> processing "accept"
+>>> check recipients = postmaster@exim.test.ex
+>>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
+>>> postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@exim.test.ex")
+>>> accept: condition test succeeded
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check hosts = :
+>>> host in ":"? no (end of list)
+>>> accept: condition test failed
+>>> processing "warn"
+>>> check dnslists = rbl.test.ex
+>>> DNS list check: rbl.test.ex
+>>> using result of previous DNS lookup
+>>> DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
+>>> => that means V4NET.11.12.14 is listed at rbl.test.ex
+>>> warn: condition test succeeded
+>>> processing "warn"
+>>> check recipients = postmaster@exim.test.ex
+>>> list@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
+>>> warn: condition test failed
+>>> processing "accept"
+>>> check recipients = postmaster@exim.test.ex
+>>> list@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> check dnslists = rbl2.test.ex
+>>> DNS list check: rbl2.test.ex
+>>> using result of previous DNS lookup
+>>> DNS lookup for 14.12.11.V4NET.rbl2.test.ex succeeded (yielding 127.0.0.2)
+>>> => that means V4NET.11.12.14 is listed at rbl2.test.ex
+>>> deny: condition test succeeded
+LOG: H=(exim.test.ex) [V4NET.11.12.14] F=<postmaster@exim.test.ex> rejected RCPT list@exim.test.ex: host is listed in rbl2.test.ex
+>>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmbB-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.14] P=esmtp S=sss

@@ -1,0 +1,45 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing ph@mxt1.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ph@mxt1.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing ph@mxt1.test.ex
+--------> r1 router <--------
+local_part=ph domain=mxt1.test.ex
+checking domains
+DNS lookup of mxt1.test.ex (MX) using fakens
+DNS lookup of mxt1.test.ex (MX) succeeded
+local host has lowest MX
+host_find_bydns yield = HOST_FOUND_LOCAL (3); returned hosts:
+  eximtesthost.test.ex ip4.ip4.ip4.ip4 MX=5 
+mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
+mxt1.test.ex in "+anymx"? yes (matched "+anymx")
+checking "condition"
+DNS lookup of mxt1.test.ex (MX) using fakens
+DNS lookup of mxt1.test.ex (MX) succeeded
+local host has lowest MX
+host_find_bydns yield = HOST_FOUND_LOCAL (3); returned hosts:
+  eximtesthost.test.ex ip4.ip4.ip4.ip4 MX=5 
+mxt1.test.ex in "@mx_any"? yes (matched "@mx_any")
+mxt1.test.ex in "+anymx"? yes (matched "+anymx")
+calling r1 router
+r1 router called for ph@mxt1.test.ex
+  domain = mxt1.test.ex
+set transport t1
+queued for t1 transport: local_part = ph
+domain = mxt1.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: ph@mxt1.test.ex
+  transport: t1
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

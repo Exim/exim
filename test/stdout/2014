@@ -1,0 +1,224 @@
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-myhost.test.ex Hello rhu.barb [ip4.ip4.ip4.ip4]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+Failed to start TLS
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-myhost.test.ex Hello rhu.barb [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+Succeeded in starting TLS
+>>> helo rhu.barb
+??? 250
+<<< 250 myhost.test.ex Hello rhu.barb [127.0.0.1]
+>>> mail from:<userx@test.ex>
+??? 250
+<<< 250 OK
+>>> rcpt to:<userx@test.ex>
+??? 550
+<<< 550 certificate not verified: peerdn=
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Certificate file = aux-fixed/cert2
+Key file = aux-fixed/cert2
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-myhost.test.ex Hello rhu.barb [ip4.ip4.ip4.ip4]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+Succeeded in starting TLS
+>>> mail from:<userx@test.ex>
+??? 250
+<<< 250 OK
+>>> rcpt to:<userx@test.ex>
+??? 250
+<<< 250 Accepted
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+Certificate file = aux-fixed/cert2
+Key file = aux-fixed/cert2
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-myhost.test.ex Hello rhu.barb [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+Succeeded in starting TLS
+>>> mail from:<userx@test.ex>
+??? 250
+<<< 250 OK
+>>> rcpt to:<userx@test.ex>
+??? 250
+<<< 250 Accepted
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Certificate file = aux-fixed/cert1
+Key file = aux-fixed/cert1
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-myhost.test.ex Hello rhu.barb [ip4.ip4.ip4.ip4]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+Succeeded in starting TLS
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+Certificate file = aux-fixed/cert1
+Key file = aux-fixed/cert1
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-myhost.test.ex Hello rhu.barb [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+Succeeded in starting TLS
+>>> mail from:<userx@test.ex>
+??? 250
+<<< 250 OK
+>>> rcpt to:<userx@test.ex>
+??? 550-
+<<< 550-certificate not verified: peerdn=C=UK,L=Cambridge,O=University of
+??? 550
+<<< 550 Cambridge,OU=Computing Service,CN=Philip Hazel
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+Certificate file = aux-fixed/cert2
+Key file = aux-fixed/cert2
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-myhost.test.ex Hello rhu.barb [ip4.ip4.ip4.ip4]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+Succeeded in starting TLS
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+Certificate file = aux-fixed/cert1
+Key file = aux-fixed/cert1
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo rhu.barb
+??? 250-
+<<< 250-myhost.test.ex Hello rhu.barb [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-STARTTLS
+??? 250
+<<< 250 HELP
+>>> starttls
+??? 220
+<<< 220 TLS go ahead
+Attempting to start TLS
+Succeeded in starting TLS
+>>> mail from:<userx@test.ex>
+??? 250
+<<< 250 OK
+>>> rcpt to:<userx@test.ex>
+??? 550-
+<<< 550-certificate not verified: peerdn=C=UK,L=Cambridge,O=University of
+??? 550
+<<< 550 Cambridge,OU=Computing Service,CN=Philip Hazel
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script

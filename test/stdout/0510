@@ -1,0 +1,24 @@
+Return-path copied from sender
+Sender      = sen@d.e.r
+Recipient   = CALLER@myhost.test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0510.sfilter"
+
+Testprint: --------System filter---------
+Testprint: Sender:  sen@d.e.r
+Testprint: Subject: test 1
+Testprint: Body:    Body content. 
+Headers add "X-Header: Added in a system filter"
+Add 3 to n1
+Testprint: n1:      3
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Testing Exim filter file "TESTSUITE/aux-fixed/0510.ufilter"
+
+Testprint: --------User filter---------
+Testprint: Sender:  sen@d.e.r
+Testprint: Subject:  test 1
+Testprint: Body:     Body content. 
+Testprint: X-Header: Added in a system filter
+Testprint: sn1:      3
+Filtering did not set up a significant delivery.
+Normal delivery will occur.

@@ -1,0 +1,14 @@
+kilos@thishost.test.ex
+    <-- kilos@thishost
+  router = r5, transport = t2
+solik@otherhost is undeliverable:
+  Can't route to otherhost.sub.test.ex
+xxx@ten-1.test.ex
+    <-- xxx@ten-1
+  router = r2, transport = t1
+  host ten-1.test.ex [V4NET.0.0.1] 
+xxx@testsub.sub.test.ex
+    <-- xxx@testsub.test.ex
+    <-- xxx@testsub
+  router = r2, transport = t1
+  host testsub.sub.test.ex [V4NET.99.0.3] 

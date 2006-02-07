@@ -1,0 +1,49 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220
+EHLO myhost.test.ex
+220 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<d1@myhost.test.ex>
+250 OK
+DATA
+334 send more
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220
+EHLO myhost.test.ex
+220 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<d2@myhost.test.ex>
+450 soft error
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220
+EHLO myhost.test.ex
+220 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO:<d3@myhost.test.ex>
+550 hard error
+QUIT
+250 OK
+End of script

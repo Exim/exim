@@ -1,0 +1,32 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO the.local.host.name
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<userx@domain.com>
+250 Recipient OK
+DATA
+354 Send data
+Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbB-0005vi-00
+	for userx@domain.com; Tue, 2 Mar 1999 09:44:33 +0000
+..dotheader: This is perfectly legal
+Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+A message containing
+.. a line starting with a dot
+... and one starting with two dots
+..
+The previous one contains only a dot.
+.
+250 OK
+QUIT
+250 OK
+End of script

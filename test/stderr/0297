@@ -1,0 +1,82 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing /a/b/c@myhost.test.ex
+--------> r1 router <--------
+local_part=/a/b/c domain=myhost.test.ex
+calling r1 router
+rda_interpret (string): $local_part
+expanded: /a/b/c
+file is not a filter file
+parse_forward_list: /a/b/c
+extract item: /a/b/c
+set transport tf1
+r1 router generated /a/b/c
+  pipe, file, or autoreply
+  errors_to=NULL transport=tf1
+  uid=CALLER_UID gid=CALLER_GID home=NULL
+routed by r1 router
+  envelope to: /a/b/c@myhost.test.ex
+  transport: <none>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing /x/y/z@myhost.test.ex
+--------> r1 router <--------
+local_part=/x/y/z domain=myhost.test.ex
+calling r1 router
+rda_interpret (string): $local_part
+expanded: /x/y/z
+file is not a filter file
+parse_forward_list: /x/y/z
+extract item: /x/y/z
+set transport tf2
+r1 router generated /x/y/z
+  pipe, file, or autoreply
+  errors_to=NULL transport=tf2
+  uid=CALLER_UID gid=CALLER_GID home=NULL
+routed by r1 router
+  envelope to: /x/y/z@myhost.test.ex
+  transport: <none>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: MAIN
+  <= fil@ter U=CALLER P=local S=sss
+delivering 10HmaX-0005vi-00
+LOG: MAIN
+  original recipients ignored (system filter)
+LOG: MAIN
+  *> /a/b/c <system-filter> T=tf1
+LOG: MAIN
+  Completed
+LOG: MAIN
+  <= fil@ter U=CALLER P=local S=sss
+delivering 10HmaY-0005vi-00
+LOG: MAIN
+  original recipients ignored (system filter)
+LOG: MAIN
+  *> /x/y/z <system-filter> T=tf2
+LOG: MAIN
+  Completed
+LOG: MAIN
+  <= fil@ter U=CALLER P=local S=sss
+delivering 10HmaZ-0005vi-00
+LOG: MAIN
+  original recipients ignored (system filter)
+LOG: MAIN
+  *> /a/b/c/ <system-filter> T=td1
+LOG: MAIN
+  Completed
+LOG: MAIN
+  <= fil@ter U=CALLER P=local S=sss
+delivering 10HmbA-0005vi-00
+LOG: MAIN
+  original recipients ignored (system filter)
+LOG: MAIN
+  *> /a/b/c// <system-filter> T=td2
+LOG: MAIN
+  Completed

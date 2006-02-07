@@ -1,0 +1,43 @@
+
+**** SMTP testing session as if from host 10.10.10.10
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+501 Syntactically invalid HELO argument(s)
+500 unrecognized command
+500 unrecognized command
+500 unrecognized command
+221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+501 Syntactically invalid HELO argument(s)
+500 unrecognized command
+500 unrecognized command
+500 unrecognized command
+221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+501 argument must begin with #
+250-the.local.host.name Hello CALLER at a.b.c
+250-SIZE 52428800
+250-ETRN
+250-PIPELINING
+250 HELP
+503 sender not yet given
+250 OK
+503 valid RCPT command must precede DATA
+550 Administrative prohibition
+550 Administrative prohibition
+550 Administrative prohibition
+550 Administrative prohibition
+550 Administrative prohibition
+452 too many recipients
+452 too many recipients
+503 ETRN is not permitted inside a transaction
+250 Reset OK
+501 MAIL must have an address operand
+250 Reset OK
+250 OK
+503 sender already given
+501 RCPT must have an address operand
+250 Reset OK
+221 the.local.host.name closing connection

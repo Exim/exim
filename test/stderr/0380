@@ -1,0 +1,85 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: aaaa@myhost.test.ex
+unique = aaaa@myhost.test.ex
+aaaa@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: bbbb@myhost.test.ex
+unique = bbbb@myhost.test.ex
+bbbb@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing bbbb@myhost.test.ex
+--------> r0 router <--------
+local_part=bbbb domain=myhost.test.ex
+processing address_data
+forced failure in expansion of "${if eq {a}{b}{x}fail}" (address_data): decline action taken
+--------> r1 router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+r1 router skipped: local_parts mismatch
+--------> r2 router <--------
+local_part=bbbb domain=myhost.test.ex
+checking local_parts
+calling r2 router
+rda_interpret (file): TESTSUITE/non-exist/$local_part
+expanded: TESTSUITE/non-exist/bbbb
+TESTSUITE/non-exist/bbbb does not exist
+ignore_enotdir set => skip checking parent directory
+r2 router declined for bbbb@myhost.test.ex
+--------> r3 router <--------
+local_part=bbbb domain=myhost.test.ex
+calling r3 router
+r3 router called for bbbb@myhost.test.ex
+  domain = myhost.test.ex
+set transport t1
+queued for t1 transport: local_part = bbbb
+domain = myhost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r3 router
+  envelope to: bbbb@myhost.test.ex
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing aaaa@myhost.test.ex
+--------> r0 router <--------
+local_part=aaaa domain=myhost.test.ex
+processing address_data
+forced failure in expansion of "${if eq {a}{b}{x}fail}" (address_data): decline action taken
+--------> r1 router <--------
+local_part=aaaa domain=myhost.test.ex
+checking local_parts
+calling r1 router
+rda_interpret (file): TESTSUITE/non-exist/$local_part
+expanded: TESTSUITE/non-exist/aaaa
+TESTSUITE/non-exist/aaaa does not exist
+checking parent directory
+stat(TESTSUITE/non-exist/.)=-1
+r1 router: defer for aaaa@myhost.test.ex
+  message: failed to stat TESTSUITE/non-exist/. (No such file or directory)
+LOG: MAIN
+  == aaaa@myhost.test.ex R=r1 defer (-1): failed to stat TESTSUITE/non-exist/. (No such file or directory)
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    bbbb@myhost.test.ex
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+    aaaa@myhost.test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => bbbb <bbbb@myhost.test.ex> R=r3 T=t1
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

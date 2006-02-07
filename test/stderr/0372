@@ -1,0 +1,108 @@
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+LOG: MAIN
+  <= <> H=host.name [1.2.3.4] U=CALLER P=smtp S=sss
+delivering 10HmaX-0005vi-00
+----- System filter -----
+  acl_c0="value for c0 is ip: 1.2.3.4"
+  acl_c1=""
+  acl_c2=""
+  acl_c3=""
+  acl_c4=""
+  acl_c5="c5 has a newline
+there!"
+  acl_c6=""
+  acl_c7=""
+  acl_c8=""
+  acl_c9="value for c9 is name: host.name"
+  acl_m0="value for m0 is local_part: x"
+  acl_m1=""
+  acl_m2=""
+  acl_m3=""
+  acl_m4=""
+  acl_m5="value for m5 contains newline
+there!"
+  acl_m6=""
+  acl_m7=""
+  acl_m8=""
+  acl_m9="value for m9 is domain: y"
+-------------------------
+acl_c0="value for c0 is ip: 1.2.3.4"
+acl_c1=""
+acl_c2=""
+acl_c3=""
+acl_c4=""
+acl_c5="c5 has a newline
+there!"
+acl_c6=""
+acl_c7=""
+acl_c8=""
+acl_c9="value for c9 is name: host.name"
+acl_m0="value for m0 is local_part: x"
+acl_m1=""
+acl_m2=""
+acl_m3=""
+acl_m4=""
+acl_m5="value for m5 contains newline
+there!"
+acl_m6=""
+acl_m7=""
+acl_m8=""
+acl_m9="value for m9 is domain: y"
+LOG: MAIN
+  => x <x@y> R=r1 T=t1
+LOG: MAIN
+  Completed
+LOG: MAIN
+  <= <> H=host.name [1.2.3.4] U=CALLER P=smtp S=sss
+delivering 10HmaY-0005vi-00
+----- System filter -----
+  acl_c0="value for c0 is ip: 1.2.3.4"
+  acl_c1=""
+  acl_c2=""
+  acl_c3=""
+  acl_c4=""
+  acl_c5="c5 has a newline
+there!"
+  acl_c6=""
+  acl_c7=""
+  acl_c8=""
+  acl_c9="value for c9 is name: host.name"
+  acl_m0="value for m0 is local_part: a"
+  acl_m1=""
+  acl_m2=""
+  acl_m3=""
+  acl_m4=""
+  acl_m5=""
+  acl_m6=""
+  acl_m7=""
+  acl_m8=""
+  acl_m9="value for m9 is domain: b"
+-------------------------
+acl_c0="value for c0 is ip: 1.2.3.4"
+acl_c1=""
+acl_c2=""
+acl_c3=""
+acl_c4=""
+acl_c5="c5 has a newline
+there!"
+acl_c6=""
+acl_c7=""
+acl_c8=""
+acl_c9="value for c9 is name: host.name"
+acl_m0="value for m0 is local_part: a"
+acl_m1=""
+acl_m2=""
+acl_m3=""
+acl_m4=""
+acl_m5=""
+acl_m6=""
+acl_m7=""
+acl_m8=""
+acl_m9="value for m9 is domain: b"
+LOG: MAIN
+  => a <a@b> R=r1 T=t1
+LOG: MAIN
+  Completed
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT

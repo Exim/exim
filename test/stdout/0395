@@ -1,0 +1,28 @@
+501 sender address must contain a domain
+Transaction started in line 0
+Error detected in line 1
+mail from: userx
+501 recipient address must contain a domain
+Transaction started in line 0
+Error detected in line 2
+rcpt to: userx
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+501 userx: recipient address must contain a domain
+503 valid RCPT command must precede DATA
+500 unrecognized command
+500 unrecognized command
+500 unrecognized command
+221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbE-0005vi-00
+221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbF-0005vi-00
+221 the.local.host.name closing connection

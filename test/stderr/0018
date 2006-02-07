@@ -1,0 +1,24 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "check_etrn"
+>>> processing "deny"
+>>> check hosts = !localhost
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=localhost address=127.0.0.1
+>>> host in "!localhost"? no (matched "!localhost")
+>>> deny: condition test failed
+>>> processing "warn"
+>>> warn: condition test succeeded
+LOG: H=[127.0.0.1] Warning: accepted etrn #some.random.domain
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> ETRN command is: exim -R
+>>> ETRN command execution skipped

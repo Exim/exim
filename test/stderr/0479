@@ -1,0 +1,89 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@the.local.host.name
+sender_fullhost = [1.2.3.4]
+sender_rcvhost = [1.2.3.4]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [1.2.3.4]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [1.2.3.4]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< helo [1.2.3.4]
+[1.2.3.4] in helo_lookup_domains? no (end of list)
+sender_fullhost = ([1.2.3.4]) [1.2.3.4]
+sender_rcvhost = [1.2.3.4]
+set_process_info: pppp handling incoming connection from ([1.2.3.4]) [1.2.3.4]
+SMTP>> 250 the.local.host.name Hello [1.2.3.4] [1.2.3.4]
+SMTP<< mail from:<a@b>
+SMTP>> 250 OK
+SMTP<< rcpt to:<c@d>
+using ACL "rcpt"
+processing "require"
+check logwrite = sender address is <$sender_address>
+               = sender address is <a@b>
+LOG: MAIN
+  sender address is <a@b>
+check verify = sender
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying a@b
+address match: subject=a@b pattern=a@b
+b in "b"? yes (matched "b")
+a@b in "a@b"? yes (matched "a@b")
+LOG: address_rewrite MAIN
+  "a@b" from env-from rewritten as "rewritten-a@rewritten-b" by rule 1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering rewritten-a@rewritten-b
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing rewritten-a@rewritten-b
+--------> r1 router <--------
+local_part=rewritten-a domain=rewritten-b
+calling r1 router
+r1 router called for rewritten-a@rewritten-b
+  domain = rewritten-b
+set transport t1
+queued for t1 transport: local_part = rewritten-a
+domain = rewritten-b
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: rewritten-a@rewritten-b
+  transport: t1
+----------- end verify ------------
+sender a@b verified ok as rewritten-a@rewritten-b
+require: condition test succeeded
+processing "accept"
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< rcpt to:<e@f>
+using ACL "rcpt"
+processing "require"
+check logwrite = sender address is <$sender_address>
+               = sender address is <rewritten-a@rewritten-b>
+LOG: MAIN
+  sender address is <rewritten-a@rewritten-b>
+check verify = sender
+using cached sender verify result
+require: condition test succeeded
+processing "accept"
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< quit
+SMTP>> 221 the.local.host.name closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from ([1.2.3.4]) [1.2.3.4] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

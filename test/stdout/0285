@@ -1,0 +1,130 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250  HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<a@test.ex>
+250 Recipient OK
+RCPT TO:<b@test.ex>
+250 Recipient OK
+DATA
+354 Send data
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<c@test.ex>
+550 Recipient not OK
+RCPT TO:<d@test.ex>
+550 Recipient not OK
+RSET
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<e@test.ex>
+250 Recipient OK
+RCPT TO:<f@test.ex>
+250 Recipient OK
+DATA
+354 Send data
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250  HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<a@test.ex>
+250 Recipient OK
+RCPT TO:<b@test.ex>
+250 Recipient OK
+DATA
+354 Send data
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<c@test.ex>
+550 Recipient not OK
+RCPT TO:<d@test.ex>
+550 Recipient not OK
+RSET
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<e@test.ex>
+250 Recipient OK
+RCPT TO:<f@test.ex>
+250 Recipient OK
+DATA
+354 Send data
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.test.ex
+250-OK
+250  HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<g@test.ex>
+250 Recipient OK
+RCPT TO:<h@test.ex>
+250 Recipient OK
+DATA
+354 Send data
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+QUIT
+250 OK
+End of script

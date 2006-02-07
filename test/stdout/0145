@@ -1,0 +1,26 @@
+x@mxt10.test.ex is undeliverable:
+  all relevant MX records point to non-existent hosts or (invalidly) to IP addresses
+
+**** SMTP testing session as if from host V4NET.9.8.7
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-Verification failed for <x@mxt10.test.ex>
+550-It appears that the DNS operator for mxt10.test.ex
+550-has installed an invalid MX record with an IP address
+550-instead of a domain name on the right hand side.
+550 Sender verify failed
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.9.8.7
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-It appears that the DNS operator for mxt10.test.ex
+550-has installed an invalid MX record with an IP address
+550 instead of a domain name on the right hand side.
+221 myhost.test.ex closing connection

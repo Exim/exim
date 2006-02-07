@@ -1,0 +1,12 @@
+220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+451 Temporary local problem - please try later
+451 Temporary local problem - please try later
+221 mail.test.ex closing connection
+220 mail.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+451-host lookup did not complete
+451 Could not complete sender verify
+451-host lookup did not complete
+451 Could not complete sender verify
+221 mail.test.ex closing connection

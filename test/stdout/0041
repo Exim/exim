@@ -1,0 +1,21 @@
+
+**** SMTP testing session as if from host 1.1.1.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+252 Administrative prohibition
+550 Administrative prohibition
+221 the.local.host.name closing connection
+
+**** SMTP testing session as if from host 2.2.2.2
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-<userx@test.ex>
+250 <usery@test.ex>
+221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+550 Administrative prohibition
+221 the.local.host.name closing connection

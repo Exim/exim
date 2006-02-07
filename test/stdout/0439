@@ -1,0 +1,9 @@
+421 Temporary local problem - please try later
+221 myhost.test.ex closing connection
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 421
+<<< 421 Temporary local problem - please try later
+>>> QUIT
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script

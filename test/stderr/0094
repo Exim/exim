@@ -1,0 +1,151 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? yes (matched "0.0.0.0/0")
+>>> looking up host name for V4NET.11.12.13
+LOG: no host name found for IP address V4NET.11.12.13
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check hosts = :
+>>> host in ":"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> cam.ac.uk in "test.ex"? no (end of list)
+>>> cam.ac.uk in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+>>> sender host name required, to match against *.masq.test.ex
+>>> host in "*.masq.test.ex"? no (failed to find host name for V4NET.11.12.13)
+>>> host in "+relay_hosts"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: H=[V4NET.11.12.13] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: relay not permitted
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? yes (matched "0.0.0.0/0")
+>>> looking up host name for V4NET.0.0.1
+>>> IP address lookup yielded ten-1.test.ex
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=ten-1.test.ex address=V4NET.0.0.1
+>>> checking addresses for ten-1.test.ex
+>>>   V4NET.0.0.1 OK
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "accept"
+>>> check hosts = :
+>>> host in ":"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check domains = +local_domains
+>>> cam.ac.uk in "test.ex"? no (end of list)
+>>> cam.ac.uk in "+local_domains"? no (end of list)
+>>> accept: condition test failed
+>>> processing "accept"
+>>> check hosts = +relay_hosts
+>>> host in "*.masq.test.ex"? no (end of list)
+>>> host in "+relay_hosts"? no (end of list)
+>>> accept: condition test failed
+>>> processing "deny"
+>>> deny: condition test succeeded
+LOG: H=ten-1.test.ex [V4NET.0.0.1] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: relay not permitted
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+sender_fullhost = [V4NET.99.99.90]
+sender_rcvhost = [V4NET.99.99.90]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.99.99.90]
+host in host_lookup? yes (matched "0.0.0.0/0")
+looking up host name for V4NET.99.99.90
+DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) using fakens
+DNS lookup of 90.99.99.V4NET.in-addr.arpa (PTR) succeeded
+IP address lookup yielded host1.masq.test.ex
+  alias oneback.test.ex
+using host_fake_gethostbyname for host1.masq.test.ex (IPv4)
+DNS lookup of host1.masq.test.ex (A) using fakens
+DNS lookup of host1.masq.test.ex (A) succeeded
+MUNGED: ::1 will be omitted in what follows
+get[host|ipnode]byname[2] looked up these IP addresses:
+  name=host1.masq.test.ex address=V4NET.90.90.90
+checking addresses for host1.masq.test.ex
+  V4NET.90.90.90
+no IP address for host1.masq.test.ex matched V4NET.99.99.90
+using host_fake_gethostbyname for oneback.test.ex (IPv4)
+DNS lookup of oneback.test.ex (A) using fakens
+DNS lookup of oneback.test.ex (A) succeeded
+MUNGED: ::1 will be omitted in what follows
+get[host|ipnode]byname[2] looked up these IP addresses:
+  name=oneback.test.ex address=V4NET.99.99.90
+checking addresses for oneback.test.ex
+  V4NET.99.99.90 OK
+sender_fullhost = oneback.test.ex [V4NET.99.99.90]
+sender_rcvhost = oneback.test.ex ([V4NET.99.99.90])
+set_process_info: pppp handling incoming connection from oneback.test.ex [V4NET.99.99.90]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<userx@test.ex>
+SMTP>> 250 OK
+SMTP<< rcpt to:<userx@test.ex>
+using ACL "check_recipient"
+processing "accept"
+check hosts = :
+host in ":"? no (end of list)
+accept: condition test failed
+processing "accept"
+check domains = +local_domains
+test.ex in "test.ex"? yes (matched "test.ex")
+test.ex in "+local_domains"? yes (matched "+local_domains")
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< rcpt to:<userx@cam.ac.uk>
+using ACL "check_recipient"
+processing "accept"
+check hosts = :
+host in ":"? no (end of list)
+accept: condition test failed
+processing "accept"
+check domains = +local_domains
+cam.ac.uk in "test.ex"? no (end of list)
+cam.ac.uk in "+local_domains"? no (end of list)
+accept: condition test failed
+processing "accept"
+check hosts = +relay_hosts
+host in "*.masq.test.ex"? no (end of list)
+host in "+relay_hosts"? no (end of list)
+accept: condition test failed
+processing "deny"
+deny: condition test succeeded
+SMTP>> 550 relay not permitted
+LOG: MAIN REJECT
+  H=oneback.test.ex [V4NET.99.99.90] F=<userx@test.ex> rejected RCPT <userx@cam.ac.uk>: relay not permitted
+SMTP<< quit
+SMTP>> 221 the.local.host.name closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from oneback.test.ex [V4NET.99.99.90] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

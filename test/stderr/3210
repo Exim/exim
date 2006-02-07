@@ -1,0 +1,32 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing userx@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering userx@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@test.ex
+--------> r1 router <--------
+local_part=userx domain=test.ex
+checking domains
+search_open: testdb "NULL"
+search_find: file="NULL"
+  key="defer" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=testdb key="defer"
+database lookup required for defer
+testdb lookup forced DEFER
+lookup deferred: testdb lookup forced DEFER
+test.ex in "testdb;defer"? lookup deferred for testdb;defer
+test.ex in "+defer_lookup : test.ex"? lookup deferred for +defer_lookup
+test.ex in "! +local_domains"? lookup deferred for ! +local_domains
+domains check lookup or other defer
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=1 >>>>>>>>>>>>>>>>

@@ -1,0 +1,3 @@
+k@mxt13.test.ex
+  router = dnslookup, transport = smtp
+  host other1.test.ex [V4NET.12.4.5] MX=4

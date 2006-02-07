@@ -1,0 +1,47 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+Verifying: uid=EXIM_UID gid=EXIM_GID euid=EXIM_UID egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying k@mxt13.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering k@mxt13.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing k@mxt13.test.ex
+--------> dnslookup router <--------
+local_part=k domain=mxt13.test.ex
+checking domains
+mxt13.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!mxt13.test.ex")
+mxt13.test.ex in "! +local_domains"? yes (end of list)
+calling dnslookup router
+dnslookup router called for k@mxt13.test.ex
+  domain = mxt13.test.ex
+DNS lookup of mxt13.test.ex (MX) using fakens
+DNS lookup of mxt13.test.ex (MX) succeeded
+other1.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? no (matched "!other1.test.ex")
+other1.test.ex in hosts_treat_as_local? no (end of list)
+other2.test.ex in "!mxt13.test.ex : !other1.test.ex : *.test.ex"? yes (matched "*.test.ex")
+other2.test.ex in hosts_treat_as_local? yes (matched "+local_domains")
+local host in host list - removed hosts:
+  other2.test.ex V4NET.12.3.1 5
+  other2.test.ex V4NET.12.3.2 5
+fully qualified name = mxt13.test.ex
+host_find_bydns yield = HOST_FOUND (2); returned hosts:
+  other1.test.ex V4NET.12.4.5 MX=4 
+set transport smtp
+queued for smtp transport: local_part = k
+domain = mxt13.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by dnslookup router
+  envelope to: k@mxt13.test.ex
+  transport: smtp
+  host other1.test.ex [V4NET.12.4.5] MX=4
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -1,0 +1,120 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing xx@mxt6.test.ex
+--------> lookuphost router <--------
+local_part=xx domain=mxt6.test.ex
+checking domains
+calling lookuphost router
+lookuphost router called for xx@mxt6.test.ex
+  domain = mxt6.test.ex
+set transport remote_smtp
+queued for remote_smtp transport: local_part = xx
+domain = mxt6.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by lookuphost router
+  envelope to: xx@mxt6.test.ex
+  transport: remote_smtp
+  host ten-1.test.ex [V4NET.0.0.1] MX=5
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing myhost.test.ex@mxt1.test.ex
+--------> lookuphost router <--------
+local_part=myhost.test.ex domain=mxt1.test.ex
+checking domains
+calling lookuphost router
+lookuphost router called for myhost.test.ex@mxt1.test.ex
+  domain = mxt1.test.ex
+lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
+lookuphost router passed for myhost.test.ex@mxt1.test.ex
+--------> self router <--------
+local_part=myhost.test.ex domain=mxt1.test.ex
+checking domains
+self_hostname=eximtesthost.test.ex
+calling self router
+self router called for myhost.test.ex@mxt1.test.ex
+  domain = mxt1.test.ex
+route_item = * $local_part byname
+original list of hosts = "$local_part" options = byname
+expanded list of hosts = "myhost.test.ex" options = byname
+set transport remote_smtp
+finding IP address for myhost.test.ex
+calling host_find_byname
+queued for remote_smtp transport: local_part = myhost.test.ex
+domain = mxt1.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by self router
+  envelope to: myhost.test.ex@mxt1.test.ex
+  transport: remote_smtp
+  host myhost.test.ex [V4NET.10.10.10]
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing xx@mxt1.test.ex
+--------> lookuphost router <--------
+local_part=xx domain=mxt1.test.ex
+checking domains
+calling lookuphost router
+lookuphost router called for xx@mxt1.test.ex
+  domain = mxt1.test.ex
+lowest numbered MX record points to local host: mxt1.test.ex: passed to next router (self = pass)
+lookuphost router passed for xx@mxt1.test.ex
+--------> self router <--------
+local_part=xx domain=mxt1.test.ex
+checking domains
+self_hostname=eximtesthost.test.ex
+calling self router
+self router called for xx@mxt1.test.ex
+  domain = mxt1.test.ex
+route_item = * $local_part byname
+original list of hosts = "$local_part" options = byname
+expanded list of hosts = "xx" options = byname
+set transport remote_smtp
+finding IP address for xx
+calling host_find_byname
+self router passed for xx@mxt1.test.ex
+--------> self2 router <--------
+local_part=xx domain=mxt1.test.ex
+checking domains
+self_hostname=eximtesthost.test.ex
+calling self2 router
+self2 router called for xx@mxt1.test.ex
+  domain = mxt1.test.ex
+route_item = * myhost.test.ex byname
+original list of hosts = "myhost.test.ex" options = byname
+expanded list of hosts = "myhost.test.ex" options = byname
+set transport remote_smtp
+finding IP address for myhost.test.ex
+calling host_find_byname
+queued for remote_smtp transport: local_part = xx
+domain = mxt1.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by self2 router
+  envelope to: xx@mxt1.test.ex
+  transport: remote_smtp
+  host myhost.test.ex [V4NET.10.10.10]
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing xx@not.exist
+--------> lookuphost router <--------
+local_part=xx domain=not.exist
+checking domains
+calling lookuphost router
+lookuphost router called for xx@not.exist
+  domain = not.exist
+lookuphost router declined for xx@not.exist
+"more" is false: skipping remaining routers
+no more routers
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=2 >>>>>>>>>>>>>>>>

@@ -1,0 +1,43 @@
+> test.ex                    A TXT record for test.ex.
+> txt=test.ex                A TXT record for test.ex.
+> a=black-1.test.ex          V4NET.11.12.13
+> Failed: lookup of "xxx=test.ex" gave DEFER: unsupported DNS record type
+> a=localhost.test.ex        127.0.0.1
+> cname=alias-eximtesthost.test.ex eximtesthost.test.ex
+> ns=test.ex                 exim.test.ex
+> zns=x.y.z.test.ex          exim.test.ex
+> mx=mxt1.test.ex            5 eximtesthost.test.ex
+> mx=mxt3.test.ex            5 not-exist.test.ex
+6 eximtesthost.test.ex
+> mxh=mxt1.test.ex           eximtesthost.test.ex
+> ptr=V4NET.0.0.1            ten-1.test.ex
+> ptr=ptr.test.ex            data.for.ptr.test.ex
+> srv=_smtp._tcp.srv01.test.ex     0 0 25 ten-1.test.ex
+> srv=_smtp._tcp.nosmtp.test.ex    0 0 0 
+> 
+> csa=csa1.test.ex           Y csa1.test.ex
+> csa=csa2.test.ex           N csa2.test.ex
+> 
+> # DNS lookups with multiple items
+> 
+> ten-1:ten2                 V4NET.0.0.1
+V4NET.0.0.2
+> ten-1:defer:ten2           V4NET.0.0.1
+V4NET.0.0.2
+> ten-1|ten2                 V4NET.0.0.1
+V4NET.0.0.2
+> mxt1;mxt2 | output         5 eximtesthost.test.ex|5 not-exist.test.ex
+> mxt1;mxt2 | output         eximtesthost.test.ex|not-exist.test.ex
+> 13/14 rbl                  This is a test blacklisting message This is a test blacklisting message
+> double ptr                 ten-1.test.ex
+ten-2.test.ex
+> ten-1:bad                  V4NET.0.0.1
+> bad:bad                    FAILED
+> 
+> Failed: lookup of "a=test.again.dns:test.again.dns" gave DEFER: 
+> defer_lax:ten-1            V4NET.0.0.1
+> defer_lax:ten-1            V4NET.0.0.1
+> defer_never:ten-1          V4NET.0.0.1
+> defer_never:defer          
+> Failed: lookup of "defer_strict,a=test.again.dns:ten-1.test.ex" gave DEFER: 
+> 

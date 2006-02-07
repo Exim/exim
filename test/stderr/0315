@@ -1,0 +1,134 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@the.local.host.name U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+delivering 10HmaX-0005vi-00
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: x@ten-1.test.ex
+unique = x@ten-1.test.ex
+x@ten-1.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: y@ten-1.test.ex
+unique = y@ten-1.test.ex
+y@ten-1.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing y@ten-1.test.ex
+--------> r1 router <--------
+local_part=y domain=ten-1.test.ex
+checking domains
+calling r1 router
+r1 router called for y@ten-1.test.ex
+  domain = ten-1.test.ex
+set transport t1
+queued for t1 transport: local_part = y
+domain = ten-1.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: y@ten-1.test.ex
+  transport: t1
+  host ten-1.test.ex [V4NET.0.0.1]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@ten-1.test.ex
+Routing for x@ten-1.test.ex copied from y@ten-1.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    x@ten-1.test.ex
+    y@ten-1.test.ex
+  Failed addresses:
+  Deferred addresses:
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  *> x@ten-1.test.ex R=r1 T=t1 H=ten-1.test.ex [V4NET.0.0.1]
+LOG: MAIN
+  *> y@ten-1.test.ex R=r1 T=t1 H=ten-1.test.ex [V4NET.0.0.1]
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@the.local.host.name U=CALLER P=local S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+delivering 10HmaY-0005vi-00
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: x@ten-2.test.ex
+unique = x@ten-2.test.ex
+x@ten-2.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: y@ten-2.test.ex
+unique = y@ten-2.test.ex
+y@ten-2.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing y@ten-2.test.ex
+--------> r1 router <--------
+local_part=y domain=ten-2.test.ex
+checking domains
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=y domain=ten-2.test.ex
+calling r2 router
+r2 router called for y@ten-2.test.ex
+  domain = ten-2.test.ex
+set transport t1
+queued for t1 transport: local_part = y
+domain = ten-2.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r2 router
+  envelope to: y@ten-2.test.ex
+  transport: t1
+  host ten-2.test.ex [V4NET.0.0.2]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@ten-2.test.ex
+--------> r1 router <--------
+local_part=x domain=ten-2.test.ex
+checking domains
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=x domain=ten-2.test.ex
+calling r2 router
+r2 router called for x@ten-2.test.ex
+  domain = ten-2.test.ex
+queued for t1 transport: local_part = x
+domain = ten-2.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r2 router
+  envelope to: x@ten-2.test.ex
+  transport: t1
+  host ten-2.test.ex [V4NET.0.0.2]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    x@ten-2.test.ex
+    y@ten-2.test.ex
+  Failed addresses:
+  Deferred addresses:
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  *> x@ten-2.test.ex R=r2 T=t1 H=ten-2.test.ex [V4NET.0.0.2]
+LOG: MAIN
+  *> y@ten-2.test.ex R=r2 T=t1 H=ten-2.test.ex [V4NET.0.0.2]
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

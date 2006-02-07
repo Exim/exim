@@ -1,0 +1,93 @@
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello abcd at a.b.c [127.0.0.1]
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello a.b.c [127.0.0.1]
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello ab\rcd at a.b.c [127.0.0.1]
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefg at a.b.c [127.0.0.1]
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello a.b.c [127.0.0.1]
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello abcd at a.b.c [127.0.0.1]
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello abcd at a.b.c [127.0.0.1]
+221 myhost.test.ex closing connection
+
+******** SERVER ********
+Listening on port 1413 ... 
+Connection request from [127.0.0.1]
+<999 , 25
+>999 , 25 : USERID : UNIX :abcd
+End of script
+Listening on port 1413 ... 
+Connection request from [127.0.0.1]
+<999 , 25
+>>999 , 25 : USERID : UNIX :abcd
+End of script
+Listening on port 1413 ... 
+Connection request from [127.0.0.1]
+<999 , 25
+>999 , 25 : USERID : UNIX :abcd
+End of script
+Listening on port 1413 ... 
+Connection request from [127.0.0.1]
+<999 , 25
+>999 , 25 : USERID : UNIX :abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++<<<
+End of script
+Listening on port 1413 ... 
+Connection request from [127.0.0.1]
+<999 , 25
+>999 , 25 : USERID : UNIX :abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++abcdefghijklmnopqrstuvwxyz++++
+End of script
+Listening on port 1413 ... 
+Connection request from [127.0.0.1]
+<999 , 25
+>999, 25 : USERID : UNIX :abcd
+End of script
+Listening on port 1413 ... 
+Connection request from [127.0.0.1]
+<999 , 25
+>999,25 : USERID : UNIX :abcd
+End of script

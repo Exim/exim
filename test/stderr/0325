@@ -1,0 +1,34 @@
+r1: $domain_data = DOMAIN DATA
+r1: $local_part_data = LOCAL PART DATA
+r2: $domain_data = DOMAIN DATA
+r2: $local_part_data = LOCAL PART DATA
+r3: $domain_data = DOMAIN DATA
+r3: $local_part_data = LOCAL PART DATA
+r4: $domain_data = DOMAIN DATA
+r4: $local_part_data = LOCAL PART DATA
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "a1"
+>>> processing "accept"
+>>> check domains = +test_domains
+>>> a.b.c in "lsearch; TESTSUITE/aux-fixed/0325.data"? yes (matched "lsearch; TESTSUITE/aux-fixed/0325.data")
+>>> a.b.c in "+test_domains"? yes (matched "+test_domains")
+>>> check local_parts = +test_local_parts
+>>> xxx in "lsearch;TESTSUITE/aux-fixed/0325.data"? yes (matched "lsearch;TESTSUITE/aux-fixed/0325.data")
+>>> xxx in "+test_local_parts"? yes (matched "+test_local_parts")
+>>> check condition = ${if eq{$domain_data/$local_part_data}{DOMAIN DATA/LOCAL PART DATA}{no}{yes}}
+>>>                 = no
+>>> accept: condition test failed
+>>> processing "deny"
+>>> check domains = +test_domains
+>>> a.b.c in "+test_domains"? yes (matched "+test_domains" - cached)
+>>> check local_parts = +test_local_parts
+>>> xxx in "+test_local_parts"? yes (matched "+test_local_parts" - cached)
+>>> deny: condition test succeeded
+LOG: H=[V4NET.0.0.0] F=<a@b.c> rejected RCPT xxx@a.b.c: $domain_data=DOMAIN DATA $local_part_data=LOCAL PART DATA

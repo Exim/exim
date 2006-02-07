@@ -1,0 +1,179 @@
+> Expect "Hazel"
+> ${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+> Hazel
+> 
+> DN is: cn=Philip Hazel,o=University of Cambridge,c=UK
+> 
+> Expect "Hazel" (Unix socket interface)
+> ${lookup ldap {ldapi://%2Ftmp%2Fldap.sock/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{}fail}
+> Hazel
+> 
+> Expect syntax failure
+> Failed: lookup of "X=y ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" gave DEFER: unknown parameter "X=" precedes LDAP URL
+> 
+> Expect "Hazel"
+> ${lookup ldap {time=1 ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+> Hazel
+> 
+> Expect "manager" followed by "Hazel" 5 times
+> ${lookup ldapm {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+> manager
+Hazel
+Hazel
+Hazel
+Hazel
+Hazel
+> 
+> DN is: cn=P*Hazel,o=University of Cambridge,c=UK
+> 
+> Expect  "manager" followed by "Hazel"
+> ${lookup ldapm {Size=2 ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+> manager
+Hazel
+> 
+> Expect "manager" followed by "Hazel" 5 times
+> ${lookup ldapm {ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+> manager
+Hazel
+Hazel
+Hazel
+Hazel
+Hazel
+> 
+> Expect "manager"
+> ${lookup ldap {size=1 ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+> manager
+> 
+> Expect too many results error
+> Failed: lookup of "size=0 time=0 ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)" gave DEFER: LDAP search: more than one entry (6) was returned (filter not specific enough?)
+> 
+> Expect "manager"
+> ${lookup ldap {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+> manager
+> 
+> Expect invalid credentials
+> ${lookup ldap {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{$value}fail}
+> Failed: lookup of "size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)" gave DEFER: failed to bind the LDAP connection to server NULL:389 - LDAP error 49: Invalid credentials
+> 
+> cn="Philip Hazel" sn=Hazel
+> ${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?sn,cn?sub?(cn=Philip%20Hazel)}{$value}fail}
+> cn="Philip Hazel" sn="Hazel"
+> 
+> cn="Philip Hazel" sn=Hazel objectClass=person
+> ${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK??sub?(cn=Philip%20Hazel)}{$value}fail}
+> cn="Philip Hazel" sn="Hazel" objectClass="person"
+> 
+> P Hazel, Phil Hazel
+> ${lookup ldapm {ldap:///o=University%20of%20Cambridge,c=UK?cn?sub?(cn=Phil%20Hazel)}{$value}fail}
+> P Hazel, Phil Hazel
+P Hazel, Phil Hazel
+> 
+> cn="P Hazel" cn="Phil Hazel" sn=Hazel objectClass=person
+> ${lookup ldapm {ldap:///o=University%20of%20Cambridge,c=UK??sub?(cn=Phil%20Hazel)}{$value}fail}
+> cn="P Hazel, Phil Hazel" sn="Hazel" objectClass="person"
+cn="P Hazel, Phil Hazel" sn="Hazel" objectClass="person"
+> 
+> cn=P Hazel, o=University of Cambridge, c=UK
+> ${lookup ldapdn {ldap:///o=University%20of%20Cambridge,c=UK??sub?(cn=manager)}{$value}fail}
+> cn=manager,o=University of Cambridge,c=UK
+> 
+> Expect too many results error
+> Failed: lookup of "ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)" gave DEFER: LDAP search: more than one entry (6) was returned (filter not specific enough?)
+> 
+> Expect "yes"
+> ${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+> yes
+> 
+> Expect "no"
+> ${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+> no
+> 
+> Expect "no"
+> ${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass= ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+> no
+> 
+> Expect "no"
+> ${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+> no
+> 
+> Expect failure to contact server
+> ${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=known ldaps://127.0.0.1:9999/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+> Failed: failed to bind the LDAP connection to server 127.0.0.1:9999 - ldap_bind() returned -1
+> 
+> Expect "yes"
+> ${if ldapauth { size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+> yes
+> 
+> Expect "yes"
+> ${if ldapauth { size=1 time=0 user=cn%3dmanager%2co%3DUniversity%20of%20Cambridge%2Cc%3dUK pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+> yes
+> 
+> Expect syntax error
+> ${lookup ldap {ldapz:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{}fail}
+> Failed: lookup of "ldapz:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" gave DEFER: LDAP URL does not start with "ldap://", "ldaps://", or "ldapi://" (it starts with "ldapz:///o=Unive...")
+> 
+> Expect error for missing user
+> ${if ldapauth {size=1 time=0 pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+> Failed: ldapauth lookups must specify the username and password
+> 
+> Expect error for missing password
+> ${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+> Failed: ldapauth lookups must specify the username and password
+> 
+> Expect "no" because of empty password
+> ${if ldapauth {size=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass="" ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+> no
+> 
+> Expect "FAILED" because no such object
+> ${lookup ldap {ldap:///o=JUNK}{}{FAILED}}
+> FAILED
+> 
+> Expect "P*Hazel (starry)"
+> ${lookup ldap {ldap:///o=University%20of%20Cambridge,c=UK?cn?sub?(cn=P%5C2AHazel*)}{$value}fail}
+> P*Hazel
+> 
+> DN is: cn=P*Hazel,o=University of Cambridge,c=UK
+> 
+> Expect "P,Hazel"
+> ${lookup ldap {ldap:///cn=P%5C%2CHazel,o=University%20of%20Cambridge,c=UK?cn?sub?(cn=*)}{$value}fail}
+> P,Hazel
+> 
+> Expect syntax error
+> ${if ldapauth { soze=1 time=0 user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+> Failed: unknown parameter "soze=" precedes LDAP URL
+> 
+> Expect syntax error
+> ${if ldapauth { size=1 time=0 user"cn=manager,o=University of Cambridge,c=UK" pass=secret ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=*)}{yes}{no}}
+> Failed: unknown parameter "user"cn=" precedes LDAP URL
+> 
+> Expect 5 x "Hazel"
+> Hazel
+> Hazel
+> Hazel
+> Hazel
+> Hazel
+> 
+> Expect 2 x "Hazel" (using ldaps)
+> ${lookup ldap {user="cn=manager,o=University of Cambridge,c=UK" pass=secret ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{}fail}
+> Hazel
+> Hazel
+> 
+> Expect 2 x "Hazel"
+> Hazel
+> Hazel
+> 
+> Expect 3 x "Hazel"
+> Hazel
+> Hazel
+> Hazel
+> 
+> Expect errors
+> ${lookup ldap {ldapi://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{}fail}
+> Failed: lookup of "ldapi://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" gave DEFER: ldapi requires an absolute path ("127.0.0.1" given)
+> 
+> ${lookup ldap {user="cn=manager,o=University of Cambridge,c=UK" pass="se"cret" ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{}fail}
+> Failed: lookup of "user="cn=manager,o=University of Cambridge,c=UK" pass="se\"cret" ldaps://127.0.0.1/o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)" gave DEFER: failed to bind the LDAP connection to server 127.0.0.1:636 - LDAP error 49: Invalid credentials
+> 
+> Expect ldap_search to fail
+> Failed: lookup of "ldap:///o=top?mailRoutingAddress,mailHost,objectClass?sub?(&(mailLocalAddress=3-1546081-domain.net?wendling@stderr.efficientimpacte.com)(objectClass=inetLocalMailRecipient))" gave DEFER: ldap_search failed: -7, Bad search filter
+> 

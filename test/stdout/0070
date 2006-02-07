@@ -1,0 +1,104 @@
+
+**** SMTP testing session as if from host V4NET.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+503 HELO or EHLO required
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.13
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 helo not verified
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.2
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello [V4NET.0.0.1] [V4NET.0.0.2]
+250 OK
+550 helo not verified
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.2
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello [V4NET.0.0.2] [V4NET.0.0.2]
+250 OK
+550 helo did verify
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello ten-1.test.ex [V4NET.0.0.1]
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.3
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello ten-3.test.ex [V4NET.0.0.3]
+250 myhost.test.ex Hello ten-3.test.ex [V4NET.0.0.3]
+250 myhost.test.ex Hello ten-3.test.ex [V4NET.0.0.3]
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+550 EHLO argument does not match calling host
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 99.99.99.99
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+451 EHLO argument does not match calling host
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.13
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello [V4NET.0.0.99] [V4NET.0.0.13]
+250 OK
+550 helo not verified
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.13
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 myhost.test.ex Hello [V4NET.0.0.13] [V4NET.0.0.13]
+250 OK
+550 helo did verify
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 99.99.99.99
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello rhubarb [99.99.99.99]
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+250 OK
+550 helo not verified
+221 myhost.test.ex closing connection

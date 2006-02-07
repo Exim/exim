@@ -1,0 +1,16 @@
+x@y.z failed to verify:
+  unrouteable mail domain "y.z"
+x@smart.domain
+  router = smart1, transport = unset
+x@test.ex
+  router = smart2, transport = dummy
+x@myhost.test.ex failed to verify:
+  Unrouteable address
+x@y.z failed to verify:
+  unrouteable mail domain "y.z"
+x@smart.domain failed to verify:
+  unrouteable mail domain "smart.domain"
+x@test.ex failed to verify:
+  Unrouteable address
+x@myhost.test.ex failed to verify:
+  Unrouteable address

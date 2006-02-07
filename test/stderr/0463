@@ -1,0 +1,68 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing x@ten-1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering x@ten-1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@ten-1
+--------> all router <--------
+local_part=x domain=ten-1
+checking domains
+DNS lookup of ten-1 (MX) using fakens
+DNS lookup of ten-1 (MX) gave NO_DATA
+returning DNS_NODATA
+Address records are not being sought
+ten-1 in "!@mx_any"? yes (end of list)
+calling all router
+all router called for x@ten-1
+  domain = ten-1
+DNS lookup of ten-1 (MX) using fakens
+DNS lookup of ten-1 (MX) gave NO_DATA
+returning DNS_NODATA
+DNS lookup of ten-1 (A) using fakens
+DNS lookup of ten-1 (A) succeeded
+fully qualified name = ten-1.test.ex
+ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+domain changed to ten-1.test.ex
+rewriting header lines
+re-routed to x@ten-1.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering x@ten-1.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@ten-1.test.ex
+--------> all router <--------
+local_part=x domain=ten-1.test.ex
+checking domains
+DNS lookup of ten-1.test.ex (MX) using fakens
+DNS lookup of ten-1.test.ex (MX) gave NO_DATA
+returning DNS_NODATA
+Address records are not being sought
+ten-1.test.ex in "!@mx_any"? yes (end of list)
+calling all router
+all router called for x@ten-1.test.ex
+  domain = ten-1.test.ex
+DNS lookup of ten-1.test.ex (MX) using fakens
+DNS lookup of ten-1.test.ex (MX) gave NO_DATA
+returning DNS_NODATA
+DNS lookup of ten-1.test.ex (A) using fakens
+DNS lookup of ten-1.test.ex (A) succeeded
+fully qualified name = ten-1.test.ex
+ten-1.test.ex V4NET.0.0.1 mx=-1 sort=xx 
+set transport smtp
+queued for smtp transport: local_part = x
+domain = ten-1.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by all router
+  envelope to: x@ten-1.test.ex
+  transport: smtp
+  host ten-1.test.ex [V4NET.0.0.1]
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

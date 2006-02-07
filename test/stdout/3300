@@ -1,0 +1,31 @@
+> BadCrypt: no
+> MySecret: yes
+> MySecret: no
+> MySecret: yes
+> MySecret: no
+> 
+> crypt16: yes
+> crypt16: yes
+> crypt16: no
+> crypt16: yes
+> 
+> test: yes
+> test: yes
+> test: no
+> test: yes
+> test: no
+> test: no
+> 
+> abc:  yes
+> abc:  yes
+> abc:  yes
+> abd:  no
+> 
+> # Combinations
+> 
+> Y:      Y
+> Y:      Y
+> Y:      Y
+> N:      N
+> N:      N
+> 

@@ -1,0 +1,283 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+set_process_info: pppp delivering specified messages
+set_process_info: pppp delivering 10HmaX-0005vi-00
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: x@y
+unique = x@y
+no domain retry record
+no address retry record
+x@y: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@y
+--------> r0 router <--------
+local_part=x domain=y
+checking local_parts
+x in "CALLER"? no (end of list)
+r0 router skipped: local_parts mismatch
+--------> r1 router <--------
+local_part=x domain=y
+calling r1 router
+r1 router called for x@y
+  domain = y
+route_item = * "127.0.0.1 : V4NET.0.0.0"
+y in "*"? yes (matched "*")
+original list of hosts = "127.0.0.1 : V4NET.0.0.0" options = 
+expanded list of hosts = "127.0.0.1 : V4NET.0.0.0" options = 
+set transport smtp
+finding IP address for 127.0.0.1
+calling host_find_byname
+using host_fake_gethostbyname for 127.0.0.1 (IPv4)
+local host found for non-MX address
+fully qualified name = 127.0.0.1
+MUNGED: ::1 will be omitted in what follows
+get[host|ipnode]byname[2] looked up these IP addresses:
+  name=127.0.0.1 address=127.0.0.1
+remote host address is the local host: y: configured to try delivery anyway
+finding IP address for V4NET.0.0.0
+calling host_find_byname
+using host_fake_gethostbyname for V4NET.0.0.0 (IPv4)
+fully qualified name = V4NET.0.0.0
+MUNGED: ::1 will be omitted in what follows
+get[host|ipnode]byname[2] looked up these IP addresses:
+  name=V4NET.0.0.0 address=V4NET.0.0.0
+queued for smtp transport: local_part = x
+domain = y
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: x@y
+  transport: smtp
+  host 127.0.0.1 [127.0.0.1]
+  host V4NET.0.0.0 [V4NET.0.0.0]
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    x@y
+  Failed addresses:
+  Deferred addresses:
+search_tidyup called
+search_tidyup called
+changed uid/gid: remote delivery to x@y with transport=smtp
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+set_process_info: pppp delivering 10HmaX-0005vi-00 using smtp
+checking status of 127.0.0.1
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+no retry data available
+127.0.0.1 in serialize_hosts? no (option unset)
+set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (x@y)
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+127.0.0.1 in hosts_avoid_esmtp? no (option unset)
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250 OK
+127.0.0.1 in hosts_require_auth? no (option unset)
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<x@y>
+  SMTP<< 451 Temporary error
+LOG: MAIN
+  SMTP error from remote mail server after RCPT TO:<x@y>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+added retry item for R:x@y: errno=-44 more_errno=dd,A flags=0
+  SMTP>> QUIT
+set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for x@y: result OK
+address match: subject=*@127.0.0.1 pattern=*
+127.0.0.1 in "*"? yes (matched "*")
+*@127.0.0.1 in "*"? yes (matched "*")
+checking status of V4NET.0.0.0
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+no retry data available
+V4NET.0.0.0 in serialize_hosts? no (option unset)
+set_process_info: pppp delivering 10HmaX-0005vi-00 to V4NET.0.0.0 [V4NET.0.0.0] (x@y)
+Connecting to V4NET.0.0.0 [V4NET.0.0.0]:1224 ... failed: Network Error
+LOG: MAIN
+  V4NET.0.0.0 [V4NET.0.0.0] Network Error
+set_process_info: pppp delivering 10HmaX-0005vi-00: just tried V4NET.0.0.0 [V4NET.0.0.0] for x@y: result DEFER
+added retry item for T:V4NET.0.0.0:V4NET.0.0.0:1224: errno=dd more_errno=dd,A flags=2
+locking TESTSUITE/spool/db/wait-smtp.lockfile
+locked TESTSUITE/spool/db/wait-smtp.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/wait-smtp)
+returned from EXIM_DBOPEN
+opened hints database TESTSUITE/spool/db/wait-smtp: flags=O_RDWR
+dbfn_read: key=V4NET.0.0.0
+dbfn_write: key=V4NET.0.0.0
+set_process_info: pppp delivering 10HmaX-0005vi-00 (just run smtp for x@y in subprocess)
+search_tidyup called
+set_process_info: pppp delivering 10HmaX-0005vi-00: waiting for a remote delivery subprocess to finish
+set_process_info: pppp delivering 10HmaX-0005vi-00
+reading retry information for T:V4NET.0.0.0:V4NET.0.0.0:1224 from subprocess
+  added retry item
+reading retry information for R:x@y from subprocess
+  added retry item
+LOG: MAIN
+  == x@y R=r1 T=smtp defer (dd): Network Error
+changed uid/gid: post-delivery tidying
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
+Processing retry items
+Succeeded addresses:
+Failed addresses:
+Deferred addresses:
+x@y
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
+address match: subject=x@y pattern=*
+y in "*"? yes (matched "*")
+x@y in "*"? yes (matched "*")
+retry for R:x@y = *
+dbfn_read: key=R:x@y
+on queue longer than maximum retry
+Writing retry data for R:x@y
+  first failed=dddd last try=dddd next try=+0 expired=0
+  errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<x@y>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
+dbfn_write: key=R:x@y
+address match: subject=*@V4NET.0.0.0 pattern=*
+V4NET.0.0.0 in "*"? yes (matched "*")
+*@V4NET.0.0.0 in "*"? yes (matched "*")
+retry for T:V4NET.0.0.0:V4NET.0.0.0:1224 (y) = *
+dbfn_read: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
+on queue longer than maximum retry
+Writing retry data for T:V4NET.0.0.0:V4NET.0.0.0:1224
+  first failed=dddd last try=dddd next try=+0 expired=0
+  errno=dd more_errno=dd,A Network Error
+dbfn_write: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
+timed out: all retries expired
+LOG: MAIN
+  ** x@y: retry timeout exceeded
+end of retry processing
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xebb95ced -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=EXIM_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=EXIM_UID gid=EXIM_GID login=EXIMUSER name=
+sender address = 
+set_process_info: pppp accepting a local non-SMTP message from <>
+Sender: 
+search_tidyup called
+>>Headers received:
+X-Failed-Recipients: x@y
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: CALLER@myhost.test.ex
+Subject: Mail delivery failed: returning message to sender
+
+rewrite_one_header: type=F:
+  From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+rewrite_one_header: type=T:
+  To: CALLER@myhost.test.ex
+search_tidyup called
+>>Headers after rewriting and local additions:
+  X-Failed-Recipients: x@y
+  Auto-Submitted: auto-replied
+F From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+T To: CALLER@myhost.test.ex
+  Subject: Mail delivery failed: returning message to sender
+I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Data file written for message 10HmaY-0005vi-00
+>>Generated Received: header line
+P Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+calling local_scan(); timeout=300
+local_scan() returned 0 NULL
+Writing spool header file
+Size of headers = sss
+LOG: MAIN
+  <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+search_tidyup called
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xebb95ced -odi -Mc 10HmaY-0005vi-00
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=EXIM_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+set_process_info: pppp delivering specified messages
+set_process_info: pppp delivering 10HmaY-0005vi-00
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: CALLER@myhost.test.ex
+unique = CALLER@myhost.test.ex
+dbfn_read: key=R:myhost.test.ex
+dbfn_read: key=R:CALLER@myhost.test.ex
+no domain retry record
+no address retry record
+CALLER@myhost.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing CALLER@myhost.test.ex
+--------> r0 router <--------
+local_part=CALLER domain=myhost.test.ex
+checking local_parts
+CALLER in "CALLER"? yes (matched "CALLER")
+checking senders
+address match: subject= pattern=
+ in ":"? yes (matched "")
+calling r0 router
+rda_interpret (string): :blackhole:
+expanded: :blackhole:
+file is not a filter file
+parse_forward_list: :blackhole:
+extract item: :blackhole:
+address :blackhole:d
+LOG: MAIN
+  => :blackhole: <CALLER@myhost.test.ex> R=r0
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+search_tidyup called
+changed uid/gid: post-delivery tidying
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
+Processing retry items
+Succeeded addresses:
+CALLER@myhost.test.ex: no retry items
+Failed addresses:
+Deferred addresses:
+end of retry processing
+LOG: MAIN
+  Completed
+search_tidyup called
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Writing spool header file
+Size of headers = sss
+LOG: MAIN
+  Completed
+search_tidyup called
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

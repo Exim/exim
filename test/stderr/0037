@@ -1,0 +1,100 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+rda_interpret (file): TESTSUITE/aux-var/0037.F
+expanded: TESTSUITE/aux-var/0037.F
+ssss bytes read from TESTSUITE/aux-var/0037.F
+data is an Exim filter program
+Filter: start of processing
+Filter: end of processing
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: filter-userx@test.ex
+unique = filter-userx@test.ex
+filter-userx@test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing filter-userx@test.ex
+--------> check_vars router <--------
+local_part=filter-userx domain=test.ex
+checking local_parts
+check_vars router skipped: local_parts mismatch
+--------> fail_read_filter router <--------
+local_part=filter-userx domain=test.ex
+checking local_parts
+fail_read_filter router skipped: local_parts mismatch
+--------> userfilter router <--------
+local_part=filter-userx domain=test.ex
+checking local_parts
+$home = >/usr<
+calling userfilter router
+rda_interpret (file): TESTSUITE/aux-var/0037.f-user
+expanded: TESTSUITE/aux-var/0037.f-user
+ssss bytes read from TESTSUITE/aux-var/0037.f-user
+data is an Exim filter program
+Filter: start of processing
+Filter: end of processing
+rda_interpret: subprocess yield=0 error=NULL
+userfilter router generated userx@test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by userfilter router
+  envelope to: filter-userx@test.ex
+  transport: <none>
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: userx@test.ex
+unique = userx@test.ex
+userx@test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@test.ex
+--------> check_vars router <--------
+local_part=userx domain=test.ex
+checking local_parts
+check_vars router skipped: local_parts mismatch
+--------> fail_read_filter router <--------
+local_part=userx domain=test.ex
+checking local_parts
+fail_read_filter router skipped: local_parts mismatch
+--------> userfilter router <--------
+local_part=userx domain=test.ex
+checking local_parts
+userfilter router skipped: local_parts mismatch
+--------> user_accept1 router <--------
+local_part=userx domain=test.ex
+checking local_parts
+user_accept1 router skipped: local_parts mismatch
+--------> user_accept2 router <--------
+local_part=userx domain=test.ex
+checking local_parts
+calling user_accept2 router
+user_accept2 router called for userx@test.ex
+  domain = test.ex
+set transport appendfile
+queued for appendfile transport: local_part = userx
+domain = test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by user_accept2 router
+  envelope to: userx@test.ex
+  transport: appendfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    userx@test.ex
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+locking TESTSUITE/spool/db/retry.lockfile
+LOG: MAIN
+  => userx <filter-userx@test.ex> R=user_accept2 T=appendfile
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

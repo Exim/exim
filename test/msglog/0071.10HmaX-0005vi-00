@@ -1,0 +1,2 @@
+1999-03-02 09:44:33 Received from CALLER@the.local.host.name U=CALLER P=local S=sss
+1999-03-02 09:44:33 |TESTSUITE/aux-fixed/showenv <pipe@the.local.host.name> R=system_aliases defer (-30): pipe_transport unset in system_aliases router

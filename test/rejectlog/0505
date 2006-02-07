@@ -1,0 +1,22 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<CALLER@myhost.test.ex> temporarily rejected after DATA: cannot use "control=submission" in DATA ACL
+Envelope-from: <CALLER@myhost.test.ex>
+Envelope-to: <userx@x.y>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@x.y; Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 U=CALLER temporarily rejected EHLO or HELO xxx: cannot use "control=submission" in EHLO or HELO ACL
+1999-03-02 09:44:33 10HmaY-0005vi-00 F=<CALLER@myhost.test.ex> rejected by non-SMTP ACL: cannot use "control=enforce_sync" in non-SMTP ACL
+Envelope-from: <CALLER@myhost.test.ex>
+Envelope-to: <userx@myhost.test.ex>
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaY-0005vi-00
+	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 U=CALLER temporarily rejected connection in "connect" ACL: cannot use "control=queue_only" in connection ACL

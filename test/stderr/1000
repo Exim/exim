@@ -1,0 +1,70 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_connect"
+>>> processing "warn"
+>>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
+>>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? yes (matched "2001:ab8:37f:20:0:0:0:1")
+>>> warn: condition test succeeded
+LOG: H=[2001:0ab8:037f:0020:0000:0000:0000:0001] Warning: matched hostlist
+>>> processing "accept"
+>>> check condition = ${if eq{$sender_host_address}{2001:0ab8:037f:0020:0000:0000:0000:0001}}
+>>>                 = true
+>>> accept: condition test succeeded
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? yes (matched "*")
+>>> looking up host name for V6NET:1234:0005:0006:0007:0008:0abc:000d
+>>> IP address lookup yielded test3.ipv6.test.ex
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=test3.ipv6.test.ex address=V6NET:1234:5:6:7:8:abc:d
+>>> checking addresses for test3.ipv6.test.ex
+>>>   V6NET:1234:5:6:7:8:abc:d OK
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_connect"
+>>> processing "warn"
+>>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=v6.test.ex address=V6NET:ffff:836f:a00:a:800:200a:c032
+>>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? no (end of list)
+>>> warn: condition test failed
+>>> processing "accept"
+>>> check condition = ${if eq{$sender_host_address}{2001:0ab8:037f:0020:0000:0000:0000:0001}}
+>>>                 = 
+>>> accept: condition test failed
+>>> end of ACL "check_connect": implicit DENY
+LOG: H=test3.ipv6.test.ex [V6NET:1234:0005:0006:0007:0008:0abc:000d] rejected connection in "connect" ACL
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_connect"
+>>> processing "warn"
+>>> check hosts = <; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=v6.test.ex address=V6NET:ffff:836f:a00:a:800:200a:c032
+>>> host in "<; 2001:ab8:37f:20:0:0:0:1 ; v6.test.ex"? yes (matched "v6.test.ex")
+>>> warn: condition test succeeded
+LOG: H=[V6NET:ffff:836f:0a00:000a:0800:200a:c032] Warning: matched hostlist
+>>> processing "accept"
+>>> check condition = ${if eq{$sender_host_address}{2001:0ab8:037f:0020:0000:0000:0000:0001}}
+>>>                 = 
+>>> accept: condition test failed
+>>> end of ACL "check_connect": implicit DENY
+LOG: H=[V6NET:ffff:836f:0a00:000a:0800:200a:c032] rejected connection in "connect" ACL

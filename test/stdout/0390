@@ -1,0 +1,142 @@
+no_accept_8bitmime
+acl_not_smtp = xxx
+acl_smtp_auth = 
+acl_smtp_connect = 
+acl_smtp_data = xxx
+acl_smtp_etrn = yyy
+acl_smtp_expn = zzz
+acl_smtp_mail = yyy
+acl_smtp_rcpt = 
+acl_smtp_vrfy = 
+accept_8bitmime
+acl_not_smtp = 
+acl_smtp_auth = xxx
+acl_smtp_connect = xxx
+acl_smtp_data = yyy
+acl_smtp_etrn = xxx
+acl_smtp_expn = 
+acl_smtp_mail = xxx
+acl_smtp_rcpt = 
+acl_smtp_vrfy = 
+no_accept_8bitmime
+acl_not_smtp = xxx
+acl_smtp_auth = xxx
+acl_smtp_connect = yyy
+acl_smtp_data = xxx
+acl_smtp_etrn = yyy
+acl_smtp_expn = yyy
+acl_smtp_mail = yyy
+acl_smtp_rcpt = 
+acl_smtp_vrfy = 
+accept_8bitmime
+acl_not_smtp = 
+acl_smtp_auth = xxx
+acl_smtp_connect = xxx
+acl_smtp_data = 
+acl_smtp_etrn = xxx
+acl_smtp_expn = xxx
+acl_smtp_mail = xxx
+acl_smtp_rcpt = 
+acl_smtp_vrfy = 
+no_body_only
+current_directory = 
+debug_print = 
+no_delivery_date_add
+no_disable_logging
+driver = pipe
+no_envelope_to_add
+group = 
+headers_add = 
+no_headers_only
+headers_remove = 
+headers_rewrite = 
+home_directory = 
+no_initgroups
+message_size_limit = 
+no_rcpt_include_affixes
+retry_use_local_part
+return_path = 
+no_return_path_add
+shadow_condition = 
+shadow_transport = 
+transport_filter = 
+transport_filter_timeout = 5m
+user = 
+allow_commands = 
+batch_id = 
+batch_max = 20
+check_string = 
+command = /x/y
+environment = 
+escape_string = 
+no_freeze_exec_fail
+no_ignore_status
+no_log_defer_output
+no_log_fail_output
+no_log_output
+max_output = 20K
+message_prefix = From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
+message_suffix = \n
+path = /bin:/usr/bin
+no_pipe_as_creator
+no_restrict_to_path
+no_return_fail_output
+no_return_output
+temp_errors = 75:73
+timeout = 1h
+no_timeout_defer
+umask = 022
+no_use_bsmtp
+no_use_crlf
+no_use_shell
+no_body_only
+current_directory = 
+debug_print = 
+no_delivery_date_add
+no_disable_logging
+driver = pipe
+no_envelope_to_add
+group = 
+headers_add = 
+no_headers_only
+headers_remove = 
+headers_rewrite = 
+home_directory = 
+no_initgroups
+message_size_limit = 
+no_rcpt_include_affixes
+retry_use_local_part
+return_path = 
+no_return_path_add
+shadow_condition = 
+shadow_transport = 
+transport_filter = 
+transport_filter_timeout = 5m
+user = 
+allow_commands = 
+batch_id = 
+batch_max = 10
+check_string = 
+command = /x/y
+environment = 
+escape_string = 
+no_freeze_exec_fail
+no_ignore_status
+no_log_defer_output
+no_log_fail_output
+no_log_output
+max_output = 20K
+message_prefix = From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
+message_suffix = \n
+path = /bin:/usr/bin
+no_pipe_as_creator
+no_restrict_to_path
+no_return_fail_output
+no_return_output
+temp_errors = 75:73
+timeout = 1h
+no_timeout_defer
+umask = 022
+no_use_bsmtp
+no_use_crlf
+no_use_shell

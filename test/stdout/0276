@@ -1,0 +1,33 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<userx@test.ex>
+250 OK
+DATA
+500 NO
+QUIT
+200 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-server id
+250 OK
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<userx@test.ex>
+250 OK
+DATA
+500 NO
+QUIT
+200 OK
+End of script

@@ -1,0 +1,460 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+finduser used cached passwd data for CALLER
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+sender_fullhost = [V4NET.9.8.7]
+sender_rcvhost = [V4NET.9.8.7]
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.9.8.7]
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [V4NET.9.8.7]
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<1@b>
+read ACL from file TESTSUITE/aux-fixed/0386.acl1
+processing "accept"
+check hosts = :
+host in ":"? no (end of list)
+accept: condition test failed
+processing "deny"
+check local_parts = ^.*[@%!/|]
+1 in "^.*[@%!/|]"? no (end of list)
+deny: condition test failed
+processing "require"
+check verify = sender/defer_ok
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying x@y
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering x@y
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@y
+--------> r1 router <--------
+local_part=x domain=y
+calling r1 router
+r1 router called for x@y
+  domain = y
+set transport t1
+queued for t1 transport: local_part = x
+domain = y
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: x@y
+  transport: t1
+----------- end verify ------------
+sender x@y verified ok
+require: condition test succeeded
+processing "deny"
+deny: condition test succeeded
+SMTP>> 550 No such user here
+LOG: MAIN REJECT
+  H=[V4NET.9.8.7] F=<x@y> rejected RCPT <1@b>: No such user here
+SMTP<< rset
+SMTP>> 250 Reset OK
+SMTP<< mail from:<x@y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<1@b>
+using ACL "TESTSUITE/aux-fixed/0386.acl1"
+processing "accept"
+check hosts = :
+host in ":"? no (end of list)
+accept: condition test failed
+processing "deny"
+check local_parts = ^.*[@%!/|]
+1 in "^.*[@%!/|]"? no (end of list)
+deny: condition test failed
+processing "require"
+check verify = sender/defer_ok
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying x@y
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering x@y
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@y
+--------> r1 router <--------
+local_part=x domain=y
+calling r1 router
+r1 router called for x@y
+  domain = y
+queued for t1 transport: local_part = x
+domain = y
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: x@y
+  transport: t1
+----------- end verify ------------
+sender x@y verified ok
+require: condition test succeeded
+processing "deny"
+deny: condition test succeeded
+SMTP>> 550 No such user here
+LOG: MAIN REJECT
+  H=[V4NET.9.8.7] F=<x@y> rejected RCPT <1@b>: No such user here
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from [V4NET.9.8.7] closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+finduser used cached passwd data for CALLER
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = NULL
+sender_fullhost = [V4NET.11.12.13]
+sender_rcvhost = [V4NET.11.12.13] (ident=CALLER)
+set_process_info: pppp handling incoming connection from [V4NET.11.12.13] via -oMa
+host in hosts_connection_nolog? no (option unset)
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+host in host_lookup? no (option unset)
+set_process_info: pppp handling incoming connection from [V4NET.11.12.13] U=CALLER
+host in host_reject_connection? no (option unset)
+host in sender_unqualified_hosts? no (option unset)
+host in recipient_unqualified_hosts? no (option unset)
+host in helo_verify_hosts? no (option unset)
+host in helo_try_verify_hosts? no (option unset)
+host in helo_accept_junk_hosts? no (option unset)
+SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+smtp_setup_msg entered
+SMTP<< mail from:<x@y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<2@b>
+read ACL from file TESTSUITE/aux-fixed/0386.acl2
+processing "warn"
+check dnslists = rbl.test.ex 
+DNS list check: rbl.test.ex
+new DNS lookup for 13.12.11.V4NET.rbl.test.ex
+DNS lookup of 13.12.11.V4NET.rbl.test.ex (A) using fakens
+DNS lookup of 13.12.11.V4NET.rbl.test.ex (A) succeeded
+DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
+DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) using fakens
+DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) succeeded
+=> that means V4NET.11.12.13 is listed at rbl.test.ex
+warn: condition test succeeded
+LOG: MAIN
+  H=[V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
+created log directory TESTSUITE/spool/log
+processing "accept"
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< data
+SMTP>> 354 Enter message, ending with "." on a line by itself
+search_tidyup called
+host in ignore_fromline_hosts? no (option unset)
+>>Headers received:
+
+search_tidyup called
+>>Headers after rewriting and local additions:
+
+Data file written for message 10HmaX-0005vi-00
+>>Generated Received: header line
+P Received: from [V4NET.11.12.13] (ident=CALLER)
+	by myhost.test.ex with smtp (Exim x.yz)
+	(envelope-from <x@y>)
+	id 10HmaX-0005vi-00
+	for 2@b; Tue, 2 Mar 1999 09:44:33 +0000
+>>Headers added by MAIL or RCPT ACL:
+  X-Warning: V4NET.11.12.13 is listed at rbl.test.ex
+  X-Warning: This is a test blacklisting message
+>>
+calling local_scan(); timeout=300
+local_scan() returned 0 NULL
+Writing spool header file
+Size of headers = sss
+LOG: MAIN
+  <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
+SMTP>> 250 OK id=10HmaX-0005vi-00
+search_tidyup called
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xfbb95cfd -odi -Mc 10HmaX-0005vi-00
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=EXIM_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+finduser used cached passwd data for CALLER
+set_process_info: pppp delivering specified messages
+set_process_info: pppp delivering 10HmaX-0005vi-00
+reading spool file 10HmaX-0005vi-00-H
+user=CALLER uid=CALLER_UID gid=CALLER_GID sender=x@y
+sender_fullhost = [V4NET.11.12.13]
+sender_rcvhost = [V4NET.11.12.13] (ident=CALLER)
+sender_local=0 ident=CALLER
+Non-recipients:
+Empty Tree
+---- End of tree ----
+recipients_count=1
+body_linecount=1 message_linecount=7
+Delivery address list:
+  2@b 
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: 2@b
+unique = 2@b
+no domain retry record
+no address retry record
+2@b: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing 2@b
+--------> r1 router <--------
+local_part=2 domain=b
+calling r1 router
+r1 router called for 2@b
+  domain = b
+set transport t1
+queued for t1 transport: local_part = 2
+domain = b
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: 2@b
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    2@b
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+search_tidyup called
+>>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
+--------> 2@b <--------
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+no retry data available
+search_tidyup called
+changed uid/gid: local delivery to 2 <2@b> transport=t1
+  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  home=NULL current=/
+set_process_info: pppp delivering 10HmaX-0005vi-00 to 2 using t1
+appendfile transport entered
+appendfile: mode=600 notify_comsat=0 quota=0 warning=0
+  file=TESTSUITE/test-mail/2 format=unix
+  message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
+  message_suffix=\n
+  maildir_use_size_file=no
+  locking by lockfile fcntl 
+lock name: TESTSUITE/test-mail/2.lock
+hitch name: TESTSUITE/test-mail/2.lock.test.ex.dddddddd.pppppppp
+lock file created
+mailbox TESTSUITE/test-mail/2 is locked
+writing to file TESTSUITE/test-mail/2
+writing data block fd=10 size=sss timeout=0
+writing data block fd=10 size=sss timeout=0
+writing data block fd=10 size=sss timeout=0
+appendfile yields 0 with errno=dd more_errno=dd
+search_tidyup called
+journalling 2@b
+t1 transport returned OK for 2@b
+post-process 2@b (0)
+2@b delivered
+LOG: MAIN
+  => 2 <2@b> R=r1 T=t1
+>>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
+changed uid/gid: post-delivery tidying
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
+Processing retry items
+Succeeded addresses:
+2@b: no retry items
+Failed addresses:
+Deferred addresses:
+end of retry processing
+LOG: MAIN
+  Completed
+end delivery of 10HmaX-0005vi-00
+search_tidyup called
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+smtp_setup_msg entered
+SMTP<< rset
+SMTP>> 250 Reset OK
+SMTP<< mail from:<x@y>
+SMTP>> 250 OK
+SMTP<< rcpt to:<2@b>
+using ACL "TESTSUITE/aux-fixed/0386.acl2"
+processing "warn"
+check dnslists = rbl.test.ex 
+DNS list check: rbl.test.ex
+using result of previous DNS lookup
+DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
+=> that means V4NET.11.12.13 is listed at rbl.test.ex
+warn: condition test succeeded
+LOG: MAIN
+  H=[V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
+processing "accept"
+accept: condition test succeeded
+SMTP>> 250 Accepted
+SMTP<< data
+SMTP>> 354 Enter message, ending with "." on a line by itself
+search_tidyup called
+host in ignore_fromline_hosts? no (option unset)
+>>Headers received:
+
+search_tidyup called
+>>Headers after rewriting and local additions:
+
+Data file written for message 10HmaY-0005vi-00
+>>Generated Received: header line
+P Received: from [V4NET.11.12.13] (ident=CALLER)
+	by myhost.test.ex with smtp (Exim x.yz)
+	(envelope-from <x@y>)
+	id 10HmaY-0005vi-00
+	for 2@b; Tue, 2 Mar 1999 09:44:33 +0000
+>>Headers added by MAIL or RCPT ACL:
+  X-Warning: V4NET.11.12.13 is listed at rbl.test.ex
+  X-Warning: This is a test blacklisting message
+>>
+calling local_scan(); timeout=300
+local_scan() returned 0 NULL
+Writing spool header file
+Size of headers = sss
+LOG: MAIN
+  <= x@y H=[V4NET.11.12.13] U=CALLER P=smtp S=sss
+SMTP>> 250 OK id=10HmaY-0005vi-00
+search_tidyup called
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xfbb95cfd -odi -Mc 10HmaY-0005vi-00
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=EXIM_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+finduser used cached passwd data for CALLER
+set_process_info: pppp delivering specified messages
+set_process_info: pppp delivering 10HmaY-0005vi-00
+reading spool file 10HmaY-0005vi-00-H
+user=CALLER uid=CALLER_UID gid=CALLER_GID sender=x@y
+sender_fullhost = [V4NET.11.12.13]
+sender_rcvhost = [V4NET.11.12.13] (ident=CALLER)
+sender_local=0 ident=CALLER
+Non-recipients:
+Empty Tree
+---- End of tree ----
+recipients_count=1
+body_linecount=1 message_linecount=7
+Delivery address list:
+  2@b 
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: 2@b
+unique = 2@b
+no domain retry record
+no address retry record
+2@b: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing 2@b
+--------> r1 router <--------
+local_part=2 domain=b
+calling r1 router
+r1 router called for 2@b
+  domain = b
+set transport t1
+queued for t1 transport: local_part = 2
+domain = b
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: 2@b
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    2@b
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+search_tidyup called
+>>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
+--------> 2@b <--------
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+no retry data available
+search_tidyup called
+changed uid/gid: local delivery to 2 <2@b> transport=t1
+  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  home=NULL current=/
+set_process_info: pppp delivering 10HmaY-0005vi-00 to 2 using t1
+appendfile transport entered
+appendfile: mode=600 notify_comsat=0 quota=0 warning=0
+  file=TESTSUITE/test-mail/2 format=unix
+  message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
+  message_suffix=\n
+  maildir_use_size_file=no
+  locking by lockfile fcntl 
+lock name: TESTSUITE/test-mail/2.lock
+hitch name: TESTSUITE/test-mail/2.lock.test.ex.dddddddd.pppppppp
+lock file created
+mailbox TESTSUITE/test-mail/2 is locked
+writing to file TESTSUITE/test-mail/2
+writing data block fd=10 size=sss timeout=0
+writing data block fd=10 size=sss timeout=0
+writing data block fd=10 size=sss timeout=0
+appendfile yields 0 with errno=dd more_errno=dd
+search_tidyup called
+journalling 2@b
+t1 transport returned OK for 2@b
+post-process 2@b (0)
+2@b delivered
+LOG: MAIN
+  => 2 <2@b> R=r1 T=t1
+>>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
+changed uid/gid: post-delivery tidying
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
+Processing retry items
+Succeeded addresses:
+2@b: no retry items
+Failed addresses:
+Deferred addresses:
+end of retry processing
+LOG: MAIN
+  Completed
+end delivery of 10HmaY-0005vi-00
+search_tidyup called
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+smtp_setup_msg entered
+SMTP<< quit
+SMTP>> 221 myhost.test.ex closing connection
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -1,0 +1,24 @@
+10HmaX-0005vi-00 "fail this" first delivery
+10HmaX-0005vi-00 subject is not "Fail This"
+10HmaY-0005vi-00 "auto fail message" first delivery
+10HmaZ-0005vi-00 "Mail delivery failed: returning message to sender" first delivery
+10HmbA-0005vi-00 "freeze this (1)" first delivery
+10HmbA-0005vi-00 subject is not "Fail This"
+10HmbB-0005vi-00 "auto freeze message" first delivery
+10HmbC-0005vi-00 "reply to this" first delivery
+10HmbC-0005vi-00 subject is not "Fail This"
+10HmbD-0005vi-00 "An auto reply: qualify_domain=test.ex" first delivery
+10HmbA-0005vi-00 "freeze this (1)" not first delivery
+10HmbA-0005vi-00 subject is not "Fail This"
+10HmbE-0005vi-00 "freeze this (2)" first delivery
+10HmbE-0005vi-00 subject is not "Fail This"
+10HmbF-0005vi-00 "auto freeze message" first delivery
+10HmbE-0005vi-00 "freeze this (2)" not first delivery
+10HmbE-0005vi-00 subject is not "Fail This"
+10HmbG-0005vi-00 "freeze this (3)" first delivery
+10HmbG-0005vi-00 subject is not "Fail This"
+10HmbH-0005vi-00 "auto freeze message" first delivery
+10HmbG-0005vi-00 "freeze this (3)" not first delivery
+10HmbG-0005vi-00 subject is not "Fail This"
+10HmbG-0005vi-00 "freeze this (3)" not first delivery
+10HmbG-0005vi-00 subject is not "Fail This"

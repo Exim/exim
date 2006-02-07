@@ -1,0 +1,42 @@
+> a@test.ex verified
+> b@test.ex failed to verify:
+  Unrouteable address
+> f@test.ex failed to verify:
+  bad user
+> p@test.ex verified
+> x@test.ex failed to verify:
+  Unrouteable address
+> y@test.ex verified
+> pipe@test.ex verified
+> file@test.ex verified
+> "smartuser.a@test.ex"@test.ex verified
+> "smartuser.b@test.ex"@test.ex failed to verify:
+  Unrouteable address
+> "smartuser.b@test.ex,a@test.ex"@test.ex verified
+> 
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+550 unrouteable address
+550 unrouteable address
+250 Accepted
+550 unrouteable address
+250 Accepted
+250 Accepted
+250 Accepted
+250 Accepted
+550 unrouteable address
+250 Accepted
+250 Reset OK
+250 <a@test.ex> is deliverable
+550 <b@test.ex> Unrouteable address
+550 <f@test.ex> bad user
+250 <p@test.ex> is deliverable
+550 <x@test.ex> Unrouteable address
+250 <y@test.ex> is deliverable
+250 <pipe@test.ex> is deliverable
+250 <file@test.ex> is deliverable
+250 <"smartuser.a@test.ex"@test.ex> is deliverable
+550 <"smartuser.b@test.ex"@test.ex> Unrouteable address
+250 <"smartuser.b@test.ex,a@test.ex"@test.ex> is deliverable
+221 the.local.host.name closing connection

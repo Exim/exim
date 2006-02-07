@@ -1,0 +1,112 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+set_process_info: pppp running the queue (single queue run)
+LOG: queue_run MAIN
+  Start queue run: pid=pppp
+set_process_info: pppp running queue: 10HmaX-0005vi-00-H
+set_process_info: pppp running queue: waiting for 10HmaX-0005vi-00 (pppp)
+set_process_info: pppp delivering 10HmaX-0005vi-00 (queue run pid ppppp)
+>>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
+--------> userx@test.ex <--------
+set_process_info: pppp delivering 10HmaX-0005vi-00 using t1
+t1 transport entered
+  userx@test.ex
+checking status of 127.0.0.1
+127.0.0.1 [127.0.0.1]:1111 status = usable
+delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (userx@test.ex)
+set_process_info: pppp delivering 10HmaX-0005vi-00 to 127.0.0.1 [127.0.0.1] (userx@test.ex)
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> EHLO the.local.host.name
+  SMTP<< 250-server id
+         250-PIPELINING
+         250 OK
+using PIPELINING
+  SMTP>> MAIL FROM:<CALLER@the.local.host.name>
+  SMTP>> RCPT TO:<userx@test.ex>
+  SMTP>> DATA
+  SMTP<< 250 OK
+  SMTP<< 550 NO
+Remote host 127.0.0.1 [127.0.0.1] closed connection in response to pipelined DATA
+error for DATA ignored: pipelining is in use and there were no good recipients
+ok=1 send_quit=1 send_rset=1 continue_more=0 yield=0 first_address is NULL
+transport_check_waiting entered
+  sequence=1 local_max=500 global_max=-1
+  SMTP>> RSET
+Remote host 127.0.0.1 [127.0.0.1] closed connection in response to RSET
+set_process_info: pppp delivering 10HmaX-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for userx@test.ex: result OK
+Leaving t1 transport
+set_process_info: pppp delivering 10HmaX-0005vi-00 (just run t1 for userx@test.ex in subprocess)
+set_process_info: pppp delivering 10HmaX-0005vi-00: waiting for a remote delivery subprocess to finish
+set_process_info: pppp delivering 10HmaX-0005vi-00
+LOG: MAIN
+  ** userx@test.ex R=r1 T=t1: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
+set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
+writing data block fd=9 size=sss timeout=0
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+set_process_info: pppp accepting a local non-SMTP message from <>
+LOG: MAIN
+  <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+set_process_info: pppp delivering specified messages
+set_process_info: pppp delivering 10HmaZ-0005vi-00
+>>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
+--------> CALLER@the.local.host.name <--------
+set_process_info: pppp delivering 10HmaZ-0005vi-00 using t1
+t1 transport entered
+  CALLER@the.local.host.name
+checking status of 127.0.0.1
+127.0.0.1 [127.0.0.1]:1111 status = usable
+delivering 10HmaZ-0005vi-00 to 127.0.0.1 [127.0.0.1] (CALLER@the.local.host.name)
+set_process_info: pppp delivering 10HmaZ-0005vi-00 to 127.0.0.1 [127.0.0.1] (CALLER@the.local.host.name)
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
+LOG: MAIN
+  127.0.0.1 [127.0.0.1] Connection refused
+set_process_info: pppp delivering 10HmaZ-0005vi-00: just tried 127.0.0.1 [127.0.0.1] for CALLER@the.local.host.name: result DEFER
+added retry item for T:127.0.0.1:127.0.0.1:1224: errno=dd more_errno=dd,A flags=2
+all IP addresses skipped or deferred at least one address
+Leaving t1 transport
+set_process_info: pppp delivering 10HmaZ-0005vi-00 (just run t1 for CALLER@the.local.host.name in subprocess)
+LOG: MAIN
+  Completed
+set_process_info: pppp running queue: waiting for children of pppp
+set_process_info: pppp delivering 10HmaZ-0005vi-00: waiting for a remote delivery subprocess to finish
+set_process_info: pppp delivering 10HmaZ-0005vi-00
+LOG: MAIN
+  == CALLER@the.local.host.name R=r1 T=t1 defer (dd): Connection refused
+set_process_info: pppp tidying up after delivering 10HmaZ-0005vi-00
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+set_process_info: pppp running queue
+set_process_info: pppp running queue: 10HmaY-0005vi-00-H
+set_process_info: pppp running queue: waiting for 10HmaY-0005vi-00 (pppp)
+set_process_info: pppp delivering 10HmaY-0005vi-00 (queue run pid ppppp)
+>>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
+--------> usery@test.ex <--------
+set_process_info: pppp delivering 10HmaY-0005vi-00 using t1
+t1 transport entered
+  usery@test.ex
+checking status of 127.0.0.1
+no message retry record
+host retry time not reached: checking ultimate address timeout
+127.0.0.1 [127.0.0.1]:1111 status = unusable
+all IP addresses skipped or deferred at least one address
+Leaving t1 transport
+set_process_info: pppp delivering 10HmaY-0005vi-00 (just run t1 for usery@test.ex in subprocess)
+set_process_info: pppp delivering 10HmaY-0005vi-00: waiting for a remote delivery subprocess to finish
+set_process_info: pppp delivering 10HmaY-0005vi-00
+LOG: retry_defer MAIN
+  == usery@test.ex R=r1 T=t1 defer (-53): retry time not reached for any host
+set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
+set_process_info: pppp running queue: waiting for children of pppp
+set_process_info: pppp running queue
+LOG: queue_run MAIN
+  End queue run: pid=pppp
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

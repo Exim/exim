@@ -1,0 +1,219 @@
+LOG: MAIN
+  remote host address is the local host: some.host (while routing <"ACCEPT hosts=localhost lookup=byname"@some.host>)
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing "DECLINE cannot route this one (DECLINE)"@some.host
+--------> b router <--------
+local_part=decline cannot route this one (decline) domain=some.host
+checking senders
+b router skipped: senders mismatch
+--------> q router <--------
+local_part=DECLINE cannot route this one (DECLINE) domain=some.host
+checking domains
+calling q router
+q router called for "DECLINE cannot route this one (DECLINE)"@some.host: domain = some.host
+uid=EXIM_UID gid=EXIM_GID current_directory=/
+command wrote: DECLINE cannot route this one (DECLINE)
+q router declined for "DECLINE cannot route this one (DECLINE)"@some.host
+"more" is false: skipping remaining routers
+no more routers
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=2 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing "FAIL cannot route this one (FAIL)"@some.host
+--------> b router <--------
+local_part=fail cannot route this one (fail) domain=some.host
+checking senders
+b router skipped: senders mismatch
+--------> q router <--------
+local_part=FAIL cannot route this one (FAIL) domain=some.host
+checking domains
+calling q router
+q router called for "FAIL cannot route this one (FAIL)"@some.host: domain = some.host
+uid=EXIM_UID gid=EXIM_GID current_directory=/
+command wrote: FAIL cannot route this one (FAIL)
+q router forced address failure
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=2 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing "ERROR cannot route this one (ERROR)"@some.host
+--------> b router <--------
+local_part=error cannot route this one (error) domain=some.host
+checking senders
+b router skipped: senders mismatch
+--------> q router <--------
+local_part=ERROR cannot route this one (ERROR) domain=some.host
+checking domains
+calling q router
+q router called for "ERROR cannot route this one (ERROR)"@some.host: domain = some.host
+uid=EXIM_UID gid=EXIM_GID current_directory=/
+command wrote: ERROR cannot route this one (ERROR)
+LOG: PANIC
+  q router: bad command yield: ERROR cannot route this one (ERROR)
+q router: defer for "ERROR cannot route this one (ERROR)"@some.host
+  message: bad command yield: ERROR cannot route this one (ERROR)
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=1 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing "DEFER cannot route this one (DEFER)"@some.host
+--------> b router <--------
+local_part=defer cannot route this one (defer) domain=some.host
+checking senders
+b router skipped: senders mismatch
+--------> q router <--------
+local_part=DEFER cannot route this one (DEFER) domain=some.host
+checking domains
+calling q router
+q router called for "DEFER cannot route this one (DEFER)"@some.host: domain = some.host
+uid=EXIM_UID gid=EXIM_GID current_directory=/
+command wrote: DEFER cannot route this one (DEFER)
+q router: defer for "DEFER cannot route this one (DEFER)"@some.host
+  message: cannot route this one (DEFER)
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=1 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing "ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host
+--------> b router <--------
+local_part=accept transport = other_smtp hosts=ten-1.test.ex domain=some.host
+checking senders
+b router skipped: senders mismatch
+--------> q router <--------
+local_part=ACCEPT transport = other_smtp hosts=ten-1.test.ex domain=some.host
+checking domains
+calling q router
+q router called for "ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host: domain = some.host
+uid=EXIM_UID gid=EXIM_GID current_directory=/
+command wrote: ACCEPT transport = other_smtp hosts=ten-1.test.ex
+finding IP address for ten-1.test.ex
+doing DNS lookup
+queued for other_smtp transport: local_part = ACCEPT transport = other_smtp hosts=ten-1.test.ex
+domain = some.host
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by q router
+  envelope to: "ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host
+  transport: other_smtp
+  host ten-1.test.ex [V4NET.0.0.1]
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing PASS@some.host
+--------> b router <--------
+local_part=pass domain=some.host
+checking senders
+b router skipped: senders mismatch
+--------> q router <--------
+local_part=PASS domain=some.host
+checking domains
+calling q router
+q router called for PASS@some.host: domain = some.host
+uid=EXIM_UID gid=EXIM_GID current_directory=/
+command wrote: PASS
+q router passed for PASS@some.host
+--------> s router <--------
+local_part=pass domain=some.host
+checking domains
+calling s router
+s router called for PASS@some.host
+  domain = some.host
+route_item = * 127.0.0.1 byname
+original list of hosts = "127.0.0.1" options = byname
+expanded list of hosts = "127.0.0.1" options = byname
+set transport smtp
+finding IP address for 127.0.0.1
+calling host_find_byname
+remote host address is the local host: some.host: configured to try delivery anyway
+queued for smtp transport: local_part = pass
+domain = some.host
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by s router
+  envelope to: PASS@some.host
+  transport: smtp
+  host 127.0.0.1 [127.0.0.1]
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing "FREEZE cannot route this one (FREEZE)"@some.host
+--------> b router <--------
+local_part=freeze cannot route this one (freeze) domain=some.host
+checking senders
+b router skipped: senders mismatch
+--------> q router <--------
+local_part=FREEZE cannot route this one (FREEZE) domain=some.host
+checking domains
+calling q router
+q router called for "FREEZE cannot route this one (FREEZE)"@some.host: domain = some.host
+uid=EXIM_UID gid=EXIM_GID current_directory=/
+command wrote: FREEZE cannot route this one (FREEZE)
+q router: defer for "FREEZE cannot route this one (FREEZE)"@some.host
+  message: cannot route this one (FREEZE)
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=1 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing "REDIRECT postmaster@test.ex"@some.host
+--------> b router <--------
+local_part=redirect postmaster@test.ex domain=some.host
+checking senders
+b router skipped: senders mismatch
+--------> q router <--------
+local_part=REDIRECT postmaster@test.ex domain=some.host
+checking domains
+calling q router
+q router called for "REDIRECT postmaster@test.ex"@some.host: domain = some.host
+uid=EXIM_UID gid=EXIM_GID current_directory=/
+command wrote: REDIRECT postmaster@test.ex
+rda_interpret (string): postmaster@test.ex
+expanded: postmaster@test.ex
+file is not a filter file
+parse_forward_list: postmaster@test.ex
+extract item: postmaster@test.ex
+q router generated postmaster@test.ex
+routed by q router
+  envelope to: "REDIRECT postmaster@test.ex"@some.host
+  transport: <none>
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing postmaster@test.ex
+--------> b router <--------
+local_part=postmaster domain=test.ex
+checking senders
+b router skipped: senders mismatch
+--------> q router <--------
+local_part=postmaster domain=test.ex
+checking domains
+q router skipped: domains mismatch
+--------> s router <--------
+local_part=postmaster domain=test.ex
+checking domains
+s router skipped: domains mismatch
+--------> pm router <--------
+local_part=postmaster domain=test.ex
+checking local_parts
+calling pm router
+pm router called for postmaster@test.ex
+  domain = test.ex
+set transport null
+queued for null transport: local_part = postmaster
+domain = test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by pm router
+  envelope to: postmaster@test.ex
+  transport: null
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

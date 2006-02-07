@@ -1,0 +1,6 @@
+1999-03-02 09:44:33 U=CALLER sender verify defer for <x@host.test.again.dns>: host lookup did not complete
+1999-03-02 09:44:33 U=CALLER F=<x@host.test.again.dns> temporarily rejected RCPT <x@y>: Could not complete sender verify
+1999-03-02 09:44:33 U=CALLER F=<x@host.test.again.dns> temporarily rejected RCPT <a@b>: Could not complete sender verify
+1999-03-02 09:44:33 U=CALLER sender verify defer for <x@host.test.again.dns>: host lookup did not complete
+1999-03-02 09:44:33 U=CALLER F=<x@host.test.again.dns> temporarily rejected RCPT <x@y>: Could not complete sender verify
+1999-03-02 09:44:33 U=CALLER F=<x@host.test.again.dns> temporarily rejected RCPT <a@b>: Could not complete sender verify

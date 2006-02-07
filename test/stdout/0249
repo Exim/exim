@@ -1,0 +1,16 @@
+  sender: User@b.domain
+    from: User@b.domain
+      to: User@b.domain
+      cc: User@b.domain
+     bcc: User@b.domain
+reply-to: User@b.domain
+env-from: User@b.domain
+  env-to: User@b.domain
+  sender: User@d.domain
+    from: User@d.domain
+      to: User@d.domain
+      cc: User@d.domain
+     bcc: User@d.domain
+reply-to: User@d.domain
+env-from: User@d.domain
+  env-to: User@d.domain

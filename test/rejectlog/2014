@@ -1,0 +1,3 @@
+1999-03-02 09:44:33 H=(rhu.barb) [127.0.0.1] F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=
+1999-03-02 09:44:33 H=[127.0.0.1] F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel
+1999-03-02 09:44:33 H=[127.0.0.1] F=<userx@test.ex> rejected RCPT <userx@test.ex>: certificate not verified: peerdn=C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel

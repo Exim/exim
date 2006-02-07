@@ -1,0 +1,34 @@
+> Ayen Other
+> Ayen Other
+> 
+> 
+> id=nothing name="" 
+> name="\"stquot" id=quote2 
+> name="before
+after" id=newline 
+> name="x	x" id=tab 
+> name=it's id=its 
+> name=it's id=its 
+> 
+
+**** SMTP testing session as if from host 10.0.0.0
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 relay not permitted
+550 relay not permitted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 10.10.10.10
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+221 myhost.test.ex closing connection
+> Ayen Other
+> 

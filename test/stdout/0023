@@ -1,0 +1,457 @@
+
+**** SMTP testing session as if from host 1.2.3.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+550 Administrative prohibition
+250 Accepted
+250 Accepted
+250 Accepted
+550 domain explicitly denied
+550 refuse.test.ex gets refused
+550 Administrative prohibition
+550 x@wontpass shall not pass
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 5.6.7.8
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 Administrative prohibition
+550 Administrative prohibition
+250 Accepted
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 9.9.9.9
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 9.9.9.8
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 don't like this host
+550 don't like this host
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 9.9.9.255
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 5.6.8.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 Administrative prohibition
+550 Administrative prohibition
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Accepted
+250 Reset OK
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 5.6.11.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+550-"local part of wrong type
+550 (quotes are literal)
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 5.6.12.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+550 failed nested acl
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 5.6.12.2
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 8.8.8.8
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+451 Temporary local problem - please try later
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 5.6.13.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+550 Administrative prohibition
+550 Administrative prohibition
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.11.12.13
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 host in DNS list rbl.test.ex: This is a test blacklisting message
+550 host in DNS list rbl.test.ex: This is a test blacklisting message
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.11.12.12
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 20.20.20.20
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-Verification failed for <x@y>
+550-Unrouteable address
+550 sender verify failure
+550 sender verify failure
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 20.20.20.20
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 recipient verify failure
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 21.21.21.21
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 Unrouteable address
+250 Accepted
+550 here is a fail message
+250 Reset OK
+250 OK
+550-Verification failed for <x@y>
+550-Unrouteable address
+550 Sender verify failed
+550 Sender verify failed
+250 Reset OK
+250 OK
+550-Verification failed for <fail@y>
+550-here is a fail message
+550 Sender verify failed
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 22.22.22.22
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 Administrative prohibition
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 23.23.23.0
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-Verification failed for <x@y>
+550-Unrouteable address
+550 sender must verify
+250 Reset OK
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 23.23.23.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 24.24.24.24
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 Administrative prohibition
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 25.25.25.25
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 Administrative prohibition
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 26.26.26.26
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+550 bounce messages can have only one recipient
+550 bounce messages can have only one recipient
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 27.27.27.27
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 28.28.28.28
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+550 Administrative prohibition
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.3
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.97
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 Administrative prohibition
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 29.29.29.29
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 Administrative prohibition
+250 Reset OK
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 30.30.30.30
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-domain=test.ex
+550-value=V4NET.0.0.1
+550 text=""
+250 Reset OK
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+550-domain=test.ex
+550-value=127.0.0.2
+550 text="This is a test blacklisting message"
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 31.31.31.31
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaY-0005vi-00
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 33.33.33.33
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 sender verify failure
+550 sender verify failure
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 44.44.44.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaZ-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbA-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbB-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbC-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbD-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbE-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbF-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbG-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbH-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbI-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbJ-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbK-0005vi-00
+250 OK
+451 Temporary local problem - please try later
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbL-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+550 Administrative prohibition
+250 Accepted
+250 Accepted
+550 Administrative prohibition
+550 Administrative prohibition
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbM-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550-ACL message for verification failure
+550 Original was >here is a fail message<
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 host in DNS list rbl.test.ex: This is a test blacklisting message
+550 host in DNS list rbl.test.ex: This is a test blacklisting message
+221 myhost.test.ex closing connection

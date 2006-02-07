@@ -1,0 +1,37 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "acl_data"
+>>> processing "deny"
+>>> check condition = ${if match{$message_body}{trigger}{yes}{no}}
+>>>                 = no
+>>> deny: condition test failed
+>>> processing "require"
+>>> check verify = header_syntax
+>>> require: condition test failed
+LOG: 10HmbF-0005vi-00 H=[10.0.0.0] F=<x@y> rejected after DATA: domain missing or malformed: failing address in "From" header is: @
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+>>> using ACL "acl_data"
+>>> processing "deny"
+>>> check condition = ${if match{$message_body}{trigger}{yes}{no}}
+>>>                 = yes
+>>> deny: condition test succeeded
+LOG: 10HmbG-0005vi-00 H=[10.0.0.0] F=<x@y> rejected after DATA: body contains trigger

@@ -1,0 +1,4 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 Failed to expand return path "${if" in bad_return transport: condition name expected, but found ""
+1999-03-02 09:44:33 10HmaX-0005vi-00 home directory "${if rhubarb" failed to expand for exp_fail transport: unknown condition "rhubarb"
+1999-03-02 09:44:33 10HmaX-0005vi-00 Failed to expand return path "${if" in bad_return transport: condition name expected, but found ""
+1999-03-02 09:44:33 10HmaX-0005vi-00 home directory "${if rhubarb" failed to expand for exp_fail transport: unknown condition "rhubarb"

@@ -1,0 +1,294 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing CALLER@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering CALLER@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing CALLER@test.ex
+--------> r1 router <--------
+local_part=CALLER domain=test.ex
+checking local_parts
+CALLER in "never"? no (end of list)
+CALLER in "never1"? no (end of list)
+CALLER in "CALLER"? yes (matched "CALLER")
+CALLER in "+never_localparts : +n1_localparts : ! +local_localparts"? no (matched "! +local_localparts")
+r1 router skipped: local_parts mismatch
+--------> r2 router <--------
+local_part=CALLER domain=test.ex
+checking local_parts
+cached no match for +never_localparts
+cached lookup data = NULL
+cached no match for +n1_localparts
+cached lookup data = NULL
+CALLER in "<; never2 ; +n1_localparts"? no (end of list)
+cached yes match for +local_localparts
+cached lookup data = NULL
+CALLER in "+never_localparts : +n2_localparts : !+local_localparts"? no (matched "!+local_localparts" - cached)
+r2 router skipped: local_parts mismatch
+--------> r3 router <--------
+local_part=CALLER domain=test.ex
+checking local_parts
+cached yes match for +local_localparts
+cached lookup data = NULL
+CALLER in "+local_localparts"? yes (matched "+local_localparts" - cached)
+checking for local user
+finduser used cached passwd data for CALLER
+calling r3 router
+r3 router called for CALLER@test.ex
+  domain = test.ex
+set transport t1
+queued for t1 transport: local_part = CALLER
+domain = test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r3 router
+  envelope to: CALLER@test.ex
+  transport: t1
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+set_process_info: pppp accepting a local non-SMTP message from <CALLER@test.ex>
+Sender: CALLER@test.ex
+Recipients:
+  CALLER@test.ex
+search_tidyup called
+>>Headers received:
+
+rewrite_one_header: type=F:
+  From: CALLER_NAME <CALLER@test.ex>
+search_tidyup called
+>>Headers after rewriting and local additions:
+I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Data file written for message 10HmaX-0005vi-00
+>>Generated Received: header line
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+calling local_scan(); timeout=300
+local_scan() returned 0 NULL
+Writing spool header file
+Size of headers = sss
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+search_tidyup called
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xfbb95cfd -odi -Mc 10HmaX-0005vi-00
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=EXIM_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+set_process_info: pppp delivering specified messages
+set_process_info: pppp delivering 10HmaX-0005vi-00
+reading spool file 10HmaX-0005vi-00-H
+user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@test.ex
+sender_local=1 ident=CALLER
+Non-recipients:
+Empty Tree
+---- End of tree ----
+recipients_count=1
+body_linecount=0 message_linecount=7
+Delivery address list:
+  CALLER@test.ex 
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+ensuring TESTSUITE/spool/db/retry.lockfile is owned by exim
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: CALLER@test.ex
+unique = CALLER@test.ex
+no domain retry record
+no address retry record
+CALLER@test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing CALLER@test.ex
+--------> r1 router <--------
+local_part=CALLER domain=test.ex
+checking local_parts
+CALLER in "never"? no (end of list)
+CALLER in "never1"? no (end of list)
+CALLER in "CALLER"? yes (matched "CALLER")
+CALLER in "+never_localparts : +n1_localparts : ! +local_localparts"? no (matched "! +local_localparts")
+r1 router skipped: local_parts mismatch
+--------> r2 router <--------
+local_part=CALLER domain=test.ex
+checking local_parts
+cached no match for +never_localparts
+cached lookup data = NULL
+cached no match for +n1_localparts
+cached lookup data = NULL
+CALLER in "<; never2 ; +n1_localparts"? no (end of list)
+cached yes match for +local_localparts
+cached lookup data = NULL
+CALLER in "+never_localparts : +n2_localparts : !+local_localparts"? no (matched "!+local_localparts" - cached)
+r2 router skipped: local_parts mismatch
+--------> r3 router <--------
+local_part=CALLER domain=test.ex
+checking local_parts
+cached yes match for +local_localparts
+cached lookup data = NULL
+CALLER in "+local_localparts"? yes (matched "+local_localparts" - cached)
+checking for local user
+finduser used cached passwd data for CALLER
+calling r3 router
+r3 router called for CALLER@test.ex
+  domain = test.ex
+set transport t1
+queued for t1 transport: local_part = CALLER
+domain = test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r3 router
+  envelope to: CALLER@test.ex
+  transport: t1
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    CALLER@test.ex
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+search_tidyup called
+>>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
+--------> CALLER@test.ex <--------
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+no retry data available
+search_tidyup called
+changed uid/gid: local delivery to CALLER <CALLER@test.ex> transport=t1
+  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  home=CALLER_HOME current=CALLER_HOME
+set_process_info: pppp delivering 10HmaX-0005vi-00 to CALLER using t1
+appendfile transport entered
+appendfile: mode=600 notify_comsat=0 quota=0 warning=0
+  file=/dev/null format=unix
+  message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
+  message_suffix=\n
+  maildir_use_size_file=no
+  locking by lockfile fcntl 
+search_tidyup called
+journalling CALLER@test.ex
+t1 transport returned OK for CALLER@test.ex
+post-process CALLER@test.ex (0)
+CALLER@test.ex delivered
+LOG: MAIN
+  => CALLER <CALLER@test.ex> R=r3 T=t1
+>>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
+changed uid/gid: post-delivery tidying
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
+Processing retry items
+Succeeded addresses:
+CALLER@test.ex: no retry items
+Failed addresses:
+Deferred addresses:
+end of retry processing
+LOG: MAIN
+  Completed
+end delivery of 10HmaX-0005vi-00
+search_tidyup called
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing unknown@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering unknown@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing unknown@test.ex
+--------> r1 router <--------
+local_part=unknown domain=test.ex
+checking local_parts
+unknown in "never"? no (end of list)
+unknown in "never1"? no (end of list)
+unknown in "CALLER"? no (end of list)
+unknown in "+never_localparts : +n1_localparts : ! +local_localparts"? yes (end of list)
+calling r1 router
+r1 router called for unknown@test.ex
+  domain = test.ex
+route_item = never
+test.ex in "never"? no (end of list)
+r1 router declined for unknown@test.ex
+--------> r2 router <--------
+local_part=unknown domain=test.ex
+checking local_parts
+cached no match for +never_localparts
+cached lookup data = NULL
+cached no match for +n1_localparts
+cached lookup data = NULL
+unknown in "<; never2 ; +n1_localparts"? no (end of list)
+cached no match for +local_localparts
+cached lookup data = NULL
+unknown in "+never_localparts : +n2_localparts : !+local_localparts"? yes (end of list)
+calling r2 router
+r2 router called for unknown@test.ex
+  domain = test.ex
+DNS lookup of test.ex (MX) using fakens
+DNS lookup of test.ex (MX) gave NO_DATA
+returning DNS_NODATA
+DNS lookup of test.ex (A) using fakens
+DNS lookup of test.ex (A) gave NO_DATA
+returning DNS_NODATA
+r2 router declined for unknown@test.ex
+--------> r3 router <--------
+local_part=unknown domain=test.ex
+checking local_parts
+cached no match for +local_localparts
+cached lookup data = NULL
+unknown in "+local_localparts"? no (end of list)
+r3 router skipped: local_parts mismatch
+--------> r4 router <--------
+local_part=unknown domain=test.ex
+checking local_parts
+cached no match for +local_localparts
+cached lookup data = NULL
+unknown in "test.ex"? no (end of list)
+unknown in "unexpanded"? no (end of list)
+unknown in "+local_localparts : +expanded : +unexpanded"? no (end of list)
+r4 router skipped: local_parts mismatch
+--------> r5 router <--------
+local_part=unknown domain=test.ex
+checking local_parts
+cached no match for +local_localparts
+cached lookup data = NULL
+unknown in "test.ex"? no (end of list)
+cached no match for +unexpanded
+cached lookup data = NULL
+unknown in "+local_localparts : +expanded : +unexpanded"? no (end of list)
+r5 router skipped: local_parts mismatch
+no more routers
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=2 >>>>>>>>>>>>>>>>

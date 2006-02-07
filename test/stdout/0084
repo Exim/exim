@@ -1,0 +1,5 @@
+userx@test.ex
+    <-- yes@myhost.test.ex
+  router = localuser, transport = unset
+no@myhost.test.ex
+  router = smart, transport = unset

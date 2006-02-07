@@ -1,0 +1,30 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "deny"
+>>> check !verify = recipient
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing userx@not.test.ex
+>>> not.test.ex in "test.ex"? no (end of list)
+>>> not.test.ex in "! +local_domains"? yes (end of list)
+>>> calling islocal router
+>>> not.test.ex in "*"? yes (matched "*")
+>>> local host found for non-MX address
+>>> fully qualified name = localhost
+MUNGED: ::1 will be omitted in what follows
+>>> get[host|ipnode]byname[2] looked up these IP addresses:
+>>>   name=localhost address=127.0.0.1
+LOG: remote host address is the local host: not.test.ex (while verifying <userx@not.test.ex> from host [V4NET.0.0.0])
+>>> islocal router: defer for userx@not.test.ex
+>>>   message: remote host address is the local host
+>>> ----------- end verify ------------
+>>> deny: condition test deferred
+LOG: H=[V4NET.0.0.0] F=<userx@test.ex> temporarily rejected RCPT <userx@not.test.ex>: remote host address is the local host
+LOG: MAIN
+  remote host address is the local host: not.test.ex (while routing <userx@not.test.ex>)

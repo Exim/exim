@@ -1,0 +1,4 @@
+1999-03-02 09:44:33 Received from CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 other@myhost.test.ex R=d2 defer (-1): explicit defer
+1999-03-02 09:44:33 /dev/null <devnull@myhost.test.ex>: **bypassed** transport succeeded
+1999-03-02 09:44:33 devnull@myhost.test.ex: children all complete

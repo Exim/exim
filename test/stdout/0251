@@ -1,0 +1,34 @@
+
+**** SMTP testing session as if from host V4NET.0.0.0
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> mail from:<ok@sender>
+??? 250
+<<< 250 OK
+>>> rcpt to:<oklist@listr.test.ex>
+??? 250
+<<< 250 Accepted
+>>> rset
+??? 250
+<<< 250 Reset OK
+>>> mail from:<bad@sender>
+??? 250
+<<< 250 OK
+>>> rcpt to:<oklist@listr.test.ex>
+??? 250
+<<< 250 Accepted
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script

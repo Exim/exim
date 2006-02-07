@@ -1,0 +1,54 @@
+1999-03-02 09:44:33 "x@y" from smtp sender rewritten as "p@q" by rule 1
+1999-03-02 09:44:33 "a@b" from smtp sender rewritten as "p@q" by rule 2
+1999-03-02 09:44:33 "2047@x.y" from sender: rewritten as "AÄÅÆZ <2047@x.y>" by rule 3
+1999-03-02 09:44:33 "2047@x.y" from from: rewritten as "AÄÅÆZ <2047@x.y>" by rule 3
+1999-03-02 09:44:33 "2047@x.y" from to: rewritten as "AÄÅÆZ <2047@x.y>" by rule 3
+1999-03-02 09:44:33 "2047@x.y" from cc: rewritten as "AÄÅÆZ <2047@x.y>" by rule 3
+1999-03-02 09:44:33 "2047@x.y" from bcc: rewritten as "AÄÅÆZ <2047@x.y>" by rule 3
+1999-03-02 09:44:33 "2047@x.y" from reply-to: rewritten as "AÄÅÆZ <2047@x.y>" by rule 3
+1999-03-02 09:44:33 "2047@x.y" from env-from rewritten as "AÄÅÆZ <2047@x.y>" by rule 3
+1999-03-02 09:44:33 "2047@x.y" from env-to rewritten as "AÄÅÆZ <2047@x.y>" by rule 3
+1999-03-02 09:44:33 Rewrite of unq1@x.y yielded unqualified address "a phrase <unq1>"
+1999-03-02 09:44:33 Rewrite of unq1@x.y yielded unqualified address "a phrase <unq1>"
+1999-03-02 09:44:33 Rewrite of unq1@x.y yielded unqualified address "a phrase <unq1>"
+1999-03-02 09:44:33 Rewrite of unq1@x.y yielded unqualified address "a phrase <unq1>"
+1999-03-02 09:44:33 Rewrite of unq1@x.y yielded unqualified address "a phrase <unq1>"
+1999-03-02 09:44:33 Rewrite of unq1@x.y yielded unqualified address "a phrase <unq1>"
+1999-03-02 09:44:33 Rewrite of unq1@x.y yielded unqualified address "a phrase <unq1>"
+1999-03-02 09:44:33 Rewrite of unq1@x.y yielded unqualified address "a phrase <unq1>"
+1999-03-02 09:44:33 "unq2@x.y" from sender: rewritten as "a phrase <unq2@test.ex>" by rule 5
+1999-03-02 09:44:33 "unq2@x.y" from from: rewritten as "a phrase <unq2@test.ex>" by rule 5
+1999-03-02 09:44:33 "unq2@x.y" from to: rewritten as "a phrase <unq2@test.ex>" by rule 5
+1999-03-02 09:44:33 "unq2@x.y" from cc: rewritten as "a phrase <unq2@test.ex>" by rule 5
+1999-03-02 09:44:33 "unq2@x.y" from bcc: rewritten as "a phrase <unq2@test.ex>" by rule 5
+1999-03-02 09:44:33 "unq2@x.y" from reply-to: rewritten as "a phrase <unq2@test.ex>" by rule 5
+1999-03-02 09:44:33 "unq2@x.y" from env-from rewritten as "a phrase <unq2@test.ex>" by rule 5
+1999-03-02 09:44:33 "unq2@x.y" from env-to rewritten as "a phrase <unq2@test.ex>" by rule 5
+1999-03-02 09:44:33 "unq3@x.y" from sender: rewritten as "unq3@test.ex" by rule 6
+1999-03-02 09:44:33 "unq3@x.y" from from: rewritten as "unq3@test.ex" by rule 6
+1999-03-02 09:44:33 "unq3@x.y" from to: rewritten as "unq3@test.ex" by rule 6
+1999-03-02 09:44:33 "unq3@x.y" from cc: rewritten as "unq3@test.ex" by rule 6
+1999-03-02 09:44:33 "unq3@x.y" from bcc: rewritten as "unq3@test.ex" by rule 6
+1999-03-02 09:44:33 "unq3@x.y" from reply-to: rewritten as "unq3@test.ex" by rule 6
+1999-03-02 09:44:33 "unq3@x.y" from env-from rewritten as "unq3@test.ex" by rule 6
+1999-03-02 09:44:33 "unq3@x.y" from env-to rewritten as "unq3@test.ex" by rule 6
+1999-03-02 09:44:33 "4@x.y" from sender: rewritten as "a 4. phrase <4@22> (a comment AÄÅÆZ)" by rule 7
+1999-03-02 09:44:33 "4@x.y" from from: rewritten as "a 4. phrase <4@22> (a comment AÄÅÆZ)" by rule 7
+1999-03-02 09:44:33 "4@x.y" from to: rewritten as "a 4. phrase <4@22> (a comment AÄÅÆZ)" by rule 7
+1999-03-02 09:44:33 "4@x.y" from cc: rewritten as "a 4. phrase <4@22> (a comment AÄÅÆZ)" by rule 7
+1999-03-02 09:44:33 "4@x.y" from bcc: rewritten as "a 4. phrase <4@22> (a comment AÄÅÆZ)" by rule 7
+1999-03-02 09:44:33 "4@x.y" from reply-to: rewritten as "a 4. phrase <4@22> (a comment AÄÅÆZ)" by rule 7
+1999-03-02 09:44:33 "4@x.y" from env-from rewritten as "a 4. phrase <4@22> (a comment AÄÅÆZ)" by rule 7
+1999-03-02 09:44:33 "4@x.y" from env-to rewritten as "a 4. phrase <4@22> (a comment AÄÅÆZ)" by rule 7
+1999-03-02 09:44:33 "fw@fw" from from: rewritten as "harry <fw@we.de>" by rule 8
+1999-03-02 09:44:33 "harry <fw@we.de>" from from: rewritten as "harry@we.de" by rule 9
+1999-03-02 09:44:33 "gw@fw" from from: rewritten as "härry <gw@we.de>" by rule 10
+1999-03-02 09:44:33 "=?ISO-8859-1?Q?h=E4rry?= <gw@we.de>" from from: rewritten as "harry@we.de" by rule 11
+1999-03-02 09:44:33 "abc@abc" from sender: rewritten as "was-abc@abc" by rule 12
+1999-03-02 09:44:33 "abc@abc" from from: rewritten as "was-abc@abc" by rule 12
+1999-03-02 09:44:33 "abc@abc" from to: rewritten as "was-abc@abc" by rule 12
+1999-03-02 09:44:33 "abc@abc" from cc: rewritten as "was-abc@abc" by rule 12
+1999-03-02 09:44:33 "abc@abc" from bcc: rewritten as "was-abc@abc" by rule 12
+1999-03-02 09:44:33 "abc@abc" from reply-to: rewritten as "was-abc@abc" by rule 12
+1999-03-02 09:44:33 "abc@abc" from env-from rewritten as "was-abc@abc" by rule 12
+1999-03-02 09:44:33 "abc@abc" from env-to rewritten as "was-abc@abc" by rule 12

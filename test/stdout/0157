@@ -1,0 +1,36 @@
+
+**** SMTP testing session as if from host V4NET.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 invalid sender
+250 Reset OK
+250 OK
+250 Accepted
+221 the.local.host.name closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.2
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Reset OK
+250 OK
+250 Accepted
+221 the.local.host.name closing connection
+
+**** SMTP testing session as if from host V4NET.0.0.3
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+550 relay not permitted
+250 Reset OK
+250 OK
+550 relay not permitted
+221 the.local.host.name closing connection

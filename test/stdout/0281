@@ -1,0 +1,54 @@
+
+**** SMTP testing session as if from host V4NET.1.1.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+550 domain doesn't match @ or @[]
+250 Accepted
+250 Accepted
+250 Accepted
+550 domain doesn't match @mx_any
+550 domain doesn't match @mx_any
+250 Accepted
+550 domain doesn't match @mx_primary
+550 domain doesn't match @mx_primary
+550 domain doesn't match @mx_primary
+550 domain doesn't match @mx_secondary
+250 Accepted
+550 domain doesn't match @mx_secondary
+550 domain doesn't match @mx_secondary
+550 host doesn't match @ or @[]
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.10.10.10
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 127.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host V4NET.1.1.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+550 domain doesn't match @mx_primary
+250 Accepted
+221 myhost.test.ex closing connection

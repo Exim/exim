@@ -1,0 +1,804 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@localhost
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@localhost
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<ok@localhost>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=0 random=0
+wrote positive callout cache address record
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@localhost
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@localhost
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: found address record
+callout cache: address record is positive
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@localhost
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@localhost
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: address record expired
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... failed: Connection refused
+LOG: MAIN REJECT
+  H=[V4NET.0.0.1] U=root sender verify defer for <ok@localhost>: could not connect to 127.0.0.1 [127.0.0.1]: Connection refused
+created log directory TESTSUITE/spool/log
+LOG: MAIN REJECT
+  H=[V4NET.0.0.1] U=root F=<ok@localhost> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying bad@localhost
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering bad@localhost
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<bad@localhost>
+  SMTP<< 550 REJECTED
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=0 random=0
+wrote negative callout cache address record
+LOG: MAIN REJECT
+  H=[V4NET.0.0.1] U=root sender verify fail for <bad@localhost>: response to "RCPT TO:<bad@localhost>" from 127.0.0.1 [127.0.0.1] was: 550 REJECTED
+LOG: MAIN REJECT
+  H=[V4NET.0.0.1] U=root F=<bad@localhost> rejected RCPT <z@test.ex>: (recipient): Sender verify failed
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying bad@localhost
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering bad@localhost
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: found address record
+callout cache: address record is negative
+LOG: MAIN REJECT
+  H=[V4NET.0.0.1] U=root sender verify fail for <bad@localhost>
+LOG: MAIN REJECT
+  H=[V4NET.0.0.1] U=root F=<bad@localhost> rejected RCPT <z@test.ex>: (recipient): Sender verify failed
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@localhost
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@localhost
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: address record expired
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 550 REJECT MAIL FROM
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=2 postmaster=0 random=0
+LOG: MAIN REJECT
+  H=[V4NET.0.0.1] U=root sender verify fail for <ok@localhost>: response to "MAIL FROM:<>" from 127.0.0.1 [127.0.0.1] was: 550 REJECT MAIL FROM
+LOG: MAIN REJECT
+  H=[V4NET.0.0.1] U=root F=<ok@localhost> rejected RCPT <z@test.ex>: (mail): Sender verify failed
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@localhost
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@localhost
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: domain gave initial rejection, or does not accept HELO or MAIL FROM:<>
+LOG: MAIN REJECT
+  H=[V4NET.0.0.1] U=root sender verify fail for <ok@localhost>
+LOG: MAIN REJECT
+  H=[V4NET.0.0.1] U=root F=<ok@localhost> rejected RCPT <z@test.ex>: (mail): Sender verify failed
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@otherhost
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@otherhost
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<ok@otherhost>
+  SMTP<< 250 OK
+  SMTP>> RSET
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<postmaster@otherhost>
+  SMTP<< 550 NOT OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=2 random=0
+wrote positive callout cache address record
+LOG: MAIN REJECT
+  H=[V4NET.0.0.2] U=root sender verify fail for <ok@otherhost>: response to "RCPT TO:<postmaster@otherhost>" from 127.0.0.1 [127.0.0.1] was: 550 NOT OK
+LOG: MAIN REJECT
+  H=[V4NET.0.0.2] U=root F=<ok@otherhost> rejected RCPT <z@test.ex>: Sender verify failed
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@otherhost
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@otherhost
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: domain does not accept RCPT TO:<postmaster@domain>
+LOG: MAIN REJECT
+  H=[V4NET.0.0.2] U=root sender verify fail for <ok@otherhost>
+LOG: MAIN REJECT
+  H=[V4NET.0.0.2] U=root F=<ok@otherhost> rejected RCPT <z@test.ex>: Sender verify failed
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@otherhost2
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@otherhost2
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<ok@otherhost2>
+  SMTP<< 250 OK
+  SMTP>> RSET
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<postmaster@otherhost2>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=1 random=0
+wrote positive callout cache address record
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@otherhost2
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@otherhost2
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: domain accepts RCPT TO:<postmaster@domain>
+callout cache: found address record
+callout cache: address record is positive
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@otherhost3
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@otherhost3
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost3>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=0 random=1
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying otherok@otherhost3
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering otherok@otherhost3
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: domain accepts random addresses
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@otherhost4
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@otherhost4
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost4>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=0 random=1
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@otherhost4
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@otherhost4
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: domain accepts random addresses
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@otherhost41
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@otherhost41
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost41>
+  SMTP<< 550 NOT OK
+  SMTP>> RSET
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<ok@otherhost41>
+  SMTP<< 250 OK
+  SMTP>> RSET
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<postmaster@otherhost41>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=1 random=2
+wrote positive callout cache address record
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@otherhost41
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@otherhost41
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: domain rejects random addresses
+callout cache: domain accepts RCPT TO:<postmaster@domain>
+callout cache: found address record
+callout cache: address record is positive
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@otherhost21
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@otherhost21
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<ok@otherhost21>
+  SMTP<< 250 OK
+  SMTP>> RSET
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<postmaster@otherhost21>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=1 random=0
+wrote positive callout cache address record
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok2@otherhost21
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok2@otherhost21
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: domain accepts RCPT TO:<postmaster@domain>
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<ok2@otherhost21>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=1 random=0
+wrote positive callout cache address record
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@otherhost31
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@otherhost31
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost31>
+  SMTP<< 550 NOT OK
+  SMTP>> RSET
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<ok@otherhost31>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=0 random=2
+wrote positive callout cache address record
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying okok@otherhost31
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering okok@otherhost31
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: domain rejects random addresses
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<okok@otherhost31>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=0 random=2
+wrote positive callout cache address record
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying okokok@otherhost31
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering okokok@otherhost31
+Attempting full verification using callout
+callout cache: domain record expired
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost31>
+  SMTP<< 550 NOT OK
+  SMTP>> RSET
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<okokok@otherhost31>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=0 random=2
+wrote positive callout cache address record
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying okok@otherhost51
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering okok@otherhost51
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@otherhost51>
+SMTP timeout
+wrote callout cache domain record:
+  result=1 postmaster=0 random=0
+LOG: MAIN REJECT
+  H=[V4NET.0.0.5] U=root sender verify defer for <okok@otherhost51>: Could not complete sender verify callout
+LOG: MAIN REJECT
+  H=[V4NET.0.0.5] U=root F=<okok@otherhost51> temporarily rejected RCPT <z@test.ex>: Could not complete sender verify callout
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying okokok@otherhost52
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering okokok@otherhost52
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<okokok@otherhost52>
+  SMTP<< 250 OK
+  SMTP>> RSET
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<pmsend@a.domain>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<postmaster@otherhost52>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=1 random=0
+wrote positive callout cache address record
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+verifying Reply-To: header address abcd@x.y.z
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying abcd@x.y.z
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering abcd@x.y.z
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<somesender@a.domain>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<abcd@x.y.z>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=0 random=0
+wrote positive callout cache address record
+LOG: MAIN
+  <= ok7@otherhost53 H=[V4NET.0.0.7] U=root P=smtp S=sss
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+verifying Reply-To: header address abcd@x.y.z
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying abcd@x.y.z
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering abcd@x.y.z
+Attempting full verification using callout
+callout cache: found domain record
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<abcd@x.y.z>
+SMTP timeout
+wrote callout cache domain record:
+  result=1 postmaster=0 random=0
+LOG: MAIN
+  <= ok7@otherhost53 H=[V4NET.0.0.8] U=root P=smtp S=sss
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying ok@otherhost9
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering ok@otherhost9
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<ok@otherhost9>
+  SMTP<< 250 OK
+  SMTP>> RSET
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<postmaster@otherhost9>
+  SMTP<< 550 NOT OK
+  SMTP>> RCPT TO:<postmaster>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=1 random=0
+wrote positive callout cache address record
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from root
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Verifying z@test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering z@test.ex
+Attempting full verification using callout
+callout cache: no domain record found
+callout cache: no address record found
+interface=NULL port=1224
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<postmaster@myhost.test.ex>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<myhost.test.ex-dddddddd-testing@test.ex>
+  SMTP<< 550 RANDOM IS BAD
+  SMTP>> RSET
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<postmaster@myhost.test.ex>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<z@test.ex>
+  SMTP<< 250 OK
+  SMTP>> RSET
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<pmsend@b.domain>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<postmaster@test.ex>
+  SMTP<< 250 OK
+  SMTP>> QUIT
+wrote callout cache domain record:
+  result=1 postmaster=1 random=2
+wrote positive callout cache address record
+LOG: smtp_connection MAIN
+  SMTP connection from root closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

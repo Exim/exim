@@ -1,0 +1,34 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+221 myhost.test.ex closing connection
+10HmaX-0005vi-00-H
+CALLER UID GID
+<CALLER@myhost.test.ex>
+ddddddddd 0
+-ident CALLER
+-received_protocol local-smtp
+-body_linecount 0
+-auth_id CALLER
+-allow_unqualified_recipient
+-allow_unqualified_sender
+-deliver_firsttime
+-local
+XX
+1
+userx@test.ex
+
+dddP Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+047I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+dddF From: CALLER_NAME <CALLER@myhost.test.ex>
+038  Date: Tue, 2 Mar 1999 09:44:33 +0000
+011  X-1: first
+012  X-2: second
+011  X-3: third
+036  X-4: continued
+ with some more text

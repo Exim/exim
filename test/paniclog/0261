@@ -1,0 +1,6 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 == bad.return@test.ex R=bad_return T=bad_return defer (-1): Failed to expand return path "${if": condition name expected, but found ""
+1999-03-02 09:44:33 10HmaX-0005vi-00 == bad.return2@test.ex R=bad_return T=bad_return defer (-1): Failed to expand return path "${if": condition name expected, but found ""
+1999-03-02 09:44:33 10HmaX-0005vi-00 == no.hosts@test.ex R=no_hosts T=no_hosts defer (-1): no_hosts transport called with no hosts set
+1999-03-02 09:44:33 10HmaX-0005vi-00 == bad.return@test.ex R=bad_return T=bad_return defer (-1): Failed to expand return path "${if": condition name expected, but found ""
+1999-03-02 09:44:33 10HmaX-0005vi-00 == bad.return2@test.ex R=bad_return T=bad_return defer (-1): Failed to expand return path "${if": condition name expected, but found ""
+1999-03-02 09:44:33 10HmaX-0005vi-00 == no.hosts@test.ex R=no_hosts T=no_hosts defer (-1): no_hosts transport called with no hosts set

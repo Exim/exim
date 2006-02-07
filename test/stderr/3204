@@ -1,0 +1,14 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_recipient"
+>>> processing "deny"
+>>> check senders = testdb;defer
+>>> userx@somehost.example.com in "testdb;defer"? lookup deferred for testdb;defer
+>>> deny: condition test deferred
+LOG: H=[1.2.3.4] F=<userx@somehost.example.com> temporarily rejected RCPT <x@y>: testdb lookup forced DEFER

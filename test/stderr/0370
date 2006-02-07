@@ -1,0 +1,37 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=EXIM_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+>>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
+--------> |TESTSUITE/bin/iefbr14 <--------
+changed uid/gid: local delivery to |TESTSUITE/bin/iefbr14 <|TESTSUITE/bin/iefbr14> transport=t1
+  uid=EXIM_UID gid=CALLER_GID pid=pppp
+t1 transport entered
+direct command:
+  argv[0] = TESTSUITE/bin/iefbr14
+Writing message to pipe
+writing data block fd=8 size=sss timeout=3600
+writing error 32: Broken pipe
+transport error EPIPE ignored
+t1 transport yielded 0
+t1 transport returned OK for |TESTSUITE/bin/iefbr14
+LOG: MAIN
+  => |TESTSUITE/bin/iefbr14 <userx@test.ex> R=r1 T=t1
+changed uid/gid: post-delivery tidying
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

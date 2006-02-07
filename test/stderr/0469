@@ -1,0 +1,33 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing x@mxt1c.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering x@mxt1c.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing x@mxt1c.test.ex
+--------> r1 router <--------
+local_part=x domain=mxt1c.test.ex
+calling r1 router
+r1 router called for x@mxt1c.test.ex
+  domain = mxt1c.test.ex
+DNS lookup of mxt1c.test.ex (MX) using fakens
+DNS lookup of mxt1c.test.ex (MX) succeeded
+DNS lookup of dontqualify (A) using fakens
+fakens returned PASS_ON
+passing dontqualify on to res_search()
+DNS lookup of dontqualify (A) gave HOST_NOT_FOUND
+returning DNS_NOMATCH
+fully qualified name = mxt1c.test.ex
+host_find_bydns yield = HOST_FIND_FAILED (0); returned hosts:
+  dontqualify <null> MX=1 *
+r1 router declined for x@mxt1c.test.ex
+no more routers
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=2 >>>>>>>>>>>>>>>>

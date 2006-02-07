@@ -1,0 +1,30 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+LOG: MAIN
+  U=CALLER Warning: sender_data=SenderData recipient_data=RecipData
+created log directory TESTSUITE/spool/log
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing recip@domain2
+--------> r1 router <--------
+local_part=recip domain=domain2
+checking senders
+sender_data=SenderData
+calling r1 router
+r1 router called for recip@domain2
+  domain = domain2
+set transport t1
+queued for t1 transport: local_part = recip
+domain = domain2
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r1 router
+  envelope to: recip@domain2
+  transport: t1
+LOG: MAIN REJECT
+  U=CALLER F=<sender@domain1> rejected RCPT <other@domain2>
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -1,0 +1,8 @@
+local_interfaces = 127.0.0.1 : V4NET.1.2.3 : ip4.ip4.ip4.ip4
+message_size_limit = 500
+recipients_max = 1
+remote_sort_domains = a:b:c
+receive_timeout = 1s
+receive_timeout = 0s
+receive_timeout = 0s
+receive_timeout = 4s

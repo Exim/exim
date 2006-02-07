@@ -1,0 +1,15 @@
+abcd@test.ex
+    <-- t1@d1
+  router = r3, transport = t1
+abcd@d1
+    <-- t1@d1
+  router = r3, transport = t1
+\abcd@test.ex
+    <-- t1@d1
+  router = r3, transport = t1
+spqr@d2
+    <-- alias1@d2
+  router = r3, transport = t1
+spqr@test.ex
+    <-- alias2@d2
+  router = r3, transport = t1

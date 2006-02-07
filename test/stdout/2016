@@ -1,0 +1,13 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO the.local.host.name
+250-OK
+250-STARTTLS
+250 HELP
+STARTTLS
+220 Go ahead
+*sleep 2
+End of script

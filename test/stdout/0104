@@ -1,0 +1,6 @@
+xxx@test.ex
+  router = all, transport = appendfile
+xxx@test.ex
+  router = all, transport = appendfile
+xxx@test.ex
+  router = all, transport = appendfile

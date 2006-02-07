@@ -1,0 +1,4 @@
+1999-03-02 09:44:33 U=CALLER sender verify fail for <notok@abc.test.ex>: Unrouteable address
+1999-03-02 09:44:33 U=CALLER F=<notok@test.ex> rejected RCPT <a@b2>: Sender verify failed
+1999-03-02 09:44:33 U=CALLER sender verify fail for <notok@abc.test.ex>: Unrouteable address
+1999-03-02 09:44:33 U=CALLER F=<notok@abc.test.ex> rejected RCPT <a@b3>: Sender verify failed

@@ -1,0 +1,33 @@
+userx@eximtesthost.test.ex cannot be resolved at this time:
+  remote host address is the local host
+userx@mxt1.test.ex cannot be resolved at this time:
+  lowest numbered MX record points to local host
+userx@mxt2.test.ex is undeliverable:
+  all relevant MX records point to non-existent hosts
+userx@mxt3.test.ex is undeliverable:
+  all relevant MX records point to non-existent hosts
+userx@mxt4.test.ex cannot be resolved at this time:
+  lowest numbered MX record points to local host
+userx@mxt5.test.ex cannot be resolved at this time:
+  lowest numbered MX record points to local host
+userx@mxt5.test.ex cannot be resolved at this time:
+  lowest numbered MX record points to local host
+userx@mxt6.test.ex
+  router = lookuphost, transport = smtp
+  host ten-1.test.ex [V4NET.0.0.1] MX=5
+userx@mxt7.test.ex
+  router = lookuphost, transport = smtp
+  host ten-2.test.ex [V4NET.0.0.2] MX=5
+  host ten-3.test.ex [V4NET.0.0.3] MX=6
+userx@mxt7.test.ex
+  router = lookuphost, transport = smtp
+  host ten-2.test.ex [V4NET.0.0.2] MX=5
+  host ten-3.test.ex [V4NET.0.0.3] MX=6
+userx@mxt8.test.ex
+  router = lookuphost, transport = smtp
+  host ten-2.test.ex [V4NET.0.0.2] MX=5
+  host ten-3.test.ex [V4NET.0.0.3] MX=6
+userx@mxt8.test.ex
+  router = lookuphost, transport = smtp
+  host ten-2.test.ex [V4NET.0.0.2] MX=5
+  host ten-3.test.ex [V4NET.0.0.3] MX=6

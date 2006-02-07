@@ -1,0 +1,63 @@
+> Failed: failed to connect to socket TESTSUITE/test-socket: No such file or directory
+> 2 ++ no socket ++
+> 
+> 1 >>ANSWER-1
+<<
+> 2 >>ANSWER-2<<
+> 3 >>ANSWER-3*EOL*<<
+> 4 >>ANSWER-4*EOL*<<
+> 5 >>ANSWER-5<<
+> 6 >><<
+> 7 >><<
+> Failed: socket read timed out
+> 9 >>sock error<<
+> 
+451 Temporary local problem - please try later
+
+******** SERVER ********
+Listening on TESTSUITE/test-socket ... 
+Connection request
+QUERY-1
+>LF>ANSWER-1
+>*eof
+Listening on TESTSUITE/test-socket ... 
+Connection request
+QUERY-2
+>>ANSWER-2
+>*eof
+Listening on TESTSUITE/test-socket ... 
+Connection request
+QUERY-3
+>LF>ANSWER-3
+>*eof
+Listening on TESTSUITE/test-socket ... 
+Connection request
+QUERY-4
+>LF>ANSWER-4
+>*eof
+Listening on TESTSUITE/test-socket ... 
+Connection request
+>>ANSWER-5
+>*eof
+Listening on TESTSUITE/test-socket ... 
+Connection request
+*sleep 1
+>*eof
+Listening on TESTSUITE/test-socket ... 
+Connection request
+>*eof
+Listening on TESTSUITE/test-socket ... 
+Connection request
+QUERY-8
+*sleep 2
+Expected EOF read from client
+Listening on TESTSUITE/test-socket ... 
+Connection request
+QUERY-9
+*sleep 2
+End of script
+Listening on TESTSUITE/test-socket ... 
+Connection request
+QUERY-ACL
+*sleep 3
+End of script

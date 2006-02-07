@@ -1,0 +1,9 @@
+abcd@test.ex verified
+yes@exists.virt.test.ex verified
+no@exists.virt.test.ex failed to verify:
+  Unrouteable address
+xx@notexists.virt.test.ex failed to verify:
+  Unrouteable address
+yes@list.test.ex verified
+no@list.test.ex failed to verify:
+  Unrouteable address

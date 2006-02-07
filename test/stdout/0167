@@ -1,0 +1,16 @@
+  sender: error@test.ex
+    from: error@test.ex
+      to: error@test.ex
+      cc: error@test.ex
+     bcc: error@test.ex
+reply-to: error@test.ex
+env-from: <>
+  env-to: error@test.ex
+  sender: remove@test.ex
+    from: remove@test.ex
+      to: remove@test.ex
+      cc: remove@test.ex
+     bcc: remove@test.ex
+reply-to: remove@test.ex
+env-from: <>
+  env-to: remove@test.ex

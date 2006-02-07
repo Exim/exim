@@ -1,0 +1,41 @@
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "connect"
+>>> processing "accept"
+>>> check hosts = TESTSUITE/aux-var/0401.hosts1
+>>> host in "TESTSUITE/aux-var/0401.hosts1"? yes (matched "V4NET.9.8.7" in TESTSUITE/aux-var/0401.hosts1)
+>>> accept: condition test succeeded
+>>> xxx in helo_lookup_domains? no (end of list)
+>>> using ACL "mail"
+>>> processing "accept"
+>>> check hosts = TESTSUITE/aux-var/0401.hosts2
+>>> no IP address found for host a2.2.2 (during SMTP connection from (xxx) [V4NET.9.8.7])
+LOG: no IP address found for host a2.2.2 (during SMTP connection from (xxx) [V4NET.9.8.7])
+>>> host in "TESTSUITE/aux-var/0401.hosts2"? no (failed to find IP address for a2.2.2)
+>>> accept: condition test failed
+>>> end of ACL "mail": implicit DENY
+LOG: H=(xxx) [V4NET.9.8.7] rejected MAIL <x@y>
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "connect"
+>>> processing "accept"
+>>> check hosts = TESTSUITE/aux-var/0401.hosts1
+>>> sender host name required, to match against *.2.2
+>>> looking up host name for V4NET.9.9.9
+LOG: no host name found for IP address V4NET.9.9.9
+>>> host in "TESTSUITE/aux-var/0401.hosts1"? no (failed to find host name for V4NET.9.9.9)
+>>> accept: condition test failed
+>>> end of ACL "connect": implicit DENY
+LOG: H=[V4NET.9.9.9] rejected connection in "connect" ACL

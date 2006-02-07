@@ -1,0 +1,328 @@
+
+**** SMTP testing session as if from host 10.0.0.2
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Reset OK
+250 <userx@test.ex> is deliverable
+553 list@test.ex is undeliverable
+250 OK
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 10.0.0.1
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+252 authentication required
+550 authentication required
+458 authentication required
+250 OK
+550 authentication required
+250 OK
+250 Reset OK
+235 Authentication succeeded
+503 already authenticated
+250 OK
+250 Accepted
+550 relay not permitted
+250 Reset OK
+250 <userx@test.ex> is deliverable
+553 list@test.ex is undeliverable
+250 OK
+250 OK
+503 already authenticated
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 10.0.0.3
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello test.host [10.0.0.3]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+250 OK
+550 authentication required
+250 Reset OK
+235 Authentication succeeded
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at testclient.ex [10.0.0.3]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaX-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaY-0005vi-00
+235 Authentication succeeded
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaZ-0005vi-00
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbA-0005vi-00
+501 invalid data for AUTH
+250 Reset OK
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbB-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+235 Authentication succeeded
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+435 Unable to authenticate at present: account suspended
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+535 Incorrect authentication data
+500 unrecognized command
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+334 VXNlciBOYW1l
+334 UGFzc3dvcmQ=
+235 Authentication succeeded
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbC-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+334 VXNlciBOYW1l
+235 Authentication succeeded
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+235 Authentication succeeded
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+334 UGFzc3dvcmQ=
+235 Authentication succeeded
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+334 VXNlciBOYW1l
+334 UGFzc3dvcmQ=
+501 Authentication cancelled
+221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 10.0.0.4
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello test.host [10.0.0.4]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250 HELP
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+535 Incorrect authentication data
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+334 
+235 Authentication succeeded
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+334 bXlob3N0LnRlc3QuZXg=
+235 Authentication succeeded
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+435 Unable to authenticate at present
+500 unrecognized command
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.2]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250 HELP
+503 AUTH command used when not advertised
+500 unrecognized command
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+535 Incorrect authentication data
+554 Too many nonmail commands
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at testing.testing [10.0.0.5]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbD-0005vi-00
+235 Authentication succeeded
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbE-0005vi-00
+503 already authenticated
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmbF-0005vi-00
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+334 VXNlciBOYW1l
+334 UGFzc3dvcmQ=
+535 Incorrect authentication data
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at testing.testing [10.0.0.5]
+250-SIZE 52428800
+250-ETRN
+250-EXPN
+250-PIPELINING
+250-AUTH MYLOGIN PLAIN EXPLAIN EXPANDED EXPANDFAIL DEFER LOGIN
+250 HELP
+235 Authentication succeeded
+221 myhost.test.ex closing connection

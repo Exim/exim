@@ -1,0 +1,26 @@
+An error was detected while processing a file of BSMTP input.
+The error message was:
+
+  501 sender address must contain a domain
+
+The SMTP transaction started in line 0.
+The error was detected in line 1.
+The SMTP command at fault was:
+
+   mail from: userx
+
+0 previous messages were successfully processed.
+The rest of the batch was abandoned.
+An error was detected while processing a file of BSMTP input.
+The error message was:
+
+  501 recipient address must contain a domain
+
+The SMTP transaction started in line 0.
+The error was detected in line 2.
+The SMTP command at fault was:
+
+   rcpt to: userx
+
+0 previous messages were successfully processed.
+The rest of the batch was abandoned.

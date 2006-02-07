@@ -1,0 +1,9 @@
+An error was detected while processing a file of BSMTP input.
+The error message was:
+
+  421 Lost incoming connection
+
+The SMTP transaction started in line 10.
+The error was detected in line 18.
+1 previous message was successfully processed.
+The rest of the batch was abandoned.

@@ -1,0 +1,225 @@
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+delivering 10HmaX-0005vi-00
+LOG: MAIN
+  *> miles <miles@thishost.test.ex> R=r4 T=t2
+LOG: MAIN
+  Completed
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+changed uid/gid: privilege not needed
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@test.ex
+set_process_info: pppp accepting a local non-SMTP message from <CALLER@test.ex>
+Sender: CALLER@test.ex
+Recipients:
+  kilos@recurse.test.ex
+search_tidyup called
+>>Headers received:
+
+rewrite_one_header: type=F:
+  From: CALLER_NAME <CALLER@test.ex>
+search_tidyup called
+>>Headers after rewriting and local additions:
+I Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+F From: CALLER_NAME <CALLER@test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Data file written for message 10HmaY-0005vi-00
+>>Generated Received: header line
+P Received: from CALLER by the.local.host.name with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00
+	for kilos@recurse.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+calling local_scan(); timeout=300
+local_scan() returned 0 NULL
+Writing spool header file
+Size of headers = sss
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+search_tidyup called
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xfbb95cfd -N -odi -Mc 10HmaY-0005vi-00
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=EXIM_GID pid=pppp
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+set_process_info: pppp delivering specified messages
+set_process_info: pppp delivering 10HmaY-0005vi-00
+reading spool file 10HmaY-0005vi-00-H
+user=CALLER uid=CALLER_UID gid=CALLER_GID sender=CALLER@test.ex
+sender_local=1 ident=CALLER
+Non-recipients:
+Empty Tree
+---- End of tree ----
+recipients_count=1
+body_linecount=0 message_linecount=7
+Delivery address list:
+  kilos@recurse.test.ex 
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: kilos@recurse.test.ex
+unique = kilos@recurse.test.ex
+no domain retry record
+no address retry record
+kilos@recurse.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing kilos@recurse.test.ex
+--------> r1 router <--------
+local_part=kilos domain=recurse.test.ex
+checking domains
+recurse.test.ex in "!thishost.test.ex : !recurse.test.ex.test.ex"? yes (end of list)
+calling r1 router
+r1 router called for kilos@recurse.test.ex
+  domain = recurse.test.ex
+DNS lookup of recurse.test.ex (MX) using fakens
+DNS lookup of recurse.test.ex (MX) gave HOST_NOT_FOUND
+returning DNS_NOMATCH
+r1 router widened recurse.test.ex to recurse.test.ex.test.ex
+DNS lookup of recurse.test.ex.test.ex (MX) using fakens
+DNS lookup of recurse.test.ex.test.ex (MX) gave NO_DATA
+returning DNS_NODATA
+DNS lookup of recurse.test.ex.test.ex (A) using fakens
+DNS lookup of recurse.test.ex.test.ex (A) succeeded
+fully qualified name = recurse.test.ex.test.ex
+recurse.test.ex.test.ex V4NET.99.0.2 mx=-1 sort=xx 
+domain changed to recurse.test.ex.test.ex
+rewriting header lines
+rewrite_one_header: type=F:
+  From: CALLER_NAME <CALLER@test.ex>
+re-routed to kilos@recurse.test.ex.test.ex
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: kilos@recurse.test.ex.test.ex
+unique = kilos@recurse.test.ex.test.ex
+no domain retry record
+no address retry record
+kilos@recurse.test.ex.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing kilos@recurse.test.ex.test.ex
+--------> r1 router <--------
+local_part=kilos domain=recurse.test.ex.test.ex
+checking domains
+recurse.test.ex.test.ex in "!thishost.test.ex : !recurse.test.ex.test.ex"? no (matched "!recurse.test.ex.test.ex")
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=kilos domain=recurse.test.ex.test.ex
+checking local_parts
+kilos in "miles"? no (end of list)
+r2 router skipped: local_parts mismatch
+--------> r3 router <--------
+local_part=kilos domain=recurse.test.ex.test.ex
+checking local_parts
+kilos in "kilos"? yes (matched "kilos")
+calling r3 router
+rda_interpret (string): $local_part@$domain
+expanded: kilos@recurse.test.ex.test.ex
+file is not a filter file
+parse_forward_list: kilos@recurse.test.ex.test.ex
+extract item: kilos@recurse.test.ex.test.ex
+r3 router generated kilos@recurse.test.ex.test.ex
+  errors_to=NULL transport=NULL
+  uid=unset gid=unset home=NULL
+routed by r3 router
+  envelope to: kilos@recurse.test.ex.test.ex
+  transport: <none>
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: kilos@recurse.test.ex.test.ex
+unique = \0\kilos@recurse.test.ex.test.ex
+no domain retry record
+no address retry record
+kilos@recurse.test.ex.test.ex: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing kilos@recurse.test.ex.test.ex
+--------> r1 router <--------
+local_part=kilos domain=recurse.test.ex.test.ex
+checking domains
+recurse.test.ex.test.ex in "!thishost.test.ex : !recurse.test.ex.test.ex"? no (matched "!recurse.test.ex.test.ex")
+r1 router skipped: domains mismatch
+--------> r2 router <--------
+local_part=kilos domain=recurse.test.ex.test.ex
+checking local_parts
+kilos in "miles"? no (end of list)
+r2 router skipped: local_parts mismatch
+--------> r3 router <--------
+r3 router skipped: previously routed kilos@recurse.test.ex.test.ex
+--------> r4 router <--------
+local_part=kilos domain=recurse.test.ex.test.ex
+calling r4 router
+r4 router called for kilos@recurse.test.ex.test.ex
+  domain = recurse.test.ex.test.ex
+set transport t2
+queued for t2 transport: local_part = kilos
+domain = recurse.test.ex.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by r4 router
+  envelope to: kilos@recurse.test.ex.test.ex
+  transport: t2
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    kilos@recurse.test.ex.test.ex
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+search_tidyup called
+>>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
+--------> kilos@recurse.test.ex.test.ex <--------
+locking TESTSUITE/spool/db/retry.lockfile
+locked TESTSUITE/spool/db/retry.lockfile
+EXIM_DBOPEN(TESTSUITE/spool/db/retry)
+returned from EXIM_DBOPEN
+no retry data available
+search_tidyup called
+changed uid/gid: local delivery to kilos <kilos@recurse.test.ex.test.ex> transport=t2
+  uid=CALLER_UID gid=CALLER_GID pid=pppp
+  home=NULL current=/
+set_process_info: pppp delivering 10HmaY-0005vi-00 to kilos using t2
+appendfile transport entered
+appendfile: mode=600 notify_comsat=0 quota=0 warning=0
+  file=/dev/null format=unix
+  message_prefix=From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
+  message_suffix=\n
+  maildir_use_size_file=no
+  locking by lockfile fcntl 
+*** delivery by t2 transport bypassed by -N option
+search_tidyup called
+journalling kilos@recurse.test.ex.test.ex/t2
+t2 transport returned OK for kilos@recurse.test.ex.test.ex
+post-process kilos@recurse.test.ex.test.ex (0)
+kilos@recurse.test.ex.test.ex delivered
+kilos@recurse.test.ex.test.ex: children all complete
+kilos@recurse.test.ex: children all complete
+LOG: MAIN
+  *> kilos <kilos@recurse.test.ex> R=r4 T=t2
+>>>>>>>>>>>>>>>> deliveries are done >>>>>>>>>>>>>>>>
+changed uid/gid: post-delivery tidying
+  uid=EXIM_UID gid=EXIM_GID pid=pppp
+set_process_info: pppp tidying up after delivering 10HmaY-0005vi-00
+LOG: MAIN
+  Completed
+end delivery of 10HmaY-0005vi-00
+search_tidyup called
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

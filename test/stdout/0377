@@ -1,0 +1,26 @@
+10HmaX-0005vi-00-H
+CALLER UID GID
+<CALLER@myhost.test.ex>
+ddddddddd 0
+-ident CALLER
+-received_protocol local
+-body_linecount 0
+-auth_id CALLER
+-auth_sender CALLER@myhost.test.ex
+-allow_unqualified_recipient
+-allow_unqualified_sender
+-local
+YY bbbb@myhost.test.ex/t1
+NN aaaa@myhost.test.ex/t1
+NN cccc@myhost.test.ex/t1
+3
+aaaa@myhost.test.ex
+bbbb@myhost.test.ex
+cccc@myhost.test.ex
+
+dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+047I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+dddF From: CALLER_NAME <CALLER@myhost.test.ex>
+038  Date: Tue, 2 Mar 1999 09:44:33 +0000

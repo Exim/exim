@@ -1,0 +1,14 @@
+x@ten
+  router = domainlist1, transport = unset
+y@two
+  router = domainlist1, transport = unset
+x@test1
+  router = local, transport = local_delivery
+x@test2
+  router = local, transport = local_delivery
+x@test3-4
+  router = local, transport = local_delivery
+x@one
+  router = domainlist2, transport = unset
+x@six
+  router = domainlist2, transport = unset

@@ -1,0 +1,4 @@
+xx@host.test.ex is undeliverable:
+  mail domain "host.test.ex._bad" is syntactically invalid
+yy@host.test.ex cannot be resolved at this time:
+  lookup of host "bad_host.test.ex" failed in domainlist router: syntax error in name

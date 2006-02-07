@@ -1,0 +1,4 @@
+x@query.program
+  router = r1, transport = t1
+  host ten-2.test.ex [V4NET.0.0.2] MX=5
+  host ten-3.test.ex [V4NET.0.0.3] MX=6

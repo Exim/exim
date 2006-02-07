@@ -1,0 +1,22 @@
+CALLER@r1 cannot be resolved at this time:
+  bad owner for TESTSUITE/aux-var/0272.exim
+CALLER@r2 is undeliverable:
+  Explictly Rejected
+CALLER@r3 cannot be resolved at this time:
+  bad owner for TESTSUITE/aux-var/0272.exim
+CALLER@r4 is undeliverable:
+  Explictly Rejected
+CALLER@r5 is undeliverable:
+  Explictly Rejected
+CALLER@r6 cannot be resolved at this time:
+  bad group for TESTSUITE/aux-var/0272.exim
+CALLER@r7 is undeliverable:
+  Explictly Rejected
+CALLER@r8 is undeliverable:
+  Explictly Rejected
+CALLER@r9 is undeliverable:
+  Explictly Rejected
+CALLER@r10 cannot be resolved at this time:
+  bad group for TESTSUITE/aux-var/0272.exim
+CALLER@r11 cannot be resolved at this time:
+  bad mode (0100644) for TESTSUITE/aux-var/0272.exim: 04 bit(s) unexpected

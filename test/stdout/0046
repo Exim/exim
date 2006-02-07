@@ -1,0 +1,60 @@
+Warning: no message headers read
+Return-path copied from sender
+Sender      = usery@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0046.filter.userx"
+
+Testprint: Body: This message has quite a short body, so both variables should end up containing the same amount of data. 
+Testprint: End:  This message has quite a short body, so both variables should end up containing the same amount of data. 
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Warning: no message headers read
+Return-path copied from sender
+Sender      = usery@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0046.filter.userx"
+
+Testprint: Body: This message has a long body, more than 500 characters, so the start and end variables should end up containing different character strings.  The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.  See! The second of those is shorter, but also contains all 26 letters of the alphabet, and also makes some kind of sense. Now is the time for all good men to come to the aid of the party. 'Twas brillig and the slithy toves did gyre and gimble in the wabe, all mimsy were 
+Testprint: End:  nd variables should end up containing different character strings.  The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs.  See! The second of those is shorter, but also contains all 26 letters of the alphabet, and also makes some kind of sense. Now is the time for all good men to come to the aid of the party. 'Twas brillig and the slithy toves did gyre and gimble in the wabe, all mimsy were the borogoves, and the mome raths outgrabe. There, that should be enough. 
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Warning: no message headers read
+Return-path copied from sender
+Sender      = usery@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0046.filter.userx"
+
+Testprint: Body: This message has a long body, more than 500 characters, so the start and end variables should end up containing different character strings.  The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. . . See! The second of those is shorter, but also contains all 26 letters of the alphabet, and also makes some kind of sense. Now is the time for all good men to come to the aid of the party. 'Twas brillig and the slithy toves did gyre and gimble in the wabe, all mimsy we
+Testprint: End:  variables should end up containing different character strings.  The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. . . See! The second of those is shorter, but also contains all 26 letters of the alphabet, and also makes some kind of sense. Now is the time for all good men to come to the aid of the party. 'Twas brillig and the slithy toves did gyre and gimble in the wabe, all mimsy were the borogoves, and the mome raths outgrabe. There, that should be enough. 
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Warning: no message headers read
+Return-path copied from sender
+Sender      = usery@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0046.filter.userx"
+
+Testprint: Body: This message has a long body, more than 500 characters, so the start and end variables should end up containing different character strings.  . The quick brown fox jumps over the lazy dog. . Pack my box with five dozen liquor jugs.  See! The second of those is shorter, but also contains all 26 letters of the alphabet, and also makes some kind of sense. Now is the time for all good men to come to the aid of the party. 'Twas brillig and the slithy toves did gyre and gimble in the wabe, all mimsy w
+Testprint: End:  ariables should end up containing different character strings.  . The quick brown fox jumps over the lazy dog. . Pack my box with five dozen liquor jugs.  See! The second of those is shorter, but also contains all 26 letters of the alphabet, and also makes some kind of sense. Now is the time for all good men to come to the aid of the party. 'Twas brillig and the slithy toves did gyre and gimble in the wabe, all mimsy were the borogoves, and the mome raths outgrabe. There, that should be enough. 
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Warning: no message headers read
+Return-path copied from sender
+Sender      = usery@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0046.filter.userx"
+
+Testprint: Body: Here's a body with a NULL( ) in it. That should become a space. 
+Testprint: End:  Here's a body with a NULL( ) in it. That should become a space. 
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
+Warning: no message headers read
+Return-path copied from sender
+Sender      = usery@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0046.filter.userx"
+
+Testprint: Body: This message has a long body, more than 500 characters, so the start and end variables should end up containing different character strings.  The quick brown fox jumps over the lazy dog. NULL( ) Pack my box with five dozen liquor jugs. NULL( )  See! The second of those is shorter, but also contains all 26 letters of the alphabet, and also makes some kind of sense. Now is the time for all good men to come to the aid of the party. 'Twas brillig and the slithy toves did gyre and gimble in the wabe,
+Testprint: End:  up containing different character strings.  The quick brown fox jumps over the lazy dog. NULL( ) Pack my box with five dozen liquor jugs. NULL( )  See! The second of those is shorter, but also contains all 26 letters of the alphabet, and also makes some kind of sense. Now is the time for all good men to come to the aid of the party. 'Twas brillig and the slithy toves did gyre and gimble in the wabe, all mimsy were the borogoves, and the mome raths outgrabe. NULL( ) There, that should be enough. 
+Filtering did not set up a significant delivery.
+Normal delivery will occur.
