@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/exim_monitor/em_init.c,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_init.c,v 1.3 2006/02/07 11:18:59 ph10 Exp $ */
 
 /*************************************************
 *                  Exim monitor                  *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module contains code to initialize things from the

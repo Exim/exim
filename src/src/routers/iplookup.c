@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/routers/iplookup.c,v 1.5 2005/12/06 10:25:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/iplookup.c,v 1.6 2006/02/07 11:19:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

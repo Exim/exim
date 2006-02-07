@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/exim_monitor/em_xs.c,v 1.2 2005/01/04 10:00:42 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_xs.c,v 1.3 2006/02/07 11:18:59 ph10 Exp $ */
 
 /*************************************************
 *               Exim Monitor                     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 1995 - 2005 */
+/* Copyright (c) University of Cambridge, 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This file contains a number of subroutines that are in effect

@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.18 2005/08/22 10:49:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.19 2006/02/07 11:19:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

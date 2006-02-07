@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/auths/call_radius.c,v 1.4 2005/08/22 10:49:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/call_radius.c,v 1.5 2006/02/07 11:19:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This file was originally supplied by Ian Kirk. The libradius support came

@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/smtp_out.c,v 1.6 2005/08/08 15:02:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_out.c,v 1.7 2006/02/07 11:19:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* A number of functions for driving outgoing SMTP calls. */

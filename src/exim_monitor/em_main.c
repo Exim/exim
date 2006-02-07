@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/exim_monitor/em_main.c,v 1.3 2005/08/09 13:31:52 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_main.c,v 1.4 2006/02/07 11:18:59 ph10 Exp $ */
 
 /*************************************************
 *                  Exim Monitor                  *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

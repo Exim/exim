@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.24 2005/09/12 10:08:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.25 2006/02/07 11:19:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Code for receiving a message and setting up spool files. */

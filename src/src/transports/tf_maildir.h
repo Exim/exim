@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.h,v 1.3 2005/06/07 15:20:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/tf_maildir.h,v 1.4 2006/02/07 11:19:03 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Header file for the functions that are used to support the use of

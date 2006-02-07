@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/retry.c,v 1.4 2005/09/19 11:56:11 ph10 Exp $ */
+/* $Cambridge: exim/src/src/retry.c,v 1.5 2006/02/07 11:19:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions concerned with retrying unsuccessful deliveries. */

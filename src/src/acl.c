@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.53 2005/12/12 15:58:53 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.54 2006/02/07 11:19:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Code for handling Access Control Lists (ACLs) */

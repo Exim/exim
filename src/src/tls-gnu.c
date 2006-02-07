@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.10 2005/06/28 08:49:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.11 2006/02/07 11:19:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module provides TLS (aka SSL) support for Exim using the GnuTLS

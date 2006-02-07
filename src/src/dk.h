@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/dk.h,v 1.1 2005/03/08 15:32:02 tom Exp $ */
+/* $Cambridge: exim/src/src/dk.h,v 1.2 2006/02/07 11:19:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Code for DomainKeys support. Other DK relevant code is in

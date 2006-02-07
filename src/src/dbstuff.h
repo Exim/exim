@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/dbstuff.h,v 1.3 2005/05/23 16:58:56 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/dbstuff.h,v 1.4 2006/02/07 11:19:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2005 */
+/* Copyright (c) University of Cambridge 1995 - 2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This header file contains macro definitions so that a variety of DBM
