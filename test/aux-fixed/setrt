@@ -1,0 +1,39 @@
+# This is a little perl script that adjusts the "received" time in a -H file,
+# so that retry timeouts etc can be more easily tested. Its arguments are:
+#
+# (1) The number of the message on the queue whose time is to be adjusted; 1 
+#     for the first message, 2 for the second, etc.
+#
+# (2) A positive or negative number by which to adjust the received time.
+
+$fileno = $ARGV[0] - 1;
+$adjust = $ARGV[1];
+
+opendir(DIR, "spool/input");
+while (($_ = readdir(DIR))) { push(@files, $_) if /.*-H$/; }
+closedir(DIR);    
+
+@files = sort @files;
+
+open(IN, "spool/input/$files[$fileno]") || 
+  die "can't open spool/input/$files[$fileno]";
+
+open(OUT, ">test-H");
+
+$_ = <IN>; print OUT;
+$_ = <IN>; print OUT;
+$_ = <IN>; print OUT;
+$_ = <IN>;
+($rtime,$rest) = $_ =~ /^(\d+)(.*)/;
+$rtime += $adjust;
+print OUT "$rtime$rest\n";
+print OUT while (<IN>);
+
+close(IN);
+close(OUT);
+
+rename("test-H", "spool/input/$files[$fileno]") || die "rename failed\n";
+
+exit(0);
+
+# End

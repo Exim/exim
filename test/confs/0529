@@ -1,0 +1,44 @@
+# Exim test configuration 0529
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  data = DIR/test-mail/rmbox
+  file_transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  quota = 1
+  user = CALLER
+
+
+# ----- Retry -----
+
+begin retry
+
+*@test.ex        quota_7d
+*@test.ex        quota       F,2h,15m; F,3d,1h
+*                *           F,2h,15m; G,16h,1h,1.5; F,4d,6h
+
+# End

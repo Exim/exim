@@ -484,7 +484,7 @@ opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
 address match: subject=userx@test.ex pattern=*
 test.ex in "*"? yes (matched "*")
 userx@test.ex in "*"? yes (matched "*")
-retry for T:userx@test.ex = *
+retry for T:userx@test.ex = * 0 0
 dbfn_read: key=T:userx@test.ex
 Writing retry data for T:userx@test.ex
   first failed=dddd last try=dddd next try=+86400 expired=0
@@ -600,8 +600,8 @@ EXIM_DBOPEN(TESTSUITE/spool/db/retry)
 returned from EXIM_DBOPEN
 opened hints database TESTSUITE/spool/db/retry: flags=O_RDONLY
 dbfn_read: key=T:userx@test.ex
-retry record exists: age=d (max=604800)
-  time to retry = -ddddd expired = 0
+retry record exists: age=ttt (max 1w)
+  time to retry = tttt expired = 0
 search_tidyup called
 changed uid/gid: local delivery to userx <userx@test.ex> transport=t1
   uid=CALLER_UID gid=CALLER_GID pid=pppp
@@ -650,7 +650,7 @@ opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
 address match: subject=userx@test.ex pattern=*
 test.ex in "*"? yes (matched "*")
 userx@test.ex in "*"? yes (matched "*")
-retry for T:userx@test.ex = *
+retry for T:userx@test.ex = * 0 0
 dbfn_read: key=T:userx@test.ex
 Writing retry data for T:userx@test.ex
   first failed=dddd last try=dddd next try=+86400 expired=0

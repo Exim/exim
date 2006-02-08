@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.17 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.18 2006/02/08 14:28:51 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2010,6 +2010,12 @@ readconf_printtime(int t)
 {
 int s, m, h, d, w;
 uschar *p = time_buffer;
+
+if (t < 0)
+  {
+  *p++ = '-';
+  t = -t;
+  }
 
 s = t % 60;
 t /= 60;

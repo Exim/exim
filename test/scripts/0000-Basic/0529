@@ -1,0 +1,10 @@
+# retries for quota exceeded when routed to a file
+#
+exim -d-all+retry -odi x@test.ex
+****
+# Adjust the received time for the message, then try a queue run.
+sudo perl DIR/aux-fixed/setrt 1 -86400
+****
+exim -d-all+retry -q
+****
+no_msglog_check

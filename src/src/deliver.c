@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.26 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.27 2006/02/08 14:28:51 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2250,10 +2250,12 @@ while (addr_local != NULL)
 
         DEBUG(D_retry)
           {
-          debug_printf("retry record exists: age=%d (max=%d)\n",
-            (int)(now - retry_record->time_stamp), retry_data_expire);
-          debug_printf("  time to retry = %d expired = %d\n",
-            (int)(now - retry_record->next_try), retry_record->expired);
+          debug_printf("retry record exists: age=%s ",
+            readconf_printtime(now - retry_record->time_stamp));
+          debug_printf("(max %s)\n", readconf_printtime(retry_data_expire));
+          debug_printf("  time to retry = %s expired = %d\n",
+            readconf_printtime(retry_record->next_try - now),
+            retry_record->expired);
           }
 
         if (queue_running && !deliver_force)
@@ -2282,9 +2284,18 @@ while (addr_local != NULL)
               for (last_rule = retry->rules;
                    last_rule->next != NULL;
                    last_rule = last_rule->next);
+              DEBUG(D_deliver|D_retry)
+                debug_printf("now=%d received_time=%d diff=%d timeout=%d\n",
+                  (int)now, received_time, (int)now - received_time,
+                  last_rule->timeout);
               if (now - received_time > last_rule->timeout) ok = TRUE;
               }
-            else ok = TRUE;    /* No rule => timed out */
+            else
+              {
+              DEBUG(D_deliver|D_retry)
+                debug_printf("no retry rule found: assume timed out\n");
+              ok = TRUE;    /* No rule => timed out */
+              }
 
             DEBUG(D_deliver|D_retry)
               {

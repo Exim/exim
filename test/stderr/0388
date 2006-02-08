@@ -143,7 +143,7 @@ opened hints database TESTSUITE/spool/db/retry: flags=O_RDWR
 address match: subject=x@y pattern=*
 y in "*"? yes (matched "*")
 x@y in "*"? yes (matched "*")
-retry for R:x@y = *
+retry for R:x@y = * 0 0
 dbfn_read: key=R:x@y
 on queue longer than maximum retry
 Writing retry data for R:x@y
@@ -153,7 +153,7 @@ dbfn_write: key=R:x@y
 address match: subject=*@V4NET.0.0.0 pattern=*
 V4NET.0.0.0 in "*"? yes (matched "*")
 *@V4NET.0.0.0 in "*"? yes (matched "*")
-retry for T:V4NET.0.0.0:V4NET.0.0.0:1224 (y) = *
+retry for T:V4NET.0.0.0:V4NET.0.0.0:1224 (y) = * 0 0
 dbfn_read: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
 on queue longer than maximum retry
 Writing retry data for T:V4NET.0.0.0:V4NET.0.0.0:1224

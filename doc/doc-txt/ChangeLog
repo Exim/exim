@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.286 2006/02/07 16:36:25 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.287 2006/02/08 14:28:51 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -97,6 +97,10 @@ PH/16 As discussed on the list in Nov/Dec: Exim no longer looks at the
       fixed another bug: if SRV records were looked up and the corresponding
       address records were *not* found in the additional section, the port
       values from the SRV records were lost.
+
+PH/17 If a delivery to a pipe, file, or autoreply was deferred, Exim was not
+      using the correct key (the original address) when searching the retry
+      rules in order to find which one to use for generating the retry hint.
 
 
 

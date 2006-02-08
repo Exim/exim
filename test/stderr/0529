@@ -1,0 +1,85 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: x@test.ex
+no domain retry record
+no address retry record
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: TESTSUITE/test-mail/rmbox
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    TESTSUITE/test-mail/rmbox
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+locking TESTSUITE/spool/db/retry.lockfile
+no retry data available
+added retry item for T:TESTSUITE/test-mail/rmbox:x@test.ex: errno=-22 more_errno=dd flags=0
+LOG: MAIN
+  == TESTSUITE/test-mail/rmbox <x@test.ex> R=r1 T=t1 defer (-22): mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/rmbox)
+Processing retry items
+Succeeded addresses:
+x@test.ex: no retry items
+Failed addresses:
+Deferred addresses:
+TESTSUITE/test-mail/rmbox
+locking TESTSUITE/spool/db/retry.lockfile
+retry for T:TESTSUITE/test-mail/rmbox:x@test.ex = *@test.ex -22 0
+Writing retry data for T:TESTSUITE/test-mail/rmbox:x@test.ex
+  first failed=dddd last try=dddd next try=+900 expired=0
+  errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/rmbox)
+x@test.ex: no retry items
+end of retry processing
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: x@test.ex
+no domain retry record
+no address retry record
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: TESTSUITE/test-mail/rmbox
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+    TESTSUITE/test-mail/rmbox
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+locking TESTSUITE/spool/db/retry.lockfile
+retry record exists: age=ttt (max 1w)
+  time to retry = tttt expired = 0
+retry time not reached for TESTSUITE/test-mail/rmbox: checking ultimate address timeout
+now=tttt received_time=tttt diff=tttt timeout=259200
+LOG: retry_defer MAIN
+  == TESTSUITE/test-mail/rmbox <x@test.ex> R=r1 T=t1 defer (-52): Retry time not yet reached
+Processing retry items
+Succeeded addresses:
+x@test.ex: no retry items
+Failed addresses:
+Deferred addresses:
+TESTSUITE/test-mail/rmbox: no retry items
+x@test.ex: no retry items
+end of retry processing
+LOG: queue_run MAIN
+  End queue run: pid=pppp
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

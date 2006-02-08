@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/retry.c,v 1.5 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/retry.c,v 1.6 2006/02/08 14:28:51 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -46,7 +46,16 @@ if (retry != NULL && retry->rules != NULL)
   for (last_rule = retry->rules;
        last_rule->next != NULL;
        last_rule = last_rule->next);
+  DEBUG(D_transport|D_retry)
+    debug_printf("now=%d received_time=%d diff=%d timeout=%d\n",
+      (int)now, received_time, (int)(now - received_time),
+      last_rule->timeout);
   address_timeout = (now - received_time > last_rule->timeout);
+  }
+else
+  {
+  DEBUG(D_transport|D_retry)
+    debug_printf("no retry rule found: assume timed out\n");
   }
 
 return address_timeout;
@@ -340,23 +349,38 @@ retry_config *
 retry_find_config(uschar *key, uschar *alternate, int basic_errno,
   int more_errno)
 {
-int replace;
+int replace = 0;
 uschar *use_key, *use_alternate;
 uschar *colon = Ustrchr(key, ':');
 retry_config *yield;
 
-/* If there's a colon in the key, temporarily replace it with
-a zero to terminate the string there. */
+/* If there's a colon in the key, there are two possibilities:
+
+(1) This is a key for a host, ip address, and possibly port, in the format
+
+      hostname:ip+port
+
+    In this case, we temporarily replace the colon with a zero, to terminate
+    the string after the host name.
+
+(2) This is a key for a pipe, file, or autoreply delivery, in the format
+
+      pipe-or-file-or-auto:x@y
+
+    where x@y is the original address that provoked the delivery. The pipe or
+    file or auto will start with | or / or >, whereas a host name will start
+    with a letter or a digit. In this case we want to use the original address
+    to search for a retry rule. */
 
 if (colon != NULL)
   {
-  replace = ':';
+  if (isalnum(*key))
+    replace = ':';
+  else
+    key = Ustrrchr(key, ':') + 1;   /* Take from the last colon */
   }
-else
-  {
-  colon = key + Ustrlen(key);
-  replace = 0;
-  }
+
+if (replace == 0) colon = key + Ustrlen(key);
 *colon = 0;
 
 /* Sort out the keys */
@@ -619,10 +643,12 @@ for (i = 0; i < 3; i++)
         DEBUG(D_retry)
           {
           if ((rti->flags & rf_host) != 0)
-            debug_printf("retry for %s (%s) = %s\n", rti->key,
-              addr->domain, retry->pattern);
+            debug_printf("retry for %s (%s) = %s %d %d\n", rti->key,
+              addr->domain, retry->pattern, retry->basic_errno,
+              retry->more_errno);
           else
-            debug_printf("retry for %s = %s\n", rti->key, retry->pattern);
+            debug_printf("retry for %s = %s %d %d\n", rti->key, retry->pattern,
+              retry->basic_errno, retry->more_errno);
           }
 
         /* Set up the message for the database retry record. Because DBM
