@@ -7,12 +7,18 @@ quota: 0
 threshold: 10
 This is a test message
 ****
-exim -odi userx
+exim -DERT='errors_reply_to = x@y' \
+     -DQWM='quota_warn_message = From : p@q\n\
+       Reply-To: a@b\n\
+       To: $local_part@$domain\n\
+       Subject: Your mailbox\n\n\
+       Your mailbox has crossed the threshold\n' \ 
+     -odi userx
 quota: 10K
 threshold: 900
 A test message
 ****
-exim -odi userx
+exim -DERT='errors_reply_to = x@y' -odi userx
 quota: 2200
 threshold: 90%
 This is a test message

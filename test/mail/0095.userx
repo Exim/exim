@@ -40,16 +40,14 @@ Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmbA-0005vi-00
 	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
-From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+From : p@q
+Reply-To: a@b
 To: userx@myhost.test.ex
 Subject: Your mailbox
 Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
-This message is automatically created by mail delivery software (Exim).
-
-The size of your mailbox has exceeded a warning threshold that is
-set by the system administrator.
+Your mailbox has crossed the threshold
 
 From CALLER@myhost.test.ex Tue Mar 02 09:44:33 1999
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
@@ -68,6 +66,7 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmbC-0005vi-00
 	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Reply-To: x@y
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: userx@myhost.test.ex

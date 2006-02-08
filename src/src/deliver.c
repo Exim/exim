@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.27 2006/02/08 14:28:51 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.28 2006/02/08 16:10:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1490,6 +1490,44 @@ return FALSE;
 
 
 
+/******************************************************
+*      Check for a given header in a header string    *
+******************************************************/
+
+/* This function is used when generating quota warnings. The configuration may
+specify any header lines it likes in quota_warn_message. If certain of them are
+missing, defaults are inserted, so we need to be able to test for the presence
+of a given header.
+
+Arguments:
+  hdr         the required header name
+  hstring     the header string
+
+Returns:      TRUE  the header is in the string
+              FALSE the header is not in the string
+*/
+
+static BOOL
+contains_header(uschar *hdr, uschar *hstring)
+{
+int len = Ustrlen(hdr);
+uschar *p = hstring;
+while (*p != 0)
+  {
+  if (strncmpic(p, hdr, len) == 0)
+    {
+    p += len;
+    while (*p == ' ' || *p == '\t') p++;
+    if (*p == ':') return TRUE;
+    }
+  while (*p != 0 && *p != '\n') p++;
+  if (*p == '\n') p++;
+  }
+return FALSE;
+}
+
+
+
 
 /*************************************************
 *           Perform a local delivery             *
@@ -1991,12 +2029,13 @@ if (addr->special_action == SPECIAL_WARN &&
     if (pid > 0)
       {
       FILE *f = fdopen(fd, "wb");
-
-      if (errors_reply_to != NULL)
+      if (errors_reply_to != NULL &&
+          !contains_header(US"Reply-To", warn_message))
         fprintf(f, "Reply-To: %s\n", errors_reply_to);
       fprintf(f, "Auto-Submitted: auto-replied\n");
-      fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
-        qualify_domain_sender);
+      if (!contains_header(US"From", warn_message))
+        fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
+          qualify_domain_sender);
       fprintf(f, "%s", CS warn_message);
 
       /* Close and wait for child process to complete, without a timeout. */

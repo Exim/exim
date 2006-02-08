@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.287 2006/02/08 14:28:51 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.288 2006/02/08 16:10:46 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -101,6 +101,10 @@ PH/16 As discussed on the list in Nov/Dec: Exim no longer looks at the
 PH/17 If a delivery to a pipe, file, or autoreply was deferred, Exim was not
       using the correct key (the original address) when searching the retry
       rules in order to find which one to use for generating the retry hint.
+
+PH/18 If quota_warn_message contains a From: header, Exim now refrains from
+      adding the default one. Similarly, if it contains a Reply-To: header, the
+      errors_reply_to option, if set, is not used.
 
 
 

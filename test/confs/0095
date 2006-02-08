@@ -1,5 +1,8 @@
 # Exim test configuration 0095
 
+ERT=
+QWM=
+
 exim_path = EXIM_PATH
 host_lookup_order = bydns
 primary_hostname = myhost.test.ex
@@ -11,6 +14,7 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
+ERT
 
 # ----- Routers -----
 
@@ -43,6 +47,7 @@ appendfile:
   file = DIR/test-mail/$local_part
   quota = $h_quota
   quota_warn_threshold = $h_threshold
+  QWM
   user = CALLER
 
 appendfile2:
