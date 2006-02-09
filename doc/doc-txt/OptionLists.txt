@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.14 2005/12/12 15:58:53 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.15 2006/02/09 10:04:00 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -326,7 +326,7 @@ message_id_header_text               string*         unset         main
 message_logs                         boolean         true          main              4.10
 message_prefix                       string*         +             appendfile        4.00 replaces prefix
                                      string*         unset         pipe              4.00 replaces prefix
-message_size_limit                   integer         0             main
+message_size_limit                   integer         50M           main
                                                      0             transports        2.05
 message_suffix                       string*         +             appendfile        4.00 replaces suffix
                                      string*         unset         pipe              4.00 replaces suffix
