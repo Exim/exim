@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/retry.c,v 1.6 2006/02/08 14:28:51 ph10 Exp $ */
+/* $Cambridge: exim/src/src/retry.c,v 1.7 2006/02/09 14:50:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -684,6 +684,16 @@ for (i = 0; i < 3; i++)
         /* Compute how long this destination has been failing */
 
         failing_interval = now - retry_record->first_failed;
+        DEBUG(D_retry) debug_printf("failing_interval=%d message_age=%d\n",
+          failing_interval, message_age);
+
+        /* If the message has been on the queue longer than the recorded time
+        of failure, use the message's age instead. This can happen when some
+        messages can be delivered and others cannot; a successful delivery will
+        reset the first_failed time, and this can lead to a failing message
+        being retried too often. */
+
+        if (message_age > failing_interval) failing_interval = message_age;
 
         /* Search for the current retry rule. The cutoff time of the
         last rule is handled differently to the others. The rule continues
@@ -738,7 +748,14 @@ for (i = 0; i < 3; i++)
 
         This implements "timeout this rule if EITHER the host (or routing or
         directing) has been failing for more than the maximum time, OR if the
-        message has been on the queue for more than the maximum time." */
+        message has been on the queue for more than the maximum time."
+
+        February 2006: It is possible that this code is no longer needed
+        following the change to the retry calculation to use the message age if
+        it is larger than the time since first failure. It may be that the
+        expired flag is always set when the other conditions are met. However,
+        this is a small bit of code, and it does no harm to leave it in place,
+        just in case. */
 
         if (received_time <= retry_record->first_failed &&
             addr == endaddr && !retry_record->expired && rule != NULL)

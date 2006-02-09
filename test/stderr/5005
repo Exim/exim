@@ -486,6 +486,7 @@ test.ex in "*"? yes (matched "*")
 userx@test.ex in "*"? yes (matched "*")
 retry for T:userx@test.ex = * 0 0
 dbfn_read: key=T:userx@test.ex
+failing_interval=ttt message_age=ttt
 Writing retry data for T:userx@test.ex
   first failed=dddd last try=dddd next try=+86400 expired=0
   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)
@@ -652,6 +653,7 @@ test.ex in "*"? yes (matched "*")
 userx@test.ex in "*"? yes (matched "*")
 retry for T:userx@test.ex = * 0 0
 dbfn_read: key=T:userx@test.ex
+failing_interval=ttt message_age=ttt
 Writing retry data for T:userx@test.ex
   first failed=dddd last try=dddd next try=+86400 expired=0
   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to tmp/MAILDIR.myhost.test.ex)

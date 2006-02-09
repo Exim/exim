@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.2 2006/02/08 14:28:51 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.3 2006/02/09 14:50:58 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -417,6 +417,7 @@ while(<IN>)
   # Time to retry may vary
   s/time to retry = \S+/time to retry = tttt/;
   s/retry record exists: age=\S+/retry record exists: age=ttt/;
+  s/failing_interval=\S+ message_age=\S+/failing_interval=ttt message_age=ttt/;
 
   # Date/time in exim -bV output
   s/\d\d-[A-Z][a-z]{2}-\d{4}\s\d\d:\d\d:\d\d/07-Mar-2000 12:21:52/g;

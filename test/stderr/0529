@@ -38,6 +38,7 @@ Deferred addresses:
 TESTSUITE/test-mail/rmbox
 locking TESTSUITE/spool/db/retry.lockfile
 retry for T:TESTSUITE/test-mail/rmbox:x@test.ex = *@test.ex -22 0
+failing_interval=ttt message_age=ttt
 Writing retry data for T:TESTSUITE/test-mail/rmbox:x@test.ex
   first failed=dddd last try=dddd next try=+900 expired=0
   errno=-22 more_errno=dd mailbox is full (MTA-imposed quota exceeded while writing to TESTSUITE/test-mail/rmbox)
