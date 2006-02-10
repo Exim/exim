@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.290 2006/02/10 14:25:43 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.291 2006/02/10 16:29:20 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -119,6 +119,15 @@ PH/19 When calculating a retry time, Exim used to measure the "time since
 PH/20 Added $auth1, $auth2, $auth3 to contain authentication data (as well as
       $1, $2, $3) because the numerical variables can be reset during some
       expansion items (e.g. "match"), thereby losing the authentication data.
+
+PH/21 Make -bV show the size of off_t variables so that the test suite can
+      decide whether to run tests for quotas > 2G.
+
+PH/22 Test the values given for quota, quota_filecount, quota_warn_threshold,
+      mailbox_size, and mailbox_filecount in the appendfile transport. If a
+      filecount value is greater than 2G or if a quota value is greater than 2G
+      on a system where the size of off_t is not greater than 4, a panic error
+      is given.
 
 
 

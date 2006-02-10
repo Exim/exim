@@ -1,0 +1,7 @@
+# maildirsize for quota handling quota > 2G
+need_largefiles
+# Set a quota that is greater than 2G
+exim -DQUOTA=3G -odi userx@test.ex
+Test message
+****
+no_msglog_check

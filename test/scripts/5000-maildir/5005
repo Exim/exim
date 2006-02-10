@@ -1,4 +1,4 @@
-# maildir with maildirsize for quota handling
+# maildirsize for quota handling
 exim -d -odi nofile@test.ex
 Message for nofile
 ****

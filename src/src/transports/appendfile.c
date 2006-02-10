@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.11 2006/02/07 11:19:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.12 2006/02/10 16:29:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -271,6 +271,7 @@ mailbox_filecount */
 for (i = 0; i < 5; i++)
   {
   double d;
+  uschar *which = NULL;
 
   if (q == NULL) d = default_value; else
     {
@@ -316,32 +317,48 @@ for (i = 0; i < 5; i++)
       }
     }
 
+  /* Set each value, checking for possible overflow. */
+
   switch (i)
     {
     case 0:
+    if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4) which = US"quota";
     ob->quota_value = (off_t)d;
     q = ob->quota_filecount;
     break;
 
     case 1:
+    if (d >= 2.0*1024.0*1024.0*1024.0) which = US"quota_filecount";
     ob->quota_filecount_value = (int)d;
     q = ob->quota_warn_threshold;
     break;
 
     case 2:
+    if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4)
+      which = US"quota_warn_threshold";
     ob->quota_warn_threshold_value = (off_t)d;
     q = ob->mailbox_size_string;
     default_value = -1.0;
     break;
 
     case 3:
+    if (d >= 2.0*1024.0*1024.0*1024.0 && sizeof(off_t) <= 4)
+      which = US"mailbox_size";;
     ob->mailbox_size_value = (off_t)d;
     q = ob->mailbox_filecount_string;
     break;
 
     case 4:
+    if (d >= 2.0*1024.0*1024.0*1024.0) which = US"mailbox_filecount";
     ob->mailbox_filecount_value = (int)d;
     break;
+    }
+
+  if (which != NULL)
+    {
+    *errmsg = string_sprintf("%s value %.10g is too large (overflow) in "
+      "%s transport", which, d, tblock->name);
+    return FAIL;
     }
   }
 

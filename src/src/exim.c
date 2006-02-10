@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.31 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.32 2006/02/10 16:29:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1012,6 +1012,8 @@ if (fixed_never_users[0] > 0)
     fprintf(f, "%d:", (unsigned int)fixed_never_users[i]);
   fprintf(f, "%d\n", (unsigned int)fixed_never_users[i]);
   }
+
+fprintf(f, "Size of off_t: %d\n", sizeof(off_t));
 }
 
 

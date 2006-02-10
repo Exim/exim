@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.46 2006/02/10 14:25:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.47 2006/02/10 16:29:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1224,7 +1224,7 @@ uschar *warnmsg_delay          = NULL;
 uschar *warnmsg_recipients     = NULL;
 BOOL    write_rejectlog        = TRUE;
 
-uschar *version_copyright      = US"Copyright (c) University of Cambridge 2005";
+uschar *version_copyright      = US"Copyright (c) University of Cambridge 2006";
 uschar *version_date           = US"?";
 uschar *version_cnumber        = US"????";
 uschar *version_string         = US"?";

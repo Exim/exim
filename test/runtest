@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.3 2006/02/09 14:50:58 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.4 2006/02/10 16:29:20 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -36,6 +36,7 @@ $server_opts = "";
 
 $have_ipv4 = 1;
 $have_ipv6 = 1;
+$have_largefiles = 0;
 
 $test_start = 1;
 $test_end = $test_top = 8999;
@@ -614,7 +615,7 @@ while(<IN>)
   # Maildirsize data
   if (/^\d+S,\d+C\s*$/)
     {
-    print MUNGED "dddS,dC\n";
+    print MUNGED;
     while (<IN>)
       {
       last if !/^\d+ \d+\s*$/;
@@ -788,7 +789,8 @@ while(<IN>)
                 /^Transports:/ ||
                 /^log selectors =/ ||
                 /^cwd=/ ||
-                /^Fixed never_users:/
+                /^Fixed never_users:/ ||
+                /^Size of off_t:/
                 );
       }
 
@@ -1459,7 +1461,7 @@ if (/^sleep\s+(.*)$/)
 
 # Various Unix management commands are recognized
 
-if (/^(ln|ls|du|mkdir|mkfifo|touch|cp)\s/ ||
+if (/^(ln|ls|du|mkdir|mkfifo|touch|cp|cat)\s/ ||
     /^sudo (rmdir|rm|chown|chmod)\s/)
   {
   run_system("$_ >>test-stdout 2>>test-stderr");
@@ -1952,9 +1954,14 @@ while (<EXIMINFO>)
   {
   my(@temp);
 
-  if (/^Exim version/) { print; next; }
+  if (/^Exim version/) { print; }
 
-  if (/^Support for: (.*)/)
+  elsif (/^Size of off_t: (\d+)/)
+    {
+    $have_largefiles = 1 if $1 > 4;
+    }
+
+  elsif (/^Support for: (.*)/)
     {
     print;
     @temp = split /(\s+)/, $1;
@@ -1962,7 +1969,7 @@ while (<EXIMINFO>)
     %parm_support = @temp;
     }
 
-  if (/^Lookups: (.*)/)
+  elsif (/^Lookups: (.*)/)
     {
     print;
     @temp = split /(\s+)/, $1;
@@ -1970,7 +1977,7 @@ while (<EXIMINFO>)
     %parm_lookups = @temp;
     }
 
-  if (/^Authenticators: (.*)/)
+  elsif (/^Authenticators: (.*)/)
     {
     print;
     @temp = split /(\s+)/, $1;
@@ -1978,7 +1985,7 @@ while (<EXIMINFO>)
     %parm_authenticators = @temp;
     }
 
-  if (/^Routers: (.*)/)
+  elsif (/^Routers: (.*)/)
     {
     print;
     @temp = split /(\s+)/, $1;
@@ -1990,7 +1997,7 @@ while (<EXIMINFO>)
   # that the basic transport name is set, and then the name with each of the
   # options.
 
-  if (/^Transports: (.*)/)
+  elsif (/^Transports: (.*)/)
     {
     print;
     @temp = split /(\s+)/, $1;
@@ -2852,6 +2859,15 @@ foreach $test (@test_list)
       if (/^no_stdout_check/)  { $stdout_skip = 1; next; }
       if (/^rmfiltertest/)     { $rmfiltertest = 1; next; }
       if (/^sortlog/)          { $sortlog = 1; next; }
+
+      if (/^need_largefiles/)
+        {
+        next if $have_largefiles;
+        print ">>> Large file support is needed for test $testno, but is not available: skipping\n";
+        $docheck = 0;      # don't check output
+        undef $_;          # pretend EOF
+        last;
+        }
 
       if (/^need_ipv4/)
         {

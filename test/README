@@ -1,4 +1,4 @@
-$Cambridge: exim/test/README,v 1.1 2006/02/06 16:07:10 ph10 Exp $
+$Cambridge: exim/test/README,v 1.2 2006/02/10 16:29:20 ph10 Exp $
 
 EXPORTABLE EXIM TEST SUITE
 --------------------------
@@ -641,6 +641,13 @@ found, the entire script is skipped, and a comment is output.
 
 This command must be at the head of a script. If no IPv6 interface has been
 found, the entire script is skipped, and a comment is output.
+
+
+  need_largefiles
+
+This command must be at the head of a script. If the Exim binary does not
+suppport large files (off_t is <= 4), the entire script is skipped, and a
+comment is output.
 
 
   need_move_frozen_messages
