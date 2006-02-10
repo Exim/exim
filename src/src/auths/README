@@ -1,4 +1,4 @@
-$Cambridge: exim/src/src/auths/README,v 1.3 2005/02/17 11:58:27 ph10 Exp $
+$Cambridge: exim/src/src/auths/README,v 1.4 2006/02/10 14:25:43 ph10 Exp $
 
 AUTHS
 
@@ -44,9 +44,10 @@ The second function performs authentication as a server. It receives a pointer
 to the instance block, and its second argument is the remainder of the data
 from the AUTH command. The numeric variable maximum setting (expand_nmax) is
 set to zero, with $0 initialized as unset. The authenticator may set up numeric
-variables according to its specification; it should leave expand_nmax set at
-the end so that they can be used for the expansion of the generic server_set_id
-option, which happens centrally.
+variables according to its (old) specification and $auth<n> variables the
+preferred ones nowadays; it should leave them set at the end so that they can
+be used for the expansion of the generic server_set_id option, which happens
+centrally.
 
 This function has access to the SMTP input and output so that it can write
 intermediate responses and read more data if necessary. There is a packaged

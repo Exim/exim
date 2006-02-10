@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/plaintext.c,v 1.3 2006/02/07 11:19:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/plaintext.c,v 1.4 2006/02/10 14:25:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -87,14 +87,16 @@ if (prompts != NULL)
   }
 
 /* If data was supplied on the AUTH command, decode it, and split it up into
-multiple items at binary zeros. If the data consists of the string "=" it
-indicates a single, empty string. */
+multiple items at binary zeros. The strings are put into $auth1, $auth2, etc,
+up to a maximum. To retain backwards compatibility, they are also put int $1,
+$2, etc. If the data consists of the string "=" it indicates a single, empty
+string. */
 
 if (*data != 0)
   {
   if (Ustrcmp(data, "=") == 0)
     {
-    expand_nstring[++expand_nmax] = US"";
+    auth_vars[0] = expand_nstring[++expand_nmax] = US"";
     expand_nlength[expand_nmax] = 0;
     }
   else
@@ -103,6 +105,7 @@ if (*data != 0)
     end = clear + len;
     while (clear < end && expand_nmax < EXPAND_MAXN)
       {
+      if (expand_nmax < AUTH_VARS) auth_vars[expand_nmax] = clear;
       expand_nstring[++expand_nmax] = clear;
       while (*clear != 0) clear++;
       expand_nlength[expand_nmax] = clear++ - expand_nstring[expand_nmax];
@@ -126,6 +129,7 @@ while ((s = string_nextinlist(&prompts, &sep, big_buffer, big_buffer_size))
   /* This loop must run at least once, in case the length is zero */
   do
     {
+    if (expand_nmax < AUTH_VARS) auth_vars[expand_nmax] = clear;
     expand_nstring[++expand_nmax] = clear;
     while (*clear != 0) clear++;
     expand_nlength[expand_nmax] = clear++ - expand_nstring[expand_nmax];
@@ -133,9 +137,9 @@ while ((s = string_nextinlist(&prompts, &sep, big_buffer, big_buffer_size))
   while (clear < end && expand_nmax < EXPAND_MAXN);
   }
 
-/* We now have a number of items of data in $1, $2, etc. Match against the
-decoded data by expanding the condition. Also expand the id to set if
-authentication succeeds. */
+/* We now have a number of items of data in $auth1, $auth2, etc (and also, for
+compatibility, in $1, $2, etc). Match against the decoded data by expanding the
+condition. */
 
 cond = expand_string(ob->server_condition);
 
@@ -143,6 +147,11 @@ HDEBUG(D_auth)
   {
   int i;
   debug_printf("%s authenticator:\n", ablock->name);
+  for (i = 0; i < AUTH_VARS; i++)
+    {
+    if (auth_vars[i] != NULL)
+      debug_printf("  $auth%d = %s\n", i + 1, auth_vars[i]);
+    }
   for (i = 1; i <= expand_nmax; i++)
     debug_printf("  $%d = %.*s\n", i, expand_nlength[i], expand_nstring[i]);
   debug_print_string(ablock->server_debug_string);    /* customized debug */

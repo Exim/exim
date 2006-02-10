@@ -16,6 +16,9 @@ LOG: H=[5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts? yes (matched "*")
 >>> auth1 authenticator:
+>>>   $auth1 = 
+>>>   $auth2 = userx
+>>>   $auth3 = secret
 >>>   $1 = 
 >>>   $2 = userx
 >>>   $3 = secret
@@ -43,6 +46,9 @@ LOG: H=[5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts? yes (matched "*")
 >>> auth1 authenticator:
+>>>   $auth1 = 
+>>>   $auth2 = userx
+>>>   $auth3 = secret
 >>>   $1 = 
 >>>   $2 = userx
 >>>   $3 = secret
@@ -64,6 +70,8 @@ LOG: H=[5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts? yes (matched "*")
 >>> auth2 authenticator:
+>>>   $auth1 = userx
+>>>   $auth2 = secret
 >>>   $1 = userx
 >>>   $2 = secret
 >>> expanded string: yes

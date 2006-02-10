@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/b64decode.c,v 1.3 2006/02/07 11:19:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/b64decode.c,v 1.4 2006/02/10 14:25:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -22,7 +22,7 @@ compact loop is messy and would probably run more slowly.
 Arguments:
   code        points to the coded string, zero-terminated
   ptr         where to put the pointer to the result, which is in
-              dynamic store
+              dynamic store, and zero-terminated
 
 Returns:      the number of bytes in the result,
               or -1 if the input was malformed

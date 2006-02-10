@@ -109,6 +109,7 @@ LOG: H=(test.host) [10.0.0.1] rejected ETRN abcd: authentication required
 >>> deny: condition test succeeded
 LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@test.ex>: authentication required
 >>> mylogin authenticator:
+>>>   $auth1 = userx secret
 >>>   $1 = userx secret
 >>> +++MYLOGIN $1="userx secret" $2="" $3=""
 >>> expanded string: yes
@@ -273,6 +274,7 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>> accept: endpass encountered - denying access
 LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cus.cam.ac.uk>: authentication required
 >>> mylogin authenticator:
+>>>   $auth1 = userx secret
 >>>   $1 = userx secret
 >>> +++MYLOGIN $1="userx secret" $2="" $3=""
 >>> expanded string: yes
@@ -367,6 +369,7 @@ SMTP>> 250-myhost.test.ex Hello CALLER at testing.testing [10.0.0.5]
 250 HELP
 SMTP<< auth mylogin dXNlcnggc2VjcmV0
 mylogin authenticator:
+  $auth1 = userx secret
   $1 = userx secret
 +++MYLOGIN $1="userx secret" $2="" $3=""
 expanded string: yes

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/cram_md5.c,v 1.3 2006/02/07 11:19:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/cram_md5.c,v 1.4 2006/02/10 14:25:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -177,10 +177,11 @@ if ((rc = auth_get_data(&data, challenge, Ustrlen(challenge))) != OK) return rc;
 if ((len = auth_b64decode(data, &clear)) < 0) return BAD64;
 
 /* The return consists of a user name, space-separated from the CRAM-MD5
-digest, expressed in hex. Extract the user name and put it in $1. Then check
-that the remaining length is 32. */
+digest, expressed in hex. Extract the user name and put it in $auth1 and $1.
+The former is now the preferred variable; the latter is the original one. Then
+check that the remaining length is 32. */
 
-expand_nstring[1] = clear;
+auth_vars[0] = expand_nstring[1] = clear;
 while (*clear != 0 && !isspace(*clear)) clear++;
 if (!isspace(*clear)) return FAIL;
 *clear++ = 0;
@@ -212,7 +213,7 @@ compute_cram_md5(secret, challenge, digest);
 HDEBUG(D_auth)
   {
   uschar buff[64];
-  debug_printf("CRAM-MD5: user name = %s\n", expand_nstring[1]);
+  debug_printf("CRAM-MD5: user name = %s\n", auth_vars[0]);
   debug_printf("          challenge = %s\n", challenge);
   debug_printf("          received  = %s\n", clear);
   Ustrcpy(buff,"          digest    = ");

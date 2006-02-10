@@ -21,11 +21,11 @@ begin authenticators
 sasl1:
   driver = cyrus_sasl
   public_name = ANONYMOUS
-  server_set_id = $1
+  server_set_id = $auth1
 
 sasl2:
   driver = cyrus_sasl
   public_name = PLAIN
-  server_set_id = $1
+  server_set_id = $auth1
 
 # End

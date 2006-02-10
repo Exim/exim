@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.45 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.46 2006/02/10 14:25:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -327,6 +327,7 @@ auth_instance auth_defaults    = {
 
 uschar *auth_defer_msg         = US"reason not recorded";
 uschar *auth_defer_user_msg    = US"";
+uschar *auth_vars[AUTH_VARS];
 int     auto_thaw              = 0;
 #ifdef WITH_CONTENT_SCAN
 uschar *av_scanner             = US"sophie:/var/run/sophie";  /* AV scanner */

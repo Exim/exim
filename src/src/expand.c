@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.53 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.54 2006/02/10 14:25:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1257,6 +1257,16 @@ if (Ustrncmp(name, "acl_", 4) == 0)
     if (*endptr == 0 && n < max)
       return (acl_var[offset + n] == NULL)? US"" : acl_var[offset + n];
     }
+  }
+
+/* Similarly for $auth<n> variables. */
+
+if (Ustrncmp(name, "auth", 4) == 0)
+  {
+  uschar *endptr;
+  int n = Ustrtoul(name + 4, &endptr, 10);
+  if (*endptr == 0 && n != 0 && n <= AUTH_VARS)
+    return (auth_vars[n-1] == NULL)? US"" : auth_vars[n-1];
   }
 
 /* For all other variables, search the table */

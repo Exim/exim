@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/spa.c,v 1.5 2006/02/07 11:19:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/spa.c,v 1.6 2006/02/10 14:25:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -162,8 +162,6 @@ if (spa_base64_to_bits((char *)(&response), sizeof(response), (const char *)(dat
   return FAIL;
   }
 
-/* get username and put it in $1 */
-
 /***************************************************************
 PH 07-Aug-2003: The original code here was this:
 
@@ -194,9 +192,14 @@ that causes failure if the size of msgbuf is exceeded. ****/
 
 /***************************************************************/
 
-expand_nstring[1] = msgbuf;
+/* Put the username in $auth1 and $1. The former is now the preferred variable;
+the latter is the original variable. */
+
+auth_vars[0] = expand_nstring[1] = msgbuf;
 expand_nlength[1] = Ustrlen(msgbuf);
 expand_nmax = 1;
+
+debug_print_string(ablock->server_debug_string);    /* customized debug */
 
 /* look up password */
 

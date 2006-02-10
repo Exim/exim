@@ -51,6 +51,9 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts? yes (matched "*")
 >>> plain authenticator:
+>>>   $auth1 = 
+>>>   $auth2 = userx
+>>>   $auth3 = secret
 >>>   $1 = 
 >>>   $2 = userx
 >>>   $3 = secret

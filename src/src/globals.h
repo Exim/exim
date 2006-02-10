@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.33 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.34 2006/02/10 14:25:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -157,6 +157,7 @@ extern auth_instance *auths;           /* Chain of instantiated auths */
 extern auth_instance auth_defaults;    /* Default values */
 extern uschar *auth_defer_msg;         /* Error message for log */
 extern uschar *auth_defer_user_msg;    /* Error message for user */
+extern uschar *auth_vars[];            /* $authn variables */
 extern int     auto_thaw;              /* Auto-thaw interval */
 #ifdef WITH_CONTENT_SCAN
 extern uschar *av_scanner;             /* AntiVirus scanner to use for the malware condition */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/cyrus_sasl.c,v 1.3 2005/04/05 14:33:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/cyrus_sasl.c,v 1.4 2006/02/10 14:25:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -324,11 +324,12 @@ while(rc==SASL_CONTINUE)
     }
   else if(rc==SASL_OK)
     {
-    /* get the username and copy it into $1 */
-    rc=sasl_getprop(conn, SASL_USERNAME, (const void **)(&out2));
-    expand_nstring[1]=string_copy(out2);
-    expand_nlength[1]=Ustrlen(expand_nstring[1]);
-    expand_nmax=1;
+    /* Get the username and copy it into $auth1 and $1. The former is now the
+    preferred variable; the latter is the original variable. */
+    rc = sasl_getprop(conn, SASL_USERNAME, (const void **)(&out2));
+    auth_vars[0] = expand_nstring[1] = string_copy(out2);
+    expand_nlength[1] = Ustrlen(expand_nstring[1]);
+    expand_nmax = 1;
 
     HDEBUG(D_auth)
       debug_printf("Cyrus SASL %s authentiction succeeded for %s\n", ob->server_mech, out2);

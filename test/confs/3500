@@ -76,10 +76,10 @@ begin authenticators
 cram_md5:
   driver = cram_md5
   public_name = CRAM-MD5
-  server_debug_print = +++CRAM-MD5 \$1="$1" \$2=\"$2" \$3="$3"
-  server_secret = "${if eq{$1}{tim}{tanstaaftanstaaf}\
-    {${if eq{$1}{userx}{secret}fail}}}"
-  server_set_id = $1
+  server_debug_print = +++CRAM-MD5 \$auth1="$auth1" \$auth2=\"$auth2" \$auth3="$auth3"
+  server_secret = "${if eq{$auth1}{tim}{tanstaaftanstaaf}\
+    {${if eq{$auth1}{userx}{secret}fail}}}"
+  server_set_id = $auth1
 
 
 

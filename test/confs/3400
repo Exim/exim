@@ -85,46 +85,46 @@ plain:
   driver = plaintext
   public_name = PLAIN
   server_condition = "\
-    ${if and {{eq{$2}{userx}}{eq{$3}{secret}}}{yes}{no}}"
-  server_set_id = $2
+    ${if and {{eq{$auth2}{userx}}{eq{$auth3}{secret}}}{yes}{no}}"
+  server_set_id = $auth2
 
 extended_plain:
   driver = plaintext
   public_name = EXPLAIN
   server_prompts = :
   server_condition = "\
-    ${if and {{eq{$2}{userx}}{eq{$3}{secret}}}{yes}{no}}"
-  server_set_id = $2
+    ${if and {{eq{$auth2}{userx}}{eq{$auth3}{secret}}}{yes}{no}}"
+  server_set_id = $auth2
 
 expanded_prompt_plain:
   driver = plaintext
   public_name = EXPANDED
   server_prompts = $primary_hostname
   server_condition = "\
-    ${if and {{eq{$2}{userx}}{eq{$3}{secret}}}{yes}{no}}"
-  server_set_id = $2
+    ${if and {{eq{$auth2}{userx}}{eq{$auth3}{secret}}}{yes}{no}}"
+  server_set_id = $auth2
 
 expanded_prompt_plain_fail:
   driver = plaintext
   public_name = EXPANDFAIL
   server_prompts = $nonexistent
   server_condition = "\
-    ${if and {{eq{$2}{userx}}{eq{$3}{secret}}}{yes}{no}}"
-  server_set_id = $2
+    ${if and {{eq{$auth2}{userx}}{eq{$auth3}{secret}}}{yes}{no}}"
+  server_set_id = $auth2
 
 defer:
   driver = plaintext
   public_name = DEFER
   server_condition = "account suspended"
-  server_set_id = $2
+  server_set_id = $auth2
 
 login:
   driver = plaintext
   public_name = LOGIN
   server_prompts = "User Name : Password "
   server_condition = "\
-    ${if and {{eq{$1}{userx}}{eq{$2}{secret}}}{yes}{no}}"
-  server_set_id = $1
+    ${if and {{eq{$auth1}{userx}}{eq{$auth2}{secret}}}{yes}{no}}"
+  server_set_id = $auth1
 
 
 # ----- Routers -----

@@ -269,6 +269,22 @@ match_domain:    ${if match_domain{5.aa.bb}{+dlist}{yes}{no}}
 match_domain:    ${if match_domain{xxxyz}{+dlist}{yes}{no}}
 match_domain:    ${if match_domain{xyz}{+dlist}{yes}{no}}
 
+${if match{x@zz.aa.bb}{^(.*)} \
+  { \
+  >$1< \ 
+  ${if match_domain{${domain:$1}}{+dlist}{[$1]}} \
+  >$1< \
+  } \
+  { CAN'T HAPPEN}} 
+
+${if match{x@xxxabc}{^(.*)} \
+  { \
+  >$1< \ 
+  ${if match_domain{${domain:$1}}{^\Nxxx(.*)\N}{[$1]}} \
+  >$1< \
+  } \
+  { CAN'T HAPPEN}} 
+
 match_address:   ${if match_address{x@y.z}{p@q:*@y.z}{yes}{no}}
 match_address:   ${if match_address{x@y.z}{p@q:x@*.z}{yes}{no}}
 

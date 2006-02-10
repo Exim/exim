@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.15 2006/02/09 10:04:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.16 2006/02/10 14:25:43 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -747,6 +747,7 @@ AUTH_CRAM_MD5                driver       include cram_md5 authenticator
 AUTH_CYRUS_SASL              driver       include Cyrus SASL authenticator
 AUTH_PLAINTEXT               driver       include plaintext authenticator
 AUTH_SPA                     driver       include SPA (NTLM) authenticator
+AUTH_VARS=3                  optional*    number of $auth variables
 BASENAME_COMMAND             system**     path to basename
 BASE_62=62                   optional*    not normally changed for Unix
 BIN_DIRECTORY                mandatory    Exim binary directory

@@ -45,6 +45,7 @@ spa:
   public_name = NTLM
   client_password = $sender_address
   client_username = username
+  server_debug_print = +++SPA \$auth1="$auth1"
   server_password = ok@test.ex
 
 

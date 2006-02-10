@@ -23,7 +23,7 @@
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in "10.0.0.1"? yes (matched "10.0.0.1")
 >>> host in auth_advertise_hosts? yes (matched "+auth_hosts")
->>> +++CRAM-MD5 $1="tim" $2="" $3=""
+>>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
 >>> CRAM-MD5: user name = tim
 >>>           challenge = <1896.697170952@postoffice.reston.mci.net>
 >>>           received  = b913a602c7eda7a495b4e6e7334d3890

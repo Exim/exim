@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.289 2006/02/09 14:50:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.290 2006/02/10 14:25:43 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -115,6 +115,10 @@ PH/19 When calculating a retry time, Exim used to measure the "time since
       when small messages continue to be delivered. Without this change, the
       "time since failure" will always be short, possible causing more frequent
       delivery attempts for the huge message than are intended.
+
+PH/20 Added $auth1, $auth2, $auth3 to contain authentication data (as well as
+      $1, $2, $3) because the numerical variables can be reset during some
+      expansion items (e.g. "match"), thereby losing the authentication data.
 
 
 

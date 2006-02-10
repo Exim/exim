@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.29 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.30 2006/02/10 14:25:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2133,7 +2133,7 @@ while (done <= 0)
   pid_t pid;
   int start, end, sender_domain, recipient_domain;
   int ptr, size, rc;
-  int c;
+  int c, i;
   auth_instance *au;
 
   switch(smtp_read_command(TRUE))
@@ -2222,20 +2222,26 @@ while (done <= 0)
       break;
       }
 
-    /* Run the checking code, passing the remainder of the command
-    line as data. Initialize $0 empty. The authenticator may set up
-    other numeric variables. Afterwards, have a go at expanding the set_id
-    string, even if authentication failed - for bad passwords it can be useful
-    to log the userid. On success, require set_id to expand and exist, and
-    put it in authenticated_id. Save this in permanent store, as the working
-    store gets reset at HELO, RSET, etc. */
+    /* Run the checking code, passing the remainder of the command line as
+    data. Initials the $auth<n> variables as empty. Initialize $0 empty and set
+    it as the only set numerical variable. The authenticator may set $auth<n>
+    and also set other numeric variables. The $auth<n> variables are preferred
+    nowadays; the numerical variables remain for backwards compatibility.
 
+    Afterwards, have a go at expanding the set_id string, even if
+    authentication failed - for bad passwords it can be useful to log the
+    userid. On success, require set_id to expand and exist, and put it in
+    authenticated_id. Save this in permanent store, as the working store gets
+    reset at HELO, RSET, etc. */
+
+    for (i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;
     expand_nmax = 0;
     expand_nlength[0] = 0;   /* $0 contains nothing */
 
     c = (au->info->servercode)(au, smtp_cmd_argument);
     if (au->set_id != NULL) set_id = expand_string(au->set_id);
     expand_nmax = -1;        /* Reset numeric variables */
+    for (i = 0; i < AUTH_VARS; i++) auth_vars[i] = NULL;   /* Reset $auth<n> */
 
     /* The value of authenticated_id is stored in the spool file and printed in
     log lines. It must not contain binary zeros or newline characters. In

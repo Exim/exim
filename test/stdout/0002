@@ -250,6 +250,10 @@
 > match_domain:    yes
 > match_domain:    no
 > 
+>  >x@zz.aa.bb< [] >x@zz.aa.bb< 
+> 
+>  >x@xxxabc< [] >x@xxxabc< 
+> 
 > match_address:   yes
 > match_address:   yes
 > 
