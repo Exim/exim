@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Darwin,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-Darwin,v 1.2 2006/02/10 14:35:37 ph10 Exp $
 
 # Exim: OS-specific make file for Darwin (Mac OS X).
 
@@ -9,7 +9,10 @@ CHOWN_COMMAND=/usr/sbin/chown
 
 HAVE_SA_LEN=YES
 
-CFLAGS=-O -no-cpp-precomp -DBIND_8_COMPAT
+# Removed -DBIND_8_COMPAT for 4.61
+# CFLAGS=-O -no-cpp-precomp -DBIND_8_COMPAT
+
+CFLAGS=-O -no-cpp-precomp
 
 USE_DB = yes
 DBMLIB =
