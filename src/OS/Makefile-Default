@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Default,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-Default,v 1.2 2006/02/10 14:33:26 ph10 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -169,22 +169,15 @@ EXIWHAT_EGREP_ARG=' exim( |$$|-)'
 EXIWHAT_KILL_SIGNAL=-USR1
 
 
-# IPv6 is coming. Exim has experimental support that has been tried out on
-# one or two OS. See the file README.IPV6 for the current status of this
-# support. Do not set this option unless you are working on IPv6 and know
-# what you are doing. As well as the basic enabling option, there are
-# parameters for include and library directories that may be needed for IPv6
-# on some systems.
+# IPv6 is gradually spreading more and more widely. Most operating systems seem
+# to support it nowadays. If you set this option, IPv6 support will be included
+# in the Exim binary. As well as the basic enabling option, there are
+# parameters for include and library directories that may be needed for IPv6 on
+# some systems, where the support is not yet in the standard library.
 
 # HAVE_IPV6=YES
 # IPV6_INCLUDE=-I /usr/ipv6/include
 # IPV6_LIBS=-L/usr/ipv6/libs -linet6
-
-# Setting this brings in support for A6 DNS records for IPV6. These are
-# now expected to be reduced to "experimental" status by the IETF, so
-# the code is omitted by default.
-
-# SUPPORT_A6=yes
 
 # Exim uses the function getaddrinfo() for converting IPv6 addresses in text
 # form to binary. Apparently some operating systems do not support this, or not
@@ -195,6 +188,13 @@ EXIWHAT_KILL_SIGNAL=-USR1
 # used by some operating systems.
 
 # IPV6_USE_INET_PTON=yes
+
+# Setting the next option brings in support for A6 DNS records for IPV6. These
+# were at one time expected to supplant AAAA records, but were eventually
+# rejected. The code remains in Exim, but has not been compiled or tested for
+# quite some time. Do not set this unless you know what you are doing.
+
+# SUPPORT_A6=yes
 
 
 # HOSTNAME_COMMAND contains the path to the "hostname" command, which varies
