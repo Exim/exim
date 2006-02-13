@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.291 2006/02/10 16:29:20 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.292 2006/02/13 11:13:37 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -128,6 +128,14 @@ PH/22 Test the values given for quota, quota_filecount, quota_warn_threshold,
       filecount value is greater than 2G or if a quota value is greater than 2G
       on a system where the size of off_t is not greater than 4, a panic error
       is given.
+
+PH/23 When a malformed item such as 1.2.3/24 appears in a host list, it can
+      never match. The debug and -bh output now contains an explicit error
+      message indicating a malformed IPv4 address or mask.
+
+PH/24 An host item such as 1.2.3.4/abc was being treated as the IP address
+      1.2.3.4 without a mask. Now it is not recognized as an IP address, and
+      PH/23 above applies.
 
 
 

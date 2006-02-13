@@ -348,3 +348,14 @@ LOG: 10HmbD-0005vi-00 Subject is: " here we go: a string that is going to be enc
 >>> processing "deny"
 >>> deny: condition test succeeded
 LOG: 10HmbD-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
+Exim version x.yz ....
+changed uid/gid: -C, -D, -be or -bf forces real uid
+  uid=CALLER_UID gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@myhost.test.ex
+1.2.3.4 in "1.2.3"? no (malformed IPv4 address or address mask)
+1.2.3.4 in "1.2.3.4/abc"? no (malformed IPv4 address or address mask)
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

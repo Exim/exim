@@ -692,3 +692,8 @@ Subject: =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_i
 .
 quit
 ****
+# Certain kind of error
+exim -d -be
+match_ip:        15 ${if match_ip{1.2.3.4}{1.2.3}}
+match_ip:        16 ${if match_ip{1.2.3.4}{1.2.3.4/abc}}
+****

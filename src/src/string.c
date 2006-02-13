@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/string.c,v 1.8 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/string.c,v 1.9 2006/02/13 11:13:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -28,6 +28,7 @@ Arguments:
   s         a string
   maskptr   NULL if no mask is permitted to follow
             otherwise, points to an int where the offset of '/' is placed
+            if there is no / followed by trailing digits, *maskptr is set 0
 
 Returns:    0 if the string is not a textual representation of an IP address
             4 if it is an IPv4 address
@@ -127,7 +128,9 @@ if (Ustrchr(s, ':') != NULL)
   sign, which introduces the interface specifier (scope id) of a link local
   address. */
 
-  if (!v4end) return (*s == 0 || *s == '%' || *s == '/')? yield : 0;
+  if (!v4end)
+    return (*s == 0 || *s == '%' ||
+           (*s == '/' && maskptr != NULL && *maskptr != 0))? yield : 0;
   }
 
 /* Test for IPv4 address, which may be the tail-end of an IPv6 address. */
@@ -139,7 +142,8 @@ for (i = 0; i < 4; i++)
   if (isdigit(*s) && isdigit(*(++s))) s++;
   }
 
-return (*s == 0 || *s == '/')? yield : 0;
+return (*s == 0 || (*s == '/' && maskptr != NULL && *maskptr != 0))?
+  yield : 0;
 }
 #endif  /* COMPILE_UTILITY */
 

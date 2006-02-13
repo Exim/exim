@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.31 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.32 2006/02/13 11:13:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1945,7 +1945,7 @@ int maskoffset;
 BOOL iplookup = FALSE;
 BOOL isquery = FALSE;
 BOOL isiponly = cb->host_name != NULL && cb->host_name[0] == 0;
-uschar *t = ss;
+uschar *t;
 uschar *semicolon;
 uschar **aliases;
 
@@ -1986,6 +1986,24 @@ a (possibly masked) comparision with the current IP address. */
 if (string_is_ip_address(ss, &maskoffset) != 0)
   return (host_is_in_net(cb->host_address, ss, maskoffset)? OK : FAIL);
 
+/* The pattern is not an IP address. A common error that people make is to omit
+one component of an IPv4 address, either by accident, or believing that, for
+example, 1.2.3/24 is the same as 1.2.3.0/24, or 1.2.3 is the same as 1.2.3.0,
+which it isn't. (Those applications that do accept 1.2.3 as an IP address
+interpret it as 1.2.0.3 because the final component becomes 16-bit - this is an
+ancient specification.) To aid in debugging these cases, we give a specific
+error if the pattern contains only digits and dots or contains a slash preceded
+only by digits and dots (a slash at the start indicates a file name and of
+course slashes may be present in lookups, but not preceded only by digits and
+dots). */
+
+for (t = ss; isdigit(*t) || *t == '.'; t++);
+if (*t == 0 || (*t == '/' && t != ss))
+  {
+  *error = US"malformed IPv4 address or address mask";
+  return ERROR;
+  }
+
 /* See if there is a semicolon in the pattern */
 
 semicolon = Ustrchr(ss, ';');
@@ -2013,6 +2031,7 @@ if (Ustrncmp(ss, "net", 3) == 0 && semicolon != NULL)
   if (mlen == 0 && t == ss+3) mlen = -1;  /* No mask supplied */
   iplookup = (*t++ == '-');
   }
+else t = ss;
 
 /* Do the IP address lookup if that is indeed what we have */
 
