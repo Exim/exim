@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.294 2006/02/13 12:02:59 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.295 2006/02/13 16:23:57 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -143,6 +143,11 @@ PH/25 Do not write to syslog when running in the test harness. The only
 
 PH/26 Added the /no_tell option to "control=freeze".
 
+PH/27 If a host name lookup failed very early in a connection, for example, if
+      the IP address matched host_lookup and the reverse lookup yielded a name
+      that did not have a forward lookup, an error message of the form "no IP
+      address found for host xxx.xxx.xxx (during SMTP connection from NULL)"
+      could be logged. Now it outputs the IP address instead of "NULL".
 
 
 Exim version 4.60

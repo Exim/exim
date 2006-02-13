@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.31 2006/02/13 12:02:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.32 2006/02/13 16:23:57 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -626,6 +626,8 @@ for (;;)
 
 /* This function is called when logging information about an SMTP connection.
 It sets up appropriate source information, depending on the type of connection.
+If sender_fullhost is NULL, we are at a very early stage of the connection;
+just use the IP address.
 
 Argument:    none
 Returns:     a string describing the connection
@@ -634,21 +636,24 @@ Returns:     a string describing the connection
 uschar *
 smtp_get_connection_info(void)
 {
+uschar *hostname = (sender_fullhost == NULL)?
+  sender_host_address : sender_fullhost;
+
 if (host_checking)
-  return string_sprintf("SMTP connection from %s", sender_fullhost);
+  return string_sprintf("SMTP connection from %s", hostname);
 
 if (sender_host_unknown || sender_host_notsocket)
   return string_sprintf("SMTP connection from %s", sender_ident);
 
 if (is_inetd)
-  return string_sprintf("SMTP connection from %s (via inetd)", sender_fullhost);
+  return string_sprintf("SMTP connection from %s (via inetd)", hostname);
 
 if ((log_extra_selector & LX_incoming_interface) != 0 &&
      interface_address != NULL)
-  return string_sprintf("SMTP connection from %s I=[%s]:%d", sender_fullhost,
+  return string_sprintf("SMTP connection from %s I=[%s]:%d", hostname,
     interface_address, interface_port);
 
-return string_sprintf("SMTP connection from %s", sender_fullhost);
+return string_sprintf("SMTP connection from %s", hostname);
 }
 
 
