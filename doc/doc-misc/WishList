@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.57 2005/11/17 10:15:28 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.58 2006/02/13 15:09:30 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -2017,5 +2017,15 @@ It seems that there are clients that send AUTH when it hasn't been advertised,
 some even after HELO, not even EHLO. Sigh. Possibly this should be an ACL
 control, to enable it to be restricted to certain hosts.
 ------------------------------------------------------------------------------
---- HWM 348 ------------------------------------------------------------------
+
+(349) 13-Feb-06 S Add login_cap support to the pipe transport
+
+FreeBSD (and maybe others) have some functions for a per-user resource database
+of which login_cap() is one. A copile-time macro (set for FreeBSD) could enable
+a new pipe transport option to cause setclassresources() to be called to limit
+the resources used. It's a bit tricky, because it has to be done as root, but
+in the forked transport process. There will have to be some higher-level code
+to deal with this.
+------------------------------------------------------------------------------
+--- HWM 349 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
