@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.293 2006/02/13 11:28:56 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.294 2006/02/13 12:02:59 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -140,6 +140,8 @@ PH/24 An host item such as 1.2.3.4/abc was being treated as the IP address
 PH/25 Do not write to syslog when running in the test harness. The only
       occasion when this arises is a failure to open the main or panic logs
       (for which there is an explicit test).
+
+PH/26 Added the /no_tell option to "control=freeze".
 
 
 

@@ -23,7 +23,9 @@ system_filter_reply_transport = address_reply
 begin acl
 
 rcpt:
-  accept control = freeze
+  accept local_parts = usery
+         control = freeze
+  accept control = freeze/no_tell
 
 
 # ----- Routers -----

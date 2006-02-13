@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.39 2005/12/12 15:58:53 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.40 2006/02/13 12:02:59 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  12 December 2005
+Last updated:  13 February 2006
 
 
 THE OLD LIST
@@ -243,5 +243,6 @@ Joachim Wieland           Patches for PostgreSQL socket support and other
                           Patch for hosts_avoid_esmtp
 Stephen Wilcox            Patch for ignore_enotdir problem
 David Woodhouse           SQLite support proof of concept code
+                          control=freeze/no_tell basic code
 
 ****

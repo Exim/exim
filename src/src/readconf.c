@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.18 2006/02/08 14:28:51 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.19 2006/02/13 12:02:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2818,6 +2818,11 @@ if (timezone_string != NULL && *timezone_string == 0) timezone_string = NULL;
 /* remote_max_parallel must be > 0 */
 
 if (remote_max_parallel <= 0) remote_max_parallel = 1;
+
+/* Save the configured setting of freeze_tell, so we can re-instate it at the
+start of a new SMTP message. */
+
+freeze_tell_config = freeze_tell;
 
 /* The primary host name may be required for expansion of spool_directory
 and log_file_path, so make sure it is set asap. It is obtained from uname(),

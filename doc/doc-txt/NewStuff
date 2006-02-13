@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.82 2006/02/10 14:25:43 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.83 2006/02/13 12:02:59 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -39,6 +39,12 @@ PH/04 The variables $auth1, $auth2, $auth3 are now available in authenticators,
       authentication data. The preferred variables are now the new ones, with
       the use of the numerical ones being deprecated, though the support will
       not be removed, at least, not for a long time.
+
+PH/05 The "control=freeze" ACL modifier can now be followed by /no_tell. If
+      the global option freeze_tell is set, it is ignored for the current
+      message (that is, nobody is told about the freezing), provided all the
+      "control=freeze" modifiers that are obeyed in the current message have
+      the /no_tell option.
 
 
 Version 4.60

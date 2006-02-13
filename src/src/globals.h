@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.34 2006/02/10 14:25:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.35 2006/02/13 12:02:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -333,6 +333,7 @@ extern uid_t   fixed_never_users[];    /* Can't be overridden */
 extern uschar *found_extension;        /* demime acl condition: file extension found */
 #endif
 extern uschar *freeze_tell;            /* Message on (some) freezings */
+extern uschar *freeze_tell_config;     /* The configured setting */
 extern uschar *fudged_queue_times;     /* For use in test harness */
 
 extern uschar *gecos_name;             /* To be expanded when pattern matches */

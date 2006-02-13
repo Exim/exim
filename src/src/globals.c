@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.47 2006/02/10 16:29:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.48 2006/02/13 12:02:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -545,6 +545,7 @@ uschar *found_extension        = NULL;
 #endif
 uid_t   fixed_never_users[]    = { FIXED_NEVER_USERS };
 uschar *freeze_tell            = NULL;
+uschar *freeze_tell_config     = NULL;
 uschar *fudged_queue_times     = US"";
 
 uschar *gecos_name             = NULL;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.54 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.55 2006/02/13 12:02:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -528,7 +528,7 @@ static control_def controls_list[] = {
   { US"caseful_local_part",     CONTROL_CASEFUL_LOCAL_PART, FALSE },
   { US"caselower_local_part",   CONTROL_CASELOWER_LOCAL_PART, FALSE },
   { US"enforce_sync",           CONTROL_ENFORCE_SYNC, FALSE },
-  { US"freeze",                 CONTROL_FREEZE, FALSE },
+  { US"freeze",                 CONTROL_FREEZE, TRUE },
   { US"no_enforce_sync",        CONTROL_NO_ENFORCE_SYNC, FALSE },
   { US"no_multiline_responses", CONTROL_NO_MULTILINE, FALSE },
   { US"queue_only",             CONTROL_QUEUE_ONLY, FALSE },
@@ -2375,7 +2375,7 @@ for (; cb != NULL; cb = cb->next)
     {
     /* A nested ACL that returns "discard" makes sense only for an "accept" or
     "discard" verb. */
-
+\
     case ACLC_ACL:
     rc = acl_check_internal(where, addr, arg, level+1, user_msgptr, log_msgptr);
     if (rc == DISCARD && verb != ACL_ACCEPT && verb != ACL_DISCARD)
@@ -2489,6 +2489,17 @@ for (; cb != NULL; cb = cb->next)
       case CONTROL_FREEZE:
       deliver_freeze = TRUE;
       deliver_frozen_at = time(NULL);
+      freeze_tell = freeze_tell_config;       /* Reset to configured value */
+      if (Ustrncmp(p, "/no_tell", 8) == 0)
+        {
+        p += 8;
+        freeze_tell = NULL;
+        }
+      if (*p != 0)
+        {
+        *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
+        return ERROR;
+        }
       break;
 
       case CONTROL_QUEUE_ONLY:

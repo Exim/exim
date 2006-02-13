@@ -1,12 +1,25 @@
 # freeze_tell & system filter & ACL
+# System filter freezes this one
 exim -odi userx
 Rhubarb
 ****
+# ACL freezes these two, tell for the second, and third, not for the first
 exim -odi -bs
+mail from:<a@test.ex>
+rcpt to:<userz@test.ex>
+data
+Should be frozen (no tell)
+.
 mail from:<a@test.ex>
 rcpt to:<usery@test.ex>
 data
-Should be frozen
+Should be frozen (with tell)
+.
+mail from:<a@test.ex>
+rcpt to:<userz@test.ex>
+rcpt to:<usery@test.ex>
+data
+Should be frozen (with tell because not both no_tell)
 .
 quit
 ****

@@ -9,6 +9,13 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 Frozen by the system filter: system filter freezes
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
 1999-03-02 09:44:33 10HmbA-0005vi-00 frozen by ACL
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= <> R=10HmbA-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbB-0005vi-00 => me <me@myhost.test.ex> R=all T=local_delivery
-1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 frozen by ACL
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 => me <me@myhost.test.ex> R=all T=local_delivery
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 frozen by ACL
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> R=10HmbD-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 => me <me@myhost.test.ex> R=all T=local_delivery
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
