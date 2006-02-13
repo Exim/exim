@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/log.c,v 1.8 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/log.c,v 1.9 2006/02/13 11:28:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -57,7 +57,9 @@ static uschar *file_path = US"";
 
 /* The given string is split into sections according to length, or at embedded
 newlines, and syslogged as a numbered sequence if it is overlong or if there is
-more than one line.
+more than one line. However, if we are running in the test harness, do not do
+anything. (The test harness doesn't use syslog - for obvious reasons - but we
+can get here if there is a failure to open the panic log.)
 
 Arguments:
   priority       syslog priority
@@ -71,6 +73,8 @@ write_syslog(int priority, uschar *s)
 {
 int len, pass;
 int linecount = 0;
+
+if (running_in_test_harness) return;
 
 if (!syslog_timestamp) s += log_timezone? 26 : 20;
 
