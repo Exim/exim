@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.297 2006/02/14 14:12:06 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.298 2006/02/14 14:26:14 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -157,6 +157,8 @@ PH/28 An enabling patch from MH: add new function child_open_exim2() which
 PH/29 In GnuTLS, a forced expansion failure for tls_privatekey was not being
       ignored. In both GnuTLS and OpenSSL, an expansion of tls_privatekey that
       results in an empty string is now treated as unset.
+
+PH/30 Fix eximon buffer overflow bug (Bugzilla #73).
 
 
 Exim version 4.60

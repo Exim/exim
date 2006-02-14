@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_queue.c,v 1.3 2006/02/07 11:18:59 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_queue.c,v 1.4 2006/02/14 14:26:15 ph10 Exp $ */
 
 /*************************************************
 *                 Exim Monitor                   *
@@ -497,7 +497,7 @@ for (i = 0; i < subdir_max; i++)
         name[SPOOL_NAME_LENGTH - 2] == '-' &&
         name[SPOOL_NAME_LENGTH - 1] == 'H')
       {
-      uschar basename[SPOOL_NAME_LENGTH];
+      uschar basename[SPOOL_NAME_LENGTH + 1];
       stripchart_total[0]++;
       if (!eximon_initialized) { printf("."); fflush(stdout); }
       Ustrcpy(basename, name);
