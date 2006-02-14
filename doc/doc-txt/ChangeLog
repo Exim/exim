@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.299 2006/02/14 14:55:37 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.300 2006/02/14 15:11:43 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -161,6 +161,10 @@ PH/29 In GnuTLS, a forced expansion failure for tls_privatekey was not being
 PH/30 Fix eximon buffer overflow bug (Bugzilla #73).
 
 PH/31 Added sender_verify_fail logging option.
+
+PH/32 In November 2003, the code in Exim that added an empty Bcc: header when
+      needed by RFC 822 but not by RFC 2822 was commented out. I have now
+      tidied the source and removed it altogether.
 
 
 Exim version 4.60

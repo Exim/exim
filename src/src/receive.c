@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.25 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.26 2006/02/14 15:11:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1284,12 +1284,7 @@ uschar *smtp_reply = NULL;
 
 header_line *h, *next;
 
-/* Flags for noting the existence of certain headers */
-
-/**** No longer check for these (Nov 2003)
-BOOL to_or_cc_header_exists = FALSE;
-BOOL bcc_header_exists = FALSE;
-****/
+/* Flags for noting the existence of certain headers (only one left) */
 
 BOOL date_header_exists = FALSE;
 
@@ -1852,24 +1847,12 @@ for (h = header_list->next; h != NULL; h = h->next)
 
   switch (header_checkname(h, is_resent))
     {
-    /* "Bcc:" gets flagged, and its existence noted, whether it's resent- or
-    not. */
-
     case htype_bcc:
-    h->type = htype_bcc;
-    /****
-    bcc_header_exists = TRUE;
-    ****/
+    h->type = htype_bcc;        /* Both Bcc: and Resent-Bcc: */
     break;
 
-    /* "Cc:" gets flagged, and the existence of a recipient header is noted,
-    whether it's resent- or not. */
-
     case htype_cc:
-    h->type = htype_cc;
-    /****
-    to_or_cc_header_exists = TRUE;
-    ****/
+    h->type = htype_cc;         /* Both Cc: and Resent-Cc: */
     break;
 
     /* Record whether a Date: or Resent-Date: header exists, as appropriate. */
@@ -2150,13 +2133,7 @@ if (extract_recip)
       will be kept on the spool, but not transmitted as part of the
       message. */
 
-      if (h->type == htype_bcc)
-        {
-        h->type = htype_old;
-        /****
-        bcc_header_exists = FALSE;
-        ****/
-        }
+      if (h->type == htype_bcc) h->type = htype_old;
       }   /* For appropriate header line */
     }     /* For each header line */
 
@@ -2561,23 +2538,15 @@ for (h = header_list->next; h != NULL; h = h->next)
 
 
 /* An RFC 822 (sic) message is not legal unless it has at least one of "to",
-"cc", or "bcc". Note that although the minimal examples in RFC822 show just
+"cc", or "bcc". Note that although the minimal examples in RFC 822 show just
 "to" or "bcc", the full syntax spec allows "cc" as well. If any resent- header
 exists, this applies to the set of resent- headers rather than the normal set.
 
-The requirement for a recipient header has been removed in RFC 2822. Earlier
-versions of Exim added a To: header for locally submitted messages, and an
-empty Bcc: header for others or when always_bcc was set. In the light of the
-changes in RFC 2822, we now always add Bcc: just in case there are still MTAs
-out there that insist on the RFC 822 syntax.
+The requirement for a recipient header has been removed in RFC 2822. At this
+point in the code, earlier versions of Exim added a To: header for locally
+submitted messages, and an empty Bcc: header for others. In the light of the
+changes in RFC 2822, this was dropped in November 2003. */
 
-November 2003: While generally revising what Exim does to fix up headers, it
-seems like a good time to remove this altogether. */
-
-/******
-if (!to_or_cc_header_exists && !bcc_header_exists)
-  header_add(htype_bcc, "Bcc:\n");
-******/
 
 /* If there is no date header, generate one if the message originates locally
 (i.e. not over TCP/IP) and suppress_local_fixups is not set, or if the
