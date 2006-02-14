@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.11 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.12 2006/02/14 14:12:07 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -455,12 +455,19 @@ may be required for different sessions. */
 if (!expand_check(certificate, US"tls_certificate", &cert_expanded))
   return DEFER;
 
+key_expanded = NULL;
 if (privatekey != NULL)
   {
   if (!expand_check(privatekey, US"tls_privatekey", &key_expanded))
     return DEFER;
   }
-else key_expanded = cert_expanded;
+
+/* If expansion was forced to fail, key_expanded will be NULL. If the result of
+the expansion is an empty string, ignore it also, and assume that the private
+key is in the same file as the certificate. */
+
+if (key_expanded == NULL || *key_expanded == 0)
+  key_expanded = cert_expanded;
 
 /* Set the certificate and private keys */
 

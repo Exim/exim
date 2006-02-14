@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.83 2006/02/13 12:02:59 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.84 2006/02/14 14:12:06 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -45,6 +45,9 @@ PH/05 The "control=freeze" ACL modifier can now be followed by /no_tell. If
       message (that is, nobody is told about the freezing), provided all the
       "control=freeze" modifiers that are obeyed in the current message have
       the /no_tell option.
+
+PH/06 In both GnuTLS and OpenSSL, an expansion of tls_privatekey that results
+      in an empty string is now treated as unset.
 
 
 Version 4.60

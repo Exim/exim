@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.6 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.7 2006/02/14 14:12:07 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -290,8 +290,8 @@ Returns:          OK/DEFER/FAIL
 */
 
 static int
-tls_init(host_item *host, uschar *dhparam, uschar *certificate, uschar *privatekey,
-  address_item *addr)
+tls_init(host_item *host, uschar *dhparam, uschar *certificate,
+  uschar *privatekey, address_item *addr)
 {
 SSL_load_error_strings();          /* basic set up */
 OpenSSL_add_ssl_algorithms();
@@ -386,7 +386,11 @@ if (certificate != NULL)
       !expand_check(privatekey, US"tls_privatekey", &expanded))
     return DEFER;
 
-  if (expanded != NULL)
+  /* If expansion was forced to fail, key_expanded will be NULL. If the result
+  of the expansion is an empty string, ignore it also, and assume the private
+  key is in the same file as the certificate. */
+
+  if (expanded != NULL && *expanded != 0)
     {
     DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
     if (!SSL_CTX_use_PrivateKey_file(ctx, CS expanded, SSL_FILETYPE_PEM))
