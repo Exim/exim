@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.300 2006/02/14 15:11:43 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.301 2006/02/14 15:24:10 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -165,6 +165,12 @@ PH/31 Added sender_verify_fail logging option.
 PH/32 In November 2003, the code in Exim that added an empty Bcc: header when
       needed by RFC 822 but not by RFC 2822 was commented out. I have now
       tidied the source and removed it altogether.
+
+PH/33 When a queue run was abandoned because the load average was too high, a
+      log line was always written; now it is written only if the queue_run log
+      selector is set. In addition, the log line for abandonment now contains
+      information about the queue run such as the pid. This is always present
+      in "start" and "stop" lines but was omitted from the "abandon" line.
 
 
 Exim version 4.60

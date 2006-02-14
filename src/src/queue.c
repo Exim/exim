@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/queue.c,v 1.9 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/queue.c,v 1.10 2006/02/14 15:24:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -453,7 +453,8 @@ for (i  = (queue_run_in_order? -1 : 0);
       load_average = os_getloadavg();
       if (load_average > deliver_queue_load_max)
         {
-        log_write(0, LOG_MAIN, "abandon queue run (load %.2f, max %.2f)",
+        log_write(L_queue_run, LOG_MAIN, "Abandon queue run: %s (load %.2f, max %.2f)",
+          log_detail,
           (double)load_average/1000.0,
           (double)deliver_queue_load_max/1000.0);
         i = subcount;                 /* Don't process other directories */

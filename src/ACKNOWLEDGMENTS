@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.40 2006/02/13 12:02:59 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.41 2006/02/14 15:24:10 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -235,6 +235,7 @@ Samuli Tuomola            OS files for QNX 6.2.0
 Dave Turner               Suggested patch for sender rewriting brokenness
 Carlos Villegas           Suggested patch for "headers" in filter files
 Matthias Waffenschmidt    Patch for build-time Perl bug in configure script
+                          Queue run abandon log message tidy up
 Norihisa Washitake        Suggested patch for RFC 2047 header decoding
 Chris Webb                Patch for support of an SPF lookup method.
 Florian Weimer            Patch for minor format string issue
