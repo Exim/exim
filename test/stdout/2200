@@ -1,4 +1,5 @@
 > test.ex                    A TXT record for test.ex.
+> s/lash.test.ex             A TXT record for s/lash.test.ex.
 > txt=test.ex                A TXT record for test.ex.
 > a=black-1.test.ex          V4NET.11.12.13
 > Failed: lookup of "xxx=test.ex" gave DEFER: unsupported DNS record type

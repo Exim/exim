@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.302 2006/02/14 15:56:43 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.303 2006/02/14 16:18:14 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -175,6 +175,11 @@ PH/33 When a queue run was abandoned because the load average was too high, a
 PH/34 Omit spaces between a header name and the colon in the error message that
       is given when verify = headers_syntax fails (if there are lots of them,
       the message gets confusing).
+
+PH/35 Change the default for dns_check_names_pattern to allow slashes within
+      names, as there are now some PTR records that contain slashes. This check
+      is only to protect against broken name servers that fall over on strange
+      characters, so the fact that it applies to all lookups doesn't matter.
 
 
 Exim version 4.60

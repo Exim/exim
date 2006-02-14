@@ -1,4 +1,4 @@
-; $Cambridge: exim/test/dnszones-src/db.test.ex,v 1.1 2006/02/06 16:22:56 ph10 Exp $
+; $Cambridge: exim/test/dnszones-src/db.test.ex,v 1.2 2006/02/14 16:18:14 ph10 Exp $
 
 ; This is a testing zone file for use when testing DNS handling in Exim. This
 ; is a fake zone of no real use - hence no SOA record. The zone name is
@@ -21,6 +21,7 @@
 test.ex.     NS      exim.test.ex.
 
 test.ex.     TXT     "A TXT record for test.ex."
+s/lash       TXT     "A TXT record for s/lash.test.ex."
 
 cname        CNAME   test.ex.
 

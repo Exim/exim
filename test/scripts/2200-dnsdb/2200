@@ -2,6 +2,7 @@
 
 exim -be
 test.ex                    ${lookup dnsdb{test.ex}{$value}fail}
+s/lash.test.ex             ${lookup dnsdb{s/lash.test.ex}{$value}fail}
 txt=test.ex                ${lookup dnsdb{txt=test.ex}{$value}fail}
 a=black-1.test.ex          ${lookup dnsdb{a=black-1.test.ex}{$value}fail}
 xxx=test.ex                ${lookup dnsdb{xxx=test.ex}{$value}fail}

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.85 2006/02/14 14:55:37 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.86 2006/02/14 16:18:14 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -54,6 +54,12 @@ PH/07 There is a new log selector called sender_verify_fail, which is set by
       sender verification failure is not written. Log lines for the rejection
       of SMTP commands (e.g. RCPT) contain just "sender verify failed", so some
       detail is lost.
+
+PH/08 The default for dns_check_names_pattern now allows slashes within names,
+      as there are now some PTR records that contain slashes. This check is
+      only to protect against broken name servers that fall over on strange
+      characters, so the fact that it applies to all lookups doesn't matter.
+
 
 
 Version 4.60
