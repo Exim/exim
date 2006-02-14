@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/child.c,v 1.8 2006/02/07 14:05:17 ph10 Exp $ */
+/* $Cambridge: exim/src/src/child.c,v 1.9 2006/02/14 10:26:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -174,12 +174,35 @@ the new process, and returns that to the caller via fdptr. The function returns
 the pid of the new process, or -1 if things go wrong. If debug_fd is
 non-negative, it is passed as stderr.
 
+This interface is now a just wrapper for the more complicated function
+child_open_exim2(), which has additional arguments. The wrapper must continue
+to exist, even if all calls from within Exim are changed, because it is
+documented for use from local_scan().
+
 Argument: fdptr   pointer to int for the stdin fd
 Returns:          pid of the created process or -1 if anything has gone wrong
 */
 
 pid_t
 child_open_exim(int *fdptr)
+{
+return child_open_exim2(fdptr, US"<>", bounce_sender_authentication);
+}
+
+
+/* This is a more complicated function for creating a child Exim process, with
+more arguments.
+
+Arguments:
+  fdptr                   pointer to int for the stdin fd
+  sender                  for a sender address (data for -f)
+  sender_authentication   authenticated sender address or NULL
+
+Returns:          pid of the created process or -1 if anything has gone wrong
+*/
+
+pid_t
+child_open_exim2(int *fdptr, uschar *sender, uschar *sender_authentication)
 {
 int pfd[2];
 int save_errno;
@@ -203,13 +226,13 @@ if (pid == 0)
   force_fd(pfd[pipe_read], 0);
   (void)close(pfd[pipe_write]);
   if (debug_fd > 0) force_fd(debug_fd, 2);
-  if (bounce_sender_authentication != NULL)
+  if (sender_authentication != NULL)
     child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 8,
-      US"-t", US"-oem", US"-oi", US"-f", US"<>", US"-oMas",
-      bounce_sender_authentication, message_id_option);
+      US"-t", US"-oem", US"-oi", US"-f", sender, US"-oMas",
+      sender_authentication, message_id_option);
   else
     child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 6,
-      US"-t", US"-oem", US"-oi", US"-f", US"<>", message_id_option);
+      US"-t", US"-oem", US"-oi", US"-f", sender, message_id_option);
   /* Control does not return here. */
   }
 

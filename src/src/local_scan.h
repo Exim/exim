@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/local_scan.h,v 1.6 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/local_scan.h,v 1.7 2006/02/14 10:26:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -162,6 +162,7 @@ extern BOOL    smtp_input;             /* TRUE if input is via SMTP */
 extern int     child_close(pid_t, int);
 extern pid_t   child_open(uschar **, uschar **, int, int *, int *, BOOL);
 extern pid_t   child_open_exim(int *);
+extern pid_t   child_open_exim2(int *, uschar *, uschar *);
 extern void    debug_printf(char *, ...) PRINTF_FUNCTION;
 extern uschar *expand_string(uschar *);
 extern void    header_add(int, char *, ...);

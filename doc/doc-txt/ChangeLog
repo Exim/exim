@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.295 2006/02/13 16:23:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.296 2006/02/14 10:26:26 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -148,6 +148,11 @@ PH/27 If a host name lookup failed very early in a connection, for example, if
       that did not have a forward lookup, an error message of the form "no IP
       address found for host xxx.xxx.xxx (during SMTP connection from NULL)"
       could be logged. Now it outputs the IP address instead of "NULL".
+
+PH/28 An enabling patch from MH: add new function child_open_exim2() which
+      allows the sender and the authenticated sender to be set when
+      submitting a message from within Exim. Since child_open_exim() is
+      documented for local_scan(), the new function should be too.
 
 
 Exim version 4.60
