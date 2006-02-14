@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.84 2006/02/14 14:12:06 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.85 2006/02/14 14:55:37 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -48,6 +48,12 @@ PH/05 The "control=freeze" ACL modifier can now be followed by /no_tell. If
 
 PH/06 In both GnuTLS and OpenSSL, an expansion of tls_privatekey that results
       in an empty string is now treated as unset.
+
+PH/07 There is a new log selector called sender_verify_fail, which is set by
+      default. If it is unset, the separate log line that gives details of a
+      sender verification failure is not written. Log lines for the rejection
+      of SMTP commands (e.g. RCPT) contain just "sender verify failed", so some
+      detail is lost.
 
 
 Version 4.60

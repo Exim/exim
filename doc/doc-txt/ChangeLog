@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.298 2006/02/14 14:26:14 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.299 2006/02/14 14:55:37 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -159,6 +159,8 @@ PH/29 In GnuTLS, a forced expansion failure for tls_privatekey was not being
       results in an empty string is now treated as unset.
 
 PH/30 Fix eximon buffer overflow bug (Bugzilla #73).
+
+PH/31 Added sender_verify_fail logging option.
 
 
 Exim version 4.60

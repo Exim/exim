@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.48 2006/02/13 12:02:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.49 2006/02/14 14:55:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -677,6 +677,7 @@ bit_table log_options[]        = {
   { US"retry_defer",                  L_retry_defer },
   { US"return_path_on_delivery",      LX_return_path_on_delivery },
   { US"sender_on_delivery",           LX_sender_on_delivery },
+  { US"sender_verify_fail",           LX_sender_verify_fail },
   { US"size_reject",                  L_size_reject },
   { US"skip_delivery",                L_skip_delivery },
   { US"smtp_confirmation",            LX_smtp_confirmation },

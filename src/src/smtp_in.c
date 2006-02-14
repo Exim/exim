@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.32 2006/02/13 16:23:57 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.33 2006/02/14 14:55:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1845,19 +1845,21 @@ if (where == ACL_WHERE_RCPT || where == ACL_WHERE_DATA || where == ACL_WHERE_MIM
 
 /* If there's been a sender verification failure with a specific message, and
 we have not sent a response about it yet, do so now, as a preliminary line for
-failures, but not defers. However, log it in both cases. */
+failures, but not defers. However, always log it for defer, and log it for fail
+unless the sender_verify_fail log selector has been turned off. */
 
 if (sender_verified_failed != NULL &&
     !testflag(sender_verified_failed, af_sverify_told))
   {
   setflag(sender_verified_failed, af_sverify_told);
 
-  log_write(0, LOG_MAIN|LOG_REJECT, "%s sender verify %s for <%s>%s",
-    host_and_ident(TRUE),
-    ((sender_verified_failed->special_action & 255) == DEFER)? "defer" : "fail",
-    sender_verified_failed->address,
-    (sender_verified_failed->message == NULL)? US"" :
-    string_sprintf(": %s", sender_verified_failed->message));
+  if (rc != FAIL || (log_extra_selector & LX_sender_verify_fail) != 0)
+    log_write(0, LOG_MAIN|LOG_REJECT, "%s sender verify %s for <%s>%s",
+      host_and_ident(TRUE),
+      ((sender_verified_failed->special_action & 255) == DEFER)? "defer":"fail",
+      sender_verified_failed->address,
+      (sender_verified_failed->message == NULL)? US"" :
+      string_sprintf(": %s", sender_verified_failed->message));
 
   if (rc == FAIL && sender_verified_failed->user_message != NULL)
     smtp_respond(code, FALSE, string_sprintf(

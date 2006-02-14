@@ -41,3 +41,20 @@ MAIL FROM:<NOTok@elsewhere>
 RCPT TO:<nocheckpm@test.ex>
 QUIT
 ****
+# Same again, but with sender_verify_fail logging turned off
+server PORT_S
+220 Server ready
+HELO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+550 NO
+QUIT
+250 OK
+****
+sudo exim -DSELECTOR=-sender_verify_fail -d-all+verify -v -bs -oMa V4NET.0.0.2
+MAIL FROM:<NOTok2@elsewhere>
+RCPT TO:<nocheckpm@test.ex>
+QUIT
+****
