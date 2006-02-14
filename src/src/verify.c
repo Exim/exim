@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.32 2006/02/13 11:13:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.33 2006/02/14 15:56:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1415,14 +1415,16 @@ for (h = header_list; h != NULL; h = h->next)
       {
       uschar *verb = US"is";
       uschar *t = ss;
+      uschar *tt = colon;
       int len;
 
       /* Arrange not to include any white space at the end in the
-      error message. */
+      error message or the header name. */
 
       while (t > s && isspace(t[-1])) t--;
+      while (tt > h->text && isspace(tt[-1])) tt--;
 
-      /* Add the address which failed to the error message, since in a
+      /* Add the address that failed to the error message, since in a
       header with very many addresses it is sometimes hard to spot
       which one is at fault. However, limit the amount of address to
       quote - cases have been seen where, for example, a missing double
@@ -1437,8 +1439,8 @@ for (h = header_list; h != NULL; h = h->next)
         }
 
       *msgptr = string_printing(
-        string_sprintf("%s: failing address in \"%.*s\" header %s: %.*s",
-          errmess, colon - h->text, h->text, verb, len, s));
+        string_sprintf("%s: failing address in \"%.*s:\" header %s: %.*s",
+          errmess, tt - h->text, h->text, verb, len, s));
 
       return FAIL;
       }
