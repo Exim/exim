@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/retry.c,v 1.7 2006/02/09 14:50:58 ph10 Exp $ */
+/* $Cambridge: exim/src/src/retry.c,v 1.8 2006/02/16 16:37:57 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -798,7 +798,8 @@ for (i = 0; i < 3; i++)
               {
               next_try = now + rule->p1;
               if (next_gap > rule->p1)
-                next_try += random_number(next_gap - rule->p1);
+                next_try += random_number(next_gap - rule->p1)/2 +
+                  (next_gap - rule->p1)/2;
               }
             }
           }

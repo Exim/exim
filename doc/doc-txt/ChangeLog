@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.305 2006/02/16 14:54:15 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.306 2006/02/16 16:37:57 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -192,6 +192,8 @@ PH/37 When running in the test harness, use -odi for submitted messages (e.g.
       the different processes.
 
 PH/38 Panic-die if .include specifies a non-absolute path.
+
+PH/39 A tweak to the "H" retry rule from its user.
 
 
 Exim version 4.60
