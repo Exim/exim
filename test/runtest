@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.4 2006/02/10 16:29:20 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.5 2006/02/16 14:34:42 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -2109,30 +2109,74 @@ if (defined $parm_support{'Content_Scanning'})
         }
       }
 
+    # Read the ClamAV configuration file and find the socket interface.
+
     if ($clamconf ne "")
       {
+      my $socket_domain;
       open(IN, "$clamconf") || die "\n** Unable to open $clamconf: $!\n";
       while (<IN>)
         {
         if (/^LocalSocket\s+(.*)/)
           {
           $parm_clamsocket = $1;
+          $socket_domain = AF_UNIX;
           last;
+          }
+        if (/^TCPSocket\s+(\d+)/)
+          {
+          if (defined $parm_clamsocket)
+            {
+            $parm_clamsocket .= " $1";
+            $socket_domain = AF_INET;
+            last;
+            }
+          else
+            {
+            $parm_clamsocket = " $1";
+            }
+          }
+        elsif (/^TCPAddr\s+(\S+)/)
+          {
+          if (defined $parm_clamsocket)
+            {
+            $parm_clamsocket = $1 . $parm_clamsocket;
+            $socket_domain = AF_INET;
+            last;
+            }
+          else
+            {
+            $parm_clamsocket = $1;
+            }
           }
         }
       close(IN);
-      if (-e $parm_clamsocket)
+
+      if (defined $socket_domain)
         {
         print ":\n  The clamd socket is $parm_clamsocket\n";
         # This test for an active ClamAV is courtesy of Daniel Tiefnig.
         eval
           {
-          my $sun = sockaddr_un($parm_clamsocket) or die "** Failed packing '$parm_clamsocket'\n";
-          socket(SOCK, AF_UNIX, SOCK_STREAM, 0) or die "** Unable to open socket '$parm_clamsocket'\n";
-
+          my $socket;
+          if ($socket_domain == AF_UNIX)
+            {
+            $socket = sockaddr_un($parm_clamsocket) or die "** Failed packing '$parm_clamsocket'\n";
+            }
+          elsif ($socket_domain == AF_INET)
+            {
+            my ($ca_host, $ca_port) = split(/\s+/,$parm_clamsocket);
+            my $ca_hostent = gethostbyname($ca_host) or die "** Failed to get raw address for host '$ca_host'\n";
+            $socket = sockaddr_in($ca_port, $ca_hostent) or die "** Failed packing '$parm_clamsocket'\n";
+            }
+          else
+            {
+            die "** Unknown socket domain '$socket_domain' (should not happen)\n";
+            }
+          socket(SOCK, $socket_domain, SOCK_STREAM, 0) or die "** Unable to open socket '$parm_clamsocket'\n";
           local $SIG{ALRM} = sub { die "** Timeout while connecting to socket '$parm_clamsocket'\n"; };
           alarm(5);
-          connect(SOCK, $sun) or die "** Unable to connect to socket '$parm_clamsocket'\n";
+          connect(SOCK, $socket) or die "** Unable to connect to socket '$parm_clamsocket'\n";
           alarm(0);
 
           my $ofh = select SOCK; $| = 1; select $ofh;
@@ -2160,7 +2204,7 @@ if (defined $parm_support{'Content_Scanning'})
         }
       else
         {
-        print ", but the socket for clamd does not exist\n";
+        print ", but the socket for clamd could not be determined\n";
         print "Assume ClamAV is not running\n";
         }
       }
