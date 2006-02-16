@@ -1,4 +1,4 @@
-/* $Cambridge: exim/test/src/fakens.c,v 1.1 2006/02/06 16:24:05 ph10 Exp $ */
+/* $Cambridge: exim/test/src/fakens.c,v 1.2 2006/02/16 10:05:34 ph10 Exp $ */
 
 /*************************************************
 *       fakens - A Fake Nameserver Program       *
@@ -80,12 +80,6 @@ typedef unsigned char uschar;
 #define Ustrlen(s)         (int)strlen(CCS(s))
 #define Ustrncmp(s,t,n)    strncmp(CCS(s),CCS(t),n)
 #define Ustrncpy(s,t,n)    strncpy(CS(s),CCS(t),n)
-
-
-typedef struct adomainstr {
-  struct adomainstr *next;
-  uschar name[1];
-} adomainstr;
 
 typedef struct zoneitem {
   uschar *zone;
@@ -210,7 +204,6 @@ Arguments:
   qtypelen    the length of qtype
   pkptr       points to the output buffer pointer; this is updated
   countptr    points to the record count; this is updated
-  adomainptr  points to where to hang additional domains
 
 Returns:      0 on success, else HOST_NOT_FOUND or NO_DATA or NO_RECOVERY or
               PASS_ON - the latter if a "PASS ON NOT FOUND" line is seen
@@ -218,16 +211,16 @@ Returns:      0 on success, else HOST_NOT_FOUND or NO_DATA or NO_RECOVERY or
 
 static int
 find_records(FILE *f, uschar *zone, uschar *domain, uschar *qtype,
-  int qtypelen, uschar **pkptr, int *countptr, adomainstr **adomainptr)
+  int qtypelen, uschar **pkptr, int *countptr)
 {
 int yield = HOST_NOT_FOUND;
-int zonelen = Ustrlen(zone);
 int domainlen = Ustrlen(domain);
 BOOL pass_on_not_found = FALSE;
 tlist *typeptr;
 uschar *pk = *pkptr;
 uschar buffer[256];
 uschar rrdomain[256];
+uschar RRdomain[256];
 
 /* Decode the required type */
 
@@ -271,8 +264,22 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   if (!isspace(*p))
     {
     uschar *pp = rrdomain;
-    while (!isspace(*p)) *pp++ = tolower(*p++);
-    if (pp[-1] != '.') Ustrcpy(pp, zone); else pp[-1] = 0;
+    uschar *PP = RRdomain;
+    while (!isspace(*p))
+      {
+      *pp++ = tolower(*p);
+      *PP++ = *p++;
+      }
+    if (pp[-1] != '.')
+      {
+      Ustrcpy(pp, zone);
+      Ustrcpy(PP, zone);
+      }
+    else
+      {
+      pp[-1] = 0;
+      PP[-1] = 0;
+      }
     }
 
   /* Compare domain names; first check for a wildcard */
@@ -312,7 +319,10 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
   p += qtlen;
   while (isspace(*p)) p++;
 
-  pk = packname(domain, pk);            /* Not rrdomain because of wildcard */
+  /* For a wildcard record, use the search name; otherwise use the record's
+  name in its original case because it might contain upper case letters. */
+
+  pk = packname((rrdomain[0] == '*')? domain : RRdomain, pk);
   *pk++ = (tvalue >> 8) & 255;
   *pk++ = (tvalue) & 255;
   *pk++ = 0;
@@ -368,7 +378,10 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
     while (isspace(*p)) p++;
     *pk++ = (value >> 8) & 255;
     *pk++ = value & 255;
-    goto PACKNAME;
+    if (ep[-1] != '.') sprintf(ep, "%s.", zone);
+    pk = packname(p, pk);
+    plen = Ustrlen(p);
+    break;
 
     case ns_t_txt:
     pp = pk++;
@@ -392,20 +405,9 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
     case ns_t_cname:
     case ns_t_ns:
     case ns_t_ptr:
-    PACKNAME:
     if (ep[-1] != '.') sprintf(ep, "%s.", zone);
     pk = packname(p, pk);
     plen = Ustrlen(p);
-    if (adomainptr != NULL && plen > zonelen + 2 &&
-        Ustrncmp(p + plen - zonelen - 1, zone, zonelen) == 0)
-      {
-      adomainstr *adomain = (adomainstr *)malloc(sizeof(adomainstr) + plen);
-      *adomainptr = adomain;
-      adomainptr = &(adomain->next);
-      adomain->next = NULL;
-      Ustrncpy(adomain->name, p, plen - 1);
-      adomain->name[plen-1] = 0;
-      }
     break;
     }
 
@@ -442,13 +444,11 @@ main(int argc, char **argv)
 {
 FILE *f;
 DIR *d;
-int dirlen, domlen, qtypelen;
+int domlen, qtypelen;
 int yield, count;
 int i;
 int zonecount = 0;
-tlist *typeptr;
 struct dirent *de;
-adomainstr *adomain = NULL;
 zoneitem zones[32];
 uschar *qualify = NULL;
 uschar *p, *zone;
@@ -559,23 +559,17 @@ if (f == NULL)
 /* Find the records we want, and add them to the result. */
 
 count = 0;
-yield = find_records(f, zone, domain, qtype, qtypelen, &pk, &count, &adomain);
+yield = find_records(f, zone, domain, qtype, qtypelen, &pk, &count);
 if (yield == NO_RECOVERY) goto END_OFF;
 
 packet[6] = (count >> 8) & 255;
 packet[7] = count & 255;
 
-/* Search for additional records and add them to the result. */
+/* There is no need to return any additional records because Exim no longer
+(from release 4.61) makes any use of them. */
 
-count = 0;
-for (; adomain != NULL; adomain = adomain->next)
-  {
-  (void)find_records(f, zone, adomain->name, US"AAAA", 4, &pk, &count, NULL);
-  (void)find_records(f, zone, adomain->name, US"A", 1, &pk, &count, NULL);
-  }
-
-packet[10] = (count >> 8) & 255;
-packet[11] = count & 255;
+packet[10] = 0;
+packet[11] = 0;
 
 /* Close the zone file, write the result, and return. */
 

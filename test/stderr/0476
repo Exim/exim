@@ -51,7 +51,6 @@ admin user
 set_process_info: pppp accepting a local non-SMTP message from <>
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -75,15 +74,16 @@ added retry item for T:127.0.0.1:127.0.0.1:1224: errno=dd more_errno=dd,A flags=
 all IP addresses skipped or deferred at least one address
 Leaving t1 transport
 set_process_info: pppp delivering 10HmaZ-0005vi-00 (just run t1 for CALLER@the.local.host.name in subprocess)
-LOG: MAIN
-  Completed
-set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp delivering 10HmaZ-0005vi-00: waiting for a remote delivery subprocess to finish
 set_process_info: pppp delivering 10HmaZ-0005vi-00
 LOG: MAIN
   == CALLER@the.local.host.name R=r1 T=t1 defer (dd): Connection refused
 set_process_info: pppp tidying up after delivering 10HmaZ-0005vi-00
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: MAIN
+  Completed
+set_process_info: pppp running queue: waiting for children of pppp
 set_process_info: pppp running queue
 set_process_info: pppp running queue: 10HmaY-0005vi-00-H
 set_process_info: pppp running queue: waiting for 10HmaY-0005vi-00 (pppp)

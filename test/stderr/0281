@@ -74,6 +74,7 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <2@mxnone.test.ex>: domain doesn't ma
 >>> using ACL "acl_rcpt_3"
 >>> processing "require"
 >>> check domains = @mx_primary
+>>> ten-1.test.ex in hosts_treat_as_local? no (end of list)
 >>> eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
 >>> local host has lowest MX
 >>> mxt5.test.ex in "@mx_primary"? yes (matched "@mx_primary")
@@ -84,10 +85,11 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <2@mxnone.test.ex>: domain doesn't ma
 >>> processing "require"
 >>> check domains = @mx_primary
 >>> ten-1.test.ex in hosts_treat_as_local? no (end of list)
+>>> ten-2.test.ex in hosts_treat_as_local? no (end of list)
 >>> eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
 >>> local host in host list - removed hosts:
->>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6
 >>>   ten-2.test.ex V4NET.0.0.2 6
+>>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6
 >>> mxt6.test.ex in "@mx_primary"? no (end of list)
 >>> require: condition test failed
 LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <3@mxt6.test.ex>: domain doesn't match @mx_primary
@@ -118,10 +120,11 @@ LOG: H=[V4NET.1.1.1] F=<x@y> rejected RCPT <4@mxt5.test.ex>: domain doesn't matc
 >>> processing "require"
 >>> check domains = @mx_secondary
 >>> ten-1.test.ex in hosts_treat_as_local? no (end of list)
+>>> ten-2.test.ex in hosts_treat_as_local? no (end of list)
 >>> eximtesthost.test.ex in hosts_treat_as_local? no (end of list)
 >>> local host in host list - removed hosts:
->>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6
 >>>   ten-2.test.ex V4NET.0.0.2 6
+>>>   eximtesthost.test.ex ip4.ip4.ip4.ip4 6
 >>> mxt6.test.ex in "@mx_secondary"? yes (matched "@mx_secondary")
 >>> require: condition test succeeded
 >>> processing "accept"

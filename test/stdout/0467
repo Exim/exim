@@ -5,8 +5,8 @@ x@srv01.test.ex
   host ten-1.test.ex [V4NET.0.0.1] MX=0 port=25
 x@mx246.test.ex
   router = r1, transport = t1
-  host ten-1.test.ex [V4NET.0.0.1] MX=10
   host v6.test.ex [unknown] MX=10 ** unusable **
+  host ten-1.test.ex [V4NET.0.0.1] MX=10
 x@srv02.test.ex
   router = r1, transport = t1
   host ten-1.test.ex [V4NET.0.0.1] MX=1 port=99

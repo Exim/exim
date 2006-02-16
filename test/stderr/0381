@@ -34,16 +34,8 @@ sender host name required, to match against *.gov.uk.test.ex
 looking up host name for V4NET.99.99.97
 DNS lookup of 97.99.99.V4NET.in-addr.arpa (PTR) using fakens
 DNS lookup of 97.99.99.V4NET.in-addr.arpa (PTR) succeeded
-IP address lookup yielded x.co.uk.test.ex
-  alias x.gov.uk.test.ex
-using host_fake_gethostbyname for x.co.uk.test.ex (IPv4)
-DNS lookup of x.co.uk.test.ex (A) using fakens
-DNS lookup of x.co.uk.test.ex (A) succeeded
-MUNGED: ::1 will be omitted in what follows
-get[host|ipnode]byname[2] looked up these IP addresses:
-  name=x.co.uk.test.ex address=V4NET.99.99.97
-checking addresses for x.co.uk.test.ex
-  V4NET.99.99.97 OK
+IP address lookup yielded x.gov.uk.test.ex
+  alias x.co.uk.test.ex
 using host_fake_gethostbyname for x.gov.uk.test.ex (IPv4)
 DNS lookup of x.gov.uk.test.ex (A) using fakens
 DNS lookup of x.gov.uk.test.ex (A) succeeded
@@ -52,8 +44,16 @@ get[host|ipnode]byname[2] looked up these IP addresses:
   name=x.gov.uk.test.ex address=V4NET.99.99.97
 checking addresses for x.gov.uk.test.ex
   V4NET.99.99.97 OK
-sender_fullhost = x.co.uk.test.ex [V4NET.99.99.97]
-sender_rcvhost = x.co.uk.test.ex ([V4NET.99.99.97] ident=CALLER)
+using host_fake_gethostbyname for x.co.uk.test.ex (IPv4)
+DNS lookup of x.co.uk.test.ex (A) using fakens
+DNS lookup of x.co.uk.test.ex (A) succeeded
+MUNGED: ::1 will be omitted in what follows
+get[host|ipnode]byname[2] looked up these IP addresses:
+  name=x.co.uk.test.ex address=V4NET.99.99.97
+checking addresses for x.co.uk.test.ex
+  V4NET.99.99.97 OK
+sender_fullhost = x.gov.uk.test.ex [V4NET.99.99.97]
+sender_rcvhost = x.gov.uk.test.ex ([V4NET.99.99.97] ident=CALLER)
 host in "*.gov.uk.test.ex"? yes (matched "*.gov.uk.test.ex")
 warn: condition test succeeded
 processing "warn"

@@ -33,7 +33,7 @@
 250 Accepted
 354 Enter message, ending with "." on a line by itself
 550-Rejected after DATA: '>' missing at end of address:
-550 failing address in "From" header is: <bad@syntax
+550 failing address in "From:" header is: <bad@syntax
 250 OK
 250 Accepted
 354 Enter message, ending with "." on a line by itself

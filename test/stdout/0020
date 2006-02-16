@@ -1,5 +1,5 @@
 
-**** SMTP testing session as if from host 10.250.104.7
+**** SMTP testing session as if from host 10.250.104.42
 **** but without any ident (RFC 1413) callback.
 **** This is not for real!
 

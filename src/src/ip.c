@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/ip.c,v 1.4 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/ip.c,v 1.5 2006/02/16 10:05:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -224,17 +224,11 @@ alarm(0);
 
 /* There is a testing facility for simulating a connection timeout, as I
 can't think of any other way of doing this. It converts a connection refused
-into a timeout.
-
-I had to add a second fudge to keep the tests working. Attempts to connect to
-10.x.x.x are expected to timeout, but sometimes they now give "No route to
-host". */
+into a timeout if the timeout is set to 999999. */
 
 if (running_in_test_harness)
   {
-  if ((save_errno == ECONNREFUSED && timeout == 999999) ||
-      (save_errno == EHOSTUNREACH && timeout > 0 &&
-         Ustrncmp(address, "10.", 3) == 0))
+  if (save_errno == ECONNREFUSED && timeout == 999999)
     {
     rc = -1;
     save_errno = EINTR;

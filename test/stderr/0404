@@ -228,7 +228,7 @@ changed uid/gid: local delivery to >sender@test.ex,sender@test.ex,sender@test.ex
 set_process_info: pppp **** string overflowed buffer ****
 t1 transport entered
 taking data from address
-exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xfbb95cfd -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
+exec TESTSUITE/eximdir/exim -DEXIM_PATH=TESTSUITE/eximdir/exim -C TESTSUITE/test-config -d=0xfbb95cfd -odi -odi -t -oem -oi -f <> -E10HmaX-0005vi-00
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp

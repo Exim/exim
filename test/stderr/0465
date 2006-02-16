@@ -132,7 +132,7 @@ accept: condition test failed
 end of ACL "check_data": implicit DENY
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT
-  U=CALLER F=<> rejected after DATA: domain missing or malformed: failing address in "To" header is: abc@xyz.
+  U=CALLER F=<> rejected after DATA: domain missing or malformed: failing address in "To:" header is: abc@xyz.
 smtp_setup_msg entered
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

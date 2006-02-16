@@ -1,0 +1,140 @@
+$Cambridge: exim/doc/doc-txt/test-harness.txt,v 1.1 2006/02/16 10:05:33 ph10 Exp $
+
+EXIM'S BEHAVIOUR CHANGES WHEN RUNNING IN THE TEST HARNESS
+---------------------------------------------------------
+
+When Exim is running in its test harness, via the scripts in the exim-testsuite
+distribution, its behaviour is altered in a few ways, in order to make the
+regression testing work properly. The documentation for the test suite
+describes how a copy of the Exim binary is taken and patched in order to get it
+to run in the test harness. This document briefly lists the behavioural changes
+that result. They come into play when the Boolean variable running_in_test_
+harness is true.
+
+
+Privilege
+---------
+
+Exim does not give up its root privilege when called with -C or -D, nor does it
+insist on the caller being an admin user when starting a daemon, a queue
+runner, or requesting debug output.
+
+
+Small Pauses
+------------
+
+In a number of places, typically when a subprocess has been forked, there are
+short pauses of half or one second in one of the processes. This allows the
+other process to "go first"; it ensures that debugging or logging output always
+appears in the same order.
+
+
+Daemon
+------
+
+The daemon always writes a pid file when running in the test harness.
+
+
+CRAM-MD5
+--------
+
+The cram_md5 authenticator always uses the same challenge string.
+
+
+Appendfile
+----------
+
+After a quota error, the "time since last read" for the file is forced to 10s,
+for repeatability.
+
+
+Memory management
+-----------------
+
+Memory management debugging output contains only the store pool and the size
+(other information is too variable). New memory is initialized to contain F0 in
+all bytes.
+
+
+Queue running
+-------------
+
+There's a facility (-Tqt) for fudging queue times for testing retry logic.
+
+
+Syslog
+------
+
+Exim never writes to syslog in the test harness. Attempts to do so are silently
+ignored. None of the tests actually specify syslog logging for any actual log
+lines, but there is one that tests the inability to open the main and panic
+logs, which by default then tries to write to syslog.
+
+
+SMTP connection timeout
+-----------------------
+
+In order to be able to test timeout handling, a "connection refused" error is
+converted into a timeout if the timeout value is set to 999999s.
+
+
+Random numbers
+--------------
+
+The seed for the pseudo-random number generator is set to a fixed value in the
+test harness, to ensure repeatability.
+
+
+Bounce messages
+---------------
+
+When Exim is submitting a bounce message to itself, unless the configuration
+has set queue_only, it uses -odi so that the bounce is delivered before the
+subprocess returns. This avoids a race that might put log lines in an arbitrary
+order.
+
+
+DNS lookups
+-----------
+
+The real DNS resolver is never called. Instead, a fake resolver, which runs as
+a separate program, is used. It is part of the test suite and is documented
+there. This ensures complete control over the exact results of any DNS lookups.
+
+An attempt to look up a PTR record for 99.99.99.99 or an IP address for a host
+whose name ends with .test.again.dns always yields a "try again" error.
+
+A fake function is called instead of gethostbyname(). It recognizes the name
+"manyhome.test.ex" and generates a humungous number of IP addresses. It also
+recognizes an unqualified "localhost" and forces it to the appropriate loopback
+address (IPv4 or IPv6, as required). IP addresses are treated as literals. For
+other names, it does a DNS lookup (which of course actually calls the fake
+resolver) to find the host name.
+
+
+User names
+----------
+
+If unknown_login is set, it forces the login name, thus overriding the actual
+login for the test suite caller. When this happens, unknown_username provides a
+user name if it is set; otherwise an empty string is used.
+
+
+Ident
+-----
+
+If -bh is used and both the sending host port and the incoming interface port
+are supplied, an ident (RFC 1413) call is made for testing purposes.
+
+
+Debug output
+------------
+
+Debugging output from the function that waits for the clock to tick at an
+appropriate resolution (before completing the arrival of a message, for
+example) is suppressed because the fractions of seconds that it contains will
+never be repeatable.
+
+
+Philip Hazel
+15 February 2006

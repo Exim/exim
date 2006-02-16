@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.13 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.14 2006/02/16 10:05:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -692,15 +692,9 @@ for (i = 0; i < 10; i++)
       }
     else if (type_rr.data != NULL)
       {
-      if (running_in_test_harness &&
-          Ustrcmp(type_rr.name, "uppercase.test.ex") == 0)
-        *fully_qualified_name = US"UpperCase.test.ex";
-      else
-        {
-        if (Ustrcmp(type_rr.name, *fully_qualified_name) != 0 &&
-            type_rr.name[0] != '*')
-          *fully_qualified_name = string_copy_dnsdomain(type_rr.name);
-        }
+      if (Ustrcmp(type_rr.name, *fully_qualified_name) != 0 &&
+          type_rr.name[0] != '*')
+        *fully_qualified_name = string_copy_dnsdomain(type_rr.name);
       }
     }
 

@@ -4,6 +4,6 @@
 # that is what is used by the testing code in Exim when it generates 2048 IP
 # addresses for the absurdly multi-homed host.
 #
-exim -bh 10.250.104.7
+exim -bh 10.250.104.42
 quit
 ****

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.303 2006/02/14 16:18:14 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.304 2006/02/16 10:05:33 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -180,6 +180,16 @@ PH/35 Change the default for dns_check_names_pattern to allow slashes within
       names, as there are now some PTR records that contain slashes. This check
       is only to protect against broken name servers that fall over on strange
       characters, so the fact that it applies to all lookups doesn't matter.
+
+PH/36 Now that the new test suite is complete, we can remove some of the
+      special code in Exim that was needed for the old test suite. For example,
+      sorting DNS records because real resolvers return them in an arbitrary
+      order. The new test suite's fake resolver always returns records in the
+      same order.
+
+PH/37 When running in the test harness, use -odi for submitted messages (e.g.
+      bounces) except when queue_only is set, to avoid logging races between
+      the different processes.
 
 
 Exim version 4.60

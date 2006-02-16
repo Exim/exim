@@ -64,7 +64,6 @@ trusted user
 admin user
 LOG: MAIN
   <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -73,6 +72,7 @@ LOG: MAIN
   => :blackhole: <CALLER@myhost.test.ex> R=r0
 LOG: MAIN
   Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed
@@ -125,7 +125,6 @@ trusted user
 admin user
 LOG: MAIN
   <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
->>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
@@ -134,6 +133,7 @@ LOG: MAIN
   => :blackhole: <CALLER@myhost.test.ex> R=r0
 LOG: MAIN
   Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 LOG: MAIN
   Completed

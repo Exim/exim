@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/child.c,v 1.9 2006/02/14 10:26:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/child.c,v 1.10 2006/02/16 10:05:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -219,21 +219,39 @@ pid = fork();
 
 /* Child process: make the reading end of the pipe into the standard input and
 close the writing end. If debugging, pass debug_fd as stderr. Then re-exec
-Exim. Failure is signalled with EX_EXECFAILED, but this shouldn't occur! */
+Exim with appropriat options. In the test harness, use -odi unless queue_only
+is set, so that the bounce is fully delivered before returning. Failure is
+signalled with EX_EXECFAILED (specified by CEE_EXEC_EXIT), but this shouldn't
+occur. */
 
 if (pid == 0)
   {
   force_fd(pfd[pipe_read], 0);
   (void)close(pfd[pipe_write]);
   if (debug_fd > 0) force_fd(debug_fd, 2);
-  if (sender_authentication != NULL)
-    child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 8,
-      US"-t", US"-oem", US"-oi", US"-f", sender, US"-oMas",
-      sender_authentication, message_id_option);
-  else
-    child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 6,
-      US"-t", US"-oem", US"-oi", US"-f", sender, message_id_option);
-  /* Control does not return here. */
+  if (running_in_test_harness && !queue_only)
+    {
+    if (sender_authentication != NULL)
+      child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 9,
+        US "-odi", US"-t", US"-oem", US"-oi", US"-f", sender, US"-oMas",
+        sender_authentication, message_id_option);
+    else
+      child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 7,
+        US "-odi", US"-t", US"-oem", US"-oi", US"-f", sender,
+        message_id_option);
+    /* Control does not return here. */
+    }
+  else   /* Not test harness */
+    {
+    if (sender_authentication != NULL)
+      child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 8,
+        US"-t", US"-oem", US"-oi", US"-f", sender, US"-oMas",
+        sender_authentication, message_id_option);
+    else
+      child_exec_exim(CEE_EXEC_EXIT, FALSE, NULL, FALSE, 6,
+        US"-t", US"-oem", US"-oi", US"-f", sender, message_id_option);
+    /* Control does not return here. */
+    }
   }
 
 /* Parent process. Save fork() errno and close the reading end of the stdin
@@ -256,7 +274,7 @@ if (pid > 0)
 errno = save_errno;
 return (pid_t)(-1);
 }
-#endif
+#endif   /* STAND_ALONE */
 
 
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.21 2006/02/07 16:36:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.22 2006/02/16 10:05:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -94,55 +94,6 @@ return (unsigned int)(random_seed >> 16) % limit;
 
 
 /*************************************************
-*         Sort addresses when testing            *
-*************************************************/
-
-/* This function is called only when running in the test harness. It sorts a
-number of multihomed host IP addresses into the order, so as to get
-repeatability. This doesn't have to be efficient. But don't interchange IPv4
-and IPv6 addresses!
-
-NOTE:
-This sorting is not necessary for the new test harness, because it
-doesn't call the real DNS resolver, and its output is repeatable. However,
-until the old test harness is discarded, we need to retain this capability.
-The new harness is being developed towards the end of 2005. It will be some
-time before it can do everything that the old one can do.
-
-Arguments:
-  host        -> the first host item
-  last        -> the last host item
-
-Returns:      nothing
-*/
-
-static void
-sort_addresses(host_item *host, host_item *last)
-{
-BOOL done = FALSE;
-while (!done)
-  {
-  host_item *h;
-  done = TRUE;
-  for (h = host; h != last; h = h->next)
-    {
-    if ((Ustrchr(h->address, ':') == NULL) !=
-        (Ustrchr(h->next->address, ':') == NULL))
-      continue;
-    if (Ustrcmp(h->address, h->next->address) > 0)
-      {
-      uschar *temp = h->address;
-      h->address = h->next->address;
-      h->next->address = temp;
-      done = FALSE;
-      }
-    }
-  }
-}
-
-
-
-/*************************************************
 *       Replace gethostbyname() when testing     *
 *************************************************/
 
@@ -151,9 +102,8 @@ getipnodebyname() when running in the test harness. It recognizes the name
 "manyhome.test.ex" and generates a humungous number of IP addresses. It also
 recognizes an unqualified "localhost" and forces it to the appropriate loopback
 address. IP addresses are treated as literals. For other names, it uses the DNS
-to find the host name. In the new test harness, this means it will access only
-the fake DNS resolver. In the old harness it will call the real resolver and
-access the test zone.
+to find the host name. In the test harness, this means it will access only the
+fake DNS resolver.
 
 Arguments:
   name          the host name or a textual IP address
@@ -1781,27 +1731,6 @@ if (sender_host_name == NULL)
   return FAIL;
   }
 
-/* We have a host name. If we are running in the test harness, we want the host
-name and its alias to appear always the same way round. There are only ever two
-names in these tests. If one of them contains "alias", make sure it is second;
-otherwise put them in alphabetical order. */
-
-if (running_in_test_harness && *sender_host_aliases != NULL &&
-    (
-    Ustrstr(sender_host_name, "alias") != NULL ||
-      (
-      Ustrstr(*sender_host_aliases, "alias") == NULL &&
-      Ustrcmp(sender_host_name, *sender_host_aliases) > 0
-      )
-    ))
-  {
-  uschar *temp = sender_host_name;
-  sender_host_name = *sender_host_aliases;
-  *sender_host_aliases = temp;
-  }
-
-/* Debug output what was found, after test harness swapping, for consistency */
-
 HDEBUG(D_host_lookup)
   {
   uschar **aliases = sender_host_aliases;
@@ -2154,11 +2083,6 @@ host if required. */
 host_remove_duplicates(host, &last);
 yield = local_host_check?
   host_scan_for_local_hosts(host, &last, NULL) : HOST_FOUND;
-
-/* When running in the test harness, sort into the order of addresses so as to
-get repeatability. */
-
-if (running_in_test_harness) sort_addresses(host, last);
 
 HDEBUG(D_host_lookup)
   {
@@ -2584,11 +2508,6 @@ if (rc != DNS_SUCCEED)
   else
     if (rc == HOST_IGNORED) rc = HOST_FIND_FAILED;  /* No special action */
 
-  /* When running in the test harness, sort into the order of addresses so as
-  to get repeatability. */
-
-  if (running_in_test_harness) sort_addresses(host, last);
-
   DEBUG(D_host_lookup)
     {
     host_item *h;
@@ -2975,39 +2894,6 @@ if (h != last)
     }
   }
 #endif
-
-/* When running in the test harness, we want the hosts always to be in the same
-order so that the debugging output is the same and can be compared. Having a
-fixed set of "random" numbers doesn't actually achieve this, because the RRs
-come back from the resolver in a random order, so the non-random random numbers
-get used in a different order. We therefore have to sort the hosts that have
-the same MX values. We chose do to this by their name and then by IP address.
-The fact that the sort is slow matters not - this is testing only! */
-
-if (running_in_test_harness)
-  {
-  BOOL done;
-  do
-    {
-    done = TRUE;
-    for (h = host; h != last; h = h->next)
-      {
-      int c = Ustrcmp(h->name, h->next->name);
-      if (c == 0) c = Ustrcmp(h->address, h->next->address);
-      if (h->mx == h->next->mx && c > 0)
-        {
-        host_item *next = h->next;
-        host_item temp = *h;
-        temp.next = next->next;
-        *h = *next;
-        h->next = next;
-        *next = temp;
-        done = FALSE;
-        }
-      }
-    }
-  while (!done);
-  }
 
 /* Remove any duplicate IP addresses and then scan the list of hosts for any
 whose IP addresses are on the local host. If any are found, all hosts with the

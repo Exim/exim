@@ -47,8 +47,8 @@ x@manual.route cannot be resolved at this time:
   lowest numbered MX record points to local host
 x@manual.route
   router = r1, transport = t1
-  host eximtesthost.test.ex [ip4.ip4.ip4.ip4] MX=5
   host ten-1.test.ex [V4NET.0.0.1] MX=5
+  host eximtesthost.test.ex [ip4.ip4.ip4.ip4] MX=5
   host ten-6.test.ex [V4NET.0.0.6]      
 x@manual.route is undeliverable:
   lowest numbered MX record points to local host

@@ -1,4 +1,4 @@
-1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<> rejected after DATA: domain missing or malformed: failing address in "To" header is: abc@xyz.
+1999-03-02 09:44:33 10HmaX-0005vi-00 U=CALLER F=<> rejected after DATA: domain missing or malformed: failing address in "To:" header is: abc@xyz.
 Envelope-from: <>
 Envelope-to: <abc@xyz>
 P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)

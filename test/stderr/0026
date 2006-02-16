@@ -17,7 +17,7 @@
 >>> processing "require"
 >>> check verify = header_syntax
 >>> require: condition test failed
-LOG: 10HmbF-0005vi-00 H=[10.0.0.0] F=<x@y> rejected after DATA: domain missing or malformed: failing address in "From" header is: @
+LOG: 10HmbF-0005vi-00 H=[10.0.0.0] F=<x@y> rejected after DATA: domain missing or malformed: failing address in "From:" header is: @
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
