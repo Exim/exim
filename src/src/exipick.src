@@ -1,5 +1,5 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.8 2005/12/15 17:58:23 jetmore Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.9 2006/02/16 17:03:16 jetmore Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
@@ -8,10 +8,10 @@ use strict;
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
-my $p_version = "20051215.3";
+my $p_version = "20060216.1";
 my $p_usage   = "Usage: $p_name [--help|--version] (see --help for details)";
 my $p_cp      = <<EOM;
-        Copyright (c) 2003-2005 John Jetmore <jj33\@pobox.com>
+        Copyright (c) 2003-2006 John Jetmore <jj33\@pobox.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -97,7 +97,7 @@ foreach my $m (@$msg) {
                                       && !$G::msg_ids->{$m->{message}});
   if (!$e->parse_message($m->{message})) {
     warn "Couldn't parse $m->{message}: ".$e->error()."\n";
-    next(MSG);
+    next MSG;
   }
   $tcount++;
   my $match = 0;
@@ -119,19 +119,19 @@ foreach my $m (@$msg) {
     }
     if ($@) {
       print STDERR "Error in eval '$c->{cmp}': $@\n";
-      next(MSG);
+      next MSG;
     } elsif ($ret) {
       $match = 1;
-      if ($G::or) { last(CRITERIA); }
-      else        { next(CRITERIA); }
+      if ($G::or) { last CRITERIA; }
+      else        { next CRITERIA; }
     } else { # no match
-      if ($G::or) { next(CRITERIA); }
-      else        { next(MSG);      }
+      if ($G::or) { next CRITERIA; }
+      else        { next MSG;      }
     }
   }
 
   # skip this message if any criteria were supplied and it didn't match
-  next(MSG) if ((scalar(@$crit) || scalar(@local_crit)) && !$match);
+  next MSG if ((scalar(@$crit) || scalar(@local_crit)) && !$match);
 
   if ($count_only) {
     $mcount++;
@@ -141,7 +141,7 @@ foreach my $m (@$msg) {
 }
 
 if ($G::mailq_bpc) {
-  print "$tcount\n";
+  print "$mcount\n";
 } elsif ($G::qgrep_c) {
   print "$mcount matches out of $tcount messages\n";
 }
@@ -610,7 +610,12 @@ sub _parse_header {
     my $bytes = $_;
     return(0) if (read(I, $_, $bytes) != $bytes);
     chomp(); # may regret this later
-    $self->{_vars}{message_linecount} += scalar(split(/\n/)) if ($t ne '*');
+    if ($t ne '*') {
+      # use of this temp variable is a little lame but it prevents a
+      # -w warning (Use of implicit split to @_ is deprecated)
+      my @t = split(/\n/);
+      $self->{_vars}{message_linecount} += scalar(@t);
+    }
     # build the $header_ variable, following exim's rules (sort of)
     if (/^([^ :]+):(.*)$/s) {
       my $v = "header_" . lc($1);

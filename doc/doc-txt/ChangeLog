@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.306 2006/02/16 16:37:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.307 2006/02/16 17:03:16 jetmore Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -194,6 +194,16 @@ PH/37 When running in the test harness, use -odi for submitted messages (e.g.
 PH/38 Panic-die if .include specifies a non-absolute path.
 
 PH/39 A tweak to the "H" retry rule from its user.
+
+JJ/03 exipick: Removed parentheses from 'next' and 'last' calls that specified
+      a label.  They prevented compilation on older perls.
+
+JJ/04 exipick: Refactored code to prevent implicit split to @_ which caused
+      a warning to be raised on newish perls.
+
+JJ/05 exipick: Fixed bug where -bpc always showed a count of all messages
+      on queue.  Changes to match documented behaviour of showing count of
+      messages matching specified criteria.
 
 
 Exim version 4.60
