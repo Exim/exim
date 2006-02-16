@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.19 2006/02/13 12:02:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.20 2006/02/16 14:54:15 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -811,6 +811,10 @@ for (;;)
       t--;
       }
     *t = 0;
+
+    if (*ss != '/')
+      log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, ".include specifies a non-"
+        "absolute path \"%s\"", ss);
 
     if (include_if_exists != 0 && (Ustat(ss, &statbuf) != 0)) continue;
 

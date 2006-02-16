@@ -7,3 +7,6 @@ exim -DRT -bP receive_timeout
 ****
 exim '-D RT = receive_timeout = 4s ' -bP receive_timeout
 ****
+1
+exim -DINC='.include non/absolute' -bP receive_timeout
+****

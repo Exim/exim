@@ -4,6 +4,7 @@ FOOBAR=
 FOO=inc1
 BAR=.include "DIR/aux-fixed/TESTNUM.inc2"
 RT = receive_timeout = 1s
+INC=
 
 C1=#
 C2=#
@@ -22,8 +23,8 @@ trusted_users = CALLER
 # ----- Main settings -----
 
 FOOBAR  .include DIR/aux-fixed/TESTNUM.FOO
-
 RT
+INC
 
 remote_sort_domains = a:b:c
 

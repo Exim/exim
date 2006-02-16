@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.304 2006/02/16 10:05:33 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.305 2006/02/16 14:54:15 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -190,6 +190,8 @@ PH/36 Now that the new test suite is complete, we can remove some of the
 PH/37 When running in the test harness, use -odi for submitted messages (e.g.
       bounces) except when queue_only is set, to avoid logging races between
       the different processes.
+
+PH/38 Panic-die if .include specifies a non-absolute path.
 
 
 Exim version 4.60
