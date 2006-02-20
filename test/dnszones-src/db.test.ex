@@ -1,4 +1,4 @@
-; $Cambridge: exim/test/dnszones-src/db.test.ex,v 1.2 2006/02/14 16:18:14 ph10 Exp $
+; $Cambridge: exim/test/dnszones-src/db.test.ex,v 1.3 2006/02/20 16:25:00 ph10 Exp $
 
 ; This is a testing zone file for use when testing DNS handling in Exim. This
 ; is a fake zone of no real use - hence no SOA record. The zone name is
@@ -189,6 +189,12 @@ mx4646       MX  46 46.test.ex.
 mx46466      MX  46 46.test.ex.
              MX  46 46b.test.ex.
              MX  46 v6.test.ex.
+
+; This time, change precedence
+
+mx46466b     MX  46 46.test.ex.
+             MX  47 46b.test.ex.
+             MX  48 v6.test.ex.
 
 ; Points to a host with a working IPv4 and a non-working IPv6 record
 

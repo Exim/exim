@@ -1,0 +1,13 @@
+# Prefer IPv6 over IPv4 addresses
+exim -bt x@46.test.ex
+****
+exim -bt x@mx46.test.ex
+****
+exim -bt x@mx246.test.ex
+****
+exim -bt x@mx4646.test.ex
+****
+exim -bt x@mx46466.test.ex
+****
+exim -bt x@mx46466b.test.ex
+****
