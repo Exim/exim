@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.16 2006/02/10 14:25:43 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.17 2006/02/20 16:31:48 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -425,7 +425,7 @@ return_size_limit                    integer         100K          main         
 rewrite                              boolean         true          redirect          4.00
 rewrite_headers                      boolean         true          dnslookup         4.00
 rfc1413_hosts                        host list       *             main
-rfc1413_query_timeout                time            30s           main
+rfc1413_query_timeout                time            5s            main
 router_home_directory                string*         unset         routers           4.11
 route_data                           string*         unset         manualroute       4.00
 route_list                           string list     unset         manualroute       4.00

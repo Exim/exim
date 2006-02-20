@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/configure.default,v 1.6 2005/11/21 10:00:26 ph10 Exp $
+# $Cambridge: exim/src/src/configure.default,v 1.7 2006/02/20 16:31:49 ph10 Exp $
 
 ######################################################################
 #                  Runtime configuration file for Exim               #
@@ -192,10 +192,11 @@ host_lookup = *
 # are disabled. RFC 1413 calls are cheap and can provide useful information
 # for tracing problem messages, but some hosts and firewalls have problems
 # with them. This can result in a timeout instead of an immediate refused
-# connection, leading to delays on starting up an SMTP session.
+# connection, leading to delays on starting up SMTP sessions. (The default was
+# reduced from 30s to 5s for release 4.61.)
 
 rfc1413_hosts = *
-rfc1413_query_timeout = 30s
+rfc1413_query_timeout = 5s
 
 
 # By default, Exim expects all envelope addresses to be fully qualified, that

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.307 2006/02/16 17:03:16 jetmore Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.308 2006/02/20 16:31:48 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -204,6 +204,8 @@ JJ/04 exipick: Refactored code to prevent implicit split to @_ which caused
 JJ/05 exipick: Fixed bug where -bpc always showed a count of all messages
       on queue.  Changes to match documented behaviour of showing count of
       messages matching specified criteria.
+
+PH/40 Changed the default ident timeout from 30s to 5s.
 
 
 Exim version 4.60

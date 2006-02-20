@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.86 2006/02/14 16:18:14 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.87 2006/02/20 16:31:48 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -59,6 +59,8 @@ PH/08 The default for dns_check_names_pattern now allows slashes within names,
       as there are now some PTR records that contain slashes. This check is
       only to protect against broken name servers that fall over on strange
       characters, so the fact that it applies to all lookups doesn't matter.
+
+PH/09 The default for rfc4131_query_timeout has been changed from 30s to 5s.
 
 
 

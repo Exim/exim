@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.50 2006/02/14 16:18:14 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.51 2006/02/20 16:31:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -877,7 +877,7 @@ uschar *return_path            = NULL;
 BOOL    return_path_remove     = TRUE;
 int     rewrite_existflags     = 0;
 uschar *rfc1413_hosts          = US"*";
-int     rfc1413_query_timeout  = 30;
+int     rfc1413_query_timeout  = 5;
 /* BOOL    rfc821_domains         = FALSE;  <<< on the way out */
 uid_t   root_uid               = ROOT_UID;
 
