@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.12 2006/02/10 16:29:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.13 2006/02/21 16:24:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -247,6 +247,8 @@ Arguments:
   tblock     points to the transport instance
   addrlist   addresses about to be delivered (not used)
   dummy      not used (doesn't pass back data)
+  uid        the uid that will be set (not used)
+  gid        the gid that will be set (not used)
   errmsg     where to put an error message
 
 Returns:     OK, FAIL, or DEFER
@@ -254,7 +256,7 @@ Returns:     OK, FAIL, or DEFER
 
 static int
 appendfile_transport_setup(transport_instance *tblock, address_item *addrlist,
-  transport_feedback *dummy, uschar **errmsg)
+  transport_feedback *dummy, uid_t uid, gid_t gid, uschar **errmsg)
 {
 appendfile_transport_options_block *ob =
   (appendfile_transport_options_block *)(tblock->options_block);
@@ -264,6 +266,8 @@ int i;
 
 addrlist = addrlist;    /* Keep picky compilers happy */
 dummy = dummy;
+uid = uid;
+gid = gid;
 
 /* Loop for quota, quota_filecount, quota_warn_threshold, mailbox_size,
 mailbox_filecount */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.33 2006/02/16 10:05:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.34 2006/02/21 16:24:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -841,6 +841,9 @@ fprintf(f, "Support for:");
 #endif
 #if HAVE_IPV6
   fprintf(f, " IPv6");
+#endif
+#ifdef HAVE_LOGIN_CAP
+  fprintf(f, " use_classresources");
 #endif
 #ifdef SUPPORT_PAM
   fprintf(f, " PAM");

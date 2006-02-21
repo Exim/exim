@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.28 2006/02/08 16:10:46 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.29 2006/02/21 16:24:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1743,7 +1743,7 @@ if ((pid = fork()) == 0)
 
   if (addr->transport->setup != NULL)
     {
-    switch((addr->transport->setup)(addr->transport, addr, NULL,
+    switch((addr->transport->setup)(addr->transport, addr, NULL, uid, gid,
            &(addr->message)))
       {
       case DEFER:
@@ -3617,12 +3617,25 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
     else return_path = new_return_path;
     }
 
+  /* Find the uid, gid, and use_initgroups setting for this transport. Failure
+  logs and sets up error messages, so we just post-process and continue with
+  the next address. */
+
+  if (!findugid(addr, tp, &uid, &gid, &use_initgroups))
+    {
+    remote_post_process(addr, LOG_MAIN|LOG_PANIC, NULL, fallback);
+    continue;
+    }
+
   /* If this transport has a setup function, call it now so that it gets
   run in this process and not in any subprocess. That way, the results of
-  any setup that are retained by the transport can be reusable. */
+  any setup that are retained by the transport can be reusable. One of the
+  things the setup does is to set the fallback host lists in the addresses.
+  That is why it is called at this point, before the continue delivery
+  processing, because that might use the fallback hosts. */
 
   if (tp->setup != NULL)
-    (void)((tp->setup)(addr->transport, addr, NULL, NULL));
+    (void)((tp->setup)(addr->transport, addr, NULL, uid, gid, NULL));
 
   /* If this is a run to continue delivery down an already-established
   channel, check that this set of addresses matches the transport and
@@ -3697,16 +3710,6 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
   for expansion. */
 
   transport_filter_argv = NULL;
-
-  /* Find the uid, gid, and use_initgroups setting for this transport. Failure
-  logs and sets up error messages, so we just post-process and continue with
-  the next address. */
-
-  if (!findugid(addr, tp, &uid, &gid, &use_initgroups))
-    {
-    remote_post_process(addr, LOG_MAIN|LOG_PANIC, NULL, fallback);
-    continue;
-    }
 
   /* Create the pipe for inter-process communication. If pipe creation
   fails, it is probably because the value of remote_max_parallel is so

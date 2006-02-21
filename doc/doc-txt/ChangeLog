@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.308 2006/02/20 16:31:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.309 2006/02/21 16:24:19 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -206,6 +206,9 @@ JJ/05 exipick: Fixed bug where -bpc always showed a count of all messages
       messages matching specified criteria.
 
 PH/40 Changed the default ident timeout from 30s to 5s.
+
+PH/41 Added support for the use of login_cap features, on those BSD systems
+      that have them, for controlling the resources used by pipe deliveries.
 
 
 Exim version 4.60

@@ -1,4 +1,4 @@
-$Cambridge: exim/src/OS/os.Configuring,v 1.1 2004/10/06 15:07:39 ph10 Exp $
+$Cambridge: exim/src/OS/os.Configuring,v 1.2 2006/02/21 16:24:19 ph10 Exp $
 
 Configuring Exim for different Operating Systems
 ------------------------------------------------
@@ -183,6 +183,13 @@ The sys/resource.h header
 One OS does not have the sys/resource.h header. If NO_SYS_RESOURCE_H is defined
 in an os.h-<ostype> file, then the #include for this header is skipped in
 exim.h.
+
+Support for login_cap functions
+-------------------------------
+
+Some of the BSD systems support functions for controlling the resources that
+user processes can use (e.g. login_getpwclass). If HAVE_LOGIN_CAP is defined,
+Exim supports this feature for running pipe deliveries.
 
 The crypt_h header
 ------------------

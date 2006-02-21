@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.20 2006/02/07 11:19:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.21 2006/02/21 16:24:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -207,6 +207,8 @@ Arguments:
   tblock    pointer to the transport instance block
   addrlist  list of addresses about to be transported
   tf        if not NULL, pointer to block in which to return options
+  uid       the uid that will be set (not used)
+  gid       the gid that will be set (not used)
   errmsg    place for error message (not used)
 
 Returns:  OK always (FAIL, DEFER not used)
@@ -214,12 +216,14 @@ Returns:  OK always (FAIL, DEFER not used)
 
 static int
 smtp_transport_setup(transport_instance *tblock, address_item *addrlist,
-  transport_feedback *tf, uschar **errmsg)
+  transport_feedback *tf, uid_t uid, gid_t gid, uschar **errmsg)
 {
 smtp_transport_options_block *ob =
   (smtp_transport_options_block *)(tblock->options_block);
 
 errmsg = errmsg;    /* Keep picky compilers happy */
+uid = uid;
+gid = gid;
 
 /* Pass back options if required. This interface is getting very messy. */
 

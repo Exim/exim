@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/structs.h,v 1.9 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/structs.h,v 1.10 2006/02/21 16:24:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -138,6 +138,8 @@ typedef struct transport_instance {
     struct transport_instance *,
     struct address_item *,
     struct transport_feedback *,  /* For passing back config data */
+    uid_t,                        /* The uid that will be used */
+    gid_t,                        /* The gid that will be used */
     uschar **);                   /* For an error message */
                                   /**************************************/
   int     batch_max;              /* )                                  */

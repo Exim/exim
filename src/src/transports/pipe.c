@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/pipe.c,v 1.9 2006/02/07 11:19:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/pipe.c,v 1.10 2006/02/21 16:24:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -10,6 +10,10 @@
 
 #include "../exim.h"
 #include "pipe.h"
+
+#ifdef HAVE_LOGIN_CAP
+#include <login_cap.h>
+#endif
 
 
 
@@ -71,6 +75,10 @@ optionlist pipe_transport_options[] = {
       (void *)offsetof(pipe_transport_options_block, umask) },
   { "use_bsmtp",         opt_bool,
       (void *)offsetof(pipe_transport_options_block, use_bsmtp) },
+  #ifdef HAVE_LOGIN_CAP
+  { "use_classresources", opt_bool,
+      (void *)offsetof(pipe_transport_options_block, use_classresources) },
+  #endif
   { "use_crlf",          opt_bool,
       (void *)offsetof(pipe_transport_options_block, use_crlf) },
   { "use_shell",         opt_bool,
@@ -106,8 +114,64 @@ pipe_transport_options_block pipe_transport_option_defaults = {
   FALSE,          /* timeout_defer */
   FALSE,          /* use_shell */
   FALSE,          /* use_bsmtp */
+  FALSE,          /* use_classresources */
   FALSE           /* use_crlf */
 };
+
+
+
+/*************************************************
+*              Setup entry point                 *
+*************************************************/
+
+/* Called for each delivery in the privileged state, just before the uid/gid
+are changed and the main entry point is called. In a system that supports the
+login_cap facilities, this function is used to set the class resource limits
+for the user.
+
+Arguments:
+  tblock     points to the transport instance
+  addrlist   addresses about to be delivered (not used)
+  dummy      not used (doesn't pass back data)
+  uid        the uid that will be set (not used)
+  gid        the gid that will be set (not used)
+  errmsg     where to put an error message
+
+Returns:     OK, FAIL, or DEFER
+*/
+
+static int
+pipe_transport_setup(transport_instance *tblock, address_item *addrlist,
+  transport_feedback *dummy, uid_t uid, gid_t gid, uschar **errmsg)
+{
+pipe_transport_options_block *ob =
+  (pipe_transport_options_block *)(tblock->options_block);
+
+addrlist = addrlist;  /* Keep compiler happy */
+dummy = dummy;
+uid = uid;
+gid = gid;
+errmsg = errmsg;
+ob = ob;
+
+#ifdef HAVE_LOGIN_CAP
+if (ob->use_classresources)
+  {
+  struct passwd *pw = getpwuid(uid);
+  if (pw != NULL)
+    {
+    login_cap_t *lc = login_getpwclass(pw);
+    if (lc != NULL)
+      {
+      setclassresources(lc);
+      login_close(lc);
+      }
+    }
+  }
+#endif
+
+return OK;
+}
 
 
 
@@ -124,6 +188,10 @@ pipe_transport_init(transport_instance *tblock)
 {
 pipe_transport_options_block *ob =
   (pipe_transport_options_block *)(tblock->options_block);
+
+/* Set up the setup entry point, to be called in the privileged state */
+
+tblock->setup = pipe_transport_setup;
 
 /* If pipe_as_creator is set, then uid/gid should not be set. */
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.33 2006/02/14 15:56:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.34 2006/02/21 16:24:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1051,7 +1051,7 @@ while (addr_new != NULL)
 
       if (addr->transport != NULL && !addr->transport->info->local)
         {
-        (void)(addr->transport->setup)(addr->transport, addr, &tf, NULL);
+        (void)(addr->transport->setup)(addr->transport, addr, &tf, 0, 0, NULL);
 
         /* If the transport has hosts and the router does not, or if the
         transport is configured to override the router's hosts, we must build a

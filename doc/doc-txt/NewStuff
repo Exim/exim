@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.87 2006/02/20 16:31:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.88 2006/02/21 16:24:19 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -62,6 +62,12 @@ PH/08 The default for dns_check_names_pattern now allows slashes within names,
 
 PH/09 The default for rfc4131_query_timeout has been changed from 30s to 5s.
 
+PH/10 When compiled on FreeBSD, NetBSD, or BSD/OS, the pipe transport has a new
+      Boolean option called use_classresources, defaulting false. If it is set
+      true, the setclassresources() function is used to set resource limits
+      when a pipe transport is run to perform a delivery. The limits for the
+      uid under which the pipe is to run are obtained from the login class
+      database.
 
 
 Version 4.60
