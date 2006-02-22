@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.88 2006/02/21 16:24:19 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.89 2006/02/22 15:08:20 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -68,6 +68,11 @@ PH/10 When compiled on FreeBSD, NetBSD, or BSD/OS, the pipe transport has a new
       when a pipe transport is run to perform a delivery. The limits for the
       uid under which the pipe is to run are obtained from the login class
       database.
+
+PH/11 If retry_interval_max is set greater than 24 hours, it is quietly reset
+      to 24 hours. This avoids potential overflow problems when processing G
+      and H retry rules, and it seems reasonable to require a retry at least
+      once a day.
 
 
 Version 4.60

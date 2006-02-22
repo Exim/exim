@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.20 2006/02/16 14:54:15 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.21 2006/02/22 15:08:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2818,6 +2818,10 @@ if (local_sender_retain && local_from_check)
 wanted. */
 
 if (timezone_string != NULL && *timezone_string == 0) timezone_string = NULL;
+
+/* The max retry interval must not be greater than 24 hours. */
+
+if (retry_interval_max > 24*60*60) retry_interval_max = 24*60*60;
 
 /* remote_max_parallel must be > 0 */
 

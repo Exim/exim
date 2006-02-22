@@ -158,7 +158,7 @@ no_recipients_max_reject
 remote_max_parallel = 1
 remote_sort_domains =
 retry_data_expire = 24h
-retry_interval_max = 1d
+retry_interval_max = 3d
 return_path_remove
 rfc1413_hosts =
 sender_unqualified_hosts = localhost:some.host.name

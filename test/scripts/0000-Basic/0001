@@ -20,6 +20,7 @@ exim -bP accept_8bitmime \
          never_users \
          percent_hack_domains \
          qualify_domain \
+         retry_interval_max \ 
          receive_timeout \
          sender_unqualified_hosts \
          tcp_nodelay \

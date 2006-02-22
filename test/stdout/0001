@@ -13,6 +13,7 @@ max_username_length = 8
 never_users = root:root
 percent_hack_domains = 
 qualify_domain = some.dom.ain
+retry_interval_max = 1d
 receive_timeout = 0s
 sender_unqualified_hosts = localhost:some.host.name
 no_tcp_nodelay

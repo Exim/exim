@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.310 2006/02/22 14:46:44 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.311 2006/02/22 15:08:20 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -220,6 +220,10 @@ PH/42 The content-scanning code uses fopen() to create files in which to put
       argument. It sets umask(777), creates the file, chmods it to the required
       mode, then resets the umask. All the relevant calls to fopen() in the
       content scanning code have been changed to use this function.
+
+PH/43 If retry_interval_max is set greater than 24 hours, it is quietly reset
+      to 24 hours. This avoids potential overflow problems when processing G
+      and H retry rules. I suspect nobody ever tinkers with this value.
 
 
 Exim version 4.60
