@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.311 2006/02/22 15:08:20 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.312 2006/02/22 15:10:28 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -224,6 +224,8 @@ PH/42 The content-scanning code uses fopen() to create files in which to put
 PH/43 If retry_interval_max is set greater than 24 hours, it is quietly reset
       to 24 hours. This avoids potential overflow problems when processing G
       and H retry rules. I suspect nobody ever tinkers with this value.
+
+PH/44 Added STRIP_COMMAND=/usr/bin/strip to the FreeBSD Makefile.
 
 
 Exim version 4.60
