@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.309 2006/02/21 16:24:19 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.310 2006/02/22 14:46:44 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -209,6 +209,17 @@ PH/40 Changed the default ident timeout from 30s to 5s.
 
 PH/41 Added support for the use of login_cap features, on those BSD systems
       that have them, for controlling the resources used by pipe deliveries.
+
+PH/42 The content-scanning code uses fopen() to create files in which to put
+      message data. Previously it was not paying any attention to the mode of
+      the files. Exim runs with umask(0) because the rest of the code creates
+      files with open(), and sets the required mode explicitly. Thus, these
+      files were ending up world-writeable. This was not a big issue, because,
+      being within the spool directory, they were not world-accessible. I have
+      created a function called modefopen, which takes an additional mode
+      argument. It sets umask(777), creates the file, chmods it to the required
+      mode, then resets the umask. All the relevant calls to fopen() in the
+      content scanning code have been changed to use this function.
 
 
 Exim version 4.60

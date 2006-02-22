@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.10 2005/08/01 14:41:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.11 2006/02/22 14:46:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -56,7 +56,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
 
     /* open [message_id].eml file for writing */
     (void)string_format(mbox_path, 1024, "%s/scan/%s/%s.eml", spool_directory, message_id, message_id);
-    mbox_file = Ufopen(mbox_path,"wb");
+    mbox_file = modefopen(mbox_path,"wb",SPOOL_MODE);
 
     if (mbox_file == NULL) {
       debug_printf("unable to open file for writing: %s\n", mbox_path);

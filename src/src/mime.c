@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.13 2005/11/15 10:08:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.14 2006/02/22 14:46:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -241,10 +241,10 @@ FILE *mime_get_decode_file(uschar *pname, uschar *fname) {
 
   if ((pname != NULL) && (fname != NULL)) {
     (void)string_format(filename, 2048, "%s/%s", pname, fname);
-    f = fopen(CS filename,"wb+");
+    f = modefopen(filename,"wb+",SPOOL_MODE);
   }
   else if (pname == NULL) {
-    f = fopen(CS fname,"wb+");
+    f = modefopen(fname,"wb+",SPOOL_MODE);
   }
   else if (fname == NULL) {
     int file_nr = 0;
@@ -261,7 +261,7 @@ FILE *mime_get_decode_file(uschar *pname, uschar *fname) {
       result = stat(CS filename,&mystat);
     }
     while(result != -1);
-    f = fopen(CS filename,"wb+");
+    f = modefopen(filename,"wb+",SPOOL_MODE);
   };
 
   /* set expansion variable */

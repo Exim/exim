@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/demime.c,v 1.8 2005/08/01 14:41:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/demime.c,v 1.9 2006/02/22 14:46:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -256,7 +256,7 @@ int mime_get_dump_file(uschar *extension, FILE **f, uschar *info) {
   }
   while(result != -1);
 
-  *f = fopen(CS file_name,"wb+");
+  *f = modefopen(file_name,"wb+",SPOOL_MODE);
   if (*f == NULL) {
     /* cannot open new dump file, disk full ? -> soft error */
     (void)string_format(info, 1024,"unable to open dump file");

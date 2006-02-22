@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.14 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.15 2006/02/22 14:46:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1414,11 +1414,10 @@ if (running_in_test_harness || write_pid)
   if (pid_file_path[0] == 0)
     pid_file_path = string_sprintf("%s/exim-daemon.pid", spool_directory);
 
-  f = Ufopen(pid_file_path, "wb");
+  f = modefopen(pid_file_path, "wb", 0644);
   if (f != NULL)
     {
     (void)fprintf(f, "%d\n", (int)getpid());
-    (void)fchmod(fileno(f), 0644);
     (void)fclose(f);
     DEBUG(D_any) debug_printf("pid written to %s\n", pid_file_path);
     }

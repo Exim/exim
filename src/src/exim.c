@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.34 2006/02/21 16:24:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.35 2006/02/22 14:46:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -371,6 +371,39 @@ DEBUG(D_process_info) debug_printf("set_process_info: %s\n", process_info);
 va_end(ap);
 }
 
+
+
+
+
+/*************************************************
+*   Call fopen() with umask 777 and adjust mode  *
+*************************************************/
+
+/* Exim runs with umask(0) so that files created with open() have the mode that
+is specified in the open() call. However, there are some files, typically in
+the spool directory, that are created with fopen(). They end up world-writeable
+if no precautions are taken. Although the spool directory is not accessible to
+the world, this is an untidiness. So this is a wrapper function for fopen()
+that sorts out the mode of the created file.
+
+Arguments:
+   filename       the file name
+   options        the fopen() options
+   mode           the required mode
+
+Returns:          the fopened FILE or NULL
+*/
+
+FILE *
+modefopen(uschar *filename, char *options, mode_t mode)
+{
+FILE *f;
+umask(0777);
+f = Ufopen(filename, options);
+umask(0);
+if (f != NULL) (void)fchmod(fileno(f), mode);
+return f;
+}
 
 
 
@@ -1440,8 +1473,15 @@ message_id_external[0] = 'E';
 message_id = message_id_external + 1;
 message_id[0] = 0;
 
-/* Set the umask to zero so that any files that Exim creates are created
-with the modes that it specifies. */
+/* Set the umask to zero so that any files that Exim creates using open() are
+created with the modes that it specifies. NOTE: Files created with fopen() have
+a problem, which was not recognized till rather late (February 2006). With this
+umask, such files will be world writeable. (They are all content scanning files
+in the spool directory, which isn't world-accessible, so this is not a
+disaster, but it's untidy.) I don't want to change this overall setting,
+however, because it will interact badly with the open() calls. Instead, there's
+now a function called modefopen() that fiddles with the umask while calling
+fopen(). */
 
 umask(0);
 
