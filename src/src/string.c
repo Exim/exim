@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/string.c,v 1.9 2006/02/13 11:13:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/string.c,v 1.10 2006/02/23 10:25:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1472,8 +1472,10 @@ printf("Testing string_format\n");
 while (fgets(CS buffer, sizeof(buffer), stdin) != NULL)
   {
   void *args[3];
+  long long llargs[3];
   double dargs[3];
   int dflag = 0;
+  int llflag = 0;
   int n = 0;
   int count;
   int countset = 0;
@@ -1504,6 +1506,11 @@ while (fgets(CS buffer, sizeof(buffer), stdin) != NULL)
         dflag = 1;
         dargs[n++] = Ustrtod(outbuf, NULL);
         }
+      else if (Ustrstr(outbuf, "ll") != NULL)
+        {
+        llflag = 1;
+        llargs[n++] = strtoull(CS outbuf, NULL, 10);
+        }
       else
         {
         args[n++] = (void *)Uatoi(outbuf);
@@ -1526,11 +1533,16 @@ while (fgets(CS buffer, sizeof(buffer), stdin) != NULL)
     if (*s == ',') s++;
     }
 
-  if (!dflag) printf("%s\n", string_format(outbuf, sizeof(outbuf), CS format,
-    args[0], args[1], args[2])? "True" : "False");
+  if (!dflag && !llflag)
+    printf("%s\n", string_format(outbuf, sizeof(outbuf), CS format,
+      args[0], args[1], args[2])? "True" : "False");
+
+  else if (dflag)
+    printf("%s\n", string_format(outbuf, sizeof(outbuf), CS format,
+      dargs[0], dargs[1], dargs[2])? "True" : "False");
 
   else printf("%s\n", string_format(outbuf, sizeof(outbuf), CS format,
-    dargs[0], dargs[1], dargs[2])? "True" : "False");
+    llargs[0], llargs[1], llargs[2])? "True" : "False");
 
   printf("%s\n", CS outbuf);
   if (countset) printf("count=%d\n", count);
