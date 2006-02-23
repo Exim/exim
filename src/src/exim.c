@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.35 2006/02/22 14:46:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.36 2006/02/23 10:25:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -397,10 +397,9 @@ Returns:          the fopened FILE or NULL
 FILE *
 modefopen(uschar *filename, char *options, mode_t mode)
 {
-FILE *f;
-umask(0777);
-f = Ufopen(filename, options);
-umask(0);
+mode_t saved_umask = umask(0777);
+FILE *f = Ufopen(filename, options);
+(void)umask(saved_umask);
 if (f != NULL) (void)fchmod(fileno(f), mode);
 return f;
 }
@@ -1473,7 +1472,7 @@ message_id_external[0] = 'E';
 message_id = message_id_external + 1;
 message_id[0] = 0;
 
-/* Set the umask to zero so that any files that Exim creates using open() are
+/* Set the umask to zero so that any files Exim creates using open() are
 created with the modes that it specifies. NOTE: Files created with fopen() have
 a problem, which was not recognized till rather late (February 2006). With this
 umask, such files will be world writeable. (They are all content scanning files
@@ -1483,7 +1482,7 @@ however, because it will interact badly with the open() calls. Instead, there's
 now a function called modefopen() that fiddles with the umask while calling
 fopen(). */
 
-umask(0);
+(void)umask(0);
 
 /* Precompile the regular expression for matching a message id. Keep this in
 step with the code that generates ids in the accept.c module. We need to do
