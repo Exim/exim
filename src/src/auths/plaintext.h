@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/plaintext.h,v 1.3 2006/02/07 11:19:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/plaintext.h,v 1.4 2006/02/23 12:41:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -13,6 +13,7 @@ typedef struct {
   uschar *server_condition;
   uschar *server_prompts;
   uschar *client_send;
+  BOOL    client_ignore_invalid_base64;
 } auth_plaintext_options_block;
 
 /* Data for reading the private options. */

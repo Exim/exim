@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/spa.c,v 1.6 2006/02/10 14:25:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/spa.c,v 1.7 2006/02/23 12:41:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -262,6 +262,8 @@ auth_spa_client(
        char *username, *password;
 
        /* Code added by PH to expand the options */
+
+       *buffer = 0;    /* Default no message when cancelled */
 
        username = CS expand_string(ob->spa_username);
        if (username == NULL)

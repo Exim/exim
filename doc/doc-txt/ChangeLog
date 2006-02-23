@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.312 2006/02/22 15:10:28 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.313 2006/02/23 12:41:22 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -226,6 +226,15 @@ PH/43 If retry_interval_max is set greater than 24 hours, it is quietly reset
       and H retry rules. I suspect nobody ever tinkers with this value.
 
 PH/44 Added STRIP_COMMAND=/usr/bin/strip to the FreeBSD Makefile.
+
+PH/45 When the plaintext authenticator is running as a client, the server's
+      challenges are checked to ensure they are valid base64 strings. By
+      default, the authentication attempt is cancelled if an invalid string is
+      received. Setting client_ignore_invalid_base64 true ignores these errors.
+      The decoded challenge strings are now placed in $auth1, $auth2, etc. as
+      they are received. Thus, the responses can be made to depend on the
+      challenges. If an invalid string is ignored, an empty string is placed in
+      the variable.
 
 
 Exim version 4.60

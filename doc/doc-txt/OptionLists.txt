@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.17 2006/02/20 16:31:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.18 2006/02/23 12:41:22 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -11,7 +11,7 @@ This file contains complete lists of four kinds of Exim option:
   4. Those that can appear in the build time configuration for the Exim monitor
      (Local/eximon.conf).
 
-This file was last updated for Exim release 4.60.
+This file was last updated for Exim release 4.61.
 
 
 1. RUN TIME OPTIONS
@@ -124,6 +124,7 @@ check_spool_space                    integer         0             main
 check_string                         string          "From "       appendfile        3.03
                                                      unset         pipe              3.03
 check_srv                            string*         unset         dnslookup         4.31
+client_ignore_invalid_base64         boolean         false         plaintext         4.61
 client_name                          string*         +             cram_md5          3.10
 client_secret                        string*         unset         cram_md5          3.10
 client_send                          string*         unset         plaintext         3.10

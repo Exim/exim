@@ -138,4 +138,50 @@ QUIT
 exim -odi forcesender@domain.com
 .
 ****
+# Bad basd64 from server; client aborts
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH LOGIN
+AUTH LOGIN
+334 User?
+*
+501 Authentication cancelled
+MAIL FROM:
+550 Not now
+QUIT
+250 OK
+****
+exim -odi userx@domain.com
+.
+****
+# Test the server challenges in $auth<n>
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250-HELP
+250 AUTH XLOGIN
+AUTH XLOGIN
+334 Y2hhbGxlbmdlLTE=
+Y2hhbGxlbmdlLTE=
+334 YW5vdGhlcm9uZQ==
+Y2hhbGxlbmdlLTErYW5vdGhlcm9uZQ==
+235 Authentication successful
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx@domain.com
+.
+****
 no_msglog_check

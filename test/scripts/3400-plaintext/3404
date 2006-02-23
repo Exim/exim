@@ -45,6 +45,8 @@ QUIT
 exim -v -oMas xxx@yyy -oMai zzz -odi userx@domain.com
 .
 ****
+# The server prompts sent here are not b64 encoded; hence they test
+# client_ignore_invalid_base64.
 server PORT_S
 220 ESMTP
 EHLO

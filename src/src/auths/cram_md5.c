@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/cram_md5.c,v 1.4 2006/02/10 14:25:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/cram_md5.c,v 1.5 2006/02/23 12:41:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -250,7 +250,7 @@ auth_cram_md5_client(
   smtp_inblock *inblock,                 /* input connection */
   smtp_outblock *outblock,               /* output connection */
   int timeout,                           /* command timeout */
-  uschar *buffer,                          /* for reading response */
+  uschar *buffer,                        /* for reading response */
   int buffsize)                          /* size of buffer */
 {
 auth_cram_md5_options_block *ob =
@@ -266,7 +266,11 @@ or ERROR, as approriate. */
 
 if (secret == NULL || name == NULL)
   {
-  if (expand_string_forcedfail) return CANCELLED;
+  if (expand_string_forcedfail)
+    {
+    *buffer = 0;           /* No message */
+    return CANCELLED;
+    }
   string_format(buffer, buffsize, "expansion of \"%s\" failed in "
     "%s authenticator: %s",
     (secret == NULL)? ob->client_secret : ob->client_name,

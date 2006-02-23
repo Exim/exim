@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.41 2006/02/14 15:24:10 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.42 2006/02/23 12:41:22 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  13 February 2006
+Last updated:  23 February 2006
 
 
 THE OLD LIST
@@ -71,6 +71,7 @@ Claus Assmann             Example code for OpenSSL CRL support
 Ian Bell                  Analysis of a bug and an infelicity in clock tick code
                           Patch for ${quote_local_part
 Peter Benie               A number mistakes found by analysing the code
+Johannes Berg             Suggested patch for authentication client $auth<n> support
 Matt Bernstein            LMTP over socket
                           Suggested patch for dnslists '&' feature
 Mike Bethune              Help with debugging an elusive ALRM signal bug

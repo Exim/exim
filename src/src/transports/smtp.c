@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.21 2006/02/21 16:24:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.22 2006/02/23 12:41:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1211,9 +1211,14 @@ if (continue_hostname == NULL
             /* Failure by some other means. In effect, the authenticator
             decided it wasn't prepared to handle this case. Typically this
             is the result of "fail" in an expansion string. Do we need to
-            log anything here? */
+            log anything here? Feb 2006: a message is now put in the buffer
+            if logging is required. */
 
             case CANCELLED:
+            if (*buffer != 0)
+              log_write(0, LOG_MAIN, "%s authenticator cancelled "
+                "authentication H=%s [%s] %s", au->name, host->name,
+                host->address, buffer);
             break;
 
             /* Internal problem, message in buffer. */

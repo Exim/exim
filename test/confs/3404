@@ -27,6 +27,7 @@ login:
   driver = plaintext
   public_name = LOGIN
   client_send = :userx:secret
+  client_ignore_invalid_base64
 
 
 # ----- Routers -----

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.89 2006/02/22 15:08:20 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.90 2006/02/23 12:41:22 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -73,6 +73,19 @@ PH/11 If retry_interval_max is set greater than 24 hours, it is quietly reset
       to 24 hours. This avoids potential overflow problems when processing G
       and H retry rules, and it seems reasonable to require a retry at least
       once a day.
+
+PH/12 When the plaintext authenticator is running as a client, the server
+      challenges are now checked to ensure they are valid base64 strings. The
+      default action on failure is to abort the authentication. However, if
+      client_ignore_invalid_base64 is set true, invalid responses are ignored.
+
+PH/13 When the plaintext authenticator is running as a client, the challenges
+      from the server are placed in $auth1, $auth2, etc. as they are received.
+      Thus, the challege that is received in response to sending the first
+      string (with the AUTH command) can be used in the expansion of the second
+      string, and so on. Currently, up to 3 challenge strings are available in
+      this way. If an invalid base64 string is received when client_ignore_
+      invalid_base64 is set, an empty string is put in the $auth<n> variable.
 
 
 Version 4.60

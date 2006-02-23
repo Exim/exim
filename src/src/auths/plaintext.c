@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/plaintext.c,v 1.4 2006/02/10 14:25:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/plaintext.c,v 1.5 2006/02/23 12:41:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -14,6 +14,8 @@
 /* Options specific to the plaintext authentication mechanism. */
 
 optionlist auth_plaintext_options[] = {
+  { "client_ignore_invalid_base64", opt_bool,
+      (void *)(offsetof(auth_plaintext_options_block, client_ignore_invalid_base64)) },
   { "client_send",        opt_stringptr,
       (void *)(offsetof(auth_plaintext_options_block, client_send)) },
   { "server_condition",   opt_stringptr,
@@ -33,7 +35,8 @@ int auth_plaintext_options_count =
 auth_plaintext_options_block auth_plaintext_option_defaults = {
   NULL,              /* server_condition */
   NULL,              /* server_prompts */
-  NULL               /* client_send */
+  NULL,              /* client_send */
+  FALSE              /* client_ignore_invalid_base64 */
 };
 
 
@@ -216,6 +219,7 @@ uschar *text = ob->client_send;
 uschar *s;
 BOOL first = TRUE;
 int sep = 0;
+int auth_var_idx = 0;
 
 /* The text is broken up into a number of different data items, which are
 sent one by one. The first one is sent with the AUTH command; the remainder are
@@ -223,8 +227,9 @@ sent in response to subsequent prompts. Each is expanded before being sent. */
 
 while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL)
   {
-  int i, len;
+  int i, len, clear_len;
   uschar *ss = expand_string(s);
+  uschar *clear;
 
   /* Forced expansion failure is not an error; authentication is abandoned. On
   all but the first string, we have to abandon the authentication attempt by
@@ -239,7 +244,11 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL
       if (smtp_write_command(outblock, FALSE, "*\r\n") >= 0)
         (void) smtp_read_response(inblock, US buffer, buffsize, '2', timeout);
       }
-    if (expand_string_forcedfail) return CANCELLED;
+    if (expand_string_forcedfail)
+      {
+      *buffer = 0;       /* No message */
+      return CANCELLED;
+      }
     string_format(buffer, buffsize, "expansion of \"%s\" failed in %s "
       "authenticator: %s", ssave, ablock->name, expand_string_message);
     return ERROR;
@@ -304,6 +313,34 @@ while ((s = string_nextinlist(&text, &sep, big_buffer, big_buffer_size)) != NULL
       "authenticator", ablock->name);
     return ERROR;
     }
+
+  /* Now that we know we'll continue, we put the received data into $auth<n>,
+  if possible. First, decode it: buffer+4 skips over the SMTP status code. */
+
+  clear_len = auth_b64decode(buffer+4, &clear);
+
+  /* If decoding failed, the default is to terminate the authentication, and
+  return FAIL, with the SMTP response still in the buffer. However, if client_
+  ignore_invalid_base64 is set, we ignore the error, and put an empty string
+  into $auth<n>. */
+
+  if (clear_len < 0)
+    {
+    uschar *save_bad = string_copy(buffer);
+    if (!ob->client_ignore_invalid_base64)
+      {
+      if (smtp_write_command(outblock, FALSE, "*\r\n") >= 0)
+        (void)smtp_read_response(inblock, US buffer, buffsize, '2', timeout);
+      string_format(buffer, buffsize, "Invalid base64 string in server "
+        "response \"%s\"", save_bad);
+      return CANCELLED;
+      }
+    clear = US"";
+    clear_len = 0;
+    }
+
+  if (auth_var_idx < AUTH_VARS)
+    auth_vars[auth_var_idx++] = string_copy(clear);
   }
 
 /* Control should never actually get here. */

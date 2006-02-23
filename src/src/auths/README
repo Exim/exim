@@ -1,4 +1,4 @@
-$Cambridge: exim/src/src/auths/README,v 1.4 2006/02/10 14:25:43 ph10 Exp $
+$Cambridge: exim/src/src/auths/README,v 1.5 2006/02/23 12:41:22 ph10 Exp $
 
 AUTHS
 
@@ -87,7 +87,8 @@ The yield of a client authentication check must be one of:
   FAIL        failed after reading a response;
               either errno is set (for timeouts, I/O failures) or
               the buffer contains the SMTP response line
-  FORCEFAIL   failed without reading a response (often "fail" in expansion)
+  CANCELLED   the client cancelled authentication (often "fail" in expansion)
+              the buffer may contain a message; if not, *buffer = 0
   ERROR       local problem (typically expansion error); message in buffer
 
 To communicate with the remote host the client should call
