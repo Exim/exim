@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.315 2006/02/28 12:42:47 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.316 2006/02/28 14:54:54 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -240,6 +240,8 @@ PH/46 Messages that are created by the autoreply transport now contains a
       References: header, in accordance with RFCs 2822 and 3834.
 
 PH/47 Added authenticated_sender_force to the smtp transport.
+
+PH/48 The ${prvs expansion was broken on systems where time_t was long long.
 
 
 Exim version 4.60
