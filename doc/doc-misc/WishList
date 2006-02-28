@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.59 2006/02/21 16:24:19 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.60 2006/02/28 10:03:06 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -2017,5 +2017,10 @@ It seems that there are clients that send AUTH when it hasn't been advertised,
 some even after HELO, not even EHLO. Sigh. Possibly this should be an ACL
 control, to enable it to be restricted to certain hosts.
 ------------------------------------------------------------------------------
---- HWM 349 ------------------------------------------------------------------
+
+(350) 28-Feb-06 S Additional errors for retry rules
+
+(i) Unexpected connection close; (ii) mail_4xx.
+------------------------------------------------------------------------------
+--- HWM 350 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
