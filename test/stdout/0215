@@ -217,3 +217,27 @@ This is a test message.
 QUIT
 250 OK
 End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+LHLO myhost.test.ex
+250 OK
+MAIL FROM:<CALLER@myhost.test.ex>
+250 Sender OK
+RCPT TO:<userx@myhost.test.ex>
+450 LATER
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+LHLO myhost.test.ex
+250 OK
+MAIL FROM:<CALLER@myhost.test.ex> AUTH=xxx@yyy
+250 Sender OK
+RCPT TO:<userx@myhost.test.ex>
+450 LATER
+QUIT
+250 OK
+End of script

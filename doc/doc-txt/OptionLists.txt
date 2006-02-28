@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.18 2006/02/23 12:41:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.19 2006/02/28 12:42:47 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -83,6 +83,7 @@ allow_symlink                        boolean         false         appendfile
 allow_utf8_domains                   boolean         false         main              4.14
 auth_advertise_hosts                 host list       "*"           main              4.00
 authenticated_sender                 string*         unset         smtp              4.14
+authenticated_sender_force           boolean         false         smtp              4.61
 authenticate_hosts                   host list       unset         smtp              3.13
 auto_thaw                            time            0s            main
 av_scanner                           string*         +             main              4.50 with content scan

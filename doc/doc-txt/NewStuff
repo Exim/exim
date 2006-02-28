@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.91 2006/02/28 11:25:40 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.92 2006/02/28 12:42:47 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -97,6 +97,10 @@ PH/14 Messages created by the autoreply transport now contain a References:
       line in the incoming message. If there are more than 12, the first one
       and then the final 11 are copied, before adding the message ID of the
       incoming message.
+
+PH/15 The smtp transport has a new option called authenticated_sender_force.
+      When set true, it allows the authenticated_sender option's value to be
+      used, even if Exim has not authenticated as a client.
 
 
 Version 4.60

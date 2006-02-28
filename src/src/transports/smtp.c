@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.22 2006/02/23 12:41:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.23 2006/02/28 12:42:47 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -25,6 +25,8 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, allow_localhost) },
   { "authenticated_sender", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, authenticated_sender) },
+  { "authenticated_sender_force", opt_bool,
+      (void *)offsetof(smtp_transport_options_block, authenticated_sender_force) },
   { "command_timeout",      opt_time,
       (void *)offsetof(smtp_transport_options_block, command_timeout) },
   { "connect_timeout",      opt_time,
@@ -158,6 +160,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   5,                   /* hosts_max_try */
   50,                  /* hosts_max_try_hardlimit */
   FALSE,               /* allow_localhost */
+  FALSE,               /* authenticated_sender_force */
   FALSE,               /* gethostbyname */
   TRUE,                /* dns_qualify_single */
   FALSE,               /* dns_search_parents */
@@ -1310,7 +1313,8 @@ if (smtp_use_size)
 
 /* Add the authenticated sender address if present */
 
-if (smtp_authenticated && local_authenticated_sender != NULL)
+if ((smtp_authenticated || ob->authenticated_sender_force) &&
+    local_authenticated_sender != NULL)
   {
   string_format(p, sizeof(buffer) - (p-buffer), " AUTH=%s",
     auth_xtextencode(local_authenticated_sender,

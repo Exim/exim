@@ -1,6 +1,8 @@
 # Exim test configuration 0215
 
 IGNORE_QUOTA=false
+AUTHS=
+AUTHF=
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -45,6 +47,8 @@ lmtp:
   port = PORT_S
   protocol = LMTP
   lmtp_ignore_quota = IGNORE_QUOTA
+  AUTHS
+  AUTHF
 
 
 # ----- Retry -----

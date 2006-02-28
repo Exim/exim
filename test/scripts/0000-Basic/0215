@@ -189,4 +189,34 @@ QUIT
 exim -odi -DIGNORE_QUOTA=true userxx userxy userxz
 This is a test message.
 ****
+# Tests for authenticated_sender forcing: this one doesn't do it
+server PORT_S
+220 ESMTP
+LHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+450 LATER
+QUIT
+250 OK
+****
+exim -odi -DAUTHS=authenticated_sender=xxx@yyy userx
+Another test message.
+****
+# Tests for authenticated_sender forcing: this one does it
+server PORT_S
+220 ESMTP
+LHLO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+450 LATER
+QUIT
+250 OK
+****
+exim -odi -DAUTHS=authenticated_sender=xxx@yyy -DAUTHF=authenticated_sender_force userx
+Another test message.
+****
 no_msglog_check
