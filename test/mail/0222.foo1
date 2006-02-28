@@ -4,6 +4,7 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for foo1@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 To: foo1@test.ex
 In-Reply-To: <E10HmaX-0005vi-00@myhost.test.ex>
+References: <E10HmaX-0005vi-00@myhost.test.ex>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
@@ -17,6 +18,7 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	for foo1@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 To: foo1@test.ex
 In-Reply-To: <E10HmbG-0005vi-00@myhost.test.ex>
+References: <E10HmbG-0005vi-00@myhost.test.ex>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmbH-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>

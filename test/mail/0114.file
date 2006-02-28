@@ -15,6 +15,7 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 To: A. File <file@test.ex>, No One <null@test.ex>
 Subject: autoreply
 In-Reply-To: <E10HmaZ-0005vi-00@the.local.host.name>
+References: <E10HmaZ-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>

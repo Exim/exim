@@ -51,6 +51,7 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 To: CALLER@test.ex
 Subject: An auto reply: qualify_domain=test.ex
 In-Reply-To: <E10HmbC-0005vi-00@the.local.host.name>
+References: <E10HmbC-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
 From: CALLER@test.ex
@@ -290,6 +291,7 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 To: CALLER_NAME <CALLER@test.ex>
 Subject: On vacation
 In-Reply-To: <E10HmbQ-0005vi-00@the.local.host.name>
+References: <E10HmbQ-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmbR-0005vi-00@the.local.host.name>
 From: CALLER@test.ex

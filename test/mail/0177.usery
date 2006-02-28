@@ -5,6 +5,7 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 To: usery@test.ex
 Subject: auto fail message
 In-Reply-To: <E10HmaX-0005vi-00@the.local.host.name>
+References: <E10HmaX-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -19,6 +20,7 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 To: usery@test.ex
 Subject: auto freeze message
 In-Reply-To: <E10HmbA-0005vi-00@the.local.host.name>
+References: <E10HmbA-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmbB-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -33,6 +35,7 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 To: usery@test.ex
 Subject: An auto reply: qualify_domain=test.ex
 In-Reply-To: <E10HmbC-0005vi-00@the.local.host.name>
+References: <E10HmbC-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -47,6 +50,7 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 To: usery@test.ex
 Subject: auto freeze message
 In-Reply-To: <E10HmbE-0005vi-00@the.local.host.name>
+References: <E10HmbE-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmbF-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -61,6 +65,7 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 To: usery@test.ex
 Subject: auto freeze message
 In-Reply-To: <E10HmbG-0005vi-00@the.local.host.name>
+References: <E10HmbG-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmbH-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>

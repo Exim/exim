@@ -1,0 +1,82 @@
+# autoreply and References: headers
+#
+exim -odi userx@test.ex
+Subject: Message-id, no References, no In-Reply-to
+Message-id: <m1@b>
+****
+exim -odi userx@test.ex
+Subject: Message-id, no References, In-Reply-to
+Message-id: <m1@b>
+In-Reply-To: <i1@b>
+****
+exim -odi userx@test.ex
+Subject: Message-id, References (1), In-Reply-to
+Message-id: <m1@b>
+References: <r1@b>
+In-Reply-To: <i1@b>
+****
+exim -odi userx@test.ex
+Subject: Message-id, References (5), no In-Reply-to
+Message-id: <m1@b>
+References: <r1@b> <r2@b> <r3@b> <r4@b> <r5@b>
+****
+exim -odi userx@test.ex
+Subject: Message-id, References (15), In-Reply-to
+Message-id: <m1@b>
+References: <r1@b> <r2@b> <r3@b> <r4@b> <r5@b>
+            <r6@b> <r7@b> <r8@b> <r9@b> <r10@b>
+            <r11@b> <r12@b> <r13@b> <r14@b> <r15@b> 
+In-Reply-To: <i1@b>
+****
+# In order not to have Exim create a Message-ID: header, we need to set
+# suppress_local_fixups, but the not-smtp ACL is too late. So we must use
+# an SMTP interface.
+#
+exim -odi -bs
+mail from:<CALLER@test.ex>
+rcpt to:<userx@test.ex>
+data
+Subject: no Message-id, no References, no In-Reply-to
+.
+quit
+****
+exim -odi -bs
+mail from:<CALLER@test.ex>
+rcpt to:<userx@test.ex>
+data
+Subject: no Message-id, no References, In-Reply-to
+In-Reply-To: <i1@b>
+.
+quit
+****
+exim -odi -bs
+mail from:<CALLER@test.ex>
+rcpt to:<userx@test.ex>
+data
+Subject: no Message-id, References (1), In-Reply-to
+References: <r1@b>
+In-Reply-To: <i1@b>
+.
+quit
+****
+exim -odi -bs
+mail from:<CALLER@test.ex>
+rcpt to:<userx@test.ex>
+data
+Subject: no Message-id, References (5), no In-Reply-to
+References: <r1@b> <r2@b> <r3@b> <r4@b> <r5@b>
+.
+quit
+****
+exim -odi -bs
+mail from:<CALLER@test.ex>
+rcpt to:<userx@test.ex>
+data
+Subject: no Message-id, References (15), In-Reply-to
+References: <r1@b> <r2@b> <r3@b> <r4@b> <r5@b>
+            <r6@b> <r7@b> <r8@b> <r9@b> <r10@b>
+            <r11@b> <r12@b> <r13@b> <r14@b> <r15@b> 
+In-Reply-To: <i1@b>
+.
+quit
+****

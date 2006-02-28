@@ -7,6 +7,7 @@ Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 To: Reply Person <CALLER@test.ex>
 In-Reply-To: <E10HmaX-0005vi-00@the.local.host.name>
+References: <E10HmaX-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 From: EXIMUSER@test.ex

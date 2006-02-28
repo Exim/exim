@@ -5,6 +5,7 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 To: postmaster@myhost.test.ex
 Subject: System filter has frozen
 In-Reply-To: <E10HmaX-0005vi-00@myhost.test.ex>
+References: <E10HmaX-0005vi-00@myhost.test.ex>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>

@@ -5,6 +5,7 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 To: CALLER@test.ex
 Subject: Auto generated
 In-Reply-To: <E10HmaX-0005vi-00@myhost.test.ex>
+References: <E10HmaX-0005vi-00@myhost.test.ex>
 Auto-Submitted: auto-replied
 h1: the first added header
 h2: the second added header

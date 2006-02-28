@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.313 2006/02/23 12:41:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.314 2006/02/28 11:25:40 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -235,6 +235,9 @@ PH/45 When the plaintext authenticator is running as a client, the server's
       they are received. Thus, the responses can be made to depend on the
       challenges. If an invalid string is ignored, an empty string is placed in
       the variable.
+
+PH/46 Messages that are created by the autoreply transport now contains a
+      References: header, in accordance with RFCs 2822 and 3834.
 
 
 Exim version 4.60

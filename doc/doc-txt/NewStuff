@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.90 2006/02/23 12:41:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.91 2006/02/28 11:25:40 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -86,6 +86,17 @@ PH/13 When the plaintext authenticator is running as a client, the challenges
       string, and so on. Currently, up to 3 challenge strings are available in
       this way. If an invalid base64 string is received when client_ignore_
       invalid_base64 is set, an empty string is put in the $auth<n> variable.
+
+PH/14 Messages created by the autoreply transport now contain a References:
+      header. This is constructed in accordance with rules that are described
+      in section 3.64 of RFC 2822, which states that replies should contain
+      such a header line, and section 3.14 of RFC 3834, which states that
+      automatic responses are not different in this respect. However, because
+      some mail processing software does not cope well with very long header
+      lines, no more than 12 message IDs are copied from the References: header
+      line in the incoming message. If there are more than 12, the first one
+      and then the final 11 are copied, before adding the message ID of the
+      incoming message.
 
 
 Version 4.60

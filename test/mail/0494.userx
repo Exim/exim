@@ -5,6 +5,7 @@ Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 To: userx@test.ex
 Subject: testing, testing
 In-Reply-To: <E10HmaX-0005vi-00@myhost.test.ex>
+References: <E10HmaX-0005vi-00@myhost.test.ex>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 From: EXIMUSER@myhost.test.ex

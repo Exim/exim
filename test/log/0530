@@ -1,0 +1,60 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss id=m1@b
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss id=m1@b
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss id=m1@b
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 => userx <userx@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss id=m1@b
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> R=10HmbD-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 => userx <userx@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss id=m1@b
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> R=10HmbF-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbG-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 => userx <userx@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= <> R=10HmbH-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbI-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-0005vi-00 => userx <userx@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbK-0005vi-00 <= <> R=10HmbJ-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbK-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbJ-0005vi-00 => userx <userx@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbM-0005vi-00 <= <> R=10HmbL-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbM-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbM-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbL-0005vi-00 => userx <userx@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmbL-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbN-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbO-0005vi-00 <= <> R=10HmbN-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbO-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbO-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbN-0005vi-00 => userx <userx@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmbN-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbP-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmbQ-0005vi-00 <= <> R=10HmbP-0005vi-00 U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbQ-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbQ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbP-0005vi-00 => userx <userx@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmbP-0005vi-00 Completed

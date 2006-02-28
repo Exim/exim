@@ -63,6 +63,7 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	id 10HmbD-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
 To: userx@test.ex,  abey seedy <abcd@test.ex>
 In-Reply-To: <E10HmbC-0005vi-00@the.local.host.name>
+References: <E10HmbC-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
@@ -94,6 +95,7 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	id 10HmbF-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
 To: userx@test.ex,   abcd@test.ex
 In-Reply-To: <E10HmbE-0005vi-00@the.local.host.name>
+References: <E10HmbE-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmbF-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>

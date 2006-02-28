@@ -246,6 +246,7 @@ search_tidyup called
 To: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex,
 **** debug string too long - truncated ****
 In-Reply-To: <E10HmaX-0005vi-00@mail.test.ex>
+References: <E10HmaX-0005vi-00@mail.test.ex>
 Auto-Submitted: auto-replied
 
 rewrite_one_header: type=T:
@@ -258,6 +259,7 @@ search_tidyup called
 T To: sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.ex, sender@test.ex,  sender@test.ex, sender@test.ex, sender@test.e
 **** debug string too long - truncated ****
   In-Reply-To: <E10HmaX-0005vi-00@mail.test.ex>
+  References: <E10HmaX-0005vi-00@mail.test.ex>
   Auto-Submitted: auto-replied
 I Message-Id: <E10HmaY-0005vi-00@mail.test.ex>
 F From: CALLER_NAME <CALLER@test.ex>
@@ -291,7 +293,7 @@ Non-recipients:
 Empty Tree
 ---- End of tree ----
 recipients_count=608
-body_linecount=1 message_linecount=8
+body_linecount=1 message_linecount=9
 Delivery address list:
   sender@test.ex 
   sender@test.ex 

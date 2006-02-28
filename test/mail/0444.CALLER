@@ -7,6 +7,7 @@ Reply-To: postmaster@test.ex
 To: CALLER@test.ex
 Subject: Submission of mail from CALLER@test.ex directly to the XXX hosts
 In-Reply-To: <E10HmaX-0005vi-00@myhost.test.ex>
+References: <E10HmaX-0005vi-00@myhost.test.ex>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 Sender: CALLER_NAME <CALLER@test.ex>

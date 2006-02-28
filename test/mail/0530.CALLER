@@ -1,0 +1,144 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmaY-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER@myhost.test.ex
+Subject: Re: Message-id, no References, no In-Reply-to
+In-Reply-To: <m1@b>
+References: <m1@b>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is the text of the autoreply.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbA-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER@myhost.test.ex
+Subject: Re: Message-id, no References, In-Reply-to
+In-Reply-To: <m1@b>
+References: <i1@b> <m1@b>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is the text of the autoreply.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbC-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER@myhost.test.ex
+Subject: Re: Message-id, References (1), In-Reply-to
+In-Reply-To: <m1@b>
+References: <r1@b> <m1@b>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is the text of the autoreply.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbE-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER@myhost.test.ex
+Subject: Re: Message-id, References (5), no In-Reply-to
+In-Reply-To: <m1@b>
+References: <r1@b> <r2@b> <r3@b> <r4@b> <r5@b> <m1@b>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is the text of the autoreply.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbG-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER@myhost.test.ex
+Subject: Re: Message-id, References (15), In-Reply-to
+In-Reply-To: <m1@b>
+References: <r1@b> <r5@b> <r6@b> <r7@b> <r8@b> <r9@b> <r10@b> <r11@b> <r12@b> <r13@b> <r14@b> <r15@b> <m1@b>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmbG-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is the text of the autoreply.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbI-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER@myhost.test.ex
+Subject: Re: no Message-id, no References, no In-Reply-to
+Auto-Submitted: auto-replied
+Message-Id: <E10HmbI-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is the text of the autoreply.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbK-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER@myhost.test.ex
+Subject: Re: no Message-id, no References, In-Reply-to
+References: <i1@b>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmbK-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is the text of the autoreply.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbM-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER@myhost.test.ex
+Subject: Re: no Message-id, References (1), In-Reply-to
+References: <r1@b>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmbM-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is the text of the autoreply.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbO-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER@myhost.test.ex
+Subject: Re: no Message-id, References (5), no In-Reply-to
+References: <r1@b> <r2@b> <r3@b> <r4@b> <r5@b>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmbO-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is the text of the autoreply.
+
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	id 10HmbQ-0005vi-00
+	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+To: CALLER@myhost.test.ex
+Subject: Re: no Message-id, References (15), In-Reply-to
+References: <r1@b> <r5@b> <r6@b> <r7@b> <r8@b> <r9@b> <r10@b> <r11@b> <r12@b> <r13@b> <r14@b> <r15@b>
+Auto-Submitted: auto-replied
+Message-Id: <E10HmbQ-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is the text of the autoreply.
+

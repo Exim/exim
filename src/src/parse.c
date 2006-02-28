@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/parse.c,v 1.7 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/parse.c,v 1.8 2006/02/28 11:25:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1656,6 +1656,68 @@ for (;;)
 }
 
 
+
+/*************************************************
+*            Extract a Message-ID                *
+*************************************************/
+
+/* This function is used to extract message ids from In-Reply-To: and
+References: header lines.
+
+Arguments:
+  str          pointer to the start of the message-id
+  yield        put pointer to the message id (in dynamic memory) here
+  error        put error message here on failure
+
+Returns:       points after the processed message-id or NULL on error
+*/
+
+uschar *
+parse_message_id(uschar *str, uschar **yield, uschar **error)
+{
+uschar *domain = NULL;
+uschar *id;
+
+str = skip_comment(str);
+if (*str != '<')
+  {
+  *error = US"Missing '<' before message-id";
+  return NULL;
+  }
+
+/* Getting a block the size of the input string will definitely be sufficient
+for the answer, but it may also be very long if we are processing a header
+line. Therefore, take care to release unwanted store afterwards. */
+
+id = *yield = store_get(Ustrlen(str) + 1);
+*id++ = *str++;
+
+str = read_addr_spec(str, id, '>', error, &domain);
+
+if (*error == NULL)
+  {
+  if (*str != '>') *error = US"Missing '>' after message-id";
+    else if (domain == NULL) *error = US"domain missing in message-id";
+  }
+
+if (*error != NULL)
+  {
+  store_reset(*yield);
+  return NULL;
+  }
+
+while (*id != 0) id++;
+*id++ = *str++;
+*id++ = 0;
+store_reset(id);
+
+str = skip_comment(str);
+return str;
+}
+
+
+
+
 /*************************************************
 **************************************************
 *             Stand-alone test program           *
@@ -1786,6 +1848,26 @@ while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
       }
     }
   else printf("Failed: %d %s\n", extracted, errmess);
+  }
+
+printf("Testing parse_message_id\n");
+
+while (Ufgets(buffer, sizeof(buffer), stdin) != NULL)
+  {
+  uschar *s, *t, *errmess;
+  buffer[Ustrlen(buffer) - 1] = 0;
+  if (buffer[0] == 0) break;
+  s = buffer;
+  while (*s != 0)
+    {
+    s = parse_message_id(s, &t, &errmess);
+    if (errmess != NULL)
+      {
+      printf("Failed: %s\n", errmess);
+      break;
+      }
+    printf("%s\n", t);
+    }
   }
 
 return 0;

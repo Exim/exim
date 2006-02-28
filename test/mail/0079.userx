@@ -49,6 +49,7 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	for userx@exim.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 To: userx@exim.test.ex
 In-Reply-To: <E10HmaZ-0005vi-00@the.local.host.name>
+References: <E10HmaZ-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 From: CALLER@exim.test.ex

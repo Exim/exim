@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/autoreply.c,v 1.8 2006/02/07 11:19:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/autoreply.c,v 1.9 2006/02/28 11:25:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -277,6 +277,7 @@ uschar *from, *reply_to, *to, *cc, *bcc, *subject, *headers, *text, *file;
 uschar *logfile, *oncelog;
 uschar *cache_buff = NULL;
 uschar *cache_time = NULL;
+uschar *message_id = NULL;
 header_line *h;
 time_t now = time(NULL);
 time_t once_repeat_sec = 0;
@@ -590,9 +591,57 @@ for (h = header_list; h != NULL; h = h->next)
 
 if (h != NULL)
   {
-  uschar *s = Ustrchr(h->text, ':') + 1;
-  while (isspace(*s)) s++;
-  fprintf(f, "In-Reply-To: %s", s);
+  message_id = Ustrchr(h->text, ':') + 1;
+  while (isspace(*message_id)) message_id++;
+  fprintf(f, "In-Reply-To: %s", message_id);
+  }
+
+/* Generate a References header if there is at least one of Message-ID:,
+References:, or In-Reply-To: (see RFC 2822). */
+
+for (h = header_list; h != NULL; h = h->next)
+  if (h->type != htype_old && strncmpic(US"References:", h->text, 11) == 0)
+    break;
+
+if (h == NULL)
+  for (h = header_list; h != NULL; h = h->next)
+    if (h->type != htype_old && strncmpic(US"In-Reply-To:", h->text, 12) == 0)
+      break;
+
+/* We limit the total length of references.  Although there is no fixed
+limit, some systems do not like headers growing beyond recognition.
+Keep the first message ID for the thread root and the last few for
+the position inside the thread, up to a maximum of 12 altogether. */
+
+if (h != NULL || message_id != NULL)
+  {
+  fprintf(f, "References:");
+  if (h != NULL)
+    {
+    uschar *s, *id, *error;
+    uschar *referenced_ids[12];
+    int reference_count = 0;
+    int i;
+
+    s = Ustrchr(h->text, ':') + 1;
+    parse_allow_group = FALSE;
+    while (*s != 0 && (s = parse_message_id(s, &id, &error)) != NULL)
+      {
+      if (reference_count == sizeof(referenced_ids)/sizeof(uschar *))
+        {
+        memmove(referenced_ids + 1, referenced_ids + 2,
+           sizeof(referenced_ids) - 2*sizeof(uschar *));
+        referenced_ids[reference_count - 1] = id;
+        }
+      else referenced_ids[reference_count++] = id;
+      }
+    for (i = 0; i < reference_count; ++i) fprintf(f, " %s", referenced_ids[i]);
+    }
+
+  /* The message id will have a newline on the end of it. */
+
+  if (message_id != NULL) fprintf(f, " %s", message_id);
+    else fprintf(f, "\n");
   }
 
 /* Add an Auto-Submitted: header */
