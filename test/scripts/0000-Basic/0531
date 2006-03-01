@@ -1,0 +1,85 @@
+# LMTP over TCP/IP - temporary error handling
+need_ipv4
+# This one has no retry time, so will be bounced immediately.
+#
+server PORT_S
+220 ESMTP
+LHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Receiver OK
+RCPT TO:
+250 Receiver OK
+DATA
+354 Send it
+.
+450 TEMPERROR
+250 OK
+QUIT
+250 OK
+****
+exim -odi userx@test.ex usery@test.ex
+This is a test message.
+****
+# This one has a retry time, so will be deferred.
+#
+server PORT_S
+220 ESMTP
+LHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Receiver OK
+DATA
+354 Send it
+.
+450 TEMPERROR
+QUIT
+250 OK
+****
+exim -odi userx@retry.test.ex
+This is a test message.
+****
+sleep 1
+# Should by now have exceeded retry time.
+server PORT_S
+220 ESMTP
+LHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Receiver OK
+DATA
+354 Send it
+.
+450 TEMPERROR
+QUIT
+250 OK
+****
+exim -q
+****
+# This one gives a temporary error for RCPT, no retry
+#
+server PORT_S
+220 ESMTP
+LHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+450 TEMPERROR
+QUIT
+250 OK
+****
+exim -odi userx@test.ex
+This is a test message.
+****
+no_msglog_check

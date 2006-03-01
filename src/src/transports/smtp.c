@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.23 2006/02/28 12:42:47 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.24 2006/03/01 16:07:16 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1574,7 +1574,8 @@ if (!ok) ok = TRUE; else
 
       /* LMTP - if the response fails badly (e.g. timeout), use it for all the
       remaining addresses. Otherwise, it's a return code for just the one
-      address. */
+      address. For temporary errors, add a retry item for the address so that
+      it doesn't get tried again too soon. */
 
       if (lmtp)
         {
@@ -1584,7 +1585,14 @@ if (!ok) ok = TRUE; else
           if (errno != 0 || buffer[0] == 0) goto RESPONSE_FAILED;
           addr->message = string_sprintf("LMTP error after %s: %s",
             big_buffer, string_printing(buffer));
-          addr->transport_return = (buffer[0] == '5')? FAIL : DEFER;
+          setflag(addr, af_pass_message);   /* Allow message to go to user */
+          if (buffer[0] == '5')
+            addr->transport_return = FAIL;
+          else
+            {
+            addr->transport_return = DEFER;
+            retry_add_item(addr, addr->address_retry_key, 0);
+            }
           continue;
           }
         completed_address = TRUE;   /* NOW we can set this flag */

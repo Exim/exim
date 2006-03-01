@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.29 2006/02/21 16:24:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.30 2006/03/01 16:07:16 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4299,15 +4299,15 @@ introducing newlines. All lines are indented by 4; the initial printing
 position must be set before calling.
 
 This function used always to print the error. Nowadays we want to restrict it
-to cases such as SMTP errors from a remote host, and errors from :fail: and
-filter "fail". We no longer pass other information willy-nilly in bounce and
-warning messages. Text in user_message is always output; text in message only
-if the af_pass_message flag is set.
+to cases such as LMTP/SMTP errors from a remote host, and errors from :fail:
+and filter "fail". We no longer pass other information willy-nilly in bounce
+and warning messages. Text in user_message is always output; text in message
+only if the af_pass_message flag is set.
 
 Arguments:
   addr         the address
   f            the FILE to print on
-  s            some leading text
+  t            some leading text
 
 Returns:       nothing
 */
@@ -4316,14 +4316,11 @@ static void
 print_address_error(address_item *addr, FILE *f, uschar *t)
 {
 int count = Ustrlen(t);
-uschar *s = (addr->user_message != NULL)? addr->user_message : addr->message;
+uschar *s = testflag(addr, af_pass_message)? addr->message : NULL;
 
-if (addr->user_message != NULL)
-  s = addr->user_message;
-else
+if (s == NULL)
   {
-  if (!testflag(addr, af_pass_message) || addr->message == NULL) return;
-  s = addr->message;
+  if (addr->user_message != NULL) s = addr->user_message; else return;
   }
 
 fprintf(f, "\n    %s", t);

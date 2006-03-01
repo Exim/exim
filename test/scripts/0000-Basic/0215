@@ -1,4 +1,4 @@
-# LMTP over TCP/IP (with log_sender_on_delivery)
+# LMTP over TCP/IP
 need_ipv4
 #
 server PORT_S

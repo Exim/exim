@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.319 2006/03/01 11:40:51 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.320 2006/03/01 16:07:16 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -253,6 +253,24 @@ PH/50 When an Exim quota was set without a file count quota, and mailbox_size
       size of the count of files.
 
 PH/51 Added ${time_eval: to convert Exim time strings into seconds.
+
+PH/52 Two bugs concerned with error handling when the smtp transport is
+      used in LMTP mode:
+
+      (i) Exim was not creating retry information for temporary errors given
+      for individual recipients after the DATA command when the smtp transport
+      was used in LMTP mode. This meant that they could be retried too
+      frequently, and not timed out correctly.
+
+      (ii) Exim was setting the flag that allows error details to be returned
+      for LMTP errors on RCPT commands, but not for LMTP errors for individual
+      recipients that were returned after the DATA command.
+
+PH/53 This is related to PH/52, but is more general: for any failing address,
+      when detailed error information was permitted to be returned to the
+      sender, but the error was temporary, then after the final timeout, only
+      "retry timeout exceeded" was returned. Now it returns the full error as
+      well as "retry timeout exceeded".
 
 
 Exim version 4.60
