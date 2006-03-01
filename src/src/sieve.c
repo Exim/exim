@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.17 2005/11/28 09:47:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.18 2006/03/01 10:40:03 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Michael Haardt 2003-2005 */
+/* Copyright (c) Michael Haardt 2003-2006 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This code was contributed by Michael Haardt. */
@@ -63,6 +63,7 @@ struct Sieve
 #endif
 #ifdef NOTIFY
   int require_notify;
+  struct Notification *notified;
 #endif
 #ifdef SUBADDRESS
   int require_subaddress;
@@ -91,6 +92,14 @@ struct String
   {
   uschar *character;
   int length;
+  };
+
+struct Notification
+  {
+  struct String method;
+  struct String priority;
+  struct String message;
+  struct Notification *next;
   };
 
 static int parse_test(struct Sieve *filter, int *cond, int exec);
@@ -161,6 +170,10 @@ static const struct String str_comparator_iascii_numeric={ str_comparator_iascii
 /*
 Arguments:
   src               UTF-8 string
+  dst               US-ASCII string
+
+Returns
+  dst
 */
 
 static struct String *quoted_printable_encode(const struct String *src, struct String *dst)
@@ -202,13 +215,8 @@ for (pass=0; pass<=1; ++pass)
       ||
         (
         (ch==9 || ch==32)
-#ifdef RFC_EOL
         && start+2<end
         && (*(start+1)!='\r' || *(start+2)!='\n')
-#else
-        && start+1<end
-        && *(start+1)!='\n'
-#endif
         )
       )
       {
@@ -218,29 +226,18 @@ for (pass=0; pass<=1; ++pass)
         *new++=*start;
       ++line;
       }
-#ifdef RFC_EOL
     else if (ch=='\r' && start+1<end && *(start+1)=='\n')
       {
       if (pass==0)
         {
         ++dst->length;
         line=0;
-        ++start;
         }
       else
         *new++='\n';
         line=0;
+      ++start;
       }
-#else
-    else if (ch=='\n')
-      {
-      if (pass==0)
-        ++dst->length;
-      else
-        *new++=*start;
-      ++line;
-      }
-#endif
     else
       {
       if (pass==0)
@@ -258,6 +255,173 @@ for (pass=0; pass<=1; ++pass)
   return dst;
 }
 
+
+/*************************************************
+*          Decode URI encoded string             *
+*************************************************/
+
+/*
+Arguments:
+  str               URI encoded string
+
+Returns
+  0                 Decoding successful
+ -1                 Encoding error
+*/
+
+static int uri_decode(struct String *str)
+{
+uschar *s,*t,*e;
+
+if (str->length==0) return 0;
+for (s=str->character,t=s,e=s+str->length; s<e; )
+  {
+  if (*s=='%')
+    {
+    if (s+2<e && isxdigit(*(s+1)) && isxdigit(*(s+2)))
+      {
+      *t++=((isdigit(*(s+1)) ? *(s+1)-'0' : tolower(*(s+1))-'a'+10)<<4)
+           | (isdigit(*(s+2)) ? *(s+2)-'0' : tolower(*(s+2))-'a'+10);
+      s+=3;
+      }
+    else return -1;
+    }
+  else
+    *t++=*s++;
+  }
+*t='\0';
+str->length=t-str->character;
+return 0;
+}
+
+
+/*************************************************
+*               Parse mailto URI                 *
+*************************************************/
+
+/*
+Parse mailto-URI.
+
+       mailtoURI   = "mailto:" [ to ] [ headers ]
+       to          = [ addr-spec *("%2C" addr-spec ) ]
+       headers     = "?" header *( "&" header )
+       header      = hname "=" hvalue
+       hname       = *urlc
+       hvalue      = *urlc
+
+Arguments:
+  filter      points to the Sieve filter including its state
+  uri         URI, excluding scheme
+
+Returns
+  1           URI is syntactically OK
+ -1           syntax error
+*/
+
+int parse_mailto_uri(struct Sieve *filter, const uschar *uri, string_item **recipient, struct String *body)
+{
+const uschar *start;
+struct String to,hname,hvalue;
+int capacity;
+string_item *new;
+
+if (*uri && *uri!='?')
+  for (;;)
+    {
+    /* match to */
+    for (start=uri; *uri && *uri!='?' && (*uri!='%' || *(uri+1)!='2' || tolower(*(uri+2))!='c'); ++uri);
+    if (uri>start)
+      {
+      capacity=0;
+      to.character=(uschar*)0;
+      to.length=0;
+      to.character=string_cat(to.character,&capacity,&to.length,start,uri-start);
+      to.character[to.length]='\0';
+      if (uri_decode(&to)==-1)
+        {
+        filter->errmsg=US"Invalid URI encoding";
+        return -1;
+        }
+        new=store_get(sizeof(string_item));
+        new->text=store_get(to.length+1);
+        if (to.length) memcpy(new->text,to.character,to.length);
+        new->text[to.length]='\0';
+        new->next=*recipient;
+        *recipient=new;
+      }
+    else
+      {
+      filter->errmsg=US"Missing addr-spec in URI";
+      return -1;
+      }
+    if (*uri=='%') uri+=3;
+    else break;
+    }
+if (*uri=='?')
+  {
+  ++uri;
+  for (;;)
+    {
+    /* match hname */
+    for (start=uri; *uri && (isalnum(*uri) || strchr("$-_.+!*'(),%",*uri)); ++uri);
+    if (uri>start)
+      {
+      capacity=0;
+      hname.character=(uschar*)0;
+      hname.length=0;
+      hname.character=string_cat(hname.character,&capacity,&hname.length,start,uri-start);
+      hname.character[hname.length]='\0';
+      if (uri_decode(&hname)==-1)
+        {
+        filter->errmsg=US"Invalid URI encoding";
+        return -1;
+        }
+      }
+    /* match = */
+    if (*uri=='=')
+      ++uri;
+    else
+      {
+      filter->errmsg=US"Missing equal after hname";
+      return -1;
+      }
+    /* match hvalue */
+    for (start=uri; *uri && (isalnum(*uri) || strchr("$-_.+!*'(),%",*uri)); ++uri);
+    if (uri>start)
+      {
+      capacity=0;
+      hvalue.character=(uschar*)0;
+      hvalue.length=0;
+      hvalue.character=string_cat(hvalue.character,&capacity,&hvalue.length,start,uri-start);
+      hvalue.character[hvalue.length]='\0';
+      if (uri_decode(&hvalue)==-1)
+        {
+        filter->errmsg=US"Invalid URI encoding";
+        return -1;
+        }
+      }
+    if (hname.length==2 && strcmp(hname.character,"to")==0)
+      {
+      new=store_get(sizeof(string_item));
+      new->text=store_get(hvalue.length+1);
+      if (hvalue.length) memcpy(new->text,hvalue.character,hvalue.length);
+      new->text[hvalue.length]='\0';
+      new->next=*recipient;
+      *recipient=new;
+      }
+    else if (hname.length==4 && strcmp(hname.character,"body")==0)
+      *body=hvalue;
+    if (*uri=='&') ++uri;
+    else break;
+    }
+  }
+if (*uri)
+  {
+  filter->errmsg=US"Syntactically invalid URI";
+  return -1;
+  }
+return 1;
+}
 
 /*************************************************
 *          Octet-wise string comparison          *
@@ -358,7 +522,7 @@ Returns:      0               needle not found in haystack
 */
 
 static int eq_glob(const struct String *needle,
-  const struct String *haystack, int ascii_caseless)
+  const struct String *haystack, int ascii_caseless, int match_octet)
 {
 const uschar *n,*h,*nend,*hend;
 int may_advance=0;
@@ -388,14 +552,19 @@ while (n<nend)
       case '?':
         {
         if (hpart==hend) return 0;
-        /* watch out: Do not match one character, but one UTF8 encoded character */
-        if ((*hpart&0xc0)==0xc0)
-          {
+        if (match_octet)
           ++hpart;
-          while (hpart<hend && ((*hpart&0xc0)==0x80)) ++hpart;
-          }
         else
-         ++hpart;
+          {
+          /* Match one UTF8 encoded character */
+          if ((*hpart&0xc0)==0xc0)
+            {
+            ++hpart;
+            while (hpart<hend && ((*hpart&0xc0)==0x80)) ++hpart;
+            }
+          else
+            ++hpart;
+          }
         ++npart;
         break;
         }
@@ -509,6 +678,7 @@ switch (relop)
 
 /*
 Arguments:
+  filter      points to the Sieve filter including its state
   needle      UTF-8 pattern or string to search ...
   haystack    ... inside the haystack
   co          comparator to use
@@ -604,7 +774,7 @@ switch (mt)
       {
       case COMP_OCTET:
         {
-        if ((r=eq_glob(needle,haystack,0))==-1)
+        if ((r=eq_glob(needle,haystack,0,1))==-1)
           {
           filter->errmsg=CUS "syntactically invalid pattern";
           return -1;
@@ -613,7 +783,7 @@ switch (mt)
         }
       case COMP_EN_ASCII_CASEMAP:
         {
-        if ((r=eq_glob(needle,haystack,1))==-1)
+        if ((r=eq_glob(needle,haystack,1,1))==-1)
           {
           filter->errmsg=CUS "syntactically invalid pattern";
           return -1;
@@ -782,6 +952,10 @@ new_addr->next = *generated;
 *************************************************/
 
 /*
+Unfold the header field as described in RFC 2822 and remove all
+leading and trailing white space, then perform MIME decoding and
+translate the header field to UTF-8.
+
 Arguments:
   value       returned value of the field
   header      name of the header field
@@ -799,19 +973,16 @@ value->length=0;
 value->character=(uschar*)0;
 
 t=r=s=expand_string(string_sprintf("$rheader_%s",quote(header)));
-while (*r==' ') ++r;
+while (*r==' ' || *r=='\t') ++r;
 while (*r)
   {
   if (*r=='\n')
-    {
     ++r;
-    while (*r==' ' || *r=='\t') ++r;
-    if (*r) *t++=' ';
-    }
   else
     *t++=*r++;
   }
-*t++='\0';
+while (t>s && (*(t-1)==' ' || *(t-1)=='\t')) --t;
+*t='\0';
 value->character=rfc2047_decode(s,check_rfc2047_length,US"utf-8",'\0',&value->length,&errmsg);
 }
 
@@ -982,6 +1153,7 @@ if (*filter->pc=='"') /* quoted string */
       int foo=data->length;
 
       ++filter->pc;
+      /* that way, there will be at least one character allocated */
       data->character=string_cat(data->character,&dataCapacity,&foo,CUS "",1);
       return 1;
       }
@@ -993,6 +1165,15 @@ if (*filter->pc=='"') /* quoted string */
       }
     else /* regular character */
       {
+#ifdef RFC_EOL
+      if (*filter->pc=='\r' && *(filter->pc+1)=='\n') ++filter->line;
+#else
+      if (*filter->pc=='\n')
+        {
+        data->character=string_cat(data->character,&dataCapacity,&data->length,US"\r",1);
+        ++filter->line;
+        }
+#endif
       data->character=string_cat(data->character,&dataCapacity,&data->length,filter->pc,1);
       filter->pc++;
       }
@@ -1048,7 +1229,10 @@ else if (Ustrncmp(filter->pc,CUS "text:",5)==0) /* multiline string */
       if (*filter->pc=='.' && *(filter->pc+1)=='\n') /* end of string */
 #endif
         {
-        data->character=string_cat(data->character,&dataCapacity,&data->length,CUS "",1);
+        int foo=data->length;
+
+        /* that way, there will be at least one character allocated */
+        data->character=string_cat(data->character,&dataCapacity,&foo,CUS "",1);
 #ifdef RFC_EOL
         filter->pc+=3;
 #else
@@ -2299,12 +2483,18 @@ while (*filter->pc)
     /*
     notify-command =  "notify" { notify-options } ";"
     notify-options =  [":method" string]
+                      [":priority" string]
                       [":message" string]
     */
 
     int m;
     struct String method;
+    struct String priority;
     struct String message;
+    struct Notification *already;
+    string_item *recipient;
+    struct String body;
+    uschar *envelope_from,*envelope_to;
 
     if (!filter->require_notify)
       {
@@ -2313,8 +2503,15 @@ while (*filter->pc)
       }
     method.character=(uschar*)0;
     method.length=-1;
+    priority.character=(uschar*)0;
+    priority.length=-1;
     message.character=(uschar*)0;
     message.length=-1;
+    recipient=NULL;
+    body.length=-1;
+    body.character=(uschar*)0;
+    envelope_from=expand_string("$sender_address");
+    envelope_to=expand_string("$local_part_prefix$local_part$local_part_suffix@$domain");
     for (;;)
       {
       if (parse_white(filter)==-1) return -1;
@@ -2324,6 +2521,19 @@ while (*filter->pc)
         if ((m=parse_string(filter,&method))!=1)
           {
           if (m==0) filter->errmsg=CUS "method string expected";
+          return -1;
+          }
+        if (method.length>7 && strncmp(method.character,"mailto:",7)==0)
+          {
+          if (parse_mailto_uri(filter,method.character+7,&recipient,&body)==-1) return -1;
+          }
+        }
+      else if (parse_identifier(filter,CUS ":priority")==1)
+        {
+        if (parse_white(filter)==-1) return -1;
+        if ((m=parse_string(filter,&priority))!=1)
+          {
+          if (m==0) filter->errmsg=CUS "priority string expected";
           return -1;
           }
         }
@@ -2339,6 +2549,72 @@ while (*filter->pc)
       else break;
       }
     if (parse_semicolon(filter)==-1) return -1;
+
+    if (method.length==-1)
+      {
+        if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
+          {
+          debug_printf("Ignoring method-less notification.\n");
+          }
+      }
+    else
+      {
+      for (already=filter->notified; already; already=already->next)
+        {
+        if (already->method.length==method.length
+            && (method.length==-1 || strcmp(already->method.character,method.character)==0)
+            && already->priority.length==priority.length
+            && (priority.length==-1 || strcmp(already->priority.character,priority.character)==0)
+            && already->message.length==message.length
+            && (message.length==-1 || strcmp(already->message.character,message.character)==0))
+          break;
+        }
+      if (already==(struct Notification*)0)
+        /* New notification, process it */
+        {
+        struct Notification *sent;
+        sent=store_get(sizeof(struct Notification));
+        sent->method=method;
+        sent->priority=priority;
+        sent->message=message;
+        sent->next=filter->notified;
+        filter->notified=sent;
+        if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
+          {
+          debug_printf("Notification to `%s'.\n",method.character);
+          }
+        if (exec)
+          {
+          string_item *p;
+          header_line *h;
+          int pid,fd;
+
+          if ((pid = child_open_exim2(&fd,envelope_to,envelope_to))>=1)
+            {
+            FILE *f;
+
+            f = fdopen(fd, "wb");
+            fprintf(f,"From: %s\n",envelope_to);
+            for (p=recipient; p; p=p->next) fprintf(f,"To: %s\n",p->text);
+            for (h = header_list; h != NULL; h = h->next)
+              if (h->type == htype_received) fprintf(f,"%s",h->text);
+            fprintf(f,"Subject: %s\n",message.length==-1 ? CUS "notification" : message.character);
+            fprintf(f,"\n");
+            if (body.length>0) fprintf(f,"%s\n",body.character);
+            fflush(f);
+            (void)fclose(f);
+            (void)child_close(pid, 0);
+            }
+          }
+        }
+      else
+        {
+        if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
+          {
+          debug_printf("Repeated notification to `%s' ignored.\n",method.character);
+          }
+        }
+      }
     }
 #endif
 #ifdef VACATION
@@ -2527,11 +2803,11 @@ while (*filter->pc)
         md5_start(&base);
         md5_end(&base, key.character, key.length, digest);
         for (i = 0; i < 16; i++) sprintf(CS (hexdigest+2*i), "%02X", digest[i]);
-        if (filter_test != FTEST_NONE)
+        if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
           {
           debug_printf("Sieve: mail was personal, vacation file basename: %s\n", hexdigest);
           }
-        else
+        if (filter_test == FTEST_NONE)
           {
           capacity=Ustrlen(filter->vacation_directory);
           start=capacity;
@@ -2543,11 +2819,22 @@ while (*filter->pc)
 
           if (subject.length==-1)
             {
-            expand_header(&subject,&str_subject);
-            capacity=6;
-            start=6;
-            subject.character=string_cat(US"Auto: ",&capacity,&start,subject.character,subject.length);
-            subject.length=start;
+            uschar *subject_def;
+
+            subject_def=expand_string(US"${if def:header_subject {true}{false}}");
+            if (Ustrcmp(subject_def,"true")==0)
+              {
+              expand_header(&subject,&str_subject);
+              capacity=6;
+              start=6;
+              subject.character=string_cat(US"Auto: ",&capacity,&start,subject.character,subject.length);
+              subject.length=start;
+              }
+            else
+              {
+              subject.character=US"Automated reply";
+              subject.length=Ustrlen(subject.character);
+              }
             }
 
           /* add address to list of generated addresses */
@@ -2565,7 +2852,7 @@ while (*filter->pc)
           else
             addr->reply->from = from.character;
           /* Allocation is larger than neccessary, but enough even for split MIME words */
-          buffer_capacity=16+4*subject.length;
+          buffer_capacity=32+4*subject.length;
           buffer=store_get(buffer_capacity);
           addr->reply->subject=parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity);
           addr->reply->oncelog=once;
@@ -2576,16 +2863,12 @@ while (*filter->pc)
           if (reason_is_mime)
             {
             uschar *mime_body,*reason_end;
-#ifdef RFC_EOL
             static const uschar nlnl[]="\r\n\r\n";
-#else
-            static const uschar nlnl[]="\n\n";
-#endif
 
             for
               (
               mime_body=reason.character,reason_end=reason.character+reason.length;
-              mime_body<(reason_end-sizeof(nlnl)-1) && memcmp(mime_body,nlnl,sizeof(nlnl)-1);
+              mime_body<(reason_end-(sizeof(nlnl)-1)) && memcmp(mime_body,nlnl,(sizeof(nlnl)-1));
               ++mime_body
               );
             capacity = 0;
@@ -2594,7 +2877,7 @@ while (*filter->pc)
             addr->reply->headers[start] = '\0';
             capacity = 0;
             start = 0;
-            if (mime_body+(sizeof(nlnl)-1)<reason_end) mime_body+=sizeof(nlnl)-1;
+            if (mime_body+(sizeof(nlnl)-1)<reason_end) mime_body+=(sizeof(nlnl)-1);
             else mime_body=reason_end-1;
             addr->reply->text = string_cat(NULL,&capacity,&start,mime_body,reason_end-mime_body);
             addr->reply->text[start] = '\0';
@@ -2613,7 +2896,7 @@ while (*filter->pc)
             }
           }
         }
-        else if (filter_test != FTEST_NONE)
+        else if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
           {
           debug_printf("Sieve: mail was not personal, vacation would ignore it\n");
           }
@@ -2653,6 +2936,7 @@ filter->require_envelope_auth=0;
 #endif
 #ifdef NOTIFY
 filter->require_notify=0;
+filter->notified=(struct Notification*)0;
 #endif
 #ifdef SUBADDRESS
 filter->require_subaddress=0;

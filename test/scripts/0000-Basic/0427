@@ -510,13 +510,13 @@ exim -bf test-data <aux-fixed/TESTNUM.message3
 ****
 catwrite test-data
 # Sieve filter
-if header "X-Wrapped" "eins zwei drei" { discard; }
+if header "X-Wrapped" "eins zwei  drei" { discard; }
 ****
 exim -bf test-data <aux-fixed/TESTNUM.message3
 ****
 catwrite test-data
 # Sieve filter
-if header "x-nomimewrap" "=?iso-8859-1?q?abc def ghi?=" { discard; }
+if header "x-nomimewrap" "=?iso-8859-1?q?abc def  ghi?=" { discard; }
 ****
 exim -bf test-data <aux-fixed/TESTNUM.message3
 ****

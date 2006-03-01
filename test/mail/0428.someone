@@ -7,7 +7,7 @@ Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	for someone@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
 From: userx@test.ex
 To: someone@test.ex
-Subject: =?utf-8?Q?Auto=3A_?=
+Subject: Automated reply
 In-Reply-To: <E10HmbL-0005vi-00@mail.test.ex>
 References: <E10HmbL-0005vi-00@mail.test.ex>
 Auto-Submitted: auto-replied

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.316 2006/02/28 14:54:54 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.317 2006/03/01 10:40:03 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -242,6 +242,8 @@ PH/46 Messages that are created by the autoreply transport now contains a
 PH/47 Added authenticated_sender_force to the smtp transport.
 
 PH/48 The ${prvs expansion was broken on systems where time_t was long long.
+
+PH/49 Installed latest patch from the Sieve maintainer.
 
 
 Exim version 4.60

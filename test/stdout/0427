@@ -427,12 +427,12 @@ if header "x-q76total" "=?ISO-8859-1?Q?01234567890123456789012345678901234567890
 No implicit keep
 ==========
 # Sieve filter
-if header "X-Wrapped" "eins zwei drei" { discard; }
+if header "X-Wrapped" "eins zwei  drei" { discard; }
 ==========
 No implicit keep
 ==========
 # Sieve filter
-if header "x-nomimewrap" "=?iso-8859-1?q?abc def ghi?=" { discard; }
+if header "x-nomimewrap" "=?iso-8859-1?q?abc def  ghi?=" { discard; }
 ==========
 No implicit keep
 ==========
