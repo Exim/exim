@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.92 2006/02/28 12:42:47 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.93 2006/03/01 11:40:51 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -101,6 +101,9 @@ PH/14 Messages created by the autoreply transport now contain a References:
 PH/15 The smtp transport has a new option called authenticated_sender_force.
       When set true, it allows the authenticated_sender option's value to be
       used, even if Exim has not authenticated as a client.
+
+PH/16 The expansion ${time_eval:<string>} converts an Exim time string such as
+      2d4h1m into a number of seconds.
 
 
 Version 4.60

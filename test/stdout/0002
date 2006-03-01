@@ -123,6 +123,12 @@
 > strlen: 0
 > strlen: 1
 > strlen: 8
+> time_eval:     10
+> time_eval:     7200
+> time_eval:     86700
+> time_eval:     788645
+> Failed: string "14" is not an Exim time interval in "time_eval" operator
+> Failed: string "rhubarb" is not an Exim time interval in "time_eval" operator
 > time_interval: 0s
 > time_interval: 44s
 > time_interval: 1w4d13h46m39s

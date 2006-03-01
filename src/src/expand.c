@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.55 2006/02/28 14:54:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.56 2006/03/01 11:40:51 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -94,12 +94,14 @@ static uschar *op_table_underscore[] = {
   US"from_utf8",
   US"local_part",
   US"quote_local_part",
+  US"time_eval",
   US"time_interval"};
 
 enum {
   EOP_FROM_UTF8,
   EOP_LOCAL_PART,
   EOP_QUOTE_LOCAL_PART,
+  EOP_TIME_EVAL,
   EOP_TIME_INTERVAL };
 
 static uschar *op_table_main[] = {
@@ -4787,6 +4789,20 @@ while (*s != 0)
         }
 
       /* Handle time period formating */
+
+      case EOP_TIME_EVAL:
+        {
+        int n = readconf_readtime(sub, 0, FALSE);
+        if (n < 0)
+          {
+          expand_string_message = string_sprintf("string \"%s\" is not an "
+            "Exim time interval in \"%s\" operator", sub, name);
+          goto EXPAND_FAILED;
+          }
+        sprintf(CS var_buffer, "%d", n);
+        yield = string_cat(yield, &size, &ptr, var_buffer, Ustrlen(var_buffer));
+        continue;
+        }
 
       case EOP_TIME_INTERVAL:
         {

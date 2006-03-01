@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.318 2006/03/01 11:24:04 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.319 2006/03/01 11:40:51 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -251,6 +251,8 @@ PH/50 When an Exim quota was set without a file count quota, and mailbox_size
       of files (along with the size), even though it did not need this
       information. It now does the scan only if it needs to find either the
       size of the count of files.
+
+PH/51 Added ${time_eval: to convert Exim time strings into seconds.
 
 
 Exim version 4.60

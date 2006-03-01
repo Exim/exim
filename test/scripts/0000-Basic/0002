@@ -142,6 +142,12 @@ str2b64:${str2b64:The quick brown \n fox}
 strlen: ${strlen:}
 strlen: ${strlen:a}
 strlen: ${strlen:abcdefgh}
+time_eval:     ${time_eval:10s}
+time_eval:     ${time_eval:2h}
+time_eval:     ${time_eval:1d5m}
+time_eval:     ${time_eval:1w2d3h4m5s}
+time_eval:     ${time_eval:14}
+time_eval:     ${time_eval:rhubarb}
 time_interval: ${time_interval:0}
 time_interval: ${time_interval:44}
 time_interval: ${time_interval:999999}
