@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.13 2006/02/21 16:24:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.14 2006/03/01 11:24:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2317,13 +2317,14 @@ else
     }
   #endif  /* SUPPORT_MAILDIR */
 
-  /* Otherwise (mailbox_size is not yet set), if we are going to do a quota
-  check later on, find the current size of the mailbox. (We don't need to check
-  ob->quota_filecount_value, because it can only be set if ob->quota_value is
-  set.) */
+  /* Otherwise if we are going to do a quota check later on, and the mailbox
+  size is not set, find the current size of the mailbox. Ditto for the file
+  count. Note that ob->quota_filecount_value cannot be set without
+  ob->quota_value being set. */
 
-  if ((mailbox_size < 0 || mailbox_filecount < 0) &&
-      (ob->quota_value > 0 || THRESHOLD_CHECK))
+  if ((ob->quota_value > 0 || THRESHOLD_CHECK) &&
+      (mailbox_size < 0 ||
+        (mailbox_filecount < 0 && ob->quota_filecount_value > 0)))
     {
     off_t size;
     int filecount = 0;

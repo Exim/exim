@@ -1,0 +1,77 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+>>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
+--------> userx@test.ex <--------
+appendfile transport entered
+appendfile: mode=600 notify_comsat=0 quota=1048576 warning=0
+  directory=TESTSUITE/test-mail/userx format=maildir
+  message_prefix=null
+  message_suffix=null
+  maildir_use_size_file=no
+ensuring maildir directories exist in TESTSUITE/test-mail/userx
+created directory TESTSUITE/test-mail/userx
+created directory TESTSUITE/test-mail/userx/tmp
+created directory TESTSUITE/test-mail/userx/new
+created directory TESTSUITE/test-mail/userx/cur
+delivering in maildir format in TESTSUITE/test-mail/userx
+writing to tmp/MAILDIR.myhost.test.ex
+Exim quota = 1048576 old size = sssss this message = sss (included)
+  file count quota = 0 count = -1
+writing data block fd=6 size=sss timeout=0
+renaming temporary file
+renamed tmp/MAILDIR.myhost.test.ex as new/MAILDIR.myhost.test.ex
+appendfile yields 0 with errno=dd more_errno=dd
+t1 transport returned OK for userx@test.ex
+LOG: MAIN
+  => userx <userx@test.ex> R=r1 T=t1
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+>>>>>>>>>>>>>>>> Local deliveries >>>>>>>>>>>>>>>>
+--------> userx@test.ex <--------
+appendfile transport entered
+appendfile: mode=600 notify_comsat=0 quota=1048576 warning=0
+  directory=TESTSUITE/test-mail/userx format=maildir
+  message_prefix=null
+  message_suffix=null
+  maildir_use_size_file=no
+ensuring maildir directories exist in TESTSUITE/test-mail/userx
+quota checks on directory TESTSUITE/test-mail/userx
+MUNGED: the check_dir_size lines have been sorted to ensure consistency
+check_dir_size: dir=TESTSUITE/test-mail/userx sum=dddd count=dd
+check_dir_size: dir=TESTSUITE/test-mail/userx/cur sum=0 count=dd
+check_dir_size: dir=TESTSUITE/test-mail/userx/new sum=dddd count=dd
+check_dir_size: dir=TESTSUITE/test-mail/userx/tmp sum=0 count=dd
+delivering in maildir format in TESTSUITE/test-mail/userx
+writing to tmp/MAILDIR.myhost.test.ex
+Exim quota = 1048576 old size = sssss this message = sss (included)
+  file count quota = 20 count = 4
+writing data block fd=6 size=sss timeout=0
+renaming temporary file
+renamed tmp/MAILDIR.myhost.test.ex as new/MAILDIR.myhost.test.ex
+appendfile yields 0 with errno=dd more_errno=dd
+t1 transport returned OK for userx@test.ex
+LOG: MAIN
+  => userx <userx@test.ex> R=r1 T=t1
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
