@@ -17,6 +17,7 @@ hostlist auth_hosts = 10.0.0.1
 hostlist relay_hosts = 10.0.0.4
 hostlist auth_relay_hosts = 10.0.0.3 : 10.0.0.4
 
+acl_smtp_connect = check_connect
 acl_smtp_etrn = check_etrn
 acl_smtp_expn = check_expn
 acl_smtp_rcpt = check_recipient
@@ -31,6 +32,11 @@ trusted_users = CALLER
 # ----- ACL -----
 
 begin acl
+
+check_connect:
+  warn     hosts = 10.0.0.6
+           control = allow_auth_unadvertised
+  accept
 
 check_recipient:
   warn     hosts = 10.0.0.5

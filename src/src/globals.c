@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.51 2006/02/20 16:31:49 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.52 2006/03/02 12:25:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -299,6 +299,7 @@ tree_node *addresslist_anchor  = NULL;
 int     addresslist_count      = 0;
 gid_t  *admin_groups           = NULL;
 BOOL    admin_user             = FALSE;
+BOOL    allow_auth_unadvertised= FALSE;
 BOOL    allow_domain_literals  = FALSE;
 BOOL    allow_mx_to_ip         = FALSE;
 BOOL    allow_unqualified_recipient = TRUE;    /* For local messages */

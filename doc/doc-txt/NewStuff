@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.93 2006/03/01 11:40:51 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.94 2006/03/02 12:25:48 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -104,6 +104,19 @@ PH/15 The smtp transport has a new option called authenticated_sender_force.
 
 PH/16 The expansion ${time_eval:<string>} converts an Exim time string such as
       2d4h1m into a number of seconds.
+
+PH/17 The ACL modifier control=allow_auth_unadvertised can be used to permit a
+      client host to use the SMTP AUTH command even when it has not been
+      advertised in response to EHLO. Furthermore, because there are apparently
+      some really broken clients that do this, Exim will even accept AUTH after
+      HELO when this control is set. It should only be used if you really need
+      it, and you should limit its use to those broken hosts that do not work
+      without it. For example:
+
+        warn hosts   = 192.168.34.25
+             control = allow_auth_unadvertised
+
+      This control is permitted only in the connection and HELO ACLs.
 
 
 Version 4.60

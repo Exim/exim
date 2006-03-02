@@ -150,9 +150,11 @@ auth expandfail
 AHVzZXJ4AHNlY3JldA==
 quit
 ****
+# 10.0.0.2 is not allowed to use AUTH when it is not advertised
+#
 exim -bs -oMa 10.0.0.2
 ehlo test.host
-auth expandfail
+auth explain
 AHVzZXJ4AHNlY3JldA==
 quit
 ****
@@ -213,6 +215,20 @@ quit
 exim -d -odi -bs -oMa 10.0.0.5
 ehlo testing.testing
 auth mylogin dXNlcnggc2VjcmV0
+quit
+****
+# 10.0.0.6 is allowed to use AUTH when it is not advertised
+#
+exim -bs -oMa 10.0.0.6
+ehlo test.host
+auth explain
+AHVzZXJ4AHNlY3JldA==
+quit
+****
+exim -bs -oMa 10.0.0.6
+helo test.host
+auth explain
+AHVzZXJ4AHNlY3JldA==
 quit
 ****
 no_msglog_check

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.35 2006/02/13 12:02:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.36 2006/03/02 12:25:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -143,6 +143,7 @@ extern tree_node *addresslist_anchor;  /* Tree of defined address lists */
 extern int     addresslist_count;      /* Number defined */
 extern gid_t  *admin_groups;           /* List of admin groups */
 extern BOOL    admin_user;             /* True if caller can do admin */
+extern BOOL    allow_auth_unadvertised;/* As it says */
 extern BOOL    allow_domain_literals;  /* As it says */
 extern BOOL    allow_mx_to_ip;         /* Allow MX records to -> ip address */
 extern BOOL    allow_unqualified_recipient; /* As it says */

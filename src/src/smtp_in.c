@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.33 2006/02/14 14:55:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.34 2006/03/02 12:25:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2147,10 +2147,14 @@ while (done <= 0)
   switch(smtp_read_command(TRUE))
     {
     /* The AUTH command is not permitted to occur inside a transaction, and may
-    occur successfully only once per connection, and then only when we've
-    advertised it. Actually, that isn't quite true. When TLS is started, all
-    previous information about a connection must be discarded, so a new AUTH is
-    permitted at that time.
+    occur successfully only once per connection. Actually, that isn't quite
+    true. When TLS is started, all previous information about a connection must
+    be discarded, so a new AUTH is permitted at that time.
+
+    AUTH may only be used when it has been advertised. However, it seems that
+    there are clients that send AUTH when it hasn't been advertised, some of
+    them even doing this after HELO. And there are MTAs that accept this. Sigh.
+    So there's a get-out that allows this to happen.
 
     AUTH is initially labelled as a "nonmail command" so that one occurrence
     doesn't get counted. We change the label here so that multiple failing
@@ -2160,7 +2164,7 @@ while (done <= 0)
     authentication_failed = TRUE;
     cmd_list[CMD_LIST_AUTH].is_mail_cmd = FALSE;
 
-    if (!auth_advertised)
+    if (!auth_advertised && !allow_auth_unadvertised)
       {
       done = synprot_error(L_smtp_protocol_error, 503, NULL,
         US"AUTH command used when not advertised");
@@ -2215,12 +2219,13 @@ while (done <= 0)
       }
 
     /* Search for an authentication mechanism which is configured for use
-    as a server and which has been advertised. */
+    as a server and which has been advertised (unless, sigh, allow_auth_
+    unadvertised is set). */
 
     for (au = auths; au != NULL; au = au->next)
       {
       if (strcmpic(s, au->public_name) == 0 && au->server &&
-          au->advertised) break;
+          (au->advertised || allow_auth_unadvertised)) break;
       }
 
     if (au == NULL)

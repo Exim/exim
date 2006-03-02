@@ -6,6 +6,13 @@
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_connect"
+>>> processing "warn"
+>>> check hosts = 10.0.0.6
+>>> host in "10.0.0.6"? no (end of list)
+>>> warn: condition test failed
+>>> processing "accept"
+>>> accept: condition test succeeded
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_vrfy"
 >>> processing "deny"
@@ -62,6 +69,13 @@ LOG: H=[10.0.0.2] Warning: accepted ETRN #abcd
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_connect"
+>>> processing "warn"
+>>> check hosts = 10.0.0.6
+>>> host in "10.0.0.6"? no (end of list)
+>>> warn: condition test failed
+>>> processing "accept"
+>>> accept: condition test succeeded
 >>> test.host in helo_lookup_domains? no (end of list)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in "10.0.0.1"? yes (matched "10.0.0.1")
@@ -234,6 +248,13 @@ LOG: H=(test.host) [10.0.0.1] Warning: accepted ETRN #abcd
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_connect"
+>>> processing "warn"
+>>> check hosts = 10.0.0.6
+>>> host in "10.0.0.6"? no (end of list)
+>>> warn: condition test failed
+>>> processing "accept"
+>>> accept: condition test succeeded
 >>> test.host in helo_lookup_domains? no (end of list)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in "10.0.0.1"? no (end of list)
@@ -318,6 +339,13 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 >>> host in helo_verify_hosts? no (option unset)
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "check_connect"
+>>> processing "warn"
+>>> check hosts = 10.0.0.6
+>>> host in "10.0.0.6"? no (end of list)
+>>> warn: condition test failed
+>>> processing "accept"
+>>> accept: condition test succeeded
 >>> test.host in helo_lookup_domains? no (end of list)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in "10.0.0.1"? no (end of list)
@@ -348,6 +376,13 @@ host in recipient_unqualified_hosts? no (option unset)
 host in helo_verify_hosts? no (option unset)
 host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
+using ACL "check_connect"
+processing "warn"
+check hosts = 10.0.0.6
+host in "10.0.0.6"? no (end of list)
+warn: condition test failed
+processing "accept"
+accept: condition test succeeded
 SMTP>> 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 smtp_setup_msg entered
 SMTP<< ehlo testing.testing

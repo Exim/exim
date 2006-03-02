@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.320 2006/03/01 16:07:16 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.321 2006/03/02 12:25:48 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -271,6 +271,9 @@ PH/53 This is related to PH/52, but is more general: for any failing address,
       sender, but the error was temporary, then after the final timeout, only
       "retry timeout exceeded" was returned. Now it returns the full error as
       well as "retry timeout exceeded".
+
+PH/54 Added control=allow_auth_unadvertised, as it seems there are clients that
+      do this, and (what is worse) MTAs that accept it.
 
 
 Exim version 4.60

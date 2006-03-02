@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.55 2006/02/13 12:02:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.56 2006/03/02 12:25:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -132,19 +132,29 @@ static uschar *conditions[] = {
 that follows! */
 
 enum {
-#ifdef EXPERIMENTAL_BRIGHTMAIL
+  CONTROL_AUTH_UNADVERTISED,
+  #ifdef EXPERIMENTAL_BRIGHTMAIL
   CONTROL_BMI_RUN,
-#endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
+  #endif
+  #ifdef EXPERIMENTAL_DOMAINKEYS
   CONTROL_DK_VERIFY,
-#endif
-  CONTROL_ERROR, CONTROL_CASEFUL_LOCAL_PART, CONTROL_CASELOWER_LOCAL_PART,
-  CONTROL_ENFORCE_SYNC, CONTROL_NO_ENFORCE_SYNC, CONTROL_FREEZE,
-  CONTROL_QUEUE_ONLY, CONTROL_SUBMISSION, CONTROL_SUPPRESS_LOCAL_FIXUPS,
-#ifdef WITH_CONTENT_SCAN
+  #endif
+  CONTROL_ERROR,
+  CONTROL_CASEFUL_LOCAL_PART,
+  CONTROL_CASELOWER_LOCAL_PART,
+  CONTROL_ENFORCE_SYNC,
+  CONTROL_NO_ENFORCE_SYNC,
+  CONTROL_FREEZE,
+  CONTROL_QUEUE_ONLY,
+  CONTROL_SUBMISSION,
+  CONTROL_SUPPRESS_LOCAL_FIXUPS,
+  #ifdef WITH_CONTENT_SCAN
   CONTROL_NO_MBOX_UNSPOOL,
-#endif
-  CONTROL_FAKEDEFER, CONTROL_FAKEREJECT, CONTROL_NO_MULTILINE };
+  #endif
+  CONTROL_FAKEDEFER,
+  CONTROL_FAKEREJECT,
+  CONTROL_NO_MULTILINE
+};
 
 /* ACL control names; keep in step with the table above! This list is used for
 turning ids into names. The actual list of recognized names is in the variable
@@ -152,20 +162,27 @@ control_def controls_list[] below. The fact that there are two lists is a mess
 and should be tidied up. */
 
 static uschar *controls[] = {
+  US"allow_auth_unadvertised",
   #ifdef EXPERIMENTAL_BRIGHTMAIL
   US"bmi_run",
   #endif
   #ifdef EXPERIMENTAL_DOMAINKEYS
   US"dk_verify",
   #endif
-  US"error", US"caseful_local_part",
-  US"caselower_local_part", US"enforce_sync", US"no_enforce_sync", US"freeze",
-  US"queue_only", US"submission", US"suppress_local_fixups",
+  US"error",
+  US"caseful_local_part",
+  US"caselower_local_part",
+  US"enforce_sync",
+  US"no_enforce_sync",
+  US"freeze",
+  US"queue_only",
+  US"submission",
+  US"suppress_local_fixups",
   #ifdef WITH_CONTENT_SCAN
   US"no_mbox_unspool",
   #endif
-
-  US"no_multiline"};
+  US"no_multiline"
+};
 
 /* Flags to indicate for which conditions /modifiers a string expansion is done
 at the outer level. In the other cases, expansion already occurs in the
@@ -453,12 +470,16 @@ each control, there's a bitmap of dis-allowed times. For some, it is easier to
 specify the negation of a small number of allowed times. */
 
 static unsigned int control_forbids[] = {
-#ifdef EXPERIMENTAL_BRIGHTMAIL
+  (unsigned int)
+  ~((1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)),   /* allow_auth_unadvertised */
+
+  #ifdef EXPERIMENTAL_BRIGHTMAIL
   0,                                               /* bmi_run */
-#endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
+  #endif
+
+  #ifdef EXPERIMENTAL_DOMAINKEYS
   (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP),      /* dk_verify */
-#endif
+  #endif
 
   0,                                               /* error */
 
@@ -490,12 +511,12 @@ static unsigned int control_forbids[] = {
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* suppress_local_fixups */
     (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_PREDATA)),
 
-#ifdef WITH_CONTENT_SCAN
+  #ifdef WITH_CONTENT_SCAN
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* no_mbox_unspool */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
     (1<<ACL_WHERE_MIME)),
-#endif
+  #endif
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* fakedefer */
@@ -519,26 +540,27 @@ typedef struct control_def {
 } control_def;
 
 static control_def controls_list[] = {
+  { US"allow_auth_unadvertised", CONTROL_AUTH_UNADVERTISED, FALSE },
 #ifdef EXPERIMENTAL_BRIGHTMAIL
-  { US"bmi_run",                CONTROL_BMI_RUN, FALSE },
+  { US"bmi_run",                 CONTROL_BMI_RUN, FALSE },
 #endif
 #ifdef EXPERIMENTAL_DOMAINKEYS
-  { US"dk_verify",              CONTROL_DK_VERIFY, FALSE },
+  { US"dk_verify",               CONTROL_DK_VERIFY, FALSE },
 #endif
-  { US"caseful_local_part",     CONTROL_CASEFUL_LOCAL_PART, FALSE },
-  { US"caselower_local_part",   CONTROL_CASELOWER_LOCAL_PART, FALSE },
-  { US"enforce_sync",           CONTROL_ENFORCE_SYNC, FALSE },
-  { US"freeze",                 CONTROL_FREEZE, TRUE },
-  { US"no_enforce_sync",        CONTROL_NO_ENFORCE_SYNC, FALSE },
-  { US"no_multiline_responses", CONTROL_NO_MULTILINE, FALSE },
-  { US"queue_only",             CONTROL_QUEUE_ONLY, FALSE },
+  { US"caseful_local_part",      CONTROL_CASEFUL_LOCAL_PART, FALSE },
+  { US"caselower_local_part",    CONTROL_CASELOWER_LOCAL_PART, FALSE },
+  { US"enforce_sync",            CONTROL_ENFORCE_SYNC, FALSE },
+  { US"freeze",                  CONTROL_FREEZE, TRUE },
+  { US"no_enforce_sync",         CONTROL_NO_ENFORCE_SYNC, FALSE },
+  { US"no_multiline_responses",  CONTROL_NO_MULTILINE, FALSE },
+  { US"queue_only",              CONTROL_QUEUE_ONLY, FALSE },
 #ifdef WITH_CONTENT_SCAN
-  { US"no_mbox_unspool",        CONTROL_NO_MBOX_UNSPOOL, FALSE },
+  { US"no_mbox_unspool",         CONTROL_NO_MBOX_UNSPOOL, FALSE },
 #endif
-  { US"fakedefer",              CONTROL_FAKEDEFER, TRUE },
-  { US"fakereject",             CONTROL_FAKEREJECT, TRUE },
-  { US"submission",             CONTROL_SUBMISSION, TRUE },
-  { US"suppress_local_fixups",  CONTROL_SUPPRESS_LOCAL_FIXUPS, FALSE }
+  { US"fakedefer",               CONTROL_FAKEDEFER, TRUE },
+  { US"fakereject",              CONTROL_FAKEREJECT, TRUE },
+  { US"submission",              CONTROL_SUBMISSION, TRUE },
+  { US"suppress_local_fixups",   CONTROL_SUPPRESS_LOCAL_FIXUPS, FALSE }
   };
 
 /* Support data structures for Client SMTP Authorization. acl_verify_csa()
@@ -2430,16 +2452,22 @@ for (; cb != NULL; cb = cb->next)
 
     switch(control_type)
       {
-#ifdef EXPERIMENTAL_BRIGHTMAIL
+      case CONTROL_AUTH_UNADVERTISED:
+      allow_auth_unadvertised = TRUE;
+      break;
+
+      #ifdef EXPERIMENTAL_BRIGHTMAIL
       case CONTROL_BMI_RUN:
       bmi_run = 1;
       break;
-#endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
+      #endif
+
+      #ifdef EXPERIMENTAL_DOMAINKEYS
       case CONTROL_DK_VERIFY:
       dk_do_verify = 1;
       break;
-#endif
+      #endif
+
       case CONTROL_ERROR:
       return ERROR;
 
@@ -2459,11 +2487,11 @@ for (; cb != NULL; cb = cb->next)
       smtp_enforce_sync = FALSE;
       break;
 
-#ifdef WITH_CONTENT_SCAN
+      #ifdef WITH_CONTENT_SCAN
       case CONTROL_NO_MBOX_UNSPOOL:
       no_mbox_unspool = TRUE;
       break;
-#endif
+      #endif
 
       case CONTROL_NO_MULTILINE:
       no_multiline_responses = TRUE;
