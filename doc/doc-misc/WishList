@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.60 2006/02/28 10:03:06 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.61 2006/03/02 11:24:25 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1220,12 +1220,6 @@ Maybe there should always be a variable with the error message for all the
 different kinds of verify failure.
 ------------------------------------------------------------------------------
 
-(196) 30-Sep-03 S  A way of detecting whether it was HELO or EHLO in the ACL
-
-$received_protocol isn't reset until after the command is accepted (which
-seems right), and $smtp_data shows only the arguments. Maybe $smtp_command?
-------------------------------------------------------------------------------
-
 (197) 30-Sep-03 S  MACROS_DROP_PRIVS and ALT_CONFIG_DROP_PRIVS
 
 Now that alternative configurations can be restricted to certain directories,
@@ -1323,14 +1317,6 @@ See also 333.
 (214) 05-Nov-03 S  Put the wild part of local part prefix/suffx in variables
 
 Unfortunately, this isn't quite as trivial as it seems.
-------------------------------------------------------------------------------
-
-(215) 14-Nov-03 S  A way of turning off message-submission fix-ups
-
-Globally, and perhaps also via an ACL control so that it can be done on a
-per-message basis. Is this still needed? Since this item was added to this
-list, default fixups for non-local messages have been removed, and control =
-submission has been added.
 ------------------------------------------------------------------------------
 
 (215) 26-Nov-03 M/L Conversion of IDNA domain names for logging
@@ -1969,7 +1955,7 @@ second. Maybe something like ${match_any{...}{...}} is needed.
 
 (341) 15-Sep-05 S Add /return_path_retain to submission mode
 
-This would re-instate the behaviour prior to change 4.52/TF/02.
+This would re-instate the behaviour prior to change 4.52/PH/04.
 ------------------------------------------------------------------------------
 
 (342) 26-Sep-05 T Log and maybe defer odd values for condition pre-condition
