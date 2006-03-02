@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.62 2006/03/02 12:25:48 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.63 2006/03/02 15:13:59 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1969,6 +1969,34 @@ should also defer, for compatibility with ACLs.
 
 The natural syntax for this would be to use a regex, like this:
 ${lookup regex{/some/file regex}{found-string}{not-found-string}}
+However, it would be natural to want to use $1 etc in the found-string; this
+would be hard because of the lookup caching (if repeated, the lookup won't
+actually be done and therefore the numerical variables won't be set), and in
+any case, even without caching (and it could, I suppose, be disabled for this
+lookup) those variables are not in the right storage pool even if they were
+preserved after the lookup.
+
+An alternative approach might be to implement something like this:
+
+  ${scanfile{/some/file}{sub-expression}}
+
+where the sub-expression is expanded for every line in the file, with each line
+in turn being put into $value. This is like a conditional ${readfile, and in
+fact ${readfile could be written using ${scanfile. It would be nice to find a
+way of stopping the scan once something has happened. The only thing I can
+think of is to invent a variable that changes when scanning a line generates
+some non-null text, and then always to stop on a forced failure. That would
+allow expressions like this:
+
+  ${scanfile{/some/file}
+    {
+    ${if eq{$generated}{}{${if match{regex}{$value}{something}}} fail}
+    }}
+
+It's all rather clumsy. Once a line has matched and generated some text, the
+next iteration would stop the scan. Another thought: maybe use $scanline
+instead of $value (to save confusion) and have $scantext containing everything
+that's been generated so far. That sounds pretty flexible.
 ------------------------------------------------------------------------------
 
 (344) 10-Oct-05 M Make debug_print work in authenticators
