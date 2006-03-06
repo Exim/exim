@@ -1,0 +1,18 @@
+# add_header modifier in ACLs
+exim -bs -odi
+mail from:<mailok@test.ex>
+rcpt to:<rcptok@test.ex>
+rcpt to:<notok@test.ex>
+data
+cond: accept
+
+Test message
+.
+quit
+****
+exim -odi rcptok@test.ex
+Test non-SMTP message.
+****
+exim -bs -odi -DCONNECTCOND="add_header=CONNECT: won't do this"
+****
+no_msglog_check

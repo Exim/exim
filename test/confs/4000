@@ -49,19 +49,19 @@ check_data:
 
 check_mime:
   warn     decode  = default
-           message = X-$mime_part_count-content-type: $mime_content_type\n\
-                     X-$mime_part_count-filename: $mime_filename\n\
-                     X-$mime_part_count-charset: $mime_charset\n\
-                     X-$mime_part_count-boundary: $mime_boundary\n\
-                     X-$mime_part_count-content-disposition: $mime_content_disposition\n\
-                     X-$mime_part_count-content-transfer-encoding: $mime_content_transfer_encoding\n\
-                     X-$mime_part_count-content-id: $mime_content_id\n\
-                     X-$mime_part_count-content-description: $mime_content_description\n\
-                     X-$mime_part_count-is-multipart: $mime_is_multipart\n\
-                     X-$mime_part_count-is-coverletter: $mime_is_coverletter\n\
-                     X-$mime_part_count-is-rfc822: $mime_is_rfc822\n\
-                     X-$mime_part_count-decode-filename: $mime_decoded_filename\n\
-                     X-$mime_part_count-content-size: $mime_content_size
+           add_header = X-$mime_part_count-content-type: $mime_content_type\n\
+                        X-$mime_part_count-filename: $mime_filename\n\
+                        X-$mime_part_count-charset: $mime_charset\n\
+                        X-$mime_part_count-boundary: $mime_boundary\n\
+                        X-$mime_part_count-content-disposition: $mime_content_disposition\n\
+                        X-$mime_part_count-content-transfer-encoding: $mime_content_transfer_encoding\n\
+                        X-$mime_part_count-content-id: $mime_content_id\n\
+                        X-$mime_part_count-content-description: $mime_content_description\n\
+                        X-$mime_part_count-is-multipart: $mime_is_multipart\n\
+                        X-$mime_part_count-is-coverletter: $mime_is_coverletter\n\
+                        X-$mime_part_count-is-rfc822: $mime_is_rfc822\n\
+                        X-$mime_part_count-decode-filename: $mime_decoded_filename\n\
+                        X-$mime_part_count-content-size: $mime_content_size
 
   accept
 

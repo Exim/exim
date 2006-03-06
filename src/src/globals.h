@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.36 2006/03/02 12:25:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.37 2006/03/06 16:05:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -104,6 +104,7 @@ extern uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT];
 /* General global variables */
 
 extern BOOL    accept_8bitmime;        /* Allow *BITMIME incoming */
+extern header_line *acl_added_headers; /* Headers added by an ACL */
 extern tree_node *acl_anchor;          /* Tree of named ACLs */
 extern uschar *acl_not_smtp;           /* ACL run for non-SMTP messages */
 #ifdef WITH_CONTENT_SCAN
@@ -128,7 +129,6 @@ extern uschar *acl_smtp_vrfy;          /* ACL run for VRFY */
 extern BOOL    acl_temp_details;       /* TRUE to give details for 4xx error */
 extern uschar *acl_var[ACL_CVARS+ACL_MVARS]; /* User ACL variables */
 extern uschar *acl_verify_message;     /* User message for verify failure */
-extern header_line *acl_warn_headers;  /* Warning headers added by ACL */
 extern string_item *acl_warn_logged;   /* Logged lines */
 extern int     acl_wherecodes[];       /* Response codes for ACL fails */
 extern uschar *acl_wherenames[];       /* Names for messages */

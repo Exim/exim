@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.56 2006/03/02 12:25:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.57 2006/03/06 16:05:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -32,13 +32,17 @@ static uschar *verbs[] =
 static int msgcond[] = { FAIL, OK, OK, FAIL, OK, FAIL, OK };
 
 /* ACL condition and modifier codes - keep in step with the table that
-follows. */
+follows, and the cond_expand_at_top and uschar cond_modifiers tables lower
+down. */
 
-enum { ACLC_ACL, ACLC_AUTHENTICATED,
+enum { ACLC_ACL,
+       ACLC_ADD_HEADER,
+       ACLC_AUTHENTICATED,
 #ifdef EXPERIMENTAL_BRIGHTMAIL
        ACLC_BMI_OPTIN,
 #endif
-ACLC_CONDITION, ACLC_CONTROL,
+       ACLC_CONDITION,
+       ACLC_CONTROL,
 #ifdef WITH_CONTENT_SCAN
        ACLC_DECODE,
 #endif
@@ -54,8 +58,14 @@ ACLC_CONDITION, ACLC_CONTROL,
        ACLC_DK_SENDERS,
        ACLC_DK_STATUS,
 #endif
-       ACLC_DNSLISTS, ACLC_DOMAINS, ACLC_ENCRYPTED, ACLC_ENDPASS,
-       ACLC_HOSTS, ACLC_LOCAL_PARTS, ACLC_LOG_MESSAGE, ACLC_LOGWRITE,
+       ACLC_DNSLISTS,
+       ACLC_DOMAINS,
+       ACLC_ENCRYPTED,
+       ACLC_ENDPASS,
+       ACLC_HOSTS,
+       ACLC_LOCAL_PARTS,
+       ACLC_LOG_MESSAGE,
+       ACLC_LOGWRITE,
 #ifdef WITH_CONTENT_SCAN
        ACLC_MALWARE,
 #endif
@@ -68,7 +78,9 @@ ACLC_CONDITION, ACLC_CONTROL,
 #ifdef WITH_CONTENT_SCAN
        ACLC_REGEX,
 #endif
-       ACLC_SENDER_DOMAINS, ACLC_SENDERS, ACLC_SET,
+       ACLC_SENDER_DOMAINS,
+       ACLC_SENDERS,
+       ACLC_SET,
 #ifdef WITH_CONTENT_SCAN
        ACLC_SPAM,
 #endif
@@ -83,6 +95,7 @@ but always return TRUE. They are used for their side effects. */
 
 static uschar *conditions[] = {
   US"acl",
+  US"add_header",
   US"authenticated",
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   US"bmi_optin",
@@ -189,6 +202,7 @@ at the outer level. In the other cases, expansion already occurs in the
 checking functions. */
 
 static uschar cond_expand_at_top[] = {
+  TRUE,    /* add_header */
   TRUE,    /* acl */
   FALSE,   /* authenticated */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -246,6 +260,7 @@ static uschar cond_expand_at_top[] = {
 /* Flags to identify the modifiers */
 
 static uschar cond_modifiers[] = {
+  TRUE,    /* add_header */
   FALSE,   /* acl */
   FALSE,   /* authenticated */
 #ifdef EXPERIMENTAL_BRIGHTMAIL
@@ -307,10 +322,15 @@ to specify the negation of a small number of allowed times. */
 static unsigned int cond_forbids[] = {
   0,                                               /* acl */
 
+  (unsigned int)
+  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|      /* add_header */
+    (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
+    (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)),
+
   (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_CONNECT)|   /* authenticated */
     (1<<ACL_WHERE_HELO),
 
-#ifdef EXPERIMENTAL_BRIGHTMAIL
+  #ifdef EXPERIMENTAL_BRIGHTMAIL
   (1<<ACL_WHERE_AUTH)|                             /* bmi_optin */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_MIME)|
@@ -318,7 +338,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAILAUTH)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_PREDATA),
-#endif
+  #endif
 
   0,                                               /* condition */
 
@@ -327,19 +347,19 @@ static unsigned int cond_forbids[] = {
 
   0,                                               /* control */
 
-#ifdef WITH_CONTENT_SCAN
+  #ifdef WITH_CONTENT_SCAN
   (unsigned int)
   ~(1<<ACL_WHERE_MIME),                            /* decode */
-#endif
+  #endif
 
   0,                                               /* delay */
 
-#ifdef WITH_OLD_DEMIME
+  #ifdef WITH_OLD_DEMIME
   (unsigned int)
   ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)),   /* demime */
-#endif
+  #endif
 
-#ifdef EXPERIMENTAL_DOMAINKEYS
+  #ifdef EXPERIMENTAL_DOMAINKEYS
   (1<<ACL_WHERE_AUTH)|                             /* dk_domain_source */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
@@ -387,7 +407,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
     (1<<ACL_WHERE_VRFY),
-#endif
+  #endif
 
   (1<<ACL_WHERE_NOTSMTP),                          /* dnslists */
 
@@ -408,28 +428,28 @@ static unsigned int cond_forbids[] = {
 
   0,                                               /* logwrite */
 
-#ifdef WITH_CONTENT_SCAN
+  #ifdef WITH_CONTENT_SCAN
   (unsigned int)
   ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)),   /* malware */
-#endif
+  #endif
 
   0,                                               /* message */
 
-#ifdef WITH_CONTENT_SCAN
+  #ifdef WITH_CONTENT_SCAN
   (unsigned int)
   ~(1<<ACL_WHERE_MIME),                            /* mime_regex */
-#endif
+  #endif
 
   0,                                               /* ratelimit */
 
   (unsigned int)
   ~(1<<ACL_WHERE_RCPT),                            /* recipients */
 
-#ifdef WITH_CONTENT_SCAN
+  #ifdef WITH_CONTENT_SCAN
   (unsigned int)
   ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|    /* regex */
     (1<<ACL_WHERE_MIME)),
-#endif
+  #endif
 
   (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|      /* sender_domains */
     (1<<ACL_WHERE_HELO)|
@@ -445,18 +465,18 @@ static unsigned int cond_forbids[] = {
 
   0,                                               /* set */
 
-#ifdef WITH_CONTENT_SCAN
+  #ifdef WITH_CONTENT_SCAN
   (unsigned int)
   ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)),   /* spam */
-#endif
+  #endif
 
-#ifdef EXPERIMENTAL_SPF
+  #ifdef EXPERIMENTAL_SPF
   (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|      /* spf */
     (1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_MAILAUTH)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
     (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY),
-#endif
+  #endif
 
   /* Certain types of verify are always allowed, so we let it through
   always and check in the verify function itself */
@@ -826,12 +846,124 @@ return yield;
 
 
 /*************************************************
+*         Set up added header line(s)            *
+*************************************************/
+
+/* This function is called by the add_header modifier, and also from acl_warn()
+to implement the now-deprecated way of adding header lines using "message" on a
+"warn" verb. The argument is treated as a sequence of header lines which are
+added to a chain, provided there isn't an identical one already there.
+
+Argument:   string of header lines
+Returns:    nothing
+*/
+
+static void
+setup_header(uschar *hstring)
+{
+uschar *p, *q;
+int hlen = Ustrlen(hstring);
+
+/* An empty string does nothing; otherwise add a final newline if necessary. */
+
+if (hlen <= 0) return;
+if (hstring[hlen-1] != '\n') hstring = string_sprintf("%s\n", hstring);
+
+/* Loop for multiple header lines, taking care about continuations */
+
+for (p = q = hstring; *p != 0; )
+  {
+  uschar *s;
+  int newtype = htype_add_bot;
+  header_line **hptr = &acl_added_headers;
+
+  /* Find next header line within the string */
+
+  for (;;)
+    {
+    q = Ustrchr(q, '\n');
+    if (*(++q) != ' ' && *q != '\t') break;
+    }
+
+  /* If the line starts with a colon, interpret the instruction for where to
+  add it. This temporarily sets up a new type. */
+
+  if (*p == ':')
+    {
+    if (strncmpic(p, US":after_received:", 16) == 0)
+      {
+      newtype = htype_add_rec;
+      p += 16;
+      }
+    else if (strncmpic(p, US":at_start_rfc:", 14) == 0)
+      {
+      newtype = htype_add_rfc;
+      p += 14;
+      }
+    else if (strncmpic(p, US":at_start:", 10) == 0)
+      {
+      newtype = htype_add_top;
+      p += 10;
+      }
+    else if (strncmpic(p, US":at_end:", 8) == 0)
+      {
+      newtype = htype_add_bot;
+      p += 8;
+      }
+    while (*p == ' ' || *p == '\t') p++;
+    }
+
+  /* See if this line starts with a header name, and if not, add X-ACL-Warn:
+  to the front of it. */
+
+  for (s = p; s < q - 1; s++)
+    {
+    if (*s == ':' || !isgraph(*s)) break;
+    }
+
+  s = string_sprintf("%s%.*s", (*s == ':')? "" : "X-ACL-Warn: ", q - p, p);
+  hlen = Ustrlen(s);
+
+  /* See if this line has already been added */
+
+  while (*hptr != NULL)
+    {
+    if (Ustrncmp((*hptr)->text, s, hlen) == 0) break;
+    hptr = &((*hptr)->next);
+    }
+
+  /* Add if not previously present */
+
+  if (*hptr == NULL)
+    {
+    header_line *h = store_get(sizeof(header_line));
+    h->text = s;
+    h->next = NULL;
+    h->type = newtype;
+    h->slen = hlen;
+    *hptr = h;
+    hptr = &(h->next);
+    }
+
+  /* Advance for next header line within the string */
+
+  p = q;
+  }
+}
+
+
+
+
+/*************************************************
 *               Handle warnings                  *
 *************************************************/
 
 /* This function is called when a WARN verb's conditions are true. It adds to
 the message's headers, and/or writes information to the log. In each case, this
 only happens once (per message for headers, per connection for log).
+
+** NOTE: The header adding action using the "message" setting is historic, and
+its use is now deprecated. The new add_header modifier should be used instead.
 
 Arguments:
   where          ACL_WHERE_xxxx indicating which ACL this is
@@ -844,8 +976,6 @@ Returns:         nothing
 static void
 acl_warn(int where, uschar *user_message, uschar *log_message)
 {
-int hlen;
-
 if (log_message != NULL && log_message != user_message)
   {
   uschar *text;
@@ -895,99 +1025,10 @@ if (where > ACL_WHERE_NOTSMTP)
   return;
   }
 
-/* Treat the user message as a sequence of one or more header lines. */
+/* The code for setting up header lines is now abstracted into a separate
+function so that it can be used for the add_header modifier as well. */
 
-hlen = Ustrlen(user_message);
-if (hlen > 0)
-  {
-  uschar *text, *p, *q;
-
-  /* Add a final newline if not present */
-
-  text = ((user_message)[hlen-1] == '\n')? user_message :
-    string_sprintf("%s\n", user_message);
-
-  /* Loop for multiple header lines, taking care about continuations */
-
-  for (p = q = text; *p != 0; )
-    {
-    uschar *s;
-    int newtype = htype_add_bot;
-    header_line **hptr = &acl_warn_headers;
-
-    /* Find next header line within the string */
-
-    for (;;)
-      {
-      q = Ustrchr(q, '\n');
-      if (*(++q) != ' ' && *q != '\t') break;
-      }
-
-    /* If the line starts with a colon, interpret the instruction for where to
-    add it. This temporarily sets up a new type. */
-
-    if (*p == ':')
-      {
-      if (strncmpic(p, US":after_received:", 16) == 0)
-        {
-        newtype = htype_add_rec;
-        p += 16;
-        }
-      else if (strncmpic(p, US":at_start_rfc:", 14) == 0)
-        {
-        newtype = htype_add_rfc;
-        p += 14;
-        }
-      else if (strncmpic(p, US":at_start:", 10) == 0)
-        {
-        newtype = htype_add_top;
-        p += 10;
-        }
-      else if (strncmpic(p, US":at_end:", 8) == 0)
-        {
-        newtype = htype_add_bot;
-        p += 8;
-        }
-      while (*p == ' ' || *p == '\t') p++;
-      }
-
-    /* See if this line starts with a header name, and if not, add X-ACL-Warn:
-    to the front of it. */
-
-    for (s = p; s < q - 1; s++)
-      {
-      if (*s == ':' || !isgraph(*s)) break;
-      }
-
-    s = string_sprintf("%s%.*s", (*s == ':')? "" : "X-ACL-Warn: ", q - p, p);
-    hlen = Ustrlen(s);
-
-    /* See if this line has already been added */
-
-    while (*hptr != NULL)
-      {
-      if (Ustrncmp((*hptr)->text, s, hlen) == 0) break;
-      hptr = &((*hptr)->next);
-      }
-
-    /* Add if not previously present */
-
-    if (*hptr == NULL)
-      {
-      header_line *h = store_get(sizeof(header_line));
-      h->text = s;
-      h->next = NULL;
-      h->type = newtype;
-      h->slen = hlen;
-      *hptr = h;
-      hptr = &(h->next);
-      }
-
-    /* Advance for next header line within the string */
-
-    p = q;
-    }
-  }
+setup_header(user_message);
 }
 
 
@@ -2395,9 +2436,13 @@ for (; cb != NULL; cb = cb->next)
 
   switch(cb->type)
     {
+    case ACLC_ADD_HEADER:
+    setup_header(arg);
+    break;
+
     /* A nested ACL that returns "discard" makes sense only for an "accept" or
     "discard" verb. */
-\
+
     case ACLC_ACL:
     rc = acl_check_internal(where, addr, arg, level+1, user_msgptr, log_msgptr);
     if (rc == DISCARD && verb != ACL_ACCEPT && verb != ACL_DISCARD)
@@ -2415,7 +2460,7 @@ for (; cb != NULL; cb = cb->next)
         TRUE, NULL);
     break;
 
-#ifdef EXPERIMENTAL_BRIGHTMAIL
+    #ifdef EXPERIMENTAL_BRIGHTMAIL
     case ACLC_BMI_OPTIN:
       {
       int old_pool = store_pool;
@@ -2424,7 +2469,7 @@ for (; cb != NULL; cb = cb->next)
       store_pool = old_pool;
       }
     break;
-#endif
+    #endif
 
     case ACLC_CONDITION:
     if (Ustrspn(arg, "0123456789") == Ustrlen(arg))     /* Digits, or empty */
@@ -2577,11 +2622,11 @@ for (; cb != NULL; cb = cb->next)
       }
     break;
 
-#ifdef WITH_CONTENT_SCAN
+    #ifdef WITH_CONTENT_SCAN
     case ACLC_DECODE:
     rc = mime_decode(&arg);
     break;
-#endif
+    #endif
 
     case ACLC_DELAY:
       {
@@ -2625,14 +2670,14 @@ for (; cb != NULL; cb = cb->next)
       }
     break;
 
-#ifdef WITH_OLD_DEMIME
+    #ifdef WITH_OLD_DEMIME
     case ACLC_DEMIME:
       rc = demime(&arg);
     break;
-#endif
+    #endif
 
-#ifdef EXPERIMENTAL_DOMAINKEYS
-  case ACLC_DK_DOMAIN_SOURCE:
+    #ifdef EXPERIMENTAL_DOMAINKEYS
+    case ACLC_DK_DOMAIN_SOURCE:
     if (dk_verify_block == NULL) { rc = FAIL; break; };
     /* check header source of domain against given string */
     switch (dk_verify_block->address_source) {
@@ -2648,9 +2693,10 @@ for (; cb != NULL; cb = cb->next)
         rc = match_isinlist(US"none", &arg, 0, NULL,
                             NULL, MCL_STRING, TRUE, NULL);
       break;
-    }
-  break;
-  case ACLC_DK_POLICY:
+      }
+    break;
+
+    case ACLC_DK_POLICY:
     if (dk_verify_block == NULL) { rc = FAIL; break; };
     /* check policy against given string, default FAIL */
     rc = FAIL;
@@ -2660,28 +2706,32 @@ for (; cb != NULL; cb = cb->next)
     if (dk_verify_block->testing)
       rc = match_isinlist(US"testing", &arg, 0, NULL,
                           NULL, MCL_STRING, TRUE, NULL);
-  break;
-  case ACLC_DK_SENDER_DOMAINS:
+    break;
+
+    case ACLC_DK_SENDER_DOMAINS:
     if (dk_verify_block == NULL) { rc = FAIL; break; };
     if (dk_verify_block->domain != NULL)
       rc = match_isinlist(dk_verify_block->domain, &arg, 0, &domainlist_anchor,
                           NULL, MCL_DOMAIN, TRUE, NULL);
     else rc = FAIL;
-  break;
-  case ACLC_DK_SENDER_LOCAL_PARTS:
+    break;
+
+    case ACLC_DK_SENDER_LOCAL_PARTS:
     if (dk_verify_block == NULL) { rc = FAIL; break; };
     if (dk_verify_block->local_part != NULL)
       rc = match_isinlist(dk_verify_block->local_part, &arg, 0, &localpartlist_anchor,
                           NULL, MCL_LOCALPART, TRUE, NULL);
     else rc = FAIL;
-  break;
-  case ACLC_DK_SENDERS:
+    break;
+
+    case ACLC_DK_SENDERS:
     if (dk_verify_block == NULL) { rc = FAIL; break; };
     if (dk_verify_block->address != NULL)
       rc = match_address_list(dk_verify_block->address, TRUE, TRUE, &arg, NULL, -1, 0, NULL);
     else rc = FAIL;
-  break;
-  case ACLC_DK_STATUS:
+    break;
+
+    case ACLC_DK_STATUS:
     if (dk_verify_block == NULL) { rc = FAIL; break; };
     if (dk_verify_block->result > 0) {
       switch(dk_verify_block->result) {
@@ -2713,10 +2763,10 @@ for (; cb != NULL; cb = cb->next)
           rc = match_isinlist(US"bad", &arg, 0, NULL,
                               NULL, MCL_STRING, TRUE, NULL);
         break;
+        }
       }
-    }
-  break;
-#endif
+    break;
+    #endif
 
     case ACLC_DNSLISTS:
     rc = verify_check_dnsbl(&arg);
@@ -2798,7 +2848,7 @@ for (; cb != NULL; cb = cb->next)
       }
     break;
 
-#ifdef WITH_CONTENT_SCAN
+    #ifdef WITH_CONTENT_SCAN
     case ACLC_MALWARE:
       {
       /* Seperate the regular expression and any optional parameters. */
@@ -2818,12 +2868,12 @@ for (; cb != NULL; cb = cb->next)
     break;
 
     case ACLC_MIME_REGEX:
-      rc = mime_regex(&arg);
+    rc = mime_regex(&arg);
     break;
-#endif
+    #endif
 
     case ACLC_RATELIMIT:
-      rc = acl_ratelimit(arg, log_msgptr);
+    rc = acl_ratelimit(arg, log_msgptr);
     break;
 
     case ACLC_RECIPIENTS:
@@ -2831,11 +2881,11 @@ for (; cb != NULL; cb = cb->next)
       &recipient_data);
     break;
 
-#ifdef WITH_CONTENT_SCAN
-   case ACLC_REGEX:
-      rc = regex(&arg);
+    #ifdef WITH_CONTENT_SCAN
+    case ACLC_REGEX:
+    rc = regex(&arg);
     break;
-#endif
+    #endif
 
     case ACLC_SENDER_DOMAINS:
       {
@@ -2863,7 +2913,7 @@ for (; cb != NULL; cb = cb->next)
       }
     break;
 
-#ifdef WITH_CONTENT_SCAN
+    #ifdef WITH_CONTENT_SCAN
     case ACLC_SPAM:
       {
       /* Seperate the regular expression and any optional parameters. */
@@ -2881,13 +2931,13 @@ for (; cb != NULL; cb = cb->next)
         }
       }
     break;
-#endif
+    #endif
 
-#ifdef EXPERIMENTAL_SPF
+    #ifdef EXPERIMENTAL_SPF
     case ACLC_SPF:
       rc = spf_process(&arg, sender_address);
     break;
-#endif
+    #endif
 
     /* If the verb is WARN, discard any user message from verification, because
     such messages are SMTP responses, not header additions. The latter come

@@ -1,0 +1,80 @@
+# Exim test configuration 0532
+
+CONNECTCOND=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_connect = connect
+acl_smtp_mail = mail
+acl_smtp_rcpt = rcpt
+acl_smtp_predata = predata
+acl_smtp_data = data
+acl_not_smtp = notsmtp
+
+qualify_domain = test.ex
+trusted_users = CALLER
+
+
+# ----- ACL -----
+
+begin acl
+
+connect:
+  accept CONNECTCOND
+
+mail:
+  accept add_header = MAIL: one
+         senders    = mailok@test.ex
+         add_header = MAIL: two\nMAIL: three
+  accept
+
+rcpt:
+  accept add_header  = RCPT: one
+         add_header  = DUP: duplicate
+         local_parts = rcptok
+         add_header  = RCPT: two\n  continued\n
+  deny   add_header  = RCPT: denied $local_part
+
+
+predata:
+  warn   add_header = PREDATA-WARN: added with add_header
+         message    = PREDATA-WARN: added with message
+  accept add_header = PREDATA: recipients are $recipients
+
+data:
+  accept add_header = DATA: one
+         add_header = DUP: duplicate
+         condition  = ${if eq{$h_cond:}{accept}}
+
+notsmtp:
+  accept add_header = NOTSMTP: $recipients
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+
+# End

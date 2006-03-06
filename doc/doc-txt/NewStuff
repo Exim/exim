@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.94 2006/03/02 12:25:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.95 2006/03/06 16:05:12 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -117,6 +117,54 @@ PH/17 The ACL modifier control=allow_auth_unadvertised can be used to permit a
              control = allow_auth_unadvertised
 
       This control is permitted only in the connection and HELO ACLs.
+
+PH/18 There is a new ACL modifier called "add_header" which does what its name
+      implies. It specifies one of more header lines that are to be added to an
+      incoming message, assuming, of course, that the message is ultimately
+      accepted.
+
+      This modifier is permitted in the MAIL, RCPT, PREDATA, DATA, MIME, and
+      non-SMTP ACLs (in other words, those that are concerned with accepting a
+      message). Added header lines are accumulated during the MAIL, RCPT, and
+      PREDATA ACLs, with any duplicates being discarded. They are then added to
+      the message before processing the DATA and MIME ACLs, during which
+      further added header lines are accumulated, again with duplicates
+      discarded. Thus, it is possible to add two identical header lines to an
+      SMTP message, but only if one is added before DATA and one after.
+
+      In the case of non-SMTP messages, new headers are accumulated during the
+      non-SMTP ACL, and added to the message at the end.
+
+      The add_header modifier is available for use with all ACL verbs. In the
+      case of the WARN verb, add_header supersedes the use of "message" for
+      this purpose; for the other verbs, it provides a new facility. If both
+      add_header and "message" are present on a WARN verb, both are processed
+      according to their specifications.
+
+      The add_header modifier acts immediately it is encountered during the
+      processing of an ACL. This is different to the (now-deprecated) use of
+      "message" on a WARN verb, where the action is taken only if all the
+      conditions are true. Notice the difference between these two cases on a
+      RCPT ACL:
+
+         deny add_header = ADDED: some text
+              <some condition>
+
+         deny <some condition>
+              add_header = ADDED: some text
+
+      In the first case, the header is always added, whether or not the current
+      recipient is rejected. In the second case, the header is added only if
+      the recipient is rejected.
+
+      If add_header appears more than once on an ACL statement, multiple
+      headers are added, provided that they have different content. (In the
+      case of WARN with "message", only the last value of "message" is used.)
+
+      The facility for specifying where the new header is to be inserted, as
+      described for WARN with "message" in section 39.19 of the 4.60 manual, is
+      supported.
+
 
 
 Version 4.60

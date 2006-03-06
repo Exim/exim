@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.52 2006/03/02 12:25:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.53 2006/03/06 16:05:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -162,6 +162,7 @@ int address_expansions_count = sizeof(address_expansions)/sizeof(uschar **);
 
 /* General global variables */
 
+header_line *acl_added_headers = NULL;
 tree_node *acl_anchor          = NULL;
 uschar *acl_not_smtp           = NULL;
 #ifdef WITH_CONTENT_SCAN
@@ -186,7 +187,6 @@ uschar *acl_smtp_vrfy          = NULL;
 BOOL    acl_temp_details       = FALSE;
 uschar *acl_var[ACL_CVARS + ACL_MVARS];
 uschar *acl_verify_message     = NULL;
-header_line *acl_warn_headers  = NULL;
 string_item *acl_warn_logged   = NULL;
 
 /* Names of SMTP places for use in ACL error messages, and corresponding SMTP

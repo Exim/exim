@@ -1,0 +1,37 @@
+From mailok@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	(envelope-from <mailok@test.ex>)
+	id 10HmaX-0005vi-00
+	for rcptok@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+cond: accept
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: mailok@test.ex
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+MAIL: one
+MAIL: two
+MAIL: three
+RCPT: one
+DUP: duplicate
+RCPT: two
+  continued
+RCPT: denied notok
+PREDATA-WARN: added with add_header
+PREDATA-WARN: added with message
+PREDATA: recipients are rcptok@test.ex
+DATA: one
+DUP: duplicate
+
+Test message
+
+From CALLER@test.ex Tue Mar 02 09:44:33 1999
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00
+	for rcptok@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+NOTSMTP: rcptok@test.ex
+
+Test non-SMTP message.
+

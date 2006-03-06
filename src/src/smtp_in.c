@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.34 2006/03/02 12:25:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.35 2006/03/06 16:05:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -808,7 +808,7 @@ rcpt_count = rcpt_defer_count = rcpt_fail_count =
   raw_recipients_count = recipients_count = recipients_list_max = 0;
 message_linecount = 0;
 message_size = -1;
-acl_warn_headers = NULL;
+acl_added_headers = NULL;
 queue_only_policy = FALSE;
 deliver_freeze = FALSE;                              /* Can be set by ACL */
 freeze_tell = freeze_tell_config;                    /* Can be set by ACL */

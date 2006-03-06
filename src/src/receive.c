@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.26 2006/02/14 15:11:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.27 2006/03/06 16:05:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -899,10 +899,10 @@ add_acl_headers(uschar *acl_name)
 header_line *h, *next;
 header_line *last_received = NULL;
 
-if (acl_warn_headers == NULL) return;
+if (acl_added_headers == NULL) return;
 DEBUG(D_receive|D_acl) debug_printf(">>Headers added by %s ACL:\n", acl_name);
 
-for (h = acl_warn_headers; h != NULL; h = next)
+for (h = acl_added_headers; h != NULL; h = next)
   {
   next = h->next;
 
@@ -964,7 +964,7 @@ for (h = acl_warn_headers; h != NULL; h = next)
   DEBUG(D_receive|D_acl) debug_printf("  %s", header_last->text);
   }
 
-acl_warn_headers = NULL;
+acl_added_headers = NULL;
 DEBUG(D_receive|D_acl) debug_printf(">>\n");
 }
 
