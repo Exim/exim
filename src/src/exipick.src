@@ -1,5 +1,5 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.10 2006/03/07 20:58:55 jetmore Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.11 2006/03/07 21:05:30 jetmore Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
@@ -8,7 +8,7 @@ use strict;
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
-my $p_version = "20060307.0";
+my $p_version = "20060307.1";
 my $p_usage   = "Usage: $p_name [--help|--version] (see --help for details)";
 my $p_cp      = <<EOM;
         Copyright (c) 2003-2006 John Jetmore <jj33\@pobox.com>
@@ -562,7 +562,6 @@ sub _parse_body {
   close(I);
   $self->{_vars}{message_body} =~ s/\n/ /g;
   $self->{_vars}{message_body} =~ s/\000/ /g;
-print "returning (1)\n";
   return(1);
 }
 
