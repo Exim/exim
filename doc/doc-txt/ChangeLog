@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.322 2006/03/06 16:05:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.323 2006/03/07 20:58:55 jetmore Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -277,6 +277,17 @@ PH/54 Added control=allow_auth_unadvertised, as it seems there are clients that
 
 PH/55 Added the add_header modified to ACLs. The use of "message" with "warn"
       will now be deprecated.
+
+JJ/06 exipick: added --unsorted option to allow unsorted output in all output
+      formats (previously only available in exim formats via -bpr, -bpru,
+      and -bpra.  Now also available in native and exiqgrep formats)
+
+JJ/07 exipick: added --freeze and --thaw options to allow faster interaction
+      with very large, slow to parse queues
+
+JJ/08 exipick: added ! as generic prefix to negate any criteria format
+
+JJ/09 exipick: miscellaneous performance enhancements (~24% improvements)
 
 
 Exim version 4.60

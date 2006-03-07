@@ -1,5 +1,5 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.9 2006/02/16 17:03:16 jetmore Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.10 2006/03/07 20:58:55 jetmore Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
@@ -8,7 +8,7 @@ use strict;
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
-my $p_version = "20060216.1";
+my $p_version = "20060307.0";
 my $p_usage   = "Usage: $p_name [--help|--version] (see --help for details)";
 my $p_cp      = <<EOM;
         Copyright (c) 2003-2006 John Jetmore <jj33\@pobox.com>
@@ -54,6 +54,9 @@ GetOptions(
   'l'           => \$G::qgrep_l,    # long format (default)
   'i'           => \$G::qgrep_i,    # message ids only
   'b'           => \$G::qgrep_b,    # brief format
+  'freeze:s'    => \$G::freeze,     # freeze data in this file
+  'thaw:s'      => \$G::thaw,       # thaw data from this file
+  'unsorted'    => \$G::unsorted,   # unsorted, regardless of output format
   'flatq'       => \$G::flatq,      # brief format
   'caseful'     => \$G::caseful,    # in '=' criteria, respect case
   'caseless'    => \$G::caseless,   #   ...ignore case (default)
@@ -61,6 +64,11 @@ GetOptions(
   'show-rules'  => \$G::show_rules, # display compiled match rules
   'show-tests'  => \$G::show_tests  # display tests as applied to each message
 ) || exit(1);
+
+# if both freeze and thaw specified, only thaw as it is less desctructive
+$G::freeze = undef               if ($G::freeze && $G::thaw);
+freeze_start()                   if ($G::freeze);
+thaw_start()                     if ($G::thaw);
 
 push(@ARGV, "\$sender_address     =~ /$G::qgrep_f/") if ($G::qgrep_f);
 push(@ARGV, "\$recipients         =~ /$G::qgrep_r/") if ($G::qgrep_r);
@@ -75,9 +83,12 @@ $G::msg_ids         = {};                  # short circuit when crit is only MID
 $G::caseless        = $G::caseful ? 0 : 1; # nocase by default, case if both
 @G::recipients_crit = ();                  # holds per-recip criteria
 $spool              = $G::spool if ($G::spool);
-my $count_only      = 1 if ($G::mailq_bpc || $G::qgrep_c);
-my $unsorted        = 1 if ($G::mailq_bpr || $G::mailq_bpra || $G::mailq_bpru);
-my $msg             = get_all_msgs($spool, $unsorted);
+my $count_only      = 1 if ($G::mailq_bpc  || $G::qgrep_c);
+my $unsorted        = 1 if ($G::mailq_bpr  || $G::mailq_bpra ||
+                            $G::mailq_bpru || $G::unsorted);
+my $msg             = $G::thaw ? thaw_message_list()
+                               : get_all_msgs($spool,$unsorted);
+die "Problem accessing thaw file\n" if ($G::thaw && !$msg);
 my $crit            = process_criteria(\@ARGV);
 my $e               = Exim::SpoolFile->new();
 my $tcount          = 0 if ($count_only);  # holds count of all messages
@@ -91,13 +102,22 @@ $e->output_flatq()               if ($G::flatq);
 $e->set_show_vars($G::show_vars) if ($G::show_vars);
 $e->set_spool($spool);
 
+
 MSG:
 foreach my $m (@$msg) {
   next if (scalar(keys(%$G::msg_ids)) && !$G::or
                                       && !$G::msg_ids->{$m->{message}});
-  if (!$e->parse_message($m->{message})) {
-    warn "Couldn't parse $m->{message}: ".$e->error()."\n";
-    next MSG;
+  if ($G::thaw) {
+    my $data = thaw_data();
+    if (!$e->restore_state($data)) {
+      warn "Couldn't thaw $data->{_message}: ".$e->error()."\n";
+      next MSG;
+    }
+  } else {
+    if (!$e->parse_message($m->{message}, $m->{path})) {
+      warn "Couldn't parse $m->{message}: ".$e->error()."\n";
+      next MSG;
+    }
   }
   $tcount++;
   my $match = 0;
@@ -138,6 +158,11 @@ foreach my $m (@$msg) {
   } else {
     $e->print_message(\*STDOUT);
   }
+
+  if ($G::freeze) {
+    freeze_data($e->get_state());
+    push(@G::frozen_msgs, $m);
+  }
 }
 
 if ($G::mailq_bpc) {
@@ -146,7 +171,76 @@ if ($G::mailq_bpc) {
   print "$mcount matches out of $tcount messages\n";
 }
 
+if ($G::freeze) {
+  freeze_message_list(\@G::frozen_msgs);
+  freeze_end();
+} elsif ($G::thaw) {
+  thaw_end();
+}
+
 exit;
+
+# FREEZE FILE FORMAT:
+# message_data_bytes
+# message_data
+# <...>
+# EOM
+# message_list
+# message_list_bytes <- 10 bytes, zero-packed, plus \n
+
+sub freeze_start {
+  eval("use Storable");
+  die "Storable module not found: $@\n" if ($@);
+  open(O, ">$G::freeze") || die "Can't open freeze file $G::freeze: $!\n";
+  $G::freeze_handle = \*O;
+}
+
+sub freeze_end {
+  close($G::freeze_handle);
+}
+
+sub thaw_start {
+  eval("use Storable");
+  die "Storable module not found: $@\n" if ($@);
+  open(I, "<$G::thaw") || die "Can't open freeze file $G::thaw: $!\n";
+  $G::freeze_handle = \*I;
+}
+
+sub thaw_end {
+  close($G::freeze_handle);
+}
+
+sub freeze_data {
+  my $h = Storable::freeze($_[0]);
+  print $G::freeze_handle length($h)+1, "\n$h\n";
+}
+
+sub freeze_message_list {
+  my $h = Storable::freeze($_[0]);
+  my $l = length($h) + 1;
+  printf $G::freeze_handle "EOM\n$l\n$h\n%010d\n", $l+11+length($l)+1;
+}
+
+sub thaw_message_list {
+  my $orig_pos = tell($G::freeze_handle);
+  seek($G::freeze_handle, -11, 2);
+  chomp(my $bytes = <$G::freeze_handle>);
+  seek($G::freeze_handle, $bytes * -1, 2);
+  my $obj = thaw_data();
+  seek($G::freeze_handle, 0, $orig_pos);
+  return($obj);
+}
+
+sub thaw_data {
+  my $obj;
+  chomp(my $bytes = <$G::freeze_handle>);
+  return(undef) if (!$bytes || $bytes eq 'EOM');
+  my $read = read(I, $obj, $bytes);
+  die "Format error in thaw file (expected $bytes bytes, got $read)\n"
+      if ($bytes != $read);
+  chomp($obj);
+  return(Storable::thaw($obj));
+}
 
 sub process_criteria {
   my $a = shift;
@@ -171,29 +265,36 @@ sub process_criteria {
         $e = 1;
         next;
       }
-      push(@c, { var => lc($v), cmp => "(\$var $o $n) ? 1 : 0" });
+      #push(@c, { var => lc($v), cmp => "(\$var $o $n) ? 1 : 0" });
+      push(@c, { var => lc($v), cmp => "(\$var $o $n)" });
     } elsif (/^(.*?)\s+(=~|!~)\s+(.*)$/) {
       #print STDERR "found as string regexp\n";
-      push(@c, { var => lc($1), cmp => "(\"\$var\" $2 $3) ? 1 : 0" });
+      push(@c, { var => lc($1), cmp => "(\"\$var\" $2 $3)" });
     } elsif (/^(.*?)\s+=\s+(.*)$/) {
       #print STDERR "found as bare string regexp\n";
       my $case = $G::caseful ? '' : 'i';
-      push(@c, { var => lc($1), cmp => "(\"\$var\" =~ /$2/$case) ? 1 : 0" });
+      push(@c, { var => lc($1), cmp => "(\"\$var\" =~ /$2/$case)" });
     } elsif (/^(.*?)\s+(eq|ne)\s+(.*)$/) {
       #print STDERR "found as string cmp\n";
       my $var = lc($1); my $op = $2; my $val = $3;
       $val =~ s|^(['"])(.*)\1$|$2|;
-      push(@c, { var => $var, cmp => "(\"\$var\" $op \"$val\") ? 1 : 0" });
+      push(@c, { var => $var, cmp => "(\"\$var\" $op \"$val\")" });
       if (($var eq 'message_id' || $var eq 'message_exim_id') && $op eq "eq") {
         #print STDERR "short circuit @c[-1]->{cmp} $val\n";
         $G::msg_ids->{$val} = 1;
       }
-    } elsif (/^(!)?(\S+)$/) {
+    } elsif (/^(\S+)$/) {
       #print STDERR "found as boolean\n";
-      push(@c, { var => lc($2), cmp => "($1\$var) ? 1 : 0" });
+      push(@c, { var => lc($1), cmp => "(\$var)" });
     } else {
       print STDERR "Expression $_ did not parse\n";
       $e = 1;
+    }
+    # assign the results of the cmp test here (handle "!" negation)
+    if ($c[-1]{var} =~ s|^!||) {
+      $c[-1]{cmp} .= " ? 0 : 1";
+    } else {
+      $c[-1]{cmp} .= " ? 1 : 0";
     }
     # support the each_* psuedo variables.  Steal the criteria off of the
     # queue for special processing later
@@ -221,11 +322,11 @@ sub get_all_msgs {
     if ($e =~ /^[a-zA-Z0-9]$/) {
       opendir(DD, "$d/$e") || next;
       foreach my $f (grep !/^\./, readdir(DD)) {
-        push(@m, { message => $1, path => "$e/$1" }) if ($f =~ /^(.{16})-H$/);
+        push(@m, { message => $1, path => "$d/$e" }) if ($f =~ /^(.{16})-H$/);
       }
       closedir(DD);
     } elsif ($e =~ /^(.{16})-H$/) {
-      push(@m, { message => $1, path => $1 });
+      push(@m, { message => $1, path => $d });
     }
   }
   closedir(D);
@@ -348,8 +449,9 @@ sub parse_message {
 
   $self->_reset();
   $self->{_message} = shift || return(0);
+  $self->{_path}    = shift; # optional path to message
   return(0) if (!$self->{_spool_dir});
-  if (!$self->_find_path()) {
+  if (!$self->{_path} && !$self->_find_path()) {
     # assume the message was delivered from under us and ignore
     $self->{_delivered} = 1;
     return(1);
@@ -359,14 +461,68 @@ sub parse_message {
   return(1);
 }
 
+# take the output of get_state() and set up a message internally like
+# parse_message (except from a saved data struct, not by parsing the
+# files on disk).
+sub restore_state {
+  my $self = shift;
+  my $h    = shift;
+
+  return(1) if ($h->{_delivered});
+  $self->_reset();
+  $self->{_message} = $h->{_message} || return(0);
+  return(0) if (!$self->{_spool_dir});
+
+  $self->{_path}      = $h->{_path};
+  $self->{_vars}      = $h->{_vars};
+  $self->{_numrecips} = $h->{_numrecips};
+  $self->{_udel_tree} = $h->{_udel_tree};
+  $self->{_del_tree}  = $h->{_del_tree};
+  $self->{_recips}    = $h->{_recips};
+
+  $self->{_vars}{message_age} = time() - $self->{_vars}{received_time};
+  return(1);
+}
+
+# This returns the state data for a specific message in a format that can
+# be later frozen back in to regain state
+#
+# after calling this function, this specific state is not expect to be
+# reused.  That's because we're returning direct references to specific
+# internal structures.  We're also modifying the structure ourselves
+# by deleting certain internal message variables.
+sub get_state {
+  my $self = shift;
+  my $h    = {};    # this is the hash ref we'll be returning.
+
+  $h->{_delivered} = $self->{_delivered};
+  $h->{_message}   = $self->{_message};
+  $h->{_path}      = $self->{_path};
+  $h->{_vars}      = $self->{_vars};
+  $h->{_numrecips} = $self->{_numrecips};
+  $h->{_udel_tree} = $self->{_udel_tree};
+  $h->{_del_tree}  = $self->{_del_tree};
+  $h->{_recips}    = $self->{_recips};
+
+  # delete some internal variables that we will rebuild later if needed
+  delete($h->{_vars}{message_body});
+  delete($h->{_vars}{message_age});
+
+  return($h);
+}
+
+# keep this sub as a feature if we ever break this module out, but do away
+# with its use in exipick (pass it in from caller instead)
 sub _find_path {
   my $self = shift;
 
   return(0) if (!$self->{_message});
   return(0) if (!$self->{_spool_dir});
 
-  foreach my $f ('', substr($self->{_message}, 5, 1).'/') {
-    if (-f $self->{_spool_dir} . "/input/$f" . $self->{_message} . '-H') {
+  # test split spool first on the theory that people concerned about
+  # performance will have split spool set =).
+  foreach my $f (substr($self->{_message}, 5, 1).'/', '') {
+    if (-f "$self->{_spool_dir}/input/$f$self->{_message}-H") {
       $self->{_path} = $self->{_spool_dir} . "/input/$f";
       return(1);
     }
@@ -390,6 +546,7 @@ sub get_var {
   $self->_parse_body()
       if ($var eq 'message_body' && !$self->{_vars}{message_body});
 
+  chomp($self->{_vars}{$var});
   return $self->{_vars}{$var};
 }
 
@@ -405,6 +562,7 @@ sub _parse_body {
   close(I);
   $self->{_vars}{message_body} =~ s/\n/ /g;
   $self->{_vars}{message_body} =~ s/\000/ /g;
+print "returning (1)\n";
   return(1);
 }
 
@@ -412,7 +570,12 @@ sub _parse_header {
   my $self = shift;
   my $f    = $self->{_path} . '/' . $self->{_message} . '-H';
 
-  open(I, "<$f") || return($self->_error("Couldn't open $f: $!"));
+  if (!open(I, "<$f")) {
+    # assume message went away and silently ignore
+    $self->{_delivered} = 1;
+    return(1);
+  }
+
   chomp($_ = <I>);
   return(0) if ($self->{_message}.'-H' ne $_);
   $self->{_vars}{message_id}       = $self->{_message};
@@ -609,27 +772,21 @@ sub _parse_header {
     $t = getc(I); # strip the space out of the file
     my $bytes = $_;
     return(0) if (read(I, $_, $bytes) != $bytes);
-    chomp(); # may regret this later
-    if ($t ne '*') {
-      # use of this temp variable is a little lame but it prevents a
-      # -w warning (Use of implicit split to @_ is deprecated)
-      my @t = split(/\n/);
-      $self->{_vars}{message_linecount} += scalar(@t);
-    }
+    $self->{_vars}{message_linecount} += (tr/\n//) if ($t ne '*');
+
     # build the $header_ variable, following exim's rules (sort of)
-    if (/^([^ :]+):(.*)$/s) {
-      my $v = "header_" . lc($1);
-      my $d = $2;
-      $d =~ s/^\s*//;
-      $d =~ s/\s*$//;
-      $self->{_vars}{$v} .= (defined($self->{_vars}{$v}) ? "\n" : '') . $d;
-      $self->{_vars}{received_count}++ if ($v eq 'header_received');
-    }
+    my($v,$d) = split(/:/, $_, 2);
+    $v = "header_" . lc($v);
+    $d =~ s/^\s+//;
+    $d =~ s/\s+$//;
+    $self->{_vars}{$v} .= "$d\n";
+    $self->{_vars}{received_count}++ if ($v eq 'header_received');
     # push header onto $message_headers var, following exim's rules
-    $self->{_vars}{message_headers} .=
-        (defined($self->{_vars}{message_headers}) ? "\n" : '') . $_;
+    $self->{_vars}{message_headers} .= $_;
   }
   close(I);
+  # remove trailing newline from $message_headers
+  chomp($self->{_vars}{message_headers});
 
   if (length($self->{_vars}{"header_reply-to"}) > 0) {
     $self->{_vars}{reply_address} = $self->{_vars}{"header_reply-to"};
@@ -648,12 +805,12 @@ sub _parse_header {
   $self->{_vars}{message_linecount} += $self->{_vars}{body_linecount};
 
   my $i = $self->{_vars}{message_size};
-  if ($i == 0)              { $i = ""; }
-  elsif ($i < 1024)         { $i = sprintf("%d", $i); }
-  elsif ($i < 10*1024)      { $i = sprintf("%.1fK", $i / 1024); }
-  elsif ($i < 1024*1024)    { $i = sprintf("%dK", ($i+512)/1024); }
-  elsif ($i < 10*1024*1024) { $i = sprintf("%.1fM", $i/(1024*1024)); }
-  else { $i = sprintf("%dM", ($i + 512 * 1024)/(1024*1024)); }
+  if ($i == 0)          { $i = ""; }
+  elsif ($i < 1024)     { $i = sprintf("%d",    $i);                    }
+  elsif ($i < 10240)    { $i = sprintf("%.1fK", $i / 1024);             }
+  elsif ($i < 1048576)  { $i = sprintf("%dK",   ($i+512)/1024);         }
+  elsif ($i < 10485760) { $i = sprintf("%.1fM", $i/1048576);            }
+  else                  { $i = sprintf("%dM",   ($i + 524288)/1048576); }
   $self->{_vars}{shown_message_size} = $i;
 
   return(1);
@@ -854,6 +1011,10 @@ If specified, for every message (regardless of matching criteria) the criteria's
 
 Change format of output so that every message is on a single line.  Useful for parsing with tools such as sed, awk, cut, etc.
 
+=item --unsorted
+
+This prevents sorting the messages according to their age when they are displayed.  While there were exim-clone options that enabled this functionality (-bpr, -bpra, etc) they only worked in the standard output format.  --unsorted works in all output formats, including the exiqgrep clone output and --flatq.
+
 =item The -bp* options all control how much information is displayed and in what manner.  They all match the functionality of the options of the same name in Exim.  Briefly:
 
 =item -bp   display the matching messages in 'mailq' format.
@@ -906,6 +1067,18 @@ The format of a criterion is explained in detail below, but a key point to make 
 
 If no criteria are provided all messages in the queue are displayed (in this case the output of exipick should be identical to the output of 'exim -bp')
 
+=item --freeze <cache file>, --thaw <cache file>
+
+Every time exipick runs, it has to rescan the input directory, open every file, and correctly parse the contents of every file.  While this isn't very time consuming on with a small queue or a lightly loaded server, it can take a great deal of time on heavily loaded machines or large queues.  Unfortunately, one of the best times to use exipick is diagnosing large mail queues.
+
+To speed run times in these situations, you can use --freeze to save a cache of the message information.  --thaw can then be used to read from the cache rather than directly from the spool.  Over time, of course, the information in the cache will drift further and further out of date, but this is not a significant problem over short runs, but do keep in mind that any deliveries made or messages removed from the queue after the cache file is made will not be reflected in the output when using --thaw.
+
+All message variables are saved to the cache except $message_body and $message_age.  $message_age is skipped because it is recalculated dynamically at every running of exipick.  $message_body is skipped because of the potentially large storage requirements.  If $message_body is referenced in any criteria when using --thaw, the data will be looked up from the spool file if the message is still in the spool.
+
+If criteria are specified when using --freeze, only matching messages will be written to the cache file.  Subsequent runs of exipick --thaw using that cache file will not need the original criteria specified.
+
+There are tradeoffs when using this system, time and space.  The cache file will take disk space to write.  The size of the file depends on the type of mail the server handles, but it ranges between 2KB and 5KB per message.  The run of exipick which creates the cache file will take longer to run than a standard run, perhaps as much as 50% longer, but the subsequent runs readng from the cache file will take as little as 10-20% of the time it would take for a run of exipick without --freeze/--thaw.  In other words, if a system is in a state where it takes 30 seconds to run exipick, making a cache file will take around 45 second, but subsequent reads of the cache will take around 5 seconds.  The size needed for the cache file decrease and the performance gains on the --thaw runs increase if criteria which limits the number of messages written to the cache file are used on the --freeze run.
+
 =item --help
 
 This screen.
@@ -941,6 +1114,10 @@ The simplest form is a bare string regular expression, represented by the operat
 Slightly more complex is the string comparison with the operators 'eq' and 'ne' for equal and not equal, respectively.  '$sender_helo_name eq hotmail.com' is true for messages with the exact helo string "hotmail.com", while '$sender_helo_name ne hotmail.com' is true for any message with a helo string other than "hotmail.com".
 
 The most complex and the most flexible format are straight regular expressions with the operators '=~' and '!~'.  The value in the criteria is expected to be a correctly formatted perl regular expression B<including the regexp delimiters (usually //)>.  The criterion '$sender_helo_name !~ /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/' matches for any message which does not have an IP address for its helo string.
+
+=item NEGATION
+
+In addition to standard logical negation available with the operators above (== vs !=, < vs >=, etc) any criteria can be whole negated by prepending an exclamation mark ("!") to the variable name.  This is required for negating boolean variables, and very convenient for negating the simple '=' operator (previously, the opposite of '$var = foo' was '$var !~ /foo/'.  This can now be written '!$var = foo').
 
 =back
 
