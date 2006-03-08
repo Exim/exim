@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/parse.c,v 1.8 2006/02/28 11:25:40 ph10 Exp $ */
+/* $Cambridge: exim/src/src/parse.c,v 1.9 2006/03/08 11:13:07 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -854,6 +854,8 @@ Arguments:
   charset      the name of the character set; NULL => iso-8859-1
   buffer       the buffer to put the answer in
   buffer_size  the size of the buffer
+  fold         if TRUE, a newline is inserted before the separating space when
+                 more than one encoded-word is generated
 
 Returns:       pointer to the original string, if no quoting needed, or
                pointer to buffer containing the quoted string, or
@@ -863,7 +865,7 @@ Returns:       pointer to the original string, if no quoting needed, or
 
 uschar *
 parse_quote_2047(uschar *string, int len, uschar *charset, uschar *buffer,
-  int buffer_size)
+  int buffer_size, BOOL fold)
 {
 uschar *s = string;
 uschar *p, *t;
@@ -890,6 +892,7 @@ for (; len > 0; len--)
     {
     *t++ = '?';
     *t++ = '=';
+    if (fold) *t++ = '\n';
     *t++ = ' ';
     p = t;
     Ustrncpy(p, buffer, hlen);
@@ -989,7 +992,7 @@ for (i = 0, s = phrase; i < len; i++, s++)
   if ((*s < 32 && *s != '\t') || *s > 126) break;
 
 if (i < len) return parse_quote_2047(phrase, len, headers_charset, buffer,
-  buffer_size);
+  buffer_size, FALSE);
 
 /* No non-printers; use the RFC 822 quoting rules */
 

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.325 2006/03/08 10:49:18 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.326 2006/03/08 11:13:07 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -295,6 +295,10 @@ PH/57 Tidies in SMTP dialogue display in debug output: (i) It was not showing
       responses to authentication challenges, though it was showing the
       challenges; (ii) I've removed the CR characters from the debug output for
       SMTP output lines.
+
+PH/58 Allow for the insertion of a newline as well as a space when a string
+      is turned into more than one encoded-word during RFC 2047 encoding. The
+      Sieve code now uses this.
 
 
 Exim version 4.60

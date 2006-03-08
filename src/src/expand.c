@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.56 2006/03/01 11:40:51 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.57 2006/03/08 11:13:07 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4737,7 +4737,7 @@ while (*s != 0)
         {
         uschar buffer[2048];
         uschar *string = parse_quote_2047(sub, Ustrlen(sub), headers_charset,
-          buffer, sizeof(buffer));
+          buffer, sizeof(buffer), FALSE);
         yield = string_cat(yield, &size, &ptr, string, Ustrlen(string));
         continue;
         }

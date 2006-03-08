@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.18 2006/03/01 10:40:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.19 2006/03/08 11:13:07 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2854,7 +2854,7 @@ while (*filter->pc)
           /* Allocation is larger than neccessary, but enough even for split MIME words */
           buffer_capacity=32+4*subject.length;
           buffer=store_get(buffer_capacity);
-          addr->reply->subject=parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity);
+          addr->reply->subject=parse_quote_2047(subject.character, subject.length, US"utf-8", buffer, buffer_capacity, TRUE);
           addr->reply->oncelog=once;
           addr->reply->once_repeat=days*86400;
 
