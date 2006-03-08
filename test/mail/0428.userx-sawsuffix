@@ -1,0 +1,19 @@
+From someone@test.ex Tue Mar 02 09:44:33 1999
+Return-path: <someone@test.ex>
+Envelope-to: userx-suffix@test.ex
+Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
+Received: from CALLER by mail.test.ex with local (Exim x.yz)
+	(envelope-from <someone@test.ex>)
+	id 10HmbN-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+To: userx-suffix@test.ex
+Filter: require ["envelope","fileinto"]; 
+        if envelope :matches :localpart "to" "*-suffix" {
+          fileinto "userx-sawsuffix";
+          stop; 
+        }   
+Message-Id: <E10HmbN-0005vi-00@mail.test.ex>
+From: someone@test.ex
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Test 14
+
