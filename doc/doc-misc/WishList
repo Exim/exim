@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.63 2006/03/02 15:13:59 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.64 2006/03/08 09:43:10 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1442,12 +1442,6 @@ this reason, I don't really like this idea.
 (236) 02-Feb-04 S  String in local_scan that's added to the binary version string
 ------------------------------------------------------------------------------
 
-(237) 02-Feb-04 M  Add_header in ACLs because "message" is overloaded
-
-This would be useful for verbs where "message" is an error message. See also
-333.
-------------------------------------------------------------------------------
-
 (238) 05-Feb-04 S  ${address to handle multiple addresses
 
 At present, ${address expects to see just one address. An extension would let
@@ -1905,7 +1899,7 @@ headers should be re-planned and re-implemented in a more consistent manner.
 These are the main previous items:
 
 Exim 3 Wish List: 41, 85, 149, 187.
-Exim 4 Wish List: 55, 62, 63, 160, 212, 237, 270, 314, 328.
+Exim 4 Wish List: 55, 62, 63, 160, 212, 270, 314, 328.
 ------------------------------------------------------------------------------
 
 (334) 07-Jun-05 M Support for messages larger than 2G

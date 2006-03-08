@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/OS/os.c-cygwin,v 1.4 2005/10/03 09:53:38 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.c-cygwin,v 1.5 2006/03/08 09:43:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -49,6 +49,8 @@ unsigned int cygwin_WinVersion;
 #endif
 
 #include <windows.h>
+#define EqualLuid(Luid1, Luid2) \
+  ((Luid1.LowPart == Luid2.LowPart) && (Luid1.HighPart == Luid2.HighPart))
 #include <sys/cygwin.h>
 
 /* Special static variables */
@@ -130,9 +132,9 @@ static DWORD get_privileges ()
               && GetTokenInformation(hToken, TokenPrivileges,
                                      privs, length, &length)))) {
     for (i = 0; i < privs->PrivilegeCount; i++) {
-      if (privs->Privileges[i].Luid.QuadPart == cluid.QuadPart)
+      if (EqualLuid(privs->Privileges[i].Luid, cluid))
         ret |= CREATE_BIT;
-      else if (privs->Privileges[i].Luid.QuadPart == rluid.QuadPart)
+      else if (EqualLuid(privs->Privileges[i].Luid, rluid))
         ret |= RESTORE_BIT;
       else continue;
       if (ret == (CREATE_BIT | RESTORE_BIT))
