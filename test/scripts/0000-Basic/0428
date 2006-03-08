@@ -85,3 +85,13 @@ Filter: require ["vacation"];
         vacation "I am gone.  Not here.";
 Test 13
 ****
+# Test use of suffix
+exim -odi -f someone@test.ex userx-suffix userx-suffix2
+To: userx-suffix@test.ex
+Filter: require ["envelope","fileinto"]; 
+        if envelope :matches :localpart "to" "*-suffix" {
+          fileinto "userx-sawsuffix";
+          stop; 
+        }   
+Test 14
+****

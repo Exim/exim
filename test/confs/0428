@@ -43,6 +43,8 @@ r1:
 
 r2:
   driver = redirect
+  local_part_suffix = -*
+  local_part_suffix_optional
   allow_filter
   data = "#Sieve filter\n$h_filter:"
   user = CALLER
