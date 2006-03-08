@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.35 2006/03/06 16:05:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.36 2006/03/08 10:49:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -338,8 +338,13 @@ va_list ap;
 
 DEBUG(D_receive)
   {
+  uschar *cr, *end;
   va_start(ap, format);
   (void) string_vformat(big_buffer, big_buffer_size, format, ap);
+  va_end(ap);
+  end = big_buffer + Ustrlen(big_buffer);
+  while ((cr = Ustrchr(big_buffer, '\r')) != NULL)   /* lose CRs */
+    memmove(cr, cr + 1, (end--) - cr);
   debug_printf("SMTP>> %s", big_buffer);
   }
 
@@ -2643,7 +2648,13 @@ while (done <= 0)
     #endif
 
     (void)fwrite(s, 1, ptr, smtp_out);
-    DEBUG(D_receive) debug_printf("SMTP>> %s", s);
+    DEBUG(D_receive)
+      {
+      uschar *cr;
+      while ((cr = Ustrchr(s, '\r')) != NULL)   /* lose CRs */
+        memmove(cr, cr + 1, (ptr--) - (cr - s));
+      debug_printf("SMTP>> %s", s);
+      }
     helo_seen = TRUE;
     break;   /* HELO/EHLO */
 

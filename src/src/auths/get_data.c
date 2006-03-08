@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/get_data.c,v 1.3 2006/02/07 11:19:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/get_data.c,v 1.4 2006/03/08 10:49:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -40,6 +40,7 @@ while ((c = receive_getc()) != '\n' && c != EOF)
   }
 if (p > 0 && big_buffer[p-1] == '\r') p--;
 big_buffer[p] = 0;
+DEBUG(D_receive) debug_printf("SMTP<< %s\n", big_buffer);
 if (Ustrcmp(big_buffer, "*") == 0) return CANCELLED;
 *aptr = big_buffer;
 return OK;
