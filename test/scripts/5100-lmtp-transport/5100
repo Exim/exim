@@ -36,4 +36,8 @@ exim -odi -DIGNORE_QUOTA=true jack jill
 script: 09
 This is a test message.
 ****
+exim -odi userx usery
+script: 10
+This is a test message.
+****
 no_msglog_check

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.36 2006/02/23 10:25:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.37 2006/03/09 15:10:16 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3725,11 +3725,13 @@ if (test_retry_arg >= 0)
       return EXIT_FAILURE;
       }
 
-    /* For the rcpt_4xx errors, a value of 255 means "any", and a code > 100 as
-    an error is for matching codes to the decade. Turn them into a real error
-    code, off the decade. */
+    /* For the {MAIL,RCPT,DATA}_4xx errors, a value of 255 means "any", and a
+    code > 100 as an error is for matching codes to the decade. Turn them into
+    a real error code, off the decade. */
 
-    if (basic_errno == ERRNO_RCPT4XX)
+    if (basic_errno == ERRNO_MAIL4XX ||
+        basic_errno == ERRNO_RCPT4XX ||
+        basic_errno == ERRNO_DATA4XX)
       {
       int code = (more_errno >> 8) & 255;
       if (code == 255)

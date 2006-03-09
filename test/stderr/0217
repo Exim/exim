@@ -116,7 +116,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 403 Sorry temp data error
   SMTP>> QUIT
 LOG: MAIN
-  == a@test.ex R=client T=send_to_server defer (0): SMTP error from remote mail server after pipelined DATA: host 127.0.0.1 [127.0.0.1]: 403 Sorry temp data error
+  == a@test.ex R=client T=send_to_server defer (-46): SMTP error from remote mail server after pipelined DATA: host 127.0.0.1 [127.0.0.1]: 403 Sorry temp data error
 LOG: MAIN
   ** b@test.ex R=client T=send_to_server: SMTP error from remote mail server after RCPT TO:<b@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
 LOG: MAIN

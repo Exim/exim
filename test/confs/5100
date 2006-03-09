@@ -51,6 +51,7 @@ lmtp:
 
 begin retry
 
+*  mail_4xx
 *  rcpt_4xx   F,1d,1m
 *  *          F,5d,1d
 

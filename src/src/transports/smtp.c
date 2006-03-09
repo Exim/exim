@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.24 2006/03/01 16:07:16 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.25 2006/03/09 15:10:16 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -598,6 +598,12 @@ if (pending_MAIL)
     if (errno == 0 && buffer[0] != 0)
       {
       uschar flushbuffer[4096];
+      int save_errno = 0;
+      if (buffer[0] == '4')
+        {
+        save_errno = ERRNO_MAIL4XX;
+        addr->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+        }
       while (count-- > 0)
         {
         if (!smtp_read_response(inblock, flushbuffer, sizeof(flushbuffer),
@@ -605,6 +611,7 @@ if (pending_MAIL)
             && (errno != 0 || flushbuffer[0] == 0))
           break;
         }
+      errno = save_errno;
       }
     return -3;
     }
@@ -683,11 +690,9 @@ while (count-- > 0)
 
     else
       {
-      int bincode = (buffer[1] - '0')*10 + buffer[2] - '0';
-
       addr->transport_return = DEFER;
       addr->basic_errno = ERRNO_RCPT4XX;
-      addr->more_errno |= bincode << 8;
+      addr->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
 
       /* Log temporary errors if there are more hosts to be tried. */
 
@@ -720,7 +725,15 @@ if (pending_DATA != 0 &&
   int code;
   uschar *msg;
   BOOL pass_message;
-  if (pending_DATA > 0 || (yield & 1) != 0) return -3;
+  if (pending_DATA > 0 || (yield & 1) != 0)
+    {
+    if (errno == 0 && buffer[0] == '4')
+      {
+      errno = ERRNO_DATA4XX;
+      addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+      }
+    return -3;
+    }
   (void)check_response(host, &errno, 0, buffer, &code, &msg, &pass_message);
   DEBUG(D_transport) debug_printf("%s\nerror for DATA ignored: pipelining "
     "is in use and there were no good recipients\n", msg);
@@ -1340,7 +1353,15 @@ switch(rc)
 
   case +1:                /* Block was sent */
   if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
-    ob->command_timeout)) goto RESPONSE_FAILED;
+       ob->command_timeout))
+    {
+    if (errno == 0 && buffer[0] == '4')
+      {
+      errno = ERRNO_MAIL4XX;
+      addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+      }
+    goto RESPONSE_FAILED;
+    }
   pending_MAIL = FALSE;
   break;
   }
@@ -1521,8 +1542,16 @@ if (!ok) ok = TRUE; else
   /* For SMTP, we now read a single response that applies to the whole message.
   If it is OK, then all the addresses have been delivered. */
 
-  if (!lmtp) ok = smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
-    ob->final_timeout);
+  if (!lmtp)
+    {
+    ok = smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
+      ob->final_timeout);
+    if (!ok && errno == 0 && buffer[0] == '4')
+      {
+      errno = ERRNO_DATA4XX;
+      addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+      }
+    }
 
   /* For LMTP, we get back a response for every RCPT command that we sent;
   some may be accepted and some rejected. For those that get a response, their
@@ -1590,6 +1619,8 @@ if (!ok) ok = TRUE; else
             addr->transport_return = FAIL;
           else
             {
+            errno = ERRNO_DATA4XX;
+            addr->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
             addr->transport_return = DEFER;
             retry_add_item(addr, addr->address_retry_key, 0);
             }
@@ -1694,61 +1725,83 @@ if (!ok)
       }
     }
 
-  /* If there was an I/O error or timeout or other transportation error,
-  indicated by errno being non-zero, defer all addresses and yield DEFER,
-  except for the case of failed add_headers expansion, or a transport filter
-  failure, when the yield should be ERROR, to stop it trying other hosts.
-
-  However, handle timeouts after MAIL FROM or "." and loss of connection after
+  /* We want to handle timeouts after MAIL or "." and loss of connection after
   "." specially. They can indicate a problem with the sender address or with
-  the contents of the message rather than a real error on the connection.
-  Therefore, treat these cases in the same way as a 4xx response.
-
-  The following condition tests for NOT these special cases. */
-
-  else if (save_errno != 0 &&
-           (save_errno != ETIMEDOUT ||
-             (Ustrncmp(smtp_command,"MAIL",4) != 0 &&
-              Ustrncmp(smtp_command,"end ",4) != 0)) &&
-           (save_errno != ERRNO_SMTPCLOSED ||
-              Ustrncmp(smtp_command,"end ",4) != 0))
-    {
-    yield = (save_errno == ERRNO_CHHEADER_FAIL ||
-             save_errno == ERRNO_FILTER_FAIL)? ERROR : DEFER;
-    set_errno(addrlist, save_errno, message, DEFER, pass_message);
-    }
-
-  /* Otherwise we have a message-specific error response from the remote
-  host. This is one of
-    (a) negative response or timeout after "mail from"
-    (b) negative response after "data"
-    (c) negative response or timeout or dropped connection after "."
-  It won't be a negative response or timeout after "rcpt to", as that is dealt
-  with separately above. The action in all cases is to set an appropriate
-  error code for all the addresses, but to leave yield set to OK because
-  the host itself has not failed. [It might in practice have failed for a
-  timeout after MAIL FROM, or "." but if so, we'll discover that at the next
-  delivery attempt.] For a temporary error, set the message_defer flag, and
-  write to the logs for information if this is not the last host. The error for
-  the last host will be logged as part of the address's log line. */
+  the contents of the message rather than a real error on the connection. These
+  cases are treated in the same way as a 4xx response. This next bit of code
+  does the classification. */
 
   else
     {
-    if (mua_wrapper) code = '5';  /* Force hard failure in wrapper mode */
+    BOOL message_error;
 
-    set_errno(addrlist, save_errno, message, (code == '5')? FAIL : DEFER,
-      pass_message);
-
-    /* If there's an errno, the message contains just the identity of
-    the host. */
-
-    if (code != '5')     /* Anything other than 5 is treated as temporary */
+    switch(save_errno)
       {
-      if (save_errno > 0)
-        message = US string_sprintf("%s: %s", message, strerror(save_errno));
-      if (host->next != NULL) log_write(0, LOG_MAIN, "%s", message);
-      deliver_msglog("%s %s\n", tod_stamp(tod_log), message);
-      *message_defer = TRUE;
+      case 0:
+      case ERRNO_MAIL4XX:
+      case ERRNO_DATA4XX:
+      message_error = TRUE;
+      break;
+
+      case ETIMEDOUT:
+      message_error = Ustrncmp(smtp_command,"MAIL",4) == 0 ||
+                      Ustrncmp(smtp_command,"end ",4) == 0;
+      break;
+
+      case ERRNO_SMTPCLOSED:
+      message_error = Ustrncmp(smtp_command,"end ",4) == 0;
+      break;
+
+      default:
+      message_error = FALSE;
+      break;
+      }
+
+    /* Handle the cases that are treated as message errors. These are:
+
+      (a) negative response or timeout after MAIL
+      (b) negative response after DATA
+      (c) negative response or timeout or dropped connection after "."
+
+    It won't be a negative response or timeout after RCPT, as that is dealt
+    with separately above. The action in all cases is to set an appropriate
+    error code for all the addresses, but to leave yield set to OK because the
+    host itself has not failed. Of course, it might in practice have failed
+    when we've had a timeout, but if so, we'll discover that at the next
+    delivery attempt. For a temporary error, set the message_defer flag, and
+    write to the logs for information if this is not the last host. The error
+    for the last host will be logged as part of the address's log line. */
+
+    if (message_error)
+      {
+      if (mua_wrapper) code = '5';  /* Force hard failure in wrapper mode */
+      set_errno(addrlist, save_errno, message, (code == '5')? FAIL : DEFER,
+        pass_message);
+
+      /* If there's an errno, the message contains just the identity of
+      the host. */
+
+      if (code != '5')     /* Anything other than 5 is treated as temporary */
+        {
+        if (save_errno > 0)
+          message = US string_sprintf("%s: %s", message, strerror(save_errno));
+        if (host->next != NULL) log_write(0, LOG_MAIN, "%s", message);
+        deliver_msglog("%s %s\n", tod_stamp(tod_log), message);
+        *message_defer = TRUE;
+        }
+      }
+
+    /* Otherwise, we have an I/O error or a timeout other than after MAIL or
+    ".", or some other transportation error. We defer all addresses and yield
+    DEFER, except for the case of failed add_headers expansion, or a transport
+    filter failure, when the yield should be ERROR, to stop it trying other
+    hosts. */
+
+    else
+      {
+      yield = (save_errno == ERRNO_CHHEADER_FAIL ||
+               save_errno == ERRNO_FILTER_FAIL)? ERROR : DEFER;
+      set_errno(addrlist, save_errno, message, DEFER, pass_message);
       }
     }
   }

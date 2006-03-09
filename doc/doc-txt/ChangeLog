@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.326 2006/03/08 11:13:07 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.327 2006/03/09 15:10:16 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -299,6 +299,9 @@ PH/57 Tidies in SMTP dialogue display in debug output: (i) It was not showing
 PH/58 Allow for the insertion of a newline as well as a space when a string
       is turned into more than one encoded-word during RFC 2047 encoding. The
       Sieve code now uses this.
+
+PH/59 Added the following errors that can be detected in retry rules: mail_4xx,
+      data_4xx, lost_connection, tls_required.
 
 
 Exim version 4.60

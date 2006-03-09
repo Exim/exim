@@ -1,5 +1,22 @@
-# rcpt_4xx from server with no retry
+# mail_4xx, rcpt_4xx, data_4xx, lost_connection
 need_ipv4
+# MAIL, no pipelining
+#
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250 OK
+MAIL FROM
+452 temporary error
+QUIT
+250 OK
+****
+exim -odi userx@x.y
+****
+dump retry
+sudo rm DIR/spool/db/*
+# RCPT, no pipelining
 #
 server PORT_S
 220 Server ready
@@ -16,4 +33,127 @@ QUIT
 exim -odi userx@x.y
 ****
 dump retry
-no_message_check
+# DATA start, no pipelining
+#
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+452 temporary error
+QUIT
+250 OK
+****
+exim -odi userx@x.y
+****
+# DATA end, no pipelining
+#
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+352 GO AHEAD
+.
+452 temporary error
+QUIT
+250 OK
+****
+exim -odi userx@x.y
+****
+# MAIL, pipelining
+#
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+452 temporary error
+QUIT
+250 OK
+****
+exim -odi userx@x.y
+****
+# RCPT, pipelining
+#
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+452 temporary error
+QUIT
+250 OK
+****
+exim -odi userx@x.y
+****
+# DATA start, pipelining
+#
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+452 temporary error
+QUIT
+250 OK
+****
+exim -odi userx@x.y
+****
+# DATA end, pipelining
+#
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+352 GO AHEAD
+.
+452 temporary error
+QUIT
+250 OK
+****
+exim -odi userx@x.y
+****
+# lost connection
+#
+server PORT_S
+220 Server ready
+EHLO
+250-server id
+250-PIPELINING
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+****
+exim -odi userx@x.y
+****

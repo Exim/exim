@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.64 2006/03/08 09:43:10 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.65 2006/03/09 15:10:16 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -293,16 +293,6 @@ Could be tricky determining who "me" is.
 David Carter
 
 So several warnings could be generated as the mailbox got bigger and bigger.
-------------------------------------------------------------------------------
-
-(146) 15-May-2000 M  Allow SMTP error codes in retry rules
-
-This would allow special handling of certain errors from certain hosts. In
-particular, it would allow failing of certain 4xx codes.
-
-This is now available for 4xx responses to RCPT commands. Is anything more
-needed? Apparently, yes; there's been a request for a similar feature for MAIL
-commands.
 ------------------------------------------------------------------------------
 
 (148) 15-May-2000 S  Warn recipient if message rejected for quota excession.
@@ -1255,11 +1245,6 @@ This is an option that turns all hard bounces into soft bounces. The idea is
 that it can be used as a safety-net while testing configurations. Instead of a
 local bounce, the message stays on the queue; instead of 5xx SMTP responses,
 4xx ones are given.
-
-The ability to do the opposite - turn 4xx into 5xx under certain circumstances
-might also be useful (e.g. after a certain time). This might best be done by
-extending the retry logic to recognize 4xx as a special error. (This is now
-done.)
 ------------------------------------------------------------------------------
 
 (202) 10-Oct-03 S  -bvsomething to do a callout after the verify
@@ -1297,7 +1282,6 @@ permanent ones after some fixed time.
 ------------------------------------------------------------------------------
 
 (209) 31-Oct-03 S  a way of making crashes in pipe commands temporary errors
-
 ------------------------------------------------------------------------------
 
 (210) 31-Oct-03 S  runtime option to change the daemon name used for tcprwappers
@@ -1328,13 +1312,6 @@ might be quite a big project: there's also output from -bp and eximon queue
 display and no doubt other places as well. (Utilities that process the logs,
 e.g. exigrep, eximstats, will be automatically handled if the logs are
 changed.)
-------------------------------------------------------------------------------
-
-(216) 27-Nov-03 S  Option to bounce if required TLS doesn't happen
-
-This is for the smtp transport with hosts_require_tls set. Currently, it
-defers. Possibly the best approach is to make the error one that can be seen by
-the retry logic.
 ------------------------------------------------------------------------------
 
 (217) 27-Nov-03 M  A function to pass back variables from Perl
@@ -1600,12 +1577,6 @@ could not be done. There are ways of fudging this, using ACL variables and
 
 For example: mainlog_selector and rejectlog_selector, with log_selector setting
 both of them.
-------------------------------------------------------------------------------
-
-(286) 21-Jul-04 M Distinguishing a larger number of errors
-
-For instance, detecting "connection reset by peer" (ENETRESET or ECONNRESET)
-might be useful.
 ------------------------------------------------------------------------------
 
 (288) 10-Aug-04 M Option for verify to require MX
@@ -2017,11 +1988,6 @@ This would allow keys that are regular expressions to set up numerical
 variables that are included in the data. This has to be done inside the lookup
 code, because of caching. Probably means we have to invent ewildlsearch and
 enwildlsearch.
-------------------------------------------------------------------------------
-
-(350) 28-Feb-06 S Additional errors for retry rules
-
-(i) Unexpected connection close; (ii) mail_4xx.
 ------------------------------------------------------------------------------
 --- HWM 350 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------

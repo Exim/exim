@@ -17,6 +17,11 @@ gecos_name = CALLER_NAME
 
 begin routers
 
+r0:
+  driver = redirect
+  senders = :
+  data = :blackhole: discard bounces
+
 r1:
   driver = accept
   transport = t1
@@ -37,7 +42,10 @@ t1:
 
 begin retry
 
+*  lost_connection
+*  mail_4xx
 *  rcpt_4xx
+*  data_4xx
 *  *         F,1d,15m
 
 

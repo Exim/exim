@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.23 2006/02/14 14:55:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.24 2006/03/09 15:10:16 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -452,6 +452,8 @@ to conflict with system errno values. */
 #define ERRNO_AUTHFAIL       (-42)   /* When required by client */
 #define ERRNO_CONNECTTIMEOUT (-43)   /* Used internally in smtp transport */
 #define ERRNO_RCPT4XX        (-44)   /* RCPT gave 4xx error */
+#define ERRNO_MAIL4XX        (-45)   /* MAIL gave 4xx error */
+#define ERRNO_DATA4XX        (-46)   /* DATA gave 4xx error */
 
 /* These must be last, so all retry deferments can easily be identified */
 

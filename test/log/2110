@@ -4,6 +4,13 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLSv1:AES256-SHA:256
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmaY-0005vi-00 a TLS session is required for 127.0.0.1 [127.0.0.1], but the server did not offer TLS support
+1999-03-02 09:44:33 10HmaY-0005vi-00 == userx@test.ex R=client T=send_to_server defer (-38): a TLS session is required for 127.0.0.1 [127.0.0.1], but the server did not offer TLS support
+1999-03-02 09:44:33 10HmaY-0005vi-00 ** userx@test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
 ******** SERVER ********
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225

@@ -32,8 +32,13 @@ MAIL FROM
 QUIT
 <<< QUIT
 250 OK
-1999-03-02 09:44:33 10HmbB-0005vi-00 == userx@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP error after MAIL FROM:<CALLER@myhost.test.ex>: 450 Don't like that sender just at the moment
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 == userx@myhost.test.ex R=smartuser T=lmtp defer (-45): LMTP error after MAIL FROM:<CALLER@myhost.test.ex>: 450 Don't like that sender just at the moment
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** userx@myhost.test.ex: retry timeout exceeded
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=bounces
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 220 Welcome to this LMTP simulation
 LHLO
 <<< LHLO myhost.test.ex
@@ -66,9 +71,9 @@ DATA
 .
 <<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 <<< 	(envelope-from <CALLER@myhost.test.ex>)
-<<< 	id 10HmbC-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+<<< 	id 10HmbD-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
 <<< script: 05
-<<< Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+<<< Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
 <<< From: CALLER_NAME <CALLER@myhost.test.ex>
 <<< Date: Tue, 2 Mar 1999 09:44:33 +0000
 <<< 
@@ -81,16 +86,16 @@ DATA
 QUIT
 <<< QUIT
 250 OK
-1999-03-02 09:44:33 10HmbC-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp
-1999-03-02 09:44:33 10HmbC-0005vi-00 == jack@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP error after end of data: 450 Number 2 is now delayed
-1999-03-02 09:44:33 10HmbC-0005vi-00 ** jill@myhost.test.ex R=smartuser T=lmtp: LMTP error after end of data: 550 Number 3 is now rejected
-1999-03-02 09:44:33 10HmbC-0005vi-00 == tom@myhost.test.ex R=smartuser T=lmtp defer (-44): LMTP error after RCPT TO:<tom@myhost.test.ex>: 450 This one is delayed on RCPT
-1999-03-02 09:44:33 10HmbC-0005vi-00 ** dick@myhost.test.ex R=smartuser T=lmtp: LMTP error after RCPT TO:<dick@myhost.test.ex>: 550 This one is unknown on RCPT
-1999-03-02 09:44:33 10HmbC-0005vi-00 -> harry <harry@myhost.test.ex> R=smartuser T=lmtp
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= <> R=10HmbC-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbD-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=bounces
-1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbD-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp
+1999-03-02 09:44:33 10HmbD-0005vi-00 == jack@myhost.test.ex R=smartuser T=lmtp defer (-46): LMTP error after end of data: 450 Number 2 is now delayed
+1999-03-02 09:44:33 10HmbD-0005vi-00 ** jill@myhost.test.ex R=smartuser T=lmtp: LMTP error after end of data: 550 Number 3 is now rejected
+1999-03-02 09:44:33 10HmbD-0005vi-00 == tom@myhost.test.ex R=smartuser T=lmtp defer (-44): LMTP error after RCPT TO:<tom@myhost.test.ex>: 450 This one is delayed on RCPT
+1999-03-02 09:44:33 10HmbD-0005vi-00 ** dick@myhost.test.ex R=smartuser T=lmtp: LMTP error after RCPT TO:<dick@myhost.test.ex>: 550 This one is unknown on RCPT
+1999-03-02 09:44:33 10HmbD-0005vi-00 -> harry <harry@myhost.test.ex> R=smartuser T=lmtp
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= <> R=10HmbD-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbE-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=bounces
+1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 220 Welcome to this LMTP simulation
 LHLO
 <<< LHLO myhost.test.ex
@@ -123,25 +128,25 @@ DATA
 .
 <<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 <<< 	(envelope-from <CALLER@myhost.test.ex>)
-<<< 	id 10HmbE-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+<<< 	id 10HmbF-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
 <<< script: 06
-<<< Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
+<<< Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
 <<< From: CALLER_NAME <CALLER@myhost.test.ex>
 <<< Date: Tue, 2 Mar 1999 09:44:33 +0000
 <<< 
 <<< This is a test message.
 <<< .
 250 Number 1 is OK
-1999-03-02 09:44:33 10HmbE-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp
-1999-03-02 09:44:33 10HmbE-0005vi-00 == jack@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after end of data (ddd bytes written)
-1999-03-02 09:44:33 10HmbE-0005vi-00 == jill@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after end of data (ddd bytes written)
-1999-03-02 09:44:33 10HmbE-0005vi-00 == tom@myhost.test.ex R=smartuser T=lmtp defer (-44): LMTP error after RCPT TO:<tom@myhost.test.ex>: 450 This one is delayed on RCPT
-1999-03-02 09:44:33 10HmbE-0005vi-00 ** dick@myhost.test.ex R=smartuser T=lmtp: LMTP error after RCPT TO:<dick@myhost.test.ex>: 550 This one is unknown on RCPT
-1999-03-02 09:44:33 10HmbE-0005vi-00 == harry@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after end of data (ddd bytes written)
-1999-03-02 09:44:33 10HmbF-0005vi-00 <= <> R=10HmbE-0005vi-00 U=EXIMUSER P=local S=sss
-1999-03-02 09:44:33 10HmbF-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=bounces
-1999-03-02 09:44:33 10HmbF-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbG-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbF-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp
+1999-03-02 09:44:33 10HmbF-0005vi-00 == jack@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after end of data (ddd bytes written)
+1999-03-02 09:44:33 10HmbF-0005vi-00 == jill@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after end of data (ddd bytes written)
+1999-03-02 09:44:33 10HmbF-0005vi-00 == tom@myhost.test.ex R=smartuser T=lmtp defer (-44): LMTP error after RCPT TO:<tom@myhost.test.ex>: 450 This one is delayed on RCPT
+1999-03-02 09:44:33 10HmbF-0005vi-00 ** dick@myhost.test.ex R=smartuser T=lmtp: LMTP error after RCPT TO:<dick@myhost.test.ex>: 550 This one is unknown on RCPT
+1999-03-02 09:44:33 10HmbF-0005vi-00 == harry@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after end of data (ddd bytes written)
+1999-03-02 09:44:33 10HmbG-0005vi-00 <= <> R=10HmbF-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbG-0005vi-00 => :blackhole: <CALLER@myhost.test.ex> R=bounces
+1999-03-02 09:44:33 10HmbG-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 220 Welcome to this LMTP simulation
 LHLO
 <<< LHLO myhost.test.ex
@@ -169,13 +174,13 @@ RCPT TO
 <<< RCPT TO:<harry@myhost.test.ex>
 250 OK
 DATA
-1999-03-02 09:44:33 10HmbG-0005vi-00 == userx@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after DATA
-1999-03-02 09:44:33 10HmbG-0005vi-00 == jack@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after DATA
-1999-03-02 09:44:33 10HmbG-0005vi-00 == jill@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after DATA
-1999-03-02 09:44:33 10HmbG-0005vi-00 == tom@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after DATA
-1999-03-02 09:44:33 10HmbG-0005vi-00 == dick@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after DATA
-1999-03-02 09:44:33 10HmbG-0005vi-00 == harry@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after DATA
-1999-03-02 09:44:33 10HmbH-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbH-0005vi-00 == userx@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after DATA
+1999-03-02 09:44:33 10HmbH-0005vi-00 == jack@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after DATA
+1999-03-02 09:44:33 10HmbH-0005vi-00 == jill@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after DATA
+1999-03-02 09:44:33 10HmbH-0005vi-00 == tom@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after DATA
+1999-03-02 09:44:33 10HmbH-0005vi-00 == dick@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after DATA
+1999-03-02 09:44:33 10HmbH-0005vi-00 == harry@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP timeout after DATA
+1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 220 Welcome to this LMTP simulation
 LHLO
 <<< LHLO myhost.test.ex
@@ -196,9 +201,9 @@ DATA
 .
 <<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 <<< 	(envelope-from <CALLER@myhost.test.ex>)
-<<< 	id 10HmbH-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+<<< 	id 10HmbI-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
 <<< script: 08
-<<< Message-Id: <E10HmbH-0005vi-00@myhost.test.ex>
+<<< Message-Id: <E10HmbI-0005vi-00@myhost.test.ex>
 <<< From: CALLER_NAME <CALLER@myhost.test.ex>
 <<< Date: Tue, 2 Mar 1999 09:44:33 +0000
 <<< 
@@ -209,10 +214,10 @@ DATA
 QUIT
 <<< QUIT
 220 OK
-1999-03-02 09:44:33 10HmbH-0005vi-00 => jack <jack@myhost.test.ex> R=smartuser T=lmtp
-1999-03-02 09:44:33 10HmbH-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp
-1999-03-02 09:44:33 10HmbH-0005vi-00 Completed
-1999-03-02 09:44:33 10HmbI-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbI-0005vi-00 => jack <jack@myhost.test.ex> R=smartuser T=lmtp
+1999-03-02 09:44:33 10HmbI-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp
+1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbJ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 220 Welcome to this LMTP simulation
 LHLO
 <<< LHLO myhost.test.ex
@@ -234,9 +239,9 @@ DATA
 .
 <<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 <<< 	(envelope-from <CALLER@myhost.test.ex>)
-<<< 	id 10HmbI-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+<<< 	id 10HmbJ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
 <<< script: 09
-<<< Message-Id: <E10HmbI-0005vi-00@myhost.test.ex>
+<<< Message-Id: <E10HmbJ-0005vi-00@myhost.test.ex>
 <<< From: CALLER_NAME <CALLER@myhost.test.ex>
 <<< Date: Tue, 2 Mar 1999 09:44:33 +0000
 <<< 
@@ -247,6 +252,29 @@ DATA
 QUIT
 <<< QUIT
 220 OK
-1999-03-02 09:44:33 10HmbI-0005vi-00 => jack <jack@myhost.test.ex> R=smartuser T=lmtp
-1999-03-02 09:44:33 10HmbI-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp
-1999-03-02 09:44:33 10HmbI-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbJ-0005vi-00 => jack <jack@myhost.test.ex> R=smartuser T=lmtp
+1999-03-02 09:44:33 10HmbJ-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp
+1999-03-02 09:44:33 10HmbJ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbK-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+220 Welcome to this LMTP simulation
+LHLO
+<<< LHLO myhost.test.ex
+250-Hello there
+250 SIZE
+MAIL FROM
+<<< MAIL FROM:<CALLER@myhost.test.ex>
+250 OK
+RCPT TO
+<<< RCPT TO:<userx@myhost.test.ex>
+250 OK
+RCPT TO
+<<< RCPT TO:<usery@myhost.test.ex>
+250 OK
+DATA
+<<< DATA
+450 Temporary error
+QUIT
+<<< QUIT
+220 OK
+1999-03-02 09:44:33 10HmbK-0005vi-00 == userx@myhost.test.ex R=smartuser T=lmtp defer (-46): LMTP error after DATA: 450 Temporary error
+1999-03-02 09:44:33 10HmbK-0005vi-00 == usery@myhost.test.ex R=smartuser T=lmtp defer (-46): LMTP error after DATA: 450 Temporary error

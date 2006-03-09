@@ -14,4 +14,4 @@ DATA
 <<< DATA
 354 Send it
 .
-1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@myhost.test.ex R=r1 T=t1 defer (-1): transport filter process failed (127): unable to execute command
+1999-03-02 09:44:33 10HmaX-0005vi-00 == userx@myhost.test.ex R=r1 T=t1 defer (-24): transport filter process failed (127): unable to execute command

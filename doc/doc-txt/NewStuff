@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.95 2006/03/06 16:05:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.96 2006/03/09 15:10:16 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -164,6 +164,24 @@ PH/18 There is a new ACL modifier called "add_header" which does what its name
       The facility for specifying where the new header is to be inserted, as
       described for WARN with "message" in section 39.19 of the 4.60 manual, is
       supported.
+
+PH/19 The following errors can now be detected in retry rules:
+
+      mail_4xx   This is like rcpt_4xx, but applies to MAIL commands
+
+      data_4xx   This is like rcpt_4xx, but applies to DATA commands and the
+                 response code after the end of the data
+
+      lost_connection  This error occurs when the server unexpectedly closes
+                 the SMTP connection. There may, of course, legitmate reasons
+                 for this (host died, network died), but if it repeats a lot
+                 for the same host, it indicates something odd.
+
+      tls_required  The server was required to use TLS (hosts_require_tls),
+                 but either did not offer it, or responded with 4xx to
+                 STARTTLS, or there was a problem setting up the TLS connection
+
+      Note that a 5xx response to STARTTLS is a permanent error.
 
 
 

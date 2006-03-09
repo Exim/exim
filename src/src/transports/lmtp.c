@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/lmtp.c,v 1.7 2006/02/07 11:19:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/lmtp.c,v 1.8 2006/03/09 15:10:16 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -578,7 +578,14 @@ if (!lmtp_write_command(fd_in, "MAIL FROM:<%s>\r\n", return_path))
   goto WRITE_FAILED;
 
 if (!lmtp_read_response(out, buffer, sizeof(buffer), '2', timeout))
+  {
+  if (errno == 0 && buffer[0] == '4')
+    {
+    errno = ERRNO_MAIL4XX;
+    addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+    }
   goto RESPONSE_FAILED;
+  }
 
 /* Next, we hand over all the recipients. Some may be permanently or
 temporarily rejected; others may be accepted, for now. */
@@ -601,9 +608,8 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
       string_printing(buffer));
     if (buffer[0] == '5') addr->transport_return = FAIL; else
       {
-      int bincode = (buffer[1] - '0')*10 + buffer[2] - '0';
       addr->basic_errno = ERRNO_RCPT4XX;
-      addr->more_errno |= bincode << 8;
+      addr->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
       }
     }
   }
@@ -616,7 +622,14 @@ if (send_data)
 
   if (!lmtp_write_command(fd_in, "DATA\r\n")) goto WRITE_FAILED;
   if (!lmtp_read_response(out, buffer, sizeof(buffer), '3', timeout))
+    {
+    if (errno == 0 && buffer[0] == '4')
+      {
+      errno = ERRNO_DATA4XX;
+      addrlist->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+      }
     goto RESPONSE_FAILED;
+    }
 
   sigalrm_seen = FALSE;
   transport_write_timeout = timeout;
@@ -676,6 +689,11 @@ if (send_data)
 
     else
       {
+      if (buffer[0] == '4')
+        {
+        addr->basic_errno = ERRNO_DATA4XX;
+        addr->more_errno |= ((buffer[1] - '0')*10 + buffer[2] - '0') << 8;
+        }
       addr->message = string_sprintf("LMTP error after %s: %s", big_buffer,
         string_printing(buffer));
       addr->transport_return = (buffer[0] == '5')? FAIL : DEFER;
@@ -696,13 +714,15 @@ goto RETURN;
 
 /* Come here if any call to read_response, other than a response after the data
 phase, failed. Put the error in the top address - this will be replicated
-because the yield is still FALSE. Analyse the error, and if if isn't too bad,
-send a QUIT command. Wait for the response with a short timeout, so we don't
-wind up this process before the far end has had time to read the QUIT. */
+because the yield is still FALSE. (But omit ETIMEDOUT, as there will already be
+a suitable message.) Analyse the error, and if if isn't too bad, send a QUIT
+command. Wait for the response with a short timeout, so we don't wind up this
+process before the far end has had time to read the QUIT. */
 
 RESPONSE_FAILED:
 
 save_errno = errno;
+if (errno != ETIMEDOUT && errno != 0) addrlist->basic_errno = errno;
 addrlist->message = NULL;
 
 if (check_response(&save_errno, addrlist->more_errno,

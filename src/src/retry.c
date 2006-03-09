@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/retry.c,v 1.8 2006/02/16 16:37:57 ph10 Exp $ */
+/* $Cambridge: exim/src/src/retry.c,v 1.9 2006/03/09 15:10:16 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -414,20 +414,31 @@ for (yield = retries; yield != NULL; yield = yield->next)
         continue;
       }
 
-    /* Handle 4xx responses to RCPT. The code that was received is in the 2nd
-    least significant byte of more_errno (with 400 subtracted). The required
-    value is coded in the 2nd least significant byte of the yield->more_errno
-    field as follows:
+    /* The TLSREQUIRED error also covers TLSFAILURE. These are subtly different
+    errors, but not worth separating at this level. */
+
+    else if (yield->basic_errno == ERRNO_TLSREQUIRED)
+      {
+      if (basic_errno != ERRNO_TLSREQUIRED && basic_errno != ERRNO_TLSFAILURE)
+        continue;
+      }
+
+    /* Handle 4xx responses to MAIL, RCPT, or DATA. The code that was received
+    is in the 2nd least significant byte of more_errno (with 400 subtracted).
+    The required value is coded in the 2nd least significant byte of the
+    yield->more_errno field as follows:
 
       255     => any 4xx code
       >= 100  => the decade must match the value less 100
       < 100   => the exact value must match
     */
 
-    else if (yield->basic_errno == ERRNO_RCPT4XX)
+    else if (yield->basic_errno == ERRNO_MAIL4XX ||
+             yield->basic_errno == ERRNO_RCPT4XX ||
+             yield->basic_errno == ERRNO_DATA4XX)
       {
       int wanted;
-      if (basic_errno != ERRNO_RCPT4XX) continue;
+      if (basic_errno != yield->basic_errno) continue;
       wanted = (yield->more_errno >> 8) & 255;
       if (wanted != 255)
         {

@@ -15,7 +15,7 @@
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
 1999-03-02 09:44:33 10HmbA-0005vi-00 => lp1 <lp1@myhost.test.ex> R=smartuser T=lmtp
-1999-03-02 09:44:33 10HmbA-0005vi-00 == lp2@myhost.test.ex R=smartuser T=lmtp defer (-1): LMTP error after end of data: 450 Number 2 is now delayed
+1999-03-02 09:44:33 10HmbA-0005vi-00 == lp2@myhost.test.ex R=smartuser T=lmtp defer (-46): LMTP error after end of data: 450 Number 2 is now delayed
 1999-03-02 09:44:33 10HmbA-0005vi-00 ** lp3@myhost.test.ex R=smartuser T=lmtp: LMTP error after end of data: 550 Number 3 is now rejected
 1999-03-02 09:44:33 10HmbA-0005vi-00 == lp4@myhost.test.ex R=smartuser T=lmtp defer (-44): LMTP error after RCPT TO:<lp4@myhost.test.ex>: 450 This one is delayed on RCPT
 1999-03-02 09:44:33 10HmbA-0005vi-00 ** lp5@myhost.test.ex R=smartuser T=lmtp: LMTP error after RCPT TO:<lp5@myhost.test.ex>: 550 This one is unknown on RCPT

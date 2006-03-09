@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.21 2006/02/22 15:08:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.22 2006/03/09 15:10:16 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3421,7 +3421,9 @@ else if (len == 7 && strncmpic(pp, US"timeout", len) == 0)
     }
   }
 
-else if (strncmpic(pp, US"rcpt_4", 6) == 0)
+else if (strncmpic(pp, US"mail_4", 6) == 0 ||
+         strncmpic(pp, US"rcpt_4", 6) == 0 ||
+         strncmpic(pp, US"data_4", 6) == 0)
   {
   BOOL bad = FALSE;
   int x = 255;                           /* means "any 4xx code" */
@@ -3438,18 +3440,24 @@ else if (strncmpic(pp, US"rcpt_4", 6) == 0)
     else if (a != 'x' || b != 'x') bad = TRUE;
     }
 
-  if (bad) return US"rcpt_4 must be followed by xx, dx, or dd, where "
-    "x is literal and d is any digit";
+  if (bad)
+    return string_sprintf("%.4s_4 must be followed by xx, dx, or dd, where "
+      "x is literal and d is any digit", pp);
 
-  *basic_errno = ERRNO_RCPT4XX;
+  *basic_errno = (*pp == 'm')? ERRNO_MAIL4XX :
+                 (*pp == 'r')? ERRNO_RCPT4XX : ERRNO_DATA4XX;
   *more_errno = x << 8;
   }
 
 else if (len == 4 && strncmpic(pp, US"auth", len) == 0 &&
          strncmpic(q+1, US"failed", p-q-1) == 0)
-  {
   *basic_errno = ERRNO_AUTHFAIL;
-  }
+
+else if (strcmpic(pp, US"lost_connection") == 0)
+  *basic_errno = ERRNO_SMTPCLOSED;
+
+else if (strcmpic(pp, US"tls_required") == 0)
+  *basic_errno = ERRNO_TLSREQUIRED;
 
 else if (len != 1 || Ustrncmp(pp, "*", 1) != 0)
   return string_sprintf("unknown or malformed retry error \"%.*s\"", p-pp, pp);

@@ -6,5 +6,7 @@ Test message
 ****
 exim -qf
 ****
+exim -DHOSTS=127.0.0.1 -qf
+****
 killdaemon
 no_msglog_check
