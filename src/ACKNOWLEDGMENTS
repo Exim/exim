@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.43 2006/03/16 11:51:09 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.44 2006/03/16 12:07:55 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -177,8 +177,9 @@ Chris Liddiard            Fix for bug in exiqsumm
 Chris Lightfoot           Patch for -restore-times in exim_lock
 Edgar Lovecraft           Patch for ${str2b64:
 Torsten Luettgert         Suggested patch for proper integer overflow detection
-Lars Mainka               Patch for OpenSSL crl collections
 David Madole              Patch for SPA forced expansion failure bug
+Lars Mainka               Patch for OpenSSL crl collections
+Andrey Malyshev           Patch for $address_data after redirection bug
 Lionel Elie Mamane        Patch for IPv4/IPv6 listen() problem on USAGI Linux
                           Patch for recognizing IPv6 "scoped addresses"
                           Patch for callout caching bug

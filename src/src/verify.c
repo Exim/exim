@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.34 2006/02/21 16:24:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.35 2006/03/16 12:07:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -793,6 +793,7 @@ if (addr != vaddr)
   vaddr->user_message = addr->user_message;
   vaddr->basic_errno = addr->basic_errno;
   vaddr->more_errno = addr->more_errno;
+  vaddr->p.address_data = addr->p.address_data;
   }
 return yield;
 }

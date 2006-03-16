@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.329 2006/03/16 11:51:09 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.330 2006/03/16 12:07:55 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -307,6 +307,12 @@ PH/60 When a VRFY deferred or FAILED, the log message rather than the user
       message was being sent as an SMTP response.
 
 PH/61 Add -l and -k options to exicyclog.
+
+PH/62 When verifying, if an address was redirected to one new address, so that
+      verification continued, and the new address failed or deferred after
+      having set something in $address_data, the value of $address_data was not
+      passed back to the ACL. This was different to the case when no
+      redirection occurred. The value is now passed back in both cases.
 
 
 Exim version 4.60
