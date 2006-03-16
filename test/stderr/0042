@@ -13,6 +13,7 @@
 >>> routing userx@test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> userx in "expan"? no (end of list)
 >>> userx in "userx"? yes (matched "userx")
 >>> calling localuser router
 >>> routed by localuser router
@@ -22,6 +23,17 @@
 >>> routing junkjunk@test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> junkjunk in "expan"? no (end of list)
 >>> junkjunk in "userx"? no (end of list)
 >>> no more routers
 LOG: VRFY failed for junkjunk@test.ex H=[1.1.1.1]
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing expan@test.ex
+>>> test.ex in "test.ex"? yes (matched "test.ex")
+>>> test.ex in "! +local_domains"? no (matched "! +local_domains")
+>>> expan in "expan"? yes (matched "expan")
+>>> calling fail_expansion router
+>>> fail_expansion router: defer for expan@test.ex
+>>>   message: failed to expand "${if with syntax error": unknown condition "with"

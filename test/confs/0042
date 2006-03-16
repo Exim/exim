@@ -24,6 +24,11 @@ fail_remote_domains:
   domains = ! +local_domains
   data = :fail: unrouteable mail domain "$domain"
 
+fail_expansion:
+  driver = redirect
+  local_parts = expan
+  data = ${if with syntax error
+
 localuser:
   driver = accept
   local_parts = userx

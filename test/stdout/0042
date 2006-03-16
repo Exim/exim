@@ -6,4 +6,5 @@
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 <userx@test.ex> is deliverable
 550 <junkjunk@test.ex> Unrouteable address
+451 Cannot resolve <expan@test.ex> at this time
 221 the.local.host.name closing connection

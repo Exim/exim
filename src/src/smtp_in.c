@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.36 2006/03/08 10:49:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.37 2006/03/16 11:14:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3208,14 +3208,14 @@ while (done <= 0)
           break;
 
           case DEFER:
-          s = (addr->message != NULL)?
-            string_sprintf("451 <%s> %s", address, addr->message) :
+          s = (addr->user_message != NULL)?
+            string_sprintf("451 <%s> %s", address, addr->user_message) :
             string_sprintf("451 Cannot resolve <%s> at this time", address);
           break;
 
           case FAIL:
-          s = (addr->message != NULL)?
-            string_sprintf("550 <%s> %s", address, addr->message) :
+          s = (addr->user_message != NULL)?
+            string_sprintf("550 <%s> %s", address, addr->user_message) :
             string_sprintf("550 <%s> is not deliverable", address);
           log_write(0, LOG_MAIN, "VRFY failed for %s %s",
             smtp_cmd_argument, host_and_ident(TRUE));
