@@ -17,9 +17,9 @@ userx@r8 is undeliverable:
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 <userx@r1> is deliverable
 250 <userx@r2> is deliverable
-451 <userx@r3> require_files: error for TESTSUITE/aux-var/0273.exim: Permission denied
-451 <userx@r4> user "non-existant" for require_files not found
-451 <userx@r5> group missing after numerical uid 1 for require_files
+451 Cannot resolve <userx@r3> at this time
+451 Cannot resolve <userx@r4> at this time
+451 Cannot resolve <userx@r5> at this time
 250 <userx@r6> is deliverable
 550 <userx@r7> Unrouteable address
 550 <userx@r8> Unrouteable address
