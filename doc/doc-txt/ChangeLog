@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.330 2006/03/16 12:07:55 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.331 2006/03/16 12:25:24 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -313,6 +313,11 @@ PH/62 When verifying, if an address was redirected to one new address, so that
       having set something in $address_data, the value of $address_data was not
       passed back to the ACL. This was different to the case when no
       redirection occurred. The value is now passed back in both cases.
+
+PH/63 Changed the macro HAVE_LOGIN_CAP (see PH/41 for this release above) to
+      HAVE_SETCLASSRESOURCES because there are different APIs in use that all
+      use login_cap.h, so on its own it isn't the distinguishing feature. The
+      new name refers directly to the setclassresources() function.
 
 
 Exim version 4.60

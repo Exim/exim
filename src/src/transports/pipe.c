@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/pipe.c,v 1.10 2006/02/21 16:24:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/pipe.c,v 1.11 2006/03/16 12:25:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -11,7 +11,7 @@
 #include "../exim.h"
 #include "pipe.h"
 
-#ifdef HAVE_LOGIN_CAP
+#ifdef HAVE_SETCLASSRESOURCES
 #include <login_cap.h>
 #endif
 
@@ -75,7 +75,7 @@ optionlist pipe_transport_options[] = {
       (void *)offsetof(pipe_transport_options_block, umask) },
   { "use_bsmtp",         opt_bool,
       (void *)offsetof(pipe_transport_options_block, use_bsmtp) },
-  #ifdef HAVE_LOGIN_CAP
+  #ifdef HAVE_SETCLASSRESOURCES
   { "use_classresources", opt_bool,
       (void *)offsetof(pipe_transport_options_block, use_classresources) },
   #endif
@@ -154,7 +154,7 @@ gid = gid;
 errmsg = errmsg;
 ob = ob;
 
-#ifdef HAVE_LOGIN_CAP
+#ifdef HAVE_SETCLASSRESOURCES
 if (ob->use_classresources)
   {
   struct passwd *pw = getpwuid(uid);

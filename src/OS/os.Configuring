@@ -1,4 +1,4 @@
-$Cambridge: exim/src/OS/os.Configuring,v 1.2 2006/02/21 16:24:19 ph10 Exp $
+$Cambridge: exim/src/OS/os.Configuring,v 1.3 2006/03/16 12:25:24 ph10 Exp $
 
 Configuring Exim for different Operating Systems
 ------------------------------------------------
@@ -188,8 +188,9 @@ Support for login_cap functions
 -------------------------------
 
 Some of the BSD systems support functions for controlling the resources that
-user processes can use (e.g. login_getpwclass). If HAVE_LOGIN_CAP is defined,
-Exim supports this feature for running pipe deliveries.
+user processes can use (e.g. login_getpwclass). If HAVE_SETCLASSRESOURCES is
+defined, Exim supports this feature for running pipe deliveries, using the
+setclassresources() function.
 
 The crypt_h header
 ------------------
