@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/os-type,v 1.4 2005/06/27 10:40:14 ph10 Exp $
+# $Cambridge: exim/src/scripts/os-type,v 1.5 2006/03/16 14:00:50 ph10 Exp $
 
 # Shell script to determine the operating system type. Some of the heuristics
 # herein have accumulated over the years and may not strictly be needed now,
@@ -83,6 +83,11 @@ linux)      os=Linux;;
 linux-*)    os=Linux;;
 Linux-*)    os=Linux;;
 netbsd*)    os=NetBSD;;
+NetBSD*)    version=`uname -r`
+            case "$version" in
+            3.*) os=NetBSD3;;
+            *)   os=NetBSD;;
+            esac;;
 openbsd*)   os=OpenBSD;;
 osf1)       os=OSF1;;
 qnx*)       os=QNX;;

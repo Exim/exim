@@ -1,0 +1,27 @@
+# $Cambridge: exim/src/OS/Makefile-NetBSD3,v 1.1 2006/03/16 14:00:50 ph10 Exp $
+
+# Exim: OS-specific make file for NetBSD (ELF object format)
+
+CHOWN_COMMAND=/usr/sbin/chown
+CFLAGS=-O
+
+HAVE_SA_LEN=YES
+HAVE_IPV6=YES
+LIBS=-lcrypt -lm -lutil
+
+X11=/usr/X11R6
+XINCLUDE=-I$(X11)/include
+XLFLAGS=-L$(X11)/lib
+X11_LD_LIB=$(X11)/lib
+
+EXIWHAT_PS_ARG=-ax
+EXIWHAT_EGREP_ARG='/exim( |$$)'
+EXIWHAT_KILL_SIGNAL=-USR1
+
+# NetBSD always ships with Berkeley DB
+USE_DB=yes
+
+# NetBSD ELF linker needs a -R flag.
+XLFLAGS+=-Wl,-R$(X11)/lib/
+
+# End

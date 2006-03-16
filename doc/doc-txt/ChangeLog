@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.331 2006/03/16 12:25:24 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.332 2006/03/16 14:00:50 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -318,6 +318,8 @@ PH/63 Changed the macro HAVE_LOGIN_CAP (see PH/41 for this release above) to
       HAVE_SETCLASSRESOURCES because there are different APIs in use that all
       use login_cap.h, so on its own it isn't the distinguishing feature. The
       new name refers directly to the setclassresources() function.
+
+PH/65 Added configuration files for NetBSD3.
 
 
 Exim version 4.60
