@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.328 2006/03/16 11:14:46 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.329 2006/03/16 11:51:09 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -305,6 +305,8 @@ PH/59 Added the following errors that can be detected in retry rules: mail_4xx,
 
 PH/60 When a VRFY deferred or FAILED, the log message rather than the user
       message was being sent as an SMTP response.
+
+PH/61 Add -l and -k options to exicyclog.
 
 
 Exim version 4.60

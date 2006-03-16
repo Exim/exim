@@ -1,8 +1,12 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exicyclog.src,v 1.4 2005/06/16 15:48:58 ph10 Exp $
+# $Cambridge: exim/src/src/exicyclog.src,v 1.5 2006/03/16 11:51:10 ph10 Exp $
 
-# Copyright (c) 2004 University of Cambridge.
+# Copyright (c) 2006 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
+
+# This script takes the following command line arguments:
+# -l dir	Log file directory
+# -k days	Number of days to keep the log files
 
 # Except when they appear in comments, the following placeholders in this
 # source are replaced when it is turned into a runnable script:
@@ -38,9 +42,10 @@
 # this source is built into a script, but you can subsequently edit them
 # without rebuilding things, as long are you are careful not to overwrite
 # the script in the next Exim rebuild/install. "Keep" is the number of old log
-# files that are required to be kept. "Compress" and "suffix" define your
-# chosen compression method. The others are provided because the location
-# of certain commands varies from OS to OS. Sigh.
+# files that are required to be kept. Its value can be overridden by the -k
+# command line option. "Compress" and "suffix" define your chosen compression
+# method. The others are provided because the location of certain commands
+# varies from OS to OS. Sigh.
 
 keep=EXICYCLOG_MAX
 compress=COMPRESS_COMMAND
@@ -53,6 +58,23 @@ rm=RM_COMMAND
 
 # End of editable lines
 #########################################################################
+
+# Sort out command line options.
+
+while [ $# -gt 0 ] ; do
+  case "$1" in
+  -l) log_file_path=$2
+      shift
+      ;;
+  -k) keep=$2
+      shift
+      ;;
+   *) echo "** exicyclog: unknown option $1"
+      exit 1
+      ;;
+   esac
+   shift
+done
 
 # Some operating systems have different versions in which the commands live
 # in different places. We have a fudge that will search the usual suspects if
@@ -112,16 +134,20 @@ done
 # Determine if the log file path is set, and where the spool directory is.
 # Search for an exim_path setting in the configure file; otherwise use the bin
 # directory. Call that version of Exim to find the spool directory and log file
-# path. BEWARE: a tab character is needed in the command below. It has had a
-# nasty tendency to get lost in the past. Use a variable to hold a space and a
-# tab to keep the tab in one place.
+# path, unless log_file_path was set above by a command line option. BEWARE: a
+# tab character is needed in the command below. It has had a nasty tendency to
+# get lost in the past. Use a variable to hold a space and a tab to keep the
+# tab in one place.
 
 st='	 '
 exim_path=`grep "^[$st]*exim_path" $config | sed "s/.*=[$st]*//"`
 if test "$exim_path" = ""; then exim_path=BIN_DIRECTORY/exim; fi
 
 spool_directory=`$exim_path -C $config -bP spool_directory | sed 's/.*=[  ]*//'`
-log_file_path=`$exim_path -C $config -bP log_file_path | sed 's/.*=[  ]*//'`
+
+if [ "$log_file_path" = "" ] ; then
+  log_file_path=`$exim_path -C $config -bP log_file_path | sed 's/.*=[  ]*//'`
+fi
 
 # If log_file_path contains only "syslog" then no Exim log files are in use.
 # We can't cycle anything. Complain and give up.
@@ -166,7 +192,7 @@ fi
 
 # Get into the log directory to do the business.
 
-cd $logdir
+cd $logdir || exit 1
 
 # If there is no main log file, do nothing.
 

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.96 2006/03/09 15:10:16 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.97 2006/03/16 11:51:09 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -183,6 +183,15 @@ PH/19 The following errors can now be detected in retry rules:
 
       Note that a 5xx response to STARTTLS is a permanent error.
 
+PH/20 There are now two options for the exicyclog script:
+
+      -k <days> specifies the number of old logs to keep, overriding the
+                default that is set when Exim is built.
+
+      -l <path> specifies the log file path, in the same format as the
+                log_file_path option (e.g. /var/log/exim_%slog), again,
+                overriding the script's default - which is to find the setting
+                from Exim's configuration.
 
 
 Version 4.60
