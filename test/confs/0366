@@ -14,6 +14,7 @@ gecos_name = CALLER_NAME
 
 ignore_bounce_errors_after = 0s
 qualify_domain = test.ex
+disable_ipv6
 
 # ----- Routers -----
 

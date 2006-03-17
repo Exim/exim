@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.22 2006/02/16 10:05:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.23 2006/03/17 16:51:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2876,17 +2876,19 @@ single MX preference value, IPv6 addresses come first. This can separate the
 addresses of a multihomed host, but that should not matter. */
 
 #if HAVE_IPV6
-if (h != last)
+if (h != last && !disable_ipv6)
   {
   for (h = host; h != last; h = h->next)
     {
     host_item temp;
     host_item *next = h->next;
-    if (h->mx != next->mx ||                /* If next is different MX value */
-        (h->sort_key % 1000) < 500 ||       /* OR this one is IPv6 */
-        (next->sort_key % 1000) >= 500)     /* OR next is IPv4 */
-      continue;                             /* move on to next */
-    temp = *h;
+    if (h->mx != next->mx ||                   /* If next is different MX */
+        h->address == NULL ||                  /* OR this one is unset */
+        Ustrchr(h->address, ':') != NULL ||    /* OR this one is IPv6 */
+        (next->address != NULL &&
+         Ustrchr(next->address, ':') == NULL)) /* OR next is IPv4 */
+      continue;                                /* move on to next */
+    temp = *h;                                 /* otherwise, swap */
     temp.next = next->next;
     *h = *next;
     h->next = next;

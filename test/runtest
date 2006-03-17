@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.5 2006/02/16 14:34:42 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.6 2006/03/17 16:51:45 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -648,9 +648,11 @@ while(<IN>)
 
   if ($is_stdout)
     {
-    # Skip translate_ip_address in -bP output because it ain't always there
+    # Skip translate_ip_address and use_classresources in -bP output because
+    # they aren't always there.
 
     next if /translate_ip_address =/;
+    next if /use_classresources/;
 
     # In certain filter tests, remove initial filter lines because they just
     # clog up by repetition.

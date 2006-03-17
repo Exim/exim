@@ -12,6 +12,7 @@ gecos_name = CALLER_NAME
 # ----- Main settings -----
 
 domainlist anymx = @mx_any
+disable_ipv6
 
 
 # ----- Routers -----

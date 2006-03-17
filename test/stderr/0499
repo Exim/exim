@@ -27,7 +27,6 @@ mxt1.test.ex in "+anymx"? yes (matched "+anymx")
 checking "condition"
 DNS lookup of mxt1.test.ex (MX) using fakens
 DNS lookup of mxt1.test.ex (MX) succeeded
-DNS lookup of eximtesthost.test.ex-AAAA: using cached value DNS_NODATA
 DNS lookup of eximtesthost.test.ex (A) using fakens
 DNS lookup of eximtesthost.test.ex (A) succeeded
 local host has lowest MX

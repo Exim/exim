@@ -16,6 +16,7 @@ acl_not_smtp = non
 
 ignore_bounce_errors_after = 0s
 qualify_domain = test.ex
+disable_ipv6
 
 
 # ----- ACLs -----
