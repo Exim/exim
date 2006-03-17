@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-HP-UX,v 1.4 2005/08/08 10:48:27 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-HP-UX,v 1.5 2006/03/17 09:39:00 ph10 Exp $
 
 # Exim: OS-specific make file for HP-UX later than 9
 
@@ -9,8 +9,9 @@
 # there have been some problems reported with this compiler with +O2 set.
 
 # gcc
-CFLAGS=-O -Wl,-z -D_XOPEN_SOURCE_EXTENDED
-
+CFLAGS=-O -D_XOPEN_SOURCE_EXTENDED
+LDFLAGS=-Wl,-z
+LIBS=-lm
 
 BASENAME_COMMAND=/bin/basename
 HAVE_ICONV=yes

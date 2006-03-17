@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.332 2006/03/16 14:00:50 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.333 2006/03/17 09:39:00 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -320,6 +320,8 @@ PH/63 Changed the macro HAVE_LOGIN_CAP (see PH/41 for this release above) to
       new name refers directly to the setclassresources() function.
 
 PH/65 Added configuration files for NetBSD3.
+
+PH/66 Updated OS/Makefile-HP-UX for gcc 4.1.0 with HP-UX 11.
 
 
 Exim version 4.60
