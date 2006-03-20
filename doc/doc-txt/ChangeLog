@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.334 2006/03/17 16:51:45 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.335 2006/03/20 10:55:21 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -325,6 +325,14 @@ PH/66 Updated OS/Makefile-HP-UX for gcc 4.1.0 with HP-UX 11.
 
 PH/67 Fixed minor infelicity in the sorting of addresses to ensure that IPv6
       is preferred over IPv4.
+
+PH/68 The bounce_return_message and bounce_return_body options were not being
+      honoured for bounces generated during the reception of non-SMTP messages.
+      In particular, this applied to messages rejected by the ACL. This bug has
+      been fixed. However, if bounce_return_message is true and bounce_return_
+      body is false, the headers that are returned for a non-SMTP message
+      include only those that have been read before the error was detected.
+      (In the case of an ACL rejection, they have all been read.)
 
 
 Exim version 4.60

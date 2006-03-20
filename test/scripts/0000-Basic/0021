@@ -48,3 +48,15 @@ Some message
 .
 quit
 ****
+# Test unsetting bounce_return_message for non-SMTP
+1
+exim -DBR=no_bounce_return_message -odi -f userx@test1 userx
+Test message 1.
+.
+****
+# Test unsetting bounce_return_body for non-SMTP
+1
+exim -DBR=no_bounce_return_body -odi -f userx@test1 userx
+Test message 1.
+.
+****

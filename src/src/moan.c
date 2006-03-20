@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/moan.c,v 1.5 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/moan.c,v 1.6 2006/03/20 10:55:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -185,62 +185,74 @@ switch(ident)
   break;
   }
 
-/* Now copy the message - headers then the rest of the input if
-available, up to the configured limit. */
+/* Now, if configured, copy the message; first the headers and then the rest of
+the input if available, up to the configured limit, if the option for including
+message bodies in bounces is set. */
 
-if (size_limit == 0 || size_limit > thismessage_size_limit)
-  size_limit = thismessage_size_limit;
-
-if (size_limit > 0 && size_limit < message_size)
+if (bounce_return_message)
   {
-  int x = size_limit;
-  uschar *k = US"";
-  if ((x & 1023) == 0)
+  if (bounce_return_body)
     {
-    k = US"K";
-    x >>= 10;
-    }
-  fprintf(f, "\n"
-  "------ This is a copy of your message, including all the headers.\n"
-  "------ No more than %d%s characters of the body are included.\n\n", x, k);
-  }
-else fprintf(f, "\n"
-  "------ This is a copy of your message, including all the headers. ------"
-  "\n\n");
-
-/* If the error occurred before the Received: header was created, its text
-field will still be NULL; just omit such a header line. */
-
-while (headers != NULL)
-  {
-  if (headers->text != NULL) fprintf(f, "%s", CS headers->text);
-  headers = headers->next;
-  }
-
-if (ident != ERRMESS_VLONGHEADER && ident != ERRMESS_VLONGHDRLINE)
-  fputc('\n', f);
-
-/* After early detection of an error, the message file may be STDIN,
-in which case we might have to terminate on a line containing just "."
-as well as on EOF. We may already have the first line in memory. */
-
-if (message_file != NULL)
-  {
-  int ch;
-  int state = 1;
-  BOOL enddot = dot_ends && message_file == stdin;
-  if (firstline != NULL) fprintf(f, "%s", CS firstline);
-  while ((ch = fgetc(message_file)) != EOF)
-    {
-    fputc(ch, f);
-    if (size_limit > 0 && ++written > size_limit) break;
-    if (enddot)
+    fprintf(f, "\n"
+      "------ This is a copy of your message, including all the headers.");
+    if (size_limit == 0 || size_limit > thismessage_size_limit)
+      size_limit = thismessage_size_limit;
+    if (size_limit > 0 && size_limit < message_size)
       {
-      if (state == 0) { if (ch == '\n') state = 1; }
-      else if (state == 1)
-        { if (ch == '.') state = 2; else if (ch != '\n') state = 0; }
-      else
-        { if (ch == '\n') break; else state = 0; }
+      int x = size_limit;
+      uschar *k = US"";
+      if ((x & 1023) == 0)
+        {
+        k = US"K";
+        x >>= 10;
+        }
+      fprintf(f, "\n"
+        "------ No more than %d%s characters of the body are included.\n\n",
+          x, k);
+      }
+    else fprintf(f, " ------\n\n");
+    }
+  else
+    {
+    fprintf(f, "\n"
+      "------ This is a copy of the headers that were received before the "
+      "error\n       was detected.\n\n");
+    }
+
+  /* If the error occurred before the Received: header was created, its text
+  field will still be NULL; just omit such a header line. */
+
+  while (headers != NULL)
+    {
+    if (headers->text != NULL) fprintf(f, "%s", CS headers->text);
+    headers = headers->next;
+    }
+
+  if (ident != ERRMESS_VLONGHEADER && ident != ERRMESS_VLONGHDRLINE)
+    fputc('\n', f);
+
+  /* After early detection of an error, the message file may be STDIN,
+  in which case we might have to terminate on a line containing just "."
+  as well as on EOF. We may already have the first line in memory. */
+
+  if (bounce_return_body && message_file != NULL)
+    {
+    int ch;
+    int state = 1;
+    BOOL enddot = dot_ends && message_file == stdin;
+    if (firstline != NULL) fprintf(f, "%s", CS firstline);
+    while ((ch = fgetc(message_file)) != EOF)
+      {
+      fputc(ch, f);
+      if (size_limit > 0 && ++written > size_limit) break;
+      if (enddot)
+        {
+        if (state == 0) { if (ch == '\n') state = 1; }
+        else if (state == 1)
+          { if (ch == '.') state = 2; else if (ch != '\n') state = 0; }
+        else
+          { if (ch == '\n') break; else state = 0; }
+        }
       }
     }
   }

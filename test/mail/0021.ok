@@ -1,12 +1,12 @@
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbC-0005vi-00
+	id 10HmbE-0005vi-00
 	for ok@test2; Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: ok@test2
 Subject: Mail failure - rejected by local scanning code
-Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 A message that you sent was rejected by the local scanning code that
@@ -28,13 +28,13 @@ Test message 3.
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
-	id 10HmbE-0005vi-00
+	id 10HmbG-0005vi-00
 	for ok@test4; Tue, 2 Mar 1999 09:44:33 +0000
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: ok@test4
 Subject: Mail failure - rejected by local scanning code
-Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmbG-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 A message that you sent was rejected by the local scanning code that

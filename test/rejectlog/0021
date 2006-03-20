@@ -35,3 +35,23 @@ F From: ok@test4
 1999-03-02 09:44:33 U=CALLER rejected connection in "connect" ACL
 1999-03-02 09:44:33 H=(x.y.z) [10.9.8.10] U=CALLER rejected EHLO or HELO x.y.z
 1999-03-02 09:44:33 mail accepted
+1999-03-02 09:44:33 10HmbA-0005vi-00 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
+Envelope-from: <userx@test1>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <userx@test1>)
+	id 10HmbA-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+F From: userx@test1
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 10HmbB-0005vi-00 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
+Envelope-from: <userx@test1>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <userx@test1>)
+	id 10HmbB-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+F From: userx@test1
+  Date: Tue, 2 Mar 1999 09:44:33 +0000

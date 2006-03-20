@@ -1,6 +1,7 @@
 # Exim test configuration 0021
 
 SERVER=
+BR=
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -23,6 +24,8 @@ acl_smtp_connect = connect
 acl_smtp_helo = helo
 acl_smtp_mail = mail
 acl_smtp_rcpt = rcpt
+
+BR
 
 qualify_domain = test.ex
 trusted_users = CALLER
