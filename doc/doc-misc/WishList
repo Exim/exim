@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.65 2006/03/09 15:10:16 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.66 2006/03/31 08:37:47 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -1989,5 +1989,13 @@ variables that are included in the data. This has to be done inside the lookup
 code, because of caching. Probably means we have to invent ewildlsearch and
 enwildlsearch.
 ------------------------------------------------------------------------------
---- HWM 350 ------------------------------------------------------------------
+
+(351) 31-Mar-06 ? Allow some/all/a few internal variables to be set
+
+The original idea was to allow "set authenticated = x" to pretend a connection
+is authenticated after other conditions are true. This can, of course, be
+packaged up using macros in other ways. Setting other variables could cause
+problems.
+------------------------------------------------------------------------------
+--- HWM 351 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
