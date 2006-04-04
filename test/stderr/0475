@@ -10,7 +10,7 @@
 >>> processing "deny"
 >>> check hosts = 1.2.3.4 : <; 1.2.3.4::5.6.7.8
 LOG: unknown lookup type "<" in host list item "<; 1.2.3.4:5.6.7.8"
->>> host in "1.2.3.4 : <; 1.2.3.4::5.6.7.8"? lookup deferred for <; 1.2.3.4:5.6.7.8
+>>> host in "1.2.3.4 : <; 1.2.3.4::5.6.7.8"? list match deferred for <; 1.2.3.4:5.6.7.8
 >>> deny: condition test deferred
 LOG: H=[V4NET.0.0.0] F=<> temporarily rejected RCPT <a1@b>: unknown lookup type "<"
 >>> using ACL "a2"

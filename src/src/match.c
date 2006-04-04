@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.12 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.13 2006/04/04 09:48:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -425,7 +425,7 @@ Returns:       OK    if matched a non-negated item
                FAIL  if expansion force-failed
                FAIL  if matched a negated item
                FAIL  if hit end of list after a non-negated item
-               DEFER if a lookup deferred or expansion failed
+               DEFER if a something deferred or expansion failed
 */
 
 int
@@ -844,10 +844,10 @@ HDEBUG(D_lists)
   debug_printf("%s %s (end of list)\n", ot, (yield == OK)? "no":"yes");
 return (yield == OK)? FAIL : OK;
 
-/* Handle lookup defer */
+/* Something deferred */
 
 DEFER_RETURN:
-HDEBUG(D_lists) debug_printf("%s lookup deferred for %s\n", ot, sss);
+HDEBUG(D_lists) debug_printf("%s list match deferred for %s\n", ot, sss);
 return DEFER;
 }
 

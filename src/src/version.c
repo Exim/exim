@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/version.c,v 1.14 2006/03/20 10:55:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/version.c,v 1.15 2006/04/04 09:48:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -12,7 +12,7 @@
 #include "exim.h"
 
 
-#define THIS_VERSION  "4.61-RC1"
+#define THIS_VERSION  "4.61"
 
 
 /* The header file cnumber.h contains a single line containing the

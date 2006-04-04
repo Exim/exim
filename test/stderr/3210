@@ -24,9 +24,9 @@ internal_search_find: file="NULL"
 database lookup required for defer
 testdb lookup forced DEFER
 lookup deferred: testdb lookup forced DEFER
-test.ex in "testdb;defer"? lookup deferred for testdb;defer
-test.ex in "+defer_lookup : test.ex"? lookup deferred for +defer_lookup
-test.ex in "! +local_domains"? lookup deferred for ! +local_domains
+test.ex in "testdb;defer"? list match deferred for testdb;defer
+test.ex in "+defer_lookup : test.ex"? list match deferred for +defer_lookup
+test.ex in "! +local_domains"? list match deferred for ! +local_domains
 domains check lookup or other defer
 search_tidyup called
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=1 >>>>>>>>>>>>>>>>

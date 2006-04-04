@@ -9,7 +9,7 @@
 >>> using ACL "acl_1_2_3_4"
 >>> processing "deny"
 >>> check senders = testdb;defer
->>> userx@external.test.ex in "testdb;defer"? lookup deferred for testdb;defer
+>>> userx@external.test.ex in "testdb;defer"? list match deferred for testdb;defer
 >>> deny: condition test deferred
 LOG: H=[1.2.3.4] F=<userx@external.test.ex> temporarily rejected RCPT <userx@test.ex>: testdb lookup forced DEFER
 >>> host in hosts_connection_nolog? no (option unset)
@@ -27,6 +27,6 @@ LOG: H=[1.2.3.4] F=<userx@external.test.ex> temporarily rejected RCPT <userx@tes
 >>> accept: condition test failed
 >>> processing "deny"
 >>> check hosts = testdb;defer
->>> host in "testdb;defer"? lookup deferred for testdb;defer
+>>> host in "testdb;defer"? list match deferred for testdb;defer
 >>> deny: condition test deferred
 LOG: H=[4.3.2.1] F=<userx@external.test.ex> temporarily rejected RCPT <userx@test.ex>: testdb lookup forced DEFER
