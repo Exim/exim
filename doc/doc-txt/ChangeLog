@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.335 2006/03/20 10:55:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.336 2006/04/04 08:35:39 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -333,6 +333,12 @@ PH/68 The bounce_return_message and bounce_return_body options were not being
       body is false, the headers that are returned for a non-SMTP message
       include only those that have been read before the error was detected.
       (In the case of an ACL rejection, they have all been read.)
+
+PH/69 The HTML version of the specification is now built in a directory called
+      spec_html instead of spec.html, because the latter looks like a path with
+      a MIME-type, and this confuses some software.
+
+PH/70 Catch two compiler warnings in sieve.c.
 
 
 Exim version 4.60

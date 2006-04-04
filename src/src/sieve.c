@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.19 2006/03/08 11:13:07 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.20 2006/04/04 08:35:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -400,7 +400,7 @@ if (*uri=='?')
         return -1;
         }
       }
-    if (hname.length==2 && strcmp(hname.character,"to")==0)
+    if (hname.length==2 && strcmp(CS hname.character,"to")==0)
       {
       new=store_get(sizeof(string_item));
       new->text=store_get(hvalue.length+1);
@@ -409,7 +409,7 @@ if (*uri=='?')
       new->next=*recipient;
       *recipient=new;
       }
-    else if (hname.length==4 && strcmp(hname.character,"body")==0)
+    else if (hname.length==4 && strcmp(CS hname.character,"body")==0)
       *body=hvalue;
     if (*uri=='&') ++uri;
     else break;
