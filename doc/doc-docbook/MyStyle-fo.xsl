@@ -1,4 +1,4 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-fo.xsl,v 1.3 2006/02/01 11:01:01 ph10 Exp $ -->
+<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-fo.xsl,v 1.4 2006/04/04 14:03:49 ph10 Exp $ -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
@@ -24,6 +24,19 @@ specification. It is imported by MyStyle-filter-fo.xsl and MyStyle-spec-fo.xsl.
 <!-- Let's have whatever fop extensions there are -->
 
 <xsl:param name="fop.extensions" select="1"></xsl:param>
+
+<!-- Arrange for the table of contents to be an even number of pages. The name
+"lot" includes all pages that contain a "list of titles", which in our case is
+only the TOC. -->
+
+<xsl:template name="force.page.count">
+  <xsl:param name="element" select="local-name(.)"/>
+  <xsl:param name="master-reference" select="''"/>
+  <xsl:choose>
+    <xsl:when test="$master-reference = 'lot'">end-on-even</xsl:when>
+    <xsl:otherwise>no-force</xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
 
 <!-- Allow for typed index entries. The "role" setting works with DocBook
 version 4.2 or earlier. Later versions (which we are not currently using)

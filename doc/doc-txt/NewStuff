@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.97 2006/03/16 11:51:09 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.98 2006/04/04 14:03:50 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -11,187 +11,27 @@ file contains a listing of all changes, including bug fixes.
 Version 4.61
 ------------
 
-PH/01 There is a new global option called disable_ipv6, which does exactly what
-      its name implies. If set true, even if the Exim binary has IPv6 support,
-      no IPv6 activities take place. AAAA records are never looked up for host
-      names given in manual routing data or elsewhere. AAAA records that are
-      received from the DNS as additional data for MX records are ignored. Any
-      IPv6 addresses that are listed in local_interfaces, manualroute route
-      data, etc. are also ignored. If IP literals are enabled, the ipliteral
-      router declines to handle IPv6 literal addresses.
+The documentation is up-to-date for the 4.61 release. Major new features since
+the 4.60 release are:
 
-PH/02 There are now 20 of each type of ACL variable by default (instead of 10).
-      It is also possible to change the numbers by setting ACL_CVARS and/or
-      ACL_MVARS in Local/Makefile. Backward compatibility is maintained if you
-      upgrade to this release with existing messages containing ACL variable
-      settings on the queue. However, going in the other direction
-      (downgrading) will not be compatible; the values of ACL variables will be
-      lost.
+. An option called disable_ipv6, to disable the use of IPv6 completely.
 
-PH/03 If quota_warn_message contains a From: header, Exim now refrains from
-      adding the default one. Similarly, if it contains a Reply-To: header, the
-      errors_reply_to option, if set, is not used.
+. An increase in the number of ACL variables to 20 of each type.
 
-PH/04 The variables $auth1, $auth2, $auth3 are now available in authenticators,
-      containing the same values as $1, $2, $3. The new variables are provided
-      because the numerical variables can be reset during string expansions
-      (for example, during a "match" operation) and so may lose the
-      authentication data. The preferred variables are now the new ones, with
-      the use of the numerical ones being deprecated, though the support will
-      not be removed, at least, not for a long time.
+. A change to use $auth1, $auth2, and $auth3 in authenticators instead of $1,
+  $2, $3, (though those are still set) because the numeric variables get used
+  for other things in complicated expansions.
 
-PH/05 The "control=freeze" ACL modifier can now be followed by /no_tell. If
-      the global option freeze_tell is set, it is ignored for the current
-      message (that is, nobody is told about the freezing), provided all the
-      "control=freeze" modifiers that are obeyed in the current message have
-      the /no_tell option.
+. The default for rfc4131_query_timeout has been changed from 30s to 5s.
 
-PH/06 In both GnuTLS and OpenSSL, an expansion of tls_privatekey that results
-      in an empty string is now treated as unset.
+. It is possible to use setclassresources() on some BSD OS to control the
+  resources used in pipe deliveries.
 
-PH/07 There is a new log selector called sender_verify_fail, which is set by
-      default. If it is unset, the separate log line that gives details of a
-      sender verification failure is not written. Log lines for the rejection
-      of SMTP commands (e.g. RCPT) contain just "sender verify failed", so some
-      detail is lost.
+. A new ACL modifier called add_header, which can be used with any verb.
 
-PH/08 The default for dns_check_names_pattern now allows slashes within names,
-      as there are now some PTR records that contain slashes. This check is
-      only to protect against broken name servers that fall over on strange
-      characters, so the fact that it applies to all lookups doesn't matter.
+. More errors are detectable in retry rules.
 
-PH/09 The default for rfc4131_query_timeout has been changed from 30s to 5s.
-
-PH/10 When compiled on FreeBSD, NetBSD, or BSD/OS, the pipe transport has a new
-      Boolean option called use_classresources, defaulting false. If it is set
-      true, the setclassresources() function is used to set resource limits
-      when a pipe transport is run to perform a delivery. The limits for the
-      uid under which the pipe is to run are obtained from the login class
-      database.
-
-PH/11 If retry_interval_max is set greater than 24 hours, it is quietly reset
-      to 24 hours. This avoids potential overflow problems when processing G
-      and H retry rules, and it seems reasonable to require a retry at least
-      once a day.
-
-PH/12 When the plaintext authenticator is running as a client, the server
-      challenges are now checked to ensure they are valid base64 strings. The
-      default action on failure is to abort the authentication. However, if
-      client_ignore_invalid_base64 is set true, invalid responses are ignored.
-
-PH/13 When the plaintext authenticator is running as a client, the challenges
-      from the server are placed in $auth1, $auth2, etc. as they are received.
-      Thus, the challege that is received in response to sending the first
-      string (with the AUTH command) can be used in the expansion of the second
-      string, and so on. Currently, up to 3 challenge strings are available in
-      this way. If an invalid base64 string is received when client_ignore_
-      invalid_base64 is set, an empty string is put in the $auth<n> variable.
-
-PH/14 Messages created by the autoreply transport now contain a References:
-      header. This is constructed in accordance with rules that are described
-      in section 3.64 of RFC 2822, which states that replies should contain
-      such a header line, and section 3.14 of RFC 3834, which states that
-      automatic responses are not different in this respect. However, because
-      some mail processing software does not cope well with very long header
-      lines, no more than 12 message IDs are copied from the References: header
-      line in the incoming message. If there are more than 12, the first one
-      and then the final 11 are copied, before adding the message ID of the
-      incoming message.
-
-PH/15 The smtp transport has a new option called authenticated_sender_force.
-      When set true, it allows the authenticated_sender option's value to be
-      used, even if Exim has not authenticated as a client.
-
-PH/16 The expansion ${time_eval:<string>} converts an Exim time string such as
-      2d4h1m into a number of seconds.
-
-PH/17 The ACL modifier control=allow_auth_unadvertised can be used to permit a
-      client host to use the SMTP AUTH command even when it has not been
-      advertised in response to EHLO. Furthermore, because there are apparently
-      some really broken clients that do this, Exim will even accept AUTH after
-      HELO when this control is set. It should only be used if you really need
-      it, and you should limit its use to those broken hosts that do not work
-      without it. For example:
-
-        warn hosts   = 192.168.34.25
-             control = allow_auth_unadvertised
-
-      This control is permitted only in the connection and HELO ACLs.
-
-PH/18 There is a new ACL modifier called "add_header" which does what its name
-      implies. It specifies one of more header lines that are to be added to an
-      incoming message, assuming, of course, that the message is ultimately
-      accepted.
-
-      This modifier is permitted in the MAIL, RCPT, PREDATA, DATA, MIME, and
-      non-SMTP ACLs (in other words, those that are concerned with accepting a
-      message). Added header lines are accumulated during the MAIL, RCPT, and
-      PREDATA ACLs, with any duplicates being discarded. They are then added to
-      the message before processing the DATA and MIME ACLs, during which
-      further added header lines are accumulated, again with duplicates
-      discarded. Thus, it is possible to add two identical header lines to an
-      SMTP message, but only if one is added before DATA and one after.
-
-      In the case of non-SMTP messages, new headers are accumulated during the
-      non-SMTP ACL, and added to the message at the end.
-
-      The add_header modifier is available for use with all ACL verbs. In the
-      case of the WARN verb, add_header supersedes the use of "message" for
-      this purpose; for the other verbs, it provides a new facility. If both
-      add_header and "message" are present on a WARN verb, both are processed
-      according to their specifications.
-
-      The add_header modifier acts immediately it is encountered during the
-      processing of an ACL. This is different to the (now-deprecated) use of
-      "message" on a WARN verb, where the action is taken only if all the
-      conditions are true. Notice the difference between these two cases on a
-      RCPT ACL:
-
-         deny add_header = ADDED: some text
-              <some condition>
-
-         deny <some condition>
-              add_header = ADDED: some text
-
-      In the first case, the header is always added, whether or not the current
-      recipient is rejected. In the second case, the header is added only if
-      the recipient is rejected.
-
-      If add_header appears more than once on an ACL statement, multiple
-      headers are added, provided that they have different content. (In the
-      case of WARN with "message", only the last value of "message" is used.)
-
-      The facility for specifying where the new header is to be inserted, as
-      described for WARN with "message" in section 39.19 of the 4.60 manual, is
-      supported.
-
-PH/19 The following errors can now be detected in retry rules:
-
-      mail_4xx   This is like rcpt_4xx, but applies to MAIL commands
-
-      data_4xx   This is like rcpt_4xx, but applies to DATA commands and the
-                 response code after the end of the data
-
-      lost_connection  This error occurs when the server unexpectedly closes
-                 the SMTP connection. There may, of course, legitmate reasons
-                 for this (host died, network died), but if it repeats a lot
-                 for the same host, it indicates something odd.
-
-      tls_required  The server was required to use TLS (hosts_require_tls),
-                 but either did not offer it, or responded with 4xx to
-                 STARTTLS, or there was a problem setting up the TLS connection
-
-      Note that a 5xx response to STARTTLS is a permanent error.
-
-PH/20 There are now two options for the exicyclog script:
-
-      -k <days> specifies the number of old logs to keep, overriding the
-                default that is set when Exim is built.
-
-      -l <path> specifies the log file path, in the same format as the
-                log_file_path option (e.g. /var/log/exim_%slog), again,
-                overriding the script's default - which is to find the setting
-                from Exim's configuration.
+There are a number of other additions too.
 
 
 Version 4.60

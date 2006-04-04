@@ -1,4 +1,4 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.7 2006/02/01 11:01:01 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.8 2006/04/04 14:03:49 ph10 Exp $
 
 # Make file for Exim documentation from xfpt source.
 
@@ -47,9 +47,9 @@ filter.ps:    filter.fo
 # Do not use ps2pdf from the PS version; better PDF is generated directly. It
 # contains cross links etc.
 
-filter.pdf:   filter.fo
+filter.pdf:   filter.fo PageLabelPDF
 	      fop filter.fo -pdf filter-tmp.pdf
-	      mv filter-tmp.pdf filter.pdf
+	      ./PageLabelPDF 2 <filter-tmp.pdf >filter.pdf
 
 filter.html:  filter-html.xml TidyHTML-filter MyStyle-nochunk-html.xsl \
                 MyStyle-html.xsl MyStyle.xsl
@@ -115,12 +115,12 @@ spec.ps:      spec.fo
 
 spec.pdf:     spec.fo PageLabelPDF
 	      FOP_OPTS=-Xmx512m fop spec.fo -pdf spec-tmp.pdf
-	      ./PageLabelPDF <spec-tmp.pdf >spec.pdf
+	      ./PageLabelPDF 12 <spec-tmp.pdf >spec.pdf
 
 spec.html:    spec-html.xml TidyHTML-spec MyStyle-chunk-html.xsl \
                 MyStyle-html.xsl MyStyle.xsl
-	      /bin/rm -rf spec.html
-	      xmlto -x MyStyle-chunk-html.xsl -o spec.html html spec-html.xml
+	      /bin/rm -rf spec_html
+	      xmlto -x MyStyle-chunk-html.xsl -o spec_html html spec-html.xml
 	      ./TidyHTML-spec
 
 spec.txt:     spec-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
@@ -135,8 +135,7 @@ spec.txt:     spec-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
 
 spec.info:    spec-info.xml
 	      docbook2texi spec-info.xml
-	      perl -ne 's/conceptindex/cindex/;s/optionindex/findex/;print;' \
-		<the_exim_mta.texi >spec.texinfo
+	      ./TidyInfo <the_exim_mta.texi >spec.texinfo
 	      /bin/rm -rf the_exim_mta.texi
 	      makeinfo -o spec.info spec.texinfo
 
@@ -200,8 +199,7 @@ test.txt:     test-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
 
 test.info:    test-info.xml
 	      docbook2texi test-info.xml
-	      perl -ne 's/conceptindex/cindex/;s/optionindex/findex/;print;' \
-		<short_title.texi >test.texinfo
+	      ./TidyInfo <short_title.texi >test.texinfo
 	      /bin/rm -rf short_title.texi
 	      makeinfo -o test.info test.texinfo
 

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-docbook/Markup.txt,v 1.1 2006/02/01 11:01:01 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/Markup.txt,v 1.2 2006/04/04 14:03:49 ph10 Exp $
 
 XFPT MARKUP USED IN THE EXIM DOCUMENTATION
 ------------------------------------------
@@ -217,8 +217,16 @@ To create an index entry, include a line like one of these:
   .oindex "primary text" "secondary text"
 
 The first is for the "concept index" and the second is for the "options index".
-Not all forms of output distinguish between these - sometimes there is just one
-index.
+The secondary text is of course optional. Not all forms of output distinguish
+between these - sometimes there is just one index. For the concept index, it is
+also possible to set "start" and "end" markers so that the entry lists a range
+of pages. This is how to do that:
+
+  .scindex IID "primary text" "secondary text"
+  <intervening text, should be several pages>
+  .ecindex IID
+
+The IID must be some unique string to tie the entries together.
 
 The index for the Exim reference manual has a number of "see also" entries.
 These are coded in raw XML at the start of the source file.
@@ -351,4 +359,4 @@ Each such entry must be separately marked. If there are more than one or two,
 it may be easier just to mark the entire table.
 
 Philip Hazel
-Last updated: 25 January 2006
+Last updated: 30 March 2006

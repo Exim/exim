@@ -1,20 +1,21 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/doc/doc-docbook/PageLabelPDF,v 1.1 2006/02/01 11:01:01 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/PageLabelPDF,v 1.2 2006/04/04 14:03:49 ph10 Exp $
 
 # Program to add page label information to the PDF output file. I have not
 # found a way of automatically discovering the number of frontmatter pages
-# in the document. It is therefore screwed in as 12 in the next statement.
+# in the document. It is therefore taken as an argument to be inserted into the
+# next statement.
 
 $add = "/PageLabels << /Nums [ 0 << /S /r >>\n" .
-       "                      12 << /S /D >>\n" .
+       "                      $ARGV[0] << /S /D >>\n" .
        "                     ]\n" .
        "            >>\n";
 
 $extra = length $add;
 
 $before = 0;
-while (<>)
+while (<STDIN>)
   {
   print;
   $before += length($_);
@@ -23,13 +24,13 @@ while (<>)
 
 print $add;
 
-while (<>)
+while (<STDIN>)
   {
   print;
   last if $_ =~ /^xref$/;
   }
 
-while (<>)
+while (<STDIN>)
   {
   if (/^(\d{10}) (.*)/)
     {
@@ -40,7 +41,7 @@ while (<>)
   elsif (/^startxref/)
     {
     print;
-    $_ = <>;
+    $_ = <STDIN>;
     if (/^(\d+)/)
       {
       print $1 + $extra, "\n";

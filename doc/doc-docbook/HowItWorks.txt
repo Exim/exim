@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.3 2006/02/01 11:01:01 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.4 2006/04/04 14:03:49 ph10 Exp $
 
 CREATING THE EXIM DOCUMENTATION
 
@@ -401,7 +401,7 @@ of </td> it inserts &nbsp; so that the table's cell is a little bit wider than
 the text itself.
 
 The TidyHTML-spec script also takes the opportunity to postprocess the
-spec.html/ix01.html file, which contains the document index. Again, the index
+spec_html/ix01.html file, which contains the document index. Again, the index
 is generated as one single line, so it splits it up. Then it creates a list of
 letters at the top of the index and hyperlinks them both ways from the
 different letter portions of the index.
@@ -448,16 +448,18 @@ characters in the source are transliterated, and the <index> elements are
 removed. The docbook2texi script is then called to convert the XML file into a
 Texinfo file. However, this is not quite enough. The converted file ends up
 with "conceptindex" and "optionindex" items, which are not recognized by the
-makeinfo command. An in-line call to Perl in the Makefile changes these to
-"cindex" and "findex" respectively in the final .texinfo file. Finally, a call
-of makeinfo creates a set of .info files.
+makeinfo command. These have to be changed to "cindex" and "findex"
+respectively in the final .texinfo file. Furthermore, the main menu lacks a
+pointer to the index, and indeed the index node itself is missing. These
+problems are fixed by running the file through a script called TidyInfo.
+Finally, a call of makeinfo creates a set of .info files.
 
 There is one apparently unconfigurable feature of docbook2texi: it does not
 seem possible to give it a file name for its output. It chooses a name based on
 the title of the document. Thus, the main specification ends up in a file
 called the_exim_mta.texi and the filter document in exim_filtering.texi. These
 files are removed after their contents have been copied and modified by the
-inline Perl call, which makes a .texinfo file.
+TidyInfo script, which writes to a .texinfo file.
 
 
 CREATING THE MAN PAGE
@@ -575,6 +577,7 @@ PageLabelPDF                   Script to postprocess PDF
 Pre-xml                        Script to preprocess XML
 TidyHTML-filter                Script to tidy up the filter HTML output
 TidyHTML-spec                  Script to tidy up the spec HTML output
+TidyInfo                       Script to sort index problems in Texinfo output
 Tidytxt                        Script to compact multiple blank lines
 filter.xfpt                    xfpt source of the filter document
 spec.xfpt                      xfpt source of the specification document
@@ -582,4 +585,4 @@ x2man                          Script to make the Exim man page from the XML
 
 
 Philip Hazel
-Last updated: 31 January 2006
+Last updated: 30 March 2006

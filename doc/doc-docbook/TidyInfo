@@ -1,0 +1,69 @@
+#! /usr/bin/perl -w
+
+# $Cambridge: exim/doc/doc-docbook/TidyInfo,v 1.1 2006/04/04 14:03:49 ph10 Exp $
+
+# This is script to tidy up the Texinfo file that docbook2texi produces. We
+# have to change "conceptindex" and "optionindex" to "cindex" and "findex", and
+# we also have to add access to the index into the menus and a final node.
+
+# Find the start of the first menu.
+
+while (<>)
+  {
+  print;
+  last if /^\@menu/;
+  }
+
+# Find the end of the first menu.
+
+while (<>)
+  {
+  last if /^$/;
+  print;
+  }
+
+# Insert a menu link to the index.
+
+print "* Concept Index::\n\n";
+
+# Find the final @bye line. En route, we look for the last chapter node, the
+# one that has nothing following, and insert a pointer to an index node. Also,
+# change the index names.
+
+while (<>)
+  {
+  last if /^\@bye/;
+  if (/^\@node ([^,]+), , (.*)/)
+    {
+    my($save1) = $1;
+    my($save2) = $2;
+    my($saveline) = $_;
+    $_ = <>;
+    if (/^\@chapter/)
+      {
+      print "\@node $save1, Concept Index, $save2\n";
+      $previous = $save1;
+      }
+    else
+      {
+      print "$saveline";
+      }
+    print;
+    }
+  else
+    {
+    s/conceptindex/cindex/;
+    s/optionindex/findex/;
+    print;
+    }
+  }
+
+# Insert the final index stuff at the end.
+
+print "\@appendix\n";
+print "\@node Concept Index, , $previous, Top\n";
+print "\n\@printindex cp\n\n";
+
+print;
+
+# End
