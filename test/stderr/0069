@@ -87,7 +87,8 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> check hosts = +ignore_unknown : non.existent.invalid : V4NET.0.0.13
 >>> no IP address found for host non.existent.invalid (during SMTP connection from [V4NET.0.0.13])
 LOG: no IP address found for host non.existent.invalid (during SMTP connection from [V4NET.0.0.13])
->>> failed to find IP address for non.existent.invalid: item ignored by +ignore_unknownhost in "+ignore_unknown : non.existent.invalid : V4NET.0.0.13"? yes (matched "V4NET.0.0.13")
+>>> failed to find IP address for non.existent.invalid: item ignored by +ignore_unknown
+>>> host in "+ignore_unknown : non.existent.invalid : V4NET.0.0.13"? yes (matched "V4NET.0.0.13")
 >>> accept: condition test succeeded
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
