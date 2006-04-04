@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.23 2006/03/17 16:51:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.24 2006/04/04 11:18:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1890,13 +1890,13 @@ int af;
 #endif
 
 /* If we are in the test harness, a name ending in .test.again.dns always
-forces a temporary error response. */
+forces a temporary error response, unless the name is in
+dns_again_means_nonexist. */
 
 if (running_in_test_harness)
   {
   uschar *endname = host->name + Ustrlen(host->name);
-  if (Ustrcmp(endname - 14, "test.again.dns") == 0)
-    return HOST_FIND_AGAIN;
+  if (Ustrcmp(endname - 14, "test.again.dns") == 0) goto RETURN_AGAIN;
   }
 
 /* In an IPv6 world, unless IPv6 has been disabled, we need to scan for both
@@ -2071,7 +2071,7 @@ if (host->address == NULL)
     string_sprintf("no IP address found for host %s", host->name);
 
   HDEBUG(D_host_lookup) debug_printf("%s\n", msg);
-  if (temp_error) return HOST_FIND_AGAIN;
+  if (temp_error) goto RETURN_AGAIN;
   if (host_checking || !log_testing_mode)
     log_write(L_host_lookup_failed, LOG_MAIN, "%s", msg);
   return HOST_FIND_FAILED;
@@ -2108,6 +2108,28 @@ HDEBUG(D_host_lookup)
 /* Return the found status. */
 
 return yield;
+
+/* Handle the case when there is a temporary error. If the name matches
+dns_again_means_nonexist, return permanent rather than temporary failure. */
+
+RETURN_AGAIN:
+  {
+  #ifndef STAND_ALONE
+  int rc;
+  uschar *save = deliver_domain;
+  deliver_domain = host->name;  /* set $domain */
+  rc = match_isinlist(host->name, &dns_again_means_nonexist, 0, NULL, NULL,
+    MCL_DOMAIN, TRUE, NULL);
+  deliver_domain = save;
+  if (rc == OK)
+    {
+    DEBUG(D_host_lookup) debug_printf("%s is in dns_again_means_nonexist: "
+      "returning HOST_FIND_FAILED\n", host->name);
+    return HOST_FIND_FAILED;
+    }
+  #endif
+  return HOST_FIND_AGAIN;
+  }
 }
 
 

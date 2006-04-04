@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.337 2006/04/04 09:09:44 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.338 2006/04/04 11:18:31 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -351,6 +351,10 @@ PH/71 Fixed an obscure and subtle bug (thanks Alexander & Matthias). The
       the function that creates it. There was only one place in the code where
       this was missing, in the iplookup router, which I don't think anybody now
       uses, but I've fixed it anyway.
+
+PH/72 Make dns_again_means_nonexist apply to lookups using gethostbyname() as
+      well as to direct DNS lookups. Otherwise the handling of names in host
+      lists is inconsistent and therefore confusing.
 
 
 Exim version 4.60

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.35 2006/03/16 12:07:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.36 2006/04/04 11:18:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2125,6 +2125,7 @@ if (*t == 0)
   h.name = ss;
   h.address = NULL;
   h.mx = MX_NONE;
+
   rc = host_find_byname(&h, NULL, NULL, FALSE);
   if (rc == HOST_FOUND || rc == HOST_FOUND_LOCAL)
     {
