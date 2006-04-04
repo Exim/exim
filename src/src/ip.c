@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/ip.c,v 1.5 2006/02/16 10:05:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/ip.c,v 1.6 2006/04/04 09:09:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -165,7 +165,9 @@ return bind(sock, (struct sockaddr *)&sin, s_len);
 *************************************************/
 
 /* This function connects a socket to a remote address and port. The socket may
-or may not have previously been bound to a local interface.
+or may not have previously been bound to a local interface. The socket is not
+closed, even in cases of error. It is expected that the calling function, which
+created the socket, will be the one that closes it.
 
 Arguments:
   sock        the socket
@@ -243,7 +245,6 @@ if (rc >= 0) return 0;
 /* A failure whose error code is "Interrupted system call" is in fact
 an externally applied timeout if the signal handler has been run. */
 
-(void)close(sock);
 errno = (save_errno == EINTR && sigalrm_seen)? ETIMEDOUT : save_errno;
 return -1;
 }

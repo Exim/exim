@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.44 2006/03/16 12:07:55 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.45 2006/04/04 09:09:45 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  16 March 2006
+Last updated:  04 April 2006
 
 
 THE OLD LIST
@@ -173,6 +173,7 @@ Tom Kistner               SPA server code
                             extension (exiscan)
 Jürgen Kreileder          Fix for cyrus_sasl advertisement problem
 Friso Kuipers             Patch for GDBM problem
+Matthias Lederhofer       Diagnosing and patching obscure and subtle socket bug
 Chris Liddiard            Fix for bug in exiqsumm
 Chris Lightfoot           Patch for -restore-times in exim_lock
 Edgar Lovecraft           Patch for ${str2b64:
@@ -199,6 +200,7 @@ Alex Miller               Suggested readline() patch
                           Support for the DrWeb content scanner
 Andreas Mueller           Patch for logging uncompleted SMTP transactions
 Pete Naylor               Patch for LDAP TCP connect timeout setting
+Alexander Newmann         Diagnosing and patching obscure and subtle socket bug
 Matthew Newton            Patch for exicyclog log location problem
 Marcin Owsiany            Diagnosis of a tricky timeout failure bug
 Eric Parusel              Patch for tls_remember_esmtp

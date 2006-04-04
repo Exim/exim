@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/iplookup.c,v 1.6 2006/02/07 11:19:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/iplookup.c,v 1.7 2006/04/04 09:09:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -240,6 +240,7 @@ while ((hostname = string_nextinlist(&listptr, &sep, host_buffer,
 
     if (ip_connect(query_socket, host_af, h->address,ob->port, ob->timeout) < 0)
       {
+      close(query_socket);
       DEBUG(D_route)
         debug_printf("connection to %s failed: %s\n", h->address,
           strerror(errno));

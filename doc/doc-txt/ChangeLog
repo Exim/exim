@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.336 2006/04/04 08:35:39 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.337 2006/04/04 09:09:44 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -339,6 +339,18 @@ PH/69 The HTML version of the specification is now built in a directory called
       a MIME-type, and this confuses some software.
 
 PH/70 Catch two compiler warnings in sieve.c.
+
+PH/71 Fixed an obscure and subtle bug (thanks Alexander & Matthias). The
+      function verify_get_ident() calls ip_connect() to connect a socket, but
+      if the "connect()" function timed out, ip_connect() used to close the
+      socket. However, verify_get_ident() also closes the socket later, and in
+      between Exim writes to the log, which may get opened at this point. When
+      the socket was closed in ip_connect(), the log could get the same file
+      descriptor number as the socket. This naturally causes chaos. The fix is
+      not to close the socket in ip_connect(); the socket should be closed by
+      the function that creates it. There was only one place in the code where
+      this was missing, in the iplookup router, which I don't think anybody now
+      uses, but I've fixed it anyway.
 
 
 Exim version 4.60
