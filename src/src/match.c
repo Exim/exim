@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.13 2006/04/04 09:48:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.14 2006/04/04 10:01:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -715,7 +715,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
         case ERROR:
         if (ignore_unknown)
           {
-          HDEBUG(D_lists) debug_printf("%s: item ignored by +ignore_unknown",
+          HDEBUG(D_lists) debug_printf("%s: item ignored by +ignore_unknown\n",
             error);
           }
         else
@@ -810,7 +810,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
         case ERROR:          /* host name lookup failed - this can only */
         if (ignore_unknown)  /* be for an incoming host (not outgoing) */
           {
-          HDEBUG(D_lists) debug_printf("%s: item ignored by +ignore_unknown",
+          HDEBUG(D_lists) debug_printf("%s: item ignored by +ignore_unknown\n",
             error);
           }
         else
