@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.98 2006/04/04 14:03:50 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.99 2006/04/10 08:14:58 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -22,7 +22,7 @@ the 4.60 release are:
   $2, $3, (though those are still set) because the numeric variables get used
   for other things in complicated expansions.
 
-. The default for rfc4131_query_timeout has been changed from 30s to 5s.
+. The default for rfc1413_query_timeout has been changed from 30s to 5s.
 
 . It is possible to use setclassresources() on some BSD OS to control the
   resources used in pipe deliveries.
