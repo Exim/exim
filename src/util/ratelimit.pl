@@ -1,6 +1,6 @@
 #!/usr/bin/perl -wT
 #
-# $Cambridge: exim/src/util/ratelimit.pl,v 1.2 2005/09/13 18:06:31 fanf2 Exp $
+# $Cambridge: exim/src/util/ratelimit.pl,v 1.3 2006/04/12 13:37:29 fanf2 Exp $
 
 use strict;
 
@@ -14,8 +14,8 @@ ACL condition. This is so that you can get an idea of a reasonable
 limit setting before you deploy the restrictions.
 
 This script isn't perfectly accurate, because the time stamps in
-Exim's log files are only accurate to a seond whereas internally Exim
-computes sender rates to the accuracy of your computer's clock
+Exim's log files are only accurate to a second whereas internally
+Exim computes sender rates to the accuracy of your computer's clock
 (typically 10ms).
 
 The log files to be processed can be specified on the command line
