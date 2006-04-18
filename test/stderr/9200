@@ -100,7 +100,7 @@ internal_search_find: file="NULL"
 database lookup required for select * from them where id='tab';
 PGSQL query: select * from them where id='tab';
 PGSQL using cached connection for localhost/test/CALLER
-lookup yielded: name="x	x" id=tab 
+lookup yielded: name="x x" id=tab 
 search_tidyup called
 close PGSQL connection: localhost/test/CALLER
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
