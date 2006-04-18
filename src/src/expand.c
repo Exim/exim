@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.57 2006/03/08 11:13:07 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.58 2006/04/18 11:13:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3655,28 +3655,148 @@ while (*s != 0)
         }
       else sub_arg[3] = NULL;                     /* No eol if no timeout */
 
-      /* If skipping, we don't actually do anything */
+      /* If skipping, we don't actually do anything. Otherwise, arrange to
+      connect to either an IP or a Unix socket. */
 
       if (!skipping)
         {
-        /* Make a connection to the socket */
+        /* Handle an IP (internet) domain */
 
-        if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) == -1)
+        if (strncmp(sub_arg[0], "inet:", 5) == 0)
           {
-          expand_string_message = string_sprintf("failed to create socket: %s",
-            strerror(errno));
-          goto SOCK_FAIL;
+          BOOL connected = FALSE;
+          int namelen, port;
+          host_item shost;
+          host_item *h;
+          uschar *server_name = sub_arg[0] + 5;
+          uschar *port_name = Ustrrchr(server_name, ':');
+
+          /* Sort out the port */
+
+          if (port_name == NULL)
+            {
+            expand_string_message =
+              string_sprintf("missing port for readsocket %s", sub_arg[0]);
+            goto EXPAND_FAILED;
+            }
+          *port_name++ = 0;           /* Terminate server name */
+
+          if (isdigit(*port_name))
+            {
+            uschar *end;
+            port = Ustrtol(port_name, &end, 0);
+            if (end != port_name + Ustrlen(port_name))
+              {
+              expand_string_message =
+                string_sprintf("invalid port number %s", port_name);
+              goto EXPAND_FAILED;
+              }
+            }
+          else
+            {
+            struct servent *service_info = getservbyname(CS port_name, "tcp");
+            if (service_info == NULL)
+              {
+              expand_string_message = string_sprintf("unknown port \"%s\"",
+                port_name);
+              goto EXPAND_FAILED;
+              }
+            port = ntohs(service_info->s_port);
+            }
+
+          /* Sort out the server. */
+
+          shost.next = NULL;
+          shost.address = NULL;
+          shost.port = port;
+          shost.mx = -1;
+
+          namelen = Ustrlen(server_name);
+
+          /* Anything enclosed in [] must be an IP address. */
+
+          if (server_name[0] == '[' &&
+              server_name[namelen - 1] == ']')
+            {
+            server_name[namelen - 1] = 0;
+            server_name++;
+            if (string_is_ip_address(server_name, NULL) == 0)
+              {
+              expand_string_message =
+                string_sprintf("malformed IP address \"%s\"", server_name);
+              goto EXPAND_FAILED;
+              }
+            shost.name = shost.address = server_name;
+            }
+
+          /* Otherwise check for an unadorned IP address */
+
+          else if (string_is_ip_address(server_name, NULL) != 0)
+            shost.name = shost.address = server_name;
+
+          /* Otherwise lookup IP address(es) from the name */
+
+          else
+            {
+            shost.name = server_name;
+            if (host_find_byname(&shost, NULL, NULL, FALSE) != HOST_FOUND)
+              {
+              expand_string_message =
+                string_sprintf("no IP address found for host %s", shost.name);
+              goto EXPAND_FAILED;
+              }
+            }
+
+          /* Try to connect to the server - test each IP till one works */
+
+          for (h = &shost; h != NULL; h = h->next)
+            {
+            int af = (Ustrchr(h->address, ':') != 0)? AF_INET6 : AF_INET;
+            if ((fd = ip_socket(SOCK_STREAM, af)) == -1)
+              {
+              expand_string_message = string_sprintf("failed to create socket: "
+                "%s", strerror(errno));
+              goto SOCK_FAIL;
+              }
+
+            if (ip_connect(fd, af, h->address, port, timeout) == 0)
+              {
+              connected = TRUE;
+              break;
+              }
+            }
+
+          if (!connected)
+            {
+            expand_string_message = string_sprintf("failed to connect to "
+              "socket %s: couldn't connect to any host", sub_arg[0],
+              strerror(errno));
+            goto SOCK_FAIL;
+            }
           }
 
-        sockun.sun_family = AF_UNIX;
-        sprintf(sockun.sun_path, "%.*s", (int)(sizeof(sockun.sun_path)-1),
-          sub_arg[0]);
-        if(connect(fd, (struct sockaddr *)(&sockun), sizeof(sockun)) == -1)
+        /* Handle a Unix domain socket */
+
+        else
           {
-          expand_string_message = string_sprintf("failed to connect to socket "
-            "%s: %s", sub_arg[0], strerror(errno));
-          goto SOCK_FAIL;
+          if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) == -1)
+            {
+            expand_string_message = string_sprintf("failed to create socket: %s",
+              strerror(errno));
+            goto SOCK_FAIL;
+            }
+
+          sockun.sun_family = AF_UNIX;
+          sprintf(sockun.sun_path, "%.*s", (int)(sizeof(sockun.sun_path)-1),
+            sub_arg[0]);
+          if(connect(fd, (struct sockaddr *)(&sockun), sizeof(sockun)) == -1)
+            {
+            expand_string_message = string_sprintf("failed to connect to socket "
+              "%s: %s", sub_arg[0], strerror(errno));
+            goto SOCK_FAIL;
+            }
           }
+
         DEBUG(D_expand) debug_printf("connected to socket %s\n", sub_arg[0]);
 
         /* Write the request string, if not empty */
@@ -3710,7 +3830,7 @@ while (*s != 0)
         if (sigalrm_seen)
           {
           ptr = save_ptr;
-          expand_string_message = US"socket read timed out";
+          expand_string_message = US "socket read timed out";
           goto SOCK_FAIL;
           }
         }

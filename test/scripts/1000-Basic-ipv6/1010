@@ -1,0 +1,43 @@
+# ${readsocket (IPv6)
+#
+# Note the difference between:
+#   >*eof      => close the connection
+#   *eof       => expect to read EOF from client
+#
+server PORT_S 9
+QUERY-1
+>LF>ANSWER-1
+>*eof
+QUERY-2
+>>ANSWER-2
+>*eof
+QUERY-3
+>LF>ANSWER-3
+>*eof
+QUERY-4
+>LF>ANSWER-4
+>*eof
+>>ANSWER-5
+>*eof
+*sleep 1
+>*eof
+>*eof
+QUERY-8
+*sleep 2
+*eof
+QUERY-9
+*sleep 2
+*eof
+****
+millisleep 500
+exim -be
+1 >>${readsocket{inet:[::1]:PORT_S}{QUERY-1\n}}<<
+2 >>${readsocket{inet:[::1]:PORT_S}{QUERY-2\n}}<<
+3 >>${readsocket{inet:[::1]:PORT_S}{QUERY-3\n}{2s}{*EOL*}}<<
+4 >>${readsocket{inet:[::1]:PORT_S}{QUERY-4\n}{2s}{*EOL*}{sock error}}<<
+5 >>${readsocket{inet:[::1]:PORT_S}{}}<<
+6 >>${readsocket{inet:[::1]:PORT_S}{QUERY-6\n}}<<
+7 >>${readsocket{inet:[::1]:PORT_S}{QUERY-7\n}{1s}{}{sock error}}<<
+8 >>${readsocket{inet:[::1]:PORT_S}{QUERY-8\n}{1s}}<<
+9 >>${readsocket{inet:[::1]:PORT_S}{QUERY-9\n}{1s}{}{sock error}}<<
+****

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.339 2006/04/04 17:10:07 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.340 2006/04/18 11:13:19 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -8,6 +8,10 @@ Exim version 4.62
 
 TF/01 Fix the add_header change below (4.61 PH/55) which had a bug that (amongst
       other effects) broke the use of negated acl sub-conditions.
+
+PH/01 ${readsocket now supports Internet domain sockets (modified John Jetmore
+      patch).
+
 
 Exim version 4.61
 -----------------

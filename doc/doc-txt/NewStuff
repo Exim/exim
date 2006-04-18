@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.99 2006/04/10 08:14:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.100 2006/04/18 11:13:19 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -7,6 +7,24 @@ This file contains descriptions of new features that have been added to Exim,
 but have not yet made it into the main manual (which is most conveniently
 updated when there is a relatively large batch of changes). The doc/ChangeLog
 file contains a listing of all changes, including bug fixes.
+
+Version 4.62
+------------
+
+1. The ${readsocket expansion item now supports Internet domain sockets as well
+   as Unix domain sockets. If the first argument begins "inet:", it must be of
+   the form "inet:host:port". The port is mandatory; it may be a number or the
+   name of a TCP port in /etc/services. The host may be a name, or it may be an
+   IP address. An ip address may optionally be enclosed in square brackets.
+   This is best for IPv6 addresses. For example:
+
+     ${readsocket{inet:[::1]:1234}{<request data>}...
+
+   Only a single host name may be given, but if looking it up yield more than
+   one IP address, they are each tried in turn until a connection is made. Once
+   a connection has been made, the behaviour is as for ${readsocket with a Unix
+   domain socket.
+
 
 Version 4.61
 ------------

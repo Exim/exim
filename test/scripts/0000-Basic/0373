@@ -1,4 +1,4 @@
-# ${readsocket
+# ${readsocket (Unix domain and IPv4)
 need_ipv4
 #
 exim -be
@@ -54,4 +54,48 @@ QUERY-ACL
 ****
 exim -odq -bs -oMa V4NET.0.0.0
 quit
+****
+#
+# Tests of IPv4 sockets
+#
+server PORT_S 10
+QUERY-1
+>LF>ANSWER-1
+>*eof
+QUERY-2
+>>ANSWER-2
+>*eof
+QUERY-3
+>LF>ANSWER-3
+>*eof
+QUERY-4
+>LF>ANSWER-4
+>*eof
+>>ANSWER-5
+>*eof
+*sleep 1
+>*eof
+>*eof
+QUERY-8
+*sleep 2
+*eof
+QUERY-9
+*sleep 2
+*eof
+QUERY-10
+>LF>ANSWER-10
+>*eof
+****
+millisleep 500
+exim -be
+1 >>${readsocket{inet:thisloop:PORT_S}{QUERY-1\n}}<<
+2 >>${readsocket{inet:127.0.0.1:PORT_S}{QUERY-2\n}}<<
+3 >>${readsocket{inet:127.0.0.1:PORT_S}{QUERY-3\n}{2s}{*EOL*}}<<
+4 >>${readsocket{inet:127.0.0.1:PORT_S}{QUERY-4\n}{2s}{*EOL*}{sock error}}<<
+5 >>${readsocket{inet:127.0.0.1:PORT_S}{}}<<
+6 >>${readsocket{inet:127.0.0.1:PORT_S}{QUERY-6\n}}<<
+7 >>${readsocket{inet:127.0.0.1:PORT_S}{QUERY-7\n}{1s}{}{sock error}}<<
+8 >>${readsocket{inet:127.0.0.1:PORT_S}{QUERY-8\n}{1s}}<<
+9 >>${readsocket{inet:127.0.0.1:PORT_S}{QUERY-9\n}{1s}{}{sock error}}<<
+10 >>${readsocket{inet:badloop:PORT_S}{QUERY-10\n}}<<
 ****

@@ -1,4 +1,4 @@
-; $Cambridge: exim/test/dnszones-src/db.test.ex,v 1.3 2006/02/20 16:25:00 ph10 Exp $
+; $Cambridge: exim/test/dnszones-src/db.test.ex,v 1.4 2006/04/18 11:13:19 ph10 Exp $
 
 ; This is a testing zone file for use when testing DNS handling in Exim. This
 ; is a fake zone of no real use - hence no SOA record. The zone name is
@@ -47,6 +47,16 @@ mx.π        A       V4NET.255.255.255
 ; A non-standard name for localhost
 
 thishost     A       127.0.0.1
+
+; Something that gives both the IP and the loopback
+
+thisloop     A       HOSTIPV4
+             A       127.0.0.1
+
+; Something that gives an unreachable IP and the loopback
+
+badloop      A       V4NET.0.0.1
+             A       127.0.0.1
 
 ; Another host with both A and AAAA records
 

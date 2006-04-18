@@ -13,6 +13,19 @@
 > 9 >>sock error<<
 > 
 451 Temporary local problem - please try later
+> 1 >>ANSWER-1
+<<
+> 2 >>ANSWER-2<<
+> 3 >>ANSWER-3*EOL*<<
+> 4 >>ANSWER-4*EOL*<<
+> 5 >>ANSWER-5<<
+> 6 >><<
+> 7 >><<
+> Failed: socket read timed out
+> 9 >>sock error<<
+> 10 >>ANSWER-10
+<<
+> 
 
 ******** SERVER ********
 Listening on TESTSUITE/test-socket ... 
@@ -60,4 +73,51 @@ Listening on TESTSUITE/test-socket ...
 Connection request
 QUERY-ACL
 *sleep 3
+End of script
+Listening on port 1224 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+QUERY-1
+>LF>ANSWER-1
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+QUERY-2
+>>ANSWER-2
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+QUERY-3
+>LF>ANSWER-3
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+QUERY-4
+>LF>ANSWER-4
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+>>ANSWER-5
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+*sleep 1
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+>*eof
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+QUERY-8
+*sleep 2
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+QUERY-9
+*sleep 2
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+QUERY-10
+>LF>ANSWER-10
+>*eof
 End of script
