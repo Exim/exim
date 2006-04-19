@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.37 2006/03/16 11:14:46 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.38 2006/04/19 10:58:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1459,19 +1459,40 @@ if (!sender_host_unknown)
     return FALSE;
     }
 
-  /* Test with TCP Wrappers if so configured */
+  /* Test with TCP Wrappers if so configured. There is a problem in that
+  hosts_ctl() returns 0 (deny) under a number of system failure circumstances,
+  such as disks dying. In these cases, it is desirable to reject with a 4xx
+  error instead of a 5xx error. There isn't a "right" way to detect such
+  problems. The following kludge is used: errno is zeroed before calling
+  hosts_ctl(). If the result is "reject", a 5xx error is given only if the
+  value of errno is 0 or ENOENT (which happens if /etc/hosts.{allow,deny} does
+  not exist). */
 
   #ifdef USE_TCP_WRAPPERS
+  errno = 0;
   if (!hosts_ctl("exim",
          (sender_host_name == NULL)? STRING_UNKNOWN : CS sender_host_name,
          (sender_host_address == NULL)? STRING_UNKNOWN : CS sender_host_address,
          (sender_ident == NULL)? STRING_UNKNOWN : CS sender_ident))
     {
-    HDEBUG(D_receive) debug_printf("tcp wrappers rejection\n");
-    log_write(L_connection_reject,
-              LOG_MAIN|LOG_REJECT, "refused connection from %s "
-              "(tcp wrappers)", host_and_ident(FALSE));
-    smtp_printf("554 SMTP service not available\r\n");
+    if (errno == 0 || errno == ENOENT)
+      {
+      HDEBUG(D_receive) debug_printf("tcp wrappers rejection\n");
+      log_write(L_connection_reject,
+                LOG_MAIN|LOG_REJECT, "refused connection from %s "
+                "(tcp wrappers)", host_and_ident(FALSE));
+      smtp_printf("554 SMTP service not available\r\n");
+      }
+    else
+      {
+      int save_errno = errno;
+      HDEBUG(D_receive) debug_printf("tcp wrappers rejected with unexpected "
+        "errno value %d\n", save_errno);
+      log_write(L_connection_reject,
+                LOG_MAIN|LOG_REJECT, "temporarily refused connection from %s "
+                "(tcp wrappers errno=%d)", host_and_ident(FALSE), save_errno);
+      smtp_printf("451 Temporary local problem - please try later\r\n");
+      }
     return FALSE;
     }
   #endif

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.340 2006/04/18 11:13:19 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.341 2006/04/19 10:58:21 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -11,6 +11,16 @@ TF/01 Fix the add_header change below (4.61 PH/55) which had a bug that (amongst
 
 PH/01 ${readsocket now supports Internet domain sockets (modified John Jetmore
       patch).
+
+PH/02 When tcp-wrappers is called from Exim, it returns only "deny" or "allow".
+      "Deny" causes Exim to reject the incoming connection with a 554 error.
+      Unfortunately, if there is a major crisis, such as a disk failure,
+      tcp-wrappers gives "deny", whereas what one would like would be some
+      kind of temporary error. A kludge has been added to help with this.
+      Before calling hosts_ctl(), errno is set zero. If the result is "deny", a
+      554 error is used if errno is still zero or contains ENOENT (which occurs
+      if either of the /etc/hosts.{allow,deny} files is missing). Otherwise, a
+      451 error is used.
 
 
 Exim version 4.61
