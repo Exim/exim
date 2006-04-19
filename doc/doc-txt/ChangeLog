@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.341 2006/04/19 10:58:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.342 2006/04/19 11:15:43 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -21,6 +21,8 @@ PH/02 When tcp-wrappers is called from Exim, it returns only "deny" or "allow".
       554 error is used if errno is still zero or contains ENOENT (which occurs
       if either of the /etc/hosts.{allow,deny} files is missing). Otherwise, a
       451 error is used.
+
+PH/03 Add -lutil to the default FreeBSD LIBS setting.
 
 
 Exim version 4.61
