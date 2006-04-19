@@ -455,3 +455,13 @@
 550 host in DNS list rbl.test.ex: This is a test blacklisting message
 550 host in DNS list rbl.test.ex: This is a test blacklisting message
 221 myhost.test.ex closing connection
+
+**** SMTP testing session as if from host 60.60.60.60
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+550 Administrative prohibition
+221 myhost.test.ex closing connection

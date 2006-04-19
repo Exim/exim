@@ -219,6 +219,9 @@ acl_56_56_59:
                     Original was >$acl_verify_message<
           verify  = recipient
 
+acl_60_60_60:
+  accept !acl = DIR/aux-fixed/0023.acl2
+
 
 # ----- Transports -----
 

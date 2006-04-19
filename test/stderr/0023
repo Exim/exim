@@ -1168,3 +1168,34 @@ LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: ret
 LOG: H=[44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferred
 >>> processing "accept"
 >>> accept: condition test succeeded
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> using ACL "acl_60_60_60"
+>>> processing "accept"
+>>> check !acl = TESTSUITE/aux-fixed/0023.acl2
+>>> read ACL from file TESTSUITE/aux-fixed/0023.acl2
+>>> processing "accept"
+>>> check domains = b
+>>> y in "b"? no (end of list)
+>>> accept: condition test failed
+>>> end of ACL "TESTSUITE/aux-fixed/0023.acl2": implicit DENY
+>>> accept: condition test succeeded
+>>> using ACL "acl_60_60_60"
+>>> processing "accept"
+>>> check !acl = TESTSUITE/aux-fixed/0023.acl2
+>>> using ACL "TESTSUITE/aux-fixed/0023.acl2"
+>>> processing "accept"
+>>> check domains = b
+>>> b in "b"? yes (matched "b")
+>>> check local_parts = a
+>>> a in "a"? yes (matched "a")
+>>> accept: condition test succeeded
+>>> accept: condition test failed
+>>> end of ACL "acl_60_60_60": implicit DENY
+LOG: H=[60.60.60.60] F=<x@y> rejected RCPT <a@b>

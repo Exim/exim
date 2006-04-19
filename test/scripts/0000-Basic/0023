@@ -331,3 +331,9 @@ rcpt to:<x@y>
 rcpt to:<x1@y>
 quit
 ****
+exim -bh 60.60.60.60
+mail from:<x@y>
+rcpt to:<x@y>
+rcpt to:<a@b>
+quit
+****
