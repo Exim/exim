@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.343 2006/04/20 10:57:46 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.344 2006/04/20 14:11:29 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -27,6 +27,11 @@ PH/03 Add -lutil to the default FreeBSD LIBS setting.
 PH/04 Change PH/19 for 4.61 was too wide. It should not be applied to host
       errors. Otherwise a message that provokes a temporary error (when other
       messages do not) can cause a whole host to time out.
+
+PH/05 Batch deliveries by appendfile and pipe transports did not work when the
+      addresses were routed directly to files or pipes from a redirect router.
+      File deliveries just didn't batch; pipe deliveries might have suffered
+      odd errors.
 
 
 Exim version 4.61

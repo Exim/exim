@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.100 2006/04/18 11:13:19 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.101 2006/04/20 14:11:29 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -24,6 +24,10 @@ Version 4.62
    one IP address, they are each tried in turn until a connection is made. Once
    a connection has been made, the behaviour is as for ${readsocket with a Unix
    domain socket.
+
+2. If a redirect router sets up file or pipe deliveries for more than one
+   incoming address, and the relevant transport has batch_max set greater than
+   one, a batch delivery now occurs.
 
 
 Version 4.61

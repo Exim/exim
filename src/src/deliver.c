@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.30 2006/03/01 16:07:16 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.31 2006/04/20 14:11:29 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -228,11 +228,18 @@ if (addr->next == NULL)
   }
 
 /* For multiple addresses, don't set local part, and leave the domain and
-self_hostname set only if it is the same for all of them. */
+self_hostname set only if it is the same for all of them. It is possible to
+have multiple pipe and file addresses, but only when all addresses have routed
+to the same pipe or file. */
 
 else
   {
   address_item *addr2;
+  if (testflag(addr, af_pfr))
+    {
+    if (testflag(addr, af_file)) address_file = addr->local_part;
+      else if (addr->local_part[0] == '|') address_pipe = addr->local_part;
+    }
   for (addr2 = addr->next; addr2 != NULL; addr2 = addr2->next)
     {
     if (deliver_domain != NULL &&
@@ -2119,15 +2126,17 @@ while (addr_local != NULL)
 
   disable_logging = tp->disable_logging;
 
-  /* Check for batched addresses and possible amalgamation. File deliveries can
-  never be batched. Skip all the work if either batch_max <= 1 or there aren't
-  any other addresses for local delivery. */
+  /* Check for batched addresses and possible amalgamation. Skip all the work
+  if either batch_max <= 1 or there aren't any other addresses for local
+  delivery. */
 
-  if (!testflag(addr, af_file) && tp->batch_max > 1 && addr_local != NULL)
+  if (tp->batch_max > 1 && addr_local != NULL)
     {
     int batch_count = 1;
     BOOL uses_dom = readconf_depends((driver_instance *)tp, US"domain");
-    BOOL uses_lp = readconf_depends((driver_instance *)tp, US"local_part");
+    BOOL uses_lp = (testflag(addr, af_pfr) &&
+      (testflag(addr, af_file) || addr->local_part[0] == '|')) ||
+      readconf_depends((driver_instance *)tp, US"local_part");
     uschar *batch_id = NULL;
     address_item **anchor = &addr_local;
     address_item *last = addr;
@@ -2156,6 +2165,7 @@ while (addr_local != NULL)
       same transport
       not previously delivered (see comment about 50 lines above)
       same local part if the transport's configuration contains $local_part
+        or if this is a file or pipe delivery from a redirection
       same domain if the transport's configuration contains $domain
       same errors address
       same additional headers
@@ -2169,6 +2179,7 @@ while (addr_local != NULL)
       BOOL ok =
         tp == next->transport &&
         !previously_transported(next, TRUE) &&
+        (addr->flags & (af_pfr|af_file)) == (next->flags & (af_pfr|af_file)) &&
         (!uses_lp  || Ustrcmp(next->local_part, addr->local_part) == 0) &&
         (!uses_dom || Ustrcmp(next->domain, addr->domain) == 0) &&
         same_strings(next->p.errors_address, addr->p.errors_address) &&

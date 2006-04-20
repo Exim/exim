@@ -1,0 +1,9 @@
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaX-0005vi-00 => |TESTSUITE/bin/../bin/iefbr14 <pipe-userz=TESTSUITE/bin/../bin/iefbr14@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmaX-0005vi-00 => |TESTSUITE/bin/iefbr14 <pipe-usery=TESTSUITE/bin/iefbr14@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> |TESTSUITE/bin/iefbr14 <pipe-userx=TESTSUITE/bin/iefbr14@test.ex> R=r2 T=t2
+1999-03-02 09:44:33 10HmaX-0005vi-00 => TESTSUITE/test-mail/mbox2 <file-usera=mbox2@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> TESTSUITE/test-mail/mbox2 <file-userz=mbox2@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 => TESTSUITE/test-mail/mbox <file-usery=mbox@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 -> TESTSUITE/test-mail/mbox <file-userx=mbox@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaX-0005vi-00 Completed

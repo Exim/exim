@@ -1,7 +1,7 @@
 # use of file= in appendfile with filter setting the folder
 exim -odi t1
 ****
-# Batched multiple deliveries (it doesn't batch)
+# Batched multiple deliveries (since 4.62 it does batch)
 exim -odi t11 t12
 ****
 # Error message for failure before full path is set

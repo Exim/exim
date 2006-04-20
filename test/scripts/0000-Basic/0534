@@ -1,0 +1,10 @@
+# Batch_max when redirecting to a mailbox or a pipe
+exim -odi file-userx=mbox@test.ex \
+          file-usery=mbox@test.ex \
+          file-userz=mbox2@test.ex \
+          file-usera=mbox2@test.ex \
+          pipe-userx=DIR/bin/iefbr14@test.ex \
+          pipe-usery=DIR/bin/iefbr14@test.ex \
+          pipe-userz=DIR/bin/../bin/iefbr14@test.ex  
+A test message.
+****

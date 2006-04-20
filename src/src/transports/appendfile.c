@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.14 2006/03/01 11:24:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.15 2006/04/20 14:11:29 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1333,10 +1333,15 @@ if (path[0] != '/')
   return FALSE;
   }
 
-/* For a file delivery, make sure the local part in the address is updated to
-the true local part. */
+/* For a file delivery, make sure the local part in the address(es) is updated
+to the true local part. */
 
-if (testflag(addr, af_file)) addr->local_part = string_copy(path);
+if (testflag(addr, af_file))
+  {
+  address_item *addr2;
+  for (addr2 = addr; addr2 != NULL; addr2 = addr2->next)
+    addr2->local_part = string_copy(path);
+  }
 
 /* The available mailbox formats depend on whether it is a directory or a file
 delivery. */
