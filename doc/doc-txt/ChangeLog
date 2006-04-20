@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.344 2006/04/20 14:11:29 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.345 2006/04/20 15:05:15 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -32,6 +32,9 @@ PH/05 Batch deliveries by appendfile and pipe transports did not work when the
       addresses were routed directly to files or pipes from a redirect router.
       File deliveries just didn't batch; pipe deliveries might have suffered
       odd errors.
+
+PH/06 A failure to get a lock for a hints database would erroneously always say
+      "Failed to get write lock", even when it was really a read lock.
 
 
 Exim version 4.61

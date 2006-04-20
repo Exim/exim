@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dbfn.c,v 1.8 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dbfn.c,v 1.9 2006/04/20 15:05:15 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -143,7 +143,7 @@ if (sigalrm_seen) errno = ETIMEDOUT;
 if (rc < 0)
   {
   log_write(0, LOG_MAIN, "Failed to get %s lock for %s: %s",
-    ((flags & O_RDONLY) != 0)? "read" : "write", buffer,
+    read_only? "read" : "write", buffer,
     (errno == ETIMEDOUT)? "timed out" : strerror(errno));
   (void)close(dbblock->lockfd);
   errno = 0;       /* Indicates locking failure */
