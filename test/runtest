@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.7 2006/04/20 14:11:29 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.8 2006/04/20 15:34:25 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -2558,12 +2558,25 @@ opendir(DIR, "scripts") || tests_exit(-1, "Failed to opendir(\"scripts\"): $!");
 @test_dirs = sort readdir(DIR);
 closedir(DIR);
 
+# Remove . and .. and CVS from the list.
+
+for ($i = 0; $i < @test_dirs; $i++)
+  {
+  my($d) = $test_dirs[$i];
+  if ($d eq "." || $d eq ".." || $d eq "CVS")
+    {
+    splice @test_dirs, $i, 1;
+    $i--;
+    }
+  }
+
+# Scan for relevant tests
+
 for ($i = 0; $i < @test_dirs; $i++)
   {
   my($testdir) = $test_dirs[$i];
   my($wantthis) = 1;
 
-  next if $testdir eq "." || $testdir eq "..";
   print ">>Checking $testdir\n" if $debug;
 
   # Skip this directory if the first test is equal or greater than the first
