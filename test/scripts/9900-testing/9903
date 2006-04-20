@@ -1,0 +1,19 @@
+# failure to lock retry database
+need_ipv4
+#
+server PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+451 Recipient not OK
+QUIT
+250 OK
+****
+exim -odi userx@test.ex
+****
+dump retry
+no_msglog_check

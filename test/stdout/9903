@@ -1,0 +1,18 @@
++++++++++++++++++++++++++++
+  R:userx@test.ex -44 13121 SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Recipient not OK
+first failed = time last try = time2 next try = time2 + 1
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO myhost.text.ex
+250-OK
+250 HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<userx@test.ex>
+451 Recipient not OK
+QUIT
+250 OK
+End of script
