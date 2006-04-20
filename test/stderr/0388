@@ -156,8 +156,9 @@ V4NET.0.0.0 in "*"? yes (matched "*")
 retry for T:V4NET.0.0.0:V4NET.0.0.0:1224 (y) = * 0 0
 dbfn_read: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
 failing_interval=ttt message_age=ttt
+on queue longer than maximum retry
 Writing retry data for T:V4NET.0.0.0:V4NET.0.0.0:1224
-  first failed=dddd last try=dddd next try=+1 expired=1
+  first failed=dddd last try=dddd next try=+0 expired=0
   errno=dd more_errno=dd,A Network Error
 dbfn_write: key=T:V4NET.0.0.0:V4NET.0.0.0:1224
 timed out: all retries expired

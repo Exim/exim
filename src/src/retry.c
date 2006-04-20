@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/retry.c,v 1.9 2006/03/09 15:10:16 ph10 Exp $ */
+/* $Cambridge: exim/src/src/retry.c,v 1.10 2006/04/20 10:57:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -698,13 +698,14 @@ for (i = 0; i < 3; i++)
         DEBUG(D_retry) debug_printf("failing_interval=%d message_age=%d\n",
           failing_interval, message_age);
 
-        /* If the message has been on the queue longer than the recorded time
-        of failure, use the message's age instead. This can happen when some
-        messages can be delivered and others cannot; a successful delivery will
-        reset the first_failed time, and this can lead to a failing message
-        being retried too often. */
+        /* For a non-host error, if the message has been on the queue longer
+        than the recorded time of failure, use the message's age instead. This
+        can happen when some messages can be delivered and others cannot; a
+        successful delivery will reset the first_failed time, and this can lead
+        to a failing message being retried too often. */
 
-        if (message_age > failing_interval) failing_interval = message_age;
+        if ((rti->flags & rf_host) == 0 && message_age > failing_interval)
+          failing_interval = message_age;
 
         /* Search for the current retry rule. The cutoff time of the
         last rule is handled differently to the others. The rule continues
