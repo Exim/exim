@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.9 2005/11/21 10:09:13 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.10 2006/04/25 10:44:57 ph10 Exp $
 
               Notes on the Sieve implementation for Exim
 
@@ -20,11 +20,12 @@ then there is no way around it.
 
 Exim Implementation
 
-The Exim Sieve implementation offers the core as defined by draft
-3028bis-4 (next version of RFC 3028 that fixes specification mistakes),
-the "envelope" (3028bis), the "fileinto" (3028bis), the "copy" (RFC 3894)
-and the "vacation" (draft-ietf-sieve-vacation-04.txt) extension, the
-"i;ascii-numeric" comparator (RFC 2244).
+The Exim Sieve implementation offers the core as defined by
+draft-ietf-sieve-3028bis-05.txt (next version of RFC 3028 that fixes
+specification mistakes), the "envelope" test (3028bis), the "fileinto"
+action (3028bis), the "copy" action (RFC 3894), the "vacation" action
+(draft-ietf-sieve-vacation-05.txt) and the "i;ascii-numeric" comparator
+extension (RFC 2244).
 
 The Sieve filter is integrated in Exim and works very similar to the
 Exim filter: Sieve scripts are recognized by the first line containing

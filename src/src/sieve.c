@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.20 2006/04/04 08:35:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.21 2006/04/25 10:44:57 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2583,6 +2583,7 @@ while (*filter->pc)
           {
           debug_printf("Notification to `%s'.\n",method.character);
           }
+#ifndef COMPILE_SYNTAX_CHECKER
         if (exec)
           {
           string_item *p;
@@ -2606,6 +2607,7 @@ while (*filter->pc)
             (void)child_close(pid, 0);
             }
           }
+#endif
         }
       else
         {
