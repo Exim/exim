@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.15 2006/04/20 14:11:29 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.16 2006/04/25 10:06:30 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2019,7 +2019,7 @@ if (!isdirectory)
             }
           }
 
-        mbx_lockfd = Uopen(mbx_lockname, O_RDWR | O_CREAT, 0600);
+        mbx_lockfd = Uopen(mbx_lockname, O_RDWR | O_CREAT, ob->lockfile_mode);
         if (mbx_lockfd < 0)
           {
           addr->basic_errno = ERRNO_LOCKFAILED;
@@ -2028,7 +2028,7 @@ if (!isdirectory)
           goto RETURN;
           }
 
-        (void)Uchmod(mbx_lockname, 0600);
+        (void)Uchmod(mbx_lockname, ob->lockfile_mode);
 
         if (apply_lock(mbx_lockfd, F_WRLCK, ob->use_fcntl,
             ob->lock_fcntl_timeout, ob->use_flock, ob->lock_flock_timeout) >= 0)

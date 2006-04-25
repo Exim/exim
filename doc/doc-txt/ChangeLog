@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.345 2006/04/20 15:05:15 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.346 2006/04/25 10:06:30 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -35,6 +35,10 @@ PH/05 Batch deliveries by appendfile and pipe transports did not work when the
 
 PH/06 A failure to get a lock for a hints database would erroneously always say
       "Failed to get write lock", even when it was really a read lock.
+
+PH/07 The appendfile transport was creating MBX lock files with a fixed mode
+      of 0600. This has been changed to use the value of the lockfile_mode
+      option (which defaults to 0600).
 
 
 Exim version 4.61
