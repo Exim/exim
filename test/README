@@ -1,4 +1,4 @@
-$Cambridge: exim/test/README,v 1.2 2006/02/10 16:29:20 ph10 Exp $
+$Cambridge: exim/test/README,v 1.3 2006/04/25 14:02:30 ph10 Exp $
 
 EXPORTABLE EXIM TEST SUITE
 --------------------------
@@ -705,8 +705,9 @@ deliveries because on different systems the processes may terminate in a
 different order.
 
 
-A number of standard file management commands are recognized. These are chmod,
-chown, ln, ls, du, mkdir, mkfifo, and touch. Some are run as root using "sudo".
+A number of standard file management commands are recognized. These are cat,
+chmod, chown, cp, ln, ls, du, mkdir, mkfifo, rm, rmdir, and touch. Some are run
+as root using "sudo".
 
 
 Commands with input

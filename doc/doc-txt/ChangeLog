@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.347 2006/04/25 10:44:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.348 2006/04/25 14:02:29 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -41,6 +41,14 @@ PH/07 The appendfile transport was creating MBX lock files with a fixed mode
       option (which defaults to 0600).
 
 PH/08 Applied small patch from the Sieve maintainer.
+
+PH/09 If maildir_quota_directory_regex was set to exclude (say) the .Trash
+      folder from quota calculations, a direct delivery into this folder messed
+      up the contents of the maildirsize file. This was because the regex was
+      used only to exclude .Trash (or whatever) when the size of the mailbox
+      was calculated. There was no check that a delivery was happening into an
+      excluded directory. This bug has been fixed by ignoring all quota
+      processing for deliveries into excluded directories.
 
 
 Exim version 4.61

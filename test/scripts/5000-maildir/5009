@@ -1,0 +1,19 @@
+# maildirsize with maildir_quota_directory_regex
+#
+exim -odi userx@test.ex
+Test message
+****
+cat DIR/test-mail/maildirsize >>test-stdout
+mkdir test-mail/.Sub
+touch test-mail/.Sub/maildirfolder
+exim -DSUB=.Sub -odi userx@test.ex
+Test message
+****
+cat DIR/test-mail/maildirsize >>test-stdout
+mkdir test-mail/.Trash
+touch test-mail/.Trash/maildirfolder
+exim -DSUB=.Trash -odi userx@test.ex
+Test message
+****
+cat DIR/test-mail/maildirsize >>test-stdout
+no_message_check

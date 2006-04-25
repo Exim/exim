@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.16 2006/04/25 10:06:30 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.17 2006/04/25 14:02:30 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1226,6 +1226,7 @@ uschar *filecount_msg = US"";
 uschar *path;
 struct utimbuf times;
 struct timeval msg_tv;
+BOOL disable_quota = FALSE;
 BOOL isdirectory = FALSE;
 BOOL isfifo = FALSE;
 BOOL wait_for_tick = FALSE;
@@ -2170,7 +2171,7 @@ else
     const uschar *error;
     int offset;
 
-    /* Compile the regex if there is one */
+    /* Compile the regex if there is one. */
 
     if (ob->quota_size_regex != NULL)
       {
@@ -2183,11 +2184,8 @@ else
           ob->quota_size_regex);
         return FALSE;
         }
-      else
-        {
-        DEBUG(D_transport) debug_printf("using regex for file sizes: %s\n",
-          ob->quota_size_regex);
-        }
+      DEBUG(D_transport) debug_printf("using regex for file sizes: %s\n",
+        ob->quota_size_regex);
       }
 
     /* Use an explicitly configured directory if set */
@@ -2263,6 +2261,8 @@ else
 
     if (ob->maildir_dir_regex != NULL)
       {
+      int check_path_len = Ustrlen(check_path);
+
       dir_regex = pcre_compile(CS ob->maildir_dir_regex, PCRE_COPT,
         (const char **)&error, &offset, NULL);
       if (dir_regex == NULL)
@@ -2272,11 +2272,27 @@ else
           ob->maildir_dir_regex);
         return FALSE;
         }
-      else
+
+      DEBUG(D_transport)
+        debug_printf("using regex for maildir directory selection: %s\n",
+          ob->maildir_dir_regex);
+
+      /* Check to see if we are delivering into an ignored directory, that is,
+      if the delivery path starts with the quota check path, and the rest
+      of the deliver path matches the regex; if so, set a flag to disable quota
+      checking and maildirsize updating. */
+
+      if (Ustrncmp(path, check_path, check_path_len) == 0)
         {
-        DEBUG(D_transport)
-          debug_printf("using regex for maildir directory selection: %s\n",
-            ob->maildir_dir_regex);
+        uschar *s = path + check_path_len;
+        while (*s == '/') s++;
+        s = (*s == 0)? US "new" : string_sprintf("%s/new", s);
+        if (pcre_exec(dir_regex, NULL, CS s, Ustrlen(s), 0, 0, NULL, 0) < 0)
+          {
+          disable_quota = TRUE;
+          DEBUG(D_transport) debug_printf("delivery directory does not match "
+            "maildir_quota_directory_regex: disabling quota\n");
+          }
         }
       }
 
@@ -2287,6 +2303,7 @@ else
 
 /*  if (???? || ob->quota_value > 0) */
 
+    if (!disable_quota)
       {
       off_t size;
       int filecount;
@@ -2327,7 +2344,8 @@ else
   count. Note that ob->quota_filecount_value cannot be set without
   ob->quota_value being set. */
 
-  if ((ob->quota_value > 0 || THRESHOLD_CHECK) &&
+  if (!disable_quota &&
+      (ob->quota_value > 0 || THRESHOLD_CHECK) &&
       (mailbox_size < 0 ||
         (mailbox_filecount < 0 && ob->quota_filecount_value > 0)))
     {
@@ -2605,7 +2623,7 @@ with this message if quota_is_inclusive is set; if it is not set, the check
 is for the mailbox already being over quota (i.e. the current message is not
 included in the check). */
 
-if (ob->quota_value > 0)
+if (!disable_quota && ob->quota_value > 0)
   {
   DEBUG(D_transport)
     {
@@ -2775,22 +2793,25 @@ added headers. */
 message_size = transport_count;
 
 /* If using a maildir++ quota file, add this message's size to it, and
-close the file descriptor. */
+close the file descriptor, except when the quota has been disabled because we
+are delivering into an uncounted folder. */
 
 #ifdef SUPPORT_MAILDIR
-if (yield == OK && maildirsize_fd >= 0)
-  maildir_record_length(maildirsize_fd, message_size);
-
-maildir_save_errno = errno;       /* Preserve errno while closing the file */
-(void)close(maildirsize_fd);
-errno = maildir_save_errno;
+if (!disable_quota)
+  {
+  if (yield == OK && maildirsize_fd >= 0)
+    maildir_record_length(maildirsize_fd, message_size);
+  maildir_save_errno = errno;    /* Preserve errno while closing the file */
+  (void)close(maildirsize_fd);
+  errno = maildir_save_errno;
+  }
 #endif  /* SUPPORT_MAILDIR */
 
 /* If there is a quota warning threshold and we are have crossed it with this
 message, set the SPECIAL_WARN flag in the address, to cause a warning message
 to be sent. */
 
-if (THRESHOLD_CHECK)
+if (!disable_quota && THRESHOLD_CHECK)
   {
   off_t threshold = ob->quota_warn_threshold_value;
   if (ob->quota_warn_threshold_is_percent)

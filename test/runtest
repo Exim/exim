@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.8 2006/04/20 15:34:25 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.9 2006/04/25 14:02:30 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -613,7 +613,7 @@ while(<IN>)
   s/\b\d+\.H\d+P\d+\b/dddddddddd.HddddddPddddd/;
 
   # Maildirsize data
-  if (/^\d+S,\d+C\s*$/)
+  while (/^\d+S,\d+C\s*$/)
     {
     print MUNGED;
     while (<IN>)
@@ -623,6 +623,7 @@ while(<IN>)
       }
     last if !defined $_;
     }
+  last if !defined $_;
 
 
   # ======== Output from the "fd" program about open descriptors ========
