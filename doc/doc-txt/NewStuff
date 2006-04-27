@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.101 2006/04/20 14:11:29 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.102 2006/04/27 08:53:24 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -28,6 +28,11 @@ Version 4.62
 2. If a redirect router sets up file or pipe deliveries for more than one
    incoming address, and the relevant transport has batch_max set greater than
    one, a batch delivery now occurs.
+
+3. The appendfile transport has a new option called maildirfolder_create_regex.
+   Its value is a regular expression. For a maildir delivery, this is matched
+   against the maildir directory; if it matches, Exim ensures that a
+   maildirfolder file is created alongside the new, cur, and tmp directories.
 
 
 Version 4.61

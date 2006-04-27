@@ -36,6 +36,7 @@ t1:
   maildir_format
   maildir_use_size_file
   maildir_quota_directory_regex = ^(?:cur|new|\.(?!Trash).*)$
+  maildirfolder_create_regex = /\.[^/]+$
   quota = 1M
 
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.8 2006/02/07 11:19:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.9 2006/04/27 08:53:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -29,19 +29,22 @@ calculations are not hard wired in, but are supplied as a regex. */
 *************************************************/
 
 /* This function is called at the start of a maildir delivery, to ensure that
-all the relevant directories exist.
+all the relevant directories exist. It also creates a maildirfolder file if the
+base directory matches a given pattern.
 
 Argument:
   path              the base directory name
   addr              the address item (for setting an error message)
   create_directory  true if we are allowed to create missing directories
   dirmode           the mode for created directories
+  maildirfolder_create_regex
+                    the pattern to match for maildirfolder creation
 
 Returns:            TRUE on success; FALSE on failure
 */
 
 BOOL maildir_ensure_directories(uschar *path, address_item *addr,
-  BOOL create_directory, int dirmode)
+  BOOL create_directory, int dirmode, uschar *maildirfolder_create_regex)
 {
 int i;
 struct stat statbuf;
@@ -52,7 +55,7 @@ DEBUG(D_transport)
 
 /* First ensure that the path we have is a directory; if it does not exist,
 create it. Then make sure the tmp, new & cur subdirs of the maildir are
-there. If not, fail which aborts the delivery (even though the cur subdir is
+there. If not, fail. This aborts the delivery (even though the cur subdir is
 not actually needed for delivery). Handle all 4 directory tests/creates in a
 loop so that code can be shared. */
 
@@ -135,7 +138,55 @@ for (i = 0; i < 4; i++)
     }
   }
 
-return TRUE;   /* All directories exist */
+/* If the basic path matches maildirfolder_create_regex, we are dealing with
+a subfolder, and should ensure that a maildirfolder file exists. */
+
+if (maildirfolder_create_regex != NULL)
+  {
+  const uschar *error;
+  int offset;
+  const pcre *regex;
+
+  DEBUG(D_transport) debug_printf("checking for maildirfolder requirement\n");
+
+  regex = pcre_compile(CS maildirfolder_create_regex, PCRE_COPT,
+    (const char **)&error, &offset, NULL);
+
+  if (regex == NULL)
+    {
+    addr->message = string_sprintf("appendfile: regular expression "
+      "error: %s at offset %d while compiling %s", error, offset,
+      maildirfolder_create_regex);
+    return FALSE;
+    }
+
+  if (pcre_exec(regex, NULL, CS path, Ustrlen(path), 0, 0, NULL, 0) >= 0)
+    {
+    uschar *fname = string_sprintf("%s/maildirfolder", path);
+    if (Ustat(fname, &statbuf) == 0)
+      {
+      DEBUG(D_transport) debug_printf("maildirfolder already exists\n");
+      }
+    else
+      {
+      int fd = Uopen(fname, O_WRONLY|O_APPEND|O_CREAT, 0);
+      if (fd < 0)
+        {
+        addr->message = string_sprintf("appendfile: failed to create "
+          "maildirfolder file in %s directory: %s", path, strerror(errno));
+        return FALSE;
+        }
+      (void)close(fd);
+      DEBUG(D_transport) debug_printf("created maildirfolder file\n");
+      }
+    }
+  else
+    {
+    DEBUG(D_transport) debug_printf("maildirfolder file not required\n");
+    }
+  }
+
+return TRUE;   /* Everything exists that should exist */
 }
 
 

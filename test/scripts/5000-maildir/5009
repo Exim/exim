@@ -4,14 +4,14 @@ exim -odi userx@test.ex
 Test message
 ****
 cat DIR/test-mail/maildirsize >>test-stdout
-mkdir test-mail/.Sub
-touch test-mail/.Sub/maildirfolder
+#mkdir test-mail/.Sub
+#touch test-mail/.Sub/maildirfolder
 exim -DSUB=.Sub -odi userx@test.ex
 Test message
 ****
 cat DIR/test-mail/maildirsize >>test-stdout
-mkdir test-mail/.Trash
-touch test-mail/.Trash/maildirfolder
+#mkdir test-mail/.Trash
+#touch test-mail/.Trash/maildirfolder
 exim -DSUB=.Trash -odi userx@test.ex
 Test message
 ****

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.h,v 1.4 2006/02/07 11:19:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.h,v 1.5 2006/04/27 08:53:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -25,6 +25,7 @@ typedef struct {
   uschar *mailbox_filecount_string;
   uschar *maildir_dir_regex;
   uschar *maildir_tag;
+  uschar *maildirfolder_create_regex;
   uschar *mailstore_prefix;
   uschar *mailstore_suffix;
   uschar *check_string;

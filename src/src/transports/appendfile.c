@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.17 2006/04/25 14:02:30 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.18 2006/04/27 08:53:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -107,6 +107,8 @@ optionlist appendfile_transport_options[] = {
       (void *)offsetof(appendfile_transport_options_block, maildir_tag) },
   { "maildir_use_size_file", opt_bool,
       (void *)offsetof(appendfile_transport_options_block, maildir_use_size_file ) } ,
+  { "maildirfolder_create_regex", opt_stringptr,
+      (void *)offsetof(appendfile_transport_options_block, maildirfolder_create_regex ) },
 #endif  /* SUPPORT_MAILDIR */
 #ifdef SUPPORT_MAILSTORE
   { "mailstore_format",  opt_bool,
@@ -184,6 +186,7 @@ appendfile_transport_options_block appendfile_transport_option_defaults = {
   NULL,           /* mailbox_filecount_string */
   US"^(?:cur|new|\\..*)$",  /* maildir_dir_regex */
   NULL,           /* maildir_tag */
+  NULL,           /* maildirfolder_create_regex */
   NULL,           /* mailstore_prefix */
   NULL,           /* mailstore_suffix */
   NULL,           /* check_string (default changed for non-bsmtp file)*/
@@ -2152,10 +2155,11 @@ else
     }
 
   #ifdef SUPPORT_MAILDIR
-  /* For a maildir delivery, ensure that all the relevant directories exist */
+  /* For a maildir delivery, ensure that all the relevant directories exist,
+  and a maildirfolder file if necessary. */
 
   if (mbformat == mbf_maildir && !maildir_ensure_directories(path, addr,
-    ob->create_directory, ob->dirmode))
+    ob->create_directory, ob->dirmode, ob->maildirfolder_create_regex))
       return FALSE;
   #endif  /* SUPPORT_MAILDIR */
 
@@ -2236,6 +2240,8 @@ else
             {
             *slash = 0;
             check_path = new_check_path;
+            DEBUG(D_transport) debug_printf("maildirfolder file exists: "
+              "quota check directory changed to %s\n", check_path);
             }
           }
         }

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.h,v 1.4 2006/02/07 11:19:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/tf_maildir.h,v 1.5 2006/04/27 08:53:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -12,7 +12,8 @@ maildirsize files for quota handling in maildir directories. */
 
 extern off_t  maildir_compute_size(uschar *, int *, time_t *, const pcre *,
                 const pcre *, BOOL);
-extern BOOL   maildir_ensure_directories(uschar *, address_item *, BOOL, int);
+extern BOOL   maildir_ensure_directories(uschar *, address_item *, BOOL, int,
+                uschar *);
 extern int    maildir_ensure_sizefile(uschar *,
                 appendfile_transport_options_block *, const pcre *,
                 const pcre *, off_t *, int *);
