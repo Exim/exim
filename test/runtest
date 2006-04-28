@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.9 2006/04/25 14:02:30 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.10 2006/04/28 13:46:36 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -526,6 +526,8 @@ while(<IN>)
   s/host\s\Q$parm_ipv6\E\s\[\Q$parm_ipv6\E\]/host ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]/;
   s/\b\Q$parm_ipv4\E\b/ip4.ip4.ip4.ip4/g;
   s/\b\Q$parm_ipv6\E\b/ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6/g;
+  s/\b\Q$parm_ipv4r\E\b/ip4-reverse/g;
+  s/\b\Q$parm_ipv6r\E\b/ip6-reverse/g;
 
 
   # ======== Test network IP addresses ========
@@ -2403,6 +2405,24 @@ else
 
 print "IPv4 address is $parm_ipv4\n";
 print "IPv6 address is $parm_ipv6\n";
+
+# For munging test output, we need the reversed IP addresses.
+
+$parm_ipv4r = ($parm_ipv4 !~ /^\d/)? "" :
+  join(".", reverse(split /\./, $parm_ipv4));
+
+$parm_ipv6r = "";
+if ($parm_ipv6 =~ /^[\da-f]/)
+  {
+  my(@comps) = split /:/, $parm_ipv6;
+  my(@nibbles);
+  foreach $comp (@comps)
+    {
+    push @nibbles, sprintf("%lx", hex($comp) >> 8);
+    push @nibbles, sprintf("%lx", hex($comp) & 0xff);
+    }
+  $parm_ipv6r = join(".", reverse(@nibbles));
+  }
 
 # Find the host name, fully qualified.
 
