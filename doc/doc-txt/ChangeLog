@@ -1,7 +1,23 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.350 2006/05/05 14:31:24 steve Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.351 2006/05/08 12:45:05 steve Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+Exim version 4.63
+-----------------
+
+SC/01 Use a glob alias rather than an array ref in eximstats generated
+      parser. This improves both readability and performance.
+
+SC/02 Collect SpamAssassin and rejection statistics in eximstats.
+      Don't display local sender or destination tables in eximstats unless
+      there is data to show.
+      Added average volumes into the eximstats top table text output.
+
+SC/03 Collect data on the number of addresses (recipients) as well
+      as the number of messages in eximstats.
+
+
 
 Exim version 4.62
 -----------------
@@ -51,17 +67,6 @@ PH/09 If maildir_quota_directory_regex was set to exclude (say) the .Trash
       processing for deliveries into excluded directories.
 
 PH/10 Added the maildirfolder_create_regex option to appendfile.
-
-SC/01 Use a glob alias rather than an array ref in eximstats generated
-      parser. This improves both readability and performance.
-
-SC/02 Collect SpamAssassin and rejection statistics in eximstats.
-      Don't display local sender or destination tables in eximstats unless
-      there is data to show.
-      Added average volumes into the eximstats top table text output.
-
-SC/03 Collect data on the number of addresses (recipients) as well
-      as the number of messages in eximstats.
 
 
 Exim version 4.61
