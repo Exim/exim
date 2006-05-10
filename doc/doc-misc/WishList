@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.67 2006/04/04 12:59:42 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.68 2006/05/10 15:36:11 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -2003,5 +2003,10 @@ problems.
 At present, a defer causes a delivery defer. For non-critical ACLs there are
 times when it may be better to accept. See also 226 and 289.
 ------------------------------------------------------------------------------
---- HWM 352 ------------------------------------------------------------------
+
+(353) 10-May-06 T Add option to stop addition of $home in filter files
+
+This would make them more like Sieve (which came afterwards, I must point out).
+------------------------------------------------------------------------------
+--- HWM 353 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
