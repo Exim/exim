@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.3 2006/04/27 15:19:27 ph10 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.4 2006/05/22 17:43:09 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -16787,8 +16787,6 @@ It is usual to set &%no_verify%& on &(redirect)& routers which handle users'
 .ilist
 When Exim is receiving an incoming SMTP message from a remote host, it is
 running under the Exim uid, not as root.
-No additional groups are set up, even if the Exim uid is a member of other
-groups (that is, the &[initgroups()]& function is not run).
 Exim is unable to change uid to read the file as the user, and it may not be
 able to read it as the Exim user. So in practice the router may not be able to
 operate.

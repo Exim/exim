@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.351 2006/05/08 12:45:05 steve Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.352 2006/05/22 17:43:10 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -17,6 +17,8 @@ SC/02 Collect SpamAssassin and rejection statistics in eximstats.
 SC/03 Collect data on the number of addresses (recipients) as well
       as the number of messages in eximstats.
 
+TF/01 Correct an error in the documentation for the redirect router. Exim
+      does (usually) call initgroups() when daemonizing.
 
 
 Exim version 4.62
