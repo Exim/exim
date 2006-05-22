@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.38 2006/03/16 12:25:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.39 2006/05/22 18:42:34 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3597,7 +3597,9 @@ root privilege above as a result of -C, -D, -be, -bf or -bF, remove it now
 except when starting the daemon or doing some kind of delivery or address
 testing (-bt). These are the only cases when root need to be retained. We run
 as exim for -bv and -bh. However, if deliver_drop_privilege is set, root is
-retained only for starting the daemon. */
+retained only for starting the daemon. We always do the initgroups() in this
+situation (controlled by the TRUE below), in order to be as close as possible
+to the state Exim usually runs in. */
 
 if (!unprivileged &&                      /* originally had root AND */
     !removed_privilege &&                 /* still got root AND      */
@@ -3613,7 +3615,7 @@ if (!unprivileged &&                      /* originally had root AND */
         )
       ))
   {
-  exim_setugid(exim_uid, exim_gid, FALSE, US"privilege not needed");
+  exim_setugid(exim_uid, exim_gid, TRUE, US"privilege not needed");
   }
 
 /* When we are retaining a privileged uid, we still change to the exim gid. */

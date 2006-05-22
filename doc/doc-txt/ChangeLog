@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.352 2006/05/22 17:43:10 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.353 2006/05/22 18:44:24 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -20,6 +20,8 @@ SC/03 Collect data on the number of addresses (recipients) as well
 TF/01 Correct an error in the documentation for the redirect router. Exim
       does (usually) call initgroups() when daemonizing.
 
+TF/02 Call initgroups() when dropping privilege in exim.c, so that Exim runs with
+      consistent privilege compared to when running as a daemon.
 
 Exim version 4.62
 -----------------
