@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.353 2006/05/22 18:44:24 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.354 2006/05/31 19:34:57 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -22,6 +22,10 @@ TF/01 Correct an error in the documentation for the redirect router. Exim
 
 TF/02 Call initgroups() when dropping privilege in exim.c, so that Exim runs with
       consistent privilege compared to when running as a daemon.
+
+TF/03 Note in the spec that $authenticated_id is not set for local
+      submissions from trusted users.
+
 
 Exim version 4.62
 -----------------

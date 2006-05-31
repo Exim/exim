@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.4 2006/05/22 17:43:09 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.5 2006/05/31 19:34:57 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -9901,8 +9901,8 @@ preserve some of the authentication information in the variable
 user/password authenticator configuration might preserve the user name for use
 in the routers. Note that this is not the same information that is saved in
 &$sender_host_authenticated$&. When a message is submitted locally (that is,
-not over a TCP connection), the value of &$authenticated_id$& is the login name
-of the calling process.
+not over a TCP connection) and if the submitter is not a trusted user,
+the value of &$authenticated_id$& is the login name of the calling process.
 
 .vitem &$authenticated_sender$&
 .cindex "sender" "authenticated"
