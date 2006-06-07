@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.355 2006/06/07 15:06:25 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.356 2006/06/07 17:42:27 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -28,6 +28,12 @@ TF/03 Note in the spec that $authenticated_id is not set for local
 
 TF/04 The ratelimit per_rcpt option now works correctly in acl_not_smtp.
       Thanks to Dean Brooks <dean@iglou.com> for the patch.
+
+TF/05 Make it easier to get SMTP authentication and TLS/SSL support working
+      by adding some example configuration directives to the default
+      configuration file. A little bit of work is required to uncomment the
+      directives and define how usernames and passwords are checked, but
+      there is now a framework to start from.
 
 
 Exim version 4.62

@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.5 2006/05/31 19:34:57 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.6 2006/06/07 17:42:27 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -4958,7 +4958,7 @@ mentioned at all in the default configuration.
 
 
 
-.section "Main configuration settings"
+.section "Main configuration settings" "SECTdefconfmain"
 The main (global) configuration option settings must always come first in the
 file. The first thing you'll see in the file, after some initial comments, is
 the line
@@ -5033,6 +5033,36 @@ These are example settings that can be used when Exim is compiled with the
 content-scanning extension. The first specifies the interface to the virus
 scanner, and the second specifies the interface to SpamAssassin. Further
 details are given in chapter &<<CHAPexiscan>>&.
+
+Three more commented-out option settings follow:
+.code
+# tls_advertise_hosts = *
+# tls_certificate = /etc/ssl/exim.crt
+# tls_privatekey = /etc/ssl/exim.pem
+.endd
+These are example settings that can be used when Exim is compiled with
+support for TLS (aka SSL) as described in &<<SECTinctlsssl>>&. The
+first one specifies the list of clients that are allowed to use TLS
+when connecting to this server; in this case the wildcard means all
+clients. The other options specify where Exim should find its TLS
+certificate and private key, which together prove the server's
+identity to any clients that connect. More details are given in
+&<<CHAPTLS>>&.
+
+Another two commented-out option settings follow:
+.code
+# daemon_smtp_ports = 25 : 465 : 587
+# tls_on_connect_ports = 465
+.endd
+These options provide better support for roaming users who wish to use
+this server for message submission. They are not much use unless you
+have turned on TLS (as described in the previous paragraph) and
+authentication (about which more in &<<SECTdefconfauth>>&). The usual
+SMTP port 25 is often blocked on end-user networks, so RFC 4409
+specifies that message submission should use port 587 instead. However
+some software (notably Microsoft Outlook) cannot be configured to use
+port 587 correctly, so these settings also enable the non-standard
+&"smtps"& port 465.
 
 Two more commented-out options settings follow:
 .code
@@ -5275,9 +5305,9 @@ accept  authenticated = *
 This statement accepts the address if the client host has authenticated itself.
 Submission mode is again specified, on the grounds that such messages are most
 likely to come from MUAs. The default configuration does not define any
-authenticators, which means that no client can in fact authenticate. You will
-need to add authenticator definitions if you want to make use of this ACL
-statement.
+authenticators, though it does include some nearly complete commented-out
+examples described in &<<SECTdefconfauth>>&. This means that no client can in
+fact authenticate until you complete the authenticator definitions.
 .code
 # deny    message     = rejected because $sender_host_address \
 #                       is in a black list at $dnslist_domain\n\
@@ -5624,14 +5654,52 @@ rewriting rules in the default configuration file.
 
 
 
-.section "Authenticators configuration"
+.section "Authenticators configuration" "SECTdefconfauth"
 .cindex "AUTH" "configuration"
 The authenticators section of the configuration, introduced by
 .code
 begin authenticators
 .endd
-defines mechanisms for the use of the SMTP AUTH command. No authenticators
-are specified in the default configuration file.
+defines mechanisms for the use of the SMTP AUTH command. The default
+configuration file contains two commented-out example authenticators
+which support plaintext username/password authentication using the
+standard PLAIN mechanism and the traditional but non-standard LOGIN
+mechanism, with Exim acting as the server. PLAIN and LOGIN are enough
+to support most MUA software.
+
+The example PLAIN authenticator looks like this:
+.code
+#PLAIN:
+#  driver                     = plaintext
+#  server_set_id              = $auth2
+#  server_prompts             = :
+#  server_condition           = Authentication is not yet configured
+#  server_advertise_condition = ${if def:tls_cipher }
+.endd
+And the example LOGIN authenticator looks like this:
+.code
+#LOGIN:
+#  driver                     = plaintext
+#  server_set_id              = $auth1
+#  server_prompts             = <| Username: | Password:
+#  server_condition           = Authentication is not yet configured
+#  server_advertise_condition = ${if def:tls_cipher }
+.endd
+
+The &%server_set_id%& option makes Exim remember the authenticated username
+in &$authenticated_id$&, which can be used later in ACLs or routers. The
+&%server_prompts%& option configures the &(plaintext)& authenticator so
+that it implements the details of the specific authentication mechanism,
+i.e. PLAIN or LOGIN. The &%server_advertise_condition%& setting controls
+when Exim offers authentication to clients; in the examples, this is only
+when TLS or SSL has been started, so to enable the authenticators you also
+need to add support for TLS as described in &<<SECTdefconfmain>>&.
+
+The &%server_condition%& setting defines how to verify that the username and
+password are correct. In the examples it just produces an error message.
+To make the authenticators work, you can use a string expansion
+expression like one of the examples in &<<CHAPplaintext>>&.
+
 .ecindex IIDconfiwal
 
 
@@ -23680,10 +23748,21 @@ connection is closed. In these special cases, the QUIT ACL does not run.
 
 .section "Finding an ACL to use"
 .cindex "&ACL;" "finding which to use"
-The value of an &%acl_smtp_%&&'xxx'& option is expanded before use, so you can
-use different ACLs in different circumstances. The resulting string does not
-have to be the name of an ACL in the configuration file; there are other
-possibilities. Having expanded the string, Exim searches for an ACL as follows:
+The value of an &%acl_smtp_%&&'xxx'& option is expanded before use, so
+you can use different ACLs in different circumstances. For example,
+.code
+acl_smtp_rcpt = ${if ={25}{$interface_port} \
+                     {acl_check_rcpt} {acl_check_rcpt_submit} }
+.endd
+In the default configuration file there are some example settings for
+providing an RFC 4409 message submission service on port 587 and a
+non-standard &"smtps"& service on port 465. You can use a string
+expansion like this to choose an ACL for MUAs on these ports which is
+more appropriate for this purpose than the default ACL on port 25.
+
+The expanded string does not have to be the name of an ACL in the
+configuration file; there are other possibilities. Having expanded the
+string, Exim searches for an ACL as follows:
 
 .ilist
 If the string begins with a slash, Exim uses it as a file name, and reads its

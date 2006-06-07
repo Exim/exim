@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/configure.default,v 1.7 2006/02/20 16:31:49 ph10 Exp $
+# $Cambridge: exim/src/src/configure.default,v 1.8 2006/06/07 17:42:27 fanf2 Exp $
 
 ######################################################################
 #                  Runtime configuration file for Exim               #
@@ -128,6 +128,40 @@ acl_smtp_data = acl_check_data
 # modify the acl_check_data access control list to enable spam scanning.
 
 # spamd_address = 127.0.0.1 783
+
+
+# If Exim is compiled with support for TLS, you may want to enable the
+# following options so that Exim allows clients to make encrypted
+# connections. In the authenticators section below, there are template
+# configurations for plaintext username/password authentication. This kind
+# of authentication is only safe when used within a TLS connection, so the
+# authenticators will only work if the following TLS settings are turned on
+# as well.
+
+# Allow any client to use TLS.
+
+# tls_advertise_hosts = *
+
+# Specify the location of the Exim server's TLS certificate and private key.
+# The private key must not be encrypted (password protected). You can put
+# the certificate and private key in the same file, in which case you only
+# need the first setting, or in separate files, in which case you need both
+# options.
+
+# tls_certificate = /etc/ssl/exim.crt
+# tls_privatekey = /etc/ssl/exim.pem
+
+# In order to support roaming users who wish to send email from anywhere,
+# you may want to make Exim listen on other ports as well as port 25, in
+# case these users need to send email from a network that blocks port 25.
+# The standard port for this purpose is port 587, the "message submission"
+# port. See RFC 4409 for details. Microsoft MUAs cannot be configured to
+# talk the message submission protocol correctly, so if you need to support
+# them you should also allow TLS-on-connect on the traditional but
+# non-standard port 465.
+
+# daemon_smtp_ports = 25 : 465 : 587
+# tls_on_connect_ports = 465
 
 
 # Specify the domain you want to be added to all unqualified addresses
@@ -662,10 +696,49 @@ begin rewrite
 #                   AUTHENTICATION CONFIGURATION                     #
 ######################################################################
 
-# There are no authenticator specifications in this default configuration file.
+# The following authenticators support plaintext username/password
+# authentication using the standard PLAIN mechanism and the traditional
+# but non-standard LOGIN mechanism, with Exim acting as the server.
+# PLAIN and LOGIN are enough to support most MUA software.
+#
+# These authenticators are not complete: you need to change the
+# server_condition settings to specify how passwords are verified.
+# They are set up to offer authentication to the client only if the
+# connection is encrypted with TLS, so you also need to add support
+# for TLS. See the global configuration options section at the start
+# of this file for more about TLS.
+#
+# The default RCPT ACL checks for successful authentication, and will accept
+# messages from authenticated users from anywhere on the Internet.
 
 begin authenticators
 
+# PLAIN authentication has no server prompts. The client sends its
+# credentials in one lump, containing an authorization ID (which we do not
+# use), an authentication ID, and a password. The latter two appear as
+# $auth2 and $auth3 in the configuration and should be checked against a
+# valid username and password. In a real configuration you would typically
+# use $auth2 as a lookup key, and compare $auth3 against the result of the
+# lookup, perhaps using the crypteq{}{} condition.
+
+#PLAIN:
+#  driver                     = plaintext
+#  server_set_id              = $auth2
+#  server_prompts             = :
+#  server_condition           = Authentication is not yet configured
+#  server_advertise_condition = ${if def:tls_cipher }
+
+# LOGIN authentication has traditional prompts and responses. There is no
+# authorization ID in this mechanism, so unlike PLAIN the username and
+# password are $auth1 and $auth2. Apart from that you can use the same
+# server_condition setting for both authenticators.
+
+#LOGIN:
+#  driver                     = plaintext
+#  server_set_id              = $auth1
+#  server_prompts             = <| Username: | Password:
+#  server_condition           = Authentication is not yet configured
+#  server_advertise_condition = ${if def:tls_cipher }
 
 
 ######################################################################
