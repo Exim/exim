@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.58 2006/04/04 17:05:45 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.59 2006/06/07 15:06:26 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2035,6 +2035,7 @@ ACL clauses like: defer ratelimit = 15 / 1h
 
 Arguments:
   arg         the option string for ratelimit=
+  where       ACL_WHERE_xxxx indicating which ACL this is
   log_msgptr  for error messages
 
 Returns:       OK        - Sender's rate is above limit
@@ -2044,7 +2045,7 @@ Returns:       OK        - Sender's rate is above limit
 */
 
 static int
-acl_ratelimit(uschar *arg, uschar **log_msgptr)
+acl_ratelimit(uschar *arg, int where, uschar **log_msgptr)
 {
 double limit, period;
 uschar *ss, *key;
@@ -2262,6 +2263,9 @@ else
 
   if (per_byte)
     dbd->rate = (message_size < 0 ? 0.0 : (double)message_size)
+              * (1 - a) / i_over_p + a * dbd->rate;
+  else if (per_cmd && where == ACL_WHERE_NOTSMTP)
+    dbd->rate = (double)recipients_count
               * (1 - a) / i_over_p + a * dbd->rate;
   else
     dbd->rate = (1 - a) / i_over_p + a * dbd->rate;
@@ -2873,7 +2877,7 @@ for (; cb != NULL; cb = cb->next)
     #endif
 
     case ACLC_RATELIMIT:
-    rc = acl_ratelimit(arg, log_msgptr);
+    rc = acl_ratelimit(arg, where, log_msgptr);
     break;
 
     case ACLC_RECIPIENTS:

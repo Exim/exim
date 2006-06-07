@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.354 2006/05/31 19:34:57 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.355 2006/06/07 15:06:25 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -25,6 +25,9 @@ TF/02 Call initgroups() when dropping privilege in exim.c, so that Exim runs wit
 
 TF/03 Note in the spec that $authenticated_id is not set for local
       submissions from trusted users.
+
+TF/04 The ratelimit per_rcpt option now works correctly in acl_not_smtp.
+      Thanks to Dean Brooks <dean@iglou.com> for the patch.
 
 
 Exim version 4.62
