@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.360 2006/06/27 15:07:18 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.361 2006/06/27 15:38:07 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -44,6 +44,10 @@ PH/02 Add the verb name to the "unknown ACL verb" error.
 PH/03 Magnus Holmgren's patch for filter_prepend_home.
 
 PH/03 Fixed Bugzilla #101: macro definition between ACLs doesn't work.
+
+PH/04 Applied Magnus Holmgren's patch to fix Bugzilla #98: transport's home
+      directory not expanded when it should be if an expanded home directory
+      was set for the address (which is overridden by the transport).
 
 
 Exim version 4.62

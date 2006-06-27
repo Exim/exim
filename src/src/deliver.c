@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.31 2006/04/20 14:11:29 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.32 2006/06/27 15:38:07 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1626,17 +1626,13 @@ return. */
 
 if (!findugid(addr, tp, &uid, &gid, &use_initgroups)) return;
 
-/* See if either the transport or the address specifies a home and/or a current
-working directory. Expand it if necessary. If nothing is set, use "/", for the
-working directory, which is assumed to be a directory to which all users have
-access. It is necessary to be in a visible directory for some operating systems
-when running pipes, as some commands (e.g. "rm" under Solaris 2.5) require
-this. */
+/* See if either the transport or the address specifies a home directory. A
+home directory set in the address may already be expanded; a flag is set to
+indicate that. In other cases we must expand it. */
 
-deliver_home = (tp->home_dir != NULL)? tp->home_dir :
-               (addr->home_dir != NULL)? addr->home_dir : NULL;
-
-if (deliver_home != NULL && !testflag(addr, af_home_expanded))
+if ((deliver_home = tp->home_dir) != NULL ||       /* Set in transport, or */
+     ((deliver_home = addr->home_dir) != NULL &&   /* Set in address and */
+       !testflag(addr, af_home_expanded)))         /*   not expanded */
   {
   uschar *rawhome = deliver_home;
   deliver_home = NULL;                      /* in case it contains $home */
@@ -1656,8 +1652,15 @@ if (deliver_home != NULL && !testflag(addr, af_home_expanded))
     }
   }
 
-working_directory = (tp->current_dir != NULL)? tp->current_dir :
-                    (addr->current_dir != NULL)? addr->current_dir : NULL;
+/* See if either the transport or the address specifies a current directory,
+and if so, expand it. If nothing is set, use the home directory, unless it is
+also unset in which case use "/", which is assumed to be a directory to which
+all users have access. It is necessary to be in a visible directory for some
+operating systems when running pipes, as some commands (e.g. "rm" under Solaris
+2.5) require this. */
+
+working_directory = (tp->current_dir != NULL)?
+  tp->current_dir : addr->current_dir;
 
 if (working_directory != NULL)
   {
