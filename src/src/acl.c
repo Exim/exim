@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.59 2006/06/07 15:06:26 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.60 2006/06/27 14:04:29 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -720,7 +720,8 @@ while ((s = (*func)()) != NULL)
     {
     if (this == NULL)
       {
-      *error = string_sprintf("unknown ACL verb in \"%s\"", saveline);
+      *error = string_sprintf("unknown ACL verb \"%s\" in \"%s\"", name,
+        saveline);
       return NULL;
       }
     }
