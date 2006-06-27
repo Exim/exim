@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.60 2006/06/27 14:04:29 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.61 2006/06/27 15:07:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -710,7 +710,7 @@ while ((s = (*func)()) != NULL)
   can be started by a name, or by a macro definition. */
 
   s = readconf_readname(name, sizeof(name), s);
-  if (*s == ':' || isupper(name[0] && *s == '=')) return yield;
+  if (*s == ':' || (isupper(name[0]) && *s == '=')) return yield;
 
   /* If a verb is unrecognized, it may be another condition or modifier that
   continues the previous verb. */

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.359 2006/06/27 14:34:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.360 2006/06/27 15:07:18 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -42,6 +42,8 @@ PH/01 Added #define LDAP_DEPRECATED 1 to ldap.c because some of the "old"
 PH/02 Add the verb name to the "unknown ACL verb" error.
 
 PH/03 Magnus Holmgren's patch for filter_prepend_home.
+
+PH/03 Fixed Bugzilla #101: macro definition between ACLs doesn't work.
 
 
 Exim version 4.62
