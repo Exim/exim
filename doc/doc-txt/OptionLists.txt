@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.20 2006/04/27 08:53:24 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.21 2006/06/27 14:34:26 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -11,7 +11,7 @@ This file contains complete lists of four kinds of Exim option:
   4. Those that can appear in the build time configuration for the Exim monitor
      (Local/eximon.conf).
 
-This file was last updated for Exim release 4.62.
+This file was last updated for Exim release 4.63.
 
 
 1. RUN TIME OPTIONS
@@ -204,6 +204,7 @@ file_format                          string          unset         appendfile   
 file_must_exist                      boolean         false         appendfile
 file_optional                        boolean         false         autoreply
 file_transport                       string*         unset         redirect          4.00
+filter_prepend_home                  boolean         true          redirect          4.63
 final_timeout                        time            10m           smtp
 finduser_retries                     integer         0             main
 forbid_blackhole                     boolean         false         redirect          4.00

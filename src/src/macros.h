@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.24 2006/03/09 15:10:16 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.25 2006/06/27 14:34:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -508,6 +508,7 @@ router, which were chosen to represent the standard situation for users'
 #define RDO_REWRITE      0x00020000  /* Rewrite generated addresses */
 #define RDO_EXIM_FILTER  0x00040000  /* Forbid Exim filters */
 #define RDO_SIEVE_FILTER 0x00080000  /* Forbid Sieve filters */
+#define RDO_PREPEND_HOME 0x00100000  /* Prepend $home to relative paths in Exim filter save commands */
 
 /* This is the set that apply to expansions in filters */
 
@@ -521,7 +522,7 @@ automated, but I haven't bothered. Keep this list in step with the above! */
 enum { RDON_BLACKHOLE, RDON_DEFER, RDON_EACCES, RDON_ENOTDIR, RDON_EXISTS,
   RDON_FAIL, RDON_FILTER, RDON_FREEZE, RDON_INCLUDE, RDON_LOG, RDON_LOOKUP,
   RDON_PERL, RDON_READFILE, RDON_READSOCK, RDON_RUN, RDON_DLFUNC, RDON_REALLOG,
-  RDON_REWRITE, RDON_EXIM_FILTER, RDON_SIEVE_FILTER };
+  RDON_REWRITE, RDON_EXIM_FILTER, RDON_SIEVE_FILTER, RDON_PREPEND_HOME };
 
 /* Results of filter or forward file processing. Some are only from a filter;
 some are only from a forward file. */

@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.46 2006/06/07 15:06:26 fanf2 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.47 2006/06/27 14:34:26 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  04 April 2006
+Last updated:  27 June 2006
 
 
 THE OLD LIST
@@ -157,6 +157,7 @@ Steve Haslam              Lots of stuff, including
 Sheldon Hearn             Suggested patch for smtp_accept_max_nonmail_hosts
 Bryan Henderson           Patch to use RM_COMMAND everywhere during building
 Jakob Hirsch              Patch for % operator
+Magnus Holmgren           Patch for filter_prepend_home
 Kjetil Torgrim Homme      Patch for require_files problem on NFS file systems
 Tom Hughes                Suggested patch for $n bug in pipe command from filter
 Pierre Humblet            Continued Cygwin support

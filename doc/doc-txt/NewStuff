@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.102 2006/04/27 08:53:24 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.103 2006/06/27 14:34:26 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -7,6 +7,16 @@ This file contains descriptions of new features that have been added to Exim,
 but have not yet made it into the main manual (which is most conveniently
 updated when there is a relatively large batch of changes). The doc/ChangeLog
 file contains a listing of all changes, including bug fixes.
+
+Version 4.63
+------------
+
+1. There is a new Boolean option called filter_prepend_home for the redirect
+   router. It defaults true, for backward compatibility. If a "save" command in
+   an Exim filter has a relative path for its argument, and $home is defined,
+   it is automatically prepended to the relative path. This action can now be
+   prevented by setting filter_prepend_home false.
+
 
 Version 4.62
 ------------

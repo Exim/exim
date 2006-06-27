@@ -257,3 +257,7 @@ Headers remove "remove-this"
 Unseen deliver message to: userz@test.ex errors_to abcd@test.ex
 Filtering did not set up a significant delivery.
 Normal delivery will occur.
+prepend@test.ex -> /usr/relative
+  transport = appendfile
+prepend@test.ex -> relative
+  transport = appendfile

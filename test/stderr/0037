@@ -29,6 +29,10 @@ check_vars router skipped: local_parts mismatch
 local_part=filter-userx domain=test.ex
 checking local_parts
 fail_read_filter router skipped: local_parts mismatch
+--------> prepend_filter router <--------
+local_part=filter-userx domain=test.ex
+checking local_parts
+prepend_filter router skipped: local_parts mismatch
 --------> userfilter router <--------
 local_part=filter-userx domain=test.ex
 checking local_parts
@@ -62,6 +66,10 @@ check_vars router skipped: local_parts mismatch
 local_part=userx domain=test.ex
 checking local_parts
 fail_read_filter router skipped: local_parts mismatch
+--------> prepend_filter router <--------
+local_part=userx domain=test.ex
+checking local_parts
+prepend_filter router skipped: local_parts mismatch
 --------> userfilter router <--------
 local_part=userx domain=test.ex
 checking local_parts

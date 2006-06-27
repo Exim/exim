@@ -171,4 +171,10 @@ Subject: should give rise to vacation message
 exim -odi filter-stat
 Subject: should give filter error (7)
 ****
+# Check prepend $home
+exim -bt prepend@test.ex
+****
+# Check not prepend $home
+exim -DFILTER_PREPEND_HOME=no_filter_prepend_home -bt prepend@test.ex
+****
 no_msglog_check

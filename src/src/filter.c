@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filter.c,v 1.9 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filter.c,v 1.10 2006/06/27 14:34:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1834,11 +1834,12 @@ while (commands != NULL)
 
     else
       {
+      if (s[0] != '/' && (filter_options & RDO_PREPEND_HOME) != 0 &&
+          deliver_home != NULL && deliver_home[0] != 0)
+        s = string_sprintf("%s/%s", deliver_home, s);
       DEBUG(D_filter) debug_printf("Filter: %ssave message to: %s%s\n",
         (commands->seen)? "" : "unseen ", s,
         commands->noerror? " (noerror)" : "");
-      if (s[0] != '/' && deliver_home != NULL && deliver_home[0] != 0)
-        s = string_sprintf("%s/%s", deliver_home, s);
 
       /* Create the new address and add it to the chain, setting the
       af_pfr and af_file flags, the af_ignore_error flag if necessary, and the

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.15 2006/02/07 11:19:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.16 2006/06/27 14:34:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -39,6 +39,8 @@ optionlist redirect_router_options[] = {
       (void *)offsetof(redirect_router_options_block, file) },
   { "file_transport",     opt_stringptr,
       (void *)offsetof(redirect_router_options_block, file_transport_name) },
+  { "filter_prepend_home",opt_bit | (RDON_PREPEND_HOME << 16),
+      (void *)offsetof(redirect_router_options_block, bit_options) },
   { "forbid_blackhole",   opt_bit | (RDON_BLACKHOLE << 16),
       (void *)offsetof(redirect_router_options_block, bit_options) },
   { "forbid_exim_filter", opt_bit | (RDON_EXIM_FILTER << 16),
@@ -160,7 +162,7 @@ redirect_router_options_block redirect_router_option_defaults = {
   NULL,        /* srs_dbselect */
 #endif
   022,         /* modemask */
-  RDO_REWRITE, /* bit_options */
+  RDO_REWRITE | RDO_PREPEND_HOME, /* bit_options */
   FALSE,       /* check_ancestor */
   TRUE_UNSET,  /* check_owner */
   TRUE_UNSET,  /* check_group */

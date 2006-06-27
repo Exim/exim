@@ -1,5 +1,7 @@
 # Exim test configuration 0037
 
+FILTER_PREPEND_HOME=
+
 exim_path = EXIM_PATH
 host_lookup_order = bydns
 rfc1413_query_timeout = 0s
@@ -38,6 +40,16 @@ fail_read_filter:
   allow_filter
   file = DIR/aux-var/TESTNUM.f-readfile
   user = CALLER
+
+prepend_filter:
+  driver = redirect
+  local_parts = prepend
+  allow_filter
+  router_home_directory = /usr
+  file = DIR/aux-fixed/TESTNUM.f-7
+  file_transport = appendfile
+  user = CALLER
+  FILTER_PREPEND_HOME
 
 userfilter:
   driver = redirect
