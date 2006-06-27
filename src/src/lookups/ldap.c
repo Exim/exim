@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.10 2006/02/07 11:19:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.11 2006/06/27 13:39:01 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -31,7 +31,12 @@ static void dummy(int x) { dummy(x-1); }
 #else
 
 
-/* Include LDAP headers */
+/* Include LDAP headers. The code below uses some "old" LDAP interfaces that
+are deprecated in OpenLDAP. I don't know their status in other LDAP
+implementations. LDAP_DEPRECATED causes their prototypes to be defined in
+ldap.h. */
+
+#define LDAP_DEPRECATED 1
 
 #include <lber.h>
 #include <ldap.h>
