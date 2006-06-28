@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/call_radius.c,v 1.5 2006/02/07 11:19:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/call_radius.c,v 1.6 2006/06/28 13:59:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -177,7 +177,8 @@ if (rad_config(h, RADIUS_CONFIG_FILE) != 0 ||
     rad_create_request(h, RAD_ACCESS_REQUEST) != 0 ||
     rad_put_string(h, RAD_USER_NAME, CS user) != 0 ||
     rad_put_string(h, RAD_USER_PASSWORD, CS radius_args) != 0 ||
-    rad_put_int(h, RAD_SERVICE_TYPE, RAD_AUTHENTICATE_ONLY) != 0)
+    rad_put_int(h, RAD_SERVICE_TYPE, RAD_AUTHENTICATE_ONLY) != 0 ||
+    rad_put_string(h, RAD_NAS_IDENTIFIER, CS primary_hostname) != 0)
   {
   *errptr = string_sprintf("RADIUS: %s", rad_strerror(h));
   result = ERROR;
