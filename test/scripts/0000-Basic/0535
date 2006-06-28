@@ -1,0 +1,7 @@
+# acl_not_smtp_start
+exim -odi userx@test.ex
+No headers supplied.
+****
+exim -odi -f nofix@test.ex userx@test.ex
+No headers supplied.
+****

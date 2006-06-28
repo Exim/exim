@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.103 2006/06/27 14:34:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.104 2006/06/28 16:00:23 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -16,6 +16,20 @@ Version 4.63
    an Exim filter has a relative path for its argument, and $home is defined,
    it is automatically prepended to the relative path. This action can now be
    prevented by setting filter_prepend_home false.
+
+2. There is a new acl, set by acl_not_smtp_start, which is run right at the
+   start of receiving a non-SMTP message, before any of the message has been
+   read. (This is the analogue of the acl_smtp_predata ACL for SMTP input.) The
+   result of this ACL is ignored; it cannot be used to reject a message. If
+   you really need to, you could set a value in an ACL variable here and reject
+   based on that in the acl_not_smtp ACL. However, this ACL can be used to set
+   controls, and in particular, it can be used to set control=suppress_local_
+   fixups, which cannot be used in the acl_not_smtp ACL because by the time
+   that ACL is run, it is too late. When the acl_not_smtp_start ACL is run, the
+   sender and recipients are known, so the "senders" and "sender_domains"
+   conditions and $sender_address and $recipients variables can be used.
+   Variables such as $authenticated_ sender are also available. It is possible
+   to specify added header lines in this ACL.
 
 
 Version 4.62

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.53 2006/03/06 16:05:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.54 2006/06/28 16:00:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -168,6 +168,7 @@ uschar *acl_not_smtp           = NULL;
 #ifdef WITH_CONTENT_SCAN
 uschar *acl_not_smtp_mime      = NULL;
 #endif
+uschar *acl_not_smtp_start     = NULL;
 uschar *acl_smtp_auth          = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;
@@ -204,6 +205,7 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"EXPN",
                                    US"EHLO or HELO",
                                    US"MAILAUTH",
+                                   US"non-SMTP-start",
                                    US"QUIT",
                                    US"STARTTLS",
                                    US"VRFY"
@@ -221,6 +223,7 @@ int     acl_wherecodes[]       = { 550,     /* RCPT */
                                    550,     /* EXPN */
                                    550,     /* HELO/EHLO */
                                    0,       /* MAILAUTH; not relevant */
+                                   0,       /* not SMTP; not relevant */
                                    0,       /* QUIT; not relevant */
                                    550,     /* STARTTLS */
                                    252      /* VRFY */

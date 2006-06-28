@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.48 2006/06/28 13:59:13 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.49 2006/06/28 16:00:23 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -72,6 +72,7 @@ Ian Bell                  Analysis of a bug and an infelicity in clock tick code
                           Patch for ${quote_local_part
 Peter Benie               A number mistakes found by analysing the code
 Johannes Berg             Suggested patch for authentication client $auth<n> support
+                          Suggested patch for acl_not_smtp_start
 Matt Bernstein            LMTP over socket
                           Suggested patch for dnslists '&' feature
 Mike Bethune              Help with debugging an elusive ALRM signal bug

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.39 2006/05/22 18:42:34 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.40 2006/06/28 16:00:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4422,7 +4422,7 @@ if (smtp_input)
     }
   }
 
-/* Otherwise, set up the input size limit here */
+/* Otherwise, set up the input size limit here. */
 
 else
   {
@@ -4636,6 +4636,19 @@ while (more)
         for (i = 0; i < recipients_count; i++)
           debug_printf("  %s\n", recipients_list[i].address);
         }
+      }
+
+    /* Run the acl_not_smtp_start ACL if required. The result of the ACL is
+    ignored; rejecting here would just add complication, and it can just as
+    well be done later. Allow $recipients to be visible in the ACL. */
+
+    if (acl_not_smtp_start != NULL)
+      {
+      uschar *user_msg, *log_msg;
+      enable_dollar_recipients = TRUE;
+      (void)acl_check(ACL_WHERE_NOTSMTP_START, NULL, acl_not_smtp_start,
+        &user_msg, &log_msg);
+      enable_dollar_recipients = FALSE;
       }
 
     /* Read the data for the message. If filter_test is not FTEST_NONE, this

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.22 2006/03/09 15:10:16 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.23 2006/06/28 16:00:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -138,6 +138,7 @@ static optionlist optionlist_config[] = {
 #ifdef WITH_CONTENT_SCAN
   { "acl_not_smtp_mime",        opt_stringptr,   &acl_not_smtp_mime },
 #endif
+  { "acl_not_smtp_start",       opt_stringptr,   &acl_not_smtp_start },
   { "acl_smtp_auth",            opt_stringptr,   &acl_smtp_auth },
   { "acl_smtp_connect",         opt_stringptr,   &acl_smtp_connect },
   { "acl_smtp_data",            opt_stringptr,   &acl_smtp_data },

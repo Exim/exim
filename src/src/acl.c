@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.61 2006/06/27 15:07:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.62 2006/06/28 16:00:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -323,12 +323,14 @@ static unsigned int cond_forbids[] = {
   0,                                               /* acl */
 
   (unsigned int)
-  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|      /* add_header */
+  ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* add_header */
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
-    (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)),
+    (1<<ACL_WHERE_MIME)|(1<<ACL_WHERE_NOTSMTP)|
+    (1<<ACL_WHERE_NOTSMTP_START)),
 
-  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_CONNECT)|   /* authenticated */
-    (1<<ACL_WHERE_HELO),
+  (1<<ACL_WHERE_NOTSMTP)|                          /* authenticated */
+    (1<<ACL_WHERE_NOTSMTP_START)|
+    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO),
 
   #ifdef EXPERIMENTAL_BRIGHTMAIL
   (1<<ACL_WHERE_AUTH)|                             /* bmi_optin */
@@ -337,7 +339,8 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
     (1<<ACL_WHERE_MAILAUTH)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_PREDATA),
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_PREDATA)|
+    (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
   0,                                               /* condition */
@@ -366,7 +369,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY),
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_NOTSMTP_START),
 
   (1<<ACL_WHERE_AUTH)|                             /* dk_policy */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
@@ -374,7 +377,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY),
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_NOTSMTP_START),
 
   (1<<ACL_WHERE_AUTH)|                             /* dk_sender_domains */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
@@ -382,7 +385,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY),
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_NOTSMTP_START),
 
   (1<<ACL_WHERE_AUTH)|                             /* dk_sender_local_parts */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
@@ -390,7 +393,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY),
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_NOTSMTP_START),
 
   (1<<ACL_WHERE_AUTH)|                             /* dk_senders */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
@@ -398,7 +401,7 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY),
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_NOTSMTP_START),
 
   (1<<ACL_WHERE_AUTH)|                             /* dk_status */
     (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
@@ -406,20 +409,24 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
     (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
     (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY),
+    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
-  (1<<ACL_WHERE_NOTSMTP),                          /* dnslists */
+  (1<<ACL_WHERE_NOTSMTP)|                          /* dnslists */
+    (1<<ACL_WHERE_NOTSMTP_START),
 
   (unsigned int)
   ~(1<<ACL_WHERE_RCPT),                            /* domains */
 
-  (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_CONNECT)|   /* encrypted */
+  (1<<ACL_WHERE_NOTSMTP)|                          /* encrypted */
+    (1<<ACL_WHERE_CONNECT)|
+    (1<<ACL_WHERE_NOTSMTP_START)|
     (1<<ACL_WHERE_HELO),
 
   0,                                               /* endpass */
 
-  (1<<ACL_WHERE_NOTSMTP),                          /* hosts */
+  (1<<ACL_WHERE_NOTSMTP)|                          /* hosts */
+    (1<<ACL_WHERE_NOTSMTP_START),
 
   (unsigned int)
   ~(1<<ACL_WHERE_RCPT),                            /* local_parts */
@@ -475,7 +482,9 @@ static unsigned int cond_forbids[] = {
     (1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_MAILAUTH)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-    (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY),
+    (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY)|
+    (1<<ACL_WHERE_NOTSMTP)|
+    (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
   /* Certain types of verify are always allowed, so we let it through
@@ -498,7 +507,8 @@ static unsigned int control_forbids[] = {
   #endif
 
   #ifdef EXPERIMENTAL_DOMAINKEYS
-  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP),      /* dk_verify */
+  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dk_verify */
+    (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
   0,                                               /* error */
@@ -509,9 +519,11 @@ static unsigned int control_forbids[] = {
   (unsigned int)
   ~(1<<ACL_WHERE_RCPT),                            /* caselower_local_part */
 
-  (1<<ACL_WHERE_NOTSMTP),                          /* enforce_sync */
+  (1<<ACL_WHERE_NOTSMTP)|                          /* enforce_sync */
+    (1<<ACL_WHERE_NOTSMTP_START),
 
-  (1<<ACL_WHERE_NOTSMTP),                          /* no_enforce_sync */
+  (1<<ACL_WHERE_NOTSMTP)|                          /* no_enforce_sync */
+    (1<<ACL_WHERE_NOTSMTP_START),
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* freeze */
@@ -529,7 +541,8 @@ static unsigned int control_forbids[] = {
 
   (unsigned int)
   ~((1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)|       /* suppress_local_fixups */
-    (1<<ACL_WHERE_NOTSMTP)|(1<<ACL_WHERE_PREDATA)),
+    (1<<ACL_WHERE_PREDATA)|
+    (1<<ACL_WHERE_NOTSMTP_START)),
 
   #ifdef WITH_CONTENT_SCAN
   (unsigned int)
@@ -548,7 +561,8 @@ static unsigned int control_forbids[] = {
     (1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|
     (1<<ACL_WHERE_MIME)),
 
-  (1<<ACL_WHERE_NOTSMTP)                           /* no_multiline */
+  (1<<ACL_WHERE_NOTSMTP)|                          /* no_multiline */
+    (1<<ACL_WHERE_NOTSMTP_START)
 };
 
 /* Structure listing various control arguments, with their characteristics. */

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.362 2006/06/28 13:59:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.363 2006/06/28 16:00:23 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -20,8 +20,8 @@ SC/03 Collect data on the number of addresses (recipients) as well
 TF/01 Correct an error in the documentation for the redirect router. Exim
       does (usually) call initgroups() when daemonizing.
 
-TF/02 Call initgroups() when dropping privilege in exim.c, so that Exim runs with
-      consistent privilege compared to when running as a daemon.
+TF/02 Call initgroups() when dropping privilege in exim.c, so that Exim runs
+      with consistent privilege compared to when running as a daemon.
 
 TF/03 Note in the spec that $authenticated_id is not set for local
       submissions from trusted users.
@@ -51,6 +51,10 @@ PH/04 Applied Magnus Holmgren's patch to fix Bugzilla #98: transport's home
 
 PH/05 Applied Alex Kiernan's patch to fix Bugzilla #99: a problem with
       libradius.
+
+PH/06 Added acl_not_smtp_start, based on Johannes Berg's patch, and set the
+      bit to forbid control=suppress_local_fixups in the acl_not_smtp ACL,
+      because it is too late at that time, and has no effect.
 
 
 Exim version 4.62
