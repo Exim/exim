@@ -9,6 +9,7 @@ ${lookup pgsql {delete from them where id='nonexist';}}
 ${lookup pgsql {select * from them where id='quote2';}}
 ${lookup pgsql {select * from them where id='newline';}}
 ${lookup pgsql {select * from them where id='tab';}}
+${lookup pgsql {select * from them where name='${quote_pgsql:'stquot}';}}
 ****
 exim -d -bh 10.0.0.0
 mail from:<a@b>

@@ -8,6 +8,7 @@
 > name="before
 after" id=newline 
 > name="x	x" id=tab 
+> name='stquot id=quote1 
 > 
 
 **** SMTP testing session as if from host 10.0.0.0

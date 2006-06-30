@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.363 2006/06/28 16:00:23 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.364 2006/06/30 13:57:46 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -55,6 +55,11 @@ PH/05 Applied Alex Kiernan's patch to fix Bugzilla #99: a problem with
 PH/06 Added acl_not_smtp_start, based on Johannes Berg's patch, and set the
       bit to forbid control=suppress_local_fixups in the acl_not_smtp ACL,
       because it is too late at that time, and has no effect.
+
+PH/07 Changed ${quote_pgsql to quote ' as '' instead of \' because of a
+      security issue with \' (bugzilla #107). I could not use the
+      PQescapeStringConn() function, because it needs a PGconn value as one of
+      its arguments.
 
 
 Exim version 4.62

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/pgsql.c,v 1.4 2006/02/07 11:19:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/pgsql.c,v 1.5 2006/06/30 13:57:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -422,6 +422,16 @@ to allow escaping "on spec". If you use something like "where id="ab\%cd" it
 does treat the string as "ab%cd". So we can safely quote percent and
 underscore. [This is different to MySQL, where you can't do this.]
 
+The original code quoted single quotes as \' which is documented as valid in
+the O'Reilly book "Practical PostgreSQL" (first edition) as an alternative to
+the SQL standard '' way of representing a single quote as data. However, in
+June 2006 there was some security issue with using \' and so this has been
+changed.
+
+[Note: There is a function called PQescapeStringConn() that quotes strings.
+This cannot be used because it needs a PGconn argument (the connection handle).
+Why, I don't know. Seems odd for just string escaping...]
+
 Arguments:
   s          the string to be quoted
   opt        additional option text or NULL if none
@@ -447,7 +457,12 @@ t = quoted = store_get(Ustrlen(s) + count + 1);
 
 while ((c = *s++) != 0)
   {
-  if (Ustrchr("\n\t\r\b\'\"\\%_", c) != NULL)
+  if (c == '\'')
+    {
+    *t++ = '\'';
+    *t++ = '\'';
+    }
+  else if (Ustrchr("\n\t\r\b\"\\%_", c) != NULL)
     {
     *t++ = '\\';
     switch(c)
