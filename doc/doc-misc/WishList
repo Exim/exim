@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.68 2006/05/10 15:36:11 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.69 2006/06/30 08:53:49 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
@@ -2004,9 +2004,52 @@ At present, a defer causes a delivery defer. For non-critical ACLs there are
 times when it may be better to accept. See also 226 and 289.
 ------------------------------------------------------------------------------
 
-(353) 10-May-06 T Add option to stop addition of $home in filter files
+(354) 30-Jun-06 ? Extensions to SMTP error codes
 
-This would make them more like Sieve (which came afterwards, I must point out).
+A number of ideas arose following a discussion on the mailing list. I record
+them here so that they don't get lost. The motivations were to support the 551
+bounce code and enhanced status codes. Suggestions are to add a new ACL
+feature, possibly one of:
+
+  errorcode = 511
+  control = errorcode=551
+  message = 551 xxxx
+
+where in the last case, it's recognized by being 3 digits. In all cases, the
+first digit must be "right" for the circumstance - ignore or fault if not?
+
+To handle ESC, perhaps a new variable called $smtp_errorcode, settable by an
+option in a router when it fails, would do the trick. It could be used in any
+of the above modifiers.
 ------------------------------------------------------------------------------
---- HWM 353 ------------------------------------------------------------------
+
+(355) 30-Jun-06 ? Facility to permit experiments with SMTP extensions
+
+This is what was suggested:
+
+- adding some expansion variables: $ehlo_extensions (which will
+   hold the remote server supported smtp extensions announced
+   in the ehlo) and $rcpt_arguments with any RCPT extra argument
+
+- a main configuration option for adding ehlo extensions to the
+   ehlo response, like:
+
+   extra_ehlo_extensions = XFOO : XBAR
+
+- a extra option for the smtp transport to add arguments to
+   the RCPT TO command, like:
+
+   rcpt_args = FOO=BAR  (will make exim issue RCPT TO:<a@b.c> FOO=BAR
+   when delivering that message)
+
+- a new acl for unknown smtp commands
+
+This should be very simple to implement and will allow to make
+some experiments and implement custom extensions, i.e. one to
+known if remote client will redirect on 551 or not. Also the acl
+for unknown smpt command could be used for other purposes, like
+to dectect and react to some kiddies that send things like
+http://... on the smtp port.
+------------------------------------------------------------------------------
+--- HWM 355 ------------------------------------------------------------------
 ---------------------------- End of WishList ---------------------------------
