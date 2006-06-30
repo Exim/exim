@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.32 2006/06/27 15:38:07 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.33 2006/06/30 14:14:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4372,10 +4372,7 @@ while (*s != 0)
 /* This function was introduced when the test for duplicate addresses that are
 not pipes, files, or autoreplies was moved from the middle of routing to when
 routing was complete. That was to fix obscure cases when the routing history
-affects the subsequent routing of identical addresses. If that change has to be
-reversed, this function is no longer needed. For a while, the old code that was
-affected by this change is commented with !!!OLD-DE-DUP!!! so it can be found
-easily.
+affects the subsequent routing of identical addresses.
 
 This function is called after routing, to check that the final routed addresses
 are not duplicates. If we detect a duplicate, we remember what it is a
@@ -5450,37 +5447,6 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
       continue;
       }
 
-
-    /* !!!OLD-DE-DUP!!!  We used to test for duplicates at this point, in order
-    to save effort on routing duplicate addresses. However, facilities have
-    been added to Exim so that now two identical addresses that are children of
-    other addresses may be routed differently as a result of their previous
-    routing history. For example, different redirect routers may have given
-    them different redirect_router values, but there are other cases too.
-    Therefore, tests for duplicates now take place when routing is complete.
-    This is the old code, kept for a while for the record, and in case this
-    radical change has to be backed out for some reason. */
-
-    #ifdef NEVER
-    /* If it's a duplicate, remember what it's a duplicate of */
-
-    if ((tnode = tree_search(tree_duplicates, addr->unique)) != NULL)
-      {
-      DEBUG(D_deliver|D_route)
-        debug_printf("%s is a duplicate address: discarded\n", addr->unique);
-      addr->dupof = tnode->data.ptr;
-      addr->next = addr_duplicate;
-      addr_duplicate = addr;
-      continue;
-      }
-
-    /* Record this address, so subsequent duplicates get picked up. */
-
-    tree_add_duplicate(addr->unique, addr);
-    #endif
-
-
-
     /* Get the routing retry status, saving the two retry keys (with and
     without the local part) for subsequent use. Ignore retry records that
     are too old. */
@@ -5792,11 +5758,6 @@ Ensure they are not set in transports. */
 local_user_gid = (gid_t)(-1);
 local_user_uid = (uid_t)(-1);
 
-
-/* !!!OLD-DE-DUP!!! The next two statement were introduced when checking for
-duplicates was moved from within routing to afterwards. If that change has to
-be backed out, they should be removed. */
-
 /* Check for any duplicate addresses. This check is delayed until after
 routing, because the flexibility of the routing configuration means that
 identical addresses with different parentage may end up being redirected to
@@ -5805,7 +5766,6 @@ to) makes this kind of thing not work. */
 
 do_duplicate_check(&addr_local);
 do_duplicate_check(&addr_remote);
-
 
 /* When acting as an MUA wrapper, we proceed only if all addresses route to a
 remote transport. The check that they all end up in one transaction happens in
