@@ -2,7 +2,7 @@ c@one
     <-- b@one
     <-- a@one
   router = accept, transport = unset
-c@one
+c@one   [duplicate, would not be delivered]
     <-- b@one
   router = accept, transport = unset
 b@two

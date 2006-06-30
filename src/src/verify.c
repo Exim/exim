@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.36 2006/04/04 11:18:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.37 2006/06/30 15:36:08 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1262,9 +1262,12 @@ or autoreplies, and there were no errors or deferments, the message is to be
 discarded, usually because of the use of :blackhole: in an alias file. */
 
 if (allok && addr_local == NULL && addr_remote == NULL)
+  {
   fprintf(f, "mail to %s is discarded\n", address);
+  return yield;
+  }
 
-else for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
+for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
   {
   while (addr_list != NULL)
     {
@@ -1277,6 +1280,19 @@ else for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
     if(addr->p.srs_sender)
       fprintf(f, "    [srs = %s]", addr->p.srs_sender);
 #endif
+
+    /* If the address is a duplicate, show something about it. */
+
+    if (!testflag(addr, af_pfr))
+      {
+      tree_node *tnode;
+      if ((tnode = tree_search(tree_duplicates, addr->unique)) != NULL)
+        fprintf(f, "   [duplicate, would not be delivered]");
+      else tree_add_duplicate(addr->unique, addr);
+      }
+
+    /* Now show its parents */
+
     while (p != NULL)
       {
       fprintf(f, "\n    <-- %s", p->address);

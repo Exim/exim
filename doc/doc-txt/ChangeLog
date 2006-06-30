@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.364 2006/06/30 13:57:46 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.365 2006/06/30 15:36:08 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -60,6 +60,12 @@ PH/07 Changed ${quote_pgsql to quote ' as '' instead of \' because of a
       security issue with \' (bugzilla #107). I could not use the
       PQescapeStringConn() function, because it needs a PGconn value as one of
       its arguments.
+
+PH/08 When testing addresses using -bt, indicate those final addresses that
+      are duplicates that would not cause an additional delivery. At least one
+      person was confused, thinking that -bt output corresponded to deliveries.
+      (Suppressing duplicates isn't a good idea as you lose the information
+      about possibly different redirections that led to the duplicates.)
 
 
 Exim version 4.62

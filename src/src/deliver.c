@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.33 2006/06/30 14:14:46 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.34 2006/06/30 15:36:08 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4372,13 +4372,13 @@ while (*s != 0)
 /* This function was introduced when the test for duplicate addresses that are
 not pipes, files, or autoreplies was moved from the middle of routing to when
 routing was complete. That was to fix obscure cases when the routing history
-affects the subsequent routing of identical addresses.
+affects the subsequent routing of identical addresses. This function is called
+after routing, to check that the final routed addresses are not duplicates.
 
-This function is called after routing, to check that the final routed addresses
-are not duplicates. If we detect a duplicate, we remember what it is a
-duplicate of. Note that pipe, file, and autoreply de-duplication is handled
-during routing, so we must leave such "addresses" alone here, as otherwise they
-will incorrectly be discarded.
+If we detect a duplicate, we remember what it is a duplicate of. Note that
+pipe, file, and autoreply de-duplication is handled during routing, so we must
+leave such "addresses" alone here, as otherwise they will incorrectly be
+discarded.
 
 Argument:     address of list anchor
 Returns:      nothing
