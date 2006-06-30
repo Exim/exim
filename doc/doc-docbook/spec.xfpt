@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.6 2006/06/07 17:42:27 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.7 2006/06/30 12:53:48 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -10851,7 +10851,7 @@ the argument of a HELO or EHLO command. This is omitted if it is identical to
 the verified host name or to the host's IP address in square brackets.
 
 .vitem &$sender_helo_name$&
-.cindex "&$sender_hslo_name$&"
+.cindex "&$sender_helo_name$&"
 When a message is received from a remote host that has issued a HELO or EHLO
 command, the argument of that command is placed in this variable. It is also
 set if HELO or EHLO is used when a message is received using SMTP locally via
