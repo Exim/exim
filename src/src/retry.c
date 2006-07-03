@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/retry.c,v 1.10 2006/04/20 10:57:46 ph10 Exp $ */
+/* $Cambridge: exim/src/src/retry.c,v 1.11 2006/07/03 15:39:06 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -47,9 +47,8 @@ if (retry != NULL && retry->rules != NULL)
        last_rule->next != NULL;
        last_rule = last_rule->next);
   DEBUG(D_transport|D_retry)
-    debug_printf("now=%d received_time=%d diff=%d timeout=%d\n",
-      (int)now, received_time, (int)(now - received_time),
-      last_rule->timeout);
+    debug_printf("  received_time=%d diff=%d timeout=%d\n",
+      received_time, (int)(now - received_time), last_rule->timeout);
   address_timeout = (now - received_time > last_rule->timeout);
   }
 else
@@ -210,8 +209,14 @@ if (host_retry_record != NULL)
   if (now < host_retry_record->next_try && !deliver_force)
     {
     DEBUG(D_transport|D_retry)
+      {
       debug_printf("host retry time not reached: checking ultimate address "
         "timeout\n");
+      debug_printf("  now=%d first_failed=%d next_try=%d expired=%d\n",
+        (int)now, (int)host_retry_record->first_failed,
+        (int)host_retry_record->next_try,
+        host_retry_record->expired);
+      }
 
     if (!host_retry_record->expired &&
         ultimate_address_timeout(host_key, domain,
@@ -247,8 +252,13 @@ if (message_retry_record != NULL)
   if (now < message_retry_record->next_try && !deliver_force)
     {
     DEBUG(D_transport|D_retry)
+      {
       debug_printf("host+message retry time not reached: checking ultimate "
         "address timeout\n");
+      debug_printf("  now=%d first_failed=%d next_try=%d expired=%d\n",
+        (int)now, (int)message_retry_record->first_failed,
+        (int)message_retry_record->next_try, message_retry_record->expired);
+      }
     if (!ultimate_address_timeout(host_key, domain, 0, 0, now))
       {
       host->status = hstatus_unusable;

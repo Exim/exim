@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.10 2006/04/28 13:46:36 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.11 2006/07/03 15:39:06 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -413,7 +413,8 @@ while(<IN>)
     my($next) = $3 - $2;
     $_ = "  first failed=dddd last try=dddd next try=+$next $4\n";
     }
-  s/^now=\d+ received_time=\d+ diff=\d+ timeout=(\d+)/now=tttt received_time=tttt diff=tttt timeout=$1/;
+  s/^(\s*)now=\d+ first_failed=\d+ next_try=\d+ expired=(\d)/$1now=tttt first_failed=tttt next_try=tttt expired=$2/;
+  s/^(\s*)received_time=\d+ diff=\d+ timeout=(\d+)/$1now=tttt received_time=tttt diff=tttt timeout=$2/;
 
   # Time to retry may vary
   s/time to retry = \S+/time to retry = tttt/;

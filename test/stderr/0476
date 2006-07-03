@@ -96,7 +96,8 @@ t1 transport entered
 checking status of 127.0.0.1
 no message retry record
 host retry time not reached: checking ultimate address timeout
-now=tttt received_time=tttt diff=tttt timeout=86400
+  now=tttt first_failed=tttt next_try=tttt expired=0
+  now=tttt received_time=tttt diff=tttt timeout=86400
 127.0.0.1 [127.0.0.1]:1111 status = unusable
 all IP addresses skipped or deferred at least one address
 Leaving t1 transport
