@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.7 2006/06/30 12:53:48 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.8 2006/07/03 18:11:41 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -11738,6 +11738,7 @@ listed in more than one group.
 .table2
 .row &%acl_not_smtp%&                "ACL for non-SMTP messages"
 .row &%acl_not_smtp_mime%&           "ACL for non-SMTP MIME parts"
+.row &%acl_not_smtp_start%&          "ACL for start of non-SMTP message"
 .row &%acl_smtp_auth%&               "ACL for AUTH"
 .row &%acl_smtp_connect%&            "ACL for connection"
 .row &%acl_smtp_data%&               "ACL for DATA"
@@ -11991,13 +11992,20 @@ Consequently, this option is turned off by default.
 .option acl_not_smtp main string&!! unset
 .cindex "&ACL;" "for non-SMTP messages"
 .cindex "non-SMTP messages" "ACLs for"
-This option defines the ACL that is run when a non-SMTP message is on the point
-of being accepted. See chapter &<<CHAPACL>>& for further details.
+This option defines the ACL that is run when a non-SMTP message has been
+read and is on the point of being accepted. See chapter &<<CHAPACL>>& for
+further details.
 
 .option acl_not_smtp_mime main string&!! unset
 This option defines the ACL that is run for individual MIME parts of non-SMTP
 messages. It operates in exactly the same way as &%acl_smtp_mime%& operates for
 SMTP messages.
+
+.option acl_not_smtp_start main string&!! unset
+.cindex "&ACL;" "at start of non-SMTP message"
+.cindex "non-SMTP messages" "ACLs for"
+This option defines the ACL that is run before Exim starts reading a
+non-SMTP message. See chapter &<<CHAPACL>>& for further details.
 
 .option acl_smtp_auth main string&!! unset
 .cindex "&ACL;" "setting up for SMTP commands"
@@ -23638,9 +23646,12 @@ options in the main part of the configuration. These options are:
 .cindex "VRFY" "ACL for"
 .cindex "SMTP connection" "ACL for"
 .cindex "non-smtp message" "ACL for"
+.cindex "MIME parts" "ACL for"
 
 .table2 140pt
 .row &~&%acl_not_smtp%&         "ACL for non-SMTP messages"
+.row &~&%acl_not_smtp_mime%&    "ACL for non-SMTP MIME parts"
+.row &~&%acl_not_smtp_start%&   "ACL at start of non-SMTP message"
 .row &~&%acl_smtp_auth%&        "ACL for AUTH"
 .row &~&%acl_smtp_connect%&     "ACL for start of SMTP connection"
 .row &~&%acl_smtp_data%&        "ACL after DATA is complete"
@@ -26661,6 +26672,7 @@ deny  message = This message scored $spam_score spam points.
 .cindex "content scanning" "MIME parts"
 .cindex "MIME content scanning"
 .cindex "&%acl_smtp_mime%&"
+.cindex "&%acl_not_smtp_mime%&"
 The &%acl_smtp_mime%& global option specifies an ACL that is called once for
 each MIME part of an SMTP message, including multipart types, in the sequence
 of their position in the message. Similarly, the &%acl_not_smtp_mime%& option
