@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.49 2006/06/28 16:00:23 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.50 2006/07/03 15:19:44 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  28 June 2006
+Last updated:  03 July 2006
 
 
 THE OLD LIST
@@ -253,5 +253,5 @@ Stephen Wilcox            Patch for ignore_enotdir problem
 Alain Williams            Suggested patch for exicyclog options
 David Woodhouse           SQLite support proof of concept code
                           control=freeze/no_tell basic code
-
+Erik ?                    patch to use select() instead of poll() on OS X
 ****

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.11 2005/08/01 14:41:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.12 2006/07/03 15:19:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -42,6 +42,9 @@ int spam(uschar **listptr) {
   struct sockaddr_un server;
 #ifndef NO_POLL_H
   struct pollfd pollfd;
+#else                               /* Patch posted by Erik ? for OS X */
+  struct timeval select_tv;         /* and applied by PH */
+  fd_set select_fd;
 #endif
 
   /* stop compiler warning */
@@ -218,7 +221,8 @@ int spam(uschar **listptr) {
    * and we poll the desciptor to make sure that we can write without
    * blocking.  Short writes are gracefully handled and if the whole
    * trasaction takes too long it is aborted.
-   * Note: poll() is not supported in OSX 10.2.
+   * Note: poll() is not supported in OSX 10.2 and is reported to be
+   *       broken in more recent versions (up to 10.4).
    */
 #ifndef NO_POLL_H
   pollfd.fd = spamd_sock;
@@ -232,8 +236,19 @@ int spam(uschar **listptr) {
 again:
 #ifndef NO_POLL_H
       result = poll(&pollfd, 1, 1000);
+
+/* Patch posted by Erik ? for OS X and applied by PH */
+#else
+      select_tv.tv_sec = 1;
+      select_tv.tv_usec = 0;
+      FD_ZERO(&select_fd);
+      FD_SET(spamd_sock, &select_fd);
+      result = select(spamd_sock+1, NULL, &select_fd, NULL, &select_tv);
+#endif
+/* End Erik's patch */
+
       if (result == -1 && errno == EINTR)
-        continue;
+        goto again;
       else if (result < 1) {
         if (result == -1)
           log_write(0, LOG_MAIN|LOG_PANIC,
@@ -248,7 +263,7 @@ again:
         (void)fclose(mbox_file);
         return DEFER;
       }
-#endif
+
       wrote = send(spamd_sock,spamd_buffer + offset,read - offset,0);
       if (wrote == -1)
       {

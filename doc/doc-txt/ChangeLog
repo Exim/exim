@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.365 2006/06/30 15:36:08 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.366 2006/07/03 15:19:44 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -66,6 +66,9 @@ PH/08 When testing addresses using -bt, indicate those final addresses that
       person was confused, thinking that -bt output corresponded to deliveries.
       (Suppressing duplicates isn't a good idea as you lose the information
       about possibly different redirections that led to the duplicates.)
+
+PH/09 Applied patch from Erik to use select() instead of poll() in spam.c on
+      systems where poll() doesn't work, in particular OS X.
 
 
 Exim version 4.62
