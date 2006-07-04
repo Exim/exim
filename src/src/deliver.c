@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.34 2006/06/30 15:36:08 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.35 2006/07/04 09:07:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2328,8 +2328,13 @@ while (addr_local != NULL)
                 retry_record->more_errno);
 
             DEBUG(D_deliver|D_retry)
+              {
               debug_printf("retry time not reached for %s: "
                 "checking ultimate address timeout\n", addr2->address);
+              debug_printf("  now=%d first_failed=%d next_try=%d expired=%d\n",
+                (int)now, (int)retry_record->first_failed,
+                (int)retry_record->next_try, retry_record->expired);
+              }
 
             if (retry != NULL && retry->rules != NULL)
               {
@@ -2338,9 +2343,8 @@ while (addr_local != NULL)
                    last_rule->next != NULL;
                    last_rule = last_rule->next);
               DEBUG(D_deliver|D_retry)
-                debug_printf("now=%d received_time=%d diff=%d timeout=%d\n",
-                  (int)now, received_time, (int)now - received_time,
-                  last_rule->timeout);
+                debug_printf("  received_time=%d diff=%d timeout=%d\n",
+                  received_time, (int)now - received_time, last_rule->timeout);
               if (now - received_time > last_rule->timeout) ok = TRUE;
               }
             else

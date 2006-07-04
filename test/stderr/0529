@@ -70,7 +70,8 @@ locking TESTSUITE/spool/db/retry.lockfile
 retry record exists: age=ttt (max 1w)
   time to retry = tttt expired = 0
 retry time not reached for TESTSUITE/test-mail/rmbox: checking ultimate address timeout
-now=tttt received_time=tttt diff=tttt timeout=259200
+  now=tttt first_failed=tttt next_try=tttt expired=0
+  received_time=tttt diff=tttt timeout=259200
 LOG: retry_defer MAIN
   == TESTSUITE/test-mail/rmbox <x@test.ex> R=r1 T=t1 defer (-52): Retry time not yet reached
 Processing retry items
