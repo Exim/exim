@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.51 2006/07/06 14:19:50 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.52 2006/07/06 14:28:03 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -159,6 +159,7 @@ Sheldon Hearn             Suggested patch for smtp_accept_max_nonmail_hosts
 Bryan Henderson           Patch to use RM_COMMAND everywhere during building
 Jakob Hirsch              Patch for % operator
 Magnus Holmgren           Patch for filter_prepend_home
+                          Patch for "h" flag in Domain Keys
 Kjetil Torgrim Homme      Patch for require_files problem on NFS file systems
 Tom Hughes                Suggested patch for $n bug in pipe command from filter
 Pierre Humblet            Continued Cygwin support

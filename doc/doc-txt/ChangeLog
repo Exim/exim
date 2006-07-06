@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.368 2006/07/06 14:19:50 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.369 2006/07/06 14:28:03 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -74,6 +74,9 @@ PH/10 Added more information to debugging output for retry time not reached.
 
 PH/11 Applied patch from Arkadiusz Miskiewicz to apply a timeout to read
       operations in malware.c.
+
+PH/12 Applied patch from Magnus Holmgren to include the "h" tag in Domain Keys
+      signatures.
 
 
 Exim version 4.62

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dk.c,v 1.9 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dk.c,v 1.10 2006/07/06 14:28:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -239,6 +239,8 @@ uschar *dk_exim_sign(int dk_fd,
                      uschar *dk_selector,
                      uschar *dk_canon) {
   uschar *rc = NULL;
+  uschar *headers = NULL;
+  int headers_len;
   int dk_canon_int = DK_CANON_SIMPLE;
   char c;
   int seen_lf = 0;
@@ -398,7 +400,7 @@ uschar *dk_exim_sign(int dk_fd,
   }
 
   /* Get the signature. */
-  dk_internal_status = dk_getsig(dk_context, dk_private_key, sig, 8192);
+  dk_internal_status = dk_getsig(dk_context, dk_private_key, sig, 1024);
 
   /* Check for unuseable key */
   if (dk_internal_status != DK_STAT_OK) {
@@ -407,13 +409,17 @@ uschar *dk_exim_sign(int dk_fd,
     goto CLEANUP;
   }
 
-  rc = store_get(1024);
+  headers_len = dk_headers(dk_context, NULL);
+  rc = store_get(1024+256+headers_len);
+  headers = store_malloc(headers_len);
+  dk_headers(dk_context, CS headers);
   /* Build DomainKey-Signature header to return. */
-  (void)string_format(rc, 1024, "DomainKey-Signature: a=rsa-sha1; q=dns; c=%s;\r\n"
-                     "\ts=%s; d=%s;\r\n"
-                     "\tb=%s;\r\n", dk_canon, dk_selector, dk_domain, sig);
+  (void)string_format(rc, 1024+256+headers_len, "DomainKey-Signature: a=rsa-sha1; q=dns; c=%s; s=%s; d=%s;\r\n"
+                     "\th=%s;\r\n"
+                     "\tb=%s;\r\n", dk_canon, dk_selector, dk_domain, headers, sig);
 
-  log_write(0, LOG_MAIN, "DK: message signed using a=rsa-sha1; q=dns; c=%s; s=%s; d=%s;", dk_canon, dk_selector, dk_domain);
+  log_write(0, LOG_MAIN, "DK: message signed using a=rsa-sha1; q=dns; c=%s; s=%s; d=%s; h=%s;", dk_canon, dk_selector, dk_domain, headers);
+  store_free(headers);
 
   CLEANUP:
   if (dk_context != NULL) {
