@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.367 2006/07/03 15:39:06 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.368 2006/07/06 14:19:50 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -71,6 +71,9 @@ PH/09 Applied patch from Erik to use select() instead of poll() in spam.c on
       systems where poll() doesn't work, in particular OS X.
 
 PH/10 Added more information to debugging output for retry time not reached.
+
+PH/11 Applied patch from Arkadiusz Miskiewicz to apply a timeout to read
+      operations in malware.c.
 
 
 Exim version 4.62
