@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.370 2006/07/07 13:36:33 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.371 2006/07/07 13:54:32 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -82,6 +82,9 @@ PH/13 If write_rejectlog was set false when logging was sent to syslog with
       syslog_duplication set false, log lines that would normally be written
       both the the main log and to the reject log were not written to syslog at
       all.
+
+PH/14 In the default configuration, change the use of "message" in ACL warn
+      statements to "add_header".
 
 
 Exim version 4.62
