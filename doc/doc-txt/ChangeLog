@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.371 2006/07/07 13:54:32 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.372 2006/07/07 14:36:04 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -85,6 +85,9 @@ PH/13 If write_rejectlog was set false when logging was sent to syslog with
 
 PH/14 In the default configuration, change the use of "message" in ACL warn
       statements to "add_header".
+
+PH/15 Diagnose a filter syntax error for "seen", "unseen", or "noerror" if not
+      not followed by a command (e.g. "seen endif").
 
 
 Exim version 4.62

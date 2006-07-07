@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filter.c,v 1.10 2006/06/27 14:34:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filter.c,v 1.11 2006/07/07 14:36:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1044,6 +1044,13 @@ switch (command)
   case elif_command:
   case else_command:
   case endif_command:
+  if (seen_force || noerror_force)
+    {
+    *error_pointer = string_sprintf("\"seen\", \"unseen\", or \"noerror\" "
+      "near line %d is not followed by a command", line_number);
+    yield = FALSE;
+    }
+
   if (expect_endif > 0)
     had_else_endif = (command == elif_command)? had_elif :
                      (command == else_command)? had_else : had_endif;
@@ -1316,6 +1323,12 @@ switch (command)
 
   case seen_command:
   case unseen_command:
+  if (*ptr == 0)
+    {
+    *error_pointer = string_sprintf("\"seen\" or \"unseen\" "
+      "near line %d is not followed by a command", line_number);
+    yield = FALSE;
+    }
   if (seen_force)
     {
     *error_pointer = string_sprintf("\"seen\" or \"unseen\" repeated "
@@ -1331,6 +1344,12 @@ switch (command)
   /* So does noerror */
 
   case noerror_command:
+  if (*ptr == 0)
+    {
+    *error_pointer = string_sprintf("\"noerror\" "
+      "near line %d is not followed by a command", line_number);
+    yield = FALSE;
+    }
   noerror_force = TRUE;
   was_noerror = TRUE;
   break;

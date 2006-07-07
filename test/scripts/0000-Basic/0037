@@ -177,4 +177,12 @@ exim -bt prepend@test.ex
 # Check not prepend $home
 exim -DFILTER_PREPEND_HOME=no_filter_prepend_home -bt prepend@test.ex
 ****
+# Check error for (un)seen and no command
+1
+exim -bf DIR/aux-fixed/TESTNUM.f-8 </dev/null
+****
+# Check error for (un)seen at eof
+1
+exim -bf DIR/aux-fixed/TESTNUM.f-9 </dev/null
+****
 no_msglog_check

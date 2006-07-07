@@ -261,3 +261,17 @@ prepend@test.ex -> /usr/relative
   transport = appendfile
 prepend@test.ex -> relative
   transport = appendfile
+Warning: no message headers read
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-8"
+
+Filter error: "seen", "unseen", or "noerror" near line 5 is not followed by a command
+Warning: no message headers read
+Return-path copied from sender
+Sender      = CALLER@test.ex
+Recipient   = CALLER@test.ex
+Testing Exim filter file "TESTSUITE/aux-fixed/0037.f-9"
+
+Filter error: "seen" or "unseen" near line 4 is not followed by a command

@@ -1,0 +1,5 @@
+#exim filter
+
+if one is one then seen endif
+
+if two is two then save /dev/null endif
