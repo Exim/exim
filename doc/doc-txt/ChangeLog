@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.369 2006/07/06 14:28:03 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.370 2006/07/07 13:36:33 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -77,6 +77,11 @@ PH/11 Applied patch from Arkadiusz Miskiewicz to apply a timeout to read
 
 PH/12 Applied patch from Magnus Holmgren to include the "h" tag in Domain Keys
       signatures.
+
+PH/13 If write_rejectlog was set false when logging was sent to syslog with
+      syslog_duplication set false, log lines that would normally be written
+      both the the main log and to the reject log were not written to syslog at
+      all.
 
 
 Exim version 4.62

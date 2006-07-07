@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/log.c,v 1.9 2006/02/13 11:28:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/log.c,v 1.10 2006/07/07 13:36:34 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -724,6 +724,10 @@ if (disable_logging)
   return;
   }
 
+/* Handle disabled reject log */
+
+if (!write_rejectlog) flags &= ~LOG_REJECT;
+
 /* Create the main message in the log buffer, including the message
 id except for the process log and when called by a utility. */
 
@@ -858,11 +862,12 @@ if ((flags & LOG_MAIN) != 0 &&
     }
   }
 
-/* Handle the log for rejected messages. This can be globally disabled. If
-there are any header lines (i.e. if the rejection is happening after the DATA
-phase), log the recipients and the headers. */
+/* Handle the log for rejected messages. This can be globally disabled, in
+which case the flags are altered above. If there are any header lines (i.e. if
+the rejection is happening after the DATA phase), log the recipients and the
+headers. */
 
-if (write_rejectlog && (flags & LOG_REJECT) != 0)
+if ((flags & LOG_REJECT) != 0)
   {
   header_line *h;
 
