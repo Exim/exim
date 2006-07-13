@@ -1,0 +1,42 @@
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user1@test.ex>: No code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user2@test.ex>: 599 Main code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user3@test.ex>: 599 Main code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user4@test.ex>: 599 5.2.3 Main and extended code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user5@test.ex>: 599 5.12.3 Main and extended code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user6@test.ex>: 550 Wrong code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user7@test.ex>: A different log message
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user8@test.ex>: 499 4.12.343 Main and extended code
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user9@test.ex>: 499 4.1234.343 Main and extended code
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user10@test.ex>: 451 Wrong code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user20@test.ex>: No code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user21@test.ex>: 590 Main code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user22@test.ex>: 590 5.4.3 Main and extended code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user23@test.ex>: 550 Wrong code
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user30@test.ex>: No code
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user31@test.ex>: 490 Main code
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user32@test.ex>: 490 4.4.3 Main and extended code
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user33@test.ex>: 451 Wrong code
+1999-03-02 09:44:33 10HmaX-0005vi-00 F=<user1@test.ex> rejected by non-SMTP ACL: No code
+Envelope-from: <user1@test.ex>
+Envelope-to: <user1@myhost.test.ex>
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <user1@test.ex>)
+	id 10HmaX-0005vi-00
+	for user1@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+F From: user1@test.ex
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 10HmaY-0005vi-00 F=<user2@test.ex> rejected by non-SMTP ACL: 599 Main code
+Envelope-from: <user2@test.ex>
+Envelope-to: <user1@myhost.test.ex>
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <user2@test.ex>)
+	id 10HmaY-0005vi-00
+	for user1@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+F From: user2@test.ex
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user20@test.ex>: No code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user21@test.ex>: Main code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user22@test.ex>: Main and extended code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user23@test.ex>: Wrong code

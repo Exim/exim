@@ -1,0 +1,40 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+250 OK
+550 No code
+599 Main code
+599-Main code
+599 on two lines
+599 5.2.3 Main and extended code
+599-5.12.3 Main and extended code
+599 5.12.3 on two lines
+550 Wrong code
+550 Wrong code
+499-4.12.343 Main and extended code
+499 4.12.343 on two lines
+499-4.1234.343 Main and extended code
+499 on two lines
+451 Wrong code
+550 No code
+590 Main code
+590 5.4.3 Main and extended code
+550 Wrong code
+451 Temporary local problem - please try later
+490 Temporary local problem - please try later
+490 4.4.3 Temporary local problem - please try later
+451 Temporary local problem - please try later
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+250 OK
+550 No code
+550 Main code
+550 Main and extended code
+550 Wrong code
+221 myhost.test.ex closing connection

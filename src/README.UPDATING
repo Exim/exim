@@ -1,4 +1,4 @@
-$Cambridge: exim/src/README.UPDATING,v 1.11 2006/02/20 16:31:49 ph10 Exp $
+$Cambridge: exim/src/README.UPDATING,v 1.12 2006/07/13 13:53:33 ph10 Exp $
 
 This document contains detailed information about incompatibilities that might
 be encountered when upgrading from one release of Exim to another. The
@@ -26,6 +26,22 @@ there have been two big upheavals...
 
 The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
+
+
+Exim version 4.63
+-----------------
+
+When an SMTP error message is specified in a "message" modifier in an ACL, or
+in a :fail: or :defer: message in a redirect router, Exim now checks the start
+of the message for an SMTP error code. This consists of three digits followed
+by a space, optionally followed by an extended code of the form n.n.n, also
+followed by a space. If this is the case and the very first digit is the same
+as the default error code, the code from the message is used instead. If the
+very first digit is incorrect, a panic error is logged, and the default code is
+used. This is an incompatible change, but it is not expected to affect many (if
+any) configurations. It is possible to suppress the use of the supplied code in
+a redirect router by setting the smtp_error_code option false. In this case,
+any SMTP code is quietly ignored.
 
 
 Exim version 4.61

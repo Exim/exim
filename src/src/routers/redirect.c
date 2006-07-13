@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.16 2006/06/27 14:34:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.17 2006/07/13 13:53:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -71,6 +71,8 @@ optionlist redirect_router_options[] = {
       (void *)offsetof(redirect_router_options_block, forbid_pipe) },
   { "forbid_sieve_filter",opt_bit | (RDON_SIEVE_FILTER << 16),
       (void *)offsetof(redirect_router_options_block, bit_options) },
+  { "forbid_smtp_code",     opt_bool,
+      (void *)offsetof(redirect_router_options_block, forbid_smtp_code) },
   { "hide_child_in_errmsg", opt_bool,
       (void *)offsetof(redirect_router_options_block,  hide_child_in_errmsg) },
   { "ignore_eacces",      opt_bit | (RDON_EACCES << 16),
@@ -169,6 +171,7 @@ redirect_router_options_block redirect_router_option_defaults = {
   FALSE,       /* forbid_file */
   FALSE,       /* forbid_filter_reply */
   FALSE,       /* forbid_pipe */
+  FALSE,       /* forbid_smtp_code */
   FALSE,       /* hide_child_in_errmsg */
   FALSE,       /* one_time */
   FALSE,       /* qualify_preserve_domain */
@@ -711,26 +714,39 @@ switch (frc)
   break;
 
   /* FF_DEFER and FF_FAIL can arise only as a result of explicit commands
-  (:fail: in an alias file or "fail" in a filter). If a configured message was
-  supplied, allow it to be included in an SMTP response after verifying. */
+  (:defer: or :fail: in an alias file or "fail" in a filter). If a configured
+  message was supplied, allow it to be included in an SMTP response after
+  verifying. Remove any SMTP code if it is not allowed. */
 
   case FF_DEFER:
-  if (addr->message == NULL) addr->message = US"forced defer";
-    else addr->user_message = addr->message;
-  return DEFER;
+  yield = DEFER;
+  goto SORT_MESSAGE;
 
   case FF_FAIL:
   if ((xrc = sort_errors_and_headers(rblock, addr, verify, &addr_prop)) != OK)
     return xrc;
   add_generated(rblock, addr_new, addr, generated, &addr_prop, &ugid, pw);
+  yield = FAIL;
+
+  SORT_MESSAGE:
   if (addr->message == NULL)
-    addr->message = US"forced rejection";
+    addr->message = (yield == FAIL)? US"forced rejection" : US"forced defer";
   else
     {
+    int ovector[3];
+    if (ob->forbid_smtp_code &&
+        pcre_exec(regex_smtp_code, NULL, CS addr->message,
+        Ustrlen(addr->message), 0, PCRE_EOPT,
+        ovector, sizeof(ovector)/sizeof(int)) >= 0)
+      {
+      DEBUG(D_route) debug_printf("SMTP code at start of error message "
+        "is ignored because forbid_smtp_code is set\n");
+      addr->message += ovector[1];
+      }
     addr->user_message = addr->message;
     setflag(addr, af_pass_message);
     }
-  return FAIL;
+  return yield;
 
   /* As in the case of a system filter, a freeze does not happen after a manual
   thaw. In case deliveries were set up by the filter, we set the child count

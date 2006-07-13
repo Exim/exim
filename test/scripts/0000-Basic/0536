@@ -1,0 +1,42 @@
+# Specifying SMTP codes in bespoke error messages
+exim -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<user1@test.ex>
+rcpt to:<user2@test.ex>
+rcpt to:<user3@test.ex>
+rcpt to:<user4@test.ex>
+rcpt to:<user5@test.ex>
+rcpt to:<user6@test.ex>
+rcpt to:<user7@test.ex>
+rcpt to:<user8@test.ex>
+rcpt to:<user9@test.ex>
+rcpt to:<user10@test.ex>
+rcpt to:<user20@test.ex>
+rcpt to:<user21@test.ex>
+rcpt to:<user22@test.ex>
+rcpt to:<user23@test.ex>
+rcpt to:<user30@test.ex>
+rcpt to:<user31@test.ex>
+rcpt to:<user32@test.ex>
+rcpt to:<user33@test.ex>
+quit
+****
+1
+exim -f user1@test.ex user1
+****
+1
+exim -f user2@test.ex user1
+****
+exim -odi -f oksender@test.ex user22@test.ex
+****
+exim -DFORBID_SMTP_CODE=true -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<user20@test.ex>
+rcpt to:<user21@test.ex>
+rcpt to:<user22@test.ex>
+rcpt to:<user23@test.ex>
+quit
+****
+no_msglog_check

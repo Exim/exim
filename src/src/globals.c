@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.54 2006/06/28 16:00:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.55 2006/07/13 13:53:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -211,22 +211,22 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"VRFY"
                                  };
 
-int     acl_wherecodes[]       = { 550,     /* RCPT */
-                                   550,     /* MAIL */
-                                   550,     /* PREDATA */
-                                   550,     /* MIME */
-                                   550,     /* DATA */
-                                   0,       /* not SMTP; not relevant */
-                                   503,     /* AUTH */
-                                   550,     /* connect */
-                                   458,     /* ETRN */
-                                   550,     /* EXPN */
-                                   550,     /* HELO/EHLO */
-                                   0,       /* MAILAUTH; not relevant */
-                                   0,       /* not SMTP; not relevant */
-                                   0,       /* QUIT; not relevant */
-                                   550,     /* STARTTLS */
-                                   252      /* VRFY */
+uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
+                                   US"550",     /* MAIL */
+                                   US"550",     /* PREDATA */
+                                   US"550",     /* MIME */
+                                   US"550",     /* DATA */
+                                   US"0",       /* not SMTP; not relevant */
+                                   US"503",     /* AUTH */
+                                   US"550",     /* connect */
+                                   US"458",     /* ETRN */
+                                   US"550",     /* EXPN */
+                                   US"550",     /* HELO/EHLO */
+                                   US"0",       /* MAILAUTH; not relevant */
+                                   US"0",       /* not SMTP; not relevant */
+                                   US"0",       /* QUIT; not relevant */
+                                   US"550",     /* STARTTLS */
+                                   US"252"      /* VRFY */
                                  };
 
 BOOL    active_local_from_check = FALSE;
@@ -866,6 +866,7 @@ const pcre *regex_From         = NULL;
 const pcre *regex_IGNOREQUOTA  = NULL;
 const pcre *regex_PIPELINING   = NULL;
 const pcre *regex_SIZE         = NULL;
+const pcre *regex_smtp_code    = NULL;
 const pcre *regex_ismsgid      = NULL;
 #ifdef WITH_CONTENT_SCAN
 uschar *regex_match_string     = NULL;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.40 2006/06/28 16:00:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.41 2006/07/13 13:53:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1491,6 +1491,13 @@ using mac_ismsgid, which uses this. */
 
 regex_ismsgid =
   regex_must_compile(US"^(?:[^\\W_]{6}-){2}[^\\W_]{2}$", FALSE, TRUE);
+
+/* Precompile the regular expression that is used for matching an SMTP error
+code, possibly extended, at the start of an error message. */
+
+regex_smtp_code =
+  regex_must_compile(US"^\\d\\d\\d\\s(?:\\d\\.\\d\\d?\\d?\\.\\d\\d?\\d?\\s)?",
+    FALSE, TRUE);
 
 /* If the program is called as "mailq" treat it as equivalent to "exim -bp";
 this seems to be a generally accepted convention, since one finds symbolic

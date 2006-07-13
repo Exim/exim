@@ -1,0 +1,104 @@
+# Exim test configuration 0536
+
+FORBID_SMTP_CODE = false
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = rcpt
+acl_not_smtp = not_smtp
+
+trusted_users = CALLER
+
+
+# ----- ACLs -----
+
+begin ACL
+
+rcpt:
+  deny local_parts = user1
+       message     = No code
+  deny local_parts = user2
+       message     = 599 Main code
+  deny local_parts = user3
+       message     = 599 Main code\non two lines
+  deny local_parts = user4
+       message     = 599 5.2.3 Main and extended code
+  deny local_parts = user5
+       message     = 599 5.12.3 Main and extended code\non two lines
+  deny local_parts = user6
+       message     = 299 Wrong code
+  deny local_parts = user7
+       message     = 299 Wrong code
+       log_message = A different log message
+
+  defer local_parts = user8
+        message     = 499 4.12.343 Main and extended code\non two lines
+  defer local_parts = user9
+        message     = 499 4.1234.343 Main and extended code\non two lines
+  defer local_parts = user10
+        message     = 399 Wrong code
+
+  deny local_parts = user20
+       !verify     = recipient
+  deny local_parts = user21
+       !verify     = recipient
+  deny local_parts = user22
+       !verify     = recipient
+  deny local_parts = user23
+       !verify     = recipient
+
+  deny local_parts = user30
+       !verify     = recipient
+  deny local_parts = user31
+       !verify     = recipient
+  deny local_parts = user32
+       !verify     = recipient
+  deny local_parts = user33
+       !verify     = recipient
+
+  deny message = Should not get this
+
+not_smtp:
+  accept senders = : oksender@test.ex
+
+  deny senders = user1@test.ex
+       message = No code
+
+  deny senders = user2@test.ex
+       message = 599 Main code
+
+  deny message = Should not get this
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = redirect
+  allow_fail
+  allow_defer
+  data = ${lookup{$local_part}lsearch{DIR/aux-fixed/TESTNUM.aliases}}
+  forbid_smtp_code = FORBID_SMTP_CODE
+
+r2:
+  driver = accept
+  transport = t1
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = appendfile
+  file = DIR/test-mail/$local_part
+  user = CALLER
+

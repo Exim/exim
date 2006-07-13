@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.38 2006/04/19 10:58:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.39 2006/07/13 13:53:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1767,7 +1767,8 @@ responses. If no_multiline_responses is TRUE (it can be set from an ACL), we
 output nothing for non-final calls, and only the first line for anything else.
 
 Arguments:
-  code          SMTP code
+  code          SMTP code, may involve extended status codes
+  codelen       length of smtp code; uf > 3 there's an ESC
   final         FALSE if the last line isn't the final line
   msg           message text, possibly containing newlines
 
@@ -1775,26 +1776,36 @@ Returns:        nothing
 */
 
 void
-smtp_respond(int code, BOOL final, uschar *msg)
+smtp_respond(uschar* code, int codelen, BOOL final, uschar *msg)
 {
+int esclen = 0;
+uschar *esc = US"";
+
 if (!final && no_multiline_responses) return;
+
+if (codelen > 3)
+  {
+  esc = code + 4;
+  esclen = codelen - 4;
+  }
 
 for (;;)
   {
   uschar *nl = Ustrchr(msg, '\n');
   if (nl == NULL)
     {
-    smtp_printf("%d%c%s\r\n", code, final? ' ':'-', msg);
+    smtp_printf("%.3s%c%.*s%s\r\n", code, final? ' ':'-', esclen, esc, msg);
     return;
     }
   else if (nl[1] == 0 || no_multiline_responses)
     {
-    smtp_printf("%d%c%.*s\r\n", code, final? ' ':'-', (int)(nl - msg), msg);
+    smtp_printf("%.3s%c%.*s%.*s\r\n", code, final? ' ':'-', esclen, esc,
+      (int)(nl - msg), msg);
     return;
     }
   else
     {
-    smtp_printf("%d-%.*s\r\n", code, (int)(nl - msg), msg);
+    smtp_printf("%.3s-%.*s%.*s\r\n", code, esclen, esc, (int)(nl - msg), msg);
     msg = nl + 1;
     while (isspace(*msg)) msg++;
     }
@@ -1814,13 +1825,18 @@ logging the incident, and sets up the error response. A message containing
 newlines is turned into a multiline SMTP response, but for logging, only the
 first line is used.
 
-There's a table of the response codes to use in globals.c, along with the table
-of names. VFRY is special. Despite RFC1123 it defaults disabled in Exim.
-However, discussion in connection with RFC 821bis (aka RFC 2821) has concluded
-that the response should be 252 in the disabled state, because there are broken
-clients that try VRFY before RCPT. A 5xx response should be given only when the
-address is positively known to be undeliverable. Sigh. Also, for ETRN, 458 is
-given on refusal, and for AUTH, 503.
+There's a table of default permanent failure response codes to use in
+globals.c, along with the table of names. VFRY is special. Despite RFC1123 it
+defaults disabled in Exim. However, discussion in connection with RFC 821bis
+(aka RFC 2821) has concluded that the response should be 252 in the disabled
+state, because there are broken clients that try VRFY before RCPT. A 5xx
+response should be given only when the address is positively known to be
+undeliverable. Sigh. Also, for ETRN, 458 is given on refusal, and for AUTH,
+503.
+
+From Exim 4.63, it is possible to override the response code details by
+providing a suitable response code string at the start of the message provided
+in user_msg. The code's first digit is checked for validity.
 
 Arguments:
   where      where the ACL was called from
@@ -1837,8 +1853,10 @@ Returns:     0 in most cases
 int
 smtp_handle_acl_fail(int where, int rc, uschar *user_msg, uschar *log_msg)
 {
-int code = acl_wherecodes[where];
 BOOL drop = rc == FAIL_DROP;
+int codelen = 3;
+int ovector[3];
+uschar *smtp_code;
 uschar *lognl;
 uschar *sender_info = US"";
 uschar *what =
@@ -1852,6 +1870,41 @@ uschar *what =
     string_sprintf("%s %s", acl_wherenames[where], smtp_cmd_argument);
 
 if (drop) rc = FAIL;
+
+/* Set the default SMTP code */
+
+smtp_code = (rc != FAIL)? US"451" : acl_wherecodes[where];
+
+/* Check a user message for starting with a response code and optionally an
+extended status code. If found, check that the first digit is valid, and if so,
+use it instead of the default code. */
+
+if (user_msg != NULL)
+  {
+  int n = pcre_exec(regex_smtp_code, NULL, CS user_msg, Ustrlen(user_msg), 0,
+    PCRE_EOPT, ovector, sizeof(ovector)/sizeof(int));
+  if (n >= 0)
+    {
+    if (user_msg[0] != smtp_code[0])
+      {
+      log_write(0, LOG_MAIN|LOG_PANIC, "configured error code starts with "
+        "incorrect digit (expected %c) in \"%s\"", smtp_code[0], user_msg);
+
+      /* If log_msg == user_msg (the default set in acl.c if no log message is
+      specified, we must adjust the log message to show the code that is
+      actually going to be used. */
+
+      if (log_msg == user_msg)
+        log_msg = string_sprintf("%s %s", smtp_code, log_msg + ovector[1]);
+      }
+    else
+      {
+      smtp_code = user_msg;
+      codelen = ovector[1];    /* Includes final space */
+      }
+    user_msg += ovector[1];    /* Chop the code off the message */
+    }
+  }
 
 /* We used to have sender_address here; however, there was a bug that was not
 updating sender_address after a rewrite during a verify. When this bug was
@@ -1888,7 +1941,7 @@ if (sender_verified_failed != NULL &&
       string_sprintf(": %s", sender_verified_failed->message));
 
   if (rc == FAIL && sender_verified_failed->user_message != NULL)
-    smtp_respond(code, FALSE, string_sprintf(
+    smtp_respond(smtp_code, codelen, FALSE, string_sprintf(
         testflag(sender_verified_failed, af_verify_pmfail)?
           "Postmaster verification failed while checking <%s>\n%s\n"
           "Several RFCs state that you are required to have a postmaster\n"
@@ -1918,7 +1971,7 @@ if (lognl != NULL) *lognl = 0;
 always a 5xx one - see comments at the start of this function. If the original
 rc was FAIL_DROP we drop the connection and yield 2. */
 
-if (rc == FAIL) smtp_respond(code, TRUE, (user_msg == NULL)?
+if (rc == FAIL) smtp_respond(smtp_code, codelen, TRUE, (user_msg == NULL)?
   US"Administrative prohibition" : user_msg);
 
 /* Send temporary failure response to the command. Don't give any details,
@@ -1937,12 +1990,13 @@ else
         sender_verified_failed != NULL &&
         sender_verified_failed->message != NULL)
       {
-      smtp_respond(451, FALSE, sender_verified_failed->message);
+      smtp_respond(smtp_code, codelen, FALSE, sender_verified_failed->message);
       }
-    smtp_respond(451, TRUE, user_msg);
+    smtp_respond(smtp_code, codelen, TRUE, user_msg);
     }
   else
-    smtp_printf("451 Temporary local problem - please try later\r\n");
+    smtp_respond(smtp_code, codelen, TRUE,
+      US"Temporary local problem - please try later");
   }
 
 /* Log the incident. If the connection is not forcibly to be dropped, return 0.

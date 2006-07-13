@@ -1,0 +1,41 @@
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user1@test.ex>: No code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user2@test.ex>: 599 Main code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user3@test.ex>: 599 Main code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user4@test.ex>: 599 5.2.3 Main and extended code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user5@test.ex>: 599 5.12.3 Main and extended code
+1999-03-02 09:44:33 configured error code starts with incorrect digit (expected 5) in "299 Wrong code"
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user6@test.ex>: 550 Wrong code
+1999-03-02 09:44:33 configured error code starts with incorrect digit (expected 5) in "299 Wrong code"
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user7@test.ex>: A different log message
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user8@test.ex>: 499 4.12.343 Main and extended code
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user9@test.ex>: 499 4.1234.343 Main and extended code
+1999-03-02 09:44:33 configured error code starts with incorrect digit (expected 4) in "399 Wrong code"
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user10@test.ex>: 451 Wrong code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user20@test.ex>: No code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user21@test.ex>: 590 Main code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user22@test.ex>: 590 5.4.3 Main and extended code
+1999-03-02 09:44:33 configured error code starts with incorrect digit (expected 5) in "490 4.5.6 Wrong code"
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user23@test.ex>: 550 Wrong code
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user30@test.ex>: No code
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user31@test.ex>: 490 Main code
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user32@test.ex>: 490 4.4.3 Main and extended code
+1999-03-02 09:44:33 configured error code starts with incorrect digit (expected 4) in "390 3.5.6 Wrong code"
+1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <user33@test.ex>: 451 Wrong code
+1999-03-02 09:44:33 10HmaX-0005vi-00 F=<user1@test.ex> rejected by non-SMTP ACL: No code
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => user1 <user1@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaY-0005vi-00 F=<user2@test.ex> rejected by non-SMTP ACL: 599 Main code
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaY-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => user2 <user2@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= oksender@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbB-0005vi-00 ** user22@test.ex R=r1: 590 5.4.3 Main and extended code
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= <> R=10HmbB-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbC-0005vi-00 => oksender <oksender@test.ex> R=r2 T=t1
+1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user20@test.ex>: No code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user21@test.ex>: Main code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user22@test.ex>: Main and extended code
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user23@test.ex>: Wrong code

@@ -1,0 +1,27 @@
+From MAILER-DAEMON Tue Mar 02 09:44:33 1999
+Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
+	id 10HmaZ-0005vi-00
+	for user1@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Auto-Submitted: auto-replied
+From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
+To: user1@test.ex
+Subject: Mail failure - rejected by local scanning code
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+A message that you sent was rejected by the local scanning code that
+checks incoming messages on this system. The following error was given:
+
+  No code
+
+------ This is a copy of your message, including all the headers. ------
+
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <user1@test.ex>)
+	id 10HmaX-0005vi-00
+	for user1@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+From: user1@test.ex
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+

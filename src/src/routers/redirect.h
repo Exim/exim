@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.h,v 1.7 2006/02/07 11:19:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.h,v 1.8 2006/07/13 13:53:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -51,6 +51,7 @@ typedef struct {
   BOOL  forbid_file;
   BOOL  forbid_filter_reply;
   BOOL  forbid_pipe;
+  BOOL  forbid_smtp_code;
   BOOL  hide_child_in_errmsg;
   BOOL  one_time;
   BOOL  qualify_preserve_domain;

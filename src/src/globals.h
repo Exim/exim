@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.38 2006/06/28 16:00:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.39 2006/07/13 13:53:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -131,7 +131,7 @@ extern BOOL    acl_temp_details;       /* TRUE to give details for 4xx error */
 extern uschar *acl_var[ACL_CVARS+ACL_MVARS]; /* User ACL variables */
 extern uschar *acl_verify_message;     /* User message for verify failure */
 extern string_item *acl_warn_logged;   /* Logged lines */
-extern int     acl_wherecodes[];       /* Response codes for ACL fails */
+extern uschar *acl_wherecodes[];       /* Response codes for ACL fails */
 extern uschar *acl_wherenames[];       /* Names for messages */
 extern BOOL    active_local_from_check;/* For adding Sender: (switchable) */
 extern BOOL    active_local_sender_retain; /* For keeping Sender: (switchable) */
@@ -556,6 +556,7 @@ extern const pcre  *regex_From;        /* For recognizing "From_" lines */
 extern const pcre  *regex_IGNOREQUOTA; /* For recognizing IGNOREQUOTA (LMTP) */
 extern const pcre  *regex_PIPELINING;  /* For recognizing PIPELINING */
 extern const pcre  *regex_SIZE;        /* For recognizing SIZE settings */
+extern const pcre  *regex_smtp_code;   /* For recognizing SMTP codes */
 extern const pcre  *regex_ismsgid;     /* Compiled r.e. for message it */
 #ifdef WITH_CONTENT_SCAN
 extern uschar *regex_match_string;     /* regex that matched a line (regex ACL condition) */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.24 2006/03/08 11:13:07 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.25 2006/07/13 13:53:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -266,7 +266,7 @@ extern BOOL    smtp_get_port(uschar *, address_item *, int *, uschar *);
 extern int     smtp_getc(void);
 extern int     smtp_handle_acl_fail(int, int, uschar *, uschar *);
 extern BOOL    smtp_read_response(smtp_inblock *, uschar *, int, int, int);
-extern void    smtp_respond(int, BOOL, uschar *);
+extern void    smtp_respond(uschar *, int, BOOL, uschar *);
 extern void    smtp_send_prohibition_message(int, uschar *);
 extern int     smtp_setup_msg(void);
 extern BOOL    smtp_start_session(void);

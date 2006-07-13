@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.104 2006/06/28 16:00:23 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.105 2006/07/13 13:53:32 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -30,6 +30,19 @@ Version 4.63
    conditions and $sender_address and $recipients variables can be used.
    Variables such as $authenticated_ sender are also available. It is possible
    to specify added header lines in this ACL.
+
+3. When an SMTP error message is specified in a "message" modifier in an ACL,
+   or in a :fail: or :defer: message in a redirect router, Exim now checks the
+   start of the message for an SMTP error code. This consists of three digits
+   followed by a space, optionally followed by an extended code of the form
+   n.n.n, also followed by a space. If this is the case and the very first
+   digit is the same as the default error code, the code from the message is
+   used instead. If the very first digit is incorrect, a panic error is logged,
+   and the default code is used. This is an incompatible change, but it is not
+   expected to affect many (if any) configurations. It is possible to suppress
+   the use of the supplied code in a redirect router by setting the
+   smtp_error_code option false. In this case, any SMTP code is quietly
+   ignored.
 
 
 Version 4.62

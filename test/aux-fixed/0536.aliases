@@ -1,0 +1,9 @@
+user20:  :fail: No code
+user21:  :fail: 590 Main code
+user22:  :fail: 590 5.4.3 Main and extended code
+user23:  :fail: 490 4.5.6 Wrong code
+
+user30:  :defer: No code
+user31:  :defer: 490 Main code
+user32:  :defer: 490 4.4.3 Main and extended code
+user33:  :defer: 390 3.5.6 Wrong code

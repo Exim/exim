@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.27 2006/03/06 16:05:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.28 2006/07/13 13:53:33 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1067,7 +1067,7 @@ if (mbox_file == NULL) {
          "acl_smtp_mime: error while creating mbox spool file, message temporarily rejected.");
   Uunlink(spool_name);
   unspool_mbox();
-  smtp_respond(451, TRUE, US"temporary local problem");
+  smtp_respond(US"451", 3, TRUE, US"temporary local problem");
   message_id[0] = 0;            /* Indicate no message accepted */
   *smtp_reply_ptr = US"";       /* Indicate reply already sent */
   return FALSE;                 /* Indicate skip to end of receive function */
@@ -3110,9 +3110,9 @@ else
   {
   uschar *istemp = US"";
   uschar *s = NULL;
+  uschar *smtp_code;
   int size = 0;
   int sptr = 0;
-  int code;
 
   errmsg = local_scan_data;
 
@@ -3129,7 +3129,7 @@ else
     /* Fall through */
 
     case LOCAL_SCAN_REJECT:
-    code = 550;
+    smtp_code = US"550";
     if (errmsg == NULL) errmsg =  US"Administrative prohibition";
     break;
 
@@ -3139,7 +3139,7 @@ else
 
     case LOCAL_SCAN_TEMPREJECT:
     TEMPREJECT:
-    code = 451;
+    smtp_code = US"451";
     if (errmsg == NULL) errmsg = US"Temporary local problem";
     istemp = US"temporarily ";
     break;
@@ -3157,14 +3157,14 @@ else
     {
     if (!smtp_batched_input)
       {
-      smtp_respond(code, TRUE, errmsg);
+      smtp_respond(smtp_code, 3, TRUE, errmsg);
       message_id[0] = 0;            /* Indicate no message accepted */
       smtp_reply = US"";            /* Indicate reply already sent */
       goto TIDYUP;                  /* Skip to end of function */
       }
     else
       {
-      moan_smtp_batch(NULL, "%d %s", code, errmsg);
+      moan_smtp_batch(NULL, "%s %s", smtp_code, errmsg);
       /* Does not return */
       }
     }
@@ -3483,8 +3483,8 @@ if (smtp_input)
     if (smtp_reply == NULL)
       {
       if (fake_response != OK)
-        smtp_respond(fake_response == DEFER ? 450 : 550,
-                     TRUE, fake_response_text);
+        smtp_respond((fake_response == DEFER)? US"450" : US"550", 3, TRUE,
+          fake_response_text);
       else
         smtp_printf("250 OK id=%s\r\n", message_id);
       if (host_checking)
@@ -3494,8 +3494,8 @@ if (smtp_input)
     else if (smtp_reply[0] != 0)
       {
       if (fake_response != OK && (smtp_reply[0] == '2'))
-        smtp_respond(fake_response == DEFER ? 450 : 550,
-                     TRUE, fake_response_text);
+        smtp_respond((fake_response == DEFER)? US"450" : US"550", 3, TRUE,
+          fake_response_text);
       else
         smtp_printf("%.1024s\r\n", smtp_reply);
       }
