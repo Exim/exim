@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.55 2006/07/13 13:53:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.56 2006/07/13 14:46:05 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -449,7 +449,11 @@ bit_table debug_options[]      = {
 int     debug_options_count    = sizeof(debug_options)/sizeof(bit_table);
 unsigned int debug_selector    = 0;
 int     delay_warning[DELAY_WARNING_SIZE] = { DELAY_WARNING_SIZE, 1, 24*60*60 };
-uschar *delay_warning_condition= US"${if match{$h_precedence:}{(?i)bulk|list|junk}{no}{yes}}";
+uschar *delay_warning_condition=
+  US"${if or {"
+            "{ match{$h_precedence:}{(?i)bulk|list|junk} }"
+            "{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }"
+            "} {no}{yes}}";
 BOOL    delivery_date_remove   = TRUE;
 uschar *deliver_address_data   = NULL;
 int     deliver_datafile       = -1;

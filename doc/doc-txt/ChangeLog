@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.373 2006/07/13 13:53:32 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.374 2006/07/13 14:46:05 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -92,6 +92,17 @@ PH/15 Diagnose a filter syntax error for "seen", "unseen", or "noerror" if not
 PH/16 Recognize SMTP codes at the start of "message" in ACLs and after :fail:
       and :defer: in a redirect router. Add forbid_smtp_code to suppress the
       latter.
+
+PH/17 Added an extra condition to the default value of delay_warning_condition
+      so that it is now:
+
+        ${if or {
+            { match{$h_precedence:}{(?i)bulk|list|junk} }
+            { match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }
+            }{no}{yes}}
+
+      The Auto-Submitted: header is standardised, whereas I don't think
+      Precedence: ever was.
 
 
 Exim version 4.62

@@ -38,4 +38,24 @@ Testing
 ****
 exim -Tqt 20s/ -odi -qf
 ****
+# Remove the previous message
+exim -Mrm $msg1
+****
+# Check no warnings for Precedence: list (in default config)
+exim -odi defer@test.ex
+Precedence: list
+Test message
+****
+exim -DDEFAULTDWC -Tqt 20s/ -odi -qf
+****
+# Remove the previous message
+exim -Mrm $msg1
+****
+# Check no warnings for Auto-Submitted: auto-generated (in default config)
+exim -odi defer@test.ex
+Auto-Submitted: auto-generated
+Test message
+****
+exim -DDEFAULTDWC -Tqt 20s/ -odi -qf
+****
 no_msglog_check

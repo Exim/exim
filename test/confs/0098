@@ -17,7 +17,10 @@ qualify_domain = test.ex
 domainlist local_domains = test.ex : another.test.ex
 
 delay_warning = 10s:40s:10m
+
+.ifndef DEFAULTDWC
 delay_warning_condition = ${if !eq{$domain}{another.test.ex}{yes}{no}}
+.endif
 
 log_selector = +subject
 
