@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.374 2006/07/13 14:46:05 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.375 2006/07/14 14:00:16 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -103,6 +103,9 @@ PH/17 Added an extra condition to the default value of delay_warning_condition
 
       The Auto-Submitted: header is standardised, whereas I don't think
       Precedence: ever was.
+
+PH/18 Refactored debugging code in route_finduser() to show more information,
+      in particular, the error code if getpwnam() issues one.
 
 
 Exim version 4.62

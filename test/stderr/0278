@@ -3,6 +3,8 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+seeking password data for user "CALLER": cache not available
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
@@ -39,7 +41,8 @@ cached yes match for +local_localparts
 cached lookup data = NULL
 CALLER in "+local_localparts"? yes (matched "+local_localparts" - cached)
 checking for local user
-finduser used cached passwd data for CALLER
+seeking password data for user "CALLER": using cached result
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 calling r3 router
 r3 router called for CALLER@test.ex
   domain = test.ex
@@ -60,6 +63,8 @@ configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+seeking password data for user "CALLER": cache not available
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 set_process_info: pppp accepting a local non-SMTP message from <CALLER@test.ex>
@@ -98,6 +103,8 @@ changed uid/gid: forcing real = effective
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
+seeking password data for user "CALLER": cache not available
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 set_process_info: pppp delivering specified messages
 set_process_info: pppp delivering 10HmaX-0005vi-00
 reading spool file 10HmaX-0005vi-00-H
@@ -151,7 +158,8 @@ cached yes match for +local_localparts
 cached lookup data = NULL
 CALLER in "+local_localparts"? yes (matched "+local_localparts" - cached)
 checking for local user
-finduser used cached passwd data for CALLER
+seeking password data for user "CALLER": using cached result
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 calling r3 router
 r3 router called for CALLER@test.ex
   domain = test.ex
@@ -220,6 +228,8 @@ changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
 configuration file is TESTSUITE/test-config
 admin user
+seeking password data for user "CALLER": cache not available
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID

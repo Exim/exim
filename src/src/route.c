@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/route.c,v 1.8 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/route.c,v 1.9 2006/07/14 14:00:16 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1077,7 +1077,12 @@ static uschar lastshell[128];
 BOOL
 route_finduser(uschar *s, struct passwd **pw, uid_t *return_uid)
 {
-if (Ustrcmp(lastname, s) != 0)
+BOOL cache_set = (Ustrcmp(lastname, s) == 0);
+
+DEBUG(D_uid) debug_printf("seeking password data for user \"%s\": %s\n", s,
+  cache_set? "using cached result" : "cache not available");
+
+if (!cache_set)
   {
   int i = 0;
 
@@ -1122,13 +1127,24 @@ if (Ustrcmp(lastname, s) != 0)
     pwcopy.pw_shell = CS lastshell;
     lastpw = &pwcopy;
     }
+
+  else DEBUG(D_uid)
+    {
+    if (errno != 0) debug_printf("getpwnam(%s) failed: %s\n", s,
+      strerror(errno));
+    }
+  }
+
+if (lastpw == NULL)
+  {
+  DEBUG(D_uid) debug_printf("getpwnam() returned NULL (user not found)\n");
+  return FALSE;
   }
 else
   {
-  DEBUG(D_uid) debug_printf("finduser used cached passwd data for %s\n", s);
+  DEBUG(D_uid) debug_printf("getpwnam() succeeded uid=%d gid=%d\n",
+    lastpw->pw_uid, lastpw->pw_gid);
   }
-
-if (lastpw == NULL) return FALSE;
 
 if (return_uid != NULL) *return_uid = lastpw->pw_uid;
 if (pw != NULL) *pw = lastpw;

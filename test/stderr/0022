@@ -5,6 +5,8 @@ configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+seeking password data for user "CALLER": cache not available
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 sender_fullhost = [V4NET.9.8.7]
@@ -66,6 +68,8 @@ configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+seeking password data for user "CALLER": cache not available
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 sender_fullhost = [V4NET.9.8.7]
@@ -129,6 +133,8 @@ configuration file is TESTSUITE/test-config
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
+seeking password data for user "CALLER": cache not available
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@test.ex
 sender_fullhost = [V4NET.9.8.7]

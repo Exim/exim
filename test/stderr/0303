@@ -43,6 +43,8 @@ MUNGED: ::1 will be omitted in what follows
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
+seeking password data for user "CALLER": cache not available
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
@@ -110,6 +112,8 @@ search_tidyup called
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
+seeking password data for user "CALLER": cache not available
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
 trusted user
 admin user

@@ -354,12 +354,15 @@ LOG: H=(test.host) [10.0.0.3] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cu
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
+seeking password data for user "CALLER": cache not available
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
 changed uid/gid: privilege not needed
   uid=EXIM_UID gid=EXIM_GID pid=pppp
-finduser used cached passwd data for CALLER
+seeking password data for user "CALLER": using cached result
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = NULL
 sender_fullhost = [10.0.0.5]

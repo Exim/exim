@@ -1,10 +1,13 @@
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
+seeking password data for user "CALLER": cache not available
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-finduser used cached passwd data for CALLER
+seeking password data for user "CALLER": using cached result
+getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = CALLER@myhost.test.ex
 Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
