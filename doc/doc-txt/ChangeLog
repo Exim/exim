@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.376 2006/07/14 14:21:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.377 2006/07/14 14:32:08 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -110,6 +110,9 @@ PH/18 Refactored debugging code in route_finduser() to show more information,
 PH/19 Added PQsetClientEncoding(conn, "SQL_ASCII") to the pgsql code module.
       This is apparently needed in addition to the PH/07 change above to avoid
       any possible encoding problems.
+
+PH/20 Perl can change the locale. Exim was resetting it after a ${perl call,
+      but not after initializing Perl.
 
 
 Exim version 4.62

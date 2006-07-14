@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/perl.c,v 1.4 2005/02/17 11:58:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/perl.c,v 1.5 2006/07/14 14:32:09 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -129,6 +129,8 @@ init_perl(uschar *startup_code)
     perl_eval_sv(sv, G_SCALAR|G_DISCARD|G_KEEPERR);
     SvREFCNT_dec(sv);
     if (SvTRUE(ERRSV)) return US SvPV(ERRSV, len);
+
+    setlocale(LC_ALL, "C");    /* In case it got changed */
     return NULL;
     }
 }
