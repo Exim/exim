@@ -9,7 +9,7 @@ first failed = time last try = time2 next try = time2 + 60
 first failed = time last try = time2 next try = time2 + 60
 Retry rule: *.star.ex  *  F,3d,10m; 
 Retry rule: lsearch*@;TESTSUITE/aux-fixed/0099.rlist  *  F,1d,3m; 
-Retry rule: *  *  F,2d,15m; 
+Retry rule: !*.not.ex  *  F,2d,15m; 
 Retry rule: *@\N^\d  *  F,5d,1m; 
 Retry rule: *@*.abcd.ex  *  F,5d,2m; 
 Retry rule: *@literal.ex  *  F,5d,3m; 
@@ -21,3 +21,4 @@ Retry rule: rcpt45x.test.ex  *  F,1w3d,2m;
 Retry rule: rcpt463.test.ex  *  F,1w3d,3m; 
 Retry rule: *  *  G,1d,1m,1.5; 
 Retry rule: *  *  G,2d,2m,1.5; 
+Retry rule: *  *  F,1w5d,2h30m; 

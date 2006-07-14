@@ -39,3 +39,5 @@ exim -f "" -brt x@Q.abcd.ex
 ****
 exim -f "d@e.f" -brt x@Q.abcd.ex
 ****
+exim -brt x@not.not.ex
+****
