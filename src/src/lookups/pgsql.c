@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/pgsql.c,v 1.6 2006/07/14 14:21:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/pgsql.c,v 1.7 2006/07/14 14:42:57 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -73,6 +73,28 @@ while ((cn = pgsql_connections) != NULL)
   DEBUG(D_lookup) debug_printf("close PGSQL connection: %s\n", cn->server);
   PQfinish(cn->handle);
   }
+}
+
+
+/*************************************************
+*       Notice processor function for pgsql      *
+*************************************************/
+
+/* This function is passed to pgsql below, and called for any PostgreSQL
+"notices". By default they are written to stderr, which is undesirable.
+
+Arguments:
+  arg        an opaque user cookie (not used)
+  message    the notice
+
+Returns:     nothing
+*/
+
+static void
+notice_processor(void *arg, const char *message)
+{
+arg = arg;   /* Keep compiler happy */
+DEBUG(D_lookup) debug_printf("PGSQL: %s\n", message);
 }
 
 
@@ -252,6 +274,12 @@ if (cn == NULL)
   or other multibyte code that might cause problems with escaping. */
 
   PQsetClientEncoding(pg_conn, "SQL_ASCII");
+
+  /* Set the notice processor to prevent notices from being written to stderr
+  (which is what the default does). Our function (above) just produces debug
+  output. */
+
+  PQsetNoticeProcessor(pg_conn, notice_processor, NULL);
 
   /* Add the connection to the cache */
 

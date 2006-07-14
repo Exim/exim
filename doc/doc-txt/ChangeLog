@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.377 2006/07/14 14:32:08 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.378 2006/07/14 14:42:57 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -113,6 +113,10 @@ PH/19 Added PQsetClientEncoding(conn, "SQL_ASCII") to the pgsql code module.
 
 PH/20 Perl can change the locale. Exim was resetting it after a ${perl call,
       but not after initializing Perl.
+
+PH/21 Added a call to PQsetNoticeProcessor() to catch pgsql "notices" and
+      output them only if debugging. By default they are written stderr,
+      apparently, which is not desirable.
 
 
 Exim version 4.62
