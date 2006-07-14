@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.375 2006/07/14 14:00:16 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.376 2006/07/14 14:21:27 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -106,6 +106,10 @@ PH/17 Added an extra condition to the default value of delay_warning_condition
 
 PH/18 Refactored debugging code in route_finduser() to show more information,
       in particular, the error code if getpwnam() issues one.
+
+PH/19 Added PQsetClientEncoding(conn, "SQL_ASCII") to the pgsql code module.
+      This is apparently needed in addition to the PH/07 change above to avoid
+      any possible encoding problems.
 
 
 Exim version 4.62

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/pgsql.c,v 1.5 2006/06/30 13:57:46 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/pgsql.c,v 1.6 2006/07/14 14:21:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -246,6 +246,12 @@ if (cn == NULL)
     *defer_break = FALSE;
     goto PGSQL_EXIT;
     }
+
+  /* Set the client encoding to SQL_ASCII, which means that the server will
+  not try to interpret the query as being in any fancy encoding such as UTF-8
+  or other multibyte code that might cause problems with escaping. */
+
+  PQsetClientEncoding(pg_conn, "SQL_ASCII");
 
   /* Add the connection to the cache */
 
