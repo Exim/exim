@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/route.c,v 1.9 2006/07/14 14:00:16 ph10 Exp $ */
+/* $Cambridge: exim/src/src/route.c,v 1.10 2006/07/17 09:21:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1109,6 +1109,7 @@ if (!cache_set)
 
   else for (;;)
     {
+    errno = 0;
     if ((lastpw = getpwnam(CS s)) != NULL) break;
     if (++i > finduser_retries) break;
     sleep(1);
