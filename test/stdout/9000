@@ -177,3 +177,7 @@ cn="P Hazel, Phil Hazel" sn="Hazel" objectClass="person"
 > Expect ldap_search to fail
 > Failed: lookup of "ldap:///o=top?mailRoutingAddress,mailHost,objectClass?sub?(&(mailLocalAddress=3-1546081-domain.net?wendling@stderr.efficientimpacte.com)(objectClass=inetLocalMailRecipient))" gave DEFER: ldap_search failed: -7, Bad search filter
 > 
+> Expect "Hazel" - checking referrals syntax
+> ${lookup ldap {time=1 referrals=nofollow ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+> Hazel
+> 

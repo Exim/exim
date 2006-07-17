@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.378 2006/07/14 14:42:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.379 2006/07/17 09:18:09 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -117,6 +117,9 @@ PH/20 Perl can change the locale. Exim was resetting it after a ${perl call,
 PH/21 Added a call to PQsetNoticeProcessor() to catch pgsql "notices" and
       output them only if debugging. By default they are written stderr,
       apparently, which is not desirable.
+
+PH/22 Added Alain Williams' LDAP patch to support setting REFERRALS=off on
+      queries.
 
 
 Exim version 4.62

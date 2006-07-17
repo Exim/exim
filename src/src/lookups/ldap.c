@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.11 2006/06/27 13:39:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.12 2006/07/17 09:18:09 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -137,6 +137,7 @@ Arguments:
   tcplimit      max time for network activity, e.g. connect, or 0 for OS default
   deference     the dereference option, which is one of
                   LDAP_DEREF_{NEVER,SEARCHING,FINDING,ALWAYS}
+  referrals     the referral option, which is LDAP_OPT_ON or LDAP_OPT_OFF
 
 Returns:        OK or FAIL or DEFER
                 FAIL is given only if a lookup was performed successfully, but
@@ -146,7 +147,7 @@ Returns:        OK or FAIL or DEFER
 static int
 perform_ldap_search(uschar *ldap_url, uschar *server, int s_port, int search_type,
   uschar **res, uschar **errmsg, BOOL *defer_break, uschar *user, uschar *password,
-  int sizelimit, int timelimit, int tcplimit, int dereference)
+  int sizelimit, int timelimit, int tcplimit, int dereference, void *referrals)
 {
 LDAPURLDesc     *ludp = NULL;
 LDAPMessage     *result = NULL;
@@ -554,6 +555,14 @@ an LDAP library without LDAP_OPT_DEREF. */
 
 #if defined(LDAP_OPT_DEREF)
 ldap_set_option(lcp->ld, LDAP_OPT_DEREF, (void *)&dereference);
+#endif
+
+/* Similarly for the referral setting; should the library follow referrals that
+the LDAP server returns? The conditional is just in case someone uses a library
+without it. */
+
+#if defined(LDAP_OPT_REFERRALS)
+ldap_set_option(lcp->ld, LDAP_OPT_REFERRALS, referrals);
 #endif
 
 /* Start the search on the server. */
@@ -977,8 +986,9 @@ BOOL defer_break = FALSE;
 int timelimit = LDAP_NO_LIMIT;
 int sizelimit = LDAP_NO_LIMIT;
 int tcplimit = 0;
-int dereference = LDAP_DEREF_NEVER;
 int sep = 0;
+int dereference = LDAP_DEREF_NEVER;
+void* referrals = LDAP_OPT_ON;
 uschar *url = ldap_url;
 uschar *p;
 uschar *user = NULL;
@@ -1032,7 +1042,29 @@ while (strncmpic(url, US"ldap", 4) != 0)
         DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
         return DEFER;
         }
+      #endif
 
+      #ifdef LDAP_OPT_REFERRALS
+      else if (strncmpic(name, US"REFERRALS=", namelen) == 0)
+        {
+        if (strcmpic(value, US"follow") == 0) referrals = LDAP_OPT_ON;
+        else if (strcmpic(value, US"nofollow") == 0) referrals = LDAP_OPT_OFF;
+        else
+          {
+          *errmsg = string_sprintf("LDAP option REFERRALS is not \"follow\" "
+            "or \"nofollow\"");
+          DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+          return DEFER;
+          }
+        }
+      #else
+      else if (strncmpic(name, US"REFERRALS=", namelen) == 0)
+        {
+        *errmsg = string_sprintf("LDAP_OP_REFERRALS not defined in this LDAP "
+          "library - cannot use \"referrals\"");
+        DEBUG(D_lookup) debug_printf("%s\n", *errmsg);
+        return DEFER;
+        }
       #endif
 
       else
@@ -1081,8 +1113,8 @@ if (user != NULL)
 
 DEBUG(D_lookup)
   debug_printf("LDAP parameters: user=%s pass=%s size=%d time=%d connect=%d "
-    "dereference=%d\n", user, password, sizelimit, timelimit, tcplimit,
-    dereference);
+    "dereference=%d referrals=%s\n", user, password, sizelimit, timelimit,
+    tcplimit, dereference, (referrals == LDAP_OPT_ON)? "on" : "off");
 
 /* If the request is just to check authentication, some credentials must
 be given. The password must not be empty because LDAP binds with an empty
@@ -1119,7 +1151,8 @@ if (Ustrncmp(p, "://", 3) != 0)
 if (eldap_default_servers == NULL || p[3] != '/')
   {
   return perform_ldap_search(url, NULL, 0, search_type, res, errmsg,
-    &defer_break, user, password, sizelimit, timelimit, tcplimit, dereference);
+    &defer_break, user, password, sizelimit, timelimit, tcplimit, dereference,
+    referrals);
   }
 
 /* Loop through the default servers until OK or FAIL */
@@ -1136,7 +1169,8 @@ while ((server = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
     port = Uatoi(colon+1);
     }
   rc = perform_ldap_search(url, server, port, search_type, res, errmsg,
-    &defer_break, user, password, sizelimit, timelimit, tcplimit, dereference);
+    &defer_break, user, password, sizelimit, timelimit, tcplimit, dereference,
+    referrals);
   if (rc != DEFER || defer_break) return rc;
   }
 

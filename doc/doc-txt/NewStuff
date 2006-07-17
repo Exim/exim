@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.105 2006/07/13 13:53:32 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.106 2006/07/17 09:18:09 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -43,6 +43,10 @@ Version 4.63
    the use of the supplied code in a redirect router by setting the
    smtp_error_code option false. In this case, any SMTP code is quietly
    ignored.
+
+4. There is a new parameter for LDAP lookups called "referrals", which takes
+   one of the settings "follow" (the default) or "nofollow". The latter stops
+   the LDAP library from trying to follow referrals issued by the LDAP server.
 
 
 Version 4.62

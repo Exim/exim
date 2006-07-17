@@ -173,3 +173,8 @@ exim -be
 Expect ldap_search to fail
 ${lookup ldap {ldap:///o=top?mailRoutingAddress,mailHost,objectClass?sub?(&(mailLocalAddress=3-1546081-domain.net?wendling@stderr.efficientimpacte.com)(objectClass=inetLocalMailRecipient))}{$value}fail}
 ****
+exim -d -be
+Expect "Hazel" - checking referrals syntax
+\${lookup ldap {time=1 referrals=nofollow ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{\$value}fail}
+${lookup ldap {time=1 referrals=nofollow ldap:///o=University%20of%20Cambridge,c=UK?sn?sub?(cn=Philip%20Hazel)}{$value}fail}
+****
