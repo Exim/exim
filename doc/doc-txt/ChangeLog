@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.379 2006/07/17 09:18:09 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.380 2006/07/21 16:48:42 jetmore Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -120,6 +120,11 @@ PH/21 Added a call to PQsetNoticeProcessor() to catch pgsql "notices" and
 
 PH/22 Added Alain Williams' LDAP patch to support setting REFERRALS=off on
       queries.
+
+JJ/01 exipick: added --reverse (and -R synonym), --random, --size, --sort and
+      --not options
+
+JJ/02 exipick: rewrote --help documentation to hopefully make more clear.
 
 
 Exim version 4.62

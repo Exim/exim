@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.8 2006/07/03 18:11:41 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.9 2006/07/21 16:48:42 jetmore Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -31230,7 +31230,7 @@ whose name ends in COMPRESS_SUFFIX through &'zcat'& as it searches it.
 .cindex "&'exipick'&"
 John Jetmore's &'exipick'& utility is included in the Exim distribution. It
 lists messages from the queue according to a variety of criteria. For details,
-run:
+visit &url(http://www.exim.org/eximwiki/ToolExipickManPage) or run:
 .code
 exipick --help
 .endd
