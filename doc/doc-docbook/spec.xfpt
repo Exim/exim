@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.9 2006/07/21 16:48:42 jetmore Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.10 2006/07/24 11:55:15 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -13440,6 +13440,13 @@ when writing log entries) non-printing characters are converted into escape
 sequences, primarily to avoid messing up the layout. If &%print_topbitchars%&
 is set, code values of 128 and above are also considered to be printing
 characters.
+
+This option also affects the header syntax checks performed by the
+&(autoreply)& transport, and whether Exim uses RFC 2047 encoding of
+the user's full name when constructing From: and Sender: addresses (as
+described in section &<<SECTconstr>>&). Setting this option can cause
+Exim to generate eight bit message headers that do not conform to the
+standards.
 
 
 .option process_log_path main string unset
