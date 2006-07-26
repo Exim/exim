@@ -16,7 +16,7 @@ hostlist   relay_hosts = net-mysql;select * from them where id='$sender_host_add
 
 acl_smtp_rcpt = check_recipient
 
-mysql_servers = localhost/test/root/password
+mysql_servers = localhost/test/root/
 
 
 # ----- ACL -----

@@ -22,7 +22,7 @@ t1 transport entered
 direct command:
   argv[0] = TESTSUITE/bin/iefbr14
 Writing message to pipe
-writing data block fd=8 size=sss timeout=3600
+writing data block fd=dddd size=sss timeout=3600
 writing error 32: Broken pipe
 transport error EPIPE ignored
 t1 transport yielded 0

@@ -347,9 +347,9 @@ hitch name: TESTSUITE/test-mail/CALLER.lock.test.ex.dddddddd.pppppppp
 lock file created
 mailbox TESTSUITE/test-mail/CALLER is locked
 writing to file TESTSUITE/test-mail/CALLER
-writing data block fd=8 size=sss timeout=0
-writing data block fd=8 size=sss timeout=0
-writing data block fd=8 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
 close PGSQL connection: localhost/test/CALLER

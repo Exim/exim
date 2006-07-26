@@ -1,12 +1,12 @@
-$Cambridge: exim/test/README,v 1.3 2006/04/25 14:02:30 ph10 Exp $
+$Cambridge: exim/test/README,v 1.4 2006/07/26 14:39:13 ph10 Exp $
 
 EXPORTABLE EXIM TEST SUITE
 --------------------------
 
 This document last updated for:
 
-Test Suite Version: 4.61
-Date: 06 February 2006
+Test Suite Version: 4.63
+Date: 25 July 2006
 
 
 BACKGROUND
@@ -26,16 +26,11 @@ that it assumes a version of Exim with more or less every optional feature
 enabled.
 
 This README describes a new test suite that is intended to be exportable and to
-run in a number of different environments. The current status of this project
-is "experimental and incomplete". I am releasing it in this state in order to
-get feedback on how well it succeeds and of course to iron out any bugs. The
-original test suite contains over 600 tests; it will be some time before they
-are all re-implemented in the new world.
-
-The tests themselves are in no particular order; they accumulated over the
-years as Exim was extended and modified. They vary greatly in size and
-complexity. Some were specifically constructed to test new features; others
-were made to demonstrate that a bug had been fixed.
+run in a number of different environments. The tests themselves are in no
+particular order; they accumulated over the years as Exim was extended and
+modified. They vary greatly in size and complexity. Some were specifically
+constructed to test new features; others were made to demonstrate that a bug
+had been fixed.
 
 A few of the original tests have had to be omitted from this more general
 suite because differences in operating system behaviour make it impossible to
@@ -45,21 +40,18 @@ option set. In Linux, such a binary is able to deliver a message as the caller
 of Exim, because it can revert to the caller's uid. In FreeBSD this is not the
 case.
 
-This is early documentation; it too may be buggy... :-) It is certainly
-incomplete, because there are features yet to be added to the test suite.
-
 
 REQUIREMENTS
 ------------
 
 In order to run this test suite, the following requirements must be met:
 
-(1) You should run the tests on the latest version of Exim, because the suite
+(1) You should run the tests on a matching version of Exim, because the suite
     is continuously updated to test the latest features and bug fixes. The
     version you test does not, however, have to be installed as the live
-    version. You can of course run the tests on an older Exim, but some may
-    fail. In particular, the test suite will fall apart horrible with versions
-    of Exim prior to 4.54.
+    version. You can of course try the tests on any version of Exim, but some
+    may fail. In particular, the test suite will fall apart horrible with
+    versions of Exim prior to 4.54.
 
 (2) You can use any non-root login to run the tests, but there must be access
     via "sudo" to root from this login. Privilege is required to override
@@ -79,17 +71,15 @@ In order to run this test suite, the following requirements must be met:
 (3) The login under which you run the tests must be in the exim group so that
     it has access to logs, spool files, etc. The login should not be one of the
     names "userx", "usery", "userz", or a few other simple ones such as "abcd"
-    and "xyz" and single letters that are used in the tests. (The original
-    tests use my login a lot; I'm weeding this out as I convert, and I'll try
-    to get rid of common names as well.) The test suite expects the login to
-    have a gecos name; I think it will now run if the gecos field is empty but
-    there may be anomalies.
+    and "xyz" and single letters that are used in the tests. The test suite
+    expects the login to have a gecos name; I think it will now run if the
+    gecos field is empty but there may be anomalies.
 
 (4) The directory into which you unpack the test suite must be accessible by
-    the Exim user, so that code which is running as exim can access the files
-    therein. A world-readable directory is fine. However, there may be problems
-    if the path name of the directory is excessively long. This is because it
-    sometimes appears in logs lines or debug output, and if it is truncated, it
+    the Exim user, so that code running as exim can access the files therein. A
+    world-readable directory is fine. However, there may be problems if the
+    path name of the directory is excessively long. This is because it
+    sometimes appears in log lines or debug output, and if it is truncated, it
     is no longer recognized.
 
 (5) Exim must be built with its user and group specified at build time, and
@@ -202,17 +192,20 @@ Exim source trees, it chooses the latest version of Exim. Consider the
 following example:
 
   $ ls -F /source/exim
-  exim-4.50/  exim-4.52/  exim-testsuite-0.00/
+  exim-4.60/  exim-4.62/  exim-testsuite-x.xx/
 
-A simple ./runtest from within the test suite will use a 4.52 binary if it
-finds one, otherwise a 4.50 binary. If a binary cannot be found, the script
+A simple ./runtest from within the test suite will use a 4.62 binary if it
+finds one, otherwise a 4.60 binary. If a binary cannot be found, the script
 prompts for one. Alternatively, you can supply the binary on the command line:
 
   ./runtest /usr/exim/bin/exim
 
-The test suite also uses some of the Exim utilities (such as exim_dbmbuild),
-and it expects to find them in the same directory as Exim itself. If they are
-not found, the tests that use them are omitted. A suitable comment is output.
+A matching test suite is released with each Exim release; if you use a test
+suite that does not match the binary, some tests may fail.
+
+The test suite uses some of the Exim utilities (such as exim_dbmbuild), and it
+expects to find them in the same directory as Exim itself. If they are not
+found, the tests that use them are omitted. A suitable comment is output.
 
 On the ./runtest command line, following the name of the binary, if present,
 there may be a number of options and then one or two numbers. The full syntax
@@ -328,8 +321,9 @@ example:
 
 If a test fails, you are shown the output of the text comparison that failed,
 and prompted as to what to do next. The output is shown using the "less"
-command, or "more" if "less" is not available. By default, the output is from
-the "cf" program, and might look like this:
+command, or "more" if "less" is not available. The options for "less" are set
+to that it automatically exits if there is less that a screenful of output. By
+default, the output is from the "cf" program, and might look like this:
 
   DBM/1300 DBM files and exim_dbmbuild
   ===============
@@ -392,6 +386,19 @@ libraries generate different error messages. This may cause the comparison with
 the saved output to fail. Such errors can be ignored.
 
 
+OTHER ISSUES
+------------
+
+. Some of the tests are time-sensitive (e.g. when testing timeouts, as in test
+  461). These may fail if run on a host that is also running a lot of other
+  processes.
+
+. Some versions of "ls" use a different format for times and dates. This can
+  cause test 345 to fail.
+
+. Test 0142 tests open file descriptors; on some hosts the output may vary.
+
+
 OTHER SCRIPTS AND PROGRAMS
 --------------------------
 
@@ -445,6 +452,7 @@ used in a test. To save repetition, the substitutions themselves are documented
 here:
 
   CALLER         is replaced by the login name of the user running the tests
+  CALLERGROUP    is replaced by the caller's group id
   CALLER_GID     is replaced by the caller's group id
   CALLER_UID     is replaced by the caller's user id
   DIR            is replaced by the name of the test-suite directory
@@ -473,7 +481,7 @@ running IPv4 interface should be skipped.
 
 If the host has more than one IPv4 or IPv6 address, the first one that
 "ifconfig" lists is used. If the only available address is 127.0.0.1 (or ::1
-for IPv6) it is used, but another value is prefered if available.
+for IPv6) it is used, but another value is preferred if available.
 
 In situations where a specific test is not being run (for example, when setting
 up dynamic data files), TESTNUM is replaced by an empty string, but should not
@@ -586,8 +594,7 @@ be replaced by the local host's name. Long commands can be continued over
 several lines by using \ as a continuation character. This does *not* apply to
 data lines.
 
-Here follows a [currently incomplete] list of supported commands. They can be
-divided into two groups:
+Here follows a list of supported commands. They can be divided into two groups:
 
 
 Commands with no input
@@ -721,7 +728,7 @@ usage, the asterisks must be given.
   catwrite <file name> [nxm[=start-of-line-text]]*
 
 This command operates like the "write" command, which is described below,
-except that the out it generates is copied to the end of the test-stdout file
+except that the data it generates is copied to the end of the test-stdout file
 as well as to the named file.
 
 

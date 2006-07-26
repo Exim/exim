@@ -29,7 +29,7 @@ not using PIPELINING
   SMTP>> DATA
   SMTP<< 354 Send data
   SMTP>> writing message and terminating "."
-writing data block fd=6 size=sss timeout=300
+writing data block fd=dddd size=sss timeout=300
   SMTP<< 250 OK
 ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
 transport_check_waiting entered

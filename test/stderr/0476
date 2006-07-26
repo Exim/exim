@@ -43,7 +43,7 @@ set_process_info: pppp delivering 10HmaX-0005vi-00
 LOG: MAIN
   ** userx@test.ex R=r1 T=t1: SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 550 NO
 set_process_info: pppp tidying up after delivering 10HmaX-0005vi-00
-writing data block fd=9 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user

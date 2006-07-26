@@ -1,2 +1,62 @@
-userx@eximtesthost.ipv6.test.ex cannot be resolved at this time:
-  lookup of host "eximtesthost.ipv6.test.ex" failed in lookuphost router
++++++++++++++++++++++++++++
+  T:46c.test.ex:V6NET:ffff:836f:a00:a:800:200a:c033:1224 101 77 Network Error
+first failed = time last try = time2 next try = time2 + 1 *
++++++++++++++++++++++++++++
+  T:46c.test.ex:V6NET:ffff:836f:a00:a:800:200a:c033:1224 101 77 Network Error
+first failed = time last try = time2 next try = time2 + 1 *
+  T:46d.test.ex:ip4.ip4.ip4.ip4:1224 111 77 Connection refused
+first failed = time last try = time2 next try = time2 + 1
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+220 ESMTP
+EHLO myhost.text.ex
+250-OK
+250 HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<userx@mx46cd.test.ex>
+250 Recipient OK
+DATA
+350 Send message
+Received: from CALLER by myhost.text.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@mx46cd.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.text.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+First message
+.
+250 OK
+QUIT
+250 OK
+End of script
+Listening on port 1224 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+220 ESMTP
+EHLO myhost.text.ex
+250-OK
+250 HELP
+MAIL FROM:<CALLER@test.ex>
+250 Sender OK
+RCPT TO:<userx@mx46cd.test.ex>
+250 Recipient OK
+DATA
+350 Send message
+Received: from CALLER by myhost.text.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmaY-0005vi-00
+	for userx@mx46cd.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@myhost.text.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+Second message
+.
+250 OK
+QUIT
+250 OK
+End of script

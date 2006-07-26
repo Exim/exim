@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.12 2006/07/04 09:07:20 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.13 2006/07/26 14:39:13 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -23,7 +23,7 @@ use Socket;
 
 # Start by initializing some global variables
 
-$testversion = "4.62 (20-Apr-06)";
+$testversion = "4.63 (24-Jul-06)";
 
 $cf = "bin/cf";
 $cr = "\r";
@@ -98,6 +98,7 @@ sub inthandler { print "\n"; tests_exit(-1, "Caught SIGINT"); }
 
 sub do_substitute{
 s?\bCALLER\b?$parm_caller?g;
+s?\bCALLERGROUP\b?$parm_caller_group?g;
 s?\bCALLER_UID\b?$parm_caller_uid?g;
 s?\bCALLER_GID\b?$parm_caller_gid?g;
 s?\bCLAMSOCKET\b?$parm_clamsocket?g;
@@ -358,6 +359,10 @@ while(<IN>)
   # Random local part in callout cache testing
   s/myhost.test.ex-\d+-testing/myhost.test.ex-dddddddd-testing/;
 
+  # File descriptor numbers may vary
+  s/^writing data block fd=\d+/writing data block fd=dddd/;
+  s/running as transport filter: write=\d+ read=\d+/running as transport filter: write=dddd read=dddd/;
+
 
   # ======== Dumpdb output ========
   # This must be before the general date/date munging.
@@ -585,7 +590,7 @@ while(<IN>)
 
 
   # ======== Values in spool space failure message ========
-  s/space=\d+ inodes=\d+/space=xxxxx inodes=xxxxx/;
+  s/space=\d+ inodes=[+-]?\d+/space=xxxxx inodes=xxxxx/;
 
 
   # ======== Filter sizes ========
@@ -1686,9 +1691,11 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
 
     # Before running the command, convert the -bd option into -bdf so that an
     # Exim daemon doesn't double fork. This means that when we wait close
-    # DAEMONCMD, it waits for the correct process.
+    # DAEMONCMD, it waits for the correct process. Also, ensure that the pid
+    # file is written to the spool directory, in case the Exim binary was
+    # built with PID_FILE_PATH pointing somewhere else.
 
-    $cmd =~ s/\s-bd\s/ -bdf /;
+    $cmd =~ s!\s-bd\s! -bdf -oP $parm_cwd/spool/exim-daemon.pid !;
     print ">> |${cmd}-server\n" if ($debug);
     open DAEMONCMD, "|${cmd}-server" || tests_exit(-1, "Failed to run $cmd");
     DAEMONCMD->autoflush(1);
@@ -2412,7 +2419,7 @@ print "IPv6 address is $parm_ipv6\n";
 $parm_ipv4r = ($parm_ipv4 !~ /^\d/)? "" :
   join(".", reverse(split /\./, $parm_ipv4));
 
-$parm_ipv6r = "";
+$parm_ipv6r = $parm_ipv6;             # Appropriate if not in use
 if ($parm_ipv6 =~ /^[\da-f]/)
   {
   my(@comps) = split /:/, $parm_ipv6;

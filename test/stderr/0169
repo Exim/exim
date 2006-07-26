@@ -23,9 +23,9 @@ mailbox TESTSUITE/test-mail/userx is locked
 writing to file TESTSUITE/test-mail/userx
 Exim quota = 52428800 old size = sssss this message = sss (included)
   file count quota = 0 count = 0
-writing data block fd=6 size=sss timeout=0
-writing data block fd=6 size=sss timeout=0
-writing data block fd=6 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 quota = 52428800 threshold = 21495808 old size = sssss message size = sss
 appendfile yields 0 with errno=dd more_errno=dd
 appendfile transport returned OK for userx@myhost.test.ex

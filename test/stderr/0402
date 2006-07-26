@@ -372,9 +372,9 @@ expanding: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbo
 
    result: From CALLER@test.ex Tue Mar 02 09:44:33 1999
 
-writing data block fd=6 size=sss timeout=0
-writing data block fd=6 size=sss timeout=0
-writing data block fd=6 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
 journalling TESTSUITE/test-mail/junk:rd+usery@test.ex
@@ -420,9 +420,9 @@ expanding: From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbo
 
    result: From CALLER@test.ex Tue Mar 02 09:44:33 1999
 
-writing data block fd=7 size=sss timeout=0
-writing data block fd=7 size=sss timeout=0
-writing data block fd=7 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
 journalling TESTSUITE/test-mail/junk:rd+CALLER@test.ex

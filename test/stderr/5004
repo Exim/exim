@@ -142,7 +142,7 @@ created directory TESTSUITE/test-mail/new
 created directory TESTSUITE/test-mail/cur
 delivering in maildir format in TESTSUITE/test-mail
 writing to tmp/MAILDIR.mail.test.ex
-writing data block fd=6 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 renaming temporary file
 renamed tmp/MAILDIR.mail.test.ex as new/MAILDIR.mail.test.ex
 appendfile yields 0 with errno=dd more_errno=dd

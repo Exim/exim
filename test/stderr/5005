@@ -136,7 +136,7 @@ delivering in maildir format in TESTSUITE/test-mail/nofile
 writing to tmp/MAILDIR.myhost.test.ex
 Exim quota = 500 old size = sssss this message = sss (included)
   file count quota = 0 count = 0
-writing data block fd=8 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 added 'ddd 1' to maildirsize file
 renaming temporary file
 renamed tmp/MAILDIR.myhost.test.ex as new/MAILDIR.myhost.test.ex
@@ -304,7 +304,7 @@ delivering in maildir format in TESTSUITE/test-mail/userx
 writing to tmp/MAILDIR.myhost.test.ex
 Exim quota = 500 old size = sssss this message = sss (included)
   file count quota = 0 count = 0
-writing data block fd=8 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 added 'ddd 1' to maildirsize file
 renaming temporary file
 renamed tmp/MAILDIR.myhost.test.ex as new/MAILDIR.myhost.test.ex

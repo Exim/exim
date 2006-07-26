@@ -98,7 +98,7 @@ After routing:
 locking TESTSUITE/spool/db/retry.lockfile
 locking TESTSUITE/spool/db/wait-t1.lockfile
 LOG: MAIN
-  == ok@no.delay R=r1 T=t1 defer (0): SMTP error from remote mail server after MAIL FROM:<CALLER@test.ex> SIZE=ssss: host 127.0.0.1 [127.0.0.1]: 421 myhost.test.ex: SMTP command timeout - closing connection
+  == ok@no.delay R=r1 T=t1 defer (-45): SMTP error from remote mail server after MAIL FROM:<CALLER@test.ex> SIZE=ssss: host 127.0.0.1 [127.0.0.1]: 421 myhost.test.ex: SMTP command timeout - closing connection
 locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
 locking TESTSUITE/spool/db/retry.lockfile

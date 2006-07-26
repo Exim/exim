@@ -26,16 +26,16 @@ hitch name: TESTSUITE/test-mail/userx.lock.test.ex.dddddddd.pppppppp
 lock file created
 mailbox TESTSUITE/test-mail/userx is locked
 writing to file TESTSUITE/test-mail/userx
-writing data block fd=6 size=sss timeout=0
-process pppp running as transport filter: write=9 read=10
-writing data block fd=9 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+process pppp running as transport filter: write=dddd read=dddd
+writing data block fd=dddd size=sss timeout=0
 process pppp writing to transport filter
 copying from the filter
 waiting for filter process
 waiting for writing process
-writing data block fd=6 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 end of filtering transport writing: yield=1
-writing data block fd=6 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 t1 transport returned OK for userx@test.ex
 LOG: MAIN
@@ -69,9 +69,9 @@ hitch name: TESTSUITE/test-mail/userx.lock.test.ex.dddddddd.pppppppp
 lock file created
 mailbox TESTSUITE/test-mail/userx is locked
 writing to file TESTSUITE/test-mail/userx
-writing data block fd=6 size=sss timeout=0
-process pppp running as transport filter: write=9 read=10
-writing data block fd=9 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+process pppp running as transport filter: write=dddd read=dddd
+writing data block fd=dddd size=sss timeout=0
 writing error 32: Broken pipe
 process pppp writing to transport filter
 copying from the filter

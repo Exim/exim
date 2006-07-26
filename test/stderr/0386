@@ -279,9 +279,9 @@ hitch name: TESTSUITE/test-mail/2.lock.test.ex.dddddddd.pppppppp
 lock file created
 mailbox TESTSUITE/test-mail/2 is locked
 writing to file TESTSUITE/test-mail/2
-writing data block fd=10 size=sss timeout=0
-writing data block fd=10 size=sss timeout=0
-writing data block fd=10 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
 journalling 2@b
@@ -436,9 +436,9 @@ hitch name: TESTSUITE/test-mail/2.lock.test.ex.dddddddd.pppppppp
 lock file created
 mailbox TESTSUITE/test-mail/2 is locked
 writing to file TESTSUITE/test-mail/2
-writing data block fd=10 size=sss timeout=0
-writing data block fd=10 size=sss timeout=0
-writing data block fd=10 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 appendfile yields 0 with errno=dd more_errno=dd
 search_tidyup called
 journalling 2@b

@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.53 2006/07/17 09:18:09 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.54 2006/07/26 14:39:13 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  17 July 2006
+Last updated:  25 July 2006
 
 
 THE OLD LIST
@@ -203,6 +203,7 @@ Alex Miller               Suggested readline() patch
                           Patch for LDAP_RES_SEARCH_REFERENCE handling
                           Support for the DrWeb content scanner
 Arkadiusz Miskiewicz      Patch to add timeout to reads in malware.c
+Martin Mrazik             Patches for problems in the test suite
 Andreas Mueller           Patch for logging uncompleted SMTP transactions
 Pete Naylor               Patch for LDAP TCP connect timeout setting
 Alexander Newmann         Diagnosing and patching obscure and subtle socket bug

@@ -83,7 +83,7 @@ r9:
   domains = r9
   allow_fail
   file = DIR/aux-var/TESTNUM.exim
-  owngroups = CALLER : EXIMGROUP
+  owngroups = CALLERGROUP : EXIMGROUP
 
 r10:
   driver = redirect
@@ -95,7 +95,7 @@ r11:
   driver = redirect
   domains = r11
   file = DIR/aux-var/TESTNUM.exim
-  owngroups = CALLER : EXIMGROUP
+  owngroups = CALLERGROUP : EXIMGROUP
   modemask = 007
 
 # End

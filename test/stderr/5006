@@ -134,7 +134,7 @@ maildir_compute_size (timestamp_only): ddddddd
 returning maildir size=sss filecount=0
 delivering in maildir format in TESTSUITE/test-mail/userx
 writing to tmp/MAILDIR.myhost.test.ex
-writing data block fd=8 size=sss timeout=0
+writing data block fd=dddd size=sss timeout=0
 added 'ddd 1' to maildirsize file
 renaming temporary file
 renamed tmp/MAILDIR.myhost.test.ex as new/MAILDIR.myhost.test.ex
