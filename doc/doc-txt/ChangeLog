@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.381 2006/07/27 10:13:52 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.382 2006/07/27 10:36:34 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -130,6 +130,10 @@ PH/23 Made -oMaa and -oMt work with -bh and -bs to pretend the connection is
       authenticated or an ident call has been made. Suppress the default
       values for $authenticated_id and $authenticated_sender (but permit -oMai
       and -oMas) when testing with -bh.
+
+PH/24 Re-jigged the order of the tests in the default configuration so that the
+      tests for valid domains and recipients precede the DNS black list and CSA
+      tests, on the grounds that those ones are more expensive.
 
 
 Exim version 4.62

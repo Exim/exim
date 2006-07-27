@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/configure.default,v 1.9 2006/07/07 13:54:32 ph10 Exp $
+# $Cambridge: exim/src/src/configure.default,v 1.10 2006/07/27 10:36:34 ph10 Exp $
 
 ######################################################################
 #                  Runtime configuration file for Exim               #
@@ -380,6 +380,21 @@ acl_check_rcpt:
   accept  authenticated = *
           control       = submission
 
+  # Insist that any other recipient address that we accept is either in one of
+  # our local domains, or is in a domain for which we explicitly allow
+  # relaying. Any other domain is rejected as being unacceptable for relaying.
+
+  require message = relay not permitted
+          domains = +local_domains : +relay_domains
+
+  # We also require all accepted addresses to be verifiable. This check will
+  # do local part verification for local domains, but only check the domain
+  # for remote domains. The only way to check local parts for the remote
+  # relay domains is to use a callout (add /callout), but please read the
+  # documentation about callouts before doing this.
+
+  require verify = recipient
+
   #############################################################################
   # There are no default checks on DNS black lists because the domains that
   # contain these lists are changing all the time. However, here are two
@@ -405,26 +420,10 @@ acl_check_rcpt:
   # require verify = csa
   #############################################################################
 
-  # Accept if the address is in a local domain, but only if the recipient can
-  # be verified. Otherwise deny. The "endpass" line is the border between
-  # passing on to the next ACL statement (if tests above it fail) or denying
-  # access (if tests below it fail).
+  # At this point, the address has passed all the checks that have been
+  # configured, so we accept it unconditionally.
 
-  accept  domains       = +local_domains
-          endpass
-          verify        = recipient
-
-  # Accept if the address is in a domain for which we are an incoming relay,
-  # but again, only if the recipient can be verified.
-
-  accept  domains       = +relay_to_domains
-          endpass
-          verify        = recipient
-
-  # Reaching the end of the ACL causes a "deny", but we might as well give
-  # an explicit message.
-
-  deny    message       = relay not permitted
+  accept
 
 
 # This ACL is used after the contents of a message have been received. This
