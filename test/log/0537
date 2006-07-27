@@ -1,0 +1,39 @@
+1999-03-02 09:44:33 ===========================================================
+1999-03-02 09:44:33 sender_ip_address=[5.6.7.8]
+1999-03-02 09:44:33 sender_host_authenticated=authname
+1999-03-02 09:44:33 authenticated_id=authid
+1999-03-02 09:44:33 authenticated_sender=authsender
+1999-03-02 09:44:33 interface_address=[9.10.11.12]
+1999-03-02 09:44:33 received_protocol=smtp
+1999-03-02 09:44:33 sender_host_name=hostname
+1999-03-02 09:44:33 sender_ident=ident
+1999-03-02 09:44:33 ===========================================================
+1999-03-02 09:44:33 sender_ip_address=[5.6.7.8]
+1999-03-02 09:44:33 sender_host_authenticated=authname
+1999-03-02 09:44:33 authenticated_id=authid
+1999-03-02 09:44:33 authenticated_sender=
+1999-03-02 09:44:33 interface_address=[9.10.11.12]
+1999-03-02 09:44:33 received_protocol=esmtpa
+1999-03-02 09:44:33 sender_host_name=hostname
+1999-03-02 09:44:33 sender_ident=ident
+1999-03-02 09:44:33 +++ host is authenticated +++
+1999-03-02 09:44:33 ===========================================================
+1999-03-02 09:44:33 sender_ip_address=[5.6.7.8]
+1999-03-02 09:44:33 sender_host_authenticated=authname
+1999-03-02 09:44:33 authenticated_id=authid
+1999-03-02 09:44:33 authenticated_sender=<asender@a.domain>
+1999-03-02 09:44:33 interface_address=[9.10.11.12]
+1999-03-02 09:44:33 received_protocol=esmtpa
+1999-03-02 09:44:33 sender_host_name=hostname
+1999-03-02 09:44:33 sender_ident=ident
+1999-03-02 09:44:33 +++ host is authenticated +++
+1999-03-02 09:44:33 ===========================================================
+1999-03-02 09:44:33 sender_ip_address=[5.6.7.8]
+1999-03-02 09:44:33 sender_host_authenticated=authname
+1999-03-02 09:44:33 authenticated_id=authid
+1999-03-02 09:44:33 authenticated_sender=authsender
+1999-03-02 09:44:33 interface_address=[9.10.11.12]
+1999-03-02 09:44:33 received_protocol=protocol
+1999-03-02 09:44:33 sender_host_name=hostname
+1999-03-02 09:44:33 sender_ident=ident
+1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@myhost.test.ex H=hostname [5.6.7.8] U=ident P=protocol A=authname:authid S=sss

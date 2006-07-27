@@ -1,0 +1,50 @@
+# Exim test configuration 0537
+
+TRUSTED=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_connect = connect
+acl_smtp_mail    = mail
+acl_not_smtp_start = mail
+
+queue_only
+trusted_users = TRUSTED
+
+# ----- ACLs -----
+
+begin ACL
+
+connect:
+  accept acl = log
+
+mail:
+  accept acl = log
+         acl = auth
+
+log:
+  accept logwrite = ===========================================================
+         logwrite = sender_ip_address=[$sender_host_address]
+         logwrite = sender_host_authenticated=$sender_host_authenticated
+         logwrite = authenticated_id=$authenticated_id
+         logwrite = authenticated_sender=$authenticated_sender
+         logwrite = interface_address=[$interface_address]
+         logwrite = received_protocol=$received_protocol
+         logwrite = sender_host_name=$sender_host_name
+         logwrite = sender_ident=$sender_ident
+
+auth:
+  accept authenticated = *
+         logwrite = +++ host is authenticated +++
+
+  accept
+

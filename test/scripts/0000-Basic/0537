@@ -1,0 +1,47 @@
+# -oMa... options in various situations
+exim -oMa 5.6.7.8 -bh 1.2.3.4
+quit
+****          
+exim -bh 1.2.3.4 \
+     -oMa 5.6.7.8 \
+     -oMaa authname \
+     -oMai authid \
+     -oMr protocol \ 
+     -oMas authsender \
+     -oMi 9.10.11.12 \
+     -oMs hostname \
+     -oMt ident
+ehlo a.b
+mail from:<>      
+rset
+mail from:<> auth=<asender@a.domain>
+quit
+****          
+exim -DTRUSTED=CALLER \
+     -bs \
+     -oMa 5.6.7.8 \
+     -oMaa authname \
+     -oMai authid \
+     -oMr protocol \ 
+     -oMas authsender \
+     -oMi 9.10.11.12 \
+     -oMs hostname \
+     -oMt ident
+ehlo a.b
+mail from:<>
+rset
+mail from:<> auth=<asender@a.domain>
+quit
+****          
+exim -DTRUSTED=CALLER \
+     -oMa 5.6.7.8 \
+     -oMaa authname \
+     -oMai authid \
+     -oMr protocol \ 
+     -oMas authsender \
+     -oMi 9.10.11.12 \
+     -oMs hostname \
+     -oMt ident \
+     userx 
+****      
+no_msglog_check    

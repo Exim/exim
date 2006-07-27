@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.39 2006/07/13 13:53:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.40 2006/07/27 10:13:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1156,7 +1156,10 @@ sync_cmd_limit = NON_SYNC_CMD_NON_PIPELINING;
 
 memset(sender_host_cache, 0, sizeof(sender_host_cache));
 
-sender_host_authenticated = NULL;
+/* If receiving by -bs from a trusted user, or testing with -bh, we allow
+authentication settings from -oMaa to remain in force. */
+
+if (!host_checking && !sender_host_notsocket) sender_host_authenticated = NULL;
 authenticated_by = NULL;
 
 #ifdef SUPPORT_TLS

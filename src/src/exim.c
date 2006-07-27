@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.41 2006/07/13 13:53:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.42 2006/07/27 10:13:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1287,6 +1287,7 @@ BOOL more = TRUE;
 BOOL one_msg_action = FALSE;
 BOOL queue_only_set = FALSE;
 BOOL receiving_message = TRUE;
+BOOL sender_ident_set = FALSE;
 BOOL unprivileged;
 BOOL removed_privilege = FALSE;
 BOOL verify_address_mode = FALSE;
@@ -2520,7 +2521,11 @@ for (i = 1; i < argc; i++)
 
       /* -oMt: Set sender ident */
 
-      else if (Ustrcmp(argrest, "Mt") == 0) sender_ident = argv[++i];
+      else if (Ustrcmp(argrest, "Mt") == 0)
+        {
+        sender_ident_set = TRUE;
+        sender_ident = argv[++i];
+        }
 
       /* Else a bad argument */
 
@@ -4055,12 +4060,14 @@ if ((sender_address == NULL && !smtp_input) ||
   sender_local = TRUE;
 
   /* A trusted caller can supply authenticated_sender and authenticated_id
-  via -oMas and -oMai and if so, they will already be set. */
+  via -oMas and -oMai and if so, they will already be set. Otherwise, force
+  defaults except when host checking. */
 
-  if (authenticated_sender == NULL)
+  if (authenticated_sender == NULL && !host_checking)
     authenticated_sender = string_sprintf("%s@%s", originator_login,
       qualify_domain_sender);
-  if (authenticated_id == NULL) authenticated_id = originator_login;
+  if (authenticated_id == NULL && !host_checking)
+    authenticated_id = originator_login;
   }
 
 /* Trusted callers are always permitted to specify the sender address.
@@ -4225,20 +4232,24 @@ if (raw_active_hostname != NULL)
   }
 
 /* Handle host checking: this facility mocks up an incoming SMTP call from a
-given IP address so that the blocking and relay configuration can be tested. An
-RFC 1413 call is made only if we are running in the test harness and an
-incoming interface and both ports are specified, because there is no TCP/IP
-call to find the ident for. */
+given IP address so that the blocking and relay configuration can be tested.
+Unless a sender_ident was set by -oMt, we discard it (the default is the
+caller's login name). An RFC 1413 call is made only if we are running in the
+test harness and an incoming interface and both ports are specified, because
+there is no TCP/IP call to find the ident for. */
 
 if (host_checking)
   {
   int x[4];
   int size;
 
-  sender_ident = NULL;
-  if (running_in_test_harness && sender_host_port != 0 &&
-      interface_address != NULL && interface_port != 0)
-    verify_get_ident(1413);
+  if (!sender_ident_set)
+    {
+    sender_ident = NULL;
+    if (running_in_test_harness && sender_host_port != 0 &&
+        interface_address != NULL && interface_port != 0)
+      verify_get_ident(1413);
+    }
 
   /* In case the given address is a non-canonical IPv6 address, canonicize
   it. The code works for both IPv4 and IPv6, as it happens. */

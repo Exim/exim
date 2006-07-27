@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.380 2006/07/21 16:48:42 jetmore Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.381 2006/07/27 10:13:52 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -125,6 +125,11 @@ JJ/01 exipick: added --reverse (and -R synonym), --random, --size, --sort and
       --not options
 
 JJ/02 exipick: rewrote --help documentation to hopefully make more clear.
+
+PH/23 Made -oMaa and -oMt work with -bh and -bs to pretend the connection is
+      authenticated or an ident call has been made. Suppress the default
+      values for $authenticated_id and $authenticated_sender (but permit -oMai
+      and -oMas) when testing with -bh.
 
 
 Exim version 4.62
