@@ -387,6 +387,13 @@ a99b:  ${lookup{a99b}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NO}}
 a\\:b:  ${lookup{a\\:b}nwildlsearch{DIR/aux-var/0002.wild}}
 a\\:Xb: ${lookup{a\\:Xb}nwildlsearch{DIR/aux-var/0002.wild}}
 
+# Some tests of case-(in)dependence
+
+MiXeD-CD:  ${lookup{MiXeD-CD}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
+MixeD-CD:  ${lookup{MixeD-CD}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
+MiXeD-Ncd: ${lookup{MiXeD-Ncd}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
+MixeD-Ncd: ${lookup{MixeD-Ncd}nwildlsearch{DIR/aux-var/0002.wild}{$value}{NOT FOUND}}
+
 # IP address (CIDR) lookups
 
 1.2.3.4:      ${lookup{1.2.3.4}iplsearch{DIR/aux-fixed/0002.iplsearch}}

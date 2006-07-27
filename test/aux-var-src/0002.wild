@@ -9,3 +9,5 @@ abc:        abc
 ^a\\.+b     ^a\\.+b
 \N^a\d+b    \N^a\d+b
 lsearch;DIR/aux-fixed/0002.quoted:  lookup succeeded
+^(?-i)MiXeD-CD: Data found for case-dependent MiXeD-CD
+^MiXeD-nCD: Data found for case-independent MiXeD-nCD

@@ -356,6 +356,13 @@
 > a\:b:  ^a\\.+b
 > a\:Xb: ^a\\.+b
 > 
+> # Some tests of case-(in)dependence
+> 
+> MiXeD-CD:  Data found for case-dependent MiXeD-CD
+> MixeD-CD:  NOT FOUND
+> MiXeD-Ncd: Data found for case-independent MiXeD-nCD
+> MixeD-Ncd: Data found for case-independent MiXeD-nCD
+> 
 > # IP address (CIDR) lookups
 > 
 > 1.2.3.4:      data for 1.2.3.4

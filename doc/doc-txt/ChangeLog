@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.383 2006/07/27 11:29:32 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.384 2006/07/27 13:50:43 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -139,6 +139,12 @@ PH/25 Exim was not testing for a space following SMTP commands such as EHLO
       that require one. Thus, EHLORHUBARB was interpreted as a valid command.
       This bug exists in every version of Exim that I still have, right back to
       0.12.
+
+PH/26 (n)wildlsearch lookups are documented as being done case-insensitively.
+      However, an attempt to turn on case-sensitivity in a regex key by
+      including (?-i) didn't work because the subject string was already
+      lowercased, and the effects were non-intuitive. It turns out that a
+      one-line patch can be used to allow (?-i) to work as expected.
 
 
 Exim version 4.62

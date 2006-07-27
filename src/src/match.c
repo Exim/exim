@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.14 2006/04/04 10:01:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.15 2006/07/27 13:50:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -74,7 +74,8 @@ Arguments:
                    returns ERROR)
 
 Contents of the argument block:
-  subject        the subject string to be checked
+  origsubject    the subject in its original casing
+  subject        the subject string to be checked, lowercased if caseless
   expand_setup   if < 0, don't set up any numeric expansion variables;
                  if = 0, set $0 to whole subject, and either
                    $1 to what matches * or
@@ -99,7 +100,7 @@ check_string_block *cb = (check_string_block *)arg;
 int search_type, partial, affixlen, starflags;
 int expand_setup = cb->expand_setup;
 uschar *affix;
-uschar *s = cb->subject;
+uschar *s;
 uschar *filename = NULL;
 uschar *keyquery, *result, *semicolon;
 void *handle;
@@ -107,6 +108,12 @@ void *handle;
 error = error;  /* Keep clever compilers from complaining */
 
 if (valueptr != NULL) *valueptr = NULL;  /* For non-lookup matches */
+
+/* For regular expressions, use cb->origsubject rather than cb->subject so that
+it works if the pattern uses (?-i) to turn off case-independence, overriding
+"caseless". */
+
+s = (pattern[0] == '^')? cb->origsubject : cb->subject;
 
 /* If required to set up $0, initialize the data but don't turn on by setting
 expand_nmax until the match is assured. */
