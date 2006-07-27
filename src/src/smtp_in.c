@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.40 2006/07/27 10:13:52 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.41 2006/07/27 11:29:32 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -523,7 +523,10 @@ if required. */
 
 for (p = cmd_list; p < cmd_list_end; p++)
   {
-  if (strncmpic(smtp_cmd_buffer, US p->name, p->len) == 0)
+  if (strncmpic(smtp_cmd_buffer, US p->name, p->len) == 0 &&
+       (smtp_cmd_buffer[p->len-1] == ':' ||   /* "mail from:" or "rcpt to:" */
+        smtp_cmd_buffer[p->len] == 0 ||
+        smtp_cmd_buffer[p->len] == ' '))
     {
     if (smtp_inptr < smtp_inend &&                     /* Outstanding input */
         p->cmd < sync_cmd_limit &&                     /* Command should sync */

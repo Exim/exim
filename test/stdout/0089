@@ -25,6 +25,10 @@ userx@myhost.test.ex
 250 OK
 250 Accepted
 550 relay not permitted
+250 Reset OK
+500 unrecognized command
+500 unrecognized command
+500 unrecognized command
 221 myhost.test.ex closing connection
 abcd@test.ex
   router = select, transport = dummy

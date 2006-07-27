@@ -16,6 +16,10 @@ helo @#$%^&*()
 mail from:<root>
 rcpt to:<xx@reLAY.ONE.ex>
 rcpt to:<yy@relay.two.ex>
+rset
+helorhubarb
+mailfrom:<>
+rsettling
 quit
 ****
 2
