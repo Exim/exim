@@ -58,4 +58,14 @@ Test message
 ****
 exim -DDEFAULTDWC -Tqt 20s/ -odi -qf
 ****
+# Remove the previous message
+exim -Mrm $msg1
+****
+# Check no warnings for List-id: (in default config)
+exim -odi defer@test.ex
+List-ID: Some data
+Test message
+****
+exim -DDEFAULTDWC -Tqt 20s/ -odi -qf
+****
 no_msglog_check

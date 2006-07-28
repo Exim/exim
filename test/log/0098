@@ -103,3 +103,10 @@
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmbK-0005vi-00 == defer@test.ex R=alias defer (-1): This address has been forced to defer.
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbK-0005vi-00 removed by CALLER
+1999-03-02 09:44:33 10HmbK-0005vi-00 Completed
+1999-03-02 09:44:33 10HmbL-0005vi-00 <= CALLER@test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmbL-0005vi-00 == defer@test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 Start queue run: pid=pppp -qf
+1999-03-02 09:44:33 10HmbL-0005vi-00 == defer@test.ex R=alias defer (-1): This address has been forced to defer.
+1999-03-02 09:44:33 End queue run: pid=pppp -qf

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.384 2006/07/27 13:50:43 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.385 2006/07/28 11:39:11 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -93,16 +93,17 @@ PH/16 Recognize SMTP codes at the start of "message" in ACLs and after :fail:
       and :defer: in a redirect router. Add forbid_smtp_code to suppress the
       latter.
 
-PH/17 Added an extra condition to the default value of delay_warning_condition
+PH/17 Added extra conditions to the default value of delay_warning_condition
       so that it is now:
 
-        ${if or {
-            { match{$h_precedence:}{(?i)bulk|list|junk} }
-            { match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }
+        ${if or { \
+            { !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} } \
+            { match{$h_precedence:}{(?i)bulk|list|junk} } \
+            { match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} } \
             }{no}{yes}}
 
-      The Auto-Submitted: header is standardised, whereas I don't think
-      Precedence: ever was.
+      The Auto-Submitted: and various List- headers are standardised, whereas I
+      don't think Precedence: ever was.
 
 PH/18 Refactored debugging code in route_finduser() to show more information,
       in particular, the error code if getpwnam() issues one.

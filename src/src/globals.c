@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.56 2006/07/13 14:46:05 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.57 2006/07/28 11:39:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -451,6 +451,7 @@ unsigned int debug_selector    = 0;
 int     delay_warning[DELAY_WARNING_SIZE] = { DELAY_WARNING_SIZE, 1, 24*60*60 };
 uschar *delay_warning_condition=
   US"${if or {"
+            "{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }"
             "{ match{$h_precedence:}{(?i)bulk|list|junk} }"
             "{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }"
             "} {no}{yes}}";
