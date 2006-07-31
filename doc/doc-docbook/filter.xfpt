@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.3 2006/04/27 15:19:27 ph10 Exp $
+. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.4 2006/07/31 13:28:49 ph10 Exp $
 
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the document that describes Exim's filtering
@@ -39,12 +39,12 @@
 <bookinfo>
 <title>Exim's interfaces to mail filtering</title>
 <titleabbrev>Exim filtering</titleabbrev>
-<date>27 April 2006</date>
+<date>31 July</date>
 <author><firstname>Philip</firstname><surname>Hazel</surname></author>
 <authorinitials>PH</authorinitials>
 <revhistory><revision>
-  <revnumber>4.62</revnumber>
-  <date>27 April 2006</date>
+  <revnumber>4.63</revnumber>
+  <date>31 July 2006</date>
   <authorinitials>PH</authorinitials>
 </revision></revhistory>
 <copyright><year>2006</year><holder>University of Cambridge</holder></copyright>
@@ -55,7 +55,7 @@
 .chapter "Forwarding and filtering in Exim"
 This document describes the user interfaces to Exim's in-built mail filtering
 facilities, and is copyright &copy; University of Cambridge 2006. It
-corresponds to Exim version 4.62.
+corresponds to Exim version 4.63.
 
 
 
@@ -824,12 +824,14 @@ message to be written to its argument file, provided they are different
 (duplicate &(save)& commands are ignored).
 
 If the file name does not start with a / character, the contents of the
-&$home$& variable are prepended, unless it is empty. In conventional
-configurations, this variable is normally set in a user filter to the user's
-home directory, but the system administrator may set it to some other path. In
-some configurations, &$home$& may be unset, in which case a non-absolute path
-name may be generated. Such configurations convert this to an absolute path
-when the delivery takes place. In a system filter, &$home$& is never set.
+&$home$& variable are prepended, unless it is empty, &new("or the system
+administrator has disabled this feature.") In conventional configurations, this
+variable is normally set in a user filter to the user's home directory, but the
+system administrator may set it to some other path. In some configurations,
+&$home$& may be unset, &new("or prepending may be disabled,") in which case a
+non-absolute path name may be generated. Such configurations convert this to an
+absolute path when the delivery takes place. In a system filter, &$home$& is
+never set.
 
 The user must of course have permission to write to the file, and the writing
 of the file takes place in a process that is running as the user, under the
