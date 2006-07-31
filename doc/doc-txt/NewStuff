@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.107 2006/07/21 16:48:42 jetmore Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.108 2006/07/31 14:19:31 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -41,7 +41,7 @@ Version 4.63
    and the default code is used. This is an incompatible change, but it is not
    expected to affect many (if any) configurations. It is possible to suppress
    the use of the supplied code in a redirect router by setting the
-   smtp_error_code option false. In this case, any SMTP code is quietly
+   forbid_smtp_code option true. In this case, any SMTP code is quietly
    ignored.
 
 4. There is a new parameter for LDAP lookups called "referrals", which takes

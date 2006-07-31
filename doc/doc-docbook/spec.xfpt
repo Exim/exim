@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.11 2006/07/31 13:19:36 ph10 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.12 2006/07/31 14:19:31 ph10 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -17250,20 +17250,32 @@ text associated with the failure. For example, an alias file might contain:
 .code
 X.Employee:  :fail: Gone away, no forwarding address
 .endd
+.new
 In the case of an address that is being verified from an ACL or as the subject
 of a
 .cindex "VRFY error text" "display of"
 VRFY command, the text is included in the SMTP error response by
 default.
 .cindex "EXPN error text" "display of"
-The text is not included in the response to an EXPN command.
+The text is not included in the response to an EXPN command. In non-SMTP cases
+the text is included in the error message that Exim generates.
+
+.cindex "SMTP" "error codes"
+By default, Exim sends a 451 SMTP code for a &':defer:'&, and 550 for
+&':fail:'&. However, if the message starts with three digits followed by a
+space, optionally followed by an extended code of the form &'n.n.n'&, also
+followed by a space, and the very first digit is the same as the default error
+code, the code from the message is used instead. If the very first digit is
+incorrect, a panic error is logged, and the default code is used. You can
+suppress the use of the supplied code in a redirect router by setting the
+&%forbid_smtp_code%& option true. In this case, any SMTP code is quietly
+ignored.
 
 .cindex "&$acl_verify_message$&"
 In an ACL, an explicitly provided message overrides the default, but the
 default message is available in the variable &$acl_verify_message$& and can
-therefore be included in a custom message if this is desired. Exim sends a 451
-SMTP code for a &':defer:'&, and 550 for &':fail:'&. In non-SMTP cases the text
-is included in the error message that Exim generates.
+therefore be included in a custom message if this is desired.
+.wen
 
 Normally the error text is the rest of the redirection list &-- a comma does
 not terminate it &-- but a newline does act as a terminator. Newlines are not
@@ -17585,6 +17597,15 @@ forward file. This option is forced to be true if &%one_time%& is set.
 .option forbid_sieve_filter redirect boolean false
 If this option is set true, only Exim filters are permitted when
 &%allow_filter%& is true.
+
+
+.new
+.cindex "SMTP" "error codes"
+.option forbid_smtp_code redirect boolean false
+If this option is set true, any SMTP error codes that are present at the start
+of messages specified for &`:defer:`& or &`:fail:`& are quietly ignored, and
+the default codes (451 and 550, respectively) are always used.
+.wen
 
 
 
@@ -24541,6 +24562,16 @@ happens at the time Exim decides that access is to be denied, not at the time
 it processes &%message%&. If the expansion fails, or generates an empty string,
 the modifier is ignored. For ACLs that are triggered by SMTP commands, the
 message is returned as part of the SMTP error response.
+
+.new
+.cindex "SMTP" "error codes"
+By default, Exim uses a 550 SMTP code when it denies access. However, if the
+message starts with three digits followed by a space, optionally followed by an
+extended code of the form &'n.n.n'&, also followed by a space, and the very
+first digit is the same as the default error code, the code from the message is
+used instead. If the very first digit is incorrect, a panic error is logged,
+and the default code is used.
+.wen
 
 The text is literal; any quotes are taken as literals, but because the string
 is expanded, backslash escapes are processed anyway. If the message contains

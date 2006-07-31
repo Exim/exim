@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.21 2006/06/27 14:34:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.22 2006/07/31 14:19:31 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -222,6 +222,7 @@ forbid_filter_run                    boolean         false         redirect     
 forbid_include                       boolean         false         redirect          4.00
 forbid_pipe                          boolean         false         redirect          4.00
 forbid_sieve_filter                  boolean         false         redirect          4.44
+forbid_smtp_code                     boolean         false         redirect          4.63
 freeze_exec_fail                     boolean         false         pipe              1.89
 freeze_tell                          boolean         false         main              4.00 replaces freeze_tell_mailmaster
 from                                 string*         unset         autoreply
