@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-docbook/Markup.txt,v 1.2 2006/04/04 14:03:49 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/Markup.txt,v 1.3 2006/07/31 13:19:36 ph10 Exp $
 
 XFPT MARKUP USED IN THE EXIM DOCUMENTATION
 ------------------------------------------
@@ -335,6 +335,10 @@ When called without an argument, .new terminates the current paragraph, and
 can, of course, put in blank lines if you wish, and it is probably clearer to
 do so.
 
+WARNING: If there are index directives, put them after rather than before .new
+because otherwise you are likely to get an empty paragraph, which shows up as
+unwanted vertical whitespace.
+
 If want to mark just a few words inside a paragraph as new, you can call the
 .new macro with an argument. The macro can be called either as a directive or
 as an inline macro call, which takes the form of an ampersand followed by the
@@ -359,4 +363,4 @@ Each such entry must be separately marked. If there are more than one or two,
 it may be easier just to mark the entire table.
 
 Philip Hazel
-Last updated: 30 March 2006
+Last updated: 31 July 2006

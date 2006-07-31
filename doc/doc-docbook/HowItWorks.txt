@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.4 2006/04/04 14:03:49 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.5 2006/07/31 13:19:36 ph10 Exp $
 
 CREATING THE EXIM DOCUMENTATION
 
@@ -339,7 +339,8 @@ of the document, which makes finding a page from the index awkward. There is a
 facility in the PDF format to give pages appropriate "labels", but I cannot
 find a way of persuading fop to generate these. Fortunately, it is possibly to
 fix up the PDF to add page labels. I wrote a script called PageLabelPDF which
-does this. They are shown correctly by acroread, but not by GhostScript (gv).
+does this. They are shown correctly by acroread and xpdf, but not by
+GhostScript (gv).
 
 
 THE PAGELABELPDF SCRIPT
