@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filter.c,v 1.11 2006/07/07 14:36:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filter.c,v 1.12 2006/08/21 11:31:43 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2186,7 +2186,6 @@ while (commands != NULL)
                   string_printing(s), command_list[commands->command]);
                 return FF_ERROR;
                 }
-              pp++;
               }
             p = pp;
             }
