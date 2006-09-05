@@ -62,7 +62,10 @@ check_mime:
                         X-$mime_part_count-is-rfc822: $mime_is_rfc822\n\
                         X-$mime_part_count-decode-filename: $mime_decoded_filename\n\
                         X-$mime_part_count-content-size: $mime_content_size
-
+  warn     mime_regex = (?s)\
+                        (?=Test quoted-printable =)\
+                        (?=.*?Continued line with this)
+           add_header = X-mime-regex: matched
   accept
 
 

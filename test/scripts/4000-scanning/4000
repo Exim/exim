@@ -75,6 +75,16 @@ X-Mailman-Version: 2.1.5
 Precedence: list
 
 --T4sUOijqQbZv57TR
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+
+Test quoted-printable =3D    
+Space at end of line=40
+Continued line =    
+with this text.
+
+--T4sUOijqQbZv57TR
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 

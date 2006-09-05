@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.14 2006/02/22 14:46:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.15 2006/09/05 15:34:41 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -41,78 +41,38 @@ void mime_set_anomaly(int level, char *text) {
            0-255 - char to write
 */
 
-unsigned int mime_qp_hstr_i(uschar *cptr) {
-  unsigned int i, j = 0;
-  while (cptr && *cptr && isxdigit(*cptr)) {
-    i = *cptr++ - '0';
-    if (9 < i) i -= 7;
-    j <<= 4;
-    j |= (i & 0x0f);
-  }
-  return(j);
-}
-
-uschar *mime_decode_qp_char(uschar *qp_p,int *c) {
-  uschar hex[] = {0,0,0};
-  int nan = 0;
+uschar *mime_decode_qp_char(uschar *qp_p, int *c) {
   uschar *initial_pos = qp_p;
 
   /* advance one char */
   qp_p++;
 
-  REPEAT_FIRST:
-  if ( (*qp_p == '\t') || (*qp_p == ' ') || (*qp_p == '\r') )  {
-    /* tab or whitespace may follow
-       just ignore it, but remember
-       that this is not a valid hex
-       encoding any more */
-    nan = 1;
-    qp_p++;
-    goto REPEAT_FIRST;
-  }
-  else if ( (('0' <= *qp_p) && (*qp_p <= '9')) || (('A' <= *qp_p) && (*qp_p <= 'F'))  || (('a' <= *qp_p) && (*qp_p <= 'f')) ) {
-    /* this is a valid hex char, if nan is unset */
-    if (nan) {
-      /* this is illegal */
-      *c = -2;
-      return initial_pos;
-    }
-    else {
-      hex[0] = *qp_p;
-      qp_p++;
-    };
-  }
-  else if (*qp_p == '\n') {
-    /* hit soft line break already, continue */
-    *c = -1;
-    return qp_p;
-  }
-  else {
-    /* illegal char here */
-    *c = -2;
-    return initial_pos;
+  /* Check for two hex digits and decode them */
+  if (isxdigit(*qp_p) && isxdigit(qp_p[1])) {
+    /* Do hex conversion */
+    if (isdigit(*qp_p)) {*c = *qp_p - '0';}
+    else {*c = toupper(*qp_p) - 'A' + 10;};
+    *c <<= 4;
+    if (isdigit(qp_p[1])) {*c |= qp_p[1] - '0';}
+    else {*c |= toupper(qp_p[1]) - 'A' + 10;};
+    return qp_p + 2;
   };
 
-  if ( (('0' <= *qp_p) && (*qp_p <= '9')) || (('A' <= *qp_p) && (*qp_p <= 'F')) || (('a' <= *qp_p) && (*qp_p <= 'f')) ) {
-    if (hex[0] > 0) {
-      hex[1] = *qp_p;
-      /* do hex conversion */
-      *c = mime_qp_hstr_i(hex);
-      qp_p++;
-      return qp_p;
-    }
-    else {
-      /* huh ? */
-      *c = -2;
-      return initial_pos;
-    };
-  }
-  else {
-    /* illegal char */
-    *c = -2;
-    return initial_pos;
+  /* tab or whitespace may follow just ignore it if it precedes \n */
+  while (*qp_p == '\t' || *qp_p == ' ' || *qp_p == '\r')
+    qp_p++;
+
+  if (*qp_p == '\n') {
+    /* hit soft line break */
+    *c = -1;
+    return qp_p;
   };
+
+  /* illegal char here */
+  *c = -2;
+  return initial_pos;
 }
+
 
 
 uschar *mime_parse_line(uschar *buffer, uschar *data, uschar *encoding, int *num_decoded) {

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.388 2006/09/05 14:14:32 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.389 2006/09/05 15:34:40 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -30,6 +30,9 @@ PH/03 On Solaris, an unexpectedly close socket (dropped connection) can
       manifest itself as EPIPE rather than ECONNECT. When tidying away a
       session, the daemon ignores ECONNECT errors and logs others; it now
       ignores EPIPE as well.
+
+PH/04 Applied Nico Erfurth's refactoring patch to tidy up mime.c
+      (quoted-printable decoding).
 
 
 Exim version 4.63
