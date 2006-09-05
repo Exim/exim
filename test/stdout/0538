@@ -1,0 +1,50 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+550-Callback setup failed while verifying <userx@broken.example>
+550-Called:   127.0.0.1
+550-Sent:     MAIL FROM:<>
+550-Response: 550 I'm misconfigured
+550-The initial connection, or a HELO or MAIL FROM:<> command was
+550-rejected. Refusing MAIL FROM:<> does not help fight spam, disregards
+550-RFC requirements, and stops you from receiving standard bounce
+550-messages. This host does not accept mail from domains whose servers
+550-refuse bounces.
+550 Sender verify failed
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+550-Callback setup failed while verifying <userx@broken.example>
+550-(result of an earlier callout reused).
+550-The initial connection, or a HELO or MAIL FROM:<> command was
+550-rejected. Refusing MAIL FROM:<> does not help fight spam, disregards
+550-RFC requirements, and stops you from receiving standard bounce
+550-messages. This host does not accept mail from domains whose servers
+550-refuse bounces.
+550 Sender verify failed
+221 myhost.test.ex closing connection
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+HELO myhost.test.ex
+250 Hi
+MAIL FROM:<>
+550 I'm misconfigured
+QUIT
+221 Bye
+End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+HELO myhost.test.ex
+250 Hi
+MAIL FROM:<userx@ok.example>
+250 OK
+RCPT TO:<usery@broken.example>
+250 OK
+QUIT
+221 Bye
+End of script

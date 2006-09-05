@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.26 2006/06/28 16:00:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.27 2006/09/05 13:24:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -626,7 +626,8 @@ enum { v_none, v_sender, v_recipient, v_expn };
 
 #define ccache_unknown         0       /* test hasn't been done */
 #define ccache_accept          1
-#define ccache_reject          2
+#define ccache_reject          2       /* All rejections except */
+#define ccache_reject_mfnull   3       /* MAIL FROM:<> was rejected */
 
 /* Options for lookup functions */
 

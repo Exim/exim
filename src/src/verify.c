@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.37 2006/06/30 15:36:08 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.38 2006/09/05 13:24:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -148,6 +148,7 @@ BOOL callout_no_cache = (options & vopt_callout_no_cache) != 0;
 BOOL callout_random = (options & vopt_callout_random) != 0;
 
 int yield = OK;
+int old_domain_cache_result = ccache_accept;
 BOOL done = FALSE;
 uschar *address_key;
 uschar *from_address;
@@ -228,10 +229,18 @@ if (dbm_file != NULL)
 
   if (cache_record != NULL)
     {
-    /* If an early command (up to and including MAIL FROM:<>) was rejected,
-    there is no point carrying on. The callout fails. */
+    /* In most cases, if an early command (up to and including MAIL FROM:<>)
+    was rejected, there is no point carrying on. The callout fails. However, if
+    we are doing a recipient verification with use_sender or use_postmaster
+    set, a previous failure of MAIL FROM:<> doesn't count, because this time we
+    will be using a non-empty sender. We have to remember this situation so as
+    not to disturb the cached domain value if this whole verification succeeds
+    (we don't want it turning into "accept"). */
 
-    if (cache_record->result == ccache_reject)
+    old_domain_cache_result = cache_record->result;
+
+    if (cache_record->result == ccache_reject ||
+         (*from_address == 0 && cache_record->result == ccache_reject_mfnull))
       {
       setflag(addr, af_verify_nsfail);
       HDEBUG(D_verify)
@@ -462,50 +471,73 @@ for (host = host_list; host != NULL && !done; host = host->next)
     continue;
     }
 
-  /* Wait for initial response, and then run the initial SMTP commands. The
-  smtp_write_command() function leaves its command in big_buffer. This is
-  used in error responses. Initialize it in case the connection is
-  rejected. */
+  /* Wait for initial response, and send HELO. The smtp_write_command()
+  function leaves its command in big_buffer. This is used in error responses.
+  Initialize it in case the connection is rejected. */
 
   Ustrcpy(big_buffer, "initial connection");
 
   done =
     smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
       '2', callout) &&
-
     smtp_write_command(&outblock, FALSE, "%s %s\r\n", helo,
       smtp_active_hostname) >= 0 &&
     smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
-      '2', callout) &&
+      '2', callout);
 
+  /* Failure to accept HELO is cached; this blocks the whole domain for all
+  senders. I/O errors and defer responses are not cached. */
+
+  if (!done)
+    {
+    *failure_ptr = US"mail";     /* At or before MAIL */
+    if (errno == 0 && responsebuffer[0] == '5')
+      {
+      setflag(addr, af_verify_nsfail);
+      new_domain_record.result = ccache_reject;
+      }
+    }
+
+  /* Send the MAIL command */
+
+  else done =
     smtp_write_command(&outblock, FALSE, "MAIL FROM:<%s>\r\n",
       from_address) >= 0 &&
     smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
       '2', callout);
 
-  /* If the host gave an initial error, or does not accept HELO or MAIL
-  FROM:<>, arrange to cache this information, but don't record anything for an
-  I/O error or a defer. Do not cache rejections when a non-empty sender has
-  been used, because that blocks the whole domain for all senders. */
+  /* If the host does not accept MAIL FROM:<>, arrange to cache this
+  information, but again, don't record anything for an I/O error or a defer. Do
+  not cache rejections of MAIL when a non-empty sender has been used, because
+  that blocks the whole domain for all senders. */
 
   if (!done)
     {
-    *failure_ptr = US"mail";
+    *failure_ptr = US"mail";     /* At or before MAIL */
     if (errno == 0 && responsebuffer[0] == '5')
       {
       setflag(addr, af_verify_nsfail);
-      if (from_address[0] == 0) new_domain_record.result = ccache_reject;
+      if (from_address[0] == 0)
+        new_domain_record.result = ccache_reject_mfnull;
       }
     }
 
   /* Otherwise, proceed to check a "random" address (if required), then the
   given address, and the postmaster address (if required). Between each check,
   issue RSET, because some servers accept only one recipient after MAIL
-  FROM:<>. */
+  FROM:<>.
+
+  Before doing this, set the result in the domain cache record to "accept",
+  unless its previous value was ccache_reject_mfnull. In that case, the domain
+  rejects MAIL FROM:<> and we want to continue to remember that. When that is
+  the case, we have got here only in the case of a recipient verification with
+  a non-null sender. */
 
   else
     {
-    new_domain_record.result = ccache_accept;
+    new_domain_record.result =
+      (old_domain_cache_result == ccache_reject_mfnull)?
+        ccache_reject_mfnull: ccache_accept;
 
     /* Do the random local part check first */
 
@@ -685,7 +717,7 @@ However, there may be domain-specific information to cache in both cases.
 The value of the result field in the new_domain record is ccache_unknown if
 there was an error before or with MAIL FROM:, and errno was not zero,
 implying some kind of I/O error. We don't want to write the cache in that case.
-Otherwise the value is ccache_accept or ccache_reject. */
+Otherwise the value is ccache_accept, ccache_reject, or ccache_reject_mfnull. */
 
 if (!callout_no_cache && new_domain_record.result != ccache_unknown)
   {

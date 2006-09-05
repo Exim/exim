@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.386 2006/08/21 11:31:43 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.387 2006/09/05 13:24:10 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -10,6 +10,18 @@ TF/01 In the add_headers option to the mail command in an Exim filter,
       there was a bug that Exim would claim a syntax error in any
       header after the first one which had an odd number of characters
       in the field name.
+
+PH/01 If a server that rejects MAIL FROM:<> was the target of a sender
+      callout verification, Exim cached a "reject" for the entire domain. This
+      is correct for most verifications, but it is not correct for a recipient
+      verification with use_sender or use_postmaster set, because in that case
+      the callout does not use MAIL FROM:<>. Exim now distinguishes the special
+      case of MAIL FROM:<> rejection from other early rejections (e.g.
+      rejection of HELO). When verifying a recipient using a non-null MAIL
+      address, the cache is ignored if it shows MAIL FROM:<> rejection.
+      Whatever the result of the callout, the value of the domain cache is
+      left unchanged (for any other kind of callout, getting as far as trying
+      RCPT means that the domain itself is ok).
 
 
 Exim version 4.63

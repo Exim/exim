@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dbstuff.h,v 1.4 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dbstuff.h,v 1.5 2006/09/05 13:24:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -564,9 +564,11 @@ performed on them. There are two groups of records:
 2. keyed by domain -
      Domain response upto MAIL FROM:<>, postmaster, random local part;
 
-If a record exists, the result field is either ccache_accept or ccache_reject.
-The other fields, however, (which are only relevant to domain records) may also
-contain ccache_unknown if that particular test has not been done.
+If a record exists, the result field is either ccache_accept or ccache_reject,
+or, for a domain record only, ccache_reject_mfnull when MAIL FROM:<> was
+rejected. The other fields, however, (which are only relevant to domain
+records) may also contain ccache_unknown if that particular test has not been
+done.
 
 Originally, there was only one structure, used for both types. However, it got
 expanded for domain records, so it got split. To make it possible for Exim to
