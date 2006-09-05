@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.15 2006/02/22 14:46:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.16 2006/09/05 14:14:32 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -680,13 +680,14 @@ ERROR_RETURN:
 /* Close the streams associated with the socket which will also close the
 socket fds in this process. We can't do anything if fclose() fails, but
 logging brings it to someone's attention. However, "connection reset by peer"
-isn't really a problem, so skip that one. If the streams don't exist, something
-went wrong while setting things up. Make sure the socket descriptors are
-closed, in order to drop the connection. */
+isn't really a problem, so skip that one. On Solaris, a dropped connection can
+manifest itself as a broken pipe, so drop that one too. If the streams don't
+exist, something went wrong while setting things up. Make sure the socket
+descriptors are closed, in order to drop the connection. */
 
 if (smtp_out != NULL)
   {
-  if (fclose(smtp_out) != 0 && errno != ECONNRESET)
+  if (fclose(smtp_out) != 0 && errno != ECONNRESET && errno != EPIPE)
     log_write(0, LOG_MAIN|LOG_PANIC, "daemon: fclose(smtp_out) failed: %s",
       strerror(errno));
   smtp_out = NULL;
@@ -695,7 +696,7 @@ else (void)close(accept_socket);
 
 if (smtp_in != NULL)
   {
-  if (fclose(smtp_in) != 0 && errno != ECONNRESET)
+  if (fclose(smtp_in) != 0 && errno != ECONNRESET && errno != EPIPE)
     log_write(0, LOG_MAIN|LOG_PANIC, "daemon: fclose(smtp_in) failed: %s",
       strerror(errno));
   smtp_in = NULL;
