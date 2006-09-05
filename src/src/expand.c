@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.58 2006/04/18 11:13:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.59 2006/09/05 14:05:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3662,7 +3662,7 @@ while (*s != 0)
         {
         /* Handle an IP (internet) domain */
 
-        if (strncmp(sub_arg[0], "inet:", 5) == 0)
+        if (Ustrncmp(sub_arg[0], "inet:", 5) == 0)
           {
           BOOL connected = FALSE;
           int namelen, port;

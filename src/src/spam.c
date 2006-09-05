@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.12 2006/07/03 15:19:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.13 2006/09/05 14:05:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -48,7 +48,7 @@ int spam(uschar **listptr) {
 #endif
 
   /* stop compiler warning */
-  result = result;
+  result = 0;
 
   /* find the username from the option list */
   if ((user_name = string_nextinlist(&list, &sep,

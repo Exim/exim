@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.62 2006/06/28 16:00:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.63 2006/09/05 14:05:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2363,7 +2363,7 @@ acl_check_condition(int verb, acl_condition_block *cb, int where,
 {
 uschar *user_message = NULL;
 uschar *log_message = NULL;
-uschar *p;
+uschar *p = NULL;
 int rc = OK;
 #ifdef WITH_CONTENT_SCAN
 int sep = '/';

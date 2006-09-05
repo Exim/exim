@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filter.c,v 1.12 2006/08/21 11:31:43 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/filter.c,v 1.13 2006/09/05 14:05:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1433,7 +1433,7 @@ Returns:         TRUE if the condition is met
 static BOOL
 test_condition(condition_block *c, BOOL toplevel)
 {
-BOOL yield;
+BOOL yield = FALSE;
 const pcre *re;
 uschar *exp[2], *p, *pp;
 const uschar *regcomp_error = NULL;

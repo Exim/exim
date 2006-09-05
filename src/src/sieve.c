@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.21 2006/04/25 10:44:57 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.22 2006/09/05 14:05:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2886,7 +2886,7 @@ while (*filter->pc)
             }
           else
             {
-            struct String qp;
+            struct String qp = { NULL, 0 };  /* Keep compiler happy (PH) */
 
             capacity = 0;
             start = reason.length;

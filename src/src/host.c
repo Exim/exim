@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.24 2006/04/04 11:18:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.25 2006/09/05 14:05:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1936,7 +1936,7 @@ for (i = 1; i <= times;
      i++)
   {
   BOOL ipv4_addr;
-  int error_num;
+  int error_num = 0;
   struct hostent *hostdata;
 
   #if HAVE_IPV6

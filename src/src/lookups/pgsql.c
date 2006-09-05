@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/pgsql.c,v 1.7 2006/07/14 14:42:57 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/pgsql.c,v 1.8 2006/09/05 14:05:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -128,7 +128,7 @@ Arguments:
   server       the server string; this is in dynamic memory and can be updated
   resultptr    where to store the result
   errmsg       where to point an error message
-  defer_break  TRUE if no more servers are to be tried after DEFER
+  defer_break  set TRUE if no more servers are to be tried after DEFER
   do_cache     set FALSE if data is changed
 
 Returns:       OK, FAIL, or DEFER
@@ -265,7 +265,6 @@ if (cn == NULL)
     *errmsg = string_sprintf("PGSQL connection failed: %s",
       PQerrorMessage(pg_conn));
     PQfinish(pg_conn);
-    *defer_break = FALSE;
     goto PGSQL_EXIT;
     }
 
@@ -328,7 +327,6 @@ else
     *errmsg = string_sprintf("PGSQL: query failed: %s (%s) (%s)\n",
                              PQresultErrorMessage(pg_result),
                              PQresStatus(PQresultStatus(pg_result)), query);
-    *defer_break = FALSE;
     goto PGSQL_EXIT;
     }
 
@@ -429,7 +427,7 @@ DEBUG(D_lookup) debug_printf("PGSQL query: %s\n", query);
 while ((server = string_nextinlist(&list, &sep, buffer, sizeof(buffer)))
         != NULL)
   {
-  BOOL defer_break;
+  BOOL defer_break = FALSE;
   int rc = perform_pgsql_search(query, server, result, errmsg, &defer_break,
     do_cache);
   if (rc != DEFER || defer_break) return rc;

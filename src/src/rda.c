@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/rda.c,v 1.12 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/rda.c,v 1.13 2006/09/05 14:05:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -352,7 +352,7 @@ uschar *data;
 
 if (rdata->isfile)
   {
-  int yield;
+  int yield = 0;
   data = rda_get_file_contents(rdata, options, error, &yield);
   if (data == NULL) return yield;
   }

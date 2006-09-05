@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/pwcheck.c,v 1.2 2005/06/27 14:29:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/pwcheck.c,v 1.3 2006/09/05 14:05:43 ph10 Exp $ */
 
 /* SASL server API implementation
  * Rob Siemborski
@@ -183,7 +183,7 @@ int saslauthd_verify_password(const uschar *userid,
                 const uschar *realm,
                 const uschar **reply)
 {
-    uschar *daemon_reply;
+    uschar *daemon_reply = NULL;
     int s, r;
     struct sockaddr_un srvaddr;
 
