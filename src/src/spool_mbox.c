@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.11 2006/02/22 14:46:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.12 2006/09/12 10:35:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -28,110 +28,91 @@ uschar spooled_message_id[17];
 /* returns a pointer to the FILE, and puts the size in bytes into mbox_file_size */
 
 FILE *spool_mbox(unsigned long *mbox_file_size) {
-  uschar mbox_path[1024];
   uschar message_subdir[2];
-  uschar data_buffer[65535];
-  FILE *mbox_file;
+  uschar buffer[16384];
+  uschar *temp_string;
+  uschar *mbox_path;
+  FILE *mbox_file = NULL;
   FILE *data_file = NULL;
+  FILE *yield = NULL;
   header_line *my_headerlist;
   struct stat statbuf;
-  int i,j;
-  uschar *mbox_delimiter;
-  uschar *envelope_from;
-  uschar *envelope_to;
+  int i, j;
+  void *reset_point = store_get(0);
 
+  mbox_path = string_sprintf("%s/scan/%s/%s.eml", spool_directory, message_id,
+    message_id);
+
+  /* Skip creation if already spooled out as mbox file */
   if (!spool_mbox_ok) {
-    /* create scan directory, if not present */
-    if (!directory_make(spool_directory, US "scan", 0750, FALSE)) {
-      debug_printf("unable to create directory: %s/scan\n", spool_directory);
-      return NULL;
-    };
-
-    /* create temp directory inside scan dir */
-    (void)string_format(mbox_path, 1024, "%s/scan/%s", spool_directory, message_id);
-    if (!directory_make(NULL, mbox_path, 0750, FALSE)) {
-      debug_printf("unable to create directory: %s/scan/%s\n", spool_directory, message_id);
-      return NULL;
+    /* create temp directory inside scan dir, directory_make works recursively */
+    temp_string = string_sprintf("scan/%s", message_id);
+    if (!directory_make(spool_directory, temp_string, 0750, FALSE)) {
+      log_write(0, LOG_MAIN|LOG_PANIC, "%s", string_open_failed(errno,
+        "scan directory %s/scan/%s", spool_directory, temp_string));
+      goto OUT;
     };
 
     /* open [message_id].eml file for writing */
-    (void)string_format(mbox_path, 1024, "%s/scan/%s/%s.eml", spool_directory, message_id, message_id);
-    mbox_file = modefopen(mbox_path,"wb",SPOOL_MODE);
-
+    mbox_file = modefopen(mbox_path, "wb", SPOOL_MODE);
     if (mbox_file == NULL) {
-      debug_printf("unable to open file for writing: %s\n", mbox_path);
-      return NULL;
+      log_write(0, LOG_MAIN|LOG_PANIC, "%s", string_open_failed(errno,
+        "scan file %s", mbox_file));
+      goto OUT;
     };
 
-    /* Generate mailbox delimiter */
-    mbox_delimiter = expand_string(US"From ${sender_address} ${tod_bsdinbox}\n");
-    if (mbox_delimiter != NULL) {
-      if (mbox_delimiter[0] != 0) {
-        i = fwrite(mbox_delimiter, 1, Ustrlen(mbox_delimiter), mbox_file);
-        if (i != Ustrlen(mbox_delimiter)) {
-          debug_printf("error/short write on writing in: %s", mbox_path);
-          (void)fclose(mbox_file);
-          return NULL;
-        };
-      };
-    };
-    /* Generate X-Envelope-From header */
-    envelope_from = expand_string(US"${sender_address}");
-    if (envelope_from != NULL) {
-      if (envelope_from[0] != 0) {
-        uschar *my_envelope_from;
-        my_envelope_from = string_sprintf("X-Envelope-From: <%s>\n", envelope_from);
-        i = fwrite(my_envelope_from, 1, Ustrlen(my_envelope_from), mbox_file);
-        if (i != Ustrlen(my_envelope_from)) {
-          debug_printf("error/short write on writing in: %s", mbox_path);
-          (void)fclose(mbox_file);
-          return NULL;
-        };
-      };
-    };
-    /* Generate X-Envelope-To header */
-    envelope_to = expand_string(US"${if def:received_for{$received_for}}");
-    if (envelope_to != NULL) {
-      if (envelope_to[0] != 0) {
-        uschar *my_envelope_to;
-        my_envelope_to = string_sprintf("X-Envelope-To: <%s>\n", envelope_to);
-        i = fwrite(my_envelope_to, 1, Ustrlen(my_envelope_to), mbox_file);
-        if (i != Ustrlen(my_envelope_to)) {
-          debug_printf("error/short write on writing in: %s", mbox_path);
-          (void)fclose(mbox_file);
-          return NULL;
-        };
+    /* Generate mailbox headers. The $received_for variable is (up to at least
+    Exim 4.64) never set here, because it is only set when expanding the
+    contents of the Received: header line. However, the code below will use it
+    if it should become available in future. */
+
+    temp_string = expand_string(
+      US"From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n"
+      "${if def:sender_address{X-Envelope-From: <${sender_address}>\n}}"
+      "${if def:received_for{X-Envelope-To: <${received_for}>\n}}");
+
+    if (temp_string != NULL) {
+      i = fwrite(temp_string, Ustrlen(temp_string), 1, mbox_file);
+      if (i != 1) {
+        log_write(0, LOG_MAIN|LOG_PANIC, "Error/short write while writing \
+            mailbox headers to %s", mbox_path);
+        goto OUT;
       };
     };
 
     /* write all header lines to mbox file */
     my_headerlist = header_list;
-    while (my_headerlist != NULL) {
-
+    for (my_headerlist = header_list; my_headerlist != NULL;
+      my_headerlist = my_headerlist->next)
+    {
       /* skip deleted headers */
-      if (my_headerlist->type == '*') {
-        my_headerlist = my_headerlist->next;
-        continue;
-      };
+      if (my_headerlist->type == '*') continue;
 
-      i = fwrite(my_headerlist->text, 1, my_headerlist->slen, mbox_file);
-      if (i != my_headerlist->slen) {
-        debug_printf("error/short write on writing in: %s", mbox_path);
-        (void)fclose(mbox_file);
-        return NULL;
+      i = fwrite(my_headerlist->text, my_headerlist->slen, 1, mbox_file);
+      if (i != 1) {
+        log_write(0, LOG_MAIN|LOG_PANIC, "Error/short write while writing \
+            message headers to %s", mbox_path);
+        goto OUT;
       };
-
-      my_headerlist = my_headerlist->next;
     };
+
+    /* End headers */
+    (void)fwrite("\n", 1, 1, mbox_file);
 
     /* copy body file */
     message_subdir[1] = '\0';
     for (i = 0; i < 2; i++) {
       message_subdir[0] = (split_spool_directory == (i == 0))? message_id[5] : 0;
-      sprintf(CS mbox_path, "%s/input/%s/%s-D", spool_directory, message_subdir, message_id);
-      data_file = Ufopen(mbox_path,"rb");
-      if (data_file != NULL)
-        break;
+      temp_string = string_sprintf("%s/input/%s/%s-D", spool_directory,
+        message_subdir, message_id);
+      data_file = Ufopen(temp_string, "rb");
+      if (data_file != NULL) break;
+    };
+
+    if (data_file == NULL) {
+      log_write(0, LOG_MAIN|LOG_PANIC, "Could not open datafile for message %s",
+        message_id);
+      goto OUT;
     };
 
     /* The code used to use this line, but it doesn't work in Cygwin.
@@ -144,39 +125,40 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
      * explicitly, because the one in the file is parted of the locked area.
      */
 
-    (void)fwrite("\n", 1, 1, mbox_file);
     (void)fseek(data_file, SPOOL_DATA_START_OFFSET, SEEK_SET);
 
     do {
-      j = fread(data_buffer, 1, sizeof(data_buffer), data_file);
+      j = fread(buffer, 1, sizeof(buffer), data_file);
 
       if (j > 0) {
-        i = fwrite(data_buffer, 1, j, mbox_file);
-        if (i != j) {
-          debug_printf("error/short write on writing in: %s", mbox_path);
-          (void)fclose(mbox_file);
-          (void)fclose(data_file);
-          return NULL;
+        i = fwrite(buffer, j, 1, mbox_file);
+        if (i != 1) {
+          log_write(0, LOG_MAIN|LOG_PANIC, "Error/short write while writing \
+              message body to %s", mbox_path);
+          goto OUT;
         };
       };
     } while (j > 0);
 
-    (void)fclose(data_file);
-    (void)fclose(mbox_file);
     Ustrcpy(spooled_message_id, message_id);
     spool_mbox_ok = 1;
   };
 
-  (void)string_format(mbox_path, 1024, "%s/scan/%s/%s.eml", spool_directory, message_id, message_id);
+  /* get the size of the mbox message and open [message_id].eml file for reading*/
+  if (Ustat(mbox_path, &statbuf) != 0 ||
+      (yield = Ufopen(mbox_path,"rb")) == NULL) {
+    log_write(0, LOG_MAIN|LOG_PANIC, "%s", string_open_failed(errno,
+      "scan file %s", mbox_file));
+    goto OUT;
+  };
 
-  /* get the size of the mbox message */
-  stat(CS mbox_path, &statbuf);
   *mbox_file_size = statbuf.st_size;
 
-  /* open [message_id].eml file for reading */
-  mbox_file = Ufopen(mbox_path,"rb");
-
-  return mbox_file;
+  OUT:
+  if (data_file) (void)fclose(data_file);
+  if (mbox_file) (void)fclose(mbox_file);
+  store_reset(reset_point);
+  return yield;
 }
 
 /* remove mbox spool file, demimed files and temp directory */
@@ -193,38 +175,33 @@ void unspool_mbox(void) {
   spam_ok = 0;
   malware_ok = 0;
 
-  if (spool_mbox_ok) {
+  if (spool_mbox_ok && !no_mbox_unspool) {
+    uschar *mbox_path;
+    uschar *file_path;
+    int n;
+    struct dirent *entry;
+    DIR *tempdir;
 
-    spool_mbox_ok = 0;
+    mbox_path = string_sprintf("%s/scan/%s", spool_directory, spooled_message_id);
 
-    if (!no_mbox_unspool) {
-      uschar mbox_path[1024];
-      uschar file_path[1024];
-      int n;
-      struct dirent *entry;
-      DIR *tempdir;
+    tempdir = opendir(CS mbox_path);
+    /* loop thru dir & delete entries */
+    while((entry = readdir(tempdir)) != NULL) {
+      uschar *name = US entry->d_name;
+      if (Ustrcmp(name, US".") == 0 || Ustrcmp(name, US"..") == 0) continue;
 
-      (void)string_format(mbox_path, 1024, "%s/scan/%s", spool_directory, spooled_message_id);
-
-  tempdir = opendir(CS mbox_path);
-  /* loop thru dir & delete entries */
-  n = 0;
-  do {
-    entry = readdir(tempdir);
-    if (entry == NULL) break;
-    (void)string_format(file_path, 1024,"%s/scan/%s/%s", spool_directory, spooled_message_id, entry->d_name);
-    if ( (Ustrcmp(entry->d_name,"..") != 0) && (Ustrcmp(entry->d_name,".") != 0) ) {
+      file_path = string_sprintf("%s/%s", mbox_path, name);
       debug_printf("unspool_mbox(): unlinking '%s'\n", file_path);
-              n = unlink(CS file_path);
-            };
-  } while (n > -1);
-
-  closedir(tempdir);
-
-  /* remove directory */
-  n = rmdir(CS mbox_path);
+      n = unlink(CS file_path);
     };
+
+    closedir(tempdir);
+
+    /* remove directory */
+    rmdir(CS mbox_path);
+    store_reset(mbox_path);
   };
+  spool_mbox_ok = 0;
 }
 
 #endif

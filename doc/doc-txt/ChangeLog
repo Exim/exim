@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.389 2006/09/05 15:34:40 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.390 2006/09/12 10:35:56 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -33,6 +33,8 @@ PH/03 On Solaris, an unexpectedly close socket (dropped connection) can
 
 PH/04 Applied Nico Erfurth's refactoring patch to tidy up mime.c
       (quoted-printable decoding).
+
+PH/05 Applied Nico Efrurth's refactoring patch to tidy up spool_mbox.c.
 
 
 Exim version 4.63
