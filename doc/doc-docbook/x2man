@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/doc/doc-docbook/x2man,v 1.4 2006/07/31 13:19:36 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/x2man,v 1.5 2006/09/12 10:15:11 ph10 Exp $
 
 # Script to find the command line options in the DocBook source of the Exim
 # spec, and turn them into a man page, because people like that.
@@ -44,12 +44,12 @@ source, hopefully without too much mangling.
 .SH DEFAULT ACTION
 .rs
 .sp
-If none of the options that specifies a specific action (such as starting the
-daemon or a queue runner, or testing an address, or receiving a message in a
-specific format, or listing the queue) are present, and there is at least one
-argument on the command line, \\fB-bm\\fR (accept a local message on the
-standard input, with the arguments specifying the recipients) is assumed.
-Otherwise, Exim outputs a brief message about itself and exits.
+If no options are present that require a specific action (such as starting the
+daemon or a queue runner, testing an address, receiving a message in a specific
+format, or listing the queue), and there is at least one command line argument,
+then \fB-bm\fR (accept a local message on the standard input, with the
+arguments specifying the recipients) is assumed. Otherwise, Exim outputs a
+brief message about itself and exits.
 
 .SH SETTING OPTIONS BY PROGRAM NAME
 .rs
