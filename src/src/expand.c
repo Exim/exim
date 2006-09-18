@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.59 2006/09/05 14:05:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.60 2006/09/18 14:49:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1893,25 +1893,8 @@ switch(cond_type)
 
     if (!isalpha(name[0]))
       {
-      uschar *endptr;
-      num[i] = (int)Ustrtol((const uschar *)sub[i], &endptr, 10);
-      if (tolower(*endptr) == 'k')
-        {
-        num[i] *= 1024;
-        endptr++;
-        }
-      else if (tolower(*endptr) == 'm')
-        {
-        num[i] *= 1024*1024;
-        endptr++;
-        }
-      while (isspace(*endptr)) endptr++;
-      if (*endptr != 0)
-        {
-        expand_string_message = string_sprintf("\"%s\" is not a number",
-          sub[i]);
-        return NULL;
-        }
+      num[i] = expand_string_integer(sub[i], FALSE);
+      if (expand_string_message != NULL) return NULL;
       }
     }
 
@@ -5260,21 +5243,25 @@ return yield;
 
 /* Expand a string, and convert the result into an integer.
 
-Argument: the string to be expanded
+Arguments:
+  string  the string to be expanded
+  isplus  TRUE if a non-negative number is expected
 
 Returns:  the integer value, or
           -1 for an expansion error               ) in both cases, message in
           -2 for an integer interpretation error  ) expand_string_message
-
+          expand_string_message is set NULL for an OK integer
 */
 
 int
-expand_string_integer(uschar *string)
+expand_string_integer(uschar *string, BOOL isplus)
 {
 long int value;
 uschar *s = expand_string(string);
 uschar *msg = US"invalid integer \"%s\"";
 uschar *endptr;
+
+/* If expansion failed, expand_string_message will be set. */
 
 if (s == NULL) return -1;
 
@@ -5283,11 +5270,16 @@ to ERANGE. When there isn't an overflow, errno is not changed, at least on some
 systems, so we set it zero ourselves. */
 
 errno = 0;
+expand_string_message = NULL;               /* Indicates no error */
 value = strtol(CS s, CSS &endptr, 0);
 
 if (endptr == s)
   {
   msg = US"integer expected but \"%s\" found";
+  }
+else if (value < 0 && isplus)
+  {
+  msg = US"non-negative integer expected but \"%s\" found";
   }
 else
   {

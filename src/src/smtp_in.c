@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.41 2006/07/27 11:29:32 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.42 2006/09/18 14:49:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1211,8 +1211,8 @@ smtp_had_eof = smtp_had_error = 0;
 
 /* Set up the message size limit; this may be host-specific */
 
-thismessage_size_limit = expand_string_integer(message_size_limit);
-if (thismessage_size_limit < 0)
+thismessage_size_limit = expand_string_integer(message_size_limit, TRUE);
+if (expand_string_message != NULL)
   {
   if (thismessage_size_limit == -1)
     log_write(0, LOG_MAIN|LOG_PANIC, "unable to expand message_size_limit: "

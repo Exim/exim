@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.391 2006/09/18 11:06:20 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.392 2006/09/18 14:49:23 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -37,6 +37,10 @@ PH/04 Applied Nico Erfurth's refactoring patch to tidy up mime.c
 PH/05 Applied Nico Efrurth's refactoring patch to tidy up spool_mbox.c.
 
 PH/06 Installed the latest Cygwin Makefile from the Cygwin maintainer.
+
+PH/07 There was no check for overflow in expansions such as ${if >{1}{4096M}}.
+
+PH/08 An error is now given if message_size_limit is specified negative.
 
 
 Exim version 4.63

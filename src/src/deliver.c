@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.35 2006/07/04 09:07:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.36 2006/09/18 14:49:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1433,10 +1433,10 @@ int rc = OK;
 int size_limit;
 
 deliver_set_expansions(addr);
-size_limit = expand_string_integer(tp->message_size_limit);
+size_limit = expand_string_integer(tp->message_size_limit, TRUE);
 deliver_set_expansions(NULL);
 
-if (size_limit < 0)
+if (expand_string_message != NULL)
   {
   rc = DEFER;
   if (size_limit == -1)

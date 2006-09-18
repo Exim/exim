@@ -168,6 +168,11 @@
 > md5:    NO
 > mask:   NO
 > 
+> # Numeric overflow
+> 
+> Failed: absolute value of integer "4096M" is too large (overflow)
+> Failed: absolute value of integer "4096000000" is too large (overflow)
+> 
 > # Conditions
 > 
 > 2=2:    y
@@ -181,6 +186,7 @@
 > 2>3:    n
 > 3>3:    n
 > 4>3:    y
+> 1>-1:   y
 > 2>=3:   n
 > 3>=3:   y
 > 4>=3:   y
@@ -191,11 +197,12 @@
 > 3<=3:   y
 > 4<=3:   n
 > 5<=3:   n
+> -3<=1:  y
 > 
 > 5>3k:   n
 > 5>3m:   n
-> Failed: "3z " is not a number
-> Failed: "a" is not a number
+> Failed: invalid integer "3z "
+> Failed: integer expected but "a" found
 > 
 > def:y   y
 > def:n   n
