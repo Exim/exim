@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-CYGWIN,v 1.4 2005/08/02 09:09:27 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-CYGWIN,v 1.5 2006/09/18 11:06:20 ph10 Exp $
 
 # OS-specific file for Cygwin.
 
@@ -78,7 +78,7 @@ LOOKUP_PASSWD=yes
 # LOOKUP_WHOSON=yes
 
 LDAP_LIB_TYPE=OPENLDAP2
-LIBS_EXIM +=-lldap
+LOOKUP_LIBS=-lldap -llber
 
 # WITH_OLD_DEMIME=yes
 WITH_CONTENT_SCAN=yes
