@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.61 2006/09/19 11:28:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.62 2006/09/19 14:31:07 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1236,15 +1236,16 @@ int last = var_table_size;
 /* Handle ACL variables, whose names are of the form acl_cxxx or acl_mxxx.
 Originally, xxx had to be a number in the range 0-9 (later 0-19), but from
 release 4.64 onwards arbitrary names are permitted, as long as the first 5
-characters are acl_c or acl_m (this gave backwards compatibility at the
-changeover). There may be built-in variables whose names start acl_ but they
-should never start acl_c or acl_m. This slightly messy specification is a
-consequence of the history, needless to say.
+characters are acl_c or acl_m and the sixth is either a digit or an underscore
+(this gave backwards compatibility at the changeover). There may be built-in
+variables whose names start acl_ but they should never start in this way. This
+slightly messy specification is a consequence of the history, needless to say.
 
 If an ACL variable does not exist, treat it as empty, unless strict_acl_vars is
 set, in which case give an error. */
 
-if (Ustrncmp(name, "acl_c", 5) == 0 || Ustrncmp(name, "acl_m", 5) == 0)
+if ((Ustrncmp(name, "acl_c", 5) == 0 || Ustrncmp(name, "acl_m", 5) == 0) &&
+     !isalpha(name[5]))
   {
   tree_node *node =
     tree_search((name[4] == 'c')? acl_var_c : acl_var_m, name + 4);
@@ -1566,6 +1567,33 @@ return 0;
 
 
 /*************************************************
+*     Elaborate message for bad variable         *
+*************************************************/
+
+/* For the "unknown variable" message, take a look at the variable's name, and
+give additional information about possible ACL variables. The extra information
+is added on to expand_string_message.
+
+Argument:   the name of the variable
+Returns:    nothing
+*/
+
+static void
+check_variable_error_message(uschar *name)
+{
+if (Ustrncmp(name, "acl_", 4) == 0)
+  expand_string_message = string_sprintf("%s (%s)", expand_string_message,
+    (name[4] == 'c' || name[4] == 'm')?
+      (isalpha(name[5])?
+        US"6th character of a user-defined ACL variable must be a digit or underscore" :
+        US"strict_acl_vars is set"    /* Syntax is OK, it has to be this */
+      ) :
+      US"user-defined ACL variables must start acl_c or acl_m");
+}
+
+
+
+/*************************************************
 *        Read and evaluate a condition           *
 *************************************************/
 
@@ -1671,13 +1699,7 @@ switch(cond_type)
       expand_string_message = (name[0] == 0)?
         string_sprintf("variable name omitted after \"def:\"") :
         string_sprintf("unknown variable \"%s\" after \"def:\"", name);
-
-      if (strict_acl_vars &&
-          Ustrncmp(name, "acl_", 4) == 0 &&
-          (name[4] == 'c' || name[4] == 'm'))
-        expand_string_message = string_sprintf("%s (strict_acl_vars is set)",
-          expand_string_message);
-
+      check_variable_error_message(name);
       return NULL;
       }
     if (yield != NULL) *yield = (value[0] != 0) == testfor;
@@ -2956,13 +2978,7 @@ while (*s != 0)
         {
         expand_string_message =
           string_sprintf("unknown variable name \"%s\"", name);
-
-        if (strict_acl_vars &&
-            Ustrncmp(name, "acl_", 4) == 0 &&
-            (name[4] == 'c' || name[4] == 'm'))
-          expand_string_message = string_sprintf("%s (strict_acl_vars is set)",
-            expand_string_message);
-
+          check_variable_error_message(name);
         goto EXPAND_FAILED;
         }
       }
@@ -5122,13 +5138,7 @@ while (*s != 0)
       {
       expand_string_message =
         string_sprintf("unknown variable in \"${%s}\"", name);
-
-      if (strict_acl_vars &&
-          Ustrncmp(name, "acl_", 4) == 0 &&
-          (name[4] == 'c' || name[4] == 'm'))
-        expand_string_message = string_sprintf("%s (strict_acl_vars is set)",
-          expand_string_message);
-
+      check_variable_error_message(name);
       goto EXPAND_FAILED;
       }
     len = Ustrlen(value);

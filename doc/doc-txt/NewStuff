@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.109 2006/09/19 11:28:44 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.110 2006/09/19 14:31:06 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -13,22 +13,23 @@ Version 4.64
 ------------
 
 1. ACL variables can now be given arbitrary names, as long as they start with
-   "acl_c" or "acl_m" (for connection variables and message variables) and are
-   at least 6 characters long. However, only alphanumeric characters and
-   underscores are allowed. This is a compatible change because the old set of
+   "acl_c" or "acl_m" (for connection variables and message variables), are
+   at least six characters long, with the sixth character being either a digit
+   or an underscore. The rest of the name can contain alphanumeric characters
+   and underscores. This is a compatible change because the old set of
    variables such as acl_m12 are a subset of the allowed names. There may now
    be any number of ACL variables. For example:
 
-     set acl_c_foo = something
-     set acl_ccc   = thingsome
-     set acl_m13   = value for original ACL variable
-     set acl_m13b  = whatever
+     set acl_c13   = value for original ACL variable
+     set acl_c13b  = whatever
+     set acl_m_foo = something
 
-   What happens if an undefined ACL variable is referenced depends on the
-   setting of the strict_acl_vars option. If it is false (the default), an
-   empty string is substituted; if it is true, an error is generated. This
-   affects all ACL variables, including the "old" ones such as acl_c4.
-   (Previously there wasn't the concept of an undefined ACL variable.)
+   What happens if a syntactically valid but undefined ACL variable is
+   referenced depends on the setting of the strict_acl_vars option. If it is
+   false (the default), an empty string is substituted; if it is true, an error
+   is generated. This affects all ACL variables, including the "old" ones such
+   as acl_c4. (Previously there wasn't the concept of an undefined ACL
+   variable.)
 
    The implementation has been done in such a way that spool files containing
    ACL variable settings written by previous releases of Exim are compatible

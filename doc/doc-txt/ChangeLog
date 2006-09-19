@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.393 2006/09/19 11:28:44 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.394 2006/09/19 14:31:06 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -43,7 +43,7 @@ PH/07 There was no check for overflow in expansions such as ${if >{1}{4096M}}.
 PH/08 An error is now given if message_size_limit is specified negative.
 
 PH/09 Applied and tidied up Jakob Hirsch's patch for allowing ACL variables
-      to be given arbitrary names.
+      to be given (somewhat) arbitrary names.
 
 
 Exim version 4.63

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.64 2006/09/19 11:28:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.65 2006/09/19 14:31:06 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -808,8 +808,10 @@ while ((s = (*func)()) != NULL)
   gives us a variable name to insert into the data block. The original ACL
   variable names were acl_c0 ... acl_c9 and acl_m0 ... acl_m9. This was
   extended to 20 of each type, but after that people successfully argued for
-  arbitrary names. For compatibility, however, the names must still start with
-  acl_c or acl_m. After that, we allow alphanumerics and underscores. */
+  arbitrary names. In the new scheme, the names must start with acl_c or acl_m.
+  After that, we allow alphanumerics and underscores, but the first character
+  after c or m must be a digit or an underscore. This retains backwards
+  compatibility. */
 
   if (c == ACLC_SET)
     {
@@ -824,6 +826,14 @@ while ((s = (*func)()) != NULL)
       }
 
     endptr = s + 5;
+    if (!isdigit(*endptr) && *endptr != '_')
+      {
+      *error = string_sprintf("invalid variable name after \"set\" in ACL "
+        "modifier \"set %s\" (digit or underscore must follow acl_c or acl_m)",
+        s);
+      return NULL;
+      }
+
     while (*endptr != 0 && *endptr != '=' && !isspace(*endptr))
       {
       if (!isalnum(*endptr) && *endptr != '_')
@@ -833,13 +843,6 @@ while ((s = (*func)()) != NULL)
         return NULL;
         }
       endptr++;
-      }
-
-    if (endptr - s < 6)
-      {
-      *error = string_sprintf("invalid variable name after \"set\" in ACL "
-        "modifier \"set %s\" (must be at least 6 characters)", s);
-      return NULL;
       }
 
     cond->u.varname = string_copyn(s + 4, endptr - s - 4);
