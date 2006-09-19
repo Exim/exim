@@ -1,5 +1,5 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.12 2006/07/21 16:48:43 jetmore Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.13 2006/09/19 20:01:13 jetmore Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
@@ -12,7 +12,7 @@ use strict;
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
-my $p_version = "20060721.2";
+my $p_version = "20060919.0";
 my $p_usage   = "Usage: $p_name [--help|--version] (see --help for details)";
 my $p_cp      = <<EOM;
         Copyright (c) 2003-2006 John Jetmore <jj33\@pobox.com>
@@ -37,7 +37,7 @@ $| = 1; # unbuffer STDOUT
 
 Getopt::Long::Configure("bundling_override");
 GetOptions(
-  'spool:s'     => \$G::spool,      # exim spool dir
+  'spool=s'     => \$G::spool,      # exim spool dir
   'bp'          => \$G::mailq_bp,   # List the queue (noop - default)
   'bpa'         => \$G::mailq_bpa,  # ... with generated address as well
   'bpc'         => \$G::mailq_bpc,  # ... but just show a count of messages
@@ -47,11 +47,11 @@ GetOptions(
   'bpu'         => \$G::mailq_bpu,  # ... only undelivered addresses
   'and'         => \$G::and,        # 'and' the criteria (default)
   'or'          => \$G::or,         # 'or' the criteria
-  'f:s'         => \$G::qgrep_f,    # from regexp
-  'r:s'         => \$G::qgrep_r,    # recipient regexp
-  's:s'         => \$G::qgrep_s,    # match against size field
-  'y:s'         => \$G::qgrep_y,    # message younger than (secs)
-  'o:s'         => \$G::qgrep_o,    # message older than (secs)
+  'f=s'         => \$G::qgrep_f,    # from regexp
+  'r=s'         => \$G::qgrep_r,    # recipient regexp
+  's=s'         => \$G::qgrep_s,    # match against size field
+  'y=s'         => \$G::qgrep_y,    # message younger than (secs)
+  'o=s'         => \$G::qgrep_o,    # message older than (secs)
   'z'           => \$G::qgrep_z,    # frozen only
   'x'           => \$G::qgrep_x,    # non-frozen only
   'c'           => \$G::qgrep_c,    # display match count
@@ -61,15 +61,15 @@ GetOptions(
   'size'        => \$G::size_only,  # sum the size of the matching msgs
   'not'         => \$G::negate,     # flip every test
   'R|reverse'   => \$G::reverse,    # reverse output (-R is qgrep option)
-  'sort:s'      => \@G::sort,       # allow you to choose variables to sort by
-  'freeze:s'    => \$G::freeze,     # freeze data in this file
-  'thaw:s'      => \$G::thaw,       # thaw data from this file
+  'sort=s'      => \@G::sort,       # allow you to choose variables to sort by
+  'freeze=s'    => \$G::freeze,     # freeze data in this file
+  'thaw=s'      => \$G::thaw,       # thaw data from this file
   'unsorted'    => \$G::unsorted,   # unsorted, regardless of output format
   'random'      => \$G::random,     # (poorly) randomize evaluation order
   'flatq'       => \$G::flatq,      # brief format
   'caseful'     => \$G::caseful,    # in '=' criteria, respect case
   'caseless'    => \$G::caseless,   #   ...ignore case (default)
-  'show-vars:s' => \$G::show_vars,  # display the contents of these vars
+  'show-vars=s' => \$G::show_vars,  # display the contents of these vars
   'show-rules'  => \$G::show_rules, # display compiled match rules
   'show-tests'  => \$G::show_tests  # display tests as applied to each message
 ) || exit(1);
@@ -627,6 +627,19 @@ sub set_spool {
   $self->{_spool_dir} = shift;
 }
 
+sub get_matching_vars {
+  my $self = shift;
+  my $e    = shift;
+
+  if ($e =~ /^\^/) {
+    my @r = ();
+    foreach my $v (keys %{$self->{_vars}}) { push(@r, $v) if ($v =~ /$e/); }
+    return(@r);
+  } else {
+    return($e);
+  }
+}
+
 # accepts a variable with or without leading '$' or trailing ':'
 sub get_var {
   my $self = shift;
@@ -711,12 +724,14 @@ sub _parse_header {
         read(I, $self->{_vars}{$t}, $2+1) || return(0);
         chomp($self->{_vars}{$t});
       } elsif ($tag eq '-aclc') {
-        return(0) if ($arg !~ /^(\d+)\s(\d+)$/);
+        #return(0) if ($arg !~ /^(\d+)\s(\d+)$/);
+        return(0) if ($arg !~ /^(\S+)\s(\d+)$/);
         my $t = "acl_c$1";
         read(I, $self->{_vars}{$t}, $2+1) || return(0);
         chomp($self->{_vars}{$t});
       } elsif ($tag eq '-aclm') {
-        return(0) if ($arg !~ /^(\d+)\s(\d+)$/);
+        #return(0) if ($arg !~ /^(\d+)\s(\d+)$/);
+        return(0) if ($arg !~ /^(\S+)\s(\d+)$/);
         my $t = "acl_m$1";
         read(I, $self->{_vars}{$t}, $2+1) || return(0);
         chomp($self->{_vars}{$t});
@@ -935,9 +950,22 @@ sub format_message {
   my $o    = '';
   return if ($self->{_delivered});
 
+  # define any vars we want to print out for this message.  The requests
+  # can be regexps, and the defined vars can change for each message, so we
+  # have to build this list for each message
+  my @vars = ();
+  if (@{$self->{_show_vars}}) {
+    my %t = ();
+    foreach my $e (@{$self->{_show_vars}}) {
+      foreach my $v ($self->get_matching_vars($e)) {
+        next if ($t{$v}); $t{$v}++; push(@vars, $v);
+      }
+    }
+  }
+
   if ($self->{_output_idonly}) {
     $o .= $self->{_message};
-    foreach my $v (@{$self->{_show_vars}}) {
+    foreach my $v (@vars) {
       $o .= " $v='" . $self->get_var($v) . "'";
     }
     $o .= "\n";
@@ -952,9 +980,8 @@ sub format_message {
       else { $o .= sprintf "%2dh ", $i; }
     } else { $o .= sprintf "%2dm ", $i; }
 
-    if ($self->{_output_flatq} && $self->{_show_vars}) {
-        $o .= join(';', map { "$_='".$self->get_var($_)."'" }
-                        (@{$self->{_show_vars}})
+    if ($self->{_output_flatq} && @vars) {
+        $o .= join(';', map { "$_='".$self->get_var($_)."'" } (@vars)
                   );
     } else {
       $o .= sprintf "%5s", $self->{_vars}{shown_message_size};
@@ -973,7 +1000,7 @@ sub format_message {
     $o .= " *** frozen ***" if ($self->{_vars}{deliver_freeze});
     $o .= "\n";
 
-    foreach my $v (@{$self->{_show_vars}}) {
+    foreach my $v (@vars) {
       $o .= sprintf "  %25s = '%s'\n", $v, $self->get_var($v);
     }
 
@@ -994,10 +1021,8 @@ sub format_message {
       push(@r, $r);
     }
     $o .= " To: " . join(';', @r);
-    if ($self->{_show_vars} && scalar(@{$self->{_show_vars}})) {
-      $o .= " Vars: " . join(';', map { "$_='".$self->get_var($_)."'" }
-                                  (@{$self->{_show_vars}})
-                            );
+    if (scalar(@vars)) {
+      $o .= " Vars: ".join(';',map { "$_='".$self->get_var($_)."'" } (@vars));
     }
   } elsif ($self->{_output_flatq}) {
     $o .= " *** frozen ***" if ($self->{_vars}{deliver_freeze});
@@ -1098,6 +1123,10 @@ Display all messages received on the MSA port, ordered first by the sender's ema
 
 Display only messages whose every recipient is in the example.com domain, also listing the IP address of the sending host:
     exipick --show-vars sender_host_address \
+            '$each_recipients = example.com'
+
+Same as above, but show values for all defined variables starting with sender_ and the number of recipients:
+    exipick --show-vars ^sender_,recipients_count \
             '$each_recipients = example.com'
 
 =head1 OPTIONS
@@ -1218,7 +1247,7 @@ Show the result of each criterion on each message
 
 =item --show-vars <variable>[,<variable>...]
 
-Show the value for <variable> for each displayed message
+Show the value for <variable> for each displayed message.  <variable> will be a regular expression if it begins with a circumflex.
 
 =item --size
 

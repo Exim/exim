@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.394 2006/09/19 14:31:06 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.395 2006/09/19 20:01:13 jetmore Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -44,6 +44,12 @@ PH/08 An error is now given if message_size_limit is specified negative.
 
 PH/09 Applied and tidied up Jakob Hirsch's patch for allowing ACL variables
       to be given (somewhat) arbitrary names.
+
+JJ/01 exipick 20060919.0, allow for arbitrary acl_ variables introduced
+      in 4.64-PH/09.
+
+JJ/02 exipick 20060919.0, --show-vars args can now be regular expressions,
+      miscellaneous code fixes
 
 
 Exim version 4.63
