@@ -4,3 +4,4 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> H=host.name [1.2.3.4] U=CALLER P=smtp S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 => a <a@b> R=r1 T=t1
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= <> H=host2.name [4.3.2.1] U=CALLER P=smtp S=sss

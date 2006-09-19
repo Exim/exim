@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_out.c,v 1.10 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_out.c,v 1.11 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -190,21 +190,10 @@ if (sender_ident != NULL) fprintf(f, "-ident %s\n", sender_ident);
 if (received_protocol != NULL)
   fprintf(f, "-received_protocol %s\n", received_protocol);
 
-/* Preserve any ACL variables that are set. Because the values may contain
-newlines, we use an explicit length. */
+/* Preserve any ACL variables that are set. */
 
-for (i = 0; i < ACL_CVARS; i++)
-  {
-  if (acl_var[i] != NULL)
-    fprintf(f, "-aclc %d %d\n%s\n", i, Ustrlen(acl_var[i]), acl_var[i]);
-  }
-
-for (i = 0; i < ACL_MVARS; i++)
-  {
-  int j = i + ACL_CVARS;
-  if (acl_var[j] != NULL)
-    fprintf(f, "-aclm %d %d\n%s\n", i, Ustrlen(acl_var[j]), acl_var[j]);
-  }
+tree_walk(acl_var_c, &acl_var_write, f);
+tree_walk(acl_var_m, &acl_var_write, f);
 
 /* Now any other data that needs to be remembered. */
 

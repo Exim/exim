@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tree.c,v 1.3 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tree.c,v 1.4 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -339,6 +339,28 @@ while (p != NULL)
   p = (c < 0)? p->left : p->right;
   }
 return NULL;
+}
+
+
+
+/*************************************************
+*   Walk tree recursively and execute function   *
+*************************************************/
+
+/*
+Arguments:
+  p       root of the tree
+  f       function to execute for each name-value-pair
+  ctx     context data for f
+*/
+
+void
+tree_walk(tree_node *p, void (*f)(uschar*, uschar*, void*), void *ctx)
+{
+if (p == NULL) return;
+f(p->name, p->data.ptr, ctx);
+if (p->left != NULL) tree_walk(p->left, f, ctx);
+if (p->right != NULL) tree_walk(p->right, f, ctx);
 }
 
 

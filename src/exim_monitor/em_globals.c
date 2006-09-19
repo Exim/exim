@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.9 2006/02/07 11:18:59 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.10 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -117,9 +117,8 @@ that fires up the monitor fishes the value out by using -bP anyway. */
 #define SPOOL_DIRECTORY ""
 #endif
 
-
-uschar *acl_var[ACL_CVARS + ACL_MVARS];
-
+tree_node *acl_var_c           = NULL;
+tree_node *acl_var_m           = NULL;
 uschar *active_hostname        = NULL;
 BOOL    allow_unqualified_recipient = FALSE;
 BOOL    allow_unqualified_sender = FALSE;

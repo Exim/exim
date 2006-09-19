@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.42 2006/09/18 14:49:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.43 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -793,8 +793,6 @@ return TRUE;
 
 
 
-
-
 /*************************************************
 *         Reset for new message                  *
 *************************************************/
@@ -809,7 +807,6 @@ Returns:    nothing
 static void
 smtp_reset(void *reset_point)
 {
-int i;
 store_reset(reset_point);
 recipients_list = NULL;
 rcpt_count = rcpt_defer_count = rcpt_fail_count =
@@ -855,9 +852,9 @@ sender_rate = sender_rate_limit = sender_rate_period = NULL;
 ratelimiters_mail = NULL;           /* Updated by ratelimit ACL condition */
                    /* Note that ratelimiters_conn persists across resets. */
 
-/* The message variables follow the connection variables. */
+/* Reset message ACL variables */
 
-for (i = 0; i < ACL_MVARS; i++) acl_var[ACL_CVARS + i] = NULL;
+acl_var_m = NULL;
 
 /* The message body variables use malloc store. They may be set if this is
 not the first message in an SMTP session and the previous message caused them
@@ -1144,7 +1141,7 @@ BOOL
 smtp_start_session(void)
 {
 int size = 256;
-int i, ptr;
+int ptr;
 uschar *p, *s, *ss;
 
 /* Default values for certain variables */
@@ -1172,7 +1169,7 @@ tls_advertised = FALSE;
 
 /* Reset ACL connection variables */
 
-for (i = 0; i < ACL_CVARS; i++) acl_var[i] = NULL;
+acl_var_c = NULL;
 
 /* Allow for trailing 0 in the command buffer. */
 

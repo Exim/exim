@@ -1,52 +1,58 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.108 2006/07/31 14:19:31 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.109 2006/09/19 11:28:44 ph10 Exp $
 
 New Features in Exim
 --------------------
 
-This file contains descriptions of new features that have been added to Exim,
-but have not yet made it into the main manual (which is most conveniently
-updated when there is a relatively large batch of changes). The doc/ChangeLog
-file contains a listing of all changes, including bug fixes.
+This file contains descriptions of new features that have been added to Exim.
+Before a formal release, there may be quite a lot of detail so that people can
+test from the snapshots or the CVS before the documentation is updated. Once
+the documentation is updated, this file is reduced to a short list.
+
+
+Version 4.64
+------------
+
+1. ACL variables can now be given arbitrary names, as long as they start with
+   "acl_c" or "acl_m" (for connection variables and message variables) and are
+   at least 6 characters long. However, only alphanumeric characters and
+   underscores are allowed. This is a compatible change because the old set of
+   variables such as acl_m12 are a subset of the allowed names. There may now
+   be any number of ACL variables. For example:
+
+     set acl_c_foo = something
+     set acl_ccc   = thingsome
+     set acl_m13   = value for original ACL variable
+     set acl_m13b  = whatever
+
+   What happens if an undefined ACL variable is referenced depends on the
+   setting of the strict_acl_vars option. If it is false (the default), an
+   empty string is substituted; if it is true, an error is generated. This
+   affects all ACL variables, including the "old" ones such as acl_c4.
+   (Previously there wasn't the concept of an undefined ACL variable.)
+
+   The implementation has been done in such a way that spool files containing
+   ACL variable settings written by previous releases of Exim are compatible
+   and can be read by the new release. If only the original numeric names are
+   used, spool files written by the new release can be read by earlier
+   releases.
+
 
 Version 4.63
 ------------
 
 1. There is a new Boolean option called filter_prepend_home for the redirect
-   router. It defaults true, for backward compatibility. If a "save" command in
-   an Exim filter has a relative path for its argument, and $home is defined,
-   it is automatically prepended to the relative path. This action can now be
-   prevented by setting filter_prepend_home false.
+   router.
 
 2. There is a new acl, set by acl_not_smtp_start, which is run right at the
    start of receiving a non-SMTP message, before any of the message has been
-   read. (This is the analogue of the acl_smtp_predata ACL for SMTP input.) The
-   result of this ACL is ignored; it cannot be used to reject a message. If
-   you really need to, you could set a value in an ACL variable here and reject
-   based on that in the acl_not_smtp ACL. However, this ACL can be used to set
-   controls, and in particular, it can be used to set control=suppress_local_
-   fixups, which cannot be used in the acl_not_smtp ACL because by the time
-   that ACL is run, it is too late. When the acl_not_smtp_start ACL is run, the
-   sender and recipients are known, so the "senders" and "sender_domains"
-   conditions and $sender_address and $recipients variables can be used.
-   Variables such as $authenticated_ sender are also available. It is possible
-   to specify added header lines in this ACL.
+   read.
 
 3. When an SMTP error message is specified in a "message" modifier in an ACL,
    or in a :fail: or :defer: message in a redirect router, Exim now checks the
-   start of the message for an SMTP error code. This consists of three digits
-   followed by a space, optionally followed by an extended code of the form
-   n.n.n, also followed by a space. If this is the case and the very first
-   digit is the same as the default error code, the code from the message is
-   used instead. If the very first digit is incorrect, a panic error is logged,
-   and the default code is used. This is an incompatible change, but it is not
-   expected to affect many (if any) configurations. It is possible to suppress
-   the use of the supplied code in a redirect router by setting the
-   forbid_smtp_code option true. In this case, any SMTP code is quietly
-   ignored.
+   start of the message for an SMTP error code.
 
 4. There is a new parameter for LDAP lookups called "referrals", which takes
-   one of the settings "follow" (the default) or "nofollow". The latter stops
-   the LDAP library from trying to follow referrals issued by the LDAP server.
+   one of the settings "follow" (the default) or "nofollow".
 
 5. Version 20070721.2 of exipick now included, offering these new options:
     --reverse

@@ -1,5 +1,7 @@
 # Exim test configuration 0372
 
+STRICT=
+
 exim_path = EXIM_PATH
 host_lookup_order = bydns
 primary_hostname = myhost.test.ex
@@ -17,7 +19,7 @@ acl_smtp_connect = a2
 
 system_filter = DIR/aux-var/TESTNUM.F
 trusted_users = CALLER
-
+STRICT
 
 # ----- ACL -----
 
@@ -28,6 +30,8 @@ a1:
          set acl_m0  = value for m0 is local_part: $local_part
          set acl_m5  = value for m5 contains newline\nthere!
          set acl_m9  = value for m9 is domain: $domain
+         set acl_mfoo = value for mfoo is local_part: $local_part
+         set acl_mbar = value for mbar is domain: $domain
 
   accept local_parts = a
          set acl_m0  = value for m0 is local_part: $local_part
@@ -37,6 +41,8 @@ a2:
   accept set acl_c0  = value for c0 is ip: $sender_host_address
          set acl_c5  = c5 has a newline\nthere!
          set acl_c9  = value for c9 is name: $sender_host_name
+         set acl_c_foo = value for c_foo is ip: $sender_host_address
+         set acl_c_bar = value for c_bar is name: $sender_host_name
 
 
 # ----- Routers -----
@@ -51,7 +57,9 @@ r1:
                 acl_c9="$acl_c9"\nacl_m0="$acl_m0"\nacl_m1="$acl_m1"\n\
                 acl_m2="$acl_m2"\nacl_m3="$acl_m3"\nacl_m4="$acl_m4"\n\
                 acl_m5="$acl_m5"\nacl_m6="$acl_m6"\nacl_m7="$acl_m7"\n\
-                acl_m8="$acl_m8"\nacl_m9="$acl_m9"
+                acl_m8="$acl_m8"\nacl_m9="$acl_m9"\n\
+                acl_mfoo="$acl_mfoo"\nacl_mbar="$acl_mbar"\n\
+                acl_c_foo="$acl_c_foo"\nacl_c_bar="$acl_c_bar"
   transport = t1
 
 
@@ -63,6 +71,5 @@ t1:
   driver = appendfile
   file = /dev/null
   user = CALLER
-
 
 # End

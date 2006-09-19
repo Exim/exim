@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_queue.c,v 1.4 2006/02/14 14:26:15 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_queue.c,v 1.5 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *                 Exim Monitor                   *
@@ -122,6 +122,29 @@ while (dd != NULL)
 if (p->sender != NULL) store_free(p->sender);
 store_free(p);
 }
+
+
+/*************************************************
+*         Set up an ACL variable                 *
+*************************************************/
+
+/* The spool_read_header() function calls acl_var_create() when it reads in an
+ACL variable. We know that in this case, the variable will be new, not re-used,
+so this is a cut-down version, to save including the whole acl.c module (which
+would need conditional compilation to cut most of it out). */
+
+tree_node *
+acl_var_create(uschar *name)
+{
+tree_node *node, **root;
+root = (name[0] == 'c')? &acl_var_c : &acl_var_m;
+node = store_get(sizeof(tree_node) + Ustrlen(name));
+Ustrcpy(node->name, name);
+node->data.ptr = NULL;
+(void)tree_insertnode(root, node);
+return node;
+}
+
 
 
 /*************************************************

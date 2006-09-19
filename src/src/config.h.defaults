@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/config.h.defaults,v 1.10 2006/02/10 14:25:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/config.h.defaults,v 1.11 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -11,9 +11,6 @@
 any data just defines the existence of the variable; it won't get included
 in config.h unless some value is defined in Local/Makefile. If there is data,
 it's a default value. */
-
-#define ACL_CVARS                    20
-#define ACL_MVARS                    20
 
 #define ALT_CONFIG_PREFIX
 #define ALT_CONFIG_ROOT_ONLY

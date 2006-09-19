@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/structs.h,v 1.10 2006/02/21 16:24:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/structs.h,v 1.11 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -779,7 +779,7 @@ typedef struct acl_condition_block {
   int type;
   union {
     BOOL negated;
-    int varnumber;
+    uschar *varname;
   } u;
 } acl_condition_block;
 

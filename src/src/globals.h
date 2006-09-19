@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.39 2006/07/13 13:53:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.40 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -128,7 +128,8 @@ extern uschar *acl_smtp_rcpt;          /* ACL run for RCPT */
 extern uschar *acl_smtp_starttls;      /* ACL run for STARTTLS */
 extern uschar *acl_smtp_vrfy;          /* ACL run for VRFY */
 extern BOOL    acl_temp_details;       /* TRUE to give details for 4xx error */
-extern uschar *acl_var[ACL_CVARS+ACL_MVARS]; /* User ACL variables */
+extern tree_node *acl_var_c;           /* ACL connection variables */
+extern tree_node *acl_var_m;           /* ACL messsage variables */
 extern uschar *acl_verify_message;     /* User message for verify failure */
 extern string_item *acl_warn_logged;   /* Logged lines */
 extern uschar *acl_wherecodes[];       /* Response codes for ACL fails */
@@ -688,6 +689,7 @@ extern uschar *srs_status;             /* SRS staus */
 extern BOOL    srs_usehash;            /* SRS use hash flag */
 extern BOOL    srs_usetimestamp;       /* SRS use timestamp flag */
 #endif
+extern BOOL    strict_acl_vars;        /* ACL variables have to be set before being used */
 extern int     string_datestamp_offset;/* After insertion by string_format */
 extern BOOL    strip_excess_angle_brackets; /* Surrounding route-addrs */
 extern BOOL    strip_trailing_dot;     /* Remove dots at ends of domains */

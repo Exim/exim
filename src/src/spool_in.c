@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.15 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.16 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -236,8 +236,7 @@ uschar *p;
 one exception. DO NOT change the default value of dont_deliver, because it may
 be forced by an external setting. */
 
-for (n = 0; n < ACL_CVARS + ACL_MVARS; n++) acl_var[n] = NULL;
-
+acl_var_c = acl_var_m = NULL;
 authenticated_id = NULL;
 authenticated_sender = NULL;
 allow_unqualified_recipient = FALSE;
@@ -378,48 +377,52 @@ for (;;)
   if (big_buffer[0] != '-') break;
   big_buffer[Ustrlen(big_buffer) - 1] = 0;
 
-  /* For backward compatibility, we recognize "-acl", which was used before the
-  number of ACL variables changed. Its variable number is 0-9 for connection
-  variables, and 10-19 for message variables. */
+  /* For long-term backward compatibility, we recognize "-acl", which was used
+  before the number of ACL variables changed from 10 to 20. This was before the
+  subsequent change to an arbitrary number of named variables. This code is
+  retained so that upgrades from very old versions can still handle old-format
+  spool files. The value given after "-acl" is a number that is 0-9 for
+  connection variables, and 10-19 for message variables. */
 
   if (Ustrncmp(big_buffer, "-acl ", 5) == 0)
     {
     int index, count;
+    uschar name[4];
+    tree_node *node;
+
     if (sscanf(CS big_buffer + 5, "%d %d", &index, &count) != 2)
       goto SPOOL_FORMAT_ERROR;
-    acl_var[index] = store_get(count + 1);
-    if (fread(acl_var[index], 1, count+1, f) < count) goto SPOOL_READ_ERROR;
-    acl_var[index][count] = 0;
+
+    (void) string_format(name, 4, "%c%d", (index < 10 ? 'c' : 'm'), index);
+    node = acl_var_create(name);
+    node->data.ptr = store_get(count + 1);
+
+    if (fread(node->data.ptr, 1, count+1, f) < count) goto SPOOL_READ_ERROR;
+    ((uschar*)node->data.ptr)[count] = 0;
     }
 
   /* Nowadays we use "-aclc" and "-aclm" for the different types of ACL
-  variable, because Exim may be built with different numbers of them. */
+  variable, because Exim allows any number of them, with arbitrary names.
+  The line in the spool file is "-acl[cm] <name> <length>". The name excludes
+  the c or m. */
 
-  else if (Ustrncmp(big_buffer, "-aclc ", 6) == 0)
+  else if (Ustrncmp(big_buffer, "-aclc ", 6) == 0 ||
+           Ustrncmp(big_buffer, "-aclm ", 6) == 0)
     {
-    int index, count;
-    if (sscanf(CS big_buffer + 6, "%d %d", &index, &count) != 2)
-      goto SPOOL_FORMAT_ERROR;
-    if (index < ACL_CVARS)
-      {
-      acl_var[index] = store_get(count + 1);
-      if (fread(acl_var[index], 1, count+1, f) < count) goto SPOOL_READ_ERROR;
-      acl_var[index][count] = 0;
-      }
-    }
+    uschar *name, *endptr;
+    int count;
+    tree_node *node;
 
-  else if (Ustrncmp(big_buffer, "-aclm ", 6) == 0)
-    {
-    int index, count;
-    if (sscanf(CS big_buffer + 6, "%d %d", &index, &count) != 2)
-      goto SPOOL_FORMAT_ERROR;
-    if (index < ACL_MVARS)
-      {
-      index += ACL_CVARS;
-      acl_var[index] = store_get(count + 1);
-      if (fread(acl_var[index], 1, count+1, f) < count) goto SPOOL_READ_ERROR;
-      acl_var[index][count] = 0;
-      }
+    endptr = Ustrchr(big_buffer + 6, ' ');
+    if (endptr == NULL) goto SPOOL_FORMAT_ERROR;
+    name = string_sprintf("%c%.*s", big_buffer[4], endptr - big_buffer - 6,
+      big_buffer + 6);
+    if (sscanf(CS endptr, " %d", &count) != 1) goto SPOOL_FORMAT_ERROR;
+
+    node = acl_var_create(name);
+    node->data.ptr = store_get(count + 1);
+    if (fread(node->data.ptr, 1, count+1, f) < count) goto SPOOL_READ_ERROR;
+    ((uschar*)node->data.ptr)[count] = 0;
     }
 
   /* Other values */

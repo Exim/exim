@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.63 2006/09/05 14:05:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.64 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -805,36 +805,44 @@ while ((s = (*func)()) != NULL)
 
   /* The "set" modifier is different in that its argument is "name=value"
   rather than just a value, and we can check the validity of the name, which
-  gives us a variable number to insert into the data block. */
+  gives us a variable name to insert into the data block. The original ACL
+  variable names were acl_c0 ... acl_c9 and acl_m0 ... acl_m9. This was
+  extended to 20 of each type, but after that people successfully argued for
+  arbitrary names. For compatibility, however, the names must still start with
+  acl_c or acl_m. After that, we allow alphanumerics and underscores. */
 
   if (c == ACLC_SET)
     {
-    int offset, max, n;
     uschar *endptr;
 
-    if (Ustrncmp(s, "acl_", 4) != 0) goto BAD_ACL_VAR;
-    if (s[4] == 'c')
+    if (Ustrncmp(s, "acl_c", 5) != 0 &&
+        Ustrncmp(s, "acl_m", 5) != 0)
       {
-      offset = 0;
-      max = ACL_CVARS;
-      }
-    else if (s[4] == 'm')
-      {
-      offset = ACL_CVARS;
-      max = ACL_MVARS;
-      }
-    else goto BAD_ACL_VAR;
-
-    n = Ustrtoul(s + 5, &endptr, 10);
-    if ((*endptr != 0 && *endptr != '=' && !isspace(*endptr)) || n >= max)
-      {
-      BAD_ACL_VAR:
-      *error = string_sprintf("syntax error or unrecognized name after "
-        "\"set\" in ACL modifier \"set %s\"", s);
+      *error = string_sprintf("invalid variable name after \"set\" in ACL "
+        "modifier \"set %s\" (must start \"acl_c\" or \"acl_m\")", s);
       return NULL;
       }
 
-    cond->u.varnumber = n + offset;
+    endptr = s + 5;
+    while (*endptr != 0 && *endptr != '=' && !isspace(*endptr))
+      {
+      if (!isalnum(*endptr) && *endptr != '_')
+        {
+        *error = string_sprintf("invalid character \"%c\" in variable name "
+          "in ACL modifier \"set %s\"", *endptr, s);
+        return NULL;
+        }
+      endptr++;
+      }
+
+    if (endptr - s < 6)
+      {
+      *error = string_sprintf("invalid variable name after \"set\" in ACL "
+        "modifier \"set %s\" (must be at least 6 characters)", s);
+      return NULL;
+      }
+
+    cond->u.varname = string_copyn(s + 4, endptr - s - 4);
     s = endptr;
     while (isspace(*s)) s++;
     }
@@ -2426,11 +2434,8 @@ for (; cb != NULL; cb = cb->next)
 
     if (cb->type == ACLC_SET)
       {
-      int n = cb->u.varnumber;
-      int t = (n < ACL_CVARS)? 'c' : 'm';
-      if (n >= ACL_CVARS) n -= ACL_CVARS;
-      debug_printf("acl_%c%d ", t, n);
-      lhswidth += 7;
+      debug_printf("acl_%s ", cb->u.varname);
+      lhswidth += 5 + Ustrlen(cb->u.varname);
       }
 
     debug_printf("= %s\n", cb->arg);
@@ -2926,8 +2931,8 @@ for (; cb != NULL; cb = cb->next)
     case ACLC_SET:
       {
       int old_pool = store_pool;
-      if (cb->u.varnumber < ACL_CVARS) store_pool = POOL_PERM;
-      acl_var[cb->u.varnumber] = string_copy(arg);
+      if (cb->u.varname[0] == 'c') store_pool = POOL_PERM;
+      acl_var_create(cb->u.varname)->data.ptr = string_copy(arg);
       store_pool = old_pool;
       }
     break;
@@ -3595,6 +3600,66 @@ if (rc != OK && *user_msgptr != NULL && Ustrlen(*user_msgptr) > 75)
   }
 
 return rc;
+}
+
+
+
+/*************************************************
+*             Create ACL variable                *
+*************************************************/
+
+/* Create an ACL variable or reuse an existing one. ACL variables are in a
+binary tree (see tree.c) with acl_var_c and acl_var_m as root nodes.
+
+Argument:
+  name    pointer to the variable's name, starting with c or m
+
+Returns   the pointer to variable's tree node
+*/
+
+tree_node *
+acl_var_create(uschar *name)
+{
+tree_node *node, **root;
+root = (name[0] == 'c')? &acl_var_c : &acl_var_m;
+node = tree_search(*root, name);
+if (node == NULL)
+  {
+  node = store_get(sizeof(tree_node) + Ustrlen(name));
+  Ustrcpy(node->name, name);
+  (void)tree_insertnode(root, node);
+  }
+node->data.ptr = NULL;
+return node;
+}
+
+
+
+/*************************************************
+*       Write an ACL variable in spool format    *
+*************************************************/
+
+/* This function is used as a callback for tree_walk when writing variables to
+the spool file. To retain spool file compatibility, what is written is -aclc or
+-aclm followed by the rest of the name and the data length, space separated,
+then the value itself, starting on a new line, and terminated by an additional
+newline. When we had only numbered ACL variables, the first line might look
+like this: "-aclc 5 20". Now it might be "-aclc foo 20" for the variable called
+acl_cfoo.
+
+Arguments:
+  name    of the variable
+  value   of the variable
+  ctx     FILE pointer (as a void pointer)
+
+Returns:  nothing
+*/
+
+void
+acl_var_write(uschar *name, uschar *value, void *ctx)
+{
+FILE *f = (FILE *)ctx;
+fprintf(f, "-acl%c %s %d\n%s\n", name[0], name+1, Ustrlen(value), value);
 }
 
 /* End of acl.c */

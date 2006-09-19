@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.23 2006/06/28 16:00:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.24 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -354,6 +354,7 @@ static optionlist optionlist_config[] = {
   { "srs_usehash",              opt_bool,        &srs_usehash },
   { "srs_usetimestamp",         opt_bool,        &srs_usetimestamp },
 #endif
+  { "strict_acl_vars",          opt_bool,        &strict_acl_vars },
   { "strip_excess_angle_brackets", opt_bool,     &strip_excess_angle_brackets },
   { "strip_trailing_dot",       opt_bool,        &strip_trailing_dot },
   { "syslog_duplication",       opt_bool,        &syslog_duplication },

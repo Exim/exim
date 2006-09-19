@@ -26,6 +26,10 @@ there!"
   acl_m7=""
   acl_m8=""
   acl_m9="value for m9 is domain: y"
+  acl_mfoo="value for mfoo is local_part: x"
+  acl_mbar="value for mbar is domain: y"
+  acl_c_foo="value for c_foo is ip: 1.2.3.4"
+  acl_c_bar="value for c_bar is name: host.name"
 -------------------------
 acl_c0="value for c0 is ip: 1.2.3.4"
 acl_c1=""
@@ -49,6 +53,10 @@ acl_m6=""
 acl_m7=""
 acl_m8=""
 acl_m9="value for m9 is domain: y"
+acl_mfoo="value for mfoo is local_part: x"
+acl_mbar="value for mbar is domain: y"
+acl_c_foo="value for c_foo is ip: 1.2.3.4"
+acl_c_bar="value for c_bar is name: host.name"
 LOG: MAIN
   => x <x@y> R=r1 T=t1
 LOG: MAIN
@@ -78,6 +86,10 @@ there!"
   acl_m7=""
   acl_m8=""
   acl_m9="value for m9 is domain: b"
+  acl_mfoo=""
+  acl_mbar=""
+  acl_c_foo="value for c_foo is ip: 1.2.3.4"
+  acl_c_bar="value for c_bar is name: host.name"
 -------------------------
 acl_c0="value for c0 is ip: 1.2.3.4"
 acl_c1=""
@@ -100,9 +112,15 @@ acl_m6=""
 acl_m7=""
 acl_m8=""
 acl_m9="value for m9 is domain: b"
+acl_mfoo=""
+acl_mbar=""
+acl_c_foo="value for c_foo is ip: 1.2.3.4"
+acl_c_bar="value for c_bar is name: host.name"
 LOG: MAIN
   => a <a@b> R=r1 T=t1
 LOG: MAIN
   Completed
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
+----- System filter -----
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Error in system filter: failed to expand "  acl_c0="$acl_c0"\n  acl_c1="$acl_c1"\n  acl_c2="$acl_c2"\n  acl_c3="$acl_c3"\n  acl_c4="$acl_c4"\n  acl_c5="$acl_c5"\n  acl_c6="$acl_c6"\n  acl_c7="$acl_c7"\n  acl_c8="$acl_c8"\n  acl_c9="$acl_c9"\n  acl_m0="$acl_m0"\n  acl_m1="$acl_m1"\n  acl_m2="$acl_m2"\n  acl_m3="$acl_m3"\n  acl_m4="$acl_m4"\n  acl_m5="$acl_m5"\n  acl_m6="$acl_m6"\n  acl_m7="$acl_m7"\n  acl_m8="$acl_m8"\n  acl_m9="$acl_m9"\n  acl_mfoo="$acl_mfoo"\n  acl_mbar="$acl_mbar"\n  acl_c_foo="$acl_c_foo"\n  acl_c_bar="$acl_c_bar"\n" in logwrite command: unknown variable name "acl_c1" (strict_acl_vars is set)

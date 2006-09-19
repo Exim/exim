@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.26 2006/09/18 14:49:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.27 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -40,6 +40,8 @@ extern int     tls_write(const uschar *, size_t);
 
 extern acl_block *acl_read(uschar *(*)(void), uschar **);
 extern int     acl_check(int, uschar *, uschar *, uschar **, uschar **);
+extern tree_node *acl_var_create(uschar *);
+extern void    acl_var_write(uschar *, uschar *, void *);
 extern uschar *auth_b64encode(uschar *, int);
 extern int     auth_b64decode(uschar *, uschar **);
 extern int     auth_call_pam(uschar *, uschar **);
@@ -327,6 +329,7 @@ extern void    tree_add_unusable(host_item *);
 extern int     tree_insertnode(tree_node **, tree_node *);
 extern tree_node *tree_search(tree_node *, uschar *);
 extern void    tree_write(tree_node *, FILE *);
+extern void    tree_walk(tree_node *, void (*)(uschar*, uschar*, void*), void *);
 
 #ifdef WITH_CONTENT_SCAN
 extern void    unspool_mbox(void);

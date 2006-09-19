@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.60 2006/09/18 14:49:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.61 2006/09/19 11:28:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -300,6 +300,8 @@ enum {
 /* This table must be kept in alphabetical order. */
 
 static var_entry var_table[] = {
+  /* WARNING: Do not invent variables whose names start acl_c or acl_m because
+     they will be confused with user-creatable ACL variables. */
   { "acl_verify_message",  vtype_stringptr,   &acl_verify_message },
   { "address_data",        vtype_stringptr,   &deliver_address_data },
   { "address_file",        vtype_stringptr,   &address_file },
@@ -1231,37 +1233,25 @@ find_variable(uschar *name, BOOL exists_only, BOOL skipping, int *newsize)
 int first = 0;
 int last = var_table_size;
 
-/* Handle ACL variables, which are not in the table because their number may
-vary depending on a build-time setting. If the variable's name is not of the
-form acl_mddd or acl_cddd, where the d's are digits, fall through to look for
-other names that start with acl_. */
+/* Handle ACL variables, whose names are of the form acl_cxxx or acl_mxxx.
+Originally, xxx had to be a number in the range 0-9 (later 0-19), but from
+release 4.64 onwards arbitrary names are permitted, as long as the first 5
+characters are acl_c or acl_m (this gave backwards compatibility at the
+changeover). There may be built-in variables whose names start acl_ but they
+should never start acl_c or acl_m. This slightly messy specification is a
+consequence of the history, needless to say.
 
-if (Ustrncmp(name, "acl_", 4) == 0)
+If an ACL variable does not exist, treat it as empty, unless strict_acl_vars is
+set, in which case give an error. */
+
+if (Ustrncmp(name, "acl_c", 5) == 0 || Ustrncmp(name, "acl_m", 5) == 0)
   {
-  uschar *endptr;
-  int offset = -1;
-  int max = 0;
-
-  if (name[4] == 'm')
-    {
-    offset = ACL_CVARS;
-    max = ACL_MVARS;
-    }
-  else if (name[4] == 'c')
-    {
-    offset = 0;
-    max = ACL_CVARS;
-    }
-
-  if (offset >= 0)
-    {
-    int n = Ustrtoul(name + 5, &endptr, 10);
-    if (*endptr == 0 && n < max)
-      return (acl_var[offset + n] == NULL)? US"" : acl_var[offset + n];
-    }
+  tree_node *node =
+    tree_search((name[4] == 'c')? acl_var_c : acl_var_m, name + 4);
+  return (node == NULL)? (strict_acl_vars? NULL : US"") : node->data.ptr;
   }
 
-/* Similarly for $auth<n> variables. */
+/* Handle $auth<n> variables. */
 
 if (Ustrncmp(name, "auth", 4) == 0)
   {
@@ -1681,6 +1671,13 @@ switch(cond_type)
       expand_string_message = (name[0] == 0)?
         string_sprintf("variable name omitted after \"def:\"") :
         string_sprintf("unknown variable \"%s\" after \"def:\"", name);
+
+      if (strict_acl_vars &&
+          Ustrncmp(name, "acl_", 4) == 0 &&
+          (name[4] == 'c' || name[4] == 'm'))
+        expand_string_message = string_sprintf("%s (strict_acl_vars is set)",
+          expand_string_message);
+
       return NULL;
       }
     if (yield != NULL) *yield = (value[0] != 0) == testfor;
@@ -2959,6 +2956,13 @@ while (*s != 0)
         {
         expand_string_message =
           string_sprintf("unknown variable name \"%s\"", name);
+
+        if (strict_acl_vars &&
+            Ustrncmp(name, "acl_", 4) == 0 &&
+            (name[4] == 'c' || name[4] == 'm'))
+          expand_string_message = string_sprintf("%s (strict_acl_vars is set)",
+            expand_string_message);
+
         goto EXPAND_FAILED;
         }
       }
@@ -5118,6 +5122,13 @@ while (*s != 0)
       {
       expand_string_message =
         string_sprintf("unknown variable in \"${%s}\"", name);
+
+      if (strict_acl_vars &&
+          Ustrncmp(name, "acl_", 4) == 0 &&
+          (name[4] == 'c' || name[4] == 'm'))
+        expand_string_message = string_sprintf("%s (strict_acl_vars is set)",
+          expand_string_message);
+
       goto EXPAND_FAILED;
       }
     len = Ustrlen(value);
