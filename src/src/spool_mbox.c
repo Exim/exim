@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.12 2006/09/12 10:35:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.13 2006/09/22 08:41:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -139,6 +139,9 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
         };
       };
     } while (j > 0);
+
+    (void)fclose(mbox_file);
+    mbox_file = NULL;
 
     Ustrcpy(spooled_message_id, message_id);
     spool_mbox_ok = 1;
