@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.23 2006/09/19 11:28:44 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.24 2006/09/22 14:01:12 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -158,6 +158,7 @@ deliver_queue_load_max               fixed-point     unset         main         
 delivery_date_add                    boolean         false         transports
 delivery_date_remove                 boolean         true          main
 directory                            string*         unset         appendfile
+directory_file                       string*         +             appendfile
 directory_mode                       octal-integer   0700          appendfile
 directory_transport                  string*         unset         redirect          4.00
 disable_ipv6                         boolean         false         main              4.61
