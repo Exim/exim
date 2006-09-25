@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.65 2006/09/19 14:31:06 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.66 2006/09/25 10:14:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -65,6 +65,7 @@ enum { ACLC_ACL,
        ACLC_HOSTS,
        ACLC_LOCAL_PARTS,
        ACLC_LOG_MESSAGE,
+       ACLC_LOG_REJECT_TARGET,
        ACLC_LOGWRITE,
 #ifdef WITH_CONTENT_SCAN
        ACLC_MALWARE,
@@ -90,8 +91,9 @@ enum { ACLC_ACL,
        ACLC_VERIFY };
 
 /* ACL conditions/modifiers: "delay", "control", "endpass", "message",
-"log_message", "logwrite", and "set" are modifiers that look like conditions
-but always return TRUE. They are used for their side effects. */
+"log_message", "log_reject_target", "logwrite", and "set" are modifiers that
+look like conditions but always return TRUE. They are used for their side
+effects. */
 
 static uschar *conditions[] = {
   US"acl",
@@ -117,8 +119,15 @@ static uschar *conditions[] = {
   US"dk_senders",
   US"dk_status",
 #endif
-  US"dnslists", US"domains", US"encrypted",
-  US"endpass", US"hosts", US"local_parts", US"log_message", US"logwrite",
+  US"dnslists",
+  US"domains",
+  US"encrypted",
+  US"endpass",
+  US"hosts",
+  US"local_parts",
+  US"log_message",
+  US"log_reject_target",
+  US"logwrite",
 #ifdef WITH_CONTENT_SCAN
   US"malware",
 #endif
@@ -232,6 +241,7 @@ static uschar cond_expand_at_top[] = {
   FALSE,   /* hosts */
   FALSE,   /* local_parts */
   TRUE,    /* log_message */
+  TRUE,    /* log_reject_target */
   TRUE,    /* logwrite */
 #ifdef WITH_CONTENT_SCAN
   TRUE,    /* malware */
@@ -290,6 +300,7 @@ static uschar cond_modifiers[] = {
   FALSE,   /* hosts */
   FALSE,   /* local_parts */
   TRUE,    /* log_message */
+  TRUE,    /* log_reject_target */
   TRUE,    /* logwrite */
 #ifdef WITH_CONTENT_SCAN
   FALSE,   /* malware */
@@ -432,6 +443,8 @@ static unsigned int cond_forbids[] = {
   ~(1<<ACL_WHERE_RCPT),                            /* local_parts */
 
   0,                                               /* log_message */
+
+  0,                                               /* log_reject_target */
 
   0,                                               /* logwrite */
 
@@ -2844,6 +2857,29 @@ for (; cb != NULL; cb = cb->next)
       &deliver_localpart_data);
     break;
 
+    case ACLC_LOG_REJECT_TARGET:
+      {
+      int logbits = 0;
+      int sep = 0;
+      uschar *s = arg;
+      uschar *ss;
+      while ((ss = string_nextinlist(&s, &sep, big_buffer, big_buffer_size))
+              != NULL)
+        {
+        if (Ustrcmp(ss, "main") == 0) logbits |= LOG_MAIN;
+        else if (Ustrcmp(ss, "panic") == 0) logbits |= LOG_PANIC;
+        else if (Ustrcmp(ss, "reject") == 0) logbits |= LOG_REJECT;
+        else
+          {
+          logbits |= LOG_MAIN|LOG_REJECT;
+          log_write(0, LOG_MAIN|LOG_PANIC, "unknown log name \"%s\" in "
+            "\"log_reject_target\" in %s ACL", ss, acl_wherenames[where]);
+          }
+        }
+      log_reject_target = logbits;
+      }
+    break;
+
     case ACLC_LOGWRITE:
       {
       int logbits = 0;
@@ -2870,6 +2906,8 @@ for (; cb != NULL; cb = cb->next)
         s++;
         }
       while (isspace(*s)) s++;
+
+
       if (logbits == 0) logbits = LOG_MAIN;
       log_write(0, logbits, "%s", string_printing(s));
       }
@@ -2878,7 +2916,7 @@ for (; cb != NULL; cb = cb->next)
     #ifdef WITH_CONTENT_SCAN
     case ACLC_MALWARE:
       {
-      /* Seperate the regular expression and any optional parameters. */
+      /* Separate the regular expression and any optional parameters. */
       uschar *ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size);
       /* Run the malware backend. */
       rc = malware(&ss);
@@ -3513,6 +3551,7 @@ address_item *addr = NULL;
 *user_msgptr = *log_msgptr = NULL;
 sender_verified_failed = NULL;
 ratelimiters_cmd = NULL;
+log_reject_target = LOG_MAIN|LOG_REJECT;
 
 if (where == ACL_WHERE_RCPT)
   {

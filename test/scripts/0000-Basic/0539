@@ -1,0 +1,20 @@
+# log_reject_target
+exim -bs
+mail from:<main@test.ex>
+mail from:<reject@test.ex>
+mail from:<both@test.ex>
+mail from:<panic@test.ex>
+mail from:<none@test.ex>
+mail from:<ok@test.ex>
+rcpt to:<main@test.ex>
+rcpt to:<reject@test.ex>
+rcpt to:<both@test.ex>
+rcpt to:<panic@test.ex>
+rcpt to:<none@test.ex>
+rcpt to:<ok@test.ex>
+data
+quit
+****
+1
+exim -oep userx@test.ex
+****

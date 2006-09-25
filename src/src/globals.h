@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.40 2006/09/19 11:28:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.41 2006/09/25 10:14:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -404,11 +404,12 @@ extern unsigned int log_extra_selector;/* Bit map of logging options other than 
 extern uschar *log_file_path;          /* If unset, use default */
 extern bit_table log_options[];        /* Table of options */
 extern int     log_options_count;      /* Size of table */
-extern unsigned int log_write_selector;/* Bit map of logging options for log_write() */
+extern int     log_reject_target;      /* Target log for ACL rejections */
 extern uschar *log_selector_string;    /* As supplied in the config */
 extern FILE   *log_stderr;             /* Copy of stderr for log use, or NULL */
 extern BOOL    log_testing_mode;       /* TRUE in various testing modes */
 extern BOOL    log_timezone;           /* TRUE to include the timezone in log lines */
+extern unsigned int log_write_selector;/* Bit map of logging options for log_write() */
 extern uschar *login_sender_address;   /* The actual sender address */
 extern lookup_info lookup_list[];      /* Vector of available lookups */
 extern int     lookup_list_count;      /* Number of entries in the list */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.28 2006/07/13 13:53:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.29 2006/09/25 10:14:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2985,8 +2985,13 @@ else
 #ifdef WITH_CONTENT_SCAN
         unspool_mbox();
 #endif
-        log_write(0, LOG_MAIN|LOG_REJECT, "F=<%s> rejected by non-SMTP ACL: %s",
-          sender_address, log_msg);
+        /* The ACL can specify where rejections are to be logged, possibly
+        nowhere. The default is main and reject logs. */
+
+        if (log_reject_target != 0)
+          log_write(0, log_reject_target, "F=<%s> rejected by non-SMTP ACL: %s",
+            sender_address, log_msg);
+
         if (user_msg == NULL) user_msg = US"local configuration problem";
         if (smtp_batched_input)
           {

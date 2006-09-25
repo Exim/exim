@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.110 2006/09/19 14:31:06 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.111 2006/09/25 10:14:20 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -36,6 +36,19 @@ Version 4.64
    and can be read by the new release. If only the original numeric names are
    used, spool files written by the new release can be read by earlier
    releases.
+
+2. There is a new ACL modifier called log_reject_target. It makes it possible
+   to specify which logs are used for messages about ACL rejections. Its
+   argument is a list of words which can be "main", "reject", or "panic". The
+   default is "main:reject". The list may be empty, in which case a rejection
+   is not logged at all. For example, this ACL fragment writes no logging
+   information when access is denied:
+
+     deny <some conditions>
+          log_reject_target =
+
+   The modifier can be used in SMTP and non-SMTP ACLs. It applies to both
+   permanent and temporary rejections.
 
 
 Version 4.63

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.43 2006/09/19 11:28:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.44 2006/09/25 10:14:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2002,12 +2002,15 @@ else
       US"Temporary local problem - please try later");
   }
 
-/* Log the incident. If the connection is not forcibly to be dropped, return 0.
-Otherwise, log why it is closing if required and return 2.  */
+/* Log the incident to the logs that are specified by log_reject_target
+(default main, reject). This can be empty to suppress logging of rejections. If
+the connection is not forcibly to be dropped, return 0. Otherwise, log why it
+is closing if required and return 2.  */
 
-log_write(0, LOG_MAIN|LOG_REJECT, "%s %s%srejected %s%s",
-  host_and_ident(TRUE),
-  sender_info, (rc == FAIL)? US"" : US"temporarily ", what, log_msg);
+if (log_reject_target != 0)
+  log_write(0, log_reject_target, "%s %s%srejected %s%s",
+    host_and_ident(TRUE),
+    sender_info, (rc == FAIL)? US"" : US"temporarily ", what, log_msg);
 
 if (!drop) return 0;
 

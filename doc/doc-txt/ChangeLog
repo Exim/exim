@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.396 2006/09/22 08:41:59 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.397 2006/09/25 10:14:20 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -51,6 +51,10 @@ JJ/01 exipick 20060919.0, allow for arbitrary acl_ variables introduced
 
 JJ/02 exipick 20060919.0, --show-vars args can now be regular expressions,
       miscellaneous code fixes
+
+PH/10 Added the log_reject_target ACL modifier to specify where to log
+      rejections.
+
 
 
 Exim version 4.63

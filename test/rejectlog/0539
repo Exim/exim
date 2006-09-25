@@ -1,0 +1,14 @@
+1999-03-02 09:44:33 U=CALLER rejected MAIL <reject@test.ex>
+1999-03-02 09:44:33 U=CALLER rejected MAIL <both@test.ex>
+1999-03-02 09:44:33 U=CALLER F=<ok@test.ex> rejected RCPT <reject@test.ex>
+1999-03-02 09:44:33 U=CALLER F=<ok@test.ex> rejected RCPT <both@test.ex>
+1999-03-02 09:44:33 10HmaX-0005vi-00 F=<CALLER@myhost.test.ex> rejected by non-SMTP ACL: Nyet
+Envelope-from: <CALLER@myhost.test.ex>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+F From: CALLER_NAME <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000

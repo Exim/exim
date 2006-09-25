@@ -1,0 +1,59 @@
+# Exim test configuration 0539
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_not_smtp = not_smtp
+acl_smtp_mail = check_mail
+acl_smtp_rcpt = check_rcpt
+acl_smtp_predata = predata
+
+
+# ----- ACLs -----
+
+begin acl
+
+check_mail:
+  deny  senders = main@test.ex
+        log_reject_target = main
+  deny  senders = reject@test.ex
+        log_reject_target = reject
+  deny  senders = both@test.ex
+        log_reject_target = <, main, reject
+  deny  senders = panic@test.ex
+        log_reject_target = panic
+  deny  senders = none@test.ex
+        log_reject_target =
+  accept
+
+check_rcpt:
+  deny  local_parts = main
+        log_reject_target = main
+  deny  local_parts = reject
+        log_reject_target = reject
+  deny  local_parts = both
+        log_reject_target = <, main, reject
+  deny  local_parts = panic
+        log_reject_target = panic
+  deny  local_parts = none
+        log_reject_target =
+  accept
+
+predata:
+  deny  log_reject_target = main
+        log_message = Not today
+
+not_smtp:
+  deny  log_reject_target = reject
+        log_message = Nyet
+
+
+# End

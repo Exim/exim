@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.58 2006/09/19 11:28:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.59 2006/09/25 10:14:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -703,11 +703,12 @@ bit_table log_options[]        = {
 };
 
 int     log_options_count      = sizeof(log_options)/sizeof(bit_table);
-unsigned int log_write_selector= L_default;
+int     log_reject_target      = 0;
 uschar *log_selector_string    = NULL;
 FILE   *log_stderr             = NULL;
 BOOL    log_testing_mode       = FALSE;
 BOOL    log_timezone           = FALSE;
+unsigned int log_write_selector= L_default;
 uschar *login_sender_address   = NULL;
 int     lookup_open_max        = 25;
 uschar *lookup_value           = NULL;
