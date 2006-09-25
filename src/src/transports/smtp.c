@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.25 2006/03/09 15:10:16 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.26 2006/09/25 11:25:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -203,8 +203,8 @@ static uschar *mail_command;   /* Points to MAIL cmd for error messages */
 but before running it in a sub-process. It is used for two things:
 
   (1) To set the fallback host list in addresses, when delivering.
-  (2) To pass back the interface, port, and protocol options, for use during
-      callout verification.
+  (2) To pass back the interface, port, protocol, and other options, for use
+      during callout verification.
 
 Arguments:
   tblock    pointer to the transport instance block
@@ -241,6 +241,7 @@ if (tf != NULL)
   tf->gethostbyname = ob->gethostbyname;
   tf->qualify_single = ob->dns_qualify_single;
   tf->search_parents = ob->dns_search_parents;
+  tf->helo_data = ob->helo_data;
   }
 
 /* Set the fallback host list for all the addresses that don't have fallback

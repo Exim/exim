@@ -1,4 +1,4 @@
-$Cambridge: exim/src/README.UPDATING,v 1.12 2006/07/13 13:53:33 ph10 Exp $
+$Cambridge: exim/src/README.UPDATING,v 1.13 2006/09/25 11:25:37 ph10 Exp $
 
 This document contains detailed information about incompatibilities that might
 be encountered when upgrading from one release of Exim to another. The
@@ -26,6 +26,20 @@ there have been two big upheavals...
 
 The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
+
+
+Exim version 4.64
+-----------------
+
+1. Callouts were setting the name used for EHLO/HELO from $smtp_active_
+hostname. This is wrong, because it relates to the incoming message (and
+probably the interface on which it is arriving) and not to the outgoing
+callout (which could be using a different interface). This has been
+changed to use the value of the helo_data option from the smtp transport
+instead - this is what is used when a message is actually being sent. If
+there is no remote transport (possible with a router that sets up host
+addresses), $smtp_active_hostname is used. This change is mentioned here in
+case somebody is relying on the use of $smtp_active_hostname.
 
 
 Exim version 4.63

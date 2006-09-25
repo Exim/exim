@@ -1,0 +1,53 @@
+# Exim test configuration 0540
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_rcpt
+
+queue_only
+
+
+# ----- ACLs -----
+
+begin acl
+
+check_rcpt:
+  accept  verify = recipient/callout
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = ${if match {$domain}{^yes}{t1}{t2}}
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  hosts = 127.0.0.1
+  port = PORT_S
+  allow_localhost
+  helo_data = ${if eq{$domain}{yes1}{localhost}{aname}}
+
+t2:
+  driver = smtp
+  hosts = 127.0.0.1
+  port = PORT_S
+  allow_localhost
+
+# End

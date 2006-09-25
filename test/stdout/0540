@@ -1,0 +1,57 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+250 Accepted
+250 Accepted
+221 myhost.test.ex closing connection
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+HELO localhost
+250 Hi
+MAIL FROM:<>
+250 OK
+RCPT TO:<abc@yes1>
+250 OK
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+HELO aname
+250 Hi
+MAIL FROM:<>
+250 OK
+RCPT TO:<def@yes2>
+250 OK
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+HELO myhost.test.ex
+250 Hi
+MAIL FROM:<>
+250 OK
+RCPT TO:<abc@no>
+250 OK
+QUIT
+250 OK
+Expected EOF read from client
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Welcome
+HELO myhost.test.ex
+250 Hi
+MAIL FROM:<>
+250 OK
+RCPT TO:<def@no>
+250 OK
+QUIT
+250 OK
+End of script

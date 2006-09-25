@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.38 2006/09/05 13:24:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.39 2006/09/25 11:25:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -389,6 +389,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
   int host_af;
   int port = 25;
   BOOL send_quit = TRUE;
+  uschar *active_hostname = smtp_active_hostname;
   uschar *helo = US"HELO";
   uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
   uschar inbuffer[4096];
@@ -434,6 +435,17 @@ for (host = host_list; host != NULL && !done; host = host->next)
       !smtp_get_port(tf->port, addr, &port, US"callout"))
     log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
       addr->message);
+
+  /* Expand the helo_data string to find the host name to use. */
+
+  if (tf->helo_data != NULL)
+    {
+    uschar *s = expand_string(tf->helo_data);
+    if (active_hostname == NULL)
+      log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: failed to expand transport's "
+        "helo_data value for callout: %s", expand_string_message);
+    else active_hostname = s;
+    }
 
   deliver_host = deliver_host_address = NULL;
   deliver_domain = save_deliver_domain;
@@ -481,7 +493,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
     smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
       '2', callout) &&
     smtp_write_command(&outblock, FALSE, "%s %s\r\n", helo,
-      smtp_active_hostname) >= 0 &&
+      active_hostname) >= 0 &&
     smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
       '2', callout);
 
@@ -1073,10 +1085,21 @@ while (addr_new != NULL)
       {
       host_item *host_list = addr->host_list;
 
-      /* Default, if no remote transport, to NULL for the interface (=> any),
-      "smtp" for the port, and "smtp" for the protocol. */
+      /* Make up some data for use in the case where there is no remote
+      transport. */
 
-      transport_feedback tf = { NULL, US"smtp", US"smtp", NULL, FALSE, FALSE };
+      transport_feedback tf = {
+        NULL,                       /* interface (=> any) */
+        US"smtp",                   /* port */
+        US"smtp",                   /* protocol */
+        NULL,                       /* hosts */
+        US"$smtp_active_hostname",  /* helo_data */
+        FALSE,                      /* hosts_override */
+        FALSE,                      /* hosts_randomize */
+        FALSE,                      /* gethostbyname */
+        TRUE,                       /* qualify_single */
+        FALSE                       /* search_parents */
+        };
 
       /* If verification yielded a remote transport, we want to use that
       transport's options, so as to mimic what would happen if we were really

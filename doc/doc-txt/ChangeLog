@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.397 2006/09/25 10:14:20 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.398 2006/09/25 11:25:37 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -55,6 +55,14 @@ JJ/02 exipick 20060919.0, --show-vars args can now be regular expressions,
 PH/10 Added the log_reject_target ACL modifier to specify where to log
       rejections.
 
+PH/11 Callouts were setting the name used for EHLO/HELO from $smtp_active_
+      hostname. This is wrong, because it relates to the incoming message (and
+      probably the interface on which it is arriving) and not to the outgoing
+      callout (which could be using a different interface). This has been
+      changed to use the value of the helo_data option from the smtp transport
+      instead - this is what is used when a message is actually being sent. If
+      there is no remote transport (possible with a router that sets up host
+      addresses), $smtp_active_hostname is used.
 
 
 Exim version 4.63

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/structs.h,v 1.11 2006/09/19 11:28:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/structs.h,v 1.12 2006/09/25 11:25:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -89,6 +89,7 @@ typedef struct transport_feedback {
   uschar *port;
   uschar *protocol;
   uschar *hosts;
+  uschar *helo_data;
   BOOL   hosts_override;
   BOOL   hosts_randomize;
   BOOL   gethostbyname;
