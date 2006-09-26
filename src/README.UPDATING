@@ -1,4 +1,4 @@
-$Cambridge: exim/src/README.UPDATING,v 1.13 2006/09/25 11:25:37 ph10 Exp $
+$Cambridge: exim/src/README.UPDATING,v 1.14 2006/09/26 14:51:02 ph10 Exp $
 
 This document contains detailed information about incompatibilities that might
 be encountered when upgrading from one release of Exim to another. The
@@ -40,6 +40,13 @@ instead - this is what is used when a message is actually being sent. If
 there is no remote transport (possible with a router that sets up host
 addresses), $smtp_active_hostname is used. This change is mentioned here in
 case somebody is relying on the use of $smtp_active_hostname.
+
+2. A bug has been fixed that might just possibly be something that is relied on
+in some configurations. In expansion items such as ${if >{xxx}{yyy}...} an
+empty string (that is {}) was being interpreted as if it was {0} and therefore
+treated as the number zero. From release 4.64, such strings cause an error
+because a decimal number, possibly followed by K or M, is required (as has
+always been documented).
 
 
 Exim version 4.63
