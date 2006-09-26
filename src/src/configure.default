@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/configure.default,v 1.10 2006/07/27 10:36:34 ph10 Exp $
+# $Cambridge: exim/src/src/configure.default,v 1.11 2006/09/26 13:51:00 ph10 Exp $
 
 ######################################################################
 #                  Runtime configuration file for Exim               #
@@ -62,7 +62,7 @@ hostlist   relay_from_hosts = 127.0.0.1
 
 # Most straightforward access control requirements can be obtained by
 # appropriate settings of the above options. In more complicated situations,
-# you may need to modify the Access Control List (ACL) which appears later in
+# you may need to modify the Access Control Lists (ACLs) which appear later in
 # this file.
 
 # The first setting specifies your local domains, for example:
@@ -195,14 +195,15 @@ acl_smtp_data = acl_check_data
 # allow_domain_literals
 
 
-# No deliveries will ever be run under the uids of these users (a colon-
-# separated list). An attempt to do so causes a panic error to be logged, and
-# the delivery to be deferred. This is a paranoic safety catch. There is an
-# even stronger safety catch in the form of the FIXED_NEVER_USERS setting
-# in the configuration for building Exim. The list of users that it specifies
-# is built into the binary, and cannot be changed. The option below just adds
-# additional users to the list. The default for FIXED_NEVER_USERS is "root",
-# but just to be absolutely sure, the default here is also "root".
+# No deliveries will ever be run under the uids of users specified by
+# never_users (a colon-separated list). An attempt to do so causes a panic
+# error to be logged, and the delivery to be deferred. This is a paranoic
+# safety catch. There is an even stronger safety catch in the form of the
+# FIXED_NEVER_USERS setting in the configuration for building Exim. The list of
+# users that it specifies is built into the binary, and cannot be changed. The
+# option below just adds additional users to the list. The default for
+# FIXED_NEVER_USERS is "root", but just to be absolutely sure, the default here
+# is also "root".
 
 # Note that the default setting means you cannot deliver mail addressed to root
 # as if it were a normal user. This isn't usually a problem, as most sites have
@@ -273,6 +274,21 @@ ignore_bounce_errors_after = 2d
 # This option cancels (removes) frozen messages that are older than a week.
 
 timeout_frozen_after = 7d
+
+
+# By default, messages that are waiting on Exim's queue are all held in a
+# single directory called "input" which it itself within Exim's spool
+# directory. (The default spool directory is specified when Exim is built, and
+# is often /var/spool/exim/.) Exim works best when its queue is kept short, but
+# there are circumstances where this is not always possible. If you uncomment
+# the setting below, messages on the queue are held in 62 subdirectories of
+# "input" instead of all in the same directory. The subdirectories are called
+# 0, 1, ... A, B, ... a, b, ... z. This has two benefits: (1) If your file
+# system degrades with many files in one directory, this is less likely to
+# happen; (2) Exim can process the queue one subdirectory at a time instead of
+# all at once, which can give better performance with large queues.
+
+# split_spool_directory = true
 
 
 
