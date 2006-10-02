@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.111 2006/09/25 10:14:20 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.112 2006/10/02 13:38:18 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -49,6 +49,26 @@ Version 4.64
 
    The modifier can be used in SMTP and non-SMTP ACLs. It applies to both
    permanent and temporary rejections.
+
+3. There is a new authenticator called "dovecot". This is an interface to the
+   authentication facility of the Dovecot POP/IMAP server, which can support a
+   number of authentication methods. If you are using Dovecot to authenticate
+   POP/IMAP clients, it might be helpful to use the same mechanisms for SMTP
+   authentication. This is a server authenticator only. The only option is
+   server_socket, which must specify the socket which is the interface to
+   Dovecot authentication. The public_name option must specify an
+   authentication mechanism that Dovecot is configured to support. You can have
+   several authenticators for different mechanisms. For example:
+
+     dovecot_plain:
+       driver = PLAIN
+       server_name = /var/run/dovecot/auth-client
+       server_setid = $auth1
+
+     dovecot_ntlm:
+       driver = NTLM
+       server_name = /var/run/dovecot/auth-client
+       server_setid = $auth1
 
 
 Version 4.63

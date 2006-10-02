@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.16 2005/10/12 15:45:38 ph10 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.17 2006/10/02 13:38:18 ph10 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -475,6 +475,7 @@ FIXED_NEVER_USERS=root
 
 # AUTH_CRAM_MD5=yes
 # AUTH_CYRUS_SASL=yes
+# AUTH_DOVECOT=yes
 # AUTH_PLAINTEXT=yes
 # AUTH_SPA=yes
 

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.399 2006/09/26 13:51:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.400 2006/10/02 13:38:17 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -63,6 +63,21 @@ PH/11 Callouts were setting the name used for EHLO/HELO from $smtp_active_
       instead - this is what is used when a message is actually being sent. If
       there is no remote transport (possible with a router that sets up host
       addresses), $smtp_active_hostname is used.
+
+PH/12 Installed Andrey Panin's patch to add a dovecot authenticator. Various
+      tweaks were necessary in order to get it to work:
+      (a) The code assumed that strncpy() returns a negative number on buffer
+          overflow, which isn't the case. Replaced with Exim's string_format()
+          function.
+      (b) There were several signed/unsigned issues. I just did the minimum
+          hacking in of casts. There is scope for a larger refactoring.
+      (c) The code used strcasecmp() which is not a standard C function.
+          Replaced with Exim's strcmpic() function.
+      (d) The code set only $1; it now sets $auth1 as well.
+      (e) A simple test gave the error "authentication client didn't specify
+          service in request". It would seem that Dovecot has changed its
+          interface. Fortunately there's a specification; I followed it and
+          changed what the client sends and it appears to be working now.
 
 
 Exim version 4.63

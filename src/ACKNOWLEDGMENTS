@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.55 2006/09/19 11:28:44 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.56 2006/10/02 13:38:18 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  19 September 2006
+Last updated:  02 October 2006
 
 
 THE OLD LIST
@@ -210,6 +210,7 @@ Pete Naylor               Patch for LDAP TCP connect timeout setting
 Alexander Newmann         Diagnosing and patching obscure and subtle socket bug
 Matthew Newton            Patch for exicyclog log location problem
 Marcin Owsiany            Diagnosis of a tricky timeout failure bug
+Andrey Panin              Dovecot authenticator
 Eric Parusel              Patch for tls_remember_esmtp
 Gaige Paulsen             Amended Darwin config files
 Richard Premdas           Patch for PAM buglet

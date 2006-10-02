@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.43 2006/09/18 14:49:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.44 2006/10/02 13:38:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -979,6 +979,9 @@ fprintf(f, "Authenticators:");
 #endif
 #ifdef AUTH_CYRUS_SASL
   fprintf(f, " cyrus_sasl");
+#endif
+#ifdef AUTH_DOVECOT
+  fprintf(f, " dovecot");
 #endif
 #ifdef AUTH_PLAINTEXT
   fprintf(f, " plaintext");

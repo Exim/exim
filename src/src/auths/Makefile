@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/auths/Makefile,v 1.3 2005/09/12 13:50:03 ph10 Exp $
+# $Cambridge: exim/src/src/auths/Makefile,v 1.4 2006/10/02 13:38:18 ph10 Exp $
 
 # Make file for building a library containing all the available authorization
 # methods, and calling it auths.a. In addition, there are functions that are
@@ -9,7 +9,8 @@
 
 OBJ = b64encode.o b64decode.o call_pam.o call_pwcheck.o call_radius.o \
       xtextencode.o xtextdecode.o get_data.o get_no64_data.o md5.o \
-      cram_md5.o cyrus_sasl.o plaintext.o pwcheck.o sha1.o auth-spa.o spa.o
+      cram_md5.o cyrus_sasl.o dovecot.o plaintext.o pwcheck.o sha1.o \
+      auth-spa.o spa.o
 
 auths.a:         $(OBJ)
 		 @$(RM_COMMAND) -f auths.a
@@ -38,6 +39,7 @@ xtextdecode.o:   $(HDRS) xtextdecode.c
 
 cram_md5.o:      $(HDRS) cram_md5.c cram_md5.h
 cyrus_sasl.o:    $(HDRS) cyrus_sasl.c cyrus_sasl.h
+dovecot.o:       $(HDRS) dovecot.c dovecot.h
 plaintext.o:     $(HDRS) plaintext.c plaintext.h
 spa.o:           $(HDRS) spa.c spa.h
 

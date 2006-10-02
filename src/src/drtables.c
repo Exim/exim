@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/drtables.c,v 1.6 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/drtables.c,v 1.7 2006/10/02 13:38:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -551,6 +551,10 @@ set to NULL for those that are not compiled into the binary. */
 #include "auths/cyrus_sasl.h"
 #endif
 
+#ifdef AUTH_DOVECOT
+#include "auths/dovecot.h"
+#endif
+
 #ifdef AUTH_PLAINTEXT
 #include "auths/plaintext.h"
 #endif
@@ -586,6 +590,19 @@ auth_info auths_available[] = {
   auth_cyrus_sasl_init,                      /* init function */
   auth_cyrus_sasl_server,                    /* server function */
   NULL                                       /* client function */
+  },
+#endif
+
+#ifdef AUTH_DOVECOT
+  {
+  US"dovecot",                                /* lookup name */
+  auth_dovecot_options,
+  &auth_dovecot_options_count,
+  &auth_dovecot_option_defaults,
+  sizeof(auth_dovecot_options_block),
+  auth_dovecot_init,                          /* init function */
+  auth_dovecot_server,                        /* server function */
+  NULL                                        /* client function */
   },
 #endif
 

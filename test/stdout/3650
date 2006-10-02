@@ -1,0 +1,21 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> EHLO xxxx
+??? 250-
+<<< 250-myhost.test.ex Hello xxxx [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250-
+<<< 250-AUTH PLAIN
+??? 250
+<<< 250 HELP
+>>> AUTH PLAIN AHVzZXJ4AHNlY3JldA==
+??? 535
+<<< 535 Incorrect authentication data
+>>> quit
+??? 221
+<<< 221 myhost.test.ex closing connection
+End of script
