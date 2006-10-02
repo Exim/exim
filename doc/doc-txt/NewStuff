@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.112 2006/10/02 13:38:18 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.113 2006/10/02 14:30:29 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -61,12 +61,14 @@ Version 4.64
    several authenticators for different mechanisms. For example:
 
      dovecot_plain:
-       driver = PLAIN
+       driver = dovecot
+       public_name = PLAIN
        server_name = /var/run/dovecot/auth-client
        server_setid = $auth1
 
      dovecot_ntlm:
-       driver = NTLM
+       driver = dovecot
+       public_name = NTLM
        server_name = /var/run/dovecot/auth-client
        server_setid = $auth1
 
