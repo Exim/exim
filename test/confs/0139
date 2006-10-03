@@ -11,6 +11,7 @@ gecos_name = CALLER_NAME
 # ----- Main settings -----
 
 domainlist local_domains = exim.test.ex
+trusted_users = CALLER
 
 acl_smtp_rcpt = check_recipient
 acl_smtp_mail = check_mail
@@ -23,6 +24,9 @@ check_mail:
   warn    dnslists = rbl4.test.ex&0.0.0.6
   warn    dnslists = rbl4.test.ex&127.0.0.3
   warn    dnslists = rbl4.test.ex!&0.0.0.7
+          add_header = DNSlist: $dnslist_domain $dnslist_text
+  warn    dnslists = rbl5.test.ex,rbl4.test.ex=127.0.0.128
+          add_header = DNSlist: $dnslist_domain $dnslist_text
   accept
 
 check_recipient:

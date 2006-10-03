@@ -1,4 +1,4 @@
-; $Cambridge: exim/test/dnszones-src/db.test.ex,v 1.4 2006/04/18 11:13:19 ph10 Exp $
+; $Cambridge: exim/test/dnszones-src/db.test.ex,v 1.5 2006/10/03 15:11:22 ph10 Exp $
 
 ; This is a testing zone file for use when testing DNS handling in Exim. This
 ; is a fake zone of no real use - hence no SOA record. The zone name is
@@ -176,6 +176,11 @@ recurse.test.ex   A  V4NET.99.0.2
 
 20.12.11.V4NET.rbl4   A   127.0.0.6
 21.12.11.V4NET.rbl4   A   127.0.0.7
+22.12.11.V4NET.rbl4   A   127.0.0.128
+                      TXT "This is a test blacklisting4 message"
+
+22.12.11.V4NET.rbl5   A   127.0.0.1
+                      TXT "This is a test blacklisting5 message"
 
 1.13.13.V4NET.rbl     CNAME non-exist.test.ex.
 2.13.13.V4NET.rbl     A   127.0.0.1

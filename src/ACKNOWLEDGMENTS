@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.56 2006/10/02 13:38:18 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.57 2006/10/03 15:11:22 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  02 October 2006
+Last updated:  03 October 2006
 
 
 THE OLD LIST
@@ -100,6 +100,7 @@ Michael Deutschmann       Suggested patch for treating bind() failure like conne
                           Patch for $sender_data and $recipient_data
                           Suggested patch for null address match lookup bug
                           Suggested patch for verify = not_blind
+                          Patch for alternate TXT lookup in DNS lists
 Oliver Eikemeier          Patch to skip Received: if expansion is empty
                           Patch for "eqi"
 Nico Erfurth              Fix for bug in ${readfile}

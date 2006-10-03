@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.114 2006/10/03 08:54:50 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.115 2006/10/03 15:11:22 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -74,7 +74,49 @@ Version 4.64
 
 4. The variable $message_headers_raw provides a concatenation of all the
    messages's headers without any decoding. This is in contrast to
-   $message_headers, which does RFC2047 encoding on the header contents.
+   $message_headers, which does RFC2047 decoding on the header contents.
+
+5. In a DNS black list, when the facility for restricting the matching IP
+   values is used, the text from the TXT record that is set in $dnslist_text
+   may not reflect the true reason for rejection. This happens when lists are
+   merged and the IP address in the A record is used to distinguish them;
+   unfortunately there is only one TXT record. One way round this is not to use
+   merged lists, but that can be inefficient because it requires multiple DNS
+   lookups where one would do in the vast majority of cases when the host of
+   interest is not on any of the lists.
+
+   A less inefficient way of solving this problem has now been implemented. If
+   two domain names, comma-separated, are given, the second is used first to do
+   an initial check, making use of any IP value restrictions that are set. If
+   there is a match, the first domain is used, without any IP value
+   restrictions, to get the TXT record. As a byproduct of this, there is also a
+   check that the IP being tested is indeed on the first list. The first domain
+   is the one that is put in $dnslist_domain. For example:
+
+     reject message  = rejected because $sender_ip_address is blacklisted \
+                       at $dnslist_domain\n$dnslist_text
+            dnslists = sbl.spamhaus.org,sbl-xbl.spamhaus.org=127.0.0.2 : \
+                       dul.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.10
+
+   For the first blacklist item, this starts by doing a lookup in
+   sbl-xbl.spamhaus.org and testing for a 127.0.0.2 return. If there is a
+   match, it then looks in sbl.spamhaus.org, without checking the return value,
+   and as long as something is found, it looks for the corresponding TXT
+   record. If there is no match in sbl-xbl.spamhaus.org, nothing more is done.
+   The second blacklist item is processed similarly.
+
+   If you are interested in more than one merged list, the same list must be
+   given several times, but because the results of the DNS lookups are cached,
+   the DNS calls themselves are not repeated. For example:
+
+     reject dnslists = http.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.2 : \
+                      socks.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.3 : \
+                       misc.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.4 : \
+                        dul.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.10
+
+   In this case there is a lookup in dnsbl.sorbs.net, and if none of the IP
+   values matches (or if no record is found), this is the only lookup that is
+   done. Only if there is a match is one of the more specific lists consulted.
 
 
 Version 4.63

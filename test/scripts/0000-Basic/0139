@@ -24,4 +24,12 @@ exim -bh V4NET.11.12.21
 mail from:<postmaster@exim.test.ex>
 quit
 ****
+exim -odi -bs -oMa V4NET.11.12.22
+mail from:<postmaster@exim.test.ex>
+rcpt to:<userx@exim.test.ex>
+data
+test data
+.
+quit
+****
 no_msglog_check

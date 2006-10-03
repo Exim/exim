@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.40 2006/10/03 10:25:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.41 2006/10/03 15:11:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2483,6 +2483,12 @@ else
     }
   }
 #endif
+
+/* Remove trailing period -- this is needed so that both arbitrary
+dnsbl keydomains and inverted addresses may be combined with the
+same format string, "%s.%s" */
+
+*(--bptr) = 0;
 }
 
 
@@ -2491,13 +2497,19 @@ else
 *          Perform a single dnsbl lookup         *
 *************************************************/
 
-/* This function is called from verify_check_dnsbl() below.
+/* This function is called from verify_check_dnsbl() below. It is also called
+recursively from within itself when domain and domain_txt are different
+pointers, in order to get the TXT record from the alternate domain.
 
 Arguments:
-  domain         the outer dnsbl domain (for debug message)
+  domain         the outer dnsbl domain
+  domain_txt     alternate domain to lookup TXT record on success; when the
+                   same domain is to be used, domain_txt == domain (that is,
+                   the pointers must be identical, not just the text)
   keydomain      the current keydomain (for debug message)
-  query          the domain to be looked up
-  iplist         the list of matching IP addresses
+  prepend        subdomain to lookup (like keydomain, but
+                   reversed if IP address)
+  iplist         the list of matching IP addresses, or NULL for "any"
   bitmask        true if bitmask matching is wanted
   invert_result  true if result to be inverted
   defer_return   what to return for a defer
@@ -2507,14 +2519,25 @@ Returns:         OK if lookup succeeded
 */
 
 static int
-one_check_dnsbl(uschar *domain, uschar *keydomain, uschar *query,
-  uschar *iplist, BOOL bitmask, BOOL invert_result, int defer_return)
+one_check_dnsbl(uschar *domain, uschar *domain_txt, uschar *keydomain,
+  uschar *prepend, uschar *iplist, BOOL bitmask, BOOL invert_result,
+  int defer_return)
 {
 dns_answer dnsa;
 dns_scan dnss;
 tree_node *t;
 dnsbl_cache_block *cb;
 int old_pool = store_pool;
+uschar query[256];         /* DNS domain max length */
+
+/* Construct the specific query domainname */
+
+if (!string_format(query, sizeof(query), "%s.%s", prepend, domain))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "dnslist query is too long "
+    "(ignored): %s...", query);
+  return FAIL;
+  }
 
 /* Look for this query in the cache. */
 
@@ -2679,8 +2702,18 @@ if (cb->rc == DNS_SUCCEED)
       }
     }
 
-  /* Either there was no IP list, or the record matched. Look up a TXT record
-  if it hasn't previously been done. */
+  /* Either there was no IP list, or the record matched, implying that the
+  domain is on the list. We now want to find a corresponding TXT record. If an
+  alternate domain is specified for the TXT record, call this function
+  recursively to look that up; this has the side effect of re-checking that
+  there is indeed an A record at the alternate domain. */
+
+  if (domain_txt != domain)
+    return one_check_dnsbl(domain_txt, domain_txt, keydomain, prepend, NULL,
+      FALSE, invert_result, defer_return);
+
+  /* If there is no alternate domain, look up a TXT record in the main domain
+  if it has not previously been cached. */
 
   if (!cb->text_set)
     {
@@ -2751,7 +2784,7 @@ given, comma-separated, for example: x.y.z=127.0.0.1,127.0.0.2.
 
 If no key is given, what is looked up in the domain is the inverted IP address
 of the current client host. If a key is given, it is used to construct the
-domain for the lookup. For example,
+domain for the lookup. For example:
 
   dsn.rfc-ignorant.org/$sender_address_domain
 
@@ -2759,6 +2792,17 @@ After finding a match in the DNS, the domain is placed in $dnslist_domain, and
 then we check for a TXT record for an error message, and if found, save its
 value in $dnslist_text. We also cache everything in a tree, to optimize
 multiple lookups.
+
+The TXT record is normally looked up in the same domain as the A record, but
+when many lists are combined in a single DNS domain, this will not be a very
+specific message. It is possible to specify a different domain for looking up
+TXT records; this is given before the main domain, comma-separated. For
+example:
+
+  dnslists = http.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.2 : \
+             socks.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.3
+
+The caching ensures that only one lookup in dnsbl.sorbs.net is done.
 
 Note: an address for testing RBL is 192.203.178.39
 Note: an address for testing DUL is 192.203.178.4
@@ -2784,7 +2828,6 @@ uschar *list = *listptr;
 uschar *domain;
 uschar *s;
 uschar buffer[1024];
-uschar query[256];         /* DNS domain max length */
 uschar revadd[128];        /* Long enough for IPv6 address */
 
 /* Indicate that the inverted IP address is not yet set up */
@@ -2800,8 +2843,9 @@ dns_init(FALSE, FALSE);
 while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
   {
   int rc;
-  BOOL frc;
   BOOL bitmask = FALSE;
+  uschar *domain_txt;
+  uschar *comma;
   uschar *iplist;
   uschar *key;
 
@@ -2846,6 +2890,18 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
     *iplist++ = 0;
     }
 
+  /* If there is a comma in the domain, it indicates that a second domain for
+  looking up TXT records is provided, before the main domain. Otherwise we must
+  set domain_txt == domain. */
+
+  domain_txt = domain;
+  comma = Ustrchr(domain, ',');
+  if (comma != NULL)
+    {
+    *comma++ = 0;
+    domain = comma;
+    }
+
   /* Check that what we have left is a sensible domain name. There is no reason
   why these domains should in fact use the same syntax as hosts and email
   domains, but in practice they seem to. However, there is little point in
@@ -2862,6 +2918,18 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
       }
     }
 
+  /* Check the alternate domain if present */
+
+  if (domain_txt != domain) for (s = domain_txt; *s != 0; s++)
+    {
+    if (!isalnum(*s) && *s != '-' && *s != '.')
+      {
+      log_write(0, LOG_MAIN, "dnslists domain \"%s\" contains "
+        "strange characters - is this right?", domain_txt);
+      break;
+      }
+    }
+
   /* If there is no key string, construct the query by adding the domain name
   onto the inverted host address, and perform a single DNS lookup. */
 
@@ -2869,25 +2937,14 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
     {
     if (sender_host_address == NULL) return FAIL;    /* can never match */
     if (revadd[0] == 0) invert_address(revadd, sender_host_address);
-    frc = string_format(query, sizeof(query), "%s%s", revadd, domain);
-
-    if (!frc)
-      {
-      log_write(0, LOG_MAIN|LOG_PANIC, "dnslist query is too long "
-        "(ignored): %s...", query);
-      continue;
-      }
-
-    rc = one_check_dnsbl(domain, sender_host_address, query, iplist, bitmask,
-      invert_result, defer_return);
-
+    rc = one_check_dnsbl(domain, domain_txt, sender_host_address, revadd,
+      iplist, bitmask, invert_result, defer_return);
     if (rc == OK)
       {
-      dnslist_domain = string_copy(domain);
+      dnslist_domain = string_copy(domain_txt);
       HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n",
-        sender_host_address, domain);
+        sender_host_address, dnslist_domain);
       }
-
     if (rc != FAIL) return rc;     /* OK or DEFER */
     }
 
@@ -2900,36 +2957,27 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
     BOOL defer = FALSE;
     uschar *keydomain;
     uschar keybuffer[256];
+    uschar keyrevadd[128];
 
     while ((keydomain = string_nextinlist(&key, &keysep, keybuffer,
             sizeof(keybuffer))) != NULL)
       {
+      uschar *prepend = keydomain;
+
       if (string_is_ip_address(keydomain, NULL) != 0)
         {
-        uschar keyrevadd[128];
         invert_address(keyrevadd, keydomain);
-        frc = string_format(query, sizeof(query), "%s%s", keyrevadd, domain);
-        }
-      else
-        {
-        frc = string_format(query, sizeof(query), "%s.%s", keydomain, domain);
+        prepend = keyrevadd;
         }
 
-      if (!frc)
-        {
-        log_write(0, LOG_MAIN|LOG_PANIC, "dnslist query is too long "
-          "(ignored): %s...", query);
-        continue;
-        }
-
-      rc = one_check_dnsbl(domain, keydomain, query, iplist, bitmask,
-        invert_result, defer_return);
+      rc = one_check_dnsbl(domain, domain_txt, keydomain, prepend, iplist,
+        bitmask, invert_result, defer_return);
 
       if (rc == OK)
         {
-        dnslist_domain = string_copy(domain);
+        dnslist_domain = string_copy(domain_txt);
         HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n",
-          keydomain, domain);
+          keydomain, dnslist_domain);
         return OK;
         }
 
