@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.113 2006/10/02 14:30:29 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.114 2006/10/03 08:54:50 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -71,6 +71,10 @@ Version 4.64
        public_name = NTLM
        server_name = /var/run/dovecot/auth-client
        server_setid = $auth1
+
+4. The variable $message_headers_raw provides a concatenation of all the
+   messages's headers without any decoding. This is in contrast to
+   $message_headers, which does RFC2047 encoding on the header contents.
 
 
 Version 4.63

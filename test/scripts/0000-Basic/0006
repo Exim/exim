@@ -1,4 +1,4 @@
-# -bS to several local deliveries
+# -bS to several local deliveries and $message_headers[_raw]
 exim -bS -odi
 mail from:someone@some.where
 rcpt to:blackhole@HOSTNAME
@@ -22,6 +22,7 @@ rcpt to:blackhole@HOSTNAME
 DATA
 From:<someone@some.where>
 To: Recipients not given:;
+X-Test: (=?iso-8859-8?b?7eXs+SDv4SDp7Oj08A==?=)
 
 Yet more text.
 .

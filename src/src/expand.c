@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.62 2006/09/19 14:31:07 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.63 2006/10/03 08:54:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -274,7 +274,8 @@ enum {
   vtype_stringptr,      /* value is address of pointer to string */
   vtype_msgbody,        /* as stringptr, but read when first required */
   vtype_msgbody_end,    /* ditto, the end of the message */
-  vtype_msgheaders,     /* the message's headers */
+  vtype_msgheaders,     /* the message's headers, processed */
+  vtype_msgheaders_raw, /* the message's headers, unprocessed */
   vtype_localpart,      /* extract local part from string */
   vtype_domain,         /* extract domain from string */
   vtype_recipients,     /* extract recipients from recipients list */
@@ -385,6 +386,7 @@ static var_entry var_table[] = {
   { "message_body_size",   vtype_int,         &message_body_size },
   { "message_exim_id",     vtype_stringptr,   &message_id },
   { "message_headers",     vtype_msgheaders,  NULL },
+  { "message_headers_raw", vtype_msgheaders_raw, NULL },
   { "message_id",          vtype_stringptr,   &message_id },
   { "message_linecount",   vtype_int,         &message_linecount },
   { "message_size",        vtype_int,         &message_size },
@@ -1078,7 +1080,8 @@ Arguments:
   newsize       return the size of memory block that was obtained; may be NULL
                 if exists_only is TRUE
   want_raw      TRUE if called for $rh_ or $rheader_ variables; no processing,
-                other than concatenating, will be done on the header
+                other than concatenating, will be done on the header. Also used
+                for $message_headers_raw.
   charset       name of charset to translate MIME words to; used only if
                 want_raw is false; if NULL, no translation is done (this is
                 used for $bh_ and $bheader_)
@@ -1384,6 +1387,9 @@ while (last > first)
 
     case vtype_msgheaders:
     return find_header(NULL, exists_only, newsize, FALSE, NULL);
+
+    case vtype_msgheaders_raw:
+    return find_header(NULL, exists_only, newsize, TRUE, NULL);
 
     case vtype_msgbody:                        /* Pointer to msgbody string */
     case vtype_msgbody_end:                    /* Ditto, the end of the msg */

@@ -41,7 +41,8 @@ local_delivery:
   envelope_to_add
   file = DIR/test-mail/$local_part
   return_path_add
-  headers_add = \nMessage Headers:\n$message_headers\n
+  headers_add = \nMessage Headers:\n$message_headers\n\
+                \nRaw Message Headers:\n$message_headers_raw\n
 
 address_file:
   driver = appendfile
