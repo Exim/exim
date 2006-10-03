@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.39 2006/09/25 11:25:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.40 2006/10/03 10:25:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1009,10 +1009,16 @@ information about the top level address, not anything that it generated. */
 while (addr_new != NULL)
   {
   int rc;
+  uschar *show_address;
   address_item *addr = addr_new;
 
   addr_new = addr->next;
   addr->next = NULL;
+
+  /* When full_info is set, child addresses are displayed in top-level
+  messages. Otherwise, we show only the top level address. */
+
+  show_address = full_info? addr->address : address;
 
   DEBUG(D_verify)
     {
@@ -1207,14 +1213,24 @@ while (addr_new != NULL)
     allok = FALSE;
     if (f != NULL)
       {
-      fprintf(f, "%s%s %s", ko_prefix, address,
+      address_item *p = addr->parent;
+
+      fprintf(f, "%s%s %s", ko_prefix, show_address,
         address_test_mode? "is undeliverable" : "failed to verify");
       if (!expn && admin_user)
         {
         if (addr->basic_errno > 0)
           fprintf(f, ": %s", strerror(addr->basic_errno));
         if (addr->message != NULL)
-          fprintf(f, ":\n  %s", addr->message);
+          fprintf(f, ": %s", addr->message);
+        }
+
+      /* Show parents iff doing full info */
+
+      if (full_info) while (p != NULL)
+        {
+        fprintf(f, "%s\n    <-- %s", cr, p->address);
+        p = p->parent;
         }
       fprintf(f, "%s\n", cr);
       }
@@ -1230,25 +1246,35 @@ while (addr_new != NULL)
     allok = FALSE;
     if (f != NULL)
       {
-      fprintf(f, "%s%s cannot be resolved at this time", ko_prefix, address);
+      address_item *p = addr->parent;
+      fprintf(f, "%s%s cannot be resolved at this time", ko_prefix,
+        show_address);
       if (!expn && admin_user)
         {
         if (addr->basic_errno > 0)
-          fprintf(f, ":\n  %s", strerror(addr->basic_errno));
+          fprintf(f, ": %s", strerror(addr->basic_errno));
         if (addr->message != NULL)
-          fprintf(f, ":\n  %s", addr->message);
+          fprintf(f, ": %s", addr->message);
         else if (addr->basic_errno <= 0)
-          fprintf(f, ":\n  unknown error");
+          fprintf(f, ": unknown error");
         }
 
+      /* Show parents iff doing full info */
+
+      if (full_info) while (p != NULL)
+        {
+        fprintf(f, "%s\n    <-- %s", cr, p->address);
+        p = p->parent;
+        }
       fprintf(f, "%s\n", cr);
       }
+
     if (!full_info) return copy_error(vaddr, addr, DEFER);
       else if (yield == OK) yield = DEFER;
     }
 
   /* If we are handling EXPN, we do not want to continue to route beyond
-  the top level. */
+  the top level (whose address is in "address"). */
 
   else if (expn)
     {
@@ -1295,7 +1321,7 @@ while (addr_new != NULL)
          (addr_new != NULL &&            /* At least one new address AND */
           success_on_redirect)))         /* success_on_redirect is set */
       {
-      if (f != NULL) fprintf(f, "%s %s\n", address,
+      if (f != NULL) fprintf(f, "%s %s\n", show_address,
         address_test_mode? "is deliverable" : "verified");
 
       /* If we have carried on to verify a child address, we want the value

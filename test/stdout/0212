@@ -1,17 +1,13 @@
 > a@test.ex verified
-> b@test.ex failed to verify:
-  Unrouteable address
-> f@test.ex failed to verify:
-  bad user
+> b@test.ex failed to verify: Unrouteable address
+> f@test.ex failed to verify: bad user
 > p@test.ex verified
-> x@test.ex failed to verify:
-  Unrouteable address
+> x@test.ex failed to verify: Unrouteable address
 > y@test.ex verified
 > pipe@test.ex verified
 > file@test.ex verified
 > "smartuser.a@test.ex"@test.ex verified
-> "smartuser.b@test.ex"@test.ex failed to verify:
-  Unrouteable address
+> "smartuser.b@test.ex"@test.ex failed to verify: Unrouteable address
 > "smartuser.b@test.ex,a@test.ex"@test.ex verified
 > 
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
@@ -40,3 +36,15 @@
 550 <"smartuser.b@test.ex"@test.ex> Unrouteable address
 250 <"smartuser.b@test.ex,a@test.ex"@test.ex> is deliverable
 221 the.local.host.name closing connection
+v1@test.ex verified
+v2@test.ex verified
+a3@test.ex failed to verify: bad user
+    <-- v1@test.ex
+userx@test.ex
+    <-- v1@test.ex
+  router = all, transport = local_delivery
+a3@test.ex failed to verify: bad user
+    <-- v2@test.ex
+userx@test.ex   [duplicate, would not be delivered]
+    <-- v2@test.ex
+  router = all, transport = local_delivery

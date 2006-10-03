@@ -6,3 +6,5 @@ f1:    :fail: bad user
 p:     userx
 pipe:  |/bin/nosuchfile
 file:  /tmp/junk
+v1:    a3, userx
+v2:    userx, a3

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.401 2006/10/03 08:54:50 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.402 2006/10/03 10:25:55 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -81,6 +81,15 @@ PH/12 Installed Andrey Panin's patch to add a dovecot authenticator. Various
 
 PH/13 Added $message_headers_raw to provide the headers without RFC 2047
       decoding.
+
+PH/14 Corrected misleading output from -bv when -v was also used. Suppose the
+      address A is aliased to B and C, where B exists and C does not. Without
+      -v the output is "A verified" because verification stops after a
+      successful redirection if more than one address is generated. However,
+      with -v the child addresses are also verified. Exim was outputting "A
+      failed to verify" and then showing the successful verification for C,
+      with its parentage. It now outputs "B failed to verify", showing B's
+      parentage before showing the successful verification of C.
 
 
 Exim version 4.63

@@ -40,3 +40,10 @@ vrfy <"smartuser.b@test.ex"@test.ex>
 vrfy <"smartuser.b@test.ex,a@test.ex"@test.ex>
 quit
 ****
+# Check fail/non-fail without and with -v
+0
+exim -bv v1 v2
+****
+2
+exim -v -bv v1 v2
+****
