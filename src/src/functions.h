@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.27 2006/09/19 11:28:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.28 2006/10/09 14:36:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -116,7 +116,7 @@ extern void    host_build_hostlist(host_item **, uschar *, BOOL);
 extern ip_address_item *host_build_ifacelist(uschar *, uschar *);
 extern void    host_build_log_info(void);
 extern void    host_build_sender_fullhost(void);
-extern BOOL    host_find_byname(host_item *, uschar *, uschar **, BOOL);
+extern BOOL    host_find_byname(host_item *, uschar *, int, uschar **, BOOL);
 extern int     host_find_bydns(host_item *, uschar *, int, uschar *, uschar *,
                  uschar *,uschar **, BOOL *);
 extern ip_address_item *host_find_interfaces(void);

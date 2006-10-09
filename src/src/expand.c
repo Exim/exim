@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.63 2006/10/03 08:54:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.64 2006/10/09 14:36:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3748,7 +3748,8 @@ while (*s != 0)
           else
             {
             shost.name = server_name;
-            if (host_find_byname(&shost, NULL, NULL, FALSE) != HOST_FOUND)
+            if (host_find_byname(&shost, NULL, HOST_FIND_QUALIFY_SINGLE, NULL,
+                FALSE) != HOST_FOUND)
               {
               expand_string_message =
                 string_sprintf("no IP address found for host %s", shost.name);

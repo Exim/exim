@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.403 2006/10/03 15:11:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.404 2006/10/09 14:36:25 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -94,6 +94,20 @@ PH/14 Corrected misleading output from -bv when -v was also used. Suppose the
 PH/15 Applied Michael Deutschmann's patch to allow DNS black list processing to
       look up a TXT record in a specific list after matching in a combined
       list.
+
+PH/16 It seems that the options setting for the resolver (RES_DEFNAMES and
+      RES_DNSRCH) can affect the behaviour of gethostbyname() and friends when
+      they consult the DNS. I had assumed they would set it the way they
+      wanted; and indeed my experiments on Linux seem to show that in some
+      cases they do (I could influence IPv6 lookups but not IPv4 lookups).
+      To be on the safe side, however, I have now made the interface to
+      host_find_byname() similar to host_find_bydns(), with an argument
+      containing the DNS resolver options. The host_find_byname() function now
+      sets these options at its start, just as host_find_bydns() does. The smtp
+      transport options dns_qualify_single and dns_search_parents are passed to
+      host_find_byname() when gethostbyname=TRUE in this transport. Other uses
+      of host_find_byname() use the default settings of RES_DEFNAMES
+      (qualify_single) but not RES_DNSRCH (search_parents).
 
 
 Exim version 4.63

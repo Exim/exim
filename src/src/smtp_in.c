@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.44 2006/09/25 10:14:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.45 2006/10/09 14:36:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2119,7 +2119,7 @@ else
     h.next = NULL;
     HDEBUG(D_receive) debug_printf("getting IP address for %s\n",
       sender_helo_name);
-    rc = host_find_byname(&h, NULL, NULL, TRUE);
+    rc = host_find_byname(&h, NULL, 0, NULL, TRUE);
     if (rc == HOST_FOUND || rc == HOST_FOUND_LOCAL)
       {
       host_item *hh = &h;

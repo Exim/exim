@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.41 2006/10/03 15:11:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.42 2006/10/09 14:36:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1009,16 +1009,10 @@ information about the top level address, not anything that it generated. */
 while (addr_new != NULL)
   {
   int rc;
-  uschar *show_address;
   address_item *addr = addr_new;
 
   addr_new = addr->next;
   addr->next = NULL;
-
-  /* When full_info is set, child addresses are displayed in top-level
-  messages. Otherwise, we show only the top level address. */
-
-  show_address = full_info? addr->address : address;
 
   DEBUG(D_verify)
     {
@@ -1141,6 +1135,7 @@ while (addr_new != NULL)
             }
           else
             {
+            int flags;
             uschar *canonical_name;
             host_item *host, *nexthost;
             host_build_hostlist(&host_list, s, tf.hosts_randomize);
@@ -1151,20 +1146,19 @@ while (addr_new != NULL)
             additional host items being inserted into the chain. Hence we must
             save the next host first. */
 
+            flags = HOST_FIND_BY_A;
+            if (tf.qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
+            if (tf.search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
+
             for (host = host_list; host != NULL; host = nexthost)
               {
               nexthost = host->next;
               if (tf.gethostbyname ||
                   string_is_ip_address(host->name, NULL) != 0)
-                (void)host_find_byname(host, NULL, &canonical_name, TRUE);
+                (void)host_find_byname(host, NULL, flags, &canonical_name, TRUE);
               else
-                {
-                int flags = HOST_FIND_BY_A;
-                if (tf.qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
-                if (tf.search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
                 (void)host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
                   &canonical_name, NULL);
-                }
               }
             }
           }
@@ -1215,7 +1209,7 @@ while (addr_new != NULL)
       {
       address_item *p = addr->parent;
 
-      fprintf(f, "%s%s %s", ko_prefix, show_address,
+      fprintf(f, "%s%s %s", ko_prefix, full_info? addr->address : address,
         address_test_mode? "is undeliverable" : "failed to verify");
       if (!expn && admin_user)
         {
@@ -1248,7 +1242,7 @@ while (addr_new != NULL)
       {
       address_item *p = addr->parent;
       fprintf(f, "%s%s cannot be resolved at this time", ko_prefix,
-        show_address);
+        full_info? addr->address : address);
       if (!expn && admin_user)
         {
         if (addr->basic_errno > 0)
@@ -1321,7 +1315,7 @@ while (addr_new != NULL)
          (addr_new != NULL &&            /* At least one new address AND */
           success_on_redirect)))         /* success_on_redirect is set */
       {
-      if (f != NULL) fprintf(f, "%s %s\n", show_address,
+      if (f != NULL) fprintf(f, "%s %s\n", address,
         address_test_mode? "is deliverable" : "verified");
 
       /* If we have carried on to verify a child address, we want the value
@@ -2223,7 +2217,7 @@ if (*t == 0)
   h.address = NULL;
   h.mx = MX_NONE;
 
-  rc = host_find_byname(&h, NULL, NULL, FALSE);
+  rc = host_find_byname(&h, NULL, HOST_FIND_QUALIFY_SINGLE, NULL, FALSE);
   if (rc == HOST_FOUND || rc == HOST_FOUND_LOCAL)
     {
     host_item *hh;

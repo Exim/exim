@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.25 2006/09/05 14:05:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.26 2006/10/09 14:36:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1763,11 +1763,11 @@ for (hname = sender_host_name; hname != NULL; hname = *aliases++)
   h.mx = MX_NONE;
   h.address = NULL;
 
-  /* When called with the 5th argument FALSE, host_find_byname() won't return
+  /* When called with the last argument FALSE, host_find_byname() won't return
   HOST_FOUND_LOCAL. If the incoming address is an IPv4 address expressed in
   IPv6 format, we must compare the IPv4 part to any IPv4 addresses. */
 
-  if ((rc = host_find_byname(&h, NULL, NULL, FALSE)) == HOST_FOUND)
+  if ((rc = host_find_byname(&h, NULL, 0, NULL, FALSE)) == HOST_FOUND)
     {
     host_item *hh;
     HDEBUG(D_host_lookup) debug_printf("checking addresses for %s\n", hname);
@@ -1848,9 +1848,12 @@ return FAIL;
 *************************************************/
 
 /* The input is a host_item structure with the name filled in and the address
-field set to NULL. We use gethostbyname(). Of course, gethostbyname() may use
-the DNS, but it doesn't do MX processing. If more than one address is given,
-chain on additional host items, with other relevant fields copied.
+field set to NULL. We use gethostbyname() or getipnodebyname() or
+gethostbyname2(), as appropriate. Of course, these functions may use the DNS,
+but they do not do MX processing. It appears, however, that in some systems the
+current setting of resolver options is used when one of these functions calls
+the resolver. For this reason, we call dns_init() at the start, with arguments
+influenced by bits in "flags", just as we do for host_find_bydns().
 
 The second argument provides a host list (usually an IP list) of hosts to
 ignore. This makes it possible to ignore IPv6 link-local addresses or loopback
@@ -1867,6 +1870,8 @@ Arguments:
                            multiple IP addresses cause other host items to be
                              chained on.
   ignore_target_hosts    a list of hosts to ignore
+  flags                  HOST_FIND_QUALIFY_SINGLE   ) passed to
+                         HOST_FIND_SEARCH_PARENTS   )   dns_init()
   fully_qualified_name   if not NULL, set to point to host name for
                          compatibility with host_find_bydns
   local_host_check       TRUE if a check for the local host is wanted
@@ -1878,7 +1883,7 @@ Returns:                 HOST_FIND_FAILED  Failed to find the host or domain
 */
 
 int
-host_find_byname(host_item *host, uschar *ignore_target_hosts,
+host_find_byname(host_item *host, uschar *ignore_target_hosts, int flags,
   uschar **fully_qualified_name, BOOL local_host_check)
 {
 int i, yield, times;
@@ -1899,6 +1904,12 @@ if (running_in_test_harness)
   if (Ustrcmp(endname - 14, "test.again.dns") == 0) goto RETURN_AGAIN;
   }
 
+/* Make sure DNS options are set as required. This appears to be necessary in
+some circumstances when the get..byname() function actually calls the DNS. */
+
+dns_init((flags & HOST_FIND_QUALIFY_SINGLE) != 0,
+         (flags & HOST_FIND_SEARCH_PARENTS) != 0);
+
 /* In an IPv6 world, unless IPv6 has been disabled, we need to scan for both
 kinds of address, so go round the loop twice. Note that we have ensured that
 AF_INET6 is defined even in an IPv4 world, which makes for slightly tidier
@@ -1906,14 +1917,17 @@ code. However, if dns_ipv4_lookup matches the domain, we also just do IPv4
 lookups here (except when testing standalone). */
 
 #if HAVE_IPV6
-  #ifndef STAND_ALONE
-  if (disable_ipv6 || (dns_ipv4_lookup != NULL &&
+  #ifdef STAND_ALONE
+  if (disable_ipv6)
+  #else
+  if (disable_ipv6 ||
+    (dns_ipv4_lookup != NULL &&
         match_isinlist(host->name, &dns_ipv4_lookup, 0, NULL, NULL, MCL_DOMAIN,
           TRUE, NULL) == OK))
+  #endif
+
     { af = AF_INET; times = 1; }
   else
-  #endif  /* STAND_ALONE */
-
     { af = AF_INET6; times = 2; }
 
 /* No IPv6 support */
@@ -1938,6 +1952,10 @@ for (i = 1; i <= times;
   BOOL ipv4_addr;
   int error_num = 0;
   struct hostent *hostdata;
+
+  #ifdef STAND_ALONE
+  printf("Looking up: %s\n", host->name);
+  #endif
 
   #if HAVE_IPV6
   if (running_in_test_harness)
@@ -2976,6 +2994,7 @@ BOOL search_parents = FALSE;
 uschar **argv = USS cargv;
 uschar buffer[256];
 
+disable_ipv6 = FALSE;
 primary_hostname = US"";
 store_pool = POOL_MAIN;
 debug_selector = D_host_lookup|D_interface;
@@ -3023,6 +3042,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
   else if (Ustrcmp(buffer, "no_search_parents") == 0) search_parents = FALSE;
   else if (Ustrcmp(buffer, "test_harness") == 0)
     running_in_test_harness = !running_in_test_harness;
+  else if (Ustrcmp(buffer, "ipv6") == 0) disable_ipv6 = !disable_ipv6;
   else if (Ustrcmp(buffer, "res_debug") == 0)
     {
     _res.options ^= RES_DEBUG;
@@ -3053,7 +3073,7 @@ while (Ufgets(buffer, 256, stdin) != NULL)
     if (search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
 
     rc = byname?
-      host_find_byname(&h, NULL, &fully_qualified_name, TRUE)
+      host_find_byname(&h, NULL, flags, &fully_qualified_name, TRUE)
       :
       host_find_bydns(&h, NULL, flags, US"smtp", NULL, NULL,
         &fully_qualified_name, NULL);

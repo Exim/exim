@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/route.c,v 1.10 2006/07/17 09:21:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/route.c,v 1.11 2006/10/09 14:36:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1884,7 +1884,7 @@ if (r->translate_ip_address != NULL)
     h->mx = MX_NONE;
 
     store_pool = POOL_PERM;
-    rc = host_find_byname(h, NULL, NULL, TRUE);
+    rc = host_find_byname(h, NULL, HOST_FIND_QUALIFY_SINGLE, NULL, TRUE);
     store_pool = old_pool;
 
     if (rc == HOST_FIND_FAILED || rc == HOST_FIND_AGAIN)

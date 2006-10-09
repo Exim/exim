@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.18 2006/04/27 08:53:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.19 2006/10/09 14:36:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -599,10 +599,10 @@ host.next = NULL;
 until one succeeds. However, it appears that at least on some systems, comsat
 doesn't listen on the ::1 address. So for the moment, just force the address to
 be 127.0.0.1. At some future stage, when IPv6 really is superseding IPv4, this
-can be changed. */
+can be changed. (But actually, comsat is probably dying out anyway.) */
 
 /******
-if (host_find_byname(&host, NULL, NULL, FALSE) == HOST_FIND_FAILED)
+if (host_find_byname(&host, NULL, 0, NULL, FALSE) == HOST_FIND_FAILED)
   {
   DEBUG(D_transport) debug_printf("\"localhost\" unknown\n");
   return;

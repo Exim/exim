@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.26 2006/09/25 11:25:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.27 2006/10/09 14:36:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2311,7 +2311,7 @@ for (cutoff_retry = 0; expired &&
 
     if (host->address == NULL)
       {
-      int new_port;
+      int new_port, flags;
       host_item *hh;
       uschar *canonical_name;
 
@@ -2336,16 +2336,15 @@ for (cutoff_retry = 0; expired &&
       /* Find by name if so configured, or if it's an IP address. We don't
       just copy the IP address, because we need the test-for-local to happen. */
 
+      flags = HOST_FIND_BY_A;
+      if (ob->dns_qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
+      if (ob->dns_search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
+
       if (ob->gethostbyname || string_is_ip_address(host->name, NULL) != 0)
-        rc = host_find_byname(host, NULL, &canonical_name, TRUE);
+        rc = host_find_byname(host, NULL, flags, &canonical_name, TRUE);
       else
-        {
-        int flags = HOST_FIND_BY_A;
-        if (ob->dns_qualify_single) flags |= HOST_FIND_QUALIFY_SINGLE;
-        if (ob->dns_search_parents) flags |= HOST_FIND_SEARCH_PARENTS;
         rc = host_find_bydns(host, NULL, flags, NULL, NULL, NULL,
           &canonical_name, NULL);
-        }
 
       /* Update the host (and any additional blocks, resulting from
       multihoming) with a host-specific port, if any. */

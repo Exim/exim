@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/rf_lookup_hostlist.c,v 1.6 2006/02/07 11:19:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/rf_lookup_hostlist.c,v 1.7 2006/10/09 14:36:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -106,7 +106,8 @@ for (h = addr->host_list; h != NULL; prev = h, h = next_h)
   else if (lookup_type == lk_byname || string_is_ip_address(h->name, NULL) != 0)
     {
     DEBUG(D_route|D_host_lookup) debug_printf("calling host_find_byname\n");
-    rc = host_find_byname(h, ignore_target_hosts, &canonical_name, TRUE);
+    rc = host_find_byname(h, ignore_target_hosts, HOST_FIND_QUALIFY_SINGLE,
+      &canonical_name, TRUE);
     }
 
   /* Otherwise, do a DNS lookup. If that yields "host not found", and the
@@ -129,7 +130,8 @@ for (h = addr->host_list; h != NULL; prev = h, h = next_h)
         {
         DEBUG(D_route|D_host_lookup)
           debug_printf("DNS lookup failed: trying getipnodebyname\n");
-        rc = host_find_byname(h, ignore_target_hosts, &canonical_name, TRUE);
+        rc = host_find_byname(h, ignore_target_hosts, HOST_FIND_QUALIFY_SINGLE,
+          &canonical_name, TRUE);
         }
       }
     }
