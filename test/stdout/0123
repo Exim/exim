@@ -1,6 +1,3 @@
-x@test.ex is undeliverable:
-  Unrouteable address
-y@test.ex is undeliverable:
-  Unrouteable address
-z@test.ex is undeliverable:
-  Unrouteable address
+x@test.ex is undeliverable: Unrouteable address
+y@test.ex is undeliverable: Unrouteable address
+z@test.ex is undeliverable: Unrouteable address

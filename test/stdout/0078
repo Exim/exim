@@ -7,5 +7,4 @@ myhost.test.ex@mxt1.test.ex
 xx@mxt1.test.ex
   router = self2, transport = remote_smtp
   host myhost.test.ex [V4NET.10.10.10] 
-xx@not.exist is undeliverable:
-  Unrouteable address
+xx@not.exist is undeliverable: Unrouteable address

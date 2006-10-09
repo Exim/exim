@@ -1,2 +1,1 @@
-userx@eximtesthost.ipv6.test.ex cannot be resolved at this time:
-  lookup of host "eximtesthost.ipv6.test.ex" failed in lookuphost router
+userx@eximtesthost.ipv6.test.ex cannot be resolved at this time: lookup of host "eximtesthost.ipv6.test.ex" failed in lookuphost router

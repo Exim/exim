@@ -1,5 +1,4 @@
-x@mxt10.test.ex is undeliverable:
-  all relevant MX records point to non-existent hosts or (invalidly) to IP addresses
+x@mxt10.test.ex is undeliverable: all relevant MX records point to non-existent hosts or (invalidly) to IP addresses
 
 **** SMTP testing session as if from host V4NET.9.8.7
 **** but without any ident (RFC 1413) callback.

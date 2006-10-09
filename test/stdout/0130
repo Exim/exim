@@ -7,5 +7,4 @@
 250 OK
 451 Temporary local problem - please try later
 221 the.local.host.name closing connection
-userx@not.test.ex cannot be resolved at this time:
-  remote host address is the local host
+userx@not.test.ex cannot be resolved at this time: remote host address is the local host

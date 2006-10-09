@@ -1,5 +1,4 @@
-x@nosrv.test.ex is undeliverable:
-  Unrouteable address
+x@nosrv.test.ex is undeliverable: Unrouteable address
 x@srv01.test.ex
   router = r1, transport = t1
   host ten-1.test.ex [V4NET.0.0.1] MX=0 port=25
@@ -12,10 +11,8 @@ x@srv02.test.ex
   host ten-1.test.ex [V4NET.0.0.1] MX=1 port=99
   host ten-2.test.ex [V4NET.0.0.2] MX=1 port=99
   host ten-3.test.ex [V4NET.0.0.3] MX=3 port=66
-x@nosmtp.test.ex is undeliverable:
-  an MX or SRV record indicated no SMTP service
-x@srv03.test.ex is undeliverable:
-  Unrouteable address
+x@nosmtp.test.ex is undeliverable: an MX or SRV record indicated no SMTP service
+x@srv03.test.ex is undeliverable: Unrouteable address
 x@srv03.test.ex
   router = r1, transport = t1
   host ten-4.test.ex [V4NET.0.0.4] MX=0 port=88

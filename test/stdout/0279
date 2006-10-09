@@ -1,4 +1,3 @@
 CALLER@test.ex
   router = r3, transport = t1
-CALLER@test.ex is undeliverable:
-  matched *@+funny_domains
+CALLER@test.ex is undeliverable: matched *@+funny_domains

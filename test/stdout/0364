@@ -1,8 +1,9 @@
 kilos@thishost.test.ex
     <-- kilos@thishost
   router = r5, transport = t2
-solik@otherhost is undeliverable:
-  Can't route to otherhost.sub.test.ex
+solik@otherhost.sub.test.ex is undeliverable: Can't route to otherhost.sub.test.ex
+    <-- solik@otherhost.test.ex
+    <-- solik@otherhost
 xxx@ten-1.test.ex
     <-- xxx@ten-1
   router = r2, transport = t1

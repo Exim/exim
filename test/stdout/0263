@@ -2,5 +2,4 @@ x@domain0
   router = r2, transport = t1
 x@domain1
   router = pr1, transport = t1
-x@domain2 is undeliverable:
-  Unrouteable address
+x@domain2 is undeliverable: Unrouteable address

@@ -9,5 +9,4 @@
 550 Administrative prohibition
 221 myhost.test.ex closing connection
 x@ten-1.test.ex verified
-x@junk.junk failed to verify:
-  Unrouteable address
+x@junk.junk failed to verify: Unrouteable address

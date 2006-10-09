@@ -1,5 +1,4 @@
 xxx@okdomain
   router = r1, transport = t1
-yyy@notokdomain is undeliverable:
-  Unrouteable address
+yyy@notokdomain is undeliverable: Unrouteable address
 syntax error: malformed address: /mod may not follow zzz@dom

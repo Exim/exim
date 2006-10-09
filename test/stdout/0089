@@ -37,5 +37,4 @@ ABCD@test.ex
 XYZ@ten-1.test.ex
   router = manual, transport = dummy
   host ten-1.test.ex [V4NET.0.0.1] 
-xyz@ten-1.test.ex is undeliverable:
-  unrouteable mail domain "ten-1.test.ex"
+xyz@ten-1.test.ex is undeliverable: unrouteable mail domain "ten-1.test.ex"

@@ -11,8 +11,7 @@ userx@ten-1.test.ex
 userx@other1.test.ex
   router = lookuphost, transport = smtp
   host other1.test.ex [V4NET.12.4.5] 
-userx@other99.test.ex cannot be resolved at this time:
-  host non-exist.test.ex not found when translating other99.test.ex [V4NET.99.0.1]
+userx@other99.test.ex cannot be resolved at this time: host non-exist.test.ex not found when translating other99.test.ex [V4NET.99.0.1]
 userx@other99.test.ex
   router = lookuphost, transport = smtp
   host non-exist.test.ex [unknown] 

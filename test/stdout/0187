@@ -13,11 +13,7 @@ userx@mxt9.test.ex
 userx@eximtesthost.test.ex
   router = lookuphost2, transport = smtp
   host eximtesthost.test.ex [ip4.ip4.ip4.ip4] 
-userx@localhost is undeliverable:
-  Unrouteable address
-userx@mxt10.test.ex is undeliverable:
-  all relevant MX records point to non-existent hosts
-userx@mxt11.test.ex is undeliverable:
-  all relevant MX records point to non-existent hosts
-userx@mxt12.test.ex is undeliverable:
-  all relevant MX records point to non-existent hosts
+userx@localhost is undeliverable: Unrouteable address
+userx@mxt10.test.ex is undeliverable: all relevant MX records point to non-existent hosts
+userx@mxt11.test.ex is undeliverable: all relevant MX records point to non-existent hosts
+userx@mxt12.test.ex is undeliverable: all relevant MX records point to non-existent hosts

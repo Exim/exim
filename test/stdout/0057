@@ -14,12 +14,8 @@
 **** SMTP testing: that is not a real message id!
 
 221 myhost.ex closing connection
-userx%myhost.ex@a.test.ex failed to verify:
-  Unrouteable address
-userx%myhost.ex@b.test.ex failed to verify:
-  Unrouteable address
-userx%myhost.ex@d.test.ex failed to verify:
-  Unrouteable address
-userx%myhost.ex@d.test.ex failed to verify:
-  Unrouteable address
+userx%myhost.ex@a.test.ex failed to verify: Unrouteable address
+userx%myhost.ex@b.test.ex failed to verify: Unrouteable address
+userx%myhost.ex@d.test.ex failed to verify: Unrouteable address
+userx%myhost.ex@d.test.ex failed to verify: Unrouteable address
 userx%myhost.ex@z.test.ex verified

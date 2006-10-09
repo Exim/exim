@@ -15,8 +15,7 @@ dnslookup@mx46.test.ex
 manualroute@test.ex
   router = r2, transport = smtp
   host 46.test.ex [V4NET.0.0.4] 
-dnslookup@v6.test.ex is undeliverable:
-  Unrouteable address
+dnslookup@v6.test.ex is undeliverable: Unrouteable address
 Connecting to ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 port 1225 ... connected
 ??? 220
 <<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000

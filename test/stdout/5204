@@ -1,21 +1,15 @@
-"ACCEPT hosts=localhost lookup=byname"@some.host cannot be resolved at this time:
-  remote host address is the local host
-"DECLINE cannot route this one (DECLINE)"@some.host is undeliverable:
-  Unrouteable address
-"FAIL cannot route this one (FAIL)"@some.host is undeliverable:
-  cannot route this one (FAIL)
-"ERROR cannot route this one (ERROR)"@some.host cannot be resolved at this time:
-  bad command yield: ERROR cannot route this one (ERROR)
-"DEFER cannot route this one (DEFER)"@some.host cannot be resolved at this time:
-  cannot route this one (DEFER)
+"ACCEPT hosts=localhost lookup=byname"@some.host cannot be resolved at this time: remote host address is the local host
+"DECLINE cannot route this one (DECLINE)"@some.host is undeliverable: Unrouteable address
+"FAIL cannot route this one (FAIL)"@some.host is undeliverable: cannot route this one (FAIL)
+"ERROR cannot route this one (ERROR)"@some.host cannot be resolved at this time: bad command yield: ERROR cannot route this one (ERROR)
+"DEFER cannot route this one (DEFER)"@some.host cannot be resolved at this time: cannot route this one (DEFER)
 "ACCEPT transport = other_smtp hosts=ten-1.test.ex"@some.host
   router = q, transport = other_smtp
   host ten-1.test.ex [V4NET.0.0.1] 
 PASS@some.host
   router = s, transport = smtp
   host 127.0.0.1 [127.0.0.1] 
-"FREEZE cannot route this one (FREEZE)"@some.host cannot be resolved at this time:
-  cannot route this one (FREEZE)
+"FREEZE cannot route this one (FREEZE)"@some.host cannot be resolved at this time: cannot route this one (FREEZE)
 postmaster@test.ex
     <-- "REDIRECT postmaster@test.ex"@some.host
   router = pm, transport = null

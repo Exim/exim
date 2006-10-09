@@ -2,18 +2,13 @@ userx@r1
   router = r1, transport = t1
 userx@r2
   router = r2, transport = t1
-userx@r3 cannot be resolved at this time:
-  require_files: error for TESTSUITE/aux-var/0273.exim: Permission denied
-userx@r4 cannot be resolved at this time:
-  user "non-existant" for require_files not found
-userx@r5 cannot be resolved at this time:
-  group missing after numerical uid 1 for require_files
+userx@r3 cannot be resolved at this time: require_files: error for TESTSUITE/aux-var/0273.exim: Permission denied
+userx@r4 cannot be resolved at this time: user "non-existant" for require_files not found
+userx@r5 cannot be resolved at this time: group missing after numerical uid 1 for require_files
 userx@r6
   router = r6, transport = t1
-userx@r7 is undeliverable:
-  Unrouteable address
-userx@r8 is undeliverable:
-  Unrouteable address
+userx@r7 is undeliverable: Unrouteable address
+userx@r8 is undeliverable: Unrouteable address
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 <userx@r1> is deliverable
 250 <userx@r2> is deliverable
