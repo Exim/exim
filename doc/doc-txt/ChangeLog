@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.404 2006/10/09 14:36:25 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.405 2006/10/10 11:15:12 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -108,6 +108,14 @@ PH/16 It seems that the options setting for the resolver (RES_DEFNAMES and
       host_find_byname() when gethostbyname=TRUE in this transport. Other uses
       of host_find_byname() use the default settings of RES_DEFNAMES
       (qualify_single) but not RES_DNSRCH (search_parents).
+
+PH/17 Applied (a modified version of) Nico Erfurth's patch to make
+      spool_read_header() do less string testing, by means of a preliminary
+      switch on the second character of optional "-foo" lines. (This is
+      overdue, caused by the large number of possibilities that now exist.
+      Originally there were few.) While I was there, I also converted the
+      str(n)cmp tests so they don't re-test the leading "-" and the first
+      character, in the hope this might squeeze out yet more improvement.
 
 
 Exim version 4.63

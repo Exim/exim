@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.16 2006/09/19 11:28:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.17 2006/10/10 11:15:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -368,153 +368,187 @@ DEBUG(D_deliver) debug_printf("user=%s uid=%ld gid=%ld sender=%s\n",
   sender_address);
 #endif  /* COMPILE_UTILITY */
 
-/* Now there may be a number of optional lines, each starting with "-".
-If you add a new setting here, make sure you set the default above. */
+/* Now there may be a number of optional lines, each starting with "-". If you
+add a new setting here, make sure you set the default above.
 
+Because there are now quite a number of different possibilities, we use a
+switch on the first character to avoid too many failing tests. Thanks to Nico
+Erfurth for the patch that implemented this. I have made it even more efficient
+by not re-scanning the first two characters.
+
+To allow new versions of Exim that add additional flags to interwork with older
+versions that do not understand them, just ignore any lines starting with "-"
+that we don't recognize. Otherwise it wouldn't be possible to back off a new
+version that left new-style flags written on the spool. */
+
+p = big_buffer + 2;
 for (;;)
   {
   if (Ufgets(big_buffer, big_buffer_size, f) == NULL) goto SPOOL_READ_ERROR;
   if (big_buffer[0] != '-') break;
   big_buffer[Ustrlen(big_buffer) - 1] = 0;
 
-  /* For long-term backward compatibility, we recognize "-acl", which was used
-  before the number of ACL variables changed from 10 to 20. This was before the
-  subsequent change to an arbitrary number of named variables. This code is
-  retained so that upgrades from very old versions can still handle old-format
-  spool files. The value given after "-acl" is a number that is 0-9 for
-  connection variables, and 10-19 for message variables. */
-
-  if (Ustrncmp(big_buffer, "-acl ", 5) == 0)
+  switch(big_buffer[1])
     {
-    int index, count;
-    uschar name[4];
-    tree_node *node;
+    case 'a':
 
-    if (sscanf(CS big_buffer + 5, "%d %d", &index, &count) != 2)
-      goto SPOOL_FORMAT_ERROR;
+    /* Nowadays we use "-aclc" and "-aclm" for the different types of ACL
+    variable, because Exim allows any number of them, with arbitrary names.
+    The line in the spool file is "-acl[cm] <name> <length>". The name excludes
+    the c or m. */
 
-    (void) string_format(name, 4, "%c%d", (index < 10 ? 'c' : 'm'), index);
-    node = acl_var_create(name);
-    node->data.ptr = store_get(count + 1);
+    if (Ustrncmp(p, "clc ", 4) == 0 ||
+        Ustrncmp(p, "clm ", 4) == 0)
+      {
+      uschar *name, *endptr;
+      int count;
+      tree_node *node;
+      endptr = Ustrchr(big_buffer + 6, ' ');
+      if (endptr == NULL) goto SPOOL_FORMAT_ERROR;
+      name = string_sprintf("%c%.*s", big_buffer[4], endptr - big_buffer - 6,
+        big_buffer + 6);
+      if (sscanf(CS endptr, " %d", &count) != 1) goto SPOOL_FORMAT_ERROR;
+      node = acl_var_create(name);
+      node->data.ptr = store_get(count + 1);
+      if (fread(node->data.ptr, 1, count+1, f) < count) goto SPOOL_READ_ERROR;
+      ((uschar*)node->data.ptr)[count] = 0;
+      }
 
-    if (fread(node->data.ptr, 1, count+1, f) < count) goto SPOOL_READ_ERROR;
-    ((uschar*)node->data.ptr)[count] = 0;
+    else if (Ustrcmp(p, "llow_unqualified_recipient") == 0)
+      allow_unqualified_recipient = TRUE;
+    else if (Ustrcmp(p, "llow_unqualified_sender") == 0)
+      allow_unqualified_sender = TRUE;
+
+    else if (Ustrncmp(p, "uth_id", 6) == 0)
+      authenticated_id = string_copy(big_buffer + 9);
+    else if (Ustrncmp(p, "uth_sender", 10) == 0)
+      authenticated_sender = string_copy(big_buffer + 13);
+    else if (Ustrncmp(p, "ctive_hostname", 14) == 0)
+      smtp_active_hostname = string_copy(big_buffer + 17);
+
+    /* For long-term backward compatibility, we recognize "-acl", which was
+    used before the number of ACL variables changed from 10 to 20. This was
+    before the subsequent change to an arbitrary number of named variables.
+    This code is retained so that upgrades from very old versions can still
+    handle old-format spool files. The value given after "-acl" is a number
+    that is 0-9 for connection variables, and 10-19 for message variables. */
+
+    else if (Ustrncmp(p, "cl ", 3) == 0)
+      {
+      int index, count;
+      uschar name[4];
+      tree_node *node;
+      if (sscanf(CS big_buffer + 5, "%d %d", &index, &count) != 2)
+        goto SPOOL_FORMAT_ERROR;
+      (void) string_format(name, 4, "%c%d", (index < 10 ? 'c' : 'm'), index);
+      node = acl_var_create(name);
+      node->data.ptr = store_get(count + 1);
+      if (fread(node->data.ptr, 1, count+1, f) < count) goto SPOOL_READ_ERROR;
+      ((uschar*)node->data.ptr)[count] = 0;
+      }
+    break;
+
+    case 'b':
+    if (Ustrncmp(p, "ody_linecount", 13) == 0)
+      body_linecount = Uatoi(big_buffer + 15);
+    else if (Ustrncmp(p, "ody_zerocount", 13) == 0)
+      body_zerocount = Uatoi(big_buffer + 15);
+    #ifdef EXPERIMENTAL_BRIGHTMAIL
+    else if (Ustrncmp(p, "mi_verdicts ", 12) == 0)
+      bmi_verdicts = string_copy(big_buffer + 14);
+    #endif
+    break;
+
+    case 'd':
+    if (Ustrcmp(p, "eliver_firsttime") == 0)
+      deliver_firsttime = TRUE;
+    break;
+
+    case 'f':
+    if (Ustrncmp(p, "rozen", 5) == 0)
+      {
+      deliver_freeze = TRUE;
+      deliver_frozen_at = Uatoi(big_buffer + 7);
+      }
+    break;
+
+    case 'h':
+    if (Ustrcmp(p, "ost_lookup_deferred") == 0)
+      host_lookup_deferred = TRUE;
+    else if (Ustrcmp(p, "ost_lookup_failed") == 0)
+      host_lookup_failed = TRUE;
+    else if (Ustrncmp(p, "ost_auth", 8) == 0)
+      sender_host_authenticated = string_copy(big_buffer + 11);
+    else if (Ustrncmp(p, "ost_name", 8) == 0)
+      sender_host_name = string_copy(big_buffer + 11);
+    else if (Ustrncmp(p, "elo_name", 8) == 0)
+      sender_helo_name = string_copy(big_buffer + 11);
+
+    /* We now record the port number after the address, separated by a
+    dot. For compatibility during upgrading, do nothing if there
+    isn't a value (it gets left at zero). */
+
+    else if (Ustrncmp(p, "ost_address", 11) == 0)
+      {
+      sender_host_port = host_address_extract_port(big_buffer + 14);
+      sender_host_address = string_copy(big_buffer + 14);
+      }
+    break;
+
+    case 'i':
+    if (Ustrncmp(p, "nterface_address", 16) == 0)
+      {
+      interface_port = host_address_extract_port(big_buffer + 19);
+      interface_address = string_copy(big_buffer + 19);
+      }
+    else if (Ustrncmp(p, "dent", 4) == 0)
+      sender_ident = string_copy(big_buffer + 7);
+    break;
+
+    case 'l':
+    if (Ustrcmp(p, "ocal") == 0) sender_local = TRUE;
+    else if (Ustrcmp(big_buffer, "-localerror") == 0)
+      local_error_message = TRUE;
+    else if (Ustrncmp(p, "ocal_scan ", 10) == 0)
+      local_scan_data = string_copy(big_buffer + 12);
+    break;
+
+    case 'm':
+    if (Ustrcmp(p, "anual_thaw") == 0) deliver_manual_thaw = TRUE;
+    break;
+
+    case 'N':
+    if (*p == 0) dont_deliver = TRUE;   /* -N */
+    break;
+
+    case 'r':
+    if (Ustrncmp(p, "eceived_protocol", 16) == 0)
+      received_protocol = string_copy(big_buffer + 19);
+    break;
+
+    case 's':
+    if (Ustrncmp(p, "ender_set_untrusted", 19) == 0)
+      sender_set_untrusted = TRUE;
+    #ifdef WITH_CONTENT_SCAN
+    else if (Ustrncmp(p, "pam_score_int ", 14) == 0)
+      spam_score_int = string_copy(big_buffer + 16);
+    #endif
+    break;
+
+    #ifdef SUPPORT_TLS
+    case 't':
+    if (Ustrncmp(p, "ls_certificate_verified", 23) == 0)
+      tls_certificate_verified = TRUE;
+    else if (Ustrncmp(p, "ls_cipher", 9) == 0)
+      tls_cipher = string_copy(big_buffer + 12);
+    else if (Ustrncmp(p, "ls_peerdn", 9) == 0)
+      tls_peerdn = string_copy(big_buffer + 12);
+    break;
+    #endif
+
+    default:    /* Present because some compilers complain if all */
+    break;      /* possibilities are not covered. */
     }
-
-  /* Nowadays we use "-aclc" and "-aclm" for the different types of ACL
-  variable, because Exim allows any number of them, with arbitrary names.
-  The line in the spool file is "-acl[cm] <name> <length>". The name excludes
-  the c or m. */
-
-  else if (Ustrncmp(big_buffer, "-aclc ", 6) == 0 ||
-           Ustrncmp(big_buffer, "-aclm ", 6) == 0)
-    {
-    uschar *name, *endptr;
-    int count;
-    tree_node *node;
-
-    endptr = Ustrchr(big_buffer + 6, ' ');
-    if (endptr == NULL) goto SPOOL_FORMAT_ERROR;
-    name = string_sprintf("%c%.*s", big_buffer[4], endptr - big_buffer - 6,
-      big_buffer + 6);
-    if (sscanf(CS endptr, " %d", &count) != 1) goto SPOOL_FORMAT_ERROR;
-
-    node = acl_var_create(name);
-    node->data.ptr = store_get(count + 1);
-    if (fread(node->data.ptr, 1, count+1, f) < count) goto SPOOL_READ_ERROR;
-    ((uschar*)node->data.ptr)[count] = 0;
-    }
-
-  /* Other values */
-
-  else if (Ustrcmp(big_buffer, "-local") == 0) sender_local = TRUE;
-  else if (Ustrcmp(big_buffer, "-localerror") == 0)
-    local_error_message = TRUE;
-  else if (Ustrncmp(big_buffer, "-local_scan ", 12) == 0)
-    local_scan_data = string_copy(big_buffer + 12);
-#ifdef WITH_CONTENT_SCAN
-  else if (Ustrncmp(big_buffer, "-spam_score_int ", 16) == 0)
-    spam_score_int = string_copy(big_buffer + 16);
-#endif
-#ifdef EXPERIMENTAL_BRIGHTMAIL
-  else if (Ustrncmp(big_buffer, "-bmi_verdicts ", 14) == 0)
-    bmi_verdicts = string_copy(big_buffer + 14);
-#endif
-  else if (Ustrcmp(big_buffer, "-host_lookup_deferred") == 0)
-    host_lookup_deferred = TRUE;
-  else if (Ustrcmp(big_buffer, "-host_lookup_failed") == 0)
-    host_lookup_failed = TRUE;
-  else if (Ustrncmp(big_buffer, "-body_linecount", 15) == 0)
-    body_linecount = Uatoi(big_buffer + 15);
-  else if (Ustrncmp(big_buffer, "-body_zerocount", 15) == 0)
-    body_zerocount = Uatoi(big_buffer + 15);
-  else if (Ustrncmp(big_buffer, "-frozen", 7) == 0)
-    {
-    deliver_freeze = TRUE;
-    deliver_frozen_at = Uatoi(big_buffer + 7);
-    }
-  else if (Ustrcmp(big_buffer, "-allow_unqualified_recipient") == 0)
-    allow_unqualified_recipient = TRUE;
-  else if (Ustrcmp(big_buffer, "-allow_unqualified_sender") == 0)
-    allow_unqualified_sender = TRUE;
-  else if (Ustrcmp(big_buffer, "-deliver_firsttime") == 0)
-    deliver_firsttime = TRUE;
-  else if (Ustrcmp(big_buffer, "-manual_thaw") == 0)
-    deliver_manual_thaw = TRUE;
-  else if (Ustrncmp(big_buffer, "-auth_id", 8) == 0)
-    authenticated_id = string_copy(big_buffer + 9);
-  else if (Ustrncmp(big_buffer, "-auth_sender", 12) == 0)
-    authenticated_sender = string_copy(big_buffer + 13);
-  else if (Ustrncmp(big_buffer, "-sender_set_untrusted", 21) == 0)
-    sender_set_untrusted = TRUE;
-
-  #ifdef SUPPORT_TLS
-  else if (Ustrncmp(big_buffer, "-tls_certificate_verified", 25) == 0)
-    tls_certificate_verified = TRUE;
-  else if (Ustrncmp(big_buffer, "-tls_cipher", 11) == 0)
-    tls_cipher = string_copy(big_buffer + 12);
-  else if (Ustrncmp(big_buffer, "-tls_peerdn", 11) == 0)
-    tls_peerdn = string_copy(big_buffer + 12);
-  #endif
-
-  /* We now record the port number after the address, separated by a
-  dot. For compatibility during upgrading, do nothing if there
-  isn't a value (it gets left at zero). */
-
-  else if (Ustrncmp(big_buffer, "-host_address", 13) == 0)
-    {
-    sender_host_port = host_address_extract_port(big_buffer + 14);
-    sender_host_address = string_copy(big_buffer + 14);
-    }
-
-  else if (Ustrncmp(big_buffer, "-interface_address", 18) == 0)
-    {
-    interface_port = host_address_extract_port(big_buffer + 19);
-    interface_address = string_copy(big_buffer + 19);
-    }
-
-  else if (Ustrncmp(big_buffer, "-active_hostname", 16) == 0)
-    smtp_active_hostname = string_copy(big_buffer + 17);
-  else if (Ustrncmp(big_buffer, "-host_auth", 10) == 0)
-    sender_host_authenticated = string_copy(big_buffer + 11);
-  else if (Ustrncmp(big_buffer, "-host_name", 10) == 0)
-    sender_host_name = string_copy(big_buffer + 11);
-  else if (Ustrncmp(big_buffer, "-helo_name", 10) == 0)
-    sender_helo_name = string_copy(big_buffer + 11);
-  else if (Ustrncmp(big_buffer, "-ident", 6) == 0)
-    sender_ident = string_copy(big_buffer + 7);
-  else if (Ustrncmp(big_buffer, "-received_protocol", 18) == 0)
-    received_protocol = string_copy(big_buffer + 19);
-  else if (Ustrncmp(big_buffer, "-N", 2) == 0)
-    dont_deliver = TRUE;
-
-  /* To allow new versions of Exim that add additional flags to interwork
-  with older versions that do not understand them, just ignore any flagged
-  lines that we don't recognize. Otherwise it wouldn't be possible to back
-  off a new version that left new-style flags written on the spool. That's
-  why the following line is commented out. */
-
-    /* else goto SPOOL_FORMAT_ERROR; */
   }
 
 /* Build sender_fullhost if required */
