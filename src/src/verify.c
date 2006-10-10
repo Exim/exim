@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.42 2006/10/09 14:36:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.43 2006/10/10 15:36:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1451,8 +1451,9 @@ verify_check_headers(uschar **msgptr)
 {
 header_line *h;
 uschar *colon, *s;
+int yield = OK;
 
-for (h = header_list; h != NULL; h = h->next)
+for (h = header_list; h != NULL && yield == OK; h = h->next)
   {
   if (h->type != htype_from &&
       h->type != htype_reply_to &&
@@ -1466,9 +1467,10 @@ for (h = header_list; h != NULL; h = h->next)
   s = colon + 1;
   while (isspace(*s)) s++;
 
-  parse_allow_group = TRUE;     /* Allow group syntax */
+  /* Loop for multiple addresses in the header, enabling group syntax. Note
+  that we have to reset this after the header has been scanned. */
 
-  /* Loop for multiple addresses in the header */
+  parse_allow_group = TRUE;
 
   while (*s != 0)
     {
@@ -1478,7 +1480,7 @@ for (h = header_list; h != NULL; h = h->next)
     int start, end, domain;
 
     /* Temporarily terminate the string at this point, and extract the
-    operative address within. */
+    operative address within, allowing group syntax. */
 
     *ss = 0;
     recipient = parse_extract_address(s,&errmess,&start,&end,&domain,FALSE);
@@ -1534,7 +1536,8 @@ for (h = header_list; h != NULL; h = h->next)
         string_sprintf("%s: failing address in \"%.*s:\" header %s: %.*s",
           errmess, tt - h->text, h->text, verb, len, s));
 
-      return FAIL;
+      yield = FAIL;
+      break;          /* Out of address loop */
       }
 
     /* Advance to the next address */
@@ -1542,9 +1545,12 @@ for (h = header_list; h != NULL; h = h->next)
     s = ss + (terminator? 1:0);
     while (isspace(*s)) s++;
     }   /* Next address */
-  }     /* Next header */
 
-return OK;
+  parse_allow_group = FALSE;
+  parse_found_group = FALSE;
+  }     /* Next header unless yield has been set FALSE */
+
+return yield;
 }
 
 
@@ -1587,9 +1593,10 @@ for (i = 0; i < recipients_count; i++)
     s = colon + 1;
     while (isspace(*s)) s++;
 
-    parse_allow_group = TRUE;     /* Allow group syntax */
+    /* Loop for multiple addresses in the header, enabling group syntax. Note
+    that we have to reset this after the header has been scanned. */
 
-    /* Loop for multiple addresses in the header */
+    parse_allow_group = TRUE;
 
     while (*s != 0)
       {
@@ -1599,7 +1606,7 @@ for (i = 0; i < recipients_count; i++)
       int start, end, domain;
 
       /* Temporarily terminate the string at this point, and extract the
-      operative address within. */
+      operative address within, allowing group syntax. */
 
       *ss = 0;
       recipient = parse_extract_address(s,&errmess,&start,&end,&domain,FALSE);
@@ -1623,6 +1630,9 @@ for (i = 0; i < recipients_count; i++)
       s = ss + (terminator? 1:0);
       while (isspace(*s)) s++;
       }   /* Next address */
+
+    parse_allow_group = FALSE;
+    parse_found_group = FALSE;
     }     /* Next header (if found is false) */
 
   if (!found) return FAIL;
@@ -1705,19 +1715,25 @@ verify_check_header_address(uschar **user_msgptr, uschar **log_msgptr,
   uschar *pm_mailfrom, int options, int *verrno)
 {
 static int header_types[] = { htype_sender, htype_reply_to, htype_from };
+BOOL done = FALSE;
 int yield = FAIL;
 int i;
 
-for (i = 0; i < 3; i++)
+for (i = 0; i < 3 && !done; i++)
   {
   header_line *h;
-  for (h = header_list; h != NULL; h = h->next)
+  for (h = header_list; h != NULL && !done; h = h->next)
     {
     int terminator, new_ok;
     uschar *s, *ss, *endname;
 
     if (h->type != header_types[i]) continue;
     s = endname = Ustrchr(h->text, ':') + 1;
+
+    /* Scan the addresses in the header, enabling group syntax. Note that we
+    have to reset this after the header has been scanned. */
+
+    parse_allow_group = TRUE;
 
     while (*s != 0)
       {
@@ -1761,10 +1777,20 @@ for (i = 0; i < 3; i++)
       else
         {
         int start, end, domain;
-        uschar *address = parse_extract_address(s, log_msgptr, &start,
-          &end, &domain, FALSE);
+        uschar *address = parse_extract_address(s, log_msgptr, &start, &end,
+          &domain, FALSE);
 
         *ss = terminator;
+
+        /* If we found an empty address, just carry on with the next one, but
+        kill the message. */
+
+        if (address == NULL && Ustrcmp(*log_msgptr, "empty address") == 0)
+          {
+          *log_msgptr = NULL;
+          s = ss;
+          continue;
+          }
 
         /* If verification failed because of a syntax error, fail this
         function, and ensure that the failing address gets added to the error
@@ -1773,14 +1799,13 @@ for (i = 0; i < 3; i++)
         if (address == NULL)
           {
           new_ok = FAIL;
-          if (*log_msgptr != NULL)
-            {
-            while (ss > s && isspace(ss[-1])) ss--;
-            *log_msgptr = string_sprintf("syntax error in '%.*s' header when "
-              "scanning for sender: %s in \"%.*s\"",
-              endname - h->text, h->text, *log_msgptr, ss - s, s);
-            return FAIL;
-            }
+          while (ss > s && isspace(ss[-1])) ss--;
+          *log_msgptr = string_sprintf("syntax error in '%.*s' header when "
+            "scanning for sender: %s in \"%.*s\"",
+            endname - h->text, h->text, *log_msgptr, ss - s, s);
+          yield = FAIL;
+          done = TRUE;
+          break;
           }
 
         /* Else go ahead with the sender verification. But it isn't *the*
@@ -1814,15 +1839,24 @@ for (i = 0; i < 3; i++)
 
       /* Success or defer */
 
-      if (new_ok == OK) return OK;
+      if (new_ok == OK)
+        {
+        yield = OK;
+        done = TRUE;
+        break;
+        }
+
       if (new_ok == DEFER) yield = DEFER;
 
       /* Move on to any more addresses in the header */
 
       s = ss;
-      }
-    }
-  }
+      }     /* Next address */
+
+    parse_allow_group = FALSE;
+    parse_found_group = FALSE;
+    }       /* Next header, unless done */
+  }         /* Next header type unless done */
 
 if (yield == FAIL && *log_msgptr == NULL)
   *log_msgptr = US"there is no valid sender in any header line";

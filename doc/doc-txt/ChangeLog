@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.405 2006/10/10 11:15:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.406 2006/10/10 15:36:50 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -116,6 +116,17 @@ PH/17 Applied (a modified version of) Nico Erfurth's patch to make
       Originally there were few.) While I was there, I also converted the
       str(n)cmp tests so they don't re-test the leading "-" and the first
       character, in the hope this might squeeze out yet more improvement.
+
+PH/18 Two problems with "group" syntax in header lines when verifying: (1) The
+      flag allowing group syntax was set by the header_syntax check but not
+      turned off, possible causing trouble later; (2) The flag was not being
+      set at all for the header_verify test, causing "group"-style headers to
+      be rejected. I have now set it in this case, and also caused header_
+      verify to ignore an empty address taken from a group. While doing this, I
+      came across some other cases where the code for allowing group syntax
+      while scanning a header line wasn't quite right (mostly, not resetting
+      the flag correctly in the right place). These bugs could have caused
+      trouble for malformed header lines. I hope it is now all correct.
 
 
 Exim version 4.63

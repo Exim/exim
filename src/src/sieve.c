@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.22 2006/09/05 14:05:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.23 2006/10/10 15:36:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1826,6 +1826,8 @@ if (parse_identifier(filter,CUS "address"))
         if (saveend == 0) break;
         header_value = end_addr + 1;
         }
+      parse_allow_group = FALSE;
+      parse_found_group = FALSE;
       }
     }
   return 1;

@@ -104,4 +104,31 @@ Message 10
 .
 quit
 ****
+# Group syntax in reply-to header, but no address (falls back to From: for
+# header_sender check - From: is valid)
+exim -odi -bs
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+to: group name: x@y, p@q;
+reply-to: group name:;
+from: userx@test.ex
+
+Message 11
+.
+quit
+****
+# Group syntax in reply-to header, but no address (falls back to From: for
+# header_sender check - but there is no From:)
+exim -odi -bs
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+to: group name: x@y, p@q;
+reply-to: group name:;
+
+Message 12
+.
+quit
+****
 no_msglog_check

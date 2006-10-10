@@ -37,3 +37,14 @@ P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 I Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 F From: x@y
   Date: Tue, 2 Mar 1999 09:44:33 +0000
+1999-03-02 09:44:33 10HmbB-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
+Envelope-from: <>
+Envelope-to: <userx@test.ex>
+P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
+	id 10HmbB-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+T to: group name: x@y, p@q;
+R reply-to: group name:;
+I Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
+  X-warning: this is a test warning

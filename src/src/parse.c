@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/parse.c,v 1.9 2006/03/08 11:13:07 ph10 Exp $ */
+/* $Cambridge: exim/src/src/parse.c,v 1.10 2006/10/10 15:36:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -597,10 +597,15 @@ which may appear in certain headers. If the flag parse_allow_group is set
 TRUE and parse_found_group is FALSE when this function is called, an address
 which is the start of a group (i.e. preceded by a phrase and a colon) is
 recognized; the phrase is ignored and the flag parse_found_group is set. If
-this flag is TRUE at the end of an address, then if an extraneous semicolon is
-found, it is ignored and the flag is cleared. This logic is used only when
-scanning through addresses in headers, either to fulfil the -t option or for
-rewriting or checking header syntax.
+this flag is TRUE at the end of an address, and if an extraneous semicolon is
+found, it is ignored and the flag is cleared.
+
+This logic is used only when scanning through addresses in headers, either to
+fulfil the -t option, or for rewriting, or for checking header syntax. Because
+the group "state" has to be remembered between multiple calls of this function,
+the variables parse_{allow,found}_group are global. It is important to ensure
+that they are reset to FALSE at the end of scanning a header's list of
+addresses.
 
 Arguments:
   mailbox     points to the RFC822 mailbox

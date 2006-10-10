@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.29 2006/09/25 10:14:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.30 2006/10/10 15:36:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2051,8 +2051,6 @@ if (extract_recip)
     recipients_count = recipients_list_max = 0;
     }
 
-  parse_allow_group = TRUE;             /* Allow address group syntax */
-
   /* Now scan the headers */
 
   for (h = header_list->next; h != NULL; h = h->next)
@@ -2062,6 +2060,8 @@ if (extract_recip)
       {
       uschar *s = Ustrchr(h->text, ':') + 1;
       while (isspace(*s)) s++;
+
+      parse_allow_group = TRUE;          /* Allow address group syntax */
 
       while (*s != 0)
         {
@@ -2127,7 +2127,10 @@ if (extract_recip)
 
         s = ss + (*ss? 1:0);
         while (isspace(*s)) s++;
-        }
+        }    /* Next address */
+
+      parse_allow_group = FALSE;      /* Reset group syntax flags */
+      parse_found_group = FALSE;
 
       /* If this was the bcc: header, mark it "old", which means it
       will be kept on the spool, but not transmitted as part of the
@@ -2137,8 +2140,6 @@ if (extract_recip)
       }   /* For appropriate header line */
     }     /* For each header line */
 
-  parse_allow_group = FALSE;      /* Reset group syntax flags */
-  parse_found_group = FALSE;
   }
 
 /* Now build the unique message id. This has changed several times over the
