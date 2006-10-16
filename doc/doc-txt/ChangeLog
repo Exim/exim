@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.406 2006/10/10 15:36:50 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.407 2006/10/16 10:37:19 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -127,6 +127,12 @@ PH/18 Two problems with "group" syntax in header lines when verifying: (1) The
       while scanning a header line wasn't quite right (mostly, not resetting
       the flag correctly in the right place). These bugs could have caused
       trouble for malformed header lines. I hope it is now all correct.
+
+PH/19 The functions {pwcheck,saslauthd}_verify_password() are always called
+      with the "reply" argument non-NULL. The code, however (which originally
+      came from elsewhere) had *some* tests for NULL when it wrote to *reply,
+      but it didn't always do it. This confused somebody who was copying the
+      code for some other use. I have removed all the tests.
 
 
 Exim version 4.63

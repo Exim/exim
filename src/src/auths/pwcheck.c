@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/pwcheck.c,v 1.3 2006/09/05 14:05:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/pwcheck.c,v 1.4 2006/10/16 10:37:19 ph10 Exp $ */
 
 /* SASL server API implementation
  * Rob Siemborski
@@ -50,6 +50,9 @@
  * Oct 2001 - Apr 2002: Slightly modified by Philip Hazel.
  * Aug 2003: new code for saslauthd from Alexander S. Sabourenkov incorporated
  *           by Philip Hazel (minor mods to avoid compiler warnings)
+ * Oct 2006: (PH) removed redundant tests on "reply" being NULL - some were
+ *           missing, and confused someone who was using this code for some
+ *           other purpose. Here in Exim, "reply" is never NULL.
  *
  * screwdriver@lxnt.info
  *
@@ -107,7 +110,7 @@ return PWCHECK_FAIL;
      struct iovec iov[2];
      static char response[1024];
 
-     if (reply) { *reply = NULL; }
+     *reply = NULL;
 
      s = socket(AF_UNIX, SOCK_STREAM, 0);
      if (s == -1) { return PWCHECK_FAIL; }
@@ -119,7 +122,7 @@ return PWCHECK_FAIL;
      if (r == -1) {
         DEBUG(D_auth)
             debug_printf("Cannot connect to pwcheck daemon (at '%s')\n",CYRUS_PWCHECK_SOCKET);
-       if (reply) { *reply = "cannot connect to pwcheck daemon"; }
+       *reply = "cannot connect to pwcheck daemon";
        return PWCHECK_FAIL;
      }
 
@@ -144,7 +147,7 @@ return PWCHECK_FAIL;
      }
 
      response[start] = '\0';
-     if (reply) { *reply = response; }
+     *reply = response;
      return PWCHECK_NO;
  }
 
@@ -191,13 +194,11 @@ int saslauthd_verify_password(const uschar *userid,
        debug_printf("saslauthd userid='%s' servicename='%s'"
                     " realm='%s'\n", userid, service, realm );
 
-    if (reply)
-        *reply = NULL;
+    *reply = NULL;
 
     s = socket(AF_UNIX, SOCK_STREAM, 0);
     if (s == -1) {
-        if (reply)
-            *reply = CUstrerror(errno);
+       *reply = CUstrerror(errno);
        return PWCHECK_FAIL;
     }
 
@@ -207,13 +208,12 @@ int saslauthd_verify_password(const uschar *userid,
             sizeof(srvaddr.sun_path));
     r = connect(s, (struct sockaddr *)&srvaddr, sizeof(srvaddr));
     if (r == -1) {
-        DEBUG(D_auth)
+       DEBUG(D_auth)
             debug_printf("Cannot connect to saslauthd daemon (at '%s'): %s\n",
                          CYRUS_SASLAUTHD_SOCKET, strerror(errno));
-       if (reply)
-           *reply = string_sprintf("cannot connect to saslauthd daemon at "
-                                   "%s: %s", CYRUS_SASLAUTHD_SOCKET,
-                                   strerror(errno));
+       *reply = string_sprintf("cannot connect to saslauthd daemon at "
+                               "%s: %s", CYRUS_SASLAUTHD_SOCKET,
+                               strerror(errno));
        return PWCHECK_FAIL;
     }
 
