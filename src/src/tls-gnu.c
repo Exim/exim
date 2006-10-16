@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.13 2006/10/16 10:58:40 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.14 2006/10/16 13:20:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -230,10 +230,10 @@ return TRUE;                            /* accept */
 
 
 /*************************************************
-*          Setup up RSA and DH parameters        *
+*            Setup up DH parameters              *
 *************************************************/
 
-/* Generating the RSA and D-H parameters takes a long time. They only need to
+/* Generating the D-H parameters may take a long time. They only need to
 be re-generated every so often, depending on security policy. What we do is to
 keep these parameters in a file in the spool directory. If the file does not
 exist, we generate them. This means that it is easy to cause a regeneration.
@@ -250,7 +250,7 @@ Returns:     OK/DEFER/FAIL
 */
 
 static int
-init_rsa_dh(host_item *host)
+init_dh(host_item *host)
 {
 int fd;
 int ret;
@@ -269,10 +269,7 @@ if (!string_format(filename, sizeof(filename), "%s/gnutls-params",
   return tls_error(US"overlong filename", host, 0);
 
 /* Open the cache file for reading and if successful, read it and set up the
-parameters. If we can't set up the RSA parameters, assume that we are dealing
-with an old-style cache file that is in another format, and fall through to
-compute new values. However, if we correctly get RSA parameters, a failure to
-set up D-H parameters is treated as an error. */
+parameters. */
 
 fd = Uopen(filename, O_RDONLY, 0);
 if (fd >= 0)
@@ -294,7 +291,7 @@ if (fd >= 0)
 
   ret = gnutls_dh_params_import_pkcs3(dh_params, &m, GNUTLS_X509_FMT_PEM);
   if (ret < 0) return tls_error(US"DH params import", host, ret);
-  DEBUG(D_tls) debug_printf("read RSA and D-H parameters from file\n");
+  DEBUG(D_tls) debug_printf("read D-H parameters from file\n");
 
   free(m.data);
   }
@@ -404,10 +401,10 @@ initialized = (host == NULL)? INITIALIZED_SERVER : INITIALIZED_CLIENT;
 rc = gnutls_global_init();
 if (rc < 0) return tls_error(US"tls-init", host, rc);
 
-/* Create RSA and D-H parameters, or read them from the cache file. This
-function does its own SMTP error messaging. */
+/* Create D-H parameters, or read them from the cache file. This function does
+its own SMTP error messaging. */
 
-rc = init_rsa_dh(host);
+rc = init_dh(host);
 if (rc != OK) return rc;
 
 /* Create the credentials structure */
