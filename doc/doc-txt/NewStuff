@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.115 2006/10/03 15:11:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.116 2006/10/16 13:43:21 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -71,6 +71,12 @@ Version 4.64
        public_name = NTLM
        server_name = /var/run/dovecot/auth-client
        server_setid = $auth1
+
+   If the SMTP connection is encrypted, or if $sender_host_address is equal to
+   $interface_address (that is, the connection is local), the "secured" option
+   is passed in the Dovecot authentication command. If, for a TLS connection, a
+   client certificate has been verified, the "valid-client-cert" option is
+   passed.
 
 4. The variable $message_headers_raw provides a concatenation of all the
    messages's headers without any decoding. This is in contrast to

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.1 2006/10/02 13:38:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.2 2006/10/16 13:43:22 ph10 Exp $ */
 
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
@@ -94,6 +94,8 @@ static int strcut(char *str, char **ptrs, int nptrs)
        goto out; \
 } while(0)
 
+
+
 /*************************************************
  *             Server entry point                *
  *************************************************/
@@ -105,6 +107,8 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
        struct sockaddr_un sa;
        char buffer[4096];
        char *args[8];
+       uschar *auth_command;
+       uschar *auth_extra_data = US"";
        int nargs, tmp;
        int cuid = 0, cont = 1, found = 0, fd, ret = DEFER;
        FILE *f;
@@ -186,31 +190,49 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
        if (!found)
                goto out;
 
-       fprintf(f, "VERSION\t%d\t%d\nCPID\t%d\n"
-               "AUTH\t%d\t%s\tservice=smtp\trip=%s\tlip=%s\tresp=%s\n",
-               VERSION_MAJOR, VERSION_MINOR, getpid(), cuid,
-               ablock->public_name, sender_host_address, interface_address,
-               data ? (char *) data : "");
+       /* Added by PH: data must not contain tab (as it is
+       b64 it shouldn't, but check for safety). */
+
+       if (Ustrchr(data, '\t') != NULL) {
+               ret = FAIL;
+               goto out;
+       }
+
+       /* Added by PH: extra fields when TLS is in use or if the TCP/IP
+       connection is local. */
+
+       if (tls_cipher != NULL)
+               auth_extra_data = string_sprintf("secured\t%s%s",
+                   tls_certificate_verified? "valid-client-cert" : "",
+                   tls_certificate_verified? "\t" : "");
+       else if (Ustrcmp(sender_host_address, interface_address) == 0)
+               auth_extra_data = US"secured\t";
+
 
 /****************************************************************************
    The code below was the original code here. It didn't work. A reading of the
    file auth-protocol.txt.gz that came with Dovecot 1.0_beta8 indicated that
-   this was not right. Maybe something changed. I changed it to the above, and
-   it seems to be better. PH
+   this was not right. Maybe something changed. I changed it to move the
+   service indication into the AUTH command, and it seems to be better. PH
 
        fprintf(f, "VERSION\t%d\t%d\r\nSERVICE\tSMTP\r\nCPID\t%d\r\n"
                "AUTH\t%d\t%s\trip=%s\tlip=%s\tresp=%s\r\n",
                VERSION_MAJOR, VERSION_MINOR, getpid(), cuid,
                ablock->public_name, sender_host_address, interface_address,
                data ? (char *) data : "");
+
+   Subsequently, the command was modified to add "secured" and "valid-client-
+   cert" when relevant.
 ****************************************************************************/
 
-       HDEBUG(D_auth) debug_printf("sent: VERSION\t%d\t%d\nsent: CPID\t%d\n"
-               "sent: AUTH\t%d\t%s\tservice=smtp\trip=%s\tlip=%s\tresp=%s\n",
+       auth_command = string_sprintf("VERSION\t%d\t%d\nCPID\t%d\n"
+               "AUTH\t%d\t%s\tservice=smtp\t%srip=%s\tlip=%s\tresp=%s\n",
                VERSION_MAJOR, VERSION_MINOR, getpid(), cuid,
-               ablock->public_name, sender_host_address, interface_address,
-               data ? (char *) data : "");
+               ablock->public_name, auth_extra_data, sender_host_address,
+               interface_address, data ? (char *) data : "");
 
+       fprintf(f, "%s", auth_command);
+       HDEBUG(D_auth) debug_printf("sent: %s", auth_command);
 
        while (1) {
                if (fgets(buffer, sizeof(buffer), f) == NULL) {
@@ -232,6 +254,14 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                        tmp = auth_get_no64_data(&data, US args[2]);
                        if (tmp != OK) {
                                ret = tmp;
+                               goto out;
+                       }
+
+                       /* Added by PH: data must not contain tab (as it is
+                       b64 it shouldn't, but check for safety). */
+
+                       if (Ustrchr(data, '\t') != NULL) {
+                               ret = FAIL;
                                goto out;
                        }
 

@@ -1,3 +1,5 @@
 
 ******** SERVER ********
 1999-03-02 09:44:33 dovecot authenticator failed for (xxxx) [127.0.0.1]: 535 Incorrect authentication data (set_id=userx)
+1999-03-02 09:44:33 dovecot authenticator failed for (xxxx) [127.0.0.1]: 535 Incorrect authentication data (set_id=userx)
+1999-03-02 09:44:33 dovecot authenticator failed for (xxxx) [ip4.ip4.ip4.ip4]: 535 Incorrect authentication data (set_id=userx)

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.408 2006/10/16 10:58:39 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.409 2006/10/16 13:43:21 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -65,7 +65,7 @@ PH/11 Callouts were setting the name used for EHLO/HELO from $smtp_active_
       addresses), $smtp_active_hostname is used.
 
 PH/12 Installed Andrey Panin's patch to add a dovecot authenticator. Various
-      tweaks were necessary in order to get it to work:
+      tweaks were necessary in order to get it to work (see also 21 below):
       (a) The code assumed that strncpy() returns a negative number on buffer
           overflow, which isn't the case. Replaced with Exim's string_format()
           function.
@@ -141,6 +141,14 @@ PH/20 It was discovered that the GnuTLS code had support for RSA_EXPORT, a
       always available. This code has been removed, because it had the bad
       effect of slowing Exim down by computing (never used) parameters for the
       RSA_EXPORT functionality.
+
+PH/21 On the advice of Timo Sirainen, added a check to the dovecot
+      authenticator to fail if there's a tab character in the incoming data
+      (there should never be unless someone is messing about, as it's supposed
+      to be base64-encoded). Also added, on Timo's advice, the "secured" option
+      if the connection is using TLS or if the remote IP is the same as the
+      local IP, and the "valid-client-cert option" if a client certificate has
+      been verified.
 
 
 Exim version 4.63

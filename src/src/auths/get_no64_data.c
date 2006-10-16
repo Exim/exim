@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/get_no64_data.c,v 1.3 2006/02/07 11:19:01 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/get_no64_data.c,v 1.4 2006/10/16 13:43:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -16,7 +16,8 @@
 
 /* This function is used by authentication drivers to output a challenge
 to the SMTP client and read the response line. This version does not use base
-64 encoding for the text on the 334 line. It is used by the SPA authenticator.
+64 encoding for the text on the 334 line. It is used by the SPA and dovecot
+authenticators.
 
 Arguments:
    aptr       set to point to the response (which is in big_buffer)
