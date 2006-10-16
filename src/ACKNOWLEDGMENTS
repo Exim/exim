@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.57 2006/10/03 15:11:22 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.58 2006/10/16 10:58:40 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  03 October 2006
+Last updated:  16 October 2006
 
 
 THE OLD LIST
@@ -252,6 +252,8 @@ Matthias Waffenschmidt    Patch for build-time Perl bug in configure script
 Norihisa Washitake        Suggested patch for RFC 2047 header decoding
 Chris Webb                Patch for support of an SPF lookup method.
 Florian Weimer            Patch for minor format string issue
+                          Noticing the unwanted (and time-wasting) GnuTLS
+                            RSA_EXPORT code, and supplying a patch to remove it
 Joachim Wieland           Patches for PostgreSQL socket support and other
                             PostgreSQL functionality
                           Patch for hosts_avoid_esmtp

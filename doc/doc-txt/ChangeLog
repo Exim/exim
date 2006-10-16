@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.407 2006/10/16 10:37:19 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.408 2006/10/16 10:58:39 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -133,6 +133,14 @@ PH/19 The functions {pwcheck,saslauthd}_verify_password() are always called
       came from elsewhere) had *some* tests for NULL when it wrote to *reply,
       but it didn't always do it. This confused somebody who was copying the
       code for some other use. I have removed all the tests.
+
+PH/20 It was discovered that the GnuTLS code had support for RSA_EXPORT, a
+      feature that was used to support insecure browsers during the U.S. crypto
+      embargo. It requires special client support, and Exim is probably the
+      only MTA that supported it -- and would never use it because real RSA is
+      always available. This code has been removed, because it had the bad
+      effect of slowing Exim down by computing (never used) parameters for the
+      RSA_EXPORT functionality.
 
 
 Exim version 4.63

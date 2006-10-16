@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.12 2006/02/14 14:12:07 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.13 2006/10/16 10:58:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -23,7 +23,6 @@ functions from the GnuTLS library. */
 
 #define UNKNOWN_NAME "unknown"
 #define DH_BITS      768
-#define RSA_BITS     512
 #define PARAM_SIZE 2*1024
 
 
@@ -37,7 +36,6 @@ enum { INITIALIZED_NOT, INITIALIZED_SERVER, INITIALIZED_CLIENT };
 static BOOL initialized = INITIALIZED_NOT;
 static host_item *client_host;
 
-static gnutls_rsa_params rsa_params = NULL;
 static gnutls_dh_params dh_params = NULL;
 
 static gnutls_certificate_server_credentials x509_cred = NULL;
@@ -57,7 +55,6 @@ static const int kx_priority[16] = {
   GNUTLS_KX_RSA,
   GNUTLS_KX_DHE_DSS,
   GNUTLS_KX_DHE_RSA,
-  GNUTLS_KX_RSA_EXPORT,
   0 };
 
 static int default_cipher_priority[16] = {
@@ -262,9 +259,6 @@ uschar filename[200];
 
 /* Initialize the data structures for holding the parameters */
 
-ret = gnutls_rsa_params_init(&rsa_params);
-if (ret < 0) return tls_error(US"init rsa_params", host, ret);
-
 ret = gnutls_dh_params_init(&dh_params);
 if (ret < 0) return tls_error(US"init dh_params", host, ret);
 
@@ -298,20 +292,9 @@ if (fd >= 0)
     return tls_error(US"TLS cache read failed", host, 0);
   (void)close(fd);
 
-  ret = gnutls_rsa_params_import_pkcs1(rsa_params, &m, GNUTLS_X509_FMT_PEM);
-
-  if (ret < 0)
-    {
-    DEBUG(D_tls)
-      debug_printf("RSA params import failed: assume old-style cache file\n");
-    }
-  else
-    {
-    ret = gnutls_dh_params_import_pkcs3(dh_params, &m, GNUTLS_X509_FMT_PEM);
-    if (ret < 0)
-      return tls_error(US"DH params import", host, ret);
-    DEBUG(D_tls) debug_printf("read RSA and D-H parameters from file\n");
-    }
+  ret = gnutls_dh_params_import_pkcs3(dh_params, &m, GNUTLS_X509_FMT_PEM);
+  if (ret < 0) return tls_error(US"DH params import", host, ret);
+  DEBUG(D_tls) debug_printf("read RSA and D-H parameters from file\n");
 
   free(m.data);
   }
@@ -339,10 +322,6 @@ if (ret < 0)
   {
   uschar tempfilename[sizeof(filename) + 10];
 
-  DEBUG(D_tls) debug_printf("generating %d bit RSA key...\n", RSA_BITS);
-  ret = gnutls_rsa_params_generate2(rsa_params, RSA_BITS);
-  if (ret < 0) return tls_error(US"RSA key generation", host, ret);
-
   DEBUG(D_tls) debug_printf("generating %d bit Diffie-Hellman key...\n",
     DH_BITS);
   ret = gnutls_dh_params_generate2(dh_params, DH_BITS);
@@ -362,25 +341,13 @@ if (ret < 0)
    * certtool or other programs.
    *
    * The commands for certtool are:
-   * $ certtool --generate-privkey --bits 512 >params
-   * $ echo "" >>params
-   * $ certtool --generate-dh-params --bits 1024 >> params
+   * $ certtool --generate-dh-params --bits 1024 > params
    */
 
   m.size = PARAM_SIZE;
   m.data = malloc(m.size);
   if (m.data == NULL)
     return tls_error(US"memory allocation failed", host, 0);
-
-  ret = gnutls_rsa_params_export_pkcs1(rsa_params, GNUTLS_X509_FMT_PEM,
-    m.data, &m.size);
-  if (ret < 0) return tls_error(US"RSA params export", host, ret);
-
-  /* Do not write the null termination byte. */
-
-  m.size = Ustrlen(m.data);
-  if (write(fd, m.data, m.size) != m.size || write(fd, "\n", 1) != 1)
-    return tls_error(US"TLS cache write failed", host, 0);
 
   m.size = PARAM_SIZE;
   ret = gnutls_dh_params_export_pkcs3(dh_params, GNUTLS_X509_FMT_PEM, m.data,
@@ -398,11 +365,10 @@ if (ret < 0)
     return tls_error(string_sprintf("failed to rename %s as %s: %s",
       tempfilename, filename, strerror(errno)), host, 0);
 
-  DEBUG(D_tls) debug_printf("wrote RSA and D-H parameters to file %s\n",
-    filename);
+  DEBUG(D_tls) debug_printf("wrote D-H parameters to file %s\n", filename);
   }
 
-DEBUG(D_tls) debug_printf("initialized RSA and D-H parameters\n");
+DEBUG(D_tls) debug_printf("initialized D-H parameters\n");
 return OK;
 }
 
@@ -540,7 +506,6 @@ if (cas != NULL)
 /* Associate the parameters with the x509 credentials structure. */
 
 gnutls_certificate_set_dh_params(x509_cred, dh_params);
-gnutls_certificate_set_rsa_export_params(x509_cred, rsa_params);
 
 DEBUG(D_tls) debug_printf("initialized certificate stuff\n");
 return OK;
