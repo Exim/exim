@@ -13,7 +13,7 @@ gecos_name = CALLER_NAME
 
 domainlist local_domains = test.ex : *.test.ex
 
-hostlist auth_hosts = 10.0.0.1
+hostlist auth_hosts = 10.0.0.1 : 10.0.0.5
 hostlist relay_hosts = 10.0.0.4
 hostlist auth_relay_hosts = 10.0.0.3 : 10.0.0.4
 
@@ -80,6 +80,7 @@ cram_md5:
   server_secret = "${if eq{$auth1}{tim}{tanstaaftanstaaf}\
     {${if eq{$auth1}{userx}{secret}fail}}}"
   server_set_id = $auth1
+  server_condition = ${if !eq {$sender_host_address}{10.0.0.5}}
 
 
 

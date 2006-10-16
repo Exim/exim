@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.116 2006/10/16 13:43:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.117 2006/10/16 15:44:36 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -123,6 +123,13 @@ Version 4.64
    In this case there is a lookup in dnsbl.sorbs.net, and if none of the IP
    values matches (or if no record is found), this is the only lookup that is
    done. Only if there is a match is one of the more specific lists consulted.
+
+6. All authenticators now have a server_condition option. Previously, only
+   plaintext had this, and this has not changed: it must be set to the
+   authenticator as a server. For the others, if server_condition is set, it is
+   expanded if authentication is successful, and treated exactly as it is in
+   plaintext. This can serve as a means of adding authorization to an
+   authenticator.
 
 
 Version 4.63

@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Cambridge: exim/src/scripts/MakeLinks,v 1.7 2006/10/02 13:38:18 ph10 Exp $
+# $Cambridge: exim/src/scripts/MakeLinks,v 1.8 2006/10/16 15:44:36 ph10 Exp $
 
 # Script to build links for all the exim source files from the system-
 # specific build directory. It should be run from within that directory.
@@ -162,6 +162,7 @@ ln -s ../../src/auths/b64decode.c        b64decode.c
 ln -s ../../src/auths/call_pam.c         call_pam.c
 ln -s ../../src/auths/call_pwcheck.c     call_pwcheck.c
 ln -s ../../src/auths/call_radius.c      call_radius.c
+ln -s ../../src/auths/check_serv_cond.c  check_serv_cond.c
 ln -s ../../src/auths/cyrus_sasl.c       cyrus_sasl.c
 ln -s ../../src/auths/cyrus_sasl.h       cyrus_sasl.h
 ln -s ../../src/auths/get_data.c         get_data.c

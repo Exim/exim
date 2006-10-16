@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/structs.h,v 1.12 2006/09/25 11:25:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/structs.h,v 1.13 2006/10/16 15:44:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -367,6 +367,7 @@ typedef struct auth_instance {
   uschar *set_id;                 /* String to set as authenticated id */
   uschar *mail_auth_condition;    /* Condition for AUTH on MAIL command */
   uschar *server_debug_string;    /* Debugging output */
+  uschar *server_condition;       /* Authorization condition */
   BOOL    client;                 /* TRUE if client option(s) set */
   BOOL    server;                 /* TRUE if server options(s) set */
   BOOL    advertised;             /* Set TRUE when advertised */

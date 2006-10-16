@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/cyrus_sasl.c,v 1.4 2006/02/10 14:25:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/cyrus_sasl.c,v 1.5 2006/10/16 15:44:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -53,7 +53,7 @@ address can appear in the tables drtables.c. */
 int auth_cyrus_sasl_options_count =
   sizeof(auth_cyrus_sasl_options)/sizeof(optionlist);
 
-/* Default private options block for the contidion authentication method. */
+/* Default private options block for the cyrus_sasl authentication method. */
 
 auth_cyrus_sasl_options_block auth_cyrus_sasl_option_defaults = {
   US"smtp",         /* server_service */
@@ -332,11 +332,13 @@ while(rc==SASL_CONTINUE)
     expand_nmax = 1;
 
     HDEBUG(D_auth)
-      debug_printf("Cyrus SASL %s authentiction succeeded for %s\n", ob->server_mech, out2);
+      debug_printf("Cyrus SASL %s authentication succeeded for %s\n", ob->server_mech, out2);
     /* close down the connection, freeing up library's memory */
     sasl_dispose(&conn);
     sasl_done();
-    return OK;
+
+    /* Expand server_condition as an authorization check */
+    return auth_check_serv_cond(ablock);
     }
   }
 /* NOTREACHED */

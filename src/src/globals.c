@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.59 2006/09/25 10:14:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.60 2006/10/16 15:44:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -38,6 +38,8 @@ optionlist optionlist_auths[] = {
                  (void *)(offsetof(auth_instance, public_name)) },
   { "server_advertise_condition", opt_stringptr | opt_public,
                  (void *)(offsetof(auth_instance, advertise_condition))},
+  { "server_condition", opt_stringptr | opt_public,
+                 (void *)(offsetof(auth_instance, server_condition)) },
   { "server_debug_print", opt_stringptr | opt_public,
                  (void *)(offsetof(auth_instance, server_debug_string)) },
   { "server_mail_auth_condition", opt_stringptr | opt_public,
@@ -325,6 +327,7 @@ auth_instance auth_defaults    = {
     NULL,                      /* set_id */
     NULL,                      /* server_mail_auth_condition */
     NULL,                      /* server_debug_string */
+    NULL,                      /* server_condition */
     FALSE,                     /* client */
     FALSE,                     /* server */
     FALSE                      /* advertised */

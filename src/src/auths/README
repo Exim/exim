@@ -1,4 +1,4 @@
-$Cambridge: exim/src/src/auths/README,v 1.5 2006/02/23 12:41:22 ph10 Exp $
+$Cambridge: exim/src/src/auths/README,v 1.6 2006/10/16 15:44:36 ph10 Exp $
 
 AUTHS
 
@@ -59,7 +59,7 @@ The yield of a server authentication check must be one of:
   DEFER       couldn't complete the check
   FAIL        authentication failed
   CANCELLED   authentication forced to fail by "*" response to challenge,
-                or by a forced string expansion failure
+                or by certain forced string expansion failures
   BAD64       bad base64 data received
   UNEXPECTED  unexpected data received
 

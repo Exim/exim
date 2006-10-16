@@ -8,7 +8,7 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> test.host in helo_lookup_domains? no (end of list)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
->>> host in "10.0.0.1"? no (end of list)
+>>> host in "10.0.0.1 : 10.0.0.5"? no (end of list)
 >>> host in "10.0.0.4"? yes (matched "10.0.0.4")
 >>> host in auth_advertise_hosts? no (matched "!+relay_hosts")
 >>> host in hosts_connection_nolog? no (option unset)
@@ -21,13 +21,18 @@
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> test.host in helo_lookup_domains? no (end of list)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
->>> host in "10.0.0.1"? yes (matched "10.0.0.1")
+>>> host in "10.0.0.1 : 10.0.0.5"? yes (matched "10.0.0.1")
 >>> host in auth_advertise_hosts? yes (matched "+auth_hosts")
 >>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
 >>> CRAM-MD5: user name = tim
 >>>           challenge = <1896.697170952@postoffice.reston.mci.net>
 >>>           received  = b913a602c7eda7a495b4e6e7334d3890
 >>>           digest    = b913a602c7eda7a495b4e6e7334d3890
+>>> cram_md5 authenticator:
+>>>   $auth1 = tim
+>>>   $1 = tim
+>>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
+>>> expanded string: true
 >>> using ACL "check_recipient"
 >>> processing "warn"
 >>> check hosts = 10.0.0.5
@@ -54,3 +59,37 @@
 >>> accept: condition test succeeded
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaY-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.1] P=esmtpa A=cram_md5:tim S=sss
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> test.host in helo_lookup_domains? no (end of list)
+>>> host in pipelining_advertise_hosts? yes (matched "*")
+>>> host in "10.0.0.1 : 10.0.0.5"? yes (matched "10.0.0.5")
+>>> host in auth_advertise_hosts? yes (matched "+auth_hosts")
+>>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
+>>> CRAM-MD5: user name = tim
+>>>           challenge = <1896.697170952@postoffice.reston.mci.net>
+>>>           received  = b913a602c7eda7a495b4e6e7334d3890
+>>>           digest    = b913a602c7eda7a495b4e6e7334d3890
+>>> cram_md5 authenticator:
+>>>   $auth1 = tim
+>>>   $1 = tim
+>>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
+>>> expanded string: 
+LOG: cram_md5 authenticator failed for (test.host) [10.0.0.5]: 535 Incorrect authentication data (set_id=tim)
+>>> using ACL "check_recipient"
+>>> processing "warn"
+>>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"? yes (matched "10.0.0.5")
+>>> warn: condition test succeeded
+>>> processing "accept"
+>>> check hosts = 10.0.0.5
+>>> host in "10.0.0.5"? yes (matched "10.0.0.5")
+>>> accept: condition test succeeded
+>>> host in ignore_fromline_hosts? no (option unset)
+LOG: 10HmaZ-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.5] P=esmtp S=sss

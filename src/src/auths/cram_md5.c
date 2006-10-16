@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/cram_md5.c,v 1.5 2006/02/23 12:41:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/cram_md5.c,v 1.6 2006/10/16 15:44:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -233,7 +233,8 @@ for (i = 0; i < 16; i++)
         ((b >= 'a')? b - 'a' + 10 : b - '0')) != digest[i]) return FAIL;
   }
 
-return OK;
+/* Expand server_condition as an authorization check */
+return auth_check_serv_cond(ablock);
 }
 
 

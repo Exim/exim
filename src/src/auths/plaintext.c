@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/plaintext.c,v 1.5 2006/02/23 12:41:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/plaintext.c,v 1.6 2006/10/16 15:44:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -18,8 +18,6 @@ optionlist auth_plaintext_options[] = {
       (void *)(offsetof(auth_plaintext_options_block, client_ignore_invalid_base64)) },
   { "client_send",        opt_stringptr,
       (void *)(offsetof(auth_plaintext_options_block, client_send)) },
-  { "server_condition",   opt_stringptr,
-      (void *)(offsetof(auth_plaintext_options_block, server_condition)) },
   { "server_prompts",     opt_stringptr,
       (void *)(offsetof(auth_plaintext_options_block, server_prompts)) }
 };
@@ -33,7 +31,6 @@ int auth_plaintext_options_count =
 /* Default private options block for the plaintext authentication method. */
 
 auth_plaintext_options_block auth_plaintext_option_defaults = {
-  NULL,              /* server_condition */
   NULL,              /* server_prompts */
   NULL,              /* client_send */
   FALSE              /* client_ignore_invalid_base64 */
@@ -54,7 +51,7 @@ auth_plaintext_init(auth_instance *ablock)
 auth_plaintext_options_block *ob =
   (auth_plaintext_options_block *)(ablock->options_block);
 if (ablock->public_name == NULL) ablock->public_name = ablock->name;
-if (ob->server_condition != NULL) ablock->server = TRUE;
+if (ablock->server_condition != NULL) ablock->server = TRUE;
 if (ob->client_send != NULL) ablock->client = TRUE;
 }
 
@@ -72,7 +69,7 @@ auth_plaintext_server(auth_instance *ablock, uschar *data)
 auth_plaintext_options_block *ob =
   (auth_plaintext_options_block *)(ablock->options_block);
 uschar *prompts = ob->server_prompts;
-uschar *clear, *cond, *end, *s;
+uschar *clear, *end, *s;
 int number = 1;
 int len, rc;
 int sep = 0;
@@ -141,59 +138,12 @@ while ((s = string_nextinlist(&prompts, &sep, big_buffer, big_buffer_size))
   }
 
 /* We now have a number of items of data in $auth1, $auth2, etc (and also, for
-compatibility, in $1, $2, etc). Match against the decoded data by expanding the
-condition. */
+compatibility, in $1, $2, etc). Authentication and authorization are handled
+together for this authenticator by expanding the server_condition option. Note
+that ablock->server_condition is always non-NULL because that's what configures
+this authenticator as a server. */
 
-cond = expand_string(ob->server_condition);
-
-HDEBUG(D_auth)
-  {
-  int i;
-  debug_printf("%s authenticator:\n", ablock->name);
-  for (i = 0; i < AUTH_VARS; i++)
-    {
-    if (auth_vars[i] != NULL)
-      debug_printf("  $auth%d = %s\n", i + 1, auth_vars[i]);
-    }
-  for (i = 1; i <= expand_nmax; i++)
-    debug_printf("  $%d = %.*s\n", i, expand_nlength[i], expand_nstring[i]);
-  debug_print_string(ablock->server_debug_string);    /* customized debug */
-  if (cond == NULL)
-    debug_printf("expansion failed: %s\n", expand_string_message);
-  else
-    debug_printf("expanded string: %s\n", cond);
-  }
-
-/* A forced expansion failure causes authentication to fail. Other expansion
-failures yield DEFER, which will cause a temporary error code to be returned to
-the AUTH command. The problem is at the server end, so the client should try
-again later. */
-
-if (cond == NULL)
-  {
-  if (expand_string_forcedfail) return FAIL;
-  auth_defer_msg = expand_string_message;
-  return DEFER;
-  }
-
-/* Return FAIL for empty string, "0", "no", and "false"; return OK for
-"1", "yes", and "true"; return DEFER for anything else, with the string
-available as an error text for the user. */
-
-if (*cond == 0 ||
-    Ustrcmp(cond, "0") == 0 ||
-    strcmpic(cond, US"no") == 0 ||
-    strcmpic(cond, US"false") == 0)
-  return FAIL;
-
-if (Ustrcmp(cond, "1") == 0 ||
-    strcmpic(cond, US"yes") == 0 ||
-    strcmpic(cond, US"true") == 0)
-  return OK;
-
-auth_defer_msg = cond;
-auth_defer_user_msg = string_sprintf(": %s", cond);
-return DEFER;
+return auth_check_serv_cond(ablock);
 }
 
 

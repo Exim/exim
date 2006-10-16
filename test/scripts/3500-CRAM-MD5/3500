@@ -32,4 +32,15 @@ Testing authenticated CRAM-MD5.
 .
 quit
 ****
+exim -bh 10.0.0.5
+ehlo test.host
+AUTH CRAM-MD5
+dGltIGI5MTNhNjAyYzdlZGE3YTQ5NWI0ZTZlNzMzNGQzODkw
+mail from:<userx@some.domain>
+rcpt to:<userx@test.ex>
+data
+Testing authenticated CRAM-MD5.
+.
+quit
+****
 no_msglog_check

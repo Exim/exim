@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.2 2006/10/16 13:43:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.3 2006/10/16 15:44:36 ph10 Exp $ */
 
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
@@ -309,5 +309,7 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
        }
 
 out:   close(fd);
-       return ret;
+
+       /* Expand server_condition as an authorization check */
+       return (ret == OK)? auth_check_serv_cond(ablock) : ret;
 }

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/spa.c,v 1.7 2006/02/23 12:41:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/spa.c,v 1.8 2006/10/16 15:44:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -25,8 +25,9 @@ References:
  * typedef unsigned uint32;
  * typedef unsigned char  uint8;
 
-07-August-2003: PH: Patched up the code to avoid assert bombouts for stupid
-                    input data. Find appropriate comment by grepping for "PH".
+07-August-2003:  PH: Patched up the code to avoid assert bombouts for stupid
+                     input data. Find appropriate comment by grepping for "PH".
+16-October-2006: PH: Added a call to auth_check_serv_cond() at the end
 */
 
 
@@ -231,7 +232,9 @@ if (memcmp(ntRespData,
       ((unsigned char*)responseptr)+IVAL(&responseptr->ntResponse.offset,0),
       24) == 0)
   /* success. we have a winner. */
-  return OK;
+
+  /* Expand server_condition as an authorization check (PH) */
+  return auth_check_serv_cond(ablock);
 
 return FAIL;
 }

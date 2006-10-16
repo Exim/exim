@@ -3,46 +3,46 @@ a1 authenticator:
 driver = plaintext
 public_name = PLAIN
 server_advertise_condition = 
+server_condition = xxx
 server_debug_print = 
 server_mail_auth_condition = 
 server_set_id = 
 no_client_ignore_invalid_base64
 client_send = 
-server_condition = xxx
 server_prompts = 
 
 a2 authenticator:
 driver = plaintext
 public_name = PLAIN
 server_advertise_condition = 
+server_condition = 
 server_debug_print = 
 server_mail_auth_condition = 
 server_set_id = 
 no_client_ignore_invalid_base64
 client_send = 
-server_condition = 
 server_prompts = 
 
 a3 authenticator:
 driver = plaintext
 public_name = LOGIN
 server_advertise_condition = 
+server_condition = 
 server_debug_print = 
 server_mail_auth_condition = 
 server_set_id = 
 no_client_ignore_invalid_base64
 client_send = 
-server_condition = 
 server_prompts = 
 
 a4 authenticator:
 driver = plaintext
 public_name = LOGIN
 server_advertise_condition = 
+server_condition = 
 server_debug_print = 
 server_mail_auth_condition = 
 server_set_id = 
 no_client_ignore_invalid_base64
 client_send = 
-server_condition = 
 server_prompts = 

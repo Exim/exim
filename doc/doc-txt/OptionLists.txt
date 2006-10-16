@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.24 2006/09/22 14:01:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.25 2006/10/16 15:44:36 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -442,7 +442,7 @@ sender_unqualified_hosts             host list       unset         main
 senders                              address list    unset         routers           4.00
 serialize_hosts                      host list       unset         smtp              1.60
 server_advertise_condition           string*         unset         authenticators    4.14
-server_condition                     string*         unset         plaintext         3.10
+server_condition                     string*         unset         authenticators    3.10 (plaintext) 4.64 (others)
 server_hostname                      string*   "$primary_hostname" cyrus_sasl        4.43
 server_mail_auth_condition           string*         unset         authenticators    3.22
 server_mech                          string          public_name   cyrus_sasl        4.43

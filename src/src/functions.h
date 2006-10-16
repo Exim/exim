@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.28 2006/10/09 14:36:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.29 2006/10/16 15:44:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -49,6 +49,7 @@ extern int     auth_call_pwcheck(uschar *, uschar **);
 extern int     auth_call_radius(uschar *, uschar **);
 extern int     auth_call_saslauthd(uschar *, uschar *, uschar *, uschar *,
                  uschar **);
+extern int     auth_check_serv_cond(auth_instance *);
 extern int     auth_get_data(uschar **, uschar *, int);
 extern int     auth_get_no64_data(uschar **, uschar *);
 extern uschar *auth_xtextencode(uschar *, int);
