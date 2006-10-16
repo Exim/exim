@@ -1,4 +1,4 @@
-/* $Cambridge: exim/test/src/client.c,v 1.1 2006/02/06 16:24:05 ph10 Exp $ */
+/* $Cambridge: exim/test/src/client.c,v 1.2 2006/10/16 13:42:19 ph10 Exp $ */
 
 /* A little hacked up program that makes a TCP/IP call and reads a script to
 drive it, for testing Exim server code running as a daemon. It's got a bit
@@ -77,11 +77,9 @@ latter needs a whole pile of tables. */
 #include <gnutls/x509.h>
 
 #define DH_BITS      768
-#define RSA_BITS     512
 
 /* Local static variables for GNUTLS */
 
-static gnutls_rsa_params rsa_params = NULL;
 static gnutls_dh_params dh_params = NULL;
 
 static gnutls_certificate_credentials_t x509_cred = NULL;
@@ -97,7 +95,6 @@ static const int kx_priority[16] = {
   GNUTLS_KX_RSA,
   GNUTLS_KX_DHE_DSS,
   GNUTLS_KX_DHE_RSA,
-  GNUTLS_KX_RSA_EXPORT,
   0 };
 
 static int default_cipher_priority[16] = {
@@ -225,7 +222,7 @@ Returns:    doesn't - it dies
 static void
 gnutls_error(uschar *prefix, int err)
 {
-fprintf(stderr, "GnuTLS connection error:%s", prefix);
+fprintf(stderr, "GnuTLS connection error: %s:", prefix);
 if (err != 0) fprintf(stderr, " %s", gnutls_strerror(err));
 fprintf(stderr, "\n");
 exit(1);
@@ -234,14 +231,14 @@ exit(1);
 
 
 /*************************************************
-*          Setup up RSA and DH parameters        *
+*             Setup up DH parameters             *
 *************************************************/
 
 /* For the test suite, the parameters should always be available in the spool
 directory. */
 
 static void
-init_rsa_dh(void)
+init_dh(void)
 {
 int fd;
 int ret;
@@ -251,17 +248,11 @@ struct stat statbuf;
 
 /* Initialize the data structures for holding the parameters */
 
-ret = gnutls_rsa_params_init(&rsa_params);
-if (ret < 0) gnutls_error(US"init rsa_params", ret);
-
 ret = gnutls_dh_params_init(&dh_params);
 if (ret < 0) gnutls_error(US"init dh_params", ret);
 
 /* Open the cache file for reading and if successful, read it and set up the
-parameters. If we can't set up the RSA parameters, assume that we are dealing
-with an old-style cache file that is in another format, and fall through to
-compute new values. However, if we correctly get RSA parameters, a failure to
-set up D-H parameters is treated as an error. */
+parameters. */
 
 fd = open("aux-fixed/gnutls-params", O_RDONLY, 0);
 if (fd < 0)
@@ -284,8 +275,6 @@ if (read(fd, m.data, m.size) != m.size)
   return gnutls_error(US"TLS cache read failed", 0);
 (void)close(fd);
 
-ret = gnutls_rsa_params_import_pkcs1(rsa_params, &m, GNUTLS_X509_FMT_PEM);
-if (ret < 0) return gnutls_error(US"RSA params import", ret);
 ret = gnutls_dh_params_import_pkcs3(dh_params, &m, GNUTLS_X509_FMT_PEM);
 if (ret < 0) return gnutls_error(US"DH params import", ret);
 free(m.data);
@@ -312,9 +301,9 @@ int rc;
 rc = gnutls_global_init();
 if (rc < 0) gnutls_error(US"gnutls_global_init", rc);
 
-/* Read RSA and D-H parameters from the cache file. */
+/* Read D-H parameters from the cache file. */
 
-init_rsa_dh();
+init_dh();
 
 /* Create the credentials structure */
 
@@ -333,7 +322,6 @@ if (certificate != NULL)
 /* Associate the parameters with the x509 credentials structure. */
 
 gnutls_certificate_set_dh_params(x509_cred, dh_params);
-gnutls_certificate_set_rsa_export_params(x509_cred, rsa_params);
 }
 
 
