@@ -5,7 +5,7 @@ exim -DSERVER=server -bd -oX PORT_D
 exim userx@test.ex
 Test message
 ****
-exim -qf
+exim -qf -DTIMES=F,1h,1d
 ****
 exim -DHOSTS=127.0.0.1 -qf
 ****

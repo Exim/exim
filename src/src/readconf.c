@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.24 2006/09/19 11:28:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.25 2006/10/18 08:55:38 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3455,10 +3455,10 @@ else if (len == 4 && strncmpic(pp, US"auth", len) == 0 &&
          strncmpic(q+1, US"failed", p-q-1) == 0)
   *basic_errno = ERRNO_AUTHFAIL;
 
-else if (strcmpic(pp, US"lost_connection") == 0)
+else if (strncmpic(pp, US"lost_connection", p - pp) == 0)
   *basic_errno = ERRNO_SMTPCLOSED;
 
-else if (strcmpic(pp, US"tls_required") == 0)
+else if (strncmpic(pp, US"tls_required", p - pp) == 0)
   *basic_errno = ERRNO_TLSREQUIRED;
 
 else if (len != 1 || Ustrncmp(pp, "*", 1) != 0)

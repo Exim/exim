@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.410 2006/10/16 15:44:36 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.411 2006/10/18 08:55:37 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -150,10 +150,13 @@ PH/21 On the advice of Timo Sirainen, added a check to the dovecot
       local IP, and the "valid-client-cert option" if a client certificate has
       been verified.
 
-PH/22 As suggested by Denis Davies, added a server_condition option to *all*
+PH/22 As suggested by Dennis Davis, added a server_condition option to *all*
       authenticators. This can be used for authorization after authentication
       succeeds. (In the case of plaintext, it servers for both authentication
       and authorization.)
+
+PH/23 Testing for tls_required and lost_connection in a retry rule didn't work
+      if any retry times were supplied.
 
 
 Exim version 4.63

@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.58 2006/10/16 10:58:40 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.59 2006/10/18 08:55:37 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  16 October 2006
+Last updated:  18 October 2006
 
 
 THE OLD LIST
@@ -94,6 +94,7 @@ Oliver Cook               Suggested patch for exigrep & rejected messages
 Jennifer Corley           Designing the new Exim logo
 John Dalbec               Patch for quota_warn_threshold bug
 Vivek Dasmohapatra        Suggested patch for CRL support
+Dennis Davis              Suggested server_condition for all authenticators
 Andrew Doran              Patch for NetBSD configuration files
                           Patch for ifreq alignment and size problems
 Michael Deutschmann       Suggested patch for treating bind() failure like connect()

@@ -1,6 +1,7 @@
 # Exim test configuration 2010
 
 SERVER =
+TIMES =
 HOSTS = 127.0.0.1 : HOSTIPV4
 
 exim_path = EXIM_PATH
@@ -54,7 +55,7 @@ send_to_server:
 
 begin retry
 
-* tls_required
+* tls_required  TIMES
 * *  F,1d,5m
 
 # End
