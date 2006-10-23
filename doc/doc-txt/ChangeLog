@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.411 2006/10/18 08:55:37 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.412 2006/10/23 10:55:10 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -157,6 +157,10 @@ PH/22 As suggested by Dennis Davis, added a server_condition option to *all*
 
 PH/23 Testing for tls_required and lost_connection in a retry rule didn't work
       if any retry times were supplied.
+
+PH/24 Exim crashed if verify=helo was activated during an incoming -bs
+      connection, where there is no client IP address to check. In this
+      situation, the verify now always succeeds.
 
 
 Exim version 4.63

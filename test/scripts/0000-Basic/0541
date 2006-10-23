@@ -1,0 +1,5 @@
+# verify=helo with no IP address
+exim -bs
+helo a.b.c.d
+quit
+****

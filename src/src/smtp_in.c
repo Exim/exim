@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.45 2006/10/09 14:36:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.46 2006/10/23 10:55:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2054,6 +2054,16 @@ if (sender_helo_name == NULL)
   HDEBUG(D_receive) debug_printf("no EHLO/HELO command was issued\n");
   }
 
+/* Deal with the case of -bs without an IP address */
+
+else if (sender_host_address == NULL)
+  {
+  HDEBUG(D_receive) debug_printf("no client IP address: assume success\n");
+  helo_verified = TRUE;
+  }
+
+/* Deal with the more common case when there is a sending IP address */
+
 else if (sender_helo_name[0] == '[')
   {
   helo_verified = Ustrncmp(sender_helo_name+1, sender_host_address,
@@ -2139,7 +2149,7 @@ else
     }
   }
 
-if (!helo_verified) helo_verify_failed = FALSE;  /* We've tried ... */
+if (!helo_verified) helo_verify_failed = TRUE;  /* We've tried ... */
 return yield;
 }
 
