@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.27 2006/09/05 13:24:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.28 2006/10/23 13:24:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -713,7 +713,7 @@ enum {
 
 enum { MSG_DELIVER, MSG_FREEZE, MSG_REMOVE, MSG_THAW, MSG_ADD_RECIPIENT,
        MSG_MARK_ALL_DELIVERED, MSG_MARK_DELIVERED, MSG_EDIT_SENDER,
-       MSG_SHOW_BODY, MSG_SHOW_HEADER, MSG_SHOW_LOG };
+       MSG_SHOW_BODY, MSG_SHOW_HEADER, MSG_SHOW_LOG, MSG_LOAD };
 
 /* Returns from the spool_read_header() function */
 

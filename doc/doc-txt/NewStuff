@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.117 2006/10/16 15:44:36 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.118 2006/10/23 13:24:21 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -130,6 +130,14 @@ Version 4.64
    expanded if authentication is successful, and treated exactly as it is in
    plaintext. This can serve as a means of adding authorization to an
    authenticator.
+
+7. There is a new command-line option called -Mset. It is useful only in
+   conjunction with -be (that is, when testing string expansions). It must be
+   followed by a message id; Exim loads the given message before doing the
+   expansions, thus setting message-specific variables such as $message_size
+   and the header variables. This feature is provided to make it easier to test
+   expansions that make use of these variables. However, Exim must be called by
+   an admin user when -Mset is used.
 
 
 Version 4.63

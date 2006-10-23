@@ -1,0 +1,17 @@
+# -Mset
+exim userx@test.x usery@test.ex
+From: Himself <himself@there.tld>
+To: Yourself <you@here.tld>
+Subject: The subject is not the object
+
+This is the body of the message.
+****
+sudo exim -be -Mset $msg1
+From: $h_from:
+Subject: $h_subject:
+message_body_size=$message_body_size
+message_size=$message_size
+message_id=$message_id
+message_exim_id=$message_exim_id
+****
+no_msglog_check

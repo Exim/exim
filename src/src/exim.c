@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.44 2006/10/02 13:38:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.45 2006/10/23 13:24:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2252,6 +2252,7 @@ for (i = 1; i < argc; i++)
        -Mmad mark all recipients delivered
        -Mmd  mark recipients(s) delivered
        -Mes  edit sender
+       -Mset load a message for use with -be
        -Mvb  show body
        -Mvh  show header
        -Mvl  show log
@@ -2289,6 +2290,11 @@ for (i = 1; i < argc; i++)
       one_msg_action = TRUE;
       }
     else if (Ustrcmp(argrest, "rm") == 0) msg_action = MSG_REMOVE;
+    else if (Ustrcmp(argrest, "set") == 0)
+      {
+      msg_action = MSG_LOAD;
+      one_msg_action = TRUE;
+      }
     else if (Ustrcmp(argrest, "t") == 0)  msg_action = MSG_THAW;
     else if (Ustrcmp(argrest, "vb") == 0)
       {
@@ -2886,13 +2892,14 @@ if ((
     ) ||
     (
     msg_action_arg > 0 &&
-    (daemon_listen || queue_interval >= 0 || list_options || checking ||
-     bi_option || test_retry_arg >= 0 || test_rewrite_arg >= 0)
+    (daemon_listen || queue_interval >= 0 || list_options ||
+      (checking && msg_action != MSG_LOAD) ||
+      bi_option || test_retry_arg >= 0 || test_rewrite_arg >= 0)
     ) ||
     (
     (daemon_listen || queue_interval >= 0) &&
     (sender_address != NULL || list_options || list_queue || checking ||
-     bi_option)
+      bi_option)
     ) ||
     (
     daemon_listen && queue_interval == 0
@@ -3655,12 +3662,12 @@ if (count_queue)
   exit(EXIT_SUCCESS);
   }
 
-/* Handle actions on specific messages, except for the force delivery action,
-which is done below. Some actions take a whole list of message ids, which
-are known to continue up to the end of the arguments. Others take a single
-message id and then operate on the recipients list. */
+/* Handle actions on specific messages, except for the force delivery and
+message load actions, which are done below. Some actions take a whole list of
+message ids, which are known to continue up to the end of the arguments. Others
+take a single message id and then operate on the recipients list. */
 
-if (msg_action_arg > 0 && msg_action != MSG_DELIVER)
+if (msg_action_arg > 0 && msg_action != MSG_DELIVER && msg_action != MSG_LOAD)
   {
   int yield = EXIT_SUCCESS;
   set_process_info("acting on specified messages");
@@ -3840,16 +3847,19 @@ if (list_options)
 
 
 /* Handle a request to deliver one or more messages that are already on the
-queue. Values of msg_action other than MSG_DELIVER are dealt with above. This
-is typically used for a small number when prodding by hand (when the option
-forced_delivery will be set) or when re-execing to regain root privilege.
-Each message delivery must happen in a separate process, so we fork a process
-for each one, and run them sequentially so that debugging output doesn't get
-intertwined, and to avoid spawning too many processes if a long list is given.
-However, don't fork for the last one; this saves a process in the common case
-when Exim is called to deliver just one message. */
+queue. Values of msg_action other than MSG_DELIVER and MSG_LOAD are dealt with
+above. MSG_LOAD is handled with -be (which is the only time it applies) below.
 
-if (msg_action_arg > 0)
+Delivery of specific messages is typically used for a small number when
+prodding by hand (when the option forced_delivery will be set) or when
+re-execing to regain root privilege. Each message delivery must happen in a
+separate process, so we fork a process for each one, and run them sequentially
+so that debugging output doesn't get intertwined, and to avoid spawning too
+many processes if a long list is given. However, don't fork for the last one;
+this saves a process in the common case when Exim is called to deliver just one
+message. */
+
+if (msg_action_arg > 0 && msg_action != MSG_LOAD)
   {
   if (prod_requires_admin && !admin_user)
     {
@@ -4169,18 +4179,37 @@ if (verify_address_mode || address_test_mode)
   exim_exit(exit_value);
   }
 
-/* Handle expansion checking */
+/* Handle expansion checking. Either expand items on the command line, or read
+from stdin if there aren't any. If -Mset was specified, load the message so
+that its variables can be used, but restrict this facility to admin users. */
 
 if (expansion_test)
   {
+  if (msg_action_arg > 0 && msg_action == MSG_LOAD)
+    {
+    uschar spoolname[256];  /* Not big_buffer; used in spool_read_header() */
+    if (!admin_user)
+      {
+      fprintf(stderr, "exim: permission denied\n");
+      exit(EXIT_FAILURE);
+      }
+    message_id = argv[msg_action_arg];
+    (void)string_format(spoolname, sizeof(spoolname), "%s-H", message_id);
+    if (!spool_open_datafile(message_id))
+      printf ("Failed to load message datafile %s\n", message_id);
+    if (spool_read_header(spoolname, TRUE, FALSE) != spool_read_OK)
+      printf ("Failed to load message %s\n", message_id);
+    }
+
+  /* Expand command line items */
+
   if (recipients_arg < argc)
     {
     while (recipients_arg < argc)
       {
       uschar *s = argv[recipients_arg++];
       uschar *ss = expand_string(s);
-      if (ss == NULL)
-        printf ("Failed: %s\n", expand_string_message);
+      if (ss == NULL) printf ("Failed: %s\n", expand_string_message);
       else printf("%s\n", CS ss);
       }
     }
@@ -4210,6 +4239,14 @@ if (expansion_test)
     #ifdef USE_READLINE
     if (dlhandle != NULL) dlclose(dlhandle);
     #endif
+    }
+
+  /* The data file will be open after -Mset */
+
+  if (deliver_datafile >= 0)
+    {
+    (void)close(deliver_datafile);
+    deliver_datafile = -1;
     }
 
   exim_exit(EXIT_SUCCESS);

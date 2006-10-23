@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.59 2006/10/18 08:55:37 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.60 2006/10/23 13:24:21 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  18 October 2006
+Last updated:  23 October 2006
 
 
 THE OLD LIST
@@ -169,6 +169,7 @@ Pierre Humblet            Continued Cygwin support
 Peter Ilieve              Suggested patch for lookup search bug
 John Jetmore              Writing and maintaining the 'exipick' utility
                           Much helpful testing of the test suite
+                          Patch for -Mset
 Bob Johannessen           Patch for Sieve envelope tests bug
                           Patch for negative uid/gid bug
 Christian Kellner         Patch for LDAP dereferencing
