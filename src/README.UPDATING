@@ -1,4 +1,4 @@
-$Cambridge: exim/src/README.UPDATING,v 1.14 2006/09/26 14:51:02 ph10 Exp $
+$Cambridge: exim/src/README.UPDATING,v 1.15 2006/10/23 09:14:50 ph10 Exp $
 
 This document contains detailed information about incompatibilities that might
 be encountered when upgrading from one release of Exim to another. The
@@ -47,6 +47,20 @@ empty string (that is {}) was being interpreted as if it was {0} and therefore
 treated as the number zero. From release 4.64, such strings cause an error
 because a decimal number, possibly followed by K or M, is required (as has
 always been documented).
+
+3. There has been a change to the GnuTLS support (ChangeLog/PH/20) to improve
+Exim's performance. Unfortunately, this has the side effect of being slightly
+non-upwards compatible for versions 4.50 and earlier. If you are upgrading from
+one of these earlier versions and you use GnuTLS, you must remove the file
+called gnutls-params in Exim's spool directory. If you don't do this, you will
+see this error:
+
+  TLS error on connection from ... (DH params import): Base64 decoding error.
+
+Removing the file causes Exim to recompute the relevant encryption parameters
+and cache them in the new format that was introduced for release 4.51 (May
+2005). If you are upgrading from release 4.51 or later, there should be no
+problem.
 
 
 Exim version 4.63
