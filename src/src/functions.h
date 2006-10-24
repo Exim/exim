@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.29 2006/10/16 15:44:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.30 2006/10/24 12:56:06 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -206,6 +206,7 @@ extern uschar *readconf_readname(uschar *, int, uschar *);
 extern int     readconf_readtime(uschar *, int, BOOL);
 extern void    readconf_rest(BOOL);
 extern uschar *readconf_retry_error(uschar *, uschar *, int *, int *);
+extern void    read_message_body(BOOL);
 extern void    receive_bomb_out(uschar *);
 extern BOOL    receive_check_fs(int);
 extern BOOL    receive_check_set_sender(uschar *);

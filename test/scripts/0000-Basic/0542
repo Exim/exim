@@ -1,4 +1,4 @@
-# -Mset
+# -Mset and -bem
 exim userx@test.x usery@test.ex
 From: Himself <himself@there.tld>
 To: Yourself <you@here.tld>
@@ -13,5 +13,35 @@ message_body_size=$message_body_size
 message_size=$message_size
 message_id=$message_id
 message_exim_id=$message_exim_id
+recipients=$recipients
+****
+write test-data
+From: A Person <a.person@a.domain.tld>
+To: First <first@test.ex>, Second <second@test.ex>
+Subject: The subject is moot
+
+And now we have the body of the message,
+containing a small number of lines.
+****
+exim -bem DIR/test-data
+from: $h_from:
+to: $h_to:
+subject: $h_subject:
+message_size=$message_size
+message_body_size=$message_body_size
+message_exim_id=$message_exim_id
+message_linecount=$message_linecount
+message_body_linecount=$body_linecount
+headers -----------------
+$message_headers
+
+body --------------------
+$message_body
+
+body end ----------------
+$message_body_end
+****
+exim -bem DIR/test-data -t
+recipients=$recipients
 ****
 no_msglog_check

@@ -4,4 +4,28 @@
 > message_size=416
 > message_id=10HmaX-0005vi-00
 > message_exim_id=10HmaX-0005vi-00
+> recipients=userx@test.x, usery@test.ex
+> 
+> from: A Person <a.person@a.domain.tld>
+> to: First <first@test.ex>, Second <second@test.ex>
+> subject: The subject is moot
+> message_size=197
+> message_body_size=77
+> message_exim_id=10HmaY-0005vi-00
+> message_linecount=4
+> message_body_linecount=2
+> headers -----------------
+> From: A Person <a.person@a.domain.tld>
+To: First <first@test.ex>, Second <second@test.ex>
+Subject: The subject is moot
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+> 
+> body --------------------
+> And now we have the body of the message, containing a small number of lines. 
+> 
+> body end ----------------
+> And now we have the body of the message, containing a small number of lines. 
+> 
+> recipients=first@test.ex, second@test.ex
 > 

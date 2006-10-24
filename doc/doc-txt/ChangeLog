@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.413 2006/10/23 13:24:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.414 2006/10/24 12:56:06 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -163,6 +163,8 @@ PH/24 Exim crashed if verify=helo was activated during an incoming -bs
       situation, the verify now always succeeds.
 
 PH/25 Applied John Jetmore's -Mset patch.
+
+PH/26 Added -bem to be like -Mset, but loading a message from a file.
 
 
 Exim version 4.63

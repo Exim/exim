@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filtertest.c,v 1.8 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filtertest.c,v 1.9 2006/10/24 12:56:06 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -22,9 +22,10 @@
 we can set up the message_body variables at the same time (in normal use, the
 message_body variables are not set up unless needed). The reading code is
 written out here rather than having options in read_message_data, in order to
-keep that function as efficient as possible. Handling message_body_end is
-somewhat more tedious. Pile it all into a circular buffer and sort out at the
-end.
+keep that function as efficient as possible. (Later: this function is now
+global because it is also used by the -bem testing option.) Handling
+message_body_end is somewhat more tedious. Pile it all into a circular buffer
+and sort out at the end.
 
 Arguments:
   dot_ended   TRUE if message already terminated by '.'
@@ -32,7 +33,7 @@ Arguments:
 Returns:      nothing
 */
 
-static void
+void
 read_message_body(BOOL dot_ended)
 {
 register int ch;

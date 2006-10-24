@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.118 2006/10/23 13:24:21 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.119 2006/10/24 12:56:06 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -133,11 +133,26 @@ Version 4.64
 
 7. There is a new command-line option called -Mset. It is useful only in
    conjunction with -be (that is, when testing string expansions). It must be
-   followed by a message id; Exim loads the given message before doing the
-   expansions, thus setting message-specific variables such as $message_size
-   and the header variables. This feature is provided to make it easier to test
-   expansions that make use of these variables. However, Exim must be called by
-   an admin user when -Mset is used.
+   followed by a message id; Exim loads the given message from its spool before
+   doing the expansions, thus setting message-specific variables such as
+   $message_size and the header variables. The $recipients variable is
+   available. This feature is provided to make it easier to test expansions
+   that make use of these variables. However, Exim must be called by an admin
+   user when -Mset is used.
+
+8. Another similar new command-line option is called -bem. It operates like -be
+   except that it must be followed by the name of a file. For example:
+
+     exim -bem /tmp/testmessage
+
+   The file is read as a message (as if receiving a locally-submitted non-SMTP
+   message) before any of the test expansions are done. Thus, message-specific
+   variables such as $message_size and $h_from: are available. However, no
+   Received: header is added to the message. If the -t option is set,
+   recipients are read from the headers in the normal way, and are shown in the
+   $recipients variable. Note that recipients cannot be given on the command
+   line, because further arguments are taken as strings to expand (just like
+   -be).
 
 
 Version 4.63

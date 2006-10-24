@@ -56,7 +56,6 @@ MUNGED: ::1 will be omitted in what follows
 >>> using ACL "rcpt"
 >>> processing "require"
 >>> check verify = helo
->>> verifying EHLO/HELO argument "[V4NET.0.0.1]"
 >>> require: condition test failed
 LOG: H=([V4NET.0.0.1]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo not verified
 >>> host in hosts_connection_nolog? no (option unset)

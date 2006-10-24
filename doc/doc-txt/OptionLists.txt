@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.25 2006/10/16 15:44:36 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.26 2006/10/24 12:56:06 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -580,6 +580,7 @@ provide compatibility with Sendmail.
 -bd            + Start daemon
 -bdf           + Start daemon and run it in the foreground
 -be              Test string expansion
+-bem             Test string expansion, read test message first
 -bF              Test system filter file
 -bf              Test user filter file
 -bfd             Set domain for filter testing
@@ -634,6 +635,7 @@ provide compatibility with Sendmail.
 -Mmad          + Mark all recipients delivered
 -Mmd           + Mark one recipient delivered
 -Mrm           + Remove message(s) (no bounce)
+-Mset          + Load message's variables when testing with -be
 -Mt            + Thaw message(s)
 -Mvb           + View message body
 -Mvh           + View message header

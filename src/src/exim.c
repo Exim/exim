@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.45 2006/10/23 13:24:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.46 2006/10/24 12:56:06 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1177,7 +1177,7 @@ int size = 0;
 int ptr = 0;
 uschar *yield = NULL;
 
-if (fn_readline == NULL) printf("> ");
+if (fn_readline == NULL) { printf("> "); fflush(stdout); }
 
 for (i = 0;; i++)
   {
@@ -1300,6 +1300,7 @@ uschar *alias_arg = NULL;
 uschar *called_as = US"";
 uschar *start_queue_run_id = NULL;
 uschar *stop_queue_run_id = NULL;
+uschar *expansion_test_message = NULL;
 uschar *ftest_domain = NULL;
 uschar *ftest_localpart = NULL;
 uschar *ftest_prefix = NULL;
@@ -1680,10 +1681,21 @@ for (i = 1; i < argc; i++)
         else if (*argrest != 0) { badarg = TRUE; break; }
       }
 
-    /* -be: Run in expansion test mode */
+    /* -be:  Run in expansion test mode
+       -bem: Ditto, but read a message from a file first
+    */
 
     else if (*argrest == 'e')
+      {
       expansion_test = checking = TRUE;
+      if (argrest[1] == 'm')
+        {
+        if (++i >= argc) { badarg = TRUE; break; }
+        expansion_test_message = argv[i];
+        argrest++;
+        }
+      if (argrest[1] != 0) { badarg = TRUE; break; }
+      }
 
     /* -bF:  Run system filter test */
 
@@ -2924,6 +2936,10 @@ if ((
     ) ||
     (
     deliver_selectstring != NULL && queue_interval < 0
+    ) ||
+    (
+    msg_action == MSG_LOAD &&
+      (!expansion_test || expansion_test_message != NULL)
     )
    )
   {
@@ -4181,7 +4197,8 @@ if (verify_address_mode || address_test_mode)
 
 /* Handle expansion checking. Either expand items on the command line, or read
 from stdin if there aren't any. If -Mset was specified, load the message so
-that its variables can be used, but restrict this facility to admin users. */
+that its variables can be used, but restrict this facility to admin users.
+Otherwise, if -bem was used, read a message from stdin. */
 
 if (expansion_test)
   {
@@ -4200,6 +4217,31 @@ if (expansion_test)
     if (spool_read_header(spoolname, TRUE, FALSE) != spool_read_OK)
       printf ("Failed to load message %s\n", message_id);
     }
+
+  /* Read a test message from a file. We fudge it up to be on stdin, saving
+  stdin itself for later reading of expansion strings. */
+
+  else if (expansion_test_message != NULL)
+    {
+    int save_stdin = dup(0);
+    int fd = Uopen(expansion_test_message, O_RDONLY, 0);
+    if (fd < 0)
+      {
+      fprintf(stderr, "exim: failed to open %s: %s\n", expansion_test_message,
+        strerror(errno));
+      return EXIT_FAILURE;
+      }
+    (void) dup2(fd, 0);
+    filter_test = FTEST_USER;      /* Fudge to make it look like filter test */
+    message_ended = END_NOTENDED;
+    read_message_body(receive_msg(extract_recipients));
+    (void)dup2(save_stdin, 0);
+    (void)close(save_stdin);
+    }
+
+  /* Allow $recipients for this testing */
+
+  enable_dollar_recipients = TRUE;
 
   /* Expand command line items */
 
