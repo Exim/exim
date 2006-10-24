@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.64 2006/10/09 14:36:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.65 2006/10/24 14:32:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1124,6 +1124,12 @@ for (i = 0; i < 2; i++)
           while (isspace(*t)) t++;          /* remove leading white space */
         ilen = h->slen - (t - h->text);     /* length to insert */
 
+        /* Unless wanted raw, remove trailing whitespace, including the
+        newline. */
+
+        if (!want_raw)
+          while (ilen > 0 && isspace(t[ilen-1])) ilen--;
+
         /* Set comma = 1 if handling a single header and it's one of those
         that contains an address list, except when asked for raw headers. Only
         need to do this once. */
@@ -1135,7 +1141,7 @@ for (i = 0; i < 2; i++)
         /* First pass - compute total store needed; second pass - compute
         total store used, including this header. */
 
-        size += ilen + comma;
+        size += ilen + comma + 1;  /* +1 for the newline */
 
         /* Second pass - concatentate the data, up to a maximum. Note that
         the loop stops when size hits the limit. */
@@ -1144,14 +1150,18 @@ for (i = 0; i < 2; i++)
           {
           if (size > header_insert_maxlen)
             {
-            ilen -= size - header_insert_maxlen;
+            ilen -= size - header_insert_maxlen - 1;
             comma = 0;
             }
           Ustrncpy(ptr, t, ilen);
           ptr += ilen;
-          if (comma != 0 && ilen > 0)
+
+          /* For a non-raw header, put in the comma if needed, then add
+          back the newline we removed above. */
+
+          if (!want_raw)
             {
-            ptr[-1] = ',';
+            if (comma != 0 && ilen > 0) *ptr++ = ',';
             *ptr++ = '\n';
             }
           }
@@ -1159,8 +1169,9 @@ for (i = 0; i < 2; i++)
       }
     }
 
-  /* At end of first pass, truncate size if necessary, and get the buffer
-  to hold the data, returning the buffer size. */
+  /* At end of first pass, return NULL if no header found. Then truncate size
+  if necessary, and get the buffer to hold the data, returning the buffer size.
+  */
 
   if (i == 0)
     {
@@ -1171,10 +1182,6 @@ for (i = 0; i < 2; i++)
     }
   }
 
-/* Remove a redundant added comma if present */
-
-if (comma != 0 && ptr > yield) ptr -= 2;
-
 /* That's all we do for raw header expansion. */
 
 if (want_raw)
@@ -1182,15 +1189,16 @@ if (want_raw)
   *ptr = 0;
   }
 
-/* Otherwise, we remove trailing whitespace, including newlines. Then we do RFC
-2047 decoding, translating the charset if requested. The rfc2047_decode2()
+/* Otherwise, remove a final newline and a redundant added comma. Then we do
+RFC 2047 decoding, translating the charset if requested. The rfc2047_decode2()
 function can return an error with decoded data if the charset translation
 fails. If decoding fails, it returns NULL. */
 
 else
   {
   uschar *decoded, *error;
-  while (ptr > yield && isspace(ptr[-1])) ptr--;
+  if (ptr > yield) ptr--;
+  if (ptr > yield && comma != 0 && ptr[-1] == ',') ptr--;
   *ptr = 0;
   decoded = rfc2047_decode2(yield, check_rfc2047_length, charset, '?', NULL,
     newsize, &error);

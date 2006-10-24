@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.414 2006/10/24 12:56:06 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.415 2006/10/24 14:32:49 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -165,6 +165,12 @@ PH/24 Exim crashed if verify=helo was activated during an incoming -bs
 PH/25 Applied John Jetmore's -Mset patch.
 
 PH/26 Added -bem to be like -Mset, but loading a message from a file.
+
+PH/27 In a string expansion for a processed (not raw) header when multiple
+      headers of the same name were present, leading whitespace was being
+      removed from all of them, but trailing whitespace was being removed only
+      from the last one. Now trailing whitespace is removed from each header
+      before concatenation.
 
 
 Exim version 4.63

@@ -6,7 +6,7 @@ Testing Exim filter file "TESTSUITE/aux-fixed/0406.f"
 Testprint: subject = >lots of leading and trailing space<
 Testprint: raw subject = >       lots of leading and trailing space         \n<
 Testprint: to = >a@b,\nc@d<
-Testprint: raw to = >    a@b\n    c@d\n<
+Testprint: raw to = >    a@b    \n    c@d    \n<
 Testprint: rX-1: > (=?ISO-8859-1?Q?a?=)\n<
 Testprint: bX-1: >(a)<
 Testprint:  X-1: >(a)<

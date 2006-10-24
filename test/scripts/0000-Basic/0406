@@ -1,8 +1,8 @@
 # $h_ $bh_ and $rh_ expansions
 exim -bf DIR/aux-fixed/TESTNUM.f
 subject:       lots of leading and trailing space         
-To:    a@b
-To:    c@d
+To:    a@b    
+To:    c@d    
 X-1: (=?ISO-8859-1?Q?a?=)
 X-2: (=?ISO-8859-1?Q?a?= b)
 X-3: (=?ISO-8859-1?Q?a?= =?ISO-8859-1?Q?b?=)
