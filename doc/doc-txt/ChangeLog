@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.415 2006/10/24 14:32:49 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.416 2006/10/24 15:01:25 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -171,6 +171,9 @@ PH/27 In a string expansion for a processed (not raw) header when multiple
       removed from all of them, but trailing whitespace was being removed only
       from the last one. Now trailing whitespace is removed from each header
       before concatenation.
+
+PH/28 Fixed bug in backwards-compatibility feature of PH/09 (thanks to John
+      Jetmore). It would have mis-read ACL variables from pre-4.61 spool files.
 
 
 Exim version 4.63

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.17 2006/10/10 11:15:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.18 2006/10/24 15:01:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -436,11 +436,14 @@ for (;;)
     else if (Ustrncmp(p, "cl ", 3) == 0)
       {
       int index, count;
-      uschar name[4];
+      uschar name[20];   /* Need plenty of space for %d format */
       tree_node *node;
       if (sscanf(CS big_buffer + 5, "%d %d", &index, &count) != 2)
         goto SPOOL_FORMAT_ERROR;
-      (void) string_format(name, 4, "%c%d", (index < 10 ? 'c' : 'm'), index);
+      if (index < 10)
+        (void) string_format(name, sizeof(name), "%c%d", 'c', index);
+      else if (index < 20) /* ignore out-of-range index */
+        (void) string_format(name, sizeof(name), "%c%d", 'm', index - 10);
       node = acl_var_create(name);
       node->data.ptr = store_get(count + 1);
       if (fread(node->data.ptr, 1, count+1, f) < count) goto SPOOL_READ_ERROR;
