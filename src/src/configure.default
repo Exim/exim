@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/configure.default,v 1.11 2006/09/26 13:51:00 ph10 Exp $
+# $Cambridge: exim/src/src/configure.default,v 1.12 2006/10/25 08:42:57 ph10 Exp $
 
 ######################################################################
 #                  Runtime configuration file for Exim               #
@@ -401,7 +401,7 @@ acl_check_rcpt:
   # relaying. Any other domain is rejected as being unacceptable for relaying.
 
   require message = relay not permitted
-          domains = +local_domains : +relay_domains
+          domains = +local_domains : +relay_to_domains
 
   # We also require all accepted addresses to be verifiable. This check will
   # do local part verification for local domains, but only check the domain
