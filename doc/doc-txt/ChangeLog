@@ -1,10 +1,23 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.417 2006/10/30 16:41:04 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.418 2006/10/30 22:22:50 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
 
 Exim version 4.64
 -----------------
+TK/01 Bugzilla #401. Fix DK spooling code so that it can overwrite a
+      leftover -K file (the existence of which was triggered by #402).
+      While we were at it, introduced process PID as part of the -K
+      filename. This should rule out race conditions when creating
+      these files.
+
+TK/02 Bugzilla #402. Apply patch from Simon Arlott, speeding up DK signing
+      processing considerably. Previous code took too long for large mails,
+      triggering a timeout which in turn triggers #401.
+
+TK/03 Introduced HAVE_LINUX_SENDFILE to os.h-Linux. Currently only used
+      in the DK code in transports.c. sendfile() is not really portable,
+      hence the _LINUX specificness.
 
 TF/01 In the add_headers option to the mail command in an Exim filter,
       there was a bug that Exim would claim a syntax error in any
