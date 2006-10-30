@@ -31,7 +31,6 @@ locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 added retry item for R:userx@test.ex: errno=-44 more_errno=dd,A flags=0
 added retry item for R:usery@test.ex: errno=-44 more_errno=dd,A flags=0
-locking TESTSUITE/spool/db/wait-t1.lockfile
 reading retry information for R:userx@test.ex from subprocess
   added retry item
 reading retry information for R:usery@test.ex from subprocess
@@ -90,7 +89,6 @@ no host retry record
 no message retry record
 added retry item for R:userx@test.ex: errno=-44 more_errno=dd,A flags=0
 added retry item for R:usery@test.ex: errno=-44 more_errno=dd,A flags=0
-locking TESTSUITE/spool/db/wait-t1.lockfile
 reading retry information for R:userx@test.ex from subprocess
   existing delete item dropped
   added retry item

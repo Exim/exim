@@ -1,0 +1,54 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: userx@domain1
+unique = userx@domain1
+userx@domain1: queued for routing
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@domain1
+--------> smarthost router <--------
+local_part=userx domain=domain1
+calling smarthost router
+smarthost router called for userx@domain1
+  domain = domain1
+set transport smtp
+queued for smtp transport: local_part = userx
+domain = domain1
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by smarthost router
+  envelope to: userx@domain1
+  transport: smtp
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+    userx@domain1
+  Failed addresses:
+  Deferred addresses:
+locking TESTSUITE/spool/db/retry.lockfile
+locking TESTSUITE/spool/db/wait-smtp.lockfile
+LOG: MAIN
+  => userx@domain1 R=smarthost T=smtp H=thisloop.test.ex [127.0.0.1]
+LOG: MAIN
+  Completed
+locking TESTSUITE/spool/db/retry.lockfile
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering: usery@domain1
+unique = usery@domain1
+LOG: retry_defer MAIN
+  == usery@domain1 routing defer (-51): retry time not reached
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+After routing:
+  Local deliveries:
+  Remote deliveries:
+  Failed addresses:
+  Deferred addresses:
+    usery@domain1
+LOG: queue_run MAIN
+  End queue run: pid=pppp
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.416 2006/10/24 15:01:25 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.417 2006/10/30 16:41:04 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -170,10 +170,41 @@ PH/27 In a string expansion for a processed (not raw) header when multiple
       headers of the same name were present, leading whitespace was being
       removed from all of them, but trailing whitespace was being removed only
       from the last one. Now trailing whitespace is removed from each header
-      before concatenation.
+      before concatenation. Completely empty headers in a concatenation (as
+      before) are ignored.
 
 PH/28 Fixed bug in backwards-compatibility feature of PH/09 (thanks to John
       Jetmore). It would have mis-read ACL variables from pre-4.61 spool files.
+
+PH/29 After an address error (typically a 4xx response from a server), Exim
+      always tries the failing address if it appears in a new message, but
+      respects the retry time otherwise. This was implemented by checking for
+      being in a queue run, which isn't quite right. Now it checks the
+      "first_delivery" flag instead.
+
+PH/30 Exim was sometimes attempting to deliver messages that had suffered
+      address errors (4xx response to RCPT) over the same connection as other
+      messages routed to the same hosts. Such deliveries are always "forced",
+      so retry times are not inspected. This resulted in far too many retries
+      for the affected addresses. The effect occurred only when there were more
+      hosts than the hosts_max_try setting in the smtp transport when it had
+      the 4xx errors. Those hosts that it had tried were not added to the list
+      of hosts for which the message was waiting, so if all were tried, there
+      was no problem. Two fixes have been applied:
+
+      (i)  If there are any address or message errors in an SMTP delivery, none
+           of the hosts (tried or untried) are now added to the list of hosts
+           for which the message is waiting, so the message should not be a
+           candidate for sending over the same connection that was used for a
+           successful delivery of some other message. This seems entirely
+           reasonable: after all the message is NOT "waiting for some host".
+           This is so "obvious" that I'm not sure why it wasn't done
+           previously. Hope I haven't missed anything, but it can't do any
+           harm, as the worst effect is to miss an optimization.
+
+      (ii) If, despite (i), such a delivery is accidentally attempted, the
+           routing retry time is respected, so at least it doesn't keep
+           hammering the server.
 
 
 Exim version 4.63

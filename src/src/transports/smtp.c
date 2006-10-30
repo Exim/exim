@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.27 2006/10/09 14:36:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.28 2006/10/30 16:41:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -193,6 +193,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
 
 static uschar *smtp_command;   /* Points to last cmd for error messages */
 static uschar *mail_command;   /* Points to MAIL cmd for error messages */
+static BOOL    update_waiting; /* TRUE to update the "wait" database */
 
 
 /*************************************************
@@ -652,7 +653,7 @@ while (count-- > 0)
       transport_rcpt_address(addr, include_affixes));
     set_errno(addrlist, save_errno, message, DEFER, FALSE);
     retry_add_item(addr, addr->address_retry_key, 0);
-    host->update_waiting = FALSE;
+    update_waiting = FALSE;
     return -1;
     }
 
@@ -699,10 +700,10 @@ while (count-- > 0)
 
       if (host->next != NULL) log_write(0, LOG_MAIN, "%s", addr->message);
 
-      /* Do not put this message on the list of those waiting for this host,
-      as otherwise it is likely to be tried too often. */
+      /* Do not put this message on the list of those waiting for specific
+      hosts, as otherwise it is likely to be tried too often. */
 
-      host->update_waiting = FALSE;
+      update_waiting = FALSE;
 
       /* Add a retry item for the address so that it doesn't get tried
       again too soon. */
@@ -2102,6 +2103,13 @@ DEBUG(D_transport)
       continue_hostname, continue_host_address);
   }
 
+/* Set the flag requesting that these hosts be added to the waiting
+database if the delivery fails temporarily or if we are running with
+queue_smtp or a 2-stage queue run. This gets unset for certain
+kinds of error, typically those that are specific to the message. */
+
+update_waiting =  TRUE;
+
 /* If a host list is not defined for the addresses - they must all have the
 same one in order to be passed to a single transport - or if the transport has
 a host list with hosts_override set, use the host list supplied with the
@@ -2287,13 +2295,6 @@ for (cutoff_retry = 0; expired &&
     address is looked up here (in case the host was multihomed). */
 
     nexthost = host->next;
-
-    /* Set the flag requesting that this host be added to the waiting
-    database if the delivery fails temporarily or if we are running with
-    queue_smtp or a 2-stage queue run. This gets unset for certain
-    kinds of error, typically those that are specific to the message. */
-
-    host->update_waiting = TRUE;
 
     /* If the address hasn't yet been obtained from the host name, look it up
     now, unless the host is already marked as unusable. If it is marked as
@@ -2504,9 +2505,9 @@ for (cutoff_retry = 0; expired &&
 
         /* If there was a retry message key, implying that previously there
         was a message-specific defer, we don't want to update the list of
-        messages waiting for this host. */
+        messages waiting for these hosts. */
 
-        if (retry_message_key != NULL) host->update_waiting = FALSE;
+        if (retry_message_key != NULL) update_waiting = FALSE;
         continue;   /* With the next host or IP address */
         }
       }
@@ -2738,7 +2739,7 @@ for (cutoff_retry = 0; expired &&
     to the retry chain. Note that if there was a message defer but now there is
     a host defer, the message defer record gets deleted. That seems perfectly
     reasonable. Also, stop the message from being remembered as waiting
-    for this host. */
+    for specific hosts. */
 
     if (message_defer || retry_message_key != NULL)
       {
@@ -2752,7 +2753,7 @@ for (cutoff_retry = 0; expired &&
         }
       retry_add_item(addrlist, retry_message_key,
         rf_message | rf_host | delete_flag);
-      host->update_waiting = FALSE;
+      update_waiting = FALSE;
       }
 
     /* Any return other than DEFER (that is, OK or ERROR) means that the
@@ -2931,11 +2932,11 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
   }
 
 /* Update the database which keeps information about which messages are waiting
-for which hosts to become available. Each host in the list has a flag which is
-set if the data is to be updated. For some message-specific errors, the flag is
-turned off because we don't want follow-on deliveries in those cases. */
+for which hosts to become available. For some message-specific errors, the
+update_waiting flag is turned off because we don't want follow-on deliveries in
+those cases. */
 
-transport_update_waiting(hostlist, tblock->name);
+if (update_waiting) transport_update_waiting(hostlist, tblock->name);
 
 END_TRANSPORT:
 

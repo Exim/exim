@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/structs.h,v 1.13 2006/10/16 15:44:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/structs.h,v 1.14 2006/10/30 16:41:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -67,7 +67,6 @@ typedef struct host_item {
   int     status;                 /* Usable, unusable, or unknown */
   int     why;                    /* Why host is unusable */
   int     last_try;               /* Time of last try if known */
-  BOOL    update_waiting;         /* Turned off if wait db not to be updated */
 } host_item;
 
 /* Chain of rewrite rules, read from the rewrite config, or parsed from the

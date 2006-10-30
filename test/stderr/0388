@@ -110,13 +110,6 @@ LOG: MAIN
   V4NET.0.0.0 [V4NET.0.0.0] Network Error
 set_process_info: pppp delivering 10HmaX-0005vi-00: just tried V4NET.0.0.0 [V4NET.0.0.0] for x@y: result DEFER
 added retry item for T:V4NET.0.0.0:V4NET.0.0.0:1224: errno=dd more_errno=dd,A flags=2
-locking TESTSUITE/spool/db/wait-smtp.lockfile
-locked TESTSUITE/spool/db/wait-smtp.lockfile
-EXIM_DBOPEN(TESTSUITE/spool/db/wait-smtp)
-returned from EXIM_DBOPEN
-opened hints database TESTSUITE/spool/db/wait-smtp: flags=O_RDWR
-dbfn_read: key=V4NET.0.0.0
-dbfn_write: key=V4NET.0.0.0
 set_process_info: pppp delivering 10HmaX-0005vi-00 (just run smtp for x@y in subprocess)
 search_tidyup called
 set_process_info: pppp delivering 10HmaX-0005vi-00: waiting for a remote delivery subprocess to finish

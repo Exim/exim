@@ -25,7 +25,6 @@ checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
 added retry item for R:userx@test.ex: errno=-44 more_errno=dd,A flags=0
-locking TESTSUITE/spool/db/wait-t1.lockfile
 reading retry information for R:userx@test.ex from subprocess
   added retry item
 LOG: MAIN
@@ -67,7 +66,6 @@ locking TESTSUITE/spool/db/retry.lockfile
 no host retry record
 no message retry record
 added retry item for R:userx@test.ex: errno=-44 more_errno=dd,A flags=0
-locking TESTSUITE/spool/db/wait-t1.lockfile
 reading retry information for R:userx@test.ex from subprocess
   existing delete item dropped
   added retry item
@@ -117,7 +115,6 @@ locking TESTSUITE/spool/db/retry.lockfile
 no host retry record
 no message retry record
 added retry item for R:userx@test.ex: errno=-44 more_errno=dd,A flags=0
-locking TESTSUITE/spool/db/wait-t1.lockfile
 reading retry information for R:userx@test.ex from subprocess
   existing delete item dropped
   added retry item

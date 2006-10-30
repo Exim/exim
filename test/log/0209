@@ -19,17 +19,19 @@
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@domain1 R=others T=smtp defer (-44): SMTP error from remote mail server after RCPT TO:<userx@domain1>: host 127.0.0.1 [127.0.0.1]: 450 Temporary error
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => usery@domain1 R=others T=smtp H=127.0.0.1 [127.0.0.1]
-1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@domain1 R=others T=smtp defer (-44): SMTP error from remote mail server after RCPT TO:<userx@domain1>: host 127.0.0.1 [127.0.0.1]: 450 Temporary error
-1999-03-02 09:44:33 10HmbA-0005vi-00 => usery@domain1 R=others T=smtp H=127.0.0.1 [127.0.0.1]*
-1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@domain1 R=others T=smtp defer (-44): SMTP error from remote mail server after RCPT TO:<userx@domain1>: host 127.0.0.1 [127.0.0.1]: 450 Temporary error
 1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@domain1 routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmbA-0005vi-00 == usery@domain1 R=others T=smtp defer (-44): SMTP error from remote mail server after RCPT TO:<usery@domain1>: host 127.0.0.1 [127.0.0.1]: 450 Temporary error
+1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@domain1 routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmbA-0005vi-00 == usery@domain1 routing defer (-51): retry time not reached
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@domain1 routing defer (-51): retry time not reached
 1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@domain1 routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmbA-0005vi-00 == usery@domain1 routing defer (-51): retry time not reached
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 Start queue run: pid=pppp
 1999-03-02 09:44:33 10HmbA-0005vi-00 == userx@domain1 routing defer (-51): retry time not reached
+1999-03-02 09:44:33 10HmbA-0005vi-00 == usery@domain1 routing defer (-51): retry time not reached
 1999-03-02 09:44:33 End queue run: pid=pppp
 1999-03-02 09:44:33 10HmaZ-0005vi-00 127.0.0.1 [127.0.0.1] Connection refused
 1999-03-02 09:44:33 10HmaZ-0005vi-00 == userx@domain1 R=others T=smtp defer (dd): Connection refused

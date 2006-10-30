@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.15 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.16 2006/10/30 16:41:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1389,8 +1389,7 @@ better.
 Old records should eventually get swept up by the exim_tidydb utility.
 
 Arguments:
-  hostlist  list of hosts that this message could be sent to;
-              the update_waiting flag is set if a host is to be noted
+  hostlist  list of hosts that this message could be sent to
   tpname    name of the transport
 
 Returns:    nothing
@@ -1412,8 +1411,7 @@ dbm_file = dbfn_open(buffer, O_RDWR, &dbblock, TRUE);
 if (dbm_file == NULL) return;
 
 /* Scan the list of hosts for which this message is waiting, and ensure
-that the message id is in each host record for those that have the
-update_waiting flag set. */
+that the message id is in each host record. */
 
 for (host = hostlist; host!= NULL; host = host->next)
   {
@@ -1421,10 +1419,6 @@ for (host = hostlist; host!= NULL; host = host->next)
   dbdata_wait *host_record;
   uschar *s;
   int i, host_length;
-
-  /* Skip if the update_waiting flag is not set. */
-
-  if (!host->update_waiting) continue;
 
   /* Skip if this is the same host as we just processed; otherwise remember
   the name for next time. */

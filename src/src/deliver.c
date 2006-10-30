@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.36 2006/09/18 14:49:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.37 2006/10/30 16:41:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -5503,19 +5503,29 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
       (void)post_process_one(addr, DEFER, LOG_MAIN, DTYPE_ROUTER, 0);
       }
 
-    /* If queue_running, defer routing unless no retry data or we've
-    passed the next retry time, or this message is forced. However,
-    if the retry time has expired, allow the routing attempt.
-    If it fails again, the address will be failed. This ensures that
+    /* If we are in a queue run, defer routing unless there is no retry data or
+    we've passed the next retry time, or this message is forced. In other
+    words, ignore retry data when not in a queue run.
+
+    However, if the domain retry time has expired, always allow the routing
+    attempt. If it fails again, the address will be failed. This ensures that
     each address is routed at least once, even after long-term routing
     failures.
 
     If there is an address retry, check that too; just wait for the next
     retry time. This helps with the case when the temporary error on the
     address was really message-specific rather than address specific, since
-    it allows other messages through. */
+    it allows other messages through.
 
-    else if (!deliver_force && queue_running &&
+    We also wait for the next retry time if this is a message sent down an
+    existing SMTP connection (even though that will be forced). Otherwise there
+    will be far too many attempts for an address that gets a 4xx error. In
+    fact, after such an error, we should not get here because, the host should
+    not be remembered as one this message needs. However, there was a bug that
+    used to cause this to  happen, so it is best to be on the safe side. */
+
+    else if (((queue_running && !deliver_force) || continue_hostname != NULL)
+            &&
             ((domain_retry_record != NULL &&
               now < domain_retry_record->next_try &&
               !domain_retry_record->expired)

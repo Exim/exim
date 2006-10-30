@@ -805,7 +805,6 @@ LOG: MAIN
   => d1@myhost.test.ex P=<> R=ut4 T=ut4 H=127.0.0.1 [127.0.0.1]
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
-locking TESTSUITE/spool/db/wait-ut4.lockfile
 LOG: MAIN
   == d2@myhost.test.ex R=ut4 T=ut4 defer (-44): SMTP error from remote mail server after RCPT TO:<d2@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 450 soft error
 log writing disabled
@@ -825,7 +824,6 @@ LOG: MAIN
   => f1@myhost.test.ex P=<CALLER@myhost.test.ex> R=ut6 T=ut6 H=127.0.0.1 [127.0.0.1]
 log writing disabled
 locking TESTSUITE/spool/db/retry.lockfile
-locking TESTSUITE/spool/db/wait-ut6.lockfile
 LOG: MAIN
   == f2@myhost.test.ex R=ut6 T=ut6 defer (-44): SMTP error from remote mail server after RCPT TO:<f2@myhost.test.ex>: host 127.0.0.1 [127.0.0.1]: 450 soft error
 log writing disabled
