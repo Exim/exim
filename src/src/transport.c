@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.16 2006/10/30 16:41:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.17 2006/10/30 22:06:33 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -13,6 +13,9 @@ transports. */
 
 #include "exim.h"
 
+#ifdef HAVE_LINUX_SENDFILE
+#include <sys/sendfile.h>
+#endif
 
 /* Structure for keeping list of addresses that have been added to
 Envelope-To:, in order to avoid duplication. */
@@ -983,10 +986,11 @@ dk_transport_write_message(address_item *addr, int fd, int options,
   int sread = 0;
   int wwritten = 0;
   uschar *dk_signature = NULL;
+  off_t size = 0;
 
-  (void)string_format(dk_spool_name, 256, "%s/input/%s/%s-K",
-          spool_directory, message_subdir, message_id);
-  dk_fd = Uopen(dk_spool_name, O_RDWR|O_CREAT|O_EXCL, SPOOL_MODE);
+  (void)string_format(dk_spool_name, 256, "%s/input/%s/%s-%d-K",
+          spool_directory, message_subdir, message_id, (int)getpid());
+  dk_fd = Uopen(dk_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE);
   if (dk_fd < 0)
     {
     /* Can't create spool file. Ugh. */
@@ -1052,9 +1056,35 @@ dk_transport_write_message(address_item *addr, int fd, int options,
       }
     }
 
-  /* Rewind file and send it down the original fd. */
+  /* Fetch file positition (the size) */
+  size = lseek(dk_fd,0,SEEK_CUR);
+
+  /* Rewind file */
   lseek(dk_fd, 0, SEEK_SET);
 
+#ifdef HAVE_LINUX_SENDFILE
+  /* We can use sendfile() to shove the file contents
+     to the socket. However only if we don't use TLS,
+     in which case theres another layer of indirection
+     before the data finally hits the socket. */
+  if (tls_active != fd)
+    {
+    ssize_t copied = 0;
+    off_t offset = 0;
+    while((copied >= 0) && (offset<size))
+      {
+      copied = sendfile(fd, dk_fd, &offset, (size - offset));
+      }
+    if (copied < 0)
+      {
+      save_errno = errno;
+      rc = FALSE;
+      }
+    goto CLEANUP;
+    }
+#endif
+
+  /* Send file down the original fd */
   while((sread = read(dk_fd,sbuf,2048)) > 0)
     {
     char *p = sbuf;
@@ -1086,7 +1116,6 @@ dk_transport_write_message(address_item *addr, int fd, int options,
     rc = FALSE;
     goto CLEANUP;
     }
-
 
   CLEANUP:
   /* unlink -K file */

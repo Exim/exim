@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dk.c,v 1.10 2006/07/06 14:28:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dk.c,v 1.11 2006/10/30 22:06:33 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -242,7 +242,7 @@ uschar *dk_exim_sign(int dk_fd,
   uschar *headers = NULL;
   int headers_len;
   int dk_canon_int = DK_CANON_SIMPLE;
-  char c;
+  char buf[4096];
   int seen_lf = 0;
   int seen_lfdot = 0;
   uschar sig[1024];
@@ -271,40 +271,46 @@ uschar *dk_exim_sign(int dk_fd,
     goto CLEANUP;
   }
 
-  while((sread = read(dk_fd,&c,1)) > 0) {
+  while((sread = read(dk_fd,&buf,4096)) > 0) {
+    int pos = 0;
+    char c;
 
-    if ((c == '.') && seen_lfdot) {
-      /* escaped dot, write "\n.", continue */
-      dk_message(dk_context, CUS "\n.", 2);
-      seen_lf = 0;
-      seen_lfdot = 0;
-      continue;
+    while (pos < sread) {
+      c = buf[pos++];
+
+      if ((c == '.') && seen_lfdot) {
+        /* escaped dot, write "\n.", continue */
+        dk_message(dk_context, CUS "\n.", 2);
+        seen_lf = 0;
+        seen_lfdot = 0;
+        continue;
+      }
+
+      if (seen_lfdot) {
+        /* EOM, write "\n" and break */
+        dk_message(dk_context, CUS "\n", 1);
+        break;
+      }
+
+      if ((c == '.') && seen_lf) {
+        seen_lfdot = 1;
+        continue;
+      }
+
+      if (seen_lf) {
+        /* normal lf, just send it */
+        dk_message(dk_context, CUS "\n", 1);
+        seen_lf = 0;
+      }
+
+      if (c == '\n') {
+        seen_lf = 1;
+        continue;
+      }
+
+      /* write the char */
+      dk_message(dk_context, CUS &c, 1);
     }
-
-    if (seen_lfdot) {
-      /* EOM, write "\n" and break */
-      dk_message(dk_context, CUS "\n", 1);
-      break;
-    }
-
-    if ((c == '.') && seen_lf) {
-      seen_lfdot = 1;
-      continue;
-    }
-
-    if (seen_lf) {
-      /* normal lf, just send it */
-      dk_message(dk_context, CUS "\n", 1);
-      seen_lf = 0;
-    }
-
-    if (c == '\n') {
-      seen_lf = 1;
-      continue;
-    }
-
-    /* write the char */
-    dk_message(dk_context, CUS &c, 1);
   }
 
   /* Handle failed read above. */
