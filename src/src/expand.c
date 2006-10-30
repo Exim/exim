@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.65 2006/10/24 14:32:49 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.66 2006/10/30 14:59:15 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1157,11 +1157,12 @@ for (i = 0; i < 2; i++)
           ptr += ilen;
 
           /* For a non-raw header, put in the comma if needed, then add
-          back the newline we removed above. */
+          back the newline we removed above, provided there was some text in
+          the header. */
 
-          if (!want_raw)
+          if (!want_raw && ilen > 0)
             {
-            if (comma != 0 && ilen > 0) *ptr++ = ',';
+            if (comma != 0) *ptr++ = ',';
             *ptr++ = '\n';
             }
           }
@@ -1197,7 +1198,7 @@ fails. If decoding fails, it returns NULL. */
 else
   {
   uschar *decoded, *error;
-  if (ptr > yield) ptr--;
+  if (ptr > yield && ptr[-1] == '\n') ptr--;
   if (ptr > yield && comma != 0 && ptr[-1] == ',') ptr--;
   *ptr = 0;
   decoded = rfc2047_decode2(yield, check_rfc2047_length, charset, '?', NULL,
