@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.418 2006/10/30 22:22:50 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.419 2006/10/31 09:50:09 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -189,11 +189,9 @@ PH/27 In a string expansion for a processed (not raw) header when multiple
 PH/28 Fixed bug in backwards-compatibility feature of PH/09 (thanks to John
       Jetmore). It would have mis-read ACL variables from pre-4.61 spool files.
 
-PH/29 After an address error (typically a 4xx response from a server), Exim
-      always tries the failing address if it appears in a new message, but
-      respects the retry time otherwise. This was implemented by checking for
-      being in a queue run, which isn't quite right. Now it checks the
-      "first_delivery" flag instead.
+PH/29 [Removed. This was a change that I later backed out, and forgot to
+      correct the ChangeLog entry (that I had efficiently created) before
+      committing the later change.]
 
 PH/30 Exim was sometimes attempting to deliver messages that had suffered
       address errors (4xx response to RCPT) over the same connection as other
