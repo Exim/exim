@@ -1,0 +1,13 @@
+# $domain setting in domain list matching
+need_ipv4
+#
+exim -odi -d-all+expand userx@domain1.ex userx@domain2.ex
+****
+# Check of $domain and $sender_domain at RCPT time
+exim -bs -d-all+expand
+ehlo ehlo.domain
+mail from:<userx@sender.domain>
+rcpt to:<userx@recipient.domain>
+quit
+****
+no_msglog_check

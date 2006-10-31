@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.15 2006/07/27 13:50:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.16 2006/10/31 16:08:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -481,7 +481,19 @@ if (type >= MCL_NOEXPAND)
   }
 else
   {
-  list = expand_string(*listptr);
+  /* If we are searching a domain list, and $domain is not set, set it to the
+  subject that is being sought for the duration of the expansion. */
+
+  if (type == MCL_DOMAIN && deliver_domain == NULL)
+    {
+    check_string_block *cb = (check_string_block *)arg;
+    deliver_domain = cb->subject;
+    list = expand_string(*listptr);
+    deliver_domain = NULL;
+    }
+
+  else list = expand_string(*listptr);
+
   if (list == NULL)
     {
     if (expand_string_forcedfail)

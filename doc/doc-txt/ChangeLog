@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.422 2006/10/31 14:26:34 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.423 2006/10/31 16:08:11 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -225,6 +225,10 @@ PH/32 Added some extra debug output when updating a wait-xxx database.
 PH/33 The hint "could be header name not terminated by colon", which has been
       given for certain expansion errors for a long time, was not being given
       for the ${if def:h_colon_omitted{...  case.
+
+PH/34 The spec says: "With one important exception, whenever a domain list is
+      being scanned, $domain contains the subject domain." There was at least
+      one case where this was not true.
 
 
 Exim version 4.63

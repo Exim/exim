@@ -1,0 +1,109 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+expanding: ${tod_full}
+   result: Tue, 2 Mar 1999 09:44:33 +0000
+condition: def:sender_rcvhost
+   result: false
+expanding: from $sender_rcvhost
+	
+   result: from 
+	
+skipping: result is not used
+condition: def:sender_ident
+   result: true
+expanding: $sender_ident
+   result: CALLER
+expanding: from ${quote_local_part:$sender_ident} 
+   result: from CALLER 
+condition: def:sender_helo_name
+   result: false
+expanding: (helo=$sender_helo_name)
+	
+   result: (helo=)
+	
+skipping: result is not used
+expanding: ${if def:sender_ident {from ${quote_local_part:$sender_ident} }}${if def:sender_helo_name {(helo=$sender_helo_name)
+	}}
+   result: from CALLER 
+condition: def:received_protocol
+   result: true
+expanding: with $received_protocol
+   result: with local
+condition: def:sender_address
+   result: true
+expanding: (envelope-from <$sender_address>)
+	
+   result: (envelope-from <CALLER@test.ex>)
+	
+condition: def:received_for
+   result: false
+expanding: 
+	for $received_for
+   result: 
+	for 
+skipping: result is not used
+expanding: ${tod_full}
+   result: Tue, 2 Mar 1999 09:44:33 +0000
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+created log directory TESTSUITE/spool/log
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+expanding: testdb;$domain
+   result: testdb;domain1.ex
+LOG: MAIN
+  == userx@domain1.ex R=smarthost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
+LOG: MAIN
+  == userx@domain2.ex R=smarthost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
+expanding: $h_list-id:$h_list-post:$h_list-subscribe:
+   result: 
+expanding: 
+   result: 
+expanding: $h_precedence:
+   result: 
+expanding: (?i)bulk|list|junk
+   result: (?i)bulk|list|junk
+expanding: $h_auto-submitted:
+   result: 
+expanding: (?i)auto-generated|auto-replied
+   result: (?i)auto-generated|auto-replied
+condition: or {{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }}
+   result: false
+expanding: no
+   result: no
+skipping: result is not used
+expanding: yes
+   result: yes
+expanding: ${if or {{ !eq{$h_list-id:$h_list-post:$h_list-subscribe:}{} }{ match{$h_precedence:}{(?i)bulk|list|junk} }{ match{$h_auto-submitted:}{(?i)auto-generated|auto-replied} }} {no}{yes}}
+   result: yes
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+expanding: $smtp_active_hostname ESMTP Exim $version_number $tod_full
+   result: the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+expanding: $sender_helo_name
+   result: ehlo.domain
+expanding: +dlist
+   result: +dlist
+expanding: testdb;$domain
+   result: testdb;ehlo.domain
+condition: match_domain {$sender_helo_name}{+dlist}
+   result: true
+expanding: ${if match_domain {$sender_helo_name}{+dlist}}
+   result: true
+expanding: domain=$domain/sender_domain=$sender_address_domain
+   result: domain=/sender_domain=sender.domain
+expanding: domain=$domain/sender_domain=$sender_address_domain
+   result: domain=recipient.domain/sender_domain=sender.domain
+expanding: domain=$domain/sender_domain=$sender_address_domain
+   result: domain=recipient.domain/sender_domain=sender.domain
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
