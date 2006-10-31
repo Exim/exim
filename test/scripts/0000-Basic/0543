@@ -1,4 +1,4 @@
-# 4xx retries with 2nd message down one SMTP connection
+# 4xx retries with 2nd message (don't use same connection)
 need_ipv4
 #
 # Put a message on the queue
@@ -23,9 +23,9 @@ Test message 2
 ****
 1
 dump wait-smtp
-# A queue run will try these in order, since queue_run_in_order is set.
-# Arrange that the first one is accepted, so it should fire up the second
-# on the same connection. But it should respect the retry time.
+# A queue run will try these in order, since queue_run_in_order is set. The
+# first one is accepted, but it shouldn't fire up the second on the same
+# connection, because a 4xx error should no longer put the message on the list.
 server PORT_S
 220 ESMTP
 EHLO
