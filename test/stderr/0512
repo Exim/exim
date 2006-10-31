@@ -52,6 +52,8 @@ LOG: MAIN
   127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:1224: errno=dd more_errno=dd,A flags=2
 all IP addresses skipped or deferred at least one address
+updating wait-t1 database
+already listed for 127.0.0.1
 Leaving t1 transport
 LOG: MAIN
   == userx@myhost.test.ex R=r1 T=t1 defer (dd): Connection refused
@@ -113,6 +115,8 @@ added retry item for T:127.0.0.1:127.0.0.1:1224: errno=dd more_errno=dd,A flags=
 temporary delivery error(s) override hosts_max_try (message older than host's retry time)
 all IP addresses skipped or deferred at least one address
 hosts_max_try_hardlimit reached: behave as if all hosts were tried
+updating wait-t1 database
+already listed for 127.0.0.1
 Leaving t1 transport
 LOG: MAIN
   == userx@myhost.test.ex R=r1 T=t1 defer (dd): Connection refused

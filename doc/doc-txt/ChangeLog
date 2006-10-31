@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.420 2006/10/31 11:14:17 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.421 2006/10/31 12:16:26 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -219,6 +219,8 @@ PH/30 Exim was sometimes attempting to deliver messages that had suffered
 
 PH/31 Installed Andrew Findlay's patch to close the writing end of the socket
       in ${readsocket because some servers need this prod.
+
+PH/32 Added some extra debug output when updating a wait-xxx database.
 
 
 Exim version 4.63

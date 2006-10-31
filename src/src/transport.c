@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.17 2006/10/30 22:06:33 tom Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.18 2006/10/31 12:16:26 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1433,6 +1433,8 @@ host_item *host;
 open_db dbblock;
 open_db *dbm_file;
 
+DEBUG(D_transport) debug_printf("updating wait-%s database\n", tpname);
+
 /* Open the database for this transport */
 
 sprintf(CS buffer, "wait-%.200s", tpname);
@@ -1498,7 +1500,11 @@ for (host = hostlist; host!= NULL; host = host->next)
 
   /* If this message is already in a record, no need to update. */
 
-  if (already) continue;
+  if (already)
+    {
+    DEBUG(D_transport) debug_printf("already listed for %s\n", host->name);
+    continue;
+    }
 
 
   /* If this record is full, write it out with a new name constructed
@@ -1534,6 +1540,7 @@ for (host = hostlist; host!= NULL; host = host->next)
   /* Update the database */
 
   dbfn_write(dbm_file, host->name, host_record, sizeof(dbdata_wait) + host_length);
+  DEBUG(D_transport) debug_printf("added to list for %s\n", host->name);
   }
 
 /* All now done */

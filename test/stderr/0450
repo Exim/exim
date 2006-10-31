@@ -22,6 +22,8 @@ LOG: MAIN
   127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:1225: errno=dd more_errno=dd,A flags=2
 all IP addresses skipped or deferred at least one address
+updating wait-t1 database
+added to list for 127.0.0.1
 Leaving t1 transport
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (dd): Connection refused
@@ -48,6 +50,8 @@ LOG: MAIN
   127.0.0.1 [127.0.0.1] Connection refused
 added retry item for T:127.0.0.1:127.0.0.1:1226: errno=dd more_errno=dd,A flags=2
 all IP addresses skipped or deferred at least one address
+updating wait-t1 database
+already listed for 127.0.0.1
 Leaving t1 transport
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (dd): Connection refused
