@@ -555,6 +555,8 @@ xyz
 > Failed: unknown condition "xya" inside "and{...}" condition
 > Failed: condition name expected, but found "${lookup{x}lsear" inside "and{...}" condition
 > Failed: missing } at end of string - could be header name not terminated by colon
+> Failed: missing or misplaced { or }
+> Failed: missing or misplaced { or } - could be header name not terminated by colon
 > Failed: each subcondition inside an "or{...}" condition must be in its own {}
 > Failed: missing } at end of condition inside "or" group
 > Failed: unknown condition "yes" inside "or{...}" condition

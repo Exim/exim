@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.67 2006/10/31 11:14:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.68 2006/10/31 14:26:34 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1689,7 +1689,9 @@ switch(cond_type)
 
   s = read_name(name, 256, s+1, US"_");
 
-  /* Test for a header's existence */
+  /* Test for a header's existence. If the name contains a closing brace
+  character, this may be a user error where the terminating colon has been
+  omitted. Set a flag to adjust a subsequent error message in this case. */
 
   if (Ustrncmp(name, "h_", 2) == 0 ||
       Ustrncmp(name, "rh_", 3) == 0 ||
@@ -1699,6 +1701,7 @@ switch(cond_type)
       Ustrncmp(name, "bheader_", 8) == 0)
     {
     s = read_header_name(name, 256, s);
+    if (Ustrchr(name, '}') != NULL) malformed_header = TRUE;
     if (yield != NULL) *yield =
       (find_header(name, TRUE, NULL, FALSE, NULL) != NULL) == testfor;
     }
@@ -2973,7 +2976,7 @@ while (*s != 0)
       value = find_header(name, FALSE, &newsize, want_raw, charset);
 
       /* If we didn't find the header, and the header contains a closing brace
-      characters, this may be a user error where the terminating colon
+      character, this may be a user error where the terminating colon
       has been omitted. Set a flag to adjust the error message in this case.
       But there is no error here - nothing gets inserted. */
 

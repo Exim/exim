@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.421 2006/10/31 12:16:26 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.422 2006/10/31 14:26:34 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -221,6 +221,10 @@ PH/31 Installed Andrew Findlay's patch to close the writing end of the socket
       in ${readsocket because some servers need this prod.
 
 PH/32 Added some extra debug output when updating a wait-xxx database.
+
+PH/33 The hint "could be header name not terminated by colon", which has been
+      given for certain expansion errors for a long time, was not being given
+      for the ${if def:h_colon_omitted{...  case.
 
 
 Exim version 4.63
