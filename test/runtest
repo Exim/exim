@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.15 2006/10/31 11:37:47 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.16 2006/10/31 16:13:48 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -2044,7 +2044,6 @@ if (defined $parm_support{'Content_Scanning'})
   {
   if (system("spamc -h 2>/dev/null >/dev/null") == 0)
     {
-    $parm_running{'SpamAssassin'} = ' ';
     print "The spamc command works:\n";
 
     # This test for an active SpamAssassin is courtesy of John Jetmore.
