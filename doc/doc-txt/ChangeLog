@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.419 2006/10/31 09:50:09 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.420 2006/10/31 11:14:17 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -216,6 +216,9 @@ PH/30 Exim was sometimes attempting to deliver messages that had suffered
       (ii) If, despite (i), such a delivery is accidentally attempted, the
            routing retry time is respected, so at least it doesn't keep
            hammering the server.
+
+PH/31 Installed Andrew Findlay's patch to close the writing end of the socket
+      in ${readsocket because some servers need this prod.
 
 
 Exim version 4.63

@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.61 2006/10/24 15:01:26 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.62 2006/10/31 11:14:18 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  24 October 2006
+Last updated:  31 October 2006
 
 
 THE OLD LIST
@@ -120,6 +120,7 @@ Jochen Erwied             Fix for BDB 4.1 API
 Stefan Esser              Fix for DNS RR parsing bug
 Peter Evans               Suggested using modification time of "new" for time
                             of "mailbox last read" for maildir
+Andrew Findlay            Patch to close writing end of ${readsocket
 Michael Fischer
   v. Mollard              Suggested patch for exigrep -t option
 Kevin Fleming             Callout cache code

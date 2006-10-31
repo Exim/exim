@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.66 2006/10/30 14:59:15 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.67 2006/10/31 11:14:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3832,6 +3832,14 @@ while (*s != 0)
             goto SOCK_FAIL;
             }
           }
+
+        /* Shut down the sending side of the socket. This helps some servers to
+        recognise that it is their turn to do some work. Just in case some
+        system doesn't have this function, make it conditional. */
+
+        #ifdef SHUT_WR
+        shutdown(fd, SHUT_WR);
+        #endif
 
         /* Now we need to read from the socket, under a timeout. The function
         that reads a file can be used. */
