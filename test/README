@@ -1,12 +1,12 @@
-$Cambridge: exim/test/README,v 1.4 2006/07/26 14:39:13 ph10 Exp $
+$Cambridge: exim/test/README,v 1.5 2006/10/31 11:37:47 ph10 Exp $
 
 EXPORTABLE EXIM TEST SUITE
 --------------------------
 
 This document last updated for:
 
-Test Suite Version: 4.63
-Date: 25 July 2006
+Test Suite Version: 4.64
+Date: 31 October 2006
 
 
 BACKGROUND
@@ -602,11 +602,18 @@ Commands with no input
 
 These commands are not followed by any input data, or by a line of asterisks.
 
+
   dbmbuild <file1> <file1>
 
 This command runs the exim_dbmbuild utility to build a DBM file. It is used
 only when DBM support is available in Exim, and typically follows the use of a
 "write" command (see below) that creates the input file.
+
+
+  dumpdb <dbname>
+
+This command runs the exim_dumpdb utility on the testing spool directory, using
+the database name given, for example: "dumpdb retry".
 
 
   echo <text>
@@ -615,13 +622,23 @@ The text is written to the screen; this is used to output comments from
 scripts.
 
 
+  exim_lock [options] <file name>
+
+This command runs the exim_lock utility with the given options and file name.
+The file remains locked with the following command (normally exim) is obeyed.
+
+
+  exinext <data>
+
+This command runs the exinext utility with the given argument data.
+
+
   gnutls
 
 This command is present at the start of all but one of the tests that use
 GnuTLS. It copies a pre-existing parameter file into the spool directory, so
 that Exim does not have to re-create the file each time. The first GnuTLS test
-does not do this, in order to test that Exim can create the file (it takes some
-time).
+does not do this, in order to test that Exim can create the file.
 
 
   killdaemon
@@ -676,6 +693,7 @@ If this command is encountered anywhere in the script, message log files that
 are still in existence at the end of the run (for messages that were not
 delivered) are not compared with saved versions.
 
+
   no_stderr_check
 
 If this command is encountered anywhere in the script, the stderr output from
@@ -712,9 +730,9 @@ deliveries because on different systems the processes may terminate in a
 different order.
 
 
-A number of standard file management commands are recognized. These are cat,
-chmod, chown, cp, ln, ls, du, mkdir, mkfifo, rm, rmdir, and touch. Some are run
-as root using "sudo".
+A number of standard file management commands are also recognized. These are
+cat, chmod, chown, cp, du, ln, ls, du, mkdir, mkfifo, rm, rmdir, and touch.
+Some are run as root using "sudo".
 
 
 Commands with input

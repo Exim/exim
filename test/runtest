@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.14 2006/09/05 13:24:10 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.15 2006/10/31 11:37:47 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -1594,12 +1594,12 @@ if (/^(cat)?write\s+(\S+)(?:\s+(.*))?\s*$/)
 # command in the variable $cmd. Shared code to run this command and handle its
 # input and output follows.
 
-# The "client" and "client-ssl" commands run a script-driven program that plays
-# the part of an email client. We also have the availability of running Perl
-# for doing one-off special things. Note that all these commands expect stdin
-# data to be supplied.
+# The "client", "client-gnutls", and "client-ssl" commands run a script-driven
+# program that plays the part of an email client. We also have the availability
+# of running Perl for doing one-off special things. Note that all these
+# commands expect stdin data to be supplied.
 
-if (/^client/ || /^client-ssl/ || /^(sudo\s+)?perl\b/)
+if (/^client/ || /^(sudo\s+)?perl\b/)
   {
   s"client"./bin/client";
   $cmd = "$_ >>test-stdout 2>>test-stderr";
