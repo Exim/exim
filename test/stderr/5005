@@ -583,6 +583,7 @@ Considering: userx@test.ex
 unique = userx@test.ex
 dbfn_read: key=R:test.ex
 dbfn_read: key=R:userx@test.ex
+dbfn_read: key=R:userx@test.ex:<CALLER@test.ex>
 no domain retry record
 no address retry record
 userx@test.ex: queued for routing

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.h,v 1.8 2006/02/28 12:42:47 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.h,v 1.9 2006/11/06 15:50:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -33,6 +33,7 @@ typedef struct {
   int     size_addition;
   int     hosts_max_try;
   int     hosts_max_try_hardlimit;
+  BOOL    address_retry_include_sender;
   BOOL    allow_localhost;
   BOOL    authenticated_sender_force;
   BOOL    gethostbyname;

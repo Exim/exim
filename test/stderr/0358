@@ -29,11 +29,11 @@ After routing:
 checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no retry data available
-added retry item for R:userx@test.ex: errno=-44 more_errno=dd,A flags=0
-added retry item for R:usery@test.ex: errno=-44 more_errno=dd,A flags=0
-reading retry information for R:userx@test.ex from subprocess
+added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
+added retry item for R:usery@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
+reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   added retry item
-reading retry information for R:usery@test.ex from subprocess
+reading retry information for R:usery@test.ex:<CALLER@test.ex> from subprocess
   added retry item
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (-44): SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
@@ -45,15 +45,15 @@ Failed addresses:
 Deferred addresses:
 usery@test.ex
 locking TESTSUITE/spool/db/retry.lockfile
-retry for R:usery@test.ex = * 0 0
+retry for R:usery@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
-Writing retry data for R:usery@test.ex
+Writing retry data for R:usery@test.ex:<CALLER@test.ex>
   first failed=dddd last try=dddd next try=+1 expired=0
   errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<usery@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
 userx@test.ex
-retry for R:userx@test.ex = * 0 0
+retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
-Writing retry data for R:userx@test.ex
+Writing retry data for R:userx@test.ex:<CALLER@test.ex>
   first failed=dddd last try=dddd next try=+1 expired=0
   errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
 end of retry processing
@@ -87,24 +87,24 @@ checking status of 127.0.0.1
 locking TESTSUITE/spool/db/retry.lockfile
 no host retry record
 no message retry record
-added retry item for R:userx@test.ex: errno=-44 more_errno=dd,A flags=0
-added retry item for R:usery@test.ex: errno=-44 more_errno=dd,A flags=0
-reading retry information for R:userx@test.ex from subprocess
-  existing delete item dropped
+added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
+added retry item for R:usery@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
+reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
   added retry item
 reading retry information for R:test.ex from subprocess
   existing delete item dropped
   added delete item
 reading retry information for R:userx@test.ex from subprocess
-  delete item not added: non-delete item exists
-reading retry information for R:usery@test.ex from subprocess
   existing delete item dropped
+  added delete item
+reading retry information for R:usery@test.ex:<CALLER@test.ex> from subprocess
   added retry item
 reading retry information for R:test.ex from subprocess
   existing delete item dropped
   added delete item
 reading retry information for R:usery@test.ex from subprocess
-  delete item not added: non-delete item exists
+  existing delete item dropped
+  added delete item
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (-44): SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
 LOG: MAIN
@@ -115,17 +115,19 @@ Failed addresses:
 Deferred addresses:
 usery@test.ex
 locking TESTSUITE/spool/db/retry.lockfile
+deleted retry information for R:usery@test.ex
 deleted retry information for R:test.ex
-retry for R:usery@test.ex = * 0 0
+retry for R:usery@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
-Writing retry data for R:usery@test.ex
+Writing retry data for R:usery@test.ex:<CALLER@test.ex>
   first failed=dddd last try=dddd next try=+2 expired=0
   errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<usery@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
 userx@test.ex
+deleted retry information for R:userx@test.ex
 deleted retry information for R:test.ex
-retry for R:userx@test.ex = * 0 0
+retry for R:userx@test.ex:<CALLER@test.ex> = * 0 0
 failing_interval=ttt message_age=ttt
-Writing retry data for R:userx@test.ex
+Writing retry data for R:userx@test.ex:<CALLER@test.ex>
   first failed=dddd last try=dddd next try=+2 expired=0
   errno=-44 more_errno=dd,A SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
 end of retry processing

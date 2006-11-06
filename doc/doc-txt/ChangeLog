@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.424 2006/11/06 11:27:54 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.425 2006/11/06 15:50:12 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -235,6 +235,17 @@ PH/35 The error "getsockname() failed: connection reset by peer" was being
       panic-worthy as it just means the connection died rather early on. I have
       removed the panic log writing for the ECONNRESET error when getsockname()
       fails.
+
+PH/36 After a 4xx response to a RCPT error, that address was delayed (in queue
+      runs only) independently of the message's sender address. This meant
+      that, if the 4xx error was in fact related to the sender, a different
+      message to the same recipient with a different sender could confuse
+      things. In particualar, this can happen when sending to a greylisting
+      server, but other circumstances could also provoke similar problems.
+      I have changed the default so that the retry time for these errors is now
+      based a combination of the sender and recipient addresses. This change
+      can be overridden by setting address_retry_include_sender=false in the
+      smtp transport.
 
 
 Exim version 4.63

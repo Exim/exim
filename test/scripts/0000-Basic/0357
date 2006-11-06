@@ -46,4 +46,6 @@ QUIT
 exim -q -d-all+retry
 ****
 dump retry
+exim -q -d-all+retry
+****
 no_msglog_check

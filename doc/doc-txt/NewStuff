@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.119 2006/10/24 12:56:06 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.120 2006/11/06 15:50:12 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -153,6 +153,15 @@ Version 4.64
    $recipients variable. Note that recipients cannot be given on the command
    line, because further arguments are taken as strings to expand (just like
    -be).
+
+9. When an address is delayed because of a 4xx response to a RCPT command, it
+   is now the combination of sender and recipient that is delayed in subsequent
+   queue runs until its retry time is reached. You can revert to the previous
+   behavious, that is, delay the recipient independent of the sender, by
+   setting address_retry_include_sender=false in the smtp transport. However,
+   this can lead to problems with servers that regularly issue 4xx responses to
+   RCPT commands.
+
 
 
 Version 4.63

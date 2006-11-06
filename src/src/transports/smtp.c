@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.28 2006/10/30 16:41:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.29 2006/11/06 15:50:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -21,6 +21,8 @@ before the lower case letters). Some live in the transport_instance block so as
 to be publicly visible; these are flagged with opt_public. */
 
 optionlist smtp_transport_options[] = {
+  { "address_retry_include_sender", opt_bool,
+      (void *)offsetof(smtp_transport_options_block, address_retry_include_sender) },
   { "allow_localhost",      opt_bool,
       (void *)offsetof(smtp_transport_options_block, allow_localhost) },
   { "authenticated_sender", opt_stringptr,
@@ -159,6 +161,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   1024,                /* size_addition */
   5,                   /* hosts_max_try */
   50,                  /* hosts_max_try_hardlimit */
+  TRUE,                /* address_retry_include_sender */
   FALSE,               /* allow_localhost */
   FALSE,               /* authenticated_sender_force */
   FALSE,               /* gethostbyname */
@@ -555,19 +558,21 @@ subsequent general error, it will get reset accordingly. If not, it will get
 converted to OK at the end.
 
 Arguments:
-  addrlist         the complete address list
-  include_affixes  TRUE if affixes include in RCPT
-  sync_addr        ptr to the ptr of the one to start scanning at (updated)
-  host             the host we are connected to
-  count            the number of responses to read
-  pending_MAIL     true if the first response is for MAIL
-  pending_DATA     0 if last command sent was not DATA
-                  +1 if previously had a good recipient
-                  -1 if not previously had a good recipient
-  inblock          incoming SMTP block
-  timeout          timeout value
-  buffer           buffer for reading response
-  buffsize         size of buffer
+  addrlist          the complete address list
+  include_affixes   TRUE if affixes include in RCPT
+  sync_addr         ptr to the ptr of the one to start scanning at (updated)
+  host              the host we are connected to
+  count             the number of responses to read
+  address_retry_
+    include_sender  true if 4xx retry is to include the sender it its key
+  pending_MAIL      true if the first response is for MAIL
+  pending_DATA      0 if last command sent was not DATA
+                   +1 if previously had a good recipient
+                   -1 if not previously had a good recipient
+  inblock           incoming SMTP block
+  timeout           timeout value
+  buffer            buffer for reading response
+  buffsize          size of buffer
 
 Returns:      3 if at least one address had 2xx and one had 5xx
               2 if at least one address had 5xx but none had 2xx
@@ -580,7 +585,8 @@ Returns:      3 if at least one address had 2xx and one had 5xx
 
 static int
 sync_responses(address_item *addrlist, BOOL include_affixes,
-  address_item **sync_addr, host_item *host, int count, BOOL pending_MAIL,
+  address_item **sync_addr, host_item *host, int count,
+  BOOL address_retry_include_sender, BOOL pending_MAIL,
   int pending_DATA, smtp_inblock *inblock, int timeout, uschar *buffer,
   int buffsize)
 {
@@ -705,10 +711,17 @@ while (count-- > 0)
 
       update_waiting = FALSE;
 
-      /* Add a retry item for the address so that it doesn't get tried
-      again too soon. */
+      /* Add a retry item for the address so that it doesn't get tried again
+      too soon. If address_retry_include_sender is true, add the sender address
+      to the retry key. */
 
-      retry_add_item(addr, addr->address_retry_key, 0);
+      if (address_retry_include_sender)
+        {
+        uschar *altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
+          sender_address);
+        retry_add_item(addr, altkey, 0);
+        }
+      else retry_add_item(addr, addr->address_retry_key, 0);
       }
     }
   }       /* Loop for next RCPT response */
@@ -1404,8 +1417,9 @@ for (addr = first_addr;
   if (count > 0)
     {
     switch(sync_responses(first_addr, tblock->rcpt_include_affixes,
-             &sync_addr, host, count, pending_MAIL, 0, &inblock,
-             ob->command_timeout, buffer, sizeof(buffer)))
+             &sync_addr, host, count, ob->address_retry_include_sender,
+             pending_MAIL, 0, &inblock, ob->command_timeout, buffer,
+             sizeof(buffer)))
       {
       case 3: ok = TRUE;                   /* 2xx & 5xx => OK & progress made */
       case 2: completed_address = TRUE;    /* 5xx (only) => progress made */
@@ -1453,8 +1467,8 @@ if (ok || (smtp_use_pipelining && !mua_wrapper))
   int count = smtp_write_command(&outblock, FALSE, "DATA\r\n");
   if (count < 0) goto SEND_FAILED;
   switch(sync_responses(first_addr, tblock->rcpt_include_affixes, &sync_addr,
-           host, count, pending_MAIL, ok? +1 : -1, &inblock,
-           ob->command_timeout, buffer, sizeof(buffer)))
+           host, count, ob->address_retry_include_sender, pending_MAIL,
+           ok? +1 : -1, &inblock, ob->command_timeout, buffer, sizeof(buffer)))
     {
     case 3: ok = TRUE;                   /* 2xx & 5xx => OK & progress made */
     case 2: completed_address = TRUE;    /* 5xx (only) => progress made */

@@ -224,6 +224,7 @@ Considering: CALLER@myhost.test.ex
 unique = CALLER@myhost.test.ex
 dbfn_read: key=R:myhost.test.ex
 dbfn_read: key=R:CALLER@myhost.test.ex
+dbfn_read: key=R:CALLER@myhost.test.ex:<>
 no domain retry record
 no address retry record
 CALLER@myhost.test.ex: queued for routing

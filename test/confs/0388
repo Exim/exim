@@ -37,6 +37,7 @@ smtp:
   hosts_max_try = 1
   port = PORT_S
   connect_timeout = 2s
+  address_retry_include_sender = false
 
 # ----- Retry -----
 

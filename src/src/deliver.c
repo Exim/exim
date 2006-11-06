@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.37 2006/10/30 16:41:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.38 2006/11/06 15:50:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -5452,8 +5452,10 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
       }
 
     /* Get the routing retry status, saving the two retry keys (with and
-    without the local part) for subsequent use. Ignore retry records that
-    are too old. */
+    without the local part) for subsequent use. If there is no retry record for
+    the standard address routing retry key, we look for the same key with the
+    sender attached, because this form is used by the smtp transport after a
+    4xx response to RCPT when address_retry_include_sender is true. */
 
     addr->domain_retry_key = string_sprintf("R:%s", addr->domain);
     addr->address_retry_key = string_sprintf("R:%s@%s", addr->local_part,
@@ -5466,12 +5468,22 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
       domain_retry_record = dbfn_read(dbm_file, addr->domain_retry_key);
       if (domain_retry_record != NULL &&
           now - domain_retry_record->time_stamp > retry_data_expire)
-        domain_retry_record = NULL;
+        domain_retry_record = NULL;    /* Ignore if too old */
 
       address_retry_record = dbfn_read(dbm_file, addr->address_retry_key);
       if (address_retry_record != NULL &&
           now - address_retry_record->time_stamp > retry_data_expire)
-        address_retry_record = NULL;
+        address_retry_record = NULL;   /* Ignore if too old */
+
+      if (address_retry_record == NULL)
+        {
+        uschar * altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
+          sender_address);
+        address_retry_record = dbfn_read(dbm_file, altkey);
+        if (address_retry_record != NULL &&
+            now - address_retry_record->time_stamp > retry_data_expire)
+          address_retry_record = NULL;   /* Ignore if too old */
+        }
       }
 
     DEBUG(D_deliver|D_retry)
