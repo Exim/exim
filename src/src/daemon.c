@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.16 2006/09/05 14:14:32 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.17 2006/11/06 11:27:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -186,13 +186,14 @@ if (smtp_in == NULL)
   goto ERROR_RETURN;
   }
 
-/* Get the data for the local interface address. */
+/* Get the data for the local interface address. Panic for most errors, but
+"connection reset by peer" just means the connection went away. */
 
 if (getsockname(accept_socket, (struct sockaddr *)(&interface_sockaddr),
      &ifsize) < 0)
   {
-  log_write(0, LOG_MAIN|LOG_PANIC, "getsockname() failed: %s",
-    strerror(errno));
+  log_write(0, LOG_MAIN | ((errno == ECONNRESET)? 0 : LOG_PANIC),
+    "getsockname() failed: %s", strerror(errno));
   smtp_printf("421 Local problem: getsockname() failed; please try again later\r\n");
   goto ERROR_RETURN;
   }
