@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.427 2006/11/07 14:13:18 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.428 2006/11/07 15:56:17 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -254,6 +254,10 @@ PH/37 For LMTP over TCP/IP (the smtp transport), error responses from the
 
 PH/38 Despite being documented as not happening, Exim was rewriting addresses
       in header lines that were in fact CNAMEs. This is no longer the case.
+
+PH/39 If -R or -S was given with -q<time>, the effect of -R or -S was ignored,
+      and queue runs started by the daemon processed all messages. This has
+      been fixed so that -R and -S can now usefully be given with -q<time>.
 
 
 Exim version 4.63

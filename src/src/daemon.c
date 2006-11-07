@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.17 2006/11/06 11:27:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.18 2006/11/07 15:56:17 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1629,6 +1629,8 @@ for (;;)
           {
           uschar opt[8];
           uschar *p = opt;
+          uschar *extra[4];
+          int extracount = 1;
 
           signal(SIGALRM, SIG_DFL);
           *p++ = '-';
@@ -1639,8 +1641,29 @@ for (;;)
           if (deliver_force_thaw) *p++ = 'f';
           if (queue_run_local) *p++ = 'l';
           *p = 0;
+          extra[0] = opt;
 
-          (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, TRUE, 1, opt);
+          /* If -R or -S were on the original command line, ensure they get
+          passed on. */
+
+          if (deliver_selectstring != NULL)
+            {
+            extra[extracount++] = deliver_selectstring_regex? US"-Rr" : US"-R";
+            extra[extracount++] = deliver_selectstring;
+            }
+
+          if (deliver_selectstring_sender != NULL)
+            {
+            extra[extracount++] = deliver_selectstring_sender_regex?
+              US"-Sr" : US"-S";
+            extra[extracount++] = deliver_selectstring_sender;
+            }
+
+          /* Overlay this process with a new execution. */
+
+          (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, TRUE, extracount,
+            extra[0], extra[1], extra[2], extra[3], extra[4]);
+
           /* Control never returns here. */
           }
 
