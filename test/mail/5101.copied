@@ -34,6 +34,7 @@ A message that you sent could not be delivered to one or more of its
 recipients. This is a permanent error. The following address(es) failed:
 
   jack@myhost.test.ex
+    LMTP error after end of data: 550 Number 2 fails
 
 ------ This is a copy of the message, including all the headers. ------
 
@@ -69,6 +70,7 @@ A message that you sent could not be delivered to one or more of its
 recipients. This is a permanent error. The following address(es) failed:
 
   jack@myhost.test.ex
+    LMTP error after end of data: 550 Number 2 fails
 
 ------ This is a copy of the message, including all the headers. ------
 

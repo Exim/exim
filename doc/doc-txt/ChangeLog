@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.425 2006/11/06 15:50:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.426 2006/11/07 11:28:05 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -246,6 +246,11 @@ PH/36 After a 4xx response to a RCPT error, that address was delayed (in queue
       based a combination of the sender and recipient addresses. This change
       can be overridden by setting address_retry_include_sender=false in the
       smtp transport.
+
+PH/37 For LMTP over TCP/IP (the smtp transport), error responses from the
+      remote server are returned as part of bounce messages. This was not
+      happening for LMTP over a pipe (the lmtp transport), but now it is the
+      same for both kinds of LMTP.
 
 
 Exim version 4.63

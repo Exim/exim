@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/lmtp.c,v 1.8 2006/03/09 15:10:16 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/lmtp.c,v 1.9 2006/11/07 11:28:05 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -606,6 +606,7 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
     if (errno != 0 || buffer[0] == 0) goto RESPONSE_FAILED;
     addr->message = string_sprintf("LMTP error after %s: %s", big_buffer,
       string_printing(buffer));
+    setflag(addr, af_pass_message);   /* Allow message to go to user */
     if (buffer[0] == '5') addr->transport_return = FAIL; else
       {
       addr->basic_errno = ERRNO_RCPT4XX;
@@ -697,6 +698,7 @@ if (send_data)
       addr->message = string_sprintf("LMTP error after %s: %s", big_buffer,
         string_printing(buffer));
       addr->transport_return = (buffer[0] == '5')? FAIL : DEFER;
+      setflag(addr, af_pass_message);   /* Allow message to go to user */
       }
     }
   }
