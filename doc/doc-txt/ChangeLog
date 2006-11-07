@@ -1,10 +1,11 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.428 2006/11/07 15:56:17 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.429 2006/11/07 16:50:36 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
 
 Exim version 4.64
 -----------------
+
 TK/01 Bugzilla #401. Fix DK spooling code so that it can overwrite a
       leftover -K file (the existence of which was triggered by #402).
       While we were at it, introduced process PID as part of the -K
@@ -258,6 +259,8 @@ PH/38 Despite being documented as not happening, Exim was rewriting addresses
 PH/39 If -R or -S was given with -q<time>, the effect of -R or -S was ignored,
       and queue runs started by the daemon processed all messages. This has
       been fixed so that -R and -S can now usefully be given with -q<time>.
+
+PH/40 Import PCRE release 6.7 (fixes some bugs).
 
 
 Exim version 4.63

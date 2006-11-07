@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Cambridge: exim/src/scripts/MakeLinks,v 1.8 2006/10/16 15:44:36 ph10 Exp $
+# $Cambridge: exim/src/scripts/MakeLinks,v 1.9 2006/11/07 16:50:36 ph10 Exp $
 
 # Script to build links for all the exim source files from the system-
 # specific build directory. It should be run from within that directory.
@@ -43,7 +43,7 @@ ln -s ../../src/pcre/pcre_compile.c      pcre_compile.c
 ln -s ../../src/pcre/pcre_exec.c         pcre_exec.c
 ln -s ../../src/pcre/pcre_fullinfo.c     pcre_fullinfo.c
 ln -s ../../src/pcre/pcretest.c          pcretest.c
-ln -s ../../src/pcre/pcre_printint.c     pcre_printint.c
+ln -s ../../src/pcre/pcre_printint.src   pcre_printint.src
 ln -s ../../src/pcre/pcre_study.c        pcre_study.c
 ln -s ../../src/pcre/pcre_tables.c       pcre_tables.c
 ln -s ../../src/pcre/pcre_try_flipped.c  pcre_try_flipped.c

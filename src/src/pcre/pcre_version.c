@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_version.c,v 1.2 2005/08/08 10:22:14 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_version.c,v 1.3 2006/11/07 16:50:36 ph10 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -8,7 +8,7 @@
 and semantics are as close as possible to those of the Perl 5 language.
 
                        Written by Philip Hazel
-           Copyright (c) 1997-2005 University of Cambridge
+           Copyright (c) 1997-2006 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -54,10 +54,13 @@ string that identifies the PCRE version that is in use. */
 #define STRING(a)  # a
 #define XSTRING(s) STRING(s)
 
-EXPORT const char *
+PCRE_DATA_SCOPE const char *
 pcre_version(void)
 {
-return XSTRING(PCRE_MAJOR) "." XSTRING(PCRE_MINOR) " " XSTRING(PCRE_DATE);
+return XSTRING(PCRE_MAJOR)
+       "." XSTRING(PCRE_MINOR)
+           XSTRING(PCRE_PRERELEASE)
+       " " XSTRING(PCRE_DATE);
 }
 
 /* End of pcre_version.c */

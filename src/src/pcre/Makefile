@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/pcre/Makefile,v 1.5 2005/10/03 09:56:42 ph10 Exp $
+# $Cambridge: exim/src/src/pcre/Makefile,v 1.6 2006/11/07 16:50:36 ph10 Exp $
 
 # Makefile for PCRE (Perl-Compatible Regular Expression) library for use by
 # Exim. This is a tailored Makefile, not the normal one that comes with the
@@ -14,7 +14,7 @@ RANLIB = @true
 ##############################################################################
 
 OBJ = pcre_maketables.o chartables.o pcre_fullinfo.o pcre_get.o \
-      pcre_globals.o pcre_compile.o pcre_config.o pcre_exec.o pcre_printint.o \
+      pcre_globals.o pcre_compile.o pcre_config.o pcre_exec.o \
       pcre_study.o pcre_tables.o pcre_try_flipped.o pcre_version.o
 
 all:            libpcre.a ../pcretest
@@ -60,10 +60,6 @@ pcre_get.o:     pcre_get.c pcre.h config.h pcre_internal.h Makefile
 pcre_globals.o: pcre_globals.c pcre.h config.h pcre_internal.h Makefile
 		@echo "$(CC) pcre_globals.c"
 		$(FE)$(CC) -c $(CFLAGS) pcre_globals.c
-
-pcre_printint.o: pcre_printint.c pcre.h config.h pcre_internal.h Makefile
-		@echo "$(CC) pcre_printint.c"
-		$(FE)$(CC) -c $(CFLAGS) pcre_printint.c
 
 pcre_study.o:   pcre_study.c pcre.h config.h pcre_internal.h Makefile
 		@echo "$(CC) pcre_study.c"
