@@ -1,4 +1,4 @@
-/* $Cambridge: exim/test/src/fakens.c,v 1.2 2006/02/16 10:05:34 ph10 Exp $ */
+/* $Cambridge: exim/test/src/fakens.c,v 1.3 2006/11/07 14:13:19 ph10 Exp $ */
 
 /*************************************************
 *       fakens - A Fake Nameserver Program       *
@@ -415,18 +415,6 @@ while (fgets(CS buffer, sizeof(buffer), f) != NULL)
 
   rdlptr[0] = ((pk - rdlptr - 2) >> 8) & 255;
   rdlptr[1] = (pk -rdlptr - 2) & 255;
-
-  /* If we have just yielded a CNAME, we must change the domain name to the
-  new domain, and re-start the scan from the beginning. */
-
-  if (found_cname)
-    {
-    domain = fcopystring("%s", p);
-    domainlen = Ustrlen(domain);
-    domain[domainlen - 1] = 0;       /* Removed trailing dot */
-    rrdomain[0] = 0;                 /* No previous domain */
-    (void)fseek(f, 0, SEEK_SET);     /* Start again at the beginning */
-    }
   }
 
 *pkptr = pk;

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.426 2006/11/07 11:28:05 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.427 2006/11/07 14:13:18 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -251,6 +251,9 @@ PH/37 For LMTP over TCP/IP (the smtp transport), error responses from the
       remote server are returned as part of bounce messages. This was not
       happening for LMTP over a pipe (the lmtp transport), but now it is the
       same for both kinds of LMTP.
+
+PH/38 Despite being documented as not happening, Exim was rewriting addresses
+      in header lines that were in fact CNAMEs. This is no longer the case.
 
 
 Exim version 4.63

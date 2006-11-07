@@ -1,0 +1,5 @@
+# CNAME not rewriting
+exim -d -bt userx@alias-eximtesthost
+****
+exim -d -bt userx@alias-eximtesthost.test.ex
+****

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.14 2006/02/16 10:05:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.15 2006/11/07 14:13:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -677,12 +677,10 @@ for (i = 0; i < 10; i++)
     else if (rr->type == T_CNAME) cname_rr = *rr;
     }
 
-  /* If a CNAME was found, take the fully qualified name from it; otherwise
-  from the first data record, if present. For testing, there is a magic name
-  that gets its casing adjusted, because my resolver doesn't seem to pass back
-  upper case letters in domain names. */
+  /* For the first time round this loop, if a CNAME was found, take the fully
+  qualified name from it; otherwise from the first data record, if present. */
 
-  if (fully_qualified_name != NULL)
+  if (i == 0 && fully_qualified_name != NULL)
     {
     if (cname_rr.data != NULL)
       {
@@ -712,6 +710,8 @@ for (i = 0; i < 10; i++)
     cname_rr.data, (DN_EXPAND_ARG4_TYPE)data, 256);
   if (datalen < 0) return DNS_FAIL;
   name = data;
+
+  DEBUG(D_dns) debug_printf("CNAME found: change to %s\n", name);
   }       /* Loop back to do another lookup */
 
 /*Control reaches here after 10 times round the CNAME loop. Something isn't

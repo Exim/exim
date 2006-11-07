@@ -1,0 +1,121 @@
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@the.local.host.name
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing userx@alias-eximtesthost
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering userx@alias-eximtesthost
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@alias-eximtesthost
+--------> dns router <--------
+local_part=userx domain=alias-eximtesthost
+calling dns router
+dns router called for userx@alias-eximtesthost
+  domain = alias-eximtesthost
+DNS lookup of alias-eximtesthost (MX) using fakens
+DNS lookup of alias-eximtesthost (MX) succeeded
+CNAME found: change to eximtesthost.test.ex
+DNS lookup of eximtesthost.test.ex (MX) using fakens
+DNS lookup of eximtesthost.test.ex (MX) gave NO_DATA
+returning DNS_NODATA
+DNS lookup of alias-eximtesthost (AAAA) succeeded
+CNAME found: change to eximtesthost.test.ex
+DNS lookup of alias-eximtesthost (A) using fakens
+DNS lookup of alias-eximtesthost (A) succeeded
+CNAME found: change to eximtesthost.test.ex
+DNS lookup of eximtesthost.test.ex (A) using fakens
+DNS lookup of eximtesthost.test.ex (A) succeeded
+local host found for non-MX address
+fully qualified name = alias-eximtesthost.test.ex
+eximtesthost.test.ex ip4.ip4.ip4.ip4 mx=-1 sort=xx 
+domain changed to alias-eximtesthost.test.ex
+rewriting header lines
+re-routed to userx@alias-eximtesthost.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering userx@alias-eximtesthost.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@alias-eximtesthost.test.ex
+--------> dns router <--------
+local_part=userx domain=alias-eximtesthost.test.ex
+calling dns router
+dns router called for userx@alias-eximtesthost.test.ex
+  domain = alias-eximtesthost.test.ex
+DNS lookup of alias-eximtesthost.test.ex (MX) using fakens
+DNS lookup of alias-eximtesthost.test.ex (MX) succeeded
+CNAME found: change to eximtesthost.test.ex
+DNS lookup of eximtesthost.test.ex-MX: using cached value DNS_NODATA
+DNS lookup of alias-eximtesthost.test.ex (AAAA) succeeded
+CNAME found: change to eximtesthost.test.ex
+DNS lookup of eximtesthost.test.ex-AAAA: using cached value DNS_NODATA
+DNS lookup of alias-eximtesthost.test.ex (A) using fakens
+DNS lookup of alias-eximtesthost.test.ex (A) succeeded
+CNAME found: change to eximtesthost.test.ex
+DNS lookup of eximtesthost.test.ex (A) using fakens
+DNS lookup of eximtesthost.test.ex (A) succeeded
+local host found for non-MX address
+fully qualified name = alias-eximtesthost.test.ex
+eximtesthost.test.ex ip4.ip4.ip4.ip4 mx=-1 sort=xx 
+remote host address is the local host: alias-eximtesthost.test.ex: configured to try delivery anyway
+set transport smtp
+queued for smtp transport: local_part = userx
+domain = alias-eximtesthost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by dns router
+  envelope to: userx@alias-eximtesthost.test.ex
+  transport: smtp
+  host eximtesthost.test.ex [ip4.ip4.ip4.ip4]
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+changed uid/gid: forcing real = effective
+  uid=uuuu gid=CALLER_GID pid=pppp
+configuration file is TESTSUITE/test-config
+admin user
+originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
+sender address = CALLER@the.local.host.name
+Address testing: uid=uuuu gid=EXIM_GID euid=uuuu egid=EXIM_GID
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Testing userx@alias-eximtesthost.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Considering userx@alias-eximtesthost.test.ex
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+routing userx@alias-eximtesthost.test.ex
+--------> dns router <--------
+local_part=userx domain=alias-eximtesthost.test.ex
+calling dns router
+dns router called for userx@alias-eximtesthost.test.ex
+  domain = alias-eximtesthost.test.ex
+DNS lookup of alias-eximtesthost.test.ex (MX) using fakens
+DNS lookup of alias-eximtesthost.test.ex (MX) succeeded
+CNAME found: change to eximtesthost.test.ex
+DNS lookup of eximtesthost.test.ex (MX) using fakens
+DNS lookup of eximtesthost.test.ex (MX) gave NO_DATA
+returning DNS_NODATA
+DNS lookup of alias-eximtesthost.test.ex (AAAA) succeeded
+CNAME found: change to eximtesthost.test.ex
+DNS lookup of alias-eximtesthost.test.ex (A) using fakens
+DNS lookup of alias-eximtesthost.test.ex (A) succeeded
+CNAME found: change to eximtesthost.test.ex
+DNS lookup of eximtesthost.test.ex (A) using fakens
+DNS lookup of eximtesthost.test.ex (A) succeeded
+local host found for non-MX address
+fully qualified name = alias-eximtesthost.test.ex
+eximtesthost.test.ex ip4.ip4.ip4.ip4 mx=-1 sort=xx 
+remote host address is the local host: alias-eximtesthost.test.ex: configured to try delivery anyway
+set transport smtp
+queued for smtp transport: local_part = userx
+domain = alias-eximtesthost.test.ex
+  errors_to=NULL
+  domain_data=NULL localpart_data=NULL
+routed by dns router
+  envelope to: userx@alias-eximtesthost.test.ex
+  transport: smtp
+  host eximtesthost.test.ex [ip4.ip4.ip4.ip4]
+search_tidyup called
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
