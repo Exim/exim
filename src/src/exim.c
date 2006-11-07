@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.47 2006/11/07 10:28:09 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.48 2006/11/07 11:07:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4238,6 +4238,7 @@ if (expansion_test)
     message_linecount += body_linecount;
     (void)dup2(save_stdin, 0);
     (void)close(save_stdin);
+    clearerr(stdin);               /* Required by Darwin */
     }
 
   /* Allow $recipients for this testing */
