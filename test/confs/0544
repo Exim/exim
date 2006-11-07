@@ -10,12 +10,12 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
-domainlist dlist = testdb;$domain
+domainlist dlist = $domain
 
 acl_smtp_helo = check_helo
 acl_smtp_mail = check_mail
 acl_smtp_rcpt = check_rcpt
-queue_smtp_domains = testdb;$domain
+queue_smtp_domains = $domain
 qualify_domain = test.ex
 
 

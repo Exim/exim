@@ -52,8 +52,8 @@ Exim version x.yz ....
 configuration file is TESTSUITE/test-config
 trusted user
 admin user
-expanding: testdb;$domain
-   result: testdb;domain1.ex
+expanding: $domain
+   result: domain1.ex
 LOG: MAIN
   == userx@domain1.ex R=smarthost T=smtp defer (-1): domain matches queue_smtp_domains, or -odqs set
 LOG: MAIN
@@ -92,8 +92,8 @@ expanding: $sender_helo_name
    result: ehlo.domain
 expanding: +dlist
    result: +dlist
-expanding: testdb;$domain
-   result: testdb;ehlo.domain
+expanding: $domain
+   result: ehlo.domain
 condition: match_domain {$sender_helo_name}{+dlist}
    result: true
 expanding: ${if match_domain {$sender_helo_name}{+dlist}}
