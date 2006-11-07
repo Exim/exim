@@ -12,7 +12,7 @@
 > message_size=197
 > message_body_size=77
 > message_exim_id=10HmaY-0005vi-00
-> message_linecount=4
+> message_linecount=6
 > message_body_linecount=2
 > headers -----------------
 > From: A Person <a.person@a.domain.tld>

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.46 2006/10/24 12:56:06 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.47 2006/11/07 10:28:09 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4235,6 +4235,7 @@ if (expansion_test)
     filter_test = FTEST_USER;      /* Fudge to make it look like filter test */
     message_ended = END_NOTENDED;
     read_message_body(receive_msg(extract_recipients));
+    message_linecount += body_linecount;
     (void)dup2(save_stdin, 0);
     (void)close(save_stdin);
     }
