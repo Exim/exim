@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.71 2006/11/13 12:29:30 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.72 2006/11/13 12:32:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3930,15 +3930,15 @@ while (*s != 0)
           alarm(timeout);
           rc = connect(fd, (struct sockaddr *)(&sockun), sizeof(sockun));
           alarm(0);
+          if (sigalrm_seen)
+            {
+            expand_string_message = US "socket connect timed out";
+            goto SOCK_FAIL;
+            }
           if (rc < 0)
             {
             expand_string_message = string_sprintf("failed to connect to socket "
               "%s: %s", sub_arg[0], strerror(errno));
-            goto SOCK_FAIL;
-            }
-          if (sigalrm_seen)
-            {
-            expand_string_message = US "socket connect timed out";
             goto SOCK_FAIL;
             }
           }
