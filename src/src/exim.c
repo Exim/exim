@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.48 2006/11/07 11:07:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.49 2006/11/13 11:56:41 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2646,6 +2646,11 @@ for (i = 1; i < argc; i++)
 
     case 'q':
     receiving_message = FALSE;
+    if (queue_interval >= 0)
+      {
+      fprintf(stderr, "exim: -q specified more than once\n");
+      exit(EXIT_FAILURE);
+      }
 
     /* -qq...: Do queue runs in a 2-stage manner */
 
@@ -2754,7 +2759,6 @@ for (i = 1; i < argc; i++)
         }
       }
     else deliver_selectstring = argrest;
-    if (queue_interval < 0) queue_interval = 0;
     break;
 
 
@@ -2802,7 +2806,6 @@ for (i = 1; i < argc; i++)
         }
       }
     else deliver_selectstring_sender = argrest;
-    if (queue_interval < 0) queue_interval = 0;
     break;
 
     /* -Tqt is an option that is exclusively for use by the testing suite.
@@ -2891,6 +2894,12 @@ for (i = 1; i < argc; i++)
     exit(EXIT_FAILURE);
     }
   }
+
+
+/* If -R or -S have been specified without -q, assume a single queue run. */
+
+if ((deliver_selectstring != NULL || deliver_selectstring_sender != NULL) &&
+  queue_interval < 0) queue_interval = 0;
 
 
 /* Arguments have been processed. Check for incompatibilities. */

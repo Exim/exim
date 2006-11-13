@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.430 2006/11/13 11:26:37 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.431 2006/11/13 11:56:41 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -263,6 +263,8 @@ PH/39 If -R or -S was given with -q<time>, the effect of -R or -S was ignored,
 PH/40 Import PCRE release 6.7 (fixes some bugs).
 
 PH/41 Add bitwise logical operations to eval (courtesy Brad Jorsch).
+
+PH/42 Give an error if -q is specified more than once.
 
 
 Exim version 4.63
