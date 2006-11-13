@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.432 2006/11/13 12:07:46 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.433 2006/11/13 12:29:30 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -270,6 +270,9 @@ PH/43 Renamed the variables $interface_address and $interface_port as
       $received_ip_address and $received_port, to make it clear that these
       values apply to message reception, and not to the outgoing interface when
       a message is delivered. (The old names remain recognized, of course.)
+
+PH/44 There was no timeout on the connect() call when using a Unix domain
+      socket in the ${readsocket expansion. There now is.
 
 
 Exim version 4.63

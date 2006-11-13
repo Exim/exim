@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.70 2006/11/13 12:07:46 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.71 2006/11/13 12:29:30 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3914,6 +3914,7 @@ while (*s != 0)
 
         else
           {
+          int rc;
           if ((fd = socket(PF_UNIX, SOCK_STREAM, 0)) == -1)
             {
             expand_string_message = string_sprintf("failed to create socket: %s",
@@ -3924,10 +3925,20 @@ while (*s != 0)
           sockun.sun_family = AF_UNIX;
           sprintf(sockun.sun_path, "%.*s", (int)(sizeof(sockun.sun_path)-1),
             sub_arg[0]);
-          if(connect(fd, (struct sockaddr *)(&sockun), sizeof(sockun)) == -1)
+
+          sigalrm_seen = FALSE;
+          alarm(timeout);
+          rc = connect(fd, (struct sockaddr *)(&sockun), sizeof(sockun));
+          alarm(0);
+          if (rc < 0)
             {
             expand_string_message = string_sprintf("failed to connect to socket "
               "%s: %s", sub_arg[0], strerror(errno));
+            goto SOCK_FAIL;
+            }
+          if (sigalrm_seen)
+            {
+            expand_string_message = US "socket connect timed out";
             goto SOCK_FAIL;
             }
           }
