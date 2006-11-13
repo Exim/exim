@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.429 2006/11/07 16:50:36 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.430 2006/11/13 11:26:37 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -261,6 +261,8 @@ PH/39 If -R or -S was given with -q<time>, the effect of -R or -S was ignored,
       been fixed so that -R and -S can now usefully be given with -q<time>.
 
 PH/40 Import PCRE release 6.7 (fixes some bugs).
+
+PH/41 Add bitwise logical operations to eval (courtesy Brad Jorsch).
 
 
 Exim version 4.63

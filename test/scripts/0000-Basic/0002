@@ -67,6 +67,20 @@ eval:   ${eval:077}
 eval:   ${eval:08}
 eval10: ${eval10:077}
 eval10: ${eval10:08}
+eval10: ${eval10:0x1234}
+eval:   ${eval:2+42%5}
+eval:   ${eval:0xc&5}          
+eval:   ${eval:0xc & 5 }          
+eval:   ${eval:0x0c|5}          
+eval:   ${eval:0xc^5}          
+eval:   ${eval:0xc>>1}         
+eval:   ${eval:0xc >> 2}         
+eval:   ${eval:0xc >> 4 }         
+eval:   ${eval:0xc<<1}         
+eval:   ${eval:~255&0x1234}    
+eval:   ${eval:~ 255&0x1234}    
+eval:   ${eval: -(~255&0x1234)} 
+
 expand: \$primary_hostname ${expand:\$primary_hostname}
 hash:   ${hash_3:monty} ${hash_5:monty} ${hash_4_62:monty python}
 hash:   ${hash_3:abc}X ${hash_3:ab}X ${hash_3:a}X ${hash_3:}X

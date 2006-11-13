@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.68 2006/10/31 14:26:34 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.69 2006/11/13 11:26:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2719,63 +2719,53 @@ return yield;
 *          Evaluate numeric expression           *
 *************************************************/
 
-/* This is a set of mutually recursive functions that evaluate a simple
-arithmetic expression involving only + - * / and parentheses. The only one that
-is called from elsewhere is eval_expr, whose interface is:
+/* This is a set of mutually recursive functions that evaluate an arithmetic
+expression involving + - * / % & | ^ ~ << >> and parentheses. The only one of
+these functions that is called from elsewhere is eval_expr, whose interface is:
 
 Arguments:
-  sptr          pointer to the pointer to the string - gets updated
-  decimal       TRUE if numbers are to be assumed decimal
-  error         pointer to where to put an error message - must be NULL on input
-  endket        TRUE if ')' must terminate - FALSE for external call
+  sptr        pointer to the pointer to the string - gets updated
+  decimal     TRUE if numbers are to be assumed decimal
+  error       pointer to where to put an error message - must be NULL on input
+  endket      TRUE if ')' must terminate - FALSE for external call
 
-
-Returns:        on success: the value of the expression, with *error still NULL
-                on failure: an undefined value, with *error = a message
+Returns:      on success: the value of the expression, with *error still NULL
+              on failure: an undefined value, with *error = a message
 */
 
-static int eval_sumterm(uschar **, BOOL, uschar **);
+static int eval_op_or(uschar **, BOOL, uschar **);
+
 
 static int
 eval_expr(uschar **sptr, BOOL decimal, uschar **error, BOOL endket)
 {
 uschar *s = *sptr;
-int x = eval_sumterm(&s, decimal, error);
+int x = eval_op_or(&s, decimal, error);
 if (*error == NULL)
   {
-  while (*s == '+' || *s == '-')
+  if (endket)
     {
-    int op = *s++;
-    int y = eval_sumterm(&s, decimal, error);
-    if (*error != NULL) break;
-    if (op == '+') x += y; else x -= y;
+    if (*s != ')')
+      *error = US"expecting closing parenthesis";
+    else
+      while (isspace(*(++s)));
     }
-  if (*error == NULL)
-    {
-    if (endket)
-      {
-      if (*s != ')')
-        *error = US"expecting closing parenthesis";
-      else
-        while (isspace(*(++s)));
-      }
-    else if (*s != 0) *error = US"expecting + or -";
-    }
+  else if (*s != 0) *error = US"expecting operator";
   }
-
 *sptr = s;
 return x;
 }
 
+
 static int
-eval_term(uschar **sptr, BOOL decimal, uschar **error)
+eval_number(uschar **sptr, BOOL decimal, uschar **error)
 {
 register int c;
 int n;
 uschar *s = *sptr;
 while (isspace(*s)) s++;
 c = *s;
-if (isdigit(c) || ((c == '-' || c == '+') && isdigit(s[1])))
+if (isdigit(c))
   {
   int count;
   (void)sscanf(CS s, (decimal? "%d%n" : "%i%n"), &n, &count);
@@ -2798,16 +2788,38 @@ else
 return n;
 }
 
-static int eval_sumterm(uschar **sptr, BOOL decimal, uschar **error)
+
+static int eval_op_unary(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int x = eval_term(&s, decimal, error);
+int x;
+while (isspace(*s)) s++;
+if (*s == '+' || *s == '-' || *s == '~')
+  {
+  int op = *s++;
+  x = eval_op_unary(&s, decimal, error);
+  if (op == '-') x = -x;
+    else if (op == '~') x = ~x;
+  }
+else
+  {
+  x = eval_number(&s, decimal, error);
+  }
+*sptr = s;
+return x;
+}
+
+
+static int eval_op_mult(uschar **sptr, BOOL decimal, uschar **error)
+{
+uschar *s = *sptr;
+int x = eval_op_unary(&s, decimal, error);
 if (*error == NULL)
   {
   while (*s == '*' || *s == '/' || *s == '%')
     {
     int op = *s++;
-    int y = eval_term(&s, decimal, error);
+    int y = eval_op_unary(&s, decimal, error);
     if (*error != NULL) break;
     if (op == '*') x *= y;
       else if (op == '/') x /= y;
@@ -2818,6 +2830,105 @@ if (*error == NULL)
 return x;
 }
 
+
+static int eval_op_sum(uschar **sptr, BOOL decimal, uschar **error)
+{
+uschar *s = *sptr;
+int x = eval_op_mult(&s, decimal, error);
+if (*error == NULL)
+  {
+  while (*s == '+' || *s == '-')
+    {
+    int op = *s++;
+    int y = eval_op_mult(&s, decimal, error);
+    if (*error != NULL) break;
+    if (op == '+') x += y; else x -= y;
+    }
+  }
+*sptr = s;
+return x;
+}
+
+
+static int eval_op_shift(uschar **sptr, BOOL decimal, uschar **error)
+{
+uschar *s = *sptr;
+int x = eval_op_sum(&s, decimal, error);
+if (*error == NULL)
+  {
+  while ((*s == '<' || *s == '>') && s[1] == s[0])
+    {
+    int y;
+    int op = *s++;
+    s++;
+    y = eval_op_sum(&s, decimal, error);
+    if (*error != NULL) break;
+    if (op == '<') x <<= y; else x >>= y;
+    }
+  }
+*sptr = s;
+return x;
+}
+
+
+static int eval_op_and(uschar **sptr, BOOL decimal, uschar **error)
+{
+uschar *s = *sptr;
+int x = eval_op_shift(&s, decimal, error);
+if (*error == NULL)
+  {
+  while (*s == '&')
+    {
+    int y;
+    s++;
+    y = eval_op_shift(&s, decimal, error);
+    if (*error != NULL) break;
+    x &= y;
+    }
+  }
+*sptr = s;
+return x;
+}
+
+
+static int eval_op_xor(uschar **sptr, BOOL decimal, uschar **error)
+{
+uschar *s = *sptr;
+int x = eval_op_and(&s, decimal, error);
+if (*error == NULL)
+  {
+  while (*s == '^')
+    {
+    int y;
+    s++;
+    y = eval_op_and(&s, decimal, error);
+    if (*error != NULL) break;
+    x ^= y;
+    }
+  }
+*sptr = s;
+return x;
+}
+
+
+static int eval_op_or(uschar **sptr, BOOL decimal, uschar **error)
+{
+uschar *s = *sptr;
+int x = eval_op_xor(&s, decimal, error);
+if (*error == NULL)
+  {
+  while (*s == '|')
+    {
+    int y;
+    s++;
+    y = eval_op_xor(&s, decimal, error);
+    if (*error != NULL) break;
+    x |= y;
+    }
+  }
+*sptr = s;
+return x;
+}
 
 
 

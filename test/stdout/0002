@@ -48,15 +48,29 @@
 > eval:   1
 > eval:   1
 > Failed: error in expression evaluation: expecting closing parenthesis (after processing "-2 - (-3")
-> Failed: error in expression evaluation: expecting + or - (after processing "-2 - -3")
+> Failed: error in expression evaluation: expecting operator (after processing "-2 - -3")
 > eval:   1
 > eval:   -5
-> Failed: error in expression evaluation: expecting number or opening parenthesis (after processing "-2 -")
+> eval:   1
 > eval:   40962
 > eval:   63
-> Failed: error in expression evaluation: expecting + or - (after processing "0")
+> Failed: error in expression evaluation: expecting operator (after processing "0")
 > eval10: 77
 > eval10: 8
+> Failed: error in expression evaluation: expecting operator (after processing "0")
+> eval:   4
+> eval:   4
+> eval:   4
+> eval:   13
+> eval:   9
+> eval:   6
+> eval:   3
+> eval:   0
+> eval:   24
+> eval:   4608
+> eval:   4608
+> eval:   -4608
+> 
 > expand: $primary_hostname myhost.test.ex
 > hash:   jmg monty fbWx
 > hash:   abcX abX aX X
