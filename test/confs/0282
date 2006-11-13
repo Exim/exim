@@ -33,6 +33,7 @@ local_delivery:
   driver = appendfile
   file = DIR/test-mail/$local_part
   user = CALLER
-  headers_add = interface-port: $interface_port
+  headers_add = interface-port: $interface_port\n\
+                received-port:  $received_port
 
 # End

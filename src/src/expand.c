@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.69 2006/11/13 11:26:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.70 2006/11/13 12:07:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -436,6 +436,8 @@ static var_entry var_table[] = {
   { "rcpt_fail_count",     vtype_int,         &rcpt_fail_count },
   { "received_count",      vtype_int,         &received_count },
   { "received_for",        vtype_stringptr,   &received_for },
+  { "received_ip_address", vtype_stringptr,   &interface_address },
+  { "received_port",       vtype_int,         &interface_port },
   { "received_protocol",   vtype_stringptr,   &received_protocol },
   { "received_time",       vtype_int,         &received_time },
   { "recipient_data",      vtype_stringptr,   &recipient_data },

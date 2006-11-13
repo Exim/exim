@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.121 2006/11/13 11:26:37 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.122 2006/11/13 12:07:46 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -191,6 +191,11 @@ Version 4.64
       ${eval:0xc<<1}         yields 24
       ${eval:~255&0x1234}    yields 4608
       ${eval:-(~255&0x1234)} yields -4608
+
+11. The variables $interface_address and $interface_port have been renamed
+    as $received_ip_address and $received_port, to make it clear that they
+    relate to message reception rather than delivery. (The old names remain
+    available for compatibility.)
 
 
 Version 4.63

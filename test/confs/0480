@@ -18,13 +18,13 @@ gecos_name = CALLER_NAME
 
 acl_smtp_rcpt = accept
 
-smtp_active_hostname = ${if eq{$interface_address}{IP1}\
+smtp_active_hostname = ${if eq{$received_ip_address}{IP1}\
                        {host.IP1}\
                        {\
-                       ${if eq{$interface_address}{IP2}\
+                       ${if eq{$received_ip_address}{IP2}\
                          {}\
                          {\
-                         ${if eq{$interface_address}{IP3}\
+                         ${if eq{$received_ip_address}{IP3}\
                            {${lookup{x}lsearch{/non/exist}}}\
                            fail}\
                          }}\

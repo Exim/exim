@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.431 2006/11/13 11:56:41 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.432 2006/11/13 12:07:46 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -265,6 +265,11 @@ PH/40 Import PCRE release 6.7 (fixes some bugs).
 PH/41 Add bitwise logical operations to eval (courtesy Brad Jorsch).
 
 PH/42 Give an error if -q is specified more than once.
+
+PH/43 Renamed the variables $interface_address and $interface_port as
+      $received_ip_address and $received_port, to make it clear that these
+      values apply to message reception, and not to the outgoing interface when
+      a message is delivered. (The old names remain recognized, of course.)
 
 
 Exim version 4.63
