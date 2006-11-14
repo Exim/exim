@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.63 2006/11/13 11:26:37 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.64 2006/11/14 16:40:36 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  13 November 2006
+Last updated:  14 November 2006
 
 
 THE OLD LIST
@@ -174,6 +174,7 @@ John Jetmore              Writing and maintaining the 'exipick' utility
 Bob Johannessen           Patch for Sieve envelope tests bug
                           Patch for negative uid/gid bug
 Brad Jorsch               Patch for bitwise logical operators
+                          Patch for using "message" on acceptance
 Christian Kellner         Patch for LDAP dereferencing
 Alex Kiernan              Patches for libradius
                           Diagnosis of milliwait clock-backwards bug

@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.18 2006/11/07 15:11:34 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.19 2006/11/14 16:40:36 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -1514,7 +1514,7 @@ if (/^server\s+(.*)$/)
   # This gives the server time to get started; otherwise the next
   # process may not find it there when it expects it.
 
-  select(undef, undef, undef, 0.05);
+  select(undef, undef, undef, 0.5);
   return 3;
   }
 

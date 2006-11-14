@@ -1,0 +1,19 @@
+# User messages for "accept" verbs
+need_ipv4
+#
+exim -bs
+ehlo a.b.c
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+This is a test
+.
+quit
+****
+exim -bs -DHELO_MSG='Two\nlines' -DRCPT_MSG='450 Bad number'
+ehlo a.b.c
+mail from:<>
+rcpt to:<userx@test.ex>
+quit
+****
+no_msglog_check

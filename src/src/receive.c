@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.30 2006/10/10 15:36:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.31 2006/11/14 16:40:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1042,18 +1042,21 @@ memset(CS rfc822_file_path,0,2048);
 
 /* check if it is a MIME message */
 my_headerlist = header_list;
-while (my_headerlist != NULL) {
+while (my_headerlist != NULL)
+  {
   /* skip deleted headers */
-  if (my_headerlist->type == '*') {
+  if (my_headerlist->type == '*')
+    {
     my_headerlist = my_headerlist->next;
     continue;
-  };
-  if (strncmpic(my_headerlist->text, US"Content-Type:", 13) == 0) {
+    }
+  if (strncmpic(my_headerlist->text, US"Content-Type:", 13) == 0)
+    {
     DEBUG(D_receive) debug_printf("Found Content-Type: header - executing acl_smtp_mime.\n");
     goto DO_MIME_ACL;
-  };
+    }
   my_headerlist = my_headerlist->next;
-};
+  }
 
 DEBUG(D_receive) debug_printf("No Content-Type: header - presumably not a MIME message.\n");
 return TRUE;
@@ -1080,18 +1083,21 @@ mime_part_count = -1;
 rc = mime_acl_check(acl, mbox_file, NULL, &user_msg, &log_msg);
 (void)fclose(mbox_file);
 
-if (Ustrlen(rfc822_file_path) > 0) {
+if (Ustrlen(rfc822_file_path) > 0)
+  {
   mime_part_count = mime_part_count_buffer;
 
-  if (unlink(CS rfc822_file_path) == -1) {
+  if (unlink(CS rfc822_file_path) == -1)
+    {
     log_write(0, LOG_PANIC,
          "acl_smtp_mime: can't unlink RFC822 spool file, skipping.");
       goto END_MIME_ACL;
-  };
-};
+    }
+  }
 
 /* check if we must check any message/rfc822 attachments */
-if (rc == OK) {
+if (rc == OK)
+  {
   uschar temp_path[1024];
   int n;
   struct dirent *entry;
@@ -1100,33 +1106,37 @@ if (rc == OK) {
   (void)string_format(temp_path, 1024, "%s/scan/%s", spool_directory,
     message_id);
 
- tempdir = opendir(CS temp_path);
- n = 0;
- do {
-   entry = readdir(tempdir);
-   if (entry == NULL) break;
-    if (strncmpic(US entry->d_name,US"__rfc822_",9) == 0) {
+  tempdir = opendir(CS temp_path);
+  n = 0;
+  do
+    {
+    entry = readdir(tempdir);
+    if (entry == NULL) break;
+    if (strncmpic(US entry->d_name,US"__rfc822_",9) == 0)
+      {
       (void)string_format(rfc822_file_path, 2048,"%s/scan/%s/%s", spool_directory, message_id, entry->d_name);
-     debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n", rfc822_file_path);
-     break;
-    };
- } while (1);
- closedir(tempdir);
+      debug_printf("RFC822 attachment detected: running MIME ACL for '%s'\n", rfc822_file_path);
+      break;
+      }
+    } while (1);
+  closedir(tempdir);
 
-  if (entry != NULL) {
+  if (entry != NULL)
+    {
     mbox_file = Ufopen(rfc822_file_path,"rb");
-    if (mbox_file == NULL) {
+    if (mbox_file == NULL)
+      {
       log_write(0, LOG_PANIC,
          "acl_smtp_mime: can't open RFC822 spool file, skipping.");
       unlink(CS rfc822_file_path);
       goto END_MIME_ACL;
-    };
+      }
     /* set RFC822 expansion variable */
     mime_is_rfc822 = 1;
     mime_part_count_buffer = mime_part_count;
     goto MIME_ACL_CHECK;
-  };
-};
+    }
+  }
 
 END_MIME_ACL:
 add_acl_headers(US"MIME");
@@ -1144,7 +1154,7 @@ else if (rc != OK)
   *smtp_reply_ptr = US"";       /* Indicate reply already sent */
   message_id[0] = 0;            /* Indicate no message accepted */
   return FALSE;                 /* Cause skip to end of receive function */
-  };
+  }
 
 return TRUE;
 }
@@ -1276,9 +1286,10 @@ uschar *queued_by = NULL;
 uschar *errmsg, *s;
 struct stat statbuf;
 
-/* Final message to give to SMTP caller */
+/* Final message to give to SMTP caller, and messages from ACLs */
 
 uschar *smtp_reply = NULL;
+uschar *user_msg, *log_msg;
 
 /* Working header pointers */
 
@@ -2902,6 +2913,7 @@ $message_body_end can be extracted if needed. Allow $recipients in expansions.
 */
 
 deliver_datafile = data_fd;
+user_msg = NULL;
 
 if (recipients_count == 0)
   {
@@ -2931,7 +2943,6 @@ else
 
     if (acl_smtp_data != NULL && recipients_count > 0)
       {
-      uschar *user_msg, *log_msg;
       rc = acl_check(ACL_WHERE_DATA, NULL, acl_smtp_data, &user_msg, &log_msg);
       add_acl_headers(US"DATA");
       if (rc == DISCARD)
@@ -3491,12 +3502,28 @@ if (smtp_input)
       if (fake_response != OK)
         smtp_respond((fake_response == DEFER)? US"450" : US"550", 3, TRUE,
           fake_response_text);
+
+      /* An OK response is required; use "message" text if present. */
+
+      else if (user_msg != NULL)
+        {
+        uschar *code = US"250";
+        int len = 3;
+        smtp_message_code(&code, &len, &user_msg, NULL);
+        smtp_respond(code, len, TRUE, user_msg);
+        }
+
+      /* Default OK response */
+
       else
         smtp_printf("250 OK id=%s\r\n", message_id);
       if (host_checking)
         fprintf(stdout,
           "\n**** SMTP testing: that is not a real message id!\n\n");
       }
+
+    /* smtp_reply was previously set */
+
     else if (smtp_reply[0] != 0)
       {
       if (fake_response != OK && (smtp_reply[0] == '2'))

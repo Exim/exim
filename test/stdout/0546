@@ -1,0 +1,20 @@
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-One line
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+299-MAIL is
+299 OK
+250 RCPT is OK
+300 Funny, but OK code
+288 I like the data
+221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-Two
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+299-MAIL is
+299 OK
+250 Bad number
+221 the.local.host.name closing connection

@@ -1,0 +1,2 @@
+1999-03-02 09:44:33 EHLO/HELO response must not contain newlines: message truncated: 250 Two\nlines
+1999-03-02 09:44:33 configured error code starts with incorrect digit (expected 2) in "450 Bad number"

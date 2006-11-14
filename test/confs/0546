@@ -1,0 +1,46 @@
+# Exim test configuration 0546
+
+HELO_MSG=One line
+RCPT_MSG=RCPT is OK
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_helo = check_helo
+acl_smtp_mail = check_mail
+acl_smtp_rcpt = check_rcpt
+acl_smtp_data = check_data
+acl_smtp_predata = check_predata
+
+qualify_domain = test.ex
+queue_only
+
+
+# ----- ACLs -----
+
+begin acl
+
+check_helo:
+  accept     message = HELO_MSG
+
+check_mail:
+  accept     message = 299 MAIL is\nOK
+
+check_rcpt:
+  accept     message = RCPT_MSG
+
+check_data:
+  accept     message = 288 I like the data
+
+check_predata:
+  accept     message = 300 Funny, but OK code
+
+
+# End

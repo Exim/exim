@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.122 2006/11/13 12:07:46 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.123 2006/11/14 16:40:36 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -196,6 +196,51 @@ Version 4.64
     as $received_ip_address and $received_port, to make it clear that they
     relate to message reception rather than delivery. (The old names remain
     available for compatibility.)
+
+12. The "message" modifier can now be used on acl verbs to vary the message
+    that is sent when an SMTP command. For example, in a RCPT ACL you could
+    have:
+
+      accept  <some conditions>
+              message = OK, I'll allow you through today
+
+    Previously, this message modifier would have had no effect whatsoever.
+
+    IMPORTANT: The new behaviour applies to "accept" (and "discard") only if
+    there is no occurrence of "endpass" in the statement. If "endpass" is
+    present, the behaviour reverts to the old case, where "message" applies to
+    rejection. This is for backwards compatibility.
+
+    It is always possible to rewrite ACL statements so that "endpass" is not
+    needed (and indeed it is no longer used in the default configuration, and
+    is somewhat not recommended nowadays because it causes confusion.)
+
+    It is now generally true that the "message" modifier sets up a text string
+    that is expanded and used as a response message if the current statement
+    terminates the ACL. The expansion happens at the time Exim decides that the
+    ACL is to end, not at the time it processes "message". If the expansion
+    fails, or generates an empty string, the modifier is ignored.
+
+    For ACLs that are triggered by SMTP commands, the message is returned as
+    part of the SMTP response. In this situation, the message may begin with an
+    overriding SMTP response code, optionally followed by an "extended response
+    code". However, the first digit of the supplied response code must be the
+    same as would be sent by default. A panic occurs if it is not. For the
+    predata ACL, note that the default success code is 354, not 2xx.
+
+    However, notwithstanding the previous paragraph, for the QUIT ACL, unlike
+    the others, the message modifier cannot override the 221 response code.
+
+    In the case of the "connect" ACL, accepting with a message modifier
+    overrides the value of smtp_banner.
+
+    The ACL test specified by acl_smtp_helo happens when the client issues the
+    HELO or EHLO commands, after the tests specified by helo_accept_junk_hosts,
+    helo_allow_chars and helo(_try)_verify_hosts. An acceptance message
+    modifier for EHLO/HELO may not contain more than one line (it will be
+    truncated at the first newline and a panic logged), and it cannot affect
+    the EHLO options.
+
 
 
 Version 4.63

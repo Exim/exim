@@ -203,7 +203,7 @@ acl_56_56_56:
   accept
 
 acl_56_56_57:
-  accept  message = denied by condition
+  accept  message = accepted by condition
           condition = ${substr_5:$local_part}
 
 acl_56_56_58:

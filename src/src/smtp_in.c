@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.46 2006/10/23 10:55:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.47 2006/11/14 16:40:36 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -874,7 +874,7 @@ if (message_body_end != NULL)
 
 /* Warning log messages are also saved in malloc store. They are saved to avoid
 repetition in the same message, but it seems right to repeat them for different
-messagess. */
+messages. */
 
 while (acl_warn_logged != NULL)
   {
@@ -1141,7 +1141,9 @@ BOOL
 smtp_start_session(void)
 {
 int size = 256;
-int ptr;
+int ptr, esclen;
+uschar *user_msg, *log_msg;
+uschar *code, *esc;
 uschar *p, *s, *ss;
 
 /* Default values for certain variables */
@@ -1571,10 +1573,10 @@ if (smtp_batched_input) return TRUE;
 
 /* Run the ACL if it exists */
 
+user_msg = NULL;
 if (acl_smtp_connect != NULL)
   {
   int rc;
-  uschar *user_msg, *log_msg;
   rc = acl_check(ACL_WHERE_CONNECT, NULL, acl_smtp_connect, &user_msg,
     &log_msg);
   if (rc != OK)
@@ -1587,10 +1589,28 @@ if (acl_smtp_connect != NULL)
 /* Output the initial message for a two-way SMTP connection. It may contain
 newlines, which then cause a multi-line response to be given. */
 
-s = expand_string(smtp_banner);
-if (s == NULL)
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" (smtp_banner) "
-    "failed: %s", smtp_banner, expand_string_message);
+code = US"220";   /* Default status code */
+esc = US"";       /* Default extended status code */
+esclen = 0;       /* Length of esc */
+
+if (user_msg == NULL)
+  {
+  s = expand_string(smtp_banner);
+  if (s == NULL)
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" (smtp_banner) "
+      "failed: %s", smtp_banner, expand_string_message);
+  }
+else
+  {
+  int codelen = 3;
+  s = user_msg;
+  smtp_message_code(&code, &codelen, &s, NULL);
+  if (codelen > 3)
+    {
+    esc = code + 4;
+    esclen = codelen - 4;
+    }
+  }
 
 /* Remove any terminating newlines; might as well remove trailing space too */
 
@@ -1615,16 +1635,18 @@ do       /* At least once, in case we have an empty string */
   {
   int len;
   uschar *linebreak = Ustrchr(p, '\n');
+  ss = string_cat(ss, &size, &ptr, code, 3);
   if (linebreak == NULL)
     {
     len = Ustrlen(p);
-    ss = string_cat(ss, &size, &ptr, US"220 ", 4);
+    ss = string_cat(ss, &size, &ptr, US" ", 1);
     }
   else
     {
     len = linebreak - p;
-    ss = string_cat(ss, &size, &ptr, US"220-", 4);
+    ss = string_cat(ss, &size, &ptr, US"-", 1);
     }
+  ss = string_cat(ss, &size, &ptr, esc, esclen);
   ss = string_cat(ss, &size, &ptr, p, len);
   ss = string_cat(ss, &size, &ptr, US"\r\n", 2);
   p += len;
@@ -1771,7 +1793,7 @@ output nothing for non-final calls, and only the first line for anything else.
 
 Arguments:
   code          SMTP code, may involve extended status codes
-  codelen       length of smtp code; uf > 3 there's an ESC
+  codelen       length of smtp code; if > 3 there's an ESC
   final         FALSE if the last line isn't the final line
   msg           message text, possibly containing newlines
 
@@ -1819,6 +1841,62 @@ for (;;)
 
 
 /*************************************************
+*            Parse user SMTP message             *
+*************************************************/
+
+/* This function allows for user messages overriding the response code details
+by providing a suitable response code string at the start of the message
+user_msg. Check the message for starting with a response code and optionally an
+extended status code. If found, check that the first digit is valid, and if so,
+change the code pointer and length to use the replacement. An invalid code
+causes a panic log; in this case, if the log messages is the same as the user
+message, we must also adjust the value of the log message to show the code that
+is actually going to be used (the original one).
+
+This function is global because it is called from receive.c as well as within
+this module.
+
+Arguments:
+  code          SMTP code, may involve extended status codes
+  codelen       length of smtp code; if > 3 there's an ESC
+  msg           message text
+  log_msg       optional log message, to be adjusted with the new SMTP code
+
+Returns:        nothing
+*/
+
+void
+smtp_message_code(uschar **code, int *codelen, uschar **msg, uschar **log_msg)
+{
+int n;
+int ovector[3];
+
+if (msg == NULL || *msg == NULL) return;
+
+n = pcre_exec(regex_smtp_code, NULL, CS *msg, Ustrlen(*msg), 0,
+  PCRE_EOPT, ovector, sizeof(ovector)/sizeof(int));
+if (n < 0) return;
+
+if ((*msg)[0] != (*code)[0])
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "configured error code starts with "
+    "incorrect digit (expected %c) in \"%s\"", (*code)[0], *msg);
+  if (log_msg != NULL && *log_msg == *msg)
+    *log_msg = string_sprintf("%s %s", *code, *log_msg + ovector[1]);
+  }
+else
+  {
+  *code = *msg;
+  *codelen = ovector[1];    /* Includes final space */
+  }
+*msg += ovector[1];         /* Chop the code off the message */
+return;
+}
+
+
+
+
+/*************************************************
 *           Handle an ACL failure                *
 *************************************************/
 
@@ -1858,7 +1936,6 @@ smtp_handle_acl_fail(int where, int rc, uschar *user_msg, uschar *log_msg)
 {
 BOOL drop = rc == FAIL_DROP;
 int codelen = 3;
-int ovector[3];
 uschar *smtp_code;
 uschar *lognl;
 uschar *sender_info = US"";
@@ -1874,40 +1951,10 @@ uschar *what =
 
 if (drop) rc = FAIL;
 
-/* Set the default SMTP code */
+/* Set the default SMTP code, and allow a user message to change it. */
 
 smtp_code = (rc != FAIL)? US"451" : acl_wherecodes[where];
-
-/* Check a user message for starting with a response code and optionally an
-extended status code. If found, check that the first digit is valid, and if so,
-use it instead of the default code. */
-
-if (user_msg != NULL)
-  {
-  int n = pcre_exec(regex_smtp_code, NULL, CS user_msg, Ustrlen(user_msg), 0,
-    PCRE_EOPT, ovector, sizeof(ovector)/sizeof(int));
-  if (n >= 0)
-    {
-    if (user_msg[0] != smtp_code[0])
-      {
-      log_write(0, LOG_MAIN|LOG_PANIC, "configured error code starts with "
-        "incorrect digit (expected %c) in \"%s\"", smtp_code[0], user_msg);
-
-      /* If log_msg == user_msg (the default set in acl.c if no log message is
-      specified, we must adjust the log message to show the code that is
-      actually going to be used. */
-
-      if (log_msg == user_msg)
-        log_msg = string_sprintf("%s %s", smtp_code, log_msg + ovector[1]);
-      }
-    else
-      {
-      smtp_code = user_msg;
-      codelen = ovector[1];    /* Includes final space */
-      }
-    user_msg += ovector[1];    /* Chop the code off the message */
-    }
-  }
+smtp_message_code(&smtp_code, &codelen, &user_msg, &log_msg);
 
 /* We used to have sender_address here; however, there was a bug that was not
 updating sender_address after a rewrite during a verify. When this bug was
@@ -2157,6 +2204,33 @@ return yield;
 
 
 /*************************************************
+*        Send user response message              *
+*************************************************/
+
+/* This function is passed a default response code and a user message. It calls
+smtp_message_code() to check and possibly modify the response code, and then
+calls smtp_respond() to transmit the response. I put this into a function
+just to avoid a lot of repetition.
+
+Arguments:
+  code         the response code
+  user_msg     the user message
+
+Returns:       nothing
+*/
+
+static void
+smtp_user_msg(uschar *code, uschar *user_msg)
+{
+int len = 3;
+smtp_message_code(&code, &len, &user_msg, NULL);
+smtp_respond(code, len, TRUE, user_msg);
+}
+
+
+
+
+/*************************************************
 *       Initialize for SMTP incoming message     *
 *************************************************/
 
@@ -2226,7 +2300,8 @@ while (done <= 0)
   uschar *etrn_command;
   uschar *etrn_serialize_key;
   uschar *errmess;
-  uschar *user_msg, *log_msg;
+  uschar *log_msg, *smtp_code;
+  uschar *user_msg = NULL;
   uschar *recipient = NULL;
   uschar *hello = NULL;
   uschar *set_id = NULL;
@@ -2563,26 +2638,11 @@ while (done <= 0)
         }
       }
 
-    /* The EHLO/HELO command is acceptable. Reset the protocol and the state,
-    abandoning any previous message. */
-
-    received_protocol = (esmtp?
-      protocols[pextend +
-        ((sender_host_authenticated != NULL)? pauthed : 0) +
-        ((tls_active >= 0)? pcrpted : 0)]
-      :
-      protocols[pnormal + ((tls_active >= 0)? pcrpted : 0)])
-      +
-      ((sender_host_address != NULL)? pnlocal : 0);
-
-    smtp_reset(reset_point);
-    toomany = FALSE;
-
-    /* Generate an OK reply, including the ident if present, and also
-    the IP address if present. Reflecting back the ident is intended
-    as a deterrent to mail forgers. For maximum efficiency, and also
-    because some broken systems expect each response to be in a single
-    packet, arrange that it is sent in one write(). */
+    /* Generate an OK reply. The default string includes the ident if present,
+    and also the IP address if present. Reflecting back the ident is intended
+    as a deterrent to mail forgers. For maximum efficiency, and also because
+    some broken systems expect each response to be in a single packet, arrange
+    that the entire reply is sent in one write(). */
 
     auth_advertised = FALSE;
     pipelining_advertised = FALSE;
@@ -2590,21 +2650,44 @@ while (done <= 0)
     tls_advertised = FALSE;
     #endif
 
-    s = string_sprintf("250 %s Hello %s%s%s",
-      smtp_active_hostname,
-      (sender_ident == NULL)?  US"" : sender_ident,
-      (sender_ident == NULL)?  US"" : US" at ",
-      (sender_host_name == NULL)? sender_helo_name : sender_host_name);
-
-    ptr = Ustrlen(s);
-    size = ptr + 1;
-
-    if (sender_host_address != NULL)
+    smtp_code = US"250";        /* Default response code */
+    if (user_msg == NULL)
       {
-      s = string_cat(s, &size, &ptr, US" [", 2);
-      s = string_cat(s, &size, &ptr, sender_host_address,
-        Ustrlen(sender_host_address));
-      s = string_cat(s, &size, &ptr, US"]", 1);
+      s = string_sprintf("%.3s %s Hello %s%s%s",
+        smtp_code,
+        smtp_active_hostname,
+        (sender_ident == NULL)?  US"" : sender_ident,
+        (sender_ident == NULL)?  US"" : US" at ",
+        (sender_host_name == NULL)? sender_helo_name : sender_host_name);
+
+      ptr = Ustrlen(s);
+      size = ptr + 1;
+
+      if (sender_host_address != NULL)
+        {
+        s = string_cat(s, &size, &ptr, US" [", 2);
+        s = string_cat(s, &size, &ptr, sender_host_address,
+          Ustrlen(sender_host_address));
+        s = string_cat(s, &size, &ptr, US"]", 1);
+        }
+      }
+
+    /* A user-supplied EHLO greeting may not contain more than one line */
+
+    else
+      {
+      char *ss;
+      int codelen = 3;
+      smtp_message_code(&smtp_code, &codelen, &user_msg, NULL);
+      s = string_sprintf("%.*s %s", codelen, smtp_code, user_msg);
+      if ((ss = strpbrk(CS s, "\r\n")) != NULL)
+        {
+        log_write(0, LOG_MAIN|LOG_PANIC, "EHLO/HELO response must not contain "
+          "newlines: message truncated: %s", string_printing(s));
+        *ss = 0;
+        }
+      ptr = Ustrlen(s);
+      size = ptr + 1;
       }
 
     s = string_cat(s, &size, &ptr, US"\r\n", 2);
@@ -2624,12 +2707,14 @@ while (done <= 0)
 
       if (thismessage_size_limit > 0)
         {
-        sprintf(CS big_buffer, "250-SIZE %d\r\n", thismessage_size_limit);
+        sprintf(CS big_buffer, "%.3s-SIZE %d\r\n", smtp_code,
+          thismessage_size_limit);
         s = string_cat(s, &size, &ptr, big_buffer, Ustrlen(big_buffer));
         }
       else
         {
-        s = string_cat(s, &size, &ptr, US"250-SIZE\r\n", 10);
+        s = string_cat(s, &size, &ptr, smtp_code, 3);
+        s = string_cat(s, &size, &ptr, US"-SIZE\r\n", 7);
         }
 
       /* Exim does not do protocol conversion or data conversion. It is 8-bit
@@ -2640,14 +2725,18 @@ while (done <= 0)
       provided as an option. */
 
       if (accept_8bitmime)
-        s = string_cat(s, &size, &ptr, US"250-8BITMIME\r\n", 14);
+        {
+        s = string_cat(s, &size, &ptr, smtp_code, 3);
+        s = string_cat(s, &size, &ptr, US"-8BITMIME\r\n", 11);
+        }
 
       /* Advertise ETRN if there's an ACL checking whether a host is
       permitted to issue it; a check is made when any host actually tries. */
 
       if (acl_smtp_etrn != NULL)
         {
-        s = string_cat(s, &size, &ptr, US"250-ETRN\r\n", 10);
+        s = string_cat(s, &size, &ptr, smtp_code, 3);
+        s = string_cat(s, &size, &ptr, US"-ETRN\r\n", 7);
         }
 
       /* Advertise EXPN if there's an ACL checking whether a host is
@@ -2655,7 +2744,8 @@ while (done <= 0)
 
       if (acl_smtp_expn != NULL)
         {
-        s = string_cat(s, &size, &ptr, US"250-EXPN\r\n", 10);
+        s = string_cat(s, &size, &ptr, smtp_code, 3);
+        s = string_cat(s, &size, &ptr, US"-EXPN\r\n", 7);
         }
 
       /* Exim is quite happy with pipelining, so let the other end know that
@@ -2663,7 +2753,8 @@ while (done <= 0)
 
       if (verify_check_host(&pipelining_advertise_hosts) == OK)
         {
-        s = string_cat(s, &size, &ptr, US"250-PIPELINING\r\n", 16);
+        s = string_cat(s, &size, &ptr, smtp_code, 3);
+        s = string_cat(s, &size, &ptr, US"-PIPELINING\r\n", 13);
         sync_cmd_limit = NON_SYNC_CMD_PIPELINING;
         pipelining_advertised = TRUE;
         }
@@ -2693,7 +2784,8 @@ while (done <= 0)
               int saveptr;
               if (first)
                 {
-                s = string_cat(s, &size, &ptr, US"250-AUTH", 8);
+                s = string_cat(s, &size, &ptr, smtp_code, 3);
+                s = string_cat(s, &size, &ptr, US"-AUTH", 5);
                 first = FALSE;
                 auth_advertised = TRUE;
                 }
@@ -2719,14 +2811,16 @@ while (done <= 0)
       if (tls_active < 0 &&
           verify_check_host(&tls_advertise_hosts) != FAIL)
         {
-        s = string_cat(s, &size, &ptr, US"250-STARTTLS\r\n", 14);
+        s = string_cat(s, &size, &ptr, smtp_code, 3);
+        s = string_cat(s, &size, &ptr, US"-STARTTLS\r\n", 11);
         tls_advertised = TRUE;
         }
       #endif
 
       /* Finish off the multiline reply with one that is always available. */
 
-      s = string_cat(s, &size, &ptr, US"250 HELP\r\n", 10);
+      s = string_cat(s, &size, &ptr, smtp_code, 3);
+      s = string_cat(s, &size, &ptr, US" HELP\r\n", 7);
       }
 
     /* Terminate the string (for debug), write it, and note that HELO/EHLO
@@ -2747,6 +2841,20 @@ while (done <= 0)
       debug_printf("SMTP>> %s", s);
       }
     helo_seen = TRUE;
+
+    /* Reset the protocol and the state, abandoning any previous message. */
+
+    received_protocol = (esmtp?
+      protocols[pextend +
+        ((sender_host_authenticated != NULL)? pauthed : 0) +
+        ((tls_active >= 0)? pcrpted : 0)]
+      :
+      protocols[pnormal + ((tls_active >= 0)? pcrpted : 0)])
+      +
+      ((sender_host_address != NULL)? pnlocal : 0);
+
+    smtp_reset(reset_point);
+    toomany = FALSE;
     break;   /* HELO/EHLO */
 
 
@@ -3024,12 +3132,12 @@ while (done <= 0)
 
     if (rc == OK || rc == DISCARD)
       {
-      smtp_printf("250 OK\r\n");
+      if (user_msg == NULL) smtp_printf("250 OK\r\n");
+        else smtp_user_msg(US"250", user_msg);
       smtp_delay_rcpt = smtp_rlr_base;
       recipients_discarded = (rc == DISCARD);
       was_rej_mail = FALSE;
       }
-
     else
       {
       done = smtp_handle_acl_fail(ACL_WHERE_MAIL, rc, user_msg, log_msg);
@@ -3184,7 +3292,8 @@ while (done <= 0)
 
     if (rc == OK)
       {
-      smtp_printf("250 Accepted\r\n");
+      if (user_msg == NULL) smtp_printf("250 Accepted\r\n");
+        else smtp_user_msg(US"250", user_msg);
       receive_add_recipient(recipient, -1);
       }
 
@@ -3192,7 +3301,8 @@ while (done <= 0)
 
     else if (rc == DISCARD)
       {
-      smtp_printf("250 Accepted\r\n");
+      if (user_msg == NULL) smtp_printf("250 Accepted\r\n");
+        else smtp_user_msg(US"250", user_msg);
       rcpt_fail_count++;
       discarded = TRUE;
       log_write(0, LOG_MAIN|LOG_REJECT, "%s F=<%s> rejected RCPT %s: "
@@ -3259,7 +3369,9 @@ while (done <= 0)
 
     if (rc == OK)
       {
-      smtp_printf("354 Enter message, ending with \".\" on a line by itself\r\n");
+      if (user_msg == NULL)
+        smtp_printf("354 Enter message, ending with \".\" on a line by itself\r\n");
+      else smtp_user_msg(US"354", user_msg);
       done = 3;
       message_ended = END_NOTENDED;   /* Indicate in middle of data */
       }
@@ -3461,12 +3573,11 @@ while (done <= 0)
         log_write(0, LOG_MAIN|LOG_PANIC, "ACL for QUIT returned ERROR: %s",
           log_msg);
       }
-    else user_msg = NULL;
 
     if (user_msg == NULL)
       smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
     else
-      smtp_printf("221 %s\r\n", user_msg);
+      smtp_respond(US"221", 3, TRUE, user_msg);
 
     #ifdef SUPPORT_TLS
     tls_close(TRUE);
@@ -3606,7 +3717,8 @@ while (done <= 0)
         debug_printf("ETRN command is: %s\n", etrn_command);
         debug_printf("ETRN command execution skipped\n");
         }
-      smtp_printf("250 OK\r\n");
+      if (user_msg == NULL) smtp_printf("250 OK\r\n");
+        else smtp_user_msg(US"250", user_msg);
       break;
       }
 
@@ -3682,7 +3794,11 @@ while (done <= 0)
       smtp_printf("458 Unable to fork process\r\n");
       if (smtp_etrn_serialize) enq_end(etrn_serialize_key);
       }
-    else smtp_printf("250 OK\r\n");
+    else
+      {
+      if (user_msg == NULL) smtp_printf("250 OK\r\n");
+        else smtp_user_msg(US"250", user_msg);
+      }
 
     signal(SIGCHLD, oldsignal);
     break;
