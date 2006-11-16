@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.434 2006/11/14 16:40:36 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.435 2006/11/16 16:21:58 steve Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -276,6 +276,38 @@ PH/44 There was no timeout on the connect() call when using a Unix domain
 
 PH/45 Applied a modified version of Brad Jorsch's patch to allow "message" to
       be meaningful with "accept".
+
+SC/01 Eximstats V1.43
+     Bug fix for V1.42 with -h0 specified. Spotted by Chris Lear.
+
+SC/02 Eximstats V1.44
+      Use a glob alias rather than an array ref in the generated
+      parser. This improves both readability and performance.
+
+SC/03 Eximstats V1.45 (Marco Gaiarin / Steve Campbell)
+      Collect SpamAssassin and rejection statistics.
+      Don't display local sender or destination tables unless
+      there is data to show.
+      Added average volumes into the top table text output.
+
+SC/04 Eximstats V1.46
+      Collect data on the number of addresses (recipients)
+      as well as the number of messages.
+
+SC/05 Eximstats V1.47
+      Added 'Message too big' to the list of mail rejection
+      reasons (thanks to Marco Gaiarin).
+
+SC/06 Eximstats V1.48
+      Mainlog lines which have GMT offsets and are too short to
+      have a flag are now skipped.
+
+SC/07 Eximstats V1.49 (Alain Williams)
+      Added the -emptyok flag.
+
+SC/08 Eximstats V1.50
+      Fixes for obtaining the IP address from reject messages.
+
 
 
 Exim version 4.63
