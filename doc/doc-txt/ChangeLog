@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.435 2006/11/16 16:21:58 steve Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.436 2006/11/17 22:27:41 jetmore Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -307,6 +307,21 @@ SC/07 Eximstats V1.49 (Alain Williams)
 
 SC/08 Eximstats V1.50
       Fixes for obtaining the IP address from reject messages.
+
+JJ/03 exipick.20061117.2, made header handling as similar to exim as possible
+      (added [br]h_ prefixes, implemented RFC2047 decoding.  Fixed
+      whitesspace changes from 4.64-PH/27
+
+JJ/04 exipick.20061117.2, fixed format and added $message_headers_raw to
+      match 4.64-PH/13
+
+JJ/05 exipick.20061117.2, bug fixes (error out sooner when invalid criteria
+      are found, allow negative numbers in numeric criteria)
+
+JJ/06 exipick.20061117.2, added new $message_body_missing variable
+
+JJ/07 exipick.20061117.2, added $received_ip_address and $received_port
+      to match changes made in 4.64-PH/43
 
 
 

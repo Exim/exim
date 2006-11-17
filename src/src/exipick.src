@@ -1,8 +1,10 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.13 2006/09/19 20:01:13 jetmore Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.14 2006/11/17 22:27:41 jetmore Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
+# Need to set this dynamically during build, but it's not used right now anyway.
+my $charset = 'ISO-8859-1';
 
 # use 'exipick --help' to view documentation for this program.
 # Documentation also viewable online at
@@ -12,7 +14,7 @@ use strict;
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
-my $p_version = "20060919.0";
+my $p_version = "20061117.2";
 my $p_usage   = "Usage: $p_name [--help|--version] (see --help for details)";
 my $p_cp      = <<EOM;
         Copyright (c) 2003-2006 John Jetmore <jj33\@pobox.com>
@@ -69,7 +71,9 @@ GetOptions(
   'flatq'       => \$G::flatq,      # brief format
   'caseful'     => \$G::caseful,    # in '=' criteria, respect case
   'caseless'    => \$G::caseless,   #   ...ignore case (default)
+  'charset=s'   => \$charset,       # charset for $bh and $h variables
   'show-vars=s' => \$G::show_vars,  # display the contents of these vars
+  'just-vars'   => \$G::just_vars,  # only display vars, no other info
   'show-rules'  => \$G::show_rules, # display compiled match rules
   'show-tests'  => \$G::show_tests  # display tests as applied to each message
 ) || exit(1);
@@ -125,6 +129,7 @@ $e->output_long()                if ($G::qgrep_l);
 $e->output_idonly()              if ($G::qgrep_i);
 $e->output_brief()               if ($G::qgrep_b);
 $e->output_flatq()               if ($G::flatq);
+$e->output_vars_only()           if ($G::just_vars && $G::show_vars);
 $e->set_show_vars($G::show_vars) if ($G::show_vars);
 $e->set_spool($spool);
 
@@ -326,20 +331,19 @@ sub process_criteria {
     if (/^(.*?)\s+(<=|>=|==|!=|<|>)\s+(.*)$/) {
       #print STDERR "found as integer\n";
       my $v = $1; my $o = $2; my $n = $3;
-      if    ($n =~ /^([\d\.]+)M$/)  { $n = $1 * 1024 * 1024; }
-      elsif ($n =~ /^([\d\.]+)K$/)  { $n = $1 * 1024; }
-      elsif ($n =~ /^([\d\.]+)B?$/) { $n = $1; }
-      elsif ($n =~ /^([\d\.]+)d$/)  { $n = $1 * 60 * 60 * 24; }
-      elsif ($n =~ /^([\d\.]+)h$/)  { $n = $1 * 60 * 60; }
-      elsif ($n =~ /^([\d\.]+)m$/)  { $n = $1 * 60; }
-      elsif ($n =~ /^([\d\.]+)s?$/) { $n = $1; }
+      if    ($n =~ /^(-?[\d\.]+)M$/)  { $n = $1 * 1024 * 1024; }
+      elsif ($n =~ /^(-?[\d\.]+)K$/)  { $n = $1 * 1024; }
+      elsif ($n =~ /^(-?[\d\.]+)B?$/) { $n = $1; }
+      elsif ($n =~ /^(-?[\d\.]+)d$/)  { $n = $1 * 60 * 60 * 24; }
+      elsif ($n =~ /^(-?[\d\.]+)h$/)  { $n = $1 * 60 * 60; }
+      elsif ($n =~ /^(-?[\d\.]+)m$/)  { $n = $1 * 60; }
+      elsif ($n =~ /^(-?[\d\.]+)s?$/) { $n = $1; }
       else {
         print STDERR "Expression $_ did not parse: numeric comparison with ",
                      "non-number\n";
         $e = 1;
         next;
       }
-      #push(@c, { var => lc($v), cmp => "(\$var $o $n) ? 1 : 0" });
       push(@c, { var => lc($v), cmp => "(\$var $o $n)" });
     } elsif (/^(.*?)\s+(=~|!~)\s+(.*)$/) {
       #print STDERR "found as string regexp\n";
@@ -366,6 +370,7 @@ sub process_criteria {
     } else {
       print STDERR "Expression $_ did not parse\n";
       $e = 1;
+      next;
     }
     # assign the results of the cmp test here (handle "!" negation)
     # also handle global --not negation
@@ -447,6 +452,7 @@ sub new {
   $self->{_output_idonly}    = 0;
   $self->{_output_brief}     = 0;
   $self->{_output_flatq}     = 0;
+  $self->{_output_vars_only} = 0;
   $self->{_show_vars}        = [];
 
   $self->_reset();
@@ -460,6 +466,7 @@ sub output_long {
   $self->{_output_idonly}    = 0;
   $self->{_output_brief}     = 0;
   $self->{_output_flatq}     = 0;
+  $self->{_output_vars_only} = 0;
 }
 
 sub output_idonly {
@@ -469,6 +476,7 @@ sub output_idonly {
   $self->{_output_idonly}    = 1;
   $self->{_output_brief}     = 0;
   $self->{_output_flatq}     = 0;
+  $self->{_output_vars_only} = 0;
 }
 
 sub output_brief {
@@ -478,6 +486,7 @@ sub output_brief {
   $self->{_output_idonly}    = 0;
   $self->{_output_brief}     = 1;
   $self->{_output_flatq}     = 0;
+  $self->{_output_vars_only} = 0;
 }
 
 sub output_flatq {
@@ -487,6 +496,17 @@ sub output_flatq {
   $self->{_output_idonly}    = 0;
   $self->{_output_brief}     = 0;
   $self->{_output_flatq}     = 1;
+  $self->{_output_vars_only} = 0;
+}
+
+sub output_vars_only {
+  my $self = shift;
+
+  $self->{_output_long}      = 0;
+  $self->{_output_idonly}    = 0;
+  $self->{_output_brief}     = 0;
+  $self->{_output_flatq}     = 0;
+  $self->{_output_vars_only} = 1;
 }
 
 sub set_show_vars {
@@ -527,6 +547,7 @@ sub _reset {
   $self->{_message}     = '';
   $self->{_path}        = '';
   $self->{_vars}        = {};
+  $self->{_vars_raw}    = {};
 
   $self->{_numrecips}   = 0;
   $self->{_udel_tree}   = {};
@@ -643,21 +664,154 @@ sub get_matching_vars {
 # accepts a variable with or without leading '$' or trailing ':'
 sub get_var {
   my $self = shift;
-  my $var  = lc(shift);
+  my $var  = lc(shift); $var =~ s/^\$//; $var =~ s/:$//;
 
-  $var =~ s/^\$//;
-  $var =~ s/:$//;
+  if ($var eq 'message_body' && !defined($self->{_vars}{message_body})) {
+    $self->_parse_body()
+  } elsif ($var =~ s|^([rb]?h)(eader)?_|${1}eader_| &&
+           exists($self->{_vars}{$var}) && !defined($self->{_vars}{$var}))
+  {
+    if ((my $type = $1) eq 'rh') {
+      $self->{_vars}{$var} = join('', @{$self->{_vars_raw}{$var}{vals}});
+    } else {
+      # both bh_ and h_ build their strings from rh_.  Do common work here
+      my $rh = $var; $rh =~ s|^b?|r|;
+      my $comma = 1 if ($self->{_vars_raw}{$rh}{type} =~ /^[BCFRST]$/);
+      foreach (@{$self->{_vars_raw}{$rh}{vals}}) {
+        my $x = $_; # editing $_ here would change the original, which is bad
+        $x =~ s|^\s+||;
+        $x =~ s|\s+$||;
+        if ($comma) { chomp($x); $self->{_vars}{$var} .= "$x,\n"; }
+        else        { $self->{_vars}{$var} .= $x; }
+      }
+      $self->{_vars}{$var} =~ s|[\s\n]*$||;
+      $self->{_vars}{$var} =~ s|,$|| if ($comma);
+      # ok, that's the preprocessing, not do specific processing for h type
+      if ($type eq 'bh') {
+        $self->{_vars}{$var} = $self->_decode_2047($self->{_vars}{$var});
+      } else {
+        $self->{_vars}{$var} =
+            $self->_decode_2047($self->{_vars}{$var}, $charset);
+      }
+    }
+  }
+  elsif ($var eq 'received_count' && !defined($self->{_vars}{received_count}))
+  {
+    $self->{_vars}{received_count} =
+        scalar(@{$self->{_vars_raw}{rheader_received}{vals}});
+  }
+  elsif ($var eq 'message_headers' && !defined($self->{_vars}{message_headers}))
+  {
+    $self->{_vars}{$var} =
+        $self->_decode_2047($self->{_vars}{message_headers_raw}, $charset);
+    chomp($self->{_vars}{$var});
+  }
+  elsif ($var eq 'reply_address' && !defined($self->{_vars}{reply_address}))
+  {
+    $self->{_vars}{reply_address} = exists($self->{_vars}{"header_reply-to"})
+        ? $self->get_var("header_reply-to") : $self->get_var("header_from");
+  }
 
-  $self->_parse_body()
-      if ($var eq 'message_body' && !$self->{_vars}{message_body});
-
-  chomp($self->{_vars}{$var});
+  #chomp($self->{_vars}{$var}); # I think this was only for headers, obsolete
   return $self->{_vars}{$var};
+}
+
+sub _decode_2047 {
+  my $self = shift;
+  my $s    = shift; # string to decode
+  my $c    = shift; # target charset.  If empty, just decode, don't convert
+  my $t    = '';    # the translated string
+  my $e    = 0;     # set to true if we get an error in here anywhere
+
+  return($s) if ($s !~ /=\?/); # don't even bother to look if there's no sign
+
+  my @p = ();
+  foreach my $mw (split(/(=\?[^\?]{3,}\?[BQ]\?[^\?]{1,74}\?=)/i, $s)) {
+    next if ($mw eq '');
+    if ($mw =~ /=\?([^\?]{3,})\?([BQ])\?([^\?]{1,74})\?=/i) {
+      push(@p, { data => $3, encoding => uc($2), charset => uc($1),
+                 is_mime => 1 });
+      if ($p[-1]{encoding} eq 'Q') {
+        my @ow = split('', $p[-1]{data});
+        my @nw = ();
+        for (my $i = 0; $i < @ow; $i++) {
+          if ($ow[$i] eq '_') { push(@nw, ' '); }
+          elsif ($ow[$i] eq '=') {
+            if (scalar(@ow) - ($i+1) < 2) {  # ran out of characters
+              $e = 1; last;
+            } elsif ($ow[$i+1] !~ /[\dA-F]/i || $ow[$i+2] !~ /[\dA-F]/i) {
+              $e = 1; last;
+            } else {
+              #push(@nw, chr('0x'.$ow[$i+1].$ow[$i+2]));
+              push(@nw, pack("C", hex($ow[$i+1].$ow[$i+2])));
+              $i += 2;
+            }
+          }
+          elsif ($ow[$i] =~ /\s/) { # whitspace is illegal
+            $e = 1;
+            last;
+          }
+          else { push(@nw, $ow[$i]); }
+        }
+        $p[-1]{data} = join('', @nw);
+      } elsif ($p[-1]{encoding} eq 'B') {
+        my $x = $p[-1]{data};
+        $x    =~ tr#A-Za-z0-9+/##cd;
+        $x    =~ s|=+$||;
+        $x    =~ tr#A-Za-z0-9+/# -_#;
+        my $r = '';
+        while ($x =~ s/(.{1,60})//s) {
+          $r .= unpack("u", chr(32 + int(length($1)*3/4)) . $1);
+        }
+        $p[-1]{data} = $r;
+      }
+    } else {
+      push(@p, { data => $mw, is_mime => 0,
+                 is_ws => ($mw =~ m|^[\s\n]+|sm) ? 1 : 0 });
+    }
+  }
+
+  for (my $i = 0; $i < @p; $i++) {
+    # mark entities we want to skip (whitespace between consecutive mimewords)
+    if ($p[$i]{is_mime} && $p[$i+1]{is_ws} && $p[$i+2]{is_mime}) {
+      $p[$i+1]{skip} = 1;
+    }
+
+    # if word is a mimeword and we have access to Encode and charset was
+    # specified, try to convert text
+    # XXX _cannot_ get consistent conversion results in perl, can't get them
+    # to return same conversions that exim performs.  Until I can figure this
+    # out, don't attempt any conversions (header_ will return same value as
+    # bheader_).
+    #if ($c && $p[$i]{is_mime} && $self->_try_load('Encode')) {
+    #  # XXX not sure how to catch errors here
+    #  Encode::from_to($p[$i]{data}, $p[$i]{charset}, $c);
+    #}
+
+    # replace binary zeros w/ '?' in decoded text
+    if ($p[$i]{is_mime}) { $p[$i]{data} =~ s|\x00|?|g; }
+  }
+
+  if ($e) {
+    return($s);
+  } else {
+    return(join('', map { $_->{data} } grep { !$_->{skip} } @p));
+  }
+}
+
+# This isn't a class func but I'm tired
+sub _try_load {
+  my $self = shift;
+  my $mod  = shift;
+
+  eval("use $mod");
+  return $@ ? 0 : 1;
 }
 
 sub _parse_body {
   my $self = shift;
   my $f    = $self->{_path} . '/' . $self->{_message} . '-D';
+  $self->{_vars}{message_body} = ""; # define var so we only come here once
 
   open(I, "<$f") || return($self->_error("Couldn't open $f: $!"));
   chomp($_ = <I>);
@@ -679,6 +833,14 @@ sub _parse_header {
     $self->{_delivered} = 1;
     return(1);
   }
+
+  # There are a few numeric variables that should explicitly be set to
+  # zero if they aren't found in the header.  Technically an empty value
+  # works just as well, but might as well be pedantic
+  $self->{_vars}{body_zerocount}           = 0;
+  $self->{_vars}{host_lookup_deferred}     = 0;
+  $self->{_vars}{host_lookup_failed}       = 0;
+  $self->{_vars}{tls_certificate_verified} = 0;
 
   chomp($_ = <I>);
   return(0) if ($self->{_message}.'-H' ne $_);
@@ -783,8 +945,10 @@ sub _parse_header {
         $self->{_vars}{sender_host_port} = $self->_get_host_and_port(\$arg);
         $self->{_vars}{sender_host_address} = $arg;
       } elsif ($tag eq '-interface_address') {
-        $self->{_vars}{interface_port} = $self->_get_host_and_port(\$arg);
-        $self->{_vars}{interface_address} = $arg;
+        $self->{_vars}{received_port} =
+            $self->{_vars}{interface_port} = $self->_get_host_and_port(\$arg);
+        $self->{_vars}{received_ip_address} =
+            $self->{_vars}{interface_address} = $arg;
       } elsif ($tag eq '-active_hostname') {
         $self->{_vars}{smtp_active_hostname} = $arg;
       } elsif ($tag eq '-host_auth') {
@@ -872,38 +1036,31 @@ sub _parse_header {
       $_ .= $t;
       $t  = getc(I);
     }
-    # ok, right here $t contains the header flag and $_ contains the number of
-    # bytes to read.  If we ever use the header flag, grab it here.
-    $self->{_vars}{message_size} += $_ if ($t ne '*');
-    $t = getc(I); # strip the space out of the file
-    my $bytes = $_;
-    return(0) if (read(I, $_, $bytes) != $bytes);
-    $self->{_vars}{message_linecount} += (tr/\n//) if ($t ne '*');
+    my $hdr_flag  = $t;
+    my $hdr_bytes = $_;
+    $t            = getc(I);              # strip the space out of the file
+    return(0) if (read(I, $_, $hdr_bytes) != $hdr_bytes);
+    if ($hdr_flag ne '*') {
+      $self->{_vars}{message_linecount} += (tr/\n//);
+      $self->{_vars}{message_size}      += $hdr_bytes;
+    }
 
-    # build the $header_ variable, following exim's rules (sort of)
+    # mark (rb)?header_ vars as existing and store raw value.  They'll be
+    # processed further in get_var() if needed
     my($v,$d) = split(/:/, $_, 2);
     $v = "header_" . lc($v);
-    $d =~ s/^\s+//;
-    $d =~ s/\s+$//;
-    $self->{_vars}{$v} .= "$d\n";
-    $self->{_vars}{received_count}++ if ($v eq 'header_received');
-    # push header onto $message_headers var, following exim's rules
-    $self->{_vars}{message_headers} .= $_;
+    $self->{_vars}{$v} = $self->{_vars}{"b$v"} = $self->{_vars}{"r$v"} = undef;
+    push(@{$self->{_vars_raw}{"r$v"}{vals}}, $d);
+    $self->{_vars_raw}{"r$v"}{type} = $hdr_flag;
+    $self->{_vars}{message_headers_raw} .= $_;
   }
   close(I);
-  # remove trailing newline from $message_headers
-  chomp($self->{_vars}{message_headers});
-
-  if (length($self->{_vars}{"header_reply-to"}) > 0) {
-    $self->{_vars}{reply_address} = $self->{_vars}{"header_reply-to"};
-  } else {
-    $self->{_vars}{reply_address} = $self->{_vars}{header_from};
-  }
 
   $self->{_vars}{message_body_size} =
       (stat($self->{_path}.'/'.$self->{_message}.'-D'))[7] - 19;
   if ($self->{_vars}{message_body_size} < 0) {
     $self->{_vars}{message_size} = 0;
+    $self->{_vars}{message_body_missing} = 1;
   } else {
     $self->{_vars}{message_size} += $self->{_vars}{message_body_size} + 1;
   }
@@ -965,10 +1122,11 @@ sub format_message {
 
   if ($self->{_output_idonly}) {
     $o .= $self->{_message};
-    foreach my $v (@vars) {
-      $o .= " $v='" . $self->get_var($v) . "'";
-    }
+    foreach my $v (@vars) { $o .= " $v='" . $self->get_var($v) . "'"; }
     $o .= "\n";
+    return $o;
+  } elsif ($self->{_output_vars_only}) {
+    foreach my $v (@vars) { $o .= $self->get_var($v) . "\n"; }
     return $o;
   }
 
@@ -1119,7 +1277,7 @@ Show the count and total size of all messages which either originated from local
 
 Display all messages received on the MSA port, ordered first by the sender's email domain and then by the size of the emails:
     exipick --sort sender_address_domain,message_size \
-            '$interface_port == 587'
+            '$received_port == 587'
 
 Display only messages whose every recipient is in the example.com domain, also listing the IP address of the sending host:
     exipick --show-vars sender_host_address \
@@ -1176,6 +1334,10 @@ Show a count of matching messages (exiqgrep)
 =item --caseful
 
 Make operators involving '=' honor case
+
+=item --charset
+
+Override the default local character set for $header_ decoding
 
 =item -f <regexp>
 
@@ -1357,6 +1519,10 @@ Optional saved information from authenticators, or the login name of the calling
 
 The value of AUTH= param for smtp messages, or a generated value from the calling processes login and qualify domain for locally submitted messages.
 
+=item S . $bheader_*, $bh_*
+
+Value of the header(s) with the same name with any RFC2047 words decoded if present.  See section 11.5 of Exim's spec.txt for full details.
+
 =item S + $bmi_verdicts
 
 The verdict string provided by a Brightmail content scan
@@ -1397,9 +1563,9 @@ Like $each_recipients, but for $recipients_undel
 
 TRUE if the message has never been deferred.
 
-=item S # $header_*
+=item S . $header_*, $h_*
 
-The value of the same named message header.  These variables are really closer to Exim's rheader_* variables, with the exception that leading and trailing space is removed.
+This will always match the contents of the corresponding $bheader_* variable currently (the same behaviour Exim displays when iconv is not installed).
 
 =item B . $host_lookup_deferred
 
@@ -1408,14 +1574,6 @@ TRUE if there was an attempt to look up the host's name from its IP address, but
 =item B . $host_lookup_failed
 
 TRUE if there was an attempt to look up the host's name from its IP address, but the attempt returned a negative result.
-
-=item S . $interface_address
-
-The address of the local IP interface for network-originated messages.
-
-=item N . $interface_port
-
-The local port number if network-originated messages.
 
 =item B + $local_error_message
 
@@ -1437,6 +1595,10 @@ The number of seconds since the message was received.
 
 The message's body.  Unlike Exim's variable of the same name, this variable contains the entire message body.  Newlines and nulls are replaced by spaces.
 
+=item B + $message_body_missing
+
+TRUE is a message's spool data file (-D file) is missing or unreadable.
+
 =item N . $message_body_size
 
 The size of the body in bytes.
@@ -1447,7 +1609,11 @@ The unique message id that is used by Exim to identify the message.  $message_id
 
 =item S . $message_headers
 
-A concatenation of all the header lines except for lines added by routers or transports.
+A concatenation of all the header lines except for lines added by routers or transports.  RFC2047 decoding is performed
+
+=item S . $message_headers_raw
+
+A concatenation of all the header lines except for lines added by routers or transports.  No decoding or translation is performed.
 
 =item N . $message_linecount
 
@@ -1468,6 +1634,14 @@ The login of the process which called Exim.
 =item N . $originator_uid
 
 The user id under which the process that called Exim was running as when the message was received.
+
+=item S . $received_ip_address, $interface_address
+
+The address of the local IP interface for network-originated messages.  $interface_address is deprecated as of Exim 4.64
+
+=item N . $received_port, $interface_port
+
+The local port number if network-originated messages.  $interface_port is deprecated as of Exim 4.64
 
 =item N . $received_count
 
@@ -1508,6 +1682,10 @@ The number of envelope recipients for the message which have not yet been delive
 =item S . $reply_address
 
 The contents of the Reply-To: header line if one exists and it is not empty, or otherwise the contents of the From: header line.
+
+=item S . $rheader_*, $rh_*
+
+The value of the message's header(s) with the same name.  See section 11.5 of Exim's spec.txt for full description.
 
 =item S . $sender_address
 
