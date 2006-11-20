@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.49 2006/11/13 11:56:41 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.50 2006/11/20 11:43:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1498,7 +1498,8 @@ regex_ismsgid =
   regex_must_compile(US"^(?:[^\\W_]{6}-){2}[^\\W_]{2}$", FALSE, TRUE);
 
 /* Precompile the regular expression that is used for matching an SMTP error
-code, possibly extended, at the start of an error message. */
+code, possibly extended, at the start of an error message. Note that the
+terminating whitespace character is included. */
 
 regex_smtp_code =
   regex_must_compile(US"^\\d\\d\\d\\s(?:\\d\\.\\d\\d?\\d?\\.\\d\\d?\\d?\\s)?",

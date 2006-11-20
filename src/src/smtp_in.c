@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.47 2006/11/14 16:40:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.48 2006/11/20 11:43:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1605,7 +1605,7 @@ else
   int codelen = 3;
   s = user_msg;
   smtp_message_code(&code, &codelen, &s, NULL);
-  if (codelen > 3)
+  if (codelen > 4)
     {
     esc = code + 4;
     esclen = codelen - 4;
@@ -1793,7 +1793,7 @@ output nothing for non-final calls, and only the first line for anything else.
 
 Arguments:
   code          SMTP code, may involve extended status codes
-  codelen       length of smtp code; if > 3 there's an ESC
+  codelen       length of smtp code; if > 4 there's an ESC
   final         FALSE if the last line isn't the final line
   msg           message text, possibly containing newlines
 
@@ -1808,7 +1808,7 @@ uschar *esc = US"";
 
 if (!final && no_multiline_responses) return;
 
-if (codelen > 3)
+if (codelen > 4)
   {
   esc = code + 4;
   esclen = codelen - 4;
@@ -1856,9 +1856,12 @@ is actually going to be used (the original one).
 This function is global because it is called from receive.c as well as within
 this module.
 
+Note that the code length returned includes the terminating whitespace
+character, which is always included in the regex match.
+
 Arguments:
   code          SMTP code, may involve extended status codes
-  codelen       length of smtp code; if > 3 there's an ESC
+  codelen       length of smtp code; if > 4 there's an ESC
   msg           message text
   log_msg       optional log message, to be adjusted with the new SMTP code
 
@@ -2650,7 +2653,7 @@ while (done <= 0)
     tls_advertised = FALSE;
     #endif
 
-    smtp_code = US"250";        /* Default response code */
+    smtp_code = US"250 ";        /* Default response code plus space*/
     if (user_msg == NULL)
       {
       s = string_sprintf("%.3s %s Hello %s%s%s",
@@ -2672,14 +2675,16 @@ while (done <= 0)
         }
       }
 
-    /* A user-supplied EHLO greeting may not contain more than one line */
+    /* A user-supplied EHLO greeting may not contain more than one line. Note
+    that the code returned by smtp_message_code() includes the terminating
+    whitespace character. */
 
     else
       {
       char *ss;
-      int codelen = 3;
+      int codelen = 4;
       smtp_message_code(&smtp_code, &codelen, &user_msg, NULL);
-      s = string_sprintf("%.*s %s", codelen, smtp_code, user_msg);
+      s = string_sprintf("%.*s%s", codelen, smtp_code, user_msg);
       if ((ss = strpbrk(CS s, "\r\n")) != NULL)
         {
         log_write(0, LOG_MAIN|LOG_PANIC, "EHLO/HELO response must not contain "

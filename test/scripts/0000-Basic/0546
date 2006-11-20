@@ -16,4 +16,8 @@ mail from:<>
 rcpt to:<userx@test.ex>
 quit
 ****
+exim -bs -DHELO_MSG='299 With code'
+ehlo a.b.c
+quit
+****
 no_msglog_check

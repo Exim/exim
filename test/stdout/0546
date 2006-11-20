@@ -18,3 +18,9 @@
 299 OK
 250 Bad number
 221 the.local.host.name closing connection
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+299-With code
+299-SIZE 52428800
+299-PIPELINING
+299 HELP
+221 the.local.host.name closing connection

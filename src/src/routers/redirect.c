@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.17 2006/07/13 13:53:33 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.18 2006/11/20 11:43:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -736,8 +736,8 @@ switch (frc)
     int ovector[3];
     if (ob->forbid_smtp_code &&
         pcre_exec(regex_smtp_code, NULL, CS addr->message,
-        Ustrlen(addr->message), 0, PCRE_EOPT,
-        ovector, sizeof(ovector)/sizeof(int)) >= 0)
+          Ustrlen(addr->message), 0, PCRE_EOPT,
+          ovector, sizeof(ovector)/sizeof(int)) >= 0)
       {
       DEBUG(D_route) debug_printf("SMTP code at start of error message "
         "is ignored because forbid_smtp_code is set\n");
