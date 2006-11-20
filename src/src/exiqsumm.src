@@ -1,5 +1,5 @@
 #! PERL_COMMAND -w
-# $Cambridge: exim/src/src/exiqsumm.src,v 1.1 2004/10/07 10:39:01 ph10 Exp $
+# $Cambridge: exim/src/src/exiqsumm.src,v 1.2 2006/11/20 11:57:57 ph10 Exp $
 
 # Mail Queue Summary
 # Christoph Lameter, 21 May 1997
@@ -26,11 +26,19 @@
 #   message ID ends in 'D'! Before Exim 4.14 this didn't
 #   matter because they never did. Looks like an original
 #   typo. Fix provided by Chris Liddiard.
+# November 2006 by Jori Hamalainen
+#   Added feature to separate frozen and bounced messages from queue
+#   Adedd feature to list queue per source - destination pair
+#   Changed regexps to compile once to very minor speed optimization
+#   Short circuit for empty lines
 #
-# Usage: mailq | exiqsumm [-a] [-c]
+# Usage: mailq | exiqsumm [-a] [-b] [-c] [-f] [-s]
 #   Default sorting is by domain name
 #   -a sorts by age of oldest message
+#   -b enables bounce message separation
 #   -c sorts by count of message
+#   -f enables frozen message separation
+#   -s enables source destination separation
 
 # Slightly modified sub from eximstats
 
@@ -52,7 +60,7 @@ else
 
 sub s_conv {
   my($x) = @_;
-  my($v,$s) = $x =~ /([\d\.]+)([A-Z]|)/;
+  my($v,$s) = $x =~ /([\d\.]+)([A-Z]|)/o;
   if ($s eq "K") { return $v * 1024 };
   if ($s eq "M") { return $v * 1024 * 1024 };
   return $v;
@@ -60,8 +68,8 @@ sub s_conv {
 
 sub older {
   my($x1,$x2) = @_;
-  my($v1,$s1) = $x1 =~ /(\d+)(\w)/;
-  my($v2,$s2) = $x2 =~ /(\d+)(\w)/;
+  my($v1,$s1) = $x1 =~ /(\d+)(\w)/o;
+  my($v2,$s2) = $x2 =~ /(\d+)(\w)/o;
   return $v1 <=> $v2 if ($s1 eq $s2);
   return (($s2 eq "m") ||
           ($s2 eq "h" && $s1 eq "d") ||
@@ -84,29 +92,41 @@ while (@ARGV > 0 && substr($ARGV[0], 0, 1) eq "-")
   {
   if ($ARGV[0] eq "-a") { $sort_by_age = 1; }
   if ($ARGV[0] eq "-c") { $sort_by_count = 1; }
+  if ($ARGV[0] eq "-f") { $enable_frozen = 1; }
+  if ($ARGV[0] eq "-b") { $enable_bounces = 1; }
+  if ($ARGV[0] eq "-s") { $enable_source = 1; }
   shift @ARGV;
   }
 
 while (<>)
 {
-# Skip already delivered lines
+# Skip empty and already delivered lines
 
-if (/^\s*D\s\S+/) { next; }
+if (/^$/o || /^\s*D\s\S+/o) { next; }
 
 # If it's the first line of a message, pick out the data. Note: it may
 # have text after the final > (e.g. frozen) so don't insist that it ends >.
 
-if (/^([\d\s]{2,3}\w)\s+(\S+)\s(\S+)\s\<(\S*)\>/)
+if (/^([\d\s]{2,3}\w)\s+(\S+)\s(\S+)\s\<(\S*)\>/o)
   {
-  ($age,$size,$id)=($1,$2,$3);
+  ($age,$size,$id,$src)=($1,$2,$3,$4);
+  $src =~ s/([^\@]*)\@(.*?)$/$2/o;
+  if (/\*\*\*\sfrozen\s\*\*\*/o) { $frozen=1; } else { $frozen=0; }
+  if ($src eq "") { $bounce=1; $src="<>"; } else { $bounce=0; }
   }
 
 # Else check for a recipient line: to handle source-routed addresses, just
 # pick off the first domain.
 
-elsif (/^\s+[^@]*\@([\w\.\-]+|\[(\d+\.){3}\d+\])/)
+elsif (/^\s+[^@]*\@([\w\.\-]+|\[(\d+\.){3}\d+\])/o)
   {
-  $domain = "\L$1";
+  if ($enable_source) {
+      $domain = "\L$src > $1";
+  } else {
+      $domain = "\L$1";
+  }
+  $domain .= " (b)" if ($bounce && $enable_bounces);
+  $domain .= " (f)" if ($frozen && $enable_frozen);
   $queue{$domain}++;
   $q_oldest{$domain} = $age
     if (!defined $q_oldest{$domain} || &older($age,$q_oldest{$domain}) > 0);

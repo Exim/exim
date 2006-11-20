@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.436 2006/11/17 22:27:41 jetmore Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.437 2006/11/20 11:57:56 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -322,6 +322,8 @@ JJ/06 exipick.20061117.2, added new $message_body_missing variable
 
 JJ/07 exipick.20061117.2, added $received_ip_address and $received_port
       to match changes made in 4.64-PH/43
+
+PH/46 Applied Jori Hamalainen's patch to add features to exiqsumm.
 
 
 
