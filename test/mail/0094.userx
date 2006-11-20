@@ -21,7 +21,7 @@ host_lookup_deferred: 1
 This is a test message
 
 From userx@test.ex Tue Mar 02 09:44:33 1999
-Received: from x.test.again.dns ([V4NET.99.99.96] ident=root)
+Received: from [V4NET.99.99.96] (ident=root)
 	by the.local.host.name with smtp (Exim x.yz)
 	(envelope-from <userx@test.ex>)
 	id 10HmaZ-0005vi-00

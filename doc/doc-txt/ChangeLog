@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.438 2006/11/20 13:53:44 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.439 2006/11/20 14:29:31 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -330,7 +330,9 @@ PH/47 Put in an explicit test for a DNS lookup of an address record where the
       those revolvers/nameservers that support "A-for-A" lookups, in
       contravention of the specifications.
 
-
+PH/48 When a host name was looked up from an IP address, and the subsequent
+      forward lookup of the name timed out, the host name was left in
+      $sender_host_name, contrary to the specification.
 
 
 Exim version 4.63

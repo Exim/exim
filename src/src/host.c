@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.26 2006/10/09 14:36:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.27 2006/11/20 14:29:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1792,6 +1792,7 @@ for (hname = sender_host_name; hname != NULL; hname = *aliases++)
     {
     HDEBUG(D_host_lookup) debug_printf("temporary error for host name lookup\n");
     host_lookup_deferred = TRUE;
+    sender_host_name = NULL;
     return DEFER;
     }
   else
