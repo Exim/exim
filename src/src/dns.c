@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.15 2006/11/07 14:13:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.16 2006/11/20 13:53:44 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -453,6 +453,7 @@ Arguments:
 Returns:    DNS_SUCCEED   successful lookup
             DNS_NOMATCH   name not found (NXDOMAIN)
                           or name contains illegal characters (if checking)
+                          or name is an IP address (for IP address lookup)
             DNS_NODATA    domain exists, but no data for this type (NODATA)
             DNS_AGAIN     soft failure, try again later
             DNS_FAIL      DNS failure
@@ -539,7 +540,20 @@ if (check_dns_names_pattern[0] != 0 && type != T_PTR)
 number of bytes the message would need, so we need to check for this case. The
 effect is to truncate overlong data.
 
-If we are running in the test harness, instead of calling the normal resolver
+On some systems, res_search() will recognize "A-for-A" queries and return
+the IP address instead of returning -1 with h_error=HOST_NOT_FOUND. Some
+nameservers are also believed to do this. It is, of course, contrary to the
+specification of the DNS, so we lock it out. */
+
+if ((
+    #ifdef SUPPORT_A6
+    type == T_A6 ||
+    #endif
+    type == T_A || type == T_AAAA) &&
+    string_is_ip_address(name, NULL) != 0)
+  return DNS_NOMATCH;
+
+/* If we are running in the test harness, instead of calling the normal resolver
 (res_search), we call fakens_search(), which recognizes certain special
 domains, and interfaces to a fake nameserver for certain special zones. */
 
