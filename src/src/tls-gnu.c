@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.14 2006/10/16 13:20:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.15 2006/12/04 15:15:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -22,7 +22,7 @@ functions from the GnuTLS library. */
 
 
 #define UNKNOWN_NAME "unknown"
-#define DH_BITS      768
+#define DH_BITS      1024
 #define PARAM_SIZE 2*1024
 
 
