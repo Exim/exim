@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/search.c,v 1.3 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/search.c,v 1.4 2006/12/04 15:00:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -184,17 +184,25 @@ else if (len >= 1 && ss[len-1]  == '*')
   }
 
 /* Check for the individual search type. Only those that are actually in the
-binary are valid. For query-style types, "partial" is an error. */
+binary are valid. For query-style types, "partial" and default types are
+erroneous. */
 
 stype = search_findtype(ss, len);
-if (pv >= 0 && mac_islookup(stype, lookup_querystyle))
+if (stype >= 0 && mac_islookup(stype, lookup_querystyle))
   {
-  search_error_message = string_sprintf("\"partial\" is not permitted "
-    "for lookup type \"%s\"", ss);
-  return -1;
+  if (pv >= 0)
+    {
+    search_error_message = string_sprintf("\"partial\" is not permitted "
+      "for lookup type \"%s\"", ss);
+    return -1;
+    }
+  if ((*starflags & (SEARCH_STAR|SEARCH_STARAT)) != 0)
+    {
+    search_error_message = string_sprintf("defaults using \"*\" or \"*@\" are "
+      "not permitted for lookup type \"%s\"", ss);
+    return -1;
+    }
   }
-
-/* All is well; pass back the partial type and return the lookup type. */
 
 *ptypeptr = pv;
 return stype;

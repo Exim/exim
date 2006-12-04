@@ -1,6 +1,11 @@
 # testdb lookups
-
+1
 exim -be
 match_ip:        12 ${if match_ip{10.11.12.13}{testdb;something}}
 match_ip:        13 ${if match_ip{10.11.12.13}{testdb;fail}}
+match_domain:    14 ${if match_domain{a.b.c.d}{testdb*;fail}}
+bad default:     ${lookup testdb*{abcd}}
+bad default:     ${lookup testdb*@{abcd}}
+bad default:     ${lookup testdb*{fail}}
+bad default:     ${lookup testdb*@{fail}}
 ****
