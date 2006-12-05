@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.72 2006/11/13 12:32:58 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.73 2006/12/05 11:35:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -13,10 +13,18 @@
 
 #include "exim.h"
 
+/* Recursively called function */
+
+static uschar *expand_string_internal(uschar *, BOOL, uschar **, BOOL);
+
 #ifdef STAND_ALONE
 #ifndef SUPPORT_CRYPTEQ
 #define SUPPORT_CRYPTEQ
 #endif
+#endif
+
+#ifdef LOOKUP_LDAP
+#include "lookups/ldap.h"
 #endif
 
 #ifdef SUPPORT_CRYPTEQ
@@ -28,15 +36,63 @@ extern char* crypt16(char*, char*);
 #endif
 #endif
 
-#ifdef LOOKUP_LDAP
-#include "lookups/ldap.h"
-#endif
+/* The handling of crypt16() is a mess. I will record below the analysis of the
+mess that was sent to me. We decided, however, to make changing this very low
+priority, because in practice people are moving away from the crypt()
+algorithms nowadays, so it doesn't seem worth it.
 
+<quote>
+There is an algorithm named "crypt16" in Ultrix and Tru64.  It crypts
+the first 8 characters of the password using a 20-round version of crypt
+(standard crypt does 25 rounds).  It then crypts the next 8 characters,
+or an empty block if the password is less than 9 characters, using a
+20-round version of crypt and the same salt as was used for the first
+block.  Charaters after the first 16 are ignored.  It always generates
+a 16-byte hash, which is expressed together with the salt as a string
+of 24 base 64 digits.  Here are some links to peruse:
 
+        http://cvs.pld.org.pl/pam/pamcrypt/crypt16.c?rev=1.2
+        http://seclists.org/bugtraq/1999/Mar/0076.html
 
-/* Recursively called function */
+There's a different algorithm named "bigcrypt" in HP-UX, Digital Unix,
+and OSF/1.  This is the same as the standard crypt if given a password
+of 8 characters or less.  If given more, it first does the same as crypt
+using the first 8 characters, then crypts the next 8 (the 9th to 16th)
+using as salt the first two base 64 digits from the first hash block.
+If the password is more than 16 characters then it crypts the 17th to 24th
+characters using as salt the first two base 64 digits from the second hash
+block.  And so on: I've seen references to it cutting off the password at
+40 characters (5 blocks), 80 (10 blocks), or 128 (16 blocks).  Some links:
 
-static uschar *expand_string_internal(uschar *, BOOL, uschar **, BOOL);
+        http://cvs.pld.org.pl/pam/pamcrypt/bigcrypt.c?rev=1.2
+        http://seclists.org/bugtraq/1999/Mar/0109.html
+        http://h30097.www3.hp.com/docs/base_doc/DOCUMENTATION/HTML/AA-Q0R2D-
+             TET1_html/sec.c222.html#no_id_208
+
+Exim has something it calls "crypt16".  It will either use a native
+crypt16 or its own implementation.  A native crypt16 will presumably
+be the one that I called "crypt16" above.  The internal "crypt16"
+function, however, is a two-block-maximum implementation of what I called
+"bigcrypt".  The documentation matches the internal code.
+
+I suspect that whoever did the "crypt16" stuff for Exim didn't realise
+that crypt16 and bigcrypt were different things.
+
+Exim uses the LDAP-style scheme identifier "{crypt16}" to refer
+to whatever it is using under that name.  This unfortunately sets a
+precedent for using "{crypt16}" to identify two incompatible algorithms
+whose output can't be distinguished.  With "{crypt16}" thus rendered
+ambiguous, I suggest you deprecate it and invent two new identifiers
+for the two algorithms.
+
+Both crypt16 and bigcrypt are very poor algorithms, btw.  Hashing parts
+of the password separately means they can be cracked separately, so
+the double-length hash only doubles the cracking effort instead of
+squaring it.  I recommend salted SHA-1 ({SSHA}), or the Blowfish-based
+bcrypt ({CRYPT}$2a$).
+</quote>
+*/
+
 
 
 

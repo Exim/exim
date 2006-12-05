@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.17 2006/10/02 13:38:18 ph10 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.18 2006/12/05 11:35:28 ph10 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -536,7 +536,7 @@ HEADERS_CHARSET="ISO-8859-1"
 # configuration of an authenticator for use with SMTP AUTH.) At least one
 # operating system has an extended function called crypt16(), which uses up to
 # 16 characters of a password (the normal crypt() uses only the first 8). Exim
-# supports the use of crypt16() as well as crypt().
+# supports the use of crypt16() as well as crypt() but note the warning below.
 
 # You can always indicate a crypt16-encrypted password by preceding it with
 # "{crypt16}". If you want the default handling (without any preceding
@@ -548,10 +548,23 @@ HEADERS_CHARSET="ISO-8859-1"
 # an encrypted password with "{crypt}". For more details, see the description
 # of the "crypteq" condition in the manual chapter on string expansions.
 
-# Since most operating systems do not include a crypt16() function (yet?), Exim
-# has one of its own, which it uses unless HAVE_CRYPT16 is defined. Normally,
-# that will be set in an OS-specific Makefile for the OS that have such a
-# function, so you should not need to bother with it.
+# Some operating systems do not include a crypt16() function, so Exim has one
+# of its own, which it uses unless HAVE_CRYPT16 is defined. Normally, that will
+# be set in an OS-specific Makefile for the OS that have such a function, so
+# you should not need to bother with it.
+
+# *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING ***
+# It turns out that the above is not entirely accurate. As well as crypt16()
+# there is a function called bigcrypt() that some operating systems have. This
+# may or may not use the same algorithm, and both of them may be different to
+# Exim's built-in crypt16() that is used unless HAVE_CRYPT16 is defined.
+#
+# However, since there is now a move away from the traditional crypt()
+# functions towards using SHA1 and other algorithms, tidying up this area of
+# Exim is seen as very low priority. In practice, if you need to, you can
+# define DEFAULT_CRYPT to the name of any function that has the same interface
+# as the traditional crypt() function.
+# *** WARNING *** WARNING *** WARNING *** WARNING *** WARNING ***
 
 
 #------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.123 2006/11/14 16:40:36 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.124 2006/12/05 11:35:28 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -198,8 +198,8 @@ Version 4.64
     available for compatibility.)
 
 12. The "message" modifier can now be used on acl verbs to vary the message
-    that is sent when an SMTP command. For example, in a RCPT ACL you could
-    have:
+    that is sent when an SMTP command is accepted. For example, in a RCPT ACL
+    you could have:
 
       accept  <some conditions>
               message = OK, I'll allow you through today

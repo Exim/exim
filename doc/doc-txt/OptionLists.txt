@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.27 2006/11/06 15:50:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.28 2006/12/05 11:35:28 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -776,7 +776,7 @@ DB_DIRECTORY_MODE            optional*    mode for hints directory
 DB_LOCKFILE_MODE             optional*    mode for hints lock files
 DB_LOCK_TIMEOUT              optional*    timeout for hints lock files
 DB_MODE                      optional*    mode for hints files
-DEFAULT_CRYPT                optional     use crypt16() as default
+DEFAULT_CRYPT                optional     default crypt() function
 DELIVER_IN_BUFFER_SIZE       optional*
 DELIVER_OUT_BUFFER_SIZE      optional*
 DISABLE_D_OPTION             optional     disables -D option
