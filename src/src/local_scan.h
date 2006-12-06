@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/local_scan.h,v 1.7 2006/02/14 10:26:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/local_scan.h,v 1.8 2006/12/06 09:46:03 magnus Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -100,7 +100,7 @@ each time a new feature is added (in a way that doesn't break backward
 compatibility). */
 
 #define LOCAL_SCAN_ABI_VERSION_MAJOR 1
-#define LOCAL_SCAN_ABI_VERSION_MINOR 0
+#define LOCAL_SCAN_ABI_VERSION_MINOR 1
 
 /* Structure definitions that are documented as visible in the function. */
 

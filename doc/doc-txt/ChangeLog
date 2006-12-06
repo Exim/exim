@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.441 2006/12/04 15:15:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.442 2006/12/06 09:46:03 magnus Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -339,6 +339,11 @@ PH/49 Although default lookup types such as lsearch* or cdb*@ have always been
       * or *@ was used with a query-style lookup.
 
 PH/50 Increased the value of DH_BITS in tls-gnu.c from 768 to 1024.
+
+MH/01 local_scan ABI version incremented to 1.1. It should have been updated
+      long ago, but noone interested enough thought of it. Let's just say that
+      the "1.1" means that there are some new functions that weren't there at
+      some point in the past.
 
 
 Exim version 4.63
