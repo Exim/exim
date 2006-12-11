@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.43 2006/10/10 15:36:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.44 2006/12/11 14:15:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -441,9 +441,10 @@ for (host = host_list; host != NULL && !done; host = host->next)
   if (tf->helo_data != NULL)
     {
     uschar *s = expand_string(tf->helo_data);
-    if (active_hostname == NULL)
+    if (s == NULL)
       log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: failed to expand transport's "
-        "helo_data value for callout: %s", expand_string_message);
+        "helo_data value for callout: %s", addr->address,
+        expand_string_message);
     else active_hostname = s;
     }
 
