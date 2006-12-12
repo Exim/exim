@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.7 2006/02/14 14:12:07 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.8 2006/12/12 15:47:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -684,7 +684,8 @@ if (!tls_on_connect)
 /* Now negotiate the TLS session. We put our own timer on it, since it seems
 that the OpenSSL library doesn't. */
 
-SSL_set_fd(ssl, fileno(smtp_out));
+SSL_set_wfd(ssl, fileno(smtp_out));
+SSL_set_rfd(ssl, fileno(smtp_in));
 SSL_set_accept_state(ssl);
 
 DEBUG(D_tls) debug_printf("Calling SSL_accept\n");

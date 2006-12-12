@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.15 2006/12/04 15:15:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.16 2006/12/12 15:47:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -809,7 +809,8 @@ if (!tls_on_connect)
 /* Now negotiate the TLS session. We put our own timer on it, since it seems
 that the GnuTLS library doesn't. */
 
-gnutls_transport_set_ptr(tls_session, (gnutls_transport_ptr)fileno(smtp_out));
+gnutls_transport_set_ptr2(tls_session, (gnutls_transport_ptr)fileno(smtp_in),
+                                       (gnutls_transport_ptr)fileno(smtp_out));
 
 sigalrm_seen = FALSE;
 if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
