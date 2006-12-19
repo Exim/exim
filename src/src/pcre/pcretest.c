@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcretest.c,v 1.4 2006/11/07 16:50:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcretest.c,v 1.5 2006/12/19 14:38:38 ph10 Exp $ */
 
 /*************************************************
 *             PCRE testing program               *
@@ -47,6 +47,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <errno.h>
 
 #ifndef _WIN32
+#include <sys/time.h>
 #include <sys/resource.h>
 #endif
 
