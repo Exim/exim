@@ -1,4 +1,4 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-fo.xsl,v 1.4 2006/04/04 14:03:49 ph10 Exp $ -->
+<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-fo.xsl,v 1.5 2006/12/19 12:28:35 ph10 Exp $ -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
@@ -235,6 +235,12 @@ and added some lines.
 <!-- Arrange for ordered list numbers to be in parentheses instead of just
 followed by a dot, which I don't like. Unfortunately, this styling is
 output-specific, so we have to do it separately for FO and HTML output. -->
+
+<xsl:param name="orderedlist.label.width" select="'2.0em'"></xsl:param>
+
+<xsl:attribute-set name="orderedlist.label.properties">
+  <xsl:attribute name="text-align">left</xsl:attribute>
+</xsl:attribute-set>
 
 <xsl:template match="orderedlist/listitem" mode="item-number">
   <xsl:variable name="numeration">

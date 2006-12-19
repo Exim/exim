@@ -1,4 +1,4 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-filter-fo.xsl,v 1.2 2005/08/05 10:57:41 ph10 Exp $ -->
+<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-filter-fo.xsl,v 1.3 2006/12/19 12:28:35 ph10 Exp $ -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>
 
@@ -8,7 +8,7 @@ all forms of output. Then it imports my FO stylesheet that contains changes for
 all printed output. Finally, there are some changes that apply only when
 printing the filter document. -->
 
-<xsl:import href="/usr/share/sgml/docbook/xsl-stylesheets-1.68.1/fo/docbook.xsl"/>
+<xsl:import href="/usr/share/sgml/docbook/xsl-stylesheets-1.70.1/fo/docbook.xsl"/>
 <xsl:import href="MyStyle.xsl"/>
 <xsl:import href="MyStyle-fo.xsl"/>
 
