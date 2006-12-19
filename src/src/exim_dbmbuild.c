@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim_dbmbuild.c,v 1.6 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim_dbmbuild.c,v 1.7 2006/12/19 15:09:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -151,8 +151,8 @@ EXIM_DB *d;
 EXIM_DATUM key, content;
 uschar *bptr;
 uschar  keybuffer[256];
-uschar  temp_dbmname[256];
-uschar  real_dbmname[256];
+uschar  temp_dbmname[512];
+uschar  real_dbmname[512];
 uschar *buffer = malloc(max_outsize);
 uschar *line = malloc(max_insize);
 
@@ -194,6 +194,15 @@ if (Ustrcmp(argv[arg], argv[arg+1]) == 0)
   exit(1);
   }
 #endif
+
+/* Check length of filename; allow for adding .dbmbuild_temp and .db or
+.dir/.pag later. */
+
+if (strlen(argv[arg+1]) > sizeof(temp_dbmname) - 20)
+  {
+  printf("exim_dbmbuild: output filename is ridiculously long\n");
+  exit(1);
+  }
 
 Ustrcpy(temp_dbmname, argv[arg+1]);
 Ustrcat(temp_dbmname, ".dbmbuild_temp");
