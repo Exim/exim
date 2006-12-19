@@ -12,6 +12,6 @@ gecos_name = CALLER_NAME
 # ----- Main settings -----
 
 queue_only
-
+trusted_users = CALLER
 
 # End

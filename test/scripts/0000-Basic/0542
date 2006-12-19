@@ -1,5 +1,5 @@
 # -Mset and -bem
-exim userx@test.x usery@test.ex
+exim -f userz@test.ex -oMt userz userx@test.x usery@test.ex
 From: Himself <himself@there.tld>
 To: Yourself <you@here.tld>
 Subject: The subject is not the object

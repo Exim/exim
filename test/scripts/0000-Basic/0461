@@ -19,7 +19,7 @@ QUIT
 exim -odi userx@test.ex
 Short message
 ****
-sleep 2
+sleep 3
 server PORT_S
 220 server ready
 EHLO
@@ -62,7 +62,7 @@ Short message
 exim -DFALLBACK= -DROUTE_DATA=V4NET.0.0.2 -odi userx@test.ex
 Short message
 ****
-sleep 2
+sleep 3
 exim -DFALLBACK= -DROUTE_DATA=V4NET.0.0.2 -q
 ****
 exim -DFALLBACK= -DROUTE_DATA=V4NET.0.0.2 -odi userx@test.ex

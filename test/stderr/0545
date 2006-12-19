@@ -23,8 +23,6 @@ CNAME found: change to eximtesthost.test.ex
 DNS lookup of eximtesthost.test.ex (MX) using fakens
 DNS lookup of eximtesthost.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
-DNS lookup of alias-eximtesthost (AAAA) succeeded
-CNAME found: change to eximtesthost.test.ex
 DNS lookup of alias-eximtesthost (A) using fakens
 DNS lookup of alias-eximtesthost (A) succeeded
 CNAME found: change to eximtesthost.test.ex
@@ -49,9 +47,6 @@ DNS lookup of alias-eximtesthost.test.ex (MX) using fakens
 DNS lookup of alias-eximtesthost.test.ex (MX) succeeded
 CNAME found: change to eximtesthost.test.ex
 DNS lookup of eximtesthost.test.ex-MX: using cached value DNS_NODATA
-DNS lookup of alias-eximtesthost.test.ex (AAAA) succeeded
-CNAME found: change to eximtesthost.test.ex
-DNS lookup of eximtesthost.test.ex-AAAA: using cached value DNS_NODATA
 DNS lookup of alias-eximtesthost.test.ex (A) using fakens
 DNS lookup of alias-eximtesthost.test.ex (A) succeeded
 CNAME found: change to eximtesthost.test.ex
@@ -97,8 +92,6 @@ CNAME found: change to eximtesthost.test.ex
 DNS lookup of eximtesthost.test.ex (MX) using fakens
 DNS lookup of eximtesthost.test.ex (MX) gave NO_DATA
 returning DNS_NODATA
-DNS lookup of alias-eximtesthost.test.ex (AAAA) succeeded
-CNAME found: change to eximtesthost.test.ex
 DNS lookup of alias-eximtesthost.test.ex (A) using fakens
 DNS lookup of alias-eximtesthost.test.ex (A) succeeded
 CNAME found: change to eximtesthost.test.ex
