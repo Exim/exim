@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.66 2006/12/12 15:47:39 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.67 2006/12/19 14:51:34 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  12 December 2006
+Last updated:  19 December 2006
 
 
 THE OLD LIST
@@ -68,6 +68,7 @@ Alexander Alekseev        Use of function attribute checks in gcc
 Justo Alonso              Suggested patch for maildir++ maildirsize file support
 Anton Altaparmakov        Patches to get cyrus_sasl fully working
 Claus Assmann             Example code for OpenSSL CRL support
+Robert Bannocks           Patch for LDAP reference problem on Solaris
 Ian Bell                  Analysis of a bug and an infelicity in clock tick code
                           Patch for ${quote_local_part
 Peter Benie               A number mistakes found by analysing the code

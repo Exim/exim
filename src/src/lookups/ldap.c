@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.12 2006/07/17 09:18:09 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/ldap.c,v 1.13 2006/12/19 14:51:34 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -853,18 +853,27 @@ We need to parse the message to find out exactly what's happened. */
   (1) If we get LDAP_SIZELIMIT_EXCEEDED, just carry on, to return the
       truncated result list.
 
-  (2) The range of errors defined by LDAP_NAME_ERROR generally mean "that
+  (2) If we get LDAP_RES_SEARCH_REFERENCE, also just carry on. This was a
+      submitted patch that is reported to "do the right thing" with Solaris
+      LDAP libraries. (The problem it addresses apparently does not occur with
+      Open LDAP.)
+
+  (3) The range of errors defined by LDAP_NAME_ERROR generally mean "that
       object does not, or cannot, exist in the database". For those cases we
       fail the lookup.
 
-  (3) All other non-successes here are treated as some kind of problem with
+  (4) All other non-successes here are treated as some kind of problem with
       the lookup, so return DEFER (which is the default in error_yield).
 */
 
 DEBUG(D_lookup) debug_printf("ldap_parse_result yielded %d: %s\n",
   rc, ldap_err2string(rc));
 
-if (rc != LDAP_SUCCESS && rc != LDAP_SIZELIMIT_EXCEEDED)
+if (rc != LDAP_SUCCESS && rc != LDAP_SIZELIMIT_EXCEEDED
+    #ifdef LDAP_RES_SEARCH_REFERENCE
+    && rc != LDAP_RES_SEARCH_REFERENCE
+    #endif
+    )
   {
   *errmsg = string_sprintf("LDAP search failed - error %d: %s%s%s%s%s",
     rc,
