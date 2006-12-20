@@ -1,7 +1,15 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.447 2006/12/19 15:09:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.448 2006/12/20 19:57:47 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+Exim version 4.65
+-----------------
+
+TK/01 Disable default definition of HAVE_LINUX_SENDFILE. Clashes with
+      Linux large file support (_FILE_OFFSET_BITS=64) on older glibc
+      versions. (#438)
+
 
 Exim version 4.64
 -----------------
