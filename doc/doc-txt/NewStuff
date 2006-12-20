@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.124 2006/12/05 11:35:28 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.125 2006/12/20 09:44:37 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -15,232 +15,49 @@ Version 4.64
  1. ACL variables can now be given arbitrary names, as long as they start with
     "acl_c" or "acl_m" (for connection variables and message variables), are at
     least six characters long, with the sixth character being either a digit or
-    an underscore. The rest of the name can contain alphanumeric characters and
-    underscores. This is a compatible change because the old set of variables
-    such as acl_m12 are a subset of the allowed names. There may now be any
-    number of ACL variables. For example:
-
-      set acl_c13   = value for original ACL variable
-      set acl_c13b  = whatever
-      set acl_m_foo = something
-
-    What happens if a syntactically valid but undefined ACL variable is
-    referenced depends on the setting of the strict_acl_vars option. If it is
-    false (the default), an empty string is substituted; if it is true, an
-    error is generated. This affects all ACL variables, including the "old"
-    ones such as acl_c4. (Previously there wasn't the concept of an undefined
-    ACL variable.)
-
-    The implementation has been done in such a way that spool files containing
-    ACL variable settings written by previous releases of Exim are compatible
-    and can be read by the new release. If only the original numeric names are
-    used, spool files written by the new release can be read by earlier
-    releases.
+    an underscore.
 
  2. There is a new ACL modifier called log_reject_target. It makes it possible
-    to specify which logs are used for messages about ACL rejections. Its
-    argument is a list of words which can be "main", "reject", or "panic". The
-    default is "main:reject". The list may be empty, in which case a rejection
-    is not logged at all. For example, this ACL fragment writes no logging
-    information when access is denied:
-
-      deny <some conditions>
-           log_reject_target =
-
-    The modifier can be used in SMTP and non-SMTP ACLs. It applies to both
-    permanent and temporary rejections.
+    to specify which logs are used for messages about ACL rejections.
 
  3. There is a new authenticator called "dovecot". This is an interface to the
     authentication facility of the Dovecot POP/IMAP server, which can support a
-    number of authentication methods. If you are using Dovecot to authenticate
-    POP/IMAP clients, it might be helpful to use the same mechanisms for SMTP
-    authentication. This is a server authenticator only. The only option is
-    server_socket, which must specify the socket which is the interface to
-    Dovecot authentication. The public_name option must specify an
-    authentication mechanism that Dovecot is configured to support. You can
-    have several authenticators for different mechanisms. For example:
-
-      dovecot_plain:
-        driver = dovecot
-        public_name = PLAIN
-        server_name = /var/run/dovecot/auth-client
-        server_setid = $auth1
-
-      dovecot_ntlm:
-        driver = dovecot
-        public_name = NTLM
-        server_name = /var/run/dovecot/auth-client
-        server_setid = $auth1
-
-    If the SMTP connection is encrypted, or if $sender_host_address is equal to
-    $interface_address (that is, the connection is local), the "secured" option
-    is passed in the Dovecot authentication command. If, for a TLS connection,
-    a client certificate has been verified, the "valid-client-cert" option is
-    passed.
+    number of authentication methods.
 
  4. The variable $message_headers_raw provides a concatenation of all the
     messages's headers without any decoding. This is in contrast to
     $message_headers, which does RFC2047 decoding on the header contents.
 
- 5. In a DNS black list, when the facility for restricting the matching IP
-    values is used, the text from the TXT record that is set in $dnslist_text
-    may not reflect the true reason for rejection. This happens when lists are
-    merged and the IP address in the A record is used to distinguish them;
-    unfortunately there is only one TXT record. One way round this is not to
-    use merged lists, but that can be inefficient because it requires multiple
-    DNS lookups where one would do in the vast majority of cases when the host
-    of interest is not on any of the lists.
+ 5. In a DNS black list, if two domain names, comma-separated, are given, the
+    second is used first to do an initial check, making use of any IP value
+    restrictions that are set. If there is a match, the first domain is used,
+    without any IP value restrictions, to get the TXT record.
 
-    A less inefficient way of solving this problem has now been implemented. If
-    two domain names, comma-separated, are given, the second is used first to
-    do an initial check, making use of any IP value restrictions that are set.
-    If there is a match, the first domain is used, without any IP value
-    restrictions, to get the TXT record. As a byproduct of this, there is also
-    a check that the IP being tested is indeed on the first list. The first
-    domain is the one that is put in $dnslist_domain. For example:
-
-      reject message  = rejected because $sender_ip_address is blacklisted \
-                        at $dnslist_domain\n$dnslist_text
-             dnslists = sbl.spamhaus.org,sbl-xbl.spamhaus.org=127.0.0.2 : \
-                        dul.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.10
-
-    For the first blacklist item, this starts by doing a lookup in
-    sbl-xbl.spamhaus.org and testing for a 127.0.0.2 return. If there is a
-    match, it then looks in sbl.spamhaus.org, without checking the return
-    value, and as long as something is found, it looks for the corresponding
-    TXT record. If there is no match in sbl-xbl.spamhaus.org, nothing more is
-    done. The second blacklist item is processed similarly.
-
-    If you are interested in more than one merged list, the same list must be
-    given several times, but because the results of the DNS lookups are cached,
-    the DNS calls themselves are not repeated. For example:
-
-      reject dnslists = http.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.2 : \
-                       socks.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.3 : \
-                        misc.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.4 : \
-                         dul.dnsbl.sorbs.net,dnsbl.sorbs.net=127.0.0.10
-
-    In this case there is a lookup in dnsbl.sorbs.net, and if none of the IP
-    values matches (or if no record is found), this is the only lookup that is
-    done. Only if there is a match is one of the more specific lists consulted.
-
- 6. All authenticators now have a server_condition option. Previously, only
-    plaintext had this, and this has not changed: it must be set to the
-    authenticator as a server. For the others, if server_condition is set, it
-    is expanded if authentication is successful, and treated exactly as it is
-    in plaintext. This can serve as a means of adding authorization to an
-    authenticator.
+ 6. All authenticators now have a server_condition option.
 
  7. There is a new command-line option called -Mset. It is useful only in
     conjunction with -be (that is, when testing string expansions). It must be
     followed by a message id; Exim loads the given message from its spool
-    before doing the expansions, thus setting message-specific variables such
-    as $message_size and the header variables. The $recipients variable is
-    available. This feature is provided to make it easier to test expansions
-    that make use of these variables. However, Exim must be called by an admin
-    user when -Mset is used.
+    before doing the expansions.
 
  8. Another similar new command-line option is called -bem. It operates like
-    -be except that it must be followed by the name of a file. For example:
-
-      exim -bem /tmp/testmessage
-
-    The file is read as a message (as if receiving a locally-submitted non-SMTP
-    message) before any of the test expansions are done. Thus, message-specific
-    variables such as $message_size and $h_from: are available. However, no
-    Received: header is added to the message. If the -t option is set,
-    recipients are read from the headers in the normal way, and are shown in
-    the $recipients variable. Note that recipients cannot be given on the
-    command line, because further arguments are taken as strings to expand
-    (just like -be).
+    -be except that it must be followed by the name of a file that contains a
+    message.
 
  9. When an address is delayed because of a 4xx response to a RCPT command, it
     is now the combination of sender and recipient that is delayed in
-    subsequent queue runs until its retry time is reached. You can revert to
-    the previous behavious, that is, delay the recipient independent of the
-    sender, by setting address_retry_include_sender=false in the smtp
-    transport. However, this can lead to problems with servers that regularly
-    issue 4xx responses to RCPT commands.
+    subsequent queue runs until its retry time is reached.
 
 10. Unary negation and the bitwise logical operators and, or, xor, not, and
-    shift, have been added to the eval: and eval10: expansion items. These
-    items may now contain arithmetic operators (plus, minus, times, divide,
-    remainder, negate), bitwise operators (and, or, xor, not, shift), and
-    parentheses. All operations are carried out using signed integer
-    arithmetic. Operator priorities are as in C, namely:
-
-      (highest) not, negate
-                times, divide, remainder
-                plus, minus
-                shift-left, shift-right
-                and
-                xor
-      (lowest)  or
-
-    Binary operators with the same priority are evaluated from left to right.
-    For example:
-
-      ${eval:1+1}            yields 2
-      ${eval:1+2*3}          yields 7
-      ${eval:(1+2)*3}        yields 9
-      ${eval:2+42%5}         yields 4
-      ${eval:0xc&5}          yields 4
-      ${eval:0xc|5}          yields 13
-      ${eval:0xc^5}          yields 9
-      ${eval:0xc>>1}         yields 6
-      ${eval:0xc<<1}         yields 24
-      ${eval:~255&0x1234}    yields 4608
-      ${eval:-(~255&0x1234)} yields -4608
+    shift, have been added to the eval: and eval10: expansion items.
 
 11. The variables $interface_address and $interface_port have been renamed
     as $received_ip_address and $received_port, to make it clear that they
     relate to message reception rather than delivery. (The old names remain
     available for compatibility.)
 
-12. The "message" modifier can now be used on acl verbs to vary the message
-    that is sent when an SMTP command is accepted. For example, in a RCPT ACL
-    you could have:
-
-      accept  <some conditions>
-              message = OK, I'll allow you through today
-
-    Previously, this message modifier would have had no effect whatsoever.
-
-    IMPORTANT: The new behaviour applies to "accept" (and "discard") only if
-    there is no occurrence of "endpass" in the statement. If "endpass" is
-    present, the behaviour reverts to the old case, where "message" applies to
-    rejection. This is for backwards compatibility.
-
-    It is always possible to rewrite ACL statements so that "endpass" is not
-    needed (and indeed it is no longer used in the default configuration, and
-    is somewhat not recommended nowadays because it causes confusion.)
-
-    It is now generally true that the "message" modifier sets up a text string
-    that is expanded and used as a response message if the current statement
-    terminates the ACL. The expansion happens at the time Exim decides that the
-    ACL is to end, not at the time it processes "message". If the expansion
-    fails, or generates an empty string, the modifier is ignored.
-
-    For ACLs that are triggered by SMTP commands, the message is returned as
-    part of the SMTP response. In this situation, the message may begin with an
-    overriding SMTP response code, optionally followed by an "extended response
-    code". However, the first digit of the supplied response code must be the
-    same as would be sent by default. A panic occurs if it is not. For the
-    predata ACL, note that the default success code is 354, not 2xx.
-
-    However, notwithstanding the previous paragraph, for the QUIT ACL, unlike
-    the others, the message modifier cannot override the 221 response code.
-
-    In the case of the "connect" ACL, accepting with a message modifier
-    overrides the value of smtp_banner.
-
-    The ACL test specified by acl_smtp_helo happens when the client issues the
-    HELO or EHLO commands, after the tests specified by helo_accept_junk_hosts,
-    helo_allow_chars and helo(_try)_verify_hosts. An acceptance message
-    modifier for EHLO/HELO may not contain more than one line (it will be
-    truncated at the first newline and a panic logged), and it cannot affect
-    the EHLO options.
-
+12. The "message" modifier can now be used on "accept" and "discard" acl verbs
+    to vary the message that is sent when an SMTP command is accepted.
 
 
 Version 4.63
