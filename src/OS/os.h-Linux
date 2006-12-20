@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/OS/os.h-Linux,v 1.4 2006/10/30 22:06:33 tom Exp $ */
+/* $Cambridge: exim/src/OS/os.h-Linux,v 1.5 2006/12/20 19:54:23 tom Exp $ */
 
 /* Exim: OS-specific C header file for Linux */
 
@@ -7,9 +7,15 @@
 #define HAVE_MMAP
 #define HAVE_BSD_GETLOADAVG
 #define HAVE_SYS_STATVFS_H
-#define HAVE_LINUX_SENDFILE
 #define NO_IP_VAR_H
 #define SIG_IGN_WORKS
+
+/* When using the experimental Domainkeys/DKIM extensions, setting
+HAVE_LINUX_SENDFILE can increase performance on outgoing mail a bit.
+Note: With older glibc versions this setting will conflict with the
+_FILE_OFFSET_BITS=64 setting defined as part of the Linux CFLAGS. */
+
+/* #define HAVE_LINUX_SENDFILE */
 
 #define F_FREESP     O_TRUNC
 typedef struct flock flock_t;
