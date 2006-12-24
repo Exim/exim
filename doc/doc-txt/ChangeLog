@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.448 2006/12/20 19:57:47 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.449 2006/12/24 12:12:05 magnus Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -9,6 +9,10 @@ Exim version 4.65
 TK/01 Disable default definition of HAVE_LINUX_SENDFILE. Clashes with
       Linux large file support (_FILE_OFFSET_BITS=64) on older glibc
       versions. (#438)
+
+MH/01 Don't check that the operands of numeric comparison operators are
+      integers when their expansion is in "skipping" mode (fixes bug
+      introduced by 4.64-PH/07).
 
 
 Exim version 4.64

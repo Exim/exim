@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.73 2006/12/05 11:35:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.74 2006/12/24 12:12:05 magnus Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1986,7 +1986,7 @@ switch(cond_type)
     conditions that compare numbers do not start with a letter. This just saves
     checking for them individually. */
 
-    if (!isalpha(name[0]))
+    if (!isalpha(name[0]) && yield != NULL)
       {
       num[i] = expand_string_integer(sub[i], FALSE);
       if (expand_string_message != NULL) return NULL;
