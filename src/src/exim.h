@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.19 2006/02/07 11:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.20 2007/01/02 11:25:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -73,6 +73,14 @@ making unique names. */
 
 #ifndef INT_MAX
 #define INT_MAX 2147483647
+#endif
+
+#ifndef INT_MIN
+#define INT_MIN (-INT_MAX - 1)
+#endif
+
+#ifndef SHRT_MAX
+#define SHRT_MAX 32767
 #endif
 
 #ifndef UCHAR_MAX

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/iplookup.c,v 1.8 2006/10/09 14:36:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/iplookup.c,v 1.9 2007/01/02 11:25:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -378,6 +378,9 @@ new_addr->parent = addr;
 copyflag(new_addr, addr, af_propagate);
 new_addr->p = addr->p;
 
+if (addr->child_count == SHRT_MAX)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s router generated more than %d "
+    "child addresses for <%s>", rblock->name, SHRT_MAX, addr->address);
 addr->child_count++;
 new_addr->next = *addr_new;
 *addr_new = new_addr;

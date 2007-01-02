@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.38 2006/11/06 15:50:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.39 2007/01/02 11:25:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4941,6 +4941,9 @@ else if (system_filter != NULL && process_recipients != RECIP_FAIL_TIMEOUT)
 
     while (p != NULL)
       {
+      if (parent->child_count == SHRT_MAX)
+        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "system filter generated more "
+          "than %d delivery addresses", SHRT_MAX);
       parent->child_count++;
       p->parent = parent;
 

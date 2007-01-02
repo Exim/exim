@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.449 2006/12/24 12:12:05 magnus Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.450 2007/01/02 11:25:00 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -13,6 +13,13 @@ TK/01 Disable default definition of HAVE_LINUX_SENDFILE. Clashes with
 MH/01 Don't check that the operands of numeric comparison operators are
       integers when their expansion is in "skipping" mode (fixes bug
       introduced by 4.64-PH/07).
+
+PH/01 If a system filter or a router generates more than SHRT_MAX (32767)
+      child addresses, Exim now panics and dies. Previously, because the count
+      is held in a short int, deliveries were likely to be lost. As such a
+      large number of recipients for a single message is ridiculous
+      (performance will be very, very poor), I have chosen to impose a limit
+      rather than extend the field.
 
 
 Exim version 4.64

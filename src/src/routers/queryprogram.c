@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/queryprogram.c,v 1.8 2006/02/07 14:05:17 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/queryprogram.c,v 1.9 2007/01/02 11:25:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -122,6 +122,9 @@ while (generated != NULL)
   next->next = *addr_new;
   *addr_new = next;
 
+  if (addr->child_count == SHRT_MAX)
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "%s router generated more than %d "
+      "child addresses for <%s>", rblock->name, SHRT_MAX, addr->address);
   addr->child_count++;
 
   DEBUG(D_route)
