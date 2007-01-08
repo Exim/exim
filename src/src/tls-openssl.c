@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.8 2006/12/12 15:47:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.9 2007/01/08 10:50:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module provides the TLS (aka SSL) support for Exim using the OpenSSL

@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/local_scan.h,v 1.9 2006/12/06 10:08:28 magnus Exp $ */
+/* $Cambridge: exim/src/src/local_scan.h,v 1.10 2007/01/08 10:50:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This file is the header that is the only Exim header to be included in the

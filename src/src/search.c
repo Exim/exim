@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/search.c,v 1.4 2006/12/04 15:00:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/search.c,v 1.5 2007/01/08 10:50:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* A set of functions to search databases in various formats. An open

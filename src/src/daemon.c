@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.18 2006/11/07 15:56:17 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.19 2007/01/08 10:50:17 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions concerned with running Exim as a daemon */

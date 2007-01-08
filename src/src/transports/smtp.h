@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/transports/smtp.h,v 1.9 2006/11/06 15:50:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.h,v 1.10 2007/01/08 10:50:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Private structure for the private options and other private data. */

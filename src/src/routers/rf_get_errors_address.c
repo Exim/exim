@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/routers/rf_get_errors_address.c,v 1.6 2006/02/07 11:19:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/rf_get_errors_address.c,v 1.7 2007/01/08 10:50:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"

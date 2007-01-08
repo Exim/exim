@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/ip.c,v 1.6 2006/04/04 09:09:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/ip.c,v 1.7 2007/01/08 10:50:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for doing things with sockets. With the advent of IPv6 this has

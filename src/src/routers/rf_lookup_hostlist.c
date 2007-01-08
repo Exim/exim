@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/routers/rf_lookup_hostlist.c,v 1.7 2006/10/09 14:36:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/rf_lookup_hostlist.c,v 1.8 2007/01/08 10:50:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

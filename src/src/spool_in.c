@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.18 2006/10/24 15:01:26 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.19 2007/01/08 10:50:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for reading spool files. When compiling for a utility (eximon),

@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.10 2006/09/19 11:28:45 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.11 2007/01/08 10:50:17 ph10 Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

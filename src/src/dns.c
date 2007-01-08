@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.16 2006/11/20 13:53:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.17 2007/01/08 10:50:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for interfacing with the DNS. */

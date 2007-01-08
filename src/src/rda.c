@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/rda.c,v 1.13 2006/09/05 14:05:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/rda.c,v 1.14 2007/01/08 10:50:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module contains code for extracting addresses from a forwarding list

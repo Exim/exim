@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/host.c,v 1.27 2006/11/20 14:29:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.28 2007/01/08 10:50:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for finding hosts, either by gethostbyname(), gethostbyaddr(), or

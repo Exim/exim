@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.25 2006/10/18 08:55:38 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.26 2007/01/08 10:50:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for reading the configuration file, and for displaying

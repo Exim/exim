@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/string.c,v 1.10 2006/02/23 10:25:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/string.c,v 1.11 2007/01/08 10:50:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Miscellaneous string-handling functions. Some are not required for

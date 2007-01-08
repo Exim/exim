@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/moan.c,v 1.6 2006/03/20 10:55:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/moan.c,v 1.7 2007/01/08 10:50:18 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2006 */
+/* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for sending messages to sender or to mailmaster. */
