@@ -237,6 +237,12 @@ mask:   ${if eq {1}{2}{${mask:invalid}}{NO}}
 5>3z:   ${if >{5 } {3z }{y}{n}}
 5>a:    ${if >{ 5 } {a}{y}{n}}
 
+>0:     ${if > {}{0}{y}{n}}
+=:      ${if = {}{}{y}{n}}
+-2<:    ${if < {-2}{}{y}{n}}
+08>07:  ${if > {08}{07}{y}{n}}
+011=11: ${if = {011}{11}{y}{n}}
+
 def:y   ${if def:tod_log{y}{n}}
 def:n   ${if def:host{y}{n}}
 def:f   ${if def:post{y}{n}}

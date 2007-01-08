@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.19 2006/11/14 16:40:36 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.20 2007/01/08 11:56:41 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -23,7 +23,7 @@ use Socket;
 
 # Start by initializing some global variables
 
-$testversion = "4.64 (05-Sep-06)";
+$testversion = "4.66 (08-Jan-07)";
 
 $cf = "bin/cf";
 $cr = "\r";

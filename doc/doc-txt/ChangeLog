@@ -1,7 +1,27 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.450 2007/01/02 11:25:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.451 2007/01/08 11:56:41 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+Exim version 4.66
+-----------------
+
+PH/01 Two more bugs that were introduced by 4.64/PH/07, in addition to the one
+      fixed by 4.65/MH/01 (is this a record?) are fixed:
+
+      (i)  An empty string was always treated as zero by the numeric comparison
+           operators. This behaviour has been restored.
+
+      (ii) It is documented that the numeric comparison operators always treat
+           their arguments as decimal numbers. This was broken in that numbers
+           starting with 0 were being interpreted as octal.
+
+      While fixing these problems I realized that there was another issue that
+      hadn't been noticed. Values of message_size_limit (both the global option
+      and the transport option) were treated as octal if they started with 0.
+      The documentation was vague. These values are now always treated as
+      decimal, and I will make that clear in the documentation.
+
 
 Exim version 4.65
 -----------------

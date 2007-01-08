@@ -218,6 +218,12 @@
 > Failed: invalid integer "3z "
 > Failed: integer expected but "a" found
 > 
+> >0:     n
+> =:      y
+> -2<:    y
+> 08>07:  y
+> 011=11: y
+> 
 > def:y   y
 > def:n   n
 > Failed: unknown variable "post" after "def:"

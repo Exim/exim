@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.75 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.76 2007/01/08 11:56:41 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1988,8 +1988,17 @@ switch(cond_type)
 
     if (!isalpha(name[0]) && yield != NULL)
       {
-      num[i] = expand_string_integer(sub[i], FALSE);
-      if (expand_string_message != NULL) return NULL;
+      if (sub[i][0] == 0)
+        {
+        num[i] = 0;
+        DEBUG(D_expand)
+          debug_printf("empty string cast to zero for numerical comparison\n");
+        }
+      else
+        {
+        num[i] = expand_string_integer(sub[i], FALSE);
+        if (expand_string_message != NULL) return NULL;
+        }
       }
     }
 
@@ -5499,7 +5508,7 @@ systems, so we set it zero ourselves. */
 
 errno = 0;
 expand_string_message = NULL;               /* Indicates no error */
-value = strtol(CS s, CSS &endptr, 0);
+value = strtol(CS s, CSS &endptr, 10);
 
 if (endptr == s)
   {
