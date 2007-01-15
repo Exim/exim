@@ -1,0 +1,93 @@
+# log_selector = +smtp_no_mail
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+****
+client 127.0.0.1 PORT_D
+??? 220
+quit
+??? 221
+****
+client 127.0.0.1 PORT_D
+??? 220
+ehlo x.y.z
+??? 250
+??? 250
+??? 250
+??? 250
+VRFY a@b.c
+??? 252
+quit
+??? 221
+****
+client 127.0.0.1 PORT_D
+??? 220
+ehlo x.y.z
+??? 250
+??? 250
+??? 250
+??? 250
+MAIL FROM:<>
+??? 250
+quit
+??? 221
+****
+killdaemon
+#
+exim -bh 10.9.8.7
+HELO rhu.barb
+RSET
+NOOP
+HELP
+RSET
+NOOP
+HELP
+RSET
+NOOP
+HELP
+RSET
+NOOP
+HELP
+RSET
+NOOP
+HELP
+RSET
+NOOP
+HELP
+RSET
+NOOP
+HELP
+QUIT
+****
+exim -bs
+EXPN x@y
+QUIT
+****
+exim -DMAXNM=10 -bh 10.9.8.7
+HELO rhu.barb
+RSET
+NOOP
+HELP
+RSET
+NOOP
+HELP
+RSET
+NOOP
+HELP
+RSET
+NOOP
+HELP
+RSET
+NOOP
+HELP
+RSET
+NOOP
+HELP
+RSET
+NOOP
+HELP
+QUIT
+****

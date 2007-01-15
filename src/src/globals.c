@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.61 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.62 2007/01/15 15:59:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -696,6 +696,7 @@ bit_table log_options[]        = {
   { US"smtp_confirmation",            LX_smtp_confirmation },
   { US"smtp_connection",              L_smtp_connection },
   { US"smtp_incomplete_transaction",  L_smtp_incomplete_transaction },
+  { US"smtp_no_mail",                 LX_smtp_no_mail },
   { US"smtp_protocol_error",          L_smtp_protocol_error },
   { US"smtp_syntax_error",            L_smtp_syntax_error },
   { US"subject",                      LX_subject },
@@ -1042,8 +1043,11 @@ uschar *smtp_banner            = US"$smtp_active_hostname ESMTP "
                              "\0<---------------Space to patch smtp_banner->";
 BOOL    smtp_batched_input     = FALSE;
 BOOL    smtp_check_spool_space = TRUE;
+int     smtp_ch_index          = 0;
 uschar *smtp_cmd_argument      = NULL;
 uschar *smtp_cmd_buffer        = NULL;
+time_t  smtp_connection_start  = 0;
+uschar  smtp_connection_had[SMTP_HBUFF_SIZE];
 int     smtp_connect_backlog   = 20;
 double  smtp_delay_mail        = 0.0;
 double  smtp_delay_rcpt        = 0.0;

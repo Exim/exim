@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.49 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.50 2007/01/15 15:59:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -96,6 +96,13 @@ enum {
   TOO_MANY_NONMAIL_CMD };
 
 
+/* This is a convenience macro for adding the identity of an SMTP command
+to the circular buffer that holds a list of the last n received. */
+
+#define HAD(n) \
+    smtp_connection_had[smtp_ch_index++] = n; \
+    if (smtp_ch_index >= SMTP_HBUFF_SIZE) smtp_ch_index = 0
+
 
 /*************************************************
 *                Local static variables          *
@@ -164,6 +171,15 @@ static smtp_cmd_list *cmd_list_end =
 #define CMD_LIST_EHLO      2
 #define CMD_LIST_AUTH      3
 #define CMD_LIST_STARTTLS  4
+
+/* This list of names is used for performing the smtp_no_mail logging action.
+It must be kept in step with the SCH_xxx enumerations. */
+
+static uschar *smtp_names[] =
+  {
+  US"NONE", US"AUTH", US"DATA", US"EHLO", US"ETRN", US"EXPN", US"HELO",
+  US"HELP", US"MAIL", US"NOOP", US"QUIT", US"RCPT", US"RSET", US"STARTTLS",
+  US"VRFY" };
 
 static uschar *protocols[] = {
   US"local-smtp",        /* HELO */
@@ -667,6 +683,74 @@ return string_sprintf("SMTP connection from %s", hostname);
 
 
 /*************************************************
+*      Log lack of MAIL if so configured         *
+*************************************************/
+
+/* This function is called when an SMTP session ends. If the log selector
+smtp_no_mail is set, write a log line giving some details of what has happened
+in the SMTP session.
+
+Arguments:   none
+Returns:     nothing
+*/
+
+void
+smtp_log_no_mail(void)
+{
+int size, ptr, i;
+uschar *s, *sep;
+
+if (smtp_mailcmd_count > 0 || (log_extra_selector & LX_smtp_no_mail) == 0)
+  return;
+
+s = NULL;
+size = ptr = 0;
+
+if (sender_host_authenticated != NULL)
+  {
+  s = string_append(s, &size, &ptr, 2, US" A=", sender_host_authenticated);
+  if (authenticated_id != NULL)
+    s = string_append(s, &size, &ptr, 2, US":", authenticated_id);
+  }
+
+#ifdef SUPPORT_TLS
+if ((log_extra_selector & LX_tls_cipher) != 0 && tls_cipher != NULL)
+  s = string_append(s, &size, &ptr, 2, US" X=", tls_cipher);
+if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
+     tls_cipher != NULL)
+  s = string_append(s, &size, &ptr, 2, US" CV=",
+    tls_certificate_verified? "yes":"no");
+if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_peerdn != NULL)
+  s = string_append(s, &size, &ptr, 3, US" DN=\"", tls_peerdn, US"\"");
+#endif
+
+sep = (smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE)?
+  US" C=..." : US" C=";
+for (i = smtp_ch_index; i < SMTP_HBUFF_SIZE; i++)
+  {
+  if (smtp_connection_had[i] != SCH_NONE)
+    {
+    s = string_append(s, &size, &ptr, 2, sep,
+      smtp_names[smtp_connection_had[i]]);
+    sep = US",";
+    }
+  }
+
+for (i = 0; i < smtp_ch_index; i++)
+  {
+  s = string_append(s, &size, &ptr, 2, sep, smtp_names[smtp_connection_had[i]]);
+  sep = US",";
+  }
+
+if (s != NULL) s[ptr] = 0; else s = US"";
+log_write(0, LOG_MAIN, "no MAIL in SMTP connection from %s D=%s%s",
+  host_and_ident(FALSE),
+  readconf_printtime(time(NULL) - smtp_connection_start), s);
+}
+
+
+
+/*************************************************
 *   Check HELO line and set sender_helo_name     *
 *************************************************/
 
@@ -1146,9 +1230,15 @@ uschar *user_msg, *log_msg;
 uschar *code, *esc;
 uschar *p, *s, *ss;
 
+smtp_connection_start = time(NULL);
+for (smtp_ch_index = 0; smtp_ch_index < SMTP_HBUFF_SIZE; smtp_ch_index++)
+  smtp_connection_had[smtp_ch_index] = SCH_NONE;
+smtp_ch_index = 0;
+
 /* Default values for certain variables */
 
 helo_seen = esmtp = helo_accept_junk = FALSE;
+smtp_mailcmd_count = 0;
 count_nonmail = TRUE_UNSET;
 synprot_error_count = unknown_command_count = nonmail_command_count = 0;
 smtp_delay_mail = smtp_rlm_base;
@@ -2335,6 +2425,7 @@ while (done <= 0)
     AUTHS will eventually hit the nonmail threshold. */
 
     case AUTH_CMD:
+    HAD(SCH_AUTH);
     authentication_failed = TRUE;
     cmd_list[CMD_LIST_AUTH].is_mail_cmd = FALSE;
 
@@ -2527,11 +2618,13 @@ while (done <= 0)
     it did the reset first. */
 
     case HELO_CMD:
+    HAD(SCH_HELO);
     hello = US"HELO";
     esmtp = FALSE;
     goto HELO_EHLO;
 
     case EHLO_CMD:
+    HAD(SCH_EHLO);
     hello = US"EHLO";
     esmtp = TRUE;
 
@@ -2870,6 +2963,7 @@ while (done <= 0)
     it is the canonical extracted address which is all that is kept. */
 
     case MAIL_CMD:
+    HAD(SCH_MAIL);
     smtp_mailcmd_count++;              /* Count for limit and ratelimit */
     was_rej_mail = TRUE;               /* Reset if accepted */
 
@@ -3159,6 +3253,7 @@ while (done <= 0)
     extracted address. */
 
     case RCPT_CMD:
+    HAD(SCH_RCPT);
     rcpt_count++;
     was_rcpt = TRUE;
 
@@ -3346,6 +3441,7 @@ while (done <= 0)
     because it is the same whether pipelining is in use or not. */
 
     case DATA_CMD:
+    HAD(SCH_DATA);
     if (!discarded && recipients_count <= 0)
       {
       if (pipelining_advertised && last_was_rcpt)
@@ -3390,6 +3486,7 @@ while (done <= 0)
 
 
     case VRFY_CMD:
+    HAD(SCH_VRFY);
     rc = acl_check(ACL_WHERE_VRFY, NULL, acl_smtp_vrfy, &user_msg, &log_msg);
     if (rc != OK)
       done = smtp_handle_acl_fail(ACL_WHERE_VRFY, rc, user_msg, log_msg);
@@ -3437,6 +3534,7 @@ while (done <= 0)
 
 
     case EXPN_CMD:
+    HAD(SCH_EXPN);
     rc = acl_check(ACL_WHERE_EXPN, NULL, acl_smtp_expn, &user_msg, &log_msg);
     if (rc != OK)
       done = smtp_handle_acl_fail(ACL_WHERE_EXPN, rc, user_msg, log_msg);
@@ -3456,6 +3554,7 @@ while (done <= 0)
     #ifdef SUPPORT_TLS
 
     case STARTTLS_CMD:
+    HAD(SCH_STARTTLS);
     if (!tls_advertised)
       {
       done = synprot_error(L_smtp_protocol_error, 503, NULL,
@@ -3569,6 +3668,7 @@ while (done <= 0)
     message. */
 
     case QUIT_CMD:
+    HAD(SCH_QUIT);
     incomplete_transaction_log(US"QUIT");
 
     if (acl_smtp_quit != NULL)
@@ -3595,6 +3695,7 @@ while (done <= 0)
 
 
     case RSET_CMD:
+    HAD(SCH_RSET);
     incomplete_transaction_log(US"RSET");
     smtp_reset(reset_point);
     toomany = FALSE;
@@ -3604,6 +3705,7 @@ while (done <= 0)
 
 
     case NOOP_CMD:
+    HAD(SCH_NOOP);
     smtp_printf("250 OK\r\n");
     break;
 
@@ -3613,6 +3715,7 @@ while (done <= 0)
     permitted hosts. */
 
     case HELP_CMD:
+    HAD(SCH_HELP);
     smtp_printf("214-Commands supported:\r\n");
       {
       uschar buffer[256];
@@ -3654,6 +3757,7 @@ while (done <= 0)
 
 
     case ETRN_CMD:
+    HAD(SCH_ETRN);
     if (sender_address != NULL)
       {
       done = synprot_error(L_smtp_protocol_error, 503, NULL,

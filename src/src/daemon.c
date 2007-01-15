@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.19 2007/01/08 10:50:17 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.20 2007/01/15 15:59:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -500,6 +500,7 @@ if (pid == 0)
       if (!ok)                            /* Connection was dropped */
         {
         mac_smtp_fflush();
+        smtp_log_no_mail();               /* Log no mail if configured */
         _exit(EXIT_SUCCESS);
         }
       if (message_id[0] == 0) continue;   /* No message was accepted */
@@ -508,6 +509,7 @@ if (pid == 0)
       {
       mac_smtp_fflush();
       search_tidyup();
+      smtp_log_no_mail();                 /* Log no mail if configured */
       _exit((rc == 0)? EXIT_SUCCESS : EXIT_FAILURE);
       }
 

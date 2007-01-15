@@ -1,7 +1,14 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.451 2007/01/08 11:56:41 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.452 2007/01/15 15:59:22 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+Exim version 4.67
+-----------------
+
+PH/01 Added a new log selector smtp_no_mail, to log SMTP sessions that do not
+      issue a MAIL command.
+
 
 Exim version 4.66
 -----------------

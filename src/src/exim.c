@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.51 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.52 2007/01/15 15:59:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4381,6 +4381,7 @@ if (host_checking)
       if (!receive_msg(FALSE)) break;
       }
     }
+  smtp_log_no_mail();
   exim_exit(EXIT_SUCCESS);
   }
 
@@ -4636,10 +4637,15 @@ while (more)
       if (message_id[0] == 0)
         {
         if (more) continue;
+        smtp_log_no_mail();               /* Log no mail if configured */
         exim_exit(EXIT_FAILURE);
         }
       }
-    else exim_exit((rc == 0)? EXIT_SUCCESS : EXIT_FAILURE);
+    else
+      {
+      smtp_log_no_mail();               /* Log no mail if configured */
+      exim_exit((rc == 0)? EXIT_SUCCESS : EXIT_FAILURE);
+      }
     }
 
   /* In the non-SMTP case, we have all the information from the command

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.29 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.30 2007/01/15 15:59:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -126,6 +126,10 @@ changed, then the tables in expand.c for accessing them must be changed too. */
 enough to hold all the headers from a normal kind of message. */
 
 #define LOG_BUFFER_SIZE 8192
+
+/* The size of the circular buffer that remembers recent SMTP commands */
+
+#define SMTP_HBUFF_SIZE 20
 
 /* The initial size of a big buffer for use in various places. It gets put
 into big_buffer_size and in some circumstances increased. It should be at least
@@ -383,11 +387,12 @@ set all the bits in a multi-word selector. */
 #define LX_sender_on_delivery          0x80004000
 #define LX_sender_verify_fail          0x80008000
 #define LX_smtp_confirmation           0x80010000
-#define LX_subject                     0x80020000
-#define LX_tls_certificate_verified    0x80040000
-#define LX_tls_cipher                  0x80080000
-#define LX_tls_peerdn                  0x80100000
-#define LX_unknown_in_list             0x80200000
+#define LX_smtp_no_mail                0x80020000
+#define LX_subject                     0x80040000
+#define LX_tls_certificate_verified    0x80080000
+#define LX_tls_cipher                  0x80100000
+#define LX_tls_peerdn                  0x80200000
+#define LX_unknown_in_list             0x80400000
 
 #define L_default     (L_connection_reject        | \
                        L_delay_delivery           | \
@@ -690,6 +695,15 @@ local_scan.h */
 #define LOG_CONFIG       128      /* Add "Exim configuration error" */
 #define LOG_CONFIG_FOR  (256+128) /* Add " for" instead of ":\n" */
 #define LOG_CONFIG_IN   (512+128) /* Add " in line x[ of file y]" */
+
+/* SMTP command identifiers for the smtp_connection_had field that records the
+most recent SMTP commands. Must be kept in step with the list of names in
+smtp_in.c that is used for creating the smtp_no_mail logging action. SCH_NONE
+is "empty". */
+
+enum { SCH_NONE, SCH_AUTH, SCH_DATA, SCH_EHLO, SCH_ETRN, SCH_EXPN, SCH_HELO,
+       SCH_HELP, SCH_MAIL, SCH_NOOP, SCH_QUIT, SCH_RCPT, SCH_RSET, SCH_STARTTLS,
+       SCH_VRFY };
 
 /* Returns from host_find_by{name,dns}() */
 

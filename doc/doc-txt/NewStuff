@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.125 2006/12/20 09:44:37 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.126 2007/01/15 15:59:22 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -7,6 +7,48 @@ This file contains descriptions of new features that have been added to Exim.
 Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
+
+Version 4.67
+------------
+
+ 1. There is a new log selector called smtp_no_mail, which is not included in
+    the default setting. When it is set, a line is written to the main log
+    whenever an accepted SMTP connection terminates without having issued a
+    MAIL command. This includes both the case when the connection is dropped,
+    and the case when QUIT is used. Note that it does not include cases where
+    the connection is rejected right at the start (by an ACL, or because there
+    are too many connections, or whatever). These cases already have their own
+    log lines.
+
+    The log line that is written contains the identity of the client in the
+    usual way, followed by D= and a time, which records the duration of the
+    connection. If the connection was authenticated, this fact is logged
+    exactly as it is for an incoming message, with an A= item. If the
+    connection was encrypted, CV=, DN=, and X= items may appear as they do for
+    an incoming message, controlled by the same logging options.
+
+    Finally, if any SMTP commands were issued during the connection, a C= item
+    is added to the line, listing the commands that were used. For example,
+
+      C=EHLO,QUIT
+
+    shows that the client issued QUIT straight after EHLO. If there were fewer
+    than 20 commands, they are all listed. If there were more than 20 commands,
+    the last 20 are listed, preceded by "...". However, with the default
+    setting of 10 for smtp_accep_max_nonmail, the connection will in any case
+    be aborted before 20 non-mail commands are processed.
+
+
+Version 4.66
+------------
+
+No new features were added to 4.66.
+
+
+Version 4.65
+------------
+
+No new features were added to 4.65.
 
 
 Version 4.64
