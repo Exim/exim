@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.13 2006/12/19 12:28:35 ph10 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.14 2007/01/15 15:58:40 ph10 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -19,7 +19,7 @@
 
 .set ACL "access control lists (ACLs)"
 .set previousversion "4.63"
-.set version "4.64"
+.set version "4.66"
 
 
 . /////////////////////////////////////////////////////////////////////////////
@@ -121,17 +121,17 @@
 <bookinfo>
 <title>Specification of the Exim Mail Transfer Agent</title>
 <titleabbrev>The Exim MTA</titleabbrev>
-<date>11 December 2006</date>
+<date>08 January 2007</date>
 <author><firstname>Philip</firstname><surname>Hazel</surname></author>
 <authorinitials>PH</authorinitials>
 <affiliation><orgname>University of Cambridge Computing Service</orgname></affiliation>
 <address>New Museums Site, Pembroke Street, Cambridge CB2 3QH, England</address>
 <revhistory><revision>
-  <revnumber>4.64</revnumber>
-  <date>11 December 2006</date>
+  <revnumber>4.66</revnumber>
+  <date>08 January 2007</date>
   <authorinitials>PH</authorinitials>
 </revision></revhistory>
-<copyright><year>2006</year><holder>University of Cambridge</holder></copyright>
+<copyright><year>2007</year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
 
@@ -7812,10 +7812,17 @@ Consider what will happen if a name cannot be found.
 Because of the problems of determining host names from IP addresses, matching
 against host names is not as common as matching against IP addresses.
 
+.new
 By default, in order to find a host name, Exim first does a reverse DNS lookup;
 if no name is found in the DNS, the system function (&[gethostbyaddr()]& or
 &[getipnodebyaddr()]& if available) is tried. The order in which these lookups
-are done can be changed by setting the &%host_lookup_order%& option.
+are done can be changed by setting the &%host_lookup_order%& option. For
+security, once Exim has found one or more names, it looks up the IP addresses
+for these names and compares them with the IP address that it started with.
+Only those names whose IP addresses match are accepted. Any other names are
+discarded. If no names are left, Exim behaves as if the host name cannot be
+found. In the most common case there is only one name and one IP address.
+.wen
 
 There are some options that control what happens if a host name cannot be
 found. These are described in section &<<SECTbehipnot>>& below.
@@ -9523,6 +9530,8 @@ Note that the general negation operator provides for inequality testing. The
 two strings must take the form of optionally signed decimal integers,
 optionally followed by one of the letters &"K"& or &"M"& (in either upper or
 lower case), signifying multiplication by 1024 or 1024*1024, respectively.
+&new("As a special case, the numerical value of an empty string is taken as
+zero.")
 
 .vitem &*crypteq&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
 .cindex "expansion" "encrypted comparison"
@@ -13524,13 +13533,16 @@ which is not affected by this option.
 .cindex "limit" "message size"
 .cindex "size of message" "limit"
 This option limits the maximum size of message that Exim will process. The
-value is expanded for each incoming
-connection so, for example, it can be made to depend on the IP address of the
-remote host for messages arriving via TCP/IP. &*Note*&: This limit cannot be
-made to depend on a message's sender or any other properties of an individual
-message, because it has to be advertised in the server's response to EHLO.
-String expansion failure causes a temporary error. A value of zero means no
-limit, but its use is not recommended. See also &%bounce_return_size_limit%&.
+value is expanded for each incoming connection so, for example, it can be made
+to depend on the IP address of the remote host for messages arriving via
+TCP/IP. &new("After expansion, the value must be a sequence of decimal digits,
+optionally followed by K or M.")
+
+&*Note*&: This limit cannot be made to depend on a message's sender or any
+other properties of an individual message, because it has to be advertised in
+the server's response to EHLO. String expansion failure causes a temporary
+error. A value of zero means no limit, but its use is not recommended. See also
+&%bounce_return_size_limit%&.
 
 Incoming SMTP messages are failed with a 552 error if the limit is
 exceeded; locally-generated messages either get a stderr message or a delivery
@@ -18371,15 +18383,15 @@ to ensure that any additional groups associated with the uid are set up.
 .cindex "size of message" "limit"
 .cindex "transport" "message size; limiting"
 This option controls the size of messages passed through the transport. It is
-expanded before use; the result of the expansion must be a sequence of digits,
-optionally followed by K or M.
-If the expansion fails for any reason, including forced failure, or if the
-result is not of the required form, delivery is deferred.
-If the value is greater than zero and the size of a message exceeds this
-limit, the address is failed. If there is any chance that the resulting bounce
-message could be routed to the same transport, you should ensure that
-&%return_size_limit%& is less than the transport's &%message_size_limit%&, as
-otherwise the bounce message will fail to get delivered.
+expanded before use; the result of the expansion must be a sequence of decimal
+digits, optionally followed by K or M. If the expansion fails for any reason,
+including forced failure, or if the result is not of the required form,
+delivery is deferred. If the value is greater than zero and the size of a
+message exceeds this limit, the address is failed. If there is any chance that
+the resulting bounce message could be routed to the same transport, you should
+ensure that &%return_size_limit%& is less than the transport's
+&%message_size_limit%&, as otherwise the bounce message will fail to get
+delivered.
 
 
 
