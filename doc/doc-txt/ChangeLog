@@ -1,10 +1,14 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.452 2007/01/15 15:59:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.453 2007/01/16 21:00:29 magnus Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
 
 Exim version 4.67
 -----------------
+
+MH/01 Fix for bug #448, segfault in Dovecot authenticator when interface_address
+      is unset (happens when testing with -bh and -oMi isn't used). Thanks to
+      Jan Srzednicki.
 
 PH/01 Added a new log selector smtp_no_mail, to log SMTP sessions that do not
       issue a MAIL command.
