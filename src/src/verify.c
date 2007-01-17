@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.45 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.46 2007/01/17 11:17:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -27,6 +27,12 @@ typedef struct dnsbl_cache_block {
 /* Anchor for DNSBL cache */
 
 static tree_node *dnsbl_cache = NULL;
+
+
+/* Bits for match_type in one_check_dnsbl() */
+
+#define MT_NOT 1
+#define MT_ALL 2
 
 
 
@@ -2540,7 +2546,12 @@ Arguments:
                    reversed if IP address)
   iplist         the list of matching IP addresses, or NULL for "any"
   bitmask        true if bitmask matching is wanted
-  invert_result  true if result to be inverted
+  match_type     condition for 'succeed' result
+                   0 => Any RR in iplist     (=)
+                   1 => No RR in iplist      (!=)
+                   2 => All RRs in iplist    (==)
+                   3 => Some RRs not in iplist (!==)
+                   the two bits are defined as MT_NOT and MT_ALL
   defer_return   what to return for a defer
 
 Returns:         OK if lookup succeeded
@@ -2549,7 +2560,7 @@ Returns:         OK if lookup succeeded
 
 static int
 one_check_dnsbl(uschar *domain, uschar *domain_txt, uschar *keydomain,
-  uschar *prepend, uschar *iplist, BOOL bitmask, BOOL invert_result,
+  uschar *prepend, uschar *iplist, BOOL bitmask, int match_type,
   int defer_return)
 {
 dns_answer dnsa;
@@ -2668,21 +2679,25 @@ if (cb->rc == DNS_SUCCEED)
 
   if (iplist != NULL)
     {
-    int ipsep = ',';
-    uschar ip[46];
-    uschar *ptr = iplist;
-
-    while (string_nextinlist(&ptr, &ipsep, ip, sizeof(ip)) != NULL)
+    for (da = cb->rhs; da != NULL; da = da->next)
       {
+      int ipsep = ',';
+      uschar ip[46];
+      uschar *ptr = iplist;
+      uschar *res;
+
       /* Handle exact matching */
+
       if (!bitmask)
         {
-        for (da = cb->rhs; da != NULL; da = da->next)
+        while ((res = string_nextinlist(&ptr, &ipsep, ip, sizeof(ip))) != NULL)
           {
           if (Ustrcmp(CS da->address, ip) == 0) break;
           }
         }
+
       /* Handle bitmask matching */
+
       else
         {
         int address[4];
@@ -2695,37 +2710,60 @@ if (cb->rc == DNS_SUCCEED)
         ignore IPv6 addresses. The default mask is 0, which always matches.
         We change this only for IPv4 addresses in the list. */
 
-        if (host_aton(ip, address) == 1) mask = address[0];
+        if (host_aton(da->address, address) == 1) mask = address[0];
 
         /* Scan the returned addresses, skipping any that are IPv6 */
 
-        for (da = cb->rhs; da != NULL; da = da->next)
+        while ((res = string_nextinlist(&ptr, &ipsep, ip, sizeof(ip))) != NULL)
           {
-          if (host_aton(da->address, address) != 1) continue;
-          if ((address[0] & mask) == mask) break;
+          if (host_aton(ip, address) != 1) continue;
+          if ((address[0] & mask) == address[0]) break;
           }
         }
 
-      /* Break out if a match has been found */
+      /* If either
 
-      if (da != NULL) break;
+         (a) An IP address in an any ('=') list matched, or
+         (b) No IP address in an all ('==') list matched
+
+      then we're done searching. */
+
+      if (((match_type & MT_ALL) != 0) == (res == NULL)) break;
       }
 
-    /* If either
+    /* If da == NULL, either
 
-       (a) No IP address in a positive list matched, or
-       (b) An IP address in a negative list did match
+       (a) No IP address in an any ('=') list matched, or
+       (b) An IP address in an all ('==') list didn't match
 
-    then behave as if the DNSBL lookup had not succeeded, i.e. the host is
-    not on the list. */
+    so behave as if the DNSBL lookup had not succeeded, i.e. the host is not on
+    the list. */
 
-    if (invert_result != (da == NULL))
+    if ((match_type == MT_NOT || match_type == MT_ALL) != (da == NULL))
       {
       HDEBUG(D_dnsbl)
         {
+        uschar *res = NULL;
+        switch(match_type)
+          {
+          case 0:
+          res = US"was no match";
+          break;
+          case MT_NOT:
+          res = US"was an exclude match";
+          break;
+          case MT_ALL:
+          res = US"was an IP address that did not match";
+          break;
+          case MT_NOT|MT_ALL:
+          res = US"were no IP addresses that did not match";
+          break;
+          }
         debug_printf("=> but we are not accepting this block class because\n");
-        debug_printf("=> there was %s match for %c%s\n",
-          invert_result? "an exclude":"no", bitmask? '&' : '=', iplist);
+        debug_printf("=> there %s for %s%c%s\n",
+          res,
+          ((match_type & MT_ALL) == 0)? "" : "=",
+          bitmask? '&' : '=', iplist);
         }
       return FAIL;
       }
@@ -2739,7 +2777,7 @@ if (cb->rc == DNS_SUCCEED)
 
   if (domain_txt != domain)
     return one_check_dnsbl(domain_txt, domain_txt, keydomain, prepend, NULL,
-      FALSE, invert_result, defer_return);
+      FALSE, match_type, defer_return);
 
   /* If there is no alternate domain, look up a TXT record in the main domain
   if it has not previously been cached. */
@@ -2852,7 +2890,6 @@ verify_check_dnsbl(uschar **listptr)
 {
 int sep = 0;
 int defer_return = FAIL;
-BOOL invert_result = FALSE;
 uschar *list = *listptr;
 uschar *domain;
 uschar *s;
@@ -2873,6 +2910,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
   {
   int rc;
   BOOL bitmask = FALSE;
+  int match_type = 0;
   uschar *domain_txt;
   uschar *comma;
   uschar *iplist;
@@ -2899,8 +2937,8 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
   if (key != NULL) *key++ = 0;
 
   /* See if there's a list of addresses supplied after the domain name. This is
-  introduced by an = or a & character; if preceded by ! we invert the result.
-  */
+  introduced by an = or a & character; if preceded by = we require all matches
+  and if preceded by ! we invert the result. */
 
   iplist = Ustrchr(domain, '=');
   if (iplist == NULL)
@@ -2909,14 +2947,23 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
     iplist = Ustrchr(domain, '&');
     }
 
-  if (iplist != NULL)
+  if (iplist != NULL)                          /* Found either = or & */
     {
-    if (iplist > domain && iplist[-1] == '!')
+    if (iplist > domain && iplist[-1] == '!')  /* Handle preceding ! */
       {
-      invert_result = TRUE;
+      match_type |= MT_NOT;
       iplist[-1] = 0;
       }
-    *iplist++ = 0;
+
+    *iplist++ = 0;                             /* Terminate domain, move on */
+
+    /* If we found = (bitmask == FALSE), check for == or =& */
+
+    if (!bitmask && (*iplist == '=' || *iplist == '&'))
+      {
+      bitmask = *iplist++ == '&';
+      match_type |= MT_ALL;
+      }
     }
 
   /* If there is a comma in the domain, it indicates that a second domain for
@@ -2967,7 +3014,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
     if (sender_host_address == NULL) return FAIL;    /* can never match */
     if (revadd[0] == 0) invert_address(revadd, sender_host_address);
     rc = one_check_dnsbl(domain, domain_txt, sender_host_address, revadd,
-      iplist, bitmask, invert_result, defer_return);
+      iplist, bitmask, match_type, defer_return);
     if (rc == OK)
       {
       dnslist_domain = string_copy(domain_txt);
@@ -3000,7 +3047,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
         }
 
       rc = one_check_dnsbl(domain, domain_txt, keydomain, prepend, iplist,
-        bitmask, invert_result, defer_return);
+        bitmask, match_type, defer_return);
 
       if (rc == OK)
         {

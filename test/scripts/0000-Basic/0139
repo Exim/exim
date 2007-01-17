@@ -32,4 +32,12 @@ test data
 .
 quit
 ****
+exim -bh V4NET.11.12.15
+helo a.b
+quit
+****
+exim -bh V4NET.13.13.2
+vrfy a@b
+quit
+****
 no_msglog_check

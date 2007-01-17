@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.453 2007/01/16 21:00:29 magnus Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.454 2007/01/17 11:17:58 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -12,6 +12,19 @@ MH/01 Fix for bug #448, segfault in Dovecot authenticator when interface_address
 
 PH/01 Added a new log selector smtp_no_mail, to log SMTP sessions that do not
       issue a MAIL command.
+
+PH/02 In an ACL statement such as
+
+        deny dnslists = X!=127.0.0.2 : X=127.0.0.2
+
+      if a client was not listed at all, or was listed with a value other than
+      127.0.0.2, in the X list, but was listed with 127.0.0.2 in the Y list,
+      the condition was not true (as it should be), so access was not denied.
+      The bug was that the ! inversion was incorrectly passed on to the second
+      item. This has been fixed.
+
+PH/03 Added additional dnslists conditions == and =& which are different from
+      = and & when the dns lookup returns more than one IP address.
 
 
 Exim version 4.66

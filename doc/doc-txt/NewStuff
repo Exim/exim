@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.126 2007/01/15 15:59:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.127 2007/01/17 11:17:58 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -37,6 +37,74 @@ Version 4.67
     the last 20 are listed, preceded by "...". However, with the default
     setting of 10 for smtp_accep_max_nonmail, the connection will in any case
     be aborted before 20 non-mail commands are processed.
+
+ 2. When an item in a dnslists list is followed by = and & and a list of IP
+    addresses, in order to restrict the match to specific results from the DNS
+    lookup, the behaviour was not clear when the lookup returned more than one
+    IP address. For example, consider the condition
+
+      dnslists = a.b.c=127.0.0.1
+
+    What happens if the DNS lookup for the incoming IP address yields both
+    127.0.0.1 and 127.0.0.2 by means of two separate DNS records? Is the
+    condition true because at least one given value was found, or is it false
+    because at least one of the found values was not listed? And how does this
+    affect negated conditions?
+
+    The behaviour of = and & has not been changed; however, the text below
+    documents it more clearly. In addition, two new additional conditions (==
+    and =&) have been added, to permit the "other" behaviour to be configured.
+
+    A DNS lookup may yield more than one record. Thus, the result of the lookup
+    for a dnslists check may yield more than one IP address. The question then
+    arises as to whether all the looked up addresses must be listed, or whether
+    just one is good enough. Both possibilities are provided for:
+
+    . If = or & is used, the condition is true if any one of the looked up
+      IP addresses matches one of the listed addresses. Consider:
+
+        dnslists = a.b.c=127.0.0.1
+
+      If the DNS lookup yields both 127.0.0.1 and 127.0.0.2, the condition is
+      true because 127.0.0.1 matches.
+
+    . If == or =& is used, the condition is true only if every one of the
+      looked up IP addresses matches one of the listed addresses. Consider:
+
+        dnslists = a.b.c==127.0.0.1
+
+      If the DNS lookup yields both 127.0.0.1 and 127.0.0.2, the condition is
+      false because 127.0.0.2 is not listed. You would need to have
+
+        dnslists = a.b.c==127.0.0.1,127.0.0.2
+
+      for the condition to be true.
+
+    When ! is used to negate IP address matching, it inverts the result, giving
+    the precise opposite of the behaviour above. Thus:
+
+    . If != or !& is used, the condition is true if none of the looked up IP
+      addresses matches one of the listed addresses. Consider:
+
+        dnslists = a.b.c!&0.0.0.1
+
+      If the DNS lookup yields both 127.0.0.1 and 127.0.0.2, the condition is
+      false because 127.0.0.1 matches.
+
+    . If !== or !=& is used, the condition is true there is at least one looked
+      up IP address that does not match. Consider:
+
+        dnslists = a.b.c!=&0.0.0.1
+
+      If the DNS lookup yields both 127.0.0.1 and 127.0.0.2, the condition is
+      true, because 127.0.0.2 does not match. You would need to have
+
+        dnslists = a.b.c!=&0.0.0.1,0.0.0.2
+
+      for the condition to be false.
+
+    When the DNS lookup yields only a single IP address, there is no difference
+    between = and == and between & and =&.
 
 
 Version 4.66

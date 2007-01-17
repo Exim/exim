@@ -50,3 +50,19 @@
 354 Enter message, ending with "." on a line by itself
 250 OK id=10HmaX-0005vi-00
 221 the.local.host.name closing connection
+
+**** SMTP testing session as if from host V4NET.11.12.15
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 the.local.host.name Hello a.b [V4NET.11.12.15]
+221 the.local.host.name closing connection
+
+**** SMTP testing session as if from host V4NET.13.13.2
+**** but without any ident (RFC 1413) callback.
+**** This is not for real!
+
+220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+550 <a@b> Unrouteable address
+221 the.local.host.name closing connection

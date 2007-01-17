@@ -13,12 +13,29 @@ gecos_name = CALLER_NAME
 domainlist local_domains = exim.test.ex
 trusted_users = CALLER
 
+acl_smtp_helo = check_helo
 acl_smtp_rcpt = check_recipient
 acl_smtp_mail = check_mail
+acl_smtp_vrfy = check_vrfy
 
 # ------ ACL ------
 
 begin acl
+
+check_helo:
+  warn    dnslists = rbl2.test.ex!=127.0.0.3 : rbl3.test.ex=127.0.0.3
+  accept
+
+check_vrfy:
+  warn    dnslists = rbl.test.ex=127.0.0.1
+  warn    dnslists = rbl.test.ex!=127.0.0.1
+  warn    dnslists = rbl.test.ex!=127.0.0.3
+  warn    dnslists = rbl.test.ex==127.0.0.1
+  warn    dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
+  warn    dnslists = rbl.test.ex!==127.0.0.1
+  warn    dnslists = rbl.test.ex!==127.0.0.3
+  warn    dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
+  accept
 
 check_mail:
   warn    dnslists = rbl4.test.ex&0.0.0.6

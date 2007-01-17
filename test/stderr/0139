@@ -259,3 +259,104 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> warn: condition test failed
 >>> processing "accept"
 >>> accept: condition test succeeded
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> a.b in helo_lookup_domains? no (end of list)
+>>> using ACL "check_helo"
+>>> processing "warn"
+>>> check dnslists = rbl2.test.ex!=127.0.0.3 : rbl3.test.ex=127.0.0.3
+>>> DNS list check: rbl2.test.ex!=127.0.0.3
+>>> new DNS lookup for 15.12.11.V4NET.rbl2.test.ex
+>>> DNS lookup for 15.12.11.V4NET.rbl2.test.ex failed
+>>> => that means V4NET.11.12.15 is not listed at rbl2.test.ex
+>>> DNS list check: rbl3.test.ex=127.0.0.3
+>>> new DNS lookup for 15.12.11.V4NET.rbl3.test.ex
+>>> DNS lookup for 15.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.3)
+>>> => that means V4NET.11.12.15 is listed at rbl3.test.ex
+>>> warn: condition test succeeded
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> host in hosts_connection_nolog? no (option unset)
+>>> host in host_lookup? no (option unset)
+>>> host in host_reject_connection? no (option unset)
+>>> host in sender_unqualified_hosts? no (option unset)
+>>> host in recipient_unqualified_hosts? no (option unset)
+>>> host in helo_verify_hosts? no (option unset)
+>>> host in helo_try_verify_hosts? no (option unset)
+>>> host in helo_accept_junk_hosts? no (option unset)
+>>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
+>>> using ACL "check_vrfy"
+>>> processing "warn"
+>>> check dnslists = rbl.test.ex=127.0.0.1
+>>> DNS list check: rbl.test.ex=127.0.0.1
+>>> new DNS lookup for 2.13.13.V4NET.rbl.test.ex
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> => that means V4NET.13.13.2 is listed at rbl.test.ex
+>>> warn: condition test succeeded
+>>> processing "warn"
+>>> check dnslists = rbl.test.ex!=127.0.0.1
+>>> DNS list check: rbl.test.ex!=127.0.0.1
+>>> using result of previous DNS lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> => but we are not accepting this block class because
+>>> => there was an exclude match for =127.0.0.1
+>>> warn: condition test failed
+>>> processing "warn"
+>>> check dnslists = rbl.test.ex!=127.0.0.3
+>>> DNS list check: rbl.test.ex!=127.0.0.3
+>>> using result of previous DNS lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> => that means V4NET.13.13.2 is listed at rbl.test.ex
+>>> warn: condition test succeeded
+>>> processing "warn"
+>>> check dnslists = rbl.test.ex==127.0.0.1
+>>> DNS list check: rbl.test.ex==127.0.0.1
+>>> using result of previous DNS lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> => but we are not accepting this block class because
+>>> => there was an IP address that did not match for ==127.0.0.1
+>>> warn: condition test failed
+>>> processing "warn"
+>>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
+>>> DNS list check: rbl.test.ex==127.0.0.1,127.0.0.2
+>>> using result of previous DNS lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> => that means V4NET.13.13.2 is listed at rbl.test.ex
+>>> warn: condition test succeeded
+>>> processing "warn"
+>>> check dnslists = rbl.test.ex!==127.0.0.1
+>>> DNS list check: rbl.test.ex!==127.0.0.1
+>>> using result of previous DNS lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> => that means V4NET.13.13.2 is listed at rbl.test.ex
+>>> warn: condition test succeeded
+>>> processing "warn"
+>>> check dnslists = rbl.test.ex!==127.0.0.3
+>>> DNS list check: rbl.test.ex!==127.0.0.3
+>>> using result of previous DNS lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> => that means V4NET.13.13.2 is listed at rbl.test.ex
+>>> warn: condition test succeeded
+>>> processing "warn"
+>>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
+>>> DNS list check: rbl.test.ex!==127.0.0.1,127.0.0.2
+>>> using result of previous DNS lookup
+>>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
+>>> => but we are not accepting this block class because
+>>> => there were no IP addresses that did not match for ==127.0.0.1,127.0.0.2
+>>> warn: condition test failed
+>>> processing "accept"
+>>> accept: condition test succeeded
+>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+>>> routing a@b
+>>> calling system_aliases router
+>>> system_aliases router declined for a@b
+>>> a in "userx"? no (end of list)
+>>> no more routers
+LOG: VRFY failed for a@b H=[V4NET.13.13.2]
