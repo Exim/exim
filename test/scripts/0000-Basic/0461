@@ -19,7 +19,7 @@ QUIT
 exim -odi userx@test.ex
 Short message
 ****
-sleep 3
+sleep 2
 server PORT_S
 220 server ready
 EHLO
@@ -38,6 +38,7 @@ QUIT
 exim -odi userx@test.ex
 Short message
 ****
+sleep 1
 server PORT_S
 220 server ready
 EHLO

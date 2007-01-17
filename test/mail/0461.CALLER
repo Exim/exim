@@ -16,7 +16,7 @@ A message that you sent could not be delivered to one or more of its
 recipients. This is a permanent error. The following address(es) failed:
 
   userx@test.ex
-    retry timeout exceeded
+    retry time not reached for any host after a long failure period
 
 ------ This is a copy of the message, including all the headers. ------
 
