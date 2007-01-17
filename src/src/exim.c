@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.52 2007/01/15 15:59:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.53 2007/01/17 11:29:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4371,6 +4371,11 @@ if (host_checking)
     log_write_selector &= ~L_smtp_connection;
   log_write(L_smtp_connection, LOG_MAIN, "%s", smtp_get_connection_info());
 
+  /* NOTE: We do *not* call smtp_log_no_mail() if smtp_start_session() fails,
+  because a log line has already been written for all its failure exists
+  (usually "connection refused: <reason>") and writing another one is
+  unnecessary clutter. */
+
   if (smtp_start_session())
     {
     reset_point = store_get(0);
@@ -4380,8 +4385,8 @@ if (host_checking)
       if (smtp_setup_msg() <= 0) break;
       if (!receive_msg(FALSE)) break;
       }
+    smtp_log_no_mail();
     }
-  smtp_log_no_mail();
   exim_exit(EXIT_SUCCESS);
   }
 
@@ -4519,7 +4524,12 @@ if ((!smtp_input || smtp_batched_input) && !receive_check_fs(0))
   }
 
 /* If this is smtp input of any kind, handle the start of the SMTP
-session. */
+session.
+
+NOTE: We do *not* call smtp_log_no_mail() if smtp_start_session() fails,
+because a log line has already been written for all its failure exists
+(usually "connection refused: <reason>") and writing another one is
+unnecessary clutter. */
 
 if (smtp_input)
   {

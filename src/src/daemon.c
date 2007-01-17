@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.20 2007/01/15 15:59:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.21 2007/01/17 11:29:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -468,7 +468,12 @@ if (pid == 0)
   /* Handle the start of the SMTP session, then loop, accepting incoming
   messages from the SMTP connection. The end will come at the QUIT command,
   when smtp_setup_msg() returns 0. A break in the connection causes the
-  process to die (see accept.c). */
+  process to die (see accept.c).
+
+  NOTE: We do *not* call smtp_log_no_mail() if smtp_start_session() fails,
+  because a log line has already been written for all its failure exists
+  (usually "connection refused: <reason>") and writing another one is
+  unnecessary clutter. */
 
   if (!smtp_start_session())
     {
