@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.50 2007/01/15 15:59:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.51 2007/01/18 15:35:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1540,7 +1540,9 @@ if (!sender_host_unknown)
   smtps port for use with older style SSL MTAs. */
 
   #ifdef SUPPORT_TLS
-  if (tls_on_connect && tls_server_start(tls_require_ciphers) != OK)
+  if (tls_on_connect &&
+      tls_server_start(tls_require_ciphers,
+        gnutls_require_mac, gnutls_require_kx, gnutls_require_proto) != OK)
     return FALSE;
   #endif
 
@@ -3593,7 +3595,8 @@ while (done <= 0)
     We must allow for an extra EHLO command and an extra AUTH command after
     STARTTLS that don't add to the nonmail command count. */
 
-    if ((rc = tls_server_start(tls_require_ciphers)) == OK)
+    if ((rc = tls_server_start(tls_require_ciphers, gnutls_require_mac,
+           gnutls_require_kx, gnutls_require_proto)) == OK)
       {
       if (!tls_remember_esmtp)
         helo_seen = esmtp = auth_advertised = pipelining_advertised = FALSE;

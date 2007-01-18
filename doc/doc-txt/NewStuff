@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.127 2007/01/17 11:17:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.128 2007/01/18 15:35:42 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -105,6 +105,75 @@ Version 4.67
 
     When the DNS lookup yields only a single IP address, there is no difference
     between = and == and between & and =&.
+
+ 3. Up till now, the only control over which cipher suites GnuTLS uses has been
+    for the cipher algorithms. New options have been added to allow some of the
+    other parameters to be varied. Here is complete documentation for the
+    available features:
+
+    GnuTLS allows the caller to specify separate lists of permitted key
+    exchange methods, main cipher algorithms, and MAC algorithms. These may be
+    used in any combination to form a specific cipher suite. This is unlike
+    OpenSSL, where complete cipher names can be passed to its control function.
+    GnuTLS also allows a list of acceptable protocols to be supplied.
+
+    For compatibility with OpenSSL, the tls_require_ciphers option can be set
+    to complete cipher suite names such as RSA_ARCFOUR_SHA, but for GnuTLS this
+    option controls only the cipher algorithms. Exim searches each item in the
+    list for the name of an available algorithm. For example, if the list
+    contains RSA_AES_SHA, then AES is recognized, and the behaviour is exactly
+    the same as if just AES were given.
+
+    There are additional options called gnutls_require_kx, gnutls_require_mac,
+    and gnutls_require_protocols that can be used to restrict the key exchange
+    methods, MAC algorithms, and protocols, respectively. These options are
+    ignored if OpenSSL is in use.
+
+    All four options are available as global options, controlling how Exim
+    behaves as a server, and also as options of the smtp transport, controlling
+    how Exim behaves as a client. All the values are string expanded. After
+    expansion, the values must be colon-separated lists, though the separator
+    can be changed in the usual way.
+
+    Each of the four lists starts out with a default set of algorithms. If the
+    first item in one of the "require" options does _not_ start with an
+    exclamation mark, all the default items are deleted. In this case, only
+    those that are explicitly specified can be used. If the first item in one
+    of the "require" items _does_ start with an exclamation mark, the defaults
+    are left on the list.
+
+    Then, any item that starts with an exclamation mark causes the relevant
+    entry to be removed from the list, and any item that does not start with an
+    exclamation mark causes a new entry to be added to the list. Unrecognized
+    items in the list are ignored. Thus:
+
+      tls_require_ciphers = !ARCFOUR
+
+    allows all the defaults except ARCFOUR, whereas
+
+      tls_require_ciphers = AES : 3DES
+
+    allows only cipher suites that use AES or 3DES. For tls_require_ciphers
+    the recognized names are AES_256, AES_128, AES (both of the preceding),
+    3DES, ARCFOUR_128, ARCFOUR_40, and ARCFOUR (both of the preceding). The
+    default list does not contain all of these; it just has AES_256, AES_128,
+    3DES, and ARCFOUR_128.
+
+    For gnutls_require_kx, the recognized names are DHE_RSA, RSA (which
+    includes DHE_RSA), DHE_DSS, and DHE (which includes both DHE_RSA and
+    DHE_DSS). The default list contains RSA, DHE_DSS, DHE_RSA.
+
+    For gnutls_require_mac, the recognized names are SHA (synonym SHA1), and
+    MD5. The default list contains SHA, MD5.
+
+    For gnutls_require_protocols, the recognized names are TLS1 and SSL3.
+    The default list contains TLS1, SSL3.
+
+    In a server, the order of items in these lists is unimportant. The server
+    will advertise the availability of all the relevant cipher suites. However,
+    in a client, the order in the tls_require_ciphers list specifies a
+    preference order for the cipher algorithms. The first one in the client's
+    list that is also advertised by the server is tried first.
 
 
 Version 4.66

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.17 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.18 2007/01/18 15:35:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -46,16 +46,23 @@ static char ssl_errstring[256];
 static int  ssl_session_timeout = 200;
 static int  verify_requirement;
 
-/* Priorities for TLS algorithms to use. At present, only the cipher priority
-vector can be altered. */
+/* Priorities for TLS algorithms to use. In each case there's a default table,
+and space into which it can be copied and altered. */
 
-static const int protocol_priority[16] = { GNUTLS_TLS1, GNUTLS_SSL3, 0 };
+static const int default_proto_priority[16] = {
+  GNUTLS_TLS1,
+  GNUTLS_SSL3,
+  0 };
 
-static const int kx_priority[16] = {
+static int proto_priority[16];
+
+static const int default_kx_priority[16] = {
   GNUTLS_KX_RSA,
   GNUTLS_KX_DHE_DSS,
   GNUTLS_KX_DHE_RSA,
   0 };
+
+static int kx_priority[16];
 
 static int default_cipher_priority[16] = {
   GNUTLS_CIPHER_AES_256_CBC,
@@ -66,20 +73,49 @@ static int default_cipher_priority[16] = {
 
 static int cipher_priority[16];
 
-static const int mac_priority[16] = {
+static const int default_mac_priority[16] = {
   GNUTLS_MAC_SHA,
   GNUTLS_MAC_MD5,
   0 };
 
+static int mac_priority[16];
+
+/* These two are currently not changeable. */
+
 static const int comp_priority[16] = { GNUTLS_COMP_NULL, 0 };
 static const int cert_type_priority[16] = { GNUTLS_CRT_X509, 0 };
 
-/* Tables of cipher names and equivalent numbers */
+/* Tables of priority names and equivalent numbers */
 
 typedef struct pri_item {
   uschar *name;
   int *values;
 } pri_item;
+
+
+static int tls1_codes[] = { GNUTLS_TLS1, 0 };
+static int ssl3_codes[] = { GNUTLS_SSL3, 0 };
+
+static pri_item proto_index[] = {
+  { US"TLS1", tls1_codes },
+  { US"SSL3", ssl3_codes }
+};
+
+
+static int kx_rsa_codes[]      = { GNUTLS_KX_RSA,
+                                   GNUTLS_KX_DHE_RSA, 0 };
+static int kx_dhe_codes[]      = { GNUTLS_KX_DHE_DSS,
+                                   GNUTLS_KX_DHE_RSA, 0 };
+static int kx_dhe_dss_codes[]  = { GNUTLS_KX_DHE_DSS, 0 };
+static int kx_dhe_rsa_codes[]  = { GNUTLS_KX_DHE_RSA, 0 };
+
+static pri_item kx_index[] = {
+  { US"DHE_DSS", kx_dhe_dss_codes },
+  { US"DHE_RSA", kx_dhe_rsa_codes },
+  { US"RSA", kx_rsa_codes },
+  { US"DHE", kx_dhe_codes }
+};
+
 
 static int arcfour_128_codes[] = { GNUTLS_CIPHER_ARCFOUR_128, 0 };
 static int arcfour_40_codes[]  = { GNUTLS_CIPHER_ARCFOUR_40, 0 };
@@ -99,6 +135,16 @@ static pri_item cipher_index[] = {
   { US"AES_128", aes_128_codes },
   { US"AES", aes_codes },
   { US"3DES", des3_codes }
+};
+
+
+static int mac_sha_codes[]     = { GNUTLS_MAC_SHA, 0 };
+static int mac_md5_codes[]     = { GNUTLS_MAC_MD5, 0 };
+
+static pri_item mac_index[] = {
+  { US"SHA",  mac_sha_codes },
+  { US"SHA1", mac_sha_codes },
+  { US"MD5",  mac_md5_codes }
 };
 
 
@@ -512,7 +558,7 @@ return OK;
 
 
 /*************************************************
-*        Remove ciphers from priority list       *
+*           Remove from a priority list          *
 *************************************************/
 
 /* Cautiously written so that it will remove duplicates if present.
@@ -525,7 +571,7 @@ Returns:       nothing
 */
 
 static void
-remove_ciphers(int *list, int *remove_list)
+remove_priority(int *list, int *remove_list)
 {
 for (; *remove_list != 0; remove_list++)
   {
@@ -545,7 +591,7 @@ for (; *remove_list != 0; remove_list++)
 
 
 /*************************************************
-*        Add ciphers to priority list            *
+*            Add to a priority list              *
 *************************************************/
 
 /* Cautiously written to check the list size
@@ -559,7 +605,7 @@ Returns:       TRUE if OK; FALSE if list overflows
 */
 
 static BOOL
-add_ciphers(int *list, int list_max, int *add_list)
+add_priority(int *list, int list_max, int *add_list)
 {
 int next = 0;
 while (list[next] != 0) next++;
@@ -571,6 +617,78 @@ while (*add_list != 0)
 list[next] = 0;
 return TRUE;
 }
+
+
+
+/*************************************************
+*          Adjust a priority list                *
+*************************************************/
+
+/* This function is called to adjust the lists of cipher algorithms, MAC
+algorithms, key-exchange methods, and protocols.
+
+Arguments:
+  plist       the appropriate priority list
+  psize       the length of the list
+  s           the configuation string
+  index       the index of recognized strings
+  isize       the length of the index
+
+
+  which       text for an error message
+
+Returns:      FALSE if the table overflows, else TRUE
+*/
+
+static BOOL
+set_priority(int *plist, int psize, uschar *s, pri_item *index, int isize,
+   uschar *which)
+{
+int sep = 0;
+BOOL first = TRUE;
+uschar *t;
+
+while ((t = string_nextinlist(&s, &sep, big_buffer, big_buffer_size)) != NULL)
+  {
+  int i;
+  BOOL exclude = t[0] == '!';
+  if (first && !exclude) plist[0] = 0;
+  first = FALSE;
+  for (i = 0; i < isize; i++)
+    {
+    uschar *ss = strstric(t, index[i].name, FALSE);
+    if (ss != NULL)
+      {
+      uschar *endss = ss + Ustrlen(index[i].name);
+      if ((ss == t || !isalnum(ss[-1])) && !isalnum(*endss))
+        {
+        if (exclude)
+          remove_priority(plist, index[i].values);
+        else
+          {
+          if (!add_priority(plist, psize, index[i].values))
+            {
+            log_write(0, LOG_MAIN|LOG_PANIC, "GnuTLS init failed: %s "
+              "priority table overflow", which);
+            return FALSE;
+            }
+          }
+        }
+      }
+    }
+  }
+
+DEBUG(D_tls)
+  {
+  int *ptr = plist;
+  debug_printf("adjusted %s priorities:", which);
+  while (*ptr != 0) debug_printf(" %d", *ptr++);
+  debug_printf("\n");
+  }
+
+return TRUE;
+}
+
 
 
 
@@ -591,78 +709,60 @@ cipher.
 
 Arguments:
   side         one of GNUTLS_SERVER, GNUTLS_CLIENT
-  expciphers   expanded ciphers list
+  expciphers   expanded ciphers list or NULL
+  expmac       expanded MAC list or NULL
+  expkx        expanded key-exchange list or NULL
+  expproto     expanded protocol list or NULL
 
 Returns:  a gnutls_session, or NULL if there is a problem
 */
 
 static gnutls_session
-tls_session_init(int side, uschar *expciphers)
+tls_session_init(int side, uschar *expciphers, uschar *expmac, uschar *expkx,
+  uschar *expproto)
 {
 gnutls_session session;
 
 gnutls_init(&session, side);
 
-/* Handle the list of permitted ciphers */
+/* Initialize the lists of permitted protocols, key-exchange methods, ciphers,
+and MACs. */
 
 memcpy(cipher_priority, default_cipher_priority, sizeof(cipher_priority));
+memcpy(mac_priority, default_mac_priority, sizeof(mac_priority));
+memcpy(kx_priority, default_kx_priority, sizeof(kx_priority));
+memcpy(proto_priority, default_proto_priority, sizeof(proto_priority));
+
+/* The names OpenSSL uses in tls_require_ciphers are of the form DES-CBC3-SHA,
+using hyphen separators. GnuTLS uses underscore separators. So that I can use
+either form for tls_require_ciphers in my tests, and also for general
+convenience, we turn hyphens into underscores before scanning the list. */
 
 if (expciphers != NULL)
   {
-  int sep = 0;
-  BOOL first = TRUE;
-  uschar *cipher;
-
-  /* The names OpenSSL uses are of the form DES-CBC3-SHA, using hyphen
-  separators. GnuTLS uses underscore separators. So that I can use either form
-  in my tests, and also for general convenience, we turn hyphens into
-  underscores before scanning the list. */
-
   uschar *s = expciphers;
   while (*s != 0) { if (*s == '-') *s = '_'; s++; }
+  }
 
-  while ((cipher = string_nextinlist(&expciphers, &sep, big_buffer,
-             big_buffer_size)) != NULL)
-    {
-    int i;
-    BOOL exclude = cipher[0] == '!';
-    if (first && !exclude) cipher_priority[0] = 0;
-    first = FALSE;
-
-    for (i = 0; i < sizeof(cipher_index)/sizeof(pri_item); i++)
-      {
-      uschar *ss = strstric(cipher, cipher_index[i].name, FALSE);
-      if (ss != NULL)
-        {
-        uschar *endss = ss + Ustrlen(cipher_index[i].name);
-        if ((ss == cipher || !isalnum(ss[-1])) && !isalnum(*endss))
-          {
-          if (exclude)
-            remove_ciphers(cipher_priority, cipher_index[i].values);
-          else
-            {
-            if (!add_ciphers(cipher_priority,
-                             sizeof(cipher_priority)/sizeof(pri_item),
-                             cipher_index[i].values))
-              {
-              log_write(0, LOG_MAIN|LOG_PANIC, "GnuTLS init failed: cipher "
-                "priority table overflow");
-              gnutls_deinit(session);
-              return NULL;
-              }
-            }
-          }
-        }
-      }
-    }
-
-  DEBUG(D_tls)
-    {
-    int *ptr = cipher_priority;
-    debug_printf("adjusted cipher priorities:");
-    while (*ptr != 0) debug_printf(" %d", *ptr++);
-    debug_printf("\n");
-    }
+if ((expciphers != NULL &&
+      !set_priority(cipher_priority, sizeof(cipher_priority)/sizeof(int),
+        expciphers, cipher_index, sizeof(cipher_index)/sizeof(pri_item),
+        US"cipher")) ||
+    (expmac != NULL &&
+      !set_priority(mac_priority, sizeof(mac_priority)/sizeof(int),
+        expmac, mac_index, sizeof(mac_index)/sizeof(pri_item),
+        US"MAC")) ||
+    (expkx != NULL &&
+      !set_priority(kx_priority, sizeof(kx_priority)/sizeof(int),
+        expkx, kx_index, sizeof(kx_index)/sizeof(pri_item),
+        US"key-exchange")) ||
+    (expproto != NULL &&
+      !set_priority(proto_priority, sizeof(proto_priority)/sizeof(int),
+        expproto, proto_index, sizeof(proto_index)/sizeof(pri_item),
+        US"protocol")))
+  {
+  gnutls_deinit(session);
+  return NULL;
   }
 
 /* Define the various priorities */
@@ -670,7 +770,7 @@ if (expciphers != NULL)
 gnutls_cipher_set_priority(session, cipher_priority);
 gnutls_compression_set_priority(session, comp_priority);
 gnutls_kx_set_priority(session, kx_priority);
-gnutls_protocol_set_priority(session, protocol_priority);
+gnutls_protocol_set_priority(session, proto_priority);
 gnutls_mac_set_priority(session, mac_priority);
 
 gnutls_cred_set(session, GNUTLS_CRD_CERTIFICATE, x509_cred);
@@ -739,7 +839,10 @@ the STARTTLS command. It must respond to that command, and then negotiate
 a TLS session.
 
 Arguments:
-  require_ciphers  list of allowed ciphers
+  require_ciphers  list of allowed ciphers or NULL
+  require_mac      list of allowed MACs or NULL
+  require_kx       list of allowed key_exchange methods or NULL
+  require_proto    list of allowed protocols or NULL
 
 Returns:           OK on success
                    DEFER for errors before the start of the negotiation
@@ -748,11 +851,15 @@ Returns:           OK on success
 */
 
 int
-tls_server_start(uschar *require_ciphers)
+tls_server_start(uschar *require_ciphers, uschar *require_mac,
+  uschar *require_kx, uschar *require_proto)
 {
 int rc;
 uschar *error;
 uschar *expciphers = NULL;
+uschar *expmac = NULL;
+uschar *expkx = NULL;
+uschar *expproto = NULL;
 
 /* Check for previous activation */
 
@@ -774,7 +881,10 @@ rc = tls_init(NULL, tls_certificate, tls_privatekey, tls_verify_certificates,
   tls_crl);
 if (rc != OK) return rc;
 
-if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers))
+if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers) ||
+    !expand_check(require_mac, US"gnutls_require_mac", &expmac) ||
+    !expand_check(require_kx, US"gnutls_require_kx", &expkx) ||
+    !expand_check(require_proto, US"gnutls_require_proto", &expproto))
   return FAIL;
 
 /* If this is a host for which certificate verification is mandatory or
@@ -790,7 +900,8 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
 
 /* Prepare for new connection */
 
-tls_session = tls_session_init(GNUTLS_SERVER, expciphers);
+tls_session = tls_session_init(GNUTLS_SERVER, expciphers, expmac, expkx,
+  expproto);
 if (tls_session == NULL)
   return tls_error(US"tls_session_init", NULL, GNUTLS_E_MEMORY_ERROR);
 
@@ -883,13 +994,16 @@ return OK;
 Arguments:
   fd                the fd of the connection
   host              connected host (for messages)
-  addr
+  addr              the first address (not used)
   dhparam           DH parameter file
   certificate       certificate file
   privatekey        private key file
   verify_certs      file for certificate verify
   verify_crl        CRL for verify
-  require_ciphers   list of allowed ciphers
+  require_ciphers   list of allowed ciphers or NULL
+  require_mac       list of allowed MACs or NULL
+  require_kx        list of allowed key_exchange methods or NULL
+  require_proto     list of allowed protocols or NULL
   timeout           startup timeout
 
 Returns:            OK/DEFER/FAIL (because using common functions),
@@ -899,10 +1013,14 @@ Returns:            OK/DEFER/FAIL (because using common functions),
 int
 tls_client_start(int fd, host_item *host, address_item *addr, uschar *dhparam,
   uschar *certificate, uschar *privatekey, uschar *verify_certs,
-  uschar *verify_crl, uschar *require_ciphers, int timeout)
+  uschar *verify_crl, uschar *require_ciphers, uschar *require_mac,
+  uschar *require_kx, uschar *require_proto, int timeout)
 {
 const gnutls_datum *server_certs;
 uschar *expciphers = NULL;
+uschar *expmac = NULL;
+uschar *expkx = NULL;
+uschar *expproto = NULL;
 uschar *error;
 unsigned int server_certs_size;
 int rc;
@@ -914,10 +1032,15 @@ verify_requirement = (verify_certs == NULL)? VERIFY_NONE : VERIFY_REQUIRED;
 rc = tls_init(host, certificate, privatekey, verify_certs, verify_crl);
 if (rc != OK) return rc;
 
-if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers))
+if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers) ||
+    !expand_check(require_mac, US"gnutls_require_mac", &expmac) ||
+    !expand_check(require_kx, US"gnutls_require_kx", &expkx) ||
+    !expand_check(require_proto, US"gnutls_require_proto", &expproto))
   return FAIL;
 
-tls_session = tls_session_init(GNUTLS_CLIENT, expciphers);
+tls_session = tls_session_init(GNUTLS_CLIENT, expciphers, expmac, expkx,
+  expproto);
+
 if (tls_session == NULL)
   return tls_error(US "tls_session_init", host, GNUTLS_E_MEMORY_ERROR);
 

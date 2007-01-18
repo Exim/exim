@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.33 2007/01/15 15:59:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.34 2007/01/18 15:35:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -24,13 +24,14 @@ extern uschar *init_perl(uschar *);
 
 #ifdef SUPPORT_TLS
 extern int     tls_client_start(int, host_item *, address_item *, uschar *,
-                 uschar *, uschar *, uschar *, uschar *, uschar *, int);
+                 uschar *, uschar *, uschar *, uschar *, uschar *, uschar *,
+                 uschar *, uschar *, int);
 extern void    tls_close(BOOL);
 extern int     tls_feof(void);
 extern int     tls_ferror(void);
 extern int     tls_getc(void);
 extern int     tls_read(uschar *, size_t);
-extern int     tls_server_start(uschar *);
+extern int     tls_server_start(uschar *, uschar *, uschar *, uschar *);
 extern int     tls_ungetc(int);
 extern int     tls_write(const uschar *, size_t);
 #endif

@@ -1,6 +1,10 @@
 # Exim test configuration 2011
 
 SERVER =
+CREQCIP =
+CREQMAC =
+SREQCIP =
+SREQMAC =
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -28,6 +32,9 @@ tls_privatekey = ${if eq {SERVER}{server}{DIR/aux-fixed/cert1}fail}
 tls_verify_hosts = *
 tls_verify_certificates = ${if eq {SERVER}{server}{DIR/aux-fixed/cert2}fail}
 
+SREQCIP
+SREQMAC
+
 
 # ----- Routers -----
 
@@ -52,7 +59,7 @@ send_to_server:
   port = PORT_D
   tls_certificate = DIR/aux-fixed/cert2
   tls_privatekey = DIR/aux-fixed/cert2
-  tls_require_ciphers = IDEA-CBC-MD5 \
-    ${if eq{$host_address}{127.0.0.1}{:DES-CBC3-SHA:RSA_ARCFOUR_SHA}}
+  CREQCIP
+  CREQMAC
 
 # End

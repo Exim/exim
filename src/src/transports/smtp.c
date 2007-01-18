@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.30 2007/01/08 10:50:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.31 2007/01/18 15:35:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -63,6 +63,14 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, final_timeout) },
   { "gethostbyname",        opt_bool,
       (void *)offsetof(smtp_transport_options_block, gethostbyname) },
+  #ifdef SUPPORT_TLS
+  { "gnutls_require_kx",    opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, gnutls_require_kx) },
+  { "gnutls_require_mac",   opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, gnutls_require_mac) },
+  { "gnutls_require_protocols", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, gnutls_require_proto) },
+  #endif
   { "helo_data",            opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, helo_data) },
   { "hosts",                opt_stringptr,
@@ -178,6 +186,9 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* tls_crl */
   NULL,                /* tls_privatekey */
   NULL,                /* tls_require_ciphers */
+  NULL,                /* gnutls_require_kx */
+  NULL,                /* gnutls_require_mac */
+  NULL,                /* gnutls_require_proto */
   NULL,                /* tls_verify_certificates */
   TRUE                 /* tls_tempfail_tryclear */
   #endif
@@ -1053,13 +1064,18 @@ if (tls_offered && !suppress_tls &&
 
   else
     {
-    int rc = tls_client_start(inblock.sock, host, addrlist,
+    int rc = tls_client_start(inblock.sock,
+      host,
+      addrlist,
       NULL,                    /* No DH param */
       ob->tls_certificate,
       ob->tls_privatekey,
       ob->tls_verify_certificates,
       ob->tls_crl,
       ob->tls_require_ciphers,
+      ob->gnutls_require_mac,
+      ob->gnutls_require_kx,
+      ob->gnutls_require_proto,
       ob->command_timeout);
 
     /* TLS negotiation failed; give an error. From outside, this function may

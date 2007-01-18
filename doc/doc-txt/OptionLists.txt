@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.28 2006/12/05 11:35:28 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.29 2007/01/18 15:35:42 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -11,7 +11,7 @@ This file contains complete lists of four kinds of Exim option:
   4. Those that can appear in the build time configuration for the Exim monitor
      (Local/eximon.conf).
 
-This file was last updated for Exim release 4.64.
+This file was last updated for Exim release 4.67.
 
 
 1. RUN TIME OPTIONS
@@ -231,6 +231,12 @@ from                                 string*         unset         autoreply
 gecos_name                           string*         unset         main
 gecos_pattern                        string          unset         main
 gethostbyname                        boolean         false         smtp
+gnutls_require_kx                    string*         unset         main              4.67
+                                     string*         unset         smtp              4.67
+gnutls_require_mac                   string*         unset         main              4.67
+                                     string*         unset         smtp              4.67
+gnutls_require_protocols             string*         unset         main              4.67
+                                     string*         unset         smtp              4.67
 group                                string          +             routers           4.00
                                                      unset         transports        4.00 replaces local option in some transports
 header_line_maxsize                  integer         0 (unset)     main              4.14

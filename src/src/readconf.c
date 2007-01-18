@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.26 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.27 2007/01/18 15:35:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -218,6 +218,11 @@ static optionlist optionlist_config[] = {
   { "freeze_tell",              opt_stringptr,   &freeze_tell },
   { "gecos_name",               opt_stringptr,   &gecos_name },
   { "gecos_pattern",            opt_stringptr,   &gecos_pattern },
+#ifdef SUPPORT_TLS
+  { "gnutls_require_kx",        opt_stringptr,   &gnutls_require_kx },
+  { "gnutls_require_mac",       opt_stringptr,   &gnutls_require_mac },
+  { "gnutls_require_protocols", opt_stringptr,   &gnutls_require_proto },
+#endif
   { "header_line_maxsize",      opt_int,         &header_line_maxsize },
   { "header_maxsize",           opt_int,         &header_maxsize },
   { "headers_charset",          opt_stringptr,   &headers_charset },

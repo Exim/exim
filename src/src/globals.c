@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.62 2007/01/15 15:59:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.63 2007/01/18 15:35:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -109,6 +109,9 @@ uschar *tls_on_connect_ports   = NULL;
 uschar *tls_peerdn             = NULL;
 
 #ifdef SUPPORT_TLS
+uschar *gnutls_require_mac     = NULL;
+uschar *gnutls_require_kx      = NULL;
+uschar *gnutls_require_proto   = NULL;
 const pcre *regex_STARTTLS     = NULL;
 uschar *tls_advertise_hosts    = NULL;    /* This is deliberate */
 uschar *tls_certificate        = NULL;

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.454 2007/01/17 11:17:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.455 2007/01/18 15:35:42 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -25,6 +25,9 @@ PH/02 In an ACL statement such as
 
 PH/03 Added additional dnslists conditions == and =& which are different from
       = and & when the dns lookup returns more than one IP address.
+
+PH/04 Added gnutls_require_{kx,mac,protocols} to give more control over the
+      cipher suites used by GnuTLS. These options are ignored by OpenSSL.
 
 
 Exim version 4.66

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.h,v 1.10 2007/01/08 10:50:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.h,v 1.11 2007/01/18 15:35:43 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -50,6 +50,9 @@ typedef struct {
   uschar *tls_crl;
   uschar *tls_privatekey;
   uschar *tls_require_ciphers;
+  uschar *gnutls_require_kx;
+  uschar *gnutls_require_mac;
+  uschar *gnutls_require_proto;
   uschar *tls_verify_certificates;
   BOOL    tls_tempfail_tryclear;
   #endif

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.9 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.10 2007/01/18 15:35:42 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -598,6 +598,11 @@ a TLS session.
 
 Arguments:
   require_ciphers   allowed ciphers
+  ------------------------------------------------------
+  require_mac      list of allowed MACs                 ) Not used
+  require_kx       list of allowed key_exchange methods )   for
+  require_proto    list of allowed protocols            ) OpenSSL
+  ------------------------------------------------------
 
 Returns:            OK on success
                     DEFER for errors before the start of the negotiation
@@ -606,7 +611,8 @@ Returns:            OK on success
 */
 
 int
-tls_server_start(uschar *require_ciphers)
+tls_server_start(uschar *require_ciphers, uschar *require_mac,
+  uschar *require_kx, uschar *require_proto)
 {
 int rc;
 uschar *expciphers;
@@ -746,12 +752,19 @@ return OK;
 Argument:
   fd               the fd of the connection
   host             connected host (for messages)
+  addr             the first address
   dhparam          DH parameter file
   certificate      certificate file
   privatekey       private key file
   verify_certs     file for certificate verify
   crl              file containing CRL
   require_ciphers  list of allowed ciphers
+  ------------------------------------------------------
+  require_mac      list of allowed MACs                 ) Not used
+  require_kx       list of allowed key_exchange methods )   for
+  require_proto    list of allowed protocols            ) OpenSSL
+  ------------------------------------------------------
+  timeout          startup timeout
 
 Returns:           OK on success
                    FAIL otherwise - note that tls_error() will not give DEFER
@@ -761,7 +774,8 @@ Returns:           OK on success
 int
 tls_client_start(int fd, host_item *host, address_item *addr, uschar *dhparam,
   uschar *certificate, uschar *privatekey, uschar *verify_certs, uschar *crl,
-  uschar *require_ciphers, int timeout)
+  uschar *require_ciphers, uschar *require_mac, uschar *require_kx,
+  uschar *require_proto, int timeout)
 {
 static uschar txt[256];
 uschar *expciphers;
