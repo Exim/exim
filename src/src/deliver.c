@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.40 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.41 2007/01/22 16:29:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -774,7 +774,7 @@ if (addr->return_file >= 0 && addr->return_filename != NULL)
   {
   BOOL return_output = FALSE;
   struct stat statbuf;
-  fsync(addr->return_file);
+  (void)EXIMfsync(addr->return_file);
 
   /* If there is no output, do nothing. */
 
@@ -1979,7 +1979,7 @@ if (!shadowing)
 
   /* Ensure the journal file is pushed out to disk. */
 
-  if (fsync(journal_fd) < 0)
+  if (EXIMfsync(journal_fd) < 0)
     log_write(0, LOG_MAIN|LOG_PANIC, "failed to fsync journal: %s",
       strerror(errno));
   }

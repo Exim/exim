@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.20 2007/01/08 10:50:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.21 2007/01/22 16:29:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2791,7 +2791,7 @@ if (temp_file != NULL && ob->mbx_format)
 /* Force out the remaining data to check for any errors; some OS don't allow
 fsync() to be called for a FIFO. */
 
-if (yield == OK && !isfifo && fsync(fd) < 0) yield = DEFER;
+if (yield == OK && !isfifo && EXIMfsync(fd) < 0) yield = DEFER;
 
 /* Update message_size to the accurate count of bytes written, including
 added headers. */

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.456 2007/01/22 15:56:47 steve Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.457 2007/01/22 16:29:54 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -28,6 +28,10 @@ PH/03 Added additional dnslists conditions == and =& which are different from
 
 PH/04 Added gnutls_require_{kx,mac,protocols} to give more control over the
       cipher suites used by GnuTLS. These options are ignored by OpenSSL.
+
+PH/05 After discussion on the list, added a compile time option ENABLE_DISABLE_
+      FSYNC, which compiles an option called disable_fsync that allows for
+      bypassing fsync(). The documentation is heavily laced with warnings.
 
 SC/01 Updated eximstats to collate all SpamAssassin rejects into one bucket.
 

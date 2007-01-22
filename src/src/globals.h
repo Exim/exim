@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.44 2007/01/18 15:35:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.45 2007/01/22 16:29:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -277,6 +277,9 @@ extern BOOL    deliver_selectstring_sender_regex; /* String is regex */
 extern int     demime_errorlevel;      /* Severity of MIME error */
 extern int     demime_ok;              /* Nonzero if message has been demimed */
 extern uschar *demime_reason;          /* Reason for broken MIME container */
+#endif
+#ifdef ENABLE_DISABLE_FSYNC
+extern BOOL    disable_fsync;          /* Not for normal use */
 #endif
 extern BOOL    disable_ipv6;           /* Don't do any IPv6 things */
 extern BOOL    disable_logging;        /* Disables log writing when TRUE */

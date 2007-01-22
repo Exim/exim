@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.27 2007/01/18 15:35:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.28 2007/01/22 16:29:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -195,6 +195,9 @@ static optionlist optionlist_config[] = {
   { "deliver_drop_privilege",   opt_bool,        &deliver_drop_privilege },
   { "deliver_queue_load_max",   opt_fixed,       &deliver_queue_load_max },
   { "delivery_date_remove",     opt_bool,        &delivery_date_remove },
+#ifdef ENABLE_DISABLE_FSYNC
+  { "disable_fsync",            opt_bool,        &disable_fsync },
+#endif
   { "disable_ipv6",             opt_bool,        &disable_ipv6 },
   { "dns_again_means_nonexist", opt_stringptr,   &dns_again_means_nonexist },
   { "dns_check_names_pattern",  opt_stringptr,   &check_dns_names_pattern },

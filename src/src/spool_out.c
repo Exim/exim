@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_out.c,v 1.12 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_out.c,v 1.13 2007/01/22 16:29:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -287,7 +287,7 @@ if (fflush(f) != 0 || ferror(f))
 just pushes it out of C, and fclose() doesn't guarantee to do the write
 either. That's just the way Unix works... */
 
-if (fsync(fileno(f)) < 0)
+if (EXIMfsync(fileno(f)) < 0)
   return spool_write_error(where, errmsg, US"sync", temp_name, f);
 
 /* Get the size of the file, and close it. */
@@ -325,7 +325,7 @@ sprintf(CS temp_name, "%s/input/%s/.", spool_directory, message_subdir);
 if ((fd = Uopen(temp_name, O_RDONLY|O_DIRECTORY, 0)) < 0)
   return spool_write_error(where, errmsg, US"directory open", name, NULL);
 
-if (fsync(fd) < 0 && errno != EINVAL)
+if (EXIMfsync(fd) < 0 && errno != EINVAL)
   return spool_write_error(where, errmsg, US"directory sync", name, NULL);
 
 if (close(fd) < 0)

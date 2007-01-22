@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.31 2007/01/18 15:35:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.32 2007/01/22 16:29:55 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1690,7 +1690,7 @@ if (!ok) ok = TRUE; else
 
     /* Ensure the journal file is pushed out to disk. */
 
-    if (fsync(journal_fd) < 0)
+    if (EXIMfsync(journal_fd) < 0)
       log_write(0, LOG_MAIN|LOG_PANIC, "failed to fsync journal: %s",
         strerror(errno));
     }

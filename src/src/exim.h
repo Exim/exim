@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.21 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.22 2007/01/22 16:29:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -459,6 +459,12 @@ requires various things that are set therein. */
 
 #if defined(USE_READLINE) || defined(EXPAND_DLFUNC)
 #include <dlfcn.h>
+#endif
+
+#ifdef ENABLE_DISABLE_FSYNC
+#define EXIMfsync(f) (disable_fsync? 0 : fsync(f))
+#else
+#define EXIMfsync(f) fsync(f)
 #endif
 
 /* Backward compatibility; LOOKUP_LSEARCH now includes all three */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.32 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.33 2007/01/22 16:29:54 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2730,7 +2730,7 @@ the input in cases of output errors, since the far end doesn't expect to see
 anything until the terminating dot line is sent. */
 
 if (fflush(data_file) == EOF || ferror(data_file) ||
-    fsync(fileno(data_file)) < 0 || (receive_ferror)())
+    EXIMfsync(fileno(data_file)) < 0 || (receive_ferror)())
   {
   uschar *msg_errno = US strerror(errno);
   BOOL input_error = (receive_ferror)() != 0;
