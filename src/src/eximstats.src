@@ -1,5 +1,5 @@
 #!PERL_COMMAND -w
-# $Cambridge: exim/src/src/eximstats.src,v 1.11 2006/11/16 16:16:30 steve Exp $
+# $Cambridge: exim/src/src/eximstats.src,v 1.12 2007/01/22 15:14:01 steve Exp $
 
 # Copyright (c) 2001 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -253,6 +253,12 @@
 #
 # 2006-11-16  V1.50 Steve Campbell
 #             Fixes for obtaining the IP address from reject messages.
+#
+# 2006-11-27  V1.51 Steve Campbell
+#             Another update for obtaining the IP address from reject messages.
+#
+# 2006-11-27  V1.52 Steve Campbell
+#             Tally any reject message containing SpamAssassin.
 #
 #
 #
@@ -552,7 +558,7 @@ use vars qw($WEEK $DAY $HOUR $MINUTE);
 
 @days_per_month = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
 $gig     = 1024 * 1024 * 1024;
-$VERSION = '1.50';
+$VERSION = '1.52';
 
 # How much space do we allow for the Hosts/Domains/Emails/Edomains column headers?
 $COLUMN_WIDTHS = 8;
@@ -2268,9 +2274,13 @@ sub generate_parser {
     if ($flag eq "Re" || ($flag eq "=>" && ! /\\sT=\\S+/)) {
       # Correct the IP address for rejects:
       # rejected EHLO from my.test.net [10.0.0.5]: syntactically invalid argument(s):
-      $ip = $1 if ($ip eq "local" && /^rejected [HE][HE]LO from .*? (\[.+?\]):/);
+      # rejected EHLO from [10.0.0.6]: syntactically invalid argument(s):
+      $ip = $1 if ($ip eq "local" && /^rejected [HE][HE]LO from .*?(\[.+?\]):/);
       ++$rejected_count_by_ip{$ip};
-      if (
+      if (/SpamAssassin/) {
+        ++$rejected_count_by_reason{"Rejected by SpamAssassin"};
+      }
+      elsif (
         /(listed at [^ ]+)/ ||
         /(Forged IP detected in HELO)/ ||
         /(Invalid domain or IP given in HELO\/EHLO)/ ||
