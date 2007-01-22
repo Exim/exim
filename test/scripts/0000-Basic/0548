@@ -1,0 +1,29 @@
+# recipient and host defer interactions
+# In this test, the primary host (normal IP address) defers the recipient, and
+# the secondary host (loopback address) defers the connection.
+#
+need_ipv4
+#
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -odi userx@test.ex
+Test message
+****
+dump retry
+sleep 2
+# At this point, the secondary host should have timed out
+exim -q
+****
+dump retry
+sleep 1
+exim -q
+****
+dump retry
+exim -odi usery@test.ex
+Test message 2.
+****
+sleep 1
+exim -q
+****
+killdaemon
+no_msglog_check

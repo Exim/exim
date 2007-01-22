@@ -1,0 +1,15 @@
++++++++++++++++++++++++++++
+  R:userx@test.ex:<CALLER@test.ex> -44 13121 SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
+first failed = time last try = time2 next try = time2 + 1
+  T:thishost.test.ex:127.0.0.1:1225 0 65 SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
+first failed = time last try = time2 next try = time2 + 1
++++++++++++++++++++++++++++
+  R:userx@test.ex:<CALLER@test.ex> -44 13121 SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
+first failed = time last try = time2 next try = time2 + 5 *
+  T:thishost.test.ex:127.0.0.1:1225 0 65 SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
+first failed = time last try = time2 next try = time2 + 1
++++++++++++++++++++++++++++
+  R:userx@test.ex:<CALLER@test.ex> -44 13121 SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]: 451 Recipient deferred
+first failed = time last try = time2 next try = time2 + 5 *
+  T:thishost.test.ex:127.0.0.1:1225 0 65 SMTP error from remote mail server after initial connection: host thishost.test.ex [127.0.0.1]: 451 host deferred
+first failed = time last try = time2 next try = time2 + 1
