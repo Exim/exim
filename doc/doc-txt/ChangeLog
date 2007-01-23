@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.459 2007/01/23 12:22:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.460 2007/01/23 12:33:08 magnus Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -40,6 +40,10 @@ PH/06 Some tidies to the infrastructure of the Test Suite that is concerned
       to be defined when compiling on OSX (Darwin); (2) Tidies to the Makefile,
       including adding "make clean"; (3) Added -fPIC when compiling the test
       dynamically loaded module, to get rid of a warning.
+
+MH/02 Fix for bug #451, causing paniclog entries to be written if a bounce
+      message fails, move_frozen_messages = true and ignore_bounce_errors_after
+      = 0s. The bug is otherwise harmless.
 
 PH/07 There was a bug in the dovecot authenticator such that the value of
       $auth1 could be overwritten, and so not correctly preserved, after a

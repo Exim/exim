@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.41 2007/01/22 16:29:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.42 2007/01/23 12:33:08 magnus Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -6572,6 +6572,9 @@ if (addr_defer == NULL)
       readconf_printtime(time(NULL) - received_time));
   else
     log_write(0, LOG_MAIN, "Completed");
+
+  /* Unset deliver_freeze so that we won't try to move the spool files further down */
+  deliver_freeze = FALSE;
   }
 
 /* If there are deferred addresses, we are keeping this message because it is
