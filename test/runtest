@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.21 2007/01/15 15:59:22 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.22 2007/01/23 14:57:51 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -428,6 +428,9 @@ while(<IN>)
 
   # Date/time in exim -bV output
   s/\d\d-[A-Z][a-z]{2}-\d{4}\s\d\d:\d\d:\d\d/07-Mar-2000 12:21:52/g;
+
+  # Time on queue tolerance
+  s/QT=1s/QT=0s/;
 
 
   # ======== Caller's login, uid, gid, home ========
