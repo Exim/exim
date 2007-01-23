@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.3 2006/10/16 15:44:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.4 2007/01/23 12:22:00 ph10 Exp $ */
 
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
@@ -278,7 +278,8 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                                uschar *p = US strchr(args[2], '=');
                                if (p) {
                                        ++p;
-                                       expand_nstring[1] = auth_vars[0] = p;
+                                       expand_nstring[1] = auth_vars[0] =
+                                         string_copy(p);  /* PH */
                                        expand_nlength[1] = Ustrlen(p);
                                        expand_nmax = 1;
                                }
@@ -296,7 +297,8 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                                        OUT("authentication socket protocol error, username missing");
 
                                p++;
-                               expand_nstring[1] = auth_vars[0] = p;
+                               expand_nstring[1] = auth_vars[0] =
+                                 string_copy(p);  /* PH */
                                expand_nlength[1] = Ustrlen(p);
                                expand_nmax = 1;
                        }
