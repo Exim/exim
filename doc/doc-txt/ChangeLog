@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.457 2007/01/22 16:29:54 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.458 2007/01/23 11:01:09 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -34,6 +34,12 @@ PH/05 After discussion on the list, added a compile time option ENABLE_DISABLE_
       bypassing fsync(). The documentation is heavily laced with warnings.
 
 SC/01 Updated eximstats to collate all SpamAssassin rejects into one bucket.
+
+PH/06 Some tidies to the infrastructure of the Test Suite that is concerned
+      with the auxiliary C programs that it uses: (1) Arrange for BIND_8_COMPAT
+      to be defined when compiling on OSX (Darwin); (2) Tidies to the Makefile,
+      including adding "make clean"; (3) Added -fPIC when compiling the test
+      dynamically loaded module, to get rid of a warning.
 
 
 Exim version 4.66

@@ -1,4 +1,4 @@
-dnl $Cambridge: exim/test/configure.ac,v 1.1 2006/02/06 16:07:10 ph10 Exp $
+dnl $Cambridge: exim/test/configure.ac,v 1.2 2007/01/23 11:01:10 ph10 Exp $
 
 dnl Process this file with autoconf to produce a configure script.
 
@@ -33,7 +33,7 @@ host_os=`uname -s`
 case $CC-$host_os in
   gcc-*linux* | gcc-*Linux* | gcc-*LINUX* | gcc-FreeBSD)
     LOADED=bin/loaded
-    LOADED_OPT=-shared
+    LOADED_OPT="-shared -fPIC"
     echo "Using gcc on $host_os: will compile dynamically loaded module"
     ;;
   *)
@@ -42,8 +42,17 @@ case $CC-$host_os in
     ;;
 esac
 
+dnl At least one operating system needs BIND_8_COMPAT to be defined.
+
+case $host_os in
+  Darwin)
+    BIND_8_COMPAT=-DBIND_8_COMPAT
+    ;;
+esac
+
 dnl "Export" these variables
 
+AC_SUBST(BIND_8_COMPAT)
 AC_SUBST(CLIENT_SSL)
 AC_SUBST(CLIENT_GNUTLS)
 AC_SUBST(LOADED)

@@ -1,11 +1,11 @@
-# $Cambridge: exim/test/Makefile.in,v 1.1 2006/02/06 16:07:10 ph10 Exp $
+# $Cambridge: exim/test/Makefile.in,v 1.2 2007/01/23 11:01:10 ph10 Exp $
 # This Makefile builds the support programs for the Exim test suite.
 
 ##############################################################################
 # These variables are set by the configure script.
 
 CC=@CC@
-CFLAGS=@CFLAGS@
+CFLAGS=@CFLAGS@ @BIND_8_COMPAT@
 LDFLAGS=@LDFLAGS@
 CLIENT_SSL=@CLIENT_SSL@
 CLIENT_GNUTLS=@CLIENT_GNUTLS@
@@ -26,72 +26,79 @@ makebin:;       @if [ ! -e bin ] ; then mkdir bin 2>/dev/null; echo ""; fi
 
 # Compile and link the programs:
 #
-# bin/client        is the SMTP script-driven client, without TLS support
-# bin/client-ssl    is with OpenSSL support
-#                   there isn't yet a version with GnuTLS support
-# bin/checkaccess   tests whether the exim uid/gid can access the files
-# bin/iefbr14       a program that does nothing and returns 0
-# bin/loaded        is a dynamically loaded test module
-# bin/server        is the SMTP script-driven server (no TLS support)
+# bin/cf              a "compare" program 
+# bin/checkaccess     tests whether the exim uid/gid can access the files
+# bin/client          an SMTP script-driven client, without TLS support
+# bin/client-gnutls   ditto, with GnuTLS support
+# bin/client-ssl      ditto, with OpenSSL support
+# bin/fakens          a fake namserver
+# bin/fd              output details of open file descriptors
+# bin/iefbr14         a program that does nothing and returns 0
+# bin/loaded          a dynamically loaded test module
+# bin/mtpscript       an LMTP/SMTP "server" that works on stdin/stdout
+# bin/server          an SMTP (socket) script-driven server (no TLS support)
+# bin/showids         output current uid, gid, euid, egid
 
-bin/cf:         src/cf.c
+bin/cf:         src/cf.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/cf src/cf.c
 		@echo ">>> bin/cf command build"
 		@echo " "
 
-bin/client:     src/client.c
+bin/client:     src/client.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/client src/client.c
 		@echo ">>> bin/client command built"
 		@echo " "
 
-bin/client-gnutls: src/client.c
+bin/client-gnutls: src/client.c Makefile
 		$(CC) $(CFLAGS) -DHAVE_GNUTLS $(LDFLAGS) -lgnutls -lgcrypt -o bin/client-gnutls src/client.c
 		@echo ">>> bin/client-gnutls command built"
 		@echo " "
 
-bin/client-ssl: src/client.c
+bin/client-ssl: src/client.c Makefile
 		$(CC) $(CFLAGS) -DHAVE_OPENSSL $(LDFLAGS) -lssl -lcrypto -o bin/client-ssl src/client.c
 		@echo ">>> bin/client-ssl command built"
 		@echo " "
 
-bin/checkaccess:src/checkaccess.c
+bin/checkaccess:src/checkaccess.c Makefile
 		$(CC) $(CFLAGS) -DNO_TLS $(LDFLAGS) -o bin/checkaccess src/checkaccess.c
 		@echo ">>> bin/checkaccess command built"
 		@echo " "
 
-bin/fakens:     src/fakens.c
+bin/fakens:     src/fakens.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fakens src/fakens.c
 		@echo ">>> bin/fakens command built"
 		@echo " "
 
-bin/fd:         src/fd.c
+bin/fd:         src/fd.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/fd src/fd.c
 		@echo ">>> bin/fd command built"
 		@echo " "
 
-bin/iefbr14:    src/iefbr14.c
+bin/iefbr14:    src/iefbr14.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/iefbr14 src/iefbr14.c
 		@echo ">>> bin/iefbr14 command built"
 		@echo " "
 
-bin/loaded:     src/loaded.c
+bin/loaded:     src/loaded.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) $(LOADED_OPT) -o bin/loaded src/loaded.c
 		@echo ">>> bin/loaded command built"
 		@echo " "
 
-bin/mtpscript:  src/mtpscript.c
+bin/mtpscript:  src/mtpscript.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) $(mtpscript_OPT) -o bin/mtpscript src/mtpscript.c
 		@echo ">>> bin/mtpscript command built"
 		@echo " "
 
-bin/server:     src/server.c
+bin/server:     src/server.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/server src/server.c
 		@echo ">>> bin/server command built"
 		@echo " "
 
-bin/showids:    src/showids.c 
+bin/showids:    src/showids.c Makefile
 		$(CC) $(CFLAGS) $(LDFLAGS) -o bin/showids src/showids.c
 		@echo ">>> bin/showids command built"
 		@echo " "
+                
+clean:;         rm -rf bin/* 
 
 # End
