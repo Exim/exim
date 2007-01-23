@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/doc/doc-docbook/x2man,v 1.6 2006/12/19 12:28:35 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/x2man,v 1.7 2007/01/23 12:13:50 ph10 Exp $
 
 # Script to find the command line options in the DocBook source of the Exim
 # spec, and turn them into a man page, because people like that.
@@ -20,17 +20,14 @@ print OUT <<End;
 .SH NAME
 exim \\- a Mail Transfer Agent
 .SH SYNOPSIS
+.nf
 .B exim [options] arguments ...
-.br
 .B mailq [options] arguments ...
-.br
 .B rsmtp [options] arguments ...
-.br
 .B rmail [options] arguments ...
-.br
 .B runq [options] arguments ...
-.br
 .B newaliases [options] arguments ...
+.fi
 .
 .SH DESCRIPTION
 .rs
