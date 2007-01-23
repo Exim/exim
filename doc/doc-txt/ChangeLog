@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.461 2007/01/23 14:34:02 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.462 2007/01/23 15:08:45 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -51,6 +51,8 @@ PH/07 There was a bug in the dovecot authenticator such that the value of
       the server_setid option was incorrect.
 
 PH/08 Added $smtp_count_at_connection_start, deliberately with a long name.
+
+PH/09 Installed PCRE release 7.0.
 
 
 Exim version 4.66

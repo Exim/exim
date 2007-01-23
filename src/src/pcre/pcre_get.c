@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_get.c,v 1.3 2006/11/07 16:50:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_get.c,v 1.4 2007/01/23 15:08:45 ph10 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -438,7 +438,6 @@ pcre_get_named_substring(const pcre *code, const char *subject, int *ovector,
 int n = get_first_set(code, stringname, ovector);
 if (n <= 0) return n;
 return pcre_get_substring(subject, ovector, stringcount, n, stringptr);
-
 }
 
 

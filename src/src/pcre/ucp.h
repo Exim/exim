@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/ucp.h,v 1.3 2006/11/07 16:50:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/ucp.h,v 1.4 2007/01/23 15:08:45 ph10 Exp $ */
 
 /*************************************************
 *          Unicode Property Table handler        *
@@ -8,7 +8,9 @@
 #define _UCP_H
 
 /* This file contains definitions of the property values that are returned by
-the function _pcre_ucp_findprop(). */
+the function _pcre_ucp_findprop(). New values that are added for new releases
+of Unicode should always be at the end of each enum, for backwards
+compatibility. */
 
 /* These are the general character categories. */
 
@@ -120,7 +122,12 @@ enum {
   ucp_Tibetan,
   ucp_Tifinagh,
   ucp_Ugaritic,
-  ucp_Yi
+  ucp_Yi,
+  ucp_Balinese,      /* New for Unicode 5.0.0 */
+  ucp_Cuneiform,     /* New for Unicode 5.0.0 */
+  ucp_Nko,           /* New for Unicode 5.0.0 */
+  ucp_Phags_Pa,      /* New for Unicode 5.0.0 */
+  ucp_Phoenician     /* New for Unicode 5.0.0 */
 };
 
 #endif

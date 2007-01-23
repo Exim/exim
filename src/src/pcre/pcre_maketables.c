@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_maketables.c,v 1.3 2006/11/07 16:50:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_maketables.c,v 1.4 2007/01/23 15:08:45 ph10 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -132,7 +132,7 @@ for (i = 0; i < 256; i++)
   meta-character, which in this sense is any character that terminates a run
   of data characters. */
 
-  if (strchr("*+?{^.$|()[", i) != 0) x += ctype_meta;
+  if (strchr("\\*+?{^.$|()[", i) != 0) x += ctype_meta;
   *p++ = x;
   }
 
