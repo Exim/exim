@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.51 2007/01/18 15:35:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.52 2007/01/23 14:34:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1594,18 +1594,18 @@ if (!sender_host_unknown)
     }
   #endif
 
-  /* Check for reserved slots. Note that the count value doesn't include
-  this process, as it gets upped in the parent process. */
+  /* Check for reserved slots. The value of smtp_accept_count has already been
+  incremented to include this process. */
 
   if (smtp_accept_max > 0 &&
-      smtp_accept_count + 1 > smtp_accept_max - smtp_accept_reserve)
+      smtp_accept_count > smtp_accept_max - smtp_accept_reserve)
     {
     if ((rc = verify_check_host(&smtp_reserve_hosts)) != OK)
       {
       log_write(L_connection_reject,
         LOG_MAIN, "temporarily refused connection from %s: not in "
         "reserve list: connected=%d max=%d reserve=%d%s",
-        host_and_ident(FALSE), smtp_accept_count, smtp_accept_max,
+        host_and_ident(FALSE), smtp_accept_count - 1, smtp_accept_max,
         smtp_accept_reserve, (rc == DEFER)? " (lookup deferred)" : "");
       smtp_printf("421 %s: Too many concurrent SMTP connections; "
         "please try again later\r\n", smtp_active_hostname);

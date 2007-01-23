@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.460 2007/01/23 12:33:08 magnus Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.461 2007/01/23 14:34:02 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -49,6 +49,8 @@ PH/07 There was a bug in the dovecot authenticator such that the value of
       $auth1 could be overwritten, and so not correctly preserved, after a
       successful authentication. This usually meant that the value preserved by
       the server_setid option was incorrect.
+
+PH/08 Added $smtp_count_at_connection_start, deliberately with a long name.
 
 
 Exim version 4.66

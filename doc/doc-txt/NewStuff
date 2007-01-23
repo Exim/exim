@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.129 2007/01/22 16:29:54 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.130 2007/01/23 14:34:02 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -185,6 +185,17 @@ Version 4.67
 
     When ENABLE_DISABLE_FSYNC is not set, a reference to disable_fsync in a
     runtime configuration generates an "unknown option" error.
+
+ 5. There is a new variable called $smtp_count_at_connection_start. The name
+    is deliberately long, in order to emphasize what the contents are. This
+    variable is set greater than zero only in processes spawned by the Exim
+    daemon for handling incoming SMTP connections. When the daemon accepts a
+    new connection, it increments this variable. A copy of the variable is
+    passed to the child process that handles the connection, but its value is
+    fixed, and never changes. It is only an approximation of how many incoming
+    connections there actually are, because many other connections may come and
+    go while a single connection is being processed. When a child process
+    terminates, the daemon decrements the variable.
 
 
 Version 4.66

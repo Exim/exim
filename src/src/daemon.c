@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.21 2007/01/17 11:29:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.22 2007/01/23 14:34:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -369,6 +369,8 @@ if (pid == 0)
   struct sigaction act;
   #endif
 
+  smtp_accept_count++;    /* So that it includes this process */
+
   /* May have been modified for the subprocess */
 
   log_write_selector = use_log_write_selector;
@@ -459,7 +461,7 @@ if (pid == 0)
   configured value and may therefore already be TRUE. Leave logging
   till later so it will have a message id attached. */
 
-  if (smtp_accept_queue > 0 && smtp_accept_count >= smtp_accept_queue)
+  if (smtp_accept_queue > 0 && smtp_accept_count > smtp_accept_queue)
     {
     local_queue_only = TRUE;
     queue_only_reason = 1;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.76 2007/01/08 11:56:41 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.77 2007/01/23 14:34:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -528,6 +528,7 @@ static var_entry var_table[] = {
   { "smtp_active_hostname", vtype_stringptr,  &smtp_active_hostname },
   { "smtp_command",        vtype_stringptr,   &smtp_cmd_buffer },
   { "smtp_command_argument", vtype_stringptr, &smtp_cmd_argument },
+  { "smtp_count_at_connection_start", vtype_int, &smtp_accept_count },
   { "sn0",                 vtype_filter_int,  &filter_sn[0] },
   { "sn1",                 vtype_filter_int,  &filter_sn[1] },
   { "sn2",                 vtype_filter_int,  &filter_sn[2] },

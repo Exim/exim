@@ -291,6 +291,8 @@ LOG: SMTP connection from [V4NET.9.8.7] closed by QUIT
 LOG: smtp_connection MAIN
   SMTP connection from CALLER
 LOG: MAIN
+  Connections=0
+LOG: MAIN
   <= CALLER@test.ex U=CALLER P=local-smtp S=sss
 LOG: MAIN
   frozen by ACL
