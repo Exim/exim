@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.53 2007/01/17 11:29:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.54 2007/01/25 15:51:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4487,16 +4487,17 @@ but fd 1 will not be set. This also happens for passed SMTP channels. */
 
 if (fstat(1, &statbuf) < 0) (void)dup2(0, 1);
 
-/* Set up the incoming protocol name and the state of the program. Root
-is allowed to force received protocol via the -oMr option above, and if we are
-in a non-local SMTP state it means we have come via inetd and the process info
-has already been set up. We don't set received_protocol here for smtp input,
-as it varies according to batch/HELO/EHLO/AUTH/TLS. */
+/* Set up the incoming protocol name and the state of the program. Root is
+allowed to force received protocol via the -oMr option above. If we have come
+via inetd, the process info has already been set up. We don't set
+received_protocol here for smtp input, as it varies according to
+batch/HELO/EHLO/AUTH/TLS. */
 
 if (smtp_input)
   {
-  if (sender_local) set_process_info("accepting a local SMTP message from <%s>",
-    sender_address);
+  if (!is_inetd) set_process_info("accepting a local %sSMTP message from <%s>",
+    smtp_batched_input? "batched " : "",
+    (sender_address!= NULL)? sender_address : originator_login);
   }
 else
   {
@@ -4523,8 +4524,8 @@ if ((!smtp_input || smtp_batched_input) && !receive_check_fs(0))
   return EXIT_FAILURE;
   }
 
-/* If this is smtp input of any kind, handle the start of the SMTP
-session.
+/* If this is smtp input of any kind, real or batched, handle the start of the
+SMTP session.
 
 NOTE: We do *not* call smtp_log_no_mail() if smtp_start_session() fails,
 because a log line has already been written for all its failure exists
@@ -4617,20 +4618,13 @@ while (more)
   store_reset(reset_point);
   message_id[0] = 0;
 
-  /* In the SMTP case, we have to handle the initial SMTP input and build the
-  recipients list, before calling receive_msg() to read the message proper.
-  Whatever sender address is actually given in the SMTP transaction is
-  actually ignored for local senders - we use the actual sender, which is
-  normally either the underlying user running this process or a -f argument
-  provided by a trusted caller. It is saved in real_sender_address.
-
-  However, if this value is NULL, we are dealing with a trusted caller when
-  -f was not used; in this case, the SMTP sender is allowed to stand.
-
-  Also, if untrusted_set_sender is set, we permit sender addresses that match
-  anything in its list.
-
-  The variable raw_sender_address holds the sender address before rewriting. */
+  /* Handle the SMTP case; call smtp_setup_mst() to deal with the initial SMTP
+  input and build the recipients list, before calling receive_msg() to read the
+  message proper. Whatever sender address is given in the SMTP transaction is
+  often ignored for local senders - we use the actual sender, which is normally
+  either the underlying user running this process or a -f argument provided by
+  a trusted caller. It is saved in real_sender_address. The test for whether to
+  accept the SMTP sender is encapsulated in receive_check_set_sender(). */
 
   if (smtp_input)
     {
@@ -4643,6 +4637,23 @@ while (more)
         sender_address = raw_sender = real_sender_address;
         sender_address_unrewritten = NULL;
         }
+
+      /* For batched SMTP, we have to run the acl_not_smtp_start ACL, since it
+      isn't really SMTP, so no other ACL will run until the acl_not_smtp one at
+      the very end. The result of the ACL is ignored (as for other non-SMTP
+      messages). It is run for its potential side effects. */
+
+      if (smtp_batched_input && acl_not_smtp_start != NULL)
+        {
+        uschar *user_msg, *log_msg;
+        enable_dollar_recipients = TRUE;
+        (void)acl_check(ACL_WHERE_NOTSMTP_START, NULL, acl_not_smtp_start,
+          &user_msg, &log_msg);
+        enable_dollar_recipients = FALSE;
+        }
+
+      /* Now get the data for the message */
+
       more = receive_msg(extract_recipients);
       if (message_id[0] == 0)
         {

@@ -368,6 +368,7 @@ sender address = NULL
 sender_fullhost = [10.0.0.5]
 sender_rcvhost = [10.0.0.5] (ident=CALLER)
 set_process_info: pppp handling incoming connection from [10.0.0.5] via -oMa
+set_process_info: pppp accepting a local SMTP message from <CALLER>
 host in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER

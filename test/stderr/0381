@@ -13,6 +13,7 @@ sender address = NULL
 sender_fullhost = [V4NET.99.99.97]
 sender_rcvhost = [V4NET.99.99.97] (ident=CALLER)
 set_process_info: pppp handling incoming connection from [V4NET.99.99.97] via -oMa
+set_process_info: pppp accepting a local SMTP message from <CALLER>
 host in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER

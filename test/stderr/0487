@@ -12,6 +12,7 @@ seeking password data for user "CALLER": using cached result
 getpwnam() succeeded uid=CALLER_UID gid=CALLER_GID
 originator: uid=CALLER_UID gid=CALLER_GID login=CALLER name=CALLER_NAME
 sender address = NULL
+set_process_info: pppp accepting a local SMTP message from <CALLER>
  in hosts_connection_nolog? no (option unset)
 LOG: smtp_connection MAIN
   SMTP connection from CALLER

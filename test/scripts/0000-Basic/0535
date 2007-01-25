@@ -5,3 +5,15 @@ No headers supplied.
 exim -odi -f nofix@test.ex userx@test.ex
 No headers supplied.
 ****
+exim -odi -bS
+mail from:<x@y>
+rcpt to:<userx@test.ex>
+data
+No headers supplied.
+.
+mail from:<nofix@test.ex>
+rcpt to:<userx@test.ex>
+data
+No headers supplied.
+.
+****
