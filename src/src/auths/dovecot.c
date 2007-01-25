@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.5 2007/01/24 17:14:27 magnus Exp $ */
+/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.6 2007/01/25 16:23:42 ph10 Exp $ */
 
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
@@ -205,8 +205,8 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                auth_extra_data = string_sprintf("secured\t%s%s",
                    tls_certificate_verified? "valid-client-cert" : "",
                    tls_certificate_verified? "\t" : "");
-       else if (interface_address
-                && Ustrcmp(sender_host_address, interface_address) == 0)
+       else if (interface_address != NULL &&
+                Ustrcmp(sender_host_address, interface_address) == 0)
                auth_extra_data = US"secured\t";
 
 
