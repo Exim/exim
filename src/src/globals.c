@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.65 2007/01/30 11:45:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.66 2007/01/30 15:10:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1031,6 +1031,8 @@ address_item *sender_verified_list  = NULL;
 address_item *sender_verified_failed = NULL;
 int     sender_verified_rc     = -1;
 BOOL    sender_verified_responded = FALSE;
+uschar *sending_ip_address     = NULL;
+int     sending_port           = -1;
 volatile  BOOL sigalrm_seen    = FALSE;
 uschar **sighup_argv           = NULL;
 int     smtp_accept_count      = 0;

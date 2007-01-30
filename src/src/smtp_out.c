@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_out.c,v 1.8 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_out.c,v 1.9 2007/01/30 15:10:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -241,7 +241,18 @@ if (save_errno != 0)
 
 else
   {
+  union sockaddr_46 interface_sock;
+  EXIM_SOCKLEN_T size = sizeof(interface_sock);
   HDEBUG(D_transport|D_acl|D_v) debug_printf("connected\n");
+  if (getsockname(sock, (struct sockaddr *)(&interface_sock), &size) == 0)
+    sending_ip_address = host_ntoa(-1, &interface_sock, NULL, &sending_port);
+  else
+    {
+    log_write(0, LOG_MAIN | ((errno == ECONNRESET)? 0 : LOG_PANIC),
+      "getsockname() failed: %s", strerror(errno));
+    close(sock);
+    return -1;
+    }
   if (keepalive) ip_keepalive(sock, host->address, TRUE);
   return sock;
   }

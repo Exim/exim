@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.46 2007/01/17 11:17:58 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.47 2007/01/30 15:10:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -442,21 +442,6 @@ for (host = host_list; host != NULL && !done; host = host->next)
     log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: %s", addr->address,
       addr->message);
 
-  /* Expand the helo_data string to find the host name to use. */
-
-  if (tf->helo_data != NULL)
-    {
-    uschar *s = expand_string(tf->helo_data);
-    if (s == NULL)
-      log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: failed to expand transport's "
-        "helo_data value for callout: %s", addr->address,
-        expand_string_message);
-    else active_hostname = s;
-    }
-
-  deliver_host = deliver_host_address = NULL;
-  deliver_domain = save_deliver_domain;
-
   /* Set HELO string according to the protocol */
 
   if (Ustrcmp(tf->protocol, "lmtp") == 0) helo = US"LHLO";
@@ -487,8 +472,25 @@ for (host = host_list; host != NULL && !done; host = host->next)
     {
     addr->message = string_sprintf("could not connect to %s [%s]: %s",
         host->name, host->address, strerror(errno));
+    deliver_host = deliver_host_address = NULL;
+    deliver_domain = save_deliver_domain;
     continue;
     }
+
+  /* Expand the helo_data string to find the host name to use. */
+
+  if (tf->helo_data != NULL)
+    {
+    uschar *s = expand_string(tf->helo_data);
+    if (s == NULL)
+      log_write(0, LOG_MAIN|LOG_PANIC, "<%s>: failed to expand transport's "
+        "helo_data value for callout: %s", addr->address,
+        expand_string_message);
+    else active_hostname = s;
+    }
+
+  deliver_host = deliver_host_address = NULL;
+  deliver_domain = save_deliver_domain;
 
   /* Wait for initial response, and send HELO. The smtp_write_command()
   function leaves its command in big_buffer. This is used in error responses.

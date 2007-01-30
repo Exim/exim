@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.54 2007/01/25 15:51:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.55 2007/01/30 15:10:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2165,6 +2165,9 @@ for (i = 1; i < argc; i++)
 
     if (Ustrcmp(argrest, "C") == 0)
       {
+      union sockaddr_46 interface_sock;
+      EXIM_SOCKLEN_T size = sizeof(interface_sock);
+
       if (argc != i + 6)
         {
         fprintf(stderr, "exim: too many or too few arguments after -MC\n");
@@ -2191,6 +2194,19 @@ for (i = 1; i < argc; i++)
         {
         fprintf(stderr, "exim: malformed message id %s after -MC option\n",
           argv[i]);
+        return EXIT_FAILURE;
+        }
+
+      /* Set up $sending_ip_address and $sending_port */
+
+      if (getsockname(fileno(stdin), (struct sockaddr *)(&interface_sock),
+          &size) == 0)
+        sending_ip_address = host_ntoa(-1, &interface_sock, NULL,
+          &sending_port);
+      else
+        {
+        fprintf(stderr, "exim: getsockname() failed after -MC option: %s\n",
+          strerror(errno));
         return EXIT_FAILURE;
         }
 

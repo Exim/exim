@@ -1,0 +1,24 @@
+
+******** SERVER ********
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 ESMTP
+EHLO Tweedledum to 127.0.0.1 [127.0.0.1]
+250-OK
+250 HELP
+MAIL FROM:<CALLER@myhost.test.ex>
+450 Defer
+QUIT
+221 OK
+Unexpected EOF read from client
+Listening on port 1224 ... 
+Connection request from [ip4.ip4.ip4.ip4]
+220 ESMTP
+EHLO Tweedledee to ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4]
+250-OK
+250 HELP
+MAIL FROM:<CALLER@myhost.test.ex>
+450 Defer
+QUIT
+221 OK
+End of script

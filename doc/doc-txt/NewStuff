@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.131 2007/01/30 11:45:20 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.132 2007/01/30 15:10:58 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -202,6 +202,25 @@ Version 4.67
     To be useful, this control must be obeyed before Exim sends its response to
     an EHLO command. Therefore, it should normally appear in an ACL controlled
     by acl_smtp_connect or acl_smtp_helo.
+
+ 7. There are two new variables called $sending_ip_address and $sending_port.
+    These are set whenever an SMTP connection to another host has been set up,
+    and they contain the IP address and port of the local interface that is
+    being used. They are of interest only on hosts that have more than on IP
+    address that want to take on different personalities depending on which one
+    is being used.
+
+ 8. The expansion of the helo_data option in the smtp transport now happens
+    after the connection to the server has been made. This means that it can
+    use the value of $sending_ip_address (see 7 above) to vary the text of the
+    message. For example, if you want the string that is used for helo_data to
+    be obtained by a DNS lookup of the interface address, you could use this:
+
+      helo_data = ${lookup dnsdb{ptr=$sending_ip_address}{$value}\
+        {$primary_hostname}}
+
+    The use of helo_data applies both to sending messages and when doing
+    callouts.
 
 
 Version 4.66

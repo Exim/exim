@@ -1,0 +1,25 @@
+# $sending_ip_address
+need_ipv4
+#
+server PORT_S 2
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM
+450 Defer
+QUIT
+221 OK
+*EOF
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM
+450 Defer
+QUIT
+221 OK
+****
+exim -odi userx@test.ex
+****
+no_msglog_check

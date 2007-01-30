@@ -7,7 +7,7 @@ Test message 1
 exim userx@test.ex
 Test message 2
 ****
-exim -qqf
+exim -qqf -d-all+acl
 ****
 killdaemon
 exim -DSERVER=server -DNOTDAEMON -qf

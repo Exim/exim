@@ -1,0 +1,66 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: queue_run MAIN
+  Start queue run: pid=pppp -qqf
+Connecting to 127.0.0.1 [127.0.0.1]:1225 ... connected
+  SMTP<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+         250-SIZE 52428800
+         250-PIPELINING
+         250-STARTTLS
+         250 HELP
+  SMTP>> STARTTLS
+  SMTP<< 220 TLS go ahead
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+         250-SIZE 52428800
+         250-PIPELINING
+         250 HELP
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP>> RCPT TO:<userx@test.ex>
+  SMTP>> DATA
+  SMTP<< 250 OK
+  SMTP<< 250 Accepted
+  SMTP<< 354 Enter message, ending with "." on a line by itself
+  SMTP<< 250 OK id=10HmaZ-0005vi-00
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+         250-SIZE 52428800
+         250-PIPELINING
+         250-STARTTLS
+         250 HELP
+LOG: MAIN
+  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLS-1.0:RSA_AES_256_CBC_SHA1:32 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
+LOG: MAIN
+  Completed
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+  SMTP>> STARTTLS
+  SMTP<< 220 TLS go ahead
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-myhost.test.ex Hello localhost [127.0.0.1]
+         250-SIZE 52428800
+         250-PIPELINING
+         250 HELP
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex> SIZE=ssss
+  SMTP>> RCPT TO:<userx@test.ex>
+  SMTP>> DATA
+  SMTP<< 250 OK
+  SMTP<< 250 Accepted
+  SMTP<< 354 Enter message, ending with "." on a line by itself
+  SMTP<< 250 OK id=10HmbA-0005vi-00
+  SMTP>> QUIT
+LOG: MAIN
+  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLS-1.0:RSA_AES_256_CBC_SHA1:32 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+LOG: queue_run MAIN
+  End queue run: pid=pppp -qqf
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+
+******** SERVER ********

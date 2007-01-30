@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.46 2007/01/30 11:45:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.47 2007/01/30 15:10:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -619,6 +619,8 @@ extern uschar *sender_unqualified_hosts; /* Permitted unqualified senders */
 extern uschar *sender_verify_failure;  /* What went wrong */
 extern address_item *sender_verified_list; /* Saved chain of sender verifies */
 extern address_item *sender_verified_failed; /* The one that caused denial */
+extern uschar *sending_ip_address;     /* Address of outgoing (SMTP) interface */
+extern int     sending_port;           /* Port of outgoing interface */
 extern volatile BOOL sigalrm_seen;     /* Flag for sigalrm_handler */
 extern uschar **sighup_argv;           /* Args for re-execing after SIGHUP */
 extern int     smtp_accept_count;      /* Count of connections */

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.464 2007/01/30 11:45:20 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.465 2007/01/30 15:10:58 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -61,6 +61,11 @@ PH/10 The acl_not_smtp_start ACL was, contrary to the documentation, not being
       input. This is fixed, and it now also says "batched" for BSMTP.
 
 PH/11 Added control=no_pipelining.
+
+PH/12 Added $sending_ip_address and $sending_port (mostly Magnus Holmgren's
+      patch, slightly modified), and move the expansion of helo_data till after
+      the connection is made in the smtp transport (so it can use these
+      values).
 
 
 Exim version 4.66

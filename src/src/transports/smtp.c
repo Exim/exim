@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.32 2007/01/22 16:29:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.33 2007/01/30 15:10:59 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -848,7 +848,7 @@ smtp_outblock outblock;
 int max_rcpt = tblock->max_addresses;
 uschar *igquotstr = US"";
 uschar *local_authenticated_sender = authenticated_sender;
-uschar *helo_data;
+uschar *helo_data = NULL;
 uschar *message = NULL;
 uschar new_message_id[MESSAGE_ID_LENGTH + 1];
 uschar *p;
@@ -876,17 +876,6 @@ outblock.buffersize = sizeof(outbuffer);
 outblock.ptr = outbuffer;
 outblock.cmd_count = 0;
 outblock.authenticating = FALSE;
-
-/* Expand the greeting message */
-
-helo_data = expand_string(ob->helo_data);
-if (helo_data == NULL)
-  {
-  uschar *message = string_sprintf("failed to expand helo_data: %s",
-    expand_string_message);
-  set_errno(addrlist, 0, message, DEFER, FALSE);
-  return ERROR;
-  }
 
 /* If an authenticated_sender override has been specified for this transport
 instance, expand it. If the expansion is forced to fail, and there was already
@@ -927,12 +916,30 @@ if (continue_hostname == NULL)
     return DEFER;
     }
 
+  /* Expand the greeting message while waiting for the initial response. (Makes
+  sense if helo_data contains ${lookup dnsdb ...} stuff). The expansion is
+  delayed till here so that $sending_interface and $sending_port are set. */
+
+  helo_data = expand_string(ob->helo_data);
+
   /* The first thing is to wait for an initial OK response. The dreaded "goto"
   is nevertheless a reasonably clean way of programming this kind of logic,
   where you want to escape on any error. */
 
   if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
     ob->command_timeout)) goto RESPONSE_FAILED;
+
+  /* Now check if the helo_data expansion went well, and sign off cleanly if it
+  didn't. */
+
+  if (helo_data == NULL)
+    {
+    uschar *message = string_sprintf("failed to expand helo_data: %s",
+      expand_string_message);
+    set_errno(addrlist, 0, message, DEFER, FALSE);
+    yield = DEFER;
+    goto SEND_QUIT;
+    }
 
 /** Debugging without sending a message
 addrlist->transport_return = DEFER;
@@ -1103,10 +1110,27 @@ if (tls_offered && !suppress_tls &&
     }
   }
 
-/* If we started TLS, redo the EHLO/LHLO exchange over the secure channel. */
+/* If we started TLS, redo the EHLO/LHLO exchange over the secure channel. If
+helo_data is null, we are dealing with a connection that was passed from
+another process, and so we won't have expanded helo_data above. We have to
+expand it here. $sending_ip_address and $sending_port are set up right at the
+start of the Exim process (in exim.c). */
 
 if (tls_active >= 0)
   {
+  if (helo_data == NULL)
+    {
+    helo_data = expand_string(ob->helo_data);
+    if (helo_data == NULL)
+      {
+      uschar *message = string_sprintf("failed to expand helo_data: %s",
+        expand_string_message);
+      set_errno(addrlist, 0, message, DEFER, FALSE);
+      yield = DEFER;
+      goto SEND_QUIT;
+      }
+    }
+
   if (smtp_write_command(&outblock, FALSE, "%s %s\r\n", lmtp? "LHLO" : "EHLO",
         helo_data) < 0)
     goto SEND_FAILED;
