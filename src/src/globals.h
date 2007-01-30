@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.45 2007/01/22 16:29:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.46 2007/01/30 11:45:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -495,6 +495,7 @@ extern BOOL    parse_found_group;      /* In the middle of a group */
 extern uschar *percent_hack_domains;   /* Local domains for which '% operates */
 extern uschar *pid_file_path;          /* For writing daemon pids */
 extern uschar *pipelining_advertise_hosts; /* As it says */
+extern BOOL    pipelining_enable;      /* As it says */
 extern BOOL    preserve_message_logs;  /* Save msglog files */
 extern uschar *primary_hostname;       /* Primary name of this computer */
 extern BOOL    print_topbitchars;      /* Topbit chars are printing chars */

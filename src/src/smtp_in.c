@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.52 2007/01/23 14:34:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.53 2007/01/30 11:45:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1244,6 +1244,7 @@ synprot_error_count = unknown_command_count = nonmail_command_count = 0;
 smtp_delay_mail = smtp_rlm_base;
 auth_advertised = FALSE;
 pipelining_advertised = FALSE;
+pipelining_enable = TRUE;
 sync_cmd_limit = NON_SYNC_CMD_NON_PIPELINING;
 
 memset(sender_host_cache, 0, sizeof(sender_host_cache));
@@ -2851,7 +2852,8 @@ while (done <= 0)
       /* Exim is quite happy with pipelining, so let the other end know that
       it is safe to use it, unless advertising is disabled. */
 
-      if (verify_check_host(&pipelining_advertise_hosts) == OK)
+      if (pipelining_enable &&
+          verify_check_host(&pipelining_advertise_hosts) == OK)
         {
         s = string_cat(s, &size, &ptr, smtp_code, 3);
         s = string_cat(s, &size, &ptr, US"-PIPELINING\r\n", 13);

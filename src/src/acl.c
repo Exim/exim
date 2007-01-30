@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.68 2007/01/08 10:50:17 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.69 2007/01/30 11:45:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -186,7 +186,8 @@ enum {
   #endif
   CONTROL_FAKEDEFER,
   CONTROL_FAKEREJECT,
-  CONTROL_NO_MULTILINE
+  CONTROL_NO_MULTILINE,
+  CONTROL_NO_PIPELINING
 };
 
 /* ACL control names; keep in step with the table above! This list is used for
@@ -214,7 +215,10 @@ static uschar *controls[] = {
   #ifdef WITH_CONTENT_SCAN
   US"no_mbox_unspool",
   #endif
-  US"no_multiline"
+  US"fakedefer",
+  US"fakereject",
+  US"no_multiline",
+  US"no_pipelining",
 };
 
 /* Flags to indicate for which conditions /modifiers a string expansion is done
@@ -586,6 +590,9 @@ static unsigned int control_forbids[] = {
     (1<<ACL_WHERE_MIME)),
 
   (1<<ACL_WHERE_NOTSMTP)|                          /* no_multiline */
+    (1<<ACL_WHERE_NOTSMTP_START),
+
+  (1<<ACL_WHERE_NOTSMTP)|                          /* no_pipelining */
     (1<<ACL_WHERE_NOTSMTP_START)
 };
 
@@ -611,6 +618,7 @@ static control_def controls_list[] = {
   { US"freeze",                  CONTROL_FREEZE, TRUE },
   { US"no_enforce_sync",         CONTROL_NO_ENFORCE_SYNC, FALSE },
   { US"no_multiline_responses",  CONTROL_NO_MULTILINE, FALSE },
+  { US"no_pipelining",           CONTROL_NO_PIPELINING, FALSE },
   { US"queue_only",              CONTROL_QUEUE_ONLY, FALSE },
 #ifdef WITH_CONTENT_SCAN
   { US"no_mbox_unspool",         CONTROL_NO_MBOX_UNSPOOL, FALSE },
@@ -2591,6 +2599,10 @@ for (; cb != NULL; cb = cb->next)
 
       case CONTROL_NO_MULTILINE:
       no_multiline_responses = TRUE;
+      break;
+
+      case CONTROL_NO_PIPELINING:
+      pipelining_enable = FALSE;
       break;
 
       case CONTROL_FAKEDEFER:

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.64 2007/01/22 16:29:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.65 2007/01/30 11:45:20 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -790,6 +790,7 @@ BOOL    parse_found_group      = FALSE;
 uschar *percent_hack_domains   = NULL;
 uschar *pid_file_path          = US PID_FILE_PATH
                            "\0<--------------Space to patch pid_file_path->";
+BOOL    pipelining_enable      = TRUE;
 uschar *pipelining_advertise_hosts = US"*";
 BOOL    preserve_message_logs  = FALSE;
 uschar *primary_hostname       = NULL;

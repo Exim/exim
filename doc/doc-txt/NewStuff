@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.130 2007/01/23 14:34:02 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.131 2007/01/30 11:45:20 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -196,6 +196,12 @@ Version 4.67
     connections there actually are, because many other connections may come and
     go while a single connection is being processed. When a child process
     terminates, the daemon decrements the variable.
+
+ 6. There's a new control called no_pipelining, which does what its name
+    suggests. It turns off the advertising of the PIPELINING extension to SMTP.
+    To be useful, this control must be obeyed before Exim sends its response to
+    an EHLO command. Therefore, it should normally appear in an ACL controlled
+    by acl_smtp_connect or acl_smtp_helo.
 
 
 Version 4.66

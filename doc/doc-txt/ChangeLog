@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.463 2007/01/25 15:51:28 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.464 2007/01/30 11:45:20 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -59,6 +59,8 @@ PH/10 The acl_not_smtp_start ACL was, contrary to the documentation, not being
       in the batch. While fixing this I discovered that the process information
       (output by running exiwhat) was not always getting set for -bs and -bS
       input. This is fixed, and it now also says "batched" for BSMTP.
+
+PH/11 Added control=no_pipelining.
 
 
 Exim version 4.66
