@@ -471,6 +471,13 @@
 > Long:     =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_i?= =?iso-8859-8?Q?t_will_go_over_the_75-char_limit?=
 > Long:     =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_i?= =?iso-8859-8?Q?t_will_go_over_the_75-char_limit_by_a_long_way=3B_in_fac?= =?iso-8859-8?Q?t_this_one_will_go_over_the_150_character_limit?=
 > 
+> # RFC 2047 decode
+> 
+> abcd      abcd
+> <:abcd:>  <:abcd:>
+> <:ab cd:> <:ab cd:>
+> Long:      here we go: a string that is going to be encoded: it will go over the 75-char limit
+> Long:      here we go: a string that is going to be encoded: it will go over the 75-char limit by a long way; in fact this one will go over the 150 character limit
 > 
 > # UTF-8
 > 

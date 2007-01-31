@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.78 2007/01/30 15:10:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.79 2007/01/31 11:30:08 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -181,6 +181,7 @@ static uschar *op_table_main[] = {
   US"nhash",
   US"quote",
   US"rfc2047",
+  US"rfc2047d",
   US"rxquote",
   US"s",
   US"sha1",
@@ -211,6 +212,7 @@ enum {
   EOP_NHASH,
   EOP_QUOTE,
   EOP_RFC2047,
+  EOP_RFC2047D,
   EOP_RXQUOTE,
   EOP_S,
   EOP_SHA1,
@@ -5081,6 +5083,23 @@ while (*s != 0)
         uschar *string = parse_quote_2047(sub, Ustrlen(sub), headers_charset,
           buffer, sizeof(buffer), FALSE);
         yield = string_cat(yield, &size, &ptr, string, Ustrlen(string));
+        continue;
+        }
+
+      /* RFC 2047 decode */
+
+      case EOP_RFC2047D:
+        {
+        int len;
+        uschar *error;
+        uschar *decoded = rfc2047_decode(sub, check_rfc2047_length,
+          headers_charset, '?', &len, &error);
+        if (error != NULL)
+          {
+          expand_string_message = error;
+          goto EXPAND_FAILED;
+          }
+        yield = string_cat(yield, &size, &ptr, decoded, len);
         continue;
         }
 

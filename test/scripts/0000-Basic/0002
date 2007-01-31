@@ -502,6 +502,13 @@ abcd      ${rfc2047:abcd}
 Long:     ${rfc2047: here we go: a string that is going to be encoded: it will go over the 75-char limit}
 Long:     ${rfc2047: here we go: a string that is going to be encoded: it will go over the 75-char limit by a long way; in fact this one will go over the 150 character limit}
 
+# RFC 2047 decode
+
+${rfc2047d:abcd      abcd}
+${rfc2047d:<:abcd:>  =?iso-8859-8?Q?=3C=3Aabcd=3A=3E?=}
+${rfc2047d:<:ab cd:> =?iso-8859-8?Q?=3C=3Aab_cd=3A=3E?=}
+${rfc2047d:Long:     =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_i?= =?iso-8859-8?Q?t_will_go_over_the_75-char_limit?=}
+${rfc2047d:Long:     =?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_i?= =?iso-8859-8?Q?t_will_go_over_the_75-char_limit_by_a_long_way=3B_in_fac?= =?iso-8859-8?Q?t_this_one_will_go_over_the_150_character_limit?=}
 
 # UTF-8
 

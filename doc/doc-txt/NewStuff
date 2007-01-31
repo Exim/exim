@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.132 2007/01/30 15:10:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.133 2007/01/31 11:30:08 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -221,6 +221,12 @@ Version 4.67
 
     The use of helo_data applies both to sending messages and when doing
     callouts.
+
+ 9. There is a new expansion operator ${rfc2047d: that decodes strings that
+    are encoded as per RFC 2047. Binary zero bytes are replaced by question
+    marks. Characters are converted into the character set defined by
+    headers_charset. Overlong RFC 2047 "words" are not recognized unless
+    check_rfc2047_length is set false.
 
 
 Version 4.66

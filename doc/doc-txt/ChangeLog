@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.465 2007/01/30 15:10:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.466 2007/01/31 11:30:08 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -66,6 +66,8 @@ PH/12 Added $sending_ip_address and $sending_port (mostly Magnus Holmgren's
       patch, slightly modified), and move the expansion of helo_data till after
       the connection is made in the smtp transport (so it can use these
       values).
+
+PH/13 Added ${rfc2047d: to decoded RFC 2047 strings.
 
 
 Exim version 4.66
