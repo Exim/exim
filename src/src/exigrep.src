@@ -1,9 +1,9 @@
 #! PERL_COMMAND -w
-# $Cambridge: exim/src/src/exigrep.src,v 1.3 2005/08/01 13:28:30 ph10 Exp $
+# $Cambridge: exim/src/src/exigrep.src,v 1.4 2007/01/31 16:52:12 ph10 Exp $
 
 use strict;
 
-# Copyright (c) 2004 University of Cambridge.
+# Copyright (c) 2007 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
 
 # Except when they appear in comments, the following placeholders in this
@@ -68,9 +68,9 @@ return unless
 
 # Handle the case when the log line belongs to a specific message. We save
 # lines for specific messages until the message is complete. Then either print
-# discard.
+# or discard.
 
-if (my($id) = $entry =~ /^(\w{6}\-\w{6}\-\w{2})/)
+if (my($id) = $entry =~ /^(?:\[\d+\]\s)?(\w{6}\-\w{6}\-\w{2})/)
   {
   $saved{$id} = '' unless defined($saved{$id});
 

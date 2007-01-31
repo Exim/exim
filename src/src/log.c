@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/log.c,v 1.11 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/log.c,v 1.12 2007/01/31 16:52:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -732,11 +732,21 @@ if (!write_rejectlog) flags &= ~LOG_REJECT;
 id except for the process log and when called by a utility. */
 
 ptr = log_buffer;
-if (really_exim && (flags & LOG_PROCESS) == 0 && message_id[0] != 0)
-  sprintf(CS ptr, "%s %s ", tod_stamp(tod_log), message_id);
-else sprintf(CS ptr, "%s ", tod_stamp(tod_log));
-
+sprintf(CS ptr, "%s ", tod_stamp(tod_log));
 while(*ptr) ptr++;
+
+if ((log_extra_selector & LX_pid) != 0)
+  {
+  sprintf(CS ptr, "[%d] ", (int)getpid());
+  while (*ptr) ptr++;
+  }
+
+if (really_exim && (flags & LOG_PROCESS) == 0 && message_id[0] != 0)
+  {
+  sprintf(CS ptr, "%s ", message_id);
+  while(*ptr) ptr++;
+  }
+
 if ((flags & LOG_CONFIG) != 0) ptr = log_config_info(ptr, flags);
 
 va_start(ap, format);

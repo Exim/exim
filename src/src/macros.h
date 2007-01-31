@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.30 2007/01/15 15:59:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.31 2007/01/31 16:52:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -378,21 +378,22 @@ set all the bits in a multi-word selector. */
 #define LX_incoming_interface          0x80000020
 #define LX_incoming_port               0x80000040
 #define LX_outgoing_port               0x80000080
-#define LX_queue_time                  0x80000100
-#define LX_queue_time_overall          0x80000200
-#define LX_received_sender             0x80000400
-#define LX_received_recipients         0x80000800
-#define LX_rejected_header             0x80001000
-#define LX_return_path_on_delivery     0x80002000
-#define LX_sender_on_delivery          0x80004000
-#define LX_sender_verify_fail          0x80008000
-#define LX_smtp_confirmation           0x80010000
-#define LX_smtp_no_mail                0x80020000
-#define LX_subject                     0x80040000
-#define LX_tls_certificate_verified    0x80080000
-#define LX_tls_cipher                  0x80100000
-#define LX_tls_peerdn                  0x80200000
-#define LX_unknown_in_list             0x80400000
+#define LX_pid                         0x80000100
+#define LX_queue_time                  0x80000200
+#define LX_queue_time_overall          0x80000400
+#define LX_received_sender             0x80000800
+#define LX_received_recipients         0x80001000
+#define LX_rejected_header             0x80002000
+#define LX_return_path_on_delivery     0x80004000
+#define LX_sender_on_delivery          0x80008000
+#define LX_sender_verify_fail          0x80010000
+#define LX_smtp_confirmation           0x80020000
+#define LX_smtp_no_mail                0x80040000
+#define LX_subject                     0x80080000
+#define LX_tls_certificate_verified    0x80100000
+#define LX_tls_cipher                  0x80200000
+#define LX_tls_peerdn                  0x80400000
+#define LX_unknown_in_list             0x80800000
 
 #define L_default     (L_connection_reject        | \
                        L_delay_delivery           | \

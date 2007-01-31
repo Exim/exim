@@ -1,0 +1,14 @@
+# log_selector = +pid
+#
+exim -odi userx@test.ex usery@test.ex
+Message 1
+****
+exim -odi userx@test.ex userz@test.ex
+Message 2
+****
+exim -DLS= -odi userx@test.ex
+Message 3
+****
+exigrep userx
+eximstats -ne -nr -nt -tnl -q0 -h0 -t0
+no_msglog_check

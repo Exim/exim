@@ -1,5 +1,5 @@
 #!PERL_COMMAND -w
-# $Cambridge: exim/src/src/eximstats.src,v 1.12 2007/01/22 15:14:01 steve Exp $
+# $Cambridge: exim/src/src/eximstats.src,v 1.13 2007/01/31 16:52:12 ph10 Exp $
 
 # Copyright (c) 2001 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -259,6 +259,9 @@
 #
 # 2006-11-27  V1.52 Steve Campbell
 #             Tally any reject message containing SpamAssassin.
+#
+# 2007-01-31  V1.53 Philip Hazel
+#             Allow for [pid] after date in log lines
 #
 #
 #
@@ -558,7 +561,7 @@ use vars qw($WEEK $DAY $HOUR $MINUTE);
 
 @days_per_month = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
 $gig     = 1024 * 1024 * 1024;
-$VERSION = '1.52';
+$VERSION = '1.53';
 
 # How much space do we allow for the Hosts/Domains/Emails/Edomains column headers?
 $COLUMN_WIDTHS = 8;
@@ -1821,7 +1824,7 @@ sub generate_parser {
 
     $length = length($_);
     next if ($length < 38);
-    next unless /^(\\d{4}\\-\\d\\d-\\d\\d\\s(\\d\\d):(\\d\\d):\\d\\d( [-+]\\d\\d\\d\\d)?)/o;
+    next unless /^(\\d{4}\\-\\d\\d-\\d\\d\\s(\\d\\d):(\\d\\d):\\d\\d( [-+]\\d\\d\\d\\d)?)( \\[\\d+\\])?/o;
 
     ($tod,$m_hour,$m_min) = ($1,$2,$3);
 
@@ -1832,6 +1835,12 @@ sub generate_parser {
     }
     else {
       $extra = 0;
+    }
+
+    # PH - watch for PID added after the timestamp.
+    if (defined($5)) {
+      $extra += length($5);
+      next if ($length < 38 + $extra);
     }
 
     $id   = substr($_, 20 + $extra, 16);

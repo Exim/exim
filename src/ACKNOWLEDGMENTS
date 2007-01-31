@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.70 2007/01/31 11:30:08 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.71 2007/01/31 16:52:12 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -240,6 +240,7 @@ Jonathan Sambrook         Suggested patch for expanding uid and gid lists
 Peter Savitch             Diagnosis of FPE bug when statvfs() fails on spool
 Harald Schueler           Patch for dn_expand() failure on truncated data
 Heiko Schlichting         Diagnosis of intermittent daemon crash bug
+Heiko Schlitterman        Proposed patch for +pid
 Stephan Schulz            Patch for $host_data caching error
 Lai Zit Seng              Patch for radiusclient 0.4.9 interface bugs
 Tony Sheen                Log files with datestamped names and auto rollover

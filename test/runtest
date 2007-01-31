@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.22 2007/01/23 14:57:51 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.23 2007/01/31 16:52:12 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -432,6 +432,10 @@ while(<IN>)
   # Time on queue tolerance
   s/QT=1s/QT=0s/;
 
+  # Eximstats heading
+  s/Exim\sstatistics\sfrom\s\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\sto\s
+    \d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d/Exim statistics from <time> to <time>/x;
+
 
   # ======== Caller's login, uid, gid, home ========
 
@@ -496,6 +500,10 @@ while(<IN>)
 
   # Pid in temp file in appendfile transport
   s"test-mail/temp\.\d+\."test-mail/temp.pppp.";
+
+  # Optional pid in log lines
+  s/^(\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d)(\s[+-]\d\d\d\d|)(\s\[\d+\])/
+    "$1$2 [" . new_value($3, "%s", \$next_pid) . "]"/gxe;
 
   # Detect a daemon stderr line with a pid and save the pid for subsequent
   # removal from following lines.
@@ -590,6 +598,8 @@ while(<IN>)
   s/\+0100,\d+;/+0100,ddd;/;
   s/\(\d+ bytes written\)/(ddd bytes written)/;
   s/added '\d+ 1'/added 'ddd 1'/;
+  s/Received\s+\d+/Received               nnn/;
+  s/Delivered\s+\d+/Delivered              nnn/;
 
 
   # ======== Values in spool space failure message ========
@@ -1408,6 +1418,30 @@ if (/^exinext\s+(.*)/)
     "-DEXIM_PATH=$parm_cwd/eximdir/exim " .
     "-C $parm_cwd/test-config $1;" .
     "echo exinext exit code = \$?)" .
+    ">>test-stdout");
+  return 1;
+  }
+
+
+# The "exigrep" command runs exigrep on the current mainlog
+
+if (/^exigrep\s+(.*)/)
+  {
+  run_system("(./eximdir/exigrep " .
+    "$1 $parm_cwd/spool/log/mainlog;" .
+    "echo exigrep exit code = \$?)" .
+    ">>test-stdout");
+  return 1;
+  }
+
+
+# The "eximstats" command runs eximstats on the current mainlog
+
+if (/^eximstats\s+(.*)/)
+  {
+  run_system("(./eximdir/eximstats " .
+    "$1 $parm_cwd/spool/log/mainlog;" .
+    "echo eximstats exit code = \$?)" .
     ">>test-stdout");
   return 1;
   }
@@ -2535,6 +2569,16 @@ if (system("cp $parm_exim_dir/exinext eximdir") != 0)
   tests_exit(-1, "Failed to make a copy of exinext: $!");
   }
 
+if (system("cp $parm_exim_dir/exigrep eximdir") != 0)
+  {
+  tests_exit(-1, "Failed to make a copy of exigrep: $!");
+  }
+
+if (system("cp $parm_exim_dir/eximstats eximdir") != 0)
+  {
+  tests_exit(-1, "Failed to make a copy of eximstats: $!");
+  }
+
 
 ##################################################
 #    Check that the Exim user can access stuff   #
@@ -2904,6 +2948,7 @@ foreach $test (@test_list)
 
   undef %cache;
   $next_msgid = "aX";
+  $next_pid = 1234;
   $next_port = 1111;
   $message_skip = 0;
   $msglog_skip = 0;

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.133 2007/01/31 11:30:08 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.134 2007/01/31 16:52:12 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -227,6 +227,10 @@ Version 4.67
     marks. Characters are converted into the character set defined by
     headers_charset. Overlong RFC 2047 "words" are not recognized unless
     check_rfc2047_length is set false.
+
+10. There is a new log selector called "pid", which causes the current process
+    id to be added to every log line, in square brackets, immediately after the
+    time and date.
 
 
 Version 4.66

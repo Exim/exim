@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_version.c,v 1.4 2007/01/08 10:50:17 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_version.c,v 1.5 2007/01/31 16:52:12 ph10 Exp $ */
 
 /*************************************************
 *                  Exim Monitor                  *
@@ -21,7 +21,7 @@ version_init(void)
 int i = 0;
 uschar today[20];
 
-version_string = US"2.05";
+version_string = US"2.06";
 
 Ustrcpy(today, __DATE__);
 if (today[4] == ' ') i = 1;

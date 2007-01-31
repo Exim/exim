@@ -1,0 +1,26 @@
+1999-03-02 09:44:33 [1234] 10HmaX-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 [1235] 10HmaX-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 [1235] 10HmaX-0005vi-00 => usery <usery@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 [1235] 10HmaX-0005vi-00 Completed
+
+1999-03-02 09:44:33 [1236] 10HmaY-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 [1237] 10HmaY-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 [1237] 10HmaY-0005vi-00 => userz <userz@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 [1237] 10HmaY-0005vi-00 Completed
+
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex U=CALLER P=local S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
+
+exigrep exit code = 0
+
+Exim statistics from <time> to <time>
+
+Grand total summary
+-------------------
+                                                                  At least one address
+  TOTAL               Volume   Messages Addresses     Hosts      Delayed       Failed
+  Received               nnn          3                   1       0  0.0%      0  0.0%
+  Delivered              nnn          5         5         1
+
+eximstats exit code = 0

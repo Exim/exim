@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.66 2007/01/30 15:10:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.67 2007/01/31 16:52:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -668,6 +668,8 @@ top bit). They are never used in calls to log_write(), but are tested
 independently. This separation became necessary when the number of log
 selectors was getting close to filling a 32-bit word. */
 
+/* Note that this list must be in alphabetical order. */
+
 bit_table log_options[]        = {
   { US"acl_warn_skipped",             LX_acl_warn_skipped },
   { US"address_rewrite",              L_address_rewrite },
@@ -686,6 +688,7 @@ bit_table log_options[]        = {
   { US"incoming_port",                LX_incoming_port },
   { US"lost_incoming_connection",     L_lost_incoming_connection },
   { US"outgoing_port",                LX_outgoing_port },
+  { US"pid",                          LX_pid },
   { US"queue_run",                    L_queue_run },
   { US"queue_time",                   LX_queue_time },
   { US"queue_time_overall",           LX_queue_time_overall },

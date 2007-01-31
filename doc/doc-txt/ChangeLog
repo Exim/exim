@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.466 2007/01/31 11:30:08 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.467 2007/01/31 16:52:12 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -68,6 +68,8 @@ PH/12 Added $sending_ip_address and $sending_port (mostly Magnus Holmgren's
       values).
 
 PH/13 Added ${rfc2047d: to decoded RFC 2047 strings.
+
+PH/14 Added log_selector = +pid.
 
 
 Exim version 4.66

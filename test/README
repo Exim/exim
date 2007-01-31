@@ -1,4 +1,4 @@
-$Cambridge: exim/test/README,v 1.6 2007/01/23 11:01:10 ph10 Exp $
+$Cambridge: exim/test/README,v 1.7 2007/01/31 16:52:12 ph10 Exp $
 
 EXPORTABLE EXIM TEST SUITE
 --------------------------
@@ -6,7 +6,7 @@ EXPORTABLE EXIM TEST SUITE
 This document last updated for:
 
 Test Suite Version: 4.67
-Date: 23 January 2007
+Date: 31 January 2007
 
 
 BACKGROUND
@@ -635,6 +635,12 @@ The file remains locked with the following command (normally exim) is obeyed.
   exinext <data>
 
 This command runs the exinext utility with the given argument data.
+
+
+  exigrep <data>
+
+This command runs the exigrep utility with the given data (the search pattern)
+on the current mainlog file.
 
 
   gnutls

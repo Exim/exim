@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_log.c,v 1.4 2007/01/08 10:50:17 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_log.c,v 1.5 2007/01/31 16:52:12 ph10 Exp $ */
 
 /*************************************************
 *                 Exim Monitor                   *
@@ -7,7 +7,7 @@
 /* Copyright (c) University of Cambridge 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
-/* This module contains code for scanning the smaill log,
+/* This module contains code for scanning the main log,
 extracting information from it, and displaying a "tail". */
 
 #include "em_hdr.h"
@@ -250,14 +250,20 @@ if (LOG != NULL)
       }
 
     /* Munge the log entry and display shortened form on one line.
-    We omit the date and show only the time. Remove any time zone offset. */
+    We omit the date and show only the time. Remove any time zone offset.
+    Take note of the presence of [pid]. */
 
     if (pcre_exec(yyyymmdd_regex,NULL,CS buffer,length,0,PCRE_EOPT,NULL,0) >= 0)
       {
+      int pidlength = 0;
       if ((buffer[20] == '+' || buffer[20] == '-') &&
           isdigit(buffer[21]) && buffer[25] == ' ')
         memmove(buffer + 20, buffer + 26, Ustrlen(buffer + 26) + 1);
-      id = string_copyn(buffer + 20, MESSAGE_ID_LENGTH);
+      if (buffer[20] == '[')
+        {
+        while (Ustrchr("[]0123456789", buffer[20+pidlength++]) != NULL);
+        }
+      id = string_copyn(buffer + 20 + pidlength, MESSAGE_ID_LENGTH);
       show_log("%s", buffer+11);
       }
     else
