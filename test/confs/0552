@@ -1,0 +1,66 @@
+# Exim test configuration 0552
+
+DDF=
+SERVER=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_not_smtp = check_not
+acl_smtp_connect = check_connect
+acl_smtp_rcpt = check_rcpt
+
+queue_only
+
+# ----- ACL -----
+
+begin ACL
+
+check_connect:
+  accept DDF
+
+check_rcpt:
+  accept delay = 1s
+
+check_not:
+  accept delay = 1s
+         logwrite = Accept non-SMTP
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = accept
+  transport = t1
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+  port = PORT_D
+  hosts = 127.0.0.1
+  allow_localhost
+  command_timeout = 2s
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,1d,1s
+
+
+# End

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.134 2007/01/31 16:52:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.135 2007/02/05 12:35:46 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -231,6 +231,10 @@ Version 4.67
 10. There is a new log selector called "pid", which causes the current process
     id to be added to every log line, in square brackets, immediately after the
     time and date.
+
+11. Exim has been modified so that it flushes SMTP output before implementing
+    a delay in an ACL. This behaviour can be disabled by obeying control =
+    no_delay_flush at some earlier point.
 
 
 Version 4.66

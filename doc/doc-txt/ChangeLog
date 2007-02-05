@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.467 2007/01/31 16:52:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.468 2007/02/05 12:35:46 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -70,6 +70,8 @@ PH/12 Added $sending_ip_address and $sending_port (mostly Magnus Holmgren's
 PH/13 Added ${rfc2047d: to decoded RFC 2047 strings.
 
 PH/14 Added log_selector = +pid.
+
+PH/15 Flush SMTP output before delaying, unless control=no_delay_flush is set.
 
 
 Exim version 4.66

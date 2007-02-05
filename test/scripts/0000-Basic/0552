@@ -1,0 +1,20 @@
+# autoflush for delay
+need_ipv4
+#
+# Put a message on the queue (queue_only is set); this tests that a
+# non-SMTP delay still works.
+exim userx1@test.ex userx2@test.ex userx3@test.ex
+****
+# This daemon is "old-style", without the flush
+exim -DSERVER=server -DDDF=control=no_delay_flush -bd -oX PORT_D
+****
+exim -qf
+****
+killdaemon
+# This daemon should flush before delaying
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -qf
+****
+killdaemon
+no_msglog_check
