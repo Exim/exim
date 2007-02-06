@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.34 2007/02/06 14:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.35 2007/02/06 14:49:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -77,6 +77,8 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, hosts) },
   { "hosts_avoid_esmtp",    opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_avoid_esmtp) },
+  { "hosts_avoid_pipelining", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, hosts_avoid_pipelining) },
   #ifdef SUPPORT_TLS
   { "hosts_avoid_tls",      opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_avoid_tls) },
@@ -160,6 +162,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* hosts_require_auth */
   NULL,                /* hosts_require_tls */
   NULL,                /* hosts_avoid_tls */
+  NULL,                /* hosts_avoid_pipelining */
   NULL,                /* hosts_avoid_esmtp */
   NULL,                /* hosts_nopass_tls */
   5*60,                /* command_timeout */
@@ -1189,9 +1192,12 @@ if (continue_hostname == NULL
       PCRE_EOPT, NULL, 0) >= 0;
 
   /* Note whether the server supports PIPELINING. If hosts_avoid_esmtp matched
-  the current host, esmtp will be false, so PIPELINING can never be used. */
+  the current host, esmtp will be false, so PIPELINING can never be used. If
+  the current host matches hosts_avoid_pipelining, don't do it. */
 
   smtp_use_pipelining = esmtp &&
+    verify_check_this_host(&(ob->hosts_avoid_pipelining), NULL, host->name,
+      host->address, NULL) != OK &&
     pcre_exec(regex_PIPELINING, NULL, CS buffer, Ustrlen(CS buffer), 0,
       PCRE_EOPT, NULL, 0) >= 0;
 

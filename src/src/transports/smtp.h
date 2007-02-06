@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.h,v 1.11 2007/01/18 15:35:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.h,v 1.12 2007/02/06 14:49:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -24,6 +24,7 @@ typedef struct {
   uschar *hosts_require_auth;
   uschar *hosts_require_tls;
   uschar *hosts_avoid_tls;
+  uschar *hosts_avoid_pipelining;
   uschar *hosts_avoid_esmtp;
   uschar *hosts_nopass_tls;
   int     command_timeout;

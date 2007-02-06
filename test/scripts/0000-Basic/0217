@@ -316,4 +316,30 @@ RCPT TO
 exim -odi a b c d e 
 .
 ****
+# Discard retry data
+sudo rm DIR/spool/db/*
+#
+# Test hosts_avoid_pipelining
+server PORT_S
+220 Server ready
+EHLO
+250-OK
+250 PIPELINING
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+RCPT TO
+250 OK
+DATA
+351 Send more
+.
+250 OK
+****
+exim -v -odi -DHAP=hosts_avoid_pipelining=127.0.0.1 w x y z
+****
 no_msglog_check

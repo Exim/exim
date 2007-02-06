@@ -228,3 +228,36 @@ LOG: MAIN
   CALLER@test.ex: error ignored
 LOG: MAIN
   Completed
+LOG: MAIN
+  <= CALLER@test.ex U=CALLER P=local S=sss
+delivering 10HmbP-0005vi-00
+Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
+  SMTP<< 220 Server ready
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250-OK
+         250 PIPELINING
+  SMTP>> MAIL FROM:<CALLER@test.ex>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<w@test.ex>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<x@test.ex>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<y@test.ex>
+  SMTP<< 250 OK
+  SMTP>> RCPT TO:<z@test.ex>
+  SMTP<< 250 OK
+  SMTP>> DATA
+  SMTP<< 351 Send more
+  SMTP>> writing message and terminating "."
+  SMTP<< 250 OK
+  SMTP>> QUIT
+LOG: MAIN
+  => w@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]
+LOG: MAIN
+  -> x@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]
+LOG: MAIN
+  -> y@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]
+LOG: MAIN
+  -> z@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]
+LOG: MAIN
+  Completed

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.472 2007/02/06 14:19:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.473 2007/02/06 14:49:13 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -84,6 +84,8 @@ PH/19 Change 4.64/PH/36 introduced a bug: when address_retry_include_sender
       was true (the default) a successful delivery failed to delete the retry
       item, thus causing premature timeout of the address. The bug is now
       fixed.
+
+PH/20 Added hosts_avoid_pipelining to the smtp transport.
 
 
 Exim version 4.66

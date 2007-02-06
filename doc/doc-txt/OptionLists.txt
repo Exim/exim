@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.29 2007/01/18 15:35:42 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.30 2007/02/06 14:49:13 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -265,6 +265,7 @@ host_reject_connection               host list       unset         main         
 hosts                                string          unset         iplookup          4.00
                                      string list*    unset         smtp
 hosts_avoid_esmtp                    host list       unset         smtp              4.21
+hosts_avoid_pipelining               host list       unset         smtp              4.67
 hosts_avoid_tls                      host list       unset         smtp              3.20
 hosts_connection_nolog               host list       unset         main              4.43
 hosts_max_try                        integer         5             smtp              3.20

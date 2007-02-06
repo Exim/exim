@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.138 2007/02/06 12:19:27 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.139 2007/02/06 14:49:13 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -281,6 +281,10 @@ Version 4.67
 
     The value is expanded every time it is needed. If the expansion fails, a
     panic is logged, and the default setting is used.
+
+14. The smtp transport has a new option called hosts_avoid_pipelining. It can
+    be used to suppress the use of PIPELINING to certain hosts, while still
+    supporting the other SMTP extensions (cf hosts_avoid_tls).
 
 
 Version 4.66

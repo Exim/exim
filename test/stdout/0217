@@ -289,3 +289,31 @@ RCPT TO:<a@test.ex>
 RCPT TO:<b@test.ex>
 550 NO
 End of script
+Listening on port 1224 ... 
+Connection request from [127.0.0.1]
+220 Server ready
+EHLO myhost.test.ex
+250-OK
+250 PIPELINING
+MAIL FROM:<CALLER@test.ex>
+250 OK
+RCPT TO:<w@test.ex>
+250 OK
+RCPT TO:<x@test.ex>
+250 OK
+RCPT TO:<y@test.ex>
+250 OK
+RCPT TO:<z@test.ex>
+250 OK
+DATA
+351 Send more
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@test.ex>)
+	id 10HmbP-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbP-0005vi-00@myhost.test.ex>
+From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+.
+250 OK
+End of script
