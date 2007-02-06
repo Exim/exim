@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.70 2007/02/06 11:11:40 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.71 2007/02/06 12:19:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -499,6 +499,7 @@ int     demime_errorlevel      = 0;
 int     demime_ok              = 0;
 uschar *demime_reason          = NULL;
 #endif
+BOOL    disable_callout_flush  = FALSE;
 BOOL    disable_delay_flush    = FALSE;
 #ifdef ENABLE_DISABLE_FSYNC
 BOOL    disable_fsync          = FALSE;

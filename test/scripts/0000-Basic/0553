@@ -1,0 +1,22 @@
+# callout autoflush
+need_ipv4
+#
+# Put a message on the queue (queue_only is set)
+exim userx1@test.ex userx2@test.ex userx3@test.ex
+****
+# This daemon is "old-style", without the flush
+exim -DSERVER=server -DDCF=control=no_callout_flush -bd -oX PORT_D
+****
+exim -qf
+****
+sleep 1
+killdaemon
+#
+# This daemon should flush before delaying
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -qf
+****
+sleep 1
+killdaemon
+no_msglog_check

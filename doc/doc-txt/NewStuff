@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.137 2007/02/06 11:11:39 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.138 2007/02/06 12:19:27 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -233,8 +233,12 @@ Version 4.67
     time and date.
 
 11. Exim has been modified so that it flushes SMTP output before implementing
-    a delay in an ACL. This behaviour can be disabled by obeying control =
-    no_delay_flush at some earlier point.
+    a delay in an ACL. It also flushes the output before performing a callout,
+    as this can take a substantial time. These behaviours can be disabled by
+    obeying control = no_delay_flush or control = no_callout_flush,
+    respectively, at some earlier stage of the connection. The effect of the
+    new default behaviour is to disable the PIPELINING optimization in these
+    situations, in order to avoid unexpected timeouts in clients.
 
 12. There are two new expansion conditions that iterate over a list. They are
     called forany and forall, and they are used like this:

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.71 2007/02/06 11:16:21 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.72 2007/02/06 12:19:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -188,7 +188,8 @@ enum {
   CONTROL_FAKEREJECT,
   CONTROL_NO_MULTILINE,
   CONTROL_NO_PIPELINING,
-  CONTROL_NO_DELAY_FLUSH
+  CONTROL_NO_DELAY_FLUSH,
+  CONTROL_NO_CALLOUT_FLUSH
 };
 
 /* ACL control names; keep in step with the table above! This list is used for
@@ -220,7 +221,8 @@ static uschar *controls[] = {
   US"fakereject",
   US"no_multiline",
   US"no_pipelining",
-  US"no_delay_flush"
+  US"no_delay_flush",
+  US"no_callout_flush"
 };
 
 /* Flags to indicate for which conditions/modifiers a string expansion is done
@@ -598,6 +600,9 @@ static unsigned int control_forbids[] = {
     (1<<ACL_WHERE_NOTSMTP_START),
 
   (1<<ACL_WHERE_NOTSMTP)|                          /* no_delay_flush */
+    (1<<ACL_WHERE_NOTSMTP_START),
+
+  (1<<ACL_WHERE_NOTSMTP)|                          /* no_callout_flush */
     (1<<ACL_WHERE_NOTSMTP_START)
 };
 
@@ -621,6 +626,7 @@ static control_def controls_list[] = {
   { US"caselower_local_part",    CONTROL_CASELOWER_LOCAL_PART, FALSE },
   { US"enforce_sync",            CONTROL_ENFORCE_SYNC, FALSE },
   { US"freeze",                  CONTROL_FREEZE, TRUE },
+  { US"no_callout_flush",        CONTROL_NO_CALLOUT_FLUSH, FALSE },
   { US"no_delay_flush",          CONTROL_NO_DELAY_FLUSH, FALSE },
   { US"no_enforce_sync",         CONTROL_NO_ENFORCE_SYNC, FALSE },
   { US"no_multiline_responses",  CONTROL_NO_MULTILINE, FALSE },
@@ -2613,6 +2619,10 @@ for (; cb != NULL; cb = cb->next)
 
       case CONTROL_NO_DELAY_FLUSH:
       disable_delay_flush = TRUE;
+      break;
+
+      case CONTROL_NO_CALLOUT_FLUSH:
+      disable_callout_flush = TRUE;
       break;
 
       case CONTROL_FAKEDEFER:

@@ -1,0 +1,63 @@
+# Exim test configuration 0553
+
+DCF =
+SERVER =
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/SERVER%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = check_recipient
+
+queue_only
+
+# ----- ACL -----
+
+begin acl
+
+check_recipient:
+  # Callouts accepted with a delay
+  accept  senders = :
+          delay = 1s
+
+  # Non-callouts do the callout
+  accept  verify = recipient/callout
+          DCF
+
+
+# ----- Routers -----
+
+begin routers
+
+t1:
+  driver = manualroute
+  route_list = * 127.0.0.1 byname
+  self = send
+  transport = smtp
+
+
+# ----- Transports -----
+
+begin transports
+
+smtp:
+  driver = smtp
+  port = PORT_D
+  command_timeout = 2s
+
+
+# ----- Retry -----
+
+begin retry
+
+* * F,5d,10s
+
+
+# End

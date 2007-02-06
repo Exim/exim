@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.47 2007/01/30 15:10:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.48 2007/02/06 12:19:27 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -384,6 +384,14 @@ time we are starting so that we can enforce it. */
 if (callout_overall < 0) callout_overall = 4 * callout;
 if (callout_connect < 0) callout_connect = callout;
 callout_start_time = time(NULL);
+
+/* Before doing a real callout, if this is an SMTP connection, flush the SMTP
+output because a callout might take some time. When PIPELINING is active and
+there are many recipients, the total time for doing lots of callouts can add up
+and cause the client to time out. So in this case we forgo the PIPELINING
+optimization. */
+
+if (smtp_out != NULL && !disable_callout_flush) mac_smtp_fflush();
 
 /* Now make connections to the hosts and do real callouts. The list of hosts
 is passed in as an argument. */
