@@ -52,6 +52,7 @@ locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 no domain retry record
+added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-1 more_errno=dd flags=1
 added retry item for R:userx@test.ex: errno=-1 more_errno=dd flags=1
 added retry item for R:test.ex: errno=-1 more_errno=dd flags=1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -67,6 +68,7 @@ no host retry record
 no message retry record
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
+  existing delete item dropped
   added retry item
 reading retry information for R:test.ex from subprocess
   existing delete item dropped
@@ -74,6 +76,8 @@ reading retry information for R:test.ex from subprocess
 reading retry information for R:userx@test.ex from subprocess
   existing delete item dropped
   added delete item
+reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
+  delete item not added: non-delete item exists
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (-44): SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
 Processing retry items
@@ -102,6 +106,7 @@ locking TESTSUITE/spool/db/retry.lockfile
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Considering: userx@test.ex
 no domain retry record
+added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-1 more_errno=dd flags=1
 added retry item for R:userx@test.ex: errno=-1 more_errno=dd flags=1
 added retry item for R:test.ex: errno=-1 more_errno=dd flags=1
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -117,6 +122,7 @@ no host retry record
 no message retry record
 added retry item for R:userx@test.ex:<CALLER@test.ex>: errno=-44 more_errno=dd,A flags=0
 reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
+  existing delete item dropped
   added retry item
 reading retry information for R:test.ex from subprocess
   existing delete item dropped
@@ -124,6 +130,8 @@ reading retry information for R:test.ex from subprocess
 reading retry information for R:userx@test.ex from subprocess
   existing delete item dropped
   added delete item
+reading retry information for R:userx@test.ex:<CALLER@test.ex> from subprocess
+  delete item not added: non-delete item exists
 LOG: MAIN
   == userx@test.ex R=r1 T=t1 defer (-44): SMTP error from remote mail server after RCPT TO:<userx@test.ex>: host 127.0.0.1 [127.0.0.1]: 451 Temporary error
 Processing retry items
