@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.48 2007/02/05 12:35:46 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.49 2007/02/06 10:00:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -385,6 +385,7 @@ extern int     ignore_bounce_errors_after; /* Keep them for this time. */
 extern BOOL    ignore_fromline_local;  /* Local SMTP ignore fromline */
 extern uschar *ignore_fromline_hosts;  /* Hosts permitted to send "From " */
 extern BOOL    is_inetd;               /* True for inetd calls */
+extern uschar *iterate_item;           /* Item from iterate list */
 
 extern int     journal_fd;             /* Fd for journal file */
 

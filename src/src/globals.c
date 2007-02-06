@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.68 2007/02/05 12:35:46 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.69 2007/02/06 10:00:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -630,6 +630,7 @@ uschar *ignore_fromline_hosts  = NULL;
 uschar *interface_address      = NULL;
 int     interface_port         = -1;
 BOOL    is_inetd               = FALSE;
+uschar *iterate_item           = NULL;
 
 int     journal_fd             = -1;
 

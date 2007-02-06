@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.71 2007/01/31 16:52:12 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.72 2007/02/06 10:00:24 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  31 January 2007
+Last updated:  06 February 2007
 
 
 THE OLD LIST
@@ -168,6 +168,7 @@ Magnus Holmgren           Patch for filter_prepend_home
                           Patch for "h" flag in Domain Keys
                           Patch for $sending_ip_address/$sending_port
                           Patch for ${rfc2047d:
+                            ... and several more
                           Lots of other maintenance support
 Kjetil Torgrim Homme      Patch for require_files problem on NFS file systems
 Tom Hughes                Suggested patch for $n bug in pipe command from filter

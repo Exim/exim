@@ -69,17 +69,17 @@ eval10: ${eval10:077}
 eval10: ${eval10:08}
 eval10: ${eval10:0x1234}
 eval:   ${eval:2+42%5}
-eval:   ${eval:0xc&5}          
-eval:   ${eval:0xc & 5 }          
-eval:   ${eval:0x0c|5}          
-eval:   ${eval:0xc^5}          
-eval:   ${eval:0xc>>1}         
-eval:   ${eval:0xc >> 2}         
-eval:   ${eval:0xc >> 4 }         
-eval:   ${eval:0xc<<1}         
-eval:   ${eval:~255&0x1234}    
-eval:   ${eval:~ 255&0x1234}    
-eval:   ${eval: -(~255&0x1234)} 
+eval:   ${eval:0xc&5}
+eval:   ${eval:0xc & 5 }
+eval:   ${eval:0x0c|5}
+eval:   ${eval:0xc^5}
+eval:   ${eval:0xc>>1}
+eval:   ${eval:0xc >> 2}
+eval:   ${eval:0xc >> 4 }
+eval:   ${eval:0xc<<1}
+eval:   ${eval:~255&0x1234}
+eval:   ${eval:~ 255&0x1234}
+eval:   ${eval: -(~255&0x1234)}
 
 expand: \$primary_hostname ${expand:\$primary_hostname}
 hash:   ${hash_3:monty} ${hash_5:monty} ${hash_4_62:monty python}
@@ -100,15 +100,15 @@ while doing a reasonable check.
 base62:  ${if or {\
                  {eq {${base62:12345}}{0003D7}}\
                  {eq {${base62:12345}}{0009IX}}\
-                 }{OK}{NOT OK}} 
+                 }{OK}{NOT OK}}
 base62d: ${if or {\
                  {eq {${base62d:0003D7}}{12345}}\
                  {eq {${base62d:0009IX}}{12345}}\
-                 }{OK}{NOT OK}} 
+                 }{OK}{NOT OK}}
 base62d: ${if or {\
                  {eq {${base62d:3D7}}{12345}}\
                  {eq {${base62d:9IX}}{12345}}\
-                 }{OK}{NOT OK}} 
+                 }{OK}{NOT OK}}
 base62 error: ${base62:12345x}
 base62d error:${base62d:0003D7.}
 
@@ -304,19 +304,19 @@ match_domain:    ${if match_domain{xyz}{+dlist}{yes}{no}}
 
 ${if match{x@zz.aa.bb}{^(.*)} \
   { \
-  >$1< \ 
+  >$1< \
   ${if match_domain{${domain:$1}}{+dlist}{[$1]}} \
   >$1< \
   } \
-  { CAN'T HAPPEN}} 
+  { CAN'T HAPPEN}}
 
 ${if match{x@xxxabc}{^(.*)} \
   { \
-  >$1< \ 
+  >$1< \
   ${if match_domain{${domain:$1}}{^\Nxxx(.*)\N}{[$1]}} \
   >$1< \
   } \
-  { CAN'T HAPPEN}} 
+  { CAN'T HAPPEN}}
 
 match_address:   ${if match_address{x@y.z}{p@q:*@y.z}{yes}{no}}
 match_address:   ${if match_address{x@y.z}{p@q:x@*.z}{yes}{no}}
@@ -569,7 +569,7 @@ ${prvs{userx@test.ex}{secret}{rhubarb}}
 ${prvs{userx@test.ex}{secret}{}}
 
 # Correct checks; can't put explicit addresses in the tests, because they
-# will change over time. 
+# will change over time.
 
 ${prvscheck{${prvs{userx@test.ex}{secret}}}{secret}}
 result=$prvscheck_result
@@ -612,6 +612,59 @@ ${if or {{eq {}{}{yes}{no}}
 ${if or {{eq {}{}}{yes}{no}}
 ${substr_1_:12345}
 ${substr__3:12345}
+
+# Iterations: forany and forall
+
+${if forany{a:b:c}{eq{$item}{a}}{yes}{no}}
+${if forany{a:b:c}{eq{$item}{b}}{yes}{no}}
+${if forany{a:b:c}{eq{$item}{c}}{yes}{no}}
+${if forany {a:b:c} {eq {$item} {z}} {yes} {no}}
+${if !forany{a:b:c}{eq{$item}{z}}{yes}{no}}
+${if !forany{a:b:c}{eq{$item}{a}}{yes}{no}}
+${if forany{}{eq{$item}{a}}{yes}{no}}
+${if !forany{}{eq{$item}{a}}{yes}{no}}
+${if forany{<, $primary_hostname,foo,bar}{eq{$item}{$primary_hostname}}{yes}{no}}
+
+${if forany{}{yes}{no}}
+${if forany{a:b:c}{gt{$item}{a}{yes}{no}}
+
+${if forall{a:b:c}{match{$item}{^[a-c]\$}}{yes}{no}}
+${if forall{q:b:c}{match{$item}{^[a-c]\$}}{yes}{no}}
+${if forall{a:b:z}{match{$item}{^[a-c]\$}}{yes}{no}}
+${if forall{}{match{$item}{^[a-c]\$}}{yes}{no}}
+
+${if !forall{a:b:c}{match{$item}{^[a-c]\$}}{yes}{no}}
+${if !forall{q:b:c}{match{$item}{^[a-c]\$}}{yes}{no}}
+${if !forall{a:b:z}{match{$item}{^[a-c]\$}}{yes}{no}}
+${if !forall{}{match{$item}{^[a-c]\$}}{yes}{no}}
+
+# Expect yes
+${if forany{a:b:c}\
+  {\
+  eq\
+    {$item: ${if forall{x:y:z}{match{$item}{^[x-z]\$}}{true}{false}}}\
+    {$item: true}\
+  }\
+{outer=yes}{outer=no}} item='$item' (unset)
+
+# Expect no
+${if forany{a:b:c}\
+  {\
+  eq\
+    {$item: ${if !forall{x:y:z}{match{$item}{^[x-z]\$}}{true}{false}}}\
+    {$item: true}\
+  }\
+{outer=yes}{outer=no}}
+
+# Error inside nest - check message is helpful
+${if forany{a:b:c}\
+  {\
+  eq\
+    {$item: ${if forall{x:y:z}{match{$item}{^[x-z]\$}{true}{false}}}\
+    {$item: true}\
+  }\
+{outer=yes}{outer=no}}
+
 
 # Miscellaneous (for bug fixes, etc)
 

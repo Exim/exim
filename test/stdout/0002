@@ -590,6 +590,41 @@ xyz
 > Failed: non-digit after underscore in "substr_1_"
 > Failed: non-digit after underscore in "substr__3"
 > 
+> # Iterations: forany and forall
+> 
+> yes
+> yes
+> yes
+> no
+> yes
+> no
+> no
+> yes
+> yes
+> 
+> Failed: unknown condition "yes" inside "forany" condition
+> Failed: missing } at end of condition inside "forany"
+> 
+> yes
+> no
+> no
+> no
+> 
+> no
+> yes
+> yes
+> yes
+> 
+> # Expect yes
+> outer=yes item='' (unset)
+> 
+> # Expect no
+> outer=no
+> 
+> # Error inside nest - check message is helpful
+> Failed: missing } at end of condition inside "forall" inside "forany" condition
+> 
+> 
 > # Miscellaneous (for bug fixes, etc)
 > 
 > true

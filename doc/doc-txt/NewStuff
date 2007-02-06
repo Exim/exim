@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.135 2007/02/05 12:35:46 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.136 2007/02/06 10:00:24 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -235,6 +235,38 @@ Version 4.67
 11. Exim has been modified so that it flushes SMTP output before implementing
     a delay in an ACL. This behaviour can be disabled by obeying control =
     no_delay_flush at some earlier point.
+
+12. There are two new expansion conditions that iterate over a list. They are
+    called forany and forall, and they are used like this:
+
+      ${if forany{<a list>}{<a condition>}{<yes-string>}{<no-string>}}
+      ${if forall{<a list>}{<a condition>}{<yes-string>}{<no-string>}}
+
+    The first argument is expanded, and the result is treated as a list. By
+    default, the list separator is a colon, but it can be changed by the normal
+    method. The second argument is interpreted as a condition that is to be
+    applied to each item in the list in turn. During the interpretation of the
+    condition, the current list item is placed in a variable called $item.
+
+    - For forany, interpretation stops if the condition is true for any item,
+      and the yes-string is then expanded. If the condition is false for all
+      items in the list, the no-string is expanded.
+
+    - For forall, interpration stops if the condition is false for any item,
+      and the no-string is then expanded. If the condition is true for all
+      items in the list, the yes-string is expanded.
+
+    Note that negation of forany means that the condition must be false for all
+    items for the overall condition to succeed, and negation of forall means
+    that the condition must be false for at least one item.
+
+    In this example, the list separator is changed to a comma:
+
+      ${if forany{<, $recipients}{match{$item}{^user3@}}{yes}{no}}
+
+    Outside a forany/forall condition, the value of $item is an empty string.
+    Its value is saved and restored while forany/forall is being processed, to
+    enable these expansion items to be nested.
 
 
 Version 4.66

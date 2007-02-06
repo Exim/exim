@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.79 2007/01/31 11:30:08 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.80 2007/02/06 10:00:24 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -240,6 +240,8 @@ static uschar *cond_table[] = {
   US"eqi",
   US"exists",
   US"first_delivery",
+  US"forall",
+  US"forany",
   US"ge",
   US"gei",
   US"gt",
@@ -279,6 +281,8 @@ enum {
   ECOND_STR_EQI,
   ECOND_EXISTS,
   ECOND_FIRST_DELIVERY,
+  ECOND_FORALL,
+  ECOND_FORANY,
   ECOND_STR_GE,
   ECOND_STR_GEI,
   ECOND_STR_GT,
@@ -420,6 +424,7 @@ static var_entry var_table[] = {
   { "inode",               vtype_ino,         &deliver_inode },
   { "interface_address",   vtype_stringptr,   &interface_address },
   { "interface_port",      vtype_int,         &interface_port },
+  { "item",                vtype_stringptr,   &iterate_item },
   #ifdef LOOKUP_LDAP
   { "ldap_dn",             vtype_stringptr,   &eldap_dn },
   #endif
@@ -2347,6 +2352,68 @@ switch(cond_type)
 
   if (yield != NULL) *yield = (combined_cond == testfor);
   return ++s;
+
+
+  /* forall/forany: iterates a condition with different values */
+
+  case ECOND_FORALL:
+  case ECOND_FORANY:
+    {
+    int sep = 0;
+    uschar *iterate_item_save = iterate_item;
+
+    while (isspace(*s)) s++;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;
+
+    sub[0] = expand_string_internal(s, TRUE, &s, (yield == NULL));
+    if (sub[0] == NULL) return NULL;
+    if (*s++ != '}') goto COND_FAILED_CURLY_END;
+
+    while (isspace(*s)) s++;
+    if (*s++ != '{') goto COND_FAILED_CURLY_START;
+
+    sub[1] = s;
+
+    /* Call eval_condition once, with result discarded (as if scanning a
+    "false" part). This allows us to find the end of the condition, because if
+    the list it empty, we won't actually evaluate the condition for real. */
+
+    s = eval_condition(sub[1], NULL);
+    if (s == NULL)
+      {
+      expand_string_message = string_sprintf("%s inside \"%s\" condition",
+        expand_string_message, name);
+      return NULL;
+      }
+    while (isspace(*s)) s++;
+
+    if (*s++ != '}')
+      {
+      expand_string_message = string_sprintf("missing } at end of condition "
+        "inside \"%s\"", name);
+      return NULL;
+      }
+
+    if (yield != NULL) *yield = !testfor;
+    while ((iterate_item = string_nextinlist(&sub[0], &sep, NULL, 0)) != NULL)
+      {
+      DEBUG(D_expand) debug_printf("%s: $item = \"%s\"\n", name, iterate_item);
+      if (eval_condition(sub[1], &tempcond) == NULL)
+        {
+        expand_string_message = string_sprintf("%s inside \"%s\" condition",
+          expand_string_message, name);
+        return NULL;
+        }
+      DEBUG(D_expand) debug_printf("%s: condition evaluated to %s\n", name,
+        tempcond? "true":"false");
+
+      if (yield != NULL) *yield = (tempcond == testfor);
+      if (tempcond == (cond_type == ECOND_FORANY)) break;
+      }
+
+    iterate_item = iterate_item_save;
+    return s;
+    }
 
 
   /* Unknown condition */
