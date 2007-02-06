@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.70 2007/02/05 12:35:46 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.71 2007/02/06 11:16:21 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2741,7 +2741,7 @@ for (; cb != NULL; cb = cb->next)
 
         else
           {
-          if (smtp_out != NULL && !disable_delay_flush) fflush(smtp_out);
+          if (smtp_out != NULL && !disable_delay_flush) mac_smtp_fflush();
           while (delay > 0) delay = sleep(delay);
           }
         }
