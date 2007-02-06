@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.42 2007/01/23 12:33:08 magnus Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.43 2007/02/06 11:11:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2043,9 +2043,7 @@ if (addr->special_action == SPECIAL_WARN &&
           !contains_header(US"Reply-To", warn_message))
         fprintf(f, "Reply-To: %s\n", errors_reply_to);
       fprintf(f, "Auto-Submitted: auto-replied\n");
-      if (!contains_header(US"From", warn_message))
-        fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
-          qualify_domain_sender);
+      if (!contains_header(US"From", warn_message)) moan_write_from(f);
       fprintf(f, "%s", CS warn_message);
 
       /* Close and wait for child process to complete, without a timeout. */
@@ -6248,8 +6246,7 @@ while (addr_failed != NULL)
       if (errors_reply_to != NULL)
         fprintf(f, "Reply-To: %s\n", errors_reply_to);
       fprintf(f, "Auto-Submitted: auto-replied\n");
-      fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
-        qualify_domain_sender);
+      moan_write_from(f);
       fprintf(f, "To: %s\n", bounce_recipient);
 
       /* Open a template file if one is provided. Log failure to open, but
@@ -6773,8 +6770,7 @@ else if (addr_defer != (address_item *)(+1))
         if (errors_reply_to != NULL)
           fprintf(f, "Reply-To: %s\n", errors_reply_to);
         fprintf(f, "Auto-Submitted: auto-replied\n");
-        fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
-          qualify_domain_sender);
+        moan_write_from(f);
         fprintf(f, "To: %s\n", recipients);
 
         wmf_text = next_emf(wmf, US"header");

@@ -7,7 +7,7 @@ Received: from EXIMUSER by myhost.ex with local (Exim x.yz)
 	for CALLER@myhost.ex; Tue, 2 Mar 1999 09:44:33 +0000
 X-Failed-Recipients: userx@mxt1.test.ex
 Auto-Submitted: auto-replied
-From: Mail Delivery System <Mailer-Daemon@myhost.ex>
+From: MailProgram <xyz@some.where>
 To: CALLER@myhost.ex
 Subject: Mail delivery failed: returning message to sender
 Message-Id: <E10HmaY-0005vi-00@myhost.ex>

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.136 2007/02/06 10:00:24 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.137 2007/02/06 11:11:39 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -267,6 +267,16 @@ Version 4.67
     Outside a forany/forall condition, the value of $item is an empty string.
     Its value is saved and restored while forany/forall is being processed, to
     enable these expansion items to be nested.
+
+13. There's a new global option called dsn_from that can be used to vary the
+    contents of From: lines in bounces and other automatically generated
+    messages ("delivery status notifications" - hence the name of the option).
+    The default setting is:
+
+      dsn_from = Mail Delivery System <Mailer-Daemon@$qualify_domain>
+
+    The value is expanded every time it is needed. If the expansion fails, a
+    panic is logged, and the default setting is used.
 
 
 Version 4.66

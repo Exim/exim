@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.49 2007/02/06 10:00:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.50 2007/02/06 11:11:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -307,6 +307,8 @@ extern BOOL    dot_ends;               /* TRUE if "." ends non-SMTP input */
 
 /* This option is now a no-opt, retained for compatibility */
 extern BOOL    drop_cr;                /* For broken local MUAs */
+
+extern uschar *dsn_from;               /* From: string for DSNs */
 
 extern BOOL    enable_dollar_recipients; /* Make $recipients available */
 extern int     envelope_to_remove;     /* Remove envelope_to_headers */

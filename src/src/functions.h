@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.34 2007/01/18 15:35:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.35 2007/02/06 11:11:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -170,6 +170,7 @@ extern void    moan_smtp_batch(uschar *, char *, ...);
 extern void    moan_tell_someone(uschar *, address_item *, uschar *, char *,
                  ...);
 extern BOOL    moan_to_sender(int, error_block *, header_line *, FILE *, BOOL);
+extern void    moan_write_from(FILE *);
 extern FILE   *modefopen(uschar *, char *, mode_t);
 
 extern uschar *parse_extract_address(uschar *, uschar **, int *, int *, int *,

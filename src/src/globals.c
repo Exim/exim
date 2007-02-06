@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.69 2007/02/06 10:00:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.70 2007/02/06 11:11:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -526,6 +526,7 @@ int     domainlist_count       = 0;
 BOOL    dont_deliver           = FALSE;
 BOOL    dot_ends               = TRUE;
 BOOL    drop_cr                = FALSE;         /* No longer used */
+uschar *dsn_from               = US DEFAULT_DSN_FROM;
 
 BOOL    enable_dollar_recipients = FALSE;
 BOOL    envelope_to_remove     = TRUE;
@@ -551,7 +552,10 @@ BOOL    extract_addresses_remove_arguments = TRUE;
 uschar *extra_local_interfaces = NULL;
 
 int     fake_response          = OK;
-uschar *fake_response_text     = US"Your message has been rejected but is being kept for evaluation.\nIf it was a legitimate message, it may still be delivered to the target recipient(s).";
+uschar *fake_response_text     = US"Your message has been rejected but is "
+                                   "being kept for evaluation.\nIf it was a "
+                                   "legitimate message, it may still be "
+                                   "delivered to the target recipient(s).";
 int     filter_n[FILTER_VARIABLE_COUNT];
 BOOL    filter_running         = FALSE;
 int     filter_sn[FILTER_VARIABLE_COUNT];

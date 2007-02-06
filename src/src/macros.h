@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.31 2007/01/31 16:52:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.32 2007/02/06 11:11:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -96,6 +96,10 @@ don't make the file descriptors two-way. */
 
 #define DEBUG(x)      if ((debug_selector & (x)) != 0)
 #define HDEBUG(x)     if (host_checking || (debug_selector & (x)) != 0)
+
+/* The default From: text for DSNs */
+
+#define DEFAULT_DSN_FROM "Mail Delivery System <Mailer-Daemon@$qualify_domain>"
 
 /* The size of the vector for saving/restoring address expansion pointers while
 verifying. This has to be explicit because it is referenced in more than one

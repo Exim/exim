@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.28 2007/01/22 16:29:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.29 2007/02/06 11:11:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -209,6 +209,7 @@ static optionlist optionlist_config[] = {
  /* This option is now a no-op, retained for compability */
   { "drop_cr",                  opt_bool,        &drop_cr },
 /*********************************************************/
+  { "dsn_from",                 opt_stringptr,   &dsn_from },
   { "envelope_to_remove",       opt_bool,        &envelope_to_remove },
   { "errors_copy",              opt_stringptr,   &errors_copy },
   { "errors_reply_to",          opt_stringptr,   &errors_reply_to },

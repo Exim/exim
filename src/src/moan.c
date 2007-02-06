@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/moan.c,v 1.7 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/moan.c,v 1.8 2007/02/06 11:11:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -11,6 +11,34 @@
 
 
 #include "exim.h"
+
+
+
+/*************************************************
+*            Write From: line for DSN            *
+*************************************************/
+
+/* This function is called to write the From: line in automatically generated
+messages - bounces, warnings, etc. It expands a configuration item in order to
+get the text. If the expansion fails, a panic is logged and the default value
+for the option is used.
+
+Argument:   the FILE to write to
+Returns:    nothing
+*/
+
+void
+moan_write_from(FILE *f)
+{
+uschar *s = expand_string(dsn_from);
+if (s == NULL)
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC,
+    "Failed to expand dsn_from (using default): %s", expand_string_message);
+  s = expand_string(US DEFAULT_DSN_FROM);
+  }
+fprintf(f, "From: %s\n", s);
+}
 
 
 
@@ -62,8 +90,7 @@ else DEBUG(D_any) debug_printf("Child process %d for sending message\n", pid);
 f = fdopen(fd, "wb");
 if (errors_reply_to != NULL) fprintf(f, "Reply-To: %s\n", errors_reply_to);
 fprintf(f, "Auto-Submitted: auto-replied\n");
-fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
-  qualify_domain_sender);
+moan_write_from(f);
 fprintf(f, "To: %s\n", recipient);
 
 switch(ident)
@@ -427,8 +454,7 @@ if (pid < 0)
 
 f = fdopen(fd, "wb");
 fprintf(f, "Auto-Submitted: auto-replied\n");
-fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
-  qualify_domain_sender);
+moan_write_from(f);
 fprintf(f, "To: %s\n", who);
 fprintf(f, "Subject: %s\n\n", subject);
 va_start(ap, format);
@@ -671,8 +697,7 @@ if (pid < 0)
 
 f = fdopen(fd, "wb");
 fprintf(f, "Auto-Submitted: auto-replied\n");
-fprintf(f, "From: Mail Delivery System <Mailer-Daemon@%s>\n",
-  qualify_domain_sender);
+moan_write_from(f);
 fprintf(f, "To: %s\n", s);
 fprintf(f, "Subject: error(s) in forwarding or filtering\n\n");
 
