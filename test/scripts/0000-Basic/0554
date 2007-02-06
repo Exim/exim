@@ -1,0 +1,41 @@
+# Retries for address errors
+need_ipv4
+#
+exim -odq x@y
+****
+# First attempt is temporarily rejected
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+451 Temporary error
+QUIT
+250 OK
+****
+exim -odi -d-all+retry -M $msg1
+****
+dump retry
+#
+# Next attempt succeeds
+server PORT_S
+220 Server ready
+EHLO
+250 OK
+MAIL FROM
+250 OK
+RCPT TO
+250 OK
+DATA
+354 Go Ahead
+.
+250 OK
+QUIT
+250 OK
+****
+exim -odi -d-all+retry -M $msg1
+****
+dump retry
+no_msglog_check

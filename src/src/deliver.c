@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.43 2007/02/06 11:11:40 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.44 2007/02/06 14:19:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -5478,7 +5478,7 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
 
       if (address_retry_record == NULL)
         {
-        uschar * altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
+        uschar *altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
           sender_address);
         address_retry_record = dbfn_read(dbm_file, altkey);
         if (address_retry_record != NULL &&
@@ -5637,12 +5637,16 @@ while (addr_new != NULL)           /* Loop until all addresses dealt with */
         string_sprintf("R:%s", addr->domain), 0);
 
     /* Otherwise, if there is an existing retry record in the database, add
-    retry items to delete both forms. Since the domain might have been
-    rewritten (expanded to fully qualified) as a result of routing, ensure
-    that the rewritten form is also deleted. */
+    retry items to delete both forms. We must also allow for the possibility
+    of a routing retry that includes the sender address. Since the domain might
+    have been rewritten (expanded to fully qualified) as a result of routing,
+    ensure that the rewritten form is also deleted. */
 
     else if (testflag(addr, af_dr_retry_exists))
       {
+      uschar *altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
+        sender_address);
+      retry_add_item(addr, altkey, rf_delete);
       retry_add_item(addr, addr->address_retry_key, rf_delete);
       retry_add_item(addr, addr->domain_retry_key, rf_delete);
       if (Ustrcmp(addr->domain, old_domain) != 0)

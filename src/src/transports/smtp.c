@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.33 2007/01/30 15:10:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.34 2007/02/06 14:19:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -654,10 +654,16 @@ while (count-- > 0)
     addr->transport_return = PENDING_OK;
 
     /* If af_dr_retry_exists is set, there was a routing delay on this address;
-    ensure that any address-specific retry record is expunged. */
+    ensure that any address-specific retry record is expunged. We do this both
+    for the basic key and for the version that also includes the sender. */
 
     if (testflag(addr, af_dr_retry_exists))
+      {
+      uschar *altkey = string_sprintf("%s:<%s>", addr->address_retry_key,
+        sender_address);
+      retry_add_item(addr, altkey, rf_delete);
       retry_add_item(addr, addr->address_retry_key, rf_delete);
+      }
     }
 
   /* Timeout while reading the response */
