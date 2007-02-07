@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.475 2007/02/07 12:23:35 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.476 2007/02/07 14:41:13 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -93,6 +93,9 @@ PH/21 Long custom messages for fakedefer and fakereject are now split up
 
 PH/22 Applied Jori Hamalainen's speed-up changes and typo fixes to exigrep,
       with slight modification.
+
+PH/23 Applied sieve patches from the maintainer "tracking the latest notify
+      draft, changing the syntax and factoring some duplicate code".
 
 
 Exim version 4.66

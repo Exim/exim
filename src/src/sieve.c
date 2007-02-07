@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.23 2006/10/10 15:36:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.24 2007/02/07 14:41:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -31,8 +31,8 @@
 /* Define this for development of the Sieve extension "envelope-auth". */
 #undef ENVELOPE_AUTH
 
-/* Define this for development of the Sieve extension "notify".     */
-#undef NOTIFY
+/* Define this for development of the Sieve extension "enotify".    */
+#undef ENOTIFY
 
 /* Define this for the Sieve extension "subaddress".                */
 #define SUBADDRESS
@@ -61,8 +61,8 @@ struct Sieve
 #ifdef ENVELOPE_AUTH
   int require_envelope_auth;
 #endif
-#ifdef NOTIFY
-  int require_notify;
+#ifdef ENOTIFY
+  int require_enotify;
   struct Notification *notified;
 #endif
 #ifdef SUBADDRESS
@@ -97,11 +97,12 @@ struct String
 struct Notification
   {
   struct String method;
-  struct String priority;
+  struct String importance;
   struct String message;
   struct Notification *next;
   };
 
+static int eq_asciicase(const struct String *needle, const struct String *haystack, int match_prefix);
 static int parse_test(struct Sieve *filter, int *cond, int exec);
 static int parse_commands(struct Sieve *filter, int exec, address_item **generated);
 
@@ -129,9 +130,9 @@ static const struct String str_envelope={ str_envelope_c, 8 };
 static uschar str_envelope_auth_c[]="envelope-auth";
 static const struct String str_envelope_auth={ str_envelope_auth_c, 13 };
 #endif
-#ifdef NOTIFY
-static uschar str_notify_c[]="notify";
-static const struct String str_notify={ str_notify_c, 6 };
+#ifdef ENOTIFY
+static uschar str_enotify_c[]="enotify";
+static const struct String str_enotify={ str_enotify_c, 7 };
 #endif
 #ifdef SUBADDRESS
 static uschar str_subaddress_c[]="subaddress";
@@ -257,6 +258,48 @@ for (pass=0; pass<=1; ++pass)
 
 
 /*************************************************
+*     Check mail address for correct syntax      *
+*************************************************/
+
+/*
+Check mail address for being syntactically correct.
+
+Arguments:
+  filter      points to the Sieve filter including its state
+  address     String containing one address
+
+Returns
+  1           Mail address is syntactically OK
+ -1           syntax error
+*/
+
+int check_mail_address(struct Sieve *filter, const struct String *address)
+{
+int start, end, domain;
+uschar *error,*ss;
+
+if (address->length>0)
+  {
+  ss = parse_extract_address(address->character, &error, &start, &end, &domain,
+    FALSE);
+  if (ss == NULL)
+    {
+    filter->errmsg=string_sprintf("malformed address \"%s\" (%s)",
+      address->character, error);
+    return -1;
+    }
+  else
+    return 1;
+  }
+else
+  {
+  filter->errmsg=CUS "empty address";
+  return -1;
+  }
+}
+
+
+/*************************************************
 *          Decode URI encoded string             *
 *************************************************/
 
@@ -269,6 +312,7 @@ Returns
  -1                 Encoding error
 */
 
+#ifdef ENOTIFY
 static int uri_decode(struct String *str)
 {
 uschar *s,*t,*e;
@@ -312,19 +356,28 @@ Parse mailto-URI.
 Arguments:
   filter      points to the Sieve filter including its state
   uri         URI, excluding scheme
+  recipient
+  body
 
 Returns
   1           URI is syntactically OK
+  0           Unknown URI scheme
  -1           syntax error
 */
 
-int parse_mailto_uri(struct Sieve *filter, const uschar *uri, string_item **recipient, struct String *body)
+static int parse_mailto_uri(struct Sieve *filter, const uschar *uri, string_item **recipient, struct String *header, struct String *body)
 {
 const uschar *start;
 struct String to,hname,hvalue;
 int capacity;
 string_item *new;
 
+if (Ustrncmp(uri,"mailto:",7))
+  {
+  filter->errmsg=US "Unknown URI scheme";
+  return 0;
+  }
+uri+=7;
 if (*uri && *uri!='?')
   for (;;)
     {
@@ -400,7 +453,7 @@ if (*uri=='?')
         return -1;
         }
       }
-    if (hname.length==2 && strcmp(CS hname.character,"to")==0)
+    if (hname.length==2 && strcmpic(hname.character, US"to")==0)
       {
       new=store_get(sizeof(string_item));
       new->text=store_get(hvalue.length+1);
@@ -409,8 +462,31 @@ if (*uri=='?')
       new->next=*recipient;
       *recipient=new;
       }
-    else if (hname.length==4 && strcmp(CS hname.character,"body")==0)
+    else if (hname.length==4 && strcmpic(hname.character, US"body")==0)
       *body=hvalue;
+    else
+      {
+      static struct String ignore[]=
+        {
+        {US"from",4},
+        {US"subject",7},
+        {US"received",8}
+        };
+      static struct String *end=ignore+sizeof(ignore)/sizeof(ignore[0]);
+      struct String *i;
+
+      for (i=ignore; i<end && !eq_asciicase(&hname,i,0); ++i);
+      if (i==end)
+        {
+        if (header->length==-1) header->length=0;
+        capacity=header->length;
+        header->character=string_cat(header->character,&capacity,&header->length,hname.character,hname.length);
+        header->character=string_cat(header->character,&capacity,&header->length,CUS ": ",2);
+        header->character=string_cat(header->character,&capacity,&header->length,hvalue.character,hvalue.length);
+        header->character=string_cat(header->character,&capacity,&header->length,CUS "\n",1);
+        header->character[header->length]='\0';
+        }
+      }
     if (*uri=='&') ++uri;
     else break;
     }
@@ -422,6 +498,8 @@ if (*uri)
   }
 return 1;
 }
+#endif
+
 
 /*************************************************
 *          Octet-wise string comparison          *
@@ -2173,6 +2251,48 @@ else if (parse_identifier(filter,CUS "envelope"))
     }
   return 1;
   }
+#ifdef ENOTIFY
+else if (parse_identifier(filter,CUS "valid_notif_method"))
+  {
+  /*
+  valid_notif_method = "valid_notif_method"
+                       <notification-uris: string-list>
+  */
+
+  struct String *uris,*u;
+  int m;
+
+  if (!filter->require_enotify)
+    {
+    filter->errmsg=CUS "missing previous require \"enotify\";";
+    return -1;
+    }
+  if (parse_white(filter)==-1) return -1;
+  if ((m=parse_stringlist(filter,&uris))!=1)
+    {
+    if (m==0) filter->errmsg=CUS "URI string list expected";
+    return -1;
+    }
+  if (exec)
+    {
+    *cond=1;
+    for (u=uris; u->length!=-1 && *cond; ++u)
+      {
+        string_item *recipient;
+        struct String header,body;
+
+        recipient=NULL;
+        header.length=-1;
+        header.character=(uschar*)0;
+        body.length=-1;
+        body.character=(uschar*)0;
+        if (parse_mailto_uri(filter,u->character,&recipient,&header,&body)!=1)
+          *cond=0;
+      }
+    }
+  return 1;
+  }
+#endif
 else return 0;
 }
 
@@ -2479,37 +2599,44 @@ while (*filter->pc)
       }
     if (parse_semicolon(filter)==-1) return -1;
     }
-#ifdef NOTIFY
+#ifdef ENOTIFY
   else if (parse_identifier(filter,CUS "notify"))
     {
     /*
-    notify-command =  "notify" { notify-options } ";"
-    notify-options =  [":method" string]
-                      [":priority" string]
+    notify-command =  "notify" { notify-options } <method: string> ";"
+    notify-options =  [":from" string]
+                      [":importance" <"1" / "2" / "3">]
+                      [":options" 1*(string-list / number)]
                       [":message" string]
     */
 
     int m;
-    struct String method;
-    struct String priority;
+    struct String from;
+    struct String importance;
+    struct String *options;
     struct String message;
+    struct String method;
     struct Notification *already;
     string_item *recipient;
+    struct String header;
     struct String body;
     uschar *envelope_from,*envelope_to;
 
-    if (!filter->require_notify)
+    if (!filter->require_enotify)
       {
-      filter->errmsg=CUS "missing previous require \"notify\";";
+      filter->errmsg=CUS "missing previous require \"enotify\";";
       return -1;
       }
-    method.character=(uschar*)0;
-    method.length=-1;
-    priority.character=(uschar*)0;
-    priority.length=-1;
+    from.character=(uschar*)0;
+    from.length=-1;
+    importance.character=(uschar*)0;
+    importance.length=-1;
+    options=(struct String*)0;
     message.character=(uschar*)0;
     message.length=-1;
     recipient=NULL;
+    header.length=-1;
+    header.character=(uschar*)0;
     body.length=-1;
     body.character=(uschar*)0;
     envelope_from=expand_string("$sender_address");
@@ -2517,27 +2644,32 @@ while (*filter->pc)
     for (;;)
       {
       if (parse_white(filter)==-1) return -1;
-      if (parse_identifier(filter,CUS ":method")==1)
+      if (parse_identifier(filter,CUS ":from")==1)
         {
         if (parse_white(filter)==-1) return -1;
-        if ((m=parse_string(filter,&method))!=1)
+        if ((m=parse_string(filter,&from))!=1)
           {
-          if (m==0) filter->errmsg=CUS "method string expected";
+          if (m==0) filter->errmsg=CUS "from string expected";
           return -1;
-          }
-        if (method.length>7 && strncmp(method.character,"mailto:",7)==0)
-          {
-          if (parse_mailto_uri(filter,method.character+7,&recipient,&body)==-1) return -1;
           }
         }
-      else if (parse_identifier(filter,CUS ":priority")==1)
+      else if (parse_identifier(filter,CUS ":importance")==1)
         {
         if (parse_white(filter)==-1) return -1;
-        if ((m=parse_string(filter,&priority))!=1)
+        if ((m=parse_string(filter,&importance))!=1)
           {
-          if (m==0) filter->errmsg=CUS "priority string expected";
+          if (m==0) filter->errmsg=CUS "importance string expected";
           return -1;
           }
+        if (importance.length!=1 || importance.character[0]<'1' || importance.character[0]>'3')
+          {
+          filter->errmsg=CUS "invalid importance";
+          return -1;
+          }
+        }
+      else if (parse_identifier(filter,CUS ":options")==1)
+        {
+        if (parse_white(filter)==-1) return -1;
         }
       else if (parse_identifier(filter,CUS ":message")==1)
         {
@@ -2550,73 +2682,72 @@ while (*filter->pc)
         }
       else break;
       }
+    if (parse_white(filter)==-1) return -1;
+    if ((m=parse_string(filter,&method))!=1)
+      {
+      if (m==0) filter->errmsg=CUS "missing method string";
+      return -1;
+      }
     if (parse_semicolon(filter)==-1) return -1;
 
-    if (method.length==-1)
+    for (already=filter->notified; already; already=already->next)
       {
-        if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
+      if (already->method.length==method.length
+          && (method.length==-1 || strcmp(already->method.character,method.character)==0)
+          && already->importance.length==importance.length
+          && (importance.length==-1 || strcmp(already->importance.character,importance.character)==0)
+          && already->message.length==message.length
+          && (message.length==-1 || strcmp(already->message.character,message.character)==0))
+        break;
+      }
+    if (already==(struct Notification*)0)
+      /* New notification, process it */
+      {
+      if (parse_mailto_uri(filter,method.character,&recipient,&header,&body)!=1)
+        return -1;
+      struct Notification *sent;
+      sent=store_get(sizeof(struct Notification));
+      sent->method=method;
+      sent->importance=importance;
+      sent->message=message;
+      sent->next=filter->notified;
+      filter->notified=sent;
+      if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
+        {
+        debug_printf("Notification to `%s'.\n",method.character);
+        }
+#ifndef COMPILE_SYNTAX_CHECKER
+      if (exec)
+        {
+        string_item *p;
+        header_line *h;
+        int pid,fd;
+
+        if ((pid = child_open_exim2(&fd,envelope_to,envelope_to))>=1)
           {
-          debug_printf("Ignoring method-less notification.\n");
+          FILE *f;
+
+          f = fdopen(fd, "wb");
+          for (h = header_list; h != NULL; h = h->next)
+            if (h->type == htype_received) fprintf(f,"%s",h->text);
+          fprintf(f,"From: %s\n",from.length==-1 ? envelope_to : from.character);
+          for (p=recipient; p; p=p->next) fprintf(f,"To: %s\n",p->text);
+          if (header.length>0) fprintf(f,"%s",header.character);
+          fprintf(f,"Subject: %s\n",message.length==-1 ? CUS "notification" : message.character);
+          fprintf(f,"\n");
+          if (body.length>0) fprintf(f,"%s\n",body.character);
+          fflush(f);
+          (void)fclose(f);
+          (void)child_close(pid, 0);
           }
+        }
+#endif
       }
     else
       {
-      for (already=filter->notified; already; already=already->next)
+      if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
         {
-        if (already->method.length==method.length
-            && (method.length==-1 || strcmp(already->method.character,method.character)==0)
-            && already->priority.length==priority.length
-            && (priority.length==-1 || strcmp(already->priority.character,priority.character)==0)
-            && already->message.length==message.length
-            && (message.length==-1 || strcmp(already->message.character,message.character)==0))
-          break;
-        }
-      if (already==(struct Notification*)0)
-        /* New notification, process it */
-        {
-        struct Notification *sent;
-        sent=store_get(sizeof(struct Notification));
-        sent->method=method;
-        sent->priority=priority;
-        sent->message=message;
-        sent->next=filter->notified;
-        filter->notified=sent;
-        if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-          {
-          debug_printf("Notification to `%s'.\n",method.character);
-          }
-#ifndef COMPILE_SYNTAX_CHECKER
-        if (exec)
-          {
-          string_item *p;
-          header_line *h;
-          int pid,fd;
-
-          if ((pid = child_open_exim2(&fd,envelope_to,envelope_to))>=1)
-            {
-            FILE *f;
-
-            f = fdopen(fd, "wb");
-            fprintf(f,"From: %s\n",envelope_to);
-            for (p=recipient; p; p=p->next) fprintf(f,"To: %s\n",p->text);
-            for (h = header_list; h != NULL; h = h->next)
-              if (h->type == htype_received) fprintf(f,"%s",h->text);
-            fprintf(f,"Subject: %s\n",message.length==-1 ? CUS "notification" : message.character);
-            fprintf(f,"\n");
-            if (body.length>0) fprintf(f,"%s\n",body.character);
-            fflush(f);
-            (void)fclose(f);
-            (void)child_close(pid, 0);
-            }
-          }
-#endif
-        }
-      else
-        {
-        if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
-          {
-          debug_printf("Repeated notification to `%s' ignored.\n",method.character);
-          }
+        debug_printf("Repeated notification to `%s' ignored.\n",method.character);
         }
       }
     }
@@ -2689,31 +2820,14 @@ while (*filter->pc)
         }
       else if (parse_identifier(filter,CUS ":from")==1)
         {
-        int start, end, domain;
-        uschar *error,*ss;
-
         if (parse_white(filter)==-1) return -1;
         if ((m=parse_string(filter,&from))!=1)
           {
           if (m==0) filter->errmsg=CUS "from string expected";
           return -1;
           }
-        if (from.length>0)
-          {
-          ss = parse_extract_address(from.character, &error, &start, &end, &domain,
-            FALSE);
-          if (ss == NULL)
-            {
-            filter->errmsg=string_sprintf("malformed address \"%s\" in "
-              "Sieve filter: %s", from.character, error);
-            return -1;
-            }
-          }
-        else
-          {
-          filter->errmsg=CUS "empty :from address in Sieve filter";
+        if (check_mail_address(filter,&from)!=1)
           return -1;
-          }
         }
       else if (parse_identifier(filter,CUS ":addresses")==1)
         {
@@ -2938,8 +3052,8 @@ filter->require_fileinto=0;
 #ifdef ENVELOPE_AUTH
 filter->require_envelope_auth=0;
 #endif
-#ifdef NOTIFY
-filter->require_notify=0;
+#ifdef ENOTIFY
+filter->require_enotify=0;
 filter->notified=(struct Notification*)0;
 #endif
 #ifdef SUBADDRESS
@@ -3010,8 +3124,8 @@ while (parse_identifier(filter,CUS "require"))
 #ifdef ENVELOPE_AUTH
     else if (eq_octet(check,&str_envelope_auth,0)) filter->require_envelope_auth=1;
 #endif
-#ifdef NOTIFY
-    else if (eq_octet(check,&str_notify,0)) filter->require_notify=1;
+#ifdef ENOTIFY
+    else if (eq_octet(check,&str_enotify,0)) filter->require_enotify=1;
 #endif
 #ifdef SUBADDRESS
     else if (eq_octet(check,&str_subaddress,0)) filter->require_subaddress=1;
