@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.139 2007/02/06 14:49:13 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.140 2007/02/07 12:23:35 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -285,6 +285,12 @@ Version 4.67
 14. The smtp transport has a new option called hosts_avoid_pipelining. It can
     be used to suppress the use of PIPELINING to certain hosts, while still
     supporting the other SMTP extensions (cf hosts_avoid_tls).
+
+15. By default, exigrep does case-insensitive matches. There is now a -I option
+    that makes it case-sensitive. This may give a performance improvement when
+    searching large log files. Without -I, the Perl pattern matches use the /i
+    option; with -I they don't. In both cases it is possible to change the case
+    sensitivity within the pattern using (?i) or (?-i).
 
 
 Version 4.66

@@ -1,5 +1,5 @@
 #! PERL_COMMAND -w
-# $Cambridge: exim/src/src/exigrep.src,v 1.4 2007/01/31 16:52:12 ph10 Exp $
+# $Cambridge: exim/src/src/exigrep.src,v 1.5 2007/02/07 12:23:35 ph10 Exp $
 
 use strict;
 
@@ -28,6 +28,10 @@ use strict;
 # appears to be compressed, it is passed through zcat. We can't just do this
 # for all files, because zcat chokes on non-compressed files.
 
+# Performance optimized in 02/02/2007 by Jori Hamalainen
+# Typical run time acceleration: 4 times
+
+
 use Getopt::Std qw(getopts);
 use POSIX qw(mktime);
 
@@ -38,7 +42,7 @@ use POSIX qw(mktime);
 
 sub seconds {
 my($year,$month,$day,$hour,$min,$sec,$tzs,$tzh,$tzm) =
-  $_[0] =~ /^(\d{4})-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)(?>\s([+-])(\d\d)(\d\d))?/;
+  $_[0] =~ /^(\d{4})-(\d\d)-(\d\d)\s(\d\d):(\d\d):(\d\d)(?>\s([+-])(\d\d)(\d\d))?/o;
 
 my $seconds = mktime $sec, $min, $hour, $day, $month - 1, $year - 1900;
 
@@ -55,22 +59,22 @@ return $seconds;
 # This subroutine processes a single line (in $_) from a log file. Program
 # defensively against short lines finding their way into the log.
 
-my (%saved, %id_list, $pattern, $queue_time);
+my (%saved, %id_list, $pattern, $queue_time, $insensitive);
 
 sub do_line {
 
 # Convert syslog lines to mainlog format, as in eximstats.
 
-if (! /^\\d{4}/) { $_ =~ s/^.*? exim\b.*?: //; }
+if (!/^\d{4}-/o) { $_ =~ s/^.*? exim\b.*?: //o; }
 
 return unless
-  my($date,$entry) = /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d (?:[+-]\d{4} )?)(.*)/;
+  my($date,$id) = /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d (?:[+-]\d{4} )?)(\w{6}\-\w{6}\-\w{2})?/o;
 
 # Handle the case when the log line belongs to a specific message. We save
 # lines for specific messages until the message is complete. Then either print
 # or discard.
 
-if (my($id) = $entry =~ /^(?:\[\d+\]\s)?(\w{6}\-\w{6}\-\w{2})/)
+if (defined $id)
   {
   $saved{$id} = '' unless defined($saved{$id});
 
@@ -78,17 +82,20 @@ if (my($id) = $entry =~ /^(?:\[\d+\]\s)?(\w{6}\-\w{6}\-\w{2})/)
 
   $saved{$id} .= $_;
 
-  # Are we interested in this id ?
+  # Are we interested in this id ? Short circuit if we already were interested.
 
-  $id_list{$id} = 1 if /$pattern/io;
+  $id_list{$id} = 1 if defined $id_list{$id} ||
+    ($insensitive && /$pattern/io) || /$pattern/o;
 
   # See if this is a completion for some message. If it is interesting,
   # print it, but in any event, throw away what was saved.
 
-  if ($entry =~
-        /(?:Completed|rejected (?:by local_scan|by non-SMTP ACL|after DATA))/)
+  if (index($_, 'Completed') != -1 ||
+      (index($_, 'rejected') != -1 &&
+       /rejected (?:by local_scan|by non-SMTP ACL|after DATA)/o))
     {
-    if ($saved{$id} =~ /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d ([+-]\d{4} )?)(\w{6}\-\w{6}\-\w{2})/)
+    if ($queue_time != -1 &&
+        $saved{$id} =~ /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d ([+-]\d{4} )?)/o)
       {
       my $old_sec = &seconds($1);
       my $sec = &seconds($date);
@@ -108,7 +115,8 @@ if (my($id) = $entry =~ /^(?:\[\d+\]\s)?(\w{6}\-\w{6}\-\w{2})/)
 # Handle the case where the log line does not belong to a specific message.
 # Print it if it is interesting.
 
-elsif ($entry =~ /$pattern/io) { print "$_\n"; }
+elsif (($insensitive && $_ =~ /$pattern/io) || $_ =~ /$pattern/o)
+  { print "$_\n"; }
 }
 
 
@@ -116,10 +124,11 @@ elsif ($entry =~ /$pattern/io) { print "$_\n"; }
 # are quoted if the -l flag is given. The -t flag gives a time-on-queue value
 # which is an additional condition.
 
-getopts('lt:',\my %args);
+getopts('Ilt:',\my %args);
 $queue_time = $args{'t'}? $args{'t'} : -1;
+$insensitive = $args{'I'}? 0 : 1;
 
-die "usage: exigrep [-l] [-t <seconds>] <pattern> [<log file>]...\n"
+die "usage: exigrep [-I] [-l] [-t <seconds>] <pattern> [<log file>]...\n"
   if ($#ARGV < 0);
 
 $pattern = shift @ARGV;
@@ -134,7 +143,7 @@ if (@ARGV)
   foreach (@ARGV)
     {
     my $filename = $_;
-    if ($filename =~ /\.(?:COMPRESS_SUFFIX)$/)
+    if ($filename =~ /\.(?:COMPRESS_SUFFIX)$/o)
       {
       open(LOG, "ZCAT_COMMAND $filename |") ||
         die "Unable to zcat $filename: $!\n";
@@ -154,6 +163,6 @@ else { do_line() while (<STDIN>); }
 
 # At the end of processing all the input, print any uncompleted data
 
-for (keys %id_list) { print "+++ $_ not completed +++\n$saved{$_}\n;" }
+for (keys %id_list) { print "+++ $_ not completed +++\n$saved{$_}\n"; }
 
 # End of exigrep

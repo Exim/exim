@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.474 2007/02/07 11:24:56 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.475 2007/02/07 12:23:35 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -90,6 +90,9 @@ PH/20 Added hosts_avoid_pipelining to the smtp transport.
 PH/21 Long custom messages for fakedefer and fakereject are now split up
       into multiline reponses in the same way that messages for "deny" and
       other ACL rejections are.
+
+PH/22 Applied Jori Hamalainen's speed-up changes and typo fixes to exigrep,
+      with slight modification.
 
 
 Exim version 4.66
