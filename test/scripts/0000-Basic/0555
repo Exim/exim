@@ -1,0 +1,20 @@
+# Long lines for fakedefer/fakereject
+exim -bs
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Message 1
+.
+quit
+****
+exim -bs -DFAKE='fakedefer/This is a rather long customised message that \
+                 should get automatically split up into more than one \
+                 response line.' 
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Message 2
+.
+quit
+****
+no_msglog_check

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.35 2007/02/06 11:11:40 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.36 2007/02/07 11:24:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -310,6 +310,7 @@ extern uschar *string_log_address(address_item *, BOOL, BOOL);
 extern uschar *string_nextinlist(uschar **, int *, uschar *, int);
 extern uschar *string_open_failed(int, char *, ...);
 extern uschar *string_printing2(uschar *, BOOL);
+extern uschar *string_split_message(uschar *);
 extern BOOL    string_vformat(uschar *, int, char *, va_list);
 extern int     strcmpic(uschar *, uschar *);
 extern int     strncmpic(uschar *, uschar *, int);

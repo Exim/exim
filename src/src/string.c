@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/string.c,v 1.11 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/string.c,v 1.12 2007/02/07 11:24:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -445,6 +445,67 @@ uschar *p = ss;
 while (n-- > 0) *p++ = tolower(*s++);
 *p = 0;
 return ss;
+}
+
+
+
+/*************************************************
+*    Copy string if long, inserting newlines     *
+*************************************************/
+
+/* If the given string is longer than 75 characters, it is copied, and within
+the copy, certain space characters are converted into newlines.
+
+Argument:  pointer to the string
+Returns:   pointer to the possibly altered string
+*/
+
+uschar *
+string_split_message(uschar *msg)
+{
+uschar *s, *ss;
+
+if (msg == NULL || Ustrlen(msg) <= 75) return msg;
+s = ss = msg = string_copy(msg);
+
+for (;;)
+  {
+  int i = 0;
+  while (i < 75 && *ss != 0 && *ss != '\n') ss++, i++;
+  if (*ss == 0) break;
+  if (*ss == '\n')
+    s = ++ss;
+  else
+    {
+    uschar *t = ss + 1;
+    uschar *tt = NULL;
+    while (--t > s + 35)
+      {
+      if (*t == ' ')
+        {
+        if (t[-1] == ':') { tt = t; break; }
+        if (tt == NULL) tt = t;
+        }
+      }
+
+    if (tt == NULL)          /* Can't split behind - try ahead */
+      {
+      t = ss + 1;
+      while (*t != 0)
+        {
+        if (*t == ' ' || *t == '\n')
+          { tt = t; break; }
+        t++;
+        }
+      }
+
+    if (tt == NULL) break;   /* Can't find anywhere to split */
+    *tt = '\n';
+    s = ss = tt+1;
+    }
+  }
+
+return msg;
 }
 
 

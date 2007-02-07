@@ -1,0 +1,15 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+550-Your message has been rejected but is being kept for evaluation.
+550-If it was a legitimate message, it may still be delivered to the target
+550 recipient(s).
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+450-This is a rather long customised message that should get automatically
+450 split up into more than one response line.
+221 myhost.test.ex closing connection

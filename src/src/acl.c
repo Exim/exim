@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.72 2007/02/06 12:19:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.73 2007/02/07 11:24:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3647,48 +3647,9 @@ if (rc == FAIL_DROP && where == ACL_WHERE_MAILAUTH)
 /* Before giving a response, take a look at the length of any user message, and
 split it up into multiple lines if possible. */
 
-if (*user_msgptr != NULL && Ustrlen(*user_msgptr) > 75)
-  {
-  uschar *s = *user_msgptr = string_copy(*user_msgptr);
-  uschar *ss = s;
-
-  for (;;)
-    {
-    int i = 0;
-    while (i < 75 && *ss != 0 && *ss != '\n') ss++, i++;
-    if (*ss == 0) break;
-    if (*ss == '\n')
-      s = ++ss;
-    else
-      {
-      uschar *t = ss + 1;
-      uschar *tt = NULL;
-      while (--t > s + 35)
-        {
-        if (*t == ' ')
-          {
-          if (t[-1] == ':') { tt = t; break; }
-          if (tt == NULL) tt = t;
-          }
-        }
-
-      if (tt == NULL)          /* Can't split behind - try ahead */
-        {
-        t = ss + 1;
-        while (*t != 0)
-          {
-          if (*t == ' ' || *t == '\n')
-            { tt = t; break; }
-          t++;
-          }
-        }
-
-      if (tt == NULL) break;   /* Can't find anywhere to split */
-      *tt = '\n';
-      s = ss = tt+1;
-      }
-    }
-  }
+*user_msgptr = string_split_message(*user_msgptr);
+if (fake_response != OK)
+  fake_response_text = string_split_message(fake_response_text);
 
 return rc;
 }
