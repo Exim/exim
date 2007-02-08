@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.35 2007/02/06 14:49:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.36 2007/02/08 15:16:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -917,7 +917,8 @@ if (continue_hostname == NULL)
   {
   inblock.sock = outblock.sock =
     smtp_connect(host, host_af, port, interface, ob->connect_timeout,
-      ob->keepalive);
+      ob->keepalive);   /* This puts port into host->port */
+
   if (inblock.sock < 0)
     {
     set_errno(addrlist, (errno == ETIMEDOUT)? ERRNO_CONNECTTIMEOUT : errno,
@@ -1041,6 +1042,7 @@ else
   {
   inblock.sock = outblock.sock = fileno(stdin);
   smtp_command = big_buffer;
+  host->port = port;    /* Record the port that was used */
   }
 
 /* If TLS is available on this connection, whether continued or not, attempt to

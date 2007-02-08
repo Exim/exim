@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.23 2007/01/31 16:52:12 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.24 2007/02/08 15:16:19 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -521,8 +521,8 @@ while(<IN>)
   s/\(port=(\d+)/"(port=" . new_value($1, "%s", \$next_port)/e;
 
   # This handles "connection from" and the like, when the port is given
-  if (!/listening for SMTP on/ && !/Connecting to/ && !/=>/ && !/\*>/ &&
-      !/Connection refused/)
+  if (!/listening for SMTP on/ && !/Connecting to/ && !/=>/ && !/->/
+      && !/\*>/ && !/Connection refused/)
     {
     s/\[([a-z\d:]+|\d+(?:\.\d+){3})\]:(\d+)/"[".$1."]:".new_value($2,"%s",\$next_port)/ie;
     }

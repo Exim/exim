@@ -13,7 +13,6 @@ gecos_name = CALLER_NAME
 
 domainlist local_domains = test.ex : *.test.ex
 
-
 # ----- Routers -----
 
 begin routers
