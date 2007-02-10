@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.80 2007/02/06 10:00:24 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.81 2007/02/10 23:51:11 magnus Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2360,7 +2360,7 @@ switch(cond_type)
   case ECOND_FORANY:
     {
     int sep = 0;
-    uschar *iterate_item_save = iterate_item;
+    uschar *save_iterate_item = iterate_item;
 
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;
@@ -2411,7 +2411,7 @@ switch(cond_type)
       if (tempcond == (cond_type == ECOND_FORANY)) break;
       }
 
-    iterate_item = iterate_item_save;
+    iterate_item = save_iterate_item;
     return s;
     }
 
