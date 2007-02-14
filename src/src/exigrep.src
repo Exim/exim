@@ -1,5 +1,5 @@
 #! PERL_COMMAND -w
-# $Cambridge: exim/src/src/exigrep.src,v 1.5 2007/02/07 12:23:35 ph10 Exp $
+# $Cambridge: exim/src/src/exigrep.src,v 1.6 2007/02/14 16:44:22 ph10 Exp $
 
 use strict;
 
@@ -68,7 +68,7 @@ sub do_line {
 if (!/^\d{4}-/o) { $_ =~ s/^.*? exim\b.*?: //o; }
 
 return unless
-  my($date,$id) = /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d (?:[+-]\d{4} )?)(\w{6}\-\w{6}\-\w{2})?/o;
+  my($date,$id) = /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d (?:[+-]\d{4} )?)(?:\[\d+\] )?(\w{6}\-\w{6}\-\w{2})?/o;
 
 # Handle the case when the log line belongs to a specific message. We save
 # lines for specific messages until the message is complete. Then either print
