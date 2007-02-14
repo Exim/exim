@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.81 2007/02/10 23:51:11 magnus Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.82 2007/02/14 14:59:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -106,17 +106,20 @@ alphabetical order. */
 static uschar *item_table[] = {
   US"dlfunc",
   US"extract",
+  US"filter",
   US"hash",
   US"hmac",
   US"if",
   US"length",
   US"lookup",
+  US"map",
   US"nhash",
   US"perl",
   US"prvs",
   US"prvscheck",
   US"readfile",
   US"readsocket",
+  US"reduce",
   US"run",
   US"sg",
   US"substr",
@@ -125,17 +128,20 @@ static uschar *item_table[] = {
 enum {
   EITEM_DLFUNC,
   EITEM_EXTRACT,
+  EITEM_FILTER,
   EITEM_HASH,
   EITEM_HMAC,
   EITEM_IF,
   EITEM_LENGTH,
   EITEM_LOOKUP,
+  EITEM_MAP,
   EITEM_NHASH,
   EITEM_PERL,
   EITEM_PRVS,
   EITEM_PRVSCHECK,
   EITEM_READFILE,
   EITEM_READSOCK,
+  EITEM_REDUCE,
   EITEM_RUN,
   EITEM_SG,
   EITEM_SUBSTR,
@@ -162,6 +168,7 @@ enum {
 
 static uschar *op_table_main[] = {
   US"address",
+  US"addresses",
   US"base62",
   US"base62d",
   US"domain",
@@ -193,6 +200,7 @@ static uschar *op_table_main[] = {
 
 enum {
   EOP_ADDRESS =  sizeof(op_table_underscore)/sizeof(uschar *),
+  EOP_ADDRESSES,
   EOP_BASE62,
   EOP_BASE62D,
   EOP_DOMAIN,
@@ -4682,6 +4690,181 @@ while (*s != 0)
       }
 
 
+    /* Handle list operations */
+
+    case EITEM_FILTER:
+    case EITEM_MAP:
+    case EITEM_REDUCE:
+      {
+      int sep = 0;
+      int save_ptr = ptr;
+      uschar outsep[2] = { '\0', '\0' };
+      uschar *list, *expr, *temp;
+      uschar *save_iterate_item = iterate_item;
+      uschar *save_lookup_value = lookup_value;
+
+      while (isspace(*s)) s++;
+      if (*s++ != '{') goto EXPAND_FAILED_CURLY;
+
+      list = expand_string_internal(s, TRUE, &s, skipping);
+      if (list == NULL) goto EXPAND_FAILED;
+      if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+
+      if (item_type == EITEM_REDUCE)
+        {
+        while (isspace(*s)) s++;
+        if (*s++ != '{') goto EXPAND_FAILED_CURLY;
+        temp = expand_string_internal(s, TRUE, &s, skipping);
+        if (temp == NULL) goto EXPAND_FAILED;
+        lookup_value = temp;
+        if (*s++ != '}') goto EXPAND_FAILED_CURLY;
+        }
+
+      while (isspace(*s)) s++;
+      if (*s++ != '{') goto EXPAND_FAILED_CURLY;
+
+      expr = s;
+
+      /* For EITEM_FILTER, call eval_condition once, with result discarded (as
+      if scanning a "false" part). This allows us to find the end of the
+      condition, because if the list is empty, we won't actually evaluate the
+      condition for real. For EITEM_MAP and EITEM_REDUCE, do the same, using
+      the normal internal expansion function. */
+
+      if (item_type == EITEM_FILTER)
+        {
+        temp = eval_condition(expr, NULL);
+        if (temp != NULL) s = temp;
+        }
+      else
+        {
+        temp = expand_string_internal(s, TRUE, &s, TRUE);
+        }
+
+      if (temp == NULL)
+        {
+        expand_string_message = string_sprintf("%s inside \"%s\" item",
+          expand_string_message, name);
+        goto EXPAND_FAILED;
+        }
+
+      while (isspace(*s)) s++;
+      if (*s++ != '}')
+        {
+        expand_string_message = string_sprintf("missing } at end of condition "
+          "or expression inside \"%s\"", name);
+        goto EXPAND_FAILED;
+        }
+
+      while (isspace(*s)) s++;
+      if (*s++ != '}')
+        {
+        expand_string_message = string_sprintf("missing } at end of \"%s\"",
+          name);
+        goto EXPAND_FAILED;
+        }
+
+      /* If we are skipping, we can now just move on to the next item. When
+      processing for real, we perform the iteration. */
+
+      if (skipping) continue;
+      while ((iterate_item = string_nextinlist(&list, &sep, NULL, 0)) != NULL)
+        {
+        *outsep = (uschar)sep;      /* Separator as a string */
+
+        DEBUG(D_expand) debug_printf("%s: $item = \"%s\"\n", name, iterate_item);
+
+        if (item_type == EITEM_FILTER)
+          {
+          BOOL condresult;
+          if (eval_condition(expr, &condresult) == NULL)
+            {
+            expand_string_message = string_sprintf("%s inside \"%s\" condition",
+              expand_string_message, name);
+            goto EXPAND_FAILED;
+            }
+          DEBUG(D_expand) debug_printf("%s: condition is %s\n", name,
+            condresult? "true":"false");
+          if (condresult)
+            temp = iterate_item;    /* TRUE => include this item */
+          else
+            continue;               /* FALSE => skip this item */
+          }
+
+        /* EITEM_MAP and EITEM_REDUCE */
+
+        else
+          {
+          temp = expand_string_internal(expr, TRUE, NULL, skipping);
+          if (temp == NULL)
+            {
+            expand_string_message = string_sprintf("%s inside \"%s\" item",
+              expand_string_message, name);
+            goto EXPAND_FAILED;
+            }
+          if (item_type == EITEM_REDUCE)
+            {
+            lookup_value = temp;      /* Update the value of $value */
+            continue;                 /* and continue the iteration */
+            }
+          }
+
+        /* We reach here for FILTER if the condition is true, always for MAP,
+        and never for REDUCE. The value in "temp" is to be added to the output
+        list that is being created, ensuring that any occurrences of the
+        separator character are doubled. Unless we are dealing with the first
+        item of the output list, add in a space if the new item begins with the
+        separator character, or is an empty string. */
+
+        if (ptr != save_ptr && (temp[0] == *outsep || temp[0] == 0))
+          yield = string_cat(yield, &size, &ptr, US" ", 1);
+
+        /* Add the string in "temp" to the output list that we are building,
+        This is done in chunks by searching for the separator character. */
+
+        for (;;)
+          {
+          size_t seglen = Ustrcspn(temp, outsep);
+            yield = string_cat(yield, &size, &ptr, temp, seglen + 1);
+
+          /* If we got to the end of the string we output one character
+          too many; backup and end the loop. Otherwise arrange to double the
+          separator. */
+
+          if (temp[seglen] == '\0') { ptr--; break; }
+          yield = string_cat(yield, &size, &ptr, outsep, 1);
+          temp += seglen + 1;
+          }
+
+        /* Output a separator after the string: we will remove the redundant
+        final one at the end. */
+
+        yield = string_cat(yield, &size, &ptr, outsep, 1);
+        }   /* End of iteration over the list loop */
+
+      /* REDUCE has generated no output above: output the final value of
+      $value. */
+
+      if (item_type == EITEM_REDUCE)
+        {
+        yield = string_cat(yield, &size, &ptr, lookup_value,
+          Ustrlen(lookup_value));
+        lookup_value = save_lookup_value;  /* Restore $value */
+        }
+
+      /* FILTER and MAP generate lists: if they have generated anything, remove
+      the redundant final separator. Even though an empty item at the end of a
+      list does not count, this is tidier. */
+
+      else if (ptr != save_ptr) ptr--;
+
+      /* Restore preserved $item */
+
+      iterate_item = save_iterate_item;
+      continue;
+      }
+
+
     /* If ${dlfunc support is configured, handle calling dynamically-loaded
     functions, unless locked out at this time. Syntax is ${dlfunc{file}{func}}
     or ${dlfunc{file}{func}{arg}} or ${dlfunc{file}{func}{arg1}{arg2}} or up to
@@ -5041,6 +5224,69 @@ while (*s != 0)
           }
         continue;
         }
+
+      case EOP_ADDRESSES:
+        {
+        uschar outsep[2] = { ':', '\0' };
+        uschar *address, *error;
+        int save_ptr = ptr;
+        int start, end, domain;  /* Not really used */
+
+        while (isspace(*sub)) sub++;
+        if (*sub == '>') { *outsep = *++sub; ++sub; }
+        parse_allow_group = TRUE;
+
+        for (;;)
+          {
+          uschar *p = parse_find_address_end(sub, FALSE);
+          uschar saveend = *p;
+          *p = '\0';
+          address = parse_extract_address(sub, &error, &start, &end, &domain,
+            FALSE);
+          *p = saveend;
+
+          /* Add the address to the output list that we are building. This is
+          done in chunks by searching for the separator character. At the
+          start, unless we are dealing with the first address of the output
+          list, add in a space if the new address begins with the separator
+          character, or is an empty string. */
+
+          if (address != NULL)
+            {
+            if (ptr != save_ptr && address[0] == *outsep)
+              yield = string_cat(yield, &size, &ptr, US" ", 1);
+
+            for (;;)
+              {
+              size_t seglen = Ustrcspn(address, outsep);
+              yield = string_cat(yield, &size, &ptr, address, seglen + 1);
+
+              /* If we got to the end of the string we output one character
+              too many. */
+
+              if (address[seglen] == '\0') { ptr--; break; }
+              yield = string_cat(yield, &size, &ptr, outsep, 1);
+              address += seglen + 1;
+              }
+
+            /* Output a separator after the string: we will remove the
+            redundant final one at the end. */
+
+            yield = string_cat(yield, &size, &ptr, outsep, 1);
+            }
+
+          if (saveend == '\0') break;
+          sub = p + 1;
+          }
+
+        /* If we have generated anything, remove the redundant final
+        separator. */
+
+        if (ptr != save_ptr) ptr--;
+        parse_allow_group = FALSE;
+        continue;
+        }
+
 
       /* quote puts a string in quotes if it is empty or contains anything
       other than alphamerics, underscore, dot, or hyphen.

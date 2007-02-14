@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.140 2007/02/07 12:23:35 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.141 2007/02/14 14:59:01 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -291,6 +291,79 @@ Version 4.67
     searching large log files. Without -I, the Perl pattern matches use the /i
     option; with -I they don't. In both cases it is possible to change the case
     sensitivity within the pattern using (?i) or (?-i).
+
+14. A number of new features have been added to string expansions to make it
+    easier to process lists of items, typically addresses. These are as
+    follows:
+
+  * ${addresses:<string>}
+
+    The string (after expansion) is interpreted as a list of addresses in RFC
+    2822 format, such as can be found in a To: or Cc: header line. The
+    operative address (local-part@domain) is extracted from each item, and the
+    result of the expansion is a colon-separated list, with appropriate
+    doubling of colons should any happen to be present in the email addresses.
+    Syntactically invalid RFC2822 address items are omitted from the output.
+
+    It is possible to specify a character other than colon for the output
+    separator by starting the string with > followed by the new separator
+    character. For example:
+
+      ${addresses:>& The Boss <ceo@up.stairs>, sec@base.ment (dogsbody)}
+
+    expands to "ceo@up.stairs&sec@base.ment". Compare ${address (singular),
+    which extracts the working address from a single RFC2822 address.
+
+  * ${map{<string1>}{<string2>}}
+
+    After expansion, <string1> is interpreted as a list, colon-separated by
+    default, but the separator can be changed in the usual way. For each item
+    in this list, its value is place in $item, and then <string2> is expanded
+    and added to the output as an item in a new list. The separator used for
+    the output list is the same as the one used for the input, but is not
+    included in the output. For example:
+
+      ${map{a:b:c}{[$item]}} ${map{<- x-y-z}{($item)}}
+
+    expands to "[a]:[b]:[c] (x)-(y)-(z)". At the end of the expansion, the
+    value of $item is restored to what it was before.
+
+  * ${filter{<string1>}{<condition>}}
+
+    After expansion, <string1> is interpreted as a list, colon-separated by
+    default, but the separator can be changed in the usual way. For each item
+    in this list, its value is place in $item, and then the condition is
+    evaluated. If the condition is true, $item is added to the output as an
+    item in a new list; if the condition is false, the item is discarded. The
+    separator used for the output list is the same as the one used for the
+    input, but is not included in the output. For example:
+
+      ${filter{a:b:c}{!eq{$item}{b}}
+
+    yields "a:c". At the end of the expansion, the value of $item is restored
+    to what it was before.
+
+  * ${reduce{<string1>}{<string2>}{<string3>}}
+
+    The ${reduce expansion operation reduces a list to a single, scalar string.
+    After expansion, <string1> is interpreted as a list, colon-separated by
+    default, but the separator can be changed in the usual way. Then <string2>
+    is expanded and assigned to the $value variable. After this, each item in
+    the <string1> list is assigned to $item in turn, and <string3> is expanded
+    for each of them. The result of that expansion is assigned to $value before
+    the next iteration. When the end of the list is reached, the final value of
+    $value is added to the expansion string. The ${reduce expansion item can be
+    used in a number of ways. For example, to add up a list of numbers:
+
+      ${reduce {<, 1,2,3}{0}{${eval:$value+$item}}}
+
+    The result of that expansion would be "6". The maximum of a list of numbers
+    can be found:
+
+      ${reduce {3:0:9:4:6}{0}{${if >{$item}{$value}{$item}{$value}}}}
+
+    At the end of a ${reduce expansion, the values of $item and $value is
+    restored to what they were before.
 
 
 Version 4.66

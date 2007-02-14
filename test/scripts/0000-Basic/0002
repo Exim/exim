@@ -40,12 +40,40 @@ x\
 +$11111111111111111111111111111111111
 +${11111111111111111111111111111111111}
 
+# List operations
+
+filter: "${filter{a:b:c}{eq{1}{1}}}"
+filter: ${filter{a:b:c}{!eq{$item}{b}}}
+filter: ${filter{<' a'b'c}{!eq{$item}{b}}}
+filter: ${filter{<' ''a'b' ''c}{!eq{$item}{b}}}
+filter: "${filter{}{!eq{$item}{b}}}"
+
+map: "${map{}{$item}}"
+map: ${map{a:b:c}{$item}}
+map: ${map{a:b:c}{:$item:}}
+map: ${if eq{1}{0}{${map{a:b:c}{:$item:}}}{fail string}}
+map: ${map{:b:c}{[$item]}}
+
+reduce: "${reduce{}{+}{$value$item}}"
+reduce: ${reduce{a:b:c}{+}{$value$item}}
+reduce: ${reduce {<, 1,2,3}{0}{${eval:$value+$item}}}
+reduce: ${reduce {3:0:9:4:6}{0}{${if >{$item}{$value}{$item}{$value}}}}
+
 # Operators
 
 addrss: ${address:local-part@dom.ain}
 addrss: ${address:Exim Person <local-part@dom.ain> (that's me)}
 domain: ${domain:local-part@dom.ain}
 domain: ${domain:Exim Person <local-part@dom.ain> (that's me)}
+
+addresses: ${addresses:>' 'abc@xyz, 'pqr@xyz}
+addresses: ${addresses:Exim Person <local-part@dom.ain> (that's me)}
+addresses: ${addresses:>+ Exim Person <local-part@dom.ain> (that's me),\
+           xyz@abc}
+addresses: ${addresses:Exim Person <local-part@dom.ain> (that's me), \
+           xyz@abc, nullgroupname:;, group: p@q, r@s; }
+addresses: ${addresses:local-part@dom.ain <local-part@dom.ain>}
+
 escape: ${escape:B7·F2ò}
 eval:   ${eval:1+1}
 eval:   ${eval:1+2*3}

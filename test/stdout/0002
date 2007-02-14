@@ -30,12 +30,38 @@
 > +
 > +
 > 
+> # List operations
+> 
+> filter: "a:b:c"
+> filter: a:c
+> filter: a'c
+> filter: ''a' ''c
+> filter: ""
+> 
+> map: ""
+> map: a:b:c
+> map: ::a::: ::b::: ::c::
+> map: fail string
+> map: []:[b]:[c]
+> 
+> reduce: "+"
+> reduce: +abc
+> reduce: 6
+> reduce: 9
+> 
 > # Operators
 > 
 > addrss: local-part@dom.ain
 > addrss: local-part@dom.ain
 > domain: dom.ain
 > domain: dom.ain
+> 
+> addresses: ''abc@xyz' ''pqr@xyz
+> addresses: local-part@dom.ain
+> addresses: local-part@dom.ain+xyz@abc
+> addresses: local-part@dom.ain:xyz@abc:p@q:r@s
+> addresses: 
+> 
 > escape: B7\267F2\362
 > eval:   2
 > eval:   7
