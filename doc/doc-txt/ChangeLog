@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.477 2007/02/08 15:16:19 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.478 2007/02/14 12:22:36 steve Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -100,6 +100,8 @@ PH/23 Applied sieve patches from the maintainer "tracking the latest notify
 PH/24 When the log selector "outgoing_port" was set, the port was shown as -1
       for deliveries of the second and subsequent messages over the same SMTP
       connection.
+
+SC/02 Applied Daniel Tiefnig's patch to improve the '($parent) =' pattern match.
 
 
 Exim version 4.66
