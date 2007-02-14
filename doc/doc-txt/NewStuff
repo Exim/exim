@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.141 2007/02/14 14:59:01 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.142 2007/02/14 15:33:40 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -292,7 +292,7 @@ Version 4.67
     option; with -I they don't. In both cases it is possible to change the case
     sensitivity within the pattern using (?i) or (?-i).
 
-14. A number of new features have been added to string expansions to make it
+16. A number of new features have been added to string expansions to make it
     easier to process lists of items, typically addresses. These are as
     follows:
 
@@ -364,6 +364,16 @@ Version 4.67
 
     At the end of a ${reduce expansion, the values of $item and $value is
     restored to what they were before.
+
+17. There's a new ACL modifier called "continue". It does nothing of itself,
+    and processing of the ACL always continues with the next condition or
+    modifier. It is provided so that the side effects of expanding its argument
+    can be used. Typically this would be for updating a database. It is really
+    just a syntactic tidiness, because the following two lines have the same
+    effect:
+
+      continue  = <some expansion>
+      condition = ${if eq{0}{<some expansion>}{true}{true}}
 
 
 Version 4.66

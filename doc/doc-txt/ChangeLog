@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.479 2007/02/14 14:59:01 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.480 2007/02/14 15:33:40 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -105,6 +105,9 @@ PH/25 Applied Magnus Holmgren's patch for ${addresses, ${map, ${filter, and
       ${reduce, with only minor "tidies".
 
 SC/02 Applied Daniel Tiefnig's patch to improve the '($parent) =' pattern match.
+
+PH/26 Added a "continue" ACL modifier that does nothing, for the benefit of its
+      expansion side effects.
 
 
 Exim version 4.66

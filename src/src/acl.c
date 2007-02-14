@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.73 2007/02/07 11:24:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.74 2007/02/14 15:33:40 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -53,6 +53,7 @@ enum { ACLC_ACL,
        ACLC_BMI_OPTIN,
 #endif
        ACLC_CONDITION,
+       ACLC_CONTINUE,
        ACLC_CONTROL,
 #ifdef WITH_CONTENT_SCAN
        ACLC_DECODE,
@@ -101,10 +102,10 @@ enum { ACLC_ACL,
 #endif
        ACLC_VERIFY };
 
-/* ACL conditions/modifiers: "delay", "control", "endpass", "message",
-"log_message", "log_reject_target", "logwrite", and "set" are modifiers that
-look like conditions but always return TRUE. They are used for their side
-effects. */
+/* ACL conditions/modifiers: "delay", "control", "continue", "endpass",
+"message", "log_message", "log_reject_target", "logwrite", and "set" are
+modifiers that look like conditions but always return TRUE. They are used for
+their side effects. */
 
 static uschar *conditions[] = {
   US"acl",
@@ -114,6 +115,7 @@ static uschar *conditions[] = {
   US"bmi_optin",
 #endif
   US"condition",
+  US"continue",
   US"control",
 #ifdef WITH_CONTENT_SCAN
   US"decode",
@@ -237,6 +239,7 @@ static uschar cond_expand_at_top[] = {
   TRUE,    /* bmi_optin */
 #endif
   TRUE,    /* condition */
+  TRUE,    /* continue */
   TRUE,    /* control */
 #ifdef WITH_CONTENT_SCAN
   TRUE,    /* decode */
@@ -296,6 +299,7 @@ static uschar cond_modifiers[] = {
   TRUE,    /* bmi_optin */
 #endif
   FALSE,   /* condition */
+  TRUE,    /* continue */
   TRUE,    /* control */
 #ifdef WITH_CONTENT_SCAN
   FALSE,   /* decode */
@@ -345,9 +349,9 @@ static uschar cond_modifiers[] = {
   FALSE    /* verify */
 };
 
-/* Bit map vector of which conditions are not allowed at certain times. For
-each condition, there's a bitmap of dis-allowed times. For some, it is easier
-to specify the negation of a small number of allowed times. */
+/* Bit map vector of which conditions and modifiers are not allowed at certain
+times. For each condition, there's a bitmap of dis-allowed times. For some, it
+is easier to specify the negation of a small number of allowed times. */
 
 static unsigned int cond_forbids[] = {
   0,                                               /* acl */
@@ -374,6 +378,8 @@ static unsigned int cond_forbids[] = {
   #endif
 
   0,                                               /* condition */
+
+  0,                                               /* continue */
 
   /* Certain types of control are always allowed, so we let it through
   always and check in the control processing itself. */
@@ -2552,6 +2558,9 @@ for (; cb != NULL; cb = cb->next)
             strcmpic(arg, US"true") == 0)? OK : DEFER;
     if (rc == DEFER)
       *log_msgptr = string_sprintf("invalid \"condition\" value \"%s\"", arg);
+    break;
+
+    case ACLC_CONTINUE:    /* Always succeeds */
     break;
 
     case ACLC_CONTROL:

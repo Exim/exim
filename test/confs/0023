@@ -51,6 +51,7 @@ acl_1_2_3:
 
   deny    message = domain explicitly denied
           log_message = DOMAIN EXPLICITLY DENIED
+          continue = this value is not used
           domains = deny.test.ex
 
   accept  domains = +local_domains
