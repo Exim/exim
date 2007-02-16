@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.82 2007/02/14 14:59:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.83 2007/02/16 22:23:35 magnus Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -349,7 +349,8 @@ enum {
   vtype_localpart,      /* extract local part from string */
   vtype_domain,         /* extract domain from string */
   vtype_recipients,     /* extract recipients from recipients list */
-                        /* (enabled only during system filtering */
+                        /* (available only in system filters, ACLs, and */
+                        /* local_scan()) */
   vtype_todbsdin,       /* value not used; generate BSD inbox tod */
   vtype_tode,           /* value not used; generate tod in epoch format */
   vtype_todf,           /* value not used; generate full tod */

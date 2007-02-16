@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.33 2007/01/22 16:29:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.34 2007/02/16 22:23:35 magnus Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2915,14 +2915,14 @@ $message_body_end can be extracted if needed. Allow $recipients in expansions.
 deliver_datafile = data_fd;
 user_msg = NULL;
 
+enable_dollar_recipients = TRUE;
+
 if (recipients_count == 0)
   {
   blackholed_by = recipients_discarded? US"MAIL ACL" : US"RCPT ACL";
   }
 else
   {
-  enable_dollar_recipients = TRUE;
-
   /* Handle interactive SMTP messages */
 
   if (smtp_input && !smtp_batched_input)
@@ -3027,8 +3027,6 @@ else
 
   if (deliver_freeze) frozen_by = US"ACL";     /* for later logging */
   if (queue_only_policy) queued_by = US"ACL";
-
-  enable_dollar_recipients = FALSE;
   }
 
 #ifdef WITH_CONTENT_SCAN
@@ -3059,6 +3057,8 @@ if (local_scan_timeout > 0) alarm(local_scan_timeout);
 rc = local_scan(data_fd, &local_scan_data);
 alarm(0);
 os_non_restarting_signal(SIGALRM, sigalrm_handler);
+
+enable_dollar_recipients = FALSE;
 
 store_pool = POOL_MAIN;   /* In case changed */
 DEBUG(D_receive) debug_printf("local_scan() returned %d %s\n", rc,
