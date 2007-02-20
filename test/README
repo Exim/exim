@@ -1,4 +1,4 @@
-$Cambridge: exim/test/README,v 1.7 2007/01/31 16:52:12 ph10 Exp $
+$Cambridge: exim/test/README,v 1.8 2007/02/20 15:58:02 ph10 Exp $
 
 EXPORTABLE EXIM TEST SUITE
 --------------------------
@@ -6,7 +6,7 @@ EXPORTABLE EXIM TEST SUITE
 This document last updated for:
 
 Test Suite Version: 4.67
-Date: 31 January 2007
+Date: 20 February 2007
 
 
 BACKGROUND
@@ -765,9 +765,12 @@ as well as to the named file.
 
 This command runs the auxiliary "client" program that simulates an SMTP client.
 It is controlled by a script read from its standard input, details of which are
-given below. The only option is -t, which must be followed by a number, to
-specify the command timeout in seconds. The program connects to the given IP
-address and port, using the specified interface, if one is given.
+given below. There are two options. One is -t, which must be followed directly
+by a number, to specify the command timeout in seconds (e.g. -t5). The default
+timeout is 1 second. The other option is -tls-on-connect, which causes the
+client to try to start up a TLS session as soon as it has connected, without
+using the STARTTLS command. The client program connects to the given IP address
+and port, using the specified interface, if one is given.
 
 
   client-ssl [<options>] <ip address> <port> [<outgoing interface>] \

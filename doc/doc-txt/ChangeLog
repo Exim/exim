@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.483 2007/02/20 11:37:16 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.484 2007/02/20 15:58:02 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -122,6 +122,14 @@ PH/28 The $smtp_command and $smtp_command_argument variables were not correct
       in the case of a MAIL command with additional options following the
       address, for example: MAIL FROM:<foo@bar> SIZE=1234. The option settings
       were accidentally chopped off.
+
+PH/29 SMTP synchronization checks are implemented when a command is read -
+      there is a check that no more input is waiting when there shouldn't be
+      any. However, for some commands, a delay in an ACL can mean that it is
+      some time before the response is written. In this time, more input might
+      arrive, invalidly. So now there are extra checks after an ACL has run for
+      HELO/EHLO and after the predata ACL, and likewise for MAIL and RCPT when
+      pipelining has not been advertised.
 
 
 Exim version 4.66

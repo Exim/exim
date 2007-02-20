@@ -1,0 +1,59 @@
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo abcd
+??? 250-
+<<< 250-myhost.test.ex Hello abcd [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250-
+<<< 250-PIPELINING
+??? 250
+<<< 250 HELP
+>>> rset\r\nmail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>\r\ndata
++++ 1
+>>> Start: sent early ...
+??? 250
+<<< 250 Reset OK
+??? 250
+<<< 250 OK
+??? 250
+<<< 250 Accepted
+??? 554
+<<< 554 SMTP synchronization error
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo abcd
+??? 250-
+<<< 250-myhost.test.ex Hello abcd [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250
+<<< 250 HELP
+>>> mail from:<userx@test.ex>
++++ 1
+>>> rcpt to:<userx@test.ex>
+??? 554
+<<< 554 SMTP synchronization error
+End of script
+Connecting to 127.0.0.1 port 1225 ... connected
+??? 220
+<<< 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+>>> ehlo abcd
+??? 250-
+<<< 250-myhost.test.ex Hello abcd [127.0.0.1]
+??? 250-
+<<< 250-SIZE 52428800
+??? 250
+<<< 250 HELP
+>>> mail from:<userx@test.ex>
+??? 250
+<<< 250 OK
+>>> rcpt to:<userx@test.ex>
++++ 1
+>>> data
+??? 554
+<<< 554 SMTP synchronization error
+End of script

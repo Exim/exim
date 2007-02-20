@@ -1,0 +1,55 @@
+# SMTP synchronization checks before sending responses
+need_ipv4
+#
+exim -DSERVER=server -DACL_PREDATA=check_predata -bd -oX PORT_D
+****
+# The pause (+++ 1) in the middle of this is so that there is no pending
+# input when DATA is received, but we start sending the data itself too
+# early (the server will be waiting 2 seconds in the predata ACL).
+#
+client 127.0.0.1 PORT_D
+??? 220
+ehlo abcd
+??? 250-
+??? 250-
+??? 250-
+??? 250
+rset\r\nmail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>\r\ndata
++++ 1
+Start: sent early ...
+??? 250
+??? 250
+??? 250
+??? 554
+****
+sleep 1
+killdaemon
+# This time turn off pipelining to check MAIL and RCPT
+exim -DSERVER=server -DACL_MAIL=check_mail -DACL_RCPT=check_rcpt -DPAH= \
+     -bd -oX PORT_D
+****
+client -t5 127.0.0.1 PORT_D
+??? 220
+ehlo abcd
+??? 250-
+??? 250-
+??? 250
+mail from:<userx@test.ex>
++++ 1
+rcpt to:<userx@test.ex>
+??? 554
+****
+client -t5 127.0.0.1 PORT_D
+??? 220
+ehlo abcd
+??? 250-
+??? 250-
+??? 250
+mail from:<userx@test.ex>
+??? 250
+rcpt to:<userx@test.ex>
++++ 1
+data
+??? 554
+****
+killdaemon      

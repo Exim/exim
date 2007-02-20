@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.54 2007/02/20 11:37:16 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.55 2007/02/20 15:58:02 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -469,6 +469,7 @@ exim_exit(EXIT_FAILURE);
 
 
 
+
 /*************************************************
 *           Read one command line                *
 *************************************************/
@@ -599,6 +600,60 @@ if (smtp_inptr < smtp_inend &&                     /* Outstanding input */
   return BADSYN_CMD;
 
 return OTHER_CMD;
+}
+
+
+
+/*************************************************
+*          Recheck synchronization               *
+*************************************************/
+
+/* Synchronization checks can never be perfect because a packet may be on its
+way but not arrived when the check is done. Such checks can in any case only be
+done when TLS is not in use. Normally, the checks happen when commands are
+read: Exim ensures that there is no more input in the input buffer. In normal
+cases, the response to the command will be fast, and there is no further check.
+
+However, for some commands an ACL is run, and that can include delays. In those
+cases, it is useful to do another check on the input just before sending the
+response. This also applies at the start of a connection. This function does
+that check by means of the select() function, as long as the facility is not
+disabled or inappropriate. A failure of select() is ignored.
+
+When there is unwanted input, we read it so that it appears in the log of the
+error.
+
+Arguments: none
+Returns:   TRUE if all is well; FALSE if there is input pending
+*/
+
+static BOOL
+check_sync(void)
+{
+int fd, rc;
+fd_set fds;
+struct timeval tzero;
+
+if (!smtp_enforce_sync || sender_host_address == NULL ||
+    sender_host_notsocket || tls_active >= 0)
+  return TRUE;
+
+fd = fileno(smtp_in);
+FD_ZERO(&fds);
+FD_SET(fd, &fds);
+tzero.tv_sec = 0;
+tzero.tv_usec = 0;
+rc = select(fd + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL, &tzero);
+
+if (rc <= 0) return TRUE;     /* Not ready to read */
+rc = smtp_getc();
+if (rc < 0) return TRUE;      /* End of file or error */
+
+smtp_ungetc(rc);
+rc = smtp_inend - smtp_inptr;
+if (rc > 150) rc = 150;
+smtp_inptr[rc] = 0;
+return FALSE;
 }
 
 
@@ -1760,30 +1815,14 @@ ss[ptr] = 0;  /* string_cat leaves room for this */
 /* Before we write the banner, check that there is no input pending, unless
 this synchronisation check is disabled. */
 
-if (smtp_enforce_sync && sender_host_address != NULL && !sender_host_notsocket)
+if (!check_sync())
   {
-  fd_set fds;
-  struct timeval tzero;
-  tzero.tv_sec = 0;
-  tzero.tv_usec = 0;
-  FD_ZERO(&fds);
-  FD_SET(fileno(smtp_in), &fds);
-  if (select(fileno(smtp_in) + 1, (SELECT_ARG2_TYPE *)&fds, NULL, NULL,
-      &tzero) > 0)
-    {
-    int rc = read(fileno(smtp_in), smtp_inbuffer, in_buffer_size);
-    if (rc > 0)
-      {
-      if (rc > 150) rc = 150;
-      smtp_inbuffer[rc] = 0;
-      log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
-        "synchronization error (input sent without waiting for greeting): "
-        "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
-        string_printing(smtp_inbuffer));
-      smtp_printf("554 SMTP synchronization error\r\n");
-      return FALSE;
-      }
-    }
+  log_write(0, LOG_MAIN|LOG_REJECT, "SMTP protocol "
+    "synchronization error (input sent without waiting for greeting): "
+    "rejected connection from %s input=\"%s\"", host_and_ident(TRUE),
+    string_printing(smtp_inptr));
+  smtp_printf("554 SMTP synchronization error\r\n");
+  return FALSE;
   }
 
 /* Now output the banner */
@@ -2731,7 +2770,8 @@ while (done <= 0)
     spf_init(sender_helo_name, sender_host_address);
 #endif
 
-    /* Apply an ACL check if one is defined */
+    /* Apply an ACL check if one is defined; afterwards, recheck
+    synchronization in case the client started sending in a delay. */
 
     if (acl_smtp_helo != NULL)
       {
@@ -2743,6 +2783,7 @@ while (done <= 0)
         host_build_sender_fullhost();  /* Rebuild */
         break;
         }
+      else if (!check_sync()) goto SYNC_FAILURE;
       }
 
     /* Generate an OK reply. The default string includes the ident if present,
@@ -3236,10 +3277,16 @@ while (done <= 0)
         }
       }
 
-    /* Apply an ACL check if one is defined, before responding */
+    /* Apply an ACL check if one is defined, before responding. Afterwards,
+    when pipelining is not advertised, do another sync check in case the ACL
+    delayed and the client started sending in the meantime. */
 
-    rc = (acl_smtp_mail == NULL)? OK :
-      acl_check(ACL_WHERE_MAIL, NULL, acl_smtp_mail, &user_msg, &log_msg);
+    if (acl_smtp_mail == NULL) rc = OK; else
+      {
+      rc = acl_check(ACL_WHERE_MAIL, NULL, acl_smtp_mail, &user_msg, &log_msg);
+      if (rc == OK && !pipelining_advertised && !check_sync())
+        goto SYNC_FAILURE;
+      }
 
     if (rc == OK || rc == DISCARD)
       {
@@ -3395,10 +3442,17 @@ while (done <= 0)
       }
 
     /* If the MAIL ACL discarded all the recipients, we bypass ACL checking
-    for them. Otherwise, check the access control list for this recipient. */
+    for them. Otherwise, check the access control list for this recipient. As
+    there may be a delay in this, re-check for a synchronization error
+    afterwards, unless pipelining was advertised. */
 
-    rc = recipients_discarded? DISCARD :
-      acl_check(ACL_WHERE_RCPT, recipient, acl_smtp_rcpt, &user_msg, &log_msg);
+    if (recipients_discarded) rc = DISCARD; else
+      {
+      rc = acl_check(ACL_WHERE_RCPT, recipient, acl_smtp_rcpt, &user_msg,
+        &log_msg);
+      if (rc == OK && !pipelining_advertised && !check_sync())
+        goto SYNC_FAILURE;
+      }
 
     /* The ACL was happy */
 
@@ -3472,12 +3526,16 @@ while (done <= 0)
       break;
       }
 
+    /* If there is an ACL, re-check the synchronization afterwards, since the
+    ACL may have delayed. */
+
     if (acl_smtp_predata == NULL) rc = OK; else
       {
       enable_dollar_recipients = TRUE;
       rc = acl_check(ACL_WHERE_PREDATA, NULL, acl_smtp_predata, &user_msg,
         &log_msg);
       enable_dollar_recipients = FALSE;
+      if (rc == OK && !check_sync()) goto SYNC_FAILURE;
       }
 
     if (rc == OK)
@@ -3493,7 +3551,6 @@ while (done <= 0)
 
     else
       done = smtp_handle_acl_fail(ACL_WHERE_PREDATA, rc, user_msg, log_msg);
-
     break;
 
 
@@ -3942,6 +3999,7 @@ while (done <= 0)
 
 
     case BADSYN_CMD:
+    SYNC_FAILURE:
     if (smtp_inend >= smtp_inbuffer + in_buffer_size)
       smtp_inend = smtp_inbuffer + in_buffer_size - 1;
     c = smtp_inend - smtp_inptr;
