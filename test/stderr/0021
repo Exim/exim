@@ -58,9 +58,10 @@ check verify = sender
 ok in "!bad"? yes (end of list)
 ----------- end verify ------------
 sender ok@test1 verified ok
-check logwrite = :main,reject: mail accepted
+check logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argument"
+               = :main,reject: mail accepted "mail from:<ok@test1>" "<ok@test1>"
 LOG: MAIN REJECT
-  mail accepted
+  mail accepted "mail from:<ok@test1>" "<ok@test1>"
 accept: condition test succeeded
 using ACL "rcpt"
 processing "accept"
@@ -142,9 +143,10 @@ check verify = sender
 ok in "!bad"? yes (end of list)
 ----------- end verify ------------
 sender ok@test3 verified ok
-check logwrite = :main,reject: mail accepted
+check logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argument"
+               = :main,reject: mail accepted "mail from:<ok@test3>" "<ok@test3>"
 LOG: MAIN REJECT
-  mail accepted
+  mail accepted "mail from:<ok@test3>" "<ok@test3>"
 accept: condition test succeeded
 using ACL "rcpt"
 processing "accept"
@@ -184,3 +186,5 @@ LOG: MAIN
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+1999-03-02 09:44:33 ACL "warn" with "message" setting found in a non-message (EHLO or HELO) ACL: cannot specify header lines here: message ignored
+1999-03-02 09:44:33 rcpt accepted

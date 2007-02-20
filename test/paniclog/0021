@@ -2,3 +2,5 @@
 1999-03-02 09:44:33 rcpt accepted
 1999-03-02 09:44:33 ACL "warn" with "message" setting found in a non-message (EHLO or HELO) ACL: cannot specify header lines here: message ignored
 1999-03-02 09:44:33 rcpt accepted
+1999-03-02 09:44:33 ACL "warn" with "message" setting found in a non-message (EHLO or HELO) ACL: cannot specify header lines here: message ignored
+1999-03-02 09:44:33 rcpt accepted

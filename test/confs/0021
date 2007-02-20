@@ -65,7 +65,7 @@ mail:
          senders = ok@test3
   accept senders = ok@test1 : ok@test3
          verify  = sender
-         logwrite = :main,reject: mail accepted
+         logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argument"
 
 rcpt:
   accept senders = +ok_senders

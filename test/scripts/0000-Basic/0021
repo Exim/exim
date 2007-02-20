@@ -60,3 +60,12 @@ exim -DBR=no_bounce_return_body -odi -f userx@test1 userx
 Test message 1.
 .
 ****
+exim -odi -bs -oMa 10.9.8.8
+ehlo test.ex
+mail from: <ok@test3> SIZE=1234
+rcpt to:<x@y>
+data
+Some message
+.
+quit
+****

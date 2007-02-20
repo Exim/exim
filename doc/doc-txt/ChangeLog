@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.482 2007/02/20 09:53:41 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.483 2007/02/20 11:37:16 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -117,6 +117,11 @@ PH/27 When a message times out after an over-quota error from an Exim-imposed
 MH/03 Made $recipients available in local_scan(). local_scan() already has
       better access to the recipient list through recipients_list[], but
       $recipients can be useful in postmaster-provided expansion strings.
+
+PH/28 The $smtp_command and $smtp_command_argument variables were not correct
+      in the case of a MAIL command with additional options following the
+      address, for example: MAIL FROM:<foo@bar> SIZE=1234. The option settings
+      were accidentally chopped off.
 
 
 Exim version 4.66
