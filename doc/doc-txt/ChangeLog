@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.481 2007/02/16 22:23:35 magnus Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.482 2007/02/20 09:53:41 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -108,6 +108,11 @@ SC/02 Applied Daniel Tiefnig's patch to improve the '($parent) =' pattern match.
 
 PH/26 Added a "continue" ACL modifier that does nothing, for the benefit of its
       expansion side effects.
+
+PH/27 When a message times out after an over-quota error from an Exim-imposed
+      quota, the bounce message says "mailbox is full". This message was not
+      being given when it was a system quota that was exceeded. It now should
+      be the same.
 
 MH/03 Made $recipients available in local_scan(). local_scan() already has
       better access to the recipient list through recipients_list[], but

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.21 2007/01/22 16:29:55 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.22 2007/02/20 09:53:41 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2903,6 +2903,7 @@ if (yield != OK)
     #else
     addr->message = string_sprintf("mailbox is full");
     #endif  /* EDQUOT */
+    addr->user_message = US"mailbox is full";
     DEBUG(D_transport) debug_printf("System quota exceeded for %s%s%s\n",
       dataname,
       isdirectory? US"" : US": time since file read = ",
