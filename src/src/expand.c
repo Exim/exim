@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.83 2007/02/16 22:23:35 magnus Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.84 2007/02/26 12:25:10 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2373,7 +2373,6 @@ switch(cond_type)
 
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;
-
     sub[0] = expand_string_internal(s, TRUE, &s, (yield == NULL));
     if (sub[0] == NULL) return NULL;
     if (*s++ != '}') goto COND_FAILED_CURLY_END;
@@ -2411,6 +2410,7 @@ switch(cond_type)
         {
         expand_string_message = string_sprintf("%s inside \"%s\" condition",
           expand_string_message, name);
+        iterate_item = save_iterate_item;
         return NULL;
         }
       DEBUG(D_expand) debug_printf("%s: condition evaluated to %s\n", name,
@@ -4780,6 +4780,8 @@ while (*s != 0)
           BOOL condresult;
           if (eval_condition(expr, &condresult) == NULL)
             {
+            iterate_item = save_iterate_item;
+            lookup_value = save_lookup_value;
             expand_string_message = string_sprintf("%s inside \"%s\" condition",
               expand_string_message, name);
             goto EXPAND_FAILED;
@@ -4799,6 +4801,7 @@ while (*s != 0)
           temp = expand_string_internal(expr, TRUE, NULL, skipping);
           if (temp == NULL)
             {
+            iterate_item = save_iterate_item;
             expand_string_message = string_sprintf("%s inside \"%s\" item",
               expand_string_message, name);
             goto EXPAND_FAILED;
