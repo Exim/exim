@@ -49,6 +49,18 @@
 > reduce: 6
 > reduce: 9
 > 
+> # Tests with iscntrl() and illegal separators
+> 
+> map: 'a'
+''
+'b'
+'c'
+> 
+> Failed: error in expression evaluation: expecting number or opening parenthesis (after processing "0+") inside "reduce" item
+> reduce: 6
+> reduce: 6
+> reduce: 6
+> 
 > # Operators
 > 
 > addrss: local-part@dom.ain

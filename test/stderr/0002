@@ -154,7 +154,7 @@ host in helo_try_verify_hosts? no (option unset)
 host in helo_accept_junk_hosts? no (option unset)
 using ACL "connect1"
 processing "deny"
-check hosts = partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
+check hosts = <\n partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch \n 1.2.3.4
 sender host name required, to match against partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch
 looking up host name for V4NET.0.0.1
 DNS lookup of 1.0.0.V4NET.in-addr.arpa (PTR) using fakens
@@ -181,7 +181,9 @@ internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
 file lookup required for ten-1.test.ex
   in TESTSUITE/aux-fixed/0002.lsearch
 lookup yielded: 
-host in "partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch"? yes (matched "partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch")
+host in "<
+ partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
+ 1.2.3.4"? yes (matched "partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch")
 deny: condition test succeeded
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT

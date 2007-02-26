@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.484 2007/02/20 15:58:02 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.485 2007/02/26 14:07:04 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -130,6 +130,8 @@ PH/29 SMTP synchronization checks are implemented when a command is read -
       arrive, invalidly. So now there are extra checks after an ACL has run for
       HELO/EHLO and after the predata ACL, and likewise for MAIL and RCPT when
       pipelining has not been advertised.
+
+PH/30 MH's patch to allow iscntrl() characters to be list separators.
 
 
 Exim version 4.66

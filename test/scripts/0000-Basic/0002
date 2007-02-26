@@ -59,6 +59,15 @@ reduce: ${reduce{a:b:c}{+}{$value$item}}
 reduce: ${reduce {<, 1,2,3}{0}{${eval:$value+$item}}}
 reduce: ${reduce {3:0:9:4:6}{0}{${if >{$item}{$value}{$item}{$value}}}}
 
+# Tests with iscntrl() and illegal separators
+
+map: ${map{<\n a\n\nb\nc}{'$item'}}
+
+reduce: ${reduce {<n 1\n2\n3}{0}{${eval:$value+$item}}}
+reduce: ${reduce {<\n 1\n2\n3}{0}{${eval:$value+$item}}}
+reduce: ${reduce { <\n 1\n 2 \n 3 }{0}{${eval:$value+$item}}}
+reduce: ${reduce {<\x7f 1\x7f2\177 3}{0}{${eval:$value+$item}}}
+
 # Operators
 
 addrss: ${address:local-part@dom.ain}

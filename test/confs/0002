@@ -33,7 +33,7 @@ connect0:
   accept
 
 connect1:
-  deny  hosts = partial-lsearch;DIR/aux-fixed/0002.lsearch
+  deny  hosts = <\n partial-lsearch;DIR/aux-fixed/0002.lsearch \n 1.2.3.4
 
 connect2:
   deny  hosts = net-lsearch;DIR/aux-fixed/0002.lsearch

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/string.c,v 1.12 2007/02/07 11:24:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/string.c,v 1.13 2007/02/26 14:07:04 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -764,19 +764,26 @@ return NULL;
 /* Leading and trailing space is removed from each item. The separator in the
 list is controlled by the int pointed to by the separator argument as follows:
 
-  If its value is > 0 it is used as the delimiter.
-    (If its value is actually > UCHAR_MAX there is only one item in the list.
+  If the value is > 0 it is used as the separator. This is typically used for
+  sublists such as slash-separated options. The value is always a printing
+  character.
+
+    (If the value is actually > UCHAR_MAX there is only one item in the list.
     This is used for some cases when called via functions that sometimes
     plough through lists, and sometimes are given single items.)
-  If its value is <= 0, the string is inspected for a leading <x, where
-    x is an ispunct() value. If found, it is used as the delimiter. If not
-    found: (a) if separator == 0, ':' is used
-           (b) if separator <0, then -separator is used
-    In all cases the value of the separator that is used is written back to
-      the int so that it is used on subsequent calls as we progress through
-      the list.
 
-The separator can always be represented in the string by doubling.
+  If the value is <= 0, the string is inspected for a leading <x, where x is an
+  ispunct() or an iscntrl() character. If found, x is used as the separator. If
+  not found:
+
+      (a) if separator == 0, ':' is used
+      (b) if separator <0, -separator is used
+
+  In all cases the value of the separator that is used is written back to the
+  int so that it is used on subsequent calls as we progress through the list.
+
+A literal ispunct() separator can be represented in an item by doubling, but
+there is no way to include an iscntrl() separator as part of the data.
 
 Arguments:
   listptr    points to a pointer to the current start of the list; the
@@ -793,20 +800,28 @@ Returns:     pointer to buffer, containing the next substring,
 uschar *
 string_nextinlist(uschar **listptr, int *separator, uschar *buffer, int buflen)
 {
-register int p = 0;
 register int sep = *separator;
 register uschar *s = *listptr;
+BOOL sep_is_special;
 
 if (s == NULL) return NULL;
-while (isspace(*s)) s++;
+
+/* This allows for a fixed specified separator to be an iscntrl() character,
+but at the time of implementation, this is never the case. However, it's best
+to be conservative. */
+
+while (isspace(*s) && *s != sep) s++;
+
+/* A change of separator is permitted, so look for a leading '<' followed by an
+allowed character. */
 
 if (sep <= 0)
   {
-  if (*s == '<' && ispunct(s[1]))
+  if (*s == '<' && (ispunct(s[1]) || iscntrl(s[1])))
     {
     sep = s[1];
     s += 2;
-    while (isspace(*s)) s++;
+    while (isspace(*s) && *s != sep) s++;
     }
   else
     {
@@ -815,15 +830,22 @@ if (sep <= 0)
   *separator = sep;
   }
 
+/* An empty string has no list elements */
+
 if (*s == 0) return NULL;
+
+/* Note whether whether or not the separator is an iscntrl() character. */
+
+sep_is_special = iscntrl(sep);
 
 /* Handle the case when a buffer is provided. */
 
 if (buffer != NULL)
   {
+  register int p = 0;
   for (; *s != 0; s++)
     {
-    if (*s == sep && *(++s) != sep) break;
+    if (*s == sep && (*(++s) != sep || sep_is_special)) break;
     if (p < buflen - 1) buffer[p++] = *s;
     }
   while (p > 0 && isspace(buffer[p-1])) p--;
@@ -834,31 +856,37 @@ if (buffer != NULL)
 
 else
   {
+  int size = 0;
+  int ptr = 0;
+  uschar *ss;
+
   /* We know that *s != 0 at this point. However, it might be pointing to a
-  separator, which could indicate an empty string, or could be doubled to
-  indicate a separator character as data at the start of a string. */
+  separator, which could indicate an empty string, or (if an ispunct()
+  character) could be doubled to indicate a separator character as data at the
+  start of a string. Avoid getting working memory for an empty item. */
 
   if (*s == sep)
     {
     s++;
-    if (*s != sep) buffer = string_copy(US"");
+    if (*s != sep || sep_is_special)
+      {
+      *listptr = s;
+      return string_copy(US"");
+      }
     }
 
-  if (buffer == NULL)
+  /* Not an empty string; the first character is guaranteed to be a data
+  character. */
+
+  for (;;)
     {
-    int size = 0;
-    int ptr = 0;
-    uschar *ss;
-    for (;;)
-      {
-      for (ss = s + 1; *ss != 0 && *ss != sep; ss++);
-      buffer = string_cat(buffer, &size, &ptr, s, ss-s);
-      s = ss;
-      if (*s == 0 || *(++s) != sep) break;
-      }
-    while (ptr > 0 && isspace(buffer[ptr-1])) ptr--;
-    buffer[ptr] = 0;
+    for (ss = s + 1; *ss != 0 && *ss != sep; ss++);
+    buffer = string_cat(buffer, &size, &ptr, s, ss-s);
+    s = ss;
+    if (*s == 0 || *(++s) != sep || sep_is_special) break;
     }
+  while (ptr > 0 && isspace(buffer[ptr-1])) ptr--;
+  buffer[ptr] = 0;
   }
 
 /* Update the current pointer and return the new string */
