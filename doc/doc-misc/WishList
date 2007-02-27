@@ -1,8 +1,14 @@
-$Cambridge: exim/doc/doc-misc/WishList,v 1.69 2006/06/30 08:53:49 ph10 Exp $
+$Cambridge: exim/doc/doc-misc/WishList,v 1.70 2007/02/27 11:51:27 ph10 Exp $
 
 EXIM 4 WISH LIST
 ----------------
 
+This Wish List is now obsolete. The items it contains have been imported into
+the Exim Bugzilla, which is where all new wishes should be added. This file is
+no longer maintained. Some day it should be deleted.
+
+
+===============================================================================
 Even when it was first released, Exim 4 had a Wish List because not all the
 things suggested for it were implemented. The list has not stopped growing...
 
