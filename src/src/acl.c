@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.74 2007/02/14 15:33:40 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.75 2007/03/01 11:17:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1976,10 +1976,13 @@ else
     callout_overall, callout_connect, se_mailfrom, pm_mailfrom, NULL);
   HDEBUG(D_acl) debug_printf("----------- end verify ------------\n");
 
+  *basic_errno = addr2.basic_errno;
   *log_msgptr = addr2.message;
   *user_msgptr = (addr2.user_message != NULL)?
     addr2.user_message : addr2.message;
-  *basic_errno = addr2.basic_errno;
+
+  /* Allow details for temporary error if the address is so flagged. */
+  if (testflag((&addr2), af_pass_message)) acl_temp_details = TRUE;
 
   /* Make $address_data visible */
   deliver_address_data = addr2.p.address_data;

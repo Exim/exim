@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.48 2007/02/06 12:19:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.49 2007/03/01 11:17:00 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -855,6 +855,7 @@ if (addr != vaddr)
   vaddr->basic_errno = addr->basic_errno;
   vaddr->more_errno = addr->more_errno;
   vaddr->p.address_data = addr->p.address_data;
+  copyflag(vaddr, addr, af_pass_message);
   }
 return yield;
 }
@@ -1279,7 +1280,6 @@ while (addr_new != NULL)
         }
       fprintf(f, "%s\n", cr);
       }
-
     if (!full_info) return copy_error(vaddr, addr, DEFER);
       else if (yield == OK) yield = DEFER;
     }

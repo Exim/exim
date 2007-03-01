@@ -25,7 +25,7 @@
 550 failure message
 250 Reset OK
 250 OK
-451 Temporary local problem - please try later
+451 defer message
 250 Reset OK
 221 the.local.host.name closing connection
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
