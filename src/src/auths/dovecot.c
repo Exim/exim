@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.6 2007/01/25 16:23:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.7 2007/03/01 14:06:56 ph10 Exp $ */
 
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
@@ -9,6 +9,11 @@
  * (at your option) any later version.
  */
 
+/* A number of modifications have been made to the original code. Originally I
+commented them specially, but now they are getting quite extensive, so I have
+ceased doing that. The biggest change is to use unbuffered I/O on the socket
+because using C buffered I/O gives problems on some operating systems. PH */
+
 #include "../exim.h"
 #include "dovecot.h"
 
@@ -18,21 +23,31 @@
 /* Options specific to the authentication mechanism. */
 optionlist auth_dovecot_options[] = {
        {
-               "server_socket",
-               opt_stringptr,
-               (void *)(offsetof(auth_dovecot_options_block, server_socket))
+       "server_socket",
+       opt_stringptr,
+       (void *)(offsetof(auth_dovecot_options_block, server_socket))
        },
 };
 
 /* Size of the options list. An extern variable has to be used so that its
 address can appear in the tables drtables.c. */
+
 int auth_dovecot_options_count =
        sizeof(auth_dovecot_options) / sizeof(optionlist);
 
 /* Default private options block for the authentication method. */
+
 auth_dovecot_options_block auth_dovecot_option_defaults = {
        NULL,                           /* server_socket */
 };
+
+
+/* Static variables for reading from the socket */
+
+static uschar sbuffer[256];
+static int sbp;
+
+
 
 /*************************************************
  *          Initialization entry point           *
@@ -41,6 +56,7 @@ auth_dovecot_options_block auth_dovecot_option_defaults = {
 /* Called for each instance, after its options have been read, to
 enable consistency checks to be done, or anything else that needs
 to be set up. */
+
 void auth_dovecot_init(auth_instance *ablock)
 {
        auth_dovecot_options_block *ob =
@@ -53,9 +69,9 @@ void auth_dovecot_init(auth_instance *ablock)
        ablock->client = FALSE;
 }
 
-static int strcut(char *str, char **ptrs, int nptrs)
+static int strcut(uschar *str, uschar **ptrs, int nptrs)
 {
-       char *tmp = str;
+       uschar *tmp = str;
        int n;
 
        for (n = 0; n < nptrs; n++)
@@ -81,7 +97,7 @@ static int strcut(char *str, char **ptrs, int nptrs)
 }
 
 #define CHECK_COMMAND(str, arg_min, arg_max) do { \
-       if (strcasecmp((str), args[0]) != 0) \
+       if (strcmpic(US(str), args[0]) != 0) \
                goto out; \
        if (nargs - 1 < (arg_min)) \
                goto out; \
@@ -97,21 +113,61 @@ static int strcut(char *str, char **ptrs, int nptrs)
 
 
 /*************************************************
- *             Server entry point                *
- *************************************************/
+*      "fgets" to read directly from socket      *
+*************************************************/
+
+/* Added by PH after a suggestion by Steve Usher because the previous use of
+C-style buffered I/O gave trouble. */
+
+static uschar *
+dc_gets(uschar *s, int n, int fd)
+{
+int p = 0;
+int count = 0;
+
+for (;;)
+  {
+  if (sbp == 0)
+    {
+    sbp = read(fd, sbuffer, sizeof(sbuffer));
+    if (sbp == 0) { if (count == 0) return NULL; else break; }
+    }
+
+  while (p < sbp)
+    {
+    if (count >= n - 1) break;
+    s[count++] = sbuffer[p];
+    if (sbuffer[p++] == '\n') break;
+    }
+
+  memmove(sbuffer, sbuffer + p, sbp - p);
+  sbp -= p;
+
+  if (s[count-1] == '\n' || count >= n - 1) break;
+  }
+
+s[count] = 0;
+return s;
+}
+
+
+
+
+/*************************************************
+*              Server entry point                *
+*************************************************/
 
 int auth_dovecot_server(auth_instance *ablock, uschar *data)
 {
        auth_dovecot_options_block *ob =
                (auth_dovecot_options_block *)(ablock->options_block);
        struct sockaddr_un sa;
-       char buffer[4096];
-       char *args[8];
+       uschar buffer[4096];
+       uschar *args[8];
        uschar *auth_command;
        uschar *auth_extra_data = US"";
        int nargs, tmp;
        int cuid = 0, cont = 1, found = 0, fd, ret = DEFER;
-       FILE *f;
 
        HDEBUG(D_auth) debug_printf("dovecot authentication\n");
 
@@ -141,24 +197,21 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
        if (connect(fd, (struct sockaddr *) &sa, sizeof(sa)) < 0)
                goto out;
 
-       f = fdopen(fd, "a+");
-       if (f == NULL)
-               goto out;
-
        auth_defer_msg = US"authentication socket protocol error";
 
+       sbp = 0;  /* Socket buffer pointer */
        while (cont) {
-               if (fgets(buffer, sizeof(buffer), f) == NULL)
+               if (dc_gets(buffer, sizeof(buffer), fd) == NULL)
                        OUT("authentication socket read error or premature eof");
 
-               buffer[strlen(buffer) - 1] = 0;
+               buffer[Ustrlen(buffer) - 1] = 0;
                HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
                nargs = strcut(buffer, args, sizeof(args) / sizeof(args[0]));
 
                switch (toupper(*args[0])) {
                case 'C':
                        CHECK_COMMAND("CUID", 1, 1);
-                       cuid = atoi(args[1]);
+                       cuid = Uatoi(args[1]);
                        break;
 
                case 'D':
@@ -178,7 +231,7 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
 
                case 'V':
                        CHECK_COMMAND("VERSION", 2, 2);
-                       if (atoi(args[1]) != VERSION_MAJOR)
+                       if (Uatoi(args[1]) != VERSION_MAJOR)
                                OUT("authentication socket protocol version mismatch");
                        break;
 
@@ -232,20 +285,24 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                ablock->public_name, auth_extra_data, sender_host_address,
                interface_address, data ? (char *) data : "");
 
-       fprintf(f, "%s", auth_command);
+       if (write(fd, auth_command, Ustrlen(auth_command)) < 0)
+              HDEBUG(D_auth) debug_printf("error sending auth_command: %s\n",
+                strerror(errno));
+
        HDEBUG(D_auth) debug_printf("sent: %s", auth_command);
 
        while (1) {
-               if (fgets(buffer, sizeof(buffer), f) == NULL) {
+               uschar *temp;
+               if (dc_gets(buffer, sizeof(buffer), fd) == NULL) {
                        auth_defer_msg = US"authentication socket read error or premature eof";
                        goto out;
                }
 
-               buffer[strlen(buffer) - 1] = 0;
+               buffer[Ustrlen(buffer) - 1] = 0;
                HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
                nargs = strcut(buffer, args, sizeof(args) / sizeof(args[0]));
 
-               if (atoi(args[1]) != cuid)
+               if (Uatoi(args[1]) != cuid)
                        OUT("authentication socket connection id mismatch");
 
                switch (toupper(*args[0])) {
@@ -266,9 +323,9 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                                goto out;
                        }
 
-                       if (fprintf(f, "CONT\t%d\t%s\r\n", cuid, data) < 0)
+                       temp = string_sprintf("CONT\t%d\t%s\r\n", cuid, data);
+                       if (write(fd, temp, Ustrlen(temp)) < 0)
                                OUT("authentication socket write error");
-
                        break;
 
                case 'F':
@@ -276,7 +333,7 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
 
                        /* FIXME: add proper response handling */
                        if (args[2]) {
-                               uschar *p = US strchr(args[2], '=');
+                               uschar *p = Ustrchr(args[2], '=');
                                if (p) {
                                        ++p;
                                        expand_nstring[1] = auth_vars[0] =
@@ -293,7 +350,7 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                        CHECK_COMMAND("OK", 2, 2);
                        {
                                /* FIXME: add proper response handling */
-                               uschar *p = US strchr(args[2], '=');
+                               uschar *p = Ustrchr(args[2], '=');
                                if (!p)
                                        OUT("authentication socket protocol error, username missing");
 
@@ -311,7 +368,7 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                }
        }
 
-out:   close(fd);
+out:
 
        /* Expand server_condition as an authorization check */
        return (ret == OK)? auth_check_serv_cond(ablock) : ret;

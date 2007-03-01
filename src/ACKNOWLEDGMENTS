@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.73 2007/02/07 12:23:35 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.74 2007/03/01 14:06:56 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  07 February 2007
+Last updated:  01 March 2007
 
 
 THE OLD LIST
@@ -261,6 +261,7 @@ Rein Tollevik             Patch to fix search cache missing tidyup
 Stefan Traby              Threaded Perl support
 Samuli Tuomola            OS files for QNX 6.2.0
 Dave Turner               Suggested patch for sender rewriting brokenness
+Steve Usher               Unbuffered I/O patch for Dovecot authentication
 Carlos Villegas           Suggested patch for "headers" in filter files
 Matthias Waffenschmidt    Patch for build-time Perl bug in configure script
                           Queue run abandon log message tidy up

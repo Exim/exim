@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.486 2007/03/01 11:17:00 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.487 2007/03/01 14:06:56 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -136,6 +136,10 @@ PH/30 MH's patch to allow iscntrl() characters to be list separators.
 PH/31 Unlike :fail:, a custom message specified with :defer: was not being
       returned in the SMTP response when smtp_return_error_details was false.
       This has been fixed.
+
+PH/32 Change the Dovecot authenticator to use read() and write() on the socket
+      instead of the C I/O that was originally supplied, because problems were
+      reported on Solaris.
 
 
 Exim version 4.66
