@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/oracle.c,v 1.4 2007/01/08 10:50:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/oracle.c,v 1.5 2007/03/13 09:59:07 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -42,9 +42,14 @@ static void dummy(int x) { dummy(x-1); }
 #define MAX_SELECT_LIST_SIZE    32     /* maximum number of columns (not rows!) */
 
 /* Paul's comment on this was "change this to 512 for 64bit cpu", but I don't
-understand why. The Oracle manual just asks for 256 bytes. */
+understand why. The Oracle manual just asks for 256 bytes.
 
-#define HDA_SIZE 256
+That was years ago. Jin Choi suggested (March 2007) that this change should
+be made in the source, as at worst it wastes 256 bytes, and it saves people
+having to discover about this for themselves as more and more systems are
+64-bit. So I have changed 256 to 512. */
+
+#define HDA_SIZE 512
 
 /* Internal/external datatype codes */
 

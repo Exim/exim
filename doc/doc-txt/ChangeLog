@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.488 2007/03/13 09:50:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.489 2007/03/13 09:59:07 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -148,6 +148,9 @@ PH/33 Compile failed with OpenSSL 0.9.8e. This was due to a coding error in
       was a macro that became an assignment, so it seemed to work. This has
       changed to a proper function call with a void return, hence the compile
       error. Exim's code has been fixed.
+
+PH/34 Change HDA_SIZE in oracle.c from 256 to 512. This is needed for 64-bit
+      cpus.
 
 
 Exim version 4.66
