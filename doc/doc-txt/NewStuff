@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.143 2007/02/26 14:07:04 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.144 2007/03/13 11:06:48 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -390,6 +390,9 @@ Version 4.67
     doubling, it is not possible to include a control character as data when it
     is set as the separator. Two such characters in succession are interpreted
     as enclosing an empty list item.
+
+19. The exigrep utility now has a -v option, which inverts the matching
+    condition.
 
 
 Version 4.66

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.490 2007/03/13 10:05:16 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.491 2007/03/13 11:06:48 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -153,6 +153,8 @@ PH/34 Change HDA_SIZE in oracle.c from 256 to 512. This is needed for 64-bit
       cpus.
 
 PH/35 Applied a patch from the Sieve maintainer which fixes a bug in "notify".
+
+PH/36 Applied John Jetmore's patch to add -v functionality to exigrep.
 
 
 Exim version 4.66

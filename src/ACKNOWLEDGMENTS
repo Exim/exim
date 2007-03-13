@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.75 2007/03/13 09:50:22 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.76 2007/03/13 11:06:48 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -180,6 +180,7 @@ John Jetmore              Writing and maintaining the 'exipick' utility
                           Much helpful testing of the test suite & elsewhere
                           Patch for -Mset
                           Patch for TLS testing with -bh/-bhc/-bs
+                          Patch for exigrep -v functionality
 Bob Johannessen           Patch for Sieve envelope tests bug
                           Patch for negative uid/gid bug
 Brad Jorsch               Patch for bitwise logical operators

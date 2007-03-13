@@ -1,5 +1,5 @@
 #! PERL_COMMAND -w
-# $Cambridge: exim/src/src/exigrep.src,v 1.6 2007/02/14 16:44:22 ph10 Exp $
+# $Cambridge: exim/src/src/exigrep.src,v 1.7 2007/03/13 11:06:48 ph10 Exp $
 
 use strict;
 
@@ -59,7 +59,7 @@ return $seconds;
 # This subroutine processes a single line (in $_) from a log file. Program
 # defensively against short lines finding their way into the log.
 
-my (%saved, %id_list, $pattern, $queue_time, $insensitive);
+my (%saved, %id_list, $pattern, $queue_time, $insensitive, $invert);
 
 sub do_line {
 
@@ -84,8 +84,16 @@ if (defined $id)
 
   # Are we interested in this id ? Short circuit if we already were interested.
 
-  $id_list{$id} = 1 if defined $id_list{$id} ||
-    ($insensitive && /$pattern/io) || /$pattern/o;
+  if ($invert)
+    {
+    $id_list{$id} = 1 if (!defined($id_list{$id}));
+    $id_list{$id} = 0 if (($insensitive && /$pattern/io) || /$pattern/o);
+    }
+  else
+    {
+    $id_list{$id} = 1 if defined $id_list{$id} ||
+      ($insensitive && /$pattern/io) || /$pattern/o;
+    }
 
   # See if this is a completion for some message. If it is interesting,
   # print it, but in any event, throw away what was saved.
@@ -108,6 +116,7 @@ if (defined $id)
       print "$saved{$id}\n";
       }
 
+    delete $id_list{$id};
     delete $saved{$id};
     }
   }
@@ -115,7 +124,8 @@ if (defined $id)
 # Handle the case where the log line does not belong to a specific message.
 # Print it if it is interesting.
 
-elsif (($insensitive && $_ =~ /$pattern/io) || $_ =~ /$pattern/o)
+elsif ( ($invert && (($insensitive && !/$pattern/io) || !/$pattern/o)) ||
+       (!$invert && (($insensitive &&  /$pattern/io) ||  /$pattern/o)) )
   { print "$_\n"; }
 }
 
@@ -124,11 +134,12 @@ elsif (($insensitive && $_ =~ /$pattern/io) || $_ =~ /$pattern/o)
 # are quoted if the -l flag is given. The -t flag gives a time-on-queue value
 # which is an additional condition.
 
-getopts('Ilt:',\my %args);
-$queue_time = $args{'t'}? $args{'t'} : -1;
+getopts('Ilvt:',\my %args);
+$queue_time  = $args{'t'}? $args{'t'} : -1;
 $insensitive = $args{'I'}? 0 : 1;
+$invert      = $args{'v'}? 1 : 0;
 
-die "usage: exigrep [-I] [-l] [-t <seconds>] <pattern> [<log file>]...\n"
+die "usage: exigrep [-I] [-l] [-t <seconds>] [-v] <pattern> [<log file>]...\n"
   if ($#ARGV < 0);
 
 $pattern = shift @ARGV;
