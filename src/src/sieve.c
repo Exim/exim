@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.24 2007/02/07 14:41:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.25 2007/03/13 10:05:17 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2717,7 +2717,7 @@ while (*filter->pc)
         debug_printf("Notification to `%s'.\n",method.character);
         }
 #ifndef COMPILE_SYNTAX_CHECKER
-      if (exec)
+      if (exec && filter_test == FTEST_NONE)
         {
         string_item *p;
         header_line *h;
@@ -2726,6 +2726,8 @@ while (*filter->pc)
         if ((pid = child_open_exim2(&fd,envelope_to,envelope_to))>=1)
           {
           FILE *f;
+          uschar *buffer;
+          int buffer_capacity;
 
           f = fdopen(fd, "wb");
           for (h = header_list; h != NULL; h = h->next)
@@ -2733,8 +2735,15 @@ while (*filter->pc)
           fprintf(f,"From: %s\n",from.length==-1 ? envelope_to : from.character);
           for (p=recipient; p; p=p->next) fprintf(f,"To: %s\n",p->text);
           if (header.length>0) fprintf(f,"%s",header.character);
-          fprintf(f,"Subject: %s\n",message.length==-1 ? CUS "notification" : message.character);
-          fprintf(f,"\n");
+          if (message.length==-1)
+            {
+            message.character=US"Notification";
+            message.length=Ustrlen(message.character);
+            }
+          /* Allocation is larger than neccessary, but enough even for split MIME words */
+          buffer_capacity=32+4*message.length;
+          buffer=store_get(buffer_capacity);
+          fprintf(f,"Subject: %s\n\n",parse_quote_2047(message.character, message.length, US"utf-8", buffer, buffer_capacity, TRUE));
           if (body.length>0) fprintf(f,"%s\n",body.character);
           fflush(f);
           (void)fclose(f);
