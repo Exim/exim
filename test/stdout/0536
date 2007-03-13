@@ -22,10 +22,10 @@
 590 Main code
 590 5.4.3 Main and extended code
 550 Wrong code
-451 Temporary local problem - please try later
-490 Temporary local problem - please try later
-490 4.4.3 Temporary local problem - please try later
-451 Temporary local problem - please try later
+451 No code
+490 Main code
+490 4.4.3 Main and extended code
+451 Wrong code
 221 myhost.test.ex closing connection
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello CALLER at test.ex

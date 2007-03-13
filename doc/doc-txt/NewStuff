@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.144 2007/03/13 11:06:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.145 2007/03/13 15:32:47 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -393,6 +393,13 @@ Version 4.67
 
 19. The exigrep utility now has a -v option, which inverts the matching
     condition.
+
+20. The host_find_failed option in the manualroute router can now be set to
+    "ignore". This causes it to completely ignore a host whose IP address
+    cannot be found. If all the hosts in the list are ignored, the behaviour is
+    controlled by the new host_all_ignored option, which takes the same values
+    as host_find_failed, except that it cannot be set to "ignore". Its default
+    is "defer".
 
 
 Version 4.66

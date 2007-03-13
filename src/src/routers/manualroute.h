@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/manualroute.h,v 1.5 2007/01/08 10:50:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/manualroute.h,v 1.6 2007/03/13 15:32:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -12,8 +12,10 @@
 /* Structure for the private options. */
 
 typedef struct {
+  int   hai_code;
   int   hff_code;
   BOOL  hosts_randomize;
+  uschar *host_all_ignored;
   uschar *host_find_failed;
   uschar *route_data;
   uschar *route_list;

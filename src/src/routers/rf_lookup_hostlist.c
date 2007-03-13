@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/rf_lookup_hostlist.c,v 1.8 2007/01/08 10:50:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/rf_lookup_hostlist.c,v 1.9 2007/03/13 15:32:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -157,6 +157,13 @@ for (h = addr->host_list; h != NULL; prev = h, h = next_h)
 
   if (rc == HOST_FIND_FAILED)
     {
+    if (hff_code == hff_ignore)
+      {
+      if (prev == NULL) addr->host_list = next_h; else prev->next = next_h;
+      h = prev;   /* Because the loop sets prev to h */
+      continue;   /* With the next host */
+      }
+
     if (hff_code == hff_pass) return PASS;
     if (hff_code == hff_decline) return DECLINE;
 

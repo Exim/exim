@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.32 2007/02/06 11:11:40 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.33 2007/03/13 15:32:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -754,13 +754,14 @@ enum {
 #define topt_no_body            0x040  /* Omit body */
 #define topt_escape_headers     0x080  /* Apply escape check to headers */
 
-/* Codes for the host_find_failed option. */
+/* Codes for the host_find_failed and host_all_ignored options. */
 
 #define hff_freeze   0
 #define hff_defer    1
 #define hff_pass     2
 #define hff_decline  3
 #define hff_fail     4
+#define hff_ignore   5
 
 /* Router information flags */
 

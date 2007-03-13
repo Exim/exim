@@ -1,0 +1,49 @@
+# Exim test configuration 0557
+
+X=
+Y=
+HOSTS=
+HAI=
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+
+# ----- Routers -----
+
+begin routers
+
+r1:
+  driver = manualroute
+  route_list = * HOSTS
+X host_find_failed = ignore
+Y host_all_ignored = HAI
+  no_more
+  self = send
+  transport = t1
+
+r2:
+  driver = accept
+  transport = t2
+
+
+# ----- Transports -----
+
+begin transports
+
+t1:
+  driver = smtp
+
+t2:
+  driver = appendfile
+  file = /dev/null
+
+# End

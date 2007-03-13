@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/manualroute.c,v 1.5 2007/01/08 10:50:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/manualroute.c,v 1.6 2007/03/13 15:32:48 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -16,6 +16,8 @@
 /* Options specific to the manualroute router. */
 
 optionlist manualroute_router_options[] = {
+  { "host_all_ignored", opt_stringptr,
+      (void *)(offsetof(manualroute_router_options_block, host_all_ignored)) },
   { "host_find_failed", opt_stringptr,
       (void *)(offsetof(manualroute_router_options_block, host_find_failed)) },
   { "hosts_randomize",  opt_bool,
@@ -37,14 +39,30 @@ int manualroute_router_options_count =
 /* Default private options block for the manualroute router. */
 
 manualroute_router_options_block manualroute_router_option_defaults = {
-  hff_freeze,   /* host_find_failed code */
+  -1,           /* host_all_ignored code (unset) */
+  -1,           /* host_find_failed code (unset) */
   FALSE,        /* hosts_randomize */
+  US"defer",    /* host_all_ignored */
   US"freeze",   /* host_find_failed */
   NULL,         /* route_data */
   NULL          /* route_list */
 };
 
 
+/* Names and values for host_find_failed and host_all_ignored.  */
+
+static uschar *hff_names[] = {
+  US"ignore",  /* MUST be first - not valid for host_all_ignored */
+  US"decline",
+  US"defer",
+  US"fail",
+  US"freeze",
+  US"pass" };
+
+static int hff_codes[] = { hff_ignore, hff_decline, hff_defer, hff_fail,
+  hff_freeze, hff_pass };
+
+static int hff_count= sizeof(hff_codes)/sizeof(int);
 
 
 
@@ -60,22 +78,33 @@ manualroute_router_init(router_instance *rblock)
 {
 manualroute_router_options_block *ob =
   (manualroute_router_options_block *)(rblock->options_block);
+int i;
 
 /* Host_find_failed must be a recognized word */
 
-if      (Ustrcmp(ob->host_find_failed, "freeze") == 0)
-  ob->hff_code = hff_freeze;
-else if (Ustrcmp(ob->host_find_failed, "decline") == 0)
-  ob->hff_code = hff_decline;
-else if (Ustrcmp(ob->host_find_failed, "defer") == 0)
-  ob->hff_code = hff_defer;
-else if (Ustrcmp(ob->host_find_failed, "pass") == 0)
-  ob->hff_code = hff_pass;
-else if (Ustrcmp(ob->host_find_failed, "fail") == 0)
-  ob->hff_code = hff_fail;
-else
+for (i = 0; i < hff_count; i++)
+  {
+  if (Ustrcmp(ob->host_find_failed, hff_names[i]) == 0)
+    {
+    ob->hff_code = hff_codes[i];
+    break;
+    }
+  }
+if (ob->hff_code < 0)
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
     "unrecognized setting for host_find_failed option", rblock->name);
+
+for (i = 1; i < hff_count; i++)   /* NB starts at 1 to skip "ignore" */
+  {
+  if (Ustrcmp(ob->host_all_ignored, hff_names[i]) == 0)
+    {
+    ob->hai_code = hff_codes[i];
+    break;
+    }
+  }
+if (ob->hai_code < 0)
+  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s router:\n  "
+    "unrecognized setting for host_all_ignored option", rblock->name);
 
 /* One of route_list or route_data must be specified */
 
@@ -400,6 +429,30 @@ host_build_hostlist(&(addr->host_list), hostlist, randomize);
 rc = rf_lookup_hostlist(rblock, addr, rblock->ignore_target_hosts, lookup_type,
   ob->hff_code, addr_new);
 if (rc != OK) return rc;
+
+/* If host_find_failed is set to "ignore", it is possible for all the hosts to
+be ignored, in which case we will end up with an empty host list. What happens
+is controlled by host_all_ignored. */
+
+if (addr->host_list == NULL)
+  {
+  int i;
+  DEBUG(D_route) debug_printf("host_find_failed ignored every host\n");
+  if (ob->hai_code == hff_decline) return DECLINE;
+  if (ob->hai_code == hff_pass) return PASS;
+
+  for (i = 0; i < hff_count; i++)
+    if (ob->hai_code == hff_codes[i]) break;
+
+  addr->message = string_sprintf("lookup failed for all hosts in %s router: "
+    "host_find_failed=ignore host_all_ignored=%s", rblock->name, hff_names[i]);
+
+  if (ob->hai_code == hff_defer) return DEFER;
+  if (ob->hai_code == hff_fail) return FAIL;
+
+  addr->special_action = SPECIAL_FREEZE;
+  return DEFER;
+  }
 
 /* Finally, since we have done all the routing here, there must be a transport
 defined for these hosts. It will be a remote one, as a local transport is
