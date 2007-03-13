@@ -1,5 +1,5 @@
 #! PERL_COMMAND -w
-# $Cambridge: exim/src/src/exigrep.src,v 1.8 2007/03/13 11:26:49 ph10 Exp $
+# $Cambridge: exim/src/src/exigrep.src,v 1.9 2007/03/13 16:37:57 ph10 Exp $
 
 use strict;
 
@@ -99,23 +99,19 @@ if (defined $id)
   # print it, but in any event, throw away what was saved.
 
   if (index($_, 'Completed') != -1 ||
-      (index($_, 'rejected') != -1 &&
-       /rejected (?:by local_scan|by non-SMTP ACL|after DATA)/o))
+      index($_, 'SMTP data timeout') != -1 ||
+        (index($_, 'rejected') != -1 &&
+          /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d (?:[+-]\d{4} )?)(?:\[\d+\] )?\w{6}\-\w{6}\-\w{2} rejected/o))
     {
     if ($queue_time != -1 &&
         $saved{$id} =~ /^(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d ([+-]\d{4} )?)/o)
       {
       my $old_sec = &seconds($1);
       my $sec = &seconds($date);
-      delete $id_list{$id} if $id_list{$id} && $sec - $old_sec <= $queue_time;
+      $id_list{$id} = 0 if $id_list{$id} && $sec - $old_sec <= $queue_time;
       }
 
-    if ($id_list{$id})
-      {
-      delete $id_list{$id};
-      print "$saved{$id}\n";
-      }
-
+    print "$saved{$id}\n" if ($id_list{$id});
     delete $id_list{$id};
     delete $saved{$id};
     }
@@ -172,16 +168,11 @@ if (@ARGV)
 
 else { do_line() while (<STDIN>); }
 
-# At the end of processing all the input, print any uncompleted messages. If
-# there is no <= line, we are dealing with a message that was rejected or
-# abandoned.
+# At the end of processing all the input, print any uncompleted messages.
 
 for (keys %id_list)
   {
-  if ($saved{$_} =~ /\s<=\s/)
-    { print "+++ $_ has not completed +++\n$saved{$_}\n"; }
-  else
-    { print "+++ $_ was not accepted +++\n$saved{$_}\n"; }
+  print "+++ $_ has not completed +++\n$saved{$_}\n";
   }
 
 # End of exigrep

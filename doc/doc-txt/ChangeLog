@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.493 2007/03/13 15:32:47 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.494 2007/03/13 16:37:57 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -158,10 +158,10 @@ PH/36 Applied John Jetmore's patch to add -v functionality to exigrep.
 
 PH/37 If a message is not accepted after it has had an id assigned (e.g.
       because it turns out to be too big or there is a timeout) there is no
-      "Completed" line in the log. When such a message was selected by exigrep,
-      it was listed as "not completed". Such messages can be identified by the
-      lack of a "<=" line in the log, and they are now listed as "not
-      accepted".
+      "Completed" line in the log. When some messages of this type were
+      selected by exigrep, they were listed as "not completed". Others were
+      picked up by some special patterns. I have improved the selection
+      criteria to be more general.
 
 PH/38 The host_find_failed option in the manualroute router can now be set
       to "ignore", to completely ignore a host whose IP address cannot be
