@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.74 2007/03/01 14:06:56 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.75 2007/03/13 09:50:22 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  01 March 2007
+Last updated:  13 March 2007
 
 
 THE OLD LIST
@@ -162,6 +162,7 @@ Steve Haslam              Lots of stuff, including
                             HMAC computations
                             Better error messages for BDB
 Sheldon Hearn             Suggested patch for smtp_accept_max_nonmail_hosts
+                          Fix for compile error with OpenSSL 0.9.8e
 Bryan Henderson           Patch to use RM_COMMAND everywhere during building
 Jakob Hirsch              Patch for % operator
                           Patch for arbitrarily named ACL variables

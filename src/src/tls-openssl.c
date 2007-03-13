@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.10 2007/01/18 15:35:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.11 2007/03/13 09:50:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -343,8 +343,7 @@ if (!RAND_status())
 /* Set up the information callback, which outputs if debugging is at a suitable
 level. */
 
-if (!(SSL_CTX_set_info_callback(ctx, (void (*)())info_callback)))
-  return tls_error(US"SSL_CTX_set_info_callback", host);
+SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
 
 /* The following patch was supplied by Robert Roselius */
 
