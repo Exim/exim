@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.491 2007/03/13 11:06:48 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.492 2007/03/13 11:26:49 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -155,6 +155,13 @@ PH/34 Change HDA_SIZE in oracle.c from 256 to 512. This is needed for 64-bit
 PH/35 Applied a patch from the Sieve maintainer which fixes a bug in "notify".
 
 PH/36 Applied John Jetmore's patch to add -v functionality to exigrep.
+
+PH/37 If a message is not accepted after it has had an id assigned (e.g.
+      because it turns out to be too big or there is a timeout) there is no
+      "Completed" line in the log. When such a message was selected by exigrep,
+      it was listed as "not completed". Such messages can be identified by the
+      lack of a "<=" line in the log, and they are now listed as "not
+      accepted".
 
 
 Exim version 4.66

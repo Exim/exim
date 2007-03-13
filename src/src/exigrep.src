@@ -1,5 +1,5 @@
 #! PERL_COMMAND -w
-# $Cambridge: exim/src/src/exigrep.src,v 1.7 2007/03/13 11:06:48 ph10 Exp $
+# $Cambridge: exim/src/src/exigrep.src,v 1.8 2007/03/13 11:26:49 ph10 Exp $
 
 use strict;
 
@@ -172,8 +172,16 @@ if (@ARGV)
 
 else { do_line() while (<STDIN>); }
 
-# At the end of processing all the input, print any uncompleted data
+# At the end of processing all the input, print any uncompleted messages. If
+# there is no <= line, we are dealing with a message that was rejected or
+# abandoned.
 
-for (keys %id_list) { print "+++ $_ not completed +++\n$saved{$_}\n"; }
+for (keys %id_list)
+  {
+  if ($saved{$_} =~ /\s<=\s/)
+    { print "+++ $_ has not completed +++\n$saved{$_}\n"; }
+  else
+    { print "+++ $_ was not accepted +++\n$saved{$_}\n"; }
+  }
 
 # End of exigrep
