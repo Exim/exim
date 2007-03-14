@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.24 2007/02/08 15:16:19 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.25 2007/03/14 12:15:56 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -463,9 +463,10 @@ while(<IN>)
 
 
   # ======== Exim's login ========
-  # For bounce messages, this will appear on the U= lines in logs and also
-  # after Received: and in addresses. In one pipe test it appears after
-  # "Running as:". It also appears in addresses, and in the names of lock
+  # For messages received by the daemon, this is in the -H file, which some
+  # tests inspect. For bounce messages, this will appear on the U= lines in
+  # logs and also after Received: and in addresses. In one pipe test it appears
+  # after "Running as:". It also appears in addresses, and in the names of lock
   # files.
 
   s/U=$parm_eximuser/U=EXIMUSER/;
@@ -481,6 +482,8 @@ while(<IN>)
 
   s/\buid=$parm_exim_uid\b/uid=EXIM_UID/g;
   s/\bgid=$parm_exim_gid\b/gid=EXIM_GID/g;
+
+  s/^$parm_eximuser $parm_exim_uid $parm_exim_gid/EXIMUSER EXIM_UID EXIM_GID/;
 
 
   # ======== General uids, gids, and pids ========

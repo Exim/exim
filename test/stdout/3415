@@ -144,7 +144,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 221 myhost.test.ex closing connection
 End of script
 10HmaX-0005vi-00-H
-CALLER UID GID
+EXIMUSER EXIM_UID EXIM_GID
 <username@myhost.test.ex>
 ddddddddd 0
 -helo_name rhu.barb
@@ -169,7 +169,7 @@ dddF From: a@y
 dddS Sender: username@myhost.test.ex
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
 10HmaY-0005vi-00-H
-CALLER UID GID
+EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
 -helo_name rhu.barb
@@ -192,7 +192,7 @@ dddP Received: from [127.0.0.1] (helo=rhu.barb)
 dddF From: username@myhost.test.ex
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
 10HmaZ-0005vi-00-H
-CALLER UID GID
+EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
 -helo_name rhu.barb
@@ -215,7 +215,7 @@ dddP Received: from [127.0.0.1] (helo=rhu.barb)
 dddF From: username@another.domain
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
 10HmbA-0005vi-00-H
-CALLER UID GID
+EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
 -helo_name rhu.barb
@@ -238,7 +238,7 @@ dddP Received: from [127.0.0.1] (helo=rhu.barb)
 dddF From: username@auth.id.domain
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
 10HmbB-0005vi-00-H
-CALLER UID GID
+EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
 -helo_name rhu.barb

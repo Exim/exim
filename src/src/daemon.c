@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.22 2007/01/23 14:34:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.23 2007/03/14 12:15:56 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -881,6 +881,7 @@ There are no arguments to this function, and it never returns. */
 void
 daemon_go(void)
 {
+struct passwd *pw;
 int *listen_sockets = NULL;
 int listen_socket_count = 0;
 ip_address_item *addresses = NULL;
@@ -1452,6 +1453,14 @@ if we are not root at this time - some odd installations run that way - we
 cannot do this. */
 
 exim_setugid(exim_uid, exim_gid, geteuid()==root_uid, US"running as a daemon");
+
+/* Update the originator_xxx fields so that received messages as listed as
+coming from Exim, not whoever started the daemon. */
+
+originator_uid = exim_uid;
+originator_gid = exim_gid;
+originator_login = ((pw = getpwuid(exim_uid)) != NULL)?
+  string_copy_malloc(US pw->pw_name) : US"exim";
 
 /* Get somewhere to keep the list of queue-runner pids if we are keeping track
 of them (and also if we are doing queue runs). */

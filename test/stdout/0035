@@ -135,7 +135,7 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 221 myhost.test.ex closing connection
 End of script
 10HmaX-0005vi-00-H
-CALLER UID GID
+EXIMUSER EXIM_UID EXIM_GID
 <notsubmit@y>
 ddddddddd 0
 -helo_name rhu.barb
@@ -154,7 +154,7 @@ dddP Received: from [127.0.0.1] (helo=rhu.barb)
 	id 10HmaX-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
 10HmaY-0005vi-00-H
-CALLER UID GID
+EXIMUSER EXIM_UID EXIM_GID
 <a@y>
 ddddddddd 0
 -helo_name rhu.barb
@@ -176,7 +176,7 @@ dddP Received: from [127.0.0.1] (helo=rhu.barb)
 dddF From: a@y
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
 10HmaZ-0005vi-00-H
-CALLER UID GID
+EXIMUSER EXIM_UID EXIM_GID
 <>
 ddddddddd 0
 -helo_name rhu.barb
@@ -196,7 +196,7 @@ dddP Received: from [127.0.0.1] (helo=rhu.barb)
 047I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
 10HmbA-0005vi-00-H
-CALLER UID GID
+EXIMUSER EXIM_UID EXIM_GID
 <notsubmit@y>
 ddddddddd 0
 -helo_name rhu.barb
@@ -216,7 +216,7 @@ dddP Received: from [127.0.0.1] (helo=rhu.barb)
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
 dddS Sender: sender@some.where
 10HmbB-0005vi-00-H
-CALLER UID GID
+EXIMUSER EXIM_UID EXIM_GID
 <a@y>
 ddddddddd 0
 -helo_name rhu.barb
@@ -239,7 +239,7 @@ ddd* Sender: sender@some.where
 dddF From: a@y
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
 10HmbC-0005vi-00-H
-CALLER UID GID
+EXIMUSER EXIM_UID EXIM_GID
 <a@y>
 ddddddddd 0
 -helo_name rhu.barb
@@ -262,7 +262,7 @@ dddS Sender: sender@some.where
 dddF From: a@y
 038  Date: Tue, 2 Mar 1999 09:44:33 +0000
 10HmbD-0005vi-00-H
-CALLER UID GID
+EXIMUSER EXIM_UID EXIM_GID
 <a@y>
 ddddddddd 0
 -helo_name rhu.barb
