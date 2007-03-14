@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.494 2007/03/13 16:37:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.495 2007/03/14 11:22:23 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -167,6 +167,13 @@ PH/38 The host_find_failed option in the manualroute router can now be set
       to "ignore", to completely ignore a host whose IP address cannot be
       found. If all hosts are ignored, the behaviour is controlled by the new
       host_all_ignored option.
+
+PH/39 In a list of hosts for manualroute, if one item (either because of multi-
+      homing or because of multiple MX records with /mx) generated more than
+      one IP address, and the following item turned out to be the local host,
+      all the secondary addresses of the first item were incorrectly removed
+      from the list, along with the local host and any following hosts (which
+      is what is supposed to happen).
 
 
 Exim version 4.66

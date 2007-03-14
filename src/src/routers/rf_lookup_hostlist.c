@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/rf_lookup_hostlist.c,v 1.9 2007/03/13 15:32:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/rf_lookup_hostlist.c,v 1.10 2007/03/14 11:22:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -64,13 +64,13 @@ list of MX hosts. If the first host is the local host, act according to the
 "self" option in the configuration. */
 
 prev = NULL;
-for (h = addr->host_list; h != NULL; prev = h, h = next_h)
+for (h = addr->host_list; h != NULL; h = next_h)
   {
   uschar *canonical_name;
   int rc, len, port;
 
   next_h = h->next;
-  if (h->address != NULL) continue;
+  if (h->address != NULL) { prev = h; continue; }
 
   DEBUG(D_route|D_host_lookup)
     debug_printf("finding IP address for %s\n", h->name);
@@ -160,8 +160,7 @@ for (h = addr->host_list; h != NULL; prev = h, h = next_h)
     if (hff_code == hff_ignore)
       {
       if (prev == NULL) addr->host_list = next_h; else prev->next = next_h;
-      h = prev;   /* Because the loop sets prev to h */
-      continue;   /* With the next host */
+      continue;   /* With the next host, leave prev unchanged */
       }
 
     if (hff_code == hff_pass) return PASS;
@@ -213,6 +212,12 @@ for (h = addr->host_list; h != NULL; prev = h, h = next_h)
       }
     self_send = TRUE;
     }
+
+  /* Ensure that prev is the host before next_h; this will not be h if a lookup
+  found multiple addresses or multiple MX records. */
+
+  prev = h;
+  while (prev->next != next_h) prev = prev->next;
   }
 
 return OK;

@@ -55,3 +55,7 @@ x@random.manual.route
   router = r2, transport = t1
   host ten-6.test.ex [V4NET.0.0.6] 
   host ten-1.test.ex [V4NET.0.0.1] MX=6
+x@manual.route
+  router = r1, transport = t1
+  host ten-1.test.ex [V4NET.0.0.1] MX=10
+  host ten-2.test.ex [V4NET.0.0.2] MX=20

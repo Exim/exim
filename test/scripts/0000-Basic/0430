@@ -28,3 +28,5 @@ exim -DLIST=mxt11.test.ex/MX:ten-6.test.ex -bt x@random.manual.route
 ****
 exim -DLIST=mxt11a.test.ex/MX:ten-6.test.ex -bt x@random.manual.route
 ****
+exim -DLIST=mxt15.test.ex/MX:localhost.test.ex -bt x@manual.route
+****

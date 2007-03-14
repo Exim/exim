@@ -1,4 +1,4 @@
-; $Cambridge: exim/test/dnszones-src/db.test.ex,v 1.5 2006/10/03 15:11:22 ph10 Exp $
+; $Cambridge: exim/test/dnszones-src/db.test.ex,v 1.6 2007/03/14 11:22:23 ph10 Exp $
 
 ; This is a testing zone file for use when testing DNS handling in Exim. This
 ; is a fake zone of no real use - hence no SOA record. The zone name is
@@ -311,6 +311,11 @@ mxt13        MX  4  other1.test.ex.
 mxt14        MX  4  ten-5-6.test.ex.
              MX  5  ten-5.test.ex.
              MX  6  ten-6.test.ex.
+
+; Non-local hosts with different precedence
+
+mxt15        MX 10  ten-1.test.ex.
+             MX 20  ten-2.test.ex.
 
 ; Large number of IP addresses at one MX value, and then some
 ; at another, to check that hosts_max_try tries the MX different
