@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.25 2007/03/13 10:05:17 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.26 2007/03/21 15:15:12 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -27,6 +27,9 @@
 /* Define this for RFC compliant \r\n end-of-line terminators.      */
 /* Undefine it for UNIX-style \n end-of-line terminators (default). */
 #undef RFC_EOL
+
+/* Define this for development of the Sieve extension "encoded-character". */
+#undef ENCODED_CHARACTER
 
 /* Define this for development of the Sieve extension "envelope-auth". */
 #undef ENVELOPE_AUTH
@@ -58,6 +61,9 @@ struct Sieve
   int keep;
   int require_envelope;
   int require_fileinto;
+#ifdef ENCODED_CHARACTER
+  int require_encoded_character;
+#endif
 #ifdef ENVELOPE_AUTH
   int require_envelope_auth;
 #endif
@@ -126,6 +132,10 @@ static uschar str_fileinto_c[]="fileinto";
 static const struct String str_fileinto={ str_fileinto_c, 8 };
 static uschar str_envelope_c[]="envelope";
 static const struct String str_envelope={ str_envelope_c, 8 };
+#ifdef ENCODED_CHARACTER
+static uschar str_encoded_character_c[]="encoded-character";
+static const struct String str_encoded_character={ str_encoded_character_c, 17 };
+#endif
 #ifdef ENVELOPE_AUTH
 static uschar str_envelope_auth_c[]="envelope-auth";
 static const struct String str_envelope_auth={ str_envelope_auth_c, 13 };
@@ -3058,6 +3068,9 @@ filter->line=1;
 filter->keep=1;
 filter->require_envelope=0;
 filter->require_fileinto=0;
+#ifdef ENCODED_CHARACTER
+filter->require_encoded_character=0;
+#endif
 #ifdef ENVELOPE_AUTH
 filter->require_envelope_auth=0;
 #endif
@@ -3130,6 +3143,9 @@ while (parse_identifier(filter,CUS "require"))
     {
     if (eq_octet(check,&str_envelope,0)) filter->require_envelope=1;
     else if (eq_octet(check,&str_fileinto,0)) filter->require_fileinto=1;
+#ifdef ENCODED_CHARACTER
+    else if (eq_octet(check,&str_encoded_character,0)) filter->require_encoded_character=1;
+#endif
 #ifdef ENVELOPE_AUTH
     else if (eq_octet(check,&str_envelope_auth,0)) filter->require_envelope_auth=1;
 #endif

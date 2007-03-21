@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.497 2007/03/21 15:10:39 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.498 2007/03/21 15:15:12 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -189,6 +189,8 @@ PH/41 (Following a suggestion from Tony Finch) If all the RCPT commands in a
       RCPT commands is included in the rejection of the DATA command. This is
       intended to be helpful for MUAs that show only the final error to their
       users.
+
+PH/42 Another patch from the Sieve maintainer.
 
 
 Exim version 4.66

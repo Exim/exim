@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.10 2006/04/25 10:44:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.11 2007/03/21 15:15:12 ph10 Exp $
 
               Notes on the Sieve implementation for Exim
 
@@ -21,11 +21,12 @@ then there is no way around it.
 Exim Implementation
 
 The Exim Sieve implementation offers the core as defined by
-draft-ietf-sieve-3028bis-05.txt (next version of RFC 3028 that fixes
-specification mistakes), the "envelope" test (3028bis), the "fileinto"
-action (3028bis), the "copy" action (RFC 3894), the "vacation" action
-(draft-ietf-sieve-vacation-05.txt) and the "i;ascii-numeric" comparator
-extension (RFC 2244).
+draft-ietf-sieve-3028bis-10.txt (next version of RFC 3028 that
+fixes specification mistakes), the "envelope" test (3028bis), the
+"fileinto" action (3028bis), the "copy" parameter (RFC 3894), the
+"vacation" action (draft-ietf-sieve-vacation-06), the "notify" action
+(draft-ietf-sieve-notify-06.), the "i;ascii-numeric" comparator (RFC 2244)
+and the subaddress parameter (draft-ietf-sieve-rfc3598bis-05).
 
 The Sieve filter is integrated in Exim and works very similar to the
 Exim filter: Sieve scripts are recognized by the first line containing
@@ -361,3 +362,24 @@ Global Reply Address Blacklist
 The draft requires that each implementation offers a global black list
 of addresses that will never be replied to.  Exim offers this as option
 "never_mail" in the autoreply transport.
+
+
+The enotify extension
+
+The extension "enotify" is specified using the following grammar
+extension.
+
+  notify-command =  "notify" { notify-options } <method: string>
+  notify-options =  [":from" string]
+                    [":importance" <"1" / "2" / "3">]
+                    [":options" 1*(string-list / number)]
+                    [":message" string]
+
+  command          =/ notify-command
+
+  valid_notify_method = "valid_notify_method"
+                        <notification-uris: string-list>
+
+  test             =/ valid_notify_method
+
+Only the mailto URI scheme is implemented.
