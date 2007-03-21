@@ -18,7 +18,11 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 550 Administrative prohibition
 >>> DATA
 ??? 503
-<<< 503 valid RCPT command must precede DATA
+<<< 503-All RCPT commands were rejected with this error:
+??? 503
+<<< 503-Administrative prohibition
+??? 503
+<<< 503 Valid RCPT command must precede DATA
 >>> QUIT
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -36,6 +40,10 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 550
 <<< 550 Administrative prohibition
 >>> DATA
+??? 503
+<<< 503-All RCPT commands were rejected with this error:
+??? 503
+<<< 503-Administrative prohibition
 ??? 503
 <<< 503 valid RCPT command must precede DATA
 >>> QUIT
@@ -62,7 +70,11 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 503 sender not yet given
 >>> DATA
 ??? 503
-<<< 503 valid RCPT command must precede DATA
+<<< 503-All RCPT commands were rejected with this error:
+??? 503
+<<< 503-503 sender not yet given
+??? 503
+<<< 503 Valid RCPT command must precede DATA
 >>> QUIT
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -80,6 +92,10 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 503
 <<< 503 sender not yet given
 >>> DATA
+??? 503
+<<< 503-All RCPT commands were rejected with this error:
+??? 503
+<<< 503-503 sender not yet given
 ??? 503
 <<< 503 valid RCPT command must precede DATA
 >>> QUIT
@@ -112,7 +128,11 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 550 Administrative prohibition
 >>> DATA
 ??? 503
-<<< 503 valid RCPT command must precede DATA
+<<< 503-All RCPT commands were rejected with this error:
+??? 503
+<<< 503-Administrative prohibition
+??? 503
+<<< 503 Valid RCPT command must precede DATA
 >>> QUIT
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -137,6 +157,10 @@ Connecting to 127.0.0.1 port 1225 ... connected
 <<< 550 Administrative prohibition
 >>> DATA
 ??? 503
+<<< 503-All RCPT commands were rejected with this error:
+??? 503
+<<< 503-Administrative prohibition
+??? 503
 <<< 503 valid RCPT command must precede DATA
 >>> QUIT
 ??? 221
@@ -158,6 +182,10 @@ Connecting to 127.0.0.1 port 1225 ... connected
 ??? 503
 <<< 503 sender not yet given
 >>> DATA
+??? 503
+<<< 503-All RCPT commands were rejected with this error:
+??? 503
+<<< 503-503 sender not yet given
 ??? 503
 <<< 503 valid RCPT command must precede DATA
 >>> QUIT

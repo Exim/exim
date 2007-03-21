@@ -24,6 +24,11 @@
 550-This is a very long blacklisting message, continuing for ages and ages and
 550-certainly being longer than 128 characters which was a previous limit on
 550 the length that Exim was prepared to handle.
+503-All RCPT commands were rejected with this error:
+503-host is listed in rbl3.test.ex with value 127.0.0.3
+503-This is a very long blacklisting message, continuing for ages and ages and
+503-certainly being longer than 128 characters which was a previous limit on
+503-the length that Exim was prepared to handle.
 503 valid RCPT command must precede DATA
 500 unrecognized command
 500 unrecognized command

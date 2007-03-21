@@ -6,6 +6,8 @@
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 OK
 550 Sender verify failed
+503-All RCPT commands were rejected with this error:
+503-Sender verify failed
 503 valid RCPT command must precede DATA
 500 unrecognized command
 221 the.local.host.name closing connection
@@ -17,6 +19,8 @@
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250 OK
 550 Sender verify failed
+503-All RCPT commands were rejected with this error:
+503-Sender verify failed
 503 valid RCPT command must precede DATA
 500 unrecognized command
 221 the.local.host.name closing connection

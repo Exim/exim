@@ -19,6 +19,8 @@
 550-Verification failed for <junk@jink.jonk.test.ex>
 550-Unrouteable address
 550 Sender verify failed
+503-All RCPT commands were rejected with this error:
+503-Sender verify failed
 503 valid RCPT command must precede DATA
 500 unrecognized command
 221 myhost.test.ex closing connection

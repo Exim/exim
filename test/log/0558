@@ -1,0 +1,6 @@
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <userx@test.ex>: Default deny message
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <usery@test.ex>: Default deny message
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <userz@test.ex>: Default deny message
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <userx@test.ex>: Default deny message
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <specialusery@test.ex>: Special deny message
+1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <userz@test.ex>: Default deny message

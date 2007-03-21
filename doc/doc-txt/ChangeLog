@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.496 2007/03/14 12:15:56 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.497 2007/03/21 15:10:39 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -181,6 +181,14 @@ PH/40 When Exim receives a message, it writes the login name, uid, and gid of
       started the daemon, but after a SIGHUP it used the Exim user (because it
       calls itself on a restart). I have changed the code so that it now always
       uses the Exim user.
+
+PH/41 (Following a suggestion from Tony Finch) If all the RCPT commands in a
+      message are rejected with the same error (e.g. no authentication or bad
+      sender address), and a DATA command is nevertheless sent (as can happen
+      with PIPELINING or a stupid MUA), the error message that was given to the
+      RCPT commands is included in the rejection of the DATA command. This is
+      intended to be helpful for MUAs that show only the final error to their
+      users.
 
 
 Exim version 4.66

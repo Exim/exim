@@ -1,0 +1,19 @@
+# DATA error after identical RCPT failures
+exim -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+rcpt to:<usery@test.ex>
+rcpt to:<userz@test.ex>
+data
+quit
+****
+exim -bs
+ehlo test.ex
+mail from:<>
+rcpt to:<userx@test.ex>
+rcpt to:<specialusery@test.ex>
+rcpt to:<userz@test.ex>
+data
+quit
+****

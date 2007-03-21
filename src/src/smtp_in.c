@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.55 2007/02/20 15:58:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.56 2007/03/21 15:10:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -120,12 +120,15 @@ static BOOL helo_seen;
 static BOOL helo_accept_junk;
 static BOOL count_nonmail;
 static BOOL pipelining_advertised;
+static BOOL rcpt_smtp_response_same;
+static BOOL rcpt_in_progress;
 static int  nonmail_command_count;
 static int  synprot_error_count;
 static int  unknown_command_count;
 static int  sync_cmd_limit;
 static int  smtp_write_error = 0;
 
+static uschar *rcpt_smtp_response;
 static uschar *smtp_data_buffer;
 static uschar *smtp_cmd_data;
 
@@ -368,28 +371,41 @@ DEBUG(D_receive)
   }
 
 va_start(ap, format);
+if (!string_vformat(big_buffer, big_buffer_size, format, ap))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "string too large in smtp_printf()");
+  smtp_closedown(US"Unexpected error");
+  exim_exit(EXIT_FAILURE);
+  }
+va_end(ap);
 
-/* If in a TLS session we have to format the string, and then write it using a
-TLS function. */
+/* If this is the first output for a (non-batch) RCPT command, see if all RCPTs
+have had the same. Note: this code is also present in smtp_respond(). It would
+be tidier to have it only in one place, but when it was added, it was easier to
+do it that way, so as not to have to mess with the code for the RCPT command,
+which sometimes uses smtp_printf() and sometimes smtp_respond(). */
+
+if (rcpt_in_progress)
+  {
+  if (rcpt_smtp_response == NULL)
+    rcpt_smtp_response = string_copy(big_buffer);
+  else if (rcpt_smtp_response_same &&
+           Ustrcmp(rcpt_smtp_response, big_buffer) != 0)
+    rcpt_smtp_response_same = FALSE;
+  rcpt_in_progress = FALSE;
+  }
+
+/* Now write the string */
 
 #ifdef SUPPORT_TLS
 if (tls_active >= 0)
   {
-  if (!string_vformat(big_buffer, big_buffer_size, format, ap))
-    {
-    log_write(0, LOG_MAIN|LOG_PANIC, "string too large in smtp_printf");
-    smtp_closedown(US"Unexpected error");
-    exim_exit(EXIT_FAILURE);
-    }
   if (tls_write(big_buffer, Ustrlen(big_buffer)) < 0) smtp_write_error = -1;
   }
 else
 #endif
 
-/* Otherwise, just use the standard library function. */
-
-if (vfprintf(smtp_out, format, ap) < 0) smtp_write_error = -1;
-va_end(ap);
+if (fprintf(smtp_out, "%s", big_buffer) < 0) smtp_write_error = -1;
 }
 
 
@@ -961,6 +977,9 @@ message_linecount = 0;
 message_size = -1;
 acl_added_headers = NULL;
 queue_only_policy = FALSE;
+rcpt_smtp_response = NULL;
+rcpt_smtp_response_same = TRUE;
+rcpt_in_progress = FALSE;
 deliver_freeze = FALSE;                              /* Can be set by ACL */
 freeze_tell = freeze_tell_config;                    /* Can be set by ACL */
 fake_response = OK;                                  /* Can be set by ACL */
@@ -1954,6 +1973,24 @@ if (codelen > 4)
   esclen = codelen - 4;
   }
 
+/* If this is the first output for a (non-batch) RCPT command, see if all RCPTs
+have had the same. Note: this code is also present in smtp_printf(). It would
+be tidier to have it only in one place, but when it was added, it was easier to
+do it that way, so as not to have to mess with the code for the RCPT command,
+which sometimes uses smtp_printf() and sometimes smtp_respond(). */
+
+if (rcpt_in_progress)
+  {
+  if (rcpt_smtp_response == NULL)
+    rcpt_smtp_response = string_copy(msg);
+  else if (rcpt_smtp_response_same &&
+           Ustrcmp(rcpt_smtp_response, msg) != 0)
+    rcpt_smtp_response_same = FALSE;
+  rcpt_in_progress = FALSE;
+  }
+
+/* Not output the message, splitting it up into multiple lines if necessary. */
+
 for (;;)
   {
   uschar *nl = Ustrchr(msg, '\n');
@@ -2123,6 +2160,9 @@ unless the sender_verify_fail log selector has been turned off. */
 if (sender_verified_failed != NULL &&
     !testflag(sender_verified_failed, af_sverify_told))
   {
+  BOOL save_rcpt_in_progress = rcpt_in_progress;
+  rcpt_in_progress = FALSE;  /* So as not to treat these as the error */
+
   setflag(sender_verified_failed, af_sverify_told);
 
   if (rc != FAIL || (log_extra_selector & LX_sender_verify_fail) != 0)
@@ -2152,6 +2192,8 @@ if (sender_verified_failed != NULL &&
           "Verification failed for <%s>\n%s",
         sender_verified_failed->address,
         sender_verified_failed->user_message));
+
+  rcpt_in_progress = save_rcpt_in_progress;
   }
 
 /* Sort out text for logging */
@@ -3304,17 +3346,15 @@ while (done <= 0)
     break;
 
 
-    /* The RCPT command requires an address as an operand. All we do
-    here is to parse it for syntactic correctness. There may be any number
-    of RCPT commands, specifying multiple senders. We build them all into
-    a data structure that is in argc/argv format. The start/end values
-    given by parse_extract_address are not used, as we keep only the
-    extracted address. */
+    /* The RCPT command requires an address as an operand. There may be any
+    number of RCPT commands, specifying multiple recipients. We build them all
+    into a data structure. The start/end values given by parse_extract_address
+    are not used, as we keep only the extracted address. */
 
     case RCPT_CMD:
     HAD(SCH_RCPT);
     rcpt_count++;
-    was_rcpt = TRUE;
+    was_rcpt = rcpt_in_progress = TRUE;
 
     /* There must be a sender address; if the sender was rejected and
     pipelining was advertised, we assume the client was pipelining, and do not
@@ -3504,14 +3544,29 @@ while (done <= 0)
         DATA command.
 
     The example in the pipelining RFC 2920 uses 554, but I use 503 here
-    because it is the same whether pipelining is in use or not. */
+    because it is the same whether pipelining is in use or not.
+
+    If all the RCPT commands that precede DATA provoked the same error message
+    (often indicating some kind of system error), it is helpful to include it
+    with the DATA rejection (an idea suggested by Tony Finch). */
 
     case DATA_CMD:
     HAD(SCH_DATA);
     if (!discarded && recipients_count <= 0)
       {
+      if (rcpt_smtp_response_same && rcpt_smtp_response != NULL)
+        {
+        uschar *code = US"503";
+        int len = Ustrlen(rcpt_smtp_response);
+        smtp_respond(code, 3, FALSE, US"All RCPT commands were rejected with "
+          "this error:");
+        /* Responses from smtp_printf() will have \r\n on the end */
+        if (len > 2 && rcpt_smtp_response[len-2] == '\r')
+          rcpt_smtp_response[len-2] = 0;
+        smtp_respond(code, 3, FALSE, rcpt_smtp_response);
+        }
       if (pipelining_advertised && last_was_rcpt)
-        smtp_printf("503 valid RCPT command must precede DATA\r\n");
+        smtp_printf("503 Valid RCPT command must precede DATA\r\n");
       else
         done = synprot_error(L_smtp_protocol_error, 503, NULL,
           US"valid RCPT command must precede DATA");

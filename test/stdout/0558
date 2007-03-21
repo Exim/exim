@@ -1,0 +1,30 @@
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+250 OK
+550-Default deny message
+550 on two lines
+550-Default deny message
+550 on two lines
+550-Default deny message
+550 on two lines
+503-All RCPT commands were rejected with this error:
+503-Default deny message
+503-on two lines
+503 Valid RCPT command must precede DATA
+221 myhost.test.ex closing connection
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250-myhost.test.ex Hello CALLER at test.ex
+250-SIZE 52428800
+250-PIPELINING
+250 HELP
+250 OK
+550-Default deny message
+550 on two lines
+550 Special deny message
+550-Default deny message
+550 on two lines
+503 Valid RCPT command must precede DATA
+221 myhost.test.ex closing connection
