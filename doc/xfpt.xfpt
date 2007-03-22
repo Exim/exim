@@ -13,15 +13,29 @@
 <bookinfo>
 <title>The xfpt plain text to XML processor</title>
 <titleabbrev>xfpt</titleabbrev>
-<date>16 January 2006</date>
+<date>22 March 2007</date>
 <author>
   <firstname>Philip</firstname>
   <surname>Hazel</surname>
 </author>
 <authorinitials>PH</authorinitials>
-<revhistory><revision><revnumber>0.00</revnumber><date>16 January 2006</date><authorinitials>PH</authorinitials></revision></revhistory>
-<copyright><year>2006</year><holder>University of Cambridge</holder></copyright>
+<revhistory><revision><revnumber>0.01</revnumber><date>22 March 2007</date><authorinitials>PH</authorinitials></revision></revhistory>
+<copyright><year>2007</year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
+.literal off
+
+. /////////////////////////////////////////////////////////////////////////////
+. These lines are processing instructions for the Simple DocBook Processor that
+. Philip Hazel has developed as a less cumbersome way of making PostScript and
+. PDFs than using xmlto and fop. They will be ignored by all other XML
+. processors.
+. /////////////////////////////////////////////////////////////////////////////
+
+.literal xml
+<?sdop
+  foot_right_recto="&chaptertitle;"
+  foot_right_verso="&chaptertitle;"
+?>
 .literal off
 
 
@@ -494,10 +508,11 @@ the four modes.
 
 .section "The &*.macro*& directive" "SECTmacro"
 This directive is used to define macros. It must be followed by a macro name,
-and then, optionally, by any number of arguments. These provide default values.
-The following lines, up to &*.endmacro*&, form the body of the macro. They are
-not processed in any way when the macro is defined; they are processed only
-when the macro is called (see section &<<SECTcallingmacro>>&).
+and then, optionally, by any number of arguments. The macro name can be any
+sequence of non-whitespace characters. The arguments in the definition provide
+default values. The following lines, up to &*.endmacro*&, form the body of the
+macro. They are not processed in any way when the macro is defined; they are
+processed only when the macro is called (see section &<<SECTcallingmacro>>&).
 
 Within the body of a macro, argument substitutions can be specified by means of
 a dollar character and an argument number, for example, &`$3`& for the third
@@ -928,6 +943,18 @@ example:
  .index goose "wild chase"
  The chasing of wild geese...
 .endd
+You can generate &"see"& and &"see also"& index entries by using &*.index-see*& 
+and &*.index-seealso*& instead of &*.index*&.
+
+If you want to generate an index entry for a range of pages, you can use the 
+&*.index-from*& and &*.index-to*& macros. The first argument of each of them is 
+an ID that ties them together. The second and third arguments of 
+&*.index-from*& are the primary and secondary index items. For example:
+.code
+ .index-from "ID5" "indexes" "handling ranges"
+ ... <lines of text> ...
+ .index-to "ID5"
+.endd    
 
 The &*.makeindex*& macro should be called at the end of the document, at the
 point where you want an index to be generated. It can have up to two

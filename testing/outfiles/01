@@ -14,6 +14,9 @@ This is text before the first section.
 <primary>primary</primary>
 <secondary>secondary</secondary>
 </indexterm>
+<indexterm id="ID" class="startofrange">
+<primary>range</primary>
+</indexterm>
 This is the text of the first section.
 We are going to have an index in the middle of a paragraph.
 <indexterm>
@@ -37,6 +40,15 @@ chapter <xref linkend="CHAPsecond"/>. Here are some entities, both local and def
 <title>Second chapter</title>
 <para>
 This is the second chapter. Test a block quote:
+<indexterm>
+<primary>visions</primary>
+<see>sights</see>
+</indexterm>
+<indexterm>
+<primary>noises</primary>
+<secondary>off</secondary>
+<seealso>sounds</seealso>
+</indexterm>
 </para>
 <blockquote revisionflag="changed">
 <para revisionflag="changed">
@@ -79,6 +91,9 @@ The third item
 </para>
 </listitem>
 </orderedlist>
+<para revisionflag="changed">
+<indexterm startref="ID" class="endofrange"/>
+</para>
 <orderedlist numeration="lowerroman">
 <listitem>
 <para>
@@ -268,4 +283,5 @@ URL <emphasis role="bold"><ulink url="http://etc">http://etc</ulink></emphasis> 
 <index>
 <title>Index</title>
 </index>
+
 </book>

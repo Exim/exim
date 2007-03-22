@@ -188,6 +188,39 @@
 &</indexterm>&
 .endmacro
 
+.macro index-from
+&<indexterm id="$1" class="startofrange">&
+&<primary>&$2&</primary>&
+.arg 3
+&<secondary>&$3&</secondary>&
+.endarg
+&</indexterm>&
+.endmacro
+
+.macro index-to
+&<indexterm startref="$1" class="endofrange"/>&
+.endmacro
+
+.macro index-see
+&<indexterm>&
+&<primary>&$2&</primary>&
+.arg 3
+&<secondary>&$3&</secondary>&
+.endarg
+&<see>&$1&</see>&
+&</indexterm>&
+.endmacro
+
+.macro index-seealso
+&<indexterm>&
+&<primary>&$2&</primary>&
+.arg 3
+&<secondary>&$3&</secondary>&
+.endarg
+&<seealso>&$1&</seealso>&
+&</indexterm>&
+.endmacro
+
 .macro makeindex "Index"
 .literal layout
 .pop C

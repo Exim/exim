@@ -13,6 +13,7 @@ This is text before the first section.
 
 .section "First section"
 .index primary secondary
+.index-from "ID" "range"
 This is the text of the first section.
 We are going to have an index in the middle of a paragraph.
 .index "primary two" "secondary two"
@@ -25,6 +26,8 @@ chapter &<<CHAPsecond>>&. Here are some entities, both local and default:
 
 .chapter "Second chapter" "CHAPsecond"
 This is the second chapter. Test a block quote:
+.index-see "sights" "visions"
+.index-seealso "sounds" "noises" "off"
 
 .revision "changed"
 .blockquote
@@ -49,6 +52,7 @@ The second item.
 .next
 The third item
 .endlist
+.index-to "ID"
 
 .revision off
 
@@ -215,11 +219,4 @@ $+1
 
 URL &url(http://etc) and another &url(http://etc, text) and so on.
 
-
-.literal layout
-.pop C
-.literal xml
-<index>
-<title>Index</title>
-</index>
-.literal off
+.makeindex

@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2006 */
+/* Copyright (c) University of Cambridge, 2007 */
 /* Written by Philip Hazel. */
 
 /* This module contains the main program and initialization functions. */
@@ -30,6 +30,7 @@ usage(void)
   "Usage: xfpt [-help]\n"
   "            [-o <output-file>]\n"
   "            [-S <share-directory>]\n"
+  "            [-v]\n"
   "            [input-file]\n");
 }
 
@@ -66,6 +67,11 @@ for (i = 1; i < argc; i++)
     {
     usage();
     return FALSE;
+    }
+  else if (Ustrcmp(arg, "-v") == 0)
+    {
+    (void)fprintf(stdout, "xpft version %s\n", xfpt_version);
+    exit(0);
     }
   else
     {
