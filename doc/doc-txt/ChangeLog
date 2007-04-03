@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.498 2007/03/21 15:15:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.499 2007/04/03 15:54:49 steve Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -191,6 +191,12 @@ PH/41 (Following a suggestion from Tony Finch) If all the RCPT commands in a
       users.
 
 PH/42 Another patch from the Sieve maintainer.
+
+SC/02 Eximstats - Differentiate between permanent and temporary rejects.
+      Eximstats - Fixed some broken HTML links and added missing column headers
+                  (Jez Hancock).
+      Eximstats - Fixed Grand Total Summary Domains, Edomains, and Email
+                  columns for Rejects, Temp Rejects, Ham, and Spam rows.
 
 
 Exim version 4.66
