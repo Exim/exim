@@ -1,5 +1,5 @@
 #!PERL_COMMAND -w
-# $Cambridge: exim/src/src/eximstats.src,v 1.14 2007/02/14 12:20:43 steve Exp $
+# $Cambridge: exim/src/src/eximstats.src,v 1.15 2007/04/03 15:50:58 steve Exp $
 
 # Copyright (c) 2001 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -265,6 +265,16 @@
 #
 # 2007-02-14  V1.54 Daniel Tiefnig
 #             Improved the '($parent) =' pattern match.
+#
+# 2007-03-19  V1.55 Steve Campbell
+#             Differentiate between permanent and temporary rejects.
+#
+# 2007-03-29  V1.56 Jez Hancock
+#             Fixed some broken HTML links and added missing column headers.
+#
+# 2007-03-30  V1.57 Steve Campbell
+#             Fixed Grand Total Summary Domains, Edomains, and Email columns
+#             for Rejects, Temp Rejects, Ham, and Spam rows.
 #
 #
 #
@@ -564,7 +574,7 @@ use vars qw($WEEK $DAY $HOUR $MINUTE);
 
 @days_per_month = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
 $gig     = 1024 * 1024 * 1024;
-$VERSION = '1.54';
+$VERSION = '1.57';
 
 # How much space do we allow for the Hosts/Domains/Emails/Edomains column headers?
 $COLUMN_WIDTHS = 8;
@@ -592,6 +602,7 @@ use vars qw($spam_score $spam_score_gigs);
 use vars qw($ham_score  $ham_score_gigs);
 use vars qw(%ham_count_by_ip %spam_count_by_ip);
 use vars qw(%rejected_count_by_ip %rejected_count_by_reason);
+use vars qw(%temporarily_rejected_count_by_ip %temporarily_rejected_count_by_reason);
 
 #For use in Speadsheed::WriteExcel
 use vars qw($workbook $ws_global $ws_relayed $ws_errors);
@@ -1349,7 +1360,8 @@ sub print_league_table {
   # Generate the printf formats and table headers.
   ################################################
   my(@headers) = ('Messages');
-  push(@headers,'Addresses') if defined $a_count;
+  #push(@headers,'Addresses') if defined $a_count;
+  push(@headers,'Addresses') if defined $a_count && %$a_count;
   push(@headers,'Bytes','Average') if defined $m_data;
 
   my $txt_format = "%10s " x @headers . "  %s\n";
@@ -1371,7 +1383,7 @@ sub print_league_table {
 <tr><td>
 <table border=1>
 EoText
-    print $htm_col_headers;
+  print $htm_fh $htm_col_headers
   }
 
   if ($xls_fh) {
@@ -1470,7 +1482,7 @@ EoText
 <tr><td>
 <table border=1>
 EoText
-    print $htm_col_headers;
+    print $htm_fh $htm_col_headers;
     }
     if ($xls_fh) {
       $spreadsheet->write(${$row_sref}++, 0, $title, $f_header2);
@@ -2290,9 +2302,21 @@ sub generate_parser {
       # rejected EHLO from my.test.net [10.0.0.5]: syntactically invalid argument(s):
       # rejected EHLO from [10.0.0.6]: syntactically invalid argument(s):
       $ip = $1 if ($ip eq "local" && /^rejected [HE][HE]LO from .*?(\[.+?\]):/);
-      ++$rejected_count_by_ip{$ip};
       if (/SpamAssassin/) {
         ++$rejected_count_by_reason{"Rejected by SpamAssassin"};
+        ++$rejected_count_by_ip{$ip};
+      }
+      elsif (
+        /(temporarily rejected [A-Z]*) .*?(: .*?)(:|\s*$)/
+        ) {
+        ++$temporarily_rejected_count_by_reason{"\u$1$2"};
+        ++$temporarily_rejected_count_by_ip{$ip};
+      }
+      elsif (
+        /(temporarily refused connection)/
+        ) {
+        ++$temporarily_rejected_count_by_reason{"\u$1"};
+        ++$temporarily_rejected_count_by_ip{$ip};
       }
       elsif (
         /(listed at [^ ]+)/ ||
@@ -2319,18 +2343,20 @@ sub generate_parser {
         # local_scan() function crashed with signal %d - message temporarily rejected
         # local_scan() function timed out - message temporarily rejected
         /(local_scan.. function .* - message temporarily rejected)/ ||
-        /(temporarily refused connection)/ ||
         # SMTP protocol synchronization error (input sent without waiting for greeting): rejected connection from %s
         /(SMTP protocol .*?(error|violation))/ ||
         /(message too big)/
         ) {
         ++$rejected_count_by_reason{"\u$1"};
+        ++$rejected_count_by_ip{$ip};
       }
       elsif (/rejected [HE][HE]LO from [^:]*: syntactically invalid argument/) {
         ++$rejected_count_by_reason{"Rejected HELO/EHLO: syntactically invalid argument"};
+        ++$rejected_count_by_ip{$ip};
       }
       elsif (/response to "RCPT TO.*? was: (.*)/) {
         ++$rejected_count_by_reason{"Response to RCPT TO was: $1"};
+        ++$rejected_count_by_ip{$ip};
       }
       elsif (
         /(lookup of host )\S+ (failed)/ ||
@@ -2358,9 +2384,11 @@ sub generate_parser {
         /: (Connection refused)()/
         ) {
         ++$rejected_count_by_reason{"\u$1$2"};
+        ++$rejected_count_by_ip{$ip};
       }
       else {
         ++$rejected_count_by_reason{Unknown};
+        ++$rejected_count_by_ip{$ip};
         print STDERR "Unknown rejection: $_" if $debug;
       }
     }
@@ -2437,9 +2465,9 @@ sub print_header {
   if ($htm_fh) {
     print $htm_fh html_header($title);
     print $htm_fh "<ul>\n";
-    print $htm_fh "<li><a href=\"#grandtotal\">Grand total summary</a>\n";
-    print $htm_fh "<li><a href=\"#patterns\">User Specified Patterns</a>\n" if @user_patterns;
-    print $htm_fh "<li><a href=\"#transport\">Deliveries by Transport</a>\n" if $show_transport;
+    print $htm_fh "<li><a href=\"#Grandtotal\">Grand total summary</a>\n";
+    print $htm_fh "<li><a href=\"#Patterns\">User Specified Patterns</a>\n" if @user_patterns;
+    print $htm_fh "<li><a href=\"#Transport\">Deliveries by Transport</a>\n" if $show_transport;
     if ($hist_opt) {
       print $htm_fh "<li><a href=\"#Messages received\">Messages received per hour</a>\n";
       print $htm_fh "<li><a href=\"#Deliveries\">Deliveries per hour</a>\n";
@@ -2461,28 +2489,29 @@ sub print_header {
 
     print $htm_fh "<li><a href=\"#Relayed messages\">Relayed messages</a>\n" if $show_relay;
     if ($topcount) {
-      print $htm_fh "<li><a href=\"#mail rejection reason count\">Top $topcount mail rejection reasons by message count</a>\n" if %rejected_count_by_reason;
+      print $htm_fh "<li><a href=\"#Mail rejection reason count\">Top $topcount mail rejection reasons by message count</a>\n" if %rejected_count_by_reason;
       foreach ('Host','Domain','Email','Edomain') {
         next unless $do_sender{$_};
-        print $htm_fh "<li><a href=\"#sending \l$_ count\">Top $topcount sending \l${_}s by message count</a>\n";
-        print $htm_fh "<li><a href=\"#sending \l$_ volume\">Top $topcount sending \l${_}s by volume</a>\n";
+        print $htm_fh "<li><a href=\"#Sending \l$_ count\">Top $topcount sending \l${_}s by message count</a>\n";
+        print $htm_fh "<li><a href=\"#Sending \l$_ volume\">Top $topcount sending \l${_}s by volume</a>\n";
       }
       if (($local_league_table || $include_remote_users) && %received_count_user) {
-        print $htm_fh "<li><a href=\"#local sender count\">Top $topcount local senders by message count</a>\n";
-        print $htm_fh "<li><a href=\"#local sender volume\">Top $topcount local senders by volume</a>\n";
+        print $htm_fh "<li><a href=\"#Local sender count\">Top $topcount local senders by message count</a>\n";
+        print $htm_fh "<li><a href=\"#Local sender volume\">Top $topcount local senders by volume</a>\n";
       }
       foreach ('Host','Domain','Email','Edomain') {
         next unless $do_sender{$_};
-        print $htm_fh "<li><a href=\"#\l$_ destination count\">Top $topcount \l$_ destinations by message count</a>\n";
-        print $htm_fh "<li><a href=\"#\l$_ destination volume\">Top $topcount \l$_ destinations by volume</a>\n";
+        print $htm_fh "<li><a href=\"#$_ destination count\">Top $topcount \l$_ destinations by message count</a>\n";
+        print $htm_fh "<li><a href=\"#$_ destination volume\">Top $topcount \l$_ destinations by volume</a>\n";
       }
       if (($local_league_table || $include_remote_users) && %delivered_messages_user) {
-        print $htm_fh "<li><a href=\"#local destination count\">Top $topcount local destinations by message count</a>\n";
-        print $htm_fh "<li><a href=\"#local destination volume\">Top $topcount local destinations by volume</a>\n";
+        print $htm_fh "<li><a href=\"#Local destination count\">Top $topcount local destinations by message count</a>\n";
+        print $htm_fh "<li><a href=\"#Local destination volume\">Top $topcount local destinations by volume</a>\n";
       }
 
-      print $htm_fh "<li><a href=\"#rejected ip count\">Top $topcount rejected ips by message count</a>\n" if %rejected_count_by_ip;
-      print $htm_fh "<li><a href=\"#non-rejected spamming ip count\">Top $topcount non-rejected spamming ips by message count</a>\n" if %spam_count_by_ip;
+      print $htm_fh "<li><a href=\"#Rejected ip count\">Top $topcount rejected ips by message count</a>\n" if %rejected_count_by_ip;
+      print $htm_fh "<li><a href=\"#Temporarily rejected ip count\">Top $topcount temporarily rejected ips by message count</a>\n" if %temporarily_rejected_count_by_ip;
+      print $htm_fh "<li><a href=\"#Non-rejected spamming ip count\">Top $topcount non-rejected spamming ips by message count</a>\n" if %spam_count_by_ip;
 
     }
     print $htm_fh "<li><a href=\"#errors\">List of errors</a>\n" if %errors_count;
@@ -2524,8 +2553,8 @@ sub print_grandtotals {
       push(@delivered_totals,scalar(keys %{$delivered_data{$_}}));
     }
     $sender_txt_header  .= " " x ($COLUMN_WIDTHS - length($_)) . $_ . 's';
-    $sender_html_format .= "<td align=\"right\">%d</td>";
-    $sender_txt_format  .= " " x ($COLUMN_WIDTHS - 5) . "%6d";
+    $sender_html_format .= "<td align=\"right\">%s</td>";
+    $sender_txt_format  .= " " x ($COLUMN_WIDTHS - 5) . "%6s";
     push(@col_headers,"${_}s");
   }
 
@@ -2543,7 +2572,7 @@ sub print_grandtotals {
     print $txt_fh "  TOTAL               Volume   Messages Addresses $sender_txt_header      Delayed       Failed\n";
   }
   if ($htm_fh) {
-    print $htm_fh "<a name=\"grandtotal\"></a>\n";
+    print $htm_fh "<a name=\"Grandtotal\"></a>\n";
     print $htm_fh "<h2>Grand total summary</h2>\n";
     print $htm_fh "<table border=1>\n";
     print $htm_fh "<tr><th>" . join('</th><th>',@col_headers) . "</th><th colspan=2>At least one addr<br>Delayed</th><th colspan=2>At least one addr<br>Failed</th>\n";
@@ -2617,12 +2646,17 @@ sub print_grandtotals {
   }
 
   if ($merge_reports) {
-    foreach ('Rejects', 'Ham', 'Spam') {
+    foreach ('Rejects', 'Temp Rejects', 'Ham', 'Spam') {
       my $messages = get_report_total($report_totals{$_},'Messages');
       my $addresses = get_report_total($report_totals{$_},'Addresses');
       if ($messages) {
         @content = ($_, '', $messages, '');
         push(@content,get_report_total($report_totals{$_},'Hosts')) if $do_sender{Host};
+        #These rows do not have entries for the following columns (if specified)
+        foreach ('Domain','Email','Edomain') {
+          push(@content,'') if $do_sender{$_};
+        }
+
         printf $txt_fh ("$txt_format1\n", @content) if $txt_fh;
         printf $htm_fh ("$htm_format1\n", @content) if $htm_fh;
         $ws_global->write(++$row, 0, \@content) if $xls_fh;
@@ -2631,14 +2665,23 @@ sub print_grandtotals {
   }
   else {
     foreach my $total_aref (['Rejects',\%rejected_count_by_ip],
+                            ['Temp Rejects',\%temporarily_rejected_count_by_ip],
                             ['Ham',\%ham_count_by_ip],
                             ['Spam',\%spam_count_by_ip]) {
+      #Count the number of messages of this type.
       my $messages = 0;
       map {$messages += $_} values %{$total_aref->[1]};
 
       if ($messages > 0) {
         @content = ($total_aref->[0], '', $messages, '');
+
+        #Count the number of distict IPs for the Hosts column.
         push(@content,scalar(keys %{$total_aref->[1]})) if $do_sender{Host};
+
+        #These rows do not have entries for the following columns (if specified)
+        foreach ('Domain','Email','Edomain') {
+          push(@content,'') if $do_sender{$_};
+        }
 
         printf $txt_fh ("$txt_format1\n", @content) if $txt_fh;
         printf $htm_fh ("$htm_format1\n", @content) if $htm_fh;
@@ -2670,7 +2713,7 @@ sub print_user_patterns {
     print $txt_fh "\n                       Total\n";
   }
   if ($htm_fh) {
-    print $htm_fh "<hr><a name=\"patterns\"></a><h2>User Specified Patterns</h2>\n";
+    print $htm_fh "<hr><a name=\"Patterns\"></a><h2>User Specified Patterns</h2>\n";
     print $htm_fh "<table border=0 width=\"100%\">\n";
     print $htm_fh "<tr><td>\n";
     print $htm_fh "<table border=1>\n";
@@ -2817,7 +2860,7 @@ sub print_transport {
     print $txt_fh "\n                      Volume    Messages\n";
   }
   if ($htm_fh) {
-    print $htm_fh "<hr><a name=\"transport\"></a><h2>Deliveries by Transport</h2>\n";
+    print $htm_fh "<hr><a name=\"Transport\"></a><h2>Deliveries by Transport</h2>\n";
     print $htm_fh "<table border=0 width=\"100%\"><tr><td><table border=1>\n";
     print $htm_fh "<tr><th>&nbsp;</th><th>Volume</th><th>Messages</th>\n";
   }
@@ -3143,7 +3186,7 @@ sub parse_old_eximstat_reports {
             add_to_totals($report_totals{Delivered},['Addresses'],$tmp{Messages});
           }
         }
-        elsif (/(Rejects|Ham|Spam)\s+(.*?)\s*$/) {
+        elsif (/(Temp Rejects|Rejects|Ham|Spam)\s+(.*?)\s*$/) {
           print STDERR "Parsing $_" if $debug;
           add_to_totals($report_totals{$1},['Messages','Hosts'],$2);
         }
@@ -3363,11 +3406,17 @@ sub parse_old_eximstat_reports {
         $data_href       = \%{$delivered_data{"\u$1"}};
         $data_gigs_href  = \%{$delivered_data_gigs{"\u$1"}};
       }
+      elsif ($category =~ /temporarily rejected ips/) {
+        $messages_href      = \%temporarily_rejected_count_by_ip;
+      }
       elsif ($category =~ /rejected ips/) {
         $messages_href      = \%rejected_count_by_ip;
       }
       elsif ($category =~ /non-rejected spamming ips/) {
         $messages_href      = \%spam_count_by_ip;
+      }
+      elsif ($category =~ /mail temporary rejection reasons/) {
+        $messages_href      = \%temporarily_rejected_count_by_reason;
       }
       elsif ($category =~ /mail rejection reasons/) {
         $messages_href      = \%rejected_count_by_reason;
@@ -3964,7 +4013,7 @@ $message_errors = 0;
 $begin = "9999-99-99 99:99:99";
 $end = "0000-00-00 00:00:00";
 my($section,$type);
-foreach $section ('Received','Delivered','Rejects','Ham','Spam') {
+foreach $section ('Received','Delivered','Temp Rejects', 'Rejects','Ham','Spam') {
   foreach $type ('Volume','Messages','Delayed','Failed','Hosts','Domains','Emails','Edomains') {
     $report_totals{$section}{$type} = 0;
   }
@@ -4056,14 +4105,16 @@ print_relay() if $show_relay;
 
 # Print the league tables, if topcount isn't zero.
 if ($topcount > 0) {
-  my($ws_rej, $ws_top50, $ws_rej_row, $ws_top50_row);
-  $ws_rej_row = $ws_top50_row = 0;
+  my($ws_rej, $ws_top50, $ws_rej_row, $ws_top50_row, $ws_temp_rej, $ws_temp_rej_row);
+  $ws_rej_row = $ws_temp_rej_row = $ws_top50_row = 0;
   if ($xls_fh) {
     $ws_top50 = $workbook->addworksheet('Deliveries');
     $ws_rej = $workbook->addworksheet('Rejections') if (%rejected_count_by_reason || %rejected_count_by_ip || %spam_count_by_ip);
+    $ws_temp_rej = $workbook->addworksheet('Temporary Rejections') if (%temporarily_rejected_count_by_reason || %temporarily_rejected_count_by_ip);
   }
 
   print_league_table("mail rejection reason", \%rejected_count_by_reason, undef, undef, undef, $ws_rej, \$ws_rej_row) if %rejected_count_by_reason;
+  print_league_table("mail temporary rejection reason", \%temporarily_rejected_count_by_reason, undef, undef, undef, $ws_temp_rej, \$ws_temp_rej_row) if %temporarily_rejected_count_by_reason;
 
   foreach ('Host','Domain','Email','Edomain') {
     next unless $do_sender{$_};
@@ -4079,6 +4130,7 @@ if ($topcount > 0) {
   print_league_table("local destination", \%delivered_messages_user, \%delivered_addresses_user, \%delivered_data_user,\%delivered_data_gigs_user, $ws_top50, \$ws_top50_row) if (($local_league_table || $include_remote_users) && %delivered_messages_user);
 
   print_league_table("rejected ip", \%rejected_count_by_ip, undef, undef, undef, $ws_rej, \$ws_rej_row) if %rejected_count_by_ip;
+  print_league_table("temporarily rejected ip", \%temporarily_rejected_count_by_ip, undef, undef, undef, $ws_rej, \$ws_rej_row) if %temporarily_rejected_count_by_ip;
   print_league_table("non-rejected spamming ip", \%spam_count_by_ip, undef, undef, undef, $ws_rej, \$ws_rej_row) if %spam_count_by_ip;
 
 }
