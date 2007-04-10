@@ -11,7 +11,7 @@
 
 
 uschar    *xfpt_share                = US DATADIR;
-uschar    *xfpt_version              = US "0.01 22-Mar-2007";
+uschar    *xfpt_version              = US "0.02 05-Apr-2007";
 
 tree_node *entities                  = NULL;
 

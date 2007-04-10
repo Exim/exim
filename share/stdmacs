@@ -251,18 +251,38 @@
 
 .macro new
 .arg -1
+.inliteral off
 .literal layout
 .revision changed
 .literal off
+.endinliteral
+.inliteral layout
+.nonl '&<phrase revisionflag="changed">&'
+.endinliteral
+.inliteral text
+.literal layout
+.nonl '&<phrase revisionflag="changed">&'
+.literal text
+.endinliteral
 .endarg
 .arg 1
 &<phrase revisionflag="changed">&$1&</phrase>&
 .endmacro
 
 .macro wen
+.inliteral off
 .literal layout
 .revision off
 .literal off
+.endinliteral
+.inliteral layout
+.nonl &</phrase>&
+.endinliteral
+.inliteral text
+.literal layout
+.nonl &</phrase>&
+.literal text
+.endinliteral
 .endmacro
 
 . End

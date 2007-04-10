@@ -29,9 +29,9 @@ This is the rest of the paragraph.
 <section>
 <title>Second section</title>
 <para>
-This is the text of the second section. Here&#x2019;s a reference to 
+This is the text of the second section. Here&#x2019;s a reference to
 chapter <xref linkend="CHAPsecond"/>. Here are some entities, both local and default:
-&amp;abcd; is ABCD; &amp;rhubarb; is &rhubarb;.
+&amp;abcd; is ABCD; &amp;amp is &amp;.
 </para>
 </section>
 </chapter>
@@ -52,7 +52,7 @@ This is the second chapter. Test a block quote:
 </para>
 <blockquote revisionflag="changed">
 <para revisionflag="changed">
-All the world&#x2019;s a stage, and all the men and women merely players. They have 
+All the world&#x2019;s a stage, and all the men and women merely players. They have
 their exits and their entrances, and one man in his time plays many parts.
 </para>
 </blockquote>
@@ -204,8 +204,8 @@ are touched
 </para>
 <para>
 whereas this should note concats
-&lt;and stuff&gt;  
-Test &copy; and &#1234; and &#x4dc4; for size. 
+&lt;and stuff&gt;
+Test &copy; and &#1234; and &#x4dc4; for size.
 </para>
 <para>
 Check &#x2018;quote&#x2019; marks. And &#x2018;&#x2018;doublequote&#x2019;&#x2019; marks.
@@ -216,7 +216,7 @@ where things happen over multiple
 lines.
 </para>
 <para>
-Test some of the standard flags <emphasis>italic</emphasis> and <emphasis role="bold">bold</emphasis> text and 
+Test some of the standard flags <emphasis>italic</emphasis> and <emphasis role="bold">bold</emphasis> text and
 <literal>literal</literal> text and <filename>filename</filename> in text and <quote>quoted</quote> text and
 we have &amp; and &ndash; as single replacements.
 </para>
@@ -258,9 +258,11 @@ Always.
 If arg1: setarg1
 If arg2: setarg2
 </para>
+<literallayout class="monospaced">
 Inside literal text, unknown directives
 .like this one
 should be passed as data
+</literallayout>
 <literallayout>
 <literal>&amp;m1(1,2)        </literal>  |1 2|
 <literal>&amp;m1(1)          </literal>  |1 two|
@@ -278,6 +280,69 @@ should be passed as data
 <para>
 URL <emphasis role="bold"><ulink url="http://etc">http://etc</ulink></emphasis> and another <emphasis role="bold"><ulink url="http://etc">text</ulink></emphasis> and so on.
 </para>
+<para revisionflag="changed">
+This is a paragraph marked new with .new/.wen.
+</para>
+<literallayout>
+The first line in a display.
+<phrase revisionflag="changed">This line is between .new/.wen.
+</phrase>Another line.
+</literallayout>
+<literallayout class="monospaced">
+The first line in a code section.
+<phrase revisionflag="changed">This line is between .new/.wen.
+</phrase>Another line.
+</literallayout>
+<literallayout>
+A
+<phrase revisionflag="changed">B
+</phrase>C
+</literallayout>
+<literallayout>
+A
+<phrase revisionflag="changed">ZZZ</phrase>
+C
+</literallayout>
+<literallayout class="monospaced">
+A
+<phrase revisionflag="changed">B
+</phrase>C
+</literallayout>
+<literallayout class="monospaced">
+A
+&amp;&lt;phrase revisionflag="changed"&gt;&amp;ZZZ&amp;&lt;/phrase&gt;&amp;
+C
+</literallayout>
+<literallayout>
+A
+B <phrase revisionflag="changed">BB</phrase> BBB
+C
+</literallayout>
+<literallayout class="monospaced">
+A
+B &amp;new(BB) BBB
+C
+</literallayout>
+<literallayout>
+FOUR "1" "2" "3" "4"
+END NOT FOUR
+------------
+NOT FOUR
+THREE "1" "2" "3"
+END NOT FOUR
+------------
+NOT FOUR
+NOT THREE "1" "2"
+END NOT FOUR
+------------
+NOT FOUR
+NOT THREE "1" ""
+END NOT FOUR
+------------
+NOT FOUR
+NOT THREE "" ""
+END NOT FOUR
+</literallayout>
 </chapter>
 
 <index>

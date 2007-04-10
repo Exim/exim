@@ -13,13 +13,13 @@
 <bookinfo>
 <title>The xfpt plain text to XML processor</title>
 <titleabbrev>xfpt</titleabbrev>
-<date>22 March 2007</date>
+<date>10 April 2007</date>
 <author>
   <firstname>Philip</firstname>
   <surname>Hazel</surname>
 </author>
 <authorinitials>PH</authorinitials>
-<revhistory><revision><revnumber>0.01</revnumber><date>22 March 2007</date><authorinitials>PH</authorinitials></revision></revhistory>
+<revhistory><revision><revnumber>0.02</revnumber><date>10 April 2007</date><authorinitials>PH</authorinitials></revision></revhistory>
 <copyright><year>2007</year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
@@ -183,7 +183,8 @@ in a document. It is not worth setting up a macro for a one-off item like this.
 .endlist
 
 The &*.literal*& directive switches between the modes. It is not normally used
-directly, but instead is incorported into appropriate macro definitions.
+directly, but instead is incorported into appropriate macro definitions. The 
+&*.inliteral*& directive can be used to test the current mode.
 
 Directive lines are recognized and acted upon in all four modes. However, an
 unrecognized line that starts with a dot in the literal text or literal XML
@@ -426,6 +427,7 @@ for the given argument. For example:
  .endarg 
  .endmacro
 .endd
+The &*.arg*& directive may be nested.
 
 
 .section "The &*.eacharg*& directive"
@@ -435,10 +437,12 @@ lines, up to a &*.endeach*& directive, are processed multiple times, once for
 each remaining argument. Unlike &*.arg*&, an argument that is an empty string 
 is not treated specially.
 
-The number given with &*.eacharg*& defines which argument to start with. While
-these lines are being processed, the remaining macro arguments can be
-referenced relative to the current argument. &`$+1`& refers to the current
-argument, &`$+2`& to the next argument, and so on.
+The number given with &*.eacharg*& defines which argument to start with. If the
+macro is called with fewer arguments, the lines up to &*.endeach*& are skipped,
+and are not processed at all. When these lines are being processed, the
+remaining macro arguments can be referenced relative to the current argument.
+&`$+1`& refers to the current argument, &`$+2`& to the next argument, and so
+on.
 
 The &*.endeach*& directive may also be followed by a number, again defaulting
 to 1. When &*.endeach*& is reached, the current argument number is incremented
@@ -460,6 +464,8 @@ fifth argument:
  &<colspec colwidth="$+1" align="$+2"/>&
  .endeach 2
 .endd
+The &*.eacharg*& directive may in principle be nested, though this does not 
+seem useful in practice.
 
 
 .section "The &*.echo*& directive"
@@ -475,6 +481,9 @@ See the description of &*.arg*& above.
 
 .section "The &*.endeach*& directive"
 See the description of &*.eacharg*& above.
+
+.section "The &*.endinliteral*& directive"
+See the description of &*.inliteral*& below.
 
 
 .section "The &*.flag*& directive"
@@ -495,6 +504,13 @@ This directive must be followed by a single string argument that is the path to
 a file. The contents of the file are read and incorporated into the input at
 this point. If the string does not contain any slashes, the path to the &X;
 library is prepended. Otherwise, the path is used unaltered.
+
+.section "The &*.inliteral*& directive"
+This directive may appear only within the body of a macro. It must be followed 
+by one of the words &"layout"&, &"text"&, &"off"&, or &"xml"&. If the current 
+literal mode does not correspond to the word, subsequent lines, up to a 
+&*.endinliteral*& directive, are skipped. The &*.inliteral*& directive may be
+nested.
 
 
 .section "The &*.literal*& directive"
@@ -560,6 +576,13 @@ call it, because &X; looks for built-in directives before it looks for macros.
 It is possible to define a macro within a macro, though clearly care must be 
 taken with argument references to ensure that substitutions happen at the right
 level.
+
+
+.section "The &*.nonl*& directive"
+This directive must be followed by a single string argument. It is processed 
+as normal text, but without a newline at the end. This facility is useful in 
+macros when constructing a single data line from several text fragments. See 
+for example the &*.new*& macro in the standard macros.
 
 
 
@@ -858,10 +881,11 @@ can be placed between &*.new*& and &*.wen*&, as in this example:
   .wen      
   Here is the next, unmarked, paragraph.
 .endd
-When called like this, without an argument, &*.new*& terminates the current
-paragraph, and &*.wen*& always does so. Therefore, even though there are no
-blank lines before &*.new*& or &*.wen*& above, the revised text will end up in
-a paragraph of its own. (You can, of course, put in blank lines if you wish.)
+When called like this, without an argument, in ordinary text, &*.new*&
+terminates the current paragraph, and &*.wen*& always does so. Therefore, even
+though there are no blank lines before &*.new*& or &*.wen*& above, the revised
+text will end up in a paragraph of its own. (You can, of course, put in blank
+lines if you wish.)
 
 If want to indicate that just a few words inside a paragraph are revised, you
 can call the &*new*& macro with an argument. The macro can be called either as
@@ -873,6 +897,22 @@ a directive or inline:
 .endd
 The effect of this is to generate a &`<phrase>`& XML element with the
 &`revisionflag`& attribute set. The &*.wen*& macro is not used in this case.
+
+You can use the &*.new*&/&*.wen*& macro pair to generate a &`<phrase>`& element 
+inside a section of displayed text. For example:
+.code
+  .display
+  This line is not flagged as changed.
+  .new
+  This line is flagged as changed.
+  .wen
+  This line is not flagged as changed.
+  .endd
+.endd        
+This usage works with both &*.display*& and &*.code*&. Within a &*.display*& 
+section you can also call &*.new*& with an argument, either as a directive or 
+inline. This does not work for &*.code*& because its lines are processed in
+literal text mode.
 
 
 .section "Informal tables"

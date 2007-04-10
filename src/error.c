@@ -48,7 +48,7 @@ static error_struct error_data[] = {
 { ec_serious,  "missing semicolon after \"&%.*s\"" },
 { ec_serious,  "unexpected character \"%c\" after \"&#\"" },
 /* 5-9 */
-{ ec_serious,  "\"layout\", \"text\", or \"off\" expected, but \"%s\" found" },
+{ ec_serious,  "\"layout\", \"text\", \"xml\", or \"off\" expected, but \"%s\" found" },
 { ec_serious,  "unknown flag \"&%c\"" },
 { ec_serious,  "missing closing flag %s" },
 { ec_serious,  "flag nesting error: \"%s\" expected before \"%s\"" },

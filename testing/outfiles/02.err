@@ -1,88 +1,88 @@
 ** Error: unknown flag "&;"
-   Detected near line 6 of infiles/02
+   Detected near line 7 of infiles/02
 
 ** Error: missing semicolon after "&abcd"
-   Detected near line 6 of infiles/02
+   Detected near line 7 of infiles/02
 
 ** Error: missing semicolon after "&abcd"
-   Detected near line 6 of infiles/02
-
-** Error: malformed directive
-   .flag &:
    Detected near line 7 of infiles/02
 
 ** Error: malformed directive
-   .flag &: "abc" "xyz"
+   .flag &:
    Detected near line 8 of infiles/02
 
-** Error: a flag must begin with "&"
+** Error: malformed directive
+   .flag &: "abc" "xyz"
    Detected near line 9 of infiles/02
+
+** Error: a flag must begin with "&"
+   Detected near line 10 of infiles/02
 
 ** Error: malformed directive
    .flag &: :& &'
-   Detected near line 10 of infiles/02
+   Detected near line 11 of infiles/02
 
 ** Warning: extra characters at end of directive
    .set abcd "abcd" xyz
                     ^^^
-   Detected near line 12 of infiles/02
-
-** Error: .arg is permitted only inside a macro
-   Detected near line 14 of infiles/02
+   Detected near line 13 of infiles/02
 
 ** Error: .arg is permitted only inside a macro
    Detected near line 15 of infiles/02
 
-** Error: .endarg is permitted only inside a macro
-   Detected near line 17 of infiles/02
+** Error: .arg is permitted only inside a macro
+   Detected near line 16 of infiles/02
 
 ** Error: .endarg is permitted only inside a macro
    Detected near line 18 of infiles/02
 
-** Error: .eacharg is permitted only inside a macro
-   Detected near line 20 of infiles/02
+** Error: .endarg is permitted only inside a macro
+   Detected near line 19 of infiles/02
 
 ** Error: .eacharg is permitted only inside a macro
    Detected near line 21 of infiles/02
 
-** Error: .endeach is permitted only inside a macro
-   Detected near line 23 of infiles/02
+** Error: .eacharg is permitted only inside a macro
+   Detected near line 22 of infiles/02
 
 ** Error: .endeach is permitted only inside a macro
    Detected near line 24 of infiles/02
 
+** Error: .endeach is permitted only inside a macro
+   Detected near line 25 of infiles/02
+
 ** Error: unknown directive line: .rhubarb and custard
-   Detected near line 26 of infiles/02
+   Detected near line 27 of infiles/02
 
 ** Warning: extra characters at end of directive
    .literal xml stuff
                 ^^^^^
-   Detected near line 28 of infiles/02
+   Detected near line 29 of infiles/02
 
 ** Warning: extra characters at end of directive
    .literal off more stuff
                 ^^^^^^^^^^
-   Detected near line 30 of infiles/02
+   Detected near line 31 of infiles/02
 
 ** Error: malformed directive
    .arg 4n
    Processing macro x
-   Detected near line 40 of infiles/02
+   Detected near line 41 of infiles/02
 
 ** Error: malformed directive
    .arg
    Processing macro x
-   Detected near line 40 of infiles/02
+   Detected near line 41 of infiles/02
 
 ** Warning: extra characters at end of directive
    .endarg 99
            ^^
    Processing macro x
-   Detected near line 40 of infiles/02
+   Detected near line 41 of infiles/02
 
 ** Warning: extra characters at end of directive
    .eacharg 6 G
               ^
    Processing macro x
-   Detected near line 40 of infiles/02
+   Detected near line 41 of infiles/02
 

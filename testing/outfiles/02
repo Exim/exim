@@ -1,5 +1,6 @@
 <para>
 This input file tries to provoke errors &amp;;.
+Non defined &amp;rhubarb is &rhubarb;
 Try &amp;abcd without semicolon: &abcd and at EOL &abcd
 </para>
 <abcd>

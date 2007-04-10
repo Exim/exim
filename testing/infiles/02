@@ -2,6 +2,7 @@
 .include "stdmacs"
 
 This input file tries to provoke errors &;.
+Non defined &&rhubarb is &rhubarb;
 Try &&abcd without semicolon: &abcd and at EOL &abcd
 
 .flag &:

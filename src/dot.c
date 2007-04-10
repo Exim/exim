@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2006 */
+/* Copyright (c) University of Cambridge, 2007 */
 /* Written by Philip Hazel. */
 
 /* This module contains code for processing a line that starts with a dot. */
@@ -51,21 +51,30 @@ return n;
 *************************************************/
 
 /* This function skips to the end of the current macro or to the given
-terminator line. It is called only when we know we are in a macro.
+terminator line. It is called only when we know we are in a macro. The current
+macro line is the conditional directive.
 
-Argument:   the terminator directive
+Arguments:
+  s         the conditional directive
+  t         the terminator directive
 Returns:    nothing
 */
 
 static void
-skipto(uschar *s)
+skipto(uschar *s, uschar *t)
 {
-int length = Ustrlen(s);
+int nest = -1;
+int slength = Ustrlen(s);
+int tlength = Ustrlen(t);
 BOOL done = macrocurrent->nextline == NULL;
 while (!done)
   {
   uschar *p = macrocurrent->nextline->string;
-  done = Ustrncmp(p, s, length) == 0 && (p[length] == 0 || isspace(p[length]));
+  done = Ustrncmp(p, t, tlength) == 0 &&
+         (p[tlength] == 0 || isspace(p[tlength])) &&
+         nest-- <= 0;
+  if (Ustrncmp(p, s, slength) == 0 && (p[slength] == 0 || isspace(p[slength])))
+    nest++;
   macrocurrent->nextline = macrocurrent->nextline->next;
   if (macrocurrent->nextline == NULL)
     {
@@ -116,7 +125,7 @@ arg = macrocurrent->args;
 for (i = 1; arg != NULL && i < argn; i++) arg = arg->next;
 
 if (mustexist != (arg != NULL && arg->string[0] != 0))
-  skipto(US".endarg");
+  skipto(US".arg", US".endarg");
 }
 
 
@@ -149,7 +158,7 @@ for (i = 1; arg != NULL && i < argn; i++) arg = arg->next;
 /* If we did not find the starting argument, skip. Otherwise, set up the
 substitution for relative arguments, and remember where to come back to. */
 
-if (arg == NULL) skipto(US".endeach"); else
+if (arg == NULL) skipto(US"eacharg", US".endeach"); else
   {
   macro_argbase = arg;
   macro_starteach = macrocurrent->nextline;
@@ -225,6 +234,26 @@ if (macro_argbase == NULL) macro_starteach = NULL;
   else macrocurrent->nextline = macro_starteach;
 }
 
+
+
+
+/*************************************************
+*           Handle .endinliteral                 *
+*************************************************/
+
+/* We only hit this as a stand-alone directive when in a literal section and
+the previous lines have been obeyed. There is nothing to do.
+
+Argument:   the rest of the line
+Returns:    nothing
+*/
+
+static void
+do_endinliteral(uschar *p)
+{
+if (macrocurrent == NULL) { error(15, US".endinliteral"); return; }
+if (*p != 0) error(19, ".endinliteral", p, 8, spaces, Ustrlen(p), circumflexes);
+}
 
 
 
@@ -347,6 +376,33 @@ if (ist->file == NULL) error(0, ist->filename, strerror(errno));  /* Hard */
 
 
 
+/*************************************************
+*             Handle .inliteral                  *
+*************************************************/
+
+/* The .inliteral directive is permitted only within a macro. If we are
+handling the appropriate kind of literal text, nothing happens. Otherwise, the
+macro's input is skipped, either to .endinliteral or to the end of the macro.
+
+Argument:   a single argument string
+Returns:    nothing
+*/
+
+static void
+do_inliteral(uschar *p)
+{
+int state = -1;
+if (macrocurrent == NULL) { error(15, US".inliteral"); return; }
+if (Ustrcmp(p, "layout") == 0) state = LITERAL_LAYOUT;
+else if (Ustrcmp(p, "text") == 0) state = LITERAL_TEXT;
+else if (Ustrcmp(p, "off") == 0) state = LITERAL_OFF;
+else if (Ustrcmp(p, "xml") == 0) state = LITERAL_XML;
+else error(5, p);
+if (literal_state != state) skipto(US"inliteral", US".endinliteral");
+}
+
+
+
 
 /*************************************************
 *                Handle .literal                 *
@@ -444,6 +500,23 @@ if (md->lines == NULL)
   }
 }
 
+
+
+/*************************************************
+*               Handle .nonl                     *
+*************************************************/
+
+/* Output the argument as normal text, but without a newline on the end.
+
+Argument:   the rest of the line
+Returns:    nothing
+*/
+
+static void
+do_nonl(uschar *p)
+{
+para_process(p);
+}
 
 
 /*************************************************
@@ -616,19 +689,22 @@ typedef struct dirstr {
 
 
 static dirstr dirs[] = {
-  { US".arg",       4, do_arg,          TRUE,  TRUE },
-  { US".eacharg",   8, do_eacharg,      TRUE,  TRUE },
-  { US".echo",      5, do_echo,         TRUE, FALSE },
-  { US".endarg",    7, do_endarg,      FALSE,  TRUE },
-  { US".endeach",   8, do_endeach,      TRUE,  TRUE },
-  { US".flag",      5, do_flag,        FALSE, FALSE },
-  { US".include",   8, do_include,      TRUE, FALSE },
-  { US".literal",   8, do_literal,      TRUE, FALSE },
-  { US".macro",     6, do_macro,       FALSE, FALSE },
-  { US".pop",       4, do_pop,          TRUE, FALSE },
-  { US".push",      5, do_push,        FALSE, FALSE },
-  { US".revision",  9, do_revision,     TRUE, FALSE },
-  { US".set",       4, do_set,         FALSE, FALSE },
+  { US".arg",           4, do_arg,           TRUE,  TRUE },
+  { US".eacharg",       8, do_eacharg,       TRUE,  TRUE },
+  { US".echo",          5, do_echo,          TRUE, FALSE },
+  { US".endarg",        7, do_endarg,       FALSE,  TRUE },
+  { US".endeach",       8, do_endeach,       TRUE,  TRUE },
+  { US".endinliteral", 13, do_endinliteral, FALSE,  TRUE },
+  { US".flag",          5, do_flag,         FALSE, FALSE },
+  { US".include",       8, do_include,       TRUE, FALSE },
+  { US".inliteral",    10, do_inliteral,     TRUE,  TRUE },
+  { US".literal",       8, do_literal,       TRUE, FALSE },
+  { US".macro",         6, do_macro,        FALSE, FALSE },
+  { US".nonl",          5, do_nonl,          TRUE, FALSE },
+  { US".pop",           4, do_pop,           TRUE, FALSE },
+  { US".push",          5, do_push,         FALSE, FALSE },
+  { US".revision",      9, do_revision,      TRUE, FALSE },
+  { US".set",           4, do_set,          FALSE, FALSE },
 };
 
 static int cmdcount = sizeof(dirs)/sizeof(dirstr);
