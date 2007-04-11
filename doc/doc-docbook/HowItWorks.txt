@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.5 2006/07/31 13:19:36 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.6 2007/04/11 15:26:09 ph10 Exp $
 
 CREATING THE EXIM DOCUMENTATION
 
@@ -21,7 +21,7 @@ bought the Adobe distiller software.)
 
 A demand for a version in "info" format led me to write a Perl script that
 converted the SGCAL input into a Texinfo file. Because of the somewhat
-restrictive requirements of Texinfo, this script has always needed a lot of
+restrictive requirements of Texinfo, this script always needed a lot of
 maintenance, and was never totally satisfactory.
 
 The HTML version of the documentation was originally produced from the Texinfo
@@ -72,10 +72,28 @@ Equally, if better ways of processing the XML become available, they can be
 adopted without affecting the source maintenance.
 
 A number of issues arose while setting this all up, which are best summed up by
-the statement that a lot of the technology is (in 2006) still very immature. It
-is probable that trying to do this conversion any earlier would not have been
-anywhere near as successful. The main problems that still bother me are
-described in the penultimate section of this document.
+the statement that a lot of the technology was (in 2006) still very immature.
+Trying to do this conversion any earlier would probably not have been anywhere
+near as successful. The main problems that bother me in the XML-generated
+documentation are described in the penultimate section of this document.
+
+The major problems were originally in producing PostScript and PDF outputs. The
+available free software for doing this was and still is (we are now in 2007)
+cumbersome and slow, and does not support certain output features that I would
+like. My response to this was, over a period of two years, to write an XML
+processor called SDoP (Simple DocBook Processor). This program reads DocBook
+XML and writes PostScript, without using any of the heavyweight apparatus that
+is required for xmlto and fop (the previously used software).
+
+An experimental first version of SDoP will be used for the Exim 4.67
+documentation. A full release of SDoP requires further work. SDoP's output
+includes features that are missing when xmlto/fop is used, and it also runs
+about 60 times faster. The main manual can be formatted in 2 seconds instead of
+2 minutes, which makes checking and fixing mistakes much easier.
+
+The Makefile that is used to build the various forms of output will, for the
+moment, support both ways of producing PostScript and PDF output, though the
+default is now to use SDoP.
 
 The following sections describe the processes by which the xfpt files are
 transformed into the final output documents. In practice, the details are coded
@@ -89,15 +107,27 @@ run Gentoo Linux, and a lot of things have been installed as dependencies that
 I am not fully aware of. This is what I know about (version numbers are current
 at the time of writing):
 
-. xfpt 0.00
+. xfpt 0.01
 
   This converts the master source file into a DocBook XML file.
+
+. sdop 0.00
+
+  This is my new, still-very-alpha, DocBook-to-PostScript processor.
+
+. ps2pdf
+
+  This is a wrapper script that is part of the GhostScript distribution. It
+  converts a PostScript file into a PDF file. It is used to process the output
+  from SDoP. It is not required when xmlto/fop is being used to generate PDF
+  output.
 
 . xmlto 0.0.18
 
   This is a shell script that drives various XML processors. It is used to
-  produce "formatted objects" for PostScript and PDF output, and to produce
-  HTML output. It uses xsltproc, libxml, libxslt, libexslt, and possibly other
+  produce "formatted objects" when PostScript and PDF output is being generated
+  using fop (the old way) rather than SDoP. It is always used to produce HTML
+  output. It uses xsltproc, libxml, libxslt, libexslt, and possibly other
   things that I have not figured out, to apply the DocBook XSLT stylesheets.
 
 . libxml 1.8.17
@@ -107,15 +137,15 @@ at the time of writing):
   These are all installed on my box; I do not know which of libxml or libxml2
   the various scripts are actually using.
 
-. xsl-stylesheets-1.68.1
+. xsl-stylesheets-1.70.1
 
   These are the standard DocBook XSL stylesheets.
 
 . fop 0.20.5
 
   FOP is a processor for "formatted objects". It is written in Java. The fop
-  command is a shell script that drives it. It is used to generate PostScript
-  and PDF output.
+  command is a shell script that drives it. It required only if you do not
+  want to use SDoP and ps2pdf to generate PostScript and PDF output.
 
 . w3m 0.5.1
 
@@ -157,9 +187,15 @@ this process, including the master DocBook source, called spec.xml. Of course,
 the usual features of "make" ensure that if this already exists and is
 up-to-date, it is not needlessly rebuilt.
 
+Because there are now two ways of creating the PostScript and PDF outputs,
+there are two targets for each one. For example fop-spec.ps makes PostScript
+using fop, and sdop-spec.ps makes it using SDoP. The generic targets spec.ps
+and spec.pdf now point to the SDoP versions.
+
 The "test" series of targets were created so that small tests could easily be
 run fairly quickly, because processing even the shortish XML document takes
-a bit of time, and processing the main specification takes ages.
+a bit of time, and processing the main specification takes ages -- except when
+using SDoP for PostScript and PDF.
 
 Another target is "exim.8". This runs a locally written Perl script called
 x2man, which extracts the list of command line options from the spec.xml file,
@@ -191,11 +227,11 @@ Pre-xml was written. This is used to preprocess the .xml files before they are
 handed to the main processors. Adding one more tool onto the front of the
 processing chain does at least seem to be in the spirit of XML processing.
 
-The XML processors themselves make use of style files, which can be overridden
-by local versions. There is one that applies to all styles, called MyStyle.xsl,
-and others for the different output formats. I have included comments in these
-style files to explain what changes I have made. Some of the changes are quite
-significant.
+The XML processors other than SDoP make use of style files, which can be
+overridden by local versions. There is one that applies to all styles, called
+MyStyle.xsl, and others for the different output formats. I have included
+comments in these style files to explain what changes I have made. Some of the
+changes are quite significant.
 
 
 THE PRE-XML SCRIPT
@@ -239,9 +275,13 @@ options it is given. The currently available options are as follows:
 
   The use of ligatures would be nice for the PostScript and PDF formats. Sadly,
   it turns out that fop cannot at present handle the FB01 character correctly.
-  The only format that does so is the HTML format, but when I used this in the
-  test version, people complained that it made searching for words difficult.
-  So at the moment, this option is not used. :-(
+  Happily this problem is now avoided when SDoP is used to generate PostScript
+  (and thence PDF) because SDoP automatically uses an "fi" ligature for
+  non-fixed-width fonts.
+
+  The only xmlto format that handles FB01 is the HTML format, but when I used
+  this in the test version, people complained that it made searching for words
+  difficult. So this option is in practice not used at all.
 
 -noindex
 
@@ -252,11 +292,11 @@ options it is given. The currently available options are as follows:
 -oneindex
 
   Remove the XML to generate a Concept and an Options Index, and add XML to
-  generate a single index. The only output processor that supports multiple
-  indexes is the processor that produces "formatted objects" for PostScript and
-  PDF output. The HTML processor ignores the XML settings for multiple indexes
-  and just makes one unified index. Specifying two indexes gets you two copies
-  of the same index, so this has to be changed.
+  generate a single index. The only output processors that support multiple
+  indexes are SDoP and the processor that produces "formatted objects" for
+  PostScript and PDF output for fop. The HTML processor ignores the XML
+  settings for multiple indexes and just makes one unified index. Specifying
+  two indexes gets you two copies of the same index, so this has to be changed.
 
 -optbreak
 
@@ -270,11 +310,31 @@ options it is given. The currently available options are as follows:
 
 CREATING POSTSCRIPT AND PDF
 
-These two output formats are created in three stages, with an additional fourth
-stage for PDF. First, the XML is pre-processed by the Pre-xml script. For the
-filter document, the <bookinfo> element is removed so that no title page is
-generated. For the main specification, the only change is to insert line
-breakpoints via -optbreak.
+These two output formats are created either by using my new SDoP program to
+produce PostScript which can then be run through ps2pdf to make a PDF, or by
+using xmlto and fop in the old way.
+
+
+USING SDOP TO CREATE POSTSCRIPT AND PDF
+
+PostScript output is created in two stages. First, the XML is pre-processed by
+the Pre-xml script. For the filter document, the <bookinfo> element is removed
+so that no title page is generated. For the main specification, the only change
+is to insert line breakpoints via -optbreak.
+
+The SDoP program is then used to create PostScript output directly from the XML
+input. Then the ps2pdf command is used to generated a PDF from the PostScript.
+There are no external stylesheets that are used by SDoP. Any variations to the
+default format are specified inline using "processing instructions".
+
+
+USING XMLTO AND FOP TO CREATE POSTSCRIPT AND PDF
+
+This is the original way of creating PostScript and PDF output. The processing
+happens in three stages, with an additional fourth stage for PDF. First, the
+XML is pre-processed by the Pre-xml script. For the filter document, the
+<bookinfo> element is removed so that no title page is generated. For the main
+specification, the only change is to insert line breakpoints via -optbreak.
 
 Second, the xmlto command is used to produce a "formatted objects" (.fo) file.
 This process uses the following stylesheets:
@@ -328,9 +388,9 @@ The last one is particularly meaningless gobbledegook. Some of the errors and
 warnings are repeated many times. Nevertheless, it does eventually produce
 usable output, though I have a number of issues with it (see a later section of
 this document). Maybe one day there will be a new release of fop that does
-better (there are now signs - February 2006 - that this may be happening).
-Maybe there will be some other means of producing PostScript and PDF from
-DocBook XML. Maybe porcine aeronautics will really happen.
+better. In the meantime, I have written my own program for making PostScript
+output -- see the previous section -- because the problems with xmlto/fop were
+sufficiently annoying.
 
 The PDF file that is produced by this process has one problem: the pages, as
 shown by acroread in its thumbnail display, are numbered sequentially from one
@@ -345,13 +405,16 @@ GhostScript (gv).
 
 THE PAGELABELPDF SCRIPT
 
-This script reads the standard input and writes the standard output. It
-searches for the PDF object that sets data in its "Catalog", and adds
-appropriate information about page labels. The number of front-matter pages
-(those before chapter 1) is hard-wired into this script as 12 because I could
-not find a way of determining it automatically. As the current table of
-contents finishes near the top of the 11th page, there is plenty of room for
-expansion, so it is unlikely to be a problem.
+This script reads the standard input and writes the standard output. It is used
+to "tidy up" the PDF output that is produced by fop. It is not needed when
+PDF output is generated from SDoP's output using ps2pdf.
+
+The PageLabelPDF script searches for the PDF object that sets data in its
+"Catalog", and adds appropriate information about page labels. The number of
+front-matter pages (those before chapter 1) is hard-wired into this script as
+12 because I could not find a way of determining it automatically. As the
+current table of contents finishes near the top of the 11th page, there is
+plenty of room for expansion, so it is unlikely to be a problem.
 
 Having added data to the PDF file, the script then finds the xref table at the
 end of the file, and adjusts its entries to allow for the added text. This
@@ -481,7 +544,8 @@ UNRESOLVED PROBLEMS
 
 There are a number of unresolved problems with producing the Exim documentation
 in the manner described above. I will describe them here in the hope that in
-future some way round them can be found.
+future some way round them can be found. Some of the problems are solved by
+using SDoP instead of xmlto/fop to produce PostScript and PDF output.
 
 (1)  When a whole chain of tools is processing a file, an error somewhere
      in the middle is often very hard to debug. For instance, an error in the
@@ -491,11 +555,12 @@ future some way round them can be found.
      targets was to help in checking out these kinds of problem.
 
 (2)  There is a mechanism in XML for marking parts of the document as
-     "revised", and I have arranged for xfpt markup to use it. However, at the
-     moment, the only output format that pays attention to this is the HTML
-     output, which sets a green background. There are therefore no revision
-     marks (change bars) in the PostScript, PDF, or text output formats as
-     there used to be. (There never were for Texinfo.)
+     "revised", and I have arranged for xfpt markup to use it. However, the
+     only xmlto output format that pays attention to this is the HTML output,
+     which sets a green background. If xmlto/fop is used to generate PostScript
+     and PDF, there are no revision marks (change bars). This problem
+     is not present when SDoP is used. However, the text and Texinfo output
+     format lack revision indications.
 
 (3)  The index entries in the HTML format take you to the top of the section
      that is referenced, instead of to the point in the section where the index
@@ -504,14 +569,17 @@ future some way round them can be found.
 (4)  The HTML output supports only a single index, so the concept and options
      index entries have to be merged.
 
-(5)  The index for the PostScript/PDF output does not merge identical page
-     numbers, which makes some entries look ugly.
+(5)  The index for the PostScript/PDF output created by xmlto/fop does not
+     merge identical page numbers, which makes some entries look ugly. This is
+     not a problem when SDoP is used.
 
 (6)  None of the indexes (PostScript/PDF and HTML) make use of textual
-     markup; the text is all roman, without any italic or boldface.
+     markup; the text is all roman, without any italic or boldface. For
+     PostScript/PDF, this is not a problem when SDoP is used.
 
-(7)  I turned off hyphenation in the PostScript/PDF output, because it was
-     being done so badly.
+(7)  I turned off hyphenation in the PostScript/PDF output produced by
+     xmlto/fop, because it was being done so badly. Needless to say, I made
+     SDoP do a better job. These comments apply to xmlto/fop:
 
      (a) It seems to force hyphenation if it is at all possible, without
          regard to the "tightness" or "looseness" of the line. Decent
@@ -522,7 +590,7 @@ future some way round them can be found.
      (b) It uses an algorithmic form of hyphenation that doesn't always produce
          acceptable word breaks. (I prefer to use a hyphenation dictionary.)
 
-(8)  The PostScript/PDF output is badly paginated:
+(8)  The PostScript/PDF output produced by xmlto/fop is badly paginated:
 
      (a) There seems to be no attempt to avoid "widow" and "orphan" lines on
          pages. A "widow" is the last line of a paragraph at the top of a page,
@@ -532,8 +600,12 @@ future some way round them can be found.
      (b) There seems to be no attempt to prevent section headings being placed
          last on a page, with no following text on the page.
 
+     Neither of these problems occurs when SDoP is used to produce the
+     PostScript/PDF output.
+
 (9)  The fop processor does not support "fi" ligatures, not even if you put the
-     appropriate Unicode character into the source by hand.
+     appropriate Unicode character into the source by hand. Again, this is not
+     a problem if SDoP is used.
 
 (10) There are no diagrams in the new documentation. This is something I hope
      to work on. The previously used Aspic command for creating line art from a
@@ -544,18 +616,23 @@ future some way round them can be found.
 
 (11) The use of a "zero-width space" works well as a way of specifying that
      Exim option names can be split, without hyphens, over line breaks.
-     However, when an option is not split, if the line is very "loose", the
-     zero-width space is expanded, along with other spaces. This is a totally
-     crazy thing to, but unfortunately it is suggested by the Unicode
-     definition of the zero-width space, which says "its presence between two
-     characters does not prevent increased letter spacing in justification".
-     It seems that the implementors of fop have understood "letter spacing"
-     also to include "word spacing". Sigh.
 
-The consequence of (7), (8), and (9) is that the PostScript/PDF output looks as
-if it comes from some of the very early attempts at text formatting of around
-20 years ago. We can only hope that 20 years' progress is not going to get
-lost, and that things will improve in this area.
+     However, when xmlto/fop is being used and an option is not split, if the
+     line is very "loose", the zero-width space is expanded, along with other
+     spaces. This is a totally crazy thing to, but unfortunately it is
+     suggested by the Unicode definition of the zero-width space, which says
+     "its presence between two characters does not prevent increased letter
+     spacing in justification". It seems that the implementors of fop have
+     understood "letter spacing" also to include "word spacing". Sigh.
+
+     This problem does not arise when SDoP is used.
+
+The consequence of (7), (8), and (9) is that the PostScript/PDF output as
+produced by xmlto/fop looks as if it comes from some of the very early attempts
+at text formatting of around 20 years ago. We can only hope that 20 years'
+progress is not going to get lost, and that things will improve in this area.
+My small contribution to this has been to write SDoP, which, though simple and
+"non-standard", does get some of these formatting issues right.
 
 
 LIST OF FILES
@@ -574,7 +651,7 @@ MyStyle.xsl                    Stylesheet for all output
 MyTitleStyle.xsl               Stylesheet for spec title page
 MyTitlepage.templates.xml      Template for creating MyTitleStyle.xsl
 Myhtml.css                     Experimental css stylesheet for HTML output
-PageLabelPDF                   Script to postprocess PDF
+PageLabelPDF                   Script to postprocess xmlto/fop PDF output
 Pre-xml                        Script to preprocess XML
 TidyHTML-filter                Script to tidy up the filter HTML output
 TidyHTML-spec                  Script to tidy up the spec HTML output
@@ -586,4 +663,4 @@ x2man                          Script to make the Exim man page from the XML
 
 
 Philip Hazel
-Last updated: 30 March 2006
+Last updated: 27 March 2007

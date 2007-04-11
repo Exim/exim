@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-docbook/Markup.txt,v 1.4 2006/12/19 12:28:35 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/Markup.txt,v 1.5 2007/04/11 15:26:09 ph10 Exp $
 
 XFPT MARKUP USED IN THE EXIM DOCUMENTATION
 ------------------------------------------
@@ -215,18 +215,20 @@ To create an index entry, include a line like one of these:
 
   .cindex "primary text" "secondary text"
   .oindex "primary text" "secondary text"
+  .vindex "&$variable_name$&"
 
-The first is for the "concept index" and the second is for the "options index".
-The secondary text is of course optional. Not all forms of output distinguish
-between these - sometimes there is just one index. For the concept index, it is
-also possible to set "start" and "end" markers so that the entry lists a range
-of pages. This is how to do that:
+The first is for the "concept index", the second is for the "options index",
+and the third is for the "variables" index. The secondary text is of course
+optional. Not all forms of output distinguish between these - sometimes there
+is just one index. For the concept index, it is also possible to set "start"
+and "end" markers so that the entry lists a range of pages. This is how to do
+that:
 
   .scindex IID "primary text" "secondary text"
   <intervening text, should be several pages>
   .ecindex IID
 
-The IID must be some unique string to tie the entries together.
+The IID must be some unique string that ties the entries together.
 
 The index for the Exim reference manual has a number of "see also" entries.
 These are coded in raw XML at the start of the source file.
@@ -309,12 +311,14 @@ and "Default", so you do not have to supply them. Notice the use of the &!!
 flag to put a dagger after the word "string".
 
 
-CHANGE BARS
+CHANGE BARS (REVISION MARKINGS)
 
 I have not yet found a way of producing change bars in the PostScript and PDF
-versions of the documents. However, it is possible to put a green background
-behind changed text in the HTML version, so the appropriate markup should be
-used in the source. There is a facility in xfpt for setting the "revisionflag"
+versions of the documents when they are generated using the "fop" command.
+However, the revision marks do work when these formats are produced using my
+own "sdop" processor. Also, it is possible to put a green background behind
+changed text in the HTML version, so the appropriate markup should be used in
+the source. There is a facility in xfpt for setting the "revisionflag"
 attribute on appropriate XML elements. There is also a macro called .new which
 packages this up for use in three different ways. One or more large text items
 can be placed between .new and .wen ("wen" is "new" backwards). For example:
@@ -353,6 +357,10 @@ name, with the argument in parentheses. For example:
 The effect of this is to generate a <phrase> XML element with the revisionflag
 attribute set. The .wen macro is not used in this case.
 
+You can also use .new/.wen inside .display and .code sections, and &new() will
+work inside lines in a .display section. It will not work in a .code section,
+because all text is literal.
+
 If you want to mark a whole table as new, .new and .wen can be used to surround
 it as described above. However, current DocBook processors do not seem to
 recognize the "revisionflag" attribute on individual rows and table entries.
@@ -361,8 +369,9 @@ by using an inline macro call. For example:
 
   .row "&new(some text)" "...."
 
-Each such entry must be separately marked. If there are more than one or two,
-it may be easier just to mark the entire table.
+This works as required when the XML is processed by "sdop" rather than "fop" to
+generate PostScript and PDF. Each such entry must be separately marked. If
+there are more than one or two, it may be easier just to mark the entire table.
 
 Philip Hazel
-Last updated: 31 July 2006
+Last updated: 10 April 2007

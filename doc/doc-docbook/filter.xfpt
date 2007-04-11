@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.4 2006/07/31 13:28:49 ph10 Exp $
+. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.5 2007/04/11 15:26:09 ph10 Exp $
 
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the document that describes Exim's filtering
@@ -11,6 +11,24 @@
 .include stdflags
 .include stdmacs
 .docbook
+
+. /////////////////////////////////////////////////////////////////////////////
+. These lines are processing instructions for the Simple DocBook Processor that
+. Philip Hazel has developed as a less cumbersome way of making PostScript and
+. PDFs than using xmlto and fop. They will be ignored by all other XML
+. processors.
+. /////////////////////////////////////////////////////////////////////////////
+
+.literal xml
+<?sdop
+  foot_right_recto="&chaptertitle;"
+  foot_right_verso="&chaptertitle;"
+  table_warn_soft_overflow="no"
+  toc_chapter_blanks="yes,yes"
+  toc_title="Exim's interfaces to mail filtering"
+?>
+.literal off
+
 .book
 
 . ===========================================================================
@@ -29,11 +47,15 @@
 . ===========================================================================
 
 
+. /////////////////////////////////////////////////////////////////////////////
+. /////////////////////////////////////////////////////////////////////////////
+
 . This preliminary stuff creates a <bookinfo> entry in the XML. This is removed
 . when creating the PostScript/PDF output, because we do not want a full-blown
-. title page created for those versions. The stylesheet fudges up a title line
-. to replace the text "Table of contents". However, for the other forms of
-. output, the <bookinfo> element is retained and used.
+. title page created for those versions. When fop is being used to create
+. PS/PDF, the stylesheet fudges up a title line to replace the text "Table of
+. contents". When SDoP is being used, a processing instruction does this job.
+. For the other forms of output, the <bookinfo> element is retained and used.
 
 .literal xml
 <bookinfo>
@@ -51,11 +73,14 @@
 </bookinfo>
 .literal off
 
+. /////////////////////////////////////////////////////////////////////////////
+. /////////////////////////////////////////////////////////////////////////////
+
 
 .chapter "Forwarding and filtering in Exim"
 This document describes the user interfaces to Exim's in-built mail filtering
-facilities, and is copyright &copy; University of Cambridge 2006. It
-corresponds to Exim version 4.63.
+facilities, and is copyright &copy; University of Cambridge 2007. It
+corresponds to Exim version 4.67.
 
 
 
@@ -248,11 +273,14 @@ this context as &"the specific implementation of Sieve for Exim"&.
 This chapter does not contain a description of Sieve, since that can be found
 in RFC 3028, which should be read in conjunction with these notes.
 
+.new
 The Exim Sieve implementation offers the core as defined by RFC 3028,
-comparison tests, the &*copy*&, &*envelope*&, &*fileinto*&, and &*vacation*&
-extensions, but not the &*reject*& extension. Exim does not support message
-delivery notifications (MDNs), so adding it just to the Sieve filter (as
-required for &*reject*&) makes little sense.
+comparison tests, the subaddress parameter, the &*copy*&, &*envelope*&,
+&*fileinto*&, &*notify*&, and &*vacation*& extensions, but not the &*reject*&
+extension. Exim does not support message delivery notifications (MDNs), so
+adding it just to the Sieve filter (as required for &*reject*&) makes little
+sense.
+.wen
 
 In order for Sieve to work properly in Exim, the system administrator needs to
 make some adjustments to the Exim configuration. These are described in the
@@ -824,11 +852,11 @@ message to be written to its argument file, provided they are different
 (duplicate &(save)& commands are ignored).
 
 If the file name does not start with a / character, the contents of the
-&$home$& variable are prepended, unless it is empty, &new("or the system
-administrator has disabled this feature.") In conventional configurations, this
+&$home$& variable are prepended, unless it is empty, or the system
+administrator has disabled this feature. In conventional configurations, this
 variable is normally set in a user filter to the user's home directory, but the
 system administrator may set it to some other path. In some configurations,
-&$home$& may be unset, &new("or prepending may be disabled,") in which case a
+&$home$& may be unset, or prepending may be disabled, in which case a
 non-absolute path name may be generated. Such configurations convert this to an
 absolute path when the delivery takes place. In a system filter, &$home$& is
 never set.

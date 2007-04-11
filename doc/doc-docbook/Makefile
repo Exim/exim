@@ -1,4 +1,4 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.8 2006/04/04 14:03:49 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.9 2007/04/11 15:26:09 ph10 Exp $
 
 # Make file for Exim documentation from xfpt source.
 
@@ -18,38 +18,63 @@ exim.8:       spec.xml x2man
 
 ############################### FILTER #################################
 
-filter.xml:   filter.xfpt
-	      xfpt filter.xfpt
+filter.xml:      filter.xfpt
+		 xfpt filter.xfpt
 
-filter-fo.xml: filter.xml Pre-xml
-	      ./Pre-xml -bookinfo <filter.xml >filter-fo.xml
+filter-pr.xml:   filter.xml Pre-xml
+		 ./Pre-xml -bookinfo <filter.xml >filter-pr.xml
 
 filter-html.xml: filter.xml Pre-xml
-	      ./Pre-xml -html <filter.xml >filter-html.xml
+		 ./Pre-xml -html <filter.xml >filter-html.xml
 
-filter-txt.xml: filter.xml Pre-xml
-	      ./Pre-xml -ascii -html -quoteliteral <filter.xml >filter-txt.xml
+filter-txt.xml:  filter.xml Pre-xml
+		 ./Pre-xml -ascii -html -quoteliteral <filter.xml >filter-txt.xml
 
 filter-info.xml: filter.xml Pre-xml
-	      ./Pre-xml -ascii -html <filter.xml >filter-info.xml
+		 ./Pre-xml -ascii -html <filter.xml >filter-info.xml
 
-filter.fo:    filter-fo.xml MyStyle-filter-fo.xsl MyStyle-fo.xsl MyStyle.xsl
-	      /bin/rm -rf filter.fo filter-fo.fo
-	      xmlto -x MyStyle-filter-fo.xsl fo filter-fo.xml
-	      /bin/mv -f filter-fo.fo filter.fo
+filter.fo:       filter-pr.xml MyStyle-filter-fo.xsl MyStyle-fo.xsl MyStyle.xsl
+		 /bin/rm -rf filter.fo filter-pr.fo
+		 xmlto -x MyStyle-filter-fo.xsl fo filter-pr.xml
+		 /bin/mv -f filter-pr.fo filter.fo
 
 # Do not use pdf2ps from the PDF version; better PS is generated directly.
 
-filter.ps:    filter.fo
-	      fop filter.fo -ps filter-tmp.ps
-	      mv filter-tmp.ps filter.ps
+###
+### PS/PDF generation using fop
+###
+
+fop-filter.ps:   filter.fo
+		 fop filter.fo -ps filter-tmp.ps
+		 mv filter-tmp.ps filter.ps
 
 # Do not use ps2pdf from the PS version; better PDF is generated directly. It
 # contains cross links etc.
 
-filter.pdf:   filter.fo PageLabelPDF
-	      fop filter.fo -pdf filter-tmp.pdf
-	      ./PageLabelPDF 2 <filter-tmp.pdf >filter.pdf
+fop-filter.pdf:  filter.fo PageLabelPDF
+		 fop filter.fo -pdf filter-tmp.pdf
+		 ./PageLabelPDF 2 <filter-tmp.pdf >filter.pdf
+
+###
+### PS/PDF generation using SDoP
+###
+
+sdop-filter.ps:  filter-pr.xml
+		 sdop -o filter.ps filter-pr.xml
+
+sdop-filter.pdf: sdop-filter.ps
+		 ps2pdf filter.ps filter.pdf
+
+###
+### PS/PDF default setting
+###
+
+filter.ps:  sdop-filter.ps
+
+filter.pdf: sdop-filter.pdf
+
+###
+###
 
 filter.html:  filter-html.xml TidyHTML-filter MyStyle-nochunk-html.xsl \
                 MyStyle-html.xsl MyStyle.xsl
@@ -80,32 +105,36 @@ filter.info:  filter-info.xml
 
 ################################ SPEC ##################################
 
-spec.xml:     spec.xfpt
-	      xfpt spec.xfpt
+spec.xml:      spec.xfpt
+	       xfpt spec.xfpt
 
-spec-fo.xml:  spec.xml Pre-xml
-	      ./Pre-xml -optbreak <spec.xml >spec-fo.xml
+spec-pr.xml:   spec.xml Pre-xml
+	       ./Pre-xml -optbreak <spec.xml >spec-pr.xml
 
 spec-html.xml: spec.xml Pre-xml
-	      ./Pre-xml -html -oneindex \
-		<spec.xml >spec-html.xml
+	       ./Pre-xml -html -oneindex \
+		 <spec.xml >spec-html.xml
 
-spec-txt.xml: spec.xml Pre-xml
-	      ./Pre-xml -ascii -html -noindex -quoteliteral \
-		<spec.xml >spec-txt.xml
+spec-txt.xml:  spec.xml Pre-xml
+	       ./Pre-xml -ascii -html -noindex -quoteliteral \
+		 <spec.xml >spec-txt.xml
 
 spec-info.xml: spec.xml Pre-xml
-	      ./Pre-xml -ascii -html -noindex <spec.xml >spec-info.xml
+	       ./Pre-xml -ascii -html -noindex <spec.xml >spec-info.xml
 
-spec.fo:      spec-fo.xml MyStyle-spec-fo.xsl MyStyle-fo.xsl MyStyle.xsl \
-              MyTitleStyle.xsl
-	      /bin/rm -rf spec.fo spec-fo.fo
-	      xmlto -x MyStyle-spec-fo.xsl fo spec-fo.xml
-	      /bin/mv -f spec-fo.fo spec.fo
+spec.fo:       spec-pr.xml MyStyle-spec-fo.xsl MyStyle-fo.xsl MyStyle.xsl \
+               MyTitleStyle.xsl
+	       /bin/rm -rf spec.fo spec-pr.fo
+	       xmlto -x MyStyle-spec-fo.xsl fo spec-pr.xml
+	       /bin/mv -f spec-pr.fo spec.fo
+
+###
+### PS/PDF generation using fop
+###
 
 # Do not use pdf2ps from the PDF version; better PS is generated directly.
 
-spec.ps:      spec.fo
+fop-spec.ps:  spec.fo
 	      FOP_OPTS=-Xmx512m fop spec.fo -ps spec-tmp.ps
 	      mv spec-tmp.ps spec.ps
 
@@ -113,9 +142,30 @@ spec.ps:      spec.fo
 # contains cross links etc. We post-process it to add page label information
 # so that the page identifiers shown by acroread are the correct page numbers.
 
-spec.pdf:     spec.fo PageLabelPDF
+fop-spec.pdf: spec.fo PageLabelPDF
 	      FOP_OPTS=-Xmx512m fop spec.fo -pdf spec-tmp.pdf
 	      ./PageLabelPDF 12 <spec-tmp.pdf >spec.pdf
+
+###
+### PS/PDF generation using SDoP
+###
+
+sdop-spec.ps:  spec-pr.xml
+	       sdop -o spec.ps spec-pr.xml
+
+sdop-spec.pdf: sdop-spec.ps
+	       ps2pdf spec.ps spec.pdf
+
+###
+### PS/PDF default setting
+###
+
+spec.ps:  sdop-spec.ps
+
+spec.pdf: sdop-spec.pdf
+
+###
+###
 
 spec.html:    spec-html.xml TidyHTML-spec MyStyle-chunk-html.xsl \
                 MyStyle-html.xsl MyStyle.xsl
@@ -149,8 +199,8 @@ spec.info:    spec-info.xml
 test.xml:     test.xfpt
 	      xfpt test.xfpt
 
-test-fo.xml:  test.xml Pre-xml
-	      ./Pre-xml <test.xml >test-fo.xml
+test-pr.xml:  test.xml Pre-xml
+	      ./Pre-xml <test.xml >test-pr.xml
 
 test-html.xml: test.xml Pre-xml
 	      ./Pre-xml -html -oneindex <test.xml >test-html.xml
@@ -162,24 +212,50 @@ test-txt.xml: test.xml Pre-xml
 test-info.xml: test.xml Pre-xml
 	      ./Pre-xml -ascii -html -noindex <test.xml >test-info.xml
 
-test.fo:      test-fo.xml MyStyle-spec-fo.xsl MyStyle-fo.xsl MyStyle.xsl \
+test.fo:      test-pr.xml MyStyle-spec-fo.xsl MyStyle-fo.xsl MyStyle.xsl \
                 MyTitleStyle.xsl
-	      /bin/rm -rf test.fo test-fo.fo
-	      xmlto -x MyStyle-spec-fo.xsl fo test-fo.xml
-	      /bin/mv -f test-fo.fo test.fo
+	      /bin/rm -rf test.fo test-pr.fo
+	      xmlto -x MyStyle-spec-fo.xsl fo test-pr.xml
+	      /bin/mv -f test-pr.fo test.fo
+
+###
+### PS/PDF generation using fop
+###
 
 # Do not use pdf2ps from the PDF version; better PS is generated directly.
 
-test.ps:      test.fo
+fop-test.ps:  test.fo
 	      fop test.fo -ps test-tmp.ps
 	      mv test-tmp.ps test.ps
 
 # Do not use ps2pdf from the PS version; better PDF is generated directly. It
 # contains cross links etc.
 
-test.pdf:     test.fo
+fop-test.pdf: test.fo
 	      fop test.fo -pdf test-tmp.pdf
 	      mv test-tmp.pdf test.pdf
+
+###
+### PS/PDF generation using SDoP
+###
+
+sdop-test.ps:  test-pr.xml
+	       sdop -o test.ps test-pr.xml
+
+sdop-test.pdf: sdop-test.ps
+	       ps2pdf test.ps test.pdf
+
+###
+### PS/PDF default setting
+###
+
+test.ps:  sdop-test.ps
+
+test.pdf: sdop-test.pdf
+
+###
+###
+
 
 test.html:    test-html.xml MyStyle-nochunk-html.xsl MyStyle-html.xsl \
                 MyStyle.xsl

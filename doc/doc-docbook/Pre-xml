@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-# $Cambridge: exim/doc/doc-docbook/Pre-xml,v 1.3 2006/02/01 11:01:01 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Pre-xml,v 1.4 2007/04/11 15:26:09 ph10 Exp $
 
 # Script to pre-process XML input before processing it for various purposes.
 # Options specify which transformations are to be done. Monospaced literal
@@ -30,7 +30,7 @@
 #            newline, the space and newline are removed, because otherwise you
 #            get a blank line in the HTML output.
 #
-# -noindex   Remove the XML to generate a Concept and an Options index.
+# -noindex   Remove the XML that generates indexes.
 # -oneindex  Ditto, but add XML to generate a single index.
 #
 # -optbreak  Insert an optional line break (zero-width space, &#x200B;) after
