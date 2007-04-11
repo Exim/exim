@@ -1,5 +1,5 @@
 #!PERL_COMMAND -w
-# $Cambridge: exim/src/src/eximstats.src,v 1.15 2007/04/03 15:50:58 steve Exp $
+# $Cambridge: exim/src/src/eximstats.src,v 1.16 2007/04/11 15:05:03 steve Exp $
 
 # Copyright (c) 2001 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -275,6 +275,9 @@
 # 2007-03-30  V1.57 Steve Campbell
 #             Fixed Grand Total Summary Domains, Edomains, and Email columns
 #             for Rejects, Temp Rejects, Ham, and Spam rows.
+#
+# 2007-04-11  V1.58 Steve Campbell
+#             Fix to get <> and blackhole to show in edomain tables.
 #
 #
 #
@@ -574,7 +577,7 @@ use vars qw($WEEK $DAY $HOUR $MINUTE);
 
 @days_per_month = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
 $gig     = 1024 * 1024 * 1024;
-$VERSION = '1.57';
+$VERSION = '1.58';
 
 # How much space do we allow for the Hosts/Domains/Emails/Edomains column headers?
 $COLUMN_WIDTHS = 8;
@@ -1942,16 +1945,25 @@ sub generate_parser {
     #ENDIF ($do_sender{Email})
 
     #IFDEF ($do_sender{Edomain})
+      if (/^(<>|blackhole)/) {
+        $edomain = $1;
+      }
       #IFDEF ($include_original_destination)
-      #$edomain = (/^(\S+) (<\S*?\\@(\S+)>)?/) ? $3 || $1 : "";
-      $edomain = (/^(\S+ (<\S*?\\@(\S+?)>)?)/) ? $1 : "";
-      chomp($edomain);
-      lc($edomain);
+        elsif (/^(\S+ (<\S*?\\@(\S+?)>)?)/) {
+          $edomain = $1;
+          chomp($edomain);
+          $edomain =~ s/@(\S+?)>/"@" . lc($1) . ">"/e;
+        }
       #ENDIF ($include_original_destination)
-
       #IFNDEF ($include_original_destination)
-      $edomain = (/^\S*?\\@(\S+)/) ? lc($1) : "";
+        elsif (/^\S*?\\@(\S+)/) {
+          $edomain = lc($1);
+        }
       #ENDIF ($include_original_destination)
+      else {
+        $edomain = "";
+      }
+
     #ENDIF ($do_sender{Edomain})
 
     if ($tod lt $begin) {
