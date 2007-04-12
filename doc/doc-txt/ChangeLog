@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.500 2007/04/11 15:06:05 steve Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.501 2007/04/12 09:00:51 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -199,6 +199,8 @@ SC/02 Eximstats - Differentiate between permanent and temporary rejects.
                   columns for Rejects, Temp Rejects, Ham, and Spam rows.
 
 SC/03 Eximstats - V1.58 Fix to get <> and blackhole to show in edomain tables.
+
+PH/43 Yet another patch from the Sieve maintainer.
 
 
 Exim version 4.66

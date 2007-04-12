@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.26 2007/03/21 15:15:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.27 2007/04/12 09:00:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1195,8 +1195,214 @@ return 1;
 }
 
 
+#ifdef ENCODED_CHARACTER
 /*************************************************
-*          Parse a optional string               *
+*       Decode encoded-character string          *
+*************************************************/
+
+/*
+Encoding definition:
+   hex-pair-seq         = hex-pair *(WSP hex-pair)
+   hex-pair             = 1*2HEXDIG
+
+Arguments:
+  src         points to a hex-pair-seq
+  end         points to its end
+  dst         points to the destination of the decoded octets,
+              optionally to (uschar*)0 for checking only
+
+Returns:      >=0              number of decoded octets
+              -1               syntax error
+*/
+
+static int hex_decode(uschar *src, uschar *end, uschar *dst)
+{
+int decoded=0;
+
+while (src<end)
+  {
+  int l,h;
+
+  if (*src==' ' || *src=='\t') ++src;
+  else if ((src+1)<end && isxdigit(h=tolower(*src)) && isxdigit(l=tolower(*(src+1))))
+    {
+    h=(h>='0' && h<='9') ? h-'0' : 10+(h-'a');
+    l=(l>='0' && l<='9') ? l-'0' : 10+(l-'a');
+    if (dst) *dst++=(h<<4)|l;
+    ++decoded;
+    src+=2;
+    }
+  else return -1;
+  }
+  return decoded;
+}
+
+
+/*************************************************
+*       Decode encoded-character string          *
+*************************************************/
+
+/*
+Encoding definition:
+   unicode-hex-seq      = unicode-hex *(WSP unicode-hex)
+   unicode-hex          = 1*6HEXDIG
+
+   It is an error for a script to use a hexadecimal value that isn't in
+   either the range 0 to D7FF or the range E000 to 10FFFF.
+
+Arguments:
+  src         points to a unicode-hex-seq
+  end         points to its end
+  dst         points to the destination of the decoded octets,
+              optionally to (uschar*)0 for checking only
+
+Returns:      >=0              number of decoded octets
+              -1               syntax error
+              -2               semantic error (character range violation)
+*/
+
+static int unicode_decode(uschar *src, uschar *end, uschar *dst)
+{
+int decoded=0;
+
+while (src<end)
+  {
+  int c,n5,n4,n3,n2,n1,n0;
+
+  if (*src==' ' || *src=='\t') ++src;
+  else if (
+           (src+5)<end
+           && isxdigit(n5=tolower(*src))
+           && isxdigit(n4=tolower(*(src+1)))
+           && isxdigit(n3=tolower(*(src+2)))
+           && isxdigit(n2=tolower(*(src+3)))
+           && isxdigit(n1=tolower(*(src+4)))
+           && isxdigit(n0=tolower(*(src+5)))
+          )
+    {
+    n5=(n5>='0' && n5<='9') ? n5-'0' : 10+(n5-'a');
+    n4=(n4>='0' && n4<='9') ? n4-'0' : 10+(n4-'a');
+    n3=(n3>='0' && n3<='9') ? n3-'0' : 10+(n3-'a');
+    n2=(n2>='0' && n2<='9') ? n2-'0' : 10+(n2-'a');
+    n1=(n1>='0' && n1<='9') ? n1-'0' : 10+(n1-'a');
+    n0=(n0>='0' && n0<='9') ? n0-'0' : 10+(n0-'a');
+    c=(n5<<24)|(n4<<16)|(n3<<12)|(n2<<8)|(n1<<4)|n0;
+    if (!((c>=0 && c<=0xd7ff) || (c>=0xe000 && c<=0x10ffff))) return -2;
+    if (c<128)
+      {
+      if (dst) *dst++=c;
+      ++decoded;
+      }
+    else if (c>=0x80 && c<=0x7ff)
+      {
+        if (dst)
+          {
+          *dst++=192+(c>>6);
+          *dst++=128+(c&0x3f);
+          }
+        decoded+=2;
+      }
+    else if (c>=0x800 && c<=0xffff)
+      {
+        if (dst)
+          {
+          *dst++=224+(c>>12);
+          *dst++=128+((c>>6)&0x3f);
+          *dst++=128+(c&0x3f);
+          }
+        decoded+=3;
+      }
+    else if (c>=0x10000 && c<=0x1fffff)
+      {
+        if (dst)
+          {
+          *dst++=240+(c>>18);
+          *dst++=128+((c>>10)&0x3f);
+          *dst++=128+((c>>6)&0x3f);
+          *dst++=128+(c&0x3f);
+          }
+        decoded+=4;
+      }
+    src+=6;
+    }
+  else return -1;
+  }
+  return decoded;
+}
+
+
+/*************************************************
+*       Decode encoded-character string          *
+*************************************************/
+
+/*
+Encoding definition:
+   encoded-arb-octets   = "${hex:" hex-pair-seq "}"
+   encoded-unicode-char = "${unicode:" unicode-hex-seq "}"
+
+Arguments:
+  encoded     points to an encoded string, returns decoded string
+  filter      points to the Sieve filter including its state
+
+Returns:      1                success
+              -1               syntax error
+*/
+
+static int string_decode(struct Sieve *filter, struct String *data)
+{
+uschar *src,*dst,*end;
+
+src=data->character;
+dst=src;
+end=data->character+data->length;
+while (src<end)
+  {
+  uschar *brace;
+
+  if (
+      Ustrncmp(src,CUS "${hex:",6)==0
+      && (brace=Ustrchr(src+6,'}'))!=(uschar*)0
+      && (hex_decode(src+6,brace,(uschar*)0))>=0
+     )
+    {
+    dst+=hex_decode(src+6,brace,dst);
+    src=brace+1;
+    }
+  else if (
+           Ustrncmp(src,CUS "${unicode:",10)==0
+           && (brace=Ustrchr(src+10,'}'))!=(uschar*)0
+          )
+    {
+    switch (unicode_decode(src+10,brace,(uschar*)0))
+      {
+      case -2:
+        {
+        filter->errmsg=CUS "unicode character out of range";
+        return -1;
+        }
+      case -1:
+        {
+        *dst++=*src++;
+        break;
+        }
+      default:
+        {
+        dst+=unicode_decode(src+10,brace,dst);
+        src=brace+1;
+        }
+      }
+    }
+  else *dst++=*src++;
+  }
+  data->length=dst-data->character;
+  *dst='\0';
+return 1;
+}
+#endif
+
+
+/*************************************************
+*          Parse an optional string              *
 *************************************************/
 
 /*
@@ -1243,6 +1449,11 @@ if (*filter->pc=='"') /* quoted string */
       ++filter->pc;
       /* that way, there will be at least one character allocated */
       data->character=string_cat(data->character,&dataCapacity,&foo,CUS "",1);
+#ifdef ENCODED_CHARACTER
+      if (filter->require_encoded_character
+          && string_decode(filter,data)==-1)
+        return -1;
+#endif
       return 1;
       }
     else if (*filter->pc=='\\' && *(filter->pc+1)) /* quoted character */
@@ -1327,6 +1538,11 @@ else if (Ustrncmp(filter->pc,CUS "text:",5)==0) /* multiline string */
         filter->pc+=2;
 #endif
         ++filter->line;
+#ifdef ENCODED_CHARACTER
+        if (filter->require_encoded_character
+            && string_decode(filter,data)==-1)
+          return -1;
+#endif
         return 1;
         }
       else if (*filter->pc=='.' && *(filter->pc+1)=='.') /* remove dot stuffing */
