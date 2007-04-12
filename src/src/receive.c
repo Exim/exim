@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.34 2007/02/16 22:23:35 magnus Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.35 2007/04/12 09:03:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -875,12 +875,12 @@ exim_exit(error_rc);
 *          Add header lines set up by ACL        *
 *************************************************/
 
-/* This function is called to add the header lines that were set up by "warn"
-statements in an ACL onto the list of headers in memory. It is done in two
-stages like this, because when the ACL for RCPT is running, the other headers
-have not yet been received. This function is called twice; once just before
-running the DATA ACL, and once after. This is so that header lines added by
-MAIL or RCPT are visible to the DATA ACL.
+/* This function is called to add the header lines that were set up by
+statements in an ACL to the list of headers in memory. It is done in two stages
+like this, because when the ACL for RCPT is running, the other headers have not
+yet been received. This function is called twice; once just before running the
+DATA ACL, and once after. This is so that header lines added by MAIL or RCPT
+are visible to the DATA ACL.
 
 Originally these header lines were added at the end. Now there is support for
 three different places: top, bottom, and after the Received: header(s). There
