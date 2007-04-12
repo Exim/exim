@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.16 2007/04/11 15:26:09 ph10 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.17 2007/04/12 10:56:02 ph10 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -66,10 +66,17 @@
 .flag &!?      "</emphasis>&Dagger;<emphasis>"
 
 . --- A macro for an Exim option definition heading, generating a one-line
-. --- table with four columns.
+. --- table with four columns. For cases when the option name is given with
+. --- a space, so that it can be split, a fifth argument is used for the
+. --- index entry.
 
 .macro option
+.arg 5
+.oindex "&%$5%&"
+.endarg
+.arg -5
 .oindex "&%$1%&"
+.endarg
 .itable all 0 0 4 8* left 6* center 6* center 6* right
 .row "&%$1%&" "Use: &'$2'&" "Type: &'$3'&" "Default: &'$4'&"
 .endtable
@@ -975,7 +982,7 @@ received the message.
 .next
 There are two different possibilities for the final two characters:
 .olist
-.cindex "&%localhost_number%&"
+.oindex "&%localhost_number%&"
 If &%localhost_number%& is not set, this value is the fractional part of the
 time of reception, normally in units of 1/2000 of a second, but for systems
 that must use base 36 instead of base 62 (because of case-insensitive file
@@ -1118,8 +1125,8 @@ corrected, and can also freeze individual messages by hand if necessary. In
 addition, an administrator can force a delivery error, causing a bounce message
 to be sent.
 
-.cindex "&%timeout_frozen_after%&"
-.cindex "&%ignore_bounce_errors_after%&"
+.oindex "&%timeout_frozen_after%&"
+.oindex "&%ignore_bounce_errors_after%&"
 There are options called &%ignore_bounce_errors_after%& and
 &%timeout_frozen_after%&, which discard frozen messages after a certain time.
 The first applies only to frozen bounces, the second to any frozen messages.
@@ -1261,7 +1268,7 @@ the following:
 &'accept'&: The router accepts the address, and either assigns it to a
 transport, or generates one or more &"child"& addresses. Processing the
 original address ceases,
-.cindex "&%unseen%& option"
+.oindex "&%unseen%&"
 unless the &%unseen%& option is set on the router. This option
 can be used to set up multiple deliveries with different routing (for example,
 for keeping archive copies of messages). When &%unseen%& is set, the address is
@@ -7502,7 +7509,7 @@ The following types of item may appear in domain lists:
 .ilist
 .cindex "primary host name"
 .cindex "host name" "matched in domain list"
-.cindex "&%primary_hostname%&"
+.oindex "&%primary_hostname%&"
 .cindex "domain list" "matching primary host name"
 .cindex "@ in a domain list"
 If a pattern consists of a single @ character, it matches the local host name,
@@ -7524,7 +7531,7 @@ In today's Internet, the use of domain literals is controversial.
 .cindex "domain list" "matching MX pointers to local host"
 If a pattern consists of the string &`@mx_any`& it matches any domain that
 has an MX record pointing to the local host or to any host that is listed in
-.cindex "&%hosts_treat_as_local%&"
+.oindex "&%hosts_treat_as_local%&"
 &%hosts_treat_as_local%&. The items &`@mx_primary`& and &`@mx_secondary`&
 are similar, except that the first matches only when a primary MX target is the
 local host, and the second only when no primary MX target is the local host,
@@ -9236,7 +9243,7 @@ processing lists.
 
 
 .vitem &*${base62:*&<&'digits'&>&*}*&
-.cindex "&%base62%&"
+.cindex "&%base62%& expansion item"
 .cindex "expansion" "conversion to base 62"
 The string must consist entirely of decimal digits. The number is converted to
 base 62 and output as a string of six characters, including leading zeros. In
@@ -9246,7 +9253,7 @@ names), base 36 is used by this operator, despite its name. &*Note*&: Just to
 be absolutely clear: this is &'not'& base64 encoding.
 
 .vitem &*${base62d:*&<&'base-62&~digits'&>&*}*&
-.cindex "&%base62d%&"
+.cindex "&%base62d%& expansion item"
 .cindex "expansion" "conversion to base 62"
 The string must consist entirely of base-62 digits, or, in operating
 environments where Exim uses base 36 instead of base 62 for its message
@@ -9262,7 +9269,7 @@ from it. If the string does not parse successfully, the result is empty.
 
 .vitem &*${escape:*&<&'string'&>&*}*&
 .cindex "expansion" "escaping non-printing characters"
-.cindex "&%escape%&, expansion item"
+.cindex "&%escape%& expansion item"
 If the string contains any non-printing characters, they are converted to
 escape sequences starting with a backslash. Whether characters with the most
 significant bit set (so-called &"8-bit characters"&) count as printing or not
@@ -9347,7 +9354,7 @@ and then re-expands what it has found.
 .cindex "Unicode"
 .cindex "UTF-8" "conversion from"
 .cindex "expansion" "UTF-8 conversion"
-.cindex "&%from_utf8%&"
+.cindex "&%from_utf8%& expansion item"
 The world is slowly moving towards Unicode, although there are no standards for
 email yet. However, other applications (including some databases) are starting
 to store data in Unicode, using UTF-8 encoding. This operator converts from a
@@ -9381,7 +9388,7 @@ abbreviation &%h%& can be used when &%hash%& is used as an operator.
 .vitem &*${hex2b64:*&<&'hexstring'&>&*}*&
 .cindex "base64 encoding" "conversion from hex"
 .cindex "expansion" "hex to base64"
-.cindex "&%hex2b64%&"
+.cindex "&%hex2b64%& expansion item"
 This operator converts a hex string into one that is base64 encoded. This can
 be useful for processing the output of the MD5 and SHA-1 hashing functions.
 
@@ -9424,7 +9431,7 @@ empty.
 .cindex "IP address" "masking"
 .cindex "CIDR notation"
 .cindex "expansion" "IP address masking"
-.cindex "&%mask%&, expansion item"
+.cindex "&%mask%& expansion item"
 If the form of the string to be operated on is not an IP address followed by a
 slash and an integer (that is, a network address in CIDR notation), the
 expansion fails. Otherwise, this operator converts the IP address to binary,
@@ -9470,7 +9477,7 @@ See the description of the general &%nhash%& item above for details.
 .vitem &*${quote:*&<&'string'&>&*}*&
 .cindex "quoting" "in string expansions"
 .cindex "expansion" "quoting"
-.cindex "&%quote%&, expansion item"
+.cindex "&%quote%& expansion item"
 The &%quote%& operator puts its argument into double quotes if it
 is an empty string or
 contains anything other than letters, digits, underscores, dots, and hyphens.
@@ -9919,7 +9926,7 @@ case-independent.
 .vitem &*match&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
 .cindex "expansion" "regular expression comparison"
 .cindex "regular expressions" "match in expanded string"
-.cindex "&%match%&, expansion condition"
+.cindex "&%match%& expansion condition"
 The two substrings are first expanded. The second is then treated as a regular
 expression and applied to the first. Because of the pre-expansion, if the
 regular expression contains dollar, or backslash characters, they must be
@@ -10486,7 +10493,7 @@ at a time if the value of &$domain$& is required at transport time &-- this is
 the default for local transports. For further details of the environment in
 which local transports are run, see chapter &<<CHAPenvironment>>&.
 
-.cindex "&%delay_warning_condition%&"
+.oindex "&%delay_warning_condition%&"
 At the end of a delivery, if all deferred addresses have the same domain, it is
 set in &$domain$& during the expansion of &%delay_warning_condition%&.
 
@@ -10517,7 +10524,7 @@ recipient domain (which is what is in &$domain$& at this time).
 
 .next
 .cindex "ETRN" "value of &$domain$&"
-.cindex "&%smtp_etrn_command%&"
+.oindex "&%smtp_etrn_command%&"
 When the &%smtp_etrn_command%& option is being expanded, &$domain$& contains
 the complete argument of the ETRN command (see section &<<SECTETRN>>&).
 .endlist
@@ -11228,7 +11235,7 @@ reliably expect to set &$runrc$& by the expansion of one option, and use it in
 another.
 
 .vitem &$self_hostname$&
-.cindex "&%self%& option" "value of host name"
+.oindex "&%self%&" "value of host name"
 .vindex "&$self_hostname$&"
 When an address is routed to a supposedly remote host that turns out to be the
 local host, what happens is controlled by the &%self%& generic router option.
@@ -11608,7 +11615,7 @@ in your &_Local/Makefile_& and then build Exim in the normal way.
 
 
 .section "Setting up so Perl can be used" "SECID85"
-.cindex "&%perl_startup%&"
+.oindex "&%perl_startup%&"
 Access to Perl subroutines is via a global configuration option called
 &%perl_startup%& and an expansion string operator &%${perl ...}%&. If there is
 no &%perl_startup%& option in the Exim configuration file then no Perl
@@ -11634,7 +11641,7 @@ the interpreter is started only when it is needed, but this can be changed in
 two ways:
 
 .ilist
-.cindex "&%perl_at_start%&"
+.oindex "&%perl_at_start%&"
 Setting &%perl_at_start%& (a boolean option) in the configuration requests
 a startup when Exim is entered.
 .next
@@ -13174,9 +13181,11 @@ routing, but which are not used for listening by the daemon. See section
 &<<SECTreclocipadd>>& for details.
 
 
-. Allow this long option name to split
+. Allow this long option name to split; give it unsplit as a fifth argument
+. for the automatic .oindex that is generated by .option.
 
-.option "extract_addresses_remove_ &~&~arguments" main boolean true
+.option "extract_addresses_remove_ &~&~arguments" main boolean true &&&
+         extract_addresses_remove_arguments
 .oindex "&%-t%&"
 .cindex "command line" "addresses with &%-t%&"
 .cindex "Sendmail compatibility" "&%-t%& option"
@@ -14409,9 +14418,11 @@ changing the value, you can exclude any badly-behaved hosts that you have to
 live with.
 
 
-. Allow this long option to split
+. Allow this long option name to split; give it unsplit as a fifth argument
+. for the automatic .oindex that is generated by .option.
 
-.option "smtp_accept_max_per_ &~&~connection" main integer 1000
+.option "smtp_accept_max_per_ &~&~connection" main integer 1000 &&&
+         smtp_accept_max_per_connection
 .cindex "SMTP" "limiting incoming message count"
 .cindex "limit" "messages per SMTP connection"
 The value of this option limits the number of MAIL commands that Exim is
@@ -14458,9 +14469,11 @@ no limit, and clearly any non-zero value is useful only if it is less than the
 command line options.
 
 
-. Allow this long option name to split
+. Allow this long option name to split; give it unsplit as a fifth argument
+. for the automatic .oindex that is generated by .option.
 
-.option "smtp_accept_queue_per_ &~&~connection" main integer 10
+.option "smtp_accept_queue_per_ &~&~connection" main integer 10 &&&
+         smtp_accept_queue_per_connection
 .cindex "queueing incoming messages"
 .cindex "message" "queueing by message count"
 This option limits the number of delivery processes that Exim starts
@@ -15622,8 +15635,18 @@ failures are treated as configuration errors.
 &*Warning 1*&: The &%headers_add%& option cannot be used for a &(redirect)&
 router that has the &%one_time%& option set.
 
+.new
+.cindex "duplicate addresses"
+.oindex "&%unseen%&"
 &*Warning 2*&: If the &%unseen%& option is set on the router, all header
 additions are deleted when the address is passed on to subsequent routers.
+For a &%redirect%& router, if a generated address is the same as the incoming
+address, this can lead to duplicate addresses with different header
+modifications. Exim does not do duplicate deliveries (except, in certain
+circumstances, to pipes -- see section &<<SECTdupaddr>>&), but it is undefined
+which of the duplicates is discarded, so this ambiguous situation should be
+avoided. The &%repeat_use%& option of the &%redirect%& router may be of help.
+.wen
 
 
 
@@ -15647,9 +15670,12 @@ errors.
 &*Warning 1*&: The &%headers_remove%& option cannot be used for a &(redirect)&
 router that has the &%one_time%& option set.
 
+.new
 &*Warning 2*&: If the &%unseen%& option is set on the router, all header
 removal requests are deleted when the address is passed on to subsequent
-routers.
+routers, and this can lead to problems with duplicates -- see the similar
+warning for &%headers_add%& above.
+.wen
 
 
 .option ignore_target_hosts routers "host list&!!" unset
@@ -15828,7 +15854,7 @@ delivery to be deferred.
 
 If this option is set false, and the router declines to handle the address, no
 further routers are tried, routing fails, and the address is bounced.
-.cindex "&%self%& option"
+.oindex "&%self%&"
 However, if the router explicitly passes an address to the following router by
 means of the setting
 .code
@@ -16064,7 +16090,7 @@ reprocessed by the routers. Any headers that contain the original domain are
 rewritten.
 
 .vitem &%pass%&
-.cindex "&%more%& option"
+.oindex "&%more%&"
 .vindex "&$self_hostname$&"
 The router passes the address to the next router, or to the router named in the
 &%pass_router%& option if it is set. This overrides &%no_more%&. During
@@ -16216,22 +16242,31 @@ overriding a false setting of &%more%&. There is little point in setting
 the value of &%unseen%& contains expansion items (and therefore, presumably, is
 sometimes true and sometimes false).
 
+.new
 .cindex "copy of message (&%unseen%& option)"
-The &%unseen%& option can be used to cause copies of messages to be delivered
-to some other destination, while also carrying out a normal delivery. In
-effect, the current address is made into a &"parent"& that has two children &--
-one that is delivered as specified by this router, and a clone that goes on to
-be routed further. For this reason, &%unseen%& may not be combined with the
+Setting the &%unseen%& option has a similar effect to the &%unseen%& command
+qualifier in filter files. It can be used to cause copies of messages to be
+delivered to some other destination, while also carrying out a normal delivery.
+In effect, the current address is made into a &"parent"& that has two children
+&-- one that is delivered as specified by this router, and a clone that goes on
+to be routed further. For this reason, &%unseen%& may not be combined with the
 &%one_time%& option in a &(redirect)& router.
 
 &*Warning*&: Header lines added to the address (or specified for removal) by
 this router or by previous routers affect the &"unseen"& copy of the message
 only. The clone that continues to be processed by further routers starts with
-no added headers and none specified for removal. However, any data that was set
-by the &%address_data%& option in the current or previous routers is passed on.
-Setting the &%unseen%& option has a similar effect to the &%unseen%& command
-qualifier in filter files.
+no added headers and none specified for removal. For a &%redirect%& router, if
+a generated address is the same as the incoming address, this can lead to
+duplicate addresses with different header modifications. Exim does not do
+duplicate deliveries (except, in certain circumstances, to pipes -- see section
+&<<SECTdupaddr>>&), but it is undefined which of the duplicates is discarded,
+so this ambiguous situation should be avoided. The &%repeat_use%& option of the
+&%redirect%& router may be of help.
 
+Unlike the handling of header modifications, any data that was set by the
+&%address_data%& option in the current or previous routers &'is'& passed on to
+subsequent routers.
+.wen
 
 
 .option user routers string&!! "see below"
@@ -16353,7 +16388,7 @@ are discarded, together with any other MX records of equal or lower priority.
 
 .cindex "MX record" "pointing to local host"
 .cindex "local host" "MX pointing to"
-.cindex "&%self%& option" "in &(dnslookup)& router"
+.oindex "&%self%&" "in &(dnslookup)& router"
 If the host pointed to by the highest priority MX record, or looked up as an
 address record, is the local host, or matches &%hosts_treat_as_local%&, what
 happens is controlled by the generic &%self%& option.
@@ -16609,7 +16644,7 @@ postmaster@[ipv6:fe80::a00:20ff:fe86:a061.5678]
 Exim allows &`ipv4:`& before IPv4 addresses, for consistency, and on the
 grounds that sooner or later somebody will try it.
 
-.cindex "&%self%& option" "in &(ipliteral)& router"
+.oindex "&%self%&" "in &(ipliteral)& router"
 If the IP address matches something in &%ignore_target_hosts%&, the router
 declines. If an IP literal turns out to refer to the local host, the generic
 &%self%& option determines what happens.
@@ -16776,7 +16811,7 @@ The default (&"freeze"&) assumes that this state is a serious configuration
 error. The difference between &"pass"& and &"decline"& is that the former
 forces the address to be passed to the next router (or the router defined by
 &%pass_router%&),
-.cindex "&%more%& option"
+.oindex "&%more%&"
 overriding &%no_more%&, whereas the latter passes the address to the next
 router only if &%more%& is true.
 
@@ -16828,7 +16863,7 @@ router declines. Other kinds of expansion failure cause delivery to be
 deferred.
 
 
-.option route_list manualroute " "string list" " semicolon-separated""
+.option route_list manualroute "string list" unset
 This string is a list of routing rules, in the form defined below. Note that,
 unlike most string lists, the items are separated by semicolons. This is so
 that they may contain colon-separated host lists.
@@ -17001,7 +17036,7 @@ that is not followed by &`/MX`& it looks up an IP address. If this turns out to
 be an interface on the local host and the item is not the first in the list,
 Exim discards it and any subsequent items. If it is the first item, what
 happens is controlled by the
-.cindex "&%self%& option" "in &(manualroute)& router"
+.oindex "&%self%&" "in &(manualroute)& router"
 &%self%& option of the router.
 
 A name on the list that is followed by &`/MX`& is replaced with the list of
@@ -17734,7 +17769,7 @@ results in an empty redirection list has the same effect.
 .endlist
 
 
-.section "Duplicate addresses" "SECID127"
+.section "Duplicate addresses" "SECTdupaddr"
 .cindex "duplicate addresses"
 .cindex "address duplicate, discarding"
 .cindex "pipe" "duplicated"
@@ -18376,7 +18411,7 @@ address by the router. If &%user%& is non-numeric and &%group%& is not set, the
 gid associated with the user is used. If &%user%& is numeric, &%group%& must be
 set.
 
-.cindex "&%initgroups%& option"
+.oindex "&%initgroups%&"
 When the uid is taken from the transport's configuration, the &[initgroups()]&
 function is called for the groups associated with that uid if the
 &%initgroups%& option is set for the transport. When the uid is not specified
@@ -18960,8 +18995,8 @@ transport is run for each address that is routed to the transport. A separate
 copy of the message is delivered each time.
 
 .cindex "batched local delivery"
-.cindex "&%batch_max%&"
-.cindex "&%batch_id%&"
+.oindex "&%batch_max%&"
+.oindex "&%batch_id%&"
 In special cases, it may be desirable to handle several addresses at once in a
 local transport, for example:
 
@@ -21207,7 +21242,6 @@ in chapter &<<CHAPdnslookup>>& for more details.
 
 
 .option dns_search_parents smtp boolean false
-.cindex "&%search_parents%&"
 If the &%hosts%& or &%fallback_hosts%& option is being used, and the
 &%gethostbyname%& option is false, the RES_DNSRCH resolver option is set.
 See the &%search_parents%& option in chapter &<<CHAPdnslookup>>& for more
@@ -22566,7 +22600,7 @@ computed from the rule's parameters until one that is greater than the previous
 interval is found. The main configuration variable
 .cindex "limit" "retry interval"
 .cindex "retry" "interval, maximum"
-.cindex "&%retry_interval_max%&"
+.oindex "&%retry_interval_max%&"
 &%retry_interval_max%& limits the maximum interval between retries. It
 cannot be set greater than &`24h`&, which is its default value.
 
@@ -22639,7 +22673,7 @@ hours, then with intervals starting at one hour and increasing by a factor of
 
 .section "Timeout of retry data" "SECID165"
 .cindex "timeout" "of retry data"
-.cindex "&%retry_data_expire%&"
+.oindex "&%retry_data_expire%&"
 .cindex "hints database" "data expiry"
 .cindex "retry" "timeout of data"
 Exim timestamps the data that it writes to its retry hints database. When it
@@ -22685,7 +22719,7 @@ messages. If this delivery fails, the address fails immediately. The
 post-cutoff retry time is not used.
 
 If the delivery is remote, there are two possibilities, controlled by the
-.cindex "&%delay_after_cutoff%&"
+.oindex "&%delay_after_cutoff%&"
 &%delay_after_cutoff%& option of the &(smtp)& transport. The option is true by
 default. Until the post-cutoff retry time for one of the IP addresses is
 reached, the failing email address is bounced immediately, without a delivery
@@ -23920,7 +23954,7 @@ stalling is removed.
 
 .section "Requiring specific ciphers in OpenSSL" "SECTreqciphssl"
 .cindex "TLS" "requiring specific ciphers (OpenSSL)"
-.cindex "&%tls_require_ciphers%&" "OpenSSL"
+.oindex "&%tls_require_ciphers%&" "OpenSSL"
 There is a function in the OpenSSL library that can be passed a list of cipher
 suites before the cipher negotiation takes place. This specifies which ciphers
 are acceptable. The list is colon separated and may contain names like
@@ -23972,7 +24006,7 @@ not be moved to the end of the list.
 .cindex "TLS" "specifying key exchange methods (GnuTLS)"
 .cindex "TLS" "specifying MAC algorithms (GnuTLS)"
 .cindex "TLS" "specifying protocols (GnuTLS)"
-.cindex "&%tls_require_ciphers%&" "GnuTLS"
+.oindex "&%tls_require_ciphers%&" "GnuTLS"
 The GnuTLS library allows the caller to specify separate lists of permitted key
 exchange methods, main cipher algorithms, MAC algorithms, and protocols.
 Unfortunately, these lists are numerical, and the library does not have a
@@ -23989,9 +24023,9 @@ list for the name of an available algorithm. For example, if the list
 contains RSA_AES_SHA, then AES is recognized, and the behaviour is exactly
 the same as if just AES were given.
 
-.cindex "&%gnutls_require_kx%&"
-.cindex "&%gnutls_require_mac%&"
-.cindex "&%gnutls_require_protocols%&"
+.oindex "&%gnutls_require_kx%&"
+.oindex "&%gnutls_require_mac%&"
+.oindex "&%gnutls_require_protocols%&"
 There are additional options called &%gnutls_require_kx%&,
 &%gnutls_require_mac%&, and &%gnutls_require_protocols%& that can be used to
 restrict the key exchange methods, MAC algorithms, and protocols, respectively.
@@ -24496,7 +24530,7 @@ temporary error for these kinds of message.
 
 .section "The SMTP connect ACL" "SECID191"
 .cindex "SMTP" "connection, ACL for"
-.cindex &%smtp_banner%&
+.oindex &%smtp_banner%&
 The ACL test specified by &%acl_smtp_connect%& happens at the start of an SMTP
 session, after the test specified by &%host_reject_connection%& (which is now
 an anomaly) and any TCP Wrappers testing (if configured). If the connection is
@@ -25302,7 +25336,7 @@ require  message = Host not recognized
 processed.)
 
 .cindex "SMTP" "error codes"
-.cindex "&%smtp_banner%&
+.oindex "&%smtp_banner%&
 For ACLs that are triggered by SMTP commands, the message is returned as part
 of the SMTP response. The use of &%message%& with &%accept%& (or &%discard%&)
 is meaningful only for SMTP, as no message is returned when a non-SMTP message
@@ -25537,7 +25571,7 @@ controlled by &%acl_smtp_connect%& or &%acl_smtp_helo%&. See also
 .wen
 
 .vitem &*control&~=&~queue_only*&
-.cindex "&%queue_only%&"
+.oindex "&%queue_only%&"
 .cindex "queueing incoming messages"
 This control is permitted only for the MAIL, RCPT, DATA, and non-SMTP ACLs, in
 other words, only when a message is being received. If the message is accepted,
@@ -27469,7 +27503,7 @@ It supports a &"generic"& interface to scanners called via the shell, and
 specialized interfaces for &"daemon"& type virus scanners, which are resident
 in memory and thus are much faster.
 
-.cindex "&%av_scanner%&"
+.oindex "&%av_scanner%&"
 You can set the &%av_scanner%& option in first part of the Exim configuration
 file to specify which scanner to use, together with any additional options that
 are needed. The basic syntax is as follows:
@@ -27689,7 +27723,7 @@ SpamAssassin has its own set of configuration files. Please review its
 documentation to see how you can tweak it. The default installation should work
 nicely, however.
 
-.cindex "&%spamd_address%&"
+.oindex "&%spamd_address%&"
 After having installed and configured SpamAssassin, start the &%spamd%& daemon.
 By default, it listens on 127.0.0.1, TCP port 783. If you use another host or
 port for &%spamd%&, you must set the &%spamd_address%& option in the global
@@ -27829,8 +27863,8 @@ deny  message = This message scored $spam_score spam points.
 .section "Scanning MIME parts" "SECTscanmimepart"
 .cindex "content scanning" "MIME parts"
 .cindex "MIME content scanning"
-.cindex "&%acl_smtp_mime%&"
-.cindex "&%acl_not_smtp_mime%&"
+.oindex "&%acl_smtp_mime%&"
+.oindex "&%acl_not_smtp_mime%&"
 The &%acl_smtp_mime%& global option specifies an ACL that is called once for
 each MIME part of an SMTP message, including multipart types, in the sequence
 of their position in the message. Similarly, the &%acl_not_smtp_mime%& option
@@ -29270,7 +29304,7 @@ interface, you could include the following in the MAIL ACL:
 warn  hosts = 127.0.0.1
       control = submission
 .endd
-.cindex "&%sender_retain%&"
+.cindex "&%sender_retain%& submission option"
 There are some options that can be used when setting submission mode. A slash
 is used to separate options. For example:
 .code
@@ -29382,8 +29416,8 @@ sender or recipient addresses in SMTP commands, namely
 cases, if an unqualified address is accepted, it is qualified by adding the
 value of &%qualify_domain%& or &%qualify_recipient%&, as appropriate.
 
-.cindex "&%qualify_domain%&"
-.cindex "&%qualify_recipient%&"
+.oindex "&%qualify_domain%&"
+.oindex "&%qualify_recipient%&"
 Unqualified addresses in header lines are automatically qualified for messages
 that are locally originated, unless the &%-bnq%& option is given on the command
 line. For messages received over SMTP, unqualified addresses in header lines
@@ -29398,8 +29432,8 @@ other words, such qualification is also controlled by
 .cindex "&""From""& line"
 .cindex "UUCP" "&""From""& line"
 .cindex "sender" "address"
-.cindex "&%uucp_from_pattern%&"
-.cindex "&%uucp_from_sender%&"
+.oindex "&%uucp_from_pattern%&"
+.oindex "&%uucp_from_sender%&"
 .cindex "envelope sender"
 .cindex "Sendmail compatibility" "&""From""& line"
 Messages that have come from UUCP (and some other applications) often begin
@@ -29502,7 +29536,7 @@ Exim adds one, using the current date and time, unless the
 
 .section "The Delivery-date: header line" "SECID224"
 .cindex "&'Delivery-date:'& header line"
-.cindex "&%delivery_date_remove%&"
+.oindex "&%delivery_date_remove%&"
 &'Delivery-date:'& header lines are not part of the standard RFC 2822 header
 set. Exim can be configured to add them to the final delivery of messages. (See
 the generic &%delivery_date_add%& transport option.) They should not be present
@@ -29513,7 +29547,7 @@ messages.
 
 .section "The Envelope-to: header line" "SECID225"
 .cindex "&'Envelope-to:'& header line"
-.cindex "&%envelope_to_remove%&"
+.oindex "&%envelope_to_remove%&"
 &'Envelope-to:'& header lines are not part of the standard RFC 2822 header set.
 Exim can be configured to add them to the final delivery of messages. (See the
 generic &%envelope_to_add%& transport option.) They should not be present in
@@ -29568,7 +29602,7 @@ name as described in section &<<SECTconstr>>&.
 .section "The Message-ID: header line" "SECID226"
 .cindex "&'Message-ID:'& header line"
 .cindex "message" "submission"
-.cindex "&%message_id_header_text%&"
+.oindex "&%message_id_header_text%&"
 If a locally-generated or submission-mode incoming message does not contain a
 &'Message-ID:'& or &'Resent-Message-ID:'& header line, and the
 &%suppress_local_fixups%& control is not set, Exim adds a suitable header line
@@ -29612,7 +29646,7 @@ incoming message. If there are more than 12, the first one and then the final
 
 .section "The Return-path: header line" "SECID229"
 .cindex "&'Return-path:'& header line"
-.cindex "&%return_path_remove%&"
+.oindex "&%return_path_remove%&"
 &'Return-path:'& header lines are defined as something an MTA may insert when
 it does the final delivery of messages. (See the generic &%return_path_add%&
 transport option.) Therefore, they should not be present in messages in
@@ -29723,7 +29757,7 @@ accepted by that router, and also with any new addresses that it generates. If
 an address passes through several routers as a result of aliasing or
 forwarding, the changes are cumulative.
 
-.cindex "&%unseen%& option"
+.oindex "&%unseen%&"
 However, this does not apply to multiple routers that result from the use of
 the &%unseen%& option. Any header modifications that were specified by the
 &"unseen"& router or its predecessors apply only to the &"unseen"& delivery.
@@ -30363,7 +30397,7 @@ a &"success"& return code. Obviously there is scope for hints records to get
 left lying around if there is a system or program crash. To guard against this,
 Exim ignores any records that are more than six hours old.
 
-.cindex "&%smtp_etrn_command%&"
+.oindex "&%smtp_etrn_command%&"
 For more control over what ETRN does, the &%smtp_etrn_command%& option can
 used. This specifies a command that is run whenever ETRN is received,
 whatever the form of its argument. For
@@ -30703,7 +30737,7 @@ The &%forbid_pipe%& and &%forbid_file%& options prevent a local part from being
 expanded into a file name or a pipe delivery, which is usually inappropriate in
 a mailing list.
 
-.cindex "&%errors_to%&"
+.oindex "&%errors_to%&"
 The &%errors_to%& option specifies that any delivery errors caused by addresses
 taken from a mailing list are to be sent to the given address rather than the
 original sender of the message. However, before acting on this, Exim verifies
@@ -31205,7 +31239,7 @@ Exim already had the necessary infrastructure for doing this job. Just a few
 tweaks were needed to make it behave as required, though it is somewhat of an
 overkill to use a fully-featured MTA for this purpose.
 
-.cindex "&%mua_wrapper%&"
+.oindex "&%mua_wrapper%&"
 There is a Boolean global option called &%mua_wrapper%&, defaulting false.
 Setting &%mua_wrapper%& true causes Exim to run in a special mode where it
 assumes that it is being used to &"wrap"& a command-line MUA in the manner
@@ -32222,7 +32256,7 @@ result of a list match is failure because a DNS lookup failed.
 .cindex "message" "log file for"
 .cindex "log" "message log; description of"
 .cindex "&_msglog_& directory"
-.cindex "&%preserve_message_logs%&"
+.oindex "&%preserve_message_logs%&"
 In addition to the general log files, Exim writes a log file for each message
 that it handles. The names of these per-message logs are the message ids, and
 they are kept in the &_msglog_& sub-directory of the spool directory. Each
