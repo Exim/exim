@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.11 2007/03/13 09:50:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.12 2007/04/13 15:13:47 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -733,6 +733,7 @@ receive_getc = tls_getc;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
 receive_ferror = tls_ferror;
+receive_smtp_buffered = tls_smtp_buffered;
 
 tls_active = fileno(smtp_out);
 return OK;
@@ -886,6 +887,7 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
     receive_ungetc = smtp_ungetc;
     receive_feof = smtp_feof;
     receive_ferror = smtp_ferror;
+    receive_smtp_buffered = smtp_buffered;
 
     SSL_free(ssl);
     ssl = NULL;

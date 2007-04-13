@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.71 2007/02/06 12:19:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.72 2007/04/13 15:13:47 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -136,6 +136,7 @@ int (*receive_getc)(void)      = stdin_getc;
 int (*receive_ungetc)(int)     = stdin_ungetc;
 int (*receive_feof)(void)      = stdin_feof;
 int (*receive_ferror)(void)    = stdin_ferror;
+BOOL (*receive_smtp_buffered)(void) = NULL;   /* Only used for SMTP */
 #endif
 
 

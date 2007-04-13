@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.35 2007/04/12 09:03:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.36 2007/04/13 15:13:47 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3081,7 +3081,7 @@ if (local_scan_data != NULL)
 
 if (rc == LOCAL_SCAN_ACCEPT_FREEZE)
   {
-  if (!deliver_freeze)      /* ACL might have already frozen */
+  if (!deliver_freeze)         /* ACL might have already frozen */
     {
     deliver_freeze = TRUE;
     deliver_frozen_at = time(NULL);
@@ -3380,22 +3380,6 @@ not put the zero in. */
 
 s[sptr] = 0;
 
-/* While writing to the log, set a flag to cause a call to receive_bomb_out()
-if the log cannot be opened. */
-
-receive_call_bombout = TRUE;
-log_write(0, LOG_MAIN |
-  (((log_extra_selector & LX_received_recipients) != 0)? LOG_RECIPIENTS : 0) |
-  (((log_extra_selector & LX_received_sender) != 0)? LOG_SENDER : 0),
-  "%s", s);
-receive_call_bombout = FALSE;
-
-/* Log any control actions taken by an ACL or local_scan(). */
-
-if (deliver_freeze) log_write(0, LOG_MAIN, "frozen by %s", frozen_by);
-if (queue_only_policy) log_write(L_delay_delivery, LOG_MAIN,
-  "no immediate delivery: queued by %s", queued_by);
-
 /* Create a message log file if message logs are being used and this message is
 not blackholed. Write the reception stuff to it. We used to leave message log
 creation until the first delivery, but this has proved confusing for somep
@@ -3446,6 +3430,94 @@ if (message_logs && blackholed_by == NULL)
     }
   }
 
+/* Everything has now been done for a successful message except logging its
+arrival, and outputting an SMTP response. While writing to the log, set a flag
+to cause a call to receive_bomb_out() if the log cannot be opened. */
+
+receive_call_bombout = TRUE;
+
+/* Before sending an SMTP response in a TCP/IP session, we check to see if
+there is unconsumed input (which there shouldn't be) or if the connection has
+gone away. This can be done because the end of a message is always a
+synchronization point. If the connection is still present, but there is no
+pending input, the result of a select() call will be zero. If, however, the
+connection has gone away, or if there is pending input, the result of select()
+will be non-zero. The two cases can be distinguished by trying to read the next
+input character. Of course, since TCP/IP is asynchronous, there is always a
+chance that the connection will vanish between the time of this test and the
+sending of the response, but the chance of this happening should be small.
+
+We also check for input that has already been received and is in the local
+input buffer (plain SMTP or TLS) by calling receive_smtp_buffered(). */
+
+if (smtp_input && sender_host_address != NULL && !sender_host_notsocket)
+  {
+  struct timeval tv;
+  fd_set select_check;
+  FD_ZERO(&select_check);
+  FD_SET(fileno(smtp_in), &select_check);
+  tv.tv_sec = 0;
+  tv.tv_usec = 0;
+
+  if (select(fileno(smtp_in) + 1, &select_check, NULL, NULL, &tv) != 0 ||
+      receive_smtp_buffered())
+    {
+    uschar *msg;
+    if ((RECEIVE_GETC)() == EOF)
+      {
+      msg = US"SMTP connection lost after final dot";
+      smtp_reply = US"";   /* No attempt to send a response */
+      }
+    else
+      {
+      msg = US"Synchronization error (data after final dot)";
+      smtp_reply = US"550 Synchronization error (data after final dot)";
+      }
+
+    /* Overwrite the log line workspace */
+
+    sptr = 0;
+    s = string_cat(s, &size, &sptr, msg, Ustrlen(msg));
+    s = add_host_info_for_log(s, &size, &sptr);
+    s[sptr] = 0;
+    log_write(0, LOG_MAIN, "%s", s);
+
+    /* We now have to delete the files for this aborted message. */
+
+    sprintf(CS spool_name, "%s/input/%s/%s-D", spool_directory, message_subdir,
+      message_id);
+    Uunlink(spool_name);
+
+    sprintf(CS spool_name, "%s/input/%s/%s-H", spool_directory, message_subdir,
+      message_id);
+    Uunlink(spool_name);
+
+    sprintf(CS spool_name, "%s/msglog/%s/%s", spool_directory, message_subdir,
+      message_id);
+    Uunlink(spool_name);
+
+    /* Do not accept any more messages on this connection. */
+
+    smtp_yield = FALSE;
+    goto TIDYUP;
+    }
+  }
+
+/* The connection has not gone away; we really are going to take responsibility
+for this message. */
+
+log_write(0, LOG_MAIN |
+  (((log_extra_selector & LX_received_recipients) != 0)? LOG_RECIPIENTS : 0) |
+  (((log_extra_selector & LX_received_sender) != 0)? LOG_SENDER : 0),
+  "%s", s);
+receive_call_bombout = FALSE;
+
+/* Log any control actions taken by an ACL or local_scan(). */
+
+if (deliver_freeze) log_write(0, LOG_MAIN, "frozen by %s", frozen_by);
+if (queue_only_policy) log_write(L_delay_delivery, LOG_MAIN,
+  "no immediate delivery: queued by %s", queued_by);
+
 store_reset(s);   /* The store for the main log message can be reused */
 
 /* If the message is frozen, and freeze_tell is set, do the telling. */
@@ -3460,9 +3532,9 @@ if (deliver_freeze && freeze_tell != NULL && freeze_tell[0] != 0)
 
 /* Either a message has been successfully received and written to the two spool
 files, or an error in writing the spool has occurred for an SMTP message, or
-an SMTP message has been rejected because of a bad sender. (For a non-SMTP
-message we will have already given up because there's no point in carrying on!)
-In either event, we must now close (and thereby unlock) the data file. In the
+an SMTP message has been rejected for policy reasons. (For a non-SMTP message
+we will have already given up because there's no point in carrying on!) In
+either event, we must now close (and thereby unlock) the data file. In the
 successful case, this leaves the message on the spool, ready for delivery. In
 the error case, the spool file will be deleted. Then tidy up store, interact
 with an SMTP call if necessary, and return.
@@ -3491,9 +3563,9 @@ if (smtp_input)
   yield = smtp_yield;
 
   /* Handle interactive SMTP callers. After several kinds of error, smtp_reply
-  is set to the response. However, after an ACL error or local_scan() error,
-  the response has already been sent, and smtp_reply is an empty string to
-  indicate this. */
+  is set to the response that should be sent. When it is NULL, we generate
+  default responses. After an ACL error or local_scan() error, the response has
+  already been sent, and smtp_reply is an empty string to indicate this. */
 
   if (!smtp_batched_input)
     {
@@ -3522,7 +3594,7 @@ if (smtp_input)
           "\n**** SMTP testing: that is not a real message id!\n\n");
       }
 
-    /* smtp_reply was previously set */
+    /* smtp_reply is set non-empty */
 
     else if (smtp_reply[0] != 0)
       {

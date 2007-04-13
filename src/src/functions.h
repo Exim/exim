@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.36 2007/02/07 11:24:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.37 2007/04/13 15:13:47 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -32,6 +32,7 @@ extern int     tls_ferror(void);
 extern int     tls_getc(void);
 extern int     tls_read(uschar *, size_t);
 extern int     tls_server_start(uschar *, uschar *, uschar *, uschar *);
+extern BOOL    tls_smtp_buffered(void);
 extern int     tls_ungetc(int);
 extern int     tls_write(const uschar *, size_t);
 #endif
@@ -261,6 +262,7 @@ extern void    sha1_start(sha1 *);
 extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
                  address_item **, uschar **);
 extern void    sigalrm_handler(int);
+extern BOOL    smtp_buffered(void);
 extern void    smtp_closedown(uschar *);
 extern int     smtp_connect(host_item *, int, int, uschar *, int, BOOL);
 extern int     smtp_feof(void);

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.18 2007/01/18 15:35:42 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.19 2007/04/13 15:13:47 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -976,6 +976,7 @@ receive_getc = tls_getc;
 receive_ungetc = tls_ungetc;
 receive_feof = tls_feof;
 receive_ferror = tls_ferror;
+receive_smtp_buffered = tls_smtp_buffered;
 
 tls_active = fileno(smtp_out);
 
@@ -1174,6 +1175,7 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
     receive_ungetc = smtp_ungetc;
     receive_feof = smtp_feof;
     receive_ferror = smtp_ferror;
+    receive_smtp_buffered = smtp_buffered;
 
     gnutls_deinit(tls_session);
     tls_session = NULL;

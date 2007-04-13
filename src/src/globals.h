@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.51 2007/02/06 12:19:27 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.52 2007/04/13 15:13:47 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -96,6 +96,7 @@ extern int (*receive_getc)(void);
 extern int (*receive_ungetc)(int);
 extern int (*receive_feof)(void);
 extern int (*receive_ferror)(void);
+extern BOOL (*receive_smtp_buffered)(void);
 
 
 /* For clearing, saving, restoring address expansion variables. We have to have

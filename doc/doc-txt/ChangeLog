@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.501 2007/04/12 09:00:51 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.502 2007/04/13 15:13:47 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -201,6 +201,16 @@ SC/02 Eximstats - Differentiate between permanent and temporary rejects.
 SC/03 Eximstats - V1.58 Fix to get <> and blackhole to show in edomain tables.
 
 PH/43 Yet another patch from the Sieve maintainer.
+
+PH/44 I found a way to check for a TCP/IP connection going away before sending
+      the response to the final '.' that terminates a message. At this time,
+      there should not be any pending input - the client should be waiting for
+      the response. Therefore, a select() can be used: if it shows that the
+      input is "ready", there is either input waiting, or the socket has been
+      closed. Both cases are errors. (It's a bit more complicated than this
+      because of buffering, but that's the essence of it.) Previously, Exim
+      would have sent an OK response which the client would never have see.
+      This could lead to message repetition. This fix should cure that.
 
 
 Exim version 4.66

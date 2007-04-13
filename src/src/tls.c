@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls.c,v 1.4 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls.c,v 1.5 2007/04/13 15:13:47 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -146,6 +146,24 @@ tls_ferror(void)
 {
 return ssl_xfer_error;
 }
+
+
+/*************************************************
+*           TLS version of smtp_buffered         *
+*************************************************/
+
+/* Tests for unused chars in the TLS input buffer.
+
+Arguments:     none
+Returns:       TRUE/FALSE
+*/
+
+BOOL
+tls_smtp_buffered(void)
+{
+return ssl_xfer_buffer_lwm < ssl_xfer_buffer_hwm;
+}
+
 
 #endif  /* SUPPORT_TLS */
 

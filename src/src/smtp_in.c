@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.56 2007/03/21 15:10:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.57 2007/04/13 15:13:47 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -331,6 +331,23 @@ errno = smtp_had_error;
 return smtp_had_error;
 }
 
+
+
+/*************************************************
+*      Test for characters in the SMTP buffer    *
+*************************************************/
+
+/* Used at the end of a message
+
+Arguments:     none
+Returns:       TRUE/FALSE
+*/
+
+BOOL
+smtp_buffered(void)
+{
+return smtp_inptr < smtp_inend;
+}
 
 
 
@@ -1378,6 +1395,7 @@ receive_getc = smtp_getc;
 receive_ungetc = smtp_ungetc;
 receive_feof = smtp_feof;
 receive_ferror = smtp_ferror;
+receive_smtp_buffered = smtp_buffered;
 smtp_inptr = smtp_inend = smtp_inbuffer;
 smtp_had_eof = smtp_had_error = 0;
 
