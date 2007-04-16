@@ -23,9 +23,8 @@ rset\r\nmail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>\r\ndata
 ??? 250
 ??? 354
 the message
-.
+.\r\nmail from:<userx@test.ex>
 +++ 1
-mail from:<userx@test.ex>
 rcpt to:<userx@test.ex>\r\ndata\r\nthe message\r\nsecond line
 ??? 250
 ??? 250

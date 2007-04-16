@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.36 2007/04/13 15:13:47 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.37 2007/04/16 10:31:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3436,21 +3436,26 @@ to cause a call to receive_bomb_out() if the log cannot be opened. */
 
 receive_call_bombout = TRUE;
 
-/* Before sending an SMTP response in a TCP/IP session, we check to see if
-there is unconsumed input (which there shouldn't be) or if the connection has
-gone away. This can be done because the end of a message is always a
-synchronization point. If the connection is still present, but there is no
-pending input, the result of a select() call will be zero. If, however, the
-connection has gone away, or if there is pending input, the result of select()
-will be non-zero. The two cases can be distinguished by trying to read the next
-input character. Of course, since TCP/IP is asynchronous, there is always a
-chance that the connection will vanish between the time of this test and the
-sending of the response, but the chance of this happening should be small.
+/* Before sending an SMTP response in a TCP/IP session, we check to see if the
+connection has gone away. This can only be done if there is no unconsumed input
+waiting in the local input buffer. We can test for this by calling
+receive_smtp_buffered(). RFC 2920 (pipelining) explicitly allows for additional
+input to be sent following the final dot, so the presence of following input is
+not an error.
 
-We also check for input that has already been received and is in the local
-input buffer (plain SMTP or TLS) by calling receive_smtp_buffered(). */
+If the connection is still present, but there is no unread input for the
+socket, the result of a select() call will be zero. If, however, the connection
+has gone away, or if there is pending input, the result of select() will be
+non-zero. The two cases can be distinguished by trying to read the next input
+character. If we succeed, we can unread it so that it remains in the local
+buffer for handling later. If not, the connection has been lost.
 
-if (smtp_input && sender_host_address != NULL && !sender_host_notsocket)
+Of course, since TCP/IP is asynchronous, there is always a chance that the
+connection will vanish between the time of this test and the sending of the
+response, but the chance of this happening should be small. */
+
+if (smtp_input && sender_host_address != NULL && !sender_host_notsocket &&
+    !receive_smtp_buffered())
   {
   struct timeval tv;
   fd_set select_check;
@@ -3459,47 +3464,39 @@ if (smtp_input && sender_host_address != NULL && !sender_host_notsocket)
   tv.tv_sec = 0;
   tv.tv_usec = 0;
 
-  if (select(fileno(smtp_in) + 1, &select_check, NULL, NULL, &tv) != 0 ||
-      receive_smtp_buffered())
+  if (select(fileno(smtp_in) + 1, &select_check, NULL, NULL, &tv) != 0)
     {
-    uschar *msg;
-    if ((RECEIVE_GETC)() == EOF)
+    int c = (RECEIVE_GETC)();
+    if (c != EOF) (RECEIVE_UNGETC)(c); else
       {
-      msg = US"SMTP connection lost after final dot";
-      smtp_reply = US"";   /* No attempt to send a response */
+      uschar *msg = US"SMTP connection lost after final dot";
+      smtp_reply = US"";    /* No attempt to send a response */
+      smtp_yield = FALSE;   /* Nothing more on this connection */
+
+      /* Re-use the log line workspace */
+
+      sptr = 0;
+      s = string_cat(s, &size, &sptr, msg, Ustrlen(msg));
+      s = add_host_info_for_log(s, &size, &sptr);
+      s[sptr] = 0;
+      log_write(0, LOG_MAIN, "%s", s);
+
+      /* Delete the files for this aborted message. */
+
+      sprintf(CS spool_name, "%s/input/%s/%s-D", spool_directory,
+        message_subdir, message_id);
+      Uunlink(spool_name);
+
+      sprintf(CS spool_name, "%s/input/%s/%s-H", spool_directory,
+        message_subdir, message_id);
+      Uunlink(spool_name);
+
+      sprintf(CS spool_name, "%s/msglog/%s/%s", spool_directory,
+        message_subdir, message_id);
+      Uunlink(spool_name);
+
+      goto TIDYUP;
       }
-    else
-      {
-      msg = US"Synchronization error (data after final dot)";
-      smtp_reply = US"550 Synchronization error (data after final dot)";
-      }
-
-    /* Overwrite the log line workspace */
-
-    sptr = 0;
-    s = string_cat(s, &size, &sptr, msg, Ustrlen(msg));
-    s = add_host_info_for_log(s, &size, &sptr);
-    s[sptr] = 0;
-    log_write(0, LOG_MAIN, "%s", s);
-
-    /* We now have to delete the files for this aborted message. */
-
-    sprintf(CS spool_name, "%s/input/%s/%s-D", spool_directory, message_subdir,
-      message_id);
-    Uunlink(spool_name);
-
-    sprintf(CS spool_name, "%s/input/%s/%s-H", spool_directory, message_subdir,
-      message_id);
-    Uunlink(spool_name);
-
-    sprintf(CS spool_name, "%s/msglog/%s/%s", spool_directory, message_subdir,
-      message_id);
-    Uunlink(spool_name);
-
-    /* Do not accept any more messages on this connection. */
-
-    smtp_yield = FALSE;
-    goto TIDYUP;
     }
   }
 
