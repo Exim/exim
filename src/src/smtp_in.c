@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.57 2007/04/13 15:13:47 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.58 2007/04/16 11:17:13 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3853,9 +3853,10 @@ while (done <= 0)
     break;
 
 
-    /* Show ETRN/EXPN/VRFY if there's
-    an ACL for checking hosts; if actually used, a check will be done for
-    permitted hosts. */
+    /* Show ETRN/EXPN/VRFY if there's an ACL for checking hosts; if actually
+    used, a check will be done for permitted hosts. Show STARTTLS only if not
+    already in a TLS session and if it would be advertised in the EHLO
+    response. */
 
     case HELP_CMD:
     HAD(SCH_HELP);
@@ -3865,7 +3866,9 @@ while (done <= 0)
       buffer[0] = 0;
       Ustrcat(buffer, " AUTH");
       #ifdef SUPPORT_TLS
-      Ustrcat(buffer, " STARTTLS");
+      if (tls_active < 0 &&
+          verify_check_host(&tls_advertise_hosts) != FAIL)
+        Ustrcat(buffer, " STARTTLS");
       #endif
       Ustrcat(buffer, " HELO EHLO MAIL RCPT DATA");
       Ustrcat(buffer, " NOOP QUIT RSET HELP");

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.503 2007/04/16 10:31:58 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.504 2007/04/16 11:17:12 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -213,6 +213,9 @@ PH/44 I found a way to check for a TCP/IP connection going away before sending
       would have sent an OK response which the client would never have see.
       This could lead to message repetition. This fix should cure that, at
       least in a lot of common cases.
+
+PH/45 Do not advertise STARTTLS in response to HELP unless it would be
+      advertised in response to EHLO.
 
 
 Exim version 4.66
