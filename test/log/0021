@@ -43,7 +43,7 @@
 1999-03-02 09:44:33 H=(test.ex) [10.9.8.8] U=CALLER Warning: This warning is from a HELO ACL (command ehlo test.ex)
 1999-03-02 09:44:33 ACL "warn" with "message" setting found in a non-message (EHLO or HELO) ACL: cannot specify header lines here: message ignored
 1999-03-02 09:44:33 H=(test.ex) [10.9.8.8] U=CALLER rejected EHLO or HELO test.ex
-1999-03-02 09:44:33 mail accepted "mail from: <ok@test3> SIZE=1234" "<ok@test3> SIZE=1234"
+1999-03-02 09:44:33 mail accepted "mail from: <ok@test3> SIZE=ssss" "<ok@test3> SIZE=1234"
 1999-03-02 09:44:33 10HmbK-0005vi-00 <= ok@test3 H=[10.9.8.8] U=CALLER P=smtp S=sss
 1999-03-02 09:44:33 10HmbK-0005vi-00 => x <x@y> R=accept T=appendfile
 1999-03-02 09:44:33 10HmbK-0005vi-00 Completed

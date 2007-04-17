@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.25 2007/03/14 12:15:56 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.26 2007/04/17 13:05:41 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -23,7 +23,7 @@ use Socket;
 
 # Start by initializing some global variables
 
-$testversion = "4.67 (15-Jan-07)";
+$testversion = "4.67 (16-Apr-07)";
 
 $cf = "bin/cf";
 $cr = "\r";
@@ -588,7 +588,7 @@ while(<IN>)
   s/([\s,])S=\d+\b/$1S=sss/;
   s/:S\d+\b/:Ssss/;
   s/^(\s*\d+m\s+)\d+(\s+[a-z0-9-]{16} <)/$1sss$2/i if $is_stdout;
-  s/\sSIZE=\d+\b/ SIZE=ssss/ if $is_stderr || $is_stdout;
+  s/\sSIZE=\d+\b/ SIZE=ssss/;
   s/\ssize=\d+\b/ size=sss/ if $is_stderr;
   s/old size = \d+\b/old size = sssss/;
   s/message size = \d+\b/message size = sss/;

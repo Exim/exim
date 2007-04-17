@@ -4,7 +4,7 @@ exim -DSERVER=server -bd -oX PORT_D
 # The pause (+++ 1) at the end of this is so that we don't close the input
 # until some time after sending the dot.
 #
-client-gnutls 127.0.0.1 PORT_D
+client-ssl 127.0.0.1 PORT_D
 ??? 220
 ehlo abcd
 ??? 250-
