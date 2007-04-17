@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.5 2007/04/11 15:26:09 ph10 Exp $
+. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.6 2007/04/17 13:06:09 ph10 Exp $
 
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the document that describes Exim's filtering
@@ -61,15 +61,15 @@
 <bookinfo>
 <title>Exim's interfaces to mail filtering</title>
 <titleabbrev>Exim filtering</titleabbrev>
-<date>31 July</date>
+<date>17 April 2007</date>
 <author><firstname>Philip</firstname><surname>Hazel</surname></author>
 <authorinitials>PH</authorinitials>
 <revhistory><revision>
-  <revnumber>4.63</revnumber>
-  <date>31 July 2006</date>
+  <revnumber>4.67</revnumber>
+  <date>17 April 2007</date>
   <authorinitials>PH</authorinitials>
 </revision></revhistory>
-<copyright><year>2006</year><holder>University of Cambridge</holder></copyright>
+<copyright><year>2007</year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
 
@@ -77,14 +77,14 @@
 . /////////////////////////////////////////////////////////////////////////////
 
 
-.chapter "Forwarding and filtering in Exim"
+.chapter "Forwarding and filtering in Exim" "CHAPforandfilt"
 This document describes the user interfaces to Exim's in-built mail filtering
 facilities, and is copyright &copy; University of Cambridge 2007. It
 corresponds to Exim version 4.67.
 
 
 
-.section "Introduction"
+.section "Introduction" "SEC00"
 Most Unix mail transfer agents (programs that deliver mail) permit individual
 users to specify automatic forwarding of their mail, usually by placing a list
 of forwarding addresses in a file called &_.forward_& in their home
@@ -127,7 +127,7 @@ up and control the use of filtering.
 
 
 
-.section "Filter operation"
+.section "Filter operation" "SEC01"
 It is important to realize that, in Exim, no deliveries are actually made while
 a filter or traditional &_.forward_& file is being processed. Running a filter
 or processing a traditional &_.forward_& file sets up future delivery
@@ -222,7 +222,7 @@ part. These are relevant only when support for multiple personal mailboxes is
 implemented; see the description in section &<<SECTmbox>>& below.
 
 
-.section "Installing a filter file"
+.section "Installing a filter file" "SEC02"
 A filter file is normally installed under the name &_.forward_& in your home
 directory &-- it is distinguished from a conventional &_.forward_& file by its
 first line (described below). However, the file name is configurable, and some
@@ -230,7 +230,7 @@ system administrators may choose to use some different name or location for
 filter files.
 
 
-.section "Testing an installed filter file"
+.section "Testing an installed filter file" "SEC03"
 Testing a filter file before installation cannot find every potential problem;
 for example, it does not actually run commands to which messages are piped.
 Some &"live"& tests should therefore also be done once a filter is installed.
@@ -256,7 +256,7 @@ be left in all Exim filter files. (This does not apply to Sieve files.)
 
 
 
-.section "Details of filtering commands"
+.section "Details of filtering commands" "SEC04"
 The filtering commands for Sieve and Exim filters are completely different in
 syntax and semantics. The Sieve mechanism is defined in RFC 3028; in the next
 chapter we describe how it is integrated into Exim. The subsequent chapter
@@ -287,7 +287,7 @@ make some adjustments to the Exim configuration. These are described in the
 chapter on the &(redirect)& router in the full Exim specification.
 
 
-.section "Recognition of Sieve filters"
+.section "Recognition of Sieve filters" "SEC05"
 A filter file is interpreted as a Sieve filter if its first line is
 .code
 # Sieve filter
@@ -297,7 +297,7 @@ filter file.
 
 
 
-.section "Saving to specified folders"
+.section "Saving to specified folders" "SEC06"
 If the system administrator has set things up as suggested in the Exim
 specification, and you use &(keep)& or &(fileinto)& to save a mail into a
 folder, absolute files are stored where specified, relative files are stored
@@ -305,7 +305,7 @@ relative to &$home$&, and &_inbox_& goes to the standard mailbox location.
 
 
 
-.section "Strings containing header names"
+.section "Strings containing header names" "SEC07"
 RFC 3028 does not specify what happens if a string denoting a header field does
 not contain a valid header name, for example, it contains a colon. This
 implementation generates an error instead of ignoring the header field in order
@@ -313,7 +313,7 @@ to ease script debugging, which fits in with the common picture of Sieve.
 
 
 
-.section "Exists test with empty list of headers"
+.section "Exists test with empty list of headers" "SEC08"
 The &*exists*& test succeeds only if all the specified headers exist. RFC 3028
 does not explicitly specify what happens on an empty list of headers. This
 implementation evaluates that condition as true, interpreting the RFC in a
@@ -321,7 +321,7 @@ strict sense.
 
 
 
-.section "Header test with invalid MIME encoding in header"
+.section "Header test with invalid MIME encoding in header" "SEC09"
 Some MUAs process invalid base64 encoded data, generating junk. Others ignore
 junk after seeing an equal sign in base64 encoded data. RFC 2047 does not
 specify how to react in this case, other than stating that a client must not
@@ -337,7 +337,7 @@ character set cannot be converted to UTF-8.
 
 
 
-.section "Address test for multiple addresses per header"
+.section "Address test for multiple addresses per header" "SEC10"
 A header may contain multiple addresses. RFC 3028 does not explicitly specify
 how to deal with them, but since the address test checks if anything matches
 anything else, matching one address suffices to satisfy the condition. That
@@ -347,7 +347,7 @@ contains an additional address besides the one the test checks for.
 
 
 
-.section "Semantics of keep"
+.section "Semantics of keep" "SEC11"
 The &(keep)& command is equivalent to
 .code
 fileinto "inbox";
@@ -357,7 +357,7 @@ implicit keep flag; there is no command to set it once it has been reset.
 
 
 
-.section "Semantics of fileinto"
+.section "Semantics of fileinto" "SEC12"
 RFC 3028 does not specify whether &(fileinto)& should try to create a mail
 folder if it does not exist. This implementation allows the sysadmin to
 configure that aspect using the &(appendfile)& transport options
@@ -366,7 +366,7 @@ configure that aspect using the &(appendfile)& transport options
 
 
 
-.section "Semantics of redirect"
+.section "Semantics of redirect" "SEC13"
 Sieve scripts are supposed to be interoperable between servers, so this
 implementation does not allow mail to be redirected to unqualified addresses,
 because the domain would depend on the system being used. On systems with
@@ -375,7 +375,7 @@ it to be.
 
 
 
-.section "String arguments"
+.section "String arguments" "SEC14"
 There has been confusion if the string arguments to &(require)& are to be
 matched case-sensitively or not. This implementation matches them with the
 match type &(:is)& (default, see section 2.7.1 of the RFC) and the comparator
@@ -385,7 +385,7 @@ the command defaults clearly, so any different implementations violate RFC
 
 
 
-.section "Number units"
+.section "Number units" "SEC15"
 There is a mistake in RFC 3028: the suffix G denotes gibi-, not tebibyte.
 The mistake is obvious, because RFC 3028 specifies G to denote 2^30
 (which is gibi, not tebi), and that is what this implementation uses as
@@ -393,7 +393,7 @@ the scaling factor for the suffix G.
 
 
 
-.section "RFC compliance"
+.section "RFC compliance" "SEC16"
 Exim requires the first line of a Sieve filter to be
 .code
 # Sieve filter
@@ -458,7 +458,7 @@ are filed into &_inbox_& due to an error in the filter.
 This chapter contains a full description of the contents of Exim filter files.
 
 
-.section "Format of Exim filter files"
+.section "Format of Exim filter files" "SEC17"
 Apart from leading white space, the first text in an Exim filter file must be
 .code
 # Exim filter
@@ -490,7 +490,7 @@ If the character # follows a separator anywhere in a command, everything from
 in a filter file.
 
 
-.section "Data values in filter commands"
+.section "Data values in filter commands" "SEC18"
 There are two ways in which a data value can be input:
 
 .ilist
@@ -562,7 +562,7 @@ if $message_body contains \N$$$$\N then ...
 tests for a run of four dollar characters.
 
 
-.section "Some useful general variables"
+.section "Some useful general variables" "SEC19"
 A complete list of the available variables is given in the Exim documentation.
 This shortened list contains the ones that are most likely to be useful in
 personal filter files:
@@ -694,7 +694,7 @@ substituted. Thus it is important to spell the names of headers correctly. Do
 not use &$header_Reply_to$& when you really mean &$header_Reply-to$&.
 
 
-.section "User variables"
+.section "User variables" "SEC20"
 There are ten user variables with names &$n0$& &-- &$n9$& that can be
 incremented by the &(add)& command (see section &<<SECTadd>>&). These can be
 used for &"scoring"& messages in various ways. If Exim is configured to run a
@@ -704,7 +704,7 @@ thus making them available to users' filter files. How these values are used is
 entirely up to the individual installation.
 
 
-.section "Current directory"
+.section "Current directory" "SEC21"
 The contents of your filter file should not make any assumptions about the
 current directory. It is best to use absolute paths for file names; you can
 normally make use of the &$home$& variable to refer to your home directory. The
@@ -748,7 +748,7 @@ finish
 
 
 
-.section "Filter commands"
+.section "Filter commands" "SEC222"
 The filter commands that are described in subsequent sections are listed
 below, with the section in which they are described in brackets:
 
@@ -1281,7 +1281,7 @@ negative forms of condition that are more English-like.
 
 
 
-.section "String testing conditions"
+.section "String testing conditions" "SEC23"
 There are a number of conditions that operate on text strings, using the words
 &"begins"&, &"ends"&, &"is"&, &"contains"& and &"matches"&. If you want to
 apply the same test to more than one header line, you can easily concatenate
@@ -1396,7 +1396,7 @@ available for use in subsequent sub-conditions, because string expansion of a
 condition occurs just before it is tested.
 
 
-.section "Numeric testing conditions"
+.section "Numeric testing conditions" "SEC24"
 The following conditions are available for performing numerical tests:
 
 .display
@@ -1412,7 +1412,7 @@ followed by one of the letters K or M (upper case or lower case) which cause
 multiplication by 1024 and 1024x1024 respectively.
 
 
-.section "Testing for significant deliveries"
+.section "Testing for significant deliveries" "SEC25"
 You can use the &(delivered)& condition to test whether or not any previously
 obeyed filter commands have set up a significant delivery. For example:
 .code
@@ -1423,7 +1423,7 @@ message has not actually been delivered; rather, a delivery has been set up for
 later processing.
 
 
-.section "Testing for error messages"
+.section "Testing for error messages" "SEC26"
 The condition &(error_message)& is true if the incoming message is a bounce
 (mail delivery error) message. Putting the command
 .code
@@ -1435,7 +1435,7 @@ wrong in such a way that you cannot receive delivery error reports. &*Note*&:
 not preceded by &`$`&.
 
 
-.section "Testing a list of addresses"
+.section "Testing a list of addresses" "SEC27"
 There is a facility for looping through a list of addresses and applying a
 condition to each of them. It takes the form
 .display
@@ -1527,7 +1527,7 @@ the tests.
 
 
 
-.section "Alias addresses for the personal condition"
+.section "Alias addresses for the personal condition" "SEC28"
 It is quite common for people who have mail accounts on a number of different
 systems to forward all their mail to one system, and in this case a check for
 personal mail should test all their various mail addresses. To allow for this,
@@ -1545,7 +1545,7 @@ The alias addresses are treated as alternatives to the current user's email
 address when testing the contents of header lines.
 
 
-.section "Details of the personal condition"
+.section "Details of the personal condition" "SEC29"
 The basic &(personal)& test is roughly equivalent to the following:
 .code
 not error_message and
@@ -1586,7 +1586,7 @@ the current user are also done with alternative addresses.
 
 
 
-.section "Testing delivery status"
+.section "Testing delivery status" "SEC30"
 There are two conditions that are intended mainly for use in system filter
 files, but which are available in users' filter files as well. The condition
 &(first_delivery)& is true if this is the first process that is attempting to
@@ -1604,7 +1604,7 @@ some reason, and was subsequently released by the system administrator. It is
 unlikely to be of use in users' filter files.
 
 
-.section "Multiple personal mailboxes" "SECTmbox"
+.section "Multiple personal mailboxes" "SECTmbox" "SEC31"
 The system administrator can configure Exim so that users can set up variants
 on their email addresses and handle them separately. Consult your system
 administrator or local documentation to see if this facility is enabled on your
@@ -1635,7 +1635,7 @@ suffixes in its checking.
 
 
 
-.section "Ignoring delivery errors"
+.section "Ignoring delivery errors" "SEC43"
 As was explained above, filtering just sets up addresses for delivery &-- no
 deliveries are actually done while a filter file is active. If any of the
 generated addresses subsequently suffers a delivery failure, an error message

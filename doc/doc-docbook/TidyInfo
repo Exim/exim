@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/doc/doc-docbook/TidyInfo,v 1.1 2006/04/04 14:03:49 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/TidyInfo,v 1.2 2007/04/17 13:06:09 ph10 Exp $
 
 # This is script to tidy up the Texinfo file that docbook2texi produces. We
 # have to change "conceptindex" and "optionindex" to "cindex" and "findex", and
@@ -54,6 +54,7 @@ while (<>)
     {
     s/conceptindex/cindex/;
     s/optionindex/findex/;
+    s/variableindex/findex/;
     print;
     }
   }

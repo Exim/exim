@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.145 2007/03/13 15:32:47 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.146 2007/04/17 13:06:10 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -14,219 +14,32 @@ Version 4.67
  1. There is a new log selector called smtp_no_mail, which is not included in
     the default setting. When it is set, a line is written to the main log
     whenever an accepted SMTP connection terminates without having issued a
-    MAIL command. This includes both the case when the connection is dropped,
-    and the case when QUIT is used. Note that it does not include cases where
-    the connection is rejected right at the start (by an ACL, or because there
-    are too many connections, or whatever). These cases already have their own
-    log lines.
-
-    The log line that is written contains the identity of the client in the
-    usual way, followed by D= and a time, which records the duration of the
-    connection. If the connection was authenticated, this fact is logged
-    exactly as it is for an incoming message, with an A= item. If the
-    connection was encrypted, CV=, DN=, and X= items may appear as they do for
-    an incoming message, controlled by the same logging options.
-
-    Finally, if any SMTP commands were issued during the connection, a C= item
-    is added to the line, listing the commands that were used. For example,
-
-      C=EHLO,QUIT
-
-    shows that the client issued QUIT straight after EHLO. If there were fewer
-    than 20 commands, they are all listed. If there were more than 20 commands,
-    the last 20 are listed, preceded by "...". However, with the default
-    setting of 10 for smtp_accep_max_nonmail, the connection will in any case
-    be aborted before 20 non-mail commands are processed.
+    MAIL command.
 
  2. When an item in a dnslists list is followed by = and & and a list of IP
-    addresses, in order to restrict the match to specific results from the DNS
-    lookup, the behaviour was not clear when the lookup returned more than one
-    IP address. For example, consider the condition
-
-      dnslists = a.b.c=127.0.0.1
-
-    What happens if the DNS lookup for the incoming IP address yields both
-    127.0.0.1 and 127.0.0.2 by means of two separate DNS records? Is the
-    condition true because at least one given value was found, or is it false
-    because at least one of the found values was not listed? And how does this
-    affect negated conditions?
-
-    The behaviour of = and & has not been changed; however, the text below
-    documents it more clearly. In addition, two new additional conditions (==
-    and =&) have been added, to permit the "other" behaviour to be configured.
-
-    A DNS lookup may yield more than one record. Thus, the result of the lookup
-    for a dnslists check may yield more than one IP address. The question then
-    arises as to whether all the looked up addresses must be listed, or whether
-    just one is good enough. Both possibilities are provided for:
-
-    . If = or & is used, the condition is true if any one of the looked up
-      IP addresses matches one of the listed addresses. Consider:
-
-        dnslists = a.b.c=127.0.0.1
-
-      If the DNS lookup yields both 127.0.0.1 and 127.0.0.2, the condition is
-      true because 127.0.0.1 matches.
-
-    . If == or =& is used, the condition is true only if every one of the
-      looked up IP addresses matches one of the listed addresses. Consider:
-
-        dnslists = a.b.c==127.0.0.1
-
-      If the DNS lookup yields both 127.0.0.1 and 127.0.0.2, the condition is
-      false because 127.0.0.2 is not listed. You would need to have
-
-        dnslists = a.b.c==127.0.0.1,127.0.0.2
-
-      for the condition to be true.
-
-    When ! is used to negate IP address matching, it inverts the result, giving
-    the precise opposite of the behaviour above. Thus:
-
-    . If != or !& is used, the condition is true if none of the looked up IP
-      addresses matches one of the listed addresses. Consider:
-
-        dnslists = a.b.c!&0.0.0.1
-
-      If the DNS lookup yields both 127.0.0.1 and 127.0.0.2, the condition is
-      false because 127.0.0.1 matches.
-
-    . If !== or !=& is used, the condition is true there is at least one looked
-      up IP address that does not match. Consider:
-
-        dnslists = a.b.c!=&0.0.0.1
-
-      If the DNS lookup yields both 127.0.0.1 and 127.0.0.2, the condition is
-      true, because 127.0.0.2 does not match. You would need to have
-
-        dnslists = a.b.c!=&0.0.0.1,0.0.0.2
-
-      for the condition to be false.
-
-    When the DNS lookup yields only a single IP address, there is no difference
-    between = and == and between & and =&.
+    addresses, the behaviour was not clear when the lookup returned more than
+    one IP address. This has been solved by the addition of == and =& for "all"
+    rather than the defaule "any" matching.
 
  3. Up till now, the only control over which cipher suites GnuTLS uses has been
     for the cipher algorithms. New options have been added to allow some of the
-    other parameters to be varied. Here is complete documentation for the
-    available features:
+    other parameters to be varied.
 
-    GnuTLS allows the caller to specify separate lists of permitted key
-    exchange methods, main cipher algorithms, and MAC algorithms. These may be
-    used in any combination to form a specific cipher suite. This is unlike
-    OpenSSL, where complete cipher names can be passed to its control function.
-    GnuTLS also allows a list of acceptable protocols to be supplied.
+ 4. There is a new compile-time option called ENABLE_DISABLE_FSYNC. When it is
+    set, Exim compiles a runtime option called disable_fsync.
 
-    For compatibility with OpenSSL, the tls_require_ciphers option can be set
-    to complete cipher suite names such as RSA_ARCFOUR_SHA, but for GnuTLS this
-    option controls only the cipher algorithms. Exim searches each item in the
-    list for the name of an available algorithm. For example, if the list
-    contains RSA_AES_SHA, then AES is recognized, and the behaviour is exactly
-    the same as if just AES were given.
+ 5. There is a new variable called $smtp_count_at_connection_start.
 
-    There are additional options called gnutls_require_kx, gnutls_require_mac,
-    and gnutls_require_protocols that can be used to restrict the key exchange
-    methods, MAC algorithms, and protocols, respectively. These options are
-    ignored if OpenSSL is in use.
-
-    All four options are available as global options, controlling how Exim
-    behaves as a server, and also as options of the smtp transport, controlling
-    how Exim behaves as a client. All the values are string expanded. After
-    expansion, the values must be colon-separated lists, though the separator
-    can be changed in the usual way.
-
-    Each of the four lists starts out with a default set of algorithms. If the
-    first item in one of the "require" options does _not_ start with an
-    exclamation mark, all the default items are deleted. In this case, only
-    those that are explicitly specified can be used. If the first item in one
-    of the "require" items _does_ start with an exclamation mark, the defaults
-    are left on the list.
-
-    Then, any item that starts with an exclamation mark causes the relevant
-    entry to be removed from the list, and any item that does not start with an
-    exclamation mark causes a new entry to be added to the list. Unrecognized
-    items in the list are ignored. Thus:
-
-      tls_require_ciphers = !ARCFOUR
-
-    allows all the defaults except ARCFOUR, whereas
-
-      tls_require_ciphers = AES : 3DES
-
-    allows only cipher suites that use AES or 3DES. For tls_require_ciphers
-    the recognized names are AES_256, AES_128, AES (both of the preceding),
-    3DES, ARCFOUR_128, ARCFOUR_40, and ARCFOUR (both of the preceding). The
-    default list does not contain all of these; it just has AES_256, AES_128,
-    3DES, and ARCFOUR_128.
-
-    For gnutls_require_kx, the recognized names are DHE_RSA, RSA (which
-    includes DHE_RSA), DHE_DSS, and DHE (which includes both DHE_RSA and
-    DHE_DSS). The default list contains RSA, DHE_DSS, DHE_RSA.
-
-    For gnutls_require_mac, the recognized names are SHA (synonym SHA1), and
-    MD5. The default list contains SHA, MD5.
-
-    For gnutls_require_protocols, the recognized names are TLS1 and SSL3.
-    The default list contains TLS1, SSL3.
-
-    In a server, the order of items in these lists is unimportant. The server
-    will advertise the availability of all the relevant cipher suites. However,
-    in a client, the order in the tls_require_ciphers list specifies a
-    preference order for the cipher algorithms. The first one in the client's
-    list that is also advertised by the server is tried first.
-
- 4. There is a new compile-time option called ENABLE_DISABLE_FSYNC. You must
-    not set this option unless you really, really, really understand what you
-    are doing. No pre-compiled distributions of Exim should ever set this
-    option. When it is set, Exim compiles a runtime option called
-    disable_fsync. If this is set true, Exim no longer calls fsync() to force
-    updated files' data to be written to disc. Unexpected events such as
-    crashes and power outages may cause data to be lost or scrambled. Beware.
-
-    When ENABLE_DISABLE_FSYNC is not set, a reference to disable_fsync in a
-    runtime configuration generates an "unknown option" error.
-
- 5. There is a new variable called $smtp_count_at_connection_start. The name
-    is deliberately long, in order to emphasize what the contents are. This
-    variable is set greater than zero only in processes spawned by the Exim
-    daemon for handling incoming SMTP connections. When the daemon accepts a
-    new connection, it increments this variable. A copy of the variable is
-    passed to the child process that handles the connection, but its value is
-    fixed, and never changes. It is only an approximation of how many incoming
-    connections there actually are, because many other connections may come and
-    go while a single connection is being processed. When a child process
-    terminates, the daemon decrements the variable.
-
- 6. There's a new control called no_pipelining, which does what its name
-    suggests. It turns off the advertising of the PIPELINING extension to SMTP.
-    To be useful, this control must be obeyed before Exim sends its response to
-    an EHLO command. Therefore, it should normally appear in an ACL controlled
-    by acl_smtp_connect or acl_smtp_helo.
+ 6. There's a new control called no_pipelining.
 
  7. There are two new variables called $sending_ip_address and $sending_port.
-    These are set whenever an SMTP connection to another host has been set up,
-    and they contain the IP address and port of the local interface that is
-    being used. They are of interest only on hosts that have more than on IP
-    address that want to take on different personalities depending on which one
-    is being used.
+    These are set whenever an SMTP connection to another host has been set up.
 
  8. The expansion of the helo_data option in the smtp transport now happens
-    after the connection to the server has been made. This means that it can
-    use the value of $sending_ip_address (see 7 above) to vary the text of the
-    message. For example, if you want the string that is used for helo_data to
-    be obtained by a DNS lookup of the interface address, you could use this:
-
-      helo_data = ${lookup dnsdb{ptr=$sending_ip_address}{$value}\
-        {$primary_hostname}}
-
-    The use of helo_data applies both to sending messages and when doing
-    callouts.
+    after the connection to the server has been made.
 
  9. There is a new expansion operator ${rfc2047d: that decodes strings that
-    are encoded as per RFC 2047. Binary zero bytes are replaced by question
-    marks. Characters are converted into the character set defined by
-    headers_charset. Overlong RFC 2047 "words" are not recognized unless
-    check_rfc2047_length is set false.
+    are encoded as per RFC 2047.
 
 10. There is a new log selector called "pid", which causes the current process
     id to be added to every log line, in square brackets, immediately after the
@@ -236,170 +49,37 @@ Version 4.67
     a delay in an ACL. It also flushes the output before performing a callout,
     as this can take a substantial time. These behaviours can be disabled by
     obeying control = no_delay_flush or control = no_callout_flush,
-    respectively, at some earlier stage of the connection. The effect of the
-    new default behaviour is to disable the PIPELINING optimization in these
-    situations, in order to avoid unexpected timeouts in clients.
+    respectively, at some earlier stage of the connection.
 
 12. There are two new expansion conditions that iterate over a list. They are
-    called forany and forall, and they are used like this:
-
-      ${if forany{<a list>}{<a condition>}{<yes-string>}{<no-string>}}
-      ${if forall{<a list>}{<a condition>}{<yes-string>}{<no-string>}}
-
-    The first argument is expanded, and the result is treated as a list. By
-    default, the list separator is a colon, but it can be changed by the normal
-    method. The second argument is interpreted as a condition that is to be
-    applied to each item in the list in turn. During the interpretation of the
-    condition, the current list item is placed in a variable called $item.
-
-    - For forany, interpretation stops if the condition is true for any item,
-      and the yes-string is then expanded. If the condition is false for all
-      items in the list, the no-string is expanded.
-
-    - For forall, interpration stops if the condition is false for any item,
-      and the no-string is then expanded. If the condition is true for all
-      items in the list, the yes-string is expanded.
-
-    Note that negation of forany means that the condition must be false for all
-    items for the overall condition to succeed, and negation of forall means
-    that the condition must be false for at least one item.
-
-    In this example, the list separator is changed to a comma:
-
-      ${if forany{<, $recipients}{match{$item}{^user3@}}{yes}{no}}
-
-    Outside a forany/forall condition, the value of $item is an empty string.
-    Its value is saved and restored while forany/forall is being processed, to
-    enable these expansion items to be nested.
+    called forany and forall.
 
 13. There's a new global option called dsn_from that can be used to vary the
     contents of From: lines in bounces and other automatically generated
     messages ("delivery status notifications" - hence the name of the option).
-    The default setting is:
 
-      dsn_from = Mail Delivery System <Mailer-Daemon@$qualify_domain>
-
-    The value is expanded every time it is needed. If the expansion fails, a
-    panic is logged, and the default setting is used.
-
-14. The smtp transport has a new option called hosts_avoid_pipelining. It can
-    be used to suppress the use of PIPELINING to certain hosts, while still
-    supporting the other SMTP extensions (cf hosts_avoid_tls).
+14. The smtp transport has a new option called hosts_avoid_pipelining.
 
 15. By default, exigrep does case-insensitive matches. There is now a -I option
-    that makes it case-sensitive. This may give a performance improvement when
-    searching large log files. Without -I, the Perl pattern matches use the /i
-    option; with -I they don't. In both cases it is possible to change the case
-    sensitivity within the pattern using (?i) or (?-i).
+    that makes it case-sensitive.
 
-16. A number of new features have been added to string expansions to make it
-    easier to process lists of items, typically addresses. These are as
-    follows:
-
-  * ${addresses:<string>}
-
-    The string (after expansion) is interpreted as a list of addresses in RFC
-    2822 format, such as can be found in a To: or Cc: header line. The
-    operative address (local-part@domain) is extracted from each item, and the
-    result of the expansion is a colon-separated list, with appropriate
-    doubling of colons should any happen to be present in the email addresses.
-    Syntactically invalid RFC2822 address items are omitted from the output.
-
-    It is possible to specify a character other than colon for the output
-    separator by starting the string with > followed by the new separator
-    character. For example:
-
-      ${addresses:>& The Boss <ceo@up.stairs>, sec@base.ment (dogsbody)}
-
-    expands to "ceo@up.stairs&sec@base.ment". Compare ${address (singular),
-    which extracts the working address from a single RFC2822 address.
-
-  * ${map{<string1>}{<string2>}}
-
-    After expansion, <string1> is interpreted as a list, colon-separated by
-    default, but the separator can be changed in the usual way. For each item
-    in this list, its value is place in $item, and then <string2> is expanded
-    and added to the output as an item in a new list. The separator used for
-    the output list is the same as the one used for the input, but is not
-    included in the output. For example:
-
-      ${map{a:b:c}{[$item]}} ${map{<- x-y-z}{($item)}}
-
-    expands to "[a]:[b]:[c] (x)-(y)-(z)". At the end of the expansion, the
-    value of $item is restored to what it was before.
-
-  * ${filter{<string1>}{<condition>}}
-
-    After expansion, <string1> is interpreted as a list, colon-separated by
-    default, but the separator can be changed in the usual way. For each item
-    in this list, its value is place in $item, and then the condition is
-    evaluated. If the condition is true, $item is added to the output as an
-    item in a new list; if the condition is false, the item is discarded. The
-    separator used for the output list is the same as the one used for the
-    input, but is not included in the output. For example:
-
-      ${filter{a:b:c}{!eq{$item}{b}}
-
-    yields "a:c". At the end of the expansion, the value of $item is restored
-    to what it was before.
-
-  * ${reduce{<string1>}{<string2>}{<string3>}}
-
-    The ${reduce expansion operation reduces a list to a single, scalar string.
-    After expansion, <string1> is interpreted as a list, colon-separated by
-    default, but the separator can be changed in the usual way. Then <string2>
-    is expanded and assigned to the $value variable. After this, each item in
-    the <string1> list is assigned to $item in turn, and <string3> is expanded
-    for each of them. The result of that expansion is assigned to $value before
-    the next iteration. When the end of the list is reached, the final value of
-    $value is added to the expansion string. The ${reduce expansion item can be
-    used in a number of ways. For example, to add up a list of numbers:
-
-      ${reduce {<, 1,2,3}{0}{${eval:$value+$item}}}
-
-    The result of that expansion would be "6". The maximum of a list of numbers
-    can be found:
-
-      ${reduce {3:0:9:4:6}{0}{${if >{$item}{$value}{$item}{$value}}}}
-
-    At the end of a ${reduce expansion, the values of $item and $value is
-    restored to what they were before.
+16. A number of new features ("addresses", "map", "filter", and "reduce") have
+    been added to string expansions to make it easier to process lists of
+    items, typically addresses.
 
 17. There's a new ACL modifier called "continue". It does nothing of itself,
     and processing of the ACL always continues with the next condition or
     modifier. It is provided so that the side effects of expanding its argument
-    can be used. Typically this would be for updating a database. It is really
-    just a syntactic tidiness, because the following two lines have the same
-    effect:
-
-      continue  = <some expansion>
-      condition = ${if eq{0}{<some expansion>}{true}{true}}
+    can be used.
 
 18. It is now possible to use newline and other control characters (those with
-    values less than 32, plus DEL) as separators in lists. Such separators must
-    be provided literally at the time the list is processed, but the string
-    expansion that happens first means that you can write them using normal
-    escape sequences. For example, if a new-line separated list of domains is
-    generated by a lookup, you can now process it directly by a line such as
-    this:
-
-      domains = <\n ${lookup mysql{.....}}
-
-    This avoids having to change the list separator in such data. Unlike
-    printing character separators, which can be included in list items by
-    doubling, it is not possible to include a control character as data when it
-    is set as the separator. Two such characters in succession are interpreted
-    as enclosing an empty list item.
+    values less than 32, plus DEL) as separators in lists.
 
 19. The exigrep utility now has a -v option, which inverts the matching
     condition.
 
 20. The host_find_failed option in the manualroute router can now be set to
-    "ignore". This causes it to completely ignore a host whose IP address
-    cannot be found. If all the hosts in the list are ignored, the behaviour is
-    controlled by the new host_all_ignored option, which takes the same values
-    as host_find_failed, except that it cannot be set to "ignore". Its default
-    is "defer".
+    "ignore".
 
 
 Version 4.66

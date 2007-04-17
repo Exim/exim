@@ -1,4 +1,4 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.9 2007/04/11 15:26:09 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.10 2007/04/17 13:06:09 ph10 Exp $
 
 # Make file for Exim documentation from xfpt source.
 
@@ -62,7 +62,7 @@ fop-filter.pdf:  filter.fo PageLabelPDF
 sdop-filter.ps:  filter-pr.xml
 		 sdop -o filter.ps filter-pr.xml
 
-sdop-filter.pdf: sdop-filter.ps
+sdop-filter.pdf: filter.ps
 		 ps2pdf filter.ps filter.pdf
 
 ###
@@ -153,7 +153,7 @@ fop-spec.pdf: spec.fo PageLabelPDF
 sdop-spec.ps:  spec-pr.xml
 	       sdop -o spec.ps spec-pr.xml
 
-sdop-spec.pdf: sdop-spec.ps
+sdop-spec.pdf: spec.ps
 	       ps2pdf spec.ps spec.pdf
 
 ###
@@ -242,7 +242,7 @@ fop-test.pdf: test.fo
 sdop-test.ps:  test-pr.xml
 	       sdop -o test.ps test-pr.xml
 
-sdop-test.pdf: sdop-test.ps
+sdop-test.pdf: test.ps
 	       ps2pdf test.ps test.pdf
 
 ###
