@@ -1,7 +1,13 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.504 2007/04/16 11:17:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.505 2007/04/19 13:19:06 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+Exim version 4.68
+-----------------
+
+PH/01 Another patch from the Sieve maintainer.
+
 
 Exim version 4.67
 -----------------
