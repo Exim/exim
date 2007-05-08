@@ -375,6 +375,7 @@ match_ip:        11 ${if match_ip{somename}{+hlist}}
 match_ip:        12 ${if match_ip{1.2.3.4}{lsearch;DIR/aux-fixed/0002.matchip}}
 match_ip:        13 ${if match_ip{1.2.3.4}{net-lsearch;DIR/aux-fixed/0002.matchip}}
 match_ip:        14 ${if match_ip{5.6.7.8}{net24-lsearch;DIR/aux-fixed/0002.matchip}}
+match_ip:        15 ${if match_ip{abcd::dcba}{net-iplsearch;DIR/aux-fixed/0002.matchip}}
 
 queue_running:  ${if queue_running{y}{n}}
 first_delivery: ${if first_delivery{y}{n}}

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.505 2007/04/19 13:19:06 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.506 2007/05/08 13:08:22 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -7,6 +7,23 @@ Exim version 4.68
 -----------------
 
 PH/01 Another patch from the Sieve maintainer.
+
+PH/02 When an IPv6 address is converted to a string for single-key lookup
+      in an address list (e.g. for an item such as "net24-dbm;/net/works"),
+      dots are used instead of colons so that keys in lsearch files need not
+      contain colons. This was done some time before quoting was made available
+      in lsearch files. However, iplsearch files do require colons in IPv6 keys
+      (notated using the quote facility) so as to distinguish them from IPv4
+      keys. This meant that lookups for IP addresses in host lists did not work
+      for iplsearch lookups.
+
+      This has been fixed by arranging for IPv6 addresses to be expressed with
+      colons if the lookup type is iplsearch. This is not incompatible, because
+      previously such lookups could never work.
+
+      The situation is now rather anomolous, since one *can* have colons in
+      ordinary lsearch keys. However, making the change in all cases is
+      incompatible and would probably break a number of configurations.
 
 
 Exim version 4.67

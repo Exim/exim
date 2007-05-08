@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.49 2007/03/01 11:17:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.50 2007/05/08 13:08:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2201,7 +2201,8 @@ if (iplookup)
   name, we have to fish the file off the start of the query. For a single-key
   lookup, the key is the current IP address, masked appropriately, and
   reconverted to text form, with the mask appended. For IPv6 addresses, specify
-  dot separators instead of colons. */
+  dot separators instead of colons, except when the lookup type is "iplsearch".
+  */
 
   if (mac_islookup(search_type, lookup_absfilequery))
     {
@@ -2216,11 +2217,13 @@ if (iplookup)
     filename = NULL;
     key = semicolon + 1;
     }
-  else
+  else   /* Single-key style */
     {
+    int sep = (Ustrcmp(lookup_list[search_type].name, "iplsearch") == 0)?
+      ':' : '.';
     insize = host_aton(cb->host_address, incoming);
     host_mask(insize, incoming, mlen);
-    (void)host_nmtoa(insize, incoming, mlen, buffer, '.');
+    (void)host_nmtoa(insize, incoming, mlen, buffer, sep);
     key = buffer;
     filename = semicolon + 1;
     }
