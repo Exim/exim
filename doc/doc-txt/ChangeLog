@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.506 2007/05/08 13:08:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.507 2007/05/11 08:50:42 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -24,6 +24,9 @@ PH/02 When an IPv6 address is converted to a string for single-key lookup
       The situation is now rather anomolous, since one *can* have colons in
       ordinary lsearch keys. However, making the change in all cases is
       incompatible and would probably break a number of configurations.
+
+TK/01 Change PRVS address formatting scheme to reflect latests BATV draft
+      version.
 
 
 Exim version 4.67
