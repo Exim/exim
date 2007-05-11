@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.84 2007/02/26 12:25:10 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.85 2007/05/11 08:48:31 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3699,11 +3699,11 @@ while (*s != 0)
       *domain++ = '\0';
 
       yield = string_cat(yield,&size,&ptr,US"prvs=",5);
-      string_cat(yield,&size,&ptr,sub_arg[0],Ustrlen(sub_arg[0]));
-      string_cat(yield,&size,&ptr,US"/",1);
       string_cat(yield,&size,&ptr,(sub_arg[2] != NULL) ? sub_arg[2] : US"0", 1);
       string_cat(yield,&size,&ptr,prvs_daystamp(7),3);
       string_cat(yield,&size,&ptr,p,6);
+      string_cat(yield,&size,&ptr,US"=",1);
+      string_cat(yield,&size,&ptr,sub_arg[0],Ustrlen(sub_arg[0]));
       string_cat(yield,&size,&ptr,US"@",1);
       string_cat(yield,&size,&ptr,domain,Ustrlen(domain));
 
@@ -3741,15 +3741,15 @@ while (*s != 0)
         case 3: goto EXPAND_FAILED;
         }
 
-      re = regex_must_compile(US"^prvs\\=(.+)\\/([0-9])([0-9]{3})([A-F0-9]{6})\\@(.+)$",
+      re = regex_must_compile(US"^prvs\\=([0-9])([0-9]{3})([A-F0-9]{6})\\=(.+)\\@(.+)$",
                               TRUE,FALSE);
 
       if (regex_match_and_setup(re,sub_arg[0],0,-1))
         {
-        uschar *local_part = string_copyn(expand_nstring[1],expand_nlength[1]);
-        uschar *key_num = string_copyn(expand_nstring[2],expand_nlength[2]);
-        uschar *daystamp = string_copyn(expand_nstring[3],expand_nlength[3]);
-        uschar *hash = string_copyn(expand_nstring[4],expand_nlength[4]);
+        uschar *local_part = string_copyn(expand_nstring[4],expand_nlength[4]);
+        uschar *key_num = string_copyn(expand_nstring[1],expand_nlength[1]);
+        uschar *daystamp = string_copyn(expand_nstring[2],expand_nlength[2]);
+        uschar *hash = string_copyn(expand_nstring[3],expand_nlength[3]);
         uschar *domain = string_copyn(expand_nstring[5],expand_nlength[5]);
 
         DEBUG(D_expand) debug_printf("prvscheck localpart: %s\n", local_part);
