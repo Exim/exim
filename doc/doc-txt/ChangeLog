@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.507 2007/05/11 08:50:42 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.508 2007/05/14 18:56:25 magnus Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -27,6 +27,13 @@ PH/02 When an IPv6 address is converted to a string for single-key lookup
 
 TK/01 Change PRVS address formatting scheme to reflect latests BATV draft
       version.
+
+MH/01 The "spam" ACL condition code contained a sscanf() call with a %s
+      conversion specification without a maximum field width, thereby enabling
+      a rogue spamd server to cause a buffer overflow. While nobody in their
+      right mind would setup Exim to query an untrusted spamd server, an
+      attacker that gains access to a server running spamd could potentially
+      exploit this vulnerability to run arbitrary code as the Exim user.
 
 
 Exim version 4.67

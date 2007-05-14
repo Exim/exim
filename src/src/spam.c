@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.13 2006/09/05 14:05:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.14 2007/05/14 18:56:25 magnus Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -316,11 +316,11 @@ again:
   (void)close(spamd_sock);
 
   /* dig in the spamd output and put the report in a multiline header, if requested */
-  if( sscanf(CS spamd_buffer,"SPAMD/%s 0 EX_OK\r\nContent-length: %*u\r\n\r\n%lf/%lf\r\n%n",
+  if( sscanf(CS spamd_buffer,"SPAMD/%7s 0 EX_OK\r\nContent-length: %*u\r\n\r\n%lf/%lf\r\n%n",
              spamd_version,&spamd_score,&spamd_threshold,&spamd_report_offset) != 3 ) {
 
     /* try to fall back to pre-2.50 spamd output */
-    if( sscanf(CS spamd_buffer,"SPAMD/%s 0 EX_OK\r\nSpam: %*s ; %lf / %lf\r\n\r\n%n",
+    if( sscanf(CS spamd_buffer,"SPAMD/%7s 0 EX_OK\r\nSpam: %*s ; %lf / %lf\r\n\r\n%n",
                spamd_version,&spamd_score,&spamd_threshold,&spamd_report_offset) != 3 ) {
       log_write(0, LOG_MAIN|LOG_PANIC,
          "spam acl condition: cannot parse spamd output");
