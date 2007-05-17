@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.508 2007/05/14 18:56:25 magnus Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.509 2007/05/17 19:58:48 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -34,6 +34,9 @@ MH/01 The "spam" ACL condition code contained a sscanf() call with a %s
       right mind would setup Exim to query an untrusted spamd server, an
       attacker that gains access to a server running spamd could potentially
       exploit this vulnerability to run arbitrary code as the Exim user.
+
+TK/02 Bugzilla 502: Apply patch to make the SPF-Received: header use
+      $primary_hostname instead of what libspf2 thinks the hosts name is.
 
 
 Exim version 4.67
