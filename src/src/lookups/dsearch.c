@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dsearch.c,v 1.4 2007/01/08 10:50:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dsearch.c,v 1.5 2007/05/31 12:42:07 magnus Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -8,8 +8,8 @@
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* The idea for this code came from Matthew Byng-Maddick, but his original has
-been heavily reworked a lot for Exim 4 (and it now uses stat() rather than a
-directory scan). */
+been heavily reworked a lot for Exim 4 (and it now uses stat() (more precisely:
+lstat()) rather than a directory scan). */
 
 
 #include "../exim.h"
@@ -24,7 +24,7 @@ directory scan). */
 
 /* See local README for interface description. We open the directory to test
 whether it exists and whether it is searchable. However, we don't need to keep
-it open, because the "search" can be done by a call to stat() rather than
+it open, because the "search" can be done by a call to lstat() rather than
 actually scanning through the list of files. */
 
 void *
@@ -64,7 +64,7 @@ return lf_check_file(-1, filename, S_IFDIR, modemask, owners, owngroups,
 *              Find entry point                  *
 *************************************************/
 
-/* See local README for interface description. We use stat() instead of
+/* See local README for interface description. We use lstat() instead of
 scanning the directory, as it is hopefully faster to let the OS do the scanning
 for us. */
 
@@ -93,7 +93,7 @@ if (!string_format(filename, sizeof(filename), "%s/%s", dirname, keystring))
   return DEFER;
   }
 
-if (Ustat(filename, &statbuf) >= 0)
+if (Ulstat(filename, &statbuf) >= 0)
   {
   *result = string_copy(keystring);
   return OK;
@@ -102,7 +102,7 @@ if (Ustat(filename, &statbuf) >= 0)
 if (errno == ENOENT) return FAIL;
 
 save_errno = errno;
-*errmsg = string_sprintf("%s: stat failed", filename);
+*errmsg = string_sprintf("%s: lstat failed", filename);
 errno = save_errno;
 return DEFER;
 }

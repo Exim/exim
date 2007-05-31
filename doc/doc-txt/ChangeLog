@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.509 2007/05/17 19:58:48 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.510 2007/05/31 12:41:49 magnus Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -37,6 +37,13 @@ MH/01 The "spam" ACL condition code contained a sscanf() call with a %s
 
 TK/02 Bugzilla 502: Apply patch to make the SPF-Received: header use
       $primary_hostname instead of what libspf2 thinks the hosts name is.
+
+MH/02 The dsearch lookup now uses lstat(2) instead of stat(2) to look for
+      a directory entry by the name of the lookup key. Previously, if a
+      symlink pointed to a non-existing file or a file in a directory that
+      Exim lacked permissions to read, a lookup for a key matching that
+      symlink would fail. Now it is enough that a matching directory entry
+      exists, symlink or not. (Bugzilla 503.)
 
 
 Exim version 4.67
