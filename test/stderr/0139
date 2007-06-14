@@ -205,8 +205,8 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> using result of previous DNS lookup
 >>> DNS lookup for 20.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.6)
 >>> => that means V4NET.11.12.20 is listed at rbl4.test.ex
->>> check add_header = DNSlist: $dnslist_domain $dnslist_text
->>>                  = DNSlist: rbl4.test.ex 
+>>> check add_header = DNSlist: $dnslist_domain $dnslist_text $dnslist_matched
+>>>                  = DNSlist: rbl4.test.ex  V4NET.11.12.20
 >>> warn: condition test succeeded
 >>> processing "warn"
 >>> check dnslists = rbl5.test.ex,rbl4.test.ex=127.0.0.128

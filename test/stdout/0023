@@ -322,6 +322,7 @@
 250 OK
 550-domain=test.ex
 550-value=V4NET.0.0.1
+550-matched=ten-1
 550 text=""
 250 Reset OK
 250 OK
@@ -330,6 +331,7 @@
 250 OK
 550-domain=test.ex
 550-value=127.0.0.2
+550-matched=13.12.11.V4NET.rbl
 550 text="This is a test blacklisting message"
 221 myhost.test.ex closing connection
 

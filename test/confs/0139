@@ -41,9 +41,9 @@ check_mail:
   warn    dnslists = rbl4.test.ex&0.0.0.6
   warn    dnslists = rbl4.test.ex&127.0.0.3
   warn    dnslists = rbl4.test.ex!&0.0.0.7
-          add_header = DNSlist: $dnslist_domain $dnslist_text
+          add_header = DNSlist: $dnslist_domain $dnslist_text $dnslist_matched
   warn    dnslists = rbl5.test.ex,rbl4.test.ex=127.0.0.128
-          add_header = DNSlist: $dnslist_domain $dnslist_text
+          add_header = DNSlist: $dnslist_domain $dnslist_text $dnslist_matched
   accept
 
 check_recipient:

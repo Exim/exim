@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.50 2007/05/08 13:08:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.51 2007/06/14 14:18:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3031,6 +3031,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
     if (rc == OK)
       {
       dnslist_domain = string_copy(domain_txt);
+      dnslist_matched = string_copy(sender_host_address);
       HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n",
         sender_host_address, dnslist_domain);
       }
@@ -3065,6 +3066,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
       if (rc == OK)
         {
         dnslist_domain = string_copy(domain_txt);
+        dnslist_matched = string_copy(keydomain);
         HDEBUG(D_dnsbl) debug_printf("=> that means %s is listed at %s\n",
           keydomain, dnslist_domain);
         return OK;

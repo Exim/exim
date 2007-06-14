@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.511 2007/06/14 13:27:11 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.512 2007/06/14 14:18:19 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -47,6 +47,8 @@ MH/02 The dsearch lookup now uses lstat(2) instead of stat(2) to look for
 
 PH/03 The body_linecount and body_zerocount variables are now exported in the
       local_scan API.
+
+PH/04 Added the $dnslist_matched variable.
 
 
 Exim version 4.67

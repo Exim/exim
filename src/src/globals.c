@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.72 2007/04/13 15:13:47 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.73 2007/06/14 14:18:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -521,6 +521,7 @@ uschar *dns_ipv4_lookup        = NULL;
 int     dns_retrans            = 0;
 int     dns_retry              = 0;
 uschar *dnslist_domain         = NULL;
+uschar *dnslist_matched        = NULL;
 uschar *dnslist_text           = NULL;
 uschar *dnslist_value          = NULL;
 tree_node *domainlist_anchor   = NULL;

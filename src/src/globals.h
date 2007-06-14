@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.53 2007/06/14 13:27:11 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.54 2007/06/14 14:18:19 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -298,6 +298,7 @@ extern uschar *dns_ipv4_lookup;        /* For these domains, don't look for AAAA
 extern int     dns_retrans;            /* Retransmission time setting */
 extern int     dns_retry;              /* Number of retries */
 extern uschar *dnslist_domain;         /* DNS (black) list domain */
+extern uschar *dnslist_matched;        /* DNS (black) list matched key */
 extern uschar *dnslist_text;           /* DNS (black) list text message */
 extern uschar *dnslist_value;          /* DNS (black) list IP address */
 extern tree_node *domainlist_anchor;   /* Tree of defined domain lists */

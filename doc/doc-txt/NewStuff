@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.147 2007/06/14 13:27:11 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.148 2007/06/14 14:18:19 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -14,6 +14,23 @@ Version 4.68
  1. The body_linecount and body_zerocount C variables are now exported in the
     local_scan API.
 
+ 2. When a dnslists lookup succeeds, the key that was looked up is now placed
+    in $dnslist_matched. When the key is an IP address, it is not reversed in
+    this variable (though it is, of course, in the actual lookup). In simple
+    cases, for example:
+
+      deny dnslists = spamhaus.example
+
+    the key is also available in another variable (in this case,
+    $sender_host_address). In more complicated cases, however, this is not
+    true. For example, using a data lookup might generate a dnslists lookup
+    like this:
+
+      deny dnslists = spamhaus.example/<|192.168.1.2|192.168.6.7|...
+
+    If this condition succeeds, the value in $dnslist_matched might be
+    192.168.6.7 (for example).
+
 
 Version 4.67
 ------------
@@ -26,7 +43,7 @@ Version 4.67
  2. When an item in a dnslists list is followed by = and & and a list of IP
     addresses, the behaviour was not clear when the lookup returned more than
     one IP address. This has been solved by the addition of == and =& for "all"
-    rather than the defaule "any" matching.
+    rather than the default "any" matching.
 
  3. Up till now, the only control over which cipher suites GnuTLS uses has been
     for the cipher algorithms. New options have been added to allow some of the
