@@ -575,9 +575,9 @@ xyz
 > 
 > # PRVS
 > 
-> prvs=userx/xxxxxxxxxx@test.ex
-> prvs=userx/xxxxxxxxxx@test.ex
-> prvs=userx/xxxxxxxxxx@test.ex
+> prvs=xxxxxxxxxx=userx@test.ex
+> prvs=xxxxxxxxxx=userx@test.ex
+> prvs=xxxxxxxxxx=userx@test.ex
 > 
 > # Syntax errors
 > 

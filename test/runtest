@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.26 2007/04/17 13:05:41 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.27 2007/06/14 13:20:38 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -23,7 +23,7 @@ use Socket;
 
 # Start by initializing some global variables
 
-$testversion = "4.67 (16-Apr-07)";
+$testversion = "4.68 (16-Apr-07)";
 
 $cf = "bin/cf";
 $cr = "\r";
@@ -330,7 +330,8 @@ while(<IN>)
   s/TlRMTVNTUAACAAAAAAAAAAAoAAABgg[\w+\/]+/TlRMTVNTUAACAAAAAAAAAAAoAAABggAAAEbBRwqFwwIAAAAAAAAAAAAt1sgAAAAA/;
 
   # PRVS values
-  s?prvs=([^/]+)/[\da-f]{10}@?prvs=$1/xxxxxxxxxx@?g;
+  s?prvs=([^/]+)/[\da-f]{10}@?prvs=$1/xxxxxxxxxx@?g;    # Old form
+  s?prvs=[\da-f]{10}=([^@]+)@?prvs=xxxxxxxxxx=$1@?g;    # New form
 
   # Error lines on stdout from SSL contain process id values and file names.
   # They also contain a source file name and line number, which may vary from
