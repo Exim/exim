@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.18 2007/05/15 19:04:56 magnus Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.19 2007/06/14 06:44:58 magnus Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -15327,10 +15327,9 @@ lookups (though Exim does cache lookups).
 
 The &%address_data%& facility is also useful as a means of passing information
 from one router to another, and from a router to a transport. In addition, if
-
 .vindex "&$sender_address_data$&"
 .vindex "&$address_data$&"
-When &$address_data$& is set by a router when verifying a recipient address
+&$address_data$& is set by a router when verifying a recipient address
 from an ACL, it remains available for use in the rest of the ACL statement.
 After verifying a sender, the value is transferred to &$sender_address_data$&.
 
