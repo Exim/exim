@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.52 2007/04/13 15:13:47 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.53 2007/06/14 13:27:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -184,8 +184,6 @@ extern int     bmi_deliver;            /* Flag that determines if the message sh
 extern int     bmi_run;                /* Flag that determines if message should be run through Brightmail server */
 extern uschar *bmi_verdicts;           /* BASE64-encoded verdicts with recipient lists */
 #endif
-extern int     body_linecount;         /* Line count in body */
-extern int     body_zerocount;         /* Binary zero count in body */
 extern uschar *bounce_message_file;    /* Template file */
 extern uschar *bounce_message_text;    /* One-liner */
 extern uschar *bounce_recipient;       /* When writing an errmsg */

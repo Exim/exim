@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.510 2007/05/31 12:41:49 magnus Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.511 2007/06/14 13:27:11 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -44,6 +44,9 @@ MH/02 The dsearch lookup now uses lstat(2) instead of stat(2) to look for
       Exim lacked permissions to read, a lookup for a key matching that
       symlink would fail. Now it is enough that a matching directory entry
       exists, symlink or not. (Bugzilla 503.)
+
+PH/03 The body_linecount and body_zerocount variables are now exported in the
+      local_scan API.
 
 
 Exim version 4.67

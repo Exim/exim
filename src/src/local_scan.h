@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/local_scan.h,v 1.10 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/local_scan.h,v 1.11 2007/06/14 13:27:11 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -139,6 +139,8 @@ typedef struct recipient_item {
 
 extern unsigned int debug_selector;    /* Debugging bits */
 
+extern int     body_linecount;         /* Line count in body */
+extern int     body_zerocount;         /* Binary zero count in body */
 extern uschar *expand_string_message;  /* Error info for failing expansion */
 extern uschar *headers_charset;        /* Charset for RFC 2047 decoding */
 extern header_line *header_last;       /* Final header */

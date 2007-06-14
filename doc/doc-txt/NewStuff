@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.146 2007/04/17 13:06:10 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.147 2007/06/14 13:27:11 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -7,6 +7,13 @@ This file contains descriptions of new features that have been added to Exim.
 Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
+
+Version 4.68
+------------
+
+ 1. The body_linecount and body_zerocount C variables are now exported in the
+    local_scan API.
+
 
 Version 4.67
 ------------
