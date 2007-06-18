@@ -1,0 +1,12 @@
+# TLS (client: test for encrypted before authenticating)
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim userz@test.ex
+Message 1.
+****
+exim -qf
+****
+exim -qf -DHOSTS_AVOID_TLS=*
+****
+killdaemon
+no_msglog_check

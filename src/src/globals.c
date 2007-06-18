@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.73 2007/06/14 14:18:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.74 2007/06/18 13:57:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -32,6 +32,8 @@ static void dummy(int x) { dummy(x-1); }
 data blocks and hence have the opt_public flag set. */
 
 optionlist optionlist_auths[] = {
+  { "client_condition", opt_stringptr | opt_public,
+                 (void *)(offsetof(auth_instance, client_condition)) },
   { "driver",        opt_stringptr | opt_public,
                  (void *)(offsetof(auth_instance, driver_name)) },
   { "public_name",   opt_stringptr | opt_public,
@@ -327,6 +329,7 @@ auth_instance auth_defaults    = {
     NULL,                      /* private options block pointer */
     NULL,                      /* driver_name */
     NULL,                      /* advertise_condition */
+    NULL,                      /* client_condition */
     NULL,                      /* public_name */
     NULL,                      /* set_id */
     NULL,                      /* server_mail_auth_condition */

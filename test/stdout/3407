@@ -1,5 +1,6 @@
 
 a1 authenticator:
+client_condition = 
 driver = plaintext
 public_name = PLAIN
 server_advertise_condition = 
@@ -12,6 +13,7 @@ client_send =
 server_prompts = 
 
 a2 authenticator:
+client_condition = 
 driver = plaintext
 public_name = PLAIN
 server_advertise_condition = 
@@ -24,6 +26,7 @@ client_send =
 server_prompts = 
 
 a3 authenticator:
+client_condition = 
 driver = plaintext
 public_name = LOGIN
 server_advertise_condition = 
@@ -36,6 +39,7 @@ client_send =
 server_prompts = 
 
 a4 authenticator:
+client_condition = 
 driver = plaintext
 public_name = LOGIN
 server_advertise_condition = 

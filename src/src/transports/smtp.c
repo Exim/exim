@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.36 2007/02/08 15:16:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.37 2007/06/18 13:57:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -789,7 +789,8 @@ return yield;
 
 /* If continue_hostname is not null, we get here only when continuing to
 deliver down an existing channel. The channel was passed as the standard
-input.
+input. TLS is never active on a passed channel; the previous process always
+closes it down before passing the connection on.
 
 Otherwise, we have to make a connection to the remote host, and do the
 initial protocol exchange.
@@ -885,6 +886,11 @@ outblock.buffersize = sizeof(outbuffer);
 outblock.ptr = outbuffer;
 outblock.cmd_count = 0;
 outblock.authenticating = FALSE;
+
+/* Reset the parameters of a TLS session. */
+
+tls_cipher = NULL;
+tls_peerdn = NULL;
 
 /* If an authenticated_sender override has been specified for this transport
 instance, expand it. If the expansion is forced to fail, and there was already
@@ -1233,14 +1239,25 @@ if (continue_hostname == NULL
       DEBUG(D_transport) debug_printf("scanning authentication mechanisms\n");
 
       /* Scan the configured authenticators looking for one which is configured
-      for use as a client and whose name matches an authentication mechanism
-      supported by the server. If one is found, attempt to authenticate by
-      calling its client function. */
+      for use as a client, which is not suppressed by client_condition, and
+      whose name matches an authentication mechanism supported by the server.
+      If one is found, attempt to authenticate by calling its client function.
+      */
 
       for (au = auths; !smtp_authenticated && au != NULL; au = au->next)
         {
         uschar *p = names;
-        if (!au->client) continue;
+        if (!au->client ||
+            (au->client_condition != NULL &&
+             !expand_check_condition(au->client_condition, au->name,
+               US"client authenticator")))
+          {
+          DEBUG(D_transport) debug_printf("skipping %s authenticator: %s\n",
+            au->name,
+            (au->client)? "client_condition is false" :
+                          "not configured as a client");
+          continue;
+          }
 
         /* Loop to scan supported server mechanisms */
 

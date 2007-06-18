@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.512 2007/06/14 14:18:19 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.513 2007/06/18 13:57:49 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -49,6 +49,13 @@ PH/03 The body_linecount and body_zerocount variables are now exported in the
       local_scan API.
 
 PH/04 Added the $dnslist_matched variable.
+
+PH/05 Unset $tls_cipher and $tls_peerdn before making a connection as a client.
+      This means they are set thereafter only if the connection becomes
+      encrypted.
+
+PH/06 Added the client_condition to authenticators so that some can be skipped
+      by clients under certain conditions.
 
 
 Exim version 4.67

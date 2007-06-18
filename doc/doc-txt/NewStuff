@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.148 2007/06/14 14:18:19 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.149 2007/06/18 13:57:49 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -30,6 +30,18 @@ Version 4.68
 
     If this condition succeeds, the value in $dnslist_matched might be
     192.168.6.7 (for example).
+
+ 3. Authenticators now have a client_condition option. When Exim is running as
+    a client, it skips an authenticator whose client_condition expansion yields
+    "0", "no", or "false". This can be used, for example, to skip plain text
+    authenticators when the connection is not encrypted by a setting such as:
+
+      client_condition = ${if !eq{$tls_cipher}{}}
+
+    Note that the 4.67 documentation states that $tls_cipher contains the
+    cipher used for incoming messages. In fact, during SMTP delivery, it
+    contains the cipher used for the delivery. The same is true for
+    $tls_peerdn.
 
 
 Version 4.67

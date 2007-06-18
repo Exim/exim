@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/structs.h,v 1.15 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/structs.h,v 1.16 2007/06/18 13:57:50 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -362,6 +362,7 @@ typedef struct auth_instance {
   void   *options_block;          /* Pointer to private options */
   uschar *driver_name;            /* Must be first */
   uschar *advertise_condition;    /* Are we going to advertise this?*/
+  uschar *client_condition;       /* Should the client try this? */
   uschar *public_name;            /* Advertised name */
   uschar *set_id;                 /* String to set as authenticated id */
   uschar *mail_auth_condition;    /* Condition for AUTH on MAIL command */
