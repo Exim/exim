@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.75 2007/03/01 11:17:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.76 2007/06/19 13:32:06 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -221,7 +221,7 @@ static uschar *controls[] = {
   #endif
   US"fakedefer",
   US"fakereject",
-  US"no_multiline",
+  US"no_multiline_responses",
   US"no_pipelining",
   US"no_delay_flush",
   US"no_callout_flush"
