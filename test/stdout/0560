@@ -1,0 +1,13 @@
+Received: from CALLER by myhost.test.ex with local (Exim x.yz)
+	(envelope-from <CALLER@myhost.test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+From: Somebody <abcd@x.y.z>
+To: first@test.ex
+    another@another.ex
+Subject: Testing -Mvc
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
+Sender: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+
+This is a test message of no great importance.

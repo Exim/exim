@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.514 2007/06/19 13:32:05 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.515 2007/06/19 14:41:31 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -59,6 +59,8 @@ PH/06 Added the client_condition to authenticators so that some can be skipped
 
 PH/07 The error message for a badly-placed control=no_multiline_responses left
       "_responses" off the end of the name.
+
+PH/08 Added -Mvc to output a copy of a message in RFC 2822 format.
 
 
 Exim version 4.67

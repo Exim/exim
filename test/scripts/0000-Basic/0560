@@ -1,0 +1,12 @@
+# -Mvc
+exim -odq userx@test.ex
+From: Somebody <abcd@x.y.z>
+To: first@test.ex
+    another@another.ex
+Subject: Testing -Mvc
+
+This is a test message of no great importance.
+****
+exim -Mvc $msg1
+****     
+no_msglog_check

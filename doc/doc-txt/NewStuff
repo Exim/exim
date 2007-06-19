@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.149 2007/06/18 13:57:49 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.150 2007/06/19 14:41:31 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -42,6 +42,10 @@ Version 4.68
     cipher used for incoming messages. In fact, during SMTP delivery, it
     contains the cipher used for the delivery. The same is true for
     $tls_peerdn.
+
+ 4. There is now a -Mvc <message-id> option, which outputs a copy of the
+    message to the standard output, in RFC 2822 format. The option can be used
+    only by an admin user.
 
 
 Version 4.67

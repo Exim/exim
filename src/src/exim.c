@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.55 2007/01/30 15:10:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.56 2007/06/19 14:41:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2283,6 +2283,7 @@ for (i = 1; i < argc; i++)
        -Mes  edit sender
        -Mset load a message for use with -be
        -Mvb  show body
+       -Mvc  show copy (of whole message, in RFC 2822 format)
        -Mvh  show header
        -Mvl  show log
     */
@@ -2328,6 +2329,11 @@ for (i = 1; i < argc; i++)
     else if (Ustrcmp(argrest, "vb") == 0)
       {
       msg_action = MSG_SHOW_BODY;
+      one_msg_action = TRUE;
+      }
+    else if (Ustrcmp(argrest, "vc") == 0)
+      {
+      msg_action = MSG_SHOW_COPY;
       one_msg_action = TRUE;
       }
     else if (Ustrcmp(argrest, "vh") == 0)
@@ -3474,7 +3480,6 @@ if (real_uid == root_uid || real_uid == exim_uid || real_gid == exim_gid)
 else
   {
   int i, j;
-
   for (i = 0; i < group_count; i++)
     {
     if (group_list[i] == exim_gid) admin_user = TRUE;

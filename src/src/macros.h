@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.33 2007/03/13 15:32:48 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.34 2007/06/19 14:41:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -732,7 +732,10 @@ enum {
 
 enum { MSG_DELIVER, MSG_FREEZE, MSG_REMOVE, MSG_THAW, MSG_ADD_RECIPIENT,
        MSG_MARK_ALL_DELIVERED, MSG_MARK_DELIVERED, MSG_EDIT_SENDER,
-       MSG_SHOW_BODY, MSG_SHOW_HEADER, MSG_SHOW_LOG, MSG_LOAD };
+       MSG_SHOW_COPY, MSG_LOAD,
+       /* These ones must be last: a test for >= MSG_SHOW_BODY is used
+       to test for actions that list individual spool files. */
+       MSG_SHOW_BODY, MSG_SHOW_HEADER, MSG_SHOW_LOG };
 
 /* Returns from the spool_read_header() function */
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/queue.c,v 1.11 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/queue.c,v 1.12 2007/06/19 14:41:31 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -936,9 +936,9 @@ for (; f != NULL; f = f->next)
 *             Act on a specific message          *
 *************************************************/
 
-/* Actions that require a list of addresses make use of
-argv/argc/recipients_arg. Other actions do not. This function does its
-own authority checking.
+/* Actions that require a list of addresses make use of argv/argc/
+recipients_arg. Other actions do not. This function does its own
+authority checking.
 
 Arguments:
   id              id of the message to work on
@@ -1093,10 +1093,17 @@ username = (pw != NULL)?
 
 /* Take the necessary action. */
 
-printf("Message %s ", id);
+if (action != MSG_SHOW_COPY) printf("Message %s ", id);
 
 switch(action)
   {
+  case MSG_SHOW_COPY:
+  deliver_in_buffer = store_malloc(DELIVER_IN_BUFFER_SIZE);
+  deliver_out_buffer = store_malloc(DELIVER_OUT_BUFFER_SIZE);
+  transport_write_message(NULL, 1, 0, 0, NULL, NULL, NULL, NULL, NULL, 0);
+  break;
+
+
   case MSG_FREEZE:
   if (deliver_freeze)
     {
