@@ -1,4 +1,4 @@
-$Cambridge: exim/src/README.UPDATING,v 1.15 2006/10/23 09:14:50 ph10 Exp $
+$Cambridge: exim/src/README.UPDATING,v 1.16 2007/06/20 14:19:23 ph10 Exp $
 
 This document contains detailed information about incompatibilities that might
 be encountered when upgrading from one release of Exim to another. The
@@ -26,6 +26,14 @@ there have been two big upheavals...
 
 The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
+
+
+Exim version 4.68
+-----------------
+
+1. The internal implementation of the database keys that are used for ACL
+ratelimiting has been tidied up. This means that an update to 4.68 might cause
+Exim to "forget" previous rates that it had calculated, and reset them to zero.
 
 
 Exim version 4.64
