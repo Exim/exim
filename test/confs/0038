@@ -2,6 +2,7 @@
 
 RRATELIMIT=0/1h/strict
 DRATELIMIT=0/1h/per_byte/strict
+ACLRCPT=check_rcpt
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -14,7 +15,7 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
-acl_smtp_rcpt = check_rcpt
+acl_smtp_rcpt = ACLRCPT
 acl_smtp_data = check_data
 qualify_domain = test.ex
 
@@ -29,6 +30,21 @@ check_rcpt:
                         sender_rate=$sender_rate \
                         sender_rate_limit=$sender_rate_limit \
                         sender_rate_period=$sender_rate_period
+    accept
+
+check_rcpt2:
+    warn  ratelimit = RRATELIMIT/noupdate
+          log_message = RCPT2-1: \
+                        sender_rate=$sender_rate \
+                        sender_rate_limit=$sender_rate_limit \
+                        sender_rate_period=$sender_rate_period
+
+    warn  ratelimit = RRATELIMIT
+          log_message = RCPT2-2: \
+                        sender_rate=$sender_rate \
+                        sender_rate_limit=$sender_rate_limit \
+                        sender_rate_period=$sender_rate_period
+
     accept
 
 check_data:

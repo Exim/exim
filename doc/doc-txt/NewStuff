@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.150 2007/06/19 14:41:31 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.151 2007/06/20 14:13:39 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -46,6 +46,33 @@ Version 4.68
  4. There is now a -Mvc <message-id> option, which outputs a copy of the
     message to the standard output, in RFC 2822 format. The option can be used
     only by an admin user.
+
+ 5. There is now a /noupdate option for the ratelimit ACL condition. It
+    computes the rate and checks the limit as normal, but it does not update
+    the saved data. This means that, in relevant ACLs, it is possible to lookup
+    the existence of a specified (or auto-generated) ratelimit key without
+    incrementing the ratelimit counter for that key.
+
+    In order for this to be useful, another ACL entry must set the rate
+    for the same key somewhere (otherwise it will always be zero).
+
+    Example:
+
+    acl_check_connect:
+      # Read the rate; if it doesn't exist or is below the maximum
+      # we update it below
+      deny ratelimit = 100 / 5m / strict / noupdate
+           log_message = RATE: $sender_rate / $sender_rate_period \
+                         (max $sender_rate_limit)
+
+      [... some other logic and tests...]
+
+      warn ratelimit = 100 / 5m / strict / per_cmd
+           log_message = RATE UPDATE: $sender_rate / $sender_rate_period \
+                         (max $sender_rate_limit)
+           condition = ${if le{$sender_rate}{$sender_rate_limit}}
+
+      accept
 
 
 Version 4.67

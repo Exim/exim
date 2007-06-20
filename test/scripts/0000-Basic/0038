@@ -46,3 +46,13 @@ Here is some data.
 .
 quit
 ****               
+exim -bh V4NET.9.8.6 -DRRATELIMIT=1/1m/per_rcpt -DACLRCPT=check_rcpt2
+ehlo test.ex
+mail from:<>
+rcpt to:<a@b>
+rcpt to:<b@c>
+data
+Here is some data.
+.
+quit
+****

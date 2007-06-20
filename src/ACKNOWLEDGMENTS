@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.77 2007/06/14 14:18:19 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.78 2007/06/20 14:13:39 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  14 June 2007
+Last updated:  20 June 2007
 
 
 THE OLD LIST
@@ -138,6 +138,7 @@ Tony Finch                Expansion extensions
                             Patch for ${dlfunc
                             Patch for $message_linecount
                             ... and many more
+Graeme Fowler             Suggested patch for /noupdate with ratelimit
 Ian Freislich             Patch for spamd timeout problem
 Giuliano Gavazzi          Patches for OSX compilation
 Dominic Germain           Patch for exiqgrep MacOS X bug

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.515 2007/06/19 14:41:31 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.516 2007/06/20 14:13:39 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -61,6 +61,11 @@ PH/07 The error message for a badly-placed control=no_multiline_responses left
       "_responses" off the end of the name.
 
 PH/08 Added -Mvc to output a copy of a message in RFC 2822 format.
+
+PH/09 Tidied the code for creating ratelimiting keys, creating them explicitly
+      (without spaces) instead of just copying the configuration text.
+
+PH/10 Added the /noupdate option to the ratelimit ACL condition.
 
 
 Exim version 4.67

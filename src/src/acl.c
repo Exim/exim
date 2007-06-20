@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.76 2007/06/19 13:32:06 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.77 2007/06/20 14:13:39 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2127,9 +2127,10 @@ static int
 acl_ratelimit(uschar *arg, int where, uschar **log_msgptr)
 {
 double limit, period;
-uschar *ss, *key;
+uschar *ss;
+uschar *key = NULL;
 int sep = '/';
-BOOL have_key = FALSE, leaky = FALSE, strict = FALSE;
+BOOL leaky = FALSE, strict = FALSE, noupdate = FALSE;
 BOOL per_byte = FALSE, per_cmd = FALSE, per_conn = FALSE, per_mail = FALSE;
 int old_pool, rc;
 tree_node **anchor, *t;
@@ -2163,12 +2164,6 @@ if (limit < 0.0 || *ss != 0)
   return ERROR;
   }
 
-/* We use the rest of the argument list following the limit as the
-lookup key, because it doesn't make sense to use the same stored data
-if the period or options are different. */
-
-key = arg;
-
 /* Second is the rate measurement period and exponential smoothing time
 constant. This must be strictly greater than zero, because zero leads to
 run-time division errors. */
@@ -2192,13 +2187,15 @@ while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
   {
   if (strcmpic(ss, US"leaky") == 0) leaky = TRUE;
   else if (strcmpic(ss, US"strict") == 0) strict = TRUE;
+  else if (strcmpic(ss, US"noupdate") == 0) noupdate = TRUE;
   else if (strcmpic(ss, US"per_byte") == 0) per_byte = TRUE;
-  else if (strcmpic(ss, US"per_cmd") == 0) per_cmd = TRUE;
+  else if (strcmpic(ss, US"per_cmd") == 0)  per_cmd = TRUE;
+  else if (strcmpic(ss, US"per_rcpt") == 0) per_cmd = TRUE; /* alias */
   else if (strcmpic(ss, US"per_conn") == 0) per_conn = TRUE;
   else if (strcmpic(ss, US"per_mail") == 0) per_mail = TRUE;
-  else if (strcmpic(ss, US"per_rcpt") == 0) per_cmd = TRUE; /* alias */
-  else have_key = TRUE;
+  else key = string_sprintf("%s", ss);
   }
+
 if (leaky + strict > 1 || per_byte + per_cmd + per_conn + per_mail > 1)
   {
   *log_msgptr = US"conflicting options for \"ratelimit\" condition";
@@ -2206,21 +2203,32 @@ if (leaky + strict > 1 || per_byte + per_cmd + per_conn + per_mail > 1)
   }
 
 /* Default option values */
+
 if (!strict) leaky = TRUE;
 if (!per_byte && !per_cmd && !per_conn) per_mail = TRUE;
 
-/* If there is no explicit key, use the sender_host_address. If there is no
-sender_host_address (e.g. -bs or acl_not_smtp) then we simply omit it. */
+/* Create the lookup key. If there is no explicit key, use sender_host_address.
+If there is no sender_host_address (e.g. -bs or acl_not_smtp) then we simply
+omit it. The smoothing constant (sender_rate_period) and the per_xxx options
+are added to the key because they alter the meaning of the stored data. */
 
-if (!have_key && sender_host_address != NULL)
-  key = string_sprintf("%s / %s", key, sender_host_address);
+if (key == NULL)
+  key = (sender_host_address == NULL)? US"" : sender_host_address;
+
+key = string_sprintf("%s/%s/%s/%s",
+  sender_rate_period,
+  per_byte? US"per_byte" :
+  per_cmd?  US"per_cmd" :
+  per_mail? US"per_mail" : US"per_conn",
+  strict?   US"strict" : US"leaky",
+  key);
 
 HDEBUG(D_acl) debug_printf("ratelimit condition limit=%.0f period=%.0f key=%s\n",
   limit, period, key);
 
-/* See if we have already computed the rate by looking in the relevant tree. For
-per-connection rate limiting, store tree nodes and dbdata in the permanent pool
-so that they survive across resets. */
+/* See if we have already computed the rate by looking in the relevant tree.
+For per-connection rate limiting, store tree nodes and dbdata in the permanent
+pool so that they survive across resets. */
 
 anchor = NULL;
 old_pool = store_pool;
@@ -2239,8 +2247,7 @@ if (anchor != NULL && (t = tree_search(*anchor, key)) != NULL)
   {
   dbd = t->data.ptr;
   /* The following few lines duplicate some of the code below. */
-  if (dbd->rate < limit) rc = FAIL;
-    else rc = OK;
+  rc = (dbd->rate < limit)? FAIL : OK;
   store_pool = old_pool;
   sender_rate = string_sprintf("%.1f", dbd->rate);
   HDEBUG(D_acl)
@@ -2249,8 +2256,8 @@ if (anchor != NULL && (t = tree_search(*anchor, key)) != NULL)
   }
 
 /* We aren't using a pre-computed rate, so get a previously recorded
-rate from the database, update it, and write it back. If there's no
-previous rate for this key, create one. */
+rate from the database, update it, and write it back when required. If there's
+no previous rate for this key, create one. */
 
 dbm = dbfn_open(US"ratelimit", O_RDWR, &dbblock, TRUE);
 if (dbm == NULL)
@@ -2355,21 +2362,30 @@ matters for edge cases such the first message sent by a client (which gets
 the initial rate of 0.0) when the rate limit is zero (i.e. the client should
 be completely blocked). */
 
-if (dbd->rate < limit) rc = FAIL;
-  else rc = OK;
+rc = (dbd->rate < limit)? FAIL : OK;
 
 /* Update the state if the rate is low or if we are being strict. If we
 are in leaky mode and the sender's rate is too high, we do not update
 the recorded rate in order to avoid an over-aggressive sender's retry
-rate preventing them from getting any email through. */
+rate preventing them from getting any email through. If noupdate is set,
+do not do any updates. */
 
-if (rc == FAIL || !leaky)
+if ((rc == FAIL || !leaky) && !noupdate)
+  {
   dbfn_write(dbm, key, dbd, sizeof(dbdata_ratelimit));
+  HDEBUG(D_acl) debug_printf("ratelimit db updated\n");
+  }
+else
+  {
+  HDEBUG(D_acl) debug_printf("ratelimit db not updated: %s\n",
+    noupdate? "noupdate set" : "over the limit, but leaky");
+  }
+
 dbfn_close(dbm);
 
 /* Store the result in the tree for future reference, if necessary. */
 
-if (anchor != NULL)
+if (anchor != NULL && !noupdate)
   {
   t = store_get(sizeof(tree_node) + Ustrlen(key));
   t->data.ptr = dbd;
