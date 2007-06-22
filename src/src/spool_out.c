@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_out.c,v 1.13 2007/01/22 16:29:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_out.c,v 1.14 2007/06/22 14:38:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -198,6 +198,7 @@ tree_walk(acl_var_m, &acl_var_write, f);
 /* Now any other data that needs to be remembered. */
 
 fprintf(f, "-body_linecount %d\n", body_linecount);
+fprintf(f, "-max_received_linelength %d\n", max_received_linelength);
 
 if (body_zerocount > 0) fprintf(f, "-body_zerocount %d\n", body_zerocount);
 

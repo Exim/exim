@@ -8,6 +8,7 @@ ddddddddd 0
 -ident spaced user
 -received_protocol local
 -body_linecount 1
+-max_received_linelength 7
 -auth_id spaced user
 -auth_sender spaced user@myhost.test.ex
 -allow_unqualified_recipient

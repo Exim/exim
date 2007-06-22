@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.86 2007/06/14 14:18:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.87 2007/06/22 14:38:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -453,6 +453,7 @@ static var_entry var_table[] = {
 #ifdef WITH_CONTENT_SCAN
   { "malware_name",        vtype_stringptr,   &malware_name },
 #endif
+  { "max_received_linelength", vtype_int,     &max_received_linelength },
   { "message_age",         vtype_int,         &message_age },
   { "message_body",        vtype_msgbody,     &message_body },
   { "message_body_end",    vtype_msgbody_end, &message_body_end },

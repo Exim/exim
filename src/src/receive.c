@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.37 2007/04/16 10:31:58 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.38 2007/06/22 14:38:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -564,6 +564,7 @@ read_message_data(FILE *fout)
 {
 int ch_state;
 register int ch;
+register int linelength = 0;
 
 /* Handle the case when only EOF terminates the message */
 
@@ -576,6 +577,9 @@ if (!dot_ends)
     if (ch == 0) body_zerocount++;
     if (last_ch == '\r' && ch != '\n')
       {
+      if (linelength > max_received_linelength)
+        max_received_linelength = linelength;
+      linelength = 0;
       if (fputc('\n', fout) == EOF) return END_WERROR;
       message_size++;
       body_linecount++;
@@ -583,12 +587,21 @@ if (!dot_ends)
     if (ch == '\r') continue;
 
     if (fputc(ch, fout) == EOF) return END_WERROR;
-    if (ch == '\n') body_linecount++;
+    if (ch == '\n')
+      {
+      if (linelength > max_received_linelength)
+        max_received_linelength = linelength;
+      linelength = 0;
+      body_linecount++;
+      }
+    else linelength++;
     if (++message_size > thismessage_size_limit) return END_SIZE;
     }
 
   if (last_ch != '\n')
     {
+    if (linelength > max_received_linelength)
+      max_received_linelength = linelength;
     if (fputc('\n', fout) == EOF) return END_WERROR;
     message_size++;
     body_linecount++;
@@ -608,25 +621,37 @@ while ((ch = (RECEIVE_GETC)()) != EOF)
     {
     case 0:                         /* Normal state (previous char written) */
     if (ch == '\n')
-      { body_linecount++; ch_state = 1; }
+      {
+      body_linecount++;
+      if (linelength > max_received_linelength)
+        max_received_linelength = linelength;
+      linelength = -1;
+      ch_state = 1;
+      }
     else if (ch == '\r')
       { ch_state = 2; continue; }
     break;
 
     case 1:                         /* After written "\n" */
     if (ch == '.') { ch_state = 3; continue; }
-    if (ch != '\n') ch_state = 0;
+    if (ch != '\n') ch_state = 0; else linelength = -1;
     break;
 
     case 2:
     body_linecount++;               /* After unwritten "\r" */
+    if (linelength > max_received_linelength)
+      max_received_linelength = linelength;
     if (ch == '\n')
-      { ch_state = 1; }
+      {
+      ch_state = 1;
+      linelength = -1;
+      }
     else
       {
       if (message_size++, fputc('\n', fout) == EOF) return END_WERROR;
       if (ch == '\r') continue;
       ch_state = 0;
+      linelength = 0;
       }
     break;
 
@@ -634,6 +659,7 @@ while ((ch = (RECEIVE_GETC)()) != EOF)
     if (ch == '\n') return END_DOT;
     if (ch == '\r') { ch_state = 4; continue; }
     message_size++;
+    linelength++;
     if (fputc('.', fout) == EOF) return END_WERROR;
     ch_state = 0;
     break;
@@ -648,6 +674,7 @@ while ((ch = (RECEIVE_GETC)()) != EOF)
     break;
     }
 
+  linelength++;
   if (fputc(ch, fout) == EOF) return END_WERROR;
   if (++message_size > thismessage_size_limit) return END_SIZE;
   }
@@ -1263,6 +1290,7 @@ int  header_size = 256;
 int  start, end, domain, size, sptr;
 int  id_resolution;
 int  had_zero = 0;
+int  prevlines_length = 0;
 
 register int ptr = 0;
 
@@ -1343,13 +1371,14 @@ data_fd = -1;
 spool_name[0] = 0;
 message_size = 0;
 warning_count = 0;
-received_count = 1;     /* For the one we will add */
+received_count = 1;            /* For the one we will add */
 
 if (thismessage_size_limit <= 0) thismessage_size_limit = INT_MAX;
 
 /* While reading the message, the following counts are computed. */
 
-message_linecount = body_linecount = body_zerocount = 0;
+message_linecount = body_linecount = body_zerocount =
+  max_received_linelength = 0;
 
 #ifdef EXPERIMENTAL_DOMAINKEYS
 /* Call into DK to set up the context. Check if DK is to be run are carried out
@@ -1585,6 +1614,12 @@ for (;;)
   receive_linecount++;
   message_linecount++;
 
+  /* Keep track of maximum line length */
+
+  if (ptr - prevlines_length > max_received_linelength)
+    max_received_linelength = ptr - prevlines_length;
+  prevlines_length = ptr + 1;
+
   /* Now put in the terminating newline. There is always space for
   at least two more characters. */
 
@@ -1813,6 +1848,7 @@ for (;;)
   next->text = store_get(header_size);
   ptr = 0;
   had_zero = 0;
+  prevlines_length = 0;
   }      /* Continue, starting to read the next header */
 
 /* At this point, we have read all the headers into a data structure in main

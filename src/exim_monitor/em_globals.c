@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.11 2007/01/08 10:50:17 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.12 2007/06/22 14:38:58 ph10 Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -163,6 +163,7 @@ BOOL    log_timezone           = FALSE;
 uschar *spam_score_int         = NULL;
 #endif
 
+int     max_received_linelength= 0;
 int     message_age            = 0;
 uschar *message_id;
 uschar *message_id_external;

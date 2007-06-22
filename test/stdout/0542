@@ -1,9 +1,10 @@
 > From: Himself <himself@there.tld>
 > Subject: The subject is not the object
-> message_body_size=33
-> message_size=369
+> message_body_size=71
+> message_size=407
 > message_id=10HmaX-0005vi-00
 > message_exim_id=10HmaX-0005vi-00
+> max_received_linelength=70
 > recipients=userx@test.x, usery@test.ex
 > 
 > from: A Person <a.person@a.domain.tld>
@@ -14,6 +15,7 @@
 > message_exim_id=10HmaY-0005vi-00
 > message_linecount=6
 > message_body_linecount=2
+> max_received_linelength=50
 > headers -----------------
 > From: A Person <a.person@a.domain.tld>
 To: First <first@test.ex>, Second <second@test.ex>

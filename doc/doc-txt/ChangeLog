@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.516 2007/06/20 14:13:39 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.517 2007/06/22 14:38:58 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -66,6 +66,8 @@ PH/09 Tidied the code for creating ratelimiting keys, creating them explicitly
       (without spaces) instead of just copying the configuration text.
 
 PH/10 Added the /noupdate option to the ratelimit ACL condition.
+
+PH/11 Added $max_received_linelength.
 
 
 Exim version 4.67

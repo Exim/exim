@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.54 2007/06/14 14:18:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.55 2007/06/22 14:38:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -432,6 +432,7 @@ extern uschar *mailstore_basename;     /* For mailstore deliveries */
 #ifdef WITH_CONTENT_SCAN
 extern uschar *malware_name;           /* Name of virus or malware ("W32/Klez-H") */
 #endif
+extern int     max_received_linelength;/* What it says */
 extern int     max_username_length;    /* For systems with broken getpwnam() */
 extern int     message_age;            /* In seconds */
 extern uschar *message_body;           /* Start of message body for filter */

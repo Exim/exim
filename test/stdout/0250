@@ -5,6 +5,7 @@ ddddddddd 0
 -ident CALLER
 -received_protocol local
 -body_linecount 0
+-max_received_linelength 19
 -auth_id CALLER
 -auth_sender CALLER@test.ex
 -allow_unqualified_recipient
@@ -34,6 +35,7 @@ ddddddddd 0
 -ident CALLER
 -received_protocol local
 -body_linecount 0
+-max_received_linelength 19
 -auth_id CALLER
 -auth_sender CALLER@test.ex
 -allow_unqualified_recipient
@@ -63,6 +65,7 @@ ddddddddd 0
 -ident CALLER
 -received_protocol local
 -body_linecount 0
+-max_received_linelength 0
 -auth_id CALLER
 -auth_sender CALLER@test.ex
 -allow_unqualified_recipient

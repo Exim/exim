@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.151 2007/06/20 14:13:39 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.152 2007/06/22 14:38:58 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -73,6 +73,10 @@ Version 4.68
            condition = ${if le{$sender_rate}{$sender_rate_limit}}
 
       accept
+
+ 6. The variable $max_received_linelength contains the number of bytes in the
+    longest line that was received as part of the message, not counting the
+    line termination character(s).
 
 
 Version 4.67

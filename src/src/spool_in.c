@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.19 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.20 2007/06/22 14:38:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -255,6 +255,7 @@ interface_address = NULL;
 interface_port = 0;
 local_error_message = FALSE;
 local_scan_data = NULL;
+max_received_linelength = 0;
 message_linecount = 0;
 received_protocol = NULL;
 received_count = 0;
@@ -518,6 +519,8 @@ for (;;)
 
     case 'm':
     if (Ustrcmp(p, "anual_thaw") == 0) deliver_manual_thaw = TRUE;
+    else if (Ustrncmp(p, "ax_received_linelength", 22) == 0)
+      max_received_linelength = Uatoi(big_buffer + 24);
     break;
 
     case 'N':

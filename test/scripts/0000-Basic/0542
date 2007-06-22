@@ -4,7 +4,7 @@ From: Himself <himself@there.tld>
 To: Yourself <you@here.tld>
 Subject: The subject is not the object
 
-This is the body of the message.
+This is the body of the message. Make the line longer than any header.
 ****
 sudo exim -be -Mset $msg1
 From: $h_from:
@@ -13,6 +13,7 @@ message_body_size=$message_body_size
 message_size=$message_size
 message_id=$message_id
 message_exim_id=$message_exim_id
+max_received_linelength=$max_received_linelength
 recipients=$recipients
 ****
 write test-data
@@ -32,6 +33,7 @@ message_body_size=$message_body_size
 message_exim_id=$message_exim_id
 message_linecount=$message_linecount
 message_body_linecount=$body_linecount
+max_received_linelength=$max_received_linelength
 headers -----------------
 $message_headers
 

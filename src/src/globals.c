@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.74 2007/06/18 13:57:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.75 2007/06/22 14:38:58 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -743,6 +743,7 @@ uschar *mailstore_basename     = NULL;
 #ifdef WITH_CONTENT_SCAN
 uschar *malware_name           = NULL;  /* Virus Name */
 #endif
+int     max_received_linelength= 0;
 int     max_username_length    = 0;
 int     message_age            = 0;
 uschar *message_body           = NULL;

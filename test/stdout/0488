@@ -11,6 +11,7 @@ ddddddddd 0
 -ident CALLER
 -received_protocol local-smtp
 -body_linecount 0
+-max_received_linelength 0
 -auth_id CALLER
 -allow_unqualified_recipient
 -allow_unqualified_sender

@@ -153,6 +153,7 @@ ddddddddd 0
 -interface_address 127.0.0.1.1225
 -received_protocol esmtpa
 -body_linecount 0
+-max_received_linelength 0
 -auth_id username
 -deliver_firsttime
 XX
@@ -178,6 +179,7 @@ ddddddddd 0
 -interface_address 127.0.0.1.1225
 -received_protocol esmtpa
 -body_linecount 0
+-max_received_linelength 0
 -auth_id username
 -deliver_firsttime
 XX
@@ -201,6 +203,7 @@ ddddddddd 0
 -interface_address 127.0.0.1.1225
 -received_protocol esmtpa
 -body_linecount 0
+-max_received_linelength 0
 -auth_id username
 -deliver_firsttime
 XX
@@ -224,6 +227,7 @@ ddddddddd 0
 -interface_address 127.0.0.1.1225
 -received_protocol esmtpa
 -body_linecount 0
+-max_received_linelength 0
 -auth_id username@auth.id.domain
 -deliver_firsttime
 XX
@@ -247,6 +251,7 @@ ddddddddd 0
 -interface_address 127.0.0.1.1225
 -received_protocol esmtpa
 -body_linecount 0
+-max_received_linelength 15
 -auth_id username@auth.id.domain
 -deliver_firsttime
 XX

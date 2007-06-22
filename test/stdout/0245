@@ -10,6 +10,7 @@ ddddddddd 0
 -ident CALLER
 -received_protocol local
 -body_linecount 1
+-max_received_linelength 25
 -auth_id CALLER
 -auth_sender CALLER@myhost.test.ex
 -allow_unqualified_recipient
