@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_version.c,v 1.4 2007/01/23 15:08:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_version.c,v 1.5 2007/06/26 11:16:54 ph10 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -8,7 +8,7 @@
 and semantics are as close as possible to those of the Perl 5 language.
 
                        Written by Philip Hazel
-           Copyright (c) 1997-2006 University of Cambridge
+           Copyright (c) 1997-2007 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,7 @@ I could find no way of detecting that a macro is defined as an empty string at
 pre-processor time. This hack uses a standard trick for avoiding calling
 the STRING macro with an empty argument when doing the test. */
 
-PCRE_DATA_SCOPE const char *
+PCRE_EXP_DEFN const char *
 pcre_version(void)
 {
 return (XSTRING(Z PCRE_PRERELEASE)[1] == 0)?

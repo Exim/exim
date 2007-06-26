@@ -151,18 +151,19 @@ PATTERN MODIFIERS
        The following table shows additional modifiers for setting PCRE options
        that do not correspond to anything in Perl:
 
-         /A       PCRE_ANCHORED
-         /C       PCRE_AUTO_CALLOUT
-         /E       PCRE_DOLLAR_ENDONLY
-         /f       PCRE_FIRSTLINE
-         /J       PCRE_DUPNAMES
-         /N       PCRE_NO_AUTO_CAPTURE
-         /U       PCRE_UNGREEDY
-         /X       PCRE_EXTRA
-         /<cr>    PCRE_NEWLINE_CR
-         /<lf>    PCRE_NEWLINE_LF
-         /<crlf>  PCRE_NEWLINE_CRLF
-         /<any>   PCRE_NEWLINE_ANY
+         /A          PCRE_ANCHORED
+         /C          PCRE_AUTO_CALLOUT
+         /E          PCRE_DOLLAR_ENDONLY
+         /f          PCRE_FIRSTLINE
+         /J          PCRE_DUPNAMES
+         /N          PCRE_NO_AUTO_CAPTURE
+         /U          PCRE_UNGREEDY
+         /X          PCRE_EXTRA
+         /<cr>       PCRE_NEWLINE_CR
+         /<lf>       PCRE_NEWLINE_LF
+         /<crlf>     PCRE_NEWLINE_CRLF
+         /<anycrlf>  PCRE_NEWLINE_ANYCRLF
+         /<any>      PCRE_NEWLINE_ANY
 
        Those  specifying  line ending sequencess are literal strings as shown.
        This example sets multiline matching  with  CRLF  as  the  line  ending
@@ -202,7 +203,11 @@ PATTERN MODIFIERS
        subject contains multiple copies of the same substring.
 
        The  /B modifier is a debugging feature. It requests that pcretest out-
-       put a representation of the compiled byte code after compilation.
+       put a representation of the compiled byte code after compilation.  Nor-
+       mally  this  information contains length and offset values; however, if
+       /Z is also present, this data is replaced by spaces. This is a  special
+       feature for use in the automatic test scripts; it ensures that the same
+       output is generated for different internal link sizes.
 
        The /L modifier must be followed directly by the name of a locale,  for
        example,
@@ -330,6 +335,8 @@ DATA LINES
          \<lf>      pass the PCRE_NEWLINE_LF option to pcre_exec()
                       or pcre_dfa_exec()
          \<crlf>    pass the PCRE_NEWLINE_CRLF option to pcre_exec()
+                      or pcre_dfa_exec()
+         \<anycrlf> pass the PCRE_NEWLINE_ANYCRLF option to pcre_exec()
                       or pcre_dfa_exec()
          \<any>     pass the PCRE_NEWLINE_ANY option to pcre_exec()
                       or pcre_dfa_exec()
@@ -486,7 +493,7 @@ RESTARTING AFTER A PARTIAL MATCH
        can restart the match with additional subject data by means of  the  \R
        escape sequence. For example:
 
-           re> /^?(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)$/
+           re> /^\d?\d(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\d\d$/
          data> 23ja\P\D
          Partial match: 23ja
          data> n05\R\D
@@ -613,8 +620,11 @@ SEE ALSO
 AUTHOR
 
        Philip Hazel
-       University Computing Service,
+       University Computing Service
        Cambridge CB2 3QH, England.
 
-Last updated: 30 November 2006
-Copyright (c) 1997-2006 University of Cambridge.
+
+REVISION
+
+       Last updated: 24 April 2007
+       Copyright (c) 1997-2007 University of Cambridge.

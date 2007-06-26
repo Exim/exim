@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.518 2007/06/26 09:23:34 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.519 2007/06/26 11:16:54 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -70,6 +70,9 @@ PH/10 Added the /noupdate option to the ratelimit ACL condition.
 PH/11 Added $max_received_linelength.
 
 PH/12 Added +ignore_defer and +include_defer to host lists.
+
+PH/13 Installed PCRE version 7.2. This needed some changes because of the new
+      way in which PCRE > 7.0 is built.
 
 
 Exim version 4.67

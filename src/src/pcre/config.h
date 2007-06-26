@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/config.h,v 1.2 2006/11/07 16:50:36 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/config.h,v 1.3 2007/06/26 11:16:54 ph10 Exp $ */
 
 /*************************************************
 *           config.h for PCRE for Exim           *
@@ -36,9 +36,8 @@ PCRE, can be adjusted by "configure". */
 #define MAX_DUPLENGTH           30000
 
 /* There is some stuff in the PCRE sources for compilation on non-Unix systems
-and non-ASCII systems. For Exim's purposes, just flatten it all. */
+and non-ASCII systems. For Exim's purposes, just flatten it. */
 
-#define EBCDIC 0
-#define EXPORT
+#undef EBCDIC
 
 /* End */

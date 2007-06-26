@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_config.c,v 1.4 2007/01/23 15:08:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_config.c,v 1.5 2007/06/26 11:16:54 ph10 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -8,7 +8,7 @@
 and semantics are as close as possible to those of the Perl 5 language.
 
                        Written by Philip Hazel
-           Copyright (c) 1997-2006 University of Cambridge
+           Copyright (c) 1997-2007 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ Arguments:
 Returns:           0 if data returned, negative on error
 */
 
-PCRE_DATA_SCOPE int
+PCRE_EXP_DEFN int
 pcre_config(int what, void *where)
 {
 switch (what)

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/ucp.h,v 1.4 2007/01/23 15:08:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/ucp.h,v 1.5 2007/06/26 11:16:54 ph10 Exp $ */
 
 /*************************************************
 *          Unicode Property Table handler        *
