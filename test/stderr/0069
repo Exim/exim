@@ -133,7 +133,6 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> processing "deny"
 >>> check hosts = +include_defer : test.again.dns
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
->>> host in "+include_defer : test.again.dns"? yes (DNS lookup of test.again.dns deferred)
 LOG: DNS lookup of test.again.dns deferred: accepted by +include_defer
 >>> deny: condition test succeeded
 LOG: H=[V4NET.0.0.13] F=<userx@myhost.test.ex> rejected RCPT <a@test.ex>
@@ -153,7 +152,6 @@ LOG: failed to find host name for V4NET.0.0.13: accepted by +include_unknown
 >>> processing "accept"
 >>> check hosts = test.again.dns : V4NET.0.0.13
 >>> test.again.dns in dns_again_means_nonexist? no (option unset)
->>> host in "test.again.dns : V4NET.0.0.13"? no (DNS lookup of test.again.dns deferred)
 >>> host in "test.again.dns : V4NET.0.0.13"? list match deferred for test.again.dns
 >>> accept: condition test deferred
 LOG: H=[V4NET.0.0.13] F=<userx@test.ex> temporarily rejected RCPT <b@test.ex>

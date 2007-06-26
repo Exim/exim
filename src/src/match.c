@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.18 2007/06/26 09:23:34 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.19 2007/06/26 13:50:41 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -730,7 +730,7 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
 
     else
       {
-      uschar *error;
+      uschar *error = NULL;
       switch ((func)(arg, ss, valueptr, &error))
         {
         case OK:
@@ -747,8 +747,6 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
             error);
           break;
           }
-        HDEBUG(D_lists) debug_printf("%s %s (%s)\n", ot,
-          include_defer? "yes":"no", error);
         if (include_defer)
           {
           log_write(0, LOG_MAIN, "%s: accepted by +include_defer", error);
@@ -862,8 +860,6 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
           break;
           }
         (void)fclose(f);
-        HDEBUG(D_lists) debug_printf("%s %s (%s)\n", ot,
-          include_defer? "yes":"no", error);
         if (include_defer)
           {
           log_write(0, LOG_MAIN, "%s: accepted by +include_defer", error);
