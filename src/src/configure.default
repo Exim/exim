@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/configure.default,v 1.12 2006/10/25 08:42:57 ph10 Exp $
+# $Cambridge: exim/src/src/configure.default,v 1.13 2007/06/26 11:21:36 ph10 Exp $
 
 ######################################################################
 #                  Runtime configuration file for Exim               #
@@ -689,6 +689,12 @@ begin retry
 # starting at 1 hour and increasing each time by a factor of 1.5, up to 16
 # hours, then retries every 6 hours until 4 days have passed since the first
 # failed delivery.
+
+# WARNING: If you do not have any retry rules at all (this section of the
+# configuration is non-existent or empty), Exim will not do any retries of
+# messages that fail to get delivered at the first attempt. The effect will
+# be to treat temporary errors as permanent. Therefore, DO NOT remove this
+# retry rule unless you really don't want any retries.
 
 # Address or Domain    Error       Retries
 # -----------------    -----       -------
