@@ -37,4 +37,18 @@ check_recipientz:
   accept  hosts = +ignore_unknown : non.existent.invalid : V4NET.0.0.13
   deny    message = "Denied"
 
+check_recipienta:
+  accept  hosts = :
+  deny    hosts = +include_defer : test.again.dns
+  accept  domains = +local_domains
+  deny    message = relay not permitted
+
+check_recipientb:
+  accept  hosts = test.again.dns : V4NET.0.0.13
+  deny    message = "Denied"
+
+check_recipientc:
+  accept  hosts = +ignore_defer : test.again.dns : V4NET.0.0.13
+  deny    message = "Denied"
+
 # End

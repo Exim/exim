@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/match.c,v 1.17 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/match.c,v 1.18 2007/06/26 09:23:34 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -444,6 +444,8 @@ int yield = OK;
 unsigned int *original_cache_bits = *cache_ptr;
 BOOL include_unknown = FALSE;
 BOOL ignore_unknown = FALSE;
+BOOL include_defer = FALSE;
+BOOL ignore_defer = FALSE;
 uschar *list;
 uschar *sss;
 uschar *ot = NULL;
@@ -553,10 +555,11 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
       }
     }
 
-  /* If the host item is "+include_unknown", remember it in case there's a
-  subsequent failed reverse lookup. */
+  /* If the host item is "+include_unknown" or "+ignore_unknown", remember it
+  in case there's a subsequent failed reverse lookup. There is similar
+  processing for "defer". */
 
-  else if (type == MCL_HOST)
+  else if (type == MCL_HOST && *ss == '+')
     {
     if (Ustrcmp(ss, "+include_unknown") == 0)
       {
@@ -568,6 +571,18 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
       {
       ignore_unknown = TRUE;
       include_unknown = FALSE;
+      continue;
+      }
+    if (Ustrcmp(ss, "+include_defer") == 0)
+      {
+      include_defer = TRUE;
+      ignore_defer = FALSE;
+      continue;
+      }
+    if (Ustrcmp(ss, "+ignore_defer") == 0)
+      {
+      ignore_defer = TRUE;
+      include_defer = FALSE;
       continue;
       }
     }
@@ -724,6 +739,21 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
         return yield;
 
         case DEFER:
+        if (error == NULL)
+          error = string_sprintf("DNS lookup of %s deferred", ss);
+        if (ignore_defer)
+          {
+          HDEBUG(D_lists) debug_printf("%s: item ignored by +ignore_defer\n",
+            error);
+          break;
+          }
+        HDEBUG(D_lists) debug_printf("%s %s (%s)\n", ot,
+          include_defer? "yes":"no", error);
+        if (include_defer)
+          {
+          log_write(0, LOG_MAIN, "%s: accepted by +include_defer", error);
+          return OK;
+          }
         goto DEFER_RETURN;
 
         /* The ERROR return occurs when checking hosts, when either a forward
@@ -823,7 +853,22 @@ while ((sss = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
         return file_yield;
 
         case DEFER:
+        if (error == NULL)
+          error = string_sprintf("DNS lookup of %s deferred", ss);
+        if (ignore_defer)
+          {
+          HDEBUG(D_lists) debug_printf("%s: item ignored by +ignore_defer\n",
+            error);
+          break;
+          }
         (void)fclose(f);
+        HDEBUG(D_lists) debug_printf("%s %s (%s)\n", ot,
+          include_defer? "yes":"no", error);
+        if (include_defer)
+          {
+          log_write(0, LOG_MAIN, "%s: accepted by +include_defer", error);
+          return OK;
+          }
         goto DEFER_RETURN;
 
         case ERROR:          /* host name lookup failed - this can only */
