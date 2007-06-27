@@ -1,0 +1,43 @@
+# queue_only_load and queue_only_load_latch
+need_ipv4
+#
+exim -bs
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Message 1.
+.
+mail from:<>
+rcpt to:<usery@test.ex>
+data
+Message 2.
+.
+quit
+****
+exim -DSERVER=server -bd -oX PORT_D
+****
+exim -qq
+****
+sleep 1
+killdaemon
+exim -DQOLL=false -DSERVER=server -bd -oX PORT_D
+****
+exim -qq
+****
+sleep 1
+killdaemon
+#
+exim -bs -DQOLL=false
+mail from:<>
+rcpt to:<userx@test.ex>
+data
+Message 3.
+.
+mail from:<>
+rcpt to:<usery@test.ex>
+data
+Message 4.
+.
+quit
+****
+no_msglog_check

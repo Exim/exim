@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.34 2007/06/19 14:41:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.35 2007/06/27 11:01:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -13,6 +13,12 @@ a string as a text string. This is sometimes useful for debugging output. */
 
 #define mac_string(s) # s
 #define mac_expanded_string(s) mac_string(s)
+
+
+/* When running in the test harness, the load average is fudged. */
+
+#define OS_GETLOADAVG() \
+  (running_in_test_harness? (test_harness_load_avg += 10) : os_getloadavg())
 
 
 /* The address_item structure has a word full of 1-bit flags. These macros

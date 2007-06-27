@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.153 2007/06/26 09:23:34 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.154 2007/06/27 11:01:51 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -81,6 +81,11 @@ Version 4.68
  7. Host lists can now include +ignore_defer and +include_defer, analagous to
     +ignore_unknown and +include_unknown. These options should be used with
     care, probably only in non-critical host lists such as whitelists.
+
+ 8. There's a new option called queue_only_load_latch, which defaults true.
+    If set false when queue_only_load is greater than zero, Exim re-evaluates
+    the load for each incoming message in an SMTP session. Otherwise, once one
+    message is queued, the remainder are also.
 
 
 Version 4.67

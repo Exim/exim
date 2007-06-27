@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.29 2007/02/06 11:11:40 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.30 2007/06/27 11:01:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -302,6 +302,7 @@ static optionlist optionlist_config[] = {
   { "queue_only",               opt_bool,        &queue_only },
   { "queue_only_file",          opt_stringptr,   &queue_only_file },
   { "queue_only_load",          opt_fixed,       &queue_only_load },
+  { "queue_only_load_latch",    opt_bool,        &queue_only_load_latch },
   { "queue_only_override",      opt_bool,        &queue_only_override },
   { "queue_run_in_order",       opt_bool,        &queue_run_in_order },
   { "queue_run_max",            opt_int,         &queue_run_max },

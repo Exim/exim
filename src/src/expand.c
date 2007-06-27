@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.87 2007/06/22 14:38:58 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.88 2007/06/27 11:01:51 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1446,7 +1446,7 @@ while (last > first)
     return var_buffer;
 
     case vtype_load_avg:
-    sprintf(CS var_buffer, "%d", os_getloadavg()); /* load_average */
+    sprintf(CS var_buffer, "%d", OS_GETLOADAVG()); /* load_average */
     return var_buffer;
 
     case vtype_host_lookup:                    /* Lookup if not done so */

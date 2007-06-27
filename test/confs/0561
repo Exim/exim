@@ -1,4 +1,6 @@
-# Exim test configuration 0160
+# Exim test configuration 0561
+
+QOLL=true
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -11,39 +13,30 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
-domainlist local_domains = test.ex : *.test.ex
+acl_smtp_rcpt = accept
 
-ignore_bounce_errors_after = 0s
-queue_only
+queue_only_load = 0.001
+queue_only_load_latch = QOLL
+queue_run_in_order
+
 
 # ----- Routers -----
 
 begin routers
 
-all:
+r1:
   driver = manualroute
-  domains = ! +local_domains
-  route_list = * 127.0.0.1 byname
+  route_data = 127.0.0.1
   self = send
-  transport = smtp
-  no_more
+  transport = t1
 
 
 # ----- Transports -----
 
 begin transports
 
-smtp:
+t1:
   driver = smtp
-  port = PORT_S
-
-
-# ----- Retry -----
-
-
-begin retry
-
-* * F,2s,1s
-
+  port = PORT_D
 
 # End

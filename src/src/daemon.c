@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.23 2007/03/14 12:15:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.24 2007/06/27 11:01:51 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -241,7 +241,7 @@ subprocess because it might take time. */
 
 if (smtp_load_reserve >= 0)
   {
-  load_average = os_getloadavg();
+  load_average = OS_GETLOADAVG();
   if (smtp_reserve_hosts == NULL && load_average > smtp_load_reserve)
     {
     DEBUG(D_any) debug_printf("rejecting SMTP connection: load average = %.2f\n",
@@ -365,6 +365,7 @@ if (pid == 0)
   int old_pool = store_pool;
   int save_debug_selector = debug_selector;
   BOOL local_queue_only;
+  BOOL session_local_queue_only;
   #ifdef SA_NOCLDWAIT
   struct sigaction act;
   #endif
@@ -413,7 +414,7 @@ if (pid == 0)
   /* Initialize the queueing flags */
 
   queue_check_only();
-  local_queue_only = queue_only;
+  session_local_queue_only = queue_only;
 
   /* Close the listening sockets, and set the SIGCHLD handler to SIG_IGN.
   We also attempt to set things up so that children are automatically reaped,
@@ -457,13 +458,15 @@ if (pid == 0)
   if (debug_daemon) debug_selector = 0;
 
   /* If there are too many child processes for immediate delivery,
-  set the local_queue_only flag, which is initialized from the
+  set the session_local_queue_only flag, which is initialized from the
   configured value and may therefore already be TRUE. Leave logging
-  till later so it will have a message id attached. */
+  till later so it will have a message id attached. Note that there is no
+  possibility of re-calculating this per-message, because the value of
+  smtp_accept_count does not change in this subprocess. */
 
   if (smtp_accept_queue > 0 && smtp_accept_count > smtp_accept_queue)
     {
-    local_queue_only = TRUE;
+    session_local_queue_only = TRUE;
     queue_only_reason = 1;
     }
 
@@ -550,26 +553,37 @@ if (pid == 0)
     store_reset(reset_point);
 
     /* If queue_only is set or if there are too many incoming connections in
-    existence, local_queue_only will be TRUE. If it is not, check whether we
-    have received too many messages in this session for immediate delivery. If
-    not, and queue_only_load is set, check that the load average is below it.
-    Note that, once set, local_queue_only remains set for any subsequent
-    messages on the same SMTP connection. This is a deliberate choice; even
-    though the load average may fall, it doesn't seem right to deliver later
-    messages on the same call when not delivering earlier ones. */
+    existence, session_local_queue_only will be TRUE. If it is not, check
+    whether we have received too many messages in this session for immediate
+    delivery. */
 
-    if (!local_queue_only)
+    if (!session_local_queue_only &&
+        smtp_accept_queue_per_connection > 0 &&
+        receive_messagecount > smtp_accept_queue_per_connection)
       {
-      if (smtp_accept_queue_per_connection > 0 &&
-          receive_messagecount > smtp_accept_queue_per_connection)
+      session_local_queue_only = TRUE;
+      queue_only_reason = 2;
+      }
+
+    /* Initialize local_queue_only from session_local_queue_only. If it is not
+    true, and queue_only_load is set, check that the load average is below it.
+    If local_queue_only is set by this means, we also set if for the session if
+    queue_only_load_latch is true (the default). This means that, once set,
+    local_queue_only remains set for any subsequent messages on the same SMTP
+    connection. This is a deliberate choice; even though the load average may
+    fall, it doesn't seem right to deliver later messages on the same call when
+    not delivering earlier ones. However, the are special circumstances such as
+    very long-lived connections from scanning appliances where this is not the
+    best strategy. In such cases, queue_only_load_latch should be set false. */
+
+    local_queue_only = session_local_queue_only;
+    if (!local_queue_only && queue_only_load >= 0)
+      {
+      local_queue_only = (load_average = OS_GETLOADAVG()) > queue_only_load;
+      if (local_queue_only)
         {
-        local_queue_only = TRUE;
-        queue_only_reason = 2;
-        }
-      else if (queue_only_load >= 0)
-        {
-        local_queue_only = (load_average = os_getloadavg()) > queue_only_load;
-        if (local_queue_only) queue_only_reason = 3;
+        queue_only_reason = 3;
+        if (queue_only_load_latch) session_local_queue_only = TRUE;
         }
       }
 

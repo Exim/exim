@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.56 2007/06/19 14:41:31 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.57 2007/06/27 11:01:51 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1291,6 +1291,7 @@ BOOL one_msg_action = FALSE;
 BOOL queue_only_set = FALSE;
 BOOL receiving_message = TRUE;
 BOOL sender_ident_set = FALSE;
+BOOL session_local_queue_only;
 BOOL unprivileged;
 BOOL removed_privilege = FALSE;
 BOOL verify_address_mode = FALSE;
@@ -3643,7 +3644,7 @@ if (receiving_message &&
         (is_inetd && smtp_load_reserve >= 0)
       ))
   {
-  load_average = os_getloadavg();
+  load_average = OS_GETLOADAVG();
   }
 #endif
 
@@ -4528,11 +4529,11 @@ else
     sender_address);
   }
 
-/* Initialize the local_queue-only flag (this will be ignored if mua_wrapper is
-set) */
+/* Initialize the session_local_queue-only flag (this will be ignored if
+mua_wrapper is set) */
 
 queue_check_only();
-local_queue_only = queue_only;
+session_local_queue_only = queue_only;
 
 /* For non-SMTP and for batched SMTP input, check that there is enough space on
 the spool if so configured. On failure, we must not attempt to send an error
@@ -4891,27 +4892,36 @@ while (more)
     }
 
   /* Else act on the result of message reception. We should not get here unless
-  message_id[0] is non-zero. If queue_only is set, local_queue_only will be
-  TRUE. If it is not, check on the number of messages received in this
-  connection. If that's OK and queue_only_load is set, check that the load
-  average is below it. If it is not, set local_queue_only TRUE. Note that it
-  then remains this way for any subsequent messages on the same SMTP connection.
-  This is a deliberate choice; even though the load average may fall, it
-  doesn't seem right to deliver later messages on the same call when not
-  delivering earlier ones. */
+  message_id[0] is non-zero. If queue_only is set, session_local_queue_only
+  will be TRUE. If it is not, check on the number of messages received in this
+  connection. */
 
-  if (!local_queue_only)
+  if (!session_local_queue_only &&
+      smtp_accept_queue_per_connection > 0 &&
+      receive_messagecount > smtp_accept_queue_per_connection)
     {
-    if (smtp_accept_queue_per_connection > 0 &&
-        receive_messagecount > smtp_accept_queue_per_connection)
+    session_local_queue_only = TRUE;
+    queue_only_reason = 2;
+    }
+
+  /* Initialize local_queue_only from session_local_queue_only. If it is false,
+  and queue_only_load is set, check that the load average is below it. If it is
+  not, set local_queue_only TRUE. If queue_only_load_latch is true (the
+  default), we put the whole session into queue_only mode. It then remains this
+  way for any subsequent messages on the same SMTP connection. This is a
+  deliberate choice; even though the load average may fall, it doesn't seem
+  right to deliver later messages on the same call when not delivering earlier
+  ones. However, there are odd cases where this is not wanted, so this can be
+  changed by setting queue_only_load_latch false. */
+
+  local_queue_only = session_local_queue_only;
+  if (!local_queue_only && queue_only_load >= 0)
+    {
+    local_queue_only = (load_average = OS_GETLOADAVG()) > queue_only_load;
+    if (local_queue_only)
       {
-      local_queue_only = TRUE;
-      queue_only_reason = 2;
-      }
-    else if (queue_only_load >= 0)
-      {
-      local_queue_only = (load_average = os_getloadavg()) > queue_only_load;
-      if (local_queue_only) queue_only_reason = 3;
+      queue_only_reason = 3;
+      if (queue_only_load_latch) session_local_queue_only = TRUE;
       }
     }
 

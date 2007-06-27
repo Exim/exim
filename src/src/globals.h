@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.55 2007/06/22 14:38:58 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.56 2007/06/27 11:01:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -527,6 +527,7 @@ extern int     queue_run_pipe;         /* Pipe for synchronizing */
 extern int     queue_interval;         /* Queue running interval */
 extern BOOL    queue_only;             /* TRUE to disable immediate delivery */
 extern int     queue_only_load;        /* Max load before auto-queue */
+extern BOOL    queue_only_load_latch;  /* Latch queue_only_load TRUE */
 extern uschar *queue_only_file;        /* Queue if file exists/not-exists */
 extern BOOL    queue_only_override;    /* Allow override from command line */
 extern BOOL    queue_only_policy;      /* ACL or local_scan wants queue_only */
@@ -735,6 +736,7 @@ extern BOOL    system_filter_uid_set;  /* TRUE if uid set */
 extern BOOL    system_filtering;       /* TRUE when running system filter */
 
 extern BOOL    tcp_nodelay;            /* Controls TCP_NODELAY on daemon */
+extern int     test_harness_load_avg;  /* For use when testing */
 extern int     thismessage_size_limit; /* Limit for this message */
 extern int     timeout_frozen_after;   /* Max time to keep frozen messages */
 extern BOOL    timestamps_utc;         /* Use UTC for all times */

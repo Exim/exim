@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.32 2007/04/11 15:26:10 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.33 2007/06/27 11:01:51 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -126,6 +126,7 @@ check_spool_space                    integer         0             main
 check_string                         string          "From "       appendfile        3.03
                                                      unset         pipe              3.03
 check_srv                            string*         unset         dnslookup         4.31
+client_condition                     string*         unset         authenticators    4.68
 client_ignore_invalid_base64         boolean         false         plaintext         4.61
 client_name                          string*         +             cram_md5          3.10
 client_secret                        string*         unset         cram_md5          3.10
@@ -398,6 +399,7 @@ queue_list_requires_admin            boolean         true          main         
 queue_only                           boolean         false         main
 queue_only_file                      string          unset         main              2.05
 queue_only_load                      fixed-point     unset         main
+queue_only_load_latch                boolean         true          main              4.68
 queue_only_override                  boolean         true          main              4.21
 queue_run_in_order                   boolean         false         main              1.70
 queue_run_max                        integer         5             main

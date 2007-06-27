@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.75 2007/06/22 14:38:58 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.76 2007/06/27 11:01:52 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -828,6 +828,7 @@ BOOL    queue_list_requires_admin = TRUE;
 BOOL    queue_only             = FALSE;
 uschar *queue_only_file        = NULL;
 int     queue_only_load        = -1;
+BOOL    queue_only_load_latch  = TRUE;
 BOOL    queue_only_override    = TRUE;
 BOOL    queue_only_policy      = FALSE;
 BOOL    queue_run_first_delivery = FALSE;
@@ -1006,7 +1007,7 @@ script that sets up a copy of Exim for running in the test harness. It seems
 that compilers are now clever, and share constant strings if they can.
 Elsewhere in Exim the string "<" is used. The compiler optimization seems to
 make use of the end of this string in order to save space. So the patching then
-wrecks this. We default this optimization by adding some additional characters
+wrecks this. We defeat this optimization by adding some additional characters
 onto the end of the string. */
 
 uschar *running_status         = US">>>running<<<" "\0EXTRA";
@@ -1163,6 +1164,7 @@ BOOL    system_filter_uid_set  = FALSE;
 BOOL    system_filtering       = FALSE;
 
 BOOL    tcp_nodelay            = TRUE;
+int     test_harness_load_avg  = 0;
 int     thismessage_size_limit = 0;
 int     timeout_frozen_after   = 0;
 BOOL    timestamps_utc         = FALSE;
