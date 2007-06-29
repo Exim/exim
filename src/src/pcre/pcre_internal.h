@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_internal.h,v 1.5 2007/06/26 11:16:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_internal.h,v 1.6 2007/06/29 08:49:17 ph10 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -236,7 +236,7 @@ must begin with PCRE_. */
 /* Include the public PCRE header and the definitions of UCP character property
 values. */
 
-#include <pcre.h>
+#include "pcre.h"
 #include "ucp.h"
 
 /* When compiling for use with the Virtual Pascal compiler, these functions
