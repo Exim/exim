@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.38 2007/06/22 14:38:58 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.39 2007/06/29 09:20:37 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -728,6 +728,7 @@ read_message_data_smtp(FILE *fout)
 {
 int ch_state = 0;
 register int ch;
+register int linelength = 0;
 
 while ((ch = (RECEIVE_GETC)()) != EOF)
   {
@@ -749,6 +750,9 @@ while ((ch = (RECEIVE_GETC)()) != EOF)
       {
       ch_state = 0;
       body_linecount++;
+      if (linelength > max_received_linelength)
+        max_received_linelength = linelength;
+      linelength = -1;
       }
     else if (ch == '\r')
       {
@@ -759,6 +763,9 @@ while ((ch = (RECEIVE_GETC)()) != EOF)
 
     case 2:                             /* After (unwritten) CR */
     body_linecount++;
+    if (linelength > max_received_linelength)
+      max_received_linelength = linelength;
+    linelength = -1;
     if (ch == '\n')
       {
       ch_state = 0;
@@ -800,6 +807,7 @@ while ((ch = (RECEIVE_GETC)()) != EOF)
   next. */
 
   message_size++;
+  linelength++;
   if (fout != NULL)
     {
     if (fputc(ch, fout) == EOF) return END_WERROR;

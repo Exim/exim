@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/patchexim,v 1.1 2006/02/06 16:07:10 ph10 Exp $
+# $Cambridge: exim/test/patchexim,v 1.2 2007/06/29 09:20:37 ph10 Exp $
 
 ###############################################################################
 # This is an auxiliary script that is part of the Exim test suite. It must be #
@@ -18,7 +18,7 @@ open(OUT, ">eximdir/exim") || die "** Failed to open eximdir/exim: $!\n";
 while(<IN>)
   {
   s/>>>running<<</<<<testing>>>/;
-  s/(\d+\.\d+(?:\.\d+)?(-RC\d+)?\0<<eximversion>>)/"x.yz\0" . ("*" x (length($1) - 5))/e;
+  s/(\d+\.\d+(?:\.\d+)?(-RC\d+|-dev)?\0<<eximversion>>)/"x.yz\0" . ("*" x (length($1) - 5))/e;
   print OUT;
   }
 

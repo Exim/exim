@@ -16,6 +16,29 @@ message_exim_id=$message_exim_id
 max_received_linelength=$max_received_linelength
 recipients=$recipients
 ****
+exim -bs
+mail from:<userz@test.ex>
+rcpt to:<userx@test.x>
+rcpt to:<usery@test.ex>
+data
+From: Himself <himself@there.tld>
+To: Yourself <you@here.tld>
+Subject: The subject is not the object
+
+This is the body of the message. Make the line much longer than any header.
+.
+quit
+****
+sudo exim -be -Mset $msg2
+From: $h_from:
+Subject: $h_subject:
+message_body_size=$message_body_size
+message_size=$message_size
+message_id=$message_id
+message_exim_id=$message_exim_id
+max_received_linelength=$max_received_linelength
+recipients=$recipients
+****
 write test-data
 From: A Person <a.person@a.domain.tld>
 To: First <first@test.ex>, Second <second@test.ex>

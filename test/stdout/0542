@@ -7,12 +7,28 @@
 > max_received_linelength=70
 > recipients=userx@test.x, usery@test.ex
 > 
+220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
+250 OK
+250 Accepted
+250 Accepted
+354 Enter message, ending with "." on a line by itself
+250 OK id=10HmaY-0005vi-00
+221 myhost.test.ex closing connection
+> From: Himself <himself@there.tld>
+> Subject: The subject is not the object
+> message_body_size=76
+> message_size=416
+> message_id=10HmaY-0005vi-00
+> message_exim_id=10HmaY-0005vi-00
+> max_received_linelength=75
+> recipients=userx@test.x, usery@test.ex
+> 
 > from: A Person <a.person@a.domain.tld>
 > to: First <first@test.ex>, Second <second@test.ex>
 > subject: The subject is moot
 > message_size=197
 > message_body_size=77
-> message_exim_id=10HmaY-0005vi-00
+> message_exim_id=10HmaZ-0005vi-00
 > message_linecount=6
 > message_body_linecount=2
 > max_received_linelength=50
@@ -20,7 +36,7 @@
 > From: A Person <a.person@a.domain.tld>
 To: First <first@test.ex>, Second <second@test.ex>
 Subject: The subject is moot
-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
 > 
 > body --------------------

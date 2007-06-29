@@ -11,6 +11,7 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
+acl_smtp_rcpt = accept
 queue_only
 trusted_users = CALLER
 
