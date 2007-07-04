@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.30 2007/06/27 11:01:52 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.31 2007/07/04 11:03:46 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1830,8 +1830,10 @@ switch (type)
   case opt_int:
     {
     uschar *endptr;
+    long int lvalue;
+
     errno = 0;
-    value = strtol(CS s, CSS &endptr, intbase);
+    lvalue = strtol(CS s, CSS &endptr, intbase);
 
     if (endptr == s)
       log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN, "%sinteger expected for %s",
@@ -1841,25 +1843,28 @@ switch (type)
       {
       if (tolower(*endptr) == 'k')
         {
-        if (value > INT_MAX/1024 || value < INT_MIN/1024) errno = ERANGE;
-          else value *= 1024;
+        if (lvalue > INT_MAX/1024 || lvalue < INT_MIN/1024) errno = ERANGE;
+          else lvalue *= 1024;
         endptr++;
         }
       else if (tolower(*endptr) == 'm')
         {
-        if (value > INT_MAX/(1024*1024) || value < INT_MIN/(1024*1024))
+        if (lvalue > INT_MAX/(1024*1024) || lvalue < INT_MIN/(1024*1024))
           errno = ERANGE;
-        else value *= 1024*1024;
+        else lvalue *= 1024*1024;
         endptr++;
         }
       }
 
-    if (errno == ERANGE) log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-      "absolute value of integer \"%s\" is too large (overflow)", s);
+    if (errno == ERANGE || lvalue > INT_MAX || lvalue < INT_MIN)
+      log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+        "absolute value of integer \"%s\" is too large (overflow)", s);
 
     while (isspace(*endptr)) endptr++;
     if (*endptr != 0)
       extra_chars_error(endptr, inttype, US"integer value for ", name);
+
+    value = (int)lvalue;
     }
 
   if (data_block == NULL)
