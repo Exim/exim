@@ -310,24 +310,35 @@ return inbuffer;
 
 /* This function is called after a line has been identified as the start of a
 paragraph. We need to read the rest so that flags can be matched across the
-entire paragraph. The whole is copied into the paragraph buffer. Directives
-that are encountered in the paragraph are processed, with the exception of
-.literal, which terminates it. We leave a .literal directive in the input
-buffer and set next_line to point to it, so that it is processed later.
+entire paragraph. (If there is nested material such as a footnote, this applies
+only to the separate parts, not across the nesting.) The text is copied into
+the paragraph buffer. Directives that are encountered in the paragraph are
+processed, with two exceptions.
 
-Arguments:  the first line
-Returns:    the paragraph
+(1) For .literal, we set next_line so it is processed next, and exit. This is
+the end of the paragraph.
+
+(2) For .nest, we set *nest_info, according to whether it is the start or
+end of a nested section, and exit.
+
+Arguments:
+  p           the first line
+  nest_info   returns NEST_NO, NEST_START, or NEST_END
+
+Returns:      the paragraph
 */
 
 
 uschar *
-read_paragraph(uschar *p)
+read_paragraph(uschar *p, int *nest_info)
 {
 uschar *q = parabuffer;
 int length = Ustrlen(p);
 
 memcpy(q, p, length);
 q += length;
+
+*nest_info = NEST_NO;    /* Not hit .nest */
 
 for (;;)
   {
@@ -338,6 +349,19 @@ for (;;)
   if (Ustrncmp(p, ".literal ", 9) == 0)
     {
     next_line = p;
+    break;
+    }
+
+  if (Ustrncmp(p, ".nest ", 6) == 0)
+    {
+    p += 6;
+    while (isspace(*p)) p++;
+    s = p + Ustrlen(p);
+    while (s > p && isspace(s[-1])) s--;
+    *s = 0;
+    if (Ustrcmp(p, "begin") == 0) *nest_info = NEST_BEGIN;
+    else if (Ustrcmp(p, "end") == 0) *nest_info = NEST_END;
+    else error(26, p);
     break;
     }
 

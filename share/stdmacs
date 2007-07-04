@@ -17,6 +17,19 @@
 .literal off
 .endmacro
 
+.macro preface "Preface"
+.literal layout
+.pop C
+.push C
+.push &</preface>&
+&<preface$=2+ id="$2"+&xfpt.rev;>&
+&<title>&$1&</title>&
+.arg 3
+&<titleabbrev>&$3&</titleabbrev>&
+.endarg
+.literal off
+.endmacro
+
 .macro chapter
 .literal layout
 .pop C
@@ -26,6 +39,34 @@
 .arg 1
 &<title>&$1&</title>&
 .endarg
+.arg 3
+&<titleabbrev>&$3&</titleabbrev>&
+.endarg
+.literal off
+.endmacro
+
+.macro appendix
+.literal layout
+.pop C
+.push C
+.push &</appendix>&
+&<appendix$=2+ id="$2"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.arg 3
+&<titleabbrev>&$3&</titleabbrev>&
+.endarg
+.literal off
+.endmacro
+
+.macro colophon "Colophon"
+.literal layout
+.pop C
+.push C
+.push &</colophon>&
+&<colophon$=2+ id="$2"+&xfpt.rev;>&
+&<title>&$1&</title>&
 .arg 3
 &<titleabbrev>&$3&</titleabbrev>&
 .endarg
@@ -150,11 +191,26 @@
 
 . =============== Tables ===============
 
-.macro itable "none" "0" "0" "2" "1*" "left" "1*" "left"
+.macro itable "none" "0" "0" "2"
 .literal layout
+.push &</informaltable>&
 &<informaltable frame="$1"&xfpt.rev;>&
 &<tgroup cols="$4" colsep="$2" rowsep="$3">&
 .eacharg 5
+&<colspec colwidth="$+1" align="$+2"/>&
+.endeach 2
+&<tbody>&
+.endmacro
+
+.macro table "title" "ref" "none" "0" "0" "2"
+.literal layout
+.push &</table>&
+&<table$=2+ id="$2"+ $=3+frame="$3"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+&<tgroup cols="$6" colsep="$4" rowsep="$5">&
+.eacharg 7
 &<colspec colwidth="$+1" align="$+2"/>&
 .endeach 2
 &<tbody>&
@@ -173,7 +229,7 @@
 .literal layout
 &</tbody>&
 &</tgroup>&
-&</informaltable>&
+.pop
 .literal off
 .endmacro
 
@@ -283,6 +339,49 @@
 .nonl &</phrase>&
 .literal text
 .endinliteral
+.endmacro
+
+. =============== Footnotes ===============
+
+.macro footnote
+&<footnote>&
+.push &</footnote>&
+.nest begin
+.endmacro
+
+.macro endnote
+.nest end
+.pop
+.endmacro
+
+. =============== Figures ===============
+
+.macro figure
+.literal layout
+&<figure$=2+ id="$2"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.literal off
+.endmacro
+
+.macro endfigure
+.literal layout
+&</figure>&
+.literal off
+.endmacro
+
+. =============== Images ===============
+
+. This is a complete image wrapped inside a <mediaobject>.
+.
+.macro image
+.literal layout
+&<mediaobject>&&<imageobject>&
+&<imagedata fileref="$1" $=2+ scale="$2"+$=3+ align="$3"+&&&
+  $=4+ depth="$4"+$=5+ width="$5"+>&
+&</imagedata>&&</imageobject>&&</mediaobject>&
+.literal off
 .endmacro
 
 . End

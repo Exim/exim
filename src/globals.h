@@ -24,6 +24,9 @@ extern istackstr  *istack;
 
 extern int         literal_state;
 
+extern int         nest_level;
+extern int         nest_literal_stack[];
+
 extern macroexe   *macrocurrent;
 extern macrodef   *macrolist;
 

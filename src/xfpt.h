@@ -34,6 +34,12 @@ headers, but they might as well be together with those above. */
 #define INBUFFSIZE       1024
 #define PARABUFFSIZE    10000
 #define FLAGSTACKSIZE      40
+#define MAXNEST             3
+
+
+/* Nested block indicators for read_paragraph() */
+
+enum { NEST_NO, NEST_BEGIN, NEST_END };
 
 
 /* The literal states */

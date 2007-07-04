@@ -343,6 +343,111 @@ NOT FOUR
 NOT THREE "" ""
 END NOT FOUR
 </literallayout>
+<para>
+Test footnotes. The quick brown fox
+<footnote>
+<para>
+Note?
+</para>
+</footnote>
+jumps
+<footnote>
+<literallayout>
+Display in footnote.
+</literallayout>
+</footnote>
+over the lazy
+<footnote>
+<informaltable frame="all">
+<tgroup cols="3" colsep="1" rowsep="1">
+<colspec colwidth="1*" align="left"/>
+<colspec colwidth="2*" align="center"/>
+<colspec colwidth="3*" align="right"/>
+<tbody>
+<row>
+<entry>1</entry>
+<entry>2</entry>
+</row>
+<row>
+<entry>3</entry>
+<entry>4</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</footnote>
+dog.
+</para>
+<para>
+Another paragraph
+<footnote>
+<para>
+First para in footnote.
+</para>
+<para>
+Second para in footnote.
+</para>
+</footnote>
+with some footnotes
+<footnote>
+<para>
+This foot note will have text
+</para>
+<literallayout class="monospaced">
+and a display
+</literallayout>
+</footnote>
+in various forms.
+</para>
+<literallayout>
+How about a footnote in a display?
+<footnote>
+<para>
+This is the note.
+</para>
+</footnote>
+Back in the display.
+</literallayout>
+<?sdop toc_sections="no" ?>
+<para>
+Here is a reference to figure <xref linkend="FIGfirst"/>.
+</para>
+<figure id="FIGfirst">
+<title>This is the first figure</title>
+<mediaobject><imageobject>
+<imagedata fileref="eps1.eps" >
+</imagedata></imageobject></mediaobject>
+</figure>
+<para>
+Here is another reference to figure <xref linkend="FIGfirst"/>. We also have
+figure <xref linkend="FIGsecond"/> below.
+</para>
+<figure id="FIGsecond">
+<title>The second figure</title>
+<mediaobject><imageobject>
+<imagedata fileref="eps1.eps"  scale="80" align="centre">
+</imagedata></imageobject></mediaobject>
+</figure>
+<table id="TAB123" >
+<title>this is title</title>
+<tgroup cols="2" colsep="" rowsep="">
+<colspec colwidth="1*" align="left"/>
+<colspec colwidth="1*" align="left"/>
+<tbody>
+<row>
+<entry>AAA</entry>
+<entry>BBB</entry>
+</row>
+<row>
+<entry>CCC</entry>
+<entry>DDD</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+<para>
+A ref to table <xref linkend="TAB123"/>.
+</para>
 </chapter>
 
 <index>

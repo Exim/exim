@@ -73,10 +73,13 @@ static error_struct error_data[] = {
 { ec_serious,  "unknown macro \"%.*s\" in inline macro call" },
 { ec_serious,  "missing closing parenthesis in inline macro call:\n   %s" },
 /* 25-29 */
-{ ec_serious,  "ampersand found at end of line or string - ignored" }
+{ ec_serious,  "ampersand found at end of line or string - ignored" },
+{ ec_serious,  "\"begin\" or \"end\" expected, but \"%s\" found" },
+{ ec_serious,  "\".nest begin\" too deeply nested" },
+{ ec_serious,  "\".nest end\" incorrectly nested" }
 };
 
-#define error_maxerror 25
+#define error_maxerror 28
 
 
 

@@ -310,4 +310,99 @@ END NOT FOUR
 .nesttest
 .endd
 
+Test footnotes. The quick brown fox
+.footnote
+Note?
+.endnote
+jumps
+.footnote
+.display
+Display in footnote.
+.endd
+.endnote
+over the lazy
+.footnote
+.itable all 1 1 3 1* left 2* center 3* right
+.row 1 2
+.row 3 4
+.endtable
+.endnote
+dog.
+
+Another paragraph
+.footnote
+First para in footnote.
+
+Second para in footnote.
+.endnote
+with some footnotes
+.
+.footnote
+This foot note will have text
+.code
+and a display
+.endd
+.endnote
+.
+in various forms.
+
+.display
+How about a footnote in a display?
+.footnote
+This is the note.
+.endnote
+Back in the display.
+.endd
+
+.include stdflags
+.include stdmacs
+
+.literal xml
+<?sdop toc_sections="no" ?>
+.literal off
+
+.macro image 
+.literal layout
+&<mediaobject>&&<imageobject>&
+&<imagedata fileref="$1" $=2+ scale="$2"+$=3+ align="$3"+&&&
+  $=4+ depth="$4"+$=5+ width="$5"+>&
+&</imagedata>&&</imageobject>&&</mediaobject>&
+.literal off
+.endmacro
+
+.macro figure
+.literal layout
+&<figure$=2+ id="$2"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.literal off
+.endmacro
+
+.macro endfigure
+.literal layout
+&</figure>&
+.literal off
+.endmacro
+
+Here is a reference to figure &<<FIGfirst>>&.
+
+.figure "This is the first figure" "FIGfirst"
+.image "eps1.eps"
+.endfigure
+
+Here is another reference to figure &<<FIGfirst>>&. We also have
+figure &<<FIGsecond>>& below.
+
+.figure "The second figure" "FIGsecond"
+.image eps1.eps 80 centre
+.endfigure
+
+.table "this is title" "TAB123" "" "" "" 2 1* left 1* left
+.row AAA BBB
+.row CCC DDD
+.endtable
+
+A ref to table &<<TAB123>>&.
+
 .makeindex

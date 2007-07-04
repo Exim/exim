@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2006 */
+/* Copyright (c) University of Cambridge, 2007 */
 /* Written by Philip Hazel. */
 
 /* This header defines all the global functions. */
@@ -19,7 +19,7 @@ extern uschar     *misc_readstring(uschar *, int *, uschar *, int);
 extern void        para_process(uschar *);
 
 extern uschar     *read_nextline(void);
-extern uschar     *read_paragraph(uschar *);
+extern uschar     *read_paragraph(uschar *, int *);
 extern void        read_process_macroline(uschar *, uschar *);
 
 extern int         tree_insertnode(tree_node **, tree_node *);

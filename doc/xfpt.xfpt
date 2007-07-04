@@ -13,13 +13,13 @@
 <bookinfo>
 <title>The xfpt plain text to XML processor</title>
 <titleabbrev>xfpt</titleabbrev>
-<date>10 April 2007</date>
+<date>03 July 2007</date>
 <author>
   <firstname>Philip</firstname>
   <surname>Hazel</surname>
 </author>
 <authorinitials>PH</authorinitials>
-<revhistory><revision><revnumber>0.02</revnumber><date>10 April 2007</date><authorinitials>PH</authorinitials></revision></revhistory>
+<revhistory><revision><revnumber>0.03</revnumber><date>03 July 2007</date><authorinitials>PH</authorinitials></revision></revhistory>
 <copyright><year>2007</year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
@@ -78,7 +78,7 @@ closing quotes, as follows:
 .endd
 
 Within normal input text, ampersand, grave accent, and apostrophe are the only
-characters that cause &X; to change the input text, and this applies only to
+characters that cause &X; to change the input text, but this applies only to
 non-literal text. In literal text, there are no markup characters, and only a
 dot at the start of a line is recognized as special. Within the body of a
 macro, there is one more special character: the dollar character is used to
@@ -95,25 +95,28 @@ The format of the &X; command line is:
 .display
  &`xfpt [`&&'options'&&`] [`&&'input source'&&`]`&
 .endd
-If no input is specified, the standard input is read. There are three options:
-.display
- &`-help`&
-.endd
+If no input is specified, the standard input is read. There are four options:
+
+.vlist
+.vitem &%-help%&
 This option causes &X; to output its &"usage"& message, and exit.  
   
-.display
- &`-o `&&'<output destination>'&
-.endd
+.vitem "&%-o%&&~&'<output destination>'&"
 This option overrides the default destination. If the standard input is being
 read, the default destination is the standard output. Otherwise, the default
 destination is the name of the input file with the extension &_.xml_&,
 replacing its existing extension if there is one. A single hyphen character can
 be given as an output destination to refer to the standard output.
-.display
-  &`-S `&&'<directory path>'&
-.endd
+
+.vitem "&%-S%&&~&'<directory path>'&"
 This option overrides the path to &X;'s library directory that is built into
 the program. This makes it possible to use or test alternate libraries.
+
+.new
+.vitem &%-v%&
+This option causes &X; to output its version number and exit.
+.wen  
+.endlist
 
 
 .section "A short &X; example"
@@ -138,8 +141,8 @@ standard macros and flags:
  .endlist
 
  There are also standard macros for ordered lists, literal
- layout blocks, code blocks, URL references, index entries
- and tables.
+ layout blocks, code blocks, URL references, index entries,
+ tables, footnotes, figures, etc.
 .endd
 
 
@@ -149,9 +152,14 @@ standard macros and flags:
 &"modes"&):
 
 .ilist
-In the default mode, text is processed paragraph by paragraph. The end of a
-paragraph is indicated by the end of the input, a blank line, or by an
-occurrence of the &*.literal*& directive. Other directives (for example,
+In the default mode, text is processed paragraph by paragraph. 
+.footnote
+&new("There is, however, a special case when a paragraph contains one or more 
+footnotes. In that situation, each part of the outer paragraph is processed 
+independently.")
+.endnote
+The end of a paragraph is indicated by the end of the input, a blank line, or
+by an occurrence of the &*.literal*& directive. Other directives (for example,
 &*.include*&) do not of themselves terminate a paragraph. Most of the standard
 macros (such as &*.chapter*& and &*.section*&) force a paragraph end by
 starting their contents with a &*.literal*& directive.
@@ -160,13 +168,15 @@ Because &X; reads a whole paragraph before processing it, error messages
 contain the phrase &"detected near line &'nnn'&"&, where the line number is
 typically that of the last line of the paragraph.
 
+
 .next
 In the &"literal layout"& mode, text is processed line by line, but is
 otherwise handled as in the default mode. The only real difference this makes
-to the markup from the user's point of view is that paired flags must be on the
-same line. In this mode, error messages are more likely to contain the exact
-line number where the fault lies. Literal layout mode is used by the standard
-&*.display*& macro to generate &`<literallayout>`& elements.
+to the markup from the user's point of view is that both parts of a set of
+paired flags must be on the same line. In this mode, error messages are more
+likely to contain the exact line number where the fault lies. Literal layout
+mode is used by the standard &*.display*& macro to generate &`<literallayout>`&
+elements.
 
 .next
 In the &"literal text"& mode, text is also processed line by line, but no flags
@@ -347,20 +357,26 @@ non-alphanumeric characters. When it is encountered, it is replaced by its
 replacement text. For example, in the standard flag definitions, &`&&&&`&
 is defined as a standalone flag with with the replacement text &`&&amp;`&.
 
+.new
 A paired flag is defined as two sequences. The first takes the same form as a
 standalone flag. The second also consists of non-alphanumeric characters, but
 need not start with an ampersand. It is often defined as the reverse of the
-first sequence. When the first sequence of a paired flag is encountered, its
-partner is expected to be found within the same paragraph (or line, in literal
-layout mode). Furthermore, multiple occurrences of paired flags must be
-correctly nested. For example, in the standard definitions, &`&&&#x27;`& and
+first sequence. For example, in the standard definitions, &`&&&#x27;`& and
 &`&#x27;&&`& are defined as a flag pair for enclosing text in an &`<emphasis>`&
-element. Each member of the pair is replaced by its replacement text.
+element.
 
-Note that, though &X; diagnoses an error for badly nested flag pairs, it does
-not prevent you from generating invalid XML. For example, DocBook does not
-allow &`<emphasis>`& within &`<literal>`&, though it does allow &`<literal>`&
-within &`<emphasis>`&.
+When the first sequence of a paired flag is encountered, its partner is
+expected to be found within the same text unit. In the default mode, the units
+are a paragraphs, or part-paragraphs if footnotes intervene. In literal layout
+mode, the text is processed line by line. Each member of the pair is replaced
+by its replacement text. 
+.wen
+
+Multiple occurrences of paired flags must be correctly nested. Note that,
+though &X; diagnoses an error for badly nested flag pairs, it does not prevent
+you from generating invalid XML. For example, DocBook does not allow
+&`<emphasis>`& within &`<literal>`&, though it does allow &`<literal>`& within
+&`<emphasis>`&.
 
 .section "Unrecognized flag sequences"
 If an ampersand is not followed by a character sequence in one of the forms
@@ -401,7 +417,7 @@ convenient.
 . ----------------------------------------------------------------------------
 .chapter "Built-in directive processing"
 The directives that are built into the code of &X; are now described in
-alphabetical order. You can see more examples of their use in the definitions
+alphabetical order. You can see more examples of their use in the descriptions
 of the standard macros in chapter &<<CHAPstdmac>>&.
 
 
@@ -427,6 +443,12 @@ for the given argument. For example:
  .endarg 
  .endmacro
 .endd
+.new
+Note that if a macro is defined with default values for its arguments, these
+are not counted by the &*.arg*& directive, which looks only at the actual
+arguments in a particular macro call.
+.wen
+
 The &*.arg*& directive may be nested.
 
 
@@ -435,7 +457,9 @@ This directive may appear only within the body of a macro. It may optionally be
 followed by a single number; if omitted the value is taken to be 1. Subsequent
 lines, up to a &*.endeach*& directive, are processed multiple times, once for
 each remaining argument. Unlike &*.arg*&, an argument that is an empty string 
-is not treated specially.
+is not treated specially. &new("However, like &*.arg*&, only the actual
+arguments of a macro call are considered. Default argument values do not 
+count.")
 
 The number given with &*.eacharg*& defines which argument to start with. If the
 macro is called with fewer arguments, the lines up to &*.endeach*& are skipped,
@@ -482,6 +506,7 @@ See the description of &*.arg*& above.
 .section "The &*.endeach*& directive"
 See the description of &*.eacharg*& above.
 
+
 .section "The &*.endinliteral*& directive"
 See the description of &*.inliteral*& below.
 
@@ -504,6 +529,7 @@ This directive must be followed by a single string argument that is the path to
 a file. The contents of the file are read and incorporated into the input at
 this point. If the string does not contain any slashes, the path to the &X;
 library is prepended. Otherwise, the path is used unaltered.
+
 
 .section "The &*.inliteral*& directive"
 This directive may appear only within the body of a macro. It must be followed 
@@ -578,12 +604,31 @@ taken with argument references to ensure that substitutions happen at the right
 level.
 
 
+.new
+.section "The &*.nest*& directive"
+This directive must be followed by one of the words &"begin"& or &"end"&. It is
+used to delimit a nested sequence of independent text items that occurs inside
+another, such as the contents of a footnote inside a paragraph. This directive
+is usually used inside a macro. For example, a &*footnote*& macro could be
+defined like this:
+.code
+ .macro footnote
+ &<footnote>&
+ .nest begin
+ .endmacro
+.endd
+At the start of a nested sequence, the current mode and paragraph state are
+remembered and &X; then reverts to the default mode and &"not in a paragraph"&.
+At the end of a nested sequence, if a paragraph has been started, it is
+terminated, and then &X; reverts to the previous state.
+.wen
+
+
 .section "The &*.nonl*& directive"
 This directive must be followed by a single string argument. It is processed 
 as normal text, but without a newline at the end. This facility is useful in 
 macros when constructing a single data line from several text fragments. See 
 for example the &*.new*& macro in the standard macros.
-
 
 
 .section "The &*.pop*& directive"
@@ -727,6 +772,13 @@ These three macros use the stack to ensure that each chapter, section, and
 subsection is terminated at the correct point. For example, starting a new
 section automatically terminates an open subsection and a previous section.
 
+
+.new
+.section "Prefaces, appendixes, and colophons"
+The macros &*.preface*&, &*.appendix*&, and &*.colophon*& operate in the same 
+way as &*.chapter*&, except that the first and the last have the default title
+strings &"Preface"& and &"Colophon"&.
+.wen
 
 
 .section "URL references"
@@ -914,6 +966,12 @@ section you can also call &*.new*& with an argument, either as a directive or
 inline. This does not work for &*.code*& because its lines are processed in
 literal text mode.
 
+.new
+If you want to add revision indications to part of a table, you must use an
+inline call of &*new*& within an argument of the &*.row*& macro (see below).
+This is the only usage that works in this case.
+.wen
+
 
 .section "Informal tables"
 The &*.itable*& macro starts an informal (untitled) table with some basic
@@ -958,7 +1016,8 @@ which has no arguments. For example:
 
 This specifies a framed table, with both column and row separator lines. There
 are two columns: the first is one inch wide and left aligned, and the second is
-two inches wide and centred. There are two rows. The output looks like this:
+two inches wide and centred. There are two rows. The resulting table looks like
+this:
 
 .itable all 1 1 2 1in left 2in center
 .row "cell 11" "cell 12"
@@ -972,6 +1031,85 @@ macro within an entry to generate a &`<phrase>`& element with &`revisionflag`&
 set.
 
 
+.new
+.section "Formal tables"
+The &*.table*& macro starts a formal table, that is, a table that has a title, 
+and which can be cross referenced. The first argument of this macro is the 
+table's title; the second is an identifier for cross-referencing. If you are 
+not going to reference the table, an empty string must be supplied. From the 
+third argument onwards, the arguments are identical to the &*.itable*& macro.
+For example:
+
+.code
+ .table "A title for the table" "" all 1 1 2 1in left 2in center
+ .row "cell 11" "cell 12"
+ .row "cell 21" "cell 22"
+ .endtable
+.endd
+
+
+.section "Figures and images"
+A figure is enclosed between &*.figure*& and &*.endfigure*& macros. The first 
+argument of &*.figure*& provides a title for the figure. The second is 
+optional; if present, it is a tag for references to the figure.
+
+A figure normally contains an image. The &*.image*& macro can be used in simple 
+cases. It generates a &`<mediaobject>`& element containing an
+&`<imageobject>`&. The first argument is the name of the file containing the 
+image. The remaining arguments are optional; if any one is not needed, an empty 
+string must be supplied as a placeholder.
+
+.ilist
+The second argument specifies a scaling factor for the image, as a percentage. 
+Thus, a value of 50 reduces the image to half size.
+.next
+The third argument specifies an alignment for the image. It must be one of 
+&`left`&, &`right`& or &`center`& (or even &`centre`& if the DocBook processor 
+you are using can handle it).
+.next
+The fourth and fifth arguments specify the depth and width, respectively. How 
+these values are handled depends on the processing software.
+.endlist
+
+Here is an example of the input for a figure, with all the image options 
+defaulted:
+.code
+ .figure "My figure's title" "FIGfirst"
+ .image figure01.eps
+ .endfigure
+.endd    
+
+Here is another example, where the figure is reduced to 80% and centred:
+.code
+ .figure "A reduced figure"
+ .image figure02.eps 80 center
+ .endfigure  
+.endd
+
+
+.section "Footnotes"
+Footnotes can be specified between &*.footnote*& and &*.endnote*& macros. 
+Within a footnote there can be any kind of text item, including displays and 
+tables. When a footnote occurs in the middle of a paragraph, paired flags 
+must not straddle the footnote. This example is wrong:
+.code
+ The &'quick
+ .footnote
+ That's really fast.
+ .endf
+ brown'& fox.
+.endd
+The correct markup for this example is:
+.code
+ The &'quick'&
+ .footnote
+ That's really fast.
+ .endf
+ &'brown'& fox.
+.endd
+.wen
+
+
 .section "Indexes"
 The &*.index*& macro generates &`<indexterm>`& elements (index entries) in the
 output. It takes one or two arguments. The first is the text for the primary
@@ -983,8 +1121,21 @@ example:
  .index goose "wild chase"
  The chasing of wild geese...
 .endd
+.new
 You can generate &"see"& and &"see also"& index entries by using &*.index-see*& 
-and &*.index-seealso*& instead of &*.index*&.
+and &*.index-seealso*& instead of &*.index*&. The first argument of these 
+macros is the text for the &"see"&. For example:
+.code
+ .index-see "chase" "wild goose"
+.endd
+This generates:
+.code
+ <indexterm>
+ <primary>wild goose</primary>
+ <see>chase</see>
+ </indexterm>
+.endd  
+.wen
 
 If you want to generate an index entry for a range of pages, you can use the 
 &*.index-from*& and &*.index-to*& macros. The first argument of each of them is 
@@ -1025,7 +1176,5 @@ As long as the processing software can handle multiple indexes, this causes two
 indexes to be generated. The first is entitled &"Concept index"&, and contains 
 only those index entries that were generated by the &*.cindex*& macro. The 
 second contains all index entries.
-
-
 
 . === End ===

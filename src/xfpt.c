@@ -19,6 +19,8 @@ static uschar *xfpt_filename = NULL;
 static uschar *out_filename = NULL;
 
 
+
+
 /*************************************************
 *                  Usage                         *
 *************************************************/
@@ -112,10 +114,10 @@ return TRUE;
 *          Entry point and main program          *
 *************************************************/
 
-
 int
 main(int argc, char **argv)
 {
+BOOL para_unfinished[MAXNEST+1];
 uschar *p, *q;
 
 if (!xfpt_decode_arg(argc, argv)) return EXIT_FAILURE;
@@ -157,6 +159,9 @@ else
 
 /* Process the input */
 
+nest_level = 0;
+para_unfinished[0] = FALSE;
+
 while ((p = read_nextline()) != NULL)
   {
   if (*p == '.') dot_process(p); else switch (literal_state)
@@ -179,18 +184,39 @@ while ((p = read_nextline()) != NULL)
     while (isspace(*q)) q++;
     if (*q != 0)
       {
-      p = read_paragraph(p);
-      (void)fprintf(outfile, "<");
-      para_process(US"para&xfpt.rev;");
-      (void)fprintf(outfile, ">\n");
+      int nest_info;
+      p = read_paragraph(p, &nest_info);
+      if (!para_unfinished[nest_level])
+        {
+        (void)fprintf(outfile, "<");
+        para_process(US"para&xfpt.rev;");
+        (void)fprintf(outfile, ">\n");
+        }
+
       para_process(p);
-      (void)fprintf(outfile, "</para>\n");
+      if (nest_info == NEST_BEGIN)
+        {
+        if (nest_level >= MAXNEST) error(27); else
+          {
+          nest_literal_stack[nest_level] = literal_state;
+          para_unfinished[nest_level++] = TRUE;
+          }
+        }
+      else (void)fprintf(outfile, "</para>\n");
+
+      para_unfinished[nest_level] = FALSE;
+
+      if (nest_info == NEST_END)
+        {
+        if (nest_level <= 0) error(28);
+          else literal_state = nest_literal_stack[--nest_level];
+        }
       }
     break;
     }
   }
 
-/* Empty the pushed stack, close the output, and we are done */
+/* Empty the stack of pushed texts, close the output, and we are done. */
 
 while (pushed != 0)
   {

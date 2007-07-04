@@ -503,6 +503,40 @@ if (md->lines == NULL)
 
 
 /*************************************************
+*               Handle .nest                     *
+*************************************************/
+
+/* This processing happens when .nest is encountered when not in the middle of
+reading a normal paragraph. That is, it's either between paragraphs or in a
+literal section. Otherwise .nest is handled in read_paragraph().
+
+Argument: the rest of the line
+Returns:  nothing
+*/
+
+static void
+do_nest(uschar *p)
+{
+if (Ustrcmp(p, "begin") == 0)
+  {
+  if (nest_level >= MAXNEST) error(27); else
+    {
+    nest_literal_stack[nest_level++] = literal_state;
+    literal_state = LITERAL_OFF;
+    }
+  }
+else if (Ustrcmp(p, "end") == 0)
+  {
+  if (nest_level <= 0) error(28);
+    else literal_state = nest_literal_stack[--nest_level];
+  }
+else error(26, p);
+}
+
+
+
+
+/*************************************************
 *               Handle .nonl                     *
 *************************************************/
 
@@ -700,6 +734,7 @@ static dirstr dirs[] = {
   { US".inliteral",    10, do_inliteral,     TRUE,  TRUE },
   { US".literal",       8, do_literal,       TRUE, FALSE },
   { US".macro",         6, do_macro,        FALSE, FALSE },
+  { US".nest",          5, do_nest,          TRUE, FALSE },
   { US".nonl",          5, do_nonl,          TRUE, FALSE },
   { US".pop",           4, do_pop,           TRUE, FALSE },
   { US".push",          5, do_push,         FALSE, FALSE },

@@ -11,7 +11,7 @@
 
 
 uschar    *xfpt_share                = US DATADIR;
-uschar    *xfpt_version              = US "0.02 05-Apr-2007";
+uschar    *xfpt_version              = US "0.03 02-July-2007";
 
 tree_node *entities                  = NULL;
 
@@ -21,6 +21,9 @@ uschar    *inbuffer                  = NULL;
 istackstr *istack                    = NULL;
 
 int        literal_state             = LITERAL_OFF;
+
+int        nest_level                = 0;
+int        nest_literal_stack[MAXNEST+1];
 
 macroexe  *macrocurrent              = NULL;
 macrodef  *macrolist                 = NULL;
