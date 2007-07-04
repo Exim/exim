@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.27 2007/06/14 13:20:38 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.28 2007/07/04 10:37:04 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -489,6 +489,12 @@ while(<IN>)
 
   # ======== General uids, gids, and pids ========
   # Note: this must come after munges for caller's and exim's uid/gid
+
+  # These are for systems where long int is 64
+  s/\buid=4294967295/uid=-1/;
+  s/\beuid=4294967295/euid=-1/;
+  s/\bgid=4294967295/gid=-1/;
+  s/\begid=4294967295/egid=-1/;
 
   s/\bgid=\d+/gid=gggg/;
   s/\begid=\d+/egid=gggg/;

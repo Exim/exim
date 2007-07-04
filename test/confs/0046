@@ -21,12 +21,6 @@ trusted_users = CALLER
 
 begin routers
 
-forwardfile:
-  driver = redirect
-  allow_filter
-  check_local_user
-  file = DIR/aux-fixed/TESTNUM.filter.$local_part
-
 localuser:
   driver = accept
   local_parts = userx

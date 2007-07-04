@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.520 2007/06/27 11:01:51 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.521 2007/07/04 10:37:03 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -75,6 +75,9 @@ PH/13 Installed PCRE version 7.2. This needed some changes because of the new
       way in which PCRE > 7.0 is built.
 
 PH/14 Implemented queue_only_load_latch.
+
+PH/15 Removed an incorrect (int) cast when reading the value of SIZE in a
+      MAIL command. The effect was to mangle the value on 64-bit systems.
 
 
 Exim version 4.67

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.58 2007/04/16 11:17:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.59 2007/07/04 10:37:03 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3134,7 +3134,7 @@ while (done <= 0)
       in order to be able to log the sender address on failure. */
 
       if (strcmpic(name, US"SIZE") == 0 &&
-          ((size = (int)Ustrtoul(value, &end, 10)), *end == 0))
+          ((size = Ustrtoul(value, &end, 10)), *end == 0))
         {
         if ((size == ULONG_MAX && errno == ERANGE) || size > INT_MAX)
           size = INT_MAX;
