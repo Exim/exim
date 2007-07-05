@@ -10,7 +10,7 @@ data
 .
 quit
 ****
-exim -DSTRICT=strict_acl_vars -bs -oMa 4.3.2.1 -oMs host2.name
+exim -DSTRICT=strict_acl_vars -odi -bs -oMa 4.3.2.1 -oMs host2.name
 mail from:<>
 rcpt to:<a@b>
 data
