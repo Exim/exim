@@ -31,7 +31,7 @@ check_rcpt:
   defer   local_parts = usery
           hosts       = 127.0.0.1
 
-  accept
+  accept  delay       = 1s
 
 
 # ----- Routers -----
