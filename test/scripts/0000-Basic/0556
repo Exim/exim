@@ -7,7 +7,7 @@ exim -DSERVER=server -DACL_PREDATA=check_predata -bd -oX PORT_D
 # input when DATA is received, but we start sending the data itself too
 # early (the server will be waiting 2 seconds in the predata ACL).
 #
-client 127.0.0.1 PORT_D
+client -t5 127.0.0.1 PORT_D
 ??? 220
 ehlo abcd
 ??? 250-
