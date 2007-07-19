@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.19 2007/06/14 06:44:58 magnus Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.20 2007/07/19 17:07:39 magnus Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -25170,7 +25170,7 @@ log entry.
 If you want to apply a control unconditionally, you can use it with a
 &%require%& verb. For example:
 .code
-    require  control = no_multiline_response
+    require  control = no_multiline_responses
 .endd
 .endlist
 
@@ -25534,7 +25534,7 @@ only to the current message, not to any subsequent ones that may be received in
 the same SMTP connection. It is provided for debugging purposes and is unlikely
 to be useful in production.
 
-.vitem &*control&~=&~no_multiline_response*&
+.vitem &*control&~=&~no_multiline_responses*&
 .cindex "multiline responses, suppressing"
 This control is permitted for any ACL except the one for non-SMTP messages.
 It seems that there are broken clients in use that cannot handle multiline
