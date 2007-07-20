@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.20 2007/07/19 17:07:39 magnus Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.21 2007/07/20 16:01:21 magnus Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -12949,7 +12949,7 @@ removed at the time the message is received, to avoid any problems that might
 occur when a delivered message is subsequently sent on to some other recipient.
 
 .new
-.option disable_fnync main boolean false
+.option disable_fsync main boolean false
 .cindex "&[fsync()]&, disabling"
 This option is available only if Exim was built with the compile-time option
 ENABLE_DISABLE_FSYNC. When this is not set, a reference to &%disable_fsync%& in
