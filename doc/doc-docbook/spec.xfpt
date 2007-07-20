@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.21 2007/07/20 16:01:21 magnus Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.22 2007/07/20 17:06:15 jetmore Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -10681,7 +10681,7 @@ lookup.
 
 .vitem &$load_average$&
 .vindex "&$load_average$&"
-This variable contains the system load average, multiplied by 1000 to that it
+This variable contains the system load average, multiplied by 1000 so that it
 is an integer. For example, if the load average is 0.21, the value of the
 variable is 210. The value is recomputed every time the variable is referenced.
 
