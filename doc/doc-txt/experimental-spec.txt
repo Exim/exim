@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.6 2005/07/23 20:19:09 tom Exp $
+$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.7 2007/07/27 13:56:24 magnus Exp $
 
 From time to time, experimental features may be added to Exim.
 While a feature  is experimental, there  will be a  build-time
@@ -642,7 +642,7 @@ variables.
   it for logging purposes.
 
   $spf_received
-  This contains a complete SPF-Received: header that can be
+  This contains a complete Received-SPF: header that can be
   added to the message. Please note that according to the SPF
   draft, this header must be added at the top of the header
   list. Please see section 10 on how you can do this.
