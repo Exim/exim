@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exinext.src,v 1.2 2005/12/22 11:47:24 ph10 Exp $
+# $Cambridge: exim/src/src/exinext.src,v 1.3 2007/07/29 21:49:46 magnus Exp $
 
 # Copyright (c) 1996-2004 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -65,9 +65,9 @@ if [ "$config" = "" ]; then
   # suffixed file in each case.
 
   set `awk -F: '{ for (i = 1; i <= NF; i++) print $i }' <<End
-  CONFIGURE_FILE
-  End
-  `
+CONFIGURE_FILE
+End
+`
   while [ "$config" = "" -a $# -gt 0 ] ; do
     if [ -f "$1$hostsuffix" ] ; then
       config="$1$hostsuffix"
