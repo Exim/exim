@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.28 2007/04/19 13:19:06 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.29 2007/08/17 11:16:45 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -143,6 +143,10 @@ static const struct String str_envelope_auth={ str_envelope_auth_c, 13 };
 #ifdef ENOTIFY
 static uschar str_enotify_c[]="enotify";
 static const struct String str_enotify={ str_enotify_c, 7 };
+static uschar str_online_c[]="online";
+static const struct String str_online={ str_online_c, 6 };
+static uschar str_maybe_c[]="maybe";
+static const struct String str_maybe={ str_maybe_c, 5 };
 #endif
 #ifdef SUBADDRESS
 static uschar str_subaddress_c[]="subaddress";
@@ -2476,11 +2480,11 @@ else if (parse_identifier(filter,CUS "envelope"))
   return 1;
   }
 #ifdef ENOTIFY
-else if (parse_identifier(filter,CUS "valid_notif_method"))
+else if (parse_identifier(filter,CUS "valid_notify_method"))
   {
   /*
-  valid_notif_method = "valid_notif_method"
-                       <notification-uris: string-list>
+  valid_notify_method = "valid_notify_method"
+                        <notification-uris: string-list>
   */
 
   struct String *uris,*u;
@@ -2515,6 +2519,93 @@ else if (parse_identifier(filter,CUS "valid_notif_method"))
       }
     }
   return 1;
+  }
+else if (parse_identifier(filter,CUS "notify_method_capability"))
+  {
+  /*
+  notify_method_capability = "notify_method_capability" [COMPARATOR] [MATCH-TYPE]
+                             <notification-uri: string>
+                             <notification-capability: string>
+                             <key-list: string-list>
+  */
+
+  int m;
+  int co=0,mt=0;
+
+  enum Comparator comparator=COMP_EN_ASCII_CASEMAP;
+  enum MatchType matchType=MATCH_IS;
+  struct String uri,capa,*keys,*k;
+
+  if (!filter->require_enotify)
+    {
+    filter->errmsg=CUS "missing previous require \"enotify\";";
+    return -1;
+    }
+  for (;;)
+    {
+    if (parse_white(filter)==-1) return -1;
+    if ((m=parse_comparator(filter,&comparator))!=0)
+      {
+      if (m==-1) return -1;
+      if (co)
+        {
+        filter->errmsg=CUS "comparator already specified";
+        return -1;
+        }
+      else co=1;
+      }
+    else if ((m=parse_matchtype(filter,&matchType))!=0)
+      {
+      if (m==-1) return -1;
+      if (mt)
+        {
+        filter->errmsg=CUS "match type already specified";
+        return -1;
+        }
+      else mt=1;
+      }
+    else break;
+    }
+    if ((m=parse_string(filter,&uri))!=1)
+      {
+      if (m==0) filter->errmsg=CUS "missing notification URI string";
+      return -1;
+      }
+    if (parse_white(filter)==-1) return -1;
+    if ((m=parse_string(filter,&capa))!=1)
+      {
+      if (m==0) filter->errmsg=CUS "missing notification capability string";
+      return -1;
+      }
+    if (parse_white(filter)==-1) return -1;
+    if ((m=parse_stringlist(filter,&keys))!=1)
+      {
+      if (m==0) filter->errmsg=CUS "missing key string list";
+      return -1;
+      }
+    if (exec)
+      {
+      string_item *recipient;
+      struct String header,body;
+
+      *cond=0;
+      recipient=NULL;
+      header.length=-1;
+      header.character=(uschar*)0;
+      body.length=-1;
+      body.character=(uschar*)0;
+      if (parse_mailto_uri(filter,uri.character,&recipient,&header,&body)==1)
+        {
+        if (eq_asciicase(&capa,&str_online,0)==1)
+          for (k=keys; k->length!=-1; ++k)
+            {
+            *cond=compare(filter,k,&str_maybe,comparator,matchType);
+            if (*cond==-1) return -1;
+            if (*cond) break;
+            }
+        }
+      }
+    return 1;
   }
 #endif
 else return 0;
