@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.22 2007/02/20 09:53:41 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.23 2007/08/22 14:07:30 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2451,6 +2451,8 @@ else
         addr->message = string_sprintf ("failed to open %s (%d tr%s)",
           filename, i, (i == 1)? "y" : "ies");
         addr->basic_errno = errno;
+        if (errno == errno_quota || errno == ENOSPC)
+          addr->user_message = US"mailbox is full";
         return FALSE;
         }
 
