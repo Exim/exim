@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.60 2007/08/22 10:10:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.61 2007/08/22 14:20:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -818,7 +818,8 @@ if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
   s = string_append(s, &size, &ptr, 2, US" CV=",
     tls_certificate_verified? "yes":"no");
 if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_peerdn != NULL)
-  s = string_append(s, &size, &ptr, 3, US" DN=\"", tls_peerdn, US"\"");
+  s = string_append(s, &size, &ptr, 3, US" DN=\"",
+    string_printing(tls_peerdn), US"\"");
 #endif
 
 sep = (smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE)?

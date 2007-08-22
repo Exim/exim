@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.40 2007/08/22 10:10:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.41 2007/08/22 14:20:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3366,7 +3366,8 @@ if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
   s = string_append(s, &size, &sptr, 2, US" CV=",
     tls_certificate_verified? "yes":"no");
 if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_peerdn != NULL)
-  s = string_append(s, &size, &sptr, 3, US" DN=\"", tls_peerdn, US"\"");
+  s = string_append(s, &size, &sptr, 3, US" DN=\"",
+    string_printing(tls_peerdn), US"\"");
 #endif
 
 if (sender_host_authenticated != NULL)

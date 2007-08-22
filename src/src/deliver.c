@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.44 2007/02/06 14:19:00 ph10 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.45 2007/08/22 14:20:28 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -944,7 +944,8 @@ if (result == OK)
       s = string_append(s, &size, &ptr, 2, US" CV=",
         testflag(addr, af_cert_verified)? "yes":"no");
     if ((log_extra_selector & LX_tls_peerdn) != 0 && addr->peerdn != NULL)
-      s = string_append(s, &size, &ptr, 3, US" DN=\"", addr->peerdn, US"\"");
+      s = string_append(s, &size, &ptr, 3, US" DN=\"",
+        string_printing(addr->peerdn), US"\"");
     #endif
 
     if ((log_extra_selector & LX_smtp_confirmation) != 0 &&
