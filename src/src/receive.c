@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.39 2007/06/29 09:20:37 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.40 2007/08/22 10:10:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -178,7 +178,7 @@ else
     }
   }
 
-/* We now have the patch; do the business */
+/* We now have the path; do the business */
 
 memset(&statbuf, 0, sizeof(statbuf));
 
@@ -283,12 +283,14 @@ that case is done by setting a flag to cause the log functions to call this
 function if there is an ultimate disaster. That is why it is globally
 accessible.
 
-Arguments:   SMTP response to give if in an SMTP session
+Arguments:
+  reason     text reason to pass to the not-quit ACL
+  msg        default SMTP response to give if in an SMTP session
 Returns:     it doesn't
 */
 
 void
-receive_bomb_out(uschar *msg)
+receive_bomb_out(uschar *reason, uschar *msg)
 {
 /* If spool_name is set, it contains the name of the data file that is being
 written. Unlink it before closing so that it cannot be picked up by a delivery
@@ -306,20 +308,16 @@ if (spool_name[0] != 0)
 if (data_file != NULL) (void)fclose(data_file);
   else if (data_fd >= 0) (void)close(data_fd);
 
-/* Attempt to close down an SMTP connection tidily. */
+/* Attempt to close down an SMTP connection tidily. For non-batched SMTP, call
+smtp_notquit_exit(), which runs the NOTQUIT ACL, if present, and handles the
+SMTP response. */
 
 if (smtp_input)
   {
-  if (!smtp_batched_input)
-    {
-    smtp_printf("421 %s %s - closing connection.\r\n", smtp_active_hostname,
-      msg);
-    mac_smtp_fflush();
-    }
-
-  /* Control does not return from moan_smtp_batch(). */
-
-  else moan_smtp_batch(NULL, "421 %s - message abandoned", msg);
+  if (smtp_batched_input)
+    moan_smtp_batch(NULL, "421 %s - message abandoned", msg);  /* No return */
+  smtp_notquit_exit(reason, US"421", US"%s %s - closing connection.",
+    smtp_active_hostname, msg);
   }
 
 /* Exit from the program (non-BSMTP cases) */
@@ -362,7 +360,7 @@ else
             LOG_MAIN, "timed out while reading local message");
   }
 
-receive_bomb_out(msg);   /* Does not return */
+receive_bomb_out(US"data-timeout", msg);   /* Does not return */
 }
 
 
@@ -384,7 +382,8 @@ local_scan_timeout_handler(int sig)
 sig = sig;    /* Keep picky compilers happy */
 log_write(0, LOG_MAIN|LOG_REJECT, "local_scan() function timed out - "
   "message temporarily rejected (size %d)", message_size);
-receive_bomb_out(US"local verification problem");   /* Does not return */
+/* Does not return */
+receive_bomb_out(US"local-scan-timeout", US"local verification problem");
 }
 
 
@@ -405,7 +404,8 @@ local_scan_crash_handler(int sig)
 {
 log_write(0, LOG_MAIN|LOG_REJECT, "local_scan() function crashed with "
   "signal %d - message temporarily rejected (size %d)", sig, message_size);
-receive_bomb_out(US"local verification problem");   /* Does not return */
+/* Does not return */
+receive_bomb_out(US"local-scan-error", US"local verification problem");
 }
 
 
@@ -442,7 +442,7 @@ else
     }
   }
 
-receive_bomb_out(msg);    /* Does not return */
+receive_bomb_out(US"signal-exit", msg);    /* Does not return */
 }
 
 

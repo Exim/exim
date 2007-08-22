@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.154 2007/06/27 11:01:51 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.155 2007/08/22 10:10:23 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -86,6 +86,38 @@ Version 4.68
     If set false when queue_only_load is greater than zero, Exim re-evaluates
     the load for each incoming message in an SMTP session. Otherwise, once one
     message is queued, the remainder are also.
+
+ 9. There is a new ACL, specified by smtp_notquit_acl, which is run in most
+    cases when an SMTP session ends without sending QUIT. However, when Exim
+    itself is is bad trouble, such as being unable to write to its log files,
+    this ACL is not run, because it might try to do things (such as write to
+    log files) that make the situation even worse.
+
+    Like the QUIT ACL, this new ACL is provided to make it possible to gather
+    statistics. Whatever it returns (accept or deny) is immaterial. The "delay"
+    modifier is forbidden in this ACL.
+
+    When the NOTQUIT ACL is running, the variable $smtp_notquit_reason is set
+    to a string that indicates the reason for the termination of the SMTP
+    connection. The possible values are:
+
+      acl-drop                 Another ACL issued a "drop" command
+      bad-commands             Too many unknown or non-mail commands
+      command-timeout          Timeout while reading SMTP commands
+      connection-lost          The SMTP connection has been lost
+      data-timeout             Timeout while reading message data
+      local-scan-error         The local_scan() function crashed
+      local-scan-timeout       The local_scan() function timed out
+      signal-exit              SIGTERM or SIGINT
+      synchronization-error    SMTP synchronization error
+      tls-failed               TLS failed to start
+
+    In most cases when an SMTP connection is closed without having received
+    QUIT, Exim sends an SMTP response message before actually closing the
+    connection. With the exception of acl-drop, the default message can be
+    overridden by the "message" modifier in the NOTQUIT ACL. In the case of a
+    "drop" verb in another ACL, it is the message from the other ACL that is
+    used.
 
 
 Version 4.67

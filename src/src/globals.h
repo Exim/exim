@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.57 2007/07/27 13:56:24 magnus Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.58 2007/08/22 10:10:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -126,6 +126,7 @@ extern uschar *acl_smtp_mailauth;      /* ACL run for MAIL AUTH */
 #ifdef WITH_CONTENT_SCAN
 extern uschar *acl_smtp_mime;          /* ACL run after DATA, before acl_smtp_data, for each MIME part */
 #endif
+extern uschar *acl_smtp_notquit;       /* ACL run for disconnects */
 extern uschar *acl_smtp_predata;       /* ACL run for DATA command */
 extern uschar *acl_smtp_quit;          /* ACL run for QUIT */
 extern uschar *acl_smtp_rcpt;          /* ACL run for RCPT */
@@ -660,6 +661,7 @@ extern int     smtp_load_reserve;      /* Only from reserved if load > this */
 extern int     smtp_mailcmd_count;     /* Count of MAIL commands */
 extern int     smtp_max_synprot_errors;/* Max syntax/protocol errors */
 extern int     smtp_max_unknown_commands; /* As it says */
+extern uschar *smtp_notquit_reason;    /* Global for disconnect reason */
 extern FILE   *smtp_out;               /* Incoming SMTP output file */
 extern uschar *smtp_ratelimit_hosts;   /* Rate limit these hosts */
 extern uschar *smtp_ratelimit_mail;    /* Parameters for MAIL limiting */

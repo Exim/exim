@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.77 2007/06/20 14:13:39 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.78 2007/08/22 10:10:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -350,8 +350,9 @@ static uschar cond_modifiers[] = {
 };
 
 /* Bit map vector of which conditions and modifiers are not allowed at certain
-times. For each condition, there's a bitmap of dis-allowed times. For some, it
-is easier to specify the negation of a small number of allowed times. */
+times. For each condition and modifier, there's a bitmap of dis-allowed times.
+For some, it is easier to specify the negation of a small number of allowed
+times. */
 
 static unsigned int cond_forbids[] = {
   0,                                               /* acl */
@@ -391,7 +392,7 @@ static unsigned int cond_forbids[] = {
   ~(1<<ACL_WHERE_MIME),                            /* decode */
   #endif
 
-  0,                                               /* delay */
+  (1<<ACL_WHERE_NOTQUIT),                          /* delay */
 
   #ifdef WITH_OLD_DEMIME
   (unsigned int)

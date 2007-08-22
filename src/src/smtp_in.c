@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.59 2007/07/04 10:37:03 ph10 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.60 2007/08/22 10:10:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -123,6 +123,7 @@ static BOOL pipelining_advertised;
 static BOOL rcpt_smtp_response_same;
 static BOOL rcpt_in_progress;
 static int  nonmail_command_count;
+static BOOL smtp_exit_function_called = 0;
 static int  synprot_error_count;
 static int  unknown_command_count;
 static int  sync_cmd_limit;
@@ -470,9 +471,8 @@ log_write(L_lost_incoming_connection,
           host_and_ident(FALSE));
 if (smtp_batched_input)
   moan_smtp_batch(NULL, "421 SMTP command timeout");  /* Does not return */
-smtp_printf("421 %s: SMTP command timeout - closing connection\r\n",
-  smtp_active_hostname);
-mac_smtp_fflush();
+smtp_notquit_exit(US"command-timeout", US"421",
+  US"%s: SMTP command timeout - closing connection", smtp_active_hostname);
 exim_exit(EXIT_FAILURE);
 }
 
@@ -495,8 +495,8 @@ sig = sig;    /* Keep picky compilers happy */
 log_write(0, LOG_MAIN, "%s closed after SIGTERM", smtp_get_connection_info());
 if (smtp_batched_input)
   moan_smtp_batch(NULL, "421 SIGTERM received");  /* Does not return */
-smtp_printf("421 %s: Service not available - closing connection\r\n",
-  smtp_active_hostname);
+smtp_notquit_exit(US"signal-exit", US"421",
+  US"%s: Service not available - closing connection", smtp_active_hostname);
 exim_exit(EXIT_FAILURE);
 }
 
@@ -702,7 +702,9 @@ phase, sends the reply string, and gives an error to all subsequent commands
 except QUIT. The existence of an SMTP call is detected by the non-NULLness of
 smtp_in.
 
-Argument:   SMTP reply string to send, excluding the code
+Arguments:
+  message   SMTP reply string to send, excluding the code
+
 Returns:    nothing
 */
 
@@ -1344,6 +1346,7 @@ auth_advertised = FALSE;
 pipelining_advertised = FALSE;
 pipelining_enable = TRUE;
 sync_cmd_limit = NON_SYNC_CMD_NON_PIPELINING;
+smtp_exit_function_called = FALSE;    /* For avoiding loop in not-quit exit */
 
 memset(sender_host_cache, 0, sizeof(sender_host_cache));
 
@@ -2266,7 +2269,93 @@ if (!drop) return 0;
 
 log_write(L_smtp_connection, LOG_MAIN, "%s closed by DROP in ACL",
   smtp_get_connection_info());
+
+/* Run the not-quit ACL, but without any custom messages. This should not be a
+problem, because we get here only if some other ACL has issued "drop", and
+in that case, *its* custom messages will have been used above. */
+
+smtp_notquit_exit(US"acl-drop", NULL, NULL);
 return 2;
+}
+
+
+
+
+/*************************************************
+*     Handle SMTP exit when QUIT is not given    *
+*************************************************/
+
+/* This function provides a logging/statistics hook for when an SMTP connection
+is dropped on the floor or the other end goes away. It's a global function
+because it's called from receive.c as well as this module. As well as running
+the NOTQUIT ACL, if there is one, this function also outputs a final SMTP
+response, either with a custom message from the ACL, or using a default. There
+is one case, however, when no message is output - after "drop". In that case,
+the ACL that obeyed "drop" has already supplied the custom message, and NULL is
+passed to this function.
+
+In case things go wrong while processing this function, causing an error that
+may re-enter this funtion, there is a recursion check.
+
+Arguments:
+  reason          What $smtp_notquit_reason will be set to in the ACL;
+                    if NULL, the ACL is not run
+  code            The error code to return as part of the response
+  defaultrespond  The default message if there's no user_msg
+
+Returns:          Nothing
+*/
+
+void
+smtp_notquit_exit(uschar *reason, uschar *code, uschar *defaultrespond, ...)
+{
+int rc;
+uschar *user_msg = NULL;
+uschar *log_msg = NULL;
+
+/* Check for recursive acll */
+
+if (smtp_exit_function_called)
+  {
+  log_write(0, LOG_PANIC, "smtp_notquit_exit() called more than once (%s)",
+    reason);
+  return;
+  }
+smtp_exit_function_called = TRUE;
+
+/* Call the not-QUIT ACL, if there is one, unless no reason is given. */
+
+if (acl_smtp_notquit != NULL && reason != NULL)
+  {
+  smtp_notquit_reason = reason;
+  rc = acl_check(ACL_WHERE_NOTQUIT, NULL, acl_smtp_notquit, &user_msg,
+    &log_msg);
+  if (rc == ERROR)
+    log_write(0, LOG_MAIN|LOG_PANIC, "ACL for not-QUIT returned ERROR: %s",
+      log_msg);
+  }
+
+/* Write an SMTP response if we are expected to give one. As the default
+responses are all internal, they should always fit in the buffer, but code a
+warning, just in case. Note that string_vformat() still leaves a complete
+string, even if it is incomplete. */
+
+if (code != NULL && defaultrespond != NULL)
+  {
+  if (user_msg == NULL)
+    {
+    uschar buffer[128];
+    va_list ap;
+    va_start(ap, defaultrespond);
+    if (!string_vformat(buffer, sizeof(buffer), CS defaultrespond, ap))
+      log_write(0, LOG_MAIN|LOG_PANIC, "string too large in smtp_notquit_exit()");
+    smtp_printf("%s %s\r\n", code, buffer);
+    va_end(ap);
+    }
+  else
+    smtp_respond(code, 3, TRUE, user_msg);
+  mac_smtp_fflush();
+  }
 }
 
 
@@ -3786,11 +3875,29 @@ while (done <= 0)
         case EOF_CMD:
         log_write(L_smtp_connection, LOG_MAIN, "%s closed by EOF",
           smtp_get_connection_info());
+        smtp_notquit_exit(US"tls-failed", NULL, NULL);
         done = 2;
         break;
 
+        /* It is perhaps arguable as to which exit ACL should be called here,
+        but as it is probably a situtation that almost never arises, it
+        probably doesn't matter. We choose to call the real QUIT ACL, which in
+        some sense is perhaps "right". */
+
         case QUIT_CMD:
-        smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
+        user_msg = NULL;
+        if (acl_smtp_quit != NULL)
+          {
+          rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, &user_msg,
+            &log_msg);
+          if (rc == ERROR)
+            log_write(0, LOG_MAIN|LOG_PANIC, "ACL for QUIT returned ERROR: %s",
+              log_msg);
+          }
+        if (user_msg == NULL)
+          smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
+        else
+          smtp_respond(US"221", 3, TRUE, user_msg);
         log_write(L_smtp_connection, LOG_MAIN, "%s closed by QUIT",
           smtp_get_connection_info());
         done = 2;
@@ -3813,15 +3920,13 @@ while (done <= 0)
     case QUIT_CMD:
     HAD(SCH_QUIT);
     incomplete_transaction_log(US"QUIT");
-
     if (acl_smtp_quit != NULL)
       {
-      rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit,&user_msg,&log_msg);
+      rc = acl_check(ACL_WHERE_QUIT, NULL, acl_smtp_quit, &user_msg, &log_msg);
       if (rc == ERROR)
         log_write(0, LOG_MAIN|LOG_PANIC, "ACL for QUIT returned ERROR: %s",
           log_msg);
       }
-
     if (user_msg == NULL)
       smtp_printf("221 %s closing connection\r\n", smtp_active_hostname);
     else
@@ -3882,7 +3987,8 @@ while (done <= 0)
 
     case EOF_CMD:
     incomplete_transaction_log(US"connection lost");
-    smtp_printf("421 %s lost input connection\r\n", smtp_active_hostname);
+    smtp_notquit_exit(US"connection-lost", US"421",
+      US"%s lost input connection", smtp_active_hostname);
 
     /* Don't log by default unless in the middle of a message, as some mailers
     just drop the call rather than sending QUIT, and it clutters up the logs.
@@ -4088,7 +4194,8 @@ while (done <= 0)
       pipelining_advertised? "" : " not",
       smtp_cmd_buffer, host_and_ident(TRUE),
       string_printing(smtp_inptr));
-    smtp_printf("554 SMTP synchronization error\r\n");
+    smtp_notquit_exit(US"synchronization-error", US"554",
+      US"SMTP synchronization error");
     done = 1;   /* Pretend eof - drops connection */
     break;
 
@@ -4100,7 +4207,7 @@ while (done <= 0)
     log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
       "nonmail commands (last was \"%.*s\")",  host_and_ident(FALSE),
       s - smtp_cmd_buffer, smtp_cmd_buffer);
-    smtp_printf("554 Too many nonmail commands\r\n");
+    smtp_notquit_exit(US"bad-commands", US"554", US"Too many nonmail commands");
     done = 1;   /* Pretend eof - drops connection */
     break;
 
@@ -4113,7 +4220,8 @@ while (done <= 0)
         string_printing(smtp_cmd_buffer), host_and_ident(TRUE),
         US"unrecognized command");
       incomplete_transaction_log(US"unrecognized command");
-      smtp_printf("500 Too many unrecognized commands\r\n");
+      smtp_notquit_exit(US"bad-commands", US"500",
+        US"Too many unrecognized commands");
       done = 2;
       log_write(0, LOG_MAIN|LOG_REJECT, "SMTP call from %s dropped: too many "
         "unrecognized commands (last was \"%s\")", host_and_ident(FALSE),

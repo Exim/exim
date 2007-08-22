@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.522 2007/08/17 11:16:45 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.523 2007/08/22 10:10:23 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -80,6 +80,8 @@ PH/15 Removed an incorrect (int) cast when reading the value of SIZE in a
       MAIL command. The effect was to mangle the value on 64-bit systems.
 
 PH/16 Another patch from the Sieve maintainer.
+
+PH/17 Added the NOTQUIT ACL, based on a patch from Ted Cooper.
 
 
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.35 2007/06/27 11:01:52 ph10 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.36 2007/08/22 10:10:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -809,6 +809,7 @@ enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_HELO,
        ACL_WHERE_MAILAUTH,
        ACL_WHERE_NOTSMTP_START,
+       ACL_WHERE_NOTQUIT,
        ACL_WHERE_QUIT,
        ACL_WHERE_STARTTLS,
        ACL_WHERE_VRFY

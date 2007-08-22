@@ -1,4 +1,4 @@
-$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.78 2007/06/20 14:13:39 ph10 Exp $
+$Cambridge: exim/src/ACKNOWLEDGMENTS,v 1.79 2007/08/22 10:10:23 ph10 Exp $
 
 EXIM ACKNOWLEDGEMENTS
 
@@ -20,7 +20,7 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  20 June 2007
+Last updated:  22 August 2007
 
 
 THE OLD LIST
@@ -93,6 +93,7 @@ Pete Carah                Patch for change to radiusclient API
 Oliver Cook               Suggested patch for exigrep & rejected messages
                             Patch to add sender/host info to local_scan() rejects
                             Suggested patch to add queue time to "Completed"
+Ted Cooper                Suggested patch for NOTQUIT ACL
 Jennifer Corley           Designing the new Exim logo
 John Dalbec               Patch for quota_warn_threshold bug
 Vivek Dasmohapatra        Suggested patch for CRL support

@@ -1,0 +1,14 @@
+1999-03-02 09:44:33 SMTP call from [127.0.0.1] dropped: too many unrecognized commands (last was "unknown")
+1999-03-02 09:44:33 H=[127.0.0.1] rejected VRFY 
+1999-03-02 09:44:33 H=[127.0.0.1] rejected VRFY 
+1999-03-02 09:44:33 H=[127.0.0.1] rejected VRFY 
+1999-03-02 09:44:33 H=[127.0.0.1] rejected VRFY 
+1999-03-02 09:44:33 SMTP call from [127.0.0.1] dropped: too many nonmail commands (last was "vrfy")
+1999-03-02 09:44:33 10HmaX-0005vi-00 H=(abcd) [127.0.0.1] F=<userx@test.ex> rejected after DATA
+Envelope-from: <userx@test.ex>
+Envelope-to: <userx@test.ex>
+P Received: from [127.0.0.1] (helo=abcd)
+	by myhost.test.ex with esmtp (Exim x.yz)
+	(envelope-from <userx@test.ex>)
+	id 10HmaX-0005vi-00
+	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000

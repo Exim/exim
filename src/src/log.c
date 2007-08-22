@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/log.c,v 1.12 2007/01/31 16:52:12 ph10 Exp $ */
+/* $Cambridge: exim/src/src/log.c,v 1.13 2007/08/22 10:10:23 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -135,9 +135,11 @@ for (pass = 0; pass < 2; pass++)
 /* This is called when Exim is dying as a result of something going wrong in
 the logging, or after a log call with LOG_PANIC_DIE set. Optionally write a
 message to debug_file or a stderr file, if they exist. Then, if in the middle
-of accepting a message, throw it away tidily; this will attempt to send an SMTP
-response if appropriate. Otherwise, try to close down an outstanding SMTP call
-tidily.
+of accepting a message, throw it away tidily by calling receive_bomb_out();
+this will attempt to send an SMTP response if appropriate. Passing NULL as the
+first argument stops it trying to run the NOTQUIT ACL (which might try further
+logging and thus cause problems). Otherwise, try to close down an outstanding
+SMTP call tidily.
 
 Arguments:
   s1         Error message to write to debug_file and/or stderr and syslog
@@ -155,7 +157,7 @@ if (s1 != NULL)
   if (log_stderr != NULL && log_stderr != debug_file)
     fprintf(log_stderr, "%s\n", s1);
   }
-if (receive_call_bombout) receive_bomb_out(s2);  /* does not return */
+if (receive_call_bombout) receive_bomb_out(NULL, s2);  /* does not return */
 if (smtp_input) smtp_closedown(s2);
 exim_exit(EXIT_FAILURE);
 }

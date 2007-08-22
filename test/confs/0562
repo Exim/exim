@@ -1,0 +1,28 @@
+# Exim test configuration 0562
+
+exim_path = EXIM_PATH
+host_lookup_order = bydns
+primary_hostname = myhost.test.ex
+rfc1413_query_timeout = 0s
+spool_directory = DIR/spool
+log_file_path = DIR/spool/log/%slog
+gecos_pattern = ""
+gecos_name = CALLER_NAME
+
+# ----- Main settings -----
+
+acl_smtp_rcpt = accept
+acl_smtp_data = drop
+acl_smtp_notquit = notquit
+
+smtp_accept_max_nonmail = 4
+smtp_receive_timeout = 1s
+
+# ----- ACLs -----
+
+begin acl
+
+notquit:
+  accept logwrite = NOTQUIT reason: '$smtp_notquit_reason'
+
+# End
