@@ -8,7 +8,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="select name from them where id='CALLER';"
 database lookup required for select name from them where id='CALLER';
-MYSQL query: select name from them where id='CALLER';
+MySQL query: select name from them where id='CALLER';
 MYSQL new connection: host=localhost port=0 socket=NULL database=test user=root
 lookup yielded: Philip Hazel
 search_open: mysql "NULL"
@@ -28,7 +28,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="select name from them where id='xxxx';"
 database lookup required for select name from them where id='xxxx';
-MYSQL query: select name from them where id='xxxx';
+MySQL query: select name from them where id='xxxx';
 MYSQL using cached connection for localhost/test/root
 MYSQL: no data found
 lookup failed
@@ -40,7 +40,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="select name from them where id='nothing';"
 database lookup required for select name from them where id='nothing';
-MYSQL query: select name from them where id='nothing';
+MySQL query: select name from them where id='nothing';
 MYSQL using cached connection for localhost/test/root
 MYSQL: no data found
 lookup failed
@@ -52,7 +52,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="select id,name from them where id='nothing';"
 database lookup required for select id,name from them where id='nothing';
-MYSQL query: select id,name from them where id='nothing';
+MySQL query: select id,name from them where id='nothing';
 MYSQL using cached connection for localhost/test/root
 lookup yielded: id=nothing name="" 
 search_open: mysql "NULL"
@@ -63,7 +63,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="delete from them where id='nonexist';"
 database lookup required for delete from them where id='nonexist';
-MYSQL query: delete from them where id='nonexist';
+MySQL query: delete from them where id='nonexist';
 MYSQL using cached connection for localhost/test/root
 MYSQL: query was not one that returns data
 lookup forced cache cleanup
@@ -76,7 +76,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="select * from them where id='quote';"
 database lookup required for select * from them where id='quote';
-MYSQL query: select * from them where id='quote';
+MySQL query: select * from them where id='quote';
 MYSQL using cached connection for localhost/test/root
 lookup yielded: id=quote name="\"Q\" Oted" home=/home/quoted mail=quoted@xxx 
 search_open: mysql "NULL"
@@ -87,7 +87,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="select * from them where id='filter';"
 database lookup required for select * from them where id='filter';
-MYSQL query: select * from them where id='filter';
+MySQL query: select * from them where id='filter';
 MYSQL using cached connection for localhost/test/root
 lookup yielded: id=filter name=filter home=filter mail="#Exim filter
 deliver postmaster" 
@@ -99,7 +99,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="select * from them where id='quote2';"
 database lookup required for select * from them where id='quote2';
-MYSQL query: select * from them where id='quote2';
+MySQL query: select * from them where id='quote2';
 MYSQL using cached connection for localhost/test/root
 lookup yielded: id=quote2 name="\"qnosp" home=/home/q2 mail="" 
 search_open: mysql "NULL"
@@ -110,10 +110,55 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="select * from them where id='nlonly';"
 database lookup required for select * from them where id='nlonly';
-MYSQL query: select * from them where id='nlonly';
+MySQL query: select * from them where id='nlonly';
 MYSQL using cached connection for localhost/test/root
 lookup yielded: id=nlonly name=filter home=filter mail="Before
 After" 
+search_open: mysql "NULL"
+  cached open
+search_find: file="NULL"
+  key="servers=x:localhost; select name from them where id='CALLER';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=mysql key="servers=x:localhost; select name from them where id='CALLER';"
+database lookup required for servers=x:localhost; select name from them where id='CALLER';
+MySQL query: servers=x:localhost; select name from them where id='CALLER';
+lookup deferred: MySQL server "x" not found in mysql_servers
+search_open: mysql "NULL"
+  cached open
+search_find: file="NULL"
+  key="servers=localhost:x; select name from them where id='CALLER';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=mysql key="servers=localhost:x; select name from them where id='CALLER';"
+database lookup required for servers=localhost:x; select name from them where id='CALLER';
+MySQL query: servers=localhost:x; select name from them where id='CALLER';
+MYSQL using cached connection for localhost/test/root
+lookup yielded: Philip Hazel
+search_open: mysql "NULL"
+  cached open
+search_find: file="NULL"
+  key="servers=localhost/test/root/:x; select name from them where id='CALLER';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=mysql key="servers=localhost/test/root/:x; select name from them where id='CALLER';"
+database lookup required for servers=localhost/test/root/:x; select name from them where id='CALLER';
+MySQL query: servers=localhost/test/root/:x; select name from them where id='CALLER';
+MYSQL using cached connection for localhost/test/root
+lookup yielded: Philip Hazel
+search_open: mysql "NULL"
+  cached open
+search_find: file="NULL"
+  key="servers=HOST_IPV4/test/root/:localhost; select name from them where id='CALLER';" partial=-1 affix=NULL starflags=0
+LRU list:
+internal_search_find: file="NULL"
+  type=mysql key="servers=HOST_IPV4/test/root/:localhost; select name from them where id='CALLER';"
+database lookup required for servers=HOST_IPV4/test/root/:localhost; select name from them where id='CALLER';
+MySQL query: servers=HOST_IPV4/test/root/:localhost; select name from them where id='CALLER';
+MYSQL new connection: host=HOST_IPV4 port=0 socket=NULL database=test user=root
+MYSQL connection failed: Unknown MySQL server host 'HOST_IPV4' (1)
+MYSQL using cached connection for localhost/test/root
+lookup yielded: Philip Hazel
 search_tidyup called
 close MYSQL connection: localhost/test/root
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -161,7 +206,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="select * from them where id='10.0.0.0'"
 database lookup required for select * from them where id='10.0.0.0'
-MYSQL query: select * from them where id='10.0.0.0'
+MySQL query: select * from them where id='10.0.0.0'
 MYSQL new connection: host=localhost port=0 socket=NULL database=test user=root
 MYSQL: no data found
 lookup failed
@@ -266,7 +311,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="select name from them where id='CALLER'"
 database lookup required for select name from them where id='CALLER'
-MYSQL query: select name from them where id='CALLER'
+MySQL query: select name from them where id='CALLER'
 MYSQL new connection: host=localhost port=0 socket=NULL database=test user=root
 lookup yielded: Philip Hazel
 calling r1 router
@@ -309,7 +354,7 @@ LRU list:
 internal_search_find: file="NULL"
   type=mysql key="select id from them where id='CALLER'"
 database lookup required for select id from them where id='CALLER'
-MYSQL query: select id from them where id='CALLER'
+MySQL query: select id from them where id='CALLER'
 MYSQL new connection: host=localhost port=0 socket=NULL database=test user=root
 lookup yielded: CALLER
 appendfile: mode=600 notify_comsat=0 quota=0 warning=0

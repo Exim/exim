@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/mysql.c,v 1.4 2007/01/08 10:50:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/mysql.c,v 1.5 2007/08/23 10:16:51 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -338,32 +338,16 @@ else
 *************************************************/
 
 /* See local README for interface description. The handle and filename
-arguments are not used. Loop through a list of servers while the query is
-deferred with a retryable error. */
+arguments are not used. The code to loop through a list of servers while the
+query is deferred with a retryable error is now in a separate function that is
+shared with other SQL lookups. */
 
 int
 mysql_find(void *handle, uschar *filename, uschar *query, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
-int sep = 0;
-uschar *server;
-uschar *list = mysql_servers;
-uschar buffer[512];
-
-DEBUG(D_lookup) debug_printf("MYSQL query: %s\n", query);
-
-while ((server = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
-  {
-  BOOL defer_break = FALSE;
-  int rc = perform_mysql_search(query, server, result, errmsg, &defer_break,
-    do_cache);
-  if (rc != DEFER || defer_break) return rc;
-  }
-
-if (mysql_servers == NULL)
-  *errmsg = US"no MYSQL servers defined (mysql_servers option)";
-
-return DEFER;
+return lf_sqlperform(US"MySQL", US"mysql_servers", mysql_servers, query,
+  result, errmsg, do_cache, perform_mysql_search);
 }
 
 

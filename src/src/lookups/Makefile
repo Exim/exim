@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/lookups/Makefile,v 1.5 2005/09/12 13:50:03 ph10 Exp $
+# $Cambridge: exim/src/src/lookups/Makefile,v 1.6 2007/08/23 10:16:51 ph10 Exp $
 
 # Make file for building a library containing all the available lookups and
 # calling it lookups.a. This is called from the main make file, after cd'ing
@@ -7,7 +7,7 @@
 
 OBJ = cdb.o dbmdb.o dnsdb.o dsearch.o ibase.o ldap.o lsearch.o mysql.o nis.o \
       nisplus.o oracle.o passwd.o pgsql.o spf.o sqlite.o testdb.o whoson.o \
-      lf_check_file.o lf_quote.o
+      lf_check_file.o lf_quote.o lf_sqlperform.o
 
 lookups.a:       $(OBJ)
 		 @$(RM_COMMAND) -f lookups.a
@@ -22,6 +22,7 @@ lookups.a:       $(OBJ)
 
 lf_check_file.o: $(HDRS) lf_check_file.c  lf_functions.h
 lf_quote.o:      $(HDRS) lf_quote.c       lf_functions.h
+lf_sqlperform.o: $(HDRS) lf_sqlperform.c  lf_functions.h
 
 cdb.o:           $(HDRS) cdb.c       cdb.h
 dbmdb.o:         $(HDRS) dbmdb.c     dbmdb.h

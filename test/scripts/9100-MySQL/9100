@@ -10,6 +10,10 @@ ${lookup mysql {select * from them where id='quote';}}
 ${lookup mysql {select * from them where id='filter';}}
 ${lookup mysql {select * from them where id='quote2';}}
 ${lookup mysql {select * from them where id='nlonly';}}
+${lookup mysql {servers=x:localhost; select name from them where id='ph10';}}
+${lookup mysql {servers=localhost:x; select name from them where id='ph10';}}
+${lookup mysql {servers=localhost/test/root/:x; select name from them where id='ph10';}}
+${lookup mysql {servers=HOST_IPV4/test/root/:localhost; select name from them where id='ph10';}}
 ****
 exim -d -bh 10.0.0.0
 mail from:<a@b>

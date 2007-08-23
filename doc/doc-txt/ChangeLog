@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.525 2007/08/22 14:20:28 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.526 2007/08/23 10:16:51 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -91,6 +91,9 @@ PH/18 If a system quota error occurred while trying to create the file for
 PH/10 It seems that peer DN values may contain newlines (and other non-printing
       characters?) which causes problems in log lines. The DN values are now
       passed through string_printing() before being added to log lines.
+
+PH/11 Added the "servers=" facility to MySQL and PostgreSQL lookups. (Oracle
+      and InterBase are left for another time.)
 
 
 Exim version 4.67

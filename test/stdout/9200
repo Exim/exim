@@ -9,6 +9,10 @@
 after" id=newline 
 > name="x	x" id=tab 
 > name='stquot id=quote1 
+> Failed: lookup of "servers=x:localhost; select name from them where id='CALLER';" gave DEFER: PostgreSQL server "x" not found in pgsql_servers
+> Philip Hazel
+> Philip Hazel
+> Philip Hazel
 > 
 
 **** SMTP testing session as if from host 10.0.0.0

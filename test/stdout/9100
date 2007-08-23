@@ -10,6 +10,10 @@ deliver postmaster"
 > id=quote2 name="\"qnosp" home=/home/q2 mail="" 
 > id=nlonly name=filter home=filter mail="Before
 After" 
+> Failed: lookup of "servers=x:localhost; select name from them where id='CALLER';" gave DEFER: MySQL server "x" not found in mysql_servers
+> Philip Hazel
+> Philip Hazel
+> Philip Hazel
 > 
 
 **** SMTP testing session as if from host 10.0.0.0

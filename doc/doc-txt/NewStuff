@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.155 2007/08/22 10:10:23 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.156 2007/08/23 10:16:51 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -118,6 +118,38 @@ Version 4.68
     overridden by the "message" modifier in the NOTQUIT ACL. In the case of a
     "drop" verb in another ACL, it is the message from the other ACL that is
     used.
+
+10. For MySQL and PostgreSQL lookups, it is now possible to specify a list of
+    servers with individual queries. This is done by starting the query with
+    "servers=x:y:z;", where each item in the list may take one of two forms:
+
+    (1) If it is just a host name, the appropriate global option (mysql_servers
+        or pgsql_servers) is searched for a host of the same name, and the
+        remaining parameters (database, user, password) are taken from there.
+
+    (2) If it contains any slashes, it is taken as a complete parameter set.
+
+    The list of servers is used in exactly the same was as the global list.
+    Once a connection to a server has happened and a query has been
+    successfully executed, processing of the lookup ceases.
+
+    This feature is intended for use in master/slave situations where updates
+    are occurring, and one wants to update a master rather than a slave. If the
+    masters are in the list for reading, you might have:
+
+      mysql_servers = slave1/db/name/pw:slave2/db/name/pw:master/db/name/pw
+
+    In an updating lookup, you could then write
+
+      ${lookup mysql{servers=master; UPDATE ...}
+
+    If, on the other hand, the master is not to be used for reading lookups:
+
+      pgsql_servers = slave1/db/name/pw:slave2/db/name/pw
+
+    you can still update the master by
+
+      ${lookup pgsql{servers=master/db/name/pw; UPDATE ...}
 
 
 Version 4.67
