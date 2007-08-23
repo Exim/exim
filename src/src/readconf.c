@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.32 2007/08/22 10:10:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.33 2007/08/23 11:01:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -265,6 +265,7 @@ static optionlist optionlist_config[] = {
   { "log_timezone",             opt_bool,        &log_timezone },
   { "lookup_open_max",          opt_int,         &lookup_open_max },
   { "max_username_length",      opt_int,         &max_username_length },
+  { "message_body_newlines",    opt_bool,        &message_body_newlines },
   { "message_body_visible",     opt_mkint,       &message_body_visible },
   { "message_id_header_domain", opt_stringptr,   &message_id_domain },
   { "message_id_header_text",   opt_stringptr,   &message_id_text },

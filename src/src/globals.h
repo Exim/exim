@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.58 2007/08/22 10:10:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.59 2007/08/23 11:01:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -438,6 +438,7 @@ extern int     max_username_length;    /* For systems with broken getpwnam() */
 extern int     message_age;            /* In seconds */
 extern uschar *message_body;           /* Start of message body for filter */
 extern uschar *message_body_end;       /* End of message body for filter */
+extern BOOL    message_body_newlines;  /* FALSE => remove newlines */
 extern int     message_body_size;      /* Sic */
 extern int     message_body_visible;   /* Amount visible in message_body */
 extern int     message_ended;          /* State of message reading and how ended */

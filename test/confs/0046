@@ -1,5 +1,7 @@
 # Exim test configuration 0046
 
+NL=FALSE
+
 exim_path = EXIM_PATH
 host_lookup_order = bydns
 rfc1413_query_timeout = 0s
@@ -10,6 +12,7 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
+message_body_newlines = NL
 message_id_header_domain = test.ex
 qualify_domain = test.ex
 # Omit Received: so as to keep the header size fixed

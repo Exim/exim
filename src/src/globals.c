@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.77 2007/08/22 10:10:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.78 2007/08/23 11:01:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -754,6 +754,7 @@ int     max_username_length    = 0;
 int     message_age            = 0;
 uschar *message_body           = NULL;
 uschar *message_body_end       = NULL;
+BOOL    message_body_newlines  = FALSE;
 int     message_body_size      = 0;
 int     message_body_visible   = 500;
 int     message_ended          = END_NOTSTARTED;

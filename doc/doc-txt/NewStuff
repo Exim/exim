@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.156 2007/08/23 10:16:51 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.157 2007/08/23 11:01:49 ph10 Exp $
 
 New Features in Exim
 --------------------
@@ -150,6 +150,11 @@ Version 4.68
     you can still update the master by
 
       ${lookup pgsql{servers=master/db/name/pw; UPDATE ...}
+
+11. The message_body_newlines option (default FALSE, for backwards
+    compatibility) can be used to control whether newlines are present in
+    $message_body and $message_body_end. If it is FALSE, they are replaced by
+    spaces.
 
 
 Version 4.67

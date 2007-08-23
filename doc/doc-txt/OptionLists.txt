@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.33 2007/06/27 11:01:51 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.34 2007/08/23 11:01:49 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -337,6 +337,7 @@ max_output                           integer         20K           pipe
 max_rcpt                             integer         100           smtp              1.60
 max_user_name_length                 integer         0             main
 mbx_format                           boolean         false         appendfile        2.10
+message_body_newlines                boolean         false         main              4.68
 message_body_visible                 integer         500           main
 message_id_header_domain             string*         unset         main              4.11
 message_id_header_text               string*         unset         main

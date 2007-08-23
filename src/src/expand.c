@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.89 2007/08/22 10:10:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.90 2007/08/23 11:01:49 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1506,9 +1506,15 @@ while (last > first)
       if (len > 0)
         {
         body[len] = 0;
-        while (len > 0)
+        if (message_body_newlines)   /* Separate loops for efficiency */
           {
-          if (body[--len] == '\n' || body[len] == 0) body[len] = ' ';
+          while (len > 0)
+            { if (body[--len] == 0) body[len] = ' '; }
+          }
+        else
+          {
+          while (len > 0)
+            { if (body[--len] == '\n' || body[len] == 0) body[len] = ' '; }
           }
         }
       }
