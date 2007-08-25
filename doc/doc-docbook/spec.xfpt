@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.22 2007/07/20 17:06:15 jetmore Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.23 2007/08/25 12:33:01 magnus Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -2938,6 +2938,7 @@ arguments, for example:
 .code
 exim -bP qualify_domain hold_domains
 .endd
+.oindex "&%hide%&"
 However, any option setting that is preceded by the word &"hide"& in the
 configuration file is not shown in full, except to an admin user. For other
 users, the output is as in this example:
@@ -4749,6 +4750,9 @@ space) and then the value. For example:
 .code
 qualify_domain = mydomain.example.com
 .endd
+.oindex "&%hide%&"
+.cindex "configuration file" "hiding sensitive data"
+.cindex "options" "hiding from extraction"
 Some option settings may contain sensitive data, for example, passwords for
 accessing databases. To stop non-admin users from using the &%-bP%& command
 line option to read these values, you can precede the option settings with the
