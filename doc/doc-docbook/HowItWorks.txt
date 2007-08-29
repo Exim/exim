@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.6 2007/04/11 15:26:09 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.7 2007/08/29 13:37:28 ph10 Exp $
 
 CREATING THE EXIM DOCUMENTATION
 
@@ -149,7 +149,7 @@ at the time of writing):
 
 . w3m 0.5.1
 
-  This is a text-oriented web brower. It is used to produce the Ascii form of
+  This is a text-oriented web brower. It is used to produce the ASCII form of
   the Exim documentation (spec.txt) from a specially-created HTML format. It
   seems to do a better job than lynx.
 
@@ -218,8 +218,8 @@ DOCBOOK PROCESSING
 Processing a .xml file into the five different output formats is not entirely
 straightforward. For a start, the same XML is not suitable for all the
 different output styles. When the final output is in a text format (.txt,
-.texinfo) for instance, all non-Ascii characters in the input must be converted
-to Ascii transliterations because the current processing tools do not do this
+.texinfo) for instance, all non-ASCII characters in the input must be converted
+to ASCII transliterations because the current processing tools do not do this
 correctly automatically.
 
 In order to cope with these issues in a flexible way, a Perl script called
@@ -241,7 +241,7 @@ options it is given. The currently available options are as follows:
 
 -ascii
 
-  This option is used for Ascii output formats. It makes the following
+  This option is used for ASCII output formats. It makes the following
   character replacements:
 
     &#x2019;  =>  '         apostrophe
@@ -252,14 +252,14 @@ options it is given. The currently available options are as follows:
     &ndash;   =>  -         en dash
 
   The apostrophe is specified numerically because that is what xfpt generates
-  from an Ascii single quote character. Non-Ascii characters that are not in
+  from an ASCII single quote character. Non-ASCII characters that are not in
   this list should not be used without thinking about how they might be
-  converted for the Ascii formats.
+  converted for the ASCII formats.
 
   In addition to the character replacements, this option causes quotes to be
   put round <literal> text items, and <quote> and </quote> to be replaced by
-  Ascii quote marks. You would think the stylesheet would cope with the latter,
-  but it seems to generate non-Ascii characters that w3m then turns into
+  ASCII quote marks. You would think the stylesheet would cope with the latter,
+  but it seems to generate non-ASCII characters that w3m then turns into
   question marks.
 
 -bookinfo
@@ -479,7 +479,7 @@ so the logic is somewhat different.
 CREATING TEXT FILES
 
 This happens in four stages. The Pre-xml script is called with the -ascii,
--optbreak, and -noindex options to convert the input to Ascii characters,
+-optbreak, and -noindex options to convert the input to ASCII characters,
 insert line break points, and disable the production of an index. Then the
 xmlto command converts the XML to a single HTML document, using these
 stylesheets:
@@ -494,7 +494,7 @@ symbol is output as "(c)" rather than the Unicode character. This is necessary
 because the stylesheet itself generates a copyright symbol as part of the
 document title; the character is not in the original input.
 
-The w3m command is used with the -dump option to turn the HTML file into Ascii
+The w3m command is used with the -dump option to turn the HTML file into ASCII
 text, but this contains multiple sequences of blank lines that make it look
 awkward. Furthermore, chapter and section titles do not stand out very well. A
 local Perl script called Tidytxt is used to post-process the output. First, it
@@ -503,6 +503,15 @@ for chapter and section headings. Each chapter heading is uppercased, and
 preceded by an extra two blank lines and a line of equals characters. An extra
 newline is inserted before each section heading, and they are underlined with
 hyphens.
+
+August 2007: A further feature has been added to Tidytxt. The current version
+of xmlto makes HTML that contains non-ASCII Unicode characters. Fortunately,
+they are few. The heading uses "box drawing" characters in the range U+2500 to
+U+253F, and within the main text, U+00A0 (hard space) occasionally appears. The
+Tidytxt script now turns all the former into hyphens and the latter into normal
+spaces. Bullets, which are set as U+25CF, are turned into asterisks. (It might
+be possible to do all this in the same way as I dealt with copyright - see
+above - but adding three lines of Perl to an existing script was a lot easier.)
 
 
 CREATING INFO FILES
@@ -663,4 +672,4 @@ x2man                          Script to make the Exim man page from the XML
 
 
 Philip Hazel
-Last updated: 27 March 2007
+Last updated: 23 August 2007

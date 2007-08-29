@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.6 2007/04/17 13:06:09 ph10 Exp $
+. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.7 2007/08/29 13:37:28 ph10 Exp $
 
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the document that describes Exim's filtering
@@ -61,12 +61,12 @@
 <bookinfo>
 <title>Exim's interfaces to mail filtering</title>
 <titleabbrev>Exim filtering</titleabbrev>
-<date>17 April 2007</date>
+<date>23 August 2007</date>
 <author><firstname>Philip</firstname><surname>Hazel</surname></author>
 <authorinitials>PH</authorinitials>
 <revhistory><revision>
-  <revnumber>4.67</revnumber>
-  <date>17 April 2007</date>
+  <revnumber>4.68</revnumber>
+  <date>23 August2007</date>
   <authorinitials>PH</authorinitials>
 </revision></revhistory>
 <copyright><year>2007</year><holder>University of Cambridge</holder></copyright>
@@ -80,7 +80,7 @@
 .chapter "Forwarding and filtering in Exim" "CHAPforandfilt"
 This document describes the user interfaces to Exim's in-built mail filtering
 facilities, and is copyright &copy; University of Cambridge 2007. It
-corresponds to Exim version 4.67.
+corresponds to Exim version 4.68.
 
 
 
@@ -273,14 +273,12 @@ this context as &"the specific implementation of Sieve for Exim"&.
 This chapter does not contain a description of Sieve, since that can be found
 in RFC 3028, which should be read in conjunction with these notes.
 
-.new
 The Exim Sieve implementation offers the core as defined by RFC 3028,
 comparison tests, the subaddress parameter, the &*copy*&, &*envelope*&,
 &*fileinto*&, &*notify*&, and &*vacation*& extensions, but not the &*reject*&
 extension. Exim does not support message delivery notifications (MDNs), so
 adding it just to the Sieve filter (as required for &*reject*&) makes little
 sense.
-.wen
 
 In order for Sieve to work properly in Exim, the system administrator needs to
 make some adjustments to the Exim configuration. These are described in the
@@ -1044,7 +1042,6 @@ mail-sending command is
 &`     [log `&<&'log file name'&>&`]`&
 &`     [once `&<&'note file name'&>&`]`&
 &`     [once_repeat `&<&'time interval'&>&`]`&
-
 &`e.g. mail text "Your message about $h_subject: has been received"`&
 .endd
 Each <&'address-list'&> can contain a number of addresses, separated by commas,

@@ -1,4 +1,4 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.10 2007/04/17 13:06:09 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.11 2007/08/29 13:37:28 ph10 Exp $
 
 # Make file for Exim documentation from xfpt source.
 
@@ -187,7 +187,7 @@ spec.info:    spec-info.xml
 	      docbook2texi spec-info.xml
 	      ./TidyInfo <the_exim_mta.texi >spec.texinfo
 	      /bin/rm -rf the_exim_mta.texi
-	      makeinfo -o spec.info spec.texinfo
+	      makeinfo -o spec.info --no-split spec.texinfo
 
 ########################################################################
 

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.34 2007/08/23 11:01:49 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.35 2007/08/29 13:37:28 ph10 Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -281,6 +281,7 @@ hosts_require_auth                   host list       unset         smtp         
 hosts_require_tls                    host list       unset         smtp              3.20
 hosts_treat_as_local                 domain list     unset         main              1.95
 hosts_try_auth                       host list       unset         smtp              4.00
+ibase_servers                        string          unset         main              4.23
 ignore_bounce_errors_after           time            0s            main              4.00
 ignore_eacces                        boolean         false         redirect          4.00
 ignore_enotdir                       boolean         false         redirect          4.00
