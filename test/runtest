@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.28 2007/07/04 10:37:04 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.29 2007/08/29 15:06:47 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -23,7 +23,7 @@ use Socket;
 
 # Start by initializing some global variables
 
-$testversion = "4.68 (16-Apr-07)";
+$testversion = "4.68 (23-Aug-07)";
 
 $cf = "bin/cf";
 $cr = "\r";
@@ -909,7 +909,7 @@ if (! -e $sf)
       print "\n";
       print "------------ $f -----------\n"
         if (defined $rf && -s $rf && defined $rsf && -s $rsf);
-      system("$more $f");
+      system("$more '$f'");
       }
     }
 
@@ -1023,7 +1023,7 @@ if (-e $sf)
 
   # Do the comparison
 
-  return 0 if (system("$cf $mf $sf >test-cf") == 0);
+  return 0 if (system("$cf '$mf' '$sf' >test-cf") == 0);
 
   # Handle comparison failure
 
@@ -1043,7 +1043,7 @@ if (-e $sf)
 # Update or delete the saved file, and give the appropriate return code.
 
 if (-s $mf)
-  { tests_exit(-1, "Failed to cp $mf $sf") if system("cp $mf $sf") != 0; }
+  { tests_exit(-1, "Failed to cp $mf $sf") if system("cp '$mf' '$sf'") != 0; }
 else
   { tests_exit(-1, "Failed to unlink $sf") if !unlink($sf); }
 

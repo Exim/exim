@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.529 2007/08/29 14:02:22 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.530 2007/08/29 15:06:47 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -100,6 +100,10 @@ PH/21 Added message_body_newlines option.
 PH/22 Guard against possible overflow in moan_check_errorcopy().
 
 PH/23 POSIX allows open() to be a macro; guard against that.
+
+PH/24 If the recipient of an error message contained an @ in the local part
+      (suitably quoted, of course), incorrect values were put in $domain and
+      $local_part during the evaluation of errors_copy.
 
 
 Exim version 4.67

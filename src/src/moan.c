@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/moan.c,v 1.9 2007/08/29 13:58:57 ph10 Exp $ */
+/* $Cambridge: exim/src/src/moan.c,v 1.10 2007/08/29 15:06:47 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -584,7 +584,7 @@ if (errors_copy == NULL) return NULL;
 length of the local part. */
 
 localpart = recipient;
-domain = Ustrchr(recipient, '@');
+domain = Ustrrchr(recipient, '@');
 if (domain == NULL) return NULL;  /* should not occur, but avoid crash */
 llen = domain++ - recipient;
 

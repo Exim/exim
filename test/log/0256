@@ -2,6 +2,13 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 ** unknown@test.ex: Unrouteable address
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= <> R=10HmaX-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmaY-0005vi-00 => CALLER <CALLER@test.ex> R=r1 T=t1
-1999-03-02 09:44:33 10HmaY-0005vi-00 => abcd <abcd@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmaY-0005vi-00 => abcd+test.ex+CALLER <abcd+test.ex+CALLER@test.ex> R=r1 T=t1
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= "abc@def"@unknown.domain U=CALLER P=local-smtp S=sss
+1999-03-02 09:44:33 10HmaZ-0005vi-00 ** unknown@test.ex: Unrouteable address
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
+1999-03-02 09:44:33 10HmbA-0005vi-00 => abc@def <"abc@def"@unknown.domain> R=r1 T=t1
+1999-03-02 09:44:33 10HmbA-0005vi-00 => abcd+unknown.domain+"abc@def" <"abcd+unknown.domain+\"abc@def\""@test.ex> R=r1 T=t1
+1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
+1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
