@@ -8,7 +8,7 @@
 1999-03-02 09:44:33 Messages accepted: 
 1999-03-02 09:44:33 Recipients:        
 1999-03-02 09:44:33 Accepted:          
-1999-03-02 09:44:33 ACL for QUIT returned ERROR: "deny" is not allowed in a QUIT ACL
+1999-03-02 09:44:33 ACL for QUIT returned ERROR: "deny" is not allowed in a QUIT or not-QUIT ACL
 1999-03-02 09:44:33 Messages received: 1
 1999-03-02 09:44:33 Messages accepted: 
 1999-03-02 09:44:33 Recipients:        
