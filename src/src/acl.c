@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.78 2007/08/22 10:10:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.79 2007/08/29 13:58:25 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3456,11 +3456,11 @@ while (acl != NULL)
   *log_msgptr = *user_msgptr = NULL;
   acl_temp_details = FALSE;
 
-  if (where == ACL_WHERE_QUIT &&
+  if ((where == ACL_WHERE_QUIT || where == ACL_WHERE_NOTQUIT) &&
       acl->verb != ACL_ACCEPT &&
       acl->verb != ACL_WARN)
     {
-    *log_msgptr = string_sprintf("\"%s\" is not allowed in a QUIT ACL",
+    *log_msgptr = string_sprintf("\"%s\" is not allowed in a QUIT or not-QUIT ACL",
       verbs[acl->verb]);
     return ERROR;
     }
