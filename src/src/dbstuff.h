@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dbstuff.h,v 1.6 2007/01/08 10:50:17 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dbstuff.h,v 1.7 2007/08/29 14:02:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -135,7 +135,7 @@ API changed for DB 4.1. */
 #define EXIM_DBOPEN(name, flags, mode, dbpp) \
        if (db_create(dbpp, NULL, 0) != 0 || \
          ((*dbpp)->set_errcall(*dbpp, dbfn_bdb_error_callback), \
-         (*dbpp)->open(*dbpp, NULL, CS name, NULL, \
+         ((*dbpp)->open)(*dbpp, NULL, CS name, NULL, \
          ((flags) == O_RDONLY)? DB_UNKNOWN : DB_HASH, \
          ((flags) == O_RDONLY)? DB_RDONLY : DB_CREATE, \
          mode)) != 0) *(dbpp) = NULL
@@ -143,7 +143,7 @@ API changed for DB 4.1. */
 #define EXIM_DBOPEN(name, flags, mode, dbpp) \
        if (db_create(dbpp, NULL, 0) != 0 || \
          ((*dbpp)->set_errcall(*dbpp, dbfn_bdb_error_callback), \
-         (*dbpp)->open(*dbpp, CS name, NULL, \
+         ((*dbpp)->open)(*dbpp, CS name, NULL, \
          ((flags) == O_RDONLY)? DB_UNKNOWN : DB_HASH, \
          ((flags) == O_RDONLY)? DB_RDONLY : DB_CREATE, \
          mode)) != 0) *(dbpp) = NULL

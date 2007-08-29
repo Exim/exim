@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/search.c,v 1.5 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/search.c,v 1.6 2007/08/29 14:02:22 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -397,7 +397,7 @@ if (lk->type == lookup_absfile && open_filecount >= lookup_open_max)
 /* If opening is successful, call the file-checking function if there is one,
 and if all is still well, enter the open database into the tree. */
 
-handle = lk->open(filename, &search_error_message);
+handle = (lk->open)(filename, &search_error_message);
 if (handle == NULL)
   {
   store_pool = old_pool;

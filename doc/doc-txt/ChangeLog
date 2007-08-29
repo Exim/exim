@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.528 2007/08/29 13:58:57 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.529 2007/08/29 14:02:22 ph10 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -98,6 +98,8 @@ PH/20 Added the "servers=" facility to MySQL and PostgreSQL lookups. (Oracle
 PH/21 Added message_body_newlines option.
 
 PH/22 Guard against possible overflow in moan_check_errorcopy().
+
+PH/23 POSIX allows open() to be a macro; guard against that.
 
 
 Exim version 4.67
