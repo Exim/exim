@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/moan.c,v 1.8 2007/02/06 11:11:40 ph10 Exp $ */
+/* $Cambridge: exim/src/src/moan.c,v 1.9 2007/08/29 13:58:57 ph10 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -610,10 +610,7 @@ while ((item = string_nextinlist(&listptr, &sep, buffer, sizeof(buffer)))
   if (match_address_list(recipient, TRUE, TRUE, &pattern, NULL, 0, UCHAR_MAX+1,
         NULL) == OK)
     {
-    uschar temp[256];
-    Ustrncpy(temp, localpart, llen);
-    temp[llen] = 0;
-    deliver_localpart = temp;
+    deliver_localpart = string_copyn(localpart, llen);
     deliver_domain = domain;
     yield = expand_string_copy(newaddress);
     deliver_domain = deliver_localpart = NULL;
