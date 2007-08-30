@@ -2,6 +2,8 @@
 
 FALLBACK=fallback_hosts = 127.0.0.1
 ROUTE_DATA=V4NET.0.0.1
+RETRY1=1s
+RETRY2=2s
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -53,8 +55,8 @@ t2:
 
 begin retry
 
-V4NET.0.0.1  * F,1s,1s
-V4NET.0.0.2  * F,1s,2s
+V4NET.0.0.1  * F,1s,RETRY1
+V4NET.0.0.2  * F,1s,RETRY2
 *            * F,1d,1s
 
 

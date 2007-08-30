@@ -1,7 +1,6 @@
 > From: Himself <himself@there.tld>
 > Subject: The subject is not the object
 > message_body_size=71
-> message_size=407
 > message_id=10HmaX-0005vi-00
 > message_exim_id=10HmaX-0005vi-00
 > max_received_linelength=70
@@ -17,7 +16,6 @@
 > From: Himself <himself@there.tld>
 > Subject: The subject is not the object
 > message_body_size=76
-> message_size=416
 > message_id=10HmaY-0005vi-00
 > message_exim_id=10HmaY-0005vi-00
 > max_received_linelength=75
@@ -26,7 +24,6 @@
 > from: A Person <a.person@a.domain.tld>
 > to: First <first@test.ex>, Second <second@test.ex>
 > subject: The subject is moot
-> message_size=197
 > message_body_size=77
 > message_exim_id=10HmaZ-0005vi-00
 > message_linecount=6

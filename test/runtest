@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.29 2007/08/29 15:06:47 ph10 Exp $
+# $Cambridge: exim/test/runtest,v 1.30 2007/08/30 13:35:29 ph10 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -338,6 +338,9 @@ while(<IN>)
   # release to release.
   s/^\d+:error:/pppp:error:/;
   s/:(?:\/[^\s:]+\/)?([^\/\s]+\.c):\d+:/:$1:dddd:/;
+
+  # There are differences in error messages between OpenSSL versions
+  s/SSL_CTX_set_cipher_list/SSL_connect/;
 
   # One error test in expansions mentions base 62 or 36
   s/is not a base (36|62) number/is not a base 36\/62 number/;

@@ -10,7 +10,6 @@ sudo exim -be -Mset $msg1
 From: $h_from:
 Subject: $h_subject:
 message_body_size=$message_body_size
-message_size=$message_size
 message_id=$message_id
 message_exim_id=$message_exim_id
 max_received_linelength=$max_received_linelength
@@ -33,7 +32,6 @@ sudo exim -be -Mset $msg2
 From: $h_from:
 Subject: $h_subject:
 message_body_size=$message_body_size
-message_size=$message_size
 message_id=$message_id
 message_exim_id=$message_exim_id
 max_received_linelength=$max_received_linelength
@@ -51,7 +49,6 @@ exim -bem DIR/test-data
 from: $h_from:
 to: $h_to:
 subject: $h_subject:
-message_size=$message_size
 message_body_size=$message_body_size
 message_exim_id=$message_exim_id
 message_linecount=$message_linecount

@@ -54,7 +54,7 @@ DATA
 QUIT
 221 OK
 ****
-exim -odi userx@test.ex
+exim -DRETRY1=5s -odi userx@test.ex
 Short message
 ****
 exim -DFALLBACK= -odi userx@test.ex
@@ -64,7 +64,7 @@ exim -DFALLBACK= -DROUTE_DATA=V4NET.0.0.2 -odi userx@test.ex
 Short message
 ****
 sleep 3
-exim -DFALLBACK= -DROUTE_DATA=V4NET.0.0.2 -q
+exim -DFALLBACK= -DROUTE_DATA=V4NET.0.0.2 -DRETRY2=5s -q
 ****
 exim -DFALLBACK= -DROUTE_DATA=V4NET.0.0.2 -odi userx@test.ex
 Short message

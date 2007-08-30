@@ -11,6 +11,7 @@ exim -qf
 ****
 sleep 1
 killdaemon
+sleep 1
 #
 # This daemon should flush before delaying
 exim -DSERVER=server -bd -oX PORT_D

@@ -1,7 +1,7 @@
 # unseen without disable_logging and errors_to = ""
 need_ipv4
 #
-server PORT_S 3
+server -t 10 PORT_S 3
 220
 EHLO
 220 OK

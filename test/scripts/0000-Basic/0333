@@ -34,4 +34,4 @@ QUIT
 ****
 exim -d-all+route -M $msg1 
 ****
-millisleep 100
+millisleep 500

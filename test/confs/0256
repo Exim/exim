@@ -13,7 +13,8 @@ gecos_name = CALLER_NAME
 
 acl_smtp_rcpt = accept
 qualify_domain = test.ex
-errors_copy = *@* ${quote_local_part::abcd+$domain+$local_part}@test.ex
+errors_copy = *@* ${quote_local_part::abcd+$domain+\
+  ${if eq{$local_part}{CALLER}{xxxx}{$local_part}}}@test.ex
 trusted_users = CALLER
 
 

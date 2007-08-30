@@ -13,7 +13,7 @@ gecos_name = CALLER_NAME
 # ----- Main settings -----
 
 ignore_bounce_errors_after = 2s
-timeout_frozen_after = 4s
+timeout_frozen_after = 5s
 queue_run_in_order
 
 
