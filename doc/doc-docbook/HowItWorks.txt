@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.7 2007/08/29 13:37:28 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.8 2007/08/31 09:13:40 ph10 Exp $
 
 CREATING THE EXIM DOCUMENTATION
 
@@ -74,10 +74,10 @@ adopted without affecting the source maintenance.
 A number of issues arose while setting this all up, which are best summed up by
 the statement that a lot of the technology was (in 2006) still very immature.
 Trying to do this conversion any earlier would probably not have been anywhere
-near as successful. The main problems that bother me in the XML-generated
+near as successful. The main issues that bother me in the XML-generated
 documentation are described in the penultimate section of this document.
 
-The major problems were originally in producing PostScript and PDF outputs. The
+Initially, the major problems were in producing PostScript and PDF outputs. The
 available free software for doing this was and still is (we are now in 2007)
 cumbersome and slow, and does not support certain output features that I would
 like. My response to this was, over a period of two years, to write an XML
@@ -85,11 +85,11 @@ processor called SDoP (Simple DocBook Processor). This program reads DocBook
 XML and writes PostScript, without using any of the heavyweight apparatus that
 is required for xmlto and fop (the previously used software).
 
-An experimental first version of SDoP will be used for the Exim 4.67
-documentation. A full release of SDoP requires further work. SDoP's output
+An experimental first version of SDoP was used for the Exim 4.67
+documentation. Subsequently SDoP was released for general use. SDoP's output
 includes features that are missing when xmlto/fop is used, and it also runs
-about 60 times faster. The main manual can be formatted in 2 seconds instead of
-2 minutes, which makes checking and fixing mistakes much easier.
+about 60 times faster. The main manual can be formatted in 2.5 seconds instead
+of 2.5 minutes, which makes checking and fixing mistakes much easier.
 
 The Makefile that is used to build the various forms of output will, for the
 moment, support both ways of producing PostScript and PDF output, though the
@@ -107,13 +107,13 @@ run Gentoo Linux, and a lot of things have been installed as dependencies that
 I am not fully aware of. This is what I know about (version numbers are current
 at the time of writing):
 
-. xfpt 0.01
+. xfpt 0.03
 
   This converts the master source file into a DocBook XML file.
 
-. sdop 0.00
+. sdop 0.03
 
-  This is my new, still-very-alpha, DocBook-to-PostScript processor.
+  This is my new DocBook-to-PostScript processor.
 
 . ps2pdf
 
@@ -131,8 +131,8 @@ at the time of writing):
   things that I have not figured out, to apply the DocBook XSLT stylesheets.
 
 . libxml 1.8.17
-  libxml2 2.6.22
-  libxslt 1.1.15
+  libxml2 2.6.28
+  libxslt 1.1.20
 
   These are all installed on my box; I do not know which of libxml or libxml2
   the various scripts are actually using.
@@ -141,13 +141,13 @@ at the time of writing):
 
   These are the standard DocBook XSL stylesheets.
 
-. fop 0.20.5
+. fop 0.93
 
   FOP is a processor for "formatted objects". It is written in Java. The fop
   command is a shell script that drives it. It required only if you do not
   want to use SDoP and ps2pdf to generate PostScript and PDF output.
 
-. w3m 0.5.1
+. w3m 0.5.2
 
   This is a text-oriented web brower. It is used to produce the ASCII form of
   the Exim documentation (spec.txt) from a specially-created HTML format. It
@@ -166,7 +166,7 @@ at the time of writing):
 
 . makeinfo 4.8
 
-  This is used to make a set of "info" files from a Texinfo file.
+  This is used to make an "info" file from a Texinfo file.
 
 In addition, there are a number of locally written Perl scripts. These are
 described below.
@@ -286,17 +286,18 @@ options it is given. The currently available options are as follows:
 -noindex
 
   Remove the XML to generate a Concept Index and an Options index. The source
-  document has two types of index entry, for a concept and an options index.
-  However, no index is required for the .txt and .texinfo outputs.
+  document has three types of index entry, for variables, options, and concept
+  indexes. However, no index is required for the .txt and .texinfo outputs.
 
 -oneindex
 
-  Remove the XML to generate a Concept and an Options Index, and add XML to
-  generate a single index. The only output processors that support multiple
-  indexes are SDoP and the processor that produces "formatted objects" for
-  PostScript and PDF output for fop. The HTML processor ignores the XML
-  settings for multiple indexes and just makes one unified index. Specifying
-  two indexes gets you two copies of the same index, so this has to be changed.
+  Remove the XML to generate separate variables, options, and concept indexes,
+  and add XML to generate a single index. The only output processors that
+  support multiple indexes are SDoP and the processor that produces "formatted
+  objects" for PostScript and PDF output for fop. The HTML processor ignores
+  the XML settings for multiple indexes and just makes one unified index.
+  Specifying three indexes gets you three copies of the same index, so this has
+  to be changed.
 
 -optbreak
 
@@ -525,7 +526,7 @@ makeinfo command. These have to be changed to "cindex" and "findex"
 respectively in the final .texinfo file. Furthermore, the main menu lacks a
 pointer to the index, and indeed the index node itself is missing. These
 problems are fixed by running the file through a script called TidyInfo.
-Finally, a call of makeinfo creates a set of .info files.
+Finally, a call of makeinfo creates a .info file.
 
 There is one apparently unconfigurable feature of docbook2texi: it does not
 seem possible to give it a file name for its output. It chooses a name based on
@@ -575,16 +576,16 @@ using SDoP instead of xmlto/fop to produce PostScript and PDF output.
      that is referenced, instead of to the point in the section where the index
      marker was set.
 
-(4)  The HTML output supports only a single index, so the concept and options
-     index entries have to be merged.
+(4)  The HTML output supports only a single index, so the variable, options,
+     and concept index entries have to be merged.
 
 (5)  The index for the PostScript/PDF output created by xmlto/fop does not
      merge identical page numbers, which makes some entries look ugly. This is
      not a problem when SDoP is used.
 
-(6)  None of the indexes (PostScript/PDF and HTML) make use of textual
-     markup; the text is all roman, without any italic or boldface. For
-     PostScript/PDF, this is not a problem when SDoP is used.
+(6)  The HTML index and the PostScript/PDF indexes, when made with xmlto/fop,
+     make no use of textual markup; the text is all roman, without any italic
+     or boldface. For PostScript/PDF, this is not a problem when SDoP is used.
 
 (7)  I turned off hyphenation in the PostScript/PDF output produced by
      xmlto/fop, because it was being done so badly. Needless to say, I made
@@ -597,7 +598,8 @@ using SDoP instead of xmlto/fop to produce PostScript and PDF output.
          hyphenations, often for several lines in succession.
 
      (b) It uses an algorithmic form of hyphenation that doesn't always produce
-         acceptable word breaks. (I prefer to use a hyphenation dictionary.)
+         acceptable word breaks. (I prefer to use a hyphenation dictionary,
+         which is what SDoP does.)
 
 (8)  The PostScript/PDF output produced by xmlto/fop is badly paginated:
 
@@ -672,4 +674,4 @@ x2man                          Script to make the Exim man page from the XML
 
 
 Philip Hazel
-Last updated: 23 August 2007
+Last updated: 31 August 2007
