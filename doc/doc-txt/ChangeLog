@@ -1,7 +1,11 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.530 2007/08/29 15:06:47 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.531 2007/09/04 08:18:12 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+NM/01 Bugzilla 592: --help option is handled incorrectly if exim is invoked
+      as mailq or other aliases.  Changed the --help handling significantly
+      to do whats expected.  exim_usage() emits usage/help information.
 
 Exim version 4.68
 -----------------

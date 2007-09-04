@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.57 2007/06/27 11:01:51 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.58 2007/09/04 08:18:12 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1233,6 +1233,43 @@ return yield;
 
 
 /*************************************************
+*    Output usage information for the program    *
+*************************************************/
+
+/* This function is called when there are no recipients
+   or a specific --help argument was added.
+
+Arguments:
+  progname      information on what name we were called by
+
+Returns:        DOES NOT RETURN
+*/
+
+static void
+exim_usage(uschar *progname)
+{
+
+/* Handle specific program invocation varients */
+if (Ustrcmp(progname, US"-mailq") == 0)
+  {
+  fprintf(stderr,
+    "mailq - list the contents of the mail queue\n\n",
+    "For a list of options, see the Exim documentation.\n");
+  exit(EXIT_FAILURE);
+  }
+
+/* Generic usage - we output this whatever happens */
+fprintf(stderr,
+  "Exim is a Mail Transfer Agent. It is normally called by Mail User Agents,\n"
+  "not directly from a shell command line. Options and/or arguments control\n"
+  "what it does when called. For a list of options, see the Exim documentation.\n");
+
+exit(EXIT_FAILURE);
+}
+
+
+
+/*************************************************
 *          Entry point and high-level code       *
 *************************************************/
 
@@ -1294,6 +1331,7 @@ BOOL sender_ident_set = FALSE;
 BOOL session_local_queue_only;
 BOOL unprivileged;
 BOOL removed_privilege = FALSE;
+BOOL usage_wanted = FALSE;
 BOOL verify_address_mode = FALSE;
 BOOL verify_as_sender = FALSE;
 BOOL version_printed = FALSE;
@@ -1588,10 +1626,15 @@ running in an unprivileged state. */
 
 unprivileged = (real_uid != root_uid && original_euid != root_uid);
 
-/* If the first argument is --help, pretend there are no arguments. This will
-cause a brief message to be given. */
+/* If the first argument is --help, set usage_wanted and pretend there
+are no arguments. This will cause a brief message to be given.   We do
+the message generation downstream so we can pick up how we were invoked */
 
-if (argc > 1 && Ustrcmp(argv[1], "--help") == 0) argc = 1;
+if (argc > 1 && Ustrcmp(argv[1], "--help") == 0)
+  {
+  argc = 1;
+  usage_wanted = TRUE;
+  }
 
 /* Scan the program's arguments. Some can be dealt with right away; others are
 simply recorded for checking and handling afterwards. Do a high-level switch
@@ -2926,9 +2969,11 @@ if ((deliver_selectstring != NULL || deliver_selectstring_sender != NULL) &&
   queue_interval < 0) queue_interval = 0;
 
 
-/* Arguments have been processed. Check for incompatibilities. */
-
 END_ARG:
+/* If usage_wanted is set we call the usage function - which never returns */
+if (usage_wanted) exim_usage(called_as);
+
+/* Arguments have been processed. Check for incompatibilities. */
 if ((
     (smtp_input || extract_recipients || recipients_arg < argc) &&
     (daemon_listen || queue_interval >= 0 || bi_option ||
@@ -4424,14 +4469,9 @@ if (recipients_arg >= argc && !extract_recipients && !smtp_input)
     printf("Configuration file is %s\n", config_main_filename);
     return EXIT_SUCCESS;
     }
+
   if (filter_test == FTEST_NONE)
-    {
-    fprintf(stderr,
-"Exim is a Mail Transfer Agent. It is normally called by Mail User Agents,\n"
-"not directly from a shell command line. Options and/or arguments control\n"
-"what it does when called. For a list of options, see the Exim documentation.\n");
-    return EXIT_FAILURE;
-    }
+    exim_usage(called_as);
   }
 
 
