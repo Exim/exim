@@ -403,6 +403,14 @@ figure &<<FIGsecond>>& below.
 .row CCC DDD
 .endtable
 
-A ref to table &<<TAB123>>&.
+A ref to table &<<TAB123>>&. Now check quotes: `normal' should be changed
+to typographic ones. In &`literal text, `they' shouldn't be`& changed.
+.code
+Check `quoted' in literal monospaced block.
+.endd
+.display
+But in a literal block that is `not monospaced' ...
+&`Check it's ok`& when `in the same line'.
+.endd
 
 .makeindex

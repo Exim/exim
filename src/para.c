@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2006 */
+/* Copyright (c) University of Cambridge, 2007 */
 /* Written by Philip Hazel. */
 
 /* This module contains code for processing a paragraph by looking for flag
@@ -133,6 +133,51 @@ return q + 1;
 
 
 /*************************************************
+*        Check a flag string for literal         *
+*************************************************/
+
+/* This function is called to scan flag replacement strings to check for
+<literal> and <literal/> so that we can avoid messing with single quotes in
+literal text.
+
+Arguments:
+  s           the flag string
+  b           a boolean that is set TRUE, FALSE, or left alone
+
+Returns:      nothing
+*/
+
+static void
+check_literal(uschar *s, BOOL *b)
+{
+while (*s != 0)
+  {
+  s = Ustrchr(s, '<');
+  if (s == NULL) return;
+
+  if (Ustrncmp(s, "<literal", 8) == 0 && (s[8] == '>' || isspace(s[8])))
+    *b = TRUE;
+  else if (Ustrncmp(s, "</literal", 9) == 0 && (s[9] == '>' || isspace(s[9])))
+    *b = FALSE;
+
+  while (*s != 0 && *s != '>')
+    {
+    if (*s == '"' || *s == '\'')
+      {
+      int t = *s++;
+      while (*s != 0 && *s != t) s++;
+      if (*s == 0) return;
+      }
+    s++;
+    }
+
+  if (*s++ == 0) return;
+  }
+}
+
+
+
+/*************************************************
 *             Process a paragraph                *
 *************************************************/
 
@@ -150,6 +195,7 @@ para_process(uschar *p)
 flagstr *f;
 flagstr *fstack[FLAGSTACKSIZE];
 int fstackcount = 0;
+BOOL inliteraltext = FALSE;
 
 while (*p != 0)
   {
@@ -168,6 +214,7 @@ while (*p != 0)
         error(8, fstack[j]->flag2, f->flag2);
       fstackcount = i;
       (void)fprintf(outfile, "%s", CS f->rep2);
+      check_literal(f->rep2, &inliteraltext);
       p += f->length2;
       i = fstackcount;   /* Reset in case another follows immediately */
       continue;
@@ -180,23 +227,26 @@ while (*p != 0)
   if (*p == 0) break;
 
   /* Otherwise, scan character by character. Angle brackets are escaped,
-  single quotes are mapped, and then everything other than ampersand is treated
-  literally. */
+  single quotes are mapped except in literal text, and then everything other
+  than ampersand is treated literally. */
 
   c = *p++;
   if (c == '<')  { (void)fprintf(outfile, "&lt;"); continue; }
   if (c == '>')  { (void)fprintf(outfile, "&gt;"); continue; }
 
-  if (c == '`')
+  if (!inliteraltext)
     {
-    (void)fprintf(outfile, "&#x2018;");
-    continue;
-    }
+    if (c == '`')
+      {
+      (void)fprintf(outfile, "&#x2018;");
+      continue;
+      }
 
-  if (c == '\'')
-    {
-    (void)fprintf(outfile, "&#x2019;");
-    continue;
+    if (c == '\'')
+      {
+      (void)fprintf(outfile, "&#x2019;");
+      continue;
+      }
     }
 
   if (c != '&')  { (void)fputc(c, outfile); continue; }
@@ -315,6 +365,7 @@ while (*p != 0)
 
   if (f->length2 != 0) fstack[fstackcount++] = f;
   (void)fprintf(outfile, "%s", CS f->rep1);
+  check_literal(f->rep1, &inliteraltext);
   p += f->length1;
   }
 

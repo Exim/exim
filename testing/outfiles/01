@@ -446,8 +446,16 @@ figure <xref linkend="FIGsecond"/> below.
 </tgroup>
 </table>
 <para>
-A ref to table <xref linkend="TAB123"/>.
+A ref to table <xref linkend="TAB123"/>. Now check quotes: &#x2018;normal&#x2019; should be changed
+to typographic ones. In <literal>literal text, `they' shouldn't be</literal> changed.
 </para>
+<literallayout class="monospaced">
+Check `quoted' in literal monospaced block.
+</literallayout>
+<literallayout>
+But in a literal block that is &#x2018;not monospaced&#x2019; ...
+<literal>Check it's ok</literal> when &#x2018;in the same line&#x2019;.
+</literallayout>
 </chapter>
 
 <index>
