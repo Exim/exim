@@ -11,13 +11,6 @@
 
 
 
-/*************************************************
-*            Static variables                    *
-*************************************************/
-
-static uschar *next_line = NULL;
-
-
 
 /*************************************************
 *             Process macro line                 *
@@ -201,7 +194,8 @@ return buffer;
 *************************************************/
 
 /* There may be a saved line already in the buffer, following the reading of a
-paragraph. Otherwise, take the next line from one of three sources, in order:
+paragraph or a .nonl directive. Otherwise, take the next line from one of three
+sources, in order:
 
   (1) If popto is not negative, get an appropropriate line off the stack.
   (2) If we are in a macro, get the next macro line.
@@ -217,7 +211,7 @@ read_nextline(void)
 int len;
 uschar *p, *q;
 
-/* Handle a dot line that terminated a paragraph */
+/* Handle a dot line that terminated a paragraph, or a .nonl line */
 
 if (next_line != NULL)
   {

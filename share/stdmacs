@@ -142,6 +142,7 @@
 .arg 1
 &<title>&$1&</title>&
 .endarg
+.literal off
 .endmacro
 
 .macro vitem

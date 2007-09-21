@@ -540,7 +540,8 @@ else error(26, p);
 *               Handle .nonl                     *
 *************************************************/
 
-/* Output the argument as normal text, but without a newline on the end.
+/* The argument is handled as a line without a terminating newline by putting
+it into a buffer and pointing next_line at it.
 
 Argument:   the rest of the line
 Returns:    nothing
@@ -549,7 +550,11 @@ Returns:    nothing
 static void
 do_nonl(uschar *p)
 {
-para_process(p);
+static uschar nonlbuffer[INBUFFSIZE];
+int len = Ustrlen(p) + 1;
+if (len > INBUFFSIZE) len = INBUFFSIZE;
+Ustrncpy(nonlbuffer, p, len);
+next_line = nonlbuffer;
 }
 
 

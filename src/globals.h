@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2006 */
+/* Copyright (c) University of Cambridge, 2007 */
 /* Written by Philip Hazel. */
 
 /* Header file for all the global variables */
@@ -26,6 +26,7 @@ extern int         literal_state;
 
 extern int         nest_level;
 extern int         nest_literal_stack[];
+extern uschar     *next_line;
 
 extern macroexe   *macrocurrent;
 extern macrodef   *macrolist;

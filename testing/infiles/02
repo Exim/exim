@@ -39,3 +39,5 @@ Try &&abcd without semicolon: &abcd and at EOL &abcd
 .endmacro
 
 .x
+
+.nonl more than one argument

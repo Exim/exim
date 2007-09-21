@@ -86,3 +86,8 @@
    Processing macro x
    Detected near line 41 of infiles/02
 
+** Warning: extra characters at end of directive
+   .nonl more than one argument
+              ^^^^^^^^^^^^^^^^^
+   Detected near line 43 of infiles/02
+

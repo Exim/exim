@@ -16,7 +16,7 @@ characters and also dealing with literals that must be escaped. */
 *************************************************/
 
 /* This function is called when we encounter & followed by a name and an
-opening parenthesis. This significies an inline macro call.
+opening parenthesis. This signifies an inline macro call.
 
 Arguments:
   p         points to the start of the macro name

@@ -456,6 +456,20 @@ Check `quoted' in literal monospaced block.
 But in a literal block that is &#x2018;not monospaced&#x2019; ...
 <literal>Check it's ok</literal> when &#x2018;in the same line&#x2019;.
 </literallayout>
+<para>
+Extra checks on the use of .nonl.
+ABCDEFGH should be joined on
+NONL</para>
+<para>
+At the end of a paragraph? It just puts &lt;/para&gt; on the same line.
+</para>
+<para>
+At the start of a paragraph should work too.
+</para>
+<literallayout>
+What about in a display?
+Use NONLWITH more stuff
+</literallayout>
 </chapter>
 
 <index>

@@ -413,4 +413,19 @@ But in a literal block that is `not monospaced' ...
 &`Check it's ok`& when `in the same line'.
 .endd
 
+Extra checks on the use of .nonl.
+.nonl ABCD
+EFGH should be joined on
+.nonl NONL
+
+At the end of a paragraph? It just puts </para> on the same line.
+
+.nonl "At the start of a para"
+graph should work too.
+.display
+What about in a display?
+.nonl "Use NONL"
+WITH more stuff
+.endd
+
 .makeindex
