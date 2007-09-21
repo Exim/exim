@@ -1,5 +1,5 @@
 #!PERL_COMMAND -w
-# $Cambridge: exim/src/src/eximstats.src,v 1.16 2007/04/11 15:05:03 steve Exp $
+# $Cambridge: exim/src/src/eximstats.src,v 1.17 2007/09/21 08:26:48 steve Exp $
 
 # Copyright (c) 2001 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -278,6 +278,9 @@
 #
 # 2007-04-11  V1.58 Steve Campbell
 #             Fix to get <> and blackhole to show in edomain tables.
+#
+# 2007-09-20  V1.59 Steve Campbell
+#             Added the -bylocaldomain option
 #
 #
 #
@@ -577,7 +580,7 @@ use vars qw($WEEK $DAY $HOUR $MINUTE);
 
 @days_per_month = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
 $gig     = 1024 * 1024 * 1024;
-$VERSION = '1.58';
+$VERSION = '1.59';
 
 # How much space do we allow for the Hosts/Domains/Emails/Edomains column headers?
 $COLUMN_WIDTHS = 8;
@@ -621,7 +624,7 @@ $ntopchart = 5;
 # The following are parameters whose values are
 # set by command line switches:
 use vars qw($show_errors $show_relay $show_transport $transport_pattern);
-use vars qw($topcount $local_league_table $include_remote_users);
+use vars qw($topcount $local_league_table $include_remote_users $do_local_domain);
 use vars qw($hist_opt $hist_interval $hist_number $volume_rounding $emptyOK);
 use vars qw($relay_pattern @queue_times @user_patterns @user_descriptions);
 use vars qw(@rcpt_times @delivery_times);
@@ -640,6 +643,7 @@ use vars qw(%received_count       %received_data       %received_data_gigs);
 use vars qw(%delivered_messages      %delivered_data      %delivered_data_gigs %delivered_addresses);
 use vars qw(%received_count_user  %received_data_user  %received_data_gigs_user);
 use vars qw(%delivered_messages_user %delivered_addresses_user %delivered_data_user %delivered_data_gigs_user);
+use vars qw(%delivered_messages_local_domain %delivered_addresses_local_domain %delivered_data_local_domain %delivered_data_gigs_local_domain);
 use vars qw(%transported_count    %transported_data    %transported_data_gigs);
 use vars qw(%relayed %errors_count $message_errors);
 use vars qw(@qt_all_bin @qt_remote_bin);
@@ -1786,6 +1790,7 @@ Valid options are:
 -bydomain       show results by sending domain.
 -byemail        show results by sender's email address
 -byedomain      show results by sender's email domain
+-bylocaldomain  show results by local domain
 
 -pattern "Description" /pattern/
                 Count lines matching specified patterns and show them in
@@ -1831,7 +1836,7 @@ sub generate_parser {
   my $parser = '
   my($ip,$host,$email,$edomain,$domain,$thissize,$size,$old,$new);
   my($tod,$m_hour,$m_min,$id,$flag,$extra,$length);
-  my($seconds,$queued,$rcpt_time);
+  my($seconds,$queued,$rcpt_time,$local_domain);
   my $rej_id = 0;
   while (<$fh>) {
 
@@ -1923,7 +1928,11 @@ sub generate_parser {
     $domain = "localdomain";  #Domain is localdomain unless otherwise specified.
 
     #IFDEF ($do_sender{Domain})
-    if ($host !~ /^\\[/ && $host =~ /^(\\(?)[^\\.]+\\.([^\\.]+\\..*)/) {
+    if ($host =~ /^\\[/ || $host =~ /^[\\d\\.]+$/) {
+      # Host is just an IP address.
+      $domain = $host;
+    }
+    elsif ($host =~ /^(\\(?)[^\\.]+\\.([^\\.]+\\..*)/) {
       # Remove the host portion from the DNS name. We ensure that we end up
       # with at least xxx.yyy. $host can be "(x.y.z)" or  "x.y.z".
       $domain = lc("$1.$2");
@@ -2105,7 +2114,17 @@ sub generate_parser {
             #ENDIF ($include_original_destination)
               #my($parent) = $_ =~ /(<[^@]+@?[^>]*>)/;
               my($parent) = $_ =~ / (<.+?>) /;              #DT 1.54
-              $user = "$user $parent" if defined $parent;
+              if (defined $parent) {
+                $user = "$user $parent";
+                #IFDEF ($do_local_domain)
+                if ($parent =~ /\\@(.+)>/) {
+                  $local_domain = lc($1);
+                  ++$delivered_messages_local_domain{$local_domain};
+                  ++$delivered_addresses_local_domain{$local_domain};
+                  add_volume(\\$delivered_data_local_domain{$local_domain},\\$delivered_data_gigs_local_domain{$local_domain},$size);
+                }
+                #ENDIF ($do_local_domain)
+              }
             }
             ++$delivered_messages_user{$user};
             ++$delivered_addresses_user{$user};
@@ -2519,6 +2538,10 @@ sub print_header {
       if (($local_league_table || $include_remote_users) && %delivered_messages_user) {
         print $htm_fh "<li><a href=\"#Local destination count\">Top $topcount local destinations by message count</a>\n";
         print $htm_fh "<li><a href=\"#Local destination volume\">Top $topcount local destinations by volume</a>\n";
+      }
+      if (($local_league_table || $include_remote_users) && %delivered_messages_local_domain) {
+        print $htm_fh "<li><a href=\"#Local domain destination count\">Top $topcount local domain destinations by message count</a>\n";
+        print $htm_fh "<li><a href=\"#Local domain destination volume\">Top $topcount local domain destinations by volume</a>\n";
       }
 
       print $htm_fh "<li><a href=\"#Rejected ip count\">Top $topcount rejected ips by message count</a>\n" if %rejected_count_by_ip;
@@ -3410,6 +3433,12 @@ sub parse_old_eximstat_reports {
         $data_href       = \%delivered_data_user;
         $data_gigs_href  = \%delivered_data_gigs_user;
       }
+      elsif ($category =~ /local domain destination/) {
+        $messages_href   = \%delivered_messages_local_domain;
+        $addresses_href  = \%delivered_addresses_local_domain;
+        $data_href       = \%delivered_data_local_domain;
+        $data_gigs_href  = \%delivered_data_gigs_local_domain;
+      }
       elsif ($category =~ /(\S+) destination/) {
         #Top 50 (host|domain|email|edomain) destinations
         #Top (host|domain|email|edomain) destination
@@ -3875,6 +3904,7 @@ while (@ARGV > 0 && substr($ARGV[0], 0, 1) eq '-') {
   elsif ($ARGV[0] =~ /^-byemail$/)  { $do_sender{Email} = 1 }
   elsif ($ARGV[0] =~ /^-byemaildomain$/)  { $do_sender{Edomain} = 1 }
   elsif ($ARGV[0] =~ /^-byedomain$/)  { $do_sender{Edomain} = 1 }
+  elsif ($ARGV[0] =~ /^-bylocaldomain$/)  { $do_local_domain = 1 }
   elsif ($ARGV[0] =~ /^-emptyok$/)  { $emptyOK = 1 }
   elsif ($ARGV[0] =~ /^-nvr$/)      { $volume_rounding = 0 }
   elsif ($ARGV[0] =~ /^-show_rt([,\d\+\-\*\/]+)?$/) { @rcpt_times = parse_time_list($1) }
@@ -4140,6 +4170,7 @@ if ($topcount > 0) {
     print_league_table("\l$_ destination", $delivered_messages{$_}, $delivered_addresses{$_}, $delivered_data{$_},$delivered_data_gigs{$_}, $ws_top50, \$ws_top50_row);
   }
   print_league_table("local destination", \%delivered_messages_user, \%delivered_addresses_user, \%delivered_data_user,\%delivered_data_gigs_user, $ws_top50, \$ws_top50_row) if (($local_league_table || $include_remote_users) && %delivered_messages_user);
+  print_league_table("local domain destination", \%delivered_messages_local_domain, \%delivered_addresses_local_domain, \%delivered_data_local_domain,\%delivered_data_gigs_local_domain, $ws_top50, \$ws_top50_row) if (($local_league_table || $include_remote_users) && %delivered_messages_local_domain);
 
   print_league_table("rejected ip", \%rejected_count_by_ip, undef, undef, undef, $ws_rej, \$ws_rej_row) if %rejected_count_by_ip;
   print_league_table("temporarily rejected ip", \%temporarily_rejected_count_by_ip, undef, undef, undef, $ws_rej, \$ws_rej_row) if %temporarily_rejected_count_by_ip;
