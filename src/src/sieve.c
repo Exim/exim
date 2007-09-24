@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.29 2007/08/17 11:16:45 ph10 Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.30 2007/09/24 11:52:16 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Michael Haardt 2003-2006 */
+/* Copyright (c) Michael Haardt 2003-2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This code was contributed by Michael Haardt. */
@@ -29,13 +29,13 @@
 #undef RFC_EOL
 
 /* Define this for development of the Sieve extension "encoded-character". */
-#undef ENCODED_CHARACTER
+#define ENCODED_CHARACTER
 
 /* Define this for development of the Sieve extension "envelope-auth". */
 #undef ENVELOPE_AUTH
 
 /* Define this for development of the Sieve extension "enotify".    */
-#undef ENOTIFY
+#define ENOTIFY
 
 /* Define this for the Sieve extension "subaddress".                */
 #define SUBADDRESS
@@ -379,7 +379,7 @@ Returns
  -1           syntax error
 */
 
-static int parse_mailto_uri(struct Sieve *filter, const uschar *uri, string_item **recipient, struct String *header, struct String *body)
+static int parse_mailto_uri(struct Sieve *filter, const uschar *uri, string_item **recipient, struct String *header, struct String *subject, struct String *body)
 {
 const uschar *start;
 struct String to,hname,hvalue;
@@ -478,12 +478,15 @@ if (*uri=='?')
       }
     else if (hname.length==4 && strcmpic(hname.character, US"body")==0)
       *body=hvalue;
+    else if (hname.length==7 && strcmpic(hname.character, US"subject")==0)
+      *subject=hvalue;
     else
       {
       static struct String ignore[]=
         {
+        {US"date",4},
         {US"from",4},
-        {US"subject",7},
+        {US"message-id",10},
         {US"received",8}
         };
       static struct String *end=ignore+sizeof(ignore)/sizeof(ignore[0]);
@@ -1460,8 +1463,7 @@ if (*filter->pc=='"') /* quoted string */
       }
     else if (*filter->pc=='\\' && *(filter->pc+1)) /* quoted character */
       {
-      if (*(filter->pc+1)=='0') data->character=string_cat(data->character,&dataCapacity,&data->length,CUS "",1);
-      else data->character=string_cat(data->character,&dataCapacity,&data->length,filter->pc+1,1);
+      data->character=string_cat(data->character,&dataCapacity,&data->length,filter->pc+1,1);
       filter->pc+=2;
       }
     else /* regular character */
@@ -2507,14 +2509,16 @@ else if (parse_identifier(filter,CUS "valid_notify_method"))
     for (u=uris; u->length!=-1 && *cond; ++u)
       {
         string_item *recipient;
-        struct String header,body;
+        struct String header,subject,body;
 
         recipient=NULL;
         header.length=-1;
         header.character=(uschar*)0;
+        subject.length=-1;
+        subject.character=(uschar*)0;
         body.length=-1;
         body.character=(uschar*)0;
-        if (parse_mailto_uri(filter,u->character,&recipient,&header,&body)!=1)
+        if (parse_mailto_uri(filter,u->character,&recipient,&header,&subject,&body)!=1)
           *cond=0;
       }
     }
@@ -2586,15 +2590,17 @@ else if (parse_identifier(filter,CUS "notify_method_capability"))
     if (exec)
       {
       string_item *recipient;
-      struct String header,body;
+      struct String header,subject,body;
 
       *cond=0;
       recipient=NULL;
       header.length=-1;
       header.character=(uschar*)0;
+      subject.length=-1;
+      subject.character=(uschar*)0;
       body.length=-1;
       body.character=(uschar*)0;
-      if (parse_mailto_uri(filter,uri.character,&recipient,&header,&body)==1)
+      if (parse_mailto_uri(filter,uri.character,&recipient,&header,&subject,&body)==1)
         {
         if (eq_asciicase(&capa,&str_online,0)==1)
           for (k=keys; k->length!=-1; ++k)
@@ -2934,6 +2940,7 @@ while (*filter->pc)
     struct Notification *already;
     string_item *recipient;
     struct String header;
+    struct String subject;
     struct String body;
     uschar *envelope_from,*envelope_to;
 
@@ -2952,6 +2959,8 @@ while (*filter->pc)
     recipient=NULL;
     header.length=-1;
     header.character=(uschar*)0;
+    subject.length=-1;
+    subject.character=(uschar*)0;
     body.length=-1;
     body.character=(uschar*)0;
     envelope_from=expand_string("$sender_address");
@@ -3004,6 +3013,10 @@ while (*filter->pc)
       return -1;
       }
     if (parse_semicolon(filter)==-1) return -1;
+    if (parse_mailto_uri(filter,method.character,&recipient,&header,&subject,&body)!=1)
+      return -1;
+    if (message.length==-1) message=subject;
+    if (message.length==-1) expand_header(&message,&str_subject);
 
     for (already=filter->notified; already; already=already->next)
       {
@@ -3018,8 +3031,6 @@ while (*filter->pc)
     if (already==(struct Notification*)0)
       /* New notification, process it */
       {
-      if (parse_mailto_uri(filter,method.character,&recipient,&header,&body)!=1)
-        return -1;
       struct Notification *sent;
       sent=store_get(sizeof(struct Notification));
       sent->method=method;
@@ -3029,7 +3040,7 @@ while (*filter->pc)
       filter->notified=sent;
       if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
         {
-        debug_printf("Notification to `%s'.\n",method.character);
+        debug_printf("Notification to `%s': '%s'.\n",method.character,message.length!=-1 ? message.character : CUS "");
         }
 #ifndef COMPILE_SYNTAX_CHECKER
       if (exec && filter_test == FTEST_NONE)
@@ -3058,7 +3069,8 @@ while (*filter->pc)
           /* Allocation is larger than neccessary, but enough even for split MIME words */
           buffer_capacity=32+4*message.length;
           buffer=store_get(buffer_capacity);
-          fprintf(f,"Subject: %s\n\n",parse_quote_2047(message.character, message.length, US"utf-8", buffer, buffer_capacity, TRUE));
+          if (message.length!=-1) fprintf(f,"Subject: %s\n",parse_quote_2047(message.character, message.length, US"utf-8", buffer, buffer_capacity, TRUE));
+          fprintf(f,"\n");
           if (body.length>0) fprintf(f,"%s\n",body.character);
           fflush(f);
           (void)fclose(f);
