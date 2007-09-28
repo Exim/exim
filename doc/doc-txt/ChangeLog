@@ -1,7 +1,17 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.532 2007/09/21 08:30:38 steve Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.533 2007/09/28 13:04:16 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+TK/01 Add preliminary DKIM support. Currently requires a forked version of
+      ALT-N's libdkim that I have put here:
+      http://duncanthrax.net/exim-experimental/
+
+      Note to Michael Haardt: I had to rename some vars in sieve.c. They
+      were called 'true' and it seems that C99 defines that as a reserved
+      keyword to be used with 'bool' variable types. That means you could
+      not include C99-style headers which use bools without triggering
+      build errors in sieve.c.
 
 NM/01 Bugzilla 592: --help option is handled incorrectly if exim is invoked
       as mailq or other aliases.  Changed the --help handling significantly
