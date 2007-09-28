@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.30 2007/09/24 11:52:16 michael Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.31 2007/09/28 12:21:57 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1942,14 +1942,14 @@ Returns:      1                success
               -1               syntax or execution error
 */
 
-static int parse_testlist(struct Sieve *filter, int *n, int *true, int exec)
+static int parse_testlist(struct Sieve *filter, int *n, int *num_true, int exec)
 {
 if (parse_white(filter)==-1) return -1;
 if (*filter->pc=='(')
   {
   ++filter->pc;
   *n=0;
-   *true=0;
+   *num_true=0;
   for (;;)
     {
     int cond;
@@ -1958,7 +1958,7 @@ if (*filter->pc=='(')
       {
       case -1: return -1;
       case 0: filter->errmsg=CUS "missing test"; return -1;
-      default: ++*n; if (cond) ++*true; break;
+      default: ++*n; if (cond) ++*num_true; break;
       }
     if (parse_white(filter)==-1) return -1;
     if (*filter->pc==',') ++filter->pc;
@@ -2146,13 +2146,13 @@ else if (parse_identifier(filter,CUS "allof"))
   allof-test   = "allof" <tests: test-list>
   */
 
-  int n,true;
+  int n,num_true;
 
-  switch (parse_testlist(filter,&n,&true,exec))
+  switch (parse_testlist(filter,&n,&num_true,exec))
     {
     case -1: return -1;
     case 0: filter->errmsg=CUS "missing test list"; return -1;
-    default: *cond=(n==true); return 1;
+    default: *cond=(n==num_true); return 1;
     }
   }
 else if (parse_identifier(filter,CUS "anyof"))
@@ -2161,13 +2161,13 @@ else if (parse_identifier(filter,CUS "anyof"))
   anyof-test   = "anyof" <tests: test-list>
   */
 
-  int n,true;
+  int n,num_true;
 
-  switch (parse_testlist(filter,&n,&true,exec))
+  switch (parse_testlist(filter,&n,&num_true,exec))
     {
     case -1: return -1;
     case 0: filter->errmsg=CUS "missing test list"; return -1;
-    default: *cond=(true>0); return 1;
+    default: *cond=(num_true>0); return 1;
     }
   }
 else if (parse_identifier(filter,CUS "exists"))

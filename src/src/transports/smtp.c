@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.37 2007/06/18 13:57:50 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.38 2007/09/28 12:21:57 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -52,6 +52,20 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, dk_selector) },
   { "dk_strict", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, dk_strict) },
+#endif
+#ifdef EXPERIMENTAL_DKIM
+  { "dkim_canon", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dkim_canon) },
+  { "dkim_domain", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dkim_domain) },
+  { "dkim_private_key", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dkim_private_key) },
+  { "dkim_selector", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dkim_selector) },
+  { "dkim_sign_headers", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dkim_sign_headers) },
+  { "dkim_strict", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dkim_strict) },
 #endif
   { "dns_qualify_single",   opt_bool,
       (void *)offsetof(smtp_transport_options_block, dns_qualify_single) },
@@ -202,6 +216,14 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* dk_private_key */
   NULL,                /* dk_selector */
   NULL                 /* dk_strict */
+  #endif
+  #ifdef EXPERIMENTAL_DKIM
+ ,NULL,                /* dkim_canon */
+  NULL,                /* dkim_domain */
+  NULL,                /* dkim_private_key */
+  NULL,                /* dkim_selector */
+  NULL,                /* dkim_sign_headers */
+  NULL                 /* dkim_strict */
   #endif
 };
 
@@ -1588,6 +1610,23 @@ if (!ok) ok = TRUE; else
       tblock->rewrite_rules, tblock->rewrite_existflags,
       ob->dk_private_key, ob->dk_domain, ob->dk_selector,
       ob->dk_canon, ob->dk_headers, ob->dk_strict);
+  else
+#endif
+#ifdef EXPERIMENTAL_DKIM
+  if ( (ob->dkim_private_key != NULL) && (ob->dkim_domain != NULL) && (ob->dkim_selector != NULL) )
+    ok = dkim_transport_write_message(addrlist, inblock.sock,
+      topt_use_crlf | topt_end_dot | topt_escape_headers |
+        (tblock->body_only? topt_no_headers : 0) |
+        (tblock->headers_only? topt_no_body : 0) |
+        (tblock->return_path_add? topt_add_return_path : 0) |
+        (tblock->delivery_date_add? topt_add_delivery_date : 0) |
+        (tblock->envelope_to_add? topt_add_envelope_to : 0),
+      0,            /* No size limit */
+      tblock->add_headers, tblock->remove_headers,
+      US".", US"..",    /* Escaping strings */
+      tblock->rewrite_rules, tblock->rewrite_existflags,
+      ob->dkim_private_key, ob->dkim_domain, ob->dkim_selector,
+      ob->dkim_canon, ob->dkim_strict, ob->dkim_sign_headers);
   else
 #endif
   ok = transport_write_message(addrlist, inblock.sock,

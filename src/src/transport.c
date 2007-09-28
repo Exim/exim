@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.19 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.20 2007/09/28 12:21:57 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1125,6 +1125,193 @@ dk_transport_write_message(address_item *addr, int fd, int options,
   return rc;
 }
 #endif
+
+
+
+#ifdef EXPERIMENTAL_DKIM
+
+/**********************************************************************************
+*    External interface to write the message, while signing it with DKIM          *
+**********************************************************************************/
+
+/* This function is a wrapper around transport_write_message(). It is only called
+   from the smtp transport if
+   (1) DKIM support is compiled in.
+   (2) The dkim_private_key and dkim_domain option on the smtp transport is set.
+   The function sets up a replacement fd into a -K file, then calls the normal
+   function. This way, the exact bits that exim would have put "on the wire" will
+   end up in the file (except for TLS encapsulation, which is the very
+   very last thing). When we are done signing the file, send the
+   signed message down the original fd (or TLS fd).
+
+Arguments:     as for internal_transport_write_message() above, with additional
+               arguments:
+               uschar *dkim_private_key         The private key to use (filename or plain data)
+               uschar *dkim_domain              The domain to use
+               uschar *dkim_selector            The selector to use.
+               uschar *dkim_canon               The canonalization scheme to use, "simple" or "relaxed"
+               uschar *dkim_strict              What to do if signing fails: 1/true  => throw error
+                                                                             0/false => send anyway
+
+Returns:       TRUE on success; FALSE (with errno) for any failure
+*/
+
+BOOL
+dkim_transport_write_message(address_item *addr, int fd, int options,
+  int size_limit, uschar *add_headers, uschar *remove_headers,
+  uschar *check_string, uschar *escape_string, rewrite_rule *rewrite_rules,
+  int rewrite_existflags, uschar *dkim_private_key, uschar *dkim_domain,
+  uschar *dkim_selector, uschar *dkim_canon, uschar *dkim_strict, uschar *dkim_sign_headers)
+{
+  int dkim_fd;
+  int save_errno = 0;
+  BOOL rc;
+  uschar dkim_spool_name[256];
+  char sbuf[2048];
+  int sread = 0;
+  int wwritten = 0;
+  uschar *dkim_signature = NULL;
+  off_t size = 0;
+
+  (void)string_format(dkim_spool_name, 256, "%s/input/%s/%s-%d-K",
+          spool_directory, message_subdir, message_id, (int)getpid());
+  dkim_fd = Uopen(dkim_spool_name, O_RDWR|O_CREAT|O_TRUNC, SPOOL_MODE);
+  if (dkim_fd < 0)
+    {
+    /* Can't create spool file. Ugh. */
+    rc = FALSE;
+    save_errno = errno;
+    goto CLEANUP;
+    }
+
+  /* Call original function */
+  rc = transport_write_message(addr, dkim_fd, options,
+    size_limit, add_headers, remove_headers,
+    check_string, escape_string, rewrite_rules,
+    rewrite_existflags);
+
+  /* Save error state. We must clean up before returning. */
+  if (!rc)
+    {
+    save_errno = errno;
+    goto CLEANUP;
+    }
+
+  /* Rewind file and feed it to the goats^W DKIM lib */
+  lseek(dkim_fd, 0, SEEK_SET);
+  dkim_signature = dkim_exim_sign(dkim_fd,
+                                  dkim_private_key,
+                                  dkim_domain,
+                                  dkim_selector,
+                                  dkim_canon,
+                                  dkim_sign_headers);
+
+  if (dkim_signature != NULL)
+    {
+    /* Send the signature first */
+    int siglen = Ustrlen(dkim_signature);
+    while(siglen > 0)
+      {
+      #ifdef SUPPORT_TLS
+      if (tls_active == fd) wwritten = tls_write(dkim_signature, siglen); else
+      #endif
+      wwritten = write(fd,dkim_signature,siglen);
+      if (wwritten == -1)
+        {
+        /* error, bail out */
+        save_errno = errno;
+        rc = FALSE;
+        goto CLEANUP;
+        }
+      siglen -= wwritten;
+      dkim_signature += wwritten;
+      }
+    }
+  else if (dkim_strict != NULL)
+    {
+    uschar *dkim_strict_result = expand_string(dkim_strict);
+    if (dkim_strict_result != NULL)
+      {
+      if ( (strcmpic(dkim_strict,US"1") == 0) ||
+           (strcmpic(dkim_strict,US"true") == 0) )
+        {
+        save_errno = errno;
+        rc = FALSE;
+        goto CLEANUP;
+        }
+      }
+    }
+
+  /* Fetch file positition (the size) */
+  size = lseek(dkim_fd,0,SEEK_CUR);
+
+  /* Rewind file */
+  lseek(dkim_fd, 0, SEEK_SET);
+
+#ifdef HAVE_LINUX_SENDFILE
+  /* We can use sendfile() to shove the file contents
+     to the socket. However only if we don't use TLS,
+     in which case theres another layer of indirection
+     before the data finally hits the socket. */
+  if (tls_active != fd)
+    {
+    ssize_t copied = 0;
+    off_t offset = 0;
+    while((copied >= 0) && (offset<size))
+      {
+      copied = sendfile(fd, dkim_fd, &offset, (size - offset));
+      }
+    if (copied < 0)
+      {
+      save_errno = errno;
+      rc = FALSE;
+      }
+    goto CLEANUP;
+    }
+#endif
+
+  /* Send file down the original fd */
+  while((sread = read(dkim_fd,sbuf,2048)) > 0)
+    {
+    char *p = sbuf;
+    /* write the chunk */
+    DKIM_WRITE:
+    #ifdef SUPPORT_TLS
+    if (tls_active == fd) wwritten = tls_write(US p, sread); else
+    #endif
+    wwritten = write(fd,p,sread);
+    if (wwritten == -1)
+      {
+      /* error, bail out */
+      save_errno = errno;
+      rc = FALSE;
+      goto CLEANUP;
+      }
+    if (wwritten < sread)
+      {
+      /* short write, try again */
+      p += wwritten;
+      sread -= wwritten;
+      goto DKIM_WRITE;
+      }
+    }
+
+  if (sread == -1)
+    {
+    save_errno = errno;
+    rc = FALSE;
+    goto CLEANUP;
+    }
+
+  CLEANUP:
+  /* unlink -K file */
+  (void)close(dkim_fd);
+  Uunlink(dkim_spool_name);
+  errno = save_errno;
+  return rc;
+}
+#endif
+
 
 
 /*************************************************

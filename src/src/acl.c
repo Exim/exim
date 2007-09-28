@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.79 2007/08/29 13:58:25 ph10 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.80 2007/09/28 12:21:57 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -174,6 +174,9 @@ enum {
   #ifdef EXPERIMENTAL_DOMAINKEYS
   CONTROL_DK_VERIFY,
   #endif
+  #ifdef EXPERIMENTAL_DKIM
+  CONTROL_DKIM_VERIFY,
+  #endif
   CONTROL_ERROR,
   CONTROL_CASEFUL_LOCAL_PART,
   CONTROL_CASELOWER_LOCAL_PART,
@@ -206,6 +209,9 @@ static uschar *controls[] = {
   #endif
   #ifdef EXPERIMENTAL_DOMAINKEYS
   US"dk_verify",
+  #endif
+  #ifdef EXPERIMENTAL_DKIM
+  US"dkim_verify",
   #endif
   US"error",
   US"caseful_local_part",
@@ -550,6 +556,11 @@ static unsigned int control_forbids[] = {
     (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
+  #ifdef EXPERIMENTAL_DKIM
+  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dkim_verify */
+    (1<<ACL_WHERE_NOTSMTP_START),
+  #endif
+
   0,                                               /* error */
 
   (unsigned int)
@@ -628,6 +639,9 @@ static control_def controls_list[] = {
 #endif
 #ifdef EXPERIMENTAL_DOMAINKEYS
   { US"dk_verify",               CONTROL_DK_VERIFY, FALSE },
+#endif
+#ifdef EXPERIMENTAL_DKIM
+  { US"dkim_verify",             CONTROL_DKIM_VERIFY, FALSE },
 #endif
   { US"caseful_local_part",      CONTROL_CASEFUL_LOCAL_PART, FALSE },
   { US"caselower_local_part",    CONTROL_CASELOWER_LOCAL_PART, FALSE },
@@ -2610,6 +2624,12 @@ for (; cb != NULL; cb = cb->next)
       #ifdef EXPERIMENTAL_DOMAINKEYS
       case CONTROL_DK_VERIFY:
       dk_do_verify = 1;
+      break;
+      #endif
+
+      #ifdef EXPERIMENTAL_DKIM
+      case CONTROL_DKIM_VERIFY:
+      dkim_do_verify = 1;
       break;
       #endif
 

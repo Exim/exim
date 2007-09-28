@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Cambridge: exim/src/scripts/MakeLinks,v 1.12 2007/08/23 10:16:51 ph10 Exp $
+# $Cambridge: exim/src/scripts/MakeLinks,v 1.13 2007/09/28 12:21:57 tom Exp $
 
 # Script to build links for all the exim source files from the system-
 # specific build directory. It should be run from within that directory.
@@ -61,6 +61,8 @@ ln -s ../../src/lookups/cdb.h            cdb.h
 ln -s ../../src/lookups/cdb.c            cdb.c
 ln -s ../../src/lookups/dbmdb.h          dbmdb.h
 ln -s ../../src/lookups/dbmdb.c          dbmdb.c
+ln -s ../../src/lookups/dkim.h           dkim.h
+ln -s ../../src/lookups/dkim.c           dkim.c
 ln -s ../../src/lookups/dnsdb.h          dnsdb.h
 ln -s ../../src/lookups/dnsdb.c          dnsdb.c
 ln -s ../../src/lookups/dsearch.h        dsearch.h
@@ -280,5 +282,7 @@ ln -s ../src/srs.c             srs.c
 ln -s ../src/srs.h             srs.h
 ln -s ../src/dk.c              dk.c
 ln -s ../src/dk.h              dk.h
+ln -s ../src/dkim-exim.c       dkim-exim.c
+ln -s ../src/dkim-exim.h       dkim-exim.h
 
 # End of MakeLinks

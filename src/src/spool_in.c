@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.20 2007/06/22 14:38:58 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.21 2007/09/28 12:21:57 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -280,6 +280,10 @@ bmi_verdicts = NULL;
 
 #ifdef EXPERIMENTAL_DOMAINKEYS
 dk_do_verify = 0;
+#endif
+
+#ifdef EXPERIMENTAL_DKIM
+dkim_do_verify = 0;
 #endif
 
 #ifdef SUPPORT_TLS

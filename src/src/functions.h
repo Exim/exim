@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.38 2007/08/22 10:10:23 ph10 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.39 2007/09/28 12:21:57 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -80,6 +80,11 @@ extern int     demime(uschar **);
 extern BOOL    directory_make(uschar *, uschar *, int, BOOL);
 #ifdef EXPERIMENTAL_DOMAINKEYS
 extern BOOL    dk_transport_write_message(address_item *, int, int,
+                   int, uschar *, uschar *, uschar *, uschar *, rewrite_rule *,
+                   int, uschar *, uschar *, uschar *, uschar *, uschar *, uschar *);
+#endif
+#ifdef EXPERIMENTAL_DKIM
+extern BOOL    dkim_transport_write_message(address_item *, int, int,
                    int, uschar *, uschar *, uschar *, uschar *, rewrite_rule *,
                    int, uschar *, uschar *, uschar *, uschar *, uschar *, uschar *);
 #endif

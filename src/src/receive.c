@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.41 2007/08/22 14:20:28 ph10 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.42 2007/09/28 12:21:57 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -11,13 +11,37 @@
 
 #include "exim.h"
 
+#if (defined EXPERIMENTAL_DOMAINKEYS) && (defined EXPERIMENTAL_DKIM)
+
+#warning Chaining Domainkeys via DKIM receive functions
+#define RECEIVE_GETC dkim_receive_getc
+#define RECEIVE_UNGETC dkim_receive_ungetc
+
+#else
+
+#if (defined EXPERIMENTAL_DOMAINKEYS) || (defined EXPERIMENTAL_DKIM)
+
 #ifdef EXPERIMENTAL_DOMAINKEYS
+#warning Using Domainkeys receive functions
 #define RECEIVE_GETC dk_receive_getc
 #define RECEIVE_UNGETC dk_receive_ungetc
+#endif
+#ifdef EXPERIMENTAL_DKIM
+#warning Using DKIM receive functions
+#define RECEIVE_GETC dkim_receive_getc
+#define RECEIVE_UNGETC dkim_receive_ungetc
+#endif
+
 #else
+
+/* Normal operation */
 #define RECEIVE_GETC receive_getc
 #define RECEIVE_UNGETC receive_ungetc
+
 #endif
+
+#endif
+
 
 /*************************************************
 *                Local static variables          *
@@ -1393,6 +1417,12 @@ message_linecount = body_linecount = body_zerocount =
    inside dk_exim_verify_init(). */
 dk_exim_verify_init();
 #endif
+#ifdef EXPERIMENTAL_DKIM
+/* Call into DKIM to set up the context. Check if DKIM is to be run are carried out
+   inside dk_exim_verify_init(). */
+dkim_exim_verify_init();
+#endif
+
 
 /* Remember the time of reception. Exim uses time+pid for uniqueness of message
 ids, and fractions of a second are required. See the comments that precede the
@@ -2974,6 +3004,9 @@ else
 
 #ifdef EXPERIMENTAL_DOMAINKEYS
     dk_exim_verify_finish();
+#endif
+#ifdef EXPERIMENTAL_DKIM
+    dkim_exim_verify_finish();
 #endif
 
 #ifdef WITH_CONTENT_SCAN

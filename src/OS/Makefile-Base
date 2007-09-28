@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.10 2006/02/07 14:20:58 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.11 2007/09/28 12:21:57 tom Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -298,7 +298,7 @@ convert4r4: Makefile ../src/convert4r4.src
 
 OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
 OBJ_WITH_OLD_DEMIME = demime.o
-OBJ_EXPERIMENTAL = bmi_spam.o spf.o srs.o dk.o
+OBJ_EXPERIMENTAL = bmi_spam.o spf.o srs.o dk.o dkim-exim.o
 
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
@@ -599,6 +599,7 @@ bmi_spam.o:      $(HDRS) bmi_spam.c
 spf.o:           $(HDRS) spf.h spf.c
 srs.o:           $(HDRS) srs.h srs.c
 dk.o:            $(HDRS) dk.h dk.c
+dkim-exim.o:     $(HDRS) dkim-exim.h dkim-exim.c
 
 # The module containing tables of available lookups, routers, auths, and
 # transports must be rebuilt if any of them are. However, because the makefiles

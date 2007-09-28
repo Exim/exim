@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.h,v 1.12 2007/02/06 14:49:13 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.h,v 1.13 2007/09/28 12:21:57 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -64,6 +64,14 @@ typedef struct {
   uschar *dk_canon;
   uschar *dk_headers;
   uschar *dk_strict;
+  #endif
+  #ifdef EXPERIMENTAL_DKIM
+  uschar *dkim_domain;
+  uschar *dkim_private_key;
+  uschar *dkim_selector;
+  uschar *dkim_canon;
+  uschar *dkim_sign_headers;
+  uschar *dkim_strict;
   #endif
 } smtp_transport_options_block;
 
