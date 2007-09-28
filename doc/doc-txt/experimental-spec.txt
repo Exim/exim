@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.7 2007/07/27 13:56:24 magnus Exp $
+$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.8 2007/09/28 12:58:41 tom Exp $
 
 From time to time, experimental features may be added to Exim.
 While a feature  is experimental, there  will be a  build-time
@@ -6,6 +6,141 @@ option whose name starts  "EXPERIMENTAL_" that must be  set in
 order to include the  feature. This file contains  information
 about experimenatal  features, all  of which  are unstable and
 liable to incompatibile change.
+
+
+0. DKIM support
+--------------------------------------------------------------
+
+DKIM support is implemented via libdkim. A compatible version
+is available here:
+
+http://duncanthrax.net/exim-experimental/libdkim-1.0.15-tk.tar.gz
+
+Build the lib according to the instructions in the enclosed
+INSTALL file.
+
+To build Exim with DKIM support, specify this in Local/Makefile:
+
+EXPERIMENTAL_DKIM=yes
+CFLAGS  += -I/home/tom/libdkim/include
+LDFLAGS += -ldkim -lssl -lstdc++ -L/home/tom/libdkim/lib
+
+Remember to tweak  the CFLAGS and  LDFLAGS lines to  match the
+location of the libdomainkeys includes and lib on your system.
+
+The current experimental implementation supports two independent
+functions:
+
+o Validate incoming DKIM-signed email.
+o Sign outgoing email with DKIM.
+
+The former is implemented in the ACLs for SMTP, the latter  as
+an extension to the SMTP transport. That means both facilities
+are limited to SMTP I/O.
+
+
+1) Validate incoming email
+
+Incoming messages are fed to the DKIM validation process as they
+are received "on  the wire". This happens synchronously to Exim's
+buffering of the message in the spool.
+
+You must set "control = dkim_verify" in one of the ACLs preceding
+DATA (you will typically use acl_smtp_rcpt), at a point where
+non-local, non-relay, non-submission mail is processed. If that
+control flag is not set, the message will NOT be verified.
+
+Example:
+
+warn log_message = Feeding message to DKIM validator.
+     control = dk_verify
+
+You can then check for DKIM signatures in the ACL after data
+(acl_smtp_data), using the 'dkim' query-style lookup type. The
+query string should be a domain or DKIM identity:
+
+${lookup dkim{domain.example}}
+
+Such a lookup will yield one of the following strings:
+
+unverified: Exim did not (yet) verify the eventual DKIM
+            signatures in this message. This may happen
+            if a) You did not use control=dkim_verify
+            or b) You are using the lookup before
+            the DATA ACL.
+
+unsigned:   The message does not have a signature from
+            the specified domain.
+
+good:       The message has a signature from the specified
+            domain, and it verified successfully.
+
+bad:        The message has a signature from the specified
+            domain, but it did not verify.
+
+defer:      A temporary DNS problem was encountered while
+            trying to verify the signature.
+
+
+
+2) Sign outgoing email with DKIM
+
+Outgoing messages are  signed just before  Exim puts them  "on
+the wire".  The only  thing that happens after DKIM signing is
+eventual TLS encryption.
+
+Signing is implemented by setting private options on the  SMTP
+transport.  These   options  take   (expandable)  strings   as
+arguments.
+
+  dkim_domain = <expanded string> [MANDATORY]
+
+    The domain you want to sign with. Should optimally match
+    the domain in the "From:" header of the message, but
+    does not necessarily have to. The result of this expanded
+    option is put into the $dkim_domain expansion variable.
+
+  dkim_selector = <expanded string> [MANDATORY]
+
+    This  sets  the  key  selector  string.  You  can  use the
+    $dkim_domain  expansion  variable  to  look  up  a  matching
+    selector.  The result  is put  in the  expansion  variable
+    $dkim_selector which  should be  used in  the dkim_private_key
+    option along with $dkim_domain.
+
+  dkim_private_key = <expanded string> [MANDATORY]
+
+    This  sets the  private key to use. You can use the
+    $dkim_domain and  $dkim_selector expansion variables to
+    determine the private key to use. The result can either
+
+      o be a valid RSA private key in ASCII armor, including
+        line breaks.
+      o start with a slash, in which case it is treated as
+        a file that contains the private key.
+      o be "0", "false" or the empty string, in which case
+        the message will not be signed. This case will not
+        result in an error, even if dkim_strict is set.
+
+  dkim_canon = <expanded string> [OPTIONAL]
+
+    This option sets the canonicalization method used when
+    signing a message. The DKIM RFC currently supports two
+    methods: "simple" and "relaxed".  The option defaults to
+    "relaxed" when unset. Note: the current implementation
+    only support using the same canonicalization method for
+    both headers and body.
+
+  dkim_strict = <expanded string> [OPTIONAL]
+
+    This  option  defines  how  Exim  behaves  when  signing a
+    message that should be signed fails for some reason.  When
+    the expansion evaluates to either "1" or "true", Exim will
+    defer. Otherwise Exim will send the message unsigned.  You
+    can  use the $dkim_domain and $dkim_selector expansion
+    variables here.
+
+
 
 
 
