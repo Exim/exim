@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.8 2007/09/28 12:58:41 tom Exp $
+$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.9 2007/10/04 13:21:06 tom Exp $
 
 From time to time, experimental features may be added to Exim.
 While a feature  is experimental, there  will be a  build-time
@@ -140,6 +140,22 @@ arguments.
     can  use the $dkim_domain and $dkim_selector expansion
     variables here.
 
+  dkim_sign_headers = <expanded string> [OPTIONAL]
+
+    When set, this option must expand to (or be specified as)
+    a colon-separated list of header names. These headers will
+    be included in the message signature. When unspecified,
+    the recommended headers will be used. Currently, these
+    are:
+
+    from:sender:reply-to:subject:date:
+    message-id:to:cc:mime-version:content-type:
+    content-transfer-encoding:content-id:
+    content-description:resent-date:resent-from:
+    resent-sender:resent-to:resent-cc:resent-message-id:
+    in-reply-to:references:
+    list-id:list-help:list-unsubscribe:
+    list-subscribe:list-post:list-owner:list-archive
 
 
 
