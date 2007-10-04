@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/OS/os.h-Linux,v 1.5 2006/12/20 19:54:23 tom Exp $ */
+/* $Cambridge: exim/src/OS/os.h-Linux,v 1.6 2007/10/04 13:23:05 tom Exp $ */
 
 /* Exim: OS-specific C header file for Linux */
 
@@ -53,3 +53,8 @@ extern struct ip_address_item *os_find_running_interfaces_linux(void);
 #endif /* __linux__ */
 
 /* End */
+
+/* Fudge added because this Linux doesn't appear to have a definition
+for ip_options in /usr/include/linux/ip.h. */
+
+#define ip_options options
