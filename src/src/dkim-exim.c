@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim-exim.c,v 1.1 2007/09/28 12:21:57 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim-exim.c,v 1.2 2007/10/09 14:10:34 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -301,6 +301,9 @@ uschar *dkim_exim_sign(int dkim_fd,
 
   dkim_context = store_get(sizeof(DKIMContext));
   dkim_sign_options = store_get(sizeof(DKIMSignOptions));
+
+  memset(dkim_sign_options,0,sizeof(DKIMSignOptions));
+  memset(dkim_context,0,sizeof(DKIMContext));
 
   dkim_sign_options->nIncludeBodyLengthTag = 0;
   dkim_sign_options->nIncludeCopiedHeaders = 0;
