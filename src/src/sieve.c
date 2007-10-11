@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.31 2007/09/28 12:21:57 tom Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.32 2007/10/11 12:44:30 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -147,6 +147,8 @@ static uschar str_online_c[]="online";
 static const struct String str_online={ str_online_c, 6 };
 static uschar str_maybe_c[]="maybe";
 static const struct String str_maybe={ str_maybe_c, 5 };
+static uschar str_auto_submitted_c[]="Auto-Submitted";
+static const struct String str_auto_submitted={ str_auto_submitted_c, 14 };
 #endif
 #ifdef SUBADDRESS
 static uschar str_subaddress_c[]="subaddress";
@@ -487,7 +489,8 @@ if (*uri=='?')
         {US"date",4},
         {US"from",4},
         {US"message-id",10},
-        {US"received",8}
+        {US"received",8},
+        {US"auto-submitted",14}
         };
       static struct String *end=ignore+sizeof(ignore)/sizeof(ignore[0]);
       struct String *i;
@@ -2943,6 +2946,8 @@ while (*filter->pc)
     struct String subject;
     struct String body;
     uschar *envelope_from,*envelope_to;
+    struct String auto_submitted_value;
+    uschar *auto_submitted_def;
 
     if (!filter->require_enotify)
       {
@@ -3017,73 +3022,90 @@ while (*filter->pc)
       return -1;
     if (message.length==-1) message=subject;
     if (message.length==-1) expand_header(&message,&str_subject);
-
-    for (already=filter->notified; already; already=already->next)
+    expand_header(&auto_submitted_value,&str_auto_submitted);
+    auto_submitted_def=expand_string(string_sprintf("${if def:header_auto-submitted {true}{false}}"));
+    if (auto_submitted_value.character == NULL || auto_submitted_def == NULL)
       {
-      if (already->method.length==method.length
-          && (method.length==-1 || strcmp(already->method.character,method.character)==0)
-          && already->importance.length==importance.length
-          && (importance.length==-1 || strcmp(already->importance.character,importance.character)==0)
-          && already->message.length==message.length
-          && (message.length==-1 || strcmp(already->message.character,message.character)==0))
-        break;
+      filter->errmsg=CUS "header string expansion failed";
+      return -1;
       }
-    if (already==(struct Notification*)0)
-      /* New notification, process it */
+    if (Ustrcmp(auto_submitted_def,"true")!=0 || Ustrcmp(auto_submitted_value.character,"no")==0)
       {
-      struct Notification *sent;
-      sent=store_get(sizeof(struct Notification));
-      sent->method=method;
-      sent->importance=importance;
-      sent->message=message;
-      sent->next=filter->notified;
-      filter->notified=sent;
-      if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
+      for (already=filter->notified; already; already=already->next)
         {
-        debug_printf("Notification to `%s': '%s'.\n",method.character,message.length!=-1 ? message.character : CUS "");
+        if (already->method.length==method.length
+            && (method.length==-1 || strcmp(already->method.character,method.character)==0)
+            && already->importance.length==importance.length
+            && (importance.length==-1 || strcmp(already->importance.character,importance.character)==0)
+            && already->message.length==message.length
+            && (message.length==-1 || strcmp(already->message.character,message.character)==0))
+          break;
         }
-#ifndef COMPILE_SYNTAX_CHECKER
-      if (exec && filter_test == FTEST_NONE)
+      if (already==(struct Notification*)0)
+        /* New notification, process it */
         {
-        string_item *p;
-        header_line *h;
-        int pid,fd;
-
-        if ((pid = child_open_exim2(&fd,envelope_to,envelope_to))>=1)
+        struct Notification *sent;
+        sent=store_get(sizeof(struct Notification));
+        sent->method=method;
+        sent->importance=importance;
+        sent->message=message;
+        sent->next=filter->notified;
+        filter->notified=sent;
+        if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
           {
-          FILE *f;
-          uschar *buffer;
-          int buffer_capacity;
+          debug_printf("Notification to `%s': '%s'.\n",method.character,message.length!=-1 ? message.character : CUS "");
+          }
+#ifndef COMPILE_SYNTAX_CHECKER
+        if (exec && filter_test == FTEST_NONE)
+          {
+          string_item *p;
+          header_line *h;
+          int pid,fd;
 
-          f = fdopen(fd, "wb");
-          for (h = header_list; h != NULL; h = h->next)
-            if (h->type == htype_received) fprintf(f,"%s",h->text);
-          fprintf(f,"From: %s\n",from.length==-1 ? envelope_to : from.character);
-          for (p=recipient; p; p=p->next) fprintf(f,"To: %s\n",p->text);
-          if (header.length>0) fprintf(f,"%s",header.character);
-          if (message.length==-1)
+          if ((pid = child_open_exim2(&fd,envelope_to,envelope_to))>=1)
             {
-            message.character=US"Notification";
-            message.length=Ustrlen(message.character);
+            FILE *f;
+            uschar *buffer;
+            int buffer_capacity;
+
+            f = fdopen(fd, "wb");
+            for (h = header_list; h != NULL; h = h->next)
+              if (h->type == htype_received) fprintf(f,"%s",h->text);
+            fprintf(f,"From: %s\n",from.length==-1 ? envelope_to : from.character);
+            for (p=recipient; p; p=p->next) fprintf(f,"To: %s\n",p->text);
+            fprintf(f,"Auto-submitted: sieve-notify\n");
+            if (header.length>0) fprintf(f,"%s",header.character);
+            if (message.length==-1)
+              {
+              message.character=US"Notification";
+              message.length=Ustrlen(message.character);
+              }
+            /* Allocation is larger than neccessary, but enough even for split MIME words */
+            buffer_capacity=32+4*message.length;
+            buffer=store_get(buffer_capacity);
+            if (message.length!=-1) fprintf(f,"Subject: %s\n",parse_quote_2047(message.character, message.length, US"utf-8", buffer, buffer_capacity, TRUE));
+            fprintf(f,"\n");
+            if (body.length>0) fprintf(f,"%s\n",body.character);
+            fflush(f);
+            (void)fclose(f);
+            (void)child_close(pid, 0);
             }
-          /* Allocation is larger than neccessary, but enough even for split MIME words */
-          buffer_capacity=32+4*message.length;
-          buffer=store_get(buffer_capacity);
-          if (message.length!=-1) fprintf(f,"Subject: %s\n",parse_quote_2047(message.character, message.length, US"utf-8", buffer, buffer_capacity, TRUE));
-          fprintf(f,"\n");
-          if (body.length>0) fprintf(f,"%s\n",body.character);
-          fflush(f);
-          (void)fclose(f);
-          (void)child_close(pid, 0);
+          }
+#endif
+        }
+      else
+        {
+        if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
+          {
+          debug_printf("Repeated notification to `%s' ignored.\n",method.character);
           }
         }
-#endif
       }
     else
       {
       if ((filter_test != FTEST_NONE && debug_selector != 0) || (debug_selector & D_filter) != 0)
         {
-        debug_printf("Repeated notification to `%s' ignored.\n",method.character);
+        debug_printf("Ignoring notification, triggering message contains Auto-submitted: field.\n");
         }
       }
     }
