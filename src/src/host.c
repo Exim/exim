@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.28 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.29 2007/10/18 12:01:00 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1502,7 +1502,7 @@ if (hosts == NULL)
 treat this as non-existent. In some operating systems, this is returned as an
 empty string; in others as a single dot. */
 
-if (hosts->h_name[0] == 0 || hosts->h_name[0] == '.')
+if (hosts->h_name == NULL || hosts->h_name[0] == 0 || hosts->h_name[0] == '.')
   {
   HDEBUG(D_host_lookup) debug_printf("IP address lookup yielded an empty name: "
     "treated as non-existent host name\n");
