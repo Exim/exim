@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.24 2007/08/29 13:37:28 ph10 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.25 2007/10/18 12:08:46 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -26974,12 +26974,21 @@ relies on the SIZE parameter on the MAIL command, which may be inaccurate or
 completely missing. You can follow the limit &'m'& in the configuration with K,
 M, or G to specify limits in kilobytes, megabytes, or gigabytes, respectively.
 
+The &%per_rcpt%& option causes Exim to limit the rate at which
+recipients are accepted. To be effective, it would need to be used in
+either the &%acl_smtp_rcpt%& or the &%acl_not_smtp%& ACL. In the
+&%acl_smtp_rcpt%& ACL, the number of recipients is incremented by one.
+In the case of a locally submitted message in the &%acl_not_smtp%& ACL,
+the number of recipients incremented is equal to &%$recipients_count%&
+for the entire message. Note that in either case the rate limiting
+engine will see a message with many recipients as a large high-speed
+burst.
+
 The &%per_cmd%& option causes Exim to recompute the rate every time the
-condition is processed. This can be used to limit the SMTP command rate. The
-alias &%per_rcpt%& is provided for use in the RCPT ACL instead of &%per_cmd%&
-to make it clear that the effect is to limit the rate at which recipients are
-accepted. Note that in this case the rate limiting engine will see a message
-with many recipients as a large high-speed burst.
+condition is processed. This can be used to limit the SMTP command rate.
+This command is essentially an alias of &%per_rcpt%& to make it clear
+that the effect is to limit the rate at which individual commands,
+rather than recipients, are accepted.
 
 .section "Ratelimit options for handling fast clients" "ratophanfas"
 If a client's average rate is greater than the maximum, the rate limiting

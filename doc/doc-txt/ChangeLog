@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.534 2007/10/18 12:00:43 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.535 2007/10/18 12:08:47 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -20,6 +20,8 @@ NM/01 Bugzilla 592: --help option is handled incorrectly if exim is invoked
 SC/01 Added the -bylocaldomain option to eximstats.
 
 NM/02 Bugzilla 619: Defended against bad data coming back from gethostbyaddr
+
+NM/03 Bugzilla 613: Documentation fix for acl_not_smtp
 
 Exim version 4.68
 -----------------
