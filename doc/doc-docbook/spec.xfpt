@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.25 2007/10/18 12:08:46 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.26 2007/10/24 17:47:31 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -22342,6 +22342,10 @@ rewriting rule is skipped unless the relevant addresses are being processed.
 &`s`&       rewrite the &'Sender:'& header
 &`t`&       rewrite the &'To:'& header
 .endd
+"All headers" means all of the headers listed above that can be selected
+individually, plus their &'Resent-'& versions. It does not include
+other headers such as &'Subject:'& etc.
+
 You should be particularly careful about rewriting &'Sender:'& headers, and
 restrict this to special known cases in your own domains.
 
