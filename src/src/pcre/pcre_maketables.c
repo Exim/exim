@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_maketables.c,v 1.5 2007/06/26 11:16:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_maketables.c,v 1.6 2007/11/12 13:02:20 nm4 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -47,7 +47,10 @@ compilation of dftables.c, in which case the macro DFTABLES is defined. */
 
 
 #ifndef DFTABLES
-#include "pcre_internal.h"
+#  ifdef HAVE_CONFIG_H
+#  include "config.h"
+#  endif
+#  include "pcre_internal.h"
 #endif
 
 

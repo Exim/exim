@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_globals.c,v 1.5 2007/06/26 11:16:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_globals.c,v 1.6 2007/11/12 13:02:19 nm4 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -47,6 +47,10 @@ indirections below, and it can optionally do callouts, using the fifth
 indirection. These values can be changed by the caller, but are shared between
 all threads. However, when compiling for Virtual Pascal, things are done
 differently, and global variables are not used (see pcre.in). */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "pcre_internal.h"
 

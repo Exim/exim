@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/config.h,v 1.3 2007/06/26 11:16:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/config.h,v 1.4 2007/11/12 13:02:19 nm4 Exp $ */
 
 /*************************************************
 *           config.h for PCRE for Exim           *
@@ -18,6 +18,9 @@ Exim works differently. It handles this case by defining memmove() as a macro
 in its os.h-SunOS4 file. We interface this to PCRE by including the os.h file
 here, and then defining HAVE_MEMOVE so that PCRE's code in internal.h leaves
 things alone. */
+
+#ifndef PCRE_CONFIG_H
+#define PCRE_CONFIG_H
 
 #include "../os.h"
 #define HAVE_MEMMOVE 1
@@ -39,5 +42,7 @@ PCRE, can be adjusted by "configure". */
 and non-ASCII systems. For Exim's purposes, just flatten it. */
 
 #undef EBCDIC
+
+#endif // include once
 
 /* End */

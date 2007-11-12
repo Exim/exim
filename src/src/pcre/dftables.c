@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/dftables.c,v 1.6 2007/06/26 11:16:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/dftables.c,v 1.7 2007/11/12 13:02:19 nm4 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -44,6 +44,10 @@ POSSIBILITY OF SUCH DAMAGE.
 character tables for PCRE. The tables are built according to the current
 locale. Now that pcre_maketables is a function visible to the outside world, we
 make use of its code from here in order to be consistent. */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <ctype.h>
 #include <stdio.h>
@@ -101,12 +105,15 @@ fprintf(f,
   "tables are passed to PCRE by the application that calls it. The tables\n"
   "are used only for characters whose code values are less than 256.\n\n");
 fprintf(f,
-  "The following #include is present because without it gcc 4.x may remove\n"
+  "The following #includes are present because without them gcc 4.x may remove\n"
   "the array definition from the final binary if PCRE is built into a static\n"
   "library and dead code stripping is activated. This leads to link errors.\n"
   "Pulling in the header ensures that the array gets flagged as \"someone\n"
   "outside this compilation unit might reference this\" and so it will always\n"
   "be supplied to the linker. */\n\n"
+  "#ifdef HAVE_CONFIG_H\n"
+  "#include \"config.h\"\n"
+  "#endif\n\n"
   "#include \"pcre_internal.h\"\n\n");
 fprintf(f,
   "const unsigned char _pcre_default_tables[] = {\n\n"

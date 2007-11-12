@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_study.c,v 1.5 2007/06/26 11:16:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_study.c,v 1.6 2007/11/12 13:02:20 nm4 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -43,6 +43,10 @@ POSSIBILITY OF SUCH DAMAGE.
 /* This module contains the external function pcre_study(), along with local
 supporting functions. */
 
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "pcre_internal.h"
 
@@ -525,7 +529,8 @@ code = (uschar *)re + re->name_table_offset +
 a multiline pattern that matches only at "line starts", no further processing
 at present. */
 
-if ((re->options & (PCRE_ANCHORED|PCRE_FIRSTSET|PCRE_STARTLINE)) != 0)
+if ((re->options & PCRE_ANCHORED) != 0 ||
+    (re->flags & (PCRE_FIRSTSET|PCRE_STARTLINE)) != 0)
   return NULL;
 
 /* Set the character tables in the block that is passed around */

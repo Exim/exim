@@ -1,7 +1,10 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.535 2007/10/18 12:08:47 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.536 2007/11/12 13:02:19 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+Exim version 4.69
+-----------------
 
 TK/01 Add preliminary DKIM support. Currently requires a forked version of
       ALT-N's libdkim that I have put here:
@@ -22,6 +25,9 @@ SC/01 Added the -bylocaldomain option to eximstats.
 NM/02 Bugzilla 619: Defended against bad data coming back from gethostbyaddr
 
 NM/03 Bugzilla 613: Documentation fix for acl_not_smtp
+
+NM/04 Bugzilla 628: PCRE update to 7.4 (work done by John Hall)
+
 
 Exim version 4.68
 -----------------

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcretest.c,v 1.7 2007/06/26 11:16:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcretest.c,v 1.8 2007/11/12 13:02:20 nm4 Exp $ */
 
 /*************************************************
 *             PCRE testing program               *
@@ -37,6 +37,10 @@ POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------------
 */
 
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <ctype.h>
 #include <stdio.h>
@@ -92,6 +96,7 @@ symbols to prevent clashes. */
 #define _pcre_utf8_table4      utf8_table4
 #define _pcre_utt              utt
 #define _pcre_utt_size         utt_size
+#define _pcre_utt_names        utt_names
 #define _pcre_OP_lengths       OP_lengths
 
 #include "pcre_tables.c"
@@ -154,6 +159,7 @@ static int callout_count;
 static int callout_extra;
 static int callout_fail_count;
 static int callout_fail_id;
+static int debug_lengths;
 static int first_callout;
 static int locale_set = 0;
 static int show_malloc;
@@ -661,6 +667,32 @@ return count;
 
 
 /*************************************************
+*         Case-independent strncmp() function    *
+*************************************************/
+
+/*
+Arguments:
+  s         first string
+  t         second string
+  n         number of characters to compare
+
+Returns:    < 0, = 0, or > 0, according to the comparison
+*/
+
+static int
+strncmpic(uschar *s, uschar *t, int n)
+{
+while (n--)
+  {
+  int c = tolower(*s++) - tolower(*t++);
+  if (c) return c;
+  }
+return 0;
+}
+
+
+
+/*************************************************
 *         Check newline indicator                *
 *************************************************/
 
@@ -678,11 +710,13 @@ Returns:      appropriate PCRE_NEWLINE_xxx flags, or 0
 static int
 check_newline(uschar *p, FILE *f)
 {
-if (strncmp((char *)p, "cr>", 3) == 0) return PCRE_NEWLINE_CR;
-if (strncmp((char *)p, "lf>", 3) == 0) return PCRE_NEWLINE_LF;
-if (strncmp((char *)p, "crlf>", 5) == 0) return PCRE_NEWLINE_CRLF;
-if (strncmp((char *)p, "anycrlf>", 8) == 0) return PCRE_NEWLINE_ANYCRLF;
-if (strncmp((char *)p, "any>", 4) == 0) return PCRE_NEWLINE_ANY;
+if (strncmpic(p, (uschar *)"cr>", 3) == 0) return PCRE_NEWLINE_CR;
+if (strncmpic(p, (uschar *)"lf>", 3) == 0) return PCRE_NEWLINE_LF;
+if (strncmpic(p, (uschar *)"crlf>", 5) == 0) return PCRE_NEWLINE_CRLF;
+if (strncmpic(p, (uschar *)"anycrlf>", 8) == 0) return PCRE_NEWLINE_ANYCRLF;
+if (strncmpic(p, (uschar *)"any>", 4) == 0) return PCRE_NEWLINE_ANY;
+if (strncmpic(p, (uschar *)"bsr_anycrlf>", 12) == 0) return PCRE_BSR_ANYCRLF;
+if (strncmpic(p, (uschar *)"bsr_unicode>", 12) == 0) return PCRE_BSR_UNICODE;
 fprintf(f, "Unknown newline type at: <%s\n", p);
 return 0;
 }
@@ -856,6 +890,9 @@ while (argc > 1 && argv[op][0] == '-')
       (rc == '\n')? "LF" : (rc == ('\r'<<8 | '\n'))? "CRLF" :
       (rc == -2)? "ANYCRLF" :
       (rc == -1)? "ANY" : "???");
+    (void)pcre_config(PCRE_CONFIG_BSR, &rc);
+    printf("  \\R matches %s\n", rc? "CR, LF, or CRLF only" :
+                                     "all Unicode newlines");
     (void)pcre_config(PCRE_CONFIG_LINK_SIZE, &rc);
     printf("  Internal link size = %d\n", rc);
     (void)pcre_config(PCRE_CONFIG_POSIX_MALLOC_THRESHOLD, &rc);
@@ -952,7 +989,6 @@ while (!done)
   size_t size, regex_gotten_store;
   int do_study = 0;
   int do_debug = debug;
-  int debug_lengths = 1;
   int do_G = 0;
   int do_g = 0;
   int do_showinfo = showinfo;
@@ -961,6 +997,7 @@ while (!done)
   int erroroffset, len, delimiter, poffset;
 
   use_utf8 = 0;
+  debug_lengths = 1;
 
   if (infile == stdin) printf("  re> ");
   if (extend_inputline(infile, buffer) == NULL) break;
@@ -1317,18 +1354,25 @@ while (!done)
     if (do_flip)
       {
       real_pcre *rre = (real_pcre *)re;
-      rre->magic_number = byteflip(rre->magic_number, sizeof(rre->magic_number));
+      rre->magic_number =
+        byteflip(rre->magic_number, sizeof(rre->magic_number));
       rre->size = byteflip(rre->size, sizeof(rre->size));
       rre->options = byteflip(rre->options, sizeof(rre->options));
-      rre->top_bracket = byteflip(rre->top_bracket, sizeof(rre->top_bracket));
-      rre->top_backref = byteflip(rre->top_backref, sizeof(rre->top_backref));
-      rre->first_byte = byteflip(rre->first_byte, sizeof(rre->first_byte));
-      rre->req_byte = byteflip(rre->req_byte, sizeof(rre->req_byte));
-      rre->name_table_offset = byteflip(rre->name_table_offset,
+      rre->flags = (pcre_uint16)byteflip(rre->flags, sizeof(rre->flags));
+      rre->top_bracket =
+        (pcre_uint16)byteflip(rre->top_bracket, sizeof(rre->top_bracket));
+      rre->top_backref =
+        (pcre_uint16)byteflip(rre->top_backref, sizeof(rre->top_backref));
+      rre->first_byte =
+        (pcre_uint16)byteflip(rre->first_byte, sizeof(rre->first_byte));
+      rre->req_byte =
+        (pcre_uint16)byteflip(rre->req_byte, sizeof(rre->req_byte));
+      rre->name_table_offset = (pcre_uint16)byteflip(rre->name_table_offset,
         sizeof(rre->name_table_offset));
-      rre->name_entry_size = byteflip(rre->name_entry_size,
+      rre->name_entry_size = (pcre_uint16)byteflip(rre->name_entry_size,
         sizeof(rre->name_entry_size));
-      rre->name_count = byteflip(rre->name_count, sizeof(rre->name_count));
+      rre->name_count = (pcre_uint16)byteflip(rre->name_count,
+        sizeof(rre->name_count));
 
       if (extra != NULL)
         {
@@ -1354,7 +1398,8 @@ while (!done)
 #if !defined NOINFOCHECK
       int old_first_char, old_options, old_count;
 #endif
-      int count, backrefmax, first_char, need_char, okpartial, jchanged;
+      int count, backrefmax, first_char, need_char, okpartial, jchanged,
+        hascrorlf;
       int nameentrysize, namecount;
       const uschar *nametable;
 
@@ -1369,6 +1414,7 @@ while (!done)
       new_info(re, NULL, PCRE_INFO_NAMETABLE, (void *)&nametable);
       new_info(re, NULL, PCRE_INFO_OKPARTIAL, &okpartial);
       new_info(re, NULL, PCRE_INFO_JCHANGED, &jchanged);
+      new_info(re, NULL, PCRE_INFO_HASCRORLF, &hascrorlf);
 
 #if !defined NOINFOCHECK
       old_count = pcre_info(re, &old_options, &old_first_char);
@@ -1411,18 +1457,21 @@ while (!done)
         }
 
       if (!okpartial) fprintf(outfile, "Partial matching not supported\n");
+      if (hascrorlf) fprintf(outfile, "Contains explicit CR or LF match\n");
 
       all_options = ((real_pcre *)re)->options;
       if (do_flip) all_options = byteflip(all_options, sizeof(all_options));
 
       if (get_options == 0) fprintf(outfile, "No options\n");
-        else fprintf(outfile, "Options:%s%s%s%s%s%s%s%s%s%s%s%s%s\n",
+        else fprintf(outfile, "Options:%s%s%s%s%s%s%s%s%s%s%s%s%s%s%s\n",
           ((get_options & PCRE_ANCHORED) != 0)? " anchored" : "",
           ((get_options & PCRE_CASELESS) != 0)? " caseless" : "",
           ((get_options & PCRE_EXTENDED) != 0)? " extended" : "",
           ((get_options & PCRE_MULTILINE) != 0)? " multiline" : "",
           ((get_options & PCRE_FIRSTLINE) != 0)? " firstline" : "",
           ((get_options & PCRE_DOTALL) != 0)? " dotall" : "",
+          ((get_options & PCRE_BSR_ANYCRLF) != 0)? " bsr_anycrlf" : "",
+          ((get_options & PCRE_BSR_UNICODE) != 0)? " bsr_unicode" : "",
           ((get_options & PCRE_DOLLAR_ENDONLY) != 0)? " dollar_endonly" : "",
           ((get_options & PCRE_EXTRA) != 0)? " extra" : "",
           ((get_options & PCRE_UNGREEDY) != 0)? " ungreedy" : "",
@@ -1555,15 +1604,15 @@ while (!done)
       else
         {
         uschar sbuf[8];
-        sbuf[0] = (true_size >> 24)  & 255;
-        sbuf[1] = (true_size >> 16)  & 255;
-        sbuf[2] = (true_size >>  8)  & 255;
-        sbuf[3] = (true_size)  & 255;
+        sbuf[0] = (uschar)((true_size >> 24) & 255);
+        sbuf[1] = (uschar)((true_size >> 16) & 255);
+        sbuf[2] = (uschar)((true_size >>  8) & 255);
+        sbuf[3] = (uschar)((true_size) & 255);
 
-        sbuf[4] = (true_study_size >> 24)  & 255;
-        sbuf[5] = (true_study_size >> 16)  & 255;
-        sbuf[6] = (true_study_size >>  8)  & 255;
-        sbuf[7] = (true_study_size)  & 255;
+        sbuf[4] = (uschar)((true_study_size >> 24) & 255);
+        sbuf[5] = (uschar)((true_study_size >> 16) & 255);
+        sbuf[6] = (uschar)((true_study_size >>  8) & 255);
+        sbuf[7] = (uschar)((true_study_size) & 255);
 
         if (fwrite(sbuf, 1, 8, f) < 8 ||
             fwrite(re, 1, true_size, f) < true_size)

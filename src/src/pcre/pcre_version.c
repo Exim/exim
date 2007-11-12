@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_version.c,v 1.5 2007/06/26 11:16:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_version.c,v 1.6 2007/11/12 13:02:20 nm4 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -43,6 +43,10 @@ POSSIBILITY OF SUCH DAMAGE.
 /* This module contains the external function pcre_version(), which returns a
 string that identifies the PCRE version that is in use. */
 
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "pcre_internal.h"
 

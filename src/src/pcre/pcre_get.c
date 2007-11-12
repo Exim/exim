@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_get.c,v 1.5 2007/06/26 11:16:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_get.c,v 1.6 2007/11/12 13:02:19 nm4 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -44,6 +44,10 @@ POSSIBILITY OF SUCH DAMAGE.
 from the subject string after a regex match has succeeded. The original idea
 for these functions came from Scott Wimer. */
 
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "pcre_internal.h"
 
@@ -187,7 +191,7 @@ const real_pcre *re = (const real_pcre *)code;
 int entrysize;
 char *first, *last;
 uschar *entry;
-if ((re->options & (PCRE_DUPNAMES | PCRE_JCHANGED)) == 0)
+if ((re->options & PCRE_DUPNAMES) == 0 && (re->flags & PCRE_JCHANGED) == 0)
   return pcre_get_stringnumber(code, stringname);
 entrysize = pcre_get_stringtable_entries(code, stringname, &first, &last);
 if (entrysize <= 0) return entrysize;

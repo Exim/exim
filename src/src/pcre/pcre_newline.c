@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_newline.c,v 1.2 2007/06/26 11:16:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_newline.c,v 1.3 2007/11/12 13:02:20 nm4 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -48,6 +48,10 @@ only NLTYPE_FIXED, which gets handled without these functions, NLTYPE_ANYCRLF,
 and NLTYPE_ANY. The full list of Unicode newline characters is taken from
 http://unicode.org/unicode/reports/tr18/. */
 
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "pcre_internal.h"
 
@@ -126,12 +130,16 @@ _pcre_was_newline(const uschar *ptr, int type, const uschar *startptr,
 {
 int c;
 ptr--;
+#ifdef SUPPORT_UTF8
 if (utf8)
   {
   BACKCHAR(ptr);
   GETCHAR(c, ptr);
   }
 else c = *ptr;
+#else   /* no UTF-8 support */
+c = *ptr;
+#endif  /* SUPPORT_UTF8 */
 
 if (type == NLTYPE_ANYCRLF) switch(c)
   {

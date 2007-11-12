@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.11 2007/09/28 12:21:57 tom Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.12 2007/11/12 13:02:19 nm4 Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -655,7 +655,7 @@ $(MONBIN): $(HDRS)
 
 buildpcre:
 	 @(cd pcre; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" \
-	   FE="$(FE)" CFLAGS="$(CFLAGS) $(PCRE_CFLAGS)" \
+	   FE="$(FE)" CFLAGS="$(CFLAGS) $(PCRE_CFLAGS) -DHAVE_CONFIG_H" \
 	   RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)")
 	 @if $(SHELL) $(SCRIPTS)/newer pcre/libpcre.a exim; then \

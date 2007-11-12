@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_printint.src,v 1.3 2007/06/26 11:16:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_printint.src,v 1.4 2007/11/12 13:02:20 nm4 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -124,11 +124,11 @@ get_ucpname(int ptype, int pvalue)
 {
 #ifdef SUPPORT_UCP
 int i;
-for (i = _pcre_utt_size; i >= 0; i--)
+for (i = _pcre_utt_size - 1; i >= 0; i--)
   {
   if (ptype == _pcre_utt[i].type && pvalue == _pcre_utt[i].value) break;
   }
-return (i >= 0)? _pcre_utt[i].name : "??";
+return (i >= 0)? _pcre_utt_names + _pcre_utt[i].name_offset : "??";
 #else
 /* It gets harder and harder to shut off unwanted compiler warnings. */
 ptype = ptype * pvalue;

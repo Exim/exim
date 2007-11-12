@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pcre/pcre_config.c,v 1.5 2007/06/26 11:16:54 ph10 Exp $ */
+/* $Cambridge: exim/src/src/pcre/pcre_config.c,v 1.6 2007/11/12 13:02:19 nm4 Exp $ */
 
 /*************************************************
 *      Perl-Compatible Regular Expressions       *
@@ -43,6 +43,10 @@ POSSIBILITY OF SUCH DAMAGE.
 /* This module contains the external function pcre_config(). */
 
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "pcre_internal.h"
 
 
@@ -83,6 +87,14 @@ switch (what)
 
   case PCRE_CONFIG_NEWLINE:
   *((int *)where) = NEWLINE;
+  break;
+
+  case PCRE_CONFIG_BSR:
+#ifdef BSR_ANYCRLF
+  *((int *)where) = 1;
+#else
+  *((int *)where) = 0;
+#endif
   break;
 
   case PCRE_CONFIG_LINK_SIZE:
