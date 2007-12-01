@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.7 2007/08/29 13:37:28 ph10 Exp $
+. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.8 2007/12/01 15:53:55 nm4 Exp $
 
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the document that describes Exim's filtering
@@ -65,7 +65,7 @@
 <author><firstname>Philip</firstname><surname>Hazel</surname></author>
 <authorinitials>PH</authorinitials>
 <revhistory><revision>
-  <revnumber>4.68</revnumber>
+  <revnumber>4.69</revnumber>
   <date>23 August2007</date>
   <authorinitials>PH</authorinitials>
 </revision></revhistory>

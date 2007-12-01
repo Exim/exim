@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.26 2007/10/24 17:47:31 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.27 2007/12/01 15:53:55 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -47,8 +47,8 @@
 . the <bookinfo> element must also be updated for each new edition.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.67"
-.set version "4.68"
+.set previousversion "4.68"
+.set version "4.69"
 
 .set ACL "access control lists (ACLs)"
 .set I   "&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -491,13 +491,11 @@ Please ask Debian-specific questions on this list and not on the general Exim
 lists.
 
 .section "Exim training" "SECID4"
-.new
 .cindex "training courses"
 Training courses in Cambridge (UK) used to be run annually by the author of
 Exim, before he retired. At the time of writing, there are no plans to run
 further Exim courses in Cambridge. However, if that changes, relevant
 information will be posted at &url(http://www-tus.csx.cam.ac.uk/courses/exim/).
-.wen
 
 .section "Bug reports" "SECID5"
 .cindex "bug reports"
@@ -3731,7 +3729,6 @@ by an admin user.
 This option causes the contents of the message body (-D) spool file to be
 written to the standard output. This option can be used only by an admin user.
 
-.new
 .vitem &%-Mvc%&&~<&'message&~id'&>
 .oindex "&%-Mvc%&"
 .cindex "message" "listing in RFC 2822 format"
@@ -3739,7 +3736,6 @@ written to the standard output. This option can be used only by an admin user.
 This option causes a copy of the complete message (header lines plus body) to
 be written to the standard output in RFC 2822 format. This option can be used
 only by an admin user.
-.wen
 
 .vitem &%-Mvh%&&~<&'message&~id'&>
 .oindex "&%-Mvh%&"
@@ -4556,13 +4552,11 @@ addresses and determine how the message is to be delivered (see chapters
 define mechanisms for copying messages to destinations (see chapters
 &<<CHAPtransportgeneric>>&&--&<<CHAPsmtptrans>>&).
 .next
-.new
 &'retry'&: Retry rules, for use when a message cannot be delivered immediately.
 If there is no retry section, or if it is empty (that is, no retry rules are
 defined), Exim will not retry deliveries. In this situation, temporary errors
 are treated the same as permanent errors. Retry rules are discussed in chapter
 &<<CHAPretry>>&.
-.wen
 .next
 &'rewrite'&: Global address rewriting rules, for use when a message arrives and
 when new addresses are generated during delivery. Rewriting is discussed in
@@ -5821,11 +5815,9 @@ This causes any temporarily failing address to be retried every 15 minutes for
 1.5 until 16 hours have passed, then every 6 hours up to 4 days. If an address
 is not delivered after 4 days of temporary failure, it is bounced.
 
-.new
 If the retry section is removed from the configuration, or is empty (that is,
 if no retry rules are defined), Exim will not retry deliveries. This turns
 temporary errors into permanent errors.
-.wen
 
 
 .section "Rewriting configuration" "SECID58"
@@ -6151,7 +6143,6 @@ calls using the passwords from Courier's &_/etc/userdbshadow.dat_& file. Exim's
 utility program for creating DBM files (&'exim_dbmbuild'&) includes the zeros
 by default, but has an option to omit them (see section &<<SECTdbmbuild>>&).
 .next
-.new
 .cindex "lookup" "dsearch"
 .cindex "dsearch lookup type"
 &(dsearch)&: The given file must be a directory; this is searched for an entry
@@ -6161,7 +6152,6 @@ the lookup is the name of the entry, which may be a file, directory,
 symbolic link, or any other kind of directory entry. An example of how this
 lookup can be used to support virtual domains is given in section
 &<<SECTvirtualdomains>>&.
-.wen
 .next
 .cindex "lookup" "iplsearch"
 .cindex "iplsearch lookup type"
@@ -7170,14 +7160,12 @@ option. Here is an example where two MySQL servers are listed:
 hide mysql_servers = localhost/users/root/secret:\
                      otherhost/users/root/othersecret
 .endd
-.new
 For MySQL and PostgreSQL, a host may be specified as <&'name'&>:<&'port'&> but
 because this is a colon-separated list, the colon has to be doubled. For each
 query, these parameter groups are tried in order until a connection is made and
 a query is successfully processed. The result of a query may be that no data is
 found, but that is still a successful query. In other words, the list of
 servers provides a backup facility, not a list of different places to look.
-.wen
 
 The &%quote_mysql%&, &%quote_pgsql%&, and &%quote_oracle%& expansion operators
 convert newline, tab, carriage return, and backspace to \n, \t, \r, and \b
@@ -7187,7 +7175,6 @@ addition, escapes the percent and underscore characters. This cannot be done
 for MySQL because these escapes are not recognized in contexts where these
 characters are not special.
 
-.new
 .section "Specifying the server in the query" "SECTspeserque"
 For MySQL and PostgreSQL lookups (but not currently for Oracle and InterBase),
 it is possible to specify a list of servers with an individual query. This is
@@ -7227,7 +7214,6 @@ option, you can still update it by a query of this form:
 .code
 ${lookup pgsql{servers=master/db/name/pw; UPDATE ...}
 .endd
-.wen
 
 
 .section "Special MySQL features" "SECID73"
@@ -7594,7 +7580,6 @@ as set by the &%primary_hostname%& option (or defaulted). This makes it
 possible to use the same configuration file on several different hosts that
 differ only in their names.
 .next
-.new
 .cindex "@[] in a domain list"
 .cindex "domain list" "matching local IP interfaces"
 .cindex "domain literal"
@@ -7604,7 +7589,6 @@ only if that IP address is recognized as local for email routing purposes. The
 &%local_interfaces%& and &%extra_local_interfaces%& options can be used to
 control which of a host's several IP addresses are treated as local.
 In today's Internet, the use of domain literals is controversial.
-.wen
 .next
 .cindex "@mx_any"
 .cindex "@mx_primary"
@@ -7666,7 +7650,6 @@ list item such as &`*key.ex`& matches &'donkey.ex'& as well as
 &'cipher.key.ex'&.
 
 .next
-.new
 .cindex "regular expressions" "in domain list"
 .cindex "domain list" "matching regular expression"
 If a pattern starts with a circumflex character, it is treated as a regular
@@ -7676,7 +7659,6 @@ Email domains are case-independent, so this regular expression match is by
 default case-independent, but you can make it case-dependent by starting it
 with &`(?-i)`&. References to descriptions of the syntax of regular expressions
 are given in chapter &<<CHAPregexp>>&.
-.wen
 
 &*Warning*&: Because domain lists are expanded before being processed, you
 must escape any backslash and dollar characters in the regular expression, or
@@ -7919,7 +7901,6 @@ mask, and this is used as the lookup key. For example, if the host's IP address
 is 192.168.34.6, the key that is looked up for the above example is
 &"192.168.34.0/24"&.
 
-.new
 When an IPv6 address is converted to a string, dots are normally used instead
 of colons, so that keys in &(lsearch)& files need not contain colons (which
 terminate &(lsearch)& keys). This was implemented some time before the ability
@@ -7934,7 +7915,6 @@ Ideally, it would be nice to tidy up this anomalous situation by changing to
 colons in all cases, given that quoting is now available for &(lsearch)&.
 However, this would be an incompatible change that might break some existing
 configurations.
-.wen
 
 &*Warning*&: Specifying &%net32-%& (for an IPv4 address) or &%net128-%& (for an
 IPv6 address) is not the same as specifying just &%net-%& without a number. In
@@ -7990,7 +7970,6 @@ the host name. For example, &`*.b.c`& matches all hosts whose names end in
 requirement. Other kinds of wildcarding require the use of a regular
 expression.
 .next
-.new
 .cindex "regular expressions" "in host list"
 .cindex "host list" "regular expression in"
 If the item starts with &"^"& it is taken to be a regular expression which is
@@ -7999,7 +7978,6 @@ expression match is by default case-independent, but you can make it
 case-dependent by starting it with &`(?-i)`&. References to descriptions of the
 syntax of regular expressions are given in chapter &<<CHAPregexp>>&. For
 example,
-.wen
 .code
 ^(a|b)\.c\.d$
 .endd
@@ -8027,10 +8005,8 @@ name (see section &<<SECThoslispatip>>&), or it may need to look up a host name
 from an IP address (see section &<<SECThoslispatnam>>&). In either case, the
 behaviour when it fails to find the information it is seeking is the same.
 
-.new
 &*Note*&: This section applies to permanent lookup failures. It does &'not'&
 apply to temporary DNS errors, whose handling is described in the next section.
-.wen
 
 .cindex "&`+include_unknown`&"
 .cindex "&`+ignore_unknown`&"
@@ -8066,7 +8042,6 @@ list. The effect of each one lasts until the next, or until the end of the
 list.
 
 
-.new
 .section "Temporary DNS errors when looking up host information" &&&
          "SECTtemdnserr"
 .cindex "host" "lookup failures, temporary"
@@ -8078,7 +8053,6 @@ host lists can include &`+ignore_defer`& and &`+include_defer`&, analagous to
 &`+ignore_unknown`& and &`+include_unknown`&, as described in the previous
 section. These options should be used with care, probably only in non-critical
 host lists such as whitelists.
-.wen
 
 
 
@@ -9658,11 +9632,9 @@ bytes are replaced by question marks. Characters are converted into the
 character set defined by &%headers_charset%&. Overlong RFC 2047 &"words"& are
 not recognized unless &%check_rfc2047_length%& is set false.
 
-.new
 &*Note*&: If you use &%$header%&_&'xxx'&&*:*& (or &%$h%&_&'xxx'&&*:*&) to
 access a header line, RFC 2047 decoding is done automatically. You do not need
 to use this operator as well.
-.wen
 
 
 
@@ -9992,7 +9964,6 @@ The substring is first expanded, and then tested to see if it has the form of
 an IP address. Both IPv4 and IPv6 addresses are valid for &%isip%&, whereas
 &%isip4%& and &%isip6%& test specifically for IPv4 or IPv6 addresses.
 
-.new
 For an IPv4 address, the test is for four dot-separated components, each of
 which consists of from one to three digits. For an IPv6 address, up to eight
 colon-separated components are permitted, each containing from one to four
@@ -10007,7 +9978,6 @@ host names, or between IPv4 and IPv6 addresses. For example, you could use
 ${if isip4{$sender_host_address}...
 .endd
 to test which IP version an incoming SMTP connection is using.
-.wen
 
 .vitem &*ldapauth&~{*&<&'ldap&~query'&>&*}*&
 .cindex "LDAP" "use for authentication"
@@ -10574,7 +10544,6 @@ This variable is available when Exim is compiled with the
 content-scanning extension and the obsolete &%demime%& condition. For details,
 see section &<<SECTdemimecond>>&.
 
-.new
 .vitem &$dnslist_domain$& &&&
        &$dnslist_matched$& &&&
        &$dnslist_text$& &&&
@@ -10588,7 +10557,6 @@ When a DNS (black) list lookup succeeds, these variables are set to contain
 the following data from the lookup: the list's domain name, the key that was
 looked up, the contents of any associated TXT record, and the value from the
 main A record. See section &<<SECID204>>& for more details.
-.wen
 
 .vitem &$domain$&
 .vindex "&$domain$&"
@@ -10930,7 +10898,6 @@ This variable is available when Exim is compiled with the
 content-scanning extension. It is set to the name of the virus that was found
 when the ACL &%malware%& condition is true (see section &<<SECTscanvirus>>&).
 
-.new
 .vitem &$max_received_linelength$&
 .vindex "&$max_received_linelength$&"
 .cindex "maximum" "line length"
@@ -10938,7 +10905,6 @@ when the ACL &%malware%& condition is true (see section &<<SECTscanvirus>>&).
 This variable contains the number of bytes in the longest line that was
 received as part of the message, not counting the line termination
 character(s).
-.wen
 
 .vitem &$message_age$&
 .cindex "message" "age of"
@@ -10958,13 +10924,11 @@ being delivered, and is intended mainly for use in filter files. The maximum
 number of characters of the body that are put into the variable is set by the
 &%message_body_visible%& configuration option; the default is 500.
 
-.new
 .oindex "&%message_body_newlines%&"
 By default, newlines are converted into spaces in &$message_body$&, to make it
 easier to search for phrases that might be split over a line break. However,
 this can be disabled by setting &%message_body_newlines%& to be true. Binary
 zeros are always converted into spaces.
-.wen
 
 .vitem &$message_body_end$&
 .cindex "body of message" "expansion variable"
@@ -11645,7 +11609,6 @@ This variable is set to &"1"& if a TLS certificate was verified when the
 message was received, and &"0"& otherwise.
 
 .vitem &$tls_cipher$&
-.new
 .vindex "&$tls_cipher$&"
 When a message is received from a remote host over an encrypted SMTP
 connection, this variable is set to the cipher suite that was negotiated, for
@@ -11660,7 +11623,6 @@ case, &$tls_cipher$& is cleared before any outgoing SMTP connection is made,
 and then set to the outgoing cipher suite if one is negotiated. See chapter
 &<<CHAPTLS>>& for details of TLS support and chapter &<<CHAPsmtptrans>>& for
 details of the &(smtp)& transport.
-.wen
 
 .vitem &$tls_peerdn$&
 .vindex "&$tls_peerdn$&"
@@ -13628,13 +13590,11 @@ chapter &<<CHAPinterfaces>>&, which contains a discussion about local network
 interfaces and recognizing the local host.
 
 
-.new
 .option ibase_servers main "string list" unset
 .cindex "InterBase" "server list"
 This option provides a list of InterBase servers and associated connection data,
 to be used in conjunction with &(ibase)& lookups (see section &<<SECID72>>&).
 The option is available only if Exim has been built with InterBase support.
-.wen
 
 
 
@@ -13888,7 +13848,6 @@ this option is set greater than zero, any attempt to call &[getpwnam()]& with
 an argument that is longer behaves as if &[getpwnam()]& failed.
 
 
-.new
 .option message_body_newlines main bool false
 .cindex "message body" "newlines in variables"
 .cindex "newline" "in message body variables"
@@ -13897,7 +13856,6 @@ an argument that is longer behaves as if &[getpwnam()]& failed.
 By default, newlines in the message body are replaced by spaces when setting
 the &$message_body$& and &$message_body_end$& expansion variables. If this
 option is set true, this no longer happens.
-.wen
 
 
 .option message_body_visible main integer 500
@@ -14234,7 +14192,6 @@ causes Exim to behave as if &%queue_smtp_domains%& were set to &"*"& whenever
 
 
 .option queue_only_load main fixed-point unset
-.new
 .cindex "load average"
 .cindex "queueing incoming messages"
 .cindex "message" "queueing by load"
@@ -14244,7 +14201,6 @@ happens during local or remote SMTP input, all subsequent messages received on
 the same SMTP connection are queued by default, whatever happens to the load in
 the meantime, but this can be changed by setting &%queue_only_load_latch%&
 false.
-.wen
 
 Deliveries will subsequently be performed by queue runner processes. This
 option has no effect on ancient operating systems on which Exim cannot
@@ -14252,7 +14208,6 @@ determine the load average. See also &%deliver_queue_load_max%& and
 &%smtp_load_reserve%&.
 
 
-.new
 .option queue_only_load_latch main boolean true
 .cindex "load average" "re-evaluating per message"
 When this option is true (the default), once one message has been queued
@@ -14265,7 +14220,6 @@ circumstances such as very long-lived connections from scanning appliances
 where this is not the best strategy. In such cases, &%queue_only_load_latch%&
 should be set false. This causes the value of the load average to be
 re-evaluated for each message.
-.wen
 
 
 .option queue_only_override main boolean true
@@ -14628,7 +14582,6 @@ doing this processing, it cannot accept any other incoming connections.
 
 
 .option smtp_accept_queue main integer 0
-.new
 .cindex "SMTP" "incoming connection count"
 .cindex "queueing incoming messages"
 .cindex "message" "queueing by SMTP connection count"
@@ -14638,7 +14591,6 @@ on the queue; no delivery processes are started automatically. The count is
 fixed at the start of an SMTP connection. It cannot be updated in the
 subprocess that receives messages, and so the queueing or not queueing applies
 to all messages received in the same connection.
-.wen
 
 A value of zero implies no limit, and clearly any non-zero value is useful only
 if it is less than the &%smtp_accept_max%& value (unless that is zero). See
@@ -15295,7 +15247,6 @@ certificates from clients. The expected certificates are defined by
 either &%tls_verify_hosts%& or &%tls_try_verify_hosts%& is set and
 &%tls_verify_certificates%& is not set.
 
-.new
 Any client that matches &%tls_verify_hosts%& is constrained by
 &%tls_verify_certificates%&. When the client initiates a TLS session, it must
 present one of the listed certificates. If it does not, the connection is
@@ -15303,7 +15254,6 @@ aborted. &*Warning*&: Including a host in &%tls_verify_hosts%& does not require
 the host to use TLS. It can still send SMTP commands through unencrypted
 connections. Forcing a client to use TLS has to be done separately using an
 ACL to reject inappropriate commands when the connection is not encrypted.
-.wen
 
 A weaker form of checking is provided by &%tls_try_verify_hosts%&. If a client
 matches this option (but not &%tls_verify_hosts%&), Exim requests a
@@ -15954,14 +15904,12 @@ real_localuser:
   check_local_user
   transport = local_delivery
 .endd
-.new
 For security, it would probably be a good idea to restrict the use of this
 router to locally-generated messages, using a condition such as this:
 .code
   condition = ${if match {$sender_host_address}\
                          {\N^(|127\.0\.0\.1)$\N}}
 .endd
-.wen
 
 If both &%local_part_prefix%& and &%local_part_suffix%& are set for a router,
 both conditions must be met if not optional. Care must be taken if wildcards
@@ -16071,7 +16019,6 @@ applies to all of them.
 
 
 .option pass_router routers string unset
-.new
 .cindex "router" "go to after &""pass""&"
 Routers that recognize the generic &%self%& option (&(dnslookup)&,
 &(ipliteral)&, and &(manualroute)&) are able to return &"pass"&, forcing
@@ -16082,7 +16029,6 @@ of another router. However (unlike &%redirect_router%&) the named router must
 be below the current router, to avoid loops. Note that this option applies only
 to the special case of &"pass"&. It does not apply when a router returns
 &"decline"& because it cannot handle an address.
-.wen
 
 
 
@@ -18503,14 +18449,12 @@ real_localuser:
   local_part_prefix = real-
   transport = local_delivery
 .endd
-.new
 For security, it would probably be a good idea to restrict the use of this
 router to locally-generated messages, using a condition such as this:
 .code
   condition = ${if match {$sender_host_address}\
                          {\N^(|127\.0\.0\.1)$\N}}
 .endd
-.wen
 
 
 .option syntax_errors_text redirect string&!! unset
@@ -19805,10 +19749,8 @@ in which case it is:
 message_prefix = "From ${if def:return_path{$return_path}\
   {MAILER-DAEMON}} $tod_bsdinbox\n"
 .endd
-.new
 &*Note:*& If you set &%use_crlf%& true, you must change any occurrences of
 &`\n`& to &`\r\n`& in &%message_prefix%&.
-.wen
 
 .option message_suffix appendfile string&!! "see below"
 The string specified here is expanded and output at the end of every message.
@@ -19818,10 +19760,8 @@ setting
 .code
 message_suffix =
 .endd
-.new
 &*Note:*& If you set &%use_crlf%& true, you must change any occurrences of
 &`\n`& to &`\r\n`& in &%message_suffix%&.
-.wen
 
 .option mode appendfile "octal integer" 0600
 If the output file is created, it is given this mode. If it already exists and
@@ -20003,14 +19943,12 @@ This option causes lines to be terminated with the two-character CRLF sequence
 of batched SMTP, the byte sequence written to the file is then an exact image
 of what would be sent down a real SMTP connection.
 
-.new
 &*Note:*& The contents of the &%message_prefix%& and &%message_suffix%& options
 (which are used to supply the traditional &"From&~"& and blank line separators
 in Berkeley-style mailboxes) are written verbatim, so must contain their own
 carriage return characters if these are needed. In cases where these options
 have non-empty defaults, the values end with a single linefeed, so they must be
 changed to end with &`\r\n`& if &%use_crlf%& is set.
-.wen
 
 
 .option use_fcntl_lock appendfile boolean "see below"
@@ -21058,10 +20996,8 @@ setting
 .code
 message_prefix =
 .endd
-.new
 &*Note:*& If you set &%use_crlf%& true, you must change any occurrences of
 &`\n`& to &`\r\n`& in &%message_prefix%&.
-.wen
 
 
 .option message_suffix pipe string&!! "see below"
@@ -21071,10 +21007,8 @@ The suffix can be suppressed by setting
 .code
 message_suffix =
 .endd
-.new
 &*Note:*& If you set &%use_crlf%& true, you must change any occurrences of
 &`\n`& to &`\r\n`& in &%message_suffix%&.
-.wen
 
 
 .option path pipe string "see below"
@@ -21184,13 +21118,11 @@ This option causes lines to be terminated with the two-character CRLF sequence
 of batched SMTP, the byte sequence written to the pipe is then an exact image
 of what would be sent down a real SMTP connection.
 
-.new
 The contents of the &%message_prefix%& and &%message_suffix%& options are
 written verbatim, so must contain their own carriage return characters if these
 are needed. When &%use_bsmtp%& is not set, the default values for both
 &%message_prefix%& and &%message_suffix%& end with a single linefeed, so their
 values must be changed to end with &`\r\n`& if &%use_crlf%& is set.
-.wen
 
 
 .option use_shell pipe boolean false
@@ -21337,7 +21269,6 @@ that are in force when the &%helo_data%&, &%hosts_try_auth%&, &%interface%&,
 &%serialize_hosts%&, and the various TLS options are expanded.
 
 
-.new
 .section "Use of $tls_cipher and $tls_peerdn" "usecippeer"
 .vindex &$tls_cipher$&
 .vindex &$tls_peerdn$&
@@ -21349,7 +21280,6 @@ variables are emptied. If TLS is subsequently started, they are set to the
 appropriate values for the outgoing connection, and these are the values that
 are in force when any authenticators are run and when the
 &%authenticated_sender%& option is expanded.
-.wen
 
 
 .section "Private options for smtp" "SECID146"
@@ -21386,12 +21316,10 @@ forced to fail, the option is ignored. Other expansion failures cause delivery
 to be deferred. If the result of expansion is an empty string, that is also
 ignored.
 
-.new
 The expansion happens after the outgoing connection has been made and TLS
 started, if required. This means that the &$host$&, &$host_address$&,
 &$tls_cipher$&, and &$tls_peerdn$& variables are set according to the
 particular connection.
-.wen
 
 If the SMTP session is not authenticated, the expansion of
 &%authenticated_sender%& still happens (and can cause the delivery to be
@@ -22342,9 +22270,11 @@ rewriting rule is skipped unless the relevant addresses are being processed.
 &`s`&       rewrite the &'Sender:'& header
 &`t`&       rewrite the &'To:'& header
 .endd
+.new
 "All headers" means all of the headers listed above that can be selected
 individually, plus their &'Resent-'& versions. It does not include
 other headers such as &'Subject:'& etc.
+.wen
 
 You should be particularly careful about rewriting &'Sender:'& headers, and
 restrict this to special known cases in your own domains.
@@ -22479,7 +22409,6 @@ can be done on the rewritten addresses.
 .chapter "Retry configuration" "CHAPretry"
 .scindex IIDretconf1 "retry" "configuration, description of"
 .scindex IIDregconf2 "configuration file" "retry section"
-.new
 The &"retry"& section of the runtime configuration file contains a list of
 retry rules that control how often Exim tries to deliver messages that cannot
 be delivered at the first attempt. If there are no retry rules (the section is
@@ -22488,7 +22417,6 @@ errors are treated as permanent. The default configuration contains a single,
 general-purpose retry rule (see section &<<SECID57>>&). The &%-brt%& command
 line option can be used to test which retry rule will be used for a given
 address, domain and error.
-.wen
 
 The most common cause of retries is temporary failure to deliver to a remote
 host because the host is down, or inaccessible because of a network problem.
@@ -23134,7 +23062,6 @@ in Exim.
 .cindex "authentication" "generic options"
 .cindex "options" "generic; for authenticators"
 
-.new
 .option client_condition authenticators string&!! unset
 When Exim is authenticating as a client, it skips any authenticator whose
 &%client_condition%& expansion yields &"0"&, &"no"&, or &"false"&. This can be
@@ -23146,7 +23073,6 @@ client_condition = ${if !eq{$tls_cipher}{}}
 (Older documentation incorrectly states that &$tls_cipher$& contains the cipher
 used for incoming messages. In fact, during SMTP delivery, it contains the
 cipher used for the delivery.)
-.wen
 
 
 .option driver authenticators string unset
@@ -24416,14 +24342,12 @@ condition can be used to test for specific cipher suites in ACLs.
 &new("(For outgoing SMTP deliveries, &$tls_cipher$& is reset &-- see section
 &<<SECID185>>&.)")
 
-.new
 Once TLS has been established, the ACLs that run for subsequent SMTP commands
 can check the name of the cipher suite and vary their actions accordingly. The
 cipher suite names vary, depending on which TLS library is being used. For
 example, OpenSSL uses the name DES-CBC3-SHA for the cipher suite which in other
 contexts is known as TLS_RSA_WITH_3DES_EDE_CBC_SHA. Check the OpenSSL or GnuTLS
 documentation for more details.
-.wen
 
 
 .section "Requesting and verifying client certificates" "SECID183"
@@ -24549,7 +24473,6 @@ All the TLS options in the &(smtp)& transport are expanded before use, with
 which the client is connected. Forced failure of an expansion causes Exim to
 behave as if the relevant option were unset.
 
-.new
 .vindex &$tls_cipher$&
 .vindex &$tls_peerdn$&
 Before an SMTP connection is established, the &$tls_cipher$& and &$tls_peerdn$&
@@ -24557,7 +24480,6 @@ variables are emptied. (Until the first connection, they contain the values
 that were set when the message was received.) If STARTTLS is subsequently
 successfully obeyed, these variables are set to the relevant values for the
 outgoing connection.
-.wen
 
 
 
@@ -24879,7 +24801,6 @@ connection is closed. In these special cases, the QUIT ACL does not run.
 
 
 
-.new
 .section "The not-QUIT ACL" "SECTNOTQUITACL"
 The not-QUIT ACL, specified by &%smtp_notquit_acl%&, is run in most cases when
 an SMTP session ends without sending QUIT. However, when Exim itself is is bad
@@ -24914,7 +24835,6 @@ With the exception of the &`acl-drop`& case, the default message can be
 overridden by the &%message%& modifier in the not-QUIT ACL. In the case of a
 &%drop%& verb in another ACL, it is the message from the other ACL that is
 used.
-.wen
 
 
 .section "Finding an ACL to use" "SECID195"
@@ -26591,10 +26511,8 @@ dnslists = sbl.spahmaus.org/<|192.168.2.3|192.168.5.6|...
 Thus, this example checks whether or not the IP addresses of the sender
 domain's mail servers are on the Spamhaus black list.
 
-.new
 The key that was used for a successful DNS list lookup is put into the variable
 &$dnslist_matched$& (see section &<<SECID204>>&).
-.wen
 
 
 
@@ -26620,7 +26538,6 @@ see section &<<SECThanmuldnsrec>>& for details of how they are checked.
 
 
 .section "Variables set from DNS lists" "SECID204"
-.new
 .cindex "expansion" "variables, set from DNS list"
 .cindex "DNS list" "variables set from"
 .vindex "&$dnslist_domain$&"
@@ -26646,7 +26563,6 @@ deny dnslists = spamhaus.example/<|192.168.1.2|192.168.6.7|...
 .endd
 If this condition succeeds, the value in &$dnslist_matched$& might be
 &`192.168.6.7`& (for example).
-.wen
 
 If more than one address record is returned by the DNS lookup, all the IP
 addresses are included in &$dnslist_value$&, separated by commas and spaces.
@@ -26945,11 +26861,9 @@ user, independent of the computer they are sending from, set the key to
 example, &$authenticated_id$& is only meaningful if the client has
 authenticated, and you can check with the &%authenticated%& ACL condition.
 
-.new
 If you want to limit the rate at which a recipient receives messages, you can
 use the key &`$local_part@$domain`& with the &%per_rcpt%& option (see below) in
 a RCPT ACL.
-.wen
 
 Internally, Exim includes the smoothing constant &'p'& and the options in the
 lookup key because they alter the meaning of the stored data. This is not true
@@ -26957,14 +26871,12 @@ for the limit &'m'&, so you can alter the configured maximum rate and Exim will
 still remember clients' past behaviour, but if you alter the other ratelimit
 parameters Exim forgets past behaviour.
 
-.new
 Each &%ratelimit%& condition can have up to three options. One option
 specifies what Exim measures the rate of, and the second specifies how Exim
 handles excessively fast clients. The third option can be &`noupdate`&, to
 disable updating of the ratelimiting database (see section &<<rearatdat>>&).
 The options are separated by a slash, like the other parameters. They may
 appear in any order.
-.wen
 
 .section "Ratelimit options for what is being measured" "ratoptmea"
 The &%per_conn%& option limits the client's connection rate.
@@ -26978,6 +26890,7 @@ relies on the SIZE parameter on the MAIL command, which may be inaccurate or
 completely missing. You can follow the limit &'m'& in the configuration with K,
 M, or G to specify limits in kilobytes, megabytes, or gigabytes, respectively.
 
+.new
 The &%per_rcpt%& option causes Exim to limit the rate at which
 recipients are accepted. To be effective, it would need to be used in
 either the &%acl_smtp_rcpt%& or the &%acl_not_smtp%& ACL. In the
@@ -26993,6 +26906,7 @@ condition is processed. This can be used to limit the SMTP command rate.
 This command is essentially an alias of &%per_rcpt%& to make it clear
 that the effect is to limit the rate at which individual commands,
 rather than recipients, are accepted.
+.wen
 
 .section "Ratelimit options for handling fast clients" "ratophanfas"
 If a client's average rate is greater than the maximum, the rate limiting
@@ -27064,7 +26978,6 @@ this means that Exim will lose its hints data after a reboot (including retry
 hints, the callout cache, and ratelimit data).
 
 
-.new
 .section "Reading ratelimit data without updating" "rearatdat"
 .cindex "rate limitint" "reading data without updating"
 If the &%noupdate%& option is present on a &%ratelimit%& ACL condition, Exim
@@ -27093,7 +27006,6 @@ acl_check_mail:
 In this example, the rate is tested and used to deny access (when it is too
 high) in the connect ACL, but the actual computation of the remembered rate
 happens later, on a per-command basis, in another ACL.
-.wen
 
 
 
@@ -28796,23 +28708,19 @@ out the values of all the &[local_scan()]& options.
 
 
 .section "Available Exim variables" "SECID208"
-.new
 .cindex "&[local_scan()]& function" "available Exim variables"
 The header &_local_scan.h_& gives you access to a number of C variables. These
 are the only ones that are guaranteed to be maintained from release to release.
 Note, however, that you can obtain the value of any Exim expansion variable,
 including &$recipients$&, by calling &'expand_string()'&. The exported
 C variables are as follows:
-.wen
 
 .vlist
 .vitem &*int&~body_linecount*&
-.new
 This variable contains the number of lines in the message's body.
 
 .vitem &*int&~body_zerocount*&
 This variable contains the number of binary zero bytes in the message's body.
-.wen
 
 .vitem &*unsigned&~int&~debug_selector*&
 This variable is set to zero when no debugging is taking place. Otherwise, it

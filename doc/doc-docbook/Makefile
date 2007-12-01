@@ -1,4 +1,4 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.11 2007/08/29 13:37:28 ph10 Exp $
+# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.12 2007/12/01 15:53:55 nm4 Exp $
 
 # Make file for Exim documentation from xfpt source.
 
@@ -7,6 +7,14 @@ notarget:;    @echo "** You must specify a target, in the form x.y, where x is '
 	      @echo "** One other possible target is 'exim.8'".
 	      exit 1
 
+
+############################# EVERYTHING ###############################
+#
+# Generate all the documentation files...
+#
+everything:		spec.pdf 	spec.ps 	spec.html 	spec.info 	spec.txt \
+				filter.pdf 	filter.ps 	filter.html filter.info filter.txt \
+				exim.8
 
 ############################## MAN PAGE ################################
 
@@ -96,7 +104,7 @@ filter.txt:   filter-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
 filter.info:  filter-info.xml
 	      docbook2texi filter-info.xml
 	      perl -ne 's/conceptindex/cindex/;s/optionindex/findex/;print;' \
-		<exim_filtering.texi | Tidytxt >filter.texinfo
+		<exim_filtering.texi | ./Tidytxt >filter.texinfo
 	      /bin/rm -rf exim_filtering.texi
 	      makeinfo -o filter.info filter.texinfo
 
