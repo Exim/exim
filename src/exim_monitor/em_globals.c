@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.12 2007/06/22 14:38:58 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.13 2008/01/16 09:32:25 tom Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -139,6 +139,12 @@ BOOL    deliver_manual_thaw    = FALSE;
 uschar *dk_signing_domain      = NULL;
 uschar *dk_signing_selector    = NULL;
 int     dk_do_verify           = 0;
+#endif
+
+#ifdef EXPERIMENTAL_DKIM
+uschar *dkim_signing_domain    = NULL;
+uschar *dkim_signing_selector  = NULL;
+int dkim_do_verify             = 0;
 #endif
 
 BOOL    dont_deliver           = FALSE;
