@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.13 2006/09/22 08:41:59 ph10 Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.14 2008/01/16 09:56:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -69,7 +69,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
     temp_string = expand_string(
       US"From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n"
       "${if def:sender_address{X-Envelope-From: <${sender_address}>\n}}"
-      "${if def:received_for{X-Envelope-To: <${received_for}>\n}}");
+      "${if def:recipients{X-Envelope-To: ${recipients}\n}}");
 
     if (temp_string != NULL) {
       i = fwrite(temp_string, Ustrlen(temp_string), 1, mbox_file);
