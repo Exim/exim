@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.23 2007/09/28 12:21:57 tom Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.24 2008/01/16 13:44:45 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -422,7 +422,7 @@ extern int ferror(FILE *);
 
 /* The header from the PCRE regex package */
 
-#include "pcre/pcre.h"
+#include <pcre.h>
 
 /* Exim includes are in several files. Note that local_scan.h #includes
 config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.

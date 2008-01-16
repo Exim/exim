@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Default,v 1.2 2006/02/10 14:33:26 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-Default,v 1.3 2008/01/16 13:44:45 nm4 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -87,6 +87,11 @@ CC=gcc
 # LFLAGS=
 
 
+# PCRE_LIBS contains the library to be linked for PCRE
+
+#PCRE_LIBS=-lpcre
+
+
 # LIBS and EXTRALIBS contain library settings that are used on linking
 # commands to build binaries. The OS-dependent Makefile may contain a default
 # setting for LIBS, leaving EXTRALIBS available for adding further libraries
@@ -110,14 +115,6 @@ CC=gcc
 
 # LIBS_EXIMON=
 # EXTRALIBS_EXIMON=
-
-
-# PCRE_CFLAGS contains flags to be passed to the CFLAGS parameter of the
-# makefile for building the PCRE regular expression library, in addition
-# to CFLAGS. Typical use is to set -DUSE_BCOPY on legacy systems that lack
-# the memmove() function but do have bcopy().
-
-# PCRE_CFLAGS=
 
 
 # The error name for quota exceeded varies among operating systems, and

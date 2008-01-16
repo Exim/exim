@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.20 2007/01/22 16:29:54 ph10 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.21 2008/01/16 13:44:45 nm4 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -298,6 +298,19 @@ LOOKUP_LSEARCH=yes
 
 # If you don't set any of these, Exim assumes the original University of
 # Michigan (OpenLDAP 1) library.
+
+
+#------------------------------------------------------------------------------
+# The PCRE library is required for exim.  There is no longer an embedded
+# version of the PCRE library included with the source code, instead you
+# must use a system library or build your own copy of PCRE.
+# In either case you must specify the library link info here.  If the
+# PCRE header files are not in the standard search path you must also
+# modify the INCLUDE path (above)
+# The default setting of PCRE_LIBS should work on the vast majority of
+# systems
+
+PCRE_LIBS=-lpcre
 
 
 #------------------------------------------------------------------------------

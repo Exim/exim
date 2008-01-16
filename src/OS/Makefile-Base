@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.12 2007/11/12 13:02:19 nm4 Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.13 2008/01/16 13:44:45 nm4 Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -96,14 +96,14 @@ config.h: Makefile buildconfig ../src/config.h.defaults $(EDITME)
 # therefore always be run, even if the files exist. This shouldn't in fact be a
 # problem, but it does no harm. Other make programs will just ignore this.
 
-.PHONY: all allexim buildauths buildlookups buildpcre buildrouters \
+.PHONY: all allexim buildauths buildlookups buildrouters \
         buildtransports checklocalmake clean
 
 
 # This is the real default target for all the various exim binaries and
 # scripts, once the configuring stuff is done.
 
-allexim: config.h buildpcre $(EXIM_MONITOR) exicyclog exinext exiwhat \
+allexim: config.h $(EXIM_MONITOR) exicyclog exinext exiwhat \
         exigrep eximstats exipick exiqgrep exiqsumm \
         transport-filter.pl convert4r3 convert4r4 \
         exim_checkaccess \
@@ -314,7 +314,7 @@ OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_WITH_OLD_DEMIME) $(OBJ_EXPERIMENTAL)
 
-exim:   pcre/libpcre.a lookups/lookups.a auths/auths.a \
+exim:   lookups/lookups.a auths/auths.a \
         routers/routers.a transports/transports.a \
         $(OBJ_EXIM) version.c
 	@echo " "
@@ -325,12 +325,11 @@ exim:   pcre/libpcre.a lookups/lookups.a auths/auths.a \
 	rm -f exim
 	@echo "$(LNCC) -o exim"
 	$(FE)$(PURIFY) $(LNCC) -o exim $(LFLAGS) $(OBJ_EXIM) version.o \
-	  pcre/libpcre.a \
 	  routers/routers.a transports/transports.a lookups/lookups.a \
 	  auths/auths.a \
 	  $(LIBRESOLV) $(LIBS) $(LIBS_EXIM) $(IPV6_LIBS) $(EXTRALIBS) \
 	  $(EXTRALIBS_EXIM) $(DBMLIB) $(LOOKUP_LIBS) $(AUTH_LIBS) \
-	  $(PERL_LIBS) $(TLS_LIBS) $(LDFLAGS)
+	  $(PERL_LIBS) $(TLS_LIBS) $(PCRE_LIBS) $(LDFLAGS)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim; \
 	  $(STRIP_COMMAND) exim; \
@@ -429,14 +428,14 @@ MONBIN = em_StripChart.o $(EXIMON_TEXTPOP) em_globals.o em_init.o \
 
 OBJ_MONBIN = util-spool_in.o util-store.o util-string.o tod.o tree.o $(MONBIN)
 
-eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) pcre/libpcre.a \
+eximon.bin: $(EXIMON_EDITME) eximon $(OBJ_MONBIN) \
             ../exim_monitor/em_version.c
 	@echo "$(CC) exim_monitor/em_version.c"
 	$(FE)$(CC) -o em_version.o -c \
 	  $(CFLAGS) $(XINCLUDE) -I. ../exim_monitor/em_version.c
 	@echo "$(LNCC) -o eximon.bin"
 	$(FE)$(PURIFY) $(LNCC) -o eximon.bin em_version.o $(LFLAGS) $(XLFLAGS) \
-	$(OBJ_MONBIN) -lXaw -lXmu -lXt -lXext -lX11 pcre/libpcre.a \
+	$(OBJ_MONBIN) -lXaw -lXmu -lXt -lXext -lX11 $(PCRE_LIBS) \
 	  $(LIBS) $(LIBS_EXIMON) $(EXTRALIBS) $(EXTRALIBS_EXIMON) -lc
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) eximon.bin; \
@@ -646,21 +645,6 @@ $(MONBIN): $(HDRS)
 # rebuilt when it should. (For the others it does, because they remove
 # drtables.o when they rebuild.) To get round this, we forcibly remove the
 # binary when it needs to be rebuilt.
-
-# The PCRE regex library. Move the pcretest program to the util directory. Some
-# "clever" versions of make notice that there are two successive shell
-# commands, and they run them in the same shell. This means that we have to
-# take care to encapsulate change of directory in parentheses, so that it
-# reverts when it should.
-
-buildpcre:
-	 @(cd pcre; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" \
-	   FE="$(FE)" CFLAGS="$(CFLAGS) $(PCRE_CFLAGS) -DHAVE_CONFIG_H" \
-	   RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
-	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)")
-	 @if $(SHELL) $(SCRIPTS)/newer pcre/libpcre.a exim; then \
-	   rm -f exim eximon.bin; fi
-	 @echo " "
 
 # The lookups library.
 

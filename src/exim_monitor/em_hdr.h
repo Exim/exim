@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_hdr.h,v 1.6 2007/01/08 10:50:17 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_hdr.h,v 1.7 2008/01/16 13:44:45 nm4 Exp $ */
 
 /*************************************************
 *                 Exim Monitor                   *
@@ -87,7 +87,7 @@ anything. */
 
 /* Regular expression include */
 
-#include "pcre/pcre.h"
+#include <pcre.h>
 
 /* Includes from the main source of Exim. We need to have MAXPACKET defined for
 the benefit of structs.h. One of these days I should tidy up this interface so
