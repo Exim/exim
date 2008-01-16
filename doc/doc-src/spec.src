@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-src/spec.src,v 1.8 2005/02/17 11:58:25 ph10 Exp $
+. $Cambridge: exim/doc/doc-src/spec.src,v 1.9 2008/01/16 09:51:00 tom Exp $
 .
 .set version "4.50"
 .set previousversion "4.40"
@@ -388,12 +388,12 @@ As the program develops, there may be features in newer versions that have not
 yet made it into this document, which is updated only when the most significant
 digit of the fractional part of the version number changes. Specifications of
 new features that are not yet in this manual are placed in the file
-\(doc/NewStuff)\ in the Exim distribution. 
+\(doc/NewStuff)\ in the Exim distribution.
 
 .em
 Some features may be classified as `experimental'. These may change
 incompatibly while they are developing, or even be withdrawn. For this reason,
-they are not documented in this manual. Information about experimental features 
+they are not documented in this manual. Information about experimental features
 can be found in the file \(doc/experimental.txt)\.
 .nem
 
@@ -429,29 +429,29 @@ available in other formats (HTML, PostScript, PDF, and Texinfo). Section
 .index web site
 .index FTP site
 .em
-The primary distribution site for Exim is currently the University of 
+The primary distribution site for Exim is currently the University of
 Cambridge's FTP site, whose contents are described in \*Where to find the Exim
 distribution*\ below. In addition, there is a
 .if ~~html
 [(A HREF="http://www.exim.org/")]
 .fi
-web site 
+web site
 .if ~~html
 [(/A)]
 .fi
-and an 
+and an
 .if ~~html
 [(A HREF="ftp://ftp.exim.org/")]
 .fi
-FTP site 
+FTP site
 .if ~~html
 [(/A)]
 .fi
-at \exim.org\. These are now also hosted at the University of Cambridge. 
+at \exim.org\. These are now also hosted at the University of Cambridge.
 The \exim.org\ site was previously hosted for a number of years by Energis
 Squared, formerly Planet Online Ltd, whose support I gratefully acknowledge.
 
-As well as Exim distribution tar files, the Exim web site contains a number of 
+As well as Exim distribution tar files, the Exim web site contains a number of
 differently formatted versions of the documentation, including the
 .index FAQ
 .if ~~html
@@ -471,7 +471,7 @@ Exim wiki.
 .else
 Exim wiki (\?http://www.exim.org/eximwiki/?\).
 .fi
-We hope that this will make it easier for Exim users to contribute examples, 
+We hope that this will make it easier for Exim users to contribute examples,
 tips, and know-how for the benefit of others.
 .nem
 
@@ -647,8 +647,8 @@ other means.
 .em
 Although Exim does have basic facilities for scanning incoming messages, these
 are not comprehensive enough to do full virus or spam scanning. Such operations
-are best carried out using additional specialized software packages. If you 
-compile Exim with the content-scanning extension, straightforward interfaces to 
+are best carried out using additional specialized software packages. If you
+compile Exim with the content-scanning extension, straightforward interfaces to
 a number of common scanners are provided.
 .nem
 .endp
@@ -979,7 +979,7 @@ specifying policy controls on incoming mail:
 Exim 4 (unlike previous versions of Exim) implements policy controls on
 incoming mail by means of \*Access Control Lists*\ (ACLs). Each list is a
 series of statements that may either grant or deny access. ACLs can be used at
-several places in the SMTP dialogue while receiving a message from a remote 
+several places in the SMTP dialogue while receiving a message from a remote
 host. However, the most common places are after each \\RCPT\\ command, and at
 the very end of the message. The sysadmin can specify conditions for accepting
 or rejecting individual recipients or the entire message, respectively, at
@@ -990,8 +990,8 @@ An ACL is also available for locally generated, non-SMTP messages. In this
 case, the only available actions are to accept or deny the entire message.
 .nextp
 .em
-When Exim is compiled with the content-scanning extension, facilities are 
-provided in the ACL mechanism for passing the message to external virus and/or 
+When Exim is compiled with the content-scanning extension, facilities are
+provided in the ACL mechanism for passing the message to external virus and/or
 spam scanning software. The result of such a scan is passed back to the ACL,
 which can then use it to decide what to do with the message.
 .nem
@@ -1004,7 +1004,7 @@ accepted, the list of recipients can be modified by the function.
 .nextp
 .em
 Using the \*local@_scan()*\ mechanism is another way of calling external
-scanner software. The \SA-Exim\ add-on package works this way. It does not 
+scanner software. The \SA-Exim\ add-on package works this way. It does not
 require Exim to be compiled with the content-scanning extension.
 .nem
 .nextp
@@ -1958,13 +1958,13 @@ be logged.
 
 .index content scanning||specifying at build time
 .em
-Exim's interfaces for calling virus and spam scanning sofware directly from 
-access control lists are not compiled by default. If you want to include these 
+Exim's interfaces for calling virus and spam scanning sofware directly from
+access control lists are not compiled by default. If you want to include these
 facilities, you need to set
 .display asis
 WITH_CONTENT_SCAN=yes
 .endd
-in your \(Local/Makefile)\. For details of the facilities themselves, see 
+in your \(Local/Makefile)\. For details of the facilities themselves, see
 chapter ~~CHAPexiscan.
 .nem
 
@@ -2797,7 +2797,7 @@ the controlling terminal, even when no debugging is specified.
 Run Exim in expansion testing mode. Exim discards its root privilege, to
 prevent ordinary users from using this mode to read otherwise inaccessible
 files. If no arguments are given, Exim runs interactively, prompting for lines
-of data. 
+of data.
 .em
 If Exim was built with \\USE@_READLINE\\=yes in \(Local/Makefile)\, it tries
 to load the \libreadline\ library dynamically whenever the \-be-\ option is
@@ -2832,7 +2832,7 @@ to be tested, and a test message must be supplied on the standard input. If
 there are no message-dependent tests in the filter, an empty file can be
 supplied.
 .em
-If you want to test a system filter file, use \-bF-\ instead of \-bf-\. You can 
+If you want to test a system filter file, use \-bF-\ instead of \-bf-\. You can
 use both \-bF-\ and \-bf-\ on the same command, in order to
 test a system filter and a user filter in the same run. For example:
 .display asis
@@ -2866,8 +2866,8 @@ be set by means of additional command line options (see the next four options).
 
 .em
 .option bfd #<<domain>>
-This sets the domain of the recipient address when a filter file is being 
-tested by means of the \-bf-\ option. The default is the value of 
+This sets the domain of the recipient address when a filter file is being
+tested by means of the \-bf-\ option. The default is the value of
 \$qualify@_domain$\.
 
 .option bfl #<<local part>>
@@ -2879,12 +2879,12 @@ actually being delivered.
 
 .option bfp #<<prefix>>
 This sets the prefix of the local part of the recipient address when a filter
-file is being tested by means of the \-bf-\ option. The default is an empty 
+file is being tested by means of the \-bf-\ option. The default is an empty
 prefix.
 
 .option bfp #<<suffix>>
 This sets the suffix of the local part of the recipient address when a filter
-file is being tested by means of the \-bf-\ option. The default is an empty 
+file is being tested by means of the \-bf-\ option. The default is an empty
 suffix.
 .em
 
@@ -2904,8 +2904,8 @@ exim -bh 10.9.8.7.1234
 exim -bh fe80::a00:20ff:fe86:a061.5678
 .endd
 .em
-When an IPv6 address is given, it is converted into canonical form. In the case 
-of the second example above, the value of \$sender@_host@_address$\ after 
+When an IPv6 address is given, it is converted into canonical form. In the case
+of the second example above, the value of \$sender@_host@_address$\ after
 conversion to the canonical form is \"fe80:0000:0000:0a00:20ff:fe86:a061.5678"\.
 .nem
 
@@ -3238,9 +3238,9 @@ details of the failure are output, because these might contain sensitive
 information such as usernames and passwords for database lookups.
 
 If no arguments are given, Exim runs in an interactive manner, prompting with a
-right angle bracket for addresses to be tested. 
+right angle bracket for addresses to be tested.
 .em
-Unlike the \-be-\ test option, you cannot arrange for Exim to use the 
+Unlike the \-be-\ test option, you cannot arrange for Exim to use the
 \*readline()*\ function, because it is running as \*root*\ and there are
 security issues.
 .nem
@@ -3277,7 +3277,7 @@ specific lookup types), the drivers that are included in the binary, and the
 name of the run time configuration file that is in use.
 
 .em
-As part of its operation, \-bV-\ causes Exim to read and syntax check its 
+As part of its operation, \-bV-\ causes Exim to read and syntax check its
 configuration file. However, this is a static check only. It cannot check
 values that are to be expanded. For example, although a misspelt ACL verb is
 detected, an error in the verb's arguments is not. You cannot rely on \-bV-\
@@ -3300,9 +3300,9 @@ failure are output, because these might contain sensitive information such as
 usernames and passwords for database lookups.
 
 If no arguments are given, Exim runs in an interactive manner, prompting with a
-right angle bracket for addresses to be verified. 
+right angle bracket for addresses to be verified.
 .em
-Unlike the \-be-\ test option, you cannot arrange for Exim to use the 
+Unlike the \-be-\ test option, you cannot arrange for Exim to use the
 \*readline()*\ function, because it is running as \*exim*\ and there are
 security issues.
 .nem
@@ -3354,8 +3354,8 @@ the caller. However, if \\ALT@_CONFIG@_ROOT@_ONLY\\ is defined in
 Exim is root.
 .em
 That is, the Exim user is no longer privileged in this regard. This build-time
-option is not set by default in the Exim source distribution tarbundle. 
-However, if you are using a `packaged' version of Exim (source or binary), the 
+option is not set by default in the Exim source distribution tarbundle.
+However, if you are using a `packaged' version of Exim (source or binary), the
 packagers might have enabled it.
 .nem
 
@@ -3532,7 +3532,7 @@ between \-F-\ and the <<string>> is optional.
 This option sets the address of the envelope sender of a locally-generated
 message (also known as the return path). The option can normally be used only
 by a trusted user, but \untrusted@_set@_sender\ can be set to allow untrusted
-users to use it. 
+users to use it.
 .em
 Processes running as root or the Exim user are always trusted. Other
 trusted users are defined by the \trusted@_users\ or \trusted@_groups\ options.
@@ -3808,7 +3808,7 @@ messages, which means that the accepting process automatically starts a
 delivery process for each message received, but does not wait for the delivery
 processes to finish.
 .em
-When all the messages have been received, the reception process exits, leaving 
+When all the messages have been received, the reception process exits, leaving
 the delivery processes to finish in their own time. The standard output and
 error streams are closed at the start of each delivery process.
 .nem
@@ -3827,7 +3827,7 @@ a locally-generated message. (For the daemon it is exactly the same as
 \-odb-\.) A delivery process is automatically started to deliver the
 message, and Exim waits for it to complete before proceeding.
 .em
-The original Exim reception process does not finish until the delivery 
+The original Exim reception process does not finish until the delivery
 process for the final message has ended. The standard error stream is left open
 during deliveries.
 .nem
@@ -3835,9 +3835,9 @@ However, like \-odb-\, this option has no effect if \queue@_only@_override\ is
 false and one of the queueing options in the configuration file is in effect.
 
 .em
-If there is a temporary delivery error during foreground delivery, the message 
-is left on the queue for later delivery, and the original reception process 
-exists. See chapter ~~CHAPnonqueueing for a way of setting up a restricted 
+If there is a temporary delivery error during foreground delivery, the message
+is left on the queue for later delivery, and the original reception process
+exists. See chapter ~~CHAPnonqueueing for a way of setting up a restricted
 configuration that never queues messages.
 .nem
 
@@ -3984,7 +3984,7 @@ option sets the received protocol value that is stored in
 \$received@_protocol$\. However, this applies only when \-bs-\ is not used. For
 interactive SMTP input (\-bs-\), the protocol is always
 .em
-`local-' followed by one of the standard SMTP protocol names (see the 
+`local-' followed by one of the standard SMTP protocol names (see the
 description of \$received@_protocol$\ in section ~~SECTexpvar).
 .nem
 For \-bS-\ (batch SMTP) however, the protocol can be set by \-oMr-\.
@@ -4311,10 +4311,10 @@ compatibility with Sendmail.
 .option tls-on-connect
 .index TLS||use without STARTTLS
 .index TLS||automatic start
-This option is available when Exim is compiled with TLS support. 
+This option is available when Exim is compiled with TLS support.
 .em
 It forces all incoming SMTP connections to behave as if the incoming port is
-listed in the \tls@_on@_connect@_ports\ option. See section ~~SECTsupobssmt and 
+listed in the \tls@_on@_connect@_ports\ option. See section ~~SECTsupobssmt and
 chapter ~~CHAPTLS for further details.
 .nem
 
@@ -4366,7 +4366,7 @@ control.
 .em
 If a syntax error is detected while reading the configuration file, Exim
 writes a message on the standard error, and exits with a non-zero return code.
-The message is also written to the panic log. \**Note**\: only simple syntax 
+The message is also written to the panic log. \**Note**\: only simple syntax
 errors can be detected at this time. The values of any expanded options are
 not checked until the expansion happens, even when the expansion does not
 actually alter the string.
@@ -4501,7 +4501,7 @@ leading white space) are treated as comments and are ignored. \**Note**\: a
 @# character other than at the beginning of a line is not treated specially,
 and does not introduce a comment.
 
-Any non-comment line can be continued by ending it with a backslash. 
+Any non-comment line can be continued by ending it with a backslash.
 .em
 Note that the general rule for whitespace means that trailing white space after
 the backslash is ignored, and leading white space at the start of continuation
@@ -4855,28 +4855,28 @@ confined to circumstances where they really are needed.
 .section Empty items in lists
 .rset SECTempitelis "~~chapter.~~section"
 .index list||empty item in
-An empty item at the end of a list is always ignored. In other words, trailing 
+An empty item at the end of a list is always ignored. In other words, trailing
 separator characters are ignored. Thus, the list in
 .display asis
 senders = user@domain :
 .endd
-contains only a single item. If you want to include an empty string as one item 
-in a list, it must not be the last item. For example, this list contains three 
+contains only a single item. If you want to include an empty string as one item
+in a list, it must not be the last item. For example, this list contains three
 items, the second of which is empty:
 .display asis
 senders = user1@domain : : user2@domain
 .endd
 \**Note**\: there must be whitespace between the two colons, as otherwise they
-are interpreted as representing a single colon data character (and the list 
-would then contain just one item). If you want to specify a list that contains 
+are interpreted as representing a single colon data character (and the list
+would then contain just one item). If you want to specify a list that contains
 just one, empty item, you can do it as in this example:
 .display asis
 senders = :
 .endd
-In this case, the first item is empty, and the second is discarded because it 
+In this case, the first item is empty, and the second is discarded because it
 is at the end of the list.
 .nem
- 
+
 
 .section Format of driver configurations
 .rset SECTfordricon "~~chapter.~~section"
@@ -5794,7 +5794,7 @@ above. The syntax requirements for the two cases are described in chapters
 Two different styles of data lookup are implemented:
 .numberpars $.
 The \*single-key*\ style requires the specification of a file in which to look,
-and a single key to search for. 
+and a single key to search for.
 .em
 The key must be a non-empty string for the lookup to succeed.
 .nem
@@ -6013,7 +6013,7 @@ many of them are given in later sections.
 .numberpars $.
 .index DNS||as a lookup type
 .index lookup||DNS
-\%dnsdb%\: This does a DNS search for 
+\%dnsdb%\: This does a DNS search for
 .em
 one or more records whose domain names are given in the supplied query. The
 resulting data is the contents of the records.
@@ -6247,7 +6247,7 @@ subject key is always followed by a dot.
 .index lookup||caching
 .index caching||lookup data
 .em
-Exim caches all lookup results in order to avoid needless repetition of 
+Exim caches all lookup results in order to avoid needless repetition of
 lookups. However, because (apart from the daemon) Exim operates as a collection
 of independent, short-lived processes, this caching applies only within a
 single Exim process. There is no inter-process caching facility.
@@ -6327,15 +6327,15 @@ by the new separator at the start of the query. For example:
 .display asis
 ${lookup dnsdb{>: a=host1.example}}
 .endd
-It is permitted to specify a space as the separator character. Further 
+It is permitted to specify a space as the separator character. Further
 whitespace is ignored.
 
 .index SRV record||in \%dnsdb%\ lookup
-For SRV records, the priority, weight, port, and host name are returned for 
+For SRV records, the priority, weight, port, and host name are returned for
 each record, separated by spaces.
 
 .index MX record||in \%dnsdb%\ lookup
-For MX records, both the preference value and the host name are returned for 
+For MX records, both the preference value and the host name are returned for
 each record, separated by a space. However, if you want only host names, you
 can use the pseudo-type MXH:
 .display asis
@@ -6352,7 +6352,7 @@ error). In other words, it may return the name servers for a top-level domain,
 but it never returns the root name servers. If there are no NS records for the
 top-level domain, the lookup fails. Consider these examples:
 .display asis
-${lookup dnsdb{zns=xxx.quercite.com}} 
+${lookup dnsdb{zns=xxx.quercite.com}}
 ${lookup dnsdb{zns=xxx.edu}}
 .endd
 Assuming that in each case there are no NS records for the full domain name,
@@ -6385,7 +6385,7 @@ to see if the rest of the string is precisely one IPv6 address. In this
 case, it does not treat it as a list.
 
 The data from each lookup is concatenated, with newline separators by default,
-in the same way that multiple DNS records for a single item are handled. A 
+in the same way that multiple DNS records for a single item are handled. A
 different separator can be specified, as described above.
 
 The \%dnsdb%\ lookup fails only if all the DNS lookups fail. If there is a
@@ -6620,9 +6620,9 @@ backwards compatibility. This timeout (specified as a number of seconds) is
 enforced from the client end for operations that can be carried out over a
 network. Specifically, it applies to network connections and calls to the
 \*ldap@_result()*\ function. If the value is greater than zero, it is used if
-\\LDAP@_OPT@_NETWORK@_TIMEOUT\\ is defined in the LDAP headers (OpenLDAP), or 
-if \\LDAP@_X@_OPT@_CONNECT@_TIMEOUT\\ is defined in the LDAP headers (Netscape 
-SDK 4.1). A value of zero forces an explicit setting of `no timeout' for 
+\\LDAP@_OPT@_NETWORK@_TIMEOUT\\ is defined in the LDAP headers (OpenLDAP), or
+if \\LDAP@_X@_OPT@_CONNECT@_TIMEOUT\\ is defined in the LDAP headers (Netscape
+SDK 4.1). A value of zero forces an explicit setting of `no timeout' for
 Netscape SDK; for OpenLDAP no action is taken.
 
 The \\TIME\\ parameter (also a number of seconds) is passed to the server to
@@ -6841,8 +6841,8 @@ the queries.
 If a MySQL query is issued that does not request any data (an insert, update,
 or delete command), the result of the lookup is the number of rows affected.
 .em
-\**Warning**\: this can be misleading. If an update does not actually change 
-anything (for example, setting a field to the value it already has), the result 
+\**Warning**\: this can be misleading. If an update does not actually change
+anything (for example, setting a field to the value it already has), the result
 is zero because no rows are affected.
 .nem
 
@@ -6891,10 +6891,10 @@ general facilities that apply to all four kinds of list.
 .index expansion||of lists
 .em
 Each list is expanded as a single string before it is used. The result of
-expansion must be a list, possibly containing empty items, which is split up 
+expansion must be a list, possibly containing empty items, which is split up
 into separate items for matching. By default, colon is the separator character,
 but this can be varied if necessary. See sections ~~SECTlistconstruct and
-~~SECTempitelis for details of the list syntax; the second of these discusses  
+~~SECTempitelis for details of the list syntax; the second of these discusses
 the way you specify empty list items.
 .nem
 
@@ -7681,7 +7681,7 @@ detected by a regular expression that matches an empty string,
 .em
 and by a query-style lookup that succeeds when \$sender@_address$\ is empty.
 
-The following kinds of address list pattern can match any address, including 
+The following kinds of address list pattern can match any address, including
 the empty address that is characteristic of bounce message senders:
 .nem
 .numberpars $.
@@ -7756,8 +7756,8 @@ domain independently, as described in a bullet point below.
 
 
 .em
-The following kinds of address list pattern can match only non-empty addresses. 
-If the subject address is empty, a match against any of these pattern types 
+The following kinds of address list pattern can match only non-empty addresses.
+If the subject address is empty, a match against any of these pattern types
 always fails.
 .nem
 
@@ -7991,9 +7991,9 @@ using \-be-\ for reading files to which they do not have access.
 .rset SECTforexpfai "~~chapter.~~section"
 .index expansion||forced failure
 A number of expansions that are described in the following section have
-alternative `true' and `false' substrings, enclosed in curly brackets. Which 
-one is used depends on some condition that is evaluated as part of the 
-expansion. If, instead of a `false' substring, the word `fail' is used (not in 
+alternative `true' and `false' substrings, enclosed in curly brackets. Which
+one is used depends on some condition that is evaluated as part of the
+expansion. If, instead of a `false' substring, the word `fail' is used (not in
 curly brackets), the entire string expansion fails in a way that can be
 detected by the code that requested the expansion. This is called `forced
 expansion failure', and its consequences depend on the circumstances. In some
@@ -8277,8 +8277,8 @@ ${if eq {$local_part}{postmaster} {yes}{no} }
 The second string need not be present; if it is not and the condition is not
 true, the item is replaced with nothing. Alternatively, the word `fail' may be
 present instead of the second string (without any curly brackets). In this
-case, the expansion is forced to fail if the condition is not true (see section 
-~~SECTforexpfai). 
+case, the expansion is forced to fail if the condition is not true (see section
+~~SECTforexpfai).
 
 .em
 If both strings are omitted, the result is the string \"true"\ if the condition
@@ -8330,7 +8330,7 @@ If the lookup succeeds, <<string1>> is expanded and replaces the entire item.
 During its expansion, the variable \$value$\ contains the data returned by the
 lookup. Afterwards it reverts to the value it had previously (at the outer
 level it is empty). If the lookup fails, <<string2>> is expanded and replaces
-the entire item. If @{<<string2>>@} is omitted, the replacement is the empty 
+the entire item. If @{<<string2>>@} is omitted, the replacement is the empty
 string on failure. If <<string2>> is provided, it can itself be a nested
 lookup, thus providing a mechanism for looking up a default value when the
 original lookup fails.
@@ -8559,7 +8559,7 @@ the simpler operator notation that avoids some of the braces:
 .endd
 The second number is optional (in both notations).
 .em
-If it is absent in the simpler format, the preceding underscore must also be 
+If it is absent in the simpler format, the preceding underscore must also be
 omitted.
 .nem
 
@@ -8900,7 +8900,7 @@ only characters in the range 33--126, and no instances of the characters
 .display asis
 ? = ( ) < > @ , ; : \ " . [ ] _
 .endd
-it is not modified. Otherwise, the result is the RFC 2047 encoding of the 
+it is not modified. Otherwise, the result is the RFC 2047 encoding of the
 string,
 .em
 using as many `coded words' as necessary to encode all the characters.
@@ -9059,7 +9059,7 @@ If the length is 40, Exim assumes that it is a hexadecimal encoding of the
 SHA-1 digest. If the length is not 28 or 40, the comparison fails.
 .nextp
 .index \*crypt()*\
-\@{crypt@}\ calls the \*crypt()*\ function, 
+\@{crypt@}\ calls the \*crypt()*\ function,
 .em
 which traditionally used to use only the first eight characters of the
 password. However, in modern operating systems this is no longer true, and in
@@ -9068,9 +9068,9 @@ many cases the entire password is used, whatever its length.
 .nextp
 .index \*crypt16()*\
 \@{crypt16@}\ calls the \*crypt16()*\ function (also known as \*bigcrypt()*\),
-which 
+which
 .em
-was orginally created to use up to 16 characters of the password. Again, in 
+was orginally created to use up to 16 characters of the password. Again, in
 modern operating systems, more characters may be used.
 .nem
 .endp
@@ -9359,8 +9359,8 @@ set \\RADIUS@_CONFIG@_FILE\\ in \(Local/Makefile)\ to specify the location of
 the Radius client configuration file in order to build Exim with Radius
 support.
 .em
-With just that one setting, Exim expects to be linked with the \radiusclient\ 
-library. You can also link Exim with the \libradius\ library that comes with 
+With just that one setting, Exim expects to be linked with the \radiusclient\
+library. You can also link Exim with the \libradius\ library that comes with
 FreeBSD. To do this, set
 .display asis
 RADIUS_LIB_TYPE=RADLIB
@@ -9503,7 +9503,7 @@ chapter ~~CHAProutergeneric for more details. \**Note**\: the contents of
 \$address@_data$\ are visible in user filter files.
 
 .em
-If \$address@_data$\ is set when the routers are called from an ACL to verify 
+If \$address@_data$\ is set when the routers are called from an ACL to verify
 a recipient address, the final value is still in the variable for subsequent
 conditions and modifiers of the ACL statement. If routing the address caused it
 to be redirected to just one address, the child address is also routed as part
@@ -9512,10 +9512,10 @@ from the child's routing.
 
 If \$address@_data$\ is set when the routers are called from an ACL to verify a
 sender address, the final value is also preserved, but this time in
-\$sender@_address@_data$\, to distinguish it from data from a recipient 
+\$sender@_address@_data$\, to distinguish it from data from a recipient
 address.
 
-In both cases (recipient and sender verification), the value does not persist 
+In both cases (recipient and sender verification), the value does not persist
 after the end of the current ACL statement. If you want to preserve
 these values for longer, you can save them in ACL variables.
 .nem
@@ -9775,7 +9775,7 @@ name of the first host.
 This variable is set to the remote host's IP address whenever \$host$\ is set
 for a remote connection.
 .em
-It is also set to the IP address that is being checked when the 
+It is also set to the IP address that is being checked when the
 \ignore@_target@_hosts\ option is being processed.
 .nem
 
@@ -9798,11 +9798,11 @@ message comes from a remote host and there is an attempt to look up the host's
 name from its IP address, and the attempt is not successful, one of these
 variables is set to `1'.
 .numberpars $.
-If the lookup receives a definite negative response (for example, a DNS lookup 
+If the lookup receives a definite negative response (for example, a DNS lookup
 succeeded, but no records were found), \$host@_lookup@_failed$\ is set to `1'.
 .nextp
-If there is any kind of problem during the lookup, such that Exim cannot 
-tell whether or not the host name is defined (for example, a timeout for a DNS 
+If there is any kind of problem during the lookup, such that Exim cannot
+tell whether or not the host name is defined (for example, a timeout for a DNS
 lookup), \$host@_lookup@_deferred$\ is set to `1'.
 .endp
 Looking up a host's name from its IP address consists of more than just a
@@ -9948,11 +9948,11 @@ been read.
 
 .em
 .tempindent 0
-\$log@_inodes$\: The number of free inodes in the disk partition where Exim's 
+\$log@_inodes$\: The number of free inodes in the disk partition where Exim's
 log files are being written. The value is recalculated whenever the variable is
 referenced. If the relevant file system does not have the concept of inodes,
 the value of is -1. See also the \check@_log@_inodes\ option.
- 
+
 .tempindent 0
 \$log@_space$\: The amount of free space (as a number of kilobytes) in the disk
 partition where Exim's log files are being written. The value is recalculated
@@ -9971,8 +9971,8 @@ other times, this variable is empty.
 
 .em
 .tempindent 0
-\$malware@_name$\: This variable is available when Exim is compiled with the 
-content-scanning extension. It is set to the name of the virus that was found 
+\$malware@_name$\: This variable is available when Exim is compiled with the
+content-scanning extension. It is set to the name of the virus that was found
 when the ACL \malware\ condition is true (see section ~~SECTscanvirus).
 .nem
 
@@ -10007,7 +10007,7 @@ body while it is being delivered. The format and maximum size are as for
 \$message@_body@_size$\: When a message is being delivered, this variable
 contains the size of the body in bytes. The count starts from the character
 after the blank line that separates the body from the header. Newlines are
-included in the count. See also \$message@_size$\, \$body@_linecount$\, and 
+included in the count. See also \$message@_size$\, \$body@_linecount$\, and
 \$body@_zerocount$\.
 
 .tempindent 0
@@ -10171,7 +10171,7 @@ The value is copied after recipient rewriting has happened, but before the
 
 .tempindent 0
 \$received@_protocol$\: When a message is being processed, this variable
-contains the name of the protocol by which it was received. 
+contains the name of the protocol by which it was received.
 .em
 Most of the names used by Exim are defined by RFCs 821, 2821, and 3848. They
 start with `smtp' (the client used \\HELO\\) or `esmtp' (the client used
@@ -10187,8 +10187,8 @@ encrypted SMTP session. The name `smtps' is also used for the rare situation
 where the client initially uses \\EHLO\\, sets up an encrypted connection using
 \\STARTTLS\\, and then uses \\HELO\\ afterwards.
 
-The \-oMr-\ option provides a way of specifying a custom protocol name for 
-messages that are injected locally by trusted callers. This is commonly used to 
+The \-oMr-\ option provides a way of specifying a custom protocol name for
+messages that are injected locally by trusted callers. This is commonly used to
 identify messages that are being re-injected after some kind of scanning.
 .nem
 
@@ -10239,7 +10239,7 @@ in these two cases:
 In a system filter file.
 .nextp
 .em
-In the ACLs associated with the \\DATA\\ command, that is, the ACLs defined by 
+In the ACLs associated with the \\DATA\\ command, that is, the ACLs defined by
 \acl@_smtp@_predata\ and \acl@_smtp@_data\.
 .nem
 .endp
@@ -10374,12 +10374,12 @@ or if the forward lookup does not yield the original IP address,
 \$sender@_host@_name$\ remains empty, and \$host@_lookup@_failed$\ is set to
 `1'.
 .em
-However, if either of the lookups cannot be completed (for example, there is a 
-DNS timeout), \$host@_lookup@_deferred$\ is set to `1', and 
+However, if either of the lookups cannot be completed (for example, there is a
+DNS timeout), \$host@_lookup@_deferred$\ is set to `1', and
 \$host@_lookup@_failed$\ remains set to `0'.
 
-Once \$host@_lookup@_failed$\ is set to `1', Exim does not try to look up the 
-host name again if there is a subsequent reference to \$sender@_host@_name$\ 
+Once \$host@_lookup@_failed$\ is set to `1', Exim does not try to look up the
+host name again if there is a subsequent reference to \$sender@_host@_name$\
 in the same Exim process, but it does try again if \$sender@_host@_deferred$\
 is set to `1'.
 .nem
@@ -10443,11 +10443,11 @@ the string, to improve the formatting of the ::Received:: header.
 .em
 .tempindent 0
 \$sender@_verify@_failure$\: In an ACL, when a sender verification fails, this
-variable contains information about the failure. The details are the same as 
+variable contains information about the failure. The details are the same as
 for \$recipient@_verify@_failure$\.
 
 .tempindent 0
-\$smtp@_active@_hostname$\: During an SMTP session, this variable contains the 
+\$smtp@_active@_hostname$\: During an SMTP session, this variable contains the
 value of the active host name, as specified by the \smtp@_active@_hostname\
 option. The value of \$smtp@_active@_hostname$\ is saved with any message that
 is received, so its value can be consulted during routing and delivery.
@@ -10486,7 +10486,7 @@ spool files are being written. The value is recalculated whenever the variable
 is referenced. If the relevant file system does not have the concept of inodes,
 the value of is -1.
 See also the \check@_spool@_inodes\ option.
- 
+
 .tempindent 0
 \$spool@_space$\: The amount of free space (as a number of kilobytes) in the
 disk partition where Exim's spool files are being written. The value is
@@ -10685,25 +10685,25 @@ terminating newline.
 .em
 .section Use of standard output and error by Perl
 .index Perl||standard output and error
-You should not write to the standard error or output streams from within your 
-Perl code, as it is not defined how these are set up. In versions of Exim  
-before 4.50, it is possible for the standard output or error to refer to the 
+You should not write to the standard error or output streams from within your
+Perl code, as it is not defined how these are set up. In versions of Exim
+before 4.50, it is possible for the standard output or error to refer to the
 SMTP connection during message reception via the daemon. Writing to this stream
 is certain to cause chaos. From Exim 4.50 onwards, the standard output and
-error streams are connected to \(/dev/null)\ in the daemon. The chaos is 
+error streams are connected to \(/dev/null)\ in the daemon. The chaos is
 avoided, but the output is lost.
 
 .index Perl||\warn\, use of
-The Perl \warn\ statement writes to the standard error stream by default. Calls 
+The Perl \warn\ statement writes to the standard error stream by default. Calls
 to \warn\ may be embedded in Perl modules that you use, but over which you have
 no control. When Exim starts up the Perl interpreter, it arranges for output
-from the \warn\ statement to be written to the Exim main log. You can change 
-this by including appropriate Perl magic somewhere in your Perl code. For 
+from the \warn\ statement to be written to the Exim main log. You can change
+this by including appropriate Perl magic somewhere in your Perl code. For
 example, to discard \warn\ output completely, you need this:
 .display asis
 $SIG{__WARN__} = sub { };
 .endd
-Whenever a \warn\ is obeyed, the anonymous subroutine is called. In this 
+Whenever a \warn\ is obeyed, the anonymous subroutine is called. In this
 example, the code for the subroutine is empty, so it does nothing, but you can
 include any Perl code that you like. The text of the \warn\ message is passed
 as the first subroutine argument.
@@ -10878,8 +10878,8 @@ because 465 is the usual port number used by the legacy clients. There is also
 a command line option \-tls-on-connect-\, which forces all ports to behave in
 this way when a daemon is started.
 
-\**Warning**\: Setting \tls@_on@_connect@_ports\ does not of itself cause the 
-daemon to listen on those ports. You must still specify them in 
+\**Warning**\: Setting \tls@_on@_connect@_ports\ does not of itself cause the
+daemon to listen on those ports. You must still specify them in
 \daemon@_smtp@_ports\, \local@_interfaces\, or the \-oX-\ option. (This is
 because \tls@_on@_connect@_ports\ applies to \inetd\ connections as well as to
 connections via the daemon.)
@@ -11467,8 +11467,8 @@ a \\MAIL\\ command. See chapter ~~CHAPACL for details of ACLs, and chapter
 .em
 .index MIME content scanning||ACL for
 .conf acl@_smtp@_mime string$**$ unset
-This option is available when Exim is built with the content-scanning 
-extension. It defines the ACL that is run for each MIME part in a message. See 
+This option is available when Exim is built with the content-scanning
+extension. It defines the ACL that is run for each MIME part in a message. See
 section ~~SECTscanmimepart for details.
 
 .conf acl@_smtp@_predata string$**$ unset
@@ -11714,11 +11714,11 @@ See \check@_spool@_space\ below.
 .index disk space, checking
 .index spool directory||checking space
 The four \check@_...\ options allow for checking of disk resources before a
-message is accepted. 
+message is accepted.
 .em
-When any of these options are set, they apply to all incoming messages. If you 
-want to apply different checks to different kinds of message, you can do so 
-by testing the the variables \$log@_inodes$\, \$log@_space$\, 
+When any of these options are set, they apply to all incoming messages. If you
+want to apply different checks to different kinds of message, you can do so
+by testing the the variables \$log@_inodes$\, \$log@_space$\,
 \$spool@_inodes$\, and \$spool@_space$\ in an ACL with appropriate additional
 conditions.
 .nem
@@ -11766,7 +11766,7 @@ intervals specified by this option. The data is a colon-separated list of times
 after which to send warning messages.
 .em
 If the value of the option is an empty string or a zero time, no warnings are
-sent. 
+sent.
 .nem
 Up to 10 times may be given. If a message has been on the queue for longer than
 the last time, the last interval between the times is used to compute
@@ -11841,8 +11841,8 @@ You can make it apply to reverse lookups by a setting such as this:
 dns_again_means_nonexist = *.in-addr.arpa
 .endd
 .em
-This option applies to all DNS lookups that Exim does. The \%dnslookup%\ router 
-has some options of its own for controlling what happens when lookups for MX or 
+This option applies to all DNS lookups that Exim does. The \%dnslookup%\ router
+has some options of its own for controlling what happens when lookups for MX or
 SRV records give temporary errors. These more specific options are applied
 after the global option.
 .nem
@@ -12018,7 +12018,7 @@ retries.
 
 .index \(/etc/passwd)\, multiple reading of
 .em
-You should not set this option greater than zero if your user information is in 
+You should not set this option greater than zero if your user information is in
 a traditional \(/etc/passwd)\ file, because it will cause Exim needlessly to
 search the file multiple times for non-existent users, and also cause delay.
 .nem
@@ -12332,12 +12332,12 @@ has been built with LDAP support.
 .index ::From:: header line||disabling checking of
 When a message is submitted locally (that is, not over a TCP/IP connection) by
 an untrusted user, Exim removes any existing ::Sender:: header line, and checks
-that the ::From:: header line matches 
+that the ::From:: header line matches
 .em
 the login of the calling user and the domain specified by \qualify@_domain\.
 
-\**Note**\: An unqualified address (no domain) in the ::From:: header in a 
-locally submitted message is automatically qualified by Exim, unless the 
+\**Note**\: An unqualified address (no domain) in the ::From:: header in a
+locally submitted message is automatically qualified by Exim, unless the
 \-bnq-\ command line option is used.
 .nem
 
@@ -12389,10 +12389,10 @@ See \local@_from@_prefix\ above.
 This option controls which network interfaces are used by the daemon for
 listening; they are also used to identify the local host when routing. Chapter
 ~~CHAPinterfaces contains a full description of this option and the related
-options 
+options
 .em
 \daemon@_smtp@_ports\, \extra@_local@_interfaces\, \hosts@_treat@_as@_local\,
-and \tls@_on@_connect@_ports\. 
+and \tls@_on@_connect@_ports\.
 .nem
 The default value for \local@_interfaces\ is
 .display asis
@@ -12734,13 +12734,13 @@ admin user unless \prod@_requires@_admin\ is set false. See also
 .index address||qualification
 This option specifies the domain name that is added to any envelope sender
 addresses that do not have a domain qualification. It also applies to
-recipient addresses if \qualify@_recipient\ is not set. 
+recipient addresses if \qualify@_recipient\ is not set.
 .em
 Unqualified addresses are accepted by default only for locally-generated
 messages.
 
-Qualification is also applied to addresses in header lines such as ::From:: and 
-::To:: for locally-generated messages, unless the \-bnq-\ command line option 
+Qualification is also applied to addresses in header lines such as ::From:: and
+::To:: for locally-generated messages, unless the \-bnq-\ command line option
 is used.
 .nem
 
@@ -13178,11 +13178,11 @@ This option is provided for multi-homed servers that want to masquerade as
 several different hosts. At the start of an SMTP connection, its value is
 expanded and used instead of the value of \$primary@_hostname$\ in SMTP
 responses. For example, it is used as domain name in the response to an
-incoming \\HELO\\ or \\EHLO\\ command. 
+incoming \\HELO\\ or \\EHLO\\ command.
 .em
 It is also used in \\HELO\\ commands for callout verification.
-The active hostname is placed in the \$smtp__active__hostname$\ variable, which 
-is saved with any messages that are received. It is therefore available for use 
+The active hostname is placed in the \$smtp__active__hostname$\ variable, which
+is saved with any messages that are received. It is therefore available for use
 in routers and transports when the message is later delivered.
 .nem
 
@@ -13208,7 +13208,7 @@ positive response to an SMTP connection. The default setting is:
 .em
 smtp_banner = $smtp_active_hostname ESMTP Exim \
   $version_number $tod_full
-.nem   
+.nem
 .endd
 Failure to expand the string causes a panic error. If you want to create a
 multiline response to the initial SMTP connection, use `@\n' in the string at
@@ -13245,7 +13245,7 @@ attacks by SYN flooding.
 The SMTP protocol specification requires the client to wait for a response from
 the server at certain points in the dialogue. Without \\PIPELINING\\ these
 synchronization points are after every command; with \\PIPELINING\\ they are
-fewer, but they still exist. 
+fewer, but they still exist.
 
 Some spamming sites send out a complete set of SMTP commands without waiting
 for any response. Exim protects against this by rejecting a message if the
@@ -13257,7 +13257,7 @@ detect many instances.
 
 .em
 The check can be globally disabled by setting \smtp@_enforce@_sync\ false.
-If you want to disable the check selectively (for example, only for certain 
+If you want to disable the check selectively (for example, only for certain
 hosts), you can do so by an appropriate use of a \control\ modifier in an ACL
 (see section ~~SECTcontrols). See also \pipelining@_advertise@_hosts\.
 .nem
@@ -13971,12 +13971,12 @@ on by `+caseful' as a list item. See section ~~SECTcasletadd for more details.
 The value of the \$local@_part$\ variable is forced to lower case while a
 router is running unless \caseful@_local@_part\ is set. When a router assigns
 an address to a transport, the value of \$local@_part$\ when the transport runs
-is the same as it was in the router. Similarly, when a router generates child 
+is the same as it was in the router. Similarly, when a router generates child
 addresses by aliasing or forwarding, the values of \$original@_local@_part$\
 and \$parent@_local@_part$\ are those that were used by the redirecting router.
 
-This option applies to the processing of an address by a router. When a 
-recipient address is being processed in an ACL, there is a separate \control\ 
+This option applies to the processing of an address by a router. When a
+recipient address is being processed in an ACL, there is a separate \control\
 modifier that can be used to specify case-sensitive processing within the ACL
 (see section ~~SECTcontrols).
 .nem
@@ -14035,7 +14035,7 @@ condition = ${if >{$message_age}{600}{true}{}}
 
 If the expansion fails (other than forced failure) delivery is deferred. Some
 of the other precondition options are common special cases that could in fact
-be specified using \condition\. 
+be specified using \condition\.
 
 
 .conf debug@_print string$**$ unset
@@ -14243,7 +14243,7 @@ addresses. Because, like all host lists, the value of \ignore@_target@_hosts\
 is expanded before use as a list, it is possible to make it dependent on the
 domain that is being routed.
 .em
-During its expansion, \$host@_address$\ is set to the IP address that is being 
+During its expansion, \$host@_address$\ is set to the IP address that is being
 checked.
 .nem
 
@@ -14483,7 +14483,7 @@ user is not permitted to read one of the directories on the file's path.
 \*stat()*\ can yield \\EACCES\\ for a file in an NFS directory that is mounted
 without root access.
 .em
-In this case, if a check for access by a particular user is requested, Exim 
+In this case, if a check for access by a particular user is requested, Exim
 creates a subprocess that runs as that user, and tries the check again in that
 process.
 
@@ -14859,7 +14859,7 @@ address for the \%local@_delivery%\ transport.
 .set runningfoot "dnslookup router"
 .index \%dnslookup%\ router
 .index routers||\%dnslookup%\
-The \%dnslookup%\ router looks up the hosts that handle mail for the 
+The \%dnslookup%\ router looks up the hosts that handle mail for the
 recipient's domain in the DNS. A transport must always be set for this router,
 unless \verify@_only\ is set.
 
@@ -14955,7 +14955,7 @@ have an additional `weight' feature which some people might find useful when
 trying to split an SMTP load between hosts of different power.
 
 .em
-See section ~~SECTprowitdnsloo above for a discussion of Exim's behaviour when 
+See section ~~SECTprowitdnsloo above for a discussion of Exim's behaviour when
 there is a DNS lookup error.
 .nem
 
@@ -15747,9 +15747,9 @@ timeout.
 
 The standard output of the command is connected to a pipe, which is read when
 the command terminates. It should consist of a single line of output,
-containing up to five fields, separated by white space. 
+containing up to five fields, separated by white space.
 .em
-The maximum length of the line is 1023 characters. Longer lines are silently 
+The maximum length of the line is 1023 characters. Longer lines are silently
 truncated.
 .nem
 The first field is one of the following words (case-insensitive):
@@ -16132,10 +16132,10 @@ text associated with the failure. For example, an alias file might contain:
 X.Employee:  :fail: Gone away, no forwarding address
 .endd
 In the case of an address that is being verified from an ACL or as the subject
-of a 
+of a
 .index \\VRFY\\||error text, display of
 \\VRFY\\ command, the text is included in the SMTP error response by
-default. 
+default.
 .em
 .index \\EXPN\\||error text, display of
 The text is not included in the response to an \\EXPN\\ command.
@@ -16241,9 +16241,9 @@ and the \fail\ command may be used in a filter file.
 Setting this option allows Exim to interpret redirection data that starts with
 `@#Exim filter' or `@#Sieve filter' as a set of filtering instructions. There
 are some features of Exim filter files that some administrators may wish to
-lock out; see the \forbid@_filter@_xxx\ options below. 
+lock out; see the \forbid@_filter@_xxx\ options below.
 .em
-It is also possible to lock out Exim filters or Sieve filters while allowing 
+It is also possible to lock out Exim filters or Sieve filters while allowing
 the other type; see \forbid@_exim@_filter\ and \forbid@_sieve@_filter\.
 .nem
 
@@ -16360,7 +16360,7 @@ list.
 
 .em
 .conf forbid@_exim@_filter boolean false
-If this option is set true, only Sieve filters are permitted when 
+If this option is set true, only Sieve filters are permitted when
 \allow@_filter\ is true.
 .nem
 
@@ -16405,7 +16405,7 @@ to make use of \readsocket\ items.
 
 .conf forbid@_filter@_reply boolean false
 If this option is true, this router may not generate an automatic reply
-message. Automatic replies can be generated only from Exim 
+message. Automatic replies can be generated only from Exim
 .em
 or Sieve filter files, not from traditional forward files.
 .nem
@@ -16430,7 +16430,7 @@ forward file. This option is forced to be true if \one@_time\ is set.
 
 .em
 .conf forbid@_sieve@_filter boolean false
-If this option is set true, only Exim filters are permitted when 
+If this option is set true, only Exim filters are permitted when
 \allow@_filter\ is true.
 .nem
 
@@ -16695,19 +16695,19 @@ configuration, and these override anything that comes from the router.
 .section Concurrent deliveries
 .index concurrent deliveries
 .index simultaneous deliveries
-If two different messages for the same local recpient arrive more or less 
-simultaneously, the two delivery processes are likely to run concurrently. When 
-the \%appendfile%\ transport is used to write to a file, Exim applies locking 
-rules to stop concurrent processes from writing to the same file at the same 
+If two different messages for the same local recpient arrive more or less
+simultaneously, the two delivery processes are likely to run concurrently. When
+the \%appendfile%\ transport is used to write to a file, Exim applies locking
+rules to stop concurrent processes from writing to the same file at the same
 time.
 
-However, when you use a \%pipe%\ transport, it is up to you to arrange any 
+However, when you use a \%pipe%\ transport, it is up to you to arrange any
 locking that is needed. Here is a silly example:
 .display asis
 my_transport:
   driver = pipe
   command = /bin/sh -c 'cat >>/some/file'
-.endd    
+.endd
 This is supposed to write the message at the end of the file. However, if two
 messages arrive at the same time, the file will be scrambled. You can use the
 \exim@_lock\ utility program (see section ~~SECTmailboxmaint) to lock a file
@@ -16907,7 +16907,7 @@ checked, since this option does not automatically suppress them.
 .index transport||header lines, removing
 .em
 This option specifies a string that is expanded into a list of header names;
-these headers are omitted from the message as it is transported, as described 
+these headers are omitted from the message as it is transported, as described
 in section ~~SECTheadersaddrem. Header removal can also be specified by
 routers. If the result of the expansion is an empty string, or if the expansion
 is forced to fail, no action is taken. Other expansion failures are treated as
@@ -17108,7 +17108,7 @@ also before any processing implied by the settings of \check@_string\ and
 \escape@_string\ in the \%appendfile%\ or \%pipe%\ transports.
 
 .em
-The standard error for the filter process is set to the same destination as its 
+The standard error for the filter process is set to the same destination as its
 standard output; this is read and written to the message's ultimate
 destination.
 .nem
@@ -17151,7 +17151,7 @@ For remote deliveries this is the Exim uid/gid by default.
 .em
 The command should normally yield a zero return code. A non-zero code is taken
 to mean that the transport filter failed in some way. Delivery of the message
-is deferred. It is not possible to cause a message to be bounced from a 
+is deferred. It is not possible to cause a message to be bounced from a
 transport filter.
 .nem
 
@@ -17477,7 +17477,7 @@ When this option is true, Exim attempts to create any missing superior
 directories for the file that it is about to write. A created directory's mode
 is given by the \directory@_mode\ option.
 .em
-The group ownership of a newly created directory is highly dependent on the 
+The group ownership of a newly created directory is highly dependent on the
 operating system (and possibly the file system) that is being used. For
 example, in Solaris, if the parent directory has the setgid bit set, its group
 is propagated to the child; if not, the currently set group is used. However,
@@ -17639,9 +17639,9 @@ accident, and Exim attempts to remove it.
 .conf mailbox@_filecount string$**$ unset
 .index mailbox||specifying size of
 .index size||of mailbox
-If this option is set, it is expanded, and the result is taken as the current 
-number of files in the mailbox. It must be a decimal number, optionally 
-followed by K or M. This provides a way of obtaining this information from an 
+If this option is set, it is expanded, and the result is taken as the current
+number of files in the mailbox. It must be a decimal number, optionally
+followed by K or M. This provides a way of obtaining this information from an
 external source that maintains the data.
 
 .conf mailbox@_size string$**$ unset
@@ -17649,8 +17649,8 @@ external source that maintains the data.
 .index size||of mailbox
 If this option is set, it is expanded, and the result is taken as the current
 size the mailbox. It must be a decimal number, optionally followed by K or M.
-This provides a way of obtaining this information from an external source that 
-maintains the data. This is likely to be helpful for maildir deliveries where 
+This provides a way of obtaining this information from an external source that
+maintains the data. This is likely to be helpful for maildir deliveries where
 it is computationally expensive to compute the size of a mailbox.
 .nem
 
@@ -18189,11 +18189,11 @@ the parent directory instead of the current directory when calculating the
 amount of space used.
 
 .em
-One problem with delivering into a multi-file mailbox is that it is 
-computationally expensive to compute the size of the mailbox for quota 
-checking. Various approaches have been taken to reduce the amount of work 
-needed. The next two sections describe two of them. A third alternative is to 
-use some external process for maintaining the size data, and use the expansion 
+One problem with delivering into a multi-file mailbox is that it is
+computationally expensive to compute the size of the mailbox for quota
+checking. Various approaches have been taken to reduce the amount of work
+needed. The next two sections describe two of them. A third alternative is to
+use some external process for maintaining the size data, and use the expansion
 of the \mailbox@_size\ option as a way of importing it into Exim.
 .nem
 
@@ -18296,7 +18296,7 @@ expanding the contents of the \directory@_file\ option.
 The \%autoreply%\ transport is not a true transport in that it does not cause
 the message to be transmitted. Instead, it generates a new mail message.
 .em
-If the router that passes the message to this transport does not have the 
+If the router that passes the message to this transport does not have the
 \unseen\ option set, the original message (for the current recipient) is not
 delivered anywhere. However, when the \unseen\ option is set on the router that
 passes the message to this transport, routing of the address continues, so
@@ -18448,7 +18448,7 @@ example:
 .display asis
 subject = Re: $h_subject:
 .endd
-There is a danger in doing this, however. It may allow a third party to 
+There is a danger in doing this, however. It may allow a third party to
 subscribe your users to an opt-in mailing list, provided that the list accepts
 bounce messages as subscription confirmations. Well-managed lists require a
 non-bounce message to confirm a subscription, so the danger is relatively
@@ -18552,7 +18552,7 @@ necessary, running as the user \*exim*\.
 .index transports||\%pipe%\
 .index \%pipe%\ transport
 The \%pipe%\ transport is used to deliver messages via a pipe to a command
-running in another process. 
+running in another process.
 .em
 One example is the
 use of \%pipe%\ as a pseudo-remote transport for passing messages to some other
@@ -18567,7 +18567,7 @@ the local part of the address (as usual), and the command that is run is
 specified by the \command\ option on the transport.
 .nextp
 .em
-If the \batch@_max\ option is set greater than 1 (the default), the transport 
+If the \batch@_max\ option is set greater than 1 (the default), the transport
 can be called upon to handle more than one address in a single run. In this
 case, \$local@_part$\ is not set (because it is not unique). However, the
 pseudo-variable \$pipe@_addresses$\ (described in section ~~SECThowcommandrun
@@ -18594,9 +18594,9 @@ the local delivery environment.
 
 .em
 .section Concurrent delivery
-If two messages arrive at almost the same time, and both are routed to a pipe 
-delivery, the two pipe transports may be run concurrently. You must ensure that 
-any pipe commands you set up are robust against this happening. If the commands 
+If two messages arrive at almost the same time, and both are routed to a pipe
+delivery, the two pipe transports may be run concurrently. You must ensure that
+any pipe commands you set up are robust against this happening. If the commands
 write to a file, the \exim@_lock\ utility might be of use.
 .nem
 
@@ -18826,7 +18826,7 @@ return code that is neither zero nor one of the return codes listed in
 \temp@_errors\ (that is, the delivery failed), the first line of output is
 written to the main log.
 .em
-This option and \log@_output\ are mutually exclusive. Only one of them may be 
+This option and \log@_output\ are mutually exclusive. Only one of them may be
 set.
 .nem
 
@@ -19306,8 +19306,8 @@ delivery in cases where there are temporary delivery errors. Section
 
 .em
 .conf hosts@_max@_try@_hardlimit integer 50
-This is an additional check on the maximum number of IP addresses that Exim 
-tries for any one delivery. Section ~~SECTvalhosmax describes its use and why 
+This is an additional check on the maximum number of IP addresses that Exim
+tries for any one delivery. Section ~~SECTvalhosmax describes its use and why
 it exists.
 .nem
 
@@ -19528,7 +19528,7 @@ when setting up an outgoing encrypted connection. (There is a global option of
 the same name for controlling incoming connections.) The values of \$host$\ and
 \$host@_address$\ are set to the name and address of the server during the
 expansion. See chapter ~~CHAPTLS for details of TLS; note that this option is
-used in different ways by OpenSSL and GnuTLS (see sections ~~SECTreqciphssl and 
+used in different ways by OpenSSL and GnuTLS (see sections ~~SECTreqciphssl and
 ~~SECTreqciphgnu).
 .em
 For GnuTLS, the order of the ciphers is a preference order.
@@ -19565,8 +19565,8 @@ expansion of this option. See chapter ~~CHAPTLS for details of TLS.
 .index host||maximum number to try
 .index limit||hosts, maximum number tried
 .em
-There are two options that are concerned with the number of hosts that are 
-tried when an SMTP delivery takes place. They are \hosts@_max@_try\ and 
+There are two options that are concerned with the number of hosts that are
+tried when an SMTP delivery takes place. They are \hosts@_max@_try\ and
 \hosts@_max@_try@_hardlimit\.
 .nem
 
@@ -19590,7 +19590,7 @@ arrived do not count, and in addition, addresses that are past their retry
 limits are also not counted, even when they are tried. This means that when
 some IP addresses are past their retry limits, more than the value of
 \hosts@_max@_retry\ may be tried. The reason for this behaviour is to ensure
-that all IP addresses are considered before timing out an email address (but 
+that all IP addresses are considered before timing out an email address (but
 see below for an exception).
 
 Secondly, when the \hosts@_max@_try\ limit is reached, Exim looks down the host
@@ -19621,9 +19621,9 @@ already been reached.
 
 The above logic means that \hosts@_max@_try\ is not a hard limit, and in
 particular, Exim normally eventually tries all the IP addresses before timing
-out an email address. When \hosts@_max@_try\ was implemented, this seemed a 
-reasonable thing to do. Recently, however, some lunatic DNS configurations have 
-been set up with hundreds of IP addresses for some domains. It can 
+out an email address. When \hosts@_max@_try\ was implemented, this seemed a
+reasonable thing to do. Recently, however, some lunatic DNS configurations have
+been set up with hundreds of IP addresses for some domains. It can
 take a very long time indeed for an address to time out in these cases.
 
 The \hosts@_max@_try@_hardlimit\ option was added to help with this problem.
@@ -19660,7 +19660,7 @@ One situation in which Exim does $it{not} automatically rewrite a domain is
 when it is the name of a CNAME record in the DNS. The older RFCs suggest that
 such a domain should be rewritten using the `canonical' name, and some MTAs do
 this. The new RFCs do not contain this suggestion.
- 
+
 .section Explicitly configured address rewriting
 This chapter describes the rewriting rules that can be used in the
 main rewrite section of the configuration file, and also in the generic
@@ -20202,7 +20202,7 @@ asterisk, which matches any error. The errors that can be tested for are:
 \rcpt@_4xx\: A 4\*xx*\ error was received for an outgoing \\RCPT\\ command.
 Either the first or both of the x's can be given as specific digits, for
 example: \"rcpt@_45x"\ or \"rcpt@_436"\. For example, to recognize 452 errors
-given to \\RCPT\\ commands by a particular host, and have retries every ten 
+given to \\RCPT\\ commands by a particular host, and have retries every ten
 minutes and a one-hour timeout, you could set up a retry rule of this form:
 .display asis
 the.host.name  rcpt_452   F,1h,10m
@@ -20233,11 +20233,11 @@ record timed out.
 \timeout@_connect\: A connection attempt timed out.
 
 .tempindent 0
-\timeout@_MX\: There was a timeout while connecting or during an SMTP session 
+\timeout@_MX\: There was a timeout while connecting or during an SMTP session
 with a host obtained from an MX record.
 
 .tempindent 0
-\timeout@_A\: There was a timeout while connecting or during an SMTP session 
+\timeout@_A\: There was a timeout while connecting or during an SMTP session
 with a host not obtained from an MX record.
 
 .tempindent 0
@@ -20250,7 +20250,7 @@ with a host not obtained from an MX record.
 .index quota||error testing in retry rule
 .index retry||quota error testing
 .tempindent 0
-\quota@_\<<time>>: A mailbox quota was exceeded in a local delivery by 
+\quota@_\<<time>>: A mailbox quota was exceeded in a local delivery by
 the \%appendfile%\ transport, and the mailbox has not been accessed for
 <<time>>. For example, \*quota@_4d*\ applies to a quota error when the mailbox
 has not been accessed for four days.
@@ -20265,7 +20265,7 @@ be based on the last time that the user accessed the mailbox. However, it is
 not always possible to determine this. Exim uses the following heuristic rules:
 .numberpars $.
 If the mailbox is a single file, the time of last access (the `atime') is used.
-As no new messages are being delivered (because the mailbox is over quota), 
+As no new messages are being delivered (because the mailbox is over quota),
 Exim does not access the file, so this is the time of last user access.
 .nextp
 .index maildir format||time of last read
@@ -20293,7 +20293,7 @@ You can specify retry rules that apply only when the failing message has a
 specific sender. In particular, this can be used to define retry rules that
 apply only to bounce messages. The third item in a retry rule can be of this
 form:
-.display 
+.display
 senders=<<address list>>
 .endd
 The retry timings themselves are then the fourth item. For example:
@@ -20318,7 +20318,7 @@ is never matched.
 
 .section Retry parameters
 .index retry||parameters in rules
-The third 
+The third
 .em
 (or fourth, if a senders list is present)
 .nem
@@ -20782,9 +20782,9 @@ fails. If there is no matching advertised mechanism, the \\AUTH\\ command is
 rejected with a 504 error.
 
 When a message is received from an authenticated host, the value of
-\$received@_protocol$\ is set to 
+\$received@_protocol$\ is set to
 .em
-`esmtpa' 
+`esmtpa'
 .nem
 instead of `esmtp', and \$sender@_host@_authenticated$\ contains the name (not
 the public name) of the authenticator driver that successfully authenticated
@@ -21312,7 +21312,7 @@ sasl_plain:
   server_set_id = $1
 .endd
 
-Cyrus SASL does implement the LOGIN authentication method, even though it is 
+Cyrus SASL does implement the LOGIN authentication method, even though it is
 not a standard method. It is disabled by default in the source distribution,
 but it is present in many binary distributions.
 
@@ -21456,8 +21456,8 @@ in order to get TLS to work.
 .index SMTP||ssmtp protocol
 .index SMTP||smtps protocol
 Early implementations of encrypted SMTP used a different TCP port from normal
-SMTP, and expected an encryption negotiation to start immediately, instead of 
-waiting for a \\STARTTLS\\ command from the client using the standard SMTP 
+SMTP, and expected an encryption negotiation to start immediately, instead of
+waiting for a \\STARTTLS\\ command from the client using the standard SMTP
 port. The protocol was called `ssmtp' or `smtps', and port 465 was allocated
 for this purpose.
 
@@ -21617,11 +21617,11 @@ allows all the defaults except those that use ARCFOUR, whereas
 tls_require_ciphers = AES : 3DES
 .endd
 allows only cipher suites that use AES and 3DES. The currently recognized
-algorithms are: 
+algorithms are:
 .em
 AES@_256, AES@_128, AES (both of the preceding), 3DES, and ARCFOUR@_128.
-Unrecognized algorithms are ignored. In a server, the order of the list is 
-unimportant; the server will advertise the availability of all the relevant 
+Unrecognized algorithms are ignored. In a server, the order of the list is
+unimportant; the server will advertise the availability of all the relevant
 cipher suites. However, in a client, the order of the list specifies a
 preference order for the algorithms. The first one in the client's list that is
 also advertised by the server is tried first. The default order is as listed
@@ -22051,7 +22051,7 @@ testing (if configured).
 .em
 .section The DATA ACLs
 .index \\DATA\\, ACLs for
-Two ACLs are associated with the \\DATA\\ command, because it is two-stage 
+Two ACLs are associated with the \\DATA\\ command, because it is two-stage
 command, with two responses being sent to the client.
 When the \\DATA\\ command is received, the ACL defined by \acl@_smtp@_predata\
 is obeyed. This gives you control after all the \\RCPT\\ commands, but before
@@ -22069,7 +22069,7 @@ associated with the \\DATA\\ command.
 
 For both of these ACLs, it is not possible to reject individual recipients. An
 error response rejects the entire message. Unfortunately, it is known that some
-MTAs do not treat hard (5$it{xx}) responses to the \\DATA\\ command (either 
+MTAs do not treat hard (5$it{xx}) responses to the \\DATA\\ command (either
 before or after the data) correctly -- they keep the message on their queues
 and try again later, but that is their problem, though it does waste some of
 your resources.
@@ -22555,7 +22555,7 @@ This example of \warn\ does not contain \message\, \log@_message\, or
 entry.
 .nextp
 .em
-If you want to apply a control unconditionally, you can use it with a \require\ 
+If you want to apply a control unconditionally, you can use it with a \require\
 verb. For example:
 .display asis
 require  control = no_multiline_response
@@ -22710,7 +22710,7 @@ These two controls are permitted only in the ACL specified by \acl@_smtp@_rcpt\
 \$local@_part$\ are lower cased before ACL processing. If
 `caseful@_local@_part' is specified, any uppercase letters in the original
 local part are restored in \$local@_part$\ for the rest of the ACL, or until a
-control that sets `caselower@_local@_part' is encountered. 
+control that sets `caselower@_local@_part' is encountered.
 
 This control affects only the current recipient. Moreover, it applies only to
 local part handling that takes place directly in the ACL (for example, as a key
@@ -22755,16 +22755,16 @@ work with.
 This control is permitted only for the \\MAIL\\, \\RCPT\\, and \\DATA\\ ACLs,
 in other words, only when an SMTP message is being received. If Exim accepts
 the message, instead the final 250 response, a 550 rejection message is sent.
-However, Exim proceeds to deliver the message as normal. The control applies 
-only to the current message, not to any subsequent ones that may be received in 
+However, Exim proceeds to deliver the message as normal. The control applies
+only to the current message, not to any subsequent ones that may be received in
 the same SMTP connection.
 
 The text for the 550 response is taken from the \control\ modifier. If no
 message is supplied, the following is used:
 .display asis
-550-Your message has been rejected but is being 
+550-Your message has been rejected but is being
 550-kept for evaluation.
-550-If it was a legitimate message, it may still be 
+550-If it was a legitimate message, it may still be
 550 delivered to the target recipient(s).
 .endd
 This facilty should be used with extreme caution.
@@ -22780,13 +22780,13 @@ received in the same SMTP connection.
 
 
 .item "control = no@_mbox@_unspool"
-This control is available when Exim is compiled with the content scanning 
-extension. Content scanning may require a copy of the current message, or parts 
+This control is available when Exim is compiled with the content scanning
+extension. Content scanning may require a copy of the current message, or parts
 of it, to be written in `mbox format' to a spool file, for passing to a virus
-or spam scanner. Normally, such copies are deleted when they are no longer 
+or spam scanner. Normally, such copies are deleted when they are no longer
 needed. If this control is set, the copies are not deleted. The control
 applies only to the current message, not to any subsequent ones that may be
-received in the same SMTP connection. It is provided for debugging purposes and 
+received in the same SMTP connection. It is provided for debugging purposes and
 is unlikely to be useful in production.
 
 
@@ -22835,7 +22835,7 @@ Exim that the current message is a submission from a local MUA. In this case,
 Exim operates in `submission mode', and applies certain fixups to the message
 if necessary. For example, it add a ::Date:: header line if one is not present.
 This control is not permitted in the \acl@_smtp@_data\ ACL, because that is too
-late (the message has already been created). 
+late (the message has already been created).
 
 Chapter ~~CHAPmsgproc describes the processing that Exim applies to messages.
 Section ~~SECTsubmodnon covers the processing that happens in submission mode;
@@ -23252,7 +23252,7 @@ a message has been received (the \acl@_smtp@_data\ or \acl@_not@_smtp\ ACLs).
 If the message's sender is empty (that is, this is a bounce message), the
 condition is true. Otherwise, the sender address is verified.
 .em
-If there is data in the \$address@_data$\ variable at the end of routing, its 
+If there is data in the \$address@_data$\ variable at the end of routing, its
 value is placed in \$sender__address__data$\ at the end of verification. This
 value can be used in subsequent conditions and modifiers in the same ACL
 statement. It does not persist after the end of the current statement. If you
@@ -24167,8 +24167,8 @@ Additional ACL conditions and modifiers: \decode\, \malware\, \mime@_regex\,
 \regex\, and \spam\. These can be used in the ACL that is run at the end of
 message reception (the \acl@_smtp@_data\ ACL).
 .nextp
-An additional control feature (`no@_mbox@_unspool') that saves spooled copies 
-of messages, or parts of messages, for debugging purposes. 
+An additional control feature (`no@_mbox@_unspool') that saves spooled copies
+of messages, or parts of messages, for debugging purposes.
 .nextp
 Additional expansion variables that are set in the new ACL and by the new
 conditions.
@@ -24195,7 +24195,7 @@ The \(.eml)\ extension is a friendly hint to virus scanners that they can
 expect an MBOX-like structure inside that file. The file is created when the
 first content scanning facility is called. Subsequent calls to content
 scanning conditions open the same file again. The directory is recursively
-removed when the \acl@_smtp@_data\ ACL has finished running, unless 
+removed when the \acl@_smtp@_data\ ACL has finished running, unless
 .display asis
 control = no_mbox_unspool
 .endd
@@ -24249,7 +24249,7 @@ number, and a port, separated by space, as in the second of these examples:
 av_scanner = clamd:/opt/clamd/socket
 av_scanner = clamd:192.168.2.100 1234
 .endd
-If the option is unset, the default is \(/tmp/clamd)\. Thanks to David Saez for 
+If the option is unset, the default is \(/tmp/clamd)\. Thanks to David Saez for
 contributing the code for this scanner.
 
 .nextp
@@ -24349,7 +24349,7 @@ called. This makes it possible to use different scanners. See further below for
 an example. The \malware\ condition caches its results, so when you use it
 multiple times for the same message, the actual scanning process is only
 carried out once. However, using expandable items in \av@_scanner\ disables
-this caching, in which case each use of the \malware\ condition causes a new 
+this caching, in which case each use of the \malware\ condition causes a new
 scan of the message.
 
 The \malware\ condition takes a right-hand argument that is expanded before
@@ -24453,10 +24453,14 @@ Up to 32 \spamd\ servers are supported. The servers are
 queried in a random fashion. When a server fails to respond
 to the connection attempt, all other servers are tried
 until one succeeds. If no server responds, the \spam\
-condition defers. 
+condition defers.
 
 \**Warning**\: It is not possible to use the UNIX socket connection method with
 multiple \spamd\ servers.
+
+The spamd_address variable is expanded before use if it starts with a dollar
+sign. In this case, the expansion may return a string that is used as the
+list so that multiple spamd servers can be the result of an expansion.
 
 Here is a simple example of the use of the \spam\ condition in a DATA ACL:
 .display asis
@@ -24510,13 +24514,14 @@ report for the message. Useful for inclusion in headers or reject messages.
 
 .pop
 
-The \spam\ condition caches its results. If you call it again with the same user
-name, it does not scan again, but rather returns the same values as before.
+The \spam\ condition caches its results unless expansion in spamd_address was
+used. If you call it again with the same user name, it does not scan again,
+but rather returns the same values as before.
 
 The \spam\ condition returns DEFER if there is any error while running the
-message through SpamAssassin. If you want to treat DEFER as FAIL (to pass on to
-the next ACL statement block), append \"/defer@_ok"\ to the right-hand side of
-the spam condition, like this:
+message through SpamAssassin or if the expansion of spamd_address failed. If
+you want to treat DEFER as FAIL (to pass on to the next ACL statement block),
+append \"/defer_ok"\ to the right-hand side of the spam condition, like this:
 .display asis
 deny message = This message was classified as SPAM
      spam    = joe/defer_ok
@@ -24554,17 +24559,17 @@ deny   message = This message scored $spam_score spam points.
 The \acl@_smtp@_mime\ global option defines an ACL that is called once for each
 MIME part of a message, including multipart types, in the sequence of their
 position in the message.
- 
+
 This ACL is called (possibly many times) just before the \acl@_smtp@_data\ ACL,
 but only if the message has a ::MIME-Version:: header. When a call to the MIME
 ACL does not yield `accept', ACL processing is aborted and the appropriate
 result code is sent to the remote client. The \acl@_smtp@_data\ ACL is not
 called in this circumstance.
 
-At the start of the MIME ACL, a number of variables are set from the header 
-information for the relevant MIME part. These are described below. The contents 
-of the MIME part are not by default decoded into a disk file except for MIME 
-parts whose content-type is `message/rfc822'. If you want to decode a MIME part 
+At the start of the MIME ACL, a number of variables are set from the header
+information for the relevant MIME part. These are described below. The contents
+of the MIME part are not by default decoded into a disk file except for MIME
+parts whose content-type is `message/rfc822'. If you want to decode a MIME part
 into a disk file, you can use the \decode\ modifier. The general syntax is:
 .display
 decode = [/<<path>>/]<<filename>>
@@ -24712,7 +24717,7 @@ All parts contained within an attachment multipart are attachments.
 .endp
 
 As an example, the following will ban `HTML mail' (including that sent with
-alternative plain text), while allowing HTML files to be attached. HTML 
+alternative plain text), while allowing HTML files to be attached. HTML
 coverletter mail attached to non-HMTL coverletter mail will also be allowed:
 .display asis
 deny message = HTML mail is not accepted here
@@ -24751,7 +24756,7 @@ parts of a message. For non-MIME messages, this variable contains the value -1.
 .rset SECTscanregex "~~chapter.~~section"
 .index content scanning||with regular expressions
 .index regular expressions||content scanning with
-You can specify your own custom regular expression matches on the full body of 
+You can specify your own custom regular expression matches on the full body of
 the message, or on individual MIME parts.
 
 The \regex\ condition takes one or more regular expressions as arguments and
@@ -24837,9 +24842,9 @@ occurred.
 .tempindent 0
 \$found@_extension$\: When the \demime\ condition is true, this variable
 contains the file extension it found.
- 
-.pop 
- 
+
+.pop
+
 Both \$demime@_errorlevel$\ and \$demime@_reason$\ are set by the first call of
 the \demime\ condition, and are not changed on subsequent calls.
 
@@ -24883,9 +24888,9 @@ deny  log_message = Another $found_extension file.
 .index policy control||by local scan function
 
 In these days of email worms, viruses, and ever-increasing spam, some sites
-want to apply a lot of checking to messages before accepting them. 
+want to apply a lot of checking to messages before accepting them.
 .em
-The content scanning extension (chapter ~~CHAPexiscan) has facilities for 
+The content scanning extension (chapter ~~CHAPexiscan) has facilities for
 passing messages to external virus and spam scanning software. You can also do
 .nem
 a certain amount in Exim itself through string expansions and the \condition\
@@ -25370,7 +25375,7 @@ block of memory that was obtained by a call to \*store@_get()*\. See section
 
 .item "void header@_add(int type, char *format, ...)"
 .em
-This function allows you to an add additional header line at the end of the 
+This function allows you to an add additional header line at the end of the
 existing ones.
 .nem
 The first argument is the type, and should normally be a space character. The
@@ -25394,7 +25399,7 @@ added. If it is true, addition is at the top; otherwise at the bottom. Thus, to
 add a header after all the ::Received:: headers, or at the top if there are no
 ::Received:: headers, you could use
 .display asis
-header_add_at_position(TRUE, US"Received", TRUE, 
+header_add_at_position(TRUE, US"Received", TRUE,
   ' ', "X-xxx: ...");
 .endd
 Normally, there is always at least one non-deleted ::Received:: header, but
@@ -25689,7 +25694,7 @@ You can run simple tests of a system filter in the same way as for a user
 filter, but you should use \-bF-\ rather than \-bf-\, so that features that
 are permitted only in system filters are recognized.
 .em
-If you want to test the combined effect of a system filter and a user filter, 
+If you want to test the combined effect of a system filter and a user filter,
 you can use both \-bF-\ and \-bf-\ on the same command line.
 .nem
 
@@ -25836,17 +25841,17 @@ header with the same name, they are all removed.
 
 .em
 The \headers\ command in a system filter makes an immediate change to the set
-of header lines that was received with the message (with possible additions 
+of header lines that was received with the message (with possible additions
 from ACL processing). Subsequent commands in the system filter operate on the
-modified set, which also forms the basis for subsequent message delivery. 
-Unless further modified during routing or transporting, this set of headers is 
+modified set, which also forms the basis for subsequent message delivery.
+Unless further modified during routing or transporting, this set of headers is
 used for all recipients of the message.
 
 During routing and transporting, the variables that refer to the contents of
 header lines refer only to those lines that are in this set. Thus, header lines
 that are added by a system filter are visible to users' filter files and to all
 routers and transports. This contrasts with the manipulation of header lines by
-routers and transports, which is not immediate, but which instead is saved up 
+routers and transports, which is not immediate, but which instead is saved up
 until the message is actually being written (see section ~~SECTheadersaddrem).
 
 If the message is not delivered at the first attempt, header lines that were
@@ -25854,11 +25859,11 @@ added by the system filter are stored with the message, and so are still
 present at the next delivery attempt. Header lines that were removed are still
 present, but marked `deleted' so that they are not transported with the
 message. For this reason, it is usual to make the \headers\ command conditional
-on \first@_delivery\ so that the set of header lines is not modified more than 
+on \first@_delivery\ so that the set of header lines is not modified more than
 once.
 
-Because header modification in a system filter acts immediately, you have to 
-use an indirect approach if you want to modify the contents of a header line. 
+Because header modification in a system filter acts immediately, you have to
+use an indirect approach if you want to modify the contents of a header line.
 For example:
 .display asis
 headers add "Old-Subject: $h_subject:"
@@ -25943,13 +25948,13 @@ Some of the automatic processing takes place by default only for
 `locally-originated' messages. This adjective is used to describe messages that
 are not received over TCP/IP, but instead are passed to an Exim process on its
 standard input. This includes the interactive `local SMTP' case that is set up
-by the \-bs-\ command line option. 
+by the \-bs-\ command line option.
 
 \**Note**\: messages received over TCP/IP on the loopback interface (127.0.0.1
 or @:@:1) are not considered to be locally-originated. Exim does not treat the
 loopback interface specially in any way.
 .em
-If you want the loopback interface to be treated specially, you must ensure 
+If you want the loopback interface to be treated specially, you must ensure
 that there are appropriate entries in your ACLs.
 .nem
 
@@ -25975,7 +25980,7 @@ interface, you could include the following in the \\MAIL\\ ACL:
 warn  hosts = 127.0.0.1
       control = submission
 .endd
-There are some options that can be used when setting submission mode. A slash 
+There are some options that can be used when setting submission mode. A slash
 is used to separate options. For example:
 .display asis
 control = submission/sender_retain
@@ -25988,7 +25993,7 @@ sender. With this setting, Exim still fixes up messages by adding ::Date:: and
 ::Message-ID:: header lines if they are missing, but makes no attempt to check
 sender authenticity in header lines.
 
-A submission mode setting may also specify a domain to be used when generating 
+A submission mode setting may also specify a domain to be used when generating
 a ::From:: or ::Sender:: header. For example:
 .display asis
 control = submission/domain=some.domain
@@ -26059,11 +26064,11 @@ value of \qualify__domain\ or \qualify__recipient\, as appropriate.
 .index \qualify@_recipient\
 
 .em
-Unqualified addresses in header lines are automatically qualified for messages 
-that are locally originated, unless the \-bnq-\ option is given on the command 
-line. For messages received over SMTP, unqualified addresses in header lines 
-are qualified only if unqualified addresses are permitted in SMTP commands. In 
-other words, such qualification is also controlled by 
+Unqualified addresses in header lines are automatically qualified for messages
+that are locally originated, unless the \-bnq-\ option is given on the command
+line. For messages received over SMTP, unqualified addresses in header lines
+are qualified only if unqualified addresses are permitted in SMTP commands. In
+other words, such qualification is also controlled by
 \sender__unqualified__hosts\ and \recipient__unqualified__hosts\,
 .nem
 
@@ -26201,16 +26206,16 @@ one if either of the following conditions is true:
 The envelope sender address is not empty (that is, this is not a bounce
 message). The added header line copies the envelope sender address.
 .nextp
-The SMTP session is authenticated and \$authenticated@_id$\ is not empty. 
+The SMTP session is authenticated and \$authenticated@_id$\ is not empty.
 .em
 .numberpars alpha
-If no domain is specified by the submission control, the local part is 
+If no domain is specified by the submission control, the local part is
 \$authenticated@_id$\ and the domain is \$qualify@_domain$\.
 .nextp
-If a non-empty domain is specified by the submission control, the local part is 
+If a non-empty domain is specified by the submission control, the local part is
 \$authenticated@_id$\, and the the domain is the specified domain.
 .nextp
-If an empty domain is specified by the submission control, 
+If an empty domain is specified by the submission control,
 \$authenticated@_id$\ is assumed to be the complete address.
 .endp
 .nem
@@ -26302,13 +26307,13 @@ First, any existing ::Sender:: lines are removed. Then, if the SMTP session is
 authenticated, and \$authenticated@_id$\ is not empty, a sender address is
 created as follows:
 .numberpars $.
-If no domain is specified by the submission control, the local part is 
+If no domain is specified by the submission control, the local part is
 \$authenticated@_id$\ and the domain is \$qualify@_domain$\.
 .nextp
-If a non-empty domain is specified by the submission control, the local part is 
+If a non-empty domain is specified by the submission control, the local part is
 \$authenticated@_id$\, and the the domain is the specified domain.
 .nextp
-If an empty domain is specified by the submission control, 
+If an empty domain is specified by the submission control,
 \$authenticated@_id$\ is assumed to be the complete address.
 .endp
 This address is compared with the address in the ::From:: header line. If they
@@ -26324,9 +26329,9 @@ setting \local@_from@_prefix\ and \local@_from@_suffix\ appropriately.
 .rset SECTheadersaddrem "~~chapter.~~section"
 .em
 When a message is delivered, the addition and removal of header lines can be
-specified in a system filter, or on any of the routers and transports that 
-process the message. Section ~~SECTaddremheasys contains details about 
-modifying headers in a system filter. 
+specified in a system filter, or on any of the routers and transports that
+process the message. Section ~~SECTaddremheasys contains details about
+modifying headers in a system filter.
 
 In contrast to what happens in a system filter, header modifications that are
 specified on routers and transports apply only to the particular recipient
@@ -26342,7 +26347,7 @@ newlines (coded as `@\n'). For example:
 headers_add = X-added-header: added by $primary_hostname\n\
               X-added-second: another added header line
 .endd
-Exim does not check the syntax of these added header lines. 
+Exim does not check the syntax of these added header lines.
 
 The result of expanding \headers@_remove\ must consist of a colon-separated
 list of header names. This is confusing, because header names themselves are
@@ -26352,7 +26357,7 @@ not part of the names. For example:
 headers_remove = return-receipt-to:acknowledge-to
 .endd
 
-When \headers@_add\ or \headers@_remove\ is specified on a router, its value is 
+When \headers@_add\ or \headers@_remove\ is specified on a router, its value is
 expanded at routing time, and then associated with all addresses that are
 accepted by that router, and also with any new addresses that it generates. If
 an address passes through several routers as a result of aliasing or
@@ -26363,11 +26368,11 @@ the \unseen\ option. Any header modifications that were specified by the
 `unseen' router or its predecessors apply only to the `unseen' delivery.
 
 Addresses that end up with different \headers@_add\ or \headers@_remove\
-settings cannot be delivered together in a batch, so a transport is always 
-dealing with a set of addresses that have the same header-processing 
-requirements. 
+settings cannot be delivered together in a batch, so a transport is always
+dealing with a set of addresses that have the same header-processing
+requirements.
 
-The transport starts by writing the original set of header lines that arrived 
+The transport starts by writing the original set of header lines that arrived
 with the message, possibly modified by the system filter. As it writes out
 these lines, it consults the list of header names that were attached to the
 recipient address(es) by \headers@_remove\ options in routers, and it also
@@ -26383,9 +26388,9 @@ header lines specified by the transport's \headers@_add\ option.
 This way of handling header line modifications in routers and transports has
 the following consequences:
 .numberpars $.
-The original set of header lines, possibly modified by the system filter, 
+The original set of header lines, possibly modified by the system filter,
 remains `visible', in the sense that the \$header@_$\\*xxx*\ variables refer to
-it, at all times. 
+it, at all times.
 .nextp
 Header lines that are added by a router's
 \headers@_add\ option are not accessible by means of the \$header@_$\\*xxx*\
@@ -26394,10 +26399,10 @@ expansion syntax in subsequent routers or the transport.
 Conversely, header lines that are specified for removal by \headers@_remove\ in
 a router remain visible to subsequent routers and the transport.
 .nextp
-Headers added to an address by \headers@_add\ in a router cannot be removed by 
+Headers added to an address by \headers@_add\ in a router cannot be removed by
 a later router or by a transport.
 .nextp
-An added header can refer to the contents of an original header that is to be 
+An added header can refer to the contents of an original header that is to be
 removed, even it has the same name as the added header. For example:
 .display asis
 headers_remove = subject
@@ -27750,10 +27755,10 @@ configured: they submit messages using the command line interface of
 \(/usr/sbin/sendmail)\. Furthermore, utility programs such as \*cron*\ submit
 messages this way.
 
-If the personal computer runs continuously, there is no problem, because it can 
+If the personal computer runs continuously, there is no problem, because it can
 run a conventional MTA that handles delivery to the smart host, and deal with
-any delays via its queueing mechanism. However, if the computer does not run 
-continuously or runs different operating systems at different times, queueing 
+any delays via its queueing mechanism. However, if the computer does not run
+continuously or runs different operating systems at different times, queueing
 email is not desirable.
 
 There is therefore a requirement for something that can provide the
@@ -28179,9 +28184,9 @@ of Exim.
 .index authentication||logging
 .index \\AUTH\\||logging
 For all messages, the P field specifies the protocol used to receive the
-message. This is set to 
+message. This is set to
 .em
-`esmtpa' 
+`esmtpa'
 .nem
 for messages received from hosts that have authenticated themselves using the
 SMTP \\AUTH\\ command. In this case there is an additional item A= followed by
@@ -28349,13 +28354,13 @@ P          $t $rm{on \"<="\ lines: protocol used}
 QT         $t $rm{on \"=>"\ lines: time spent on queue so far}
            $t $rm{on `Completed' lines: time spent on queue}
 .nem
-.newline            
+.newline
 R          $t $rm{on \"<="\ lines: reference for local bounce}
 .newline
 .em
            $t $rm{on \"=>"\  \"**"\ and \"=="\ lines: router name}
 .nem
-.newline            
+.newline
 S          $t $rm{size of message}
 ST         $t $rm{shadow transport name}
 T          $t $rm{on \"<="\ lines: message subject (topic)}
@@ -28363,7 +28368,7 @@ T          $t $rm{on \"<="\ lines: message subject (topic)}
 .em
            $t $rm{on \"=>"\ \"**"\ and \"=="\ lines: transport name}
 .nem
-.newline            
+.newline
 U          $t $rm{local user or RFC 1413 identity}
 X          $t $rm{TLS cipher suite}
 .endd
@@ -28441,9 +28446,9 @@ selection marked by asterisks:
  outgoing@_port             $t $rm{add remote port to => lines}
 *queue@_run                 $t $rm{start and end queue runs}
 .newline
-.em 
+.em
  queue@_time                $t $rm{time on queue for one recipient}
- queue@_time@_overall       $t $rm{time on queue for whole message} 
+ queue@_time@_overall       $t $rm{time on queue for whole message}
 .nem
 .newline
  received@_recipients       $t $rm{recipients on <= lines}
@@ -28623,7 +28628,7 @@ attempt.
 \return@_path@_on@_delivery\: The return path that is being transmitted with
 the message is included in delivery and bounce lines, using the tag P=.
 .em
-This is omitted if no delivery actually happens, for example, if routing fails, 
+This is omitted if no delivery actually happens, for example, if routing fails,
 or if delivery is to \(/dev/null)\ or to \":blackhole:"\.
 .nem
 .nextp
@@ -28821,8 +28826,8 @@ order to run \*exiwhat*\ successfully you have to have sufficient privilege to
 send the signal to the Exim processes, so it is normally run as root.
 
 .em
-\**Warning**\: This is not an efficient process. It is intended for occasional 
-use by system administrators. It is not sensible, for example, to set up a 
+\**Warning**\: This is not an efficient process. It is intended for occasional
+use by system administrators. It is not sensible, for example, to set up a
 script that sends \\SIGUSR1\\ signals to Exim processes at short intervals.
 .nem
 
@@ -29007,7 +29012,7 @@ Each time \*exicyclog*\ is run the file names get `shuffled down' by one. If
 the main log file name is \(mainlog)\ (the default) then when \*exicyclog*\ is
 run \(mainlog)\ becomes \(mainlog.01)\, the previous \(mainlog.01)\ becomes
 \(mainlog.02)\ and so on, up to a limit which is set in the script, and which
-defaults to 10. 
+defaults to 10.
 .em
 Log files whose numbers exceed the limit are discarded.
 .nem
@@ -29471,10 +29476,10 @@ message ids are removed. The \*exim@_tidydb*\ utility outputs comments on the
 standard output whenever it removes information from the database.
 
 .em
-Certain records are automatically removed by Exim when they are no longer 
-needed, but others are not. For example, if all the MX hosts for a domain are 
+Certain records are automatically removed by Exim when they are no longer
+needed, but others are not. For example, if all the MX hosts for a domain are
 down, a retry record is created for each one. If the primary MX host comes back
-first, its record is removed when Exim successfully delivers to it, but the 
+first, its record is removed when Exim successfully delivers to it, but the
 records for the others remain because Exim has not tried to use those hosts.
 
 It is important, therefore, to run \*exim@_tidydb*\ periodically on all the
@@ -29482,11 +29487,11 @@ hints databases. You should do this at a quiet time of day, because it requires
 a database to be locked (and therefore inaccessible to Exim) while it does its
 work. Removing records from a DBM file does not normally make the file smaller,
 but all the common DBM libraries are able to re-use the space that is released.
-After an initial phase of increasing in size, the databases normally reach a 
-point at which they no longer get any bigger, as long as they are regularly 
+After an initial phase of increasing in size, the databases normally reach a
+point at which they no longer get any bigger, as long as they are regularly
 tidied.
 
-\**Warning**\: If you never run \*exim@_tidydb*\, the space used by the hints 
+\**Warning**\: If you never run \*exim@_tidydb*\, the space used by the hints
 databases is likely to keep on increasing.
 .nem
 
@@ -30136,9 +30141,9 @@ stops Exim from trying to re-invoke itself to do a delivery after a message has
 been received. Such a re-invocation is a waste of resources because it has no
 effect.
 
-If restarting the daemon is not an issue (for example, if 
+If restarting the daemon is not an issue (for example, if
 .em
-\mua@_wrapper\ is set, or 
+\mua@_wrapper\ is set, or
 .nem
 \*inetd*\ is being used instead of a daemon), having the binary setuid to the
 Exim user seems a clean approach, but there is one complication:
@@ -30194,7 +30199,7 @@ However, there are no restrictions on remote deliveries. If you are running a
 gateway host that does no local deliveries, setting \deliver@_drop@_privilege\
 gives more security at essentially no cost.
 .em
-If you are using the \mua@_wrapper\ facility (see chapter ~~CHAPnonqueueing), 
+If you are using the \mua@_wrapper\ facility (see chapter ~~CHAPnonqueueing),
 \deliver@_drop@_privilege\ is forced to be true.
 .nem
 
@@ -30402,8 +30407,8 @@ variable. The string itself starts at the beginning of the next line, and is
 followed by a newline character. It may contain internal newlines.
 .nextp
 .em
-\-active@_hostname <<hostname>>-\: This is present if, when the message was 
-received over SMTP, the value of \$smtp@_active@_hostname$\ was different to 
+\-active@_hostname <<hostname>>-\: This is present if, when the message was
+received over SMTP, the value of \$smtp@_active@_hostname$\ was different to
 the value of \$primary@_hostname$\.
 .nem
 .nextp
@@ -30430,7 +30435,7 @@ value of the \$authenticated@_sender$\ variable.
 the message, and is always present.
 .nextp
 .em
-\-body@_zerocount <<number>>-\: This records the number of binary zero bytes in 
+\-body@_zerocount <<number>>-\: This records the number of binary zero bytes in
 the body of the message, and is present if the number is greater than zero.
 .nem
 .nextp
@@ -30497,7 +30502,7 @@ untrusted local caller (used to ensure that the caller is displayed in queue
 listings).
 .nextp
 .em
-\-spam@_score@_int-\: If a message was scanned by SpamAssassin, this is 
+\-spam@_score@_int-\: If a message was scanned by SpamAssassin, this is
 present. It records the value of \$spam@_score@_int$\.
 .nem
 .nextp
