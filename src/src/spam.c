@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.14 2007/05/14 18:56:25 magnus Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.15 2008/01/16 09:52:15 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -46,6 +46,7 @@ int spam(uschar **listptr) {
   struct timeval select_tv;         /* and applied by PH */
   fd_set select_fd;
 #endif
+  uschar *spamd_address_work;
 
   /* stop compiler warning */
   result = 0;
@@ -89,8 +90,20 @@ int spam(uschar **listptr) {
   };
 
   start = time(NULL);
+
+  if (*spamd_address == '$') {
+    spamd_address_work = expand_string(spamd_address);
+    if (spamd_address_work == NULL) {
+      log_write(0, LOG_MAIN|LOG_PANIC,
+        "spamassassin acl condition: spamd_address starts with $, but expansion failed: %s", expand_string_message);
+      return DEFER;
+    }
+  }
+  else
+    spamd_address_work = spamd_address;
+
   /* socket does not start with '/' -> network socket */
-  if (*spamd_address != '/') {
+  if (*spamd_address_work != '/') {
     time_t now = time(NULL);
     int num_servers = 0;
     int current_server = 0;
@@ -184,12 +197,12 @@ int spam(uschar **listptr) {
     }
 
     server.sun_family = AF_UNIX;
-    Ustrcpy(server.sun_path, spamd_address);
+    Ustrcpy(server.sun_path, spamd_address_work);
 
     if (connect(spamd_sock, (struct sockaddr *) &server, sizeof(struct sockaddr_un)) < 0) {
       log_write(0, LOG_MAIN|LOG_PANIC,
                 "malware acl condition: spamd: unable to connect to UNIX socket %s (%s)",
-                spamd_address, strerror(errno) );
+                spamd_address_work, strerror(errno) );
       (void)fclose(mbox_file);
       (void)close(spamd_sock);
       return DEFER;
@@ -395,9 +408,11 @@ again:
     spam_rc = FAIL;
   };
 
-  /* remember user name and "been here" for it */
-  Ustrcpy(prev_user_name, user_name);
-  spam_ok = 1;
+  /* remember user name and "been here" for it unless spamd_socket was expanded */
+  if (spamd_address_work == spamd_address) {
+    Ustrcpy(prev_user_name, user_name);
+    spam_ok = 1;
+  }
 
   if (override) {
     /* always return OK, no matter what the score */
