@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.9 2007/10/04 13:21:06 tom Exp $
+$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.10 2008/01/16 09:36:19 tom Exp $
 
 From time to time, experimental features may be added to Exim.
 While a feature  is experimental, there  will be a  build-time
@@ -697,7 +697,7 @@ These four steps are explained in more details below.
 3. Sender Policy Framework (SPF) support
 --------------------------------------------------------------
 
-To learn  more  about  SPF, visit   http://spf.pobox.com. This
+To learn  more  about  SPF, visit   http://www.openspf.org. This
 document does   not explain  the SPF  fundamentals, you should
 read and understand the implications of deploying SPF on  your
 system before doing so.
@@ -761,11 +761,12 @@ the SPF check, the condition  succeeds. If none of the  listed
 strings matches the  outcome of the  SPF check, the  condition
 fails.
 
-Here is a simple example to fail forgery attempts from domains
-that publish SPF records:
+Here is an example to fail forgery attempts from domains that
+publish SPF records:
 
 /* -----------------
-deny message = $sender_host_address is not allowed to send mail from $sender_address_domain
+deny message = $sender_host_address is not allowed to send mail from ${if def:sender_address_domain {$sender_address_domain}{$sender_helo_name}}.  \
+              Please see http://www.openspf.org/Why?scope=${if def:sender_address_domain {mfrom}{helo}};identity=${if def:sender_address_domain {$sender_address}{$sender_helo_name}};ip=$sender_host_address
      spf = fail
 --------------------- */
 
