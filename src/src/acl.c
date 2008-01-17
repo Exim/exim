@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.80 2007/09/28 12:21:57 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.81 2008/01/17 13:03:35 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -55,6 +55,9 @@ enum { ACLC_ACL,
        ACLC_CONDITION,
        ACLC_CONTINUE,
        ACLC_CONTROL,
+#ifdef EXPERIMENTAL_DCC
+       ACLC_DCC,
+#endif
 #ifdef WITH_CONTENT_SCAN
        ACLC_DECODE,
 #endif
@@ -117,6 +120,9 @@ static uschar *conditions[] = {
   US"condition",
   US"continue",
   US"control",
+#ifdef EXPERIMENTAL_DCC
+  US"dcc",
+#endif
 #ifdef WITH_CONTENT_SCAN
   US"decode",
 #endif
@@ -247,6 +253,9 @@ static uschar cond_expand_at_top[] = {
   TRUE,    /* condition */
   TRUE,    /* continue */
   TRUE,    /* control */
+#ifdef EXPERIMENTAL_DCC
+  TRUE,    /* dcc */
+#endif
 #ifdef WITH_CONTENT_SCAN
   TRUE,    /* decode */
 #endif
@@ -307,6 +316,9 @@ static uschar cond_modifiers[] = {
   FALSE,   /* condition */
   TRUE,    /* continue */
   TRUE,    /* control */
+#ifdef EXPERIMENTAL_DCC
+  FALSE,   /* dcc */
+#endif
 #ifdef WITH_CONTENT_SCAN
   FALSE,   /* decode */
 #endif
@@ -392,6 +404,11 @@ static unsigned int cond_forbids[] = {
   always and check in the control processing itself. */
 
   0,                                               /* control */
+
+  #ifdef EXPERIMENTAL_DCC
+  (unsigned int)
+  ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)),   /* dcc */
+  #endif
 
   #ifdef WITH_CONTENT_SCAN
   (unsigned int)
@@ -2753,6 +2770,26 @@ for (; cb != NULL; cb = cb->next)
       break;
       }
     break;
+
+    #ifdef EXPERIMENTAL_DCC
+    case ACLC_DCC:
+      {
+      /* Seperate the regular expression and any optional parameters. */
+      uschar *ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size);
+      /* Run the dcc backend. */
+      rc = dcc_process(&ss);
+      /* Modify return code based upon the existance of options. */
+      while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
+            != NULL) {
+        if (strcmpic(ss, US"defer_ok") == 0 && rc == DEFER)
+          {
+          /* FAIL so that the message is passed to the next ACL */
+          rc = FAIL;
+          }
+        }
+      }
+    break;
+    #endif
 
     #ifdef WITH_CONTENT_SCAN
     case ACLC_DECODE:

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.60 2007/09/28 12:21:57 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.61 2008/01/17 13:03:35 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -232,6 +232,15 @@ extern BOOL    daemon_listen;          /* True if listening required */
 extern uschar *daemon_smtp_port;       /* Can be a list of ports */
 extern int     daemon_startup_retries; /* Number of times to retry */
 extern int     daemon_startup_sleep;   /* Sleep between retries */
+
+#ifdef EXPERIMENTAL_DCC
+extern BOOL    dcc_direct_add_header;  /* directly add header */
+extern uschar *dcc_header;             /* dcc header */
+extern uschar *dcc_result;             /* dcc result */
+extern uschar *dccifd_address;         /* address of the dccifd daemon */
+extern uschar *dccifd_options;         /* options for the dccifd daemon */
+#endif
+
 extern BOOL    debug_daemon;           /* Debug the daemon process only */
 extern int     debug_fd;               /* The fd for debug_file */
 extern FILE   *debug_file;             /* Where to write debugging info */

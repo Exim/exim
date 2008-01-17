@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.42 2007/09/28 12:21:57 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.43 2008/01/17 13:03:36 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -42,6 +42,10 @@
 
 #endif
 
+
+#ifdef EXPERIMENTAL_DCC
+extern int dcc_ok;
+#endif
 
 /*************************************************
 *                Local static variables          *
@@ -3109,6 +3113,11 @@ else
 #ifdef WITH_CONTENT_SCAN
 unspool_mbox();
 #endif
+
+#ifdef EXPERIMENTAL_DCC
+dcc_ok = 0;
+#endif
+
 
 /* The final check on the message is to run the scan_local() function. The
 version supplied with Exim always accepts, but this is a hook for sysadmins to

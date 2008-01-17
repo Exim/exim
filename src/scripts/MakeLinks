@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Cambridge: exim/src/scripts/MakeLinks,v 1.13 2007/09/28 12:21:57 tom Exp $
+# $Cambridge: exim/src/scripts/MakeLinks,v 1.14 2008/01/17 13:03:35 tom Exp $
 
 # Script to build links for all the exim source files from the system-
 # specific build directory. It should be run from within that directory.
@@ -284,5 +284,8 @@ ln -s ../src/dk.c              dk.c
 ln -s ../src/dk.h              dk.h
 ln -s ../src/dkim-exim.c       dkim-exim.c
 ln -s ../src/dkim-exim.h       dkim-exim.h
+ln -s ../src/dcc.c             dcc.c
+ln -s ../src/dcc.h             dcc.h
+
 
 # End of MakeLinks

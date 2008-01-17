@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.59 2007/09/28 12:21:57 tom Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.60 2008/01/17 13:03:35 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -922,6 +922,9 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_DKIM
   fprintf(f, " Experimental_DKIM");
+#endif
+#ifdef EXPERIMENTAL_DCC
+  fprintf(f, " Experimental_DCC");
 #endif
 fprintf(f, "\n");
 

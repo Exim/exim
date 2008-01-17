@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.13 2007/01/08 10:50:17 ph10 Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.14 2008/01/17 13:03:35 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -680,7 +680,8 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
     {
     char *wcs = getenv("WITH_CONTENT_SCAN");
     char *wod = getenv("WITH_OLD_DEMIME");
-    if (wcs != NULL || wod != NULL)
+    char *dcc = getenv("EXPERIMENTAL_DCC");
+    if (wcs != NULL || wod != NULL || dcc != NULL)
       fprintf(new, "#define WITH_CONTENT_SCAN     yes\n");
     else fprintf(new, "/* WITH_CONTENT_SCAN not set */\n");
     continue;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.33 2007/08/23 11:01:49 ph10 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.34 2008/01/17 13:03:35 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -191,6 +191,11 @@ static optionlist optionlist_config[] = {
   { "daemon_smtp_ports",        opt_stringptr,   &daemon_smtp_port },
   { "daemon_startup_retries",   opt_int,         &daemon_startup_retries },
   { "daemon_startup_sleep",     opt_time,        &daemon_startup_sleep },
+#ifdef EXPERIMENTAL_DCC
+  { "dcc_direct_add_header",    opt_bool,        &dcc_direct_add_header },
+  { "dccifd_address",           opt_stringptr,   &dccifd_address },
+  { "dccifd_options",           opt_stringptr,   &dccifd_options },
+#endif
   { "delay_warning",            opt_timelist,    &delay_warning },
   { "delay_warning_condition",  opt_stringptr,   &delay_warning_condition },
   { "deliver_drop_privilege",   opt_bool,        &deliver_drop_privilege },

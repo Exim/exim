@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.39 2007/09/28 12:21:57 tom Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.40 2008/01/17 13:03:35 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -63,6 +63,11 @@ extern pid_t   child_open_uid(uschar **, uschar **, int, uid_t *, gid_t *,
                  int *, int *, uschar *, BOOL);
 
 extern void    daemon_go(void);
+
+#ifdef EXPERIMENTAL_DCC
+extern int     dcc_process(uschar **);
+#endif
+
 extern void    debug_print_argv(uschar **);
 extern void    debug_print_ids(uschar *);
 extern void    debug_print_string(uschar *);

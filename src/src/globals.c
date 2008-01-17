@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.79 2007/09/28 12:21:57 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.80 2008/01/17 13:03:35 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -427,6 +427,15 @@ BOOL    daemon_listen          = FALSE;
 uschar *daemon_smtp_port       = US"smtp";
 int     daemon_startup_retries = 9;
 int     daemon_startup_sleep   = 30;
+
+#ifdef EXPERIMENTAL_DCC
+BOOL    dcc_direct_add_header  = FALSE;
+uschar *dcc_header             = NULL;
+uschar *dcc_result             = NULL;
+uschar *dccifd_address         = US"/usr/local/dcc/var/dccifd";
+uschar *dccifd_options         = US"header";
+#endif
+
 BOOL    debug_daemon           = FALSE;
 int     debug_fd               = -1;
 FILE   *debug_file             = NULL;

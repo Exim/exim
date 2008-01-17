@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/Configure-os.h,v 1.1 2004/10/06 15:07:40 ph10 Exp $
+# $Cambridge: exim/src/scripts/Configure-os.h,v 1.2 2008/01/17 13:03:35 tom Exp $
 
 # Shell script to create a link to the appropriate OS-specific header file.
 
@@ -28,7 +28,10 @@ then    echo ""
 	exit 1;
 fi
 rm -f os.h
-ln -s ../OS/os.h-$os os.h || exit 1
+
+# In order to accomodate for the fudge below, copy the file instead of
+# symlinking it. Otherwise we pollute the clean copy with the fudge.
+cp -a ../OS/os.h-$os os.h || exit 1
 
 # Special-purpose fudge for older versions of Linux (pre 2.1.15) that
 # use the structure name "options" instead of "ip_options".
