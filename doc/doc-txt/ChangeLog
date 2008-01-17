@@ -1,7 +1,15 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.536 2007/11/12 13:02:19 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.537 2008/01/17 12:56:13 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+Exim version 4.70
+-----------------
+
+NM/01 Bugzilla 657: Embedded PCRE removed from the exim source tree.
+      When building exim an external PCRE library is now needed -
+      PCRE is a system library on the majority of modern systems.
+      See entry on PCRE_LIBS in EDITME file.
 
 Exim version 4.69
 -----------------

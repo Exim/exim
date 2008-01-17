@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.27 2007/12/01 15:53:55 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.28 2008/01/17 12:56:12 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -47,8 +47,8 @@
 . the <bookinfo> element must also be updated for each new edition.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.68"
-.set version "4.69"
+.set previousversion "4.69"
+.set version "4.70"
 
 .set ACL "access control lists (ACLs)"
 .set I   "&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -537,13 +537,13 @@ The &_.bz2_& file is usually a lot smaller than the &_.gz_& file.
 .cindex "distribution" "signing details"
 .cindex "distribution" "public key"
 .cindex "public key for signed distribution"
-The distributions are currently signed with Philip Hazel's GPG key. The
+The distributions are currently signed with Nigel Metheringham's GPG key. The
 corresponding public key is available from a number of keyservers, and there is
-also a copy in the file &_Public-Key_&. The signatures for the tar bundles are
+also a copy in the file &_nigel-pubkey.asc_&. The signatures for the tar bundles are
 in:
 .display
-&_exim-n.nn.tar.gz.sig_&
-&_exim-n.nn.tar.bz2.sig_&
+&_exim-n.nn.tar.gz.asc_&
+&_exim-n.nn.tar.bz2.asc_&
 .endd
 For each released version, the log of changes is made separately available in a
 separate file in the directory &_ChangeLogs_& so that it is possible to
@@ -729,12 +729,12 @@ the Exim documentation, &"spool"& is always used in the first sense.
 A number of pieces of external code are included in the Exim distribution.
 
 .ilist
-Regular expressions are supported in the main Exim program and in the Exim
-monitor using the freely-distributable PCRE library, copyright &copy;
-University of Cambridge. The source is distributed in the directory
-&_src/pcre_&. However, this is a cut-down version of PCRE. If you want to use
-the PCRE library in other programs, you should obtain and install the full
-version of the library from
+Regular expressions are supported in the main Exim program and in the
+Exim monitor using the freely-distributable PCRE library, copyright
+&copy; University of Cambridge. The source to a cut down version of PCRE
+used to be distributed in the directory &_src/pcre_&. However, this is
+no longer the case and you will need to use a system PCRE library or
+obtain and install the full version of the library from
 &url(ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre).
 .next
 .cindex "cdb" "acknowledgment"
@@ -1653,6 +1653,18 @@ the actual building takes place. In most cases, Exim can discover the machine
 architecture and operating system for itself, but the defaults can be
 overridden if necessary.
 
+
+.section "PCRE library" "SECTdb"
+.cindex "PCRE library"
+Exim no longer has an embedded PCRE library as the vast majority of
+modern systems include PCRE as a system library, although you may need
+to install the PCRE or PCRE development package for your operating
+system. If your system has a normal PCRE installation the Exim build
+process will need no further configuration. If the library or the
+headers are in an unusual location you will need to set the PCRE_LIBS
+and INCLUDE directives appropriately. If your operating system has no
+PCRE support then you will need to obtain and build the current PCRE
+from &url(ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/).
 
 .section "DBM libraries" "SECTdb"
 .cindex "DBM libraries" "discussion of"
