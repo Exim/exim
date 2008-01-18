@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.7 2007/03/01 14:06:56 ph10 Exp $ */
+/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.8 2008/01/18 12:23:26 nm4 Exp $ */
 
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
@@ -280,7 +280,7 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
 ****************************************************************************/
 
        auth_command = string_sprintf("VERSION\t%d\t%d\nCPID\t%d\n"
-               "AUTH\t%d\t%s\tservice=smtp\t%srip=%s\tlip=%s\tresp=%s\n",
+               "AUTH\t%d\t%s\tservice=smtp\t%srip=%s\tlip=%s\tnologin\tresp=%s\n",
                VERSION_MAJOR, VERSION_MINOR, getpid(), cuid,
                ablock->public_name, auth_extra_data, sender_host_address,
                interface_address, data ? (char *) data : "");
@@ -323,7 +323,7 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                                goto out;
                        }
 
-                       temp = string_sprintf("CONT\t%d\t%s\r\n", cuid, data);
+                       temp = string_sprintf("CONT\t%d\t%s\n", cuid, data);
                        if (write(fd, temp, Ustrlen(temp)) < 0)
                                OUT("authentication socket write error");
                        break;
