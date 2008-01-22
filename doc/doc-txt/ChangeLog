@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.538 2008/01/18 12:23:26 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.539 2008/01/22 19:23:47 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -14,6 +14,8 @@ NM/01 Bugzilla 657: Embedded PCRE removed from the exim source tree.
 NM/02 Bugzilla 646: Removed unwanted C/R in Dovecot authenticator
       conversation.  Added nologin parameter to request.
       Patch contributed by Kirill Miazine
+
+TF/01 Do not log submission mode rewrites if they do not change the address.
 
 
 Exim version 4.69

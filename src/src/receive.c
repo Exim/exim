@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.43 2008/01/17 13:03:36 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.44 2008/01/22 19:23:46 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2585,9 +2585,10 @@ if (from_header != NULL &&
     if (sender_address_unrewritten == NULL)
       sender_address_unrewritten = sender_address;
     sender_address = generated_sender_address;
-    log_write(L_address_rewrite, LOG_MAIN,
-      "\"%s\" from env-from rewritten as \"%s\" by submission mode",
-      sender_address_unrewritten, generated_sender_address);
+    if (Ustrcmp(sender_address_unrewritten, generated_sender_address) != 0)
+      log_write(L_address_rewrite, LOG_MAIN,
+        "\"%s\" from env-from rewritten as \"%s\" by submission mode",
+        sender_address_unrewritten, generated_sender_address);
     }
   }
 
