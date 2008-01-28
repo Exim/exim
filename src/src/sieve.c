@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.32 2007/10/11 12:44:30 michael Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.33 2008/01/28 12:18:56 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Michael Haardt 2003-2007 */
+/* Copyright (c) Michael Haardt 2003-2008 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This code was contributed by Michael Haardt. */
@@ -611,8 +611,10 @@ return (match_prefix ? nl==0 : nl==0 && hl==0);
 
 /*
 Arguments:
-  needle      pattern to search ...
-  haystack    ... inside the haystack
+  needle          pattern to search ...
+  haystack        ... inside the haystack
+  ascii_caseless  ignore ASCII case
+  match_octet     match octets, not UTF-8 multi-octet characters
 
 Returns:      0               needle not found in haystack
               1               needle found
@@ -1002,7 +1004,7 @@ return quoted;
 *************************************************/
 
 /*
-According to RFC 3028, duplicate delivery to the same address must
+According to RFC 5228, duplicate delivery to the same address must
 not happen, so the list is first searched for the address.
 
 Arguments:
@@ -1937,7 +1939,7 @@ Grammar:
 Arguments:
   filter      points to the Sieve filter including its state
   n           total number of tests
-  true        number of passed tests
+  num_true    number of passed tests
   exec        Execute parsed statements
 
 Returns:      1                success
