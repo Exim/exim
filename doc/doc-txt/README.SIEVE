@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.11 2007/03/21 15:15:12 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.12 2008/01/28 12:26:31 michael Exp $
 
               Notes on the Sieve implementation for Exim
 
@@ -13,20 +13,20 @@ The Exim filter contains more features, such as variable expansion, and
 better integration with the host environment, like external processes
 and pipes.
 
-Sieve is a standard for interoperable filters, defined in RFC 3028,
+Sieve is a standard for interoperable filters, defined in RFC 5228,
 with multiple implementations around. If interoperability is important,
 then there is no way around it.
 
 
 Exim Implementation
 
-The Exim Sieve implementation offers the core as defined by
-draft-ietf-sieve-3028bis-10.txt (next version of RFC 3028 that
-fixes specification mistakes), the "envelope" test (3028bis), the
-"fileinto" action (3028bis), the "copy" parameter (RFC 3894), the
-"vacation" action (draft-ietf-sieve-vacation-06), the "notify" action
-(draft-ietf-sieve-notify-06.), the "i;ascii-numeric" comparator (RFC 2244)
-and the subaddress parameter (draft-ietf-sieve-rfc3598bis-05).
+The Exim Sieve implementation offers the core as defined by RFC 5228,
+the "encoded-character" extension (RFC 5228), the "envelope" test (RFC
+5228), the "fileinto" action (5228), the "copy" parameter (RFC 3894), the
+"vacation" action (5230), the "notify" action (draft-ietf-sieve-notify-12)
+with mailto URIs (draft-ietf-sieve-notify-mailto-05), the
+"i;ascii-numeric" comparator (RFC 2244) and the subaddress parameter
+(RFC 5233).
 
 The Sieve filter is integrated in Exim and works very similar to the
 Exim filter: Sieve scripts are recognized by the first line containing
@@ -97,7 +97,7 @@ Exim requires the first line to be "# sieve filter".  Of course the RFC
 does not enforce that line.  Don't expect examples to work without adding
 it, though.
 
-RFC 3028 requires using CRLF to terminate the end of a line.
+RFC 5228 requires using CRLF to terminate the end of a line.
 The rationale was that CRLF is universally used in network protocols
 to mark the end of the line.  This implementation does not embed Sieve
 in a network protocol, but uses Sieve scripts as part of the Exim MTA.
@@ -105,20 +105,13 @@ Since all parts of Exim use \n as newline character, this implementation
 does, too.  You can change this by defining the macro RFC_EOL at compile
 time to enforce CRLF being used.
 
-Sieve scripts can not contain NUL characters in strings, but mail
-headers could contain MIME encoded NUL characters, which could never
-be matched by Sieve scripts using exact comparisons.  For that reason,
-this implementation extends the Sieve quoted string syntax with \0
-to describe a NUL character, violating \0 being the same as 0 in
-RFC 3028.
-
 The folder specified by "fileinto" must not contain the character
-sequence ".." to avoid security problems.  RFC 3028 does not specify the
+sequence ".." to avoid security problems.  RFC 5228 does not specify the
 syntax of folders apart from keep being equivalent to fileinto "INBOX".
 This implementation uses "inbox" instead.
 
 Sieve script errors currently cause that messages are silently filed into
-"inbox".  RFC 3028 requires that the user is notified of that condition.
+"inbox".  RFC 5228 requires that the user is notified of that condition.
 This may be implemented in future by adding a header line to mails that
 are filed into "inbox" due to an error in the filter.
 
@@ -136,7 +129,7 @@ been reset.
 
 Semantics Of Fileinto
 
-RFC 3028 does not specify if "fileinto" tries to create a mail folder,
+RFC 5228 does not specify if "fileinto" tries to create a mail folder,
 in case it does not exist.  This implementation allows to configure
 that aspect using the appendfile transport options "create_directory",
 "create_file" and "file_must_exist".  See the appendfile transport in
@@ -145,52 +138,34 @@ the Exim specification for details.
 
 Allof And Anyof Test
 
-RFC 3028 does not specify if these tests use shortcut/lazy evaluation.
+RFC 5228 does not specify if these tests use shortcut/lazy evaluation.
 Exim uses shortcut evaluation.
 
 
 Action Reordering
 
-RFC 3028 does not specify if actions may be executed out of order.
+RFC 5228 does not specify if actions may be executed out of order.
 Exim may execute them out of order, e.g. messages may be filed to
 folders or forwarded in a different order than specified, because
 those actions only setup delivery, but do not execute it themselves.
 
 
-Wildcard Matching
-
-RFC 3028 is not exactly clear if comparators act on unicode characters
-or on octets containing their UTF-8 representation.  As it turns out,
-many implementations go the second way.  This does not make a difference
-but for wildcard matching and octet-wise comparison.  Working on unicode
-means a dot matches a character.  Working on UTF-8 means the dot matches
-a single octet of a multi-octet sequence.  For octet-wise comparisons,
-working on UTF-8 means arbitrary byte sequences in headers can not be
-matches, as they are rarely correct UTF-8 sequences and can thus not be
-expressed as string literal.  This implementation works on unicode, but
-this may be changed in case RFC3028bis specifies this issue safe and sound.
-
-
 Sieve Syntax And Semantics
 
-RFC 3028 confuses syntax and semantics sometimes.  It uses a generic
-grammar as syntax for commands and tests and performs many checks during
-semantic analysis.  Syntax is specified by grammar rules, semantics
-by natural language, despite the latter often talking about syntax.
-The intention was to provide a framework for the syntax that describes
-current commands as well as future extensions, and describing commands
-by semantics.
+RFC 5228 uses a generic grammar as syntax for commands and tests and
+performs many checks during semantic analysis.  Syntax is specified
+by grammar rules, semantics by natural language.  The intention is to
+provide a framework for the syntax that describes current commands as
+well as future extensions, and describing commands by semantics.
 
-The following replacement for section 8.2 gives two grammars, one for
-the framework, and one for specific commands, thus removing most of the
-semantic analysis.  Since the parser can not parse unsupported extensions,
-the result is strict error checking of any executed and not executed code
+The following replacement for section 8.2 gives a grammar for specific
+commands of this implementation, thus removing most of the semantic
+analysis.  Since the parser can not parse unsupported extensions, the
+result is strict error checking of any executed and not executed code
 until "stop" is executed or the end of the script is reached.
 
 8.2. Grammar
 
-The atoms of the grammar are lexical tokens.  White space or comments may
-appear anywhere between lexical tokens, they are not part of the grammar.
 The grammar is specified in ABNF with two extensions to describe tagged
 arguments that can be reordered and grammar extensions: { } denotes a
 sequence of symbols that may appear in any order.  Example:
@@ -210,21 +185,6 @@ The symbol =) is used to append to a rule:
 is equivalent to
 
   start =  a b
-
-All Sieve commands, including extensions, MUST be words of the following
-generic grammar with the start symbol "start".  They SHOULD be specified
-using a specific grammar, though.
-
-   argument        = string-list / number / tag
-   arguments       = *argument [test / test-list]
-   block           = "{" commands "}"
-   commands        = *command
-   string          = quoted-string / multi-line
-   string-list     = "[" string *("," string) "]" / string
-   test            = identifier arguments
-   test-list       = "(" test *("," test) ")"
-   command         = identifier arguments ( ";" / block )
-   start           = command
 
 The basic Sieve commands are specified using the following grammar, which
 language is a subset of the generic grammar above.  The start symbol is
@@ -331,7 +291,7 @@ the UTF-8 reason is processed to compose the resulting message.
 
 Default Subject
 
-The draft specifies that the default message subject is "Auto: " plus
+RFC 5230 specifies that the default message subject is "Auto: " plus
 the old subject.  Using this subject is dangerous, because many mailing
 lists verify addresses by sending a secret key in the subject of a
 message, asking to reply to the message for confirmation.  Using the
