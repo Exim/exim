@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.24 2007/06/27 11:01:51 ph10 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.25 2008/01/28 18:24:07 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1661,7 +1661,7 @@ for (;;)
           {
           uschar opt[8];
           uschar *p = opt;
-          uschar *extra[4];
+          uschar *extra[5];
           int extracount = 1;
 
           signal(SIGALRM, SIG_DFL);

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.539 2008/01/22 19:23:47 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.540 2008/01/28 18:24:07 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -16,6 +16,8 @@ NM/02 Bugzilla 646: Removed unwanted C/R in Dovecot authenticator
       Patch contributed by Kirill Miazine
 
 TF/01 Do not log submission mode rewrites if they do not change the address.
+
+TF/02 Bugzilla 662: Fix stack corruption before exec() in daemon.c.
 
 
 Exim version 4.69
