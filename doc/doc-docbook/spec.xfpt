@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.29 2008/01/17 13:10:37 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.30 2008/01/28 18:30:29 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -28104,7 +28104,9 @@ for inclusion in log or reject messages.
 
 .vitem &$spam_score_int$&
 The spam score of the message, multiplied by ten, as an integer value. For
-example &"34"& or &"305"&. This is useful for numeric comparisons in
+example &"34"& or &"305"&. It may appear to disagree with &$spam_score$&
+because &$spam_score$& is rounded and &$spam_score_int$& is truncated.
+The integer value is useful for numeric comparisons in
 conditions. This variable is special; its value is saved with the message, and
 written to Exim's spool file. This means that it can be used during the whole
 life of the message on your Exim system, in particular, in routers or
