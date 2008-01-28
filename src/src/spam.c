@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.15 2008/01/16 09:52:15 tom Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.16 2008/01/28 13:14:48 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -109,7 +109,7 @@ int spam(uschar **listptr) {
     int current_server = 0;
     int start_server = 0;
     uschar *address = NULL;
-    uschar *spamd_address_list_ptr = spamd_address;
+    uschar *spamd_address_list_ptr = spamd_address_work;
     uschar address_buffer[256];
     spamd_address_container * spamd_address_vector[32];
 
