@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.31 2008/01/29 17:08:54 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.32 2008/01/29 17:14:47 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -367,13 +367,11 @@ contributors.
 
 
 .section "Exim documentation" "SECID1"
-.new
 .cindex "documentation"
 This edition of the Exim specification applies to version &version; of Exim.
 Substantive changes from the &previousversion; edition are marked in some
 renditions of the document; this paragraph is so marked if the rendition is
 capable of showing a change indicator.
-.wen
 
 This document is very much a reference manual; it is not a tutorial. The reader
 is expected to have some familiarity with the SMTP mail transfer protocol and
@@ -456,12 +454,12 @@ Squared, formerly Planet Online Ltd, whose support I gratefully acknowledge.
 .cindex "FAQ"
 As well as Exim distribution tar files, the Exim web site contains a number of
 differently formatted versions of the documentation. A recent addition to the
-online information is the Exim wiki &new("(&url(http://wiki.exim.org))"),
+online information is the Exim wiki (&url(http://wiki.exim.org)),
 which contains what used to be a separate FAQ, as well as various other
 examples, tips, and know-how that have been contributed by Exim users.
 
 .cindex Bugzilla
-An Exim Bugzilla exists at &new("&url(http://bugs.exim.org)"). You can use
+An Exim Bugzilla exists at &url(http://bugs.exim.org). You can use
 this to report bugs, and also to add items to the wish list. Please search
 first to check that you are not duplicating a previous entry.
 
@@ -500,8 +498,8 @@ information will be posted at &url(http://www-tus.csx.cam.ac.uk/courses/exim/).
 .section "Bug reports" "SECID5"
 .cindex "bug reports"
 .cindex "reporting bugs"
-Reports of obvious bugs &new("can be emailed to &'bugs@exim.org'& or reported
-via the Bugzilla (&url(http://bugs.exim.org)).") However, if you are unsure
+Reports of obvious bugs can be emailed to &'bugs@exim.org'& or reported
+via the Bugzilla (&url(http://bugs.exim.org)). However, if you are unsure
 whether some behaviour is a bug or not, the best thing to do is to post a
 message to the &'exim-dev'& mailing list and have it discussed.
 
@@ -7156,9 +7154,9 @@ If any MySQL, PostgreSQL, Oracle, or InterBase lookups are used, the
 &%mysql_servers%&, &%pgsql_servers%&, &%oracle_servers%&, or &%ibase_servers%&
 option (as appropriate) must be set to a colon-separated list of server
 information.
-&new("(For MySQL and PostgreSQL only, the global option need not be set if all
+(For MySQL and PostgreSQL only, the global option need not be set if all
 queries contain their own server information &-- see section
-&<<SECTspeserque>>&.)") Each item in the list is a slash-separated list of four
+&<<SECTspeserque>>&.) Each item in the list is a slash-separated list of four
 items: host name, database name, user name, and password. In the case of
 Oracle, the host name field is used for the &"service name"&, and the database
 name field is not used and should be empty. For example:
@@ -11641,9 +11639,9 @@ details of the &(smtp)& transport.
 When a message is received from a remote host over an encrypted SMTP
 connection, and Exim is configured to request a certificate from the client,
 the value of the Distinguished Name of the certificate is made available in the
-&$tls_peerdn$& during subsequent processing. &new("Like &$tls_cipher$&, the
+&$tls_peerdn$& during subsequent processing. Like &$tls_cipher$&, the
 value is retained during message delivery, except during outbound SMTP
-deliveries.")
+deliveries.
 
 .vitem &$tod_bsdinbox$&
 .vindex "&$tod_bsdinbox$&"
@@ -12186,7 +12184,7 @@ listed in more than one group.
 .row &%disable_ipv6%&                "do no IPv6 processing"
 .row &%keep_malformed%&              "for broken files &-- should not happen"
 .row &%localhost_number%&            "for unique message ids in clusters"
-.row &new(&%message_body_newlines%&) "retain newlines in &$message_body$&"
+.row &%message_body_newlines%&       "retain newlines in &$message_body$&"
 .row &%message_body_visible%&        "how much to show in &$message_body$&"
 .row &%mua_wrapper%&                 "run in &""MUA wrapper""& mode"
 .row &%print_topbitchars%&           "top-bit characters are printing"
@@ -12253,13 +12251,13 @@ listed in more than one group.
 
 .section "Data lookups" "SECID101"
 .table2
-.row &new(&%ibase_servers%&)         "InterBase servers"
+.row &%ibase_servers%&               "InterBase servers"
 .row &%ldap_default_servers%&        "used if no server in query"
 .row &%ldap_version%&                "set protocol version"
 .row &%lookup_open_max%&             "lookup files held open"
-.row &new(&%mysql_servers%&)               "default MySQL servers"
-.row &new(&%oracle_servers%&)              "Oracle servers"
-.row &new(&%pgsql_servers%&)               "default PostgreSQL servers"
+.row &%mysql_servers%&               "default MySQL servers"
+.row &%oracle_servers%&              "Oracle servers"
+.row &%pgsql_servers%&               "default PostgreSQL servers"
 .row &%sqlite_lock_timeout%&         "as it says"
 .endtable
 
@@ -12302,7 +12300,7 @@ listed in more than one group.
 .row &%check_spool_space%&           "before accepting a message"
 .row &%deliver_queue_load_max%&      "no queue deliveries if load high"
 .row &%queue_only_load%&             "queue incoming if load high"
-.row &new(&%queue_only_load_latch%&) "don't re-evaluate load for each message"
+.row &%queue_only_load_latch%&       "don't re-evaluate load for each message"
 .row &%queue_run_max%&               "maximum simultaneous queue runners"
 .row &%remote_max_parallel%&         "parallel SMTP delivery per message"
 .row &%smtp_accept_max%&             "simultaneous incoming connections"
@@ -12537,7 +12535,7 @@ See also the &'Policy controls'& section above.
 .row &%queue_only%&                  "no immediate delivery at all"
 .row &%queue_only_file%&             "no immediate delivery if file exists"
 .row &%queue_only_load%&             "no immediate delivery if load is high"
-.row &new(&%queue_only_load_latch%&) "don't re-evaluate load for each message"
+.row &%queue_only_load_latch%&       "don't re-evaluate load for each message"
 .row &%queue_only_override%&         "allow command line to override"
 .row &%queue_run_in_order%&          "order of arrival"
 .row &%queue_run_max%&               "of simultaneous queue runners"
@@ -13118,7 +13116,7 @@ dns_check_names_pattern = \
   (?i)^(?>(?(1)\.|())[^\W_](?>[a-z0-9/-]*[^\W_])?)+$
 .endd
 which permits only letters, digits, slashes, and hyphens in components, but
-they must start and end with a letter or digit. &new(Slashes) are not, in fact,
+they must start and end with a letter or digit. Slashes are not, in fact,
 permitted in host names, but they are found in certain NS records (which can be
 accessed in Exim by using a &%dnsdb%& lookup). If you set
 &%allow_utf8_domains%&, you must modify this pattern, or set the option to an
@@ -20651,8 +20649,8 @@ delivers the message to it using the LMTP protocol.
 
 .option timeout lmtp time 5m
 The transport is aborted if the created process or Unix domain socket does not
-respond to LMTP commands or message input within this timeout. &new("Delivery
-is deferred, and will be tried again later.") Here is an example of a typical
+respond to LMTP commands or message input within this timeout. Delivery
+is deferred, and will be tried again later. Here is an example of a typical
 LMTP transport:
 .code
 lmtp:
@@ -21655,8 +21653,8 @@ unauthenticated. See also &%hosts_require_auth%&, and chapter
 .vindex "&$host$&"
 .vindex "&$host_address$&"
 This option specifies which interface to bind to when making an outgoing SMTP
-call. &new("The value is an IP address, not an interface name such as
-&`eth0`&.") Do not confuse this with the interface address that was used when a
+call. The value is an IP address, not an interface name such as
+&`eth0`&. Do not confuse this with the interface address that was used when a
 message was received, which is in &$received_ip_address$&, formerly known as
 &$interface_address$&. The name was changed to minimize confusion with the
 outgoing interface address. There is no variable that contains an outgoing
@@ -22282,11 +22280,9 @@ rewriting rule is skipped unless the relevant addresses are being processed.
 &`s`&       rewrite the &'Sender:'& header
 &`t`&       rewrite the &'To:'& header
 .endd
-.new
 "All headers" means all of the headers listed above that can be selected
 individually, plus their &'Resent-'& versions. It does not include
 other headers such as &'Subject:'& etc.
-.wen
 
 You should be particularly careful about rewriting &'Sender:'& headers, and
 restrict this to special known cases in your own domains.
@@ -24351,8 +24347,8 @@ incoming message (by default &-- you can, of course, change this), and it is
 also included in the log line that records a message's arrival, keyed by
 &"X="&, unless the &%tls_cipher%& log selector is turned off. The &%encrypted%&
 condition can be used to test for specific cipher suites in ACLs.
-&new("(For outgoing SMTP deliveries, &$tls_cipher$& is reset &-- see section
-&<<SECID185>>&.)")
+(For outgoing SMTP deliveries, &$tls_cipher$& is reset &-- see section
+&<<SECID185>>&.)
 
 Once TLS has been established, the ACLs that run for subsequent SMTP commands
 can check the name of the cipher suite and vary their actions accordingly. The
@@ -24672,7 +24668,7 @@ options in the main part of the configuration. These options are:
 .irow &%acl_smtp_mail%&        "ACL for MAIL"
 .irow &%acl_smtp_mailauth%&    "ACL for the AUTH parameter of MAIL"
 .irow &%acl_smtp_mime%&        "ACL for content-scanning MIME parts"
-.irow &new(&%acl_smtp_notquit%&)  "ACL for non-QUIT terminations"
+.irow &%acl_smtp_notquit%&     "ACL for non-QUIT terminations"
 .irow &%acl_smtp_predata%&     "ACL at start of DATA command"
 .irow &%acl_smtp_quit%&        "ACL for QUIT"
 .irow &%acl_smtp_rcpt%&        "ACL for RCPT"
@@ -26904,7 +26900,6 @@ which may be inaccurate or completely missing. You can follow the limit &'m'&
 in the configuration with K, M, or G to specify limits in kilobytes,
 megabytes, or gigabytes, respectively.
 
-.new
 The &%per_rcpt%& option causes Exim to limit the rate at which
 recipients are accepted. To be effective, it would need to be used in
 either the &%acl_smtp_rcpt%& or the &%acl_not_smtp%& ACL. In the
@@ -26920,7 +26915,6 @@ condition is processed. This can be used to limit the SMTP command rate.
 This command is essentially an alias of &%per_rcpt%& to make it clear
 that the effect is to limit the rate at which individual commands,
 rather than recipients, are accepted.
-.wen
 
 .section "Ratelimit options for handling fast clients" "ratophanfas"
 If a client's average rate is greater than the maximum, the rate limiting
@@ -28177,7 +28171,7 @@ cases.
 These ACLs are called (possibly many times) just before the &%acl_smtp_data%&
 ACL in the case of an SMTP message, or just before the &%acl_not_smtp%& ACL in
 the case of a non-SMTP message. However, a MIME ACL is called only if the
-message contains a &new(&'Content-Type:'&) header line. When a call to a MIME
+message contains a &'Content-Type:'& header line. When a call to a MIME
 ACL does not yield &"accept"&, ACL processing is aborted and the appropriate
 result code is sent to the client. In the case of an SMTP message, the
 &%acl_smtp_data%& ACL is not called when this happens.
