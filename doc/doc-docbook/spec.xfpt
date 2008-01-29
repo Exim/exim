@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.30 2008/01/28 18:30:29 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.31 2008/01/29 17:08:54 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -26854,7 +26854,7 @@ parameter &'m'& is the maximum number of messages that a client is permitted to
 send in each time interval. It also specifies the number of messages permitted
 in a fast burst. By increasing both &'m'& and &'p'& but keeping &'m/p'&
 constant, you can allow a client to send more messages in a burst without
-changing its overall sending rate limit. Conversely, if &'m'& and &'p'& are
+changing its long-term sending rate limit. Conversely, if &'m'& and &'p'& are
 both small, messages must be sent at an even rate.
 
 There is a script in &_util/ratelimit.pl_& which extracts sending rates from
@@ -26863,21 +26863,22 @@ when deploying the &%ratelimit%& ACL condition. The script prints usage
 instructions when it is run with no arguments.
 
 The key is used to look up the data for calculating the client's average
-sending rate. This data is stored in a database maintained by Exim in its spool
-directory, alongside the retry and other hints databases. The default key is
-&$sender_host_address$&, which applies the limit to each client host IP address.
+sending rate. This data is stored in Exim's spool directory, alongside the
+retry and other hints databases. The default key is &$sender_host_address$&,
+which means Exim computes the sending rate of each client host IP address.
 By changing the key you can change how Exim identifies clients for the purpose
 of ratelimiting. For example, to limit the sending rate of each authenticated
 user, independent of the computer they are sending from, set the key to
 &$authenticated_id$&. You must ensure that the lookup key is meaningful; for
 example, &$authenticated_id$& is only meaningful if the client has
-authenticated, and you can check with the &%authenticated%& ACL condition.
+authenticated (which you can check with the &%authenticated%& ACL condition).
 
-If you want to limit the rate at which a recipient receives messages, you can
-use the key &`$local_part@$domain`& with the &%per_rcpt%& option (see below) in
-a RCPT ACL.
+The lookup key does not have to identify clients: If you want to limit the
+rate at which a recipient receives messages, you can use the key
+&`$local_part@$domain`& with the &%per_rcpt%& option (see below) in a RCPT
+ACL.
 
-Internally, Exim includes the smoothing constant &'p'& and the options in the
+Internally, Exim appends the smoothing constant &'p'& and the options onto the
 lookup key because they alter the meaning of the stored data. This is not true
 for the limit &'m'&, so you can alter the configured maximum rate and Exim will
 still remember clients' past behaviour, but if you alter the other ratelimit
@@ -26898,9 +26899,10 @@ the default if none of the &%per_*%& options is specified.
 
 The &%per_byte%& option limits the sender's email bandwidth. Note that it is
 best to use this option in the DATA ACL; if it is used in an earlier ACL it
-relies on the SIZE parameter on the MAIL command, which may be inaccurate or
-completely missing. You can follow the limit &'m'& in the configuration with K,
-M, or G to specify limits in kilobytes, megabytes, or gigabytes, respectively.
+relies on the SIZE parameter specified by the client in its MAIL command,
+which may be inaccurate or completely missing. You can follow the limit &'m'&
+in the configuration with K, M, or G to specify limits in kilobytes,
+megabytes, or gigabytes, respectively.
 
 .new
 The &%per_rcpt%& option causes Exim to limit the rate at which
@@ -26908,7 +26910,7 @@ recipients are accepted. To be effective, it would need to be used in
 either the &%acl_smtp_rcpt%& or the &%acl_not_smtp%& ACL. In the
 &%acl_smtp_rcpt%& ACL, the number of recipients is incremented by one.
 In the case of a locally submitted message in the &%acl_not_smtp%& ACL,
-the number of recipients incremented is equal to &%$recipients_count%&
+the number of recipients is incremented by the &%$recipients_count%&
 for the entire message. Note that in either case the rate limiting
 engine will see a message with many recipients as a large high-speed
 burst.
@@ -26928,15 +26930,16 @@ counter-measures (such as rejecting the message) that may be specified by the
 rest of the ACL. The default mode is leaky, which avoids a sender's
 over-aggressive retry rate preventing it from getting any email through.
 
-The &%strict%& option means that the client's recorded rate is always updated.
-The effect of this is that Exim measures the client's average rate of attempts
-to send email, which can be much higher than the maximum &new("it is actually
-allowed. If the client is over the limit it may be subjected to
-counter-measures in the ACL until it slows down below the maximum rate.") The
-smoothing period determines the time it takes for a high sending rate to decay
-exponentially to 37% of its peak value, which means that you can work out the
-time (the number of smoothing periods) that a client is subjected to
-counter-measures after an over-limit burst with this formula:
+The &%strict%& option means that the client's recorded rate is always
+updated. The effect of this is that Exim measures the client's average rate
+of attempts to send email, which can be much higher than the maximum it is
+actually allowed. If the client is over the limit it may be subjected to
+counter-measures by the ACL until it slows down below the maximum rate. If
+the client stops attempting to send email for the time specified in the &'p'&
+parameter then its computed rate will decay exponentially to 37% of its peak
+value. You can work out the time (the number of smoothing periods) that a
+client is subjected to counter-measures after an over-limit burst with this
+formula:
 .code
 ln(peakrate/maxrate)
 .endd
