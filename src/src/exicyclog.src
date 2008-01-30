@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exicyclog.src,v 1.5 2006/03/16 11:51:10 ph10 Exp $
+# $Cambridge: exim/src/src/exicyclog.src,v 1.6 2008/01/30 20:09:24 nm4 Exp $
 
 # Copyright (c) 2006 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -20,6 +20,8 @@
 # COMPRESS_SUFFIX
 # CHOWN_COMMAND
 # CHGRP_COMMAND
+# CHMOD_COMMAND
+# TOUCH_COMMAND
 # MV_COMMAND
 # RM_COMMAND
 
@@ -53,6 +55,8 @@ suffix=COMPRESS_SUFFIX
 
 chown=CHOWN_COMMAND
 chgrp=CHGRP_COMMAND
+chmod=CHMOD_COMMAND
+touch=TOUCH_COMMAND
 mv=MV_COMMAND
 rm=RM_COMMAND
 
@@ -183,11 +187,13 @@ if [ "$log_file_path" = "" ]; then
   logdir=$spool_directory/log
   mainlog=mainlog
   rejectlog=rejectlog
+  paniclog=paniclog
 else
   logdir=`echo $log_file_path | sed 's?/[^/]*$??'`
   logbase=`echo $log_file_path | sed 's?^.*/??'`
   mainlog=`echo $logbase | sed 's/%s/main/'`
   rejectlog=`echo $logbase | sed 's/%s/reject/'`
+  paniclog=`echo $logbase | sed 's/%s/panic/'`
 fi
 
 # Get into the log directory to do the business.
@@ -235,6 +241,9 @@ if [ -f $mainlog.$keept.$suffix ]; then $rm $mainlog.$keept.$suffix; fi;
 if [ -f $rejectlog.$keept ]; then $rm $rejectlog.$keept; fi;
 if [ -f $rejectlog.$keept.$suffix ]; then $rm $rejectlog.$keept.$suffix; fi;
 
+if [ -f $paniclog.$keept ]; then $rm $rejectlog.$keept; fi;
+if [ -f $paniclog.$keept.$suffix ]; then $rm $rejectlog.$keept.$suffix; fi;
+
 # Now rename all the previous old files by increasing their numbers by 1.
 # When the number is less than 10, insert a leading zero.
 
@@ -261,6 +270,11 @@ while [ $count -gt 1 ]; do
   elif [ -f $rejectlog.$oldt.$suffix ]; then
     $mv $rejectlog.$oldt.$suffix $rejectlog.$countt.$suffix
   fi
+  if [ -f $paniclog.$oldt ]; then
+    $mv $paniclog.$oldt $paniclog.$countt
+  elif [ -f $paniclog.$oldt.$suffix ]; then
+    $mv $paniclog.$oldt.$suffix $paniclog.$countt.$suffix
+  fi
   count=$old
   countt=$oldt
 done
@@ -272,11 +286,25 @@ if [ $keep -gt 99 ]; then first=001; else first=01; fi
 if [ -f $mainlog ]; then
   $mv $mainlog $mainlog.$first
   $chown $user:$group $mainlog.$first
+  $touch $mainlog
+  $chown $user:$group $mainlog
+  $chmod 640 $mainlog
 fi
 
 if [ -f $rejectlog ]; then
   $mv $rejectlog $rejectlog.$first
   $chown $user:$group $rejectlog.$first
+  $touch $rejectlog
+  $chown $user:$group $rejectlog
+  $chmod 640 $rejectlog
+fi
+
+if [ -f $paniclog ]; then
+  $mv $paniclog $paniclog.$first
+  $chown $user:$group $rejectlog.$first
+  $touch $paniclog
+  $chown $user:$group $paniclog
+  $chmod 640 $paniclog
 fi
 
 # Now scan the (0)02 and later files, compressing where necessary, and
@@ -301,6 +329,11 @@ while [ $count -le $keep ]; do
   if [ -f $rejectlog.$countt.$suffix ]; then
     $chown $user:$group $rejectlog.$countt.$suffix
   fi
+  if [ -f $paniclog.$countt ]; then $compress $paniclog.$countt; fi
+  if [ -f $paniclog.$countt.$suffix ]; then
+    $chown $user:$group $paniclog.$countt.$suffix
+  fi
+
   count=`expr $count + 1`
 done
 
