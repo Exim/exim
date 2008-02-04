@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.8 2007/08/31 09:13:40 ph10 Exp $
+$Cambridge: exim/doc/doc-docbook/HowItWorks.txt,v 1.9 2008/02/04 17:28:44 fanf2 Exp $
 
 CREATING THE EXIM DOCUMENTATION
 
@@ -505,14 +505,13 @@ preceded by an extra two blank lines and a line of equals characters. An extra
 newline is inserted before each section heading, and they are underlined with
 hyphens.
 
-August 2007: A further feature has been added to Tidytxt. The current version
-of xmlto makes HTML that contains non-ASCII Unicode characters. Fortunately,
-they are few. The heading uses "box drawing" characters in the range U+2500 to
-U+253F, and within the main text, U+00A0 (hard space) occasionally appears. The
-Tidytxt script now turns all the former into hyphens and the latter into normal
-spaces. Bullets, which are set as U+25CF, are turned into asterisks. (It might
-be possible to do all this in the same way as I dealt with copyright - see
-above - but adding three lines of Perl to an existing script was a lot easier.)
+The output of xmlto also contains non-ASCII Unicode characters that w3m passes
+through. Fortunately, they are few, and Tidytxt cleans them up as well. Some
+headings use "box drawing" characters in the range U+2500 to U+253F which are
+translated into -+| as appropriate, and U+00A0 (hard space) and U+25CF (bullet)
+are translated into plain spaces and asterisks. (It might be possible to do all
+this in the same way as I dealt with copyright - see above - but adding a few
+lines of Perl to an existing script was a lot easier.)
 
 
 CREATING INFO FILES
