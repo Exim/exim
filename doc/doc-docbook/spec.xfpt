@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.33 2008/01/30 14:56:54 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.34 2008/02/04 17:03:35 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -1655,7 +1655,7 @@ architecture and operating system for itself, but the defaults can be
 overridden if necessary.
 
 
-.section "PCRE library" "SECTdb"
+.section "PCRE library" "SECTpcre"
 .cindex "PCRE library"
 Exim no longer has an embedded PCRE library as the vast majority of
 modern systems include PCRE as a system library, although you may need
