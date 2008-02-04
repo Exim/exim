@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-# $Cambridge: exim/doc/doc-docbook/Tidytxt,v 1.5 2008/02/04 17:07:26 fanf2 Exp $
+# $Cambridge: exim/doc/doc-docbook/Tidytxt,v 1.6 2008/02/04 17:18:18 fanf2 Exp $
 
 # Script to tidy up the output of w3m when it makes a text file. First we
 # convert sequences of blank lines into a single blank line, to get everything
@@ -28,8 +28,8 @@ foreach $line (@lines)
   $line =~ s/\x{e2}\x{95}[\x{b4}\x{b6}\x{b8}\x{ba}\x{bc}\x{be}]/-/g;
   # (3b) vertical box drawing -> bar
   $line =~ s/\x{e2}\x{94}[\x{82}\x{83}\x{86}\x{87}\x{8a}\x{8b}]/|/g;
-  $line =~ s/\x{e2}\x{95}[\x{8e}\x{8f}\x{91}]/+/g;
-  $line =~ s/\x{e2}\x{95}[\x{b5}\x{b7}\x{b9}\x{bb}\x{bd}\x{bf}]/-/g;
+  $line =~ s/\x{e2}\x{95}[\x{8e}\x{8f}\x{91}]/|/g;
+  $line =~ s/\x{e2}\x{95}[\x{b5}\x{b7}\x{b9}\x{bb}\x{bd}\x{bf}]/|/g;
   # (3c) corner box drawing -> plus
   $line =~ s/\x{e2}\x{94}[\x{8c}-\x{bf}]/+/g;
   $line =~ s/\x{e2}\x{95}[\x{80}-\x{8b}\x{92}-\x{b0}]/+/g;
