@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.542 2008/02/06 12:44:58 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.543 2008/02/06 18:57:46 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -23,6 +23,11 @@ NM/03 Bugzilla 602: exicyclog now handles panic log, and creates empty
       log files in place.  Contributed by Roberto Lima
 
 NM/04 Bugzilla 667: close socket used by dovecot authenticator
+
+TF/03 Bugzilla 615: When checking the local_parts router precondition
+      after a local_part_suffix or local_part_prefix option, Exim now
+      does not use the address's named list lookup cache, since this
+      contains cached lookups for the whole local part.
 
 
 Exim version 4.69

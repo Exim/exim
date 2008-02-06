@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/route.c,v 1.12 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/route.c,v 1.13 2008/02/06 18:57:46 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -825,6 +825,7 @@ check_router_conditions(router_instance *r, address_item *addr, int verify,
 {
 int rc;
 uschar *check_local_part;
+unsigned int *localpart_cache;
 
 /* Reset variables to hold a home directory and data from lookup of a domain or
 local part, and ensure search_find_defer is unset, in case there aren't any
@@ -885,12 +886,17 @@ if ((rc = route_check_dls(r->name, US"domains", r->domains, &domainlist_anchor,
 caseful local part, so that +caseful can restore it, even if this router is
 handling local parts caselessly. However, we can't just pass cc_local_part,
 because that doesn't have the prefix or suffix stripped. A bit of massaging is
-required. */
+required. Also, we only use the match cache for local parts that have not had
+a prefix or suffix stripped. */
 
 if (addr->prefix == NULL && addr->suffix == NULL)
+  {
+  localpart_cache = addr->localpart_cache;
   check_local_part = addr->cc_local_part;
+  }
 else
   {
+  localpart_cache = NULL;
   check_local_part = string_copy(addr->cc_local_part);
   if (addr->prefix != NULL)
     check_local_part += Ustrlen(addr->prefix);
@@ -899,7 +905,7 @@ else
   }
 
 if ((rc = route_check_dls(r->name, US"local_parts", r->local_parts,
-       &localpartlist_anchor, addr->localpart_cache, MCL_LOCALPART,
+       &localpartlist_anchor, localpart_cache, MCL_LOCALPART,
        check_local_part, &deliver_localpart_data, !r->caseful_local_part,
        perror)) != OK)
   return rc;
