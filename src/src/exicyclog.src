@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exicyclog.src,v 1.6 2008/01/30 20:09:24 nm4 Exp $
+# $Cambridge: exim/src/src/exicyclog.src,v 1.7 2008/02/06 12:35:03 nm4 Exp $
 
 # Copyright (c) 2006 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -241,8 +241,8 @@ if [ -f $mainlog.$keept.$suffix ]; then $rm $mainlog.$keept.$suffix; fi;
 if [ -f $rejectlog.$keept ]; then $rm $rejectlog.$keept; fi;
 if [ -f $rejectlog.$keept.$suffix ]; then $rm $rejectlog.$keept.$suffix; fi;
 
-if [ -f $paniclog.$keept ]; then $rm $rejectlog.$keept; fi;
-if [ -f $paniclog.$keept.$suffix ]; then $rm $rejectlog.$keept.$suffix; fi;
+if [ -f $paniclog.$keept ]; then $rm $paniclog.$keept; fi;
+if [ -f $paniclog.$keept.$suffix ]; then $rm $paniclog.$keept.$suffix; fi;
 
 # Now rename all the previous old files by increasing their numbers by 1.
 # When the number is less than 10, insert a leading zero.
@@ -301,7 +301,7 @@ fi
 
 if [ -f $paniclog ]; then
   $mv $paniclog $paniclog.$first
-  $chown $user:$group $rejectlog.$first
+  $chown $user:$group $paniclog.$first
   $touch $paniclog
   $chown $user:$group $paniclog
   $chmod 640 $paniclog
