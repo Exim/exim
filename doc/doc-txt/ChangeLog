@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.541 2008/01/30 20:09:23 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.542 2008/02/06 12:44:58 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -21,6 +21,8 @@ TF/02 Bugzilla 662: Fix stack corruption before exec() in daemon.c.
 
 NM/03 Bugzilla 602: exicyclog now handles panic log, and creates empty
       log files in place.  Contributed by Roberto Lima
+
+NM/04 Bugzilla 667: close socket used by dovecot authenticator
 
 
 Exim version 4.69

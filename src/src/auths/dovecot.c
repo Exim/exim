@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.8 2008/01/18 12:23:26 nm4 Exp $ */
+/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.9 2008/02/06 12:44:59 nm4 Exp $ */
 
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
@@ -369,6 +369,9 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
        }
 
 out:
+       /* close the socket used by dovecot */
+       if (fd >= 0)
+              close(fd);
 
        /* Expand server_condition as an authorization check */
        return (ret == OK)? auth_check_serv_cond(ablock) : ret;
