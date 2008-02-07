@@ -9,7 +9,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
 search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   key="list" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0484.aliases
+  ;TESTSUITE/aux-fixed/0484.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   type=lsearch key="list"
@@ -21,7 +21,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
 search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   key="list" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0484.aliases
+  ;TESTSUITE/aux-fixed/0484.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   type=lsearch key="list"
@@ -33,7 +33,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
 search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   key="root" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0484.aliases
+  ;TESTSUITE/aux-fixed/0484.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   type=lsearch key="root"
@@ -45,7 +45,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
 search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   key="root" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0484.aliases
+  ;TESTSUITE/aux-fixed/0484.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   type=lsearch key="root"
@@ -57,7 +57,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
 search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   key="list" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0484.aliases
+  ;TESTSUITE/aux-fixed/0484.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   type=lsearch key="list"
@@ -68,8 +68,8 @@ search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases2"
 search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
   key="list" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0484.aliases2
-  :TESTSUITE/aux-fixed/0484.aliases
+  ;TESTSUITE/aux-fixed/0484.aliases2
+  ;TESTSUITE/aux-fixed/0484.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
   type=lsearch key="list"
@@ -81,8 +81,8 @@ search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases2"
 search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
   key="root" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0484.aliases2
-  :TESTSUITE/aux-fixed/0484.aliases
+  ;TESTSUITE/aux-fixed/0484.aliases2
+  ;TESTSUITE/aux-fixed/0484.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
   type=lsearch key="root"
@@ -94,8 +94,8 @@ search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases2"
 search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
   key="list" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0484.aliases2
-  :TESTSUITE/aux-fixed/0484.aliases
+  ;TESTSUITE/aux-fixed/0484.aliases2
+  ;TESTSUITE/aux-fixed/0484.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases2"
   type=lsearch key="list"
@@ -107,8 +107,8 @@ search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
 search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   key="list" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0484.aliases
-  :TESTSUITE/aux-fixed/0484.aliases2
+  ;TESTSUITE/aux-fixed/0484.aliases
+  ;TESTSUITE/aux-fixed/0484.aliases2
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   type=lsearch key="list"
@@ -120,8 +120,8 @@ search_open: lsearch "TESTSUITE/aux-fixed/0484.aliases"
 search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   key="root" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0484.aliases
-  :TESTSUITE/aux-fixed/0484.aliases2
+  ;TESTSUITE/aux-fixed/0484.aliases
+  ;TESTSUITE/aux-fixed/0484.aliases2
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0484.aliases"
   type=lsearch key="root"
