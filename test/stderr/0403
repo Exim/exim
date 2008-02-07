@@ -80,7 +80,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0403.data"
 search_find: file="TESTSUITE/aux-fixed/0403.data"
   key="test.ex" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0403.data
+  ;TESTSUITE/aux-fixed/0403.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0403.data"
   type=lsearch key="test.ex"
@@ -94,7 +94,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0403.data"
 search_find: file="TESTSUITE/aux-fixed/0403.data"
   key="userx" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0403.data
+  ;TESTSUITE/aux-fixed/0403.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0403.data"
   type=lsearch key="userx"
