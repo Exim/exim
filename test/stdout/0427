@@ -251,7 +251,7 @@ No implicit keep
 # Sieve filter
 if header :matches "x-special1" "*\0*" { discard; }
 ==========
-No implicit keep
+Implicit keep
 ==========
 # Sieve filter
 if not header :matches "x-special1" "*\0*q" { discard; }
