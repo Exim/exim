@@ -1,0 +1,22 @@
+qualify_domain = testexim.test.ex
+localpartlist aliases = joe:sam:tom
+
+begin routers
+
+router1:
+  driver = accept
+  local_parts = +aliases
+  condition = false
+  transport = local_delivery
+
+router2:
+  driver = accept
+  local_parts = +aliases
+  local_part_suffix = -real
+  transport = local_delivery
+
+begin transports
+
+local_delivery:
+  driver = appendfile
+  file = /tmp/${local_part}
