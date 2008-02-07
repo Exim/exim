@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2007 */
+/* Copyright (c) University of Cambridge, 2008 */
 /* Written by Philip Hazel. */
 
 /* This module contains the main program and initialization functions. */
@@ -130,6 +130,9 @@ parabuffer = misc_malloc(PARABUFFSIZE);
 istack = misc_malloc(sizeof(istackstr));
 istack->prev = NULL;
 istack->linenumber = 0;
+
+from_type_ptr = 0;
+from_type[from_type_ptr] = FROM_FILE;
 
 if (xfpt_filename == NULL)
   {

@@ -41,3 +41,13 @@ Try &&abcd without semicolon: &abcd and at EOL &abcd
 .x
 
 .nonl more than one argument
+
+.macro a
+.include infiles/02.inc
+.endmacro
+
+.macro b
+.arg 4n
+.endmacro
+
+.a

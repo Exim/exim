@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2007 */
+/* Copyright (c) University of Cambridge, 2008 */
 /* Written by Philip Hazel. */
 
 /* This module contains code for processing a line that starts with a dot. */
@@ -81,6 +81,7 @@ while (!done)
     macroexe *temp = macrocurrent;
     macrocurrent = macrocurrent->prev;
     free(temp);
+    from_type_ptr--;
     break;
     }
   }
@@ -110,7 +111,7 @@ BOOL mustexist = TRUE;
 argstr *arg;
 int i, argn;
 
-if (macrocurrent == NULL) { error(15, US".arg"); return; }
+if (from_type[from_type_ptr] != FROM_MACRO) { error(15, US".arg"); return; }
 
 if (*p == '-')
   {
@@ -147,7 +148,7 @@ do_eacharg(uschar *p)
 argstr *arg;
 int argn, i;
 
-if (macrocurrent == NULL) { error(15, US".eacharg"); return; }
+if (from_type[from_type_ptr] != FROM_MACRO) { error(15, US".eacharg"); return; }
 
 argn = (*p == 0)? 1 : readnumber(p);
 if (argn < 0) return;
@@ -199,7 +200,7 @@ Returns:    nothing
 static void
 do_endarg(uschar *p)
 {
-if (macrocurrent == NULL) { error(15, US".endarg"); return; }
+if (from_type[from_type_ptr] != FROM_MACRO) { error(15, US".endarg"); return; }
 if (*p != 0) error(19, ".endarg", p, 8, spaces, Ustrlen(p), circumflexes);
 }
 
@@ -222,7 +223,7 @@ do_endeach(uschar *p)
 {
 int count;
 
-if (macrocurrent == NULL) { error(15, US".endeach"); return; }
+if (from_type[from_type_ptr] != FROM_MACRO) { error(15, US".endeach"); return; }
 
 count = (*p == 0)? 1 : readnumber(p);
 if (count < 0) return;
@@ -251,7 +252,7 @@ Returns:    nothing
 static void
 do_endinliteral(uschar *p)
 {
-if (macrocurrent == NULL) { error(15, US".endinliteral"); return; }
+if (from_type[from_type_ptr] != FROM_MACRO) { error(15, US".endinliteral"); return; }
 if (*p != 0) error(19, ".endinliteral", p, 8, spaces, Ustrlen(p), circumflexes);
 }
 
@@ -350,8 +351,8 @@ f->next = *ff;
 *               Handle .include                  *
 *************************************************/
 
-/* We set up a stack of included files so that the input is treated as one big
-file.
+/* Add to the stack of included files and push a new input type onto the
+from_type stack.
 
 Argument:   a single argument string
 Returns:    nothing
@@ -372,6 +373,8 @@ if (Ustrchr(p, '/') != NULL) Ustrcpy(ist->filename, p);
 
 ist->file = Ufopen(ist->filename, "rb");
 if (ist->file == NULL) error(0, ist->filename, strerror(errno));  /* Hard */
+
+from_type[++from_type_ptr] = FROM_FILE;
 }
 
 
@@ -392,7 +395,7 @@ static void
 do_inliteral(uschar *p)
 {
 int state = -1;
-if (macrocurrent == NULL) { error(15, US".inliteral"); return; }
+if (from_type[from_type_ptr] != FROM_MACRO) { error(15, US".inliteral"); return; }
 if (Ustrcmp(p, "layout") == 0) state = LITERAL_LAYOUT;
 else if (Ustrcmp(p, "text") == 0) state = LITERAL_TEXT;
 else if (Ustrcmp(p, "off") == 0) state = LITERAL_OFF;
@@ -862,13 +865,14 @@ if (md == NULL)
   return;
   }
 
-/* Found a macro */
+/* Found a macro. Add it to the chain, and set the input type. */
 
 me = misc_malloc(sizeof(macroexe));
 me->prev = macrocurrent;
 macrocurrent = me;
 me->macro = md;
 me->nextline = md->lines;
+from_type[++from_type_ptr] = FROM_MACRO;
 
 me->args = NULL;
 pp = &(me->args);

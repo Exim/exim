@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2006 */
+/* Copyright (c) University of Cambridge, 2008 */
 /* Written by Philip Hazel. */
 
 /* This module contains code for reading the input. */
@@ -156,38 +156,6 @@ while (*p != 0)
 }
 
 
-/*************************************************
-*     Get the next line from the current file    *
-*************************************************/
-
-/* There may be a stack of included files. This function makes them look like a
-single source of input.
-
-Arguments:
-  buffer        where to read
-  size          size of buffer
-
-Returns:        buffer pointer or NULL
-*/
-
-static uschar *
-read_nextfileline(uschar *buffer, int size)
-{
-if (istack == NULL) return NULL;
-if (Ufgets(buffer, size, istack->file) == NULL)
-  {
-  istackstr *prev = istack->prev;
-  fclose(istack->file);
-  free(istack);
-  istack = prev;
-  return (istack == NULL)? NULL : read_nextfileline(buffer, size);
-  }
-
-istack->linenumber++;
-return buffer;
-}
-
-
 
 /*************************************************
 *         Get the next line of input             *
@@ -195,11 +163,16 @@ return buffer;
 
 /* There may be a saved line already in the buffer, following the reading of a
 paragraph or a .nonl directive. Otherwise, take the next line from one of three
-sources, in order:
+sources:
 
   (1) If popto is not negative, get an appropropriate line off the stack.
   (2) If we are in a macro, get the next macro line.
-  (3) Read a new line from a file and handle any continuations.
+  (3) If we are in a file, read a new line from a file and handle any
+      continuations.
+
+There can be arbitrary nesting of macros and files, because a .include
+directive may appear inside a macro. The current from_type vector is used to
+keep track of what is current.
 
 Arguments:  none
 Returns:    pointer to the next line or NULL
@@ -250,47 +223,77 @@ if (popto > 0)
   return inbuffer;
   }
 
-/* Handle the next macro line. */
-
-while (macrocurrent != NULL)
-  {
-  if (macrocurrent->nextline == NULL)
-    {
-    macroexe *temp = macrocurrent;
-    macrocurrent = macrocurrent->prev;
-    free(temp);
-    }
-  else
-    {
-    read_process_macroline(macrocurrent->nextline->string, inbuffer);
-    macrocurrent->nextline = macrocurrent->nextline->next;
-    return inbuffer;
-    }
-  }
-
-/* Get a line from an input file */
-
-if (read_nextfileline(inbuffer, INBUFFSIZE) == NULL) return NULL;
-
-q = inbuffer;
-len = Ustrlen(q);
+/* Get the next line from the current macro or the current file. We need a loop
+for handling the ends of macros and files. */
 
 for (;;)
   {
-  p = q + len;
-  while (p > q && isspace(p[-1])) p--;
+  if (from_type[from_type_ptr] == FROM_MACRO)
+    {
+    if (macrocurrent->nextline == NULL)
+      {
+      macroexe *temp = macrocurrent;
+      macrocurrent = macrocurrent->prev;
+      free(temp);
+      }
+    else
+      {
+      read_process_macroline(macrocurrent->nextline->string, inbuffer);
+      macrocurrent->nextline = macrocurrent->nextline->next;
+      break;
+      }
+    }
 
-  if (p - q < 3 || Ustrncmp(p - 3, "&&&", 3) != 0) break;
+  /* When reading from a file, handle continuation lines, but only within the
+  single file. */
 
-  q = p - 3;
-  *q = 0;
+  else
+    {
+    if (istack == NULL) return NULL;
+    if (Ufgets(inbuffer, INBUFFSIZE, istack->file) == NULL)
+      {
+      istackstr *prev = istack->prev;
+      fclose(istack->file);
+      free(istack);
+      istack = prev;
+      }
+    else
+      {
+      istack->linenumber++;
 
-  if (read_nextfileline(q, INBUFFSIZE - (q - inbuffer)) == NULL) break;
+      q = inbuffer;
+      len = Ustrlen(q);
 
-  p = q;
-  while (*p == ' ' || *p == '\t') p++;
-  len = Ustrlen(p);
-  if (p > q) memmove(q, p, len + 1);
+      for (;;)
+        {
+        p = q + len;
+        while (p > q && isspace(p[-1])) p--;
+
+        if (p - q < 3 || Ustrncmp(p - 3, "&&&", 3) != 0) break;
+
+        q = p - 3;
+        *q = 0;
+
+        if (istack == NULL ||
+            Ufgets(q, INBUFFSIZE - (q - inbuffer), istack->file) == NULL)
+          break;
+
+        istack->linenumber++;
+        p = q;
+        while (*p == ' ' || *p == '\t') p++;
+        len = Ustrlen(p);
+        if (p > q) memmove(q, p, len + 1);
+        }
+
+      break;
+      }
+    }
+
+  /* We get here if the end of a macro or a file was reached. The appropriate
+  chain has been popped. Back up the stack of input types before the loop
+  repeats. */
+
+  from_type_ptr--;
   }
 
 return inbuffer;

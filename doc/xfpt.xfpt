@@ -13,14 +13,14 @@
 <bookinfo>
 <title>The xfpt plain text to XML processor</title>
 <titleabbrev>xfpt</titleabbrev>
-<date>03 July 2007</date>
+<date>06 February 2008</date>
 <author>
   <firstname>Philip</firstname>
   <surname>Hazel</surname>
 </author>
 <authorinitials>PH</authorinitials>
-<revhistory><revision><revnumber>0.03</revnumber><date>03 July 2007</date><authorinitials>PH</authorinitials></revision></revhistory>
-<copyright><year>2007</year><holder>University of Cambridge</holder></copyright>
+<revhistory><revision><revnumber>0.06</revnumber><date>06 February 2008</date><authorinitials>PH</authorinitials></revision></revhistory>
+<copyright><year>2008</year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
 
@@ -41,7 +41,7 @@
 
 
 . ----------------------------------------------------------------------------
-.chapter "Introduction"
+.chapter "Introduction" ID00
 &X; is a program that reads a marked-up ASCII source file, and converts it into
 XML. It was written with DocBook XML in mind, but can also be used for other
 forms of XML. Unlike &'AsciiDoc'& (&url(http://www.methods.co.nz/asciidoc/)),
@@ -90,7 +90,7 @@ output, the appropriate XML entity reference (&`&&amp;`&, &`&&lt;`&, or
 &`&&gt;`&, respectively) is generated.
 
 
-.section "The &X; command line"
+.section "The &X; command line" ID01
 The format of the &X; command line is:
 .display
  &`xfpt [`&&'options'&&`] [`&&'input source'&&`]`&
@@ -112,14 +112,12 @@ be given as an output destination to refer to the standard output.
 This option overrides the path to &X;'s library directory that is built into
 the program. This makes it possible to use or test alternate libraries.
 
-.new
 .vitem &%-v%&
 This option causes &X; to output its version number and exit.
-.wen  
 .endlist
 
 
-.section "A short &X; example"
+.section "A short &X; example" ID02
 Here is a very short example of a complete &X; input file that uses some of the
 standard macros and flags:
 .code
@@ -147,7 +145,7 @@ standard macros and flags:
 
 
 
-.section "Literal and non-literal processing" "SECTliteralprocessing"
+.section "Literal and non-literal processing" "SECTliteralprocessing" ID03
 &X; processes non-directive input lines in one of four ways (known as
 &"modes"&):
 
@@ -219,7 +217,7 @@ lines), is to indent every displayed line by one space, and thereby avoid the
 problem altogether.
 
 
-.section "Format of directive lines"
+.section "Format of directive lines" ID04
 If an input line starts with a dot followed by a space, it is ignored by &X;.
 This provides a facility for including comments in the input. Otherwise, the
 dot must be followed by a directive or macro name, and possibly one or more
@@ -237,7 +235,7 @@ dot is treated as a data line.
 
 
 
-.section "Calling macros" "SECTcallingmacro"
+.section "Calling macros" "SECTcallingmacro" ID05
 Macros are defined by the &*.macro*& directive, which is described in section
 &<<SECTmacro>>&. There are two ways of calling a macro. It can be called in the
 same way as a directive, or it can be called from within text that is being
@@ -280,7 +278,7 @@ standard library are examples of macros that are designed be called either way.
 
 
 . ----------------------------------------------------------------------------
-.chapter "Flag sequences"
+.chapter "Flag sequences" ID06
 Only one flag sequence is built-into the code itself. If an input line ends
 with three ampersands (ignoring trailing white space), the ampersands are
 removed, and the next input line, with any leading white space removed, is
@@ -300,7 +298,7 @@ produces exactly the same output as:
 .endd
 
 
-.section "Flag sequences for XML entities and &X; variables"
+.section "Flag sequences for XML entities and &X; variables" ID07
 If an ampersand is followed by a # character, a number, and a semicolon, it is
 understood as a numerical reference to an XML entity, and is passed through
 unmodified. The number can be decimal, or hexadecimal preceded by &`x`&. For
@@ -329,7 +327,7 @@ without modification. For example:
 .endlist
 
 
-.section "Flag sequences for calling macros"
+.section "Flag sequences for calling macros" ID08
 If an ampersand is followed by a sequence of alphanumeric characters starting
 with a letter, terminated by an opening parenthesis, the characters between the
 ampersand and the parenthesis are interpreted as the name of a macro. See
@@ -337,7 +335,7 @@ section &<<SECTcallingmacro>>& for more details.
 
 
 
-.section "Other flag sequences"
+.section "Other flag sequences" ID09
 Any other flag sequences that are needed must be defined by means of the
 &*.flag*& directive. These are of two types, standalone and paired. Both cases
 define replacement text. This is always literal; it is not itself scanned for
@@ -357,7 +355,6 @@ non-alphanumeric characters. When it is encountered, it is replaced by its
 replacement text. For example, in the standard flag definitions, &`&&&&`&
 is defined as a standalone flag with with the replacement text &`&&amp;`&.
 
-.new
 A paired flag is defined as two sequences. The first takes the same form as a
 standalone flag. The second also consists of non-alphanumeric characters, but
 need not start with an ampersand. It is often defined as the reverse of the
@@ -370,7 +367,6 @@ expected to be found within the same text unit. In the default mode, the units
 are a paragraphs, or part-paragraphs if footnotes intervene. In literal layout
 mode, the text is processed line by line. Each member of the pair is replaced
 by its replacement text. 
-.wen
 
 Multiple occurrences of paired flags must be correctly nested. Note that,
 though &X; diagnoses an error for badly nested flag pairs, it does not prevent
@@ -378,12 +374,12 @@ you from generating invalid XML. For example, DocBook does not allow
 &`<emphasis>`& within &`<literal>`&, though it does allow &`<literal>`& within
 &`<emphasis>`&.
 
-.section "Unrecognized flag sequences"
+.section "Unrecognized flag sequences" ID10
 If an ampersand is not followed by a character sequence in one of the forms
 described in the preceding sections, an error occurs.
 
 
-.section "Standard flag sequences"
+.section "Standard flag sequences" ID11
 These are the standalone flag sequences that are defined in the &_stdflags_&
 file in the &X; library:
 .display
@@ -415,13 +411,13 @@ convenient.
 
 
 . ----------------------------------------------------------------------------
-.chapter "Built-in directive processing"
+.chapter "Built-in directive processing" ID12
 The directives that are built into the code of &X; are now described in
 alphabetical order. You can see more examples of their use in the descriptions
 of the standard macros in chapter &<<CHAPstdmac>>&.
 
 
-.section "The &*.arg*& directive"
+.section "The &*.arg*& directive" ID13
 This directive may appear only within the body of a macro. It must be followed
 by a single number, optionally preceded by a minus sign. If the number is
 positive (no minus sign), subsequent lines, up to a &*.endarg*& directive, are
@@ -443,23 +439,20 @@ for the given argument. For example:
  .endarg 
  .endmacro
 .endd
-.new
 Note that if a macro is defined with default values for its arguments, these
 are not counted by the &*.arg*& directive, which looks only at the actual
 arguments in a particular macro call.
-.wen
 
 The &*.arg*& directive may be nested.
 
 
-.section "The &*.eacharg*& directive"
+.section "The &*.eacharg*& directive" ID14
 This directive may appear only within the body of a macro. It may optionally be
 followed by a single number; if omitted the value is taken to be 1. Subsequent
 lines, up to a &*.endeach*& directive, are processed multiple times, once for
-each remaining argument. Unlike &*.arg*&, an argument that is an empty string 
-is not treated specially. &new("However, like &*.arg*&, only the actual
-arguments of a macro call are considered. Default argument values do not 
-count.")
+each remaining argument. Unlike &*.arg*&, an argument that is an empty string
+is not treated specially. However, like &*.arg*&, only the actual arguments of
+a macro call are considered. Default argument values do not count.
 
 The number given with &*.eacharg*& defines which argument to start with. If the
 macro is called with fewer arguments, the lines up to &*.endeach*& are skipped,
@@ -492,26 +485,26 @@ The &*.eacharg*& directive may in principle be nested, though this does not
 seem useful in practice.
 
 
-.section "The &*.echo*& directive"
+.section "The &*.echo*& directive" ID15
 This directive takes a single string argument. It writes it to the standard
 error stream. Within a macro, argument substitution takes place, but no other
 processing is done on the string. This directive can be useful for debugging
 macros or writing comments to the user.
 
 
-.section "The &*.endarg*& directive"
+.section "The &*.endarg*& directive" ID16
 See the description of &*.arg*& above.
 
 
-.section "The &*.endeach*& directive"
+.section "The &*.endeach*& directive" ID17
 See the description of &*.eacharg*& above.
 
 
-.section "The &*.endinliteral*& directive"
+.section "The &*.endinliteral*& directive" ID18
 See the description of &*.inliteral*& below.
 
 
-.section "The &*.flag*& directive"
+.section "The &*.flag*& directive" ID19
 This directive is used to define flag sequences. The directive must be followed
 either by a standalone flag sequence and one string in quotes, or by a flag
 pair and two strings in quotes. White space separates these items. For example:
@@ -524,14 +517,16 @@ redefine an existing flag, the new definition overrides the old. There is no
 way to revert to the previous definition.
 
 
-.section "The &*.include*& directive"
+.section "The &*.include*& directive" ID20
 This directive must be followed by a single string argument that is the path to
 a file. The contents of the file are read and incorporated into the input at
 this point. If the string does not contain any slashes, the path to the &X;
-library is prepended. Otherwise, the path is used unaltered.
+library is prepended. Otherwise, the path is used unaltered. &new("If 
+&*.include*& is used inside a macro, it is evaluated each time the macro is 
+called, and thus can be used to include a different file on each occasion.")
 
 
-.section "The &*.inliteral*& directive"
+.section "The &*.inliteral*& directive" ID21
 This directive may appear only within the body of a macro. It must be followed 
 by one of the words &"layout"&, &"text"&, &"off"&, or &"xml"&. If the current 
 literal mode does not correspond to the word, subsequent lines, up to a 
@@ -539,7 +534,7 @@ literal mode does not correspond to the word, subsequent lines, up to a
 nested.
 
 
-.section "The &*.literal*& directive"
+.section "The &*.literal*& directive" ID22
 This must be followed by one of the words &"layout"&, &"text"&, &"off"&, or
 &"xml"&. It forces an end to a previous paragraph, if there is one, and then
 switches between processing modes. The default mode is the &"off"& mode, in
@@ -548,7 +543,7 @@ Section &<<SECTliteralprocessing>>& describes how input lines are processed in
 the four modes.
 
 
-.section "The &*.macro*& directive" "SECTmacro"
+.section "The &*.macro*& directive" "SECTmacro" ID23
 This directive is used to define macros. It must be followed by a macro name,
 and then, optionally, by any number of arguments. The macro name can be any
 sequence of non-whitespace characters. The arguments in the definition provide
@@ -604,8 +599,7 @@ taken with argument references to ensure that substitutions happen at the right
 level.
 
 
-.new
-.section "The &*.nest*& directive"
+.section "The &*.nest*& directive" ID24
 This directive must be followed by one of the words &"begin"& or &"end"&. It is
 used to delimit a nested sequence of independent text items that occurs inside
 another, such as the contents of a footnote inside a paragraph. This directive
@@ -621,17 +615,16 @@ At the start of a nested sequence, the current mode and paragraph state are
 remembered and &X; then reverts to the default mode and &"not in a paragraph"&.
 At the end of a nested sequence, if a paragraph has been started, it is
 terminated, and then &X; reverts to the previous state.
-.wen
 
 
-.section "The &*.nonl*& directive"
+.section "The &*.nonl*& directive" ID25
 This directive must be followed by a single string argument. It is processed 
-as normal text, but without a newline at the end. This facility is useful in 
-macros when constructing a single data line from several text fragments. See 
+as &new("an input line") without a newline at the end. This facility is useful
+in macros when constructing a single data line from several text fragments. See
 for example the &*.new*& macro in the standard macros.
 
 
-.section "The &*.pop*& directive"
+.section "The &*.pop*& directive" ID26
 &X; keeps a stack of text strings that are manipulated by the &*.push*& and
 &*.pop*& directives. When the end of the input is reached, any strings that
 remain on the stack are popped off, processed for flags, and written to the
@@ -647,7 +640,7 @@ If &*.pop*& is given without a following letter, it pops one string off the
 stack and writes it out. If there is nothing on the stack, an error occurs.
 
 
-.section "The &*.push*& directive"
+.section "The &*.push*& directive" ID27
 This directive pushes a string onto the stack. If the rest of the command line
 starts with an upper case letter followed by white space, that letter is
 associated with the string that is pushed, which consists of the rest of the
@@ -663,7 +656,7 @@ This arrangement ensures that any previous chapter is terminated before
 starting a new one, and also when the end of the input is reached.
 
 
-.section "The &*.revision*& directive" "SECTrevision"
+.section "The &*.revision*& directive" "SECTrevision" ID28
 This directive is provided to make it easy to set the &`revisionflag`&
 attribute on XML elements in a given portion of the document. The DocBook
 specification states that the &`revisionflag`& attribute is common to all
@@ -696,7 +689,7 @@ standard macros &*.new*& and &*.wen*& are provided (see section
 &<<SECTrevmacs>>&).
 
 
-.section "The &*.set*& directive"
+.section "The &*.set*& directive" ID29
 This directive must be followed by a name and a text string. It defines a user
 variable and gives it a name. A reference to the name in the style of an XML
 entity causes the string to be substituted, without further processing. For
@@ -712,7 +705,7 @@ has been defined.
 
 
 . ----------------------------------------------------------------------------
-.chapter "The standard macros for DocBook" "CHAPstdmac" "Standard macros"
+.chapter "The standard macros for DocBook" "CHAPstdmac" "Standard macros" ID30
 A set of simple macros for commonly needed DocBook features is provided in
 &X;'s library. This may be extended as experience with &X; accumulates. The
 standard macros assume that the standard flags are defined, so a document that
@@ -725,7 +718,7 @@ All the standard macros except &*new*&, &*index*&, and &*url*& are intended to
 be called as directive lines. Their names are therefore shown with a leading
 dot in the discussion below.
 
-.section "Overall setup"
+.section "Overall setup" ID31
 There are two macros that should be used only once, at the start of the
 document. The &*.docbook*& macro has no arguments. It inserts into the output
 file the standard header material for a DocBook XML file, which is:
@@ -738,7 +731,7 @@ The &*.book*& macro has no arguments. It generates &`<book>`& and pushes
 &`</book>`& onto the stack so that it will be output at the end.
 
 
-.section "Chapters, sections, and subsections"
+.section "Chapters, sections, and subsections" ID32
 Chapters, sections, and subsections are supported by three macros that all
 operate in the same way. They are &*.chapter*&, &*.section*&, and
 &*.subsection*&. They take either one, two, or three arguments. The first
@@ -773,15 +766,13 @@ subsection is terminated at the correct point. For example, starting a new
 section automatically terminates an open subsection and a previous section.
 
 
-.new
-.section "Prefaces, appendixes, and colophons"
+.section "Prefaces, appendixes, and colophons" ID33
 The macros &*.preface*&, &*.appendix*&, and &*.colophon*& operate in the same 
 way as &*.chapter*&, except that the first and the last have the default title
 strings &"Preface"& and &"Colophon"&.
-.wen
 
 
-.section "URL references"
+.section "URL references" ID34
 The &*url*& macro generates URL references, and is intended to be called inline
 within the text that is being processed. It generates a &`<ulink>`& element,
 and has either one or two arguments. The first argument is the URL, and the
@@ -800,7 +791,7 @@ do not want.
 
 
 
-.section "Itemized lists"
+.section "Itemized lists" ID35
 The &*.ilist*& macro marks the start of an itemized list, the items of which
 are normally rendered with bullets or similar markings. The macro can
 optionally be called with one argument, for which there is no default. If the
@@ -822,7 +813,7 @@ For example:
 There may be more than one paragraph in an item. 
 
 
-.section "Ordered lists"
+.section "Ordered lists" ID36
 The &*.olist*& macro marks the start of an ordered list, the items of which are
 numbered. If no argument is given, arabic numerals are used. One of the
 following words can be given as the macro's argument to specify the numeration:
@@ -846,7 +837,7 @@ For example:
 There may be more than one paragraph in an item.
 
 
-.section "Variable lists"
+.section "Variable lists" ID37
 A variable list is one in which each entry is composed of a set of one or more
 terms and an associated description. Typically, the terms are printed in a
 style that makes them stand out, and the description is indented underneath.
@@ -867,7 +858,7 @@ This is followed by the body of the entry. The list is terminated by the
 As for the other lists, there may be more than one paragraph in an item.
 
 
-.section "Nested lists"
+.section "Nested lists" ID38
 Lists may be nested as required. Some DocBook processors automatically choose
 different bullets for nested itemized lists, but others do not. The
 &*.endlist*& macro has no useful arguments. Any text that follows it is
@@ -875,7 +866,7 @@ treated as a comment. This can provide an annotation facility that may make the
 input easier to understand when lists are nested.
 
 
-.section "Displayed text"
+.section "Displayed text" ID39
 In displayed text each non-directive input line generates one output line. The
 &`<literallayout>`& DocBook element is used to achieve this. Two kinds of
 displayed text are supported by the standard macros. They differ in their
@@ -912,12 +903,12 @@ As the examples illustrate, both kinds of display are terminated by the
 
 
 
-.section "Block quotes"
+.section "Block quotes" ID40
 The macro pair &*.blockquote*& and &*.endblockquote*& are used to wrap the
 lines between them in a &`<blockquote>`& element.
 
 
-.section "Revision markings" "SECTrevmacs"
+.section "Revision markings" "SECTrevmacs" ID41
 Two macros are provided to simplify setting and unsetting the &"changed"&
 revision marking (see section &<<SECTrevision>>&). When the revised text is
 substantial (for example, a complete paragraph, table, display, or section), it
@@ -966,14 +957,12 @@ section you can also call &*.new*& with an argument, either as a directive or
 inline. This does not work for &*.code*& because its lines are processed in
 literal text mode.
 
-.new
 If you want to add revision indications to part of a table, you must use an
 inline call of &*new*& within an argument of the &*.row*& macro (see below).
 This is the only usage that works in this case.
-.wen
 
 
-.section "Informal tables"
+.section "Informal tables" ID42
 The &*.itable*& macro starts an informal (untitled) table with some basic
 parameterization. If you are working on a large document that has many tables
 with the same parameters, the best approach is to define your own table macros,
@@ -1031,8 +1020,7 @@ macro within an entry to generate a &`<phrase>`& element with &`revisionflag`&
 set.
 
 
-.new
-.section "Formal tables"
+.section "Formal tables" ID43
 The &*.table*& macro starts a formal table, that is, a table that has a title, 
 and which can be cross referenced. The first argument of this macro is the 
 table's title; the second is an identifier for cross-referencing. If you are 
@@ -1048,24 +1036,25 @@ For example:
 .endd
 
 
-.section "Figures and images"
+.section "Figures and images" ID44
 A figure is enclosed between &*.figure*& and &*.endfigure*& macros. The first 
 argument of &*.figure*& provides a title for the figure. The second is 
 optional; if present, it is a tag for references to the figure.
 
 A figure normally contains an image. The &*.image*& macro can be used in simple 
 cases. It generates a &`<mediaobject>`& element containing an
-&`<imageobject>`&. The first argument is the name of the file containing the 
-image. The remaining arguments are optional; if any one is not needed, an empty 
-string must be supplied as a placeholder.
+&`<imageobject>`&. The first argument is the name of the file containing the
+image. The remaining arguments are optional; &new("an empty string must be
+supplied as a placeholder when one that is not required is followed by one that
+is set.")
 
 .ilist
 The second argument specifies a scaling factor for the image, as a percentage. 
 Thus, a value of 50 reduces the image to half size.
 .next
 The third argument specifies an alignment for the image. It must be one of 
-&`left`&, &`right`& or &`center`& (or even &`centre`& if the DocBook processor 
-you are using can handle it).
+&`left`& &new("(default)"), &`right`& or &`center`& (or even &`centre`& if the
+DocBook processor you are using can handle it).
 .next
 The fourth and fifth arguments specify the depth and width, respectively. How 
 these values are handled depends on the processing software.
@@ -1087,7 +1076,7 @@ Here is another example, where the figure is reduced to 80% and centred:
 .endd
 
 
-.section "Footnotes"
+.section "Footnotes" ID45
 Footnotes can be specified between &*.footnote*& and &*.endnote*& macros. 
 Within a footnote there can be any kind of text item, including displays and 
 tables. When a footnote occurs in the middle of a paragraph, paired flags 
@@ -1107,10 +1096,9 @@ The correct markup for this example is:
  .endf
  &'brown'& fox.
 .endd
-.wen
 
 
-.section "Indexes"
+.section "Indexes" ID46
 The &*.index*& macro generates &`<indexterm>`& elements (index entries) in the
 output. It takes one or two arguments. The first is the text for the primary
 index term, and the second, if present, specifies a secondary index term. This
@@ -1121,7 +1109,6 @@ example:
  .index goose "wild chase"
  The chasing of wild geese...
 .endd
-.new
 You can generate &"see"& and &"see also"& index entries by using &*.index-see*& 
 and &*.index-seealso*& instead of &*.index*&. The first argument of these 
 macros is the text for the &"see"&. For example:
@@ -1135,7 +1122,6 @@ This generates:
  <see>chase</see>
  </indexterm>
 .endd  
-.wen
 
 If you want to generate an index entry for a range of pages, you can use the 
 &*.index-from*& and &*.index-to*& macros. The first argument of each of them is 

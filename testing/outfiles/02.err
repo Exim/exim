@@ -91,3 +91,15 @@
               ^^^^^^^^^^^^^^^^^
    Detected near line 43 of infiles/02
 
+** Error: malformed directive
+   .arg 4n
+   Processing macro b
+   Detected near line 1 of infiles/02.inc
+   Processing macro a
+   Detected near line 53 of infiles/02
+
+** Error: .arg is permitted only inside a macro
+   Detected near line 3 of infiles/02.inc
+   Processing macro a
+   Detected near line 53 of infiles/02
+

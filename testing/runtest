@@ -3,7 +3,7 @@
 # Controlling script for xfpt tests
 
 $xfpt = "../src/xfpt -S ../share";
-$cf = "cf";
+$cf = (-f "/usr/local/bin/cf")? "cf" : "diff -u";
 
 $force_update = 0;
 $starttest = undef;
@@ -35,9 +35,10 @@ while (scalar @files > 0)
   my($options) = $cmd_options; 
 
   # Skip . and .. and also skip any file ending in .opt because that
-  # contains options for any given test.
+  # contains options for any given test, and any file ending in .inc
+  # because that is an included file. 
     
-  next if $file =~ /^\.\.?$|\.opt$/;
+  next if $file =~ /^\.\.?$|\.opt$|\.inc$/;
   
   next if !$started && defined $starttest && $file !~ /^$starttest/;
   $started = 1; 

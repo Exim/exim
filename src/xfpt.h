@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2006 */
+/* Copyright (c) University of Cambridge, 2008 */
 
 /* Written by Philip Hazel. I wrote this because I found AsciiDoc to be to slow
 for large documents, and also to have too many quirks and gotchas. */
@@ -31,10 +31,16 @@ must appear before including the local headers. */
 /* These values do not necessarily have to appear before including the local
 headers, but they might as well be together with those above. */
 
-#define INBUFFSIZE       1024
-#define PARABUFFSIZE    10000
-#define FLAGSTACKSIZE      40
-#define MAXNEST             3
+#define INBUFFSIZE          1024
+#define PARABUFFSIZE       10000
+#define FLAGSTACKSIZE         40
+#define MAXNEST                3
+#define FROM_TYPE_STACKSIZE   20
+
+
+/* Type of current input */
+
+enum { FROM_FILE, FROM_MACRO };
 
 
 /* Nested block indicators for read_paragraph() */

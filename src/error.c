@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2006 */
+/* Copyright (c) University of Cambridge, 2008 */
 /* Written by Philip Hazel. */
 
 /* Error handling routines */
@@ -102,8 +102,9 @@ Returns:      nothing, but some errors do not return
 void
 error(int n, ...)
 {
-int ec;
+int ec, i;
 macroexe *me;
+istackstr *fe;
 va_list ap;
 va_start(ap, n);
 
@@ -128,19 +129,29 @@ else
 
 va_end(ap);
 
-for (me = macrocurrent; me != NULL; me = me->prev)
-  {
-  (void)fprintf(stderr, "   Processing macro %s\n", me->macro->name);
-  }
+me = macrocurrent;
+fe = istack;
 
-if (istack != NULL)
+for (i = from_type_ptr; i >= 0; i--)
   {
-  (void)fprintf(stderr, "   Detected near line %d of %s\n",
-    istack->linenumber, istack->filename);
-  }
-else
-  {
-  (void)fprintf(stderr, "   Detected near end of file\n");
+  if (from_type[i] == FROM_MACRO)
+    {
+    (void)fprintf(stderr, "   Processing macro %s\n", me->macro->name);
+    me = me->prev;
+    }
+  else
+    {
+    if (fe != NULL)
+      {
+      (void)fprintf(stderr, "   Detected near line %d of %s\n",
+        fe->linenumber, fe->filename);
+      fe = fe->prev;
+      }
+    else
+      {
+      (void)fprintf(stderr, "   Detected near end of file\n");
+      }
+    }
   }
 
 if (ec == ec_warning)

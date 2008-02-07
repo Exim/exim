@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2007 */
+/* Copyright (c) University of Cambridge, 2008 */
 /* Written by Philip Hazel. */
 
 /* This module contains code for processing a paragraph by looking for flag
@@ -53,6 +53,7 @@ me->prev = macrocurrent;
 macrocurrent = me;
 me->macro = md;
 me->nextline = md->lines;
+from_type[++from_type_ptr] = FROM_MACRO;
 
 me->args = NULL;
 pp = &(me->args);
@@ -118,6 +119,7 @@ for (;;)
     macroexe *temp = macrocurrent;
     macrocurrent = macrocurrent->prev;
     free(temp);
+    from_type_ptr--;
     break;
     }
   }

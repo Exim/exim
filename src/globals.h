@@ -18,6 +18,8 @@ extern uschar     *xfpt_version;
 extern tree_node  *entities;
 
 extern flagstr    *flaglist;
+extern int         from_type[];
+extern int         from_type_ptr;
 
 extern uschar     *inbuffer;
 extern istackstr  *istack;
