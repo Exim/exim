@@ -259,6 +259,12 @@ if not header :matches "x-special1" "*\0*q" { discard; }
 No implicit keep
 ==========
 # Sieve filter
+require "encoded-character";
+if not header :matches "x-special1" "*${hex:00}*" { discard; }
+==========
+Implicit keep
+==========
+# Sieve filter
 if not header :matches "x-special2" "\\?*\\*" { discard; }
 ==========
 No implicit keep

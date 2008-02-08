@@ -311,6 +311,13 @@ exim -bf test-data <aux-fixed/TESTNUM.message
 ****
 catwrite test-data
 # Sieve filter
+require "encoded-character";
+if not header :matches "x-special1" "*${hex:00}*" { discard; }
+****
+exim -bf test-data <aux-fixed/TESTNUM.message
+****
+catwrite test-data
+# Sieve filter
 if not header :matches "x-special2" "\\?*\\*" { discard; }
 ****
 exim -bf test-data <aux-fixed/TESTNUM.message
