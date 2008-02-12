@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.543 2008/02/06 18:57:46 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.544 2008/02/12 12:52:51 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -28,6 +28,10 @@ TF/03 Bugzilla 615: When checking the local_parts router precondition
       after a local_part_suffix or local_part_prefix option, Exim now
       does not use the address's named list lookup cache, since this
       contains cached lookups for the whole local part.
+
+NM/05 Bugzilla 521: Integrated SPF Best Guess support contributed by
+      Robert Millan.  Documentation is in experimental-spec.txt
+
 
 
 Exim version 4.69

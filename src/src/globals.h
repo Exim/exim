@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.61 2008/01/17 13:03:35 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.62 2008/02/12 12:52:51 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -705,6 +705,7 @@ extern uschar *spam_score;             /* the spam score (float) */
 extern uschar *spam_score_int;         /* spam_score * 10 (int) */
 #endif
 #ifdef EXPERIMENTAL_SPF
+extern uschar *spf_guess;              /* spf best-guess record */
 extern uschar *spf_header_comment;     /* spf header comment */
 extern uschar *spf_received;           /* Received-SPF: header */
 extern uschar *spf_result;             /* spf result in string form */

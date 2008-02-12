@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spf.h,v 1.6 2005/06/27 15:28:45 tom Exp $ */
+/* $Cambridge: exim/src/src/spf.h,v 1.7 2008/02/12 12:52:51 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -26,6 +26,10 @@ typedef struct spf_result_id {
 
 /* prototypes */
 int spf_init(uschar *,uschar *);
-int spf_process(uschar **, uschar *);
+int spf_process(uschar **, uschar *, int);
+
+#define SPF_PROCESS_NORMAL  0
+#define SPF_PROCESS_GUESS   1
+#define SPF_PROCESS_FALLBACK    2
 
 #endif

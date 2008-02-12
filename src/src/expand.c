@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.92 2008/01/17 13:03:35 tom Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.93 2008/02/12 12:52:51 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -575,6 +575,7 @@ static var_entry var_table[] = {
   { "spam_score_int",      vtype_stringptr,   &spam_score_int },
 #endif
 #ifdef EXPERIMENTAL_SPF
+  { "spf_guess",           vtype_stringptr,   &spf_guess },
   { "spf_header_comment",  vtype_stringptr,   &spf_header_comment },
   { "spf_received",        vtype_stringptr,   &spf_received },
   { "spf_result",          vtype_stringptr,   &spf_result },

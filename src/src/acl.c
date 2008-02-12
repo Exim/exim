@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.81 2008/01/17 13:03:35 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.82 2008/02/12 12:52:51 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -102,6 +102,7 @@ enum { ACLC_ACL,
 #endif
 #ifdef EXPERIMENTAL_SPF
        ACLC_SPF,
+       ACLC_SPF_GUESS,
 #endif
        ACLC_VERIFY };
 
@@ -165,6 +166,7 @@ static uschar *conditions[] = {
 #endif
 #ifdef EXPERIMENTAL_SPF
   US"spf",
+  US"spf_guess",
 #endif
   US"verify" };
 
@@ -300,6 +302,7 @@ static uschar cond_expand_at_top[] = {
 #endif
 #ifdef EXPERIMENTAL_SPF
   TRUE,    /* spf */
+  TRUE,    /* spf_guess */
 #endif
   TRUE     /* verify */
 };
@@ -363,6 +366,7 @@ static uschar cond_modifiers[] = {
 #endif
 #ifdef EXPERIMENTAL_SPF
   FALSE,   /* spf */
+  FALSE,   /* spf_guess */
 #endif
   FALSE    /* verify */
 };
@@ -541,6 +545,14 @@ static unsigned int cond_forbids[] = {
 
   #ifdef EXPERIMENTAL_SPF
   (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|      /* spf */
+    (1<<ACL_WHERE_HELO)|
+    (1<<ACL_WHERE_MAILAUTH)|
+    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
+    (1<<ACL_WHERE_STARTTLS)|(1<<ACL_WHERE_VRFY)|
+    (1<<ACL_WHERE_NOTSMTP)|
+    (1<<ACL_WHERE_NOTSMTP_START),
+
+  (1<<ACL_WHERE_AUTH)|(1<<ACL_WHERE_CONNECT)|      /* spf_guess */
     (1<<ACL_WHERE_HELO)|
     (1<<ACL_WHERE_MAILAUTH)|
     (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
@@ -3134,7 +3146,10 @@ for (; cb != NULL; cb = cb->next)
 
     #ifdef EXPERIMENTAL_SPF
     case ACLC_SPF:
-      rc = spf_process(&arg, sender_address);
+      rc = spf_process(&arg, sender_address, SPF_PROCESS_NORMAL);
+    break;
+    case ACLC_SPF_GUESS:
+      rc = spf_process(&arg, sender_address, SPF_PROCESS_GUESS);
     break;
     #endif
 

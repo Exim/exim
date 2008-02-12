@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.10 2008/01/16 09:36:19 tom Exp $
+$Cambridge: exim/doc/doc-txt/experimental-spec.txt,v 1.11 2008/02/12 12:52:51 nm4 Exp $
 
 From time to time, experimental features may be added to Exim.
 While a feature  is experimental, there  will be a  build-time
@@ -799,6 +799,9 @@ variables.
   draft, this header must be added at the top of the header
   list. Please see section 10 on how you can do this.
 
+  Note: in case of "Best-guess" (see below), the convention is
+  to put this string in a header called X-SPF-Guess: instead.
+
   $spf_result
   This contains the outcome of the SPF check in string form,
   one of pass, fail, softfail, none, neutral, err_perm or
@@ -808,6 +811,37 @@ variables.
   This contains a string that can be used in a SMTP response
   to the calling party. Useful for "fail".
 
+In addition to SPF, you can also perform checks for so-called
+"Best-guess".  Strictly speaking, "Best-guess" is not standard
+SPF, but it is supported by the same framework that enables SPF
+capability.  Refer to http://www.openspf.org/FAQ/Best_guess_record
+for a description of what it means.
+
+To access this feature, simply use the spf_guess condition in place
+of the spf one.  For example:
+
+/* -----------------
+deny message = $sender_host_address doesn't look trustworthy to me
+     spf_guess = fail
+--------------------- */
+
+In case you decide to reject messages based on this check, you
+should note that although it uses the same framework, "Best-guess"
+is NOT SPF, and therefore you should not mention SPF at all in your
+reject message.
+
+When the spf_guess condition has run, it sets up the same expansion
+variables as when spf condition is run, described above.
+
+Additionally, since Best-guess is not standarized, you may redefine
+what "Best-guess" means to you by redefining spf_guess variable in
+global config.  For example, the following:
+
+/* -----------------
+spf_guess = v=spf1 a/16 mx/16 ptr ?all
+--------------------- */
+
+would relax host matching rules to a broader network range.
 
 
 4. SRS (Sender Rewriting Scheme) Support

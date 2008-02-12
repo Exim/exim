@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spf.c,v 1.7 2007/05/17 19:55:10 tom Exp $ */
+/* $Cambridge: exim/src/src/spf.c,v 1.8 2008/02/12 12:52:51 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -73,7 +73,7 @@ int spf_init(uschar *spf_helo_domain, uschar *spf_remote_addr) {
    context (if any), retrieves the result, sets up expansion
    strings and evaluates the condition outcome. */
 
-int spf_process(uschar **listptr, uschar *spf_envelope_sender) {
+int spf_process(uschar **listptr, uschar *spf_envelope_sender, int action) {
   int sep = 0;
   uschar *list = *listptr;
   uschar *spf_result_id;
@@ -93,7 +93,10 @@ int spf_process(uschar **listptr, uschar *spf_envelope_sender) {
   }
 
   /* get SPF result */
-  SPF_request_query_mailfrom(spf_request, &spf_response);
+  if (action == SPF_PROCESS_FALLBACK)
+    SPF_request_query_fallback(spf_request, &spf_response, spf_guess);
+  else
+    SPF_request_query_mailfrom(spf_request, &spf_response);
 
   /* set up expansion items */
   spf_header_comment     = (uschar *)SPF_response_get_header_comment(spf_response);
@@ -106,6 +109,10 @@ int spf_process(uschar **listptr, uschar *spf_envelope_sender) {
   /* We got a result. Now see if we should return OK or FAIL for it */
   SPF_EVALUATE:
   debug_printf("SPF result is %s (%d)\n", SPF_strresult(rc), rc);
+
+  if (action == SPF_PROCESS_GUESS && (!strcmp (SPF_strresult(rc), "none")))
+    return spf_process(listptr, spf_envelope_sender, SPF_PROCESS_FALLBACK);
+
   while ((spf_result_id = string_nextinlist(&list, &sep,
                                      spf_result_id_buffer,
                                      sizeof(spf_result_id_buffer))) != NULL) {

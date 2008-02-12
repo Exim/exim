@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.34 2008/01/17 13:03:35 tom Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.35 2008/02/12 12:52:51 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -356,6 +356,9 @@ static optionlist optionlist_config[] = {
   { "smtp_return_error_details",opt_bool,        &smtp_return_error_details },
 #ifdef WITH_CONTENT_SCAN
   { "spamd_address",            opt_stringptr,   &spamd_address },
+#endif
+#ifdef EXPERIMENTAL_SPF
+  { "spf_guess",                opt_stringptr,   &spf_guess },
 #endif
   { "split_spool_directory",    opt_bool,        &split_spool_directory },
   { "spool_directory",          opt_stringptr,   &spool_directory },
