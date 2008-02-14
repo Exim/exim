@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/lookups/Makefile,v 1.7 2007/09/28 12:21:57 tom Exp $
+# $Cambridge: exim/src/src/lookups/Makefile,v 1.8 2008/02/14 13:49:35 fanf2 Exp $
 
 # Make file for building a library containing all the available lookups and
 # calling it lookups.a. This is called from the main make file, after cd'ing
@@ -14,7 +14,6 @@ lookups.a:       $(OBJ)
 		 @echo "$(AR) lookups.a"
 		 @$(AR) lookups.a $(OBJ)
 		 $(RANLIB) $@
-		 @$(RM_COMMAND) -rf ../drtables.o
 
 .SUFFIXES:       .o .c
 .c.o:;           @echo "$(CC) $*.c"

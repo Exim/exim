@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/Makefile,v 1.4 2005/09/12 13:55:54 ph10 Exp $
+# $Cambridge: exim/src/Makefile,v 1.5 2008/02/14 13:49:35 fanf2 Exp $
 
 # Top-level makefile for Exim; handles creating a build directory with
 # appropriate links, and then creating and running the main makefile in that
@@ -27,7 +27,8 @@ buildname=$${build:-`$(SHELL) scripts/os-type`-`$(SHELL) scripts/arch-type`}
 # The default target checks for the existence of Local/Makefile, that the main
 # makefile is built and up-to-date, and then it runs it.
 
-all: Local/Makefile configure go
+all: Local/Makefile configure
+	@cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS)
 
 Local/Makefile:
 	@echo ""
@@ -61,10 +62,6 @@ configure: build-directory
 makefile: build-directory
 	@cd build-$(buildname); $(RM_COMMAND) -f Makefile; \
 	  build=$(build) $(SHELL) ../scripts/Configure-Makefile
-
-# Go to the build directory and do the business
-
-go:; @cd build-$(buildname); $(MAKE) SHELL=$(SHELL) $(MFLAGS)
 
 # The installation commands are kept in a separate script, which expects
 # to be run from inside the build directory.

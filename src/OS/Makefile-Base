@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.14 2008/01/17 13:03:35 tom Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.15 2008/02/14 13:49:35 fanf2 Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -525,7 +525,7 @@ util-os.o:       $(HDRS) os.c
 # The local scan module depends only on its own special header, and is compiled
 # from a source whose location is set by configuration.
 
-local_scan.o:    Makefile local_scan.h ../$(LOCAL_SCAN_SOURCE)
+local_scan.o:    Makefile config.h local_scan.h ../$(LOCAL_SCAN_SOURCE)
 	@echo "$(CC) local_scan.c"
 	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) -o local_scan.o ../$(LOCAL_SCAN_SOURCE)
 
@@ -634,22 +634,11 @@ $(MONBIN): $(HDRS)
 		   ../exim_monitor/`echo $@ | sed 's/o$$/c/'`
 
 
-# Targets for the various libraries that Exim uses. This coding is tedious,
-# because different versions of "make" behave in different ways with regard
-# to rebuilding. If these target names are of the form pcre/libpcre.a, for
-# example, then a forcing mechanism is required to get them obeyed each time.
-# That's fine on Solaris and other systems; the rebuilding of the exim target
-# happens only if the libraries are actually rebuilt. However, on IRIX, if
-# the target is forced, the exim target gets unnecessarily rebuilt even if
-# the .a file is not. Contrariwise, if we use dummy names, they don't interact
-# with the building of exim (and eximon.bin), but for libpcre Exim doesn't get
-# rebuilt when it should. (For the others it does, because they remove
-# drtables.o when they rebuild.) To get round this, we forcibly remove the
-# binary when it needs to be rebuilt.
+# Targets for the various libraries that Exim uses.
 
 # The lookups library.
 
-buildlookups:
+buildlookups lookups/lookups.a: config.h
 	 @cd lookups; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) $(LOOKUP_INCLUDE)"; \
@@ -657,7 +646,7 @@ buildlookups:
 
 # The routers library.
 
-buildrouters:
+buildrouters routers/routers.a: config.h
 	 @cd routers; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"; \
@@ -665,7 +654,7 @@ buildrouters:
 
 # The transports library.
 
-buildtransports:
+buildtransports transports/transports.a: config.h
 	 @cd transports; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"; \
@@ -673,7 +662,7 @@ buildtransports:
 
 # The library of authorization modules
 
-buildauths:
+buildauths auths/auths.a: config.h
 	 @cd auths; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"; \

@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/auths/Makefile,v 1.5 2006/10/16 15:44:36 ph10 Exp $
+# $Cambridge: exim/src/src/auths/Makefile,v 1.6 2008/02/14 13:49:35 fanf2 Exp $
 
 # Make file for building a library containing all the available authorization
 # methods, and calling it auths.a. In addition, there are functions that are
@@ -17,7 +17,6 @@ auths.a:         $(OBJ)
 		 @echo "$(AR) auths.a"
 		 $(FE)$(AR) auths.a $(OBJ)
 		 $(RANLIB) $@
-		 @$(RM_COMMAND) -rf ../drtables.o
 
 .SUFFIXES:       .o .c
 .c.o:;           @echo "$(CC) $*.c"

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.544 2008/02/12 12:52:51 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.545 2008/02/14 13:49:35 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -32,6 +32,7 @@ TF/03 Bugzilla 615: When checking the local_parts router precondition
 NM/05 Bugzilla 521: Integrated SPF Best Guess support contributed by
       Robert Millan.  Documentation is in experimental-spec.txt
 
+TF/04 Bugzilla 668: Fix parallel build (make -j).
 
 
 Exim version 4.69
