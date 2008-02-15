@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.35 2008/02/15 13:13:43 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.36 2008/02/15 13:19:30 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -23571,17 +23571,20 @@ login:
   driver = plaintext
   public_name = LOGIN
   server_prompts = Username:: : Password::
-  server_condition = ${if ldapauth \
-    {user="cn=${quote_ldap_dn:$auth1},ou=people,o=example.org" \
-    pass=${quote:$auth2} \
-    ldap://ldap.example.org/}}
+  server_condition = ${if and{{
+    !eq{}{$auth1} }{ \
+    ldapauth{user="cn=${quote_ldap_dn:$auth1},ou=people,o=example.org" \
+             pass=${quote:$auth2} \
+             ldap://ldap.example.org/} }} }
   server_set_id = uid=$auth1,ou=people,o=example.org
 .endd
-Note the use of the &%quote_ldap_dn%& operator to correctly quote the DN for
-authentication. However, the basic &%quote%& operator, rather than any of the
-LDAP quoting operators, is the correct one to use for the password, because
-quoting is needed only to make the password conform to the Exim syntax. At the
-LDAP level, the password is an uninterpreted string.
+We have to check that the username is not empty before using it, because LDAP
+does not permit empty DN components. We must also use the &%quote_ldap_dn%&
+operator to correctly quote the DN for authentication. However, the basic
+&%quote%& operator, rather than any of the LDAP quoting operators, is the
+correct one to use for the password, because quoting is needed only to make
+the password conform to the Exim syntax. At the LDAP level, the password is an
+uninterpreted string.
 
 
 
