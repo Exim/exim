@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.36 2008/02/15 13:19:30 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.37 2008/02/18 18:32:31 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -10763,7 +10763,7 @@ This is an obsolete name for &$received_port$&.
 .vitem &$item$&
 .vindex "&$item$&"
 This variable is used during the expansion of &*forall*& and &*forany*&
-conditions (see section &<<SECTexpcond>>&), and &*filter*&, &*man*&, and
+conditions (see section &<<SECTexpcond>>&), and &*filter*&, &*map*&, and
 &*reduce*& items (see section &<<SECTexpcond>>&). In other circumstances, it is
 empty.
 
