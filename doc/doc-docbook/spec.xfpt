@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.37 2008/02/18 18:32:31 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.38 2008/02/26 11:46:33 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -431,8 +431,6 @@ directory are:
 .row &_exim.8_&              "a man page of Exim's command line options"
 .row &_experimental.txt_&    "documentation of experimental features"
 .row &_filter.txt_&          "specification of the filter language"
-.row &_pcrepattern.txt_&     "specification of PCRE regular expressions"
-.row &_pcretest.txt_&        "specification of the PCRE testing program"
 .row &_Exim3.upgrade_&       "upgrade notes from release 2 to release 3"
 .row &_Exim4.upgrade_&       "upgrade notes from release 3 to release 4"
 .endtable
@@ -732,10 +730,9 @@ A number of pieces of external code are included in the Exim distribution.
 .ilist
 Regular expressions are supported in the main Exim program and in the
 Exim monitor using the freely-distributable PCRE library, copyright
-&copy; University of Cambridge. The source to a cut down version of PCRE
-used to be distributed in the directory &_src/pcre_&. However, this is
-no longer the case and you will need to use a system PCRE library or
-obtain and install the full version of the library from
+&copy; University of Cambridge. The source to PCRE is no longer shipped with
+Exim, so you will need to use the version of PCRE shipped with your system,
+or obtain and install the full version of the library from
 &url(ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre).
 .next
 .cindex "cdb" "acknowledgment"
@@ -2226,9 +2223,8 @@ but this usage is deprecated.
 
 .cindex "installing Exim" "what is not installed"
 Running &'make install'& does not copy the Exim 4 conversion script
-&'convert4r4'&, or the &'pcretest'& test program. You will probably run the
-first of these only once (if you are upgrading from Exim 3), and the second
-isn't really part of Exim. None of the documentation files in the &_doc_&
+&'convert4r4'&. You will probably run this only once if you are
+upgrading from Exim 3. None of the documentation files in the &_doc_&
 directory are copied, except for the info files when you have set
 INFO_DIRECTORY, as described in section &<<SECTinsinfdoc>>& below.
 
@@ -5908,13 +5904,11 @@ Jeffrey Friedl's &'Mastering Regular Expressions'&, which is published by
 O'Reilly (see &url(http://www.oreilly.com/catalog/regex2/)).
 
 The documentation for the syntax and semantics of the regular expressions that
-are supported by PCRE is included in plain text in the file
-&_doc/pcrepattern.txt_& in the Exim distribution, and also in the HTML
-tarbundle of Exim documentation. It describes in detail the features of the
-regular expressions that PCRE supports, so no further description is included
-here. The PCRE functions are called from Exim using the default option settings
-(that is, with no PCRE options set), except that the PCRE_CASELESS option is
-set when the matching is required to be case-insensitive.
+are supported by PCRE is included in the PCRE distribution, and no further
+description is included here. The PCRE functions are called from Exim using
+the default option settings (that is, with no PCRE options set), except that
+the PCRE_CASELESS option is set when the matching is required to be
+case-insensitive.
 
 In most cases, when a regular expression is required in an Exim configuration,
 it has to start with a circumflex, in order to distinguish it from plain text
@@ -5950,47 +5944,6 @@ domains = ^\\d{3}\\.example\$
 .endd
 if you want &'example'& to be the top-level domain. The backslash before the
 $ is needed because string expansion also interprets dollar characters.
-
-
-
-.section "Testing regular expressions" "SECID59"
-.cindex "testing" "regular expressions"
-.cindex "regular expressions" "testing"
-.cindex "&'pcretest'&"
-A program called &'pcretest'& forms part of the PCRE distribution and is built
-with PCRE during the process of building Exim. It is primarily intended for
-testing PCRE itself, but it can also be used for experimenting with regular
-expressions. After building Exim, the binary can be found in the build
-directory (it is not installed anywhere automatically). There is documentation
-of various options in &_doc/pcretest.txt_&, but for simple testing, none are
-needed. This is the output of a sample run of &'pcretest'&:
-.display
-&`  re> `&&*&`/^([@]+)@.+\.(ac|edu)\.(?!kr)[a-z]{2}$/`&*&
-&`data> `&&*&`x@y.ac.uk`&*&
-&` 0: x@y.ac.uk`&
-&` 1: x`&
-&` 2: ac`&
-&`data> `&&*&`x@y.ac.kr`&*&
-&`No match`&
-&`data> `&&*&`x@y.edu.com`&*&
-&`No match`&
-&`data> `&&*&`x@y.edu.co`&*&
-&` 0: x@y.edu.co`&
-&` 1: x`&
-&` 2: edu`&
-.endd
-Input typed by the user is shown in bold face. After the &"re>"& prompt, a
-regular expression enclosed in delimiters is expected. If this compiles without
-error, &"data>"& prompts are given for strings against which the expression is
-matched. An empty data line causes a new regular expression to be read. If the
-match is successful, the captured substring values (that is, what would be in
-the variables &$0$&, &$1$&, &$2$&, etc.) are shown. The above example tests for
-an email address whose domain ends with either &"ac"& or &"edu"& followed by a
-two-character top-level domain that is not &"kr"&. The local part is captured
-in &$1$& and the &"ac"& or &"edu"& in &$2$&.
-
-
-
 
 
 
