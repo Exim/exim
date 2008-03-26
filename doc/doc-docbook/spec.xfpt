@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.38 2008/02/26 11:46:33 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.39 2008/03/26 15:37:37 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -26317,7 +26317,9 @@ verified as a sender.
 .cindex "&ACL;" "testing a DNS list"
 In its simplest form, the &%dnslists%& condition tests whether the calling host
 is on at least one of a number of DNS lists by looking up the inverted IP
-address in one or more DNS domains. For example, if the calling host's IP
+address in one or more DNS domains. (Note that DNS list domains are not mail
+domains, so the &`+`& syntax for named lists doesn't work - it is used for
+special options instead.) For example, if the calling host's IP
 address is 192.168.62.43, and the ACL statement is
 .code
 deny dnslists = blackholes.mail-abuse.org : \
