@@ -1,10 +1,25 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.545 2008/02/14 13:49:35 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.546 2008/03/27 13:23:40 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
 
 Exim version 4.70
 -----------------
+
+TK/01 Added patch by Johannes Berg that expands the main option
+      "spamd_servers" if it starts with a dollar sign.
+
+TK/02 Write list of recipients to X-Envelope-Sender header when building
+      the mbox-format spool file for content scanning (suggested by Jakob
+      Hirsch)
+
+TK/03 Added patch by Wolfgang Breyha that adds experimental DCC
+      (http://www.dcc-servers.net/) support via dccifd. Activated by
+      setting EXPERIMENTAL_DCC=yes in Local/Makefile. Check out
+      experimental_spec.txt for more documentation.
+
+TK/04 Bugzilla 673: Add f-protd malware scanner support. Patch submitted
+      by Mark Daniel Reidel <mr@df.eu>.
 
 NM/01 Bugzilla 657: Embedded PCRE removed from the exim source tree.
       When building exim an external PCRE library is now needed -
