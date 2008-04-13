@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.40 2008/04/13 11:45:09 tom Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.41 2008/04/13 11:45:58 tom Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -24061,7 +24061,7 @@ GnuTLS uses D-H parameters that may take a substantial amount of time
 to compute. It is unreasonable to re-compute them for every TLS session.
 Therefore, Exim keeps this data in a file in its spool directory, called
 &_gnutls-params_&. The file is owned by the Exim user and is readable only by
-its owner. Every Exim process that start up GnuTLS reads the RSA and D-H
+its owner. Every Exim process that start up GnuTLS reads the D-H
 parameters from this file. If the file does not exist, the first Exim process
 that needs it computes the data and writes it to a temporary file which is
 renamed once it is complete. It does not matter if several Exim processes do
