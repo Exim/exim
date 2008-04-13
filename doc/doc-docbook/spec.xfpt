@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.39 2008/03/26 15:37:37 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.40 2008/04/13 11:45:09 tom Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -24057,7 +24057,7 @@ sections &<<SECTreqciphssl>>& and &<<SECTreqciphgnu>>&.
 
 
 .section "GnuTLS parameter computation" "SECID181"
-GnuTLS uses RSA and D-H parameters that may take a substantial amount of time
+GnuTLS uses D-H parameters that may take a substantial amount of time
 to compute. It is unreasonable to re-compute them for every TLS session.
 Therefore, Exim keeps this data in a file in its spool directory, called
 &_gnutls-params_&. The file is owned by the Exim user and is readable only by
