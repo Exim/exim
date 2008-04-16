@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.41 2008/04/13 11:45:58 tom Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.42 2008/04/16 10:16:13 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -18958,11 +18958,9 @@ filter itself, and the original process that reads the result and delivers it
 are all run in parallel, like a shell pipeline.
 
 The filter can perform any transformations it likes, but of course should take
-care not to break RFC 2822 syntax. A demonstration Perl script is provided in
-&_util/transport-filter.pl_&; this makes a few arbitrary modifications just to
-show the possibilities. Exim does not check the result, except to test for a
-final newline when SMTP is in use. All messages transmitted over SMTP must end
-with a newline, so Exim supplies one if it is missing.
+care not to break RFC 2822 syntax. Exim does not check the result, except to
+test for a final newline when SMTP is in use. All messages transmitted over
+SMTP must end with a newline, so Exim supplies one if it is missing.
 
 .cindex "content scanning" "per user"
 A transport filter can be used to provide content-scanning on a per-user basis
