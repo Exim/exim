@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exiwhat.src,v 1.1 2004/10/07 10:39:01 ph10 Exp $
+# $Cambridge: exim/src/src/exiwhat.src,v 1.2 2008/04/21 13:13:57 fanf2 Exp $
 
 # Copyright (c) 2003 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -109,7 +109,7 @@ fi
 # Solaris, "killall" kills ALL processes - this is the System V version of this
 # command, and not what we want!
 
-if [ "$multikill_cmd" != "" ] ; then
+if [ "$multikill_cmd" != "" ] && type "$multikill_cmd" >/dev/null 2>&1; then
   $multikill_cmd $signal "$multikill_arg"
 
 # No multikill command; do it the hard way
