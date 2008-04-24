@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.93 2008/02/12 12:52:51 nm4 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.94 2008/04/24 18:30:02 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3818,7 +3818,7 @@ while (*s != 0)
              Adjust "inow" accordingly. */
           if ( (iexpire < 7) && (inow >= 993) ) inow = 0;
 
-          if (iexpire > inow)
+          if (iexpire >= inow)
             {
             prvscheck_result = US"1";
             DEBUG(D_expand) debug_printf("prvscheck: success, $pvrs_result set to 1\n");
