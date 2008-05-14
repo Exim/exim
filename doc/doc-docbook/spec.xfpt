@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.42 2008/04/16 10:16:13 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.43 2008/05/14 09:16:38 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -27552,19 +27552,8 @@ the third string (in this case &"1"&), whether or not the cryptographic and
 timeout checks succeed. The &$prvscheck_result$& variable contains the result
 of the checks (empty for failure, &"1"& for success).
 
-There are two more issues you must consider when implementing prvs-signing.
-Firstly, you need to ensure that prvs-signed addresses are not blocked by your
-ACLs. A prvs-signed address contains a slash character, but the default Exim
-configuration contains this statement in the RCPT ACL:
-.code
-deny    message       = Restricted characters in address
-        domains       = +local_domains
-        local_parts   = ^[.] : ^.*[@%!/|]
-.endd
-This is a conservative rule that blocks local parts that contain slashes. You
-should remove the slash in the last line.
-
-Secondly, you have to ensure that the routers accept prvs-signed addresses and
+There is one more issue you must consider when implementing prvs-signing:
+you have to ensure that the routers accept prvs-signed addresses and
 deliver them correctly. The easiest way to handle this is to use a &(redirect)&
 router to remove the signature with a configuration along these lines:
 .code
