@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.10 2007/01/08 10:50:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.11 2008/05/16 12:02:19 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -169,7 +169,7 @@ if (maildirfolder_create_regex != NULL)
       }
     else
       {
-      int fd = Uopen(fname, O_WRONLY|O_APPEND|O_CREAT, 0);
+      int fd = Uopen(fname, O_WRONLY|O_APPEND|O_CREAT, 0600);
       if (fd < 0)
         {
         addr->message = string_sprintf("appendfile: failed to create "
@@ -392,7 +392,7 @@ the same thing. */
 filename = string_sprintf("%s/maildirsize", path);
 
 DEBUG(D_transport) debug_printf("looking for maildirsize in %s\n", path);
-fd = Uopen(filename, O_RDWR|O_APPEND, 0);
+fd = Uopen(filename, O_RDWR|O_APPEND, 0600);
 if (fd < 0)
   {
   if (errno != ENOENT) return -1;

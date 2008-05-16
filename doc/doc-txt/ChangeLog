@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.546 2008/03/27 13:23:40 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.547 2008/05/16 12:02:19 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -48,6 +48,10 @@ NM/05 Bugzilla 521: Integrated SPF Best Guess support contributed by
       Robert Millan.  Documentation is in experimental-spec.txt
 
 TF/04 Bugzilla 668: Fix parallel build (make -j).
+
+NM/05 Bugzilla 437: Prevent Maildix aux files being created with mode 000
+
+
 
 
 Exim version 4.69
