@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.547 2008/05/16 12:02:19 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.548 2008/05/16 12:22:08 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -50,6 +50,9 @@ NM/05 Bugzilla 521: Integrated SPF Best Guess support contributed by
 TF/04 Bugzilla 668: Fix parallel build (make -j).
 
 NM/05 Bugzilla 437: Prevent Maildix aux files being created with mode 000
+
+NM/05 Bugzilla 598: Improvedment to Dovecot authenticator handling.
+      Patch provided by Jan Srzednicki
 
 
 

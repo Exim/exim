@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.9 2008/02/06 12:44:59 nm4 Exp $ */
+/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.10 2008/05/16 12:22:08 nm4 Exp $ */
 
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
@@ -101,7 +101,7 @@ static int strcut(uschar *str, uschar **ptrs, int nptrs)
                goto out; \
        if (nargs - 1 < (arg_min)) \
                goto out; \
-       if (nargs - 1 > (arg_max)) \
+       if ( (arg_max != -1) && (nargs - 1 > (arg_max)) ) \
                goto out; \
 } while (0)
 
@@ -277,6 +277,9 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
 
    Subsequently, the command was modified to add "secured" and "valid-client-
    cert" when relevant.
+
+   The auth protocol is documented here:
+        http://wiki.dovecot.org/Authentication_Protocol
 ****************************************************************************/
 
        auth_command = string_sprintf("VERSION\t%d\t%d\nCPID\t%d\n"
@@ -293,6 +296,9 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
 
        while (1) {
                uschar *temp;
+               uschar *auth_id_pre = NULL;
+               int i;
+
                if (dc_gets(buffer, sizeof(buffer), fd) == NULL) {
                        auth_defer_msg = US"authentication socket read error or premature eof";
                        goto out;
@@ -329,16 +335,16 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                        break;
 
                case 'F':
-                       CHECK_COMMAND("FAIL", 1, 2);
+                       CHECK_COMMAND("FAIL", 1, -1);
 
-                       /* FIXME: add proper response handling */
-                       if (args[2]) {
-                               uschar *p = Ustrchr(args[2], '=');
-                               if (p) {
-                                       ++p;
+                       for (i=2; (i<nargs) && (auth_id_pre == NULL); i++)
+                       {
+                               if ( Ustrncmp(args[i], US"user=", 5) == 0 )
+                               {
+                                       auth_id_pre = args[i]+5;
                                        expand_nstring[1] = auth_vars[0] =
-                                         string_copy(p);  /* PH */
-                                       expand_nlength[1] = Ustrlen(p);
+                                               string_copy(auth_id_pre); /* PH */
+                                       expand_nlength[1] = Ustrlen(auth_id_pre);
                                        expand_nmax = 1;
                                }
                        }
@@ -347,19 +353,27 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                        goto out;
 
                case 'O':
-                       CHECK_COMMAND("OK", 2, 2);
-                       {
-                               /* FIXME: add proper response handling */
-                               uschar *p = Ustrchr(args[2], '=');
-                               if (!p)
-                                       OUT("authentication socket protocol error, username missing");
+                       CHECK_COMMAND("OK", 2, -1);
 
-                               p++;
-                               expand_nstring[1] = auth_vars[0] =
-                                 string_copy(p);  /* PH */
-                               expand_nlength[1] = Ustrlen(p);
-                               expand_nmax = 1;
+                       /*
+                        * Search for the "user=$USER" string in the args array
+                        * and return the proper value.
+                        */
+                       for (i=2; (i<nargs) && (auth_id_pre == NULL); i++)
+                       {
+                               if ( Ustrncmp(args[i], US"user=", 5) == 0 )
+                               {
+                                       auth_id_pre = args[i]+5;
+                                       expand_nstring[1] = auth_vars[0] =
+                                               string_copy(auth_id_pre); /* PH */
+                                       expand_nlength[1] = Ustrlen(auth_id_pre);
+                                       expand_nmax = 1;
+                               }
                        }
+
+                       if (auth_id_pre == NULL)
+                               OUT("authentication socket protocol error, username missing");
+
                        ret = OK;
                        /* fallthrough */
 
