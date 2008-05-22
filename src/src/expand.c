@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.94 2008/04/24 18:30:02 tom Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.95 2008/05/22 10:56:27 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3136,6 +3136,12 @@ we reset the store before processing it; if the result is in fresh store, we
 use that without copying. This is helpful for expanding strings like
 $message_headers which can get very long.
 
+There's a problem if a ${dlfunc item has side-effects that cause allocation,
+since resetting the store at the end of the expansion will free store that was
+allocated by the plugin code as well as the slop after the expanded string. So
+we skip any resets if ${dlfunc has been used. This is an unfortunate
+consequence of string expansion becoming too powerful.
+
 Arguments:
   string         the string to be expanded
   ket_ends       true if expansion is to stop at }
@@ -3161,6 +3167,7 @@ uschar *yield = store_get(size);
 uschar *s = string;
 uschar *save_expand_nstring[EXPAND_MAXN+1];
 int save_expand_nlength[EXPAND_MAXN+1];
+BOOL resetok = TRUE;
 
 expand_string_forcedfail = FALSE;
 expand_string_message = US"";
@@ -3233,7 +3240,7 @@ while (*s != 0)
 
     if (ptr == 0 && yield != NULL)
       {
-      store_reset(yield);
+      if (resetok) store_reset(yield);
       yield = NULL;
       size = 0;
       }
@@ -4963,8 +4970,10 @@ while (*s != 0)
       returns OK, we have a replacement string; if it returns DEFER then
       expansion has failed in a non-forced manner; if it returns FAIL then
       failure was forced; if it returns ERROR or any other value there's a
-      problem, so panic slightly. */
+      problem, so panic slightly. In any case, assume that the function has
+      side-effects on the store that must be preserved. */
 
+      resetok = FALSE;
       result = NULL;
       for (argc = 0; argv[argc] != NULL; argc++);
       status = func(&result, argc - 2, &argv[2]);
@@ -5702,7 +5711,7 @@ while (*s != 0)
     int newsize = 0;
     if (ptr == 0)
       {
-      store_reset(yield);
+      if (resetok) store_reset(yield);
       yield = NULL;
       size = 0;
       }
@@ -5757,7 +5766,7 @@ if (left != NULL) *left = s;
 In many cases the final string will be the first one that was got and so there
 will be optimal store usage. */
 
-store_reset(yield + ptr + 1);
+if (resetok) store_reset(yield + ptr + 1);
 DEBUG(D_expand)
   {
   debug_printf("expanding: %.*s\n   result: %s\n", (int)(s - string), string,
