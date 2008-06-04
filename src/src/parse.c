@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/parse.c,v 1.11 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/parse.c,v 1.12 2008/06/04 13:29:34 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1664,7 +1664,6 @@ for (;;)
 }
 
 
-
 /*************************************************
 *            Extract a Message-ID                *
 *************************************************/
@@ -1720,6 +1719,315 @@ while (*id != 0) id++;
 store_reset(id);
 
 str = skip_comment(str);
+return str;
+}
+
+
+/*************************************************
+*        Parse a fixed digit number              *
+*************************************************/
+
+/* Parse a string containing an ASCII encoded fixed digits number
+
+Arguments:
+  str          pointer to the start of the ASCII encoded number
+  n            pointer to the resulting value
+  digits       number of required digits
+
+Returns:       points after the processed date or NULL on error
+*/
+
+static uschar *
+parse_number(uschar *str, int *n, int digits)
+{
+  *n=0;
+  while (digits--)
+  {
+    if (*str<'0' || *str>'9') return NULL;
+    *n=10*(*n)+(*str++-'0');
+  }
+  return str;
+}
+
+
+/*************************************************
+*        Parse a RFC 2822 day of week            *
+*************************************************/
+
+/* Parse the day of the week from a RFC 2822 date, but do not
+   decode it, because it is only for humans.
+
+Arguments:
+  str          pointer to the start of the day of the week
+
+Returns:       points after the parsed day or NULL on error
+*/
+
+static uschar *
+parse_day_of_week(uschar *str)
+{
+/*
+day-of-week     =       ([FWS] day-name) / obs-day-of-week
+
+day-name        =       "Mon" / "Tue" / "Wed" / "Thu" /
+                        "Fri" / "Sat" / "Sun"
+
+obs-day-of-week =       [CFWS] day-name [CFWS]
+*/
+
+uschar *o;
+static const uschar *day_name[7]={ "mon", "tue", "wed", "thu", "fri", "sat", "sun" };
+int i;
+uschar day[4];
+
+str=skip_comment(str);
+for (i=0; i<3; ++i)
+  {
+  if ((day[i]=tolower(*str))=='\0') return NULL;
+  ++str;
+  }
+day[3]='\0';
+for (i=0; i<7; ++i) if (strcmp(day,day_name[i])==0) break;
+if (i==7) return NULL;
+str=skip_comment(str);
+return str;
+}
+
+
+/*************************************************
+*            Parse a RFC 2822 date               *
+*************************************************/
+
+/* Parse the date part of a RFC 2822 date-time, extracting the
+   day, month and year.
+
+Arguments:
+  str          pointer to the start of the date
+  d            pointer to the resulting day
+  m            pointer to the resulting month
+  y            pointer to the resulting year
+
+Returns:       points after the processed date or NULL on error
+*/
+
+static uschar *
+parse_date(uschar *str, int *d, int *m, int *y)
+{
+/*
+date            =       day month year
+
+year            =       4*DIGIT / obs-year
+
+obs-year        =       [CFWS] 2*DIGIT [CFWS]
+
+month           =       (FWS month-name FWS) / obs-month
+
+month-name      =       "Jan" / "Feb" / "Mar" / "Apr" /
+                        "May" / "Jun" / "Jul" / "Aug" /
+                        "Sep" / "Oct" / "Nov" / "Dec"
+
+obs-month       =       CFWS month-name CFWS
+
+day             =       ([FWS] 1*2DIGIT) / obs-day
+
+obs-day         =       [CFWS] 1*2DIGIT [CFWS]
+*/
+
+uschar *c,*n;
+static const uschar *month_name[]={ "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec" };
+int i;
+uschar month[4];
+
+str=skip_comment(str);
+if ((str=parse_number(str,d,1))==NULL) return NULL;
+if (*str>='0' && *str<='9') *d=10*(*d)+(*str++-'0');
+c=skip_comment(str);
+if (c==str) return NULL;
+else str=c;
+for (i=0; i<3; ++i) if ((month[i]=tolower(*(str+i)))=='\0') return NULL;
+month[3]='\0';
+for (i=0; i<12; ++i) if (Ustrcmp(month,month_name[i])==0) break;
+if (i==12) return NULL;
+str+=3;
+*m=i;
+c=skip_comment(str);
+if (c==str) return NULL;
+else str=c;
+if ((n=parse_number(str,y,4)))
+  {
+  str=n;
+  if (*y<1900) return NULL;
+  *y=*y-1900;
+  }
+else if ((n=parse_number(str,y,2)))
+  {
+  str=skip_comment(n);
+  while (*(str-1)==' ' || *(str-1)=='\t') --str; /* match last FWS later */
+  if (*y<50) *y+=100;
+  }
+else return NULL;
+return str;
+}
+
+
+/*************************************************
+*            Parse a RFC 2822 Time               *
+*************************************************/
+
+/* Parse the time part of a RFC 2822 date-time, extracting the
+   hour, minute, second and timezone.
+
+Arguments:
+  str          pointer to the start of the time
+  h            pointer to the resulting hour
+  m            pointer to the resulting minute
+  s            pointer to the resulting second
+  z            pointer to the resulting timezone (offset in seconds)
+
+Returns:       points after the processed time or NULL on error
+*/
+
+static uschar *
+parse_time(uschar *str, int *h, int *m, int *s, int *z)
+{
+/*
+time            =       time-of-day FWS zone
+
+time-of-day     =       hour ":" minute [ ":" second ]
+
+hour            =       2DIGIT / obs-hour
+
+obs-hour        =       [CFWS] 2DIGIT [CFWS]
+
+minute          =       2DIGIT / obs-minute
+
+obs-minute      =       [CFWS] 2DIGIT [CFWS]
+
+second          =       2DIGIT / obs-second
+
+obs-second      =       [CFWS] 2DIGIT [CFWS]
+
+zone            =       (( "+" / "-" ) 4DIGIT) / obs-zone
+
+obs-zone        =       "UT" / "GMT" /          ; Universal Time
+                                                ; North American UT
+                                                ; offsets
+                        "EST" / "EDT" /         ; Eastern:  - 5/ - 4
+                        "CST" / "CDT" /         ; Central:  - 6/ - 5
+                        "MST" / "MDT" /         ; Mountain: - 7/ - 6
+                        "PST" / "PDT" /         ; Pacific:  - 8/ - 7
+
+                        %d65-73 /               ; Military zones - "A"
+                        %d75-90 /               ; through "I" and "K"
+                        %d97-105 /              ; through "Z", both
+                        %d107-122               ; upper and lower case
+*/
+
+uschar *c;
+
+str=skip_comment(str);
+if ((str=parse_number(str,h,2))==NULL) return NULL;
+str=skip_comment(str);
+if (*str!=':') return NULL;
+++str;
+str=skip_comment(str);
+if ((str=parse_number(str,m,2))==NULL) return NULL;
+c=skip_comment(str);
+if (*str==':')
+  {
+  ++str;
+  str=skip_comment(str);
+  if ((str=parse_number(str,s,2))==NULL) return NULL;
+  c=skip_comment(str);
+  }
+if (c==str) return NULL;
+else str=c;
+if (*str=='+' || *str=='-')
+  {
+  int neg;
+
+  neg=(*str=='-');
+  ++str;
+  if ((str=parse_number(str,z,4))==NULL) return NULL;
+  *z=(*z/100)*3600+(*z%100)*60;
+  if (neg) *z=-*z;
+  }
+else
+  {
+  char zone[5];
+  struct { const char *name; int off; } zone_name[10]=
+  { {"gmt",0}, {"ut",0}, {"est",-5}, {"edt",-4}, {"cst",-6}, {"cdt",-5}, {"mst",-7}, {"mdt",-6}, {"pst",-8}, {"pdt",-7}};
+  int i,j;
+
+  for (i=0; i<4; ++i)
+    {
+    zone[i]=tolower(*(str+i));
+    if (zone[i]<'a' || zone[i]>'z') break;
+    }
+  zone[i]='\0';
+  for (j=0; j<10 && strcmp(zone,zone_name[j].name); ++j);
+  /* Besides zones named in the grammar, RFC 2822 says other alphabetic */
+  /* time zones should be treated as unknown offsets. */
+  if (j<10)
+    {
+    *z=zone_name[j].off*3600;
+    str+=i;
+    }
+  else if (zone[0]<'a' || zone[1]>'z') return 0;
+  else
+    {
+    while ((*str>='a' && *str<='z') || (*str>='A' && *str<='Z')) ++str;
+    *z=0;
+    }
+  }
+return str;
+}
+
+
+/*************************************************
+*          Parse a RFC 2822 date-time            *
+*************************************************/
+
+/* Parse a RFC 2822 date-time and return it in seconds since the epoch.
+
+Arguments:
+  str          pointer to the start of the date-time
+  t            pointer to the parsed time
+
+Returns:       points after the processed date-time or NULL on error
+*/
+
+uschar *
+parse_date_time(uschar *str, time_t *t)
+{
+/*
+date-time       =       [ day-of-week "," ] date FWS time [CFWS]
+*/
+
+struct tm tm;
+int zone;
+extern char **environ;
+char **old_environ;
+static char gmt0[]="TZ=GMT0";
+static char *gmt_env[]={ gmt0, (char*)0 };
+
+if (str=parse_day_of_week(str))
+  {
+  if (*str!=',') return 0;
+  ++str;
+  }
+if ((str=parse_date(str,&tm.tm_mday,&tm.tm_mon,&tm.tm_year))==NULL) return NULL;
+if (*str!=' ' && *str!='\t') return NULL;
+while (*str==' ' || *str=='\t') ++str;
+if ((str=parse_time(str,&tm.tm_hour,&tm.tm_min,&tm.tm_sec,&zone))==NULL) return NULL;
+tm.tm_isdst=0;
+old_environ=environ;
+environ=gmt_env;
+*t=mktime(&tm);
+environ=old_environ;
+if (*t==-1) return NULL;
+*t-=zone;
+str=skip_comment(str);
 return str;
 }
 
