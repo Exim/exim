@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.43 2008/05/14 09:16:38 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.44 2008/06/04 19:15:47 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -25469,7 +25469,8 @@ ACL fragment writes no logging information when access is denied:
 &`     log_reject_target =`&
 .endd
 This modifier can be used in SMTP and non-SMTP ACLs. It applies to both
-permanent and temporary rejections.
+permanent and temporary rejections. Its effect lasts for the rest of the
+current ACL.
 
 
 .vitem &*logwrite*&&~=&~<&'text'&>
