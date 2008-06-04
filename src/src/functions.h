@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.41 2008/03/05 21:13:23 tom Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.42 2008/06/04 13:28:23 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -190,6 +190,7 @@ extern uschar *parse_find_at(uschar *);
 extern uschar *parse_fix_phrase(uschar *, int, uschar *, int);
 extern uschar *parse_message_id(uschar *, uschar **, uschar **);
 extern uschar *parse_quote_2047(uschar *, int, uschar *, uschar *, int, BOOL);
+extern uschar *parse_date_time(uschar *str, time_t *t);
 
 extern BOOL    queue_action(uschar *, int, uschar **, int, int);
 extern void    queue_check_only(void);
