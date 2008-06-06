@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/parse.c,v 1.12 2008/06/04 13:29:34 michael Exp $ */
+/* $Cambridge: exim/src/src/parse.c,v 1.13 2008/06/06 14:40:21 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2010,9 +2010,11 @@ extern char **environ;
 char **old_environ;
 static char gmt0[]="TZ=GMT0";
 static char *gmt_env[]={ gmt0, (char*)0 };
+uschar *try;
 
-if (str=parse_day_of_week(str))
+if ((try=parse_day_of_week(str)))
   {
+  str=try;
   if (*str!=',') return 0;
   ++str;
   }
