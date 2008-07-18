@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.16 2008/01/28 13:14:48 tom Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.17 2008/07/18 17:55:42 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -354,13 +354,10 @@ again:
     *q = *p;
     q++;
     if (*p == '\n') {
-      *q = '\t';
+      /* add an extra space after the newline to ensure
+      that it is treated as a header continuation line */
+      *q = ' ';
       q++;
-      /* eat whitespace */
-      while( (*p <= ' ') && (*p != '\0') ) {
-        p++;
-      };
-      p--;
     };
     p++;
   };
