@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Default,v 1.3 2008/01/16 13:44:45 nm4 Exp $
+# $Cambridge: exim/src/OS/Makefile-Default,v 1.4 2008/07/25 20:27:30 fanf2 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -42,8 +42,10 @@ BASENAME_COMMAND=/usr/bin/basename
 
 CHOWN_COMMAND=/usr/bin/chown
 CHGRP_COMMAND=/usr/bin/chgrp
+CHMOD_COMMAND=/usr/bin/chmod
 MV_COMMAND=/bin/mv
 RM_COMMAND=/bin/rm
+TOUCH_COMMAND=/usr/bin/touch
 
 
 # Some operating systems have different ways of building libraries of
