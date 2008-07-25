@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-FreeBSD,v 1.4 2006/04/19 11:15:43 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-FreeBSD,v 1.5 2008/07/25 20:39:55 fanf2 Exp $
 
 # Exim: OS-specific make file for FreeBSD
 # There's no setting of CFLAGS here, to allow the system default
@@ -8,6 +8,7 @@ PORTOBJFORMAT!= test -x /usr/bin/objformat && /usr/bin/objformat || echo aout
 
 CHOWN_COMMAND=/usr/sbin/chown
 STRIP_COMMAND=/usr/bin/strip
+CHMOD_COMMAND=/bin/chmod
 
 HAVE_SA_LEN=YES
 

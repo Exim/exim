@@ -1,10 +1,11 @@
-# $Cambridge: exim/src/OS/Makefile-DragonFly,v 1.1 2005/09/06 13:21:07 ph10 Exp $
+# $Cambridge: exim/src/OS/Makefile-DragonFly,v 1.2 2008/07/25 20:39:55 fanf2 Exp $
 
 # Exim: OS-specific make file for DragonFly
 # There's no setting of CFLAGS here, to allow the system default
 # for "make" to be the default.
 
 CHOWN_COMMAND=/usr/sbin/chown
+CHMOD_COMMAND=/bin/chmod
 
 HAVE_SA_LEN=YES
 

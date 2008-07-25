@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-GNU,v 1.4 2005/05/23 16:58:55 fanf2 Exp $
+# $Cambridge: exim/src/OS/Makefile-GNU,v 1.5 2008/07/25 20:39:55 fanf2 Exp $
 
 # Exim: OS-specific make file for GNU and variants.
 
@@ -7,6 +7,7 @@ HAVE_ICONV=yes
 BASENAME_COMMAND=look_for_it
 CHOWN_COMMAND=look_for_it
 CHGRP_COMMAND=look_for_it
+CHMOD_COMMAND=look_for_it
 
 CFLAGS ?= -O -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 
