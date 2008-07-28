@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.549 2008/07/18 17:55:42 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.550 2008/07/28 18:46:44 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -56,6 +56,9 @@ NM/05 Bugzilla 598: Improvedment to Dovecot authenticator handling.
 
 TF/05 Leading white space used to be stripped from $spam_report which
       wrecked the formatting. Now it is preserved.
+
+TF/06 Save $spam_score, $spam_bar, and $spam_report in spool files, so
+      that they are available at delivery time.
 
 
 Exim version 4.69
