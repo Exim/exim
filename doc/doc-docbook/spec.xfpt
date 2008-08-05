@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.44 2008/06/04 19:15:47 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.45 2008/08/05 10:09:35 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -7172,13 +7172,13 @@ mysql_servers = slave1/db/name/pw:\
 .endd
 In an updating lookup, you could then write:
 .code
-${lookup mysql{servers=master; UPDATE ...}
+${lookup mysql{servers=master; UPDATE ...} }
 .endd
 That query would then be sent only to the master server. If, on the other hand,
 the master is not to be used for reading, and so is not present in the global
 option, you can still update it by a query of this form:
 .code
-${lookup pgsql{servers=master/db/name/pw; UPDATE ...}
+${lookup pgsql{servers=master/db/name/pw; UPDATE ...} }
 .endd
 
 
