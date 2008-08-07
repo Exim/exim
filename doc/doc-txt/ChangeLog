@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.550 2008/07/28 18:46:44 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.551 2008/08/07 11:05:03 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -59,6 +59,8 @@ TF/05 Leading white space used to be stripped from $spam_report which
 
 TF/06 Save $spam_score, $spam_bar, and $spam_report in spool files, so
       that they are available at delivery time.
+
+TF/07 Fix the way ${extract is skipped in the untaken branch of a conditional.
 
 
 Exim version 4.69

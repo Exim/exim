@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.95 2008/05/22 10:56:27 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.96 2008/08/07 11:05:03 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -4659,7 +4659,7 @@ while (*s != 0)
             while (len > 0 && isspace(p[len-1])) len--;
             p[len] = 0;
 
-            if (*p == 0)
+            if (*p == 0 && !skipping)
               {
               expand_string_message = US"first argument of \"extract\" must "
                 "not be empty";
