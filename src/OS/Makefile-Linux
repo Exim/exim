@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Linux,v 1.3 2008/07/25 20:39:55 fanf2 Exp $
+# $Cambridge: exim/src/OS/Makefile-Linux,v 1.4 2008/08/11 15:30:02 fanf2 Exp $
 
 # Exim: OS-specific make file for Linux. This is for modern Linuxes,
 # which use libc6.
@@ -10,7 +10,7 @@ CHOWN_COMMAND=look_for_it
 CHGRP_COMMAND=look_for_it
 CHMOD_COMMAND=look_for_it
 
-CFLAGS=-O -g -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
+CFLAGS=-O -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
 
 DBMLIB = -ldb
 USE_DB = yes
