@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.45 2008/08/05 10:09:35 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.46 2008/09/01 11:07:54 fanf2 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -25079,7 +25079,7 @@ the sending entity receives a &"success"& response. However, &%discard%& causes
 recipients to be discarded. If it is used in an ACL for RCPT, just the one
 recipient is discarded; if used for MAIL, DATA or in the non-SMTP ACL, all the
 message's recipients are discarded. Recipients that are discarded before DATA
-do not appear in the log line when the &%log_recipients%& log selector is set.
+do not appear in the log line when the &%received_recipients%& log selector is set.
 
 If the &%log_message%& modifier is set when &%discard%& operates,
 its contents are added to the line that is automatically written to the log.
