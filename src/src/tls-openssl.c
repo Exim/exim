@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.12 2007/04/13 15:13:47 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.13 2008/09/03 18:53:29 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -62,25 +62,33 @@ Argument:
   prefix    text to include in the logged error
   host      NULL if setting up a server;
             the connected host if setting up a client
+  msg       error message or NULL if we should ask OpenSSL
 
 Returns:    OK/DEFER/FAIL
 */
 
 static int
-tls_error(uschar *prefix, host_item *host)
+tls_error(uschar *prefix, host_item *host, uschar *msg)
 {
-ERR_error_string(ERR_get_error(), ssl_errstring);
+if (msg == NULL)
+  {
+  ERR_error_string(ERR_get_error(), ssl_errstring);
+  msg = ssl_errstring;
+  }
+
 if (host == NULL)
   {
-  log_write(0, LOG_MAIN, "TLS error on connection from %s (%s): %s",
-    (sender_fullhost != NULL)? sender_fullhost : US"local process",
-    prefix, ssl_errstring);
+  uschar *conn_info = smtp_get_connection_info();
+  if (strncmp(conn_info, "SMTP ", 5) == 0)
+    conn_info += 5;
+  log_write(0, LOG_MAIN, "TLS error on %s (%s): %s",
+    conn_info, prefix, msg);
   return DEFER;
   }
 else
   {
   log_write(0, LOG_MAIN, "TLS error on connection to %s [%s] (%s): %s",
-    host->name, host->address, prefix, ssl_errstring);
+    host->name, host->address, prefix, msg);
   return FAIL;
   }
 }
@@ -224,12 +232,13 @@ DEBUG(D_tls) debug_printf("SSL info: %s\n", SSL_state_string_long(s));
 
 Arguments:
   dhparam   DH parameter file
+  host      connected host, if client; NULL if server
 
 Returns:    TRUE if OK (nothing to set up, or setup worked)
 */
 
 static BOOL
-init_dh(uschar *dhparam)
+init_dh(uschar *dhparam, host_item *host)
 {
 BOOL yield = TRUE;
 BIO *bio;
@@ -243,16 +252,16 @@ if (dhexpanded == NULL) return TRUE;
 
 if ((bio = BIO_new_file(CS dhexpanded, "r")) == NULL)
   {
-  log_write(0, LOG_MAIN, "DH: could not read %s: %s", dhexpanded,
-    strerror(errno));
+  tls_error(string_sprintf("could not read dhparams file %s", dhexpanded),
+    host, strerror(errno));
   yield = FALSE;
   }
 else
   {
   if ((dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)) == NULL)
     {
-    log_write(0, LOG_MAIN, "DH: could not load params from %s",
-      dhexpanded);
+    tls_error(string_sprintf("could not read dhparams file %s", dhexpanded),
+      host, NULL);
     yield = FALSE;
     }
   else
@@ -301,7 +310,7 @@ OpenSSL_add_ssl_algorithms();
 ctx = SSL_CTX_new((host == NULL)?
   SSLv23_server_method() : SSLv23_client_method());
 
-if (ctx == NULL) return tls_error(US"SSL_CTX_new", host);
+if (ctx == NULL) return tls_error(US"SSL_CTX_new", host, NULL);
 
 /* It turns out that we need to seed the random number generator this early in
 order to get the full complement of ciphers to work. It took me roughly a day
@@ -322,22 +331,8 @@ if (!RAND_status())
   if (addr != NULL) RAND_seed((uschar *)addr, sizeof(addr));
 
   if (!RAND_status())
-    {
-    if (host == NULL)
-      {
-      log_write(0, LOG_MAIN, "TLS error on connection from %s: "
-        "unable to seed random number generator",
-        (sender_fullhost != NULL)? sender_fullhost : US"local process");
-      return DEFER;
-      }
-    else
-      {
-      log_write(0, LOG_MAIN, "TLS error on connection to %s [%s]: "
-        "unable to seed random number generator",
-        host->name, host->address);
-      return FAIL;
-      }
-    }
+    return tls_error(US"RAND_status", host,
+      "unable to seed random number generator");
   }
 
 /* Set up the information callback, which outputs if debugging is at a suitable
@@ -358,12 +353,12 @@ SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
 /* XXX (Silently?) ignore failure here? XXX*/
 
 if (!(SSL_CTX_set_options(ctx, SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS)))
-  return tls_error(US"SSL_CTX_set_option", host);
+  return tls_error(US"SSL_CTX_set_option", host, NULL);
 #endif
 
 /* Initialize with DH parameters if supplied */
 
-if (!init_dh(dhparam)) return DEFER;
+if (!init_dh(dhparam, host)) return DEFER;
 
 /* Set up certificate and key */
 
@@ -378,7 +373,7 @@ if (certificate != NULL)
     DEBUG(D_tls) debug_printf("tls_certificate file %s\n", expanded);
     if (!SSL_CTX_use_certificate_chain_file(ctx, CS expanded))
       return tls_error(string_sprintf(
-        "SSL_CTX_use_certificate_chain_file file=%s", expanded), host);
+        "SSL_CTX_use_certificate_chain_file file=%s", expanded), host, NULL);
     }
 
   if (privatekey != NULL &&
@@ -394,7 +389,7 @@ if (certificate != NULL)
     DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
     if (!SSL_CTX_use_PrivateKey_file(ctx, CS expanded, SSL_FILETYPE_PEM))
       return tls_error(string_sprintf(
-        "SSL_CTX_use_PrivateKey_file file=%s", expanded), host);
+        "SSL_CTX_use_PrivateKey_file file=%s", expanded), host, NULL);
     }
   }
 
@@ -491,7 +486,7 @@ if (expcerts != NULL)
   {
   struct stat statbuf;
   if (!SSL_CTX_set_default_verify_paths(ctx))
-    return tls_error(US"SSL_CTX_set_default_verify_paths", host);
+    return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL);
 
   if (Ustat(expcerts, &statbuf) < 0)
     {
@@ -514,7 +509,7 @@ if (expcerts != NULL)
 
     if ((file == NULL || statbuf.st_size > 0) &&
           !SSL_CTX_load_verify_locations(ctx, CS file, CS dir))
-      return tls_error(US"SSL_CTX_load_verify_locations", host);
+      return tls_error(US"SSL_CTX_load_verify_locations", host, NULL);
 
     if (file != NULL)
       {
@@ -564,7 +559,7 @@ if (expcerts != NULL)
         DEBUG(D_tls) debug_printf("SSL CRL value is a file %s\n", file);
         }
       if (X509_STORE_load_locations(cvstore, CS file, CS dir) == 0)
-        return tls_error(US"X509_STORE_load_locations", host);
+        return tls_error(US"X509_STORE_load_locations", host, NULL);
 
       /* setting the flags to check against the complete crl chain */
 
@@ -620,9 +615,7 @@ uschar *expciphers;
 
 if (tls_active >= 0)
   {
-  log_write(0, LOG_MAIN, "STARTTLS received in already encrypted "
-    "connection from %s",
-    (sender_fullhost != NULL)? sender_fullhost : US"local process");
+  tls_error("STARTTLS received after TLS started", NULL, "");
   smtp_printf("554 Already in TLS\r\n");
   return FAIL;
   }
@@ -646,7 +639,7 @@ if (expciphers != NULL)
   while (*s != 0) { if (*s == '_') *s = '-'; s++; }
   DEBUG(D_tls) debug_printf("required ciphers: %s\n", expciphers);
   if (!SSL_CTX_set_cipher_list(ctx, CS expciphers))
-    return tls_error(US"SSL_CTX_set_cipher_list", NULL);
+    return tls_error(US"SSL_CTX_set_cipher_list", NULL, NULL);
   }
 
 /* If this is a host for which certificate verification is mandatory or
@@ -670,7 +663,7 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
 
 /* Prepare for new connection */
 
-if ((ssl = SSL_new(ctx)) == NULL) return tls_error(US"SSL_new", NULL);
+if ((ssl = SSL_new(ctx)) == NULL) return tls_error(US"SSL_new", NULL, NULL);
 SSL_clear(ssl);
 
 /* Set context and tell client to go ahead, except in the case of TLS startup
@@ -702,11 +695,7 @@ alarm(0);
 
 if (rc <= 0)
   {
-  if (sigalrm_seen) Ustrcpy(ssl_errstring, "timed out");
-    else ERR_error_string(ERR_get_error(), ssl_errstring);
-  log_write(0, LOG_MAIN, "TLS error on connection from %s (SSL_accept): %s",
-    (sender_fullhost != NULL)? sender_fullhost : US"local process",
-    ssl_errstring);
+  tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL);
   return FAIL;
   }
 
@@ -801,13 +790,13 @@ if (expciphers != NULL)
   while (*s != 0) { if (*s == '_') *s = '-'; s++; }
   DEBUG(D_tls) debug_printf("required ciphers: %s\n", expciphers);
   if (!SSL_CTX_set_cipher_list(ctx, CS expciphers))
-    return tls_error(US"SSL_CTX_set_cipher_list", host);
+    return tls_error(US"SSL_CTX_set_cipher_list", host, NULL);
   }
 
 rc = setup_certs(verify_certs, crl, host, FALSE);
 if (rc != OK) return rc;
 
-if ((ssl = SSL_new(ctx)) == NULL) return tls_error(US"SSL_new", host);
+if ((ssl = SSL_new(ctx)) == NULL) return tls_error(US"SSL_new", host, NULL);
 SSL_set_session_id_context(ssl, sid_ctx, Ustrlen(sid_ctx));
 SSL_set_fd(ssl, fd);
 SSL_set_connect_state(ssl);
@@ -821,15 +810,7 @@ rc = SSL_connect(ssl);
 alarm(0);
 
 if (rc <= 0)
-  {
-  if (sigalrm_seen)
-    {
-    log_write(0, LOG_MAIN, "TLS error on connection to %s [%s]: "
-      "SSL_connect timed out", host->name, host->address);
-    return FAIL;
-    }
-  else return tls_error(US"SSL_connect", host);
-  }
+  return tls_error(US"SSL_connect", host, sigalrm_seen ? US"timed out" : NULL);
 
 DEBUG(D_tls) debug_printf("SSL_connect succeeded\n");
 

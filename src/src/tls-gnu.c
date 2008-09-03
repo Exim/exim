@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.19 2007/04/13 15:13:47 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.20 2008/09/03 18:53:29 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -26,14 +26,12 @@ functions from the GnuTLS library. */
 #define PARAM_SIZE 2*1024
 
 
-/* Values for verify_requirment and initialized */
+/* Values for verify_requirment */
 
 enum { VERIFY_NONE, VERIFY_OPTIONAL, VERIFY_REQUIRED };
-enum { INITIALIZED_NOT, INITIALIZED_SERVER, INITIALIZED_CLIENT };
 
 /* Local static variables for GNUTLS */
 
-static BOOL initialized = INITIALIZED_NOT;
 static host_item *client_host;
 
 static gnutls_dh_params dh_params = NULL;
@@ -164,27 +162,28 @@ Argument:
   prefix    text to include in the logged error
   host      NULL if setting up a server;
             the connected host if setting up a client
-  err       a GnuTLS error number, or 0 if local error
+  msg       additional error string (may be NULL)
+            usually obtained from gnutls_strerror()
 
 Returns:    OK/DEFER/FAIL
 */
 
 static int
-tls_error(uschar *prefix, host_item *host, int err)
+tls_error(uschar *prefix, host_item *host, const char *msg)
 {
-uschar *errtext = US"";
-if (err != 0) errtext = string_sprintf(": %s", gnutls_strerror(err));
 if (host == NULL)
   {
-  log_write(0, LOG_MAIN, "TLS error on connection from %s (%s)%s",
-    (sender_fullhost != NULL)? sender_fullhost : US "local process",
-    prefix, errtext);
+  uschar *conn_info = smtp_get_connection_info();
+  if (strncmp(conn_info, "SMTP ", 5) == 0)
+    conn_info += 5;
+  log_write(0, LOG_MAIN, "TLS error on %s (%s)%s%s",
+    conn_info, prefix, msg ? ": " : "", msg ? msg : "");
   return DEFER;
   }
 else
   {
-  log_write(0, LOG_MAIN, "TLS error on connection to %s [%s] (%s)%s",
-    host->name, host->address, prefix, errtext);
+  log_write(0, LOG_MAIN, "TLS error on connection to %s [%s] (%s)%s%s",
+    host->name, host->address, prefix, msg ? ": " : "", msg ? msg : "");
   return FAIL;
   }
 }
@@ -206,7 +205,7 @@ Returns:     TRUE/FALSE
 */
 
 static BOOL
-verify_certificate(gnutls_session session, uschar **error)
+verify_certificate(gnutls_session session, const char **error)
 {
 int verify;
 uschar *dn_string = US"";
@@ -241,7 +240,7 @@ else
   {
   DEBUG(D_tls) debug_printf("no peer certificate supplied\n");
   verify = GNUTLS_CERT_INVALID;
-  *error = US"not supplied";
+  *error = "not supplied";
   }
 
 /* Handle the result of verification. INVALID seems to be set as well
@@ -251,7 +250,7 @@ if ((verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED)) != 0)
   {
   tls_certificate_verified = FALSE;
   if (*error == NULL) *error = ((verify & GNUTLS_CERT_REVOKED) != 0)?
-    US"revoked" : US"invalid";
+    "revoked" : "invalid";
   if (verify_requirement == VERIFY_REQUIRED)
     {
     DEBUG(D_tls) debug_printf("TLS certificate verification failed (%s): "
@@ -306,13 +305,13 @@ uschar filename[200];
 /* Initialize the data structures for holding the parameters */
 
 ret = gnutls_dh_params_init(&dh_params);
-if (ret < 0) return tls_error(US"init dh_params", host, ret);
+if (ret < 0) return tls_error(US"init dh_params", host, gnutls_strerror(ret));
 
 /* Set up the name of the cache file */
 
 if (!string_format(filename, sizeof(filename), "%s/gnutls-params",
       spool_directory))
-  return tls_error(US"overlong filename", host, 0);
+  return tls_error(US"overlong filename", host, NULL);
 
 /* Open the cache file for reading and if successful, read it and set up the
 parameters. */
@@ -324,19 +323,21 @@ if (fd >= 0)
   if (fstat(fd, &statbuf) < 0)
     {
     (void)close(fd);
-    return tls_error(US"TLS cache stat failed", host, 0);
+    return tls_error(US"TLS cache stat failed", host, strerror(errno));
     }
 
   m.size = statbuf.st_size;
   m.data = malloc(m.size);
   if (m.data == NULL)
-    return tls_error(US"memory allocation failed", host, 0);
+    return tls_error(US"memory allocation failed", host, strerror(errno));
+  errno = 0;
   if (read(fd, m.data, m.size) != m.size)
-    return tls_error(US"TLS cache read failed", host, 0);
+    return tls_error(US"TLS cache read failed", host, strerror(errno));
   (void)close(fd);
 
   ret = gnutls_dh_params_import_pkcs3(dh_params, &m, GNUTLS_X509_FMT_PEM);
-  if (ret < 0) return tls_error(US"DH params import", host, ret);
+  if (ret < 0)
+    return tls_error(US"DH params import", host, gnutls_strerror(ret));
   DEBUG(D_tls) debug_printf("read D-H parameters from file\n");
 
   free(m.data);
@@ -353,7 +354,7 @@ else if (errno == ENOENT)
   }
 else
   return tls_error(string_open_failed(errno, "%s for reading", filename),
-    host, 0);
+    host, NULL);
 
 /* If ret < 0, either the cache file does not exist, or the data it contains
 is not useful. One particular case of this is when upgrading from an older
@@ -368,7 +369,7 @@ if (ret < 0)
   DEBUG(D_tls) debug_printf("generating %d bit Diffie-Hellman key...\n",
     DH_BITS);
   ret = gnutls_dh_params_generate2(dh_params, DH_BITS);
-  if (ret < 0) return tls_error(US"D-H key generation", host, ret);
+  if (ret < 0) return tls_error(US"D-H key generation", host, gnutls_strerror(ret));
 
   /* Write the parameters to a file in the spool directory so that we
   can use them from other Exim processes. */
@@ -377,7 +378,7 @@ if (ret < 0)
   fd = Uopen(tempfilename, O_WRONLY|O_CREAT, 0400);
   if (fd < 0)
     return tls_error(string_open_failed(errno, "%s for writing", filename),
-      host, 0);
+      host, NULL);
   (void)fchown(fd, exim_uid, exim_gid);   /* Probably not necessary */
 
   /* export the parameters in a format that can be generated using GNUTLS'
@@ -390,23 +391,25 @@ if (ret < 0)
   m.size = PARAM_SIZE;
   m.data = malloc(m.size);
   if (m.data == NULL)
-    return tls_error(US"memory allocation failed", host, 0);
+    return tls_error(US"memory allocation failed", host, strerror(errno));
 
   m.size = PARAM_SIZE;
   ret = gnutls_dh_params_export_pkcs3(dh_params, GNUTLS_X509_FMT_PEM, m.data,
     &m.size);
-  if (ret < 0) return tls_error(US"DH params export", host, ret);
+  if (ret < 0)
+    return tls_error(US"DH params export", host, gnutls_strerror(ret));
 
   m.size = Ustrlen(m.data);
+  errno = 0;
   if (write(fd, m.data, m.size) != m.size || write(fd, "\n", 1) != 1)
-    return tls_error(US"TLS cache write failed", host, 0);
+    return tls_error(US"TLS cache write failed", host, strerror(errno));
 
   free(m.data);
   (void)close(fd);
 
   if (rename(CS tempfilename, CS filename) < 0)
-    return tls_error(string_sprintf("failed to rename %s as %s: %s",
-      tempfilename, filename, strerror(errno)), host, 0);
+    return tls_error(string_sprintf("failed to rename %s as %s",
+      tempfilename, filename), host, strerror(errno));
 
   DEBUG(D_tls) debug_printf("wrote D-H parameters to file %s\n", filename);
   }
@@ -442,10 +445,10 @@ tls_init(host_item *host, uschar *certificate, uschar *privatekey, uschar *cas,
 int rc;
 uschar *cert_expanded, *key_expanded, *cas_expanded, *crl_expanded;
 
-initialized = (host == NULL)? INITIALIZED_SERVER : INITIALIZED_CLIENT;
+client_host = host;
 
 rc = gnutls_global_init();
-if (rc < 0) return tls_error(US"tls-init", host, rc);
+if (rc < 0) return tls_error(US"tls-init", host, gnutls_strerror(rc));
 
 /* Create D-H parameters, or read them from the cache file. This function does
 its own SMTP error messaging. */
@@ -456,7 +459,9 @@ if (rc != OK) return rc;
 /* Create the credentials structure */
 
 rc = gnutls_certificate_allocate_credentials(&x509_cred);
-if (rc < 0) return tls_error(US"certificate_allocate_credentials", host, rc);
+if (rc < 0)
+  return tls_error(US"certificate_allocate_credentials",
+    host, gnutls_strerror(rc));
 
 /* This stuff must be done for each session, because different certificates
 may be required for different sessions. */
@@ -490,7 +495,7 @@ if (cert_expanded != NULL)
     {
     uschar *msg = string_sprintf("cert/key setup: cert=%s key=%s",
       cert_expanded, key_expanded);
-    return tls_error(msg, host, rc);
+    return tls_error(msg, host, gnutls_strerror(rc));
     }
   }
 
@@ -499,7 +504,7 @@ if (cert_expanded != NULL)
 else
   {
   if (host == NULL)
-    return tls_error(US"no TLS server certificate is specified", host, 0);
+    return tls_error(US"no TLS server certificate is specified", NULL, NULL);
   DEBUG(D_tls) debug_printf("no TLS client certificate is specified\n");
   }
 
@@ -532,7 +537,7 @@ if (cas != NULL)
     {
     rc = gnutls_certificate_set_x509_trust_file(x509_cred, CS cas_expanded,
       GNUTLS_X509_FMT_PEM);
-    if (rc < 0) return tls_error(US"setup_certs", host, rc);
+    if (rc < 0) return tls_error(US"setup_certs", host, gnutls_strerror(rc));
 
     if (crl != NULL && *crl != 0)
       {
@@ -541,7 +546,7 @@ if (cas != NULL)
       DEBUG(D_tls) debug_printf("loading CRL file = %s\n", crl_expanded);
       rc = gnutls_certificate_set_x509_crl_file(x509_cred, CS crl_expanded,
         GNUTLS_X509_FMT_PEM);
-      if (rc < 0) return tls_error(US"CRL setup", host, rc);
+      if (rc < 0) return tls_error(US"CRL setup", host, gnutls_strerror(rc));
       }
     }
   }
@@ -855,7 +860,7 @@ tls_server_start(uschar *require_ciphers, uschar *require_mac,
   uschar *require_kx, uschar *require_proto)
 {
 int rc;
-uschar *error;
+const char *error;
 uschar *expciphers = NULL;
 uschar *expmac = NULL;
 uschar *expkx = NULL;
@@ -865,9 +870,7 @@ uschar *expproto = NULL;
 
 if (tls_active >= 0)
   {
-  log_write(0, LOG_MAIN, "STARTTLS received in already encrypted "
-    "connection from %s",
-    (sender_fullhost != NULL)? sender_fullhost : US"local process");
+  tls_error("STARTTLS received after TLS started", NULL, "");
   smtp_printf("554 Already in TLS\r\n");
   return FAIL;
   }
@@ -903,7 +906,8 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
 tls_session = tls_session_init(GNUTLS_SERVER, expciphers, expmac, expkx,
   expproto);
 if (tls_session == NULL)
-  return tls_error(US"tls_session_init", NULL, GNUTLS_E_MEMORY_ERROR);
+  return tls_error(US"tls_session_init", NULL,
+    gnutls_strerror(GNUTLS_E_MEMORY_ERROR));
 
 /* Set context and tell client to go ahead, except in the case of TLS startup
 on connection, where outputting anything now upsets the clients and tends to
@@ -930,14 +934,8 @@ alarm(0);
 
 if (rc < 0)
   {
-  if (sigalrm_seen)
-    Ustrcpy(ssl_errstring, "timed out");
-  else
-    Ustrcpy(ssl_errstring, gnutls_strerror(rc));
-  log_write(0, LOG_MAIN,
-    "TLS error on connection from %s (gnutls_handshake): %s",
-    (sender_fullhost != NULL)? sender_fullhost : US"local process",
-    ssl_errstring);
+  tls_error(US"gnutls_handshake", NULL,
+    sigalrm_seen ? "timed out" : gnutls_strerror(rc));
 
   /* It seems that, except in the case of a timeout, we have to close the
   connection right here; otherwise if the other end is running OpenSSL it hangs
@@ -957,9 +955,7 @@ DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
 if (verify_requirement != VERIFY_NONE &&
      !verify_certificate(tls_session, &error))
   {
-  log_write(0, LOG_MAIN,
-    "TLS error on connection from %s: certificate verification failed (%s)",
-    (sender_fullhost != NULL)? sender_fullhost : US"local process", error);
+  tls_error(US"certificate verification failed", NULL, error);
   return FAIL;
   }
 
@@ -1022,13 +1018,12 @@ uschar *expciphers = NULL;
 uschar *expmac = NULL;
 uschar *expkx = NULL;
 uschar *expproto = NULL;
-uschar *error;
+const char *error;
 unsigned int server_certs_size;
 int rc;
 
 DEBUG(D_tls) debug_printf("initializing GnuTLS as a client\n");
 
-client_host = host;
 verify_requirement = (verify_certs == NULL)? VERIFY_NONE : VERIFY_REQUIRED;
 rc = tls_init(host, certificate, privatekey, verify_certs, verify_crl);
 if (rc != OK) return rc;
@@ -1043,7 +1038,8 @@ tls_session = tls_session_init(GNUTLS_CLIENT, expciphers, expmac, expkx,
   expproto);
 
 if (tls_session == NULL)
-  return tls_error(US "tls_session_init", host, GNUTLS_E_MEMORY_ERROR);
+  return tls_error(US "tls_session_init", host,
+    gnutls_strerror(GNUTLS_E_MEMORY_ERROR));
 
 gnutls_transport_set_ptr(tls_session, (gnutls_transport_ptr)fd);
 
@@ -1055,15 +1051,8 @@ rc = gnutls_handshake(tls_session);
 alarm(0);
 
 if (rc < 0)
-  {
-  if (sigalrm_seen)
-    {
-    log_write(0, LOG_MAIN, "TLS error on connection to %s [%s]: "
-      "gnutls_handshake timed out", host->name, host->address);
-    return FAIL;
-    }
-  else return tls_error(US "gnutls_handshake", host, rc);
-  }
+  return tls_error(US "gnutls_handshake", host,
+    sigalrm_seen ? "timed out" : gnutls_strerror(rc));
 
 server_certs = gnutls_certificate_get_peers(tls_session, &server_certs_size);
 
@@ -1087,12 +1076,7 @@ if (server_certs != NULL)
 
 if (verify_requirement != VERIFY_NONE &&
       !verify_certificate(tls_session, &error))
-  {
-  log_write(0, LOG_MAIN,
-    "TLS error on connection to %s [%s]: certificate verification failed (%s)",
-    host->name, host->address, error);
-  return FAIL;
-  }
+  return tls_error(US"certificate verification failed", host, error);
 
 construct_cipher_name(tls_session);    /* Sets tls_cipher */
 tls_active = fd;
@@ -1118,21 +1102,15 @@ Returns:   nothing
 static void
 record_io_error(int ec, uschar *when, uschar *text)
 {
-uschar *additional = US"";
+const char *msg;
 
 if (ec == GNUTLS_E_FATAL_ALERT_RECEIVED)
-  additional = string_sprintf(": %s",
+  msg = string_sprintf("%s: %s", gnutls_strerror(ec),
     gnutls_alert_get_name(gnutls_alert_get(tls_session)));
-
-if (initialized == INITIALIZED_SERVER)
-  log_write(0, LOG_MAIN, "TLS %s error on connection from %s: %s%s", when,
-    (sender_fullhost != NULL)? sender_fullhost : US "local process",
-    (ec == 0)? text : US gnutls_strerror(ec), additional);
-
 else
-  log_write(0, LOG_MAIN, "TLS %s error on connection to %s [%s]: %s%s", when,
-    client_host->name, client_host->address,
-    (ec == 0)? text : US gnutls_strerror(ec), additional);
+  msg = gnutls_strerror(ec);
+
+tls_error(when, client_host, msg);
 }
 
 

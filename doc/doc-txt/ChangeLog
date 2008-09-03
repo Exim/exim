@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.551 2008/08/07 11:05:03 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.552 2008/09/03 18:53:29 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -61,6 +61,9 @@ TF/06 Save $spam_score, $spam_bar, and $spam_report in spool files, so
       that they are available at delivery time.
 
 TF/07 Fix the way ${extract is skipped in the untaken branch of a conditional.
+
+TF/08 TLS error reporting now respects the incoming_interface and
+      incoming_port log selectors.
 
 
 Exim version 4.69
