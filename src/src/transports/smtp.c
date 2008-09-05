@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.39 2008/03/05 21:13:23 tom Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.40 2008/09/05 16:59:48 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2263,6 +2263,15 @@ if (hostlist == NULL || (ob->hosts_override && ob->hosts != NULL))
       if (ob->hosts_randomize) s = expanded_hosts = string_copy(s);
 
     host_build_hostlist(&hostlist, s, ob->hosts_randomize);
+
+    /* Check that the expansion yielded something useful. */
+    if (hostlist == NULL)
+      {
+      addrlist->message =
+        string_sprintf("%s transport has empty hosts setting", tblock->name);
+      addrlist->transport_return = PANIC;
+      return FALSE;   /* Only top address has status */
+      }
 
     /* If there was no expansion of hosts, save the host list for
     next time. */

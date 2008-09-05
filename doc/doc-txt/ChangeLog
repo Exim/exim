@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.552 2008/09/03 18:53:29 fanf2 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.553 2008/09/05 16:59:47 fanf2 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -64,6 +64,9 @@ TF/07 Fix the way ${extract is skipped in the untaken branch of a conditional.
 
 TF/08 TLS error reporting now respects the incoming_interface and
       incoming_port log selectors.
+
+TF/09 Produce a more useful error message if an SMTP transport's hosts
+      setting expands to an empty string.
 
 
 Exim version 4.69
