@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.46 2008/09/01 11:07:54 fanf2 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.47 2008/09/29 11:17:46 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -4718,7 +4718,7 @@ up in a MySQL database. It helps to keep the file less cluttered if long
 strings such as SQL statements are defined separately as macros, for example:
 .code
 ALIAS_QUERY = select mailbox from user where \
-              login=${quote_mysql:$local_part};
+              login='${quote_mysql:$local_part}';
 .endd
 This can then be used in a &(redirect)& router setting like this:
 .code
