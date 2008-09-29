@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mytypes.h,v 1.4 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/mytypes.h,v 1.5 2008/09/29 11:41:07 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -25,9 +25,9 @@ local_scan.h includes it and exim.h includes them both (to get this earlier). */
 the arguments of printf-like functions. This is done by a macro. */
 
 #ifdef __GNUC__
-#define PRINTF_FUNCTION  __attribute__((format(printf,1,2)))
+#define PRINTF_FUNCTION(A,B)  __attribute__((format(printf,A,B)))
 #else
-#define PRINTF_FUNCTION
+#define PRINTF_FUNCTION(A,B)
 #endif
 
 

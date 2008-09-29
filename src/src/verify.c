@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.51 2007/06/14 14:18:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.52 2008/09/29 11:41:07 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -863,6 +863,42 @@ return yield;
 
 
 
+/**************************************************
+* printf that automatically handles TLS if needed *
+***************************************************/
+
+/* This function is used by verify_address() as a substitute for all fprintf()
+calls; a direct fprintf() will not produce output in a TLS SMTP session, such
+as a response to an EXPN command.  smtp_in.c makes smtp_printf available but
+that assumes that we always use the smtp_out FILE* when not using TLS or the
+ssl buffer when we are.  Instead we take a FILE* parameter and check to see if
+that is smtp_out; if so, smtp_printf() with TLS support, otherwise regular
+fprintf().
+
+Arguments:
+  f           the candidate FILE* to write to
+  format      format string
+  ...         optional arguments
+
+Returns:
+              nothing
+*/
+
+static void PRINTF_FUNCTION(2,3)
+respond_printf(FILE *f, char *format, ...)
+{
+va_list ap;
+
+va_start(ap, format);
+if (smtp_out && (f == smtp_out))
+  smtp_vprintf(format, ap);
+else
+  fprintf(f, format, ap);
+va_end(ap);
+}
+
+
+
 /*************************************************
 *            Verify an email address             *
 *************************************************/
@@ -962,8 +998,8 @@ if (parse_find_at(address) == NULL)
   if ((options & vopt_qualify) == 0)
     {
     if (f != NULL)
-      fprintf(f, "%sA domain is required for \"%s\"%s\n", ko_prefix, address,
-        cr);
+      respond_printf(f, "%sA domain is required for \"%s\"%s\n",
+        ko_prefix, address, cr);
     *failure_ptr = US"qualify";
     return FAIL;
     }
@@ -1227,24 +1263,25 @@ while (addr_new != NULL)
       {
       address_item *p = addr->parent;
 
-      fprintf(f, "%s%s %s", ko_prefix, full_info? addr->address : address,
+      respond_printf(f, "%s%s %s", ko_prefix,
+        full_info? addr->address : address,
         address_test_mode? "is undeliverable" : "failed to verify");
       if (!expn && admin_user)
         {
         if (addr->basic_errno > 0)
-          fprintf(f, ": %s", strerror(addr->basic_errno));
+          respond_printf(f, ": %s", strerror(addr->basic_errno));
         if (addr->message != NULL)
-          fprintf(f, ": %s", addr->message);
+          respond_printf(f, ": %s", addr->message);
         }
 
       /* Show parents iff doing full info */
 
       if (full_info) while (p != NULL)
         {
-        fprintf(f, "%s\n    <-- %s", cr, p->address);
+        respond_printf(f, "%s\n    <-- %s", cr, p->address);
         p = p->parent;
         }
-      fprintf(f, "%s\n", cr);
+      respond_printf(f, "%s\n", cr);
       }
 
     if (!full_info) return copy_error(vaddr, addr, FAIL);
@@ -1259,26 +1296,26 @@ while (addr_new != NULL)
     if (f != NULL)
       {
       address_item *p = addr->parent;
-      fprintf(f, "%s%s cannot be resolved at this time", ko_prefix,
+      respond_printf(f, "%s%s cannot be resolved at this time", ko_prefix,
         full_info? addr->address : address);
       if (!expn && admin_user)
         {
         if (addr->basic_errno > 0)
-          fprintf(f, ": %s", strerror(addr->basic_errno));
+          respond_printf(f, ": %s", strerror(addr->basic_errno));
         if (addr->message != NULL)
-          fprintf(f, ": %s", addr->message);
+          respond_printf(f, ": %s", addr->message);
         else if (addr->basic_errno <= 0)
-          fprintf(f, ": unknown error");
+          respond_printf(f, ": unknown error");
         }
 
       /* Show parents iff doing full info */
 
       if (full_info) while (p != NULL)
         {
-        fprintf(f, "%s\n    <-- %s", cr, p->address);
+        respond_printf(f, "%s\n    <-- %s", cr, p->address);
         p = p->parent;
         }
-      fprintf(f, "%s\n", cr);
+      respond_printf(f, "%s\n", cr);
       }
     if (!full_info) return copy_error(vaddr, addr, DEFER);
       else if (yield == OK) yield = DEFER;
@@ -1293,16 +1330,16 @@ while (addr_new != NULL)
     if (addr_new == NULL)
       {
       if (addr_local == NULL && addr_remote == NULL)
-        fprintf(f, "250 mail to <%s> is discarded\r\n", address);
+        respond_printf(f, "250 mail to <%s> is discarded\r\n", address);
       else
-        fprintf(f, "250 <%s>\r\n", address);
+        respond_printf(f, "250 <%s>\r\n", address);
       }
     else while (addr_new != NULL)
       {
       address_item *addr2 = addr_new;
       addr_new = addr2->next;
       if (addr_new == NULL) ok_prefix = US"250 ";
-      fprintf(f, "%s<%s>\r\n", ok_prefix, addr2->address);
+      respond_printf(f, "%s<%s>\r\n", ok_prefix, addr2->address);
       }
     return OK;
     }

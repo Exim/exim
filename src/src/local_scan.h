@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/local_scan.h,v 1.11 2007/06/14 13:27:11 ph10 Exp $ */
+/* $Cambridge: exim/src/src/local_scan.h,v 1.12 2008/09/29 11:41:07 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -17,6 +17,7 @@ This API is also used for functions called by the ${dlfunc expansion item. */
 /* Some basic types that make some things easier, the Exim configuration
 settings, and the store functions. */
 
+#include <stdarg.h>
 #include <sys/types.h>
 #include "config.h"
 #include "mytypes.h"
@@ -167,7 +168,7 @@ extern int     child_close(pid_t, int);
 extern pid_t   child_open(uschar **, uschar **, int, int *, int *, BOOL);
 extern pid_t   child_open_exim(int *);
 extern pid_t   child_open_exim2(int *, uschar *, uschar *);
-extern void    debug_printf(char *, ...) PRINTF_FUNCTION;
+extern void    debug_printf(char *, ...) PRINTF_FUNCTION(1,2);
 extern uschar *expand_string(uschar *);
 extern void    header_add(int, char *, ...);
 extern void    header_add_at_position(BOOL, uschar *, BOOL, int, char *, ...);
@@ -185,7 +186,8 @@ extern void    receive_add_recipient(uschar *, int);
 extern BOOL    receive_remove_recipient(uschar *);
 extern uschar *rfc2047_decode(uschar *, BOOL, uschar *, int, int *, uschar **);
 extern int     smtp_fflush(void);
-extern void    smtp_printf(char *, ...) PRINTF_FUNCTION;
+extern void    smtp_printf(char *, ...) PRINTF_FUNCTION(1,2);
+extern void    smtp_vprintf(char *, va_list);
 extern uschar *string_copy(uschar *);
 extern uschar *string_copyn(uschar *, int);
 extern uschar *string_sprintf(char *, ...);
