@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.21 2008/03/05 21:13:23 tom Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.22 2008/09/30 09:20:31 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1181,7 +1181,7 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
   CLEANUP:
   /* unlink -K file */
   (void)close(dkim_fd);
-  Uunlink(dkim_spool_name);
+  //Uunlink(dkim_spool_name);
   errno = save_errno;
   return rc;
 }
