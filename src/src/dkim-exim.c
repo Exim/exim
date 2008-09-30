@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim-exim.c,v 1.2 2007/10/09 14:10:34 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim-exim.c,v 1.3 2008/09/30 09:10:45 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -424,6 +424,8 @@ uschar *dkim_exim_sign(int dkim_fd,
 
     while (pos < sread) {
       c = buf[pos++];
+
+      debug_printf("POS %08u CHAR %02x\n",(unsigned int)pos,(unsigned int)(c));
 
       if ((c == '.') && seen_lfdot) {
         /* escaped dot, write "\n.", continue */
