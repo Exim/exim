@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.554 2008/09/29 11:41:07 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.555 2008/10/12 09:58:13 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -70,6 +70,9 @@ TF/09 Produce a more useful error message if an SMTP transport's hosts
 
 NM/06 Bugzilla 744: EXPN did not work under TLS.
       Patch provided by Phil Pennock
+
+NM/07 Bugzilla 769: Extraneous comma in usage fprintf
+      Patch provided by Richard Godbee
 
 
 Exim version 4.69

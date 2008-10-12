@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.60 2008/01/17 13:03:35 tom Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.61 2008/10/12 09:58:13 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1259,7 +1259,7 @@ exim_usage(uschar *progname)
 if (Ustrcmp(progname, US"-mailq") == 0)
   {
   fprintf(stderr,
-    "mailq - list the contents of the mail queue\n\n",
+    "mailq - list the contents of the mail queue\n\n"
     "For a list of options, see the Exim documentation.\n");
   exit(EXIT_FAILURE);
   }
