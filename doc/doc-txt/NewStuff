@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.158 2008/02/12 12:52:51 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.159 2008/10/16 07:57:01 nm4 Exp $
 
 New Features in Exim
 --------------------
@@ -94,7 +94,7 @@ Version 4.68
     the load for each incoming message in an SMTP session. Otherwise, once one
     message is queued, the remainder are also.
 
- 9. There is a new ACL, specified by smtp_notquit_acl, which is run in most
+ 9. There is a new ACL, specified by acl_smtp_notquit, which is run in most
     cases when an SMTP session ends without sending QUIT. However, when Exim
     itself is is bad trouble, such as being unable to write to its log files,
     this ACL is not run, because it might try to do things (such as write to

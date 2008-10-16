@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.47 2008/09/29 11:17:46 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.48 2008/10/16 07:57:01 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -24767,7 +24767,7 @@ connection is closed. In these special cases, the QUIT ACL does not run.
 
 
 .section "The not-QUIT ACL" "SECTNOTQUITACL"
-The not-QUIT ACL, specified by &%smtp_notquit_acl%&, is run in most cases when
+The not-QUIT ACL, specified by &%acl_smtp_notquit%&, is run in most cases when
 an SMTP session ends without sending QUIT. However, when Exim itself is is bad
 trouble, such as being unable to write to its log files, this ACL is not run,
 because it might try to do things (such as write to log files) that make the
