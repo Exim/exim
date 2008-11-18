@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.34 2008/01/29 12:08:43 michael Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.35 2008/11/18 11:10:43 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3058,7 +3058,6 @@ while (*filter->pc)
           if (filter_test == FTEST_NONE)
             {
             string_item *p;
-            header_line *h;
             int pid,fd;
 
             if ((pid = child_open_exim2(&fd,envelope_from,envelope_from))>=1)
@@ -3068,11 +3067,9 @@ while (*filter->pc)
               int buffer_capacity;
 
               f = fdopen(fd, "wb");
-              for (h = header_list; h != NULL; h = h->next)
-                if (h->type == htype_received) fprintf(f,"%s",h->text);
               fprintf(f,"From: %s\n",from.length==-1 ? expand_string("$local_part_prefix$local_part$local_part_suffix@$domain") : from.character);
               for (p=recipient; p; p=p->next) fprintf(f,"To: %s\n",p->text);
-              fprintf(f,"Auto-submitted: sieve-notify\n");
+              fprintf(f,"Auto-Submitted: auto-notified\n");
               if (header.length>0) fprintf(f,"%s",header.character);
               if (message.length==-1)
                 {
