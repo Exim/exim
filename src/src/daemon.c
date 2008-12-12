@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/daemon.c,v 1.25 2008/01/28 18:24:07 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/daemon.c,v 1.26 2008/12/12 14:44:25 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1613,7 +1613,7 @@ for (;;)
   struct sockaddr_in accepted;
   #endif
 
-  EXIM_SOCKLEN_T len = sizeof(accepted);
+  EXIM_SOCKLEN_T len;
   pid_t pid;
 
   /* This code is placed first in the loop, so that it gets obeyed at the
@@ -1808,6 +1808,7 @@ for (;;)
           {
           if (FD_ISSET(listen_sockets[sk], &select_listen))
             {
+            len = sizeof(accepted);
             accept_socket = accept(listen_sockets[sk],
               (struct sockaddr *)&accepted, &len);
             FD_CLR(listen_sockets[sk], &select_listen);

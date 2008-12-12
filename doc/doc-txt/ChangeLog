@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.557 2008/12/12 14:36:37 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.558 2008/12/12 14:44:25 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -79,6 +79,9 @@ NM/08 Fixed erroneous documentation references to smtp_notquit_acl to be
 
 NM/09 Bugzilla 787: Potential buffer overflow in string_format
       Patch provided by Eugene Bujak
+
+NM/10 Bugzilla 770: Problem on some platforms modifying the len parameter to accept()
+      Patch provided by Maxim Dounin
 
 
 Exim version 4.69
