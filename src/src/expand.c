@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.96 2008/08/07 11:05:03 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.97 2008/12/12 14:51:47 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -5874,6 +5874,23 @@ systems, so we set it zero ourselves. */
 
 errno = 0;
 expand_string_message = NULL;               /* Indicates no error */
+
+/* Before Exim 4.64, strings consisting entirely of whitespace compared
+equal to 0.  Unfortunately, people actually relied upon that, so preserve
+the behaviour explicitly.  Stripping leading whitespace is a harmless
+noop change since strtol skips it anyway (provided that there is a number
+to find at all). */
+if (isspace(*s))
+  {
+  while (isspace(*s)) ++s;
+  if (*s == '\0')
+    {
+      DEBUG(D_expand)
+       debug_printf("treating blank string as number 0\n");
+      return 0;
+    }
+  }
+
 value = strtol(CS s, CSS &endptr, 10);
 
 if (endptr == s)

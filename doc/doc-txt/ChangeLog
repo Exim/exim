@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.558 2008/12/12 14:44:25 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.559 2008/12/12 14:51:47 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -82,6 +82,9 @@ NM/09 Bugzilla 787: Potential buffer overflow in string_format
 
 NM/10 Bugzilla 770: Problem on some platforms modifying the len parameter to accept()
       Patch provided by Maxim Dounin
+
+NM/11 Bugzilla 749: Preserve old behaviour of blanks comparing equal to zero.
+      Patch provided by Phil Pennock
 
 
 Exim version 4.69
