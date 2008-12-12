@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/string.c,v 1.13 2007/02/26 14:07:04 ph10 Exp $ */
+/* $Cambridge: exim/src/src/string.c,v 1.14 2008/12/12 14:36:37 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1267,10 +1267,17 @@ while (*fp != 0)
     not OK, add part of the string (debugging uses this to show as
     much as possible). */
 
+    if (p == last)
+      {
+      yield = FALSE;
+      goto END_FORMAT;
+      }
     if (p >= last - width)
       {
       yield = FALSE;
       width = precision = last - p - 1;
+      if (width < 0) width = 0;
+      if (precision < 0) precision = 0;
       }
     sprintf(CS p, "%*.*s", width, precision, s);
     if (fp[-1] == 'S')
