@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.42 2008/06/04 13:28:23 michael Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.43 2008/12/18 13:13:54 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -203,8 +203,8 @@ extern int     random_number(int);
 extern int     recv_line(int, uschar *, int);
 #endif
 extern int     rda_interpret(redirect_block *, int, uschar *, uschar *,
-                 uschar *, uschar *, ugid_block *, address_item **, uschar **,
-                 error_block **, int *, uschar *);
+                 uschar *, uschar *, uschar *, ugid_block *, address_item **,
+                 uschar **, error_block **, int *, uschar *);
 extern int     rda_is_filter(const uschar *);
 extern BOOL    readconf_depends(driver_instance *, uschar *);
 extern void    readconf_driver_init(uschar *, driver_instance **,
@@ -268,7 +268,7 @@ extern void    sha1_end(sha1 *, const uschar *, int, uschar *);
 extern void    sha1_mid(sha1 *, const uschar *);
 extern void    sha1_start(sha1 *);
 extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
-                 address_item **, uschar **);
+                 uschar *, address_item **, uschar **);
 extern void    sigalrm_handler(int);
 extern BOOL    smtp_buffered(void);
 extern void    smtp_closedown(uschar *);

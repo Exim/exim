@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.20 2007/01/08 10:50:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.21 2008/12/18 13:13:54 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -107,6 +107,8 @@ optionlist redirect_router_options[] = {
       (void *)offsetof(redirect_router_options_block, sieve_useraddress) },
   { "sieve_vacation_directory", opt_stringptr,
       (void *)offsetof(redirect_router_options_block, sieve_vacation_directory) },
+  { "sieve_enotify_mailto_owner", opt_stringptr,
+      (void *)offsetof(redirect_router_options_block, sieve_enotify_mailto_owner) },
   { "skip_syntax_errors", opt_bool,
       (void *)offsetof(redirect_router_options_block, skip_syntax_errors) },
 #ifdef EXPERIMENTAL_SRS
@@ -151,6 +153,7 @@ redirect_router_options_block redirect_router_option_defaults = {
   NULL,        /* sieve_subaddress */
   NULL,        /* sieve_useraddress */
   NULL,        /* sieve_vacation_directory */
+  NULL,        /* sieve_enotify_mailto_owner */
   NULL,        /* syntax_errors_text */
   NULL,        /* syntax_errors_to */
   NULL,        /* qualify_domain */
@@ -693,10 +696,10 @@ else
   }
 
 frc = rda_interpret(&redirect, options, ob->include_directory,
-  ob->sieve_vacation_directory, ob->sieve_useraddress, ob->sieve_subaddress,
-  &ugid, &generated, &(addr->message), ob->skip_syntax_errors? &eblock : NULL,
-  &filtertype, string_sprintf("%s router (recipient is %s)", rblock->name,
-  addr->address));
+  ob->sieve_vacation_directory, ob->sieve_enotify_mailto_owner,
+  ob->sieve_useraddress, ob->sieve_subaddress, &ugid, &generated,
+  &(addr->message), ob->skip_syntax_errors? &eblock : NULL, &filtertype,
+  string_sprintf("%s router (recipient is %s)", rblock->name, addr->address));
 
 qualify_domain_recipient = save_qualify_domain_recipient;
 

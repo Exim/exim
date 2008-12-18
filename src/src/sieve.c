@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.35 2008/11/18 11:10:43 michael Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.36 2008/12/18 13:13:53 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -71,6 +71,7 @@ struct Sieve
   int require_enotify;
   struct Notification *notified;
 #endif
+  uschar *enotify_mailto_owner;
 #ifdef SUBADDRESS
   int require_subaddress;
 #endif
@@ -3490,7 +3491,15 @@ while (parse_identifier(filter,CUS "require"))
     else if (eq_octet(check,&str_envelope_auth,0)) filter->require_envelope_auth=1;
 #endif
 #ifdef ENOTIFY
-    else if (eq_octet(check,&str_enotify,0)) filter->require_enotify=1;
+    else if (eq_octet(check,&str_enotify,0))
+      {
+      if (filter->enotify_mailto_owner == NULL)
+        {
+        filter->errmsg=CUS "enotify disabled";
+        return -1;
+        }
+        filter->require_enotify=1;
+      }
 #endif
 #ifdef SUBADDRESS
     else if (eq_octet(check,&str_subaddress,0)) filter->require_subaddress=1;
@@ -3538,7 +3547,8 @@ Arguments:
   filter      points to the entire file, read into store as a single string
   options     controls whether various special things are allowed, and requests
               special actions (not currently used)
-  sieve_vacation_directory  where to store vacation "once" files
+  vacation_directory    where to store vacation "once" files
+  enotify_mailto_owner  owner of mailto notifications
   useraddress string expression for :user part of address
   subaddress  string expression for :subaddress part of address
   generated   where to hang newly-generated addresses
@@ -3554,7 +3564,8 @@ Returns:      FF_DELIVERED     success, a significant action was taken
 
 int
 sieve_interpret(uschar *filter, int options, uschar *vacation_directory,
-  uschar *useraddress, uschar *subaddress, address_item **generated, uschar **error)
+  uschar *enotify_mailto_owner, uschar *useraddress, uschar *subaddress,
+  address_item **generated, uschar **error)
 {
 struct Sieve sieve;
 int r;
@@ -3575,6 +3586,20 @@ else
     {
     *error = string_sprintf("failed to expand \"%s\" "
       "(sieve_vacation_directory): %s", vacation_directory,
+      expand_string_message);
+    return FF_ERROR;
+    }
+  }
+
+if (enotify_mailto_owner == NULL)
+  sieve.enotify_mailto_owner = NULL;
+else
+  {
+  sieve.enotify_mailto_owner=expand_string(enotify_mailto_owner);
+  if (sieve.enotify_mailto_owner == NULL)
+    {
+    *error = string_sprintf("failed to expand \"%s\" "
+      "(sieve_enotify_mailto_owner): %s", enotify_mailto_owner,
       expand_string_message);
     return FF_ERROR;
     }

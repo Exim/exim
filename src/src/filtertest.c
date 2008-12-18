@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/filtertest.c,v 1.10 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/filtertest.c,v 1.11 2008/12/18 13:13:54 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -272,7 +272,7 @@ if (is_system)
 else
   {
   yield = (filter_type == FILTER_SIEVE)?
-    sieve_interpret(filebuf, RDO_REWRITE, NULL, NULL, NULL, &generated, &error)
+    sieve_interpret(filebuf, RDO_REWRITE, NULL, NULL, NULL, NULL, &generated, &error)
     :
     filter_interpret(filebuf, RDO_REWRITE, &generated, &error);
   }

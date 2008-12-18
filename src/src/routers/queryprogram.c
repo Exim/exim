@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/queryprogram.c,v 1.10 2007/01/08 10:50:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/routers/queryprogram.c,v 1.11 2008/12/18 13:13:54 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -378,6 +378,7 @@ if (strcmpic(rword, US"REDIRECT") == 0)
       RDO_REWRITE,               /* rewrite generated addresses */
     NULL,                        /* :include: directory not relevant */
     NULL,                        /* sieve vacation directory not relevant */
+    NULL,                        /* sieve enotify mailto owner not relevant */
     NULL,                        /* sieve useraddress not relevant */
     NULL,                        /* sieve subaddress not relevant */
     &ugid,                       /* uid/gid (but not set) */
