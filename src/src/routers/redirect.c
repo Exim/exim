@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/routers/redirect.c,v 1.21 2008/12/18 13:13:54 michael Exp $ */
+/* $Cambridge: exim/src/src/routers/redirect.c,v 1.22 2008/12/18 13:42:26 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -101,14 +101,14 @@ optionlist redirect_router_options[] = {
       (void *)offsetof(redirect_router_options_block, reply_transport_name) },
   { "rewrite",            opt_bit | (RDON_REWRITE << 16),
       (void *)offsetof(redirect_router_options_block, bit_options) },
+  { "sieve_enotify_mailto_owner", opt_stringptr,
+      (void *)offsetof(redirect_router_options_block, sieve_enotify_mailto_owner) },
   { "sieve_subaddress", opt_stringptr,
       (void *)offsetof(redirect_router_options_block, sieve_subaddress) },
   { "sieve_useraddress", opt_stringptr,
       (void *)offsetof(redirect_router_options_block, sieve_useraddress) },
   { "sieve_vacation_directory", opt_stringptr,
       (void *)offsetof(redirect_router_options_block, sieve_vacation_directory) },
-  { "sieve_enotify_mailto_owner", opt_stringptr,
-      (void *)offsetof(redirect_router_options_block, sieve_enotify_mailto_owner) },
   { "skip_syntax_errors", opt_bool,
       (void *)offsetof(redirect_router_options_block, skip_syntax_errors) },
 #ifdef EXPERIMENTAL_SRS
