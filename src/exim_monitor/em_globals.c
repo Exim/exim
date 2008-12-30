@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.13 2008/01/16 09:32:25 tom Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.14 2008/12/30 13:12:02 michael Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -166,6 +166,9 @@ uschar *local_scan_data        = NULL;
 BOOL    log_timezone           = FALSE;
 
 #ifdef WITH_CONTENT_SCAN
+uschar *spam_bar               = NULL;
+uschar *spam_report            = NULL;
+uschar *spam_score             = NULL;
 uschar *spam_score_int         = NULL;
 #endif
 
