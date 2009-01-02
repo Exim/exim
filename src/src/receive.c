@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.44 2008/01/22 19:23:46 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.45 2009/01/02 17:12:03 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1947,7 +1947,7 @@ for (h = header_list->next; h != NULL; h = h->next)
     /* Record whether a Date: or Resent-Date: header exists, as appropriate. */
 
     case htype_date:
-    date_header_exists = !resents_exist || is_resent;
+    if (!resents_exist || is_resent) date_header_exists = TRUE;
     break;
 
     /* Same comments as about Return-Path: below. */
