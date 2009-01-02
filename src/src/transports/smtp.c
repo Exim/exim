@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.40 2008/09/05 16:59:48 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.41 2009/01/02 17:22:12 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1382,6 +1382,7 @@ if (tblock->filter_command != NULL)
   sprintf(CS buffer, "%.50s transport", tblock->name);
   rc = transport_set_up_command(&transport_filter_argv, tblock->filter_command,
     TRUE, DEFER, addrlist, buffer, NULL);
+  transport_filter_timeout = tblock->filter_timeout;
 
   /* On failure, copy the error to all addresses, abandon the SMTP call, and
   yield ERROR. */
