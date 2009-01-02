@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.559 2008/12/12 14:51:47 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.560 2009/01/02 16:58:05 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -75,7 +75,7 @@ NM/07 Bugzilla 769: Extraneous comma in usage fprintf
       Patch provided by Richard Godbee
 
 NM/08 Fixed erroneous documentation references to smtp_notquit_acl to be
-      acl_smtp_notquit
+      acl_smtp_notquit, added index entry.
 
 NM/09 Bugzilla 787: Potential buffer overflow in string_format
       Patch provided by Eugene Bujak
@@ -85,6 +85,8 @@ NM/10 Bugzilla 770: Problem on some platforms modifying the len parameter to acc
 
 NM/11 Bugzilla 749: Preserve old behaviour of blanks comparing equal to zero.
       Patch provided by Phil Pennock
+
+NM/12 Bugzilla 497: Correct behaviour of exiwhat when no config exists.
 
 
 Exim version 4.69

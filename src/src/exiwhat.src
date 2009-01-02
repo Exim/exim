@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exiwhat.src,v 1.2 2008/04/21 13:13:57 fanf2 Exp $
+# $Cambridge: exim/src/src/exiwhat.src,v 1.3 2009/01/02 16:58:05 nm4 Exp $
 
 # Copyright (c) 2003 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -74,6 +74,12 @@ while [ "$config" = "" -a $# -gt 0 ] ; do
   fi
   shift
 done
+
+# check we have a config file
+if [ "$config" = "" -o ! -f "$config" ]; then
+  echo Config file not found.
+  exit 1
+fi
 
 # Determine where the spool directory is. Search for an exim_path setting
 # in the configure file; otherwise use the bin directory. Call that version of
