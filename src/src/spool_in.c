@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.22 2008/07/28 18:46:44 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.23 2009/01/20 16:09:20 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -542,12 +542,6 @@ for (;;)
     #ifdef WITH_CONTENT_SCAN
     else if (Ustrncmp(p, "pam_score_int ", 14) == 0)
       spam_score_int = string_copy(big_buffer + 16);
-    else if (Ustrncmp(p, "pam_score ", 10) == 0)
-      spam_score = string_copy(big_buffer + 12);
-    else if (Ustrncmp(p, "pam_bar ", 8) == 0)
-      spam_bar = string_copy(big_buffer + 10);
-    else if (Ustrncmp(p, "pam_report ", 11) == 0)
-      spam_report = string_copy(big_buffer + 13);
     #endif
     break;
 
