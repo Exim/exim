@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.15 2008/02/14 13:49:35 fanf2 Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.16 2009/01/20 16:06:14 fanf2 Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -132,10 +132,12 @@ exicyclog: Makefile config.h ../src/exicyclog.src
 	  -e "s?EXICYCLOG_MAX?$(EXICYCLOG_MAX)?" \
 	  -e "s?COMPRESS_COMMAND?$(COMPRESS_COMMAND)?" \
 	  -e "s?COMPRESS_SUFFIX?$(COMPRESS_SUFFIX)?" \
-	  -e "s?CHOWN_COMMAND?$(CHOWN_COMMAND)?" \
 	  -e "s?CHGRP_COMMAND?$(CHGRP_COMMAND)?" \
+	  -e "s?CHMOD_COMMAND?$(CHMOD_COMMAND)?" \
+	  -e "s?CHOWN_COMMAND?$(CHOWN_COMMAND)?" \
 	  -e "s?MV_COMMAND?$(MV_COMMAND)?" \
 	  -e "s?RM_COMMAND?$(RM_COMMAND)?" \
+	  -e "s?TOUCH_COMMAND?$(TOUCH_COMMAND)?" \
 	  ../src/exicyclog.src > exicyclog-t
 	@mv exicyclog-t exicyclog
 	@chmod a+x exicyclog

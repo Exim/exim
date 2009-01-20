@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exicyclog.src,v 1.8 2008/07/28 18:24:13 fanf2 Exp $
+# $Cambridge: exim/src/src/exicyclog.src,v 1.9 2009/01/20 16:06:14 fanf2 Exp $
 
 # Copyright (c) 2006 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -53,12 +53,12 @@ keep=EXICYCLOG_MAX
 compress=COMPRESS_COMMAND
 suffix=COMPRESS_SUFFIX
 
-chown=CHOWN_COMMAND
 chgrp=CHGRP_COMMAND
 chmod=CHMOD_COMMAND
-touch=TOUCH_COMMAND
+chown=CHOWN_COMMAND
 mv=MV_COMMAND
 rm=RM_COMMAND
+touch=TOUCH_COMMAND
 
 # End of editable lines
 #########################################################################
@@ -84,7 +84,7 @@ done
 # in different places. We have a fudge that will search the usual suspects if
 # requested.
 
-for cmd in chown chgrp chmod mv rm ; do
+for cmd in chgrp chmod chown mv rm touch; do
   eval "oldcmd=\$$cmd"
   if [ "$oldcmd" != "look_for_it" ] ; then continue ; fi
   newcmd=$cmd
