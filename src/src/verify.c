@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.52 2008/09/29 11:41:07 nm4 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.53 2009/01/21 19:14:53 fanf2 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -893,7 +893,7 @@ va_start(ap, format);
 if (smtp_out && (f == smtp_out))
   smtp_vprintf(format, ap);
 else
-  fprintf(f, format, ap);
+  vfprintf(f, format, ap);
 va_end(ap);
 }
 
