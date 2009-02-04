@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.36 2008/12/18 13:13:53 michael Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.37 2009/02/04 11:31:13 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3070,7 +3070,7 @@ while (*filter->pc)
               f = fdopen(fd, "wb");
               fprintf(f,"From: %s\n",from.length==-1 ? expand_string("$local_part_prefix$local_part$local_part_suffix@$domain") : from.character);
               for (p=recipient; p; p=p->next) fprintf(f,"To: %s\n",p->text);
-              fprintf(f,"Auto-Submitted: auto-notified\n");
+              fprintf(f,"Auto-Submitted: auto-notified; %s\n",filter->enotify_mailto_owner);
               if (header.length>0) fprintf(f,"%s",header.character);
               if (message.length==-1)
                 {
