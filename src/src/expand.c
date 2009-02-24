@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.97 2008/12/12 14:51:47 nm4 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.97.2.1 2009/02/24 15:57:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -364,9 +364,6 @@ enum {
   vtype_load_avg,       /* value not used; result is int from os_getloadavg */
   vtype_pspace,         /* partition space; value is T/F for spool/log */
   vtype_pinodes         /* partition inodes; value is T/F for spool/log */
-#ifdef EXPERIMENTAL_DOMAINKEYS
- ,vtype_dk_verify       /* Serve request out of DomainKeys verification structure */
-#endif
   };
 
 /* This table must be kept in alphabetical order. */
@@ -404,20 +401,7 @@ static var_entry var_table[] = {
   { "demime_errorlevel",   vtype_int,         &demime_errorlevel },
   { "demime_reason",       vtype_stringptr,   &demime_reason },
 #endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
-  { "dk_domain",           vtype_stringptr,   &dk_signing_domain },
-  { "dk_is_signed",        vtype_dk_verify,   NULL },
-  { "dk_result",           vtype_dk_verify,   NULL },
-  { "dk_selector",         vtype_stringptr,   &dk_signing_selector },
-  { "dk_sender",           vtype_dk_verify,   NULL },
-  { "dk_sender_domain",    vtype_dk_verify,   NULL },
-  { "dk_sender_local_part",vtype_dk_verify,   NULL },
-  { "dk_sender_source",    vtype_dk_verify,   NULL },
-  { "dk_signsall",         vtype_dk_verify,   NULL },
-  { "dk_status",           vtype_dk_verify,   NULL },
-  { "dk_testing",          vtype_dk_verify,   NULL },
-#endif
-#ifdef EXPERIMENTAL_DKIM
+#ifndef DISABLE_DKIM
   { "dkim_domain",         vtype_stringptr,   &dkim_signing_domain },
   { "dkim_selector",       vtype_stringptr,   &dkim_signing_selector },
 #endif
@@ -1382,51 +1366,6 @@ while (last > first)
 
   switch (var_table[middle].type)
     {
-#ifdef EXPERIMENTAL_DOMAINKEYS
-
-    case vtype_dk_verify:
-    if (dk_verify_block == NULL) return US"";
-    s = NULL;
-    if (Ustrcmp(var_table[middle].name, "dk_result") == 0)
-      s = dk_verify_block->result_string;
-    if (Ustrcmp(var_table[middle].name, "dk_sender") == 0)
-      s = dk_verify_block->address;
-    if (Ustrcmp(var_table[middle].name, "dk_sender_domain") == 0)
-      s = dk_verify_block->domain;
-    if (Ustrcmp(var_table[middle].name, "dk_sender_local_part") == 0)
-      s = dk_verify_block->local_part;
-
-    if (Ustrcmp(var_table[middle].name, "dk_sender_source") == 0)
-      switch(dk_verify_block->address_source) {
-        case DK_EXIM_ADDRESS_NONE: s = US"0"; break;
-        case DK_EXIM_ADDRESS_FROM_FROM: s = US"from"; break;
-        case DK_EXIM_ADDRESS_FROM_SENDER: s = US"sender"; break;
-      }
-
-    if (Ustrcmp(var_table[middle].name, "dk_status") == 0)
-      switch(dk_verify_block->result) {
-        case DK_EXIM_RESULT_ERR: s = US"error"; break;
-        case DK_EXIM_RESULT_BAD_FORMAT: s = US"bad format"; break;
-        case DK_EXIM_RESULT_NO_KEY: s = US"no key"; break;
-        case DK_EXIM_RESULT_NO_SIGNATURE: s = US"no signature"; break;
-        case DK_EXIM_RESULT_REVOKED: s = US"revoked"; break;
-        case DK_EXIM_RESULT_NON_PARTICIPANT: s = US"non-participant"; break;
-        case DK_EXIM_RESULT_GOOD: s = US"good"; break;
-        case DK_EXIM_RESULT_BAD: s = US"bad"; break;
-      }
-
-    if (Ustrcmp(var_table[middle].name, "dk_signsall") == 0)
-      s = (dk_verify_block->signsall)? US"1" : US"0";
-
-    if (Ustrcmp(var_table[middle].name, "dk_testing") == 0)
-      s = (dk_verify_block->testing)? US"1" : US"0";
-
-    if (Ustrcmp(var_table[middle].name, "dk_is_signed") == 0)
-      s = (dk_verify_block->is_signed)? US"1" : US"0";
-
-    return (s == NULL)? US"" : s;
-#endif
-
     case vtype_filter_int:
     if (!filter_running) return NULL;
     /* Fall through */

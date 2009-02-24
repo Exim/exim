@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.16.2.1 2009/02/24 13:13:46 tom Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.16.2.2 2009/02/24 15:57:55 tom Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -300,14 +300,14 @@ convert4r4: Makefile ../src/convert4r4.src
 
 OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
 OBJ_WITH_OLD_DEMIME = demime.o
-OBJ_EXPERIMENTAL = bmi_spam.o spf.o srs.o dk.o dcc.o
+OBJ_EXPERIMENTAL = bmi_spam.o spf.o srs.o dcc.o
 
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
 
 OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
-        filtertest.o globals.o \
+        filtertest.o globals.o dkim.o \
         header.o host.o ip.o log.o lss.o match.o moan.o \
         os.o parse.o queue.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
@@ -578,7 +578,7 @@ tod.o:           $(HDRS) tod.c
 transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c
 verify.o:        $(HDRS) verify.c
-
+dkim.o:          $(HDRS) dkim.c
 
 # Dependencies for WITH_CONTENT_SCAN modules
 
@@ -599,7 +599,6 @@ demime.o:        $(HDRS) demime.c
 bmi_spam.o:      $(HDRS) bmi_spam.c
 spf.o:           $(HDRS) spf.h spf.c
 srs.o:           $(HDRS) srs.h srs.c
-dk.o:            $(HDRS) dk.h dk.c
 dcc.o:           $(HDRS) dcc.h dcc.c
 
 # The module containing tables of available lookups, routers, auths, and

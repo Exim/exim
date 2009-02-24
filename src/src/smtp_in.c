@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.63 2008/09/29 11:41:07 nm4 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.63.2.1 2009/02/24 15:57:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1037,10 +1037,7 @@ authenticated_sender = NULL;
 bmi_run = 0;
 bmi_verdicts = NULL;
 #endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
-dk_do_verify = 0;
-#endif
-#ifdef EXPERIMENTAL_DKIM
+#ifndef DISABLE_DKIM
 dkim_do_verify = 0;
 #endif
 #ifdef EXPERIMENTAL_SPF

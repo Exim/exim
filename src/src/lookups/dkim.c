@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dkim.c,v 1.1 2007/09/28 12:21:57 tom Exp $ */
+/* $Cambridge: exim/src/src/lookups/dkim.c,v 1.1.2.1 2009/02/24 15:57:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -39,7 +39,7 @@ int
 dkim_find(void *handle, uschar *filename, uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
-#ifdef EXPERIMENTAL_DKIM
+#ifndef DISABLE_DKIM
   dkim_exim_verify_result(keystring,result,errmsg);
   return OK;
 #else

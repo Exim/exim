@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/drtables.c,v 1.9 2007/09/28 12:21:57 tom Exp $ */
+/* $Cambridge: exim/src/src/drtables.c,v 1.9.2.1 2009/02/24 15:57:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -105,7 +105,7 @@ be NULL for methods that don't need them. */
 #include "lookups/whoson.h"
 #endif
 
-#ifdef EXPERIMENTAL_DKIM
+#ifndef DISABLE_DKIM
 #include "lookups/dkim.h"
 #endif
 
@@ -181,7 +181,7 @@ of the key strings. */
   {
   US"dkim",                      /* lookup name */
   lookup_querystyle,             /* query style */
-#ifdef EXPERIMENTAL_DKIM
+#ifndef DISABLE_DKIM
   dkim_open,                     /* open function */
   NULL,                          /* check function */
   dkim_find,                     /* find function */

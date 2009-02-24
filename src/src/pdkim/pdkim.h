@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.1 2009/02/24 13:13:47 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.2 2009/02/24 15:57:55 tom Exp $ */
 /* pdkim.h */
 
 #include "sha1.h"
@@ -181,8 +181,8 @@ int   pdkim_finish_bodyhash   (pdkim_ctx *);
 int   pdkim_bodyline_complete (pdkim_ctx *);
 int   pdkim_header_complete   (pdkim_ctx *);
 
-int   pdkim_feed              (pdkim_ctx *, char *data, int len);
-int   pdkim_feed_finish       (pdkim_ctx *);
+int   pdkim_feed              (pdkim_ctx *, char *, int);
+int   pdkim_feed_finish       (pdkim_ctx *, char **);
 
 pdkim_str
      *pdkim_create_header     (pdkim_ctx *, int);
@@ -190,7 +190,9 @@ pdkim_str
 pdkim_ctx
      *pdkim_init_sign         (char *, char *, char *);
 
-int   pdkim_set_optional      (pdkim_ctx *, char *, char *,
+int   pdkim_set_optional      (pdkim_ctx *,
+                               int,
+                               char *, char *,
                                int, int,
                                unsigned long, int,
                                unsigned long,

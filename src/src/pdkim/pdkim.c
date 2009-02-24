@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.1 2009/02/24 13:13:47 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.2 2009/02/24 15:57:55 tom Exp $ */
 /* pdkim.c */
 
 #include <stdlib.h>
@@ -549,7 +549,7 @@ pdkim_str *pdkim_create_header(pdkim_ctx *ctx, int final) {
 
 
 /* -------------------------------------------------------------------------- */
-int pdkim_feed_finish(pdkim_ctx *ctx) {
+int pdkim_feed_finish(pdkim_ctx *ctx, char **signature) {
 
   /* Check if we must still flush a (partial) header. If that is the
      case, the message has no body, and we must compute a body hash
@@ -730,13 +730,18 @@ int pdkim_feed_finish(pdkim_ctx *ctx) {
     if (ctx->debug_stream) {
       fprintf(ctx->debug_stream,
               "PDKIM >> Final DKIM-Signature header >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-      fprintf(ctx->debug_stream,"%s\n",hdr->str);
-      //pdkim_quoteprint(ctx->debug_stream, hdr->str, hdr->len, 1);
+      pdkim_quoteprint(ctx->debug_stream, hdr->str, hdr->len, 1);
       fprintf(ctx->debug_stream,
               "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
     }
 #endif
+
+    if (signature != NULL) {
+      *signature = hdr->str;
+    }
+
   }
+
 
   return PDKIM_OK;
 }
@@ -793,6 +798,7 @@ void pdkim_set_debug_stream(pdkim_ctx *ctx,
 
 /* -------------------------------------------------------------------------- */
 int pdkim_set_optional(pdkim_ctx *ctx,
+                       int input_mode,
                        char *sign_headers,
                        char *identity,
                        int canon_headers,
@@ -818,6 +824,7 @@ int pdkim_set_optional(pdkim_ctx *ctx,
     strcpy(ctx->sig->sign_headers, sign_headers);
   }
 
+  ctx->input_mode = input_mode;
   ctx->sig->canon_headers = canon_headers;
   ctx->sig->canon_body = canon_body;
   ctx->sig->bodylength = bodylength;

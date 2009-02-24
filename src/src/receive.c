@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.45 2009/01/02 17:12:03 nm4 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.45.2.1 2009/02/24 15:57:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -10,38 +10,6 @@
 /* Code for receiving a message and setting up spool files. */
 
 #include "exim.h"
-
-#if (defined EXPERIMENTAL_DOMAINKEYS) && (defined EXPERIMENTAL_DKIM)
-
-#warning Chaining Domainkeys via DKIM receive functions
-#define RECEIVE_GETC dkim_receive_getc
-#define RECEIVE_UNGETC dkim_receive_ungetc
-
-#else
-
-#if (defined EXPERIMENTAL_DOMAINKEYS) || (defined EXPERIMENTAL_DKIM)
-
-#ifdef EXPERIMENTAL_DOMAINKEYS
-#warning Using Domainkeys receive functions
-#define RECEIVE_GETC dk_receive_getc
-#define RECEIVE_UNGETC dk_receive_ungetc
-#endif
-#ifdef EXPERIMENTAL_DKIM
-#warning Using DKIM receive functions
-#define RECEIVE_GETC dkim_receive_getc
-#define RECEIVE_UNGETC dkim_receive_ungetc
-#endif
-
-#else
-
-/* Normal operation */
-#define RECEIVE_GETC receive_getc
-#define RECEIVE_UNGETC receive_ungetc
-
-#endif
-
-#endif
-
 
 #ifdef EXPERIMENTAL_DCC
 extern int dcc_ok;
@@ -600,7 +568,7 @@ if (!dot_ends)
   {
   register int last_ch = '\n';
 
-  for (; (ch = (RECEIVE_GETC)()) != EOF; last_ch = ch)
+  for (; (ch = (receive_getc)()) != EOF; last_ch = ch)
     {
     if (ch == 0) body_zerocount++;
     if (last_ch == '\r' && ch != '\n')
@@ -642,7 +610,7 @@ if (!dot_ends)
 
 ch_state = 1;
 
-while ((ch = (RECEIVE_GETC)()) != EOF)
+while ((ch = (receive_getc)()) != EOF)
   {
   if (ch == 0) body_zerocount++;
   switch (ch_state)
@@ -758,7 +726,7 @@ int ch_state = 0;
 register int ch;
 register int linelength = 0;
 
-while ((ch = (RECEIVE_GETC)()) != EOF)
+while ((ch = (receive_getc)()) != EOF)
   {
   if (ch == 0) body_zerocount++;
   switch (ch_state)
@@ -1416,14 +1384,9 @@ if (thismessage_size_limit <= 0) thismessage_size_limit = INT_MAX;
 message_linecount = body_linecount = body_zerocount =
   max_received_linelength = 0;
 
-#ifdef EXPERIMENTAL_DOMAINKEYS
-/* Call into DK to set up the context. Check if DK is to be run are carried out
-   inside dk_exim_verify_init(). */
-dk_exim_verify_init();
-#endif
-#ifdef EXPERIMENTAL_DKIM
+#ifndef DISABLE_DKIM
 /* Call into DKIM to set up the context. Check if DKIM is to be run are carried out
-   inside dk_exim_verify_init(). */
+   inside dkim_exim_verify_init(). */
 dkim_exim_verify_init();
 #endif
 
@@ -1476,7 +1439,7 @@ next->text. */
 
 for (;;)
   {
-  int ch = (RECEIVE_GETC)();
+  int ch = (receive_getc)();
 
   /* If we hit EOF on a SMTP connection, it's an error, since incoming
   SMTP must have a correct "." terminator. */
@@ -1540,7 +1503,7 @@ for (;;)
   if (ch == '\n')
     {
     if (first_line_ended_crlf == TRUE_UNSET) first_line_ended_crlf = FALSE;
-      else if (first_line_ended_crlf) RECEIVE_UNGETC(' ');
+      else if (first_line_ended_crlf) receive_ungetc(' ');
     goto EOL;
     }
 
@@ -1555,13 +1518,13 @@ for (;;)
 
   if (ptr == 0 && ch == '.' && (smtp_input || dot_ends))
     {
-    ch = (RECEIVE_GETC)();
+    ch = (receive_getc)();
     if (ch == '\r')
       {
-      ch = (RECEIVE_GETC)();
+      ch = (receive_getc)();
       if (ch != '\n')
         {
-        RECEIVE_UNGETC(ch);
+        receive_ungetc(ch);
         ch = '\r';              /* Revert to CR */
         }
       }
@@ -1589,7 +1552,7 @@ for (;;)
 
   if (ch == '\r')
     {
-    ch = (RECEIVE_GETC)();
+    ch = (receive_getc)();
     if (ch == '\n')
       {
       if (first_line_ended_crlf == TRUE_UNSET) first_line_ended_crlf = TRUE;
@@ -1599,7 +1562,7 @@ for (;;)
     /* Otherwise, put back the character after CR, and turn the bare CR
     into LF SP. */
 
-    ch = (RECEIVE_UNGETC)(ch);
+    ch = (receive_ungetc)(ch);
     next->text[ptr++] = '\n';
     message_size++;
     ch = ' ';
@@ -1684,14 +1647,14 @@ for (;;)
 
   if (ch != EOF)
     {
-    int nextch = (RECEIVE_GETC)();
+    int nextch = (receive_getc)();
     if (nextch == ' ' || nextch == '\t')
       {
       next->text[ptr++] = nextch;
       message_size++;
       continue;                      /* Iterate the loop */
       }
-    else if (nextch != EOF) (RECEIVE_UNGETC)(nextch);   /* For next time */
+    else if (nextch != EOF) (receive_ungetc)(nextch);   /* For next time */
     else ch = EOF;                   /* Cause main loop to exit at end */
     }
 
@@ -3007,10 +2970,7 @@ else
   if (smtp_input && !smtp_batched_input)
     {
 
-#ifdef EXPERIMENTAL_DOMAINKEYS
-    dk_exim_verify_finish();
-#endif
-#ifdef EXPERIMENTAL_DKIM
+#ifndef DISABLE_DKIM
     dkim_exim_verify_finish();
 #endif
 
@@ -3554,8 +3514,8 @@ if (smtp_input && sender_host_address != NULL && !sender_host_notsocket &&
 
   if (select(fileno(smtp_in) + 1, &select_check, NULL, NULL, &tv) != 0)
     {
-    int c = (RECEIVE_GETC)();
-    if (c != EOF) (RECEIVE_UNGETC)(c); else
+    int c = (receive_getc)();
+    if (c != EOF) (receive_ungetc)(c); else
       {
       uschar *msg = US"SMTP connection lost after final dot";
       smtp_reply = US"";    /* No attempt to send a response */

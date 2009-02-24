@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.23 2008/09/30 10:03:55 tom Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.23.2.1 2009/02/24 15:57:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -941,7 +941,7 @@ return (len = chunk_ptr - deliver_out_buffer) <= 0 ||
 }
 
 
-#if (defined EXPERIMENTAL_DOMAINKEYS) || (defined EXPERIMENTAL_DKIM)
+#ifndef DISABLE_DKIM
 
 /***************************************************************************************************
 *    External interface to write the message, while signing it with DKIM and/or Domainkeys         *
@@ -965,14 +965,6 @@ Arguments:     as for internal_transport_write_message() above, with additional
                                                                                    0/false => send anyway
                uschar *dkim_sign_headers        DKIM: List of headers that should be included in signature
                                                 generation
-               uschar *dk_private_key           Domainkeys: The private key to use (filename or plain data)
-               uschar *dk_domain                Domainkeys: Override domain (normally NULL)
-               uschar *dk_selector              Domainkeys: The selector to use.
-               uschar *dk_canon                 Domainkeys: The canonalization scheme to use, "simple" or "nofws"
-               uschar *dk_headers               Domainkeys: Colon-separated header list to include in the signing
-                                                process.
-               uschar *dk_strict                Domainkeys: What to do if signing fails: 1/true  => throw error
-                                                                                         0/false => send anyway
 
 Returns:       TRUE on success; FALSE (with errno) for any failure
 */
@@ -982,9 +974,7 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
   int size_limit, uschar *add_headers, uschar *remove_headers,
   uschar *check_string, uschar *escape_string, rewrite_rule *rewrite_rules,
   int rewrite_existflags, uschar *dkim_private_key, uschar *dkim_domain,
-  uschar *dkim_selector, uschar *dkim_canon, uschar *dkim_strict, uschar *dkim_sign_headers,
-  uschar *dk_private_key, uschar *dk_domain, uschar *dk_selector, uschar *dk_canon,
-  uschar *dk_headers, uschar *dk_strict
+  uschar *dkim_selector, uschar *dkim_canon, uschar *dkim_strict, uschar *dkim_sign_headers
   )
 {
   int dkim_fd;
@@ -995,12 +985,10 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
   int sread = 0;
   int wwritten = 0;
   uschar *dkim_signature = NULL;
-  uschar *dk_signature = NULL;
   off_t size = 0;
 
-  if ( !( ((dkim_private_key != NULL) && (dkim_domain != NULL) && (dkim_selector != NULL)) ||
-          ((dk_private_key != NULL) && (dk_selector != NULL)) ) ) {
-    /* If we can sign with neither method, just call the original function. */
+  if (!( ((dkim_private_key != NULL) && (dkim_domain != NULL) && (dkim_selector != NULL)) )) {
+    /* If we can't sign, just call the original function. */
     return transport_write_message(addr, fd, options,
               size_limit, add_headers, remove_headers,
               check_string, escape_string, rewrite_rules,
@@ -1031,8 +1019,6 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
     goto CLEANUP;
     }
 
-
-  #ifdef EXPERIMENTAL_DKIM
   if ( (dkim_private_key != NULL) && (dkim_domain != NULL) && (dkim_selector != NULL) ) {
     /* Rewind file and feed it to the goats^W DKIM lib */
     lseek(dkim_fd, 0, SEEK_SET);
@@ -1070,48 +1056,6 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
         }
         siglen -= wwritten;
         dkim_signature += wwritten;
-      }
-    }
-  }
-  #endif
-
-  #ifdef EXPERIMENTAL_DOMAINKEYS
-  if ( (dk_private_key != NULL) && (dk_selector != NULL) ) {
-    /* Rewind file and feed it to the goats^W DK lib */
-    lseek(dkim_fd, 0, SEEK_SET);
-    dk_signature = dk_exim_sign(dkim_fd,
-                                dk_private_key,
-                                dk_domain,
-                                dk_selector,
-                                dk_canon);
-    if (dk_signature == NULL) {
-      if (dk_strict != NULL) {
-        uschar *dk_strict_result = expand_string(dk_strict);
-        if (dk_strict_result != NULL) {
-          if ( (strcmpic(dk_strict,US"1") == 0) ||
-               (strcmpic(dk_strict,US"true") == 0) ) {
-            save_errno = errno;
-            rc = FALSE;
-            goto CLEANUP;
-          }
-        }
-      }
-    }
-    else {
-      int siglen = Ustrlen(dk_signature);
-      while(siglen > 0) {
-        #ifdef SUPPORT_TLS
-        if (tls_active == fd) wwritten = tls_write(dk_signature, siglen); else
-        #endif
-        wwritten = write(fd,dk_signature,siglen);
-        if (wwritten == -1) {
-          /* error, bail out */
-          save_errno = errno;
-          rc = FALSE;
-          goto CLEANUP;
-        }
-        siglen -= wwritten;
-        dk_signature += wwritten;
       }
     }
   }

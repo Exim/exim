@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.62 2008/02/12 12:52:51 nm4 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.62.2.1 2009/02/24 15:57:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -295,13 +295,7 @@ extern BOOL    disable_fsync;          /* Not for normal use */
 extern BOOL    disable_ipv6;           /* Don't do any IPv6 things */
 extern BOOL    disable_logging;        /* Disables log writing when TRUE */
 
-#ifdef EXPERIMENTAL_DOMAINKEYS
-extern uschar *dk_signing_domain;      /* Domain used for signing a message. */
-extern uschar *dk_signing_selector;    /* Selector used for signing a message. */
-extern int     dk_do_verify;           /* DK verification switch. Set with ACL control statement. */
-#endif
-
-#ifdef EXPERIMENTAL_DKIM
+#ifndef DISABLE_DKIM
 extern uschar *dkim_signing_domain;      /* Domain used for signing a message. */
 extern uschar *dkim_signing_selector;    /* Selector used for signing a message. */
 extern int     dkim_do_verify;           /* DKIM verification switch. Set with ACL control statement. */
