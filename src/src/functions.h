@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.43.2.1 2009/02/24 15:57:55 tom Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.43.2.2 2009/02/24 18:43:59 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -86,9 +86,7 @@ extern BOOL    directory_make(uschar *, uschar *, int, BOOL);
 #ifndef DISABLE_DKIM
 extern BOOL    dkim_transport_write_message(address_item *, int, int,
                    int, uschar *, uschar *, uschar *, uschar *, rewrite_rule *,
-                   int, uschar *, uschar *, uschar *, uschar *, uschar *, uschar *,
-                   uschar *, uschar *, uschar *, uschar *, uschar *, uschar *
-                   );
+                   int, uschar *, uschar *, uschar *, uschar *, uschar *, uschar *);
 #endif
 extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
 extern void    dns_build_reverse(uschar *, uschar *);

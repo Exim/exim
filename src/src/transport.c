@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.23.2.1 2009/02/24 15:57:55 tom Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.23.2.2 2009/02/24 18:43:59 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1059,7 +1059,6 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
       }
     }
   }
-  #endif
 
   /* Fetch file positition (the size) */
   size = lseek(dkim_fd,0,SEEK_CUR);
@@ -1129,6 +1128,7 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
   errno = save_errno;
   return rc;
 }
+
 #endif
 
 

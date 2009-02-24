@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/sha1.c,v 1.1.2.1 2009/02/24 13:13:47 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/sha1.c,v 1.1.2.2 2009/02/24 18:43:59 tom Exp $ */
 /*
  *  FIPS-180-1 compliant SHA-1 implementation
  *
@@ -309,7 +309,7 @@ void sha1_finish( sha1_context *ctx, unsigned char output[20] )
 /*
  * output = SHA-1( input buffer )
  */
-void sha1( unsigned char *input, int ilen, unsigned char output[20] )
+void sha1_oneshot( unsigned char *input, int ilen, unsigned char output[20] )
 {
     sha1_context ctx;
 
@@ -362,7 +362,7 @@ void sha1_hmac_starts( sha1_context *ctx, unsigned char *key, int keylen )
 
     if( keylen > 64 )
     {
-        sha1( key, keylen, sum );
+        sha1_oneshot( key, keylen, sum );
         keylen = 20;
         key = sum;
     }

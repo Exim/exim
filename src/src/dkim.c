@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.1 2009/02/24 15:57:55 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.2 2009/02/24 18:43:59 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -16,6 +16,17 @@
 
 #include "pdkim/pdkim.h"
 
+
+void dkim_exim_verify_init(void) {
+}
+
+void dkim_exim_verify_finish(void) {
+}
+
+int dkim_exim_verify_result(uschar *domain, uschar **result, uschar **error) {
+  return OK;
+}
+
 uschar *dkim_exim_sign(int dkim_fd,
                        uschar *dkim_private_key,
                        uschar *dkim_domain,
@@ -29,6 +40,7 @@ uschar *dkim_exim_sign(int dkim_fd,
   int sread;
   char buf[4096];
   int save_errno = 0;
+  int old_pool = store_pool;
 
   dkim_domain = expand_string(dkim_domain);
   if (dkim_domain == NULL) {
@@ -80,7 +92,6 @@ uschar *dkim_exim_sign(int dkim_fd,
       goto CLEANUP;
     }
   }
-  dkim_exim_sign_headers = dkim_sign_headers;
 
   /* Get private key to use. */
   dkim_private_key = expand_string(dkim_private_key);
@@ -117,7 +128,7 @@ uschar *dkim_exim_sign(int dkim_fd,
 
   pdkim_set_optional(ctx,
                      PDKIM_INPUT_SMTP,
-                     (char *)dkim_exim_sign_headers,
+                     (char *)dkim_sign_headers,
                      NULL,
                      pdkim_canon,
                      pdkim_canon,

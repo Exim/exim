@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/sha1.h,v 1.1.2.1 2009/02/24 13:13:47 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/sha1.h,v 1.1.2.2 2009/02/24 18:43:59 tom Exp $ */
 /**
  * \file sha1.h
  *
@@ -72,7 +72,7 @@ void sha1_finish( sha1_context *ctx, unsigned char output[20] );
  * \param ilen     length of the input data
  * \param output   SHA-1 checksum result
  */
-void sha1( unsigned char *input, int ilen, unsigned char output[20] );
+void sha1_oneshot( unsigned char *input, int ilen, unsigned char output[20] );
 
 /**
  * \brief          Output = SHA-1( file contents )
