@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.2 2009/02/24 15:57:55 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.3 2009/02/25 12:52:58 tom Exp $ */
 /* pdkim.c */
 
 #include <stdlib.h>
@@ -228,7 +228,7 @@ int pdkim_update_bodyhash(pdkim_ctx *ctx, char *data, int len) {
         int seen_wsp = 0;
         char *p = data;
         int q = 0;
-        relaxed_data = malloc(len);
+        relaxed_data = malloc(len+1);
         if (relaxed_data == NULL) return PDKIM_ERR_OOM;
         while (*p != '\0') {
           char c = *p;
