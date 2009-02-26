@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.2 2009/02/24 15:57:55 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.3 2009/02/26 16:07:36 tom Exp $ */
 /* pdkim.h */
 
 #include "sha1.h"
@@ -86,7 +86,7 @@ typedef struct pdkim_pubkey {
 /* Signature as it appears in a DKIM-Signature header */
 typedef struct pdkim_signature {
 
-  /* Bits stored in a DKIM signature header */
+  /* Bits stored in a DKIM signature header ------ */
   int version;                    /* v=   */
   int algo;                       /* a=   */
   int canon_headers;              /* c=x/ */
@@ -107,31 +107,22 @@ typedef struct pdkim_signature {
   char *headernames;              /* h=   */
   char *copiedheaders;            /* z=   */
 
-  /* Public key used to verify this signature.
-     (Verification only) */
-  pdkim_pubkey pubkey;
 
-  /* Private RSA key used to create this signature */
-  char *rsa_privkey;
+  /* Signing specific ---------------------------- */
+  char *rsa_privkey;     /* Private RSA key */
+  char *sign_headers;    /* To-be-signed header names */
 
-  /* Header field names to include in the signature,
-     colon separated. When NULL, the recommended defaults
-     from RFC 4871 are used. */
-  char *sign_headers;
+  /* Verification specific ----------------------- */
+  pdkim_pubkey pubkey;   /* Public key used to verify this signature. */
+  int verify_result;     /* Verification result */
+  char *rawsig_no_b_val; /* Original signature header w/o b= tag value. */
+  void *next;            /* Pointer to next signature in list. */
 
-  /* Per-signature helper variables */
+  /* Per-signature helper variables -------------- */
   sha1_context sha1_body;
   sha2_context sha2_body;
   unsigned long signed_body_bytes;
   pdkim_stringlist *headers;
-
-  /* Verification specific */
-  int verify_result;
-
-  /* Pointer to next signature in list.
-     (Always NULL for signing) */
-  void *next;
-
 } pdkim_signature;
 
 
@@ -185,10 +176,13 @@ int   pdkim_feed              (pdkim_ctx *, char *, int);
 int   pdkim_feed_finish       (pdkim_ctx *, char **);
 
 pdkim_str
-     *pdkim_create_header     (pdkim_ctx *, int);
+     *pdkim_create_header     (pdkim_signature *, int);
 
 pdkim_ctx
      *pdkim_init_sign         (char *, char *, char *);
+
+pdkim_ctx
+     *pdkim_init_verify       (void);
 
 int   pdkim_set_optional      (pdkim_ctx *,
                                int,

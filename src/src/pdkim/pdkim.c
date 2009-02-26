@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.3 2009/02/25 12:52:58 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.4 2009/02/26 16:07:36 tom Exp $ */
 /* pdkim.c */
 
 #include <stdlib.h>
@@ -13,15 +13,33 @@
 /* -------------------------------------------------------------------------- */
 /* A bunch of list constants */
 char *pdkim_querymethods[] = {
-  "dns/txt"
+  "dns/txt",
+  NULL
 };
 char *pdkim_algos[] = {
   "rsa-sha256",
-  "rsa-sha1"
+  "rsa-sha1",
+  NULL
 };
 char *pdkim_canons[] = {
   "simple",
-  "relaxed"
+  "relaxed",
+  NULL
+};
+
+typedef struct pdkim_combined_canon_entry {
+  char *str;
+  int canon_headers;
+  int canon_body;
+} pdkim_combined_canon_entry;
+pdkim_combined_canon_entry pdkim_combined_canons[] = {
+  { "simple/simple",    PDKIM_CANON_SIMPLE,   PDKIM_CANON_SIMPLE },
+  { "simple/relaxed",   PDKIM_CANON_SIMPLE,   PDKIM_CANON_RELAXED },
+  { "relaxed/simple",   PDKIM_CANON_RELAXED,  PDKIM_CANON_SIMPLE },
+  { "relaxed/relaxed",  PDKIM_CANON_RELAXED,  PDKIM_CANON_RELAXED },
+  { "simple",           PDKIM_CANON_SIMPLE,   PDKIM_CANON_SIMPLE },
+  { "relaxed",          PDKIM_CANON_RELAXED,  PDKIM_CANON_SIMPLE },
+  { NULL,               0,                    0 }
 };
 
 
@@ -113,6 +131,24 @@ char *pdkim_numcat(pdkim_str *str, unsigned long num) {
   char minibuf[20];
   snprintf(minibuf,20,"%lu",num);
   return pdkim_strcat(str,minibuf);
+};
+char *pdkim_strtrim(pdkim_str *str) {
+  char *p = str->str;
+  char *q = str->str;
+  while ( (*p != '\0') && ((*p == '\t') || (*p == ' ')) ) p++;
+  while (*p != '\0') {*q = *p; q++; p++;};
+  *q = '\0';
+  while ( (q != str->str) && ( (*q == '\0') || (*q == '\t') || (*q == ' ') ) ) {
+    *q = '\0';
+    q--;
+  }
+  str->len = strlen(str->str);
+  return str->str;
+};
+char *pdkim_strclear(pdkim_str *str) {
+  str->str[0] = '\0';
+  str->len = 0;
+  return str->str;
 };
 void pdkim_strfree(pdkim_str *str) {
   if (str == NULL) return;
@@ -207,6 +243,285 @@ char *pdkim_relax_header (char *header, int crlf) {
   if (crlf) strcat(relaxed,"\r\n");
   return relaxed;
 };
+
+
+/* -------------------------------------------------------------------------- */
+#define PDKIM_QP_ERROR_DECODE -1
+char *pdkim_decode_qp_char(char *qp_p, int *c) {
+  char *initial_pos = qp_p;
+
+  /* Advance one char */
+  qp_p++;
+
+  /* Check for two hex digits and decode them */
+  if (isxdigit(*qp_p) && isxdigit(qp_p[1])) {
+    /* Do hex conversion */
+    if (isdigit(*qp_p)) {*c = *qp_p - '0';}
+    else {*c = toupper(*qp_p) - 'A' + 10;};
+    *c <<= 4;
+    if (isdigit(qp_p[1])) {*c |= qp_p[1] - '0';}
+    else {*c |= toupper(qp_p[1]) - 'A' + 10;};
+    return qp_p + 2;
+  };
+
+  /* Illegal char here */
+  *c = PDKIM_QP_ERROR_DECODE;
+  return initial_pos;
+}
+
+
+/* -------------------------------------------------------------------------- */
+char *pdkim_decode_qp(char *str) {
+  int nchar = 0;
+  char *q;
+  char *p = str;
+  char *n = malloc(strlen(p)+1);
+  if (n == NULL) return NULL;
+  *n = '\0';
+  q = n;
+  while (*p != '\0') {
+    if (*p == '=') {
+      p = pdkim_decode_qp_char(p,&nchar);
+      if (nchar >= 0) {
+        *q = nchar;
+        q++;
+        continue;
+      }
+    }
+    else {
+      *q = *p;
+      q++;
+    }
+    p++;
+  }
+  return n;
+}
+
+
+/* -------------------------------------------------------------------------- */
+char *pdkim_decode_base64(char *str) {
+  int dlen = 0;
+  char *res;
+
+  base64_decode(NULL, &dlen, str, strlen(str));
+  res = malloc(dlen+1);
+  if (res == NULL) return NULL;
+  if (base64_decode(res,&dlen,str,strlen(str)) != 0) {
+    free(res);
+    return NULL;
+  }
+  return res;
+}
+
+
+/* -------------------------------------------------------------------------- */
+#define PDKIM_HDR_LIMBO 0
+#define PDKIM_HDR_TAG   1
+#define PDKIM_HDR_VALUE 2
+pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
+  pdkim_signature *sig ;
+  char *rawsig_no_b_val;
+  char *p,*q;
+  pdkim_str *cur_tag = NULL;
+  pdkim_str *cur_val = NULL;
+  int past_hname = 0;
+  int in_b_val = 0;
+  int where = PDKIM_HDR_LIMBO;
+  int i;
+
+  sig = malloc(sizeof(pdkim_signature));
+  if (sig == NULL) return NULL;
+  memset(sig,0,sizeof(pdkim_signature));
+
+  sig->rawsig_no_b_val = malloc(strlen(raw_hdr)+1);
+  if (sig->rawsig_no_b_val == NULL) {
+    free(sig);
+    return NULL;
+  }
+
+  p = raw_hdr;
+  q = sig->rawsig_no_b_val;
+
+  while (*p != '\0') {
+
+    /* Ignore FWS */
+    if ( (*p == '\r') || (*p == '\n') )
+      goto NEXT_CHAR;
+
+    /* Fast-forward through header name */
+    if (!past_hname) {
+      if (*p == ':') past_hname = 1;
+      goto NEXT_CHAR;
+    }
+
+    if (where == PDKIM_HDR_LIMBO) {
+      /* In limbo, just wait for a tag-char to appear */
+      if (!((*p >= 'a') && (*p <= 'z')))
+        goto NEXT_CHAR;
+
+      where = PDKIM_HDR_TAG;
+    }
+
+    if (where == PDKIM_HDR_TAG) {
+      if (cur_tag == NULL)
+        cur_tag = pdkim_strnew(NULL);
+
+      if ((*p >= 'a') && (*p <= 'z'))
+        pdkim_strncat(cur_tag,p,1);
+
+      if (*p == '=') {
+        if (strcmp(cur_tag->str,"b") == 0) {
+          *q = '='; q++;
+          in_b_val = 1;
+        }
+        where = PDKIM_HDR_VALUE;
+        goto NEXT_CHAR;
+      }
+    }
+
+    if (where == PDKIM_HDR_VALUE) {
+      if (cur_val == NULL)
+        cur_val = pdkim_strnew(NULL);
+
+      if ( (*p == '\r') || (*p == '\n') )
+        goto NEXT_CHAR;
+
+      if (*p == ';') {
+        if (cur_tag->len > 0) {
+          pdkim_strtrim(cur_val);
+          #ifdef PDKIM_DEBUG
+          if (ctx->debug_stream)
+            fprintf(ctx->debug_stream, "%s=%s\n", cur_tag->str, cur_val->str);
+          #endif
+          switch (cur_tag->str[0]) {
+            case 'b':
+              switch (cur_tag->str[1]) {
+                case 'h':
+                  sig->bodyhash = pdkim_decode_base64(cur_val->str);
+                break;
+                default:
+                  sig->sigdata = pdkim_decode_base64(cur_val->str);
+                break;
+              }
+            break;
+            case 'v':
+              if (strcmp(cur_val->str,PDKIM_SIGNATURE_VERSION) == 0) {
+                /* We only support version 1, and that is currently the
+                   only version there is. */
+                sig->version = 1;
+              }
+            break;
+            case 'a':
+              i = 0;
+              while (pdkim_algos[i] != NULL) {
+                if (strcmp(cur_val->str,pdkim_algos[i]) == 0 ) {
+                  sig->algo = i;
+                  break;
+                }
+                i++;
+              }
+            break;
+            case 'c':
+              i = 0;
+              while (pdkim_combined_canons[i].str != NULL) {
+                if (strcmp(cur_val->str,pdkim_combined_canons[i].str) == 0 ) {
+                  sig->canon_headers = pdkim_combined_canons[i].canon_headers;
+                  sig->canon_body    = pdkim_combined_canons[i].canon_body;
+                  break;
+                }
+                i++;
+              }
+            break;
+            case 'q':
+              i = 0;
+              while (pdkim_querymethods[i] != NULL) {
+                if (strcmp(cur_val->str,pdkim_querymethods[i]) == 0 ) {
+                  sig->querymethod = i;
+                  break;
+                }
+                i++;
+              }
+            break;
+            case 's':
+              sig->selector = malloc(strlen(cur_val->str)+1);
+              if (sig->selector == NULL) break;
+              strcpy(sig->selector, cur_val->str);
+            break;
+            case 'd':
+              sig->domain = malloc(strlen(cur_val->str)+1);
+              if (sig->domain == NULL) break;
+              strcpy(sig->domain, cur_val->str);
+            break;
+            case 'i':
+              sig->identity = pdkim_decode_qp(cur_val->str);
+            break;
+            case 't':
+              sig->created = strtoul(cur_val->str,NULL,10);
+            break;
+            case 'x':
+              sig->expires = strtoul(cur_val->str,NULL,10);
+            break;
+            case 'l':
+              sig->bodylength = strtoul(cur_val->str,NULL,10);
+            break;
+            case 'h':
+              sig->headernames = malloc(strlen(cur_val->str)+1);
+              if (sig->headernames == NULL) break;
+              strcpy(sig->headernames, cur_val->str);
+            break;
+            case 'z':
+              sig->copiedheaders = pdkim_decode_qp(cur_val->str);
+            break;
+            default:
+              #ifdef PDKIM_DEBUG
+              if (ctx->debug_stream)
+                fprintf(ctx->debug_stream, "Unknown tag encountered\n");
+              #endif
+            break;
+          }
+        }
+        pdkim_strclear(cur_tag);
+        pdkim_strclear(cur_val);
+        in_b_val = 0;
+        where = PDKIM_HDR_LIMBO;
+        goto NEXT_CHAR;
+      }
+      else pdkim_strncat(cur_val,p,1);
+    }
+
+    NEXT_CHAR:
+
+    if (!in_b_val) {
+      *q = *p;
+      q++;
+    }
+    p++;
+  }
+
+  /* Make sure the most important bits are there. */
+  if (!(sig->domain      && (*(sig->domain)      != '\0') &&
+        sig->selector    && (*(sig->selector)    != '\0') &&
+        sig->headernames && (*(sig->headernames) != '\0') &&
+        sig->version)) {
+    pdkim_free_signature(sig);
+    return NULL;
+  }
+
+  *q = '\0';
+  #ifdef PDKIM_DEBUG
+  if (ctx->debug_stream) {
+    fprintf(ctx->debug_stream,
+            "PDKIM >> Raw signature w/o b= tag value >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+    pdkim_quoteprint(ctx->debug_stream,
+                     sig->rawsig_no_b_val,
+                     strlen(sig->rawsig_no_b_val), 1);
+    fprintf(ctx->debug_stream,
+            "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+  }
+  #endif
+  return sig;
+}
+
 
 
 /* -------------------------------------------------------------------------- */
@@ -322,7 +637,6 @@ int pdkim_finish_bodyhash(pdkim_ctx *ctx) {
     /* VERIFICATION --------------------------------------------------------- */
     else {
 
-
     }
 
 
@@ -381,6 +695,7 @@ int pdkim_bodyline_complete(pdkim_ctx *ctx) {
 
 /* -------------------------------------------------------------------------- */
 /* Callback from pdkim_feed below for processing complete headers */
+#define DKIM_SIGNATURE_HEADERNAME "DKIM-Signature:"
 int pdkim_header_complete(pdkim_ctx *ctx) {
   pdkim_signature *sig = ctx->sig;
 
@@ -412,7 +727,41 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
 
     sig = sig->next;
   }
-  ctx->cur_header->len = 0; /* Re-use existing pdkim_str */
+
+  /* DKIM-Signature: headers are added to the verification list */
+  if ( (ctx->mode == PDKIM_MODE_VERIFY) &&
+       (strncasecmp(ctx->cur_header->str,
+                    DKIM_SIGNATURE_HEADERNAME,
+                    strlen(DKIM_SIGNATURE_HEADERNAME)) == 0) ) {
+    /* Create and chain new signature block */
+    #ifdef PDKIM_DEBUG
+    if (ctx->debug_stream)
+      fprintf(ctx->debug_stream,
+        "PDKIM >> Found sig, trying to parse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+    #endif
+    pdkim_signature *new_sig = pdkim_parse_sig_header(ctx, ctx->cur_header->str);
+    if (new_sig != NULL) {
+      pdkim_signature *last_sig = ctx->sig;
+      if (last_sig == NULL) {
+        ctx->sig = new_sig;
+      }
+      else {
+        while (last_sig->next != NULL) { last_sig = last_sig->next; };
+        last_sig->next = new_sig;
+      }
+    }
+    else {
+      #ifdef PDKIM_DEBUG
+      if (ctx->debug_stream) {
+        fprintf(ctx->debug_stream,"Error while parsing signature header\n");
+        fprintf(ctx->debug_stream,
+          "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+      }
+    #endif
+    }
+  }
+
+  pdkim_strclear(ctx->cur_header); /* Re-use existing pdkim_str */
   return PDKIM_OK;
 };
 
@@ -475,55 +824,55 @@ int pdkim_feed (pdkim_ctx *ctx,
 
 
 /* -------------------------------------------------------------------------- */
-pdkim_str *pdkim_create_header(pdkim_ctx *ctx, int final) {
+pdkim_str *pdkim_create_header(pdkim_signature *sig, int final) {
 
   pdkim_str *hdr = pdkim_strnew("DKIM-Signature: v="PDKIM_SIGNATURE_VERSION);
   if (hdr == NULL) return NULL;
   /* Required and static bits */
   if (
-        pdkim_strcat(hdr,"; a=")                                     &&
-        pdkim_strcat(hdr,pdkim_algos[ctx->sig->algo])                &&
-        pdkim_strcat(hdr,"; q=")                                     &&
-        pdkim_strcat(hdr,pdkim_querymethods[ctx->sig->querymethod])  &&
-        pdkim_strcat(hdr,"; c=")                                     &&
-        pdkim_strcat(hdr,pdkim_canons[ctx->sig->canon_headers])      &&
-        pdkim_strcat(hdr,"/")                                        &&
-        pdkim_strcat(hdr,pdkim_canons[ctx->sig->canon_body])         &&
-        pdkim_strcat(hdr,"; d=")                                     &&
-        pdkim_strcat(hdr,ctx->sig->domain)                           &&
-        pdkim_strcat(hdr,"; s=")                                     &&
-        pdkim_strcat(hdr,ctx->sig->selector)                         &&
-        pdkim_strcat(hdr,";\r\n\th=")                                &&
-        pdkim_strcat(hdr,ctx->sig->headernames)                      &&
-        pdkim_strcat(hdr,"; bh=")                                    &&
-        pdkim_strcat(hdr,ctx->sig->bodyhash)                         &&
+        pdkim_strcat(hdr,"; a=")                                &&
+        pdkim_strcat(hdr,pdkim_algos[sig->algo])                &&
+        pdkim_strcat(hdr,"; q=")                                &&
+        pdkim_strcat(hdr,pdkim_querymethods[sig->querymethod])  &&
+        pdkim_strcat(hdr,"; c=")                                &&
+        pdkim_strcat(hdr,pdkim_canons[sig->canon_headers])      &&
+        pdkim_strcat(hdr,"/")                                   &&
+        pdkim_strcat(hdr,pdkim_canons[sig->canon_body])         &&
+        pdkim_strcat(hdr,"; d=")                                &&
+        pdkim_strcat(hdr,sig->domain)                           &&
+        pdkim_strcat(hdr,"; s=")                                &&
+        pdkim_strcat(hdr,sig->selector)                         &&
+        pdkim_strcat(hdr,";\r\n\th=")                           &&
+        pdkim_strcat(hdr,sig->headernames)                      &&
+        pdkim_strcat(hdr,"; bh=")                               &&
+        pdkim_strcat(hdr,sig->bodyhash)                         &&
         pdkim_strcat(hdr,";\r\n\t")
      ) {
     /* Optional bits */
-    if (ctx->sig->identity != NULL) {
-      if (!( pdkim_strcat(hdr,"i=")                                  &&
-             pdkim_strcat(hdr,ctx->sig->identity)                    &&
+    if (sig->identity != NULL) {
+      if (!( pdkim_strcat(hdr,"i=")                             &&
+             pdkim_strcat(hdr,sig->identity)                    &&
              pdkim_strcat(hdr,";") ) ) {
         return NULL;
       }
     }
-    if (ctx->sig->created > 0) {
-      if (!( pdkim_strcat(hdr,"t=")                                  &&
-             pdkim_numcat(hdr,ctx->sig->created)                     &&
+    if (sig->created > 0) {
+      if (!( pdkim_strcat(hdr,"t=")                             &&
+             pdkim_numcat(hdr,sig->created)                     &&
              pdkim_strcat(hdr,";") ) ) {
         return NULL;
       }
     }
-    if (ctx->sig->expires > 0) {
-      if (!( pdkim_strcat(hdr,"x=")                                  &&
-             pdkim_numcat(hdr,ctx->sig->expires)                     &&
+    if (sig->expires > 0) {
+      if (!( pdkim_strcat(hdr,"x=")                             &&
+             pdkim_numcat(hdr,sig->expires)                     &&
              pdkim_strcat(hdr,";") ) ) {
         return NULL;
       }
     }
-    if (ctx->sig->bodylength > 0) {
-      if (!( pdkim_strcat(hdr,"l=")                                  &&
-             pdkim_numcat(hdr,ctx->sig->bodylength)                  &&
+    if (sig->bodylength > 0) {
+      if (!( pdkim_strcat(hdr,"l=")                             &&
+             pdkim_numcat(hdr,sig->bodylength)                  &&
              pdkim_strcat(hdr,";") ) ) {
         return NULL;
       }
@@ -535,8 +884,8 @@ pdkim_str *pdkim_create_header(pdkim_ctx *ctx, int final) {
     /* Preliminary or final version? */
     if (final) {
       if (
-            pdkim_strcat(hdr,"b=")                                   &&
-            pdkim_strcat(hdr,ctx->sig->sigdata)                      &&
+            pdkim_strcat(hdr,"b=")                              &&
+            pdkim_strcat(hdr,sig->sigdata)                      &&
             pdkim_strcat(hdr,";")
          ) return hdr;
     }
@@ -636,7 +985,7 @@ int pdkim_feed_finish(pdkim_ctx *ctx, char **signature) {
     pdkim_strfree(headernames);
 
     /* Create signature header with b= omitted */
-    hdr = pdkim_create_header(ctx,0);
+    hdr = pdkim_create_header(ctx->sig,0);
     if (hdr == NULL) return PDKIM_ERR_OOM;
 
     /* If necessary, perform relaxed canon */
@@ -723,7 +1072,7 @@ int pdkim_feed_finish(pdkim_ctx *ctx, char **signature) {
 
     /* Recreate signature header with b= included */
     pdkim_strfree(hdr);
-    hdr = pdkim_create_header(ctx,1);
+    hdr = pdkim_create_header(ctx->sig,1);
     if (hdr == NULL) return PDKIM_ERR_OOM;
 
 #ifdef PDKIM_DEBUG
@@ -744,6 +1093,16 @@ int pdkim_feed_finish(pdkim_ctx *ctx, char **signature) {
 
 
   return PDKIM_OK;
+}
+
+
+/* -------------------------------------------------------------------------- */
+pdkim_ctx *pdkim_init_verify(void) {
+  pdkim_ctx *ctx = malloc(sizeof(pdkim_ctx));
+  if (ctx == NULL) return NULL;
+  memset(ctx,0,sizeof(pdkim_ctx));
+  ctx->mode = PDKIM_MODE_VERIFY;
+  return ctx;
 }
 
 
@@ -785,7 +1144,6 @@ pdkim_ctx *pdkim_init_sign(char *domain,
   sha2_starts(&(ctx->sig->sha2_body),0);
 
   return ctx;
-
 };
 
 #ifdef PDKIM_DEBUG
