@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.3 2009/02/26 16:07:36 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.4 2009/02/27 17:04:20 tom Exp $ */
 /* pdkim.h */
 
 #include "sha1.h"
@@ -19,19 +19,34 @@
                              "List-Subscribe:List-Post:List-Owner:List-Archive"
 
 
-/* Success / Error codes */
+/* Function success / error codes */
 #define PDKIM_OK              0
-#define PDKIM_FAIL            1
-#define PDKIM_ERR_OOM         100
-#define PDKIM_ERR_RSA_PRIVKEY 101
-#define PDKIM_ERR_RSA_SIGNING 102
-#define PDKIM_ERR_LONG_LINE   103
+#define PDKIM_FAIL            -1
+#define PDKIM_ERR_OOM         -100
+#define PDKIM_ERR_RSA_PRIVKEY -101
+#define PDKIM_ERR_RSA_SIGNING -102
+#define PDKIM_ERR_LONG_LINE   -103
+
+/* Main verification status */
+#define PDKIM_VERIFY_NONE      0
+#define PDKIM_VERIFY_INVALID   1
+#define PDKIM_VERIFY_FAIL      2
+#define PDKIM_VERIFY_PASS      3
+
+/* Extended verification status */
+#define PDKIM_VERIFY_FAIL_NONE    0
+#define PDKIM_VERIFY_FAIL_BODY    1
+#define PDKIM_VERIFY_FAIL_MESSAGE 2
+
+
+
+
+
 
 
 #ifdef PDKIM_DEBUG
 void pdkim_quoteprint(FILE *, char *, int, int);
 #endif
-
 
 typedef struct pdkim_stringlist {
   char *value;
@@ -93,9 +108,6 @@ typedef struct pdkim_signature {
   int canon_body;                 /* c=/x */
   int querymethod;                /* q=   */
 
-  char *sigdata;                  /* b=   */
-  char *bodyhash;                 /* bh=  */
-
   char *selector;                 /* s=   */
   char *domain;                   /* d=   */
   char *identity;                 /* i=   */
@@ -107,6 +119,11 @@ typedef struct pdkim_signature {
   char *headernames;              /* h=   */
   char *copiedheaders;            /* z=   */
 
+  char *sigdata;                  /* b=   */
+  char *bodyhash;                 /* bh=  */
+
+  int   sigdata_len;
+  int   bodyhash_len;
 
   /* Signing specific ---------------------------- */
   char *rsa_privkey;     /* Private RSA key */
@@ -114,9 +131,11 @@ typedef struct pdkim_signature {
 
   /* Verification specific ----------------------- */
   pdkim_pubkey pubkey;   /* Public key used to verify this signature. */
-  int verify_result;     /* Verification result */
+  int headernames_pos;   /* Current position in header name list */
   char *rawsig_no_b_val; /* Original signature header w/o b= tag value. */
   void *next;            /* Pointer to next signature in list. */
+  int verify_status;     /* Verification result */
+  int verify_ext_status; /* Extended verification result */
 
   /* Per-signature helper variables -------------- */
   sha1_context sha1_body;
@@ -163,7 +182,7 @@ typedef struct pdkim_ctx {
 } pdkim_ctx;
 
 
-int   header_name_match       (char *, char *);
+int   header_name_match       (char *, char *, int);
 char *pdkim_relax_header      (char *, int);
 
 int   pdkim_update_bodyhash   (pdkim_ctx *, char *, int);
@@ -175,8 +194,7 @@ int   pdkim_header_complete   (pdkim_ctx *);
 int   pdkim_feed              (pdkim_ctx *, char *, int);
 int   pdkim_feed_finish       (pdkim_ctx *, char **);
 
-pdkim_str
-     *pdkim_create_header     (pdkim_signature *, int);
+char *pdkim_create_header     (pdkim_signature *, int);
 
 pdkim_ctx
      *pdkim_init_sign         (char *, char *, char *);
