@@ -1,5 +1,5 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.7 2009/03/17 16:20:13 tom Exp $ */
-/* pdkim-api.h */
+/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.8 2009/03/17 21:11:56 tom Exp $ */
+/* pdkim.h */
 
 /* -------------------------------------------------------------------------- */
 /* Debugging. This can also be enabled/disabled at run-time. I recommend to

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/rsa.c,v 1.1.2.2 2009/03/17 12:57:37 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/rsa.c,v 1.1.2.3 2009/03/17 21:11:56 tom Exp $ */
 /*
  *  The RSA public-key cryptosystem
  *
@@ -33,6 +33,106 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+
+
+/*
+ * ASN.1 DER decoding routines
+ */
+static int asn1_get_len( unsigned char **p,
+                         unsigned char *end,
+                         int *len )
+{
+    if( ( end - *p ) < 1 )
+        return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
+
+    if( ( **p & 0x80 ) == 0 )
+        *len = *(*p)++;
+    else
+    {
+        switch( **p & 0x7F )
+        {
+        case 1:
+            if( ( end - *p ) < 2 )
+                return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
+
+            *len = (*p)[1];
+            (*p) += 2;
+            break;
+
+        case 2:
+            if( ( end - *p ) < 3 )
+                return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
+
+            *len = ( (*p)[1] << 8 ) | (*p)[2];
+            (*p) += 3;
+            break;
+
+        default:
+            return( POLARSSL_ERR_ASN1_INVALID_LENGTH );
+            break;
+        }
+    }
+
+    if( *len > (int) ( end - *p ) )
+        return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
+
+    return( 0 );
+}
+
+static int asn1_get_tag( unsigned char **p,
+                         unsigned char *end,
+                         int *len, int tag )
+{
+    if( ( end - *p ) < 1 )
+        return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
+
+    if( **p != tag )
+        return( POLARSSL_ERR_ASN1_UNEXPECTED_TAG );
+
+    (*p)++;
+
+    return( asn1_get_len( p, end, len ) );
+}
+
+static int asn1_get_int( unsigned char **p,
+                         unsigned char *end,
+                         int *val )
+{
+    int ret, len;
+
+    if( ( ret = asn1_get_tag( p, end, &len, ASN1_INTEGER ) ) != 0 )
+        return( ret );
+
+    if( len > (int) sizeof( int ) || ( **p & 0x80 ) != 0 )
+        return( POLARSSL_ERR_ASN1_INVALID_LENGTH );
+
+    *val = 0;
+
+    while( len-- > 0 )
+    {
+        *val = ( *val << 8 ) | **p;
+        (*p)++;
+    }
+
+    return( 0 );
+}
+
+static int asn1_get_mpi( unsigned char **p,
+                         unsigned char *end,
+                         mpi *X )
+{
+    int ret, len;
+
+    if( ( ret = asn1_get_tag( p, end, &len, ASN1_INTEGER ) ) != 0 )
+        return( ret );
+
+    ret = mpi_read_binary( X, *p, len );
+
+    *p += len;
+
+    return( ret );
+}
+
 
 /*
  * Initialize an RSA context
@@ -481,6 +581,15 @@ int rsa_pkcs1_verify( rsa_context *ctx,
             return( POLARSSL_ERR_RSA_VERIFY_FAILED );
     }
 
+    if( len == 51 && hash_id == RSA_SHA256 )
+    {
+        if( memcmp( p, ASN1_HASH_SHA256, 19 ) == 0 &&
+            memcmp( p + 19, hash, 32 ) == 0 )
+            return( 0 );
+        else
+            return( POLARSSL_ERR_RSA_VERIFY_FAILED );
+    }
+
     if( len == hashlen && hash_id == RSA_RAW )
     {
         if( memcmp( p, hash, hashlen ) == 0 )
@@ -501,104 +610,6 @@ void rsa_free( rsa_context *ctx )
               &ctx->QP, &ctx->DQ, &ctx->DP,
               &ctx->Q,  &ctx->P,  &ctx->D,
               &ctx->E,  &ctx->N,  NULL );
-}
-
-/*
- * ASN.1 DER decoding routines
- */
-static int asn1_get_len( unsigned char **p,
-                         unsigned char *end,
-                         int *len )
-{
-    if( ( end - *p ) < 1 )
-        return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
-
-    if( ( **p & 0x80 ) == 0 )
-        *len = *(*p)++;
-    else
-    {
-        switch( **p & 0x7F )
-        {
-        case 1:
-            if( ( end - *p ) < 2 )
-                return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
-
-            *len = (*p)[1];
-            (*p) += 2;
-            break;
-
-        case 2:
-            if( ( end - *p ) < 3 )
-                return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
-
-            *len = ( (*p)[1] << 8 ) | (*p)[2];
-            (*p) += 3;
-            break;
-
-        default:
-            return( POLARSSL_ERR_ASN1_INVALID_LENGTH );
-            break;
-        }
-    }
-
-    if( *len > (int) ( end - *p ) )
-        return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
-
-    return( 0 );
-}
-
-static int asn1_get_tag( unsigned char **p,
-                         unsigned char *end,
-                         int *len, int tag )
-{
-    if( ( end - *p ) < 1 )
-        return( POLARSSL_ERR_ASN1_OUT_OF_DATA );
-
-    if( **p != tag )
-        return( POLARSSL_ERR_ASN1_UNEXPECTED_TAG );
-
-    (*p)++;
-
-    return( asn1_get_len( p, end, len ) );
-}
-
-static int asn1_get_int( unsigned char **p,
-                         unsigned char *end,
-                         int *val )
-{
-    int ret, len;
-
-    if( ( ret = asn1_get_tag( p, end, &len, ASN1_INTEGER ) ) != 0 )
-        return( ret );
-
-    if( len > (int) sizeof( int ) || ( **p & 0x80 ) != 0 )
-        return( POLARSSL_ERR_ASN1_INVALID_LENGTH );
-
-    *val = 0;
-
-    while( len-- > 0 )
-    {
-        *val = ( *val << 8 ) | **p;
-        (*p)++;
-    }
-
-    return( 0 );
-}
-
-static int asn1_get_mpi( unsigned char **p,
-                         unsigned char *end,
-                         mpi *X )
-{
-    int ret, len;
-
-    if( ( ret = asn1_get_tag( p, end, &len, ASN1_INTEGER ) ) != 0 )
-        return( ret );
-
-    ret = mpi_read_binary( X, *p, len );
-
-    *p += len;
-
-    return( ret );
 }
 
 

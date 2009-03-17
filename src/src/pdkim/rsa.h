@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/rsa.h,v 1.1.2.2 2009/03/17 12:57:37 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/rsa.h,v 1.1.2.3 2009/03/17 21:11:56 tom Exp $ */
 /**
  * \file rsa.h
  *
@@ -125,10 +125,9 @@
     "\x02\x1A\x05\x00\x04\x14"
 
 #define ASN1_HASH_SHA256                    \
-    "\x30\x21\x30\x09"                      \
-    "\x06\x09\x60\x86\x48\x01\x65\x03\x04\x02\x02" \
-    "\x05\x00\x04\x20"
-
+    "\x30\x31\x30\x0d\x06\x09\x60\x86\x48"  \
+    "\x01\x65\x03\x04\x02\x01\x05\x00\x04"  \
+    "\x20"
 
 /**
  * \brief          RSA context structure
