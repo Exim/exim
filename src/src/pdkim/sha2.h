@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/sha2.h,v 1.1.2.1 2009/02/24 13:13:47 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/sha2.h,v 1.1.2.2 2009/03/17 14:56:55 tom Exp $ */
 /**
  * \file sha2.h
  *
@@ -26,7 +26,12 @@
 /**
  * \brief          SHA-256 context structure
  */
-typedef struct
+#ifndef HAVE_SHA2_CONTEXT
+#define HAVE_SHA2_CONTEXT
+typedef struct sha2_context sha2_context;
+#endif
+
+struct sha2_context
 {
     unsigned long total[2];     /*!< number of bytes processed  */
     unsigned long state[8];     /*!< intermediate digest state  */
@@ -35,8 +40,7 @@ typedef struct
     unsigned char ipad[64];     /*!< HMAC: inner padding        */
     unsigned char opad[64];     /*!< HMAC: outer padding        */
     int is224;                  /*!< 0 => SHA-256, else SHA-224 */
-}
-sha2_context;
+};
 
 #ifdef __cplusplus
 extern "C" {

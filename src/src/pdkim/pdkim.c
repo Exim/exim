@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.6 2009/03/17 12:57:37 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.7 2009/03/17 14:56:55 tom Exp $ */
 /* pdkim.c */
 
 #include <stdlib.h>
@@ -7,7 +7,44 @@
 #include <strings.h>
 #include <ctype.h>
 #include <unistd.h>
+
 #include "pdkim.h"
+
+#include "sha1.h"
+#include "sha2.h"
+#include "rsa.h"
+#include "base64.h"
+
+#define PDKIM_SIGNATURE_VERSION     "1"
+#define PDKIM_PUB_RECORD_VERSION    "DKIM1"
+
+#define PDKIM_MAX_HEADER_LEN        65536
+#define PDKIM_MAX_HEADERS           512
+#define PDKIM_MAX_BODY_LINE_LEN     1024
+#define PDKIM_DNS_TXT_MAX_NAMELEN   1024
+#define PDKIM_DNS_TXT_MAX_RECLEN    4096
+#define PDKIM_DEFAULT_SIGN_HEADERS "From:Sender:Reply-To:Subject:Date:"\
+                             "Message-ID:To:Cc:MIME-Version:Content-Type:"\
+                             "Content-Transfer-Encoding:Content-ID:"\
+                             "Content-Description:Resent-Date:Resent-From:"\
+                             "Resent-Sender:Resent-To:Resent-Cc:"\
+                             "Resent-Message-ID:In-Reply-To:References:"\
+                             "List-Id:List-Help:List-Unsubscribe:"\
+                             "List-Subscribe:List-Post:List-Owner:List-Archive"
+
+
+struct pdkim_stringlist {
+  char *value;
+  void *next;
+};
+
+#define PDKIM_STR_ALLOC_FRAG 256
+struct pdkim_str {
+  char         *str;
+  unsigned int  len;
+  unsigned int  allocated;
+};
+
 
 
 /* -------------------------------------------------------------------------- */
@@ -53,7 +90,7 @@ pdkim_combined_canon_entry pdkim_combined_canons[] = {
 
 
 /* -------------------------------------------------------------------------- */
-/* Various debugging functions */
+/* Print debugging functions */
 #ifdef PDKIM_DEBUG
 void pdkim_quoteprint(FILE *stream, char *data, int len, int lf) {
   int i;
@@ -129,9 +166,6 @@ pdkim_str *pdkim_strnew (char *cstr) {
   if (cstr) strcpy(p->str,cstr);
   return p;
 };
-char *pdkim_strcat(pdkim_str *str, char *cstr) {
-  return pdkim_strncat(str, cstr, strlen(cstr));
-};
 char *pdkim_strncat(pdkim_str *str, char *data, int len) {
   if ((str->allocated - str->len) < (len+1)) {
     /* Extend the buffer */
@@ -146,6 +180,9 @@ char *pdkim_strncat(pdkim_str *str, char *data, int len) {
   str->len+=len;
   str->str[str->len] = '\0';
   return str->str;
+};
+char *pdkim_strcat(pdkim_str *str, char *cstr) {
+  return pdkim_strncat(str, cstr, strlen(cstr));
 };
 char *pdkim_numcat(pdkim_str *str, unsigned long num) {
   char minibuf[20];
@@ -174,6 +211,63 @@ void pdkim_strfree(pdkim_str *str) {
   if (str == NULL) return;
   if (str->str != NULL) free(str->str);
   free(str);
+};
+
+
+
+/* -------------------------------------------------------------------------- */
+void pdkim_free_pubkey(pdkim_pubkey *pub) {
+  if (pub) {
+    if (pub->version        != NULL) free(pub->version);
+    if (pub->granularity    != NULL) free(pub->granularity);
+    if (pub->hashes         != NULL) free(pub->hashes);
+    if (pub->keytype        != NULL) free(pub->keytype);
+    if (pub->srvtype        != NULL) free(pub->srvtype);
+    if (pub->notes          != NULL) free(pub->notes);
+    if (pub->key            != NULL) free(pub->key);
+    free(pub);
+  }
+}
+
+
+/* -------------------------------------------------------------------------- */
+void pdkim_free_sig(pdkim_signature *sig) {
+  if (sig) {
+    pdkim_signature *next = (pdkim_signature *)sig->next;
+
+    pdkim_stringlist *e = sig->headers;
+    while(e != NULL) {
+      pdkim_stringlist *c = e;
+      if (e->value != NULL) free(e->value);
+      e = e->next;
+      free(c);
+    }
+
+    if (sig->sigdata        != NULL) free(sig->sigdata);
+    if (sig->bodyhash       != NULL) free(sig->bodyhash);
+    if (sig->selector       != NULL) free(sig->selector);
+    if (sig->domain         != NULL) free(sig->domain);
+    if (sig->identity       != NULL) free(sig->identity);
+    if (sig->headernames    != NULL) free(sig->headernames);
+    if (sig->copiedheaders  != NULL) free(sig->copiedheaders);
+    if (sig->rsa_privkey    != NULL) free(sig->rsa_privkey);
+    if (sig->sign_headers   != NULL) free(sig->sign_headers);
+
+    if (sig->pubkey != NULL) pdkim_free_pubkey(sig->pubkey);
+
+    free(sig);
+    if (next != NULL) pdkim_free_sig(next);
+  }
+};
+
+
+/* -------------------------------------------------------------------------- */
+void pdkim_free_ctx(pdkim_ctx *ctx) {
+  if (ctx) {
+    pdkim_free_sig(ctx->sig);
+    pdkim_strfree(ctx->cur_header);
+    free(ctx);
+  }
 };
 
 
@@ -560,8 +654,19 @@ pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
   }
   #endif
 
-  sha1_starts(&(sig->sha1_body));
-  sha2_starts(&(sig->sha2_body),0);
+  sig->sha1_body = malloc(sizeof(sha1_context));
+  if (sig->sha1_body == NULL) {
+    pdkim_free_sig(sig);
+    return NULL;
+  }
+  sig->sha2_body = malloc(sizeof(sha2_context));
+  if (sig->sha2_body == NULL) {
+    pdkim_free_sig(sig);
+    return NULL;
+  }
+
+  sha1_starts(sig->sha1_body);
+  sha2_starts(sig->sha2_body,0);
 
   return sig;
 }
@@ -736,9 +841,9 @@ int pdkim_update_bodyhash(pdkim_ctx *ctx, char *data, int len) {
 
     if (canon_len > 0) {
       if (sig->algo == PDKIM_ALGO_RSA_SHA1)
-        sha1_update(&(sig->sha1_body),(unsigned char *)canon_data,canon_len);
+        sha1_update(sig->sha1_body,(unsigned char *)canon_data,canon_len);
       else
-        sha2_update(&(sig->sha2_body),(unsigned char *)canon_data,canon_len);
+        sha2_update(sig->sha2_body,(unsigned char *)canon_data,canon_len);
       sig->signed_body_bytes += canon_len;
 #ifdef PDKIM_DEBUG
       if (ctx->debug_stream!=NULL)
@@ -764,9 +869,9 @@ int pdkim_finish_bodyhash(pdkim_ctx *ctx) {
     /* Finish hashes */
     unsigned char bh[32]; /* SHA-256 = 32 Bytes,  SHA-1 = 20 Bytes */
     if (sig->algo == PDKIM_ALGO_RSA_SHA1)
-      sha1_finish(&(sig->sha1_body),bh);
+      sha1_finish(sig->sha1_body,bh);
     else
-      sha2_finish(&(sig->sha2_body),bh);
+      sha2_finish(sig->sha2_body,bh);
 
     #ifdef PDKIM_DEBUG
     if (ctx->debug_stream) {
@@ -1406,6 +1511,13 @@ pdkim_ctx *pdkim_init_verify(int input_mode,
   pdkim_ctx *ctx = malloc(sizeof(pdkim_ctx));
   if (ctx == NULL) return NULL;
   memset(ctx,0,sizeof(pdkim_ctx));
+
+  ctx->linebuf = malloc(PDKIM_MAX_BODY_LINE_LEN);
+  if (ctx->linebuf == NULL) {
+    free(ctx);
+    return NULL;
+  }
+
   ctx->mode = PDKIM_MODE_VERIFY;
   ctx->input_mode = input_mode;
   ctx->dns_txt_callback = dns_txt_callback;
@@ -1426,8 +1538,16 @@ pdkim_ctx *pdkim_init_sign(int input_mode,
   ctx = malloc(sizeof(pdkim_ctx));
   if (ctx == NULL) return NULL;
   memset(ctx,0,sizeof(pdkim_ctx));
+
+  ctx->linebuf = malloc(PDKIM_MAX_BODY_LINE_LEN);
+  if (ctx->linebuf == NULL) {
+    free(ctx);
+    return NULL;
+  }
+
   pdkim_signature *sig = malloc(sizeof(pdkim_signature));
   if (sig == NULL) {
+    free(ctx->linebuf);
     free(ctx);
     return NULL;
   }
@@ -1450,8 +1570,8 @@ pdkim_ctx *pdkim_init_sign(int input_mode,
   strcpy(ctx->sig->selector, selector);
   strcpy(ctx->sig->rsa_privkey, rsa_privkey);
 
-  sha1_starts(&(ctx->sig->sha1_body));
-  sha2_starts(&(ctx->sig->sha2_body),0);
+  sha1_starts(ctx->sig->sha1_body);
+  sha2_starts(ctx->sig->sha2_body,0);
 
   return ctx;
 };
@@ -1499,60 +1619,4 @@ int pdkim_set_optional(pdkim_ctx *ctx,
   ctx->sig->expires = expires;
 
   return PDKIM_OK;
-};
-
-
-/* -------------------------------------------------------------------------- */
-void pdkim_free_pubkey(pdkim_pubkey *pub) {
-  if (pub) {
-    if (pub->version        != NULL) free(pub->version);
-    if (pub->granularity    != NULL) free(pub->granularity);
-    if (pub->hashes         != NULL) free(pub->hashes);
-    if (pub->keytype        != NULL) free(pub->keytype);
-    if (pub->srvtype        != NULL) free(pub->srvtype);
-    if (pub->notes          != NULL) free(pub->notes);
-    if (pub->key            != NULL) free(pub->key);
-    free(pub);
-  }
-}
-
-
-/* -------------------------------------------------------------------------- */
-void pdkim_free_sig(pdkim_signature *sig) {
-  if (sig) {
-    pdkim_signature *next = (pdkim_signature *)sig->next;
-
-    pdkim_stringlist *e = sig->headers;
-    while(e != NULL) {
-      pdkim_stringlist *c = e;
-      if (e->value != NULL) free(e->value);
-      e = e->next;
-      free(c);
-    }
-
-    if (sig->sigdata        != NULL) free(sig->sigdata);
-    if (sig->bodyhash       != NULL) free(sig->bodyhash);
-    if (sig->selector       != NULL) free(sig->selector);
-    if (sig->domain         != NULL) free(sig->domain);
-    if (sig->identity       != NULL) free(sig->identity);
-    if (sig->headernames    != NULL) free(sig->headernames);
-    if (sig->copiedheaders  != NULL) free(sig->copiedheaders);
-    if (sig->rsa_privkey    != NULL) free(sig->rsa_privkey);
-    if (sig->sign_headers   != NULL) free(sig->sign_headers);
-
-    if (sig->pubkey != NULL) pdkim_free_pubkey(sig->pubkey);
-
-    free(sig);
-    if (next != NULL) pdkim_free_sig(next);
-  }
-};
-
-
-/* -------------------------------------------------------------------------- */
-void pdkim_free_ctx(pdkim_ctx *ctx) {
-  if (ctx) {
-    pdkim_free_sig(ctx->sig);
-    pdkim_strfree(ctx->cur_header);
-    free(ctx);
-  }
 };

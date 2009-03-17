@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Cambridge: exim/src/scripts/MakeLinks,v 1.14.2.2 2009/02/24 15:57:55 tom Exp $
+# $Cambridge: exim/src/scripts/MakeLinks,v 1.14.2.3 2009/03/17 14:56:55 tom Exp $
 
 # Script to build links for all the exim source files from the system-
 # specific build directory. It should be run from within that directory.
@@ -201,6 +201,7 @@ ln -s ../../src/pdkim/bignum.h           bignum.h
 ln -s ../../src/pdkim/bn_mul.h           bn_mul.h
 ln -s ../../src/pdkim/pdkim.c            pdkim.c
 ln -s ../../src/pdkim/pdkim.h            pdkim.h
+ln -s ../../src/pdkim/pdkim-api.h        pdkim-api.h
 ln -s ../../src/pdkim/rsa.c              rsa.c
 ln -s ../../src/pdkim/rsa.h              rsa.h
 ln -s ../../src/pdkim/sha1.c             sha1.c

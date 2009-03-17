@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.2 2009/02/24 18:43:59 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.3 2009/03/17 14:56:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -119,15 +119,15 @@ uschar *dkim_exim_sign(int dkim_fd,
     dkim_private_key = big_buffer;
   }
 
-  ctx = pdkim_init_sign((char *)dkim_signing_domain,
+  ctx = pdkim_init_sign(PDKIM_INPUT_SMTP,
+                        (char *)dkim_signing_domain,
                         (char *)dkim_signing_selector,
-                        dkim_private_key
+                        (char *)dkim_private_key
                        );
 
   pdkim_set_debug_stream(ctx,debug_file);
 
   pdkim_set_optional(ctx,
-                     PDKIM_INPUT_SMTP,
                      (char *)dkim_sign_headers,
                      NULL,
                      pdkim_canon,

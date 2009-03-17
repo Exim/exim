@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/sha1.h,v 1.1.2.2 2009/02/24 18:43:59 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/sha1.h,v 1.1.2.3 2009/03/17 14:56:55 tom Exp $ */
 /**
  * \file sha1.h
  *
@@ -26,7 +26,12 @@
 /**
  * \brief          SHA-1 context structure
  */
-typedef struct
+#ifndef HAVE_SHA1_CONTEXT
+#define HAVE_SHA1_CONTEXT
+typedef struct sha1_context sha1_context;
+#endif
+
+struct sha1_context
 {
     unsigned long total[2];     /*!< number of bytes processed  */
     unsigned long state[5];     /*!< intermediate digest state  */
@@ -34,8 +39,7 @@ typedef struct
 
     unsigned char ipad[64];     /*!< HMAC: inner padding        */
     unsigned char opad[64];     /*!< HMAC: outer padding        */
-}
-sha1_context;
+};
 
 #ifdef __cplusplus
 extern "C" {
