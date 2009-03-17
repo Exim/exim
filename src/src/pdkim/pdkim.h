@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.6 2009/03/17 14:56:55 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.7 2009/03/17 16:20:13 tom Exp $ */
 /* pdkim-api.h */
 
 /* -------------------------------------------------------------------------- */
@@ -121,15 +121,21 @@ typedef struct pdkim_signature {
   /* (z=) */
   char *copiedheaders;
 
-  /* (b=) Decoded raw signature data, along with its length in bytes */
+  /* (b=) Raw signature data, along with its length in bytes */
   char *sigdata;
   int   sigdata_len;
 
-  /* (bh=) Decoded raw body hash data, along with its length in bytes */
+  /* (bh=) Raw body hash data, along with its length in bytes */
   char *bodyhash;
   int   bodyhash_len;
 
-  /* The main verification status. One of:
+  /* Folded DKIM-Signature: header. Singing only, NULL for verifying.
+     Ready for insertion into the message. Note: Folded using CRLFTB,
+     but final line terminator is NOT included. Note2: This buffer is
+     free()d when you call pdkim_free_ctx(). */
+  char *signature_header;
+
+  /* The main verification status. Verification only. One of:
 
      PDKIM_VERIFY_NONE      Verification was not attempted. This status
                             should not appear.
@@ -140,16 +146,15 @@ typedef struct pdkim_signature {
 
      PDKIM_VERIFY_FAIL      Verification failed because either the body
                             hash did not match, or the signature verification
-                            failed. This probably means the message was
-                            modified. Check verify_ext_status for the
-                            exact reason.
+                            failed. This means the message was modified.
+                            Check verify_ext_status for the exact reason.
 
      PDKIM_VERIFY_PASS      Verification succeeded.
   */
   int verify_status;
 
-  /* Extended verification status. Depending on the value of verify_status,
-     it can contain:
+  /* Extended verification status. Verification only. Depending on the value
+     of verify_status, it can contain:
 
      For verify_status == PDKIM_VERIFY_INVALID:
 
@@ -178,11 +183,11 @@ typedef struct pdkim_signature {
 
   /* Pointer to a public key record that was used to verify the signature.
      See pdkim_pubkey declaration above for more information.
-     Caution: can be NULL if no record was retrieved. */
+     Caution: is NULL if signing or if no record was retrieved. */
   pdkim_pubkey *pubkey;
 
-  /* Pointer to the next pdkim_signature signature. NULL if this is the
-     last signature. */
+  /* Pointer to the next pdkim_signature signature. NULL if signing or if
+     this is the last signature. */
   void *next;
 
   /* Properties below this point are used internally only ------------- */
@@ -202,7 +207,7 @@ typedef struct pdkim_signature {
 
 
 /* -------------------------------------------------------------------------- */
-/* Context to keep state between all operations */
+/* Context to keep state between all operations. */
 #define PDKIM_MODE_SIGN     0
 #define PDKIM_MODE_VERIFY   1
 #define PDKIM_INPUT_NORMAL  0
@@ -257,7 +262,7 @@ int   pdkim_set_optional      (pdkim_ctx *,
                                unsigned long);
 
 int   pdkim_feed              (pdkim_ctx *, char *, int);
-int   pdkim_feed_finish       (pdkim_ctx *, char **);
+int   pdkim_feed_finish       (pdkim_ctx *, pdkim_signature **);
 
 void  pdkim_free_ctx          (pdkim_ctx *);
 

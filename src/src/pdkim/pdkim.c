@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.7 2009/03/17 14:56:55 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.8 2009/03/17 16:20:13 tom Exp $ */
 /* pdkim.c */
 
 #include <stdlib.h>
@@ -136,9 +136,8 @@ pdkim_stringlist *pdkim_append_stringlist(pdkim_stringlist *base, char *str) {
   pdkim_stringlist *new_entry = malloc(sizeof(pdkim_stringlist));
   if (new_entry == NULL) return NULL;
   memset(new_entry,0,sizeof(pdkim_stringlist));
-  new_entry->value = malloc(strlen(str)+1);
+  new_entry->value = strdup(str);
   if (new_entry->value == NULL) return NULL;
-  strcpy(new_entry->value,str);
   if (base != NULL) {
     pdkim_stringlist *last = base;
     while (last->next != NULL) { last = last->next; };
@@ -243,15 +242,18 @@ void pdkim_free_sig(pdkim_signature *sig) {
       free(c);
     }
 
-    if (sig->sigdata        != NULL) free(sig->sigdata);
-    if (sig->bodyhash       != NULL) free(sig->bodyhash);
-    if (sig->selector       != NULL) free(sig->selector);
-    if (sig->domain         != NULL) free(sig->domain);
-    if (sig->identity       != NULL) free(sig->identity);
-    if (sig->headernames    != NULL) free(sig->headernames);
-    if (sig->copiedheaders  != NULL) free(sig->copiedheaders);
-    if (sig->rsa_privkey    != NULL) free(sig->rsa_privkey);
-    if (sig->sign_headers   != NULL) free(sig->sign_headers);
+    if (sig->sigdata          != NULL) free(sig->sigdata);
+    if (sig->bodyhash         != NULL) free(sig->bodyhash);
+    if (sig->selector         != NULL) free(sig->selector);
+    if (sig->domain           != NULL) free(sig->domain);
+    if (sig->identity         != NULL) free(sig->identity);
+    if (sig->headernames      != NULL) free(sig->headernames);
+    if (sig->copiedheaders    != NULL) free(sig->copiedheaders);
+    if (sig->rsa_privkey      != NULL) free(sig->rsa_privkey);
+    if (sig->sign_headers     != NULL) free(sig->sign_headers);
+    if (sig->signature_header != NULL) free(sig->signature_header);
+    if (sig->sha1_body        != NULL) free(sig->sha1_body);
+    if (sig->sha2_body        != NULL) free(sig->sha2_body);
 
     if (sig->pubkey != NULL) pdkim_free_pubkey(sig->pubkey);
 
@@ -291,12 +293,11 @@ int header_name_match(char *header,
   if (hname == NULL) return PDKIM_ERR_OOM;
   memset(hname,0,(hcolon-header)+1);
   strncpy(hname,header,(hcolon-header));
-  lcopy = malloc(strlen(list)+1);
+  lcopy = strdup(list);
   if (lcopy == NULL) {
     free(hname);
     return PDKIM_ERR_OOM;
   }
-  strcpy(lcopy,list);
   p = lcopy;
   q = strchr(p,':');
   while (q != NULL) {
@@ -1209,7 +1210,7 @@ char *pdkim_create_header(pdkim_signature *sig, int final) {
 
 
 /* -------------------------------------------------------------------------- */
-int pdkim_feed_finish(pdkim_ctx *ctx, char **signature) {
+int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatures) {
   pdkim_signature *sig = ctx->sig;
   pdkim_str *headernames = NULL;             /* Collected signed header names */
 
@@ -1386,11 +1387,8 @@ int pdkim_feed_finish(pdkim_ctx *ctx, char **signature) {
       }
       #endif
 
-      /* Recreate signature header with b= included, return it to the caller */
-      if (signature != NULL) {
-        *signature = pdkim_create_header(ctx->sig,1);
-        if (*signature == NULL) return PDKIM_ERR_OOM;
-      }
+      sig->signature_header = pdkim_create_header(ctx->sig,1);
+      if (sig->signature_header == NULL) return PDKIM_ERR_OOM;
     }
     /* VERIFICATION ----------------------------------------------------------- */
     else {
@@ -1500,6 +1498,11 @@ int pdkim_feed_finish(pdkim_ctx *ctx, char **signature) {
     sig = sig->next;
   }
 
+  /* If requested, set return pointer to signature(s) */
+  if (return_signatures != NULL) {
+    *return_signatures = ctx->sig;
+  }
+
   return PDKIM_OK;
 }
 
@@ -1557,20 +1560,27 @@ pdkim_ctx *pdkim_init_sign(int input_mode,
   ctx->input_mode = input_mode;
   ctx->sig = sig;
 
-  ctx->sig->domain = malloc(strlen(domain)+1);
-  ctx->sig->selector = malloc(strlen(selector)+1);
-  ctx->sig->rsa_privkey = malloc(strlen(rsa_privkey)+1);
+  ctx->sig->domain = strdup(domain);
+  ctx->sig->selector = strdup(selector);
+  ctx->sig->rsa_privkey = strdup(rsa_privkey);
 
   if (!ctx->sig->domain || !ctx->sig->selector || !ctx->sig->rsa_privkey) {
     pdkim_free_ctx(ctx);
     return NULL;
   }
 
-  strcpy(ctx->sig->domain, domain);
-  strcpy(ctx->sig->selector, selector);
-  strcpy(ctx->sig->rsa_privkey, rsa_privkey);
-
+  ctx->sig->sha1_body = malloc(sizeof(sha1_context));
+  if (ctx->sig->sha1_body == NULL) {
+    pdkim_free_ctx(ctx);
+    return NULL;
+  }
   sha1_starts(ctx->sig->sha1_body);
+
+  ctx->sig->sha2_body = malloc(sizeof(sha2_context));
+  if (ctx->sig->sha2_body == NULL) {
+    pdkim_free_ctx(ctx);
+    return NULL;
+  }
   sha2_starts(ctx->sig->sha2_body,0);
 
   return ctx;
@@ -1596,19 +1606,13 @@ int pdkim_set_optional(pdkim_ctx *ctx,
                        unsigned long expires) {
 
   if (identity != NULL) {
-    ctx->sig->identity = malloc(strlen(identity)+1);
-    if (!ctx->sig->identity) {
-      return PDKIM_ERR_OOM;
-    }
-    strcpy(ctx->sig->identity, identity);
+    ctx->sig->identity = strdup(identity);
+    if (ctx->sig->identity == NULL) return PDKIM_ERR_OOM;
   }
 
   if (sign_headers != NULL) {
-    ctx->sig->sign_headers = malloc(strlen(sign_headers)+1);
-    if (!ctx->sig->sign_headers) {
-      return PDKIM_ERR_OOM;
-    }
-    strcpy(ctx->sig->sign_headers, sign_headers);
+    ctx->sig->sign_headers = strdup(sign_headers);
+    if (ctx->sig->sign_headers == NULL) return PDKIM_ERR_OOM;
   }
 
   ctx->sig->canon_headers = canon_headers;
