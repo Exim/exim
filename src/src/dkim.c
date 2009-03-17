@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.3 2009/03/17 14:56:55 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.4 2009/03/17 21:31:10 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -133,7 +133,7 @@ uschar *dkim_exim_sign(int dkim_fd,
                      pdkim_canon,
                      pdkim_canon,
                      0,
-                     PDKIM_ALGO_RSA_SHA1,
+                     PDKIM_ALGO_RSA_SHA256,
                      0,
                      0);
 
