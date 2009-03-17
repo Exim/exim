@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/rsa.c,v 1.1.2.1 2009/02/24 13:13:47 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/rsa.c,v 1.1.2.2 2009/03/17 12:57:37 tom Exp $ */
 /*
  *  The RSA public-key cryptosystem
  *
@@ -601,6 +601,65 @@ static int asn1_get_mpi( unsigned char **p,
     return( ret );
 }
 
+
+/*
+ * Parse a public RSA key
+
+OpenSSL RSA public key ASN1 container
+  0:d=0  hl=3 l= 159 cons: SEQUENCE
+  3:d=1  hl=2 l=  13 cons: SEQUENCE
+  5:d=2  hl=2 l=   9 prim: OBJECT:rsaEncryption
+ 16:d=2  hl=2 l=   0 prim: NULL
+ 18:d=1  hl=3 l= 141 prim: BIT STRING:RSAPublicKey (below)
+
+RSAPublicKey ASN1 container
+  0:d=0  hl=3 l= 137 cons: SEQUENCE
+  3:d=1  hl=3 l= 129 prim: INTEGER:Public modulus
+135:d=1  hl=2 l=   3 prim: INTEGER:Public exponent
+*/
+
+int rsa_parse_public_key( rsa_context *rsa, unsigned char *buf, int buflen )
+{
+    unsigned char *p, *end;
+    int ret, len;
+
+    p = buf;
+    end = buf+buflen;
+
+    if( ( ret = asn1_get_tag( &p, end, &len,
+            ASN1_CONSTRUCTED | ASN1_SEQUENCE ) ) != 0 ) {
+        return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT | ret );
+    }
+
+    if( ( ret = asn1_get_tag( &p, end, &len,
+            ASN1_CONSTRUCTED | ASN1_SEQUENCE ) ) == 0 ) {
+        /* Skip over embedded rsaEncryption Object */
+        p+=len;
+
+        /* The RSAPublicKey ASN1 container is wrapped in a BIT STRING */
+        if( ( ret = asn1_get_tag( &p, end, &len,
+                ASN1_BIT_STRING ) ) != 0 ) {
+            return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT | ret );
+        }
+
+        /* Limit range to that BIT STRING */
+        end = p + len;
+        p++;
+
+        if( ( ret = asn1_get_tag( &p, end, &len,
+                ASN1_CONSTRUCTED | ASN1_SEQUENCE ) ) != 0 ) {
+            return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT | ret );
+        }
+    }
+
+    if ( ( ( ret = asn1_get_mpi( &p, end, &(rsa->N)  ) ) == 0 ) &&
+         ( ( ret = asn1_get_mpi( &p, end, &(rsa->E)  ) ) == 0 ) ) {
+        rsa->len = mpi_size( &rsa->N );
+        return 0;
+    }
+
+    return( POLARSSL_ERR_X509_KEY_INVALID_FORMAT | ret );
+}
 
 /*
  * Parse a private RSA key

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.5 2009/02/27 17:04:20 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.6 2009/03/17 12:57:37 tom Exp $ */
 /* pdkim.c */
 
 #include <stdlib.h>
@@ -24,6 +24,15 @@ char *pdkim_algos[] = {
 char *pdkim_canons[] = {
   "simple",
   "relaxed",
+  NULL
+};
+char *pdkim_hashes[] = {
+  "sha256",
+  "sha1",
+  NULL
+};
+char *pdkim_keytypes[] = {
+  "rsa",
   NULL
 };
 
@@ -478,14 +487,10 @@ pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
               }
             break;
             case 's':
-              sig->selector = malloc(strlen(cur_val->str)+1);
-              if (sig->selector == NULL) break;
-              strcpy(sig->selector, cur_val->str);
+              sig->selector = strdup(cur_val->str);
             break;
             case 'd':
-              sig->domain = malloc(strlen(cur_val->str)+1);
-              if (sig->domain == NULL) break;
-              strcpy(sig->domain, cur_val->str);
+              sig->domain = strdup(cur_val->str);
             break;
             case 'i':
               sig->identity = pdkim_decode_qp(cur_val->str);
@@ -500,9 +505,7 @@ pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
               sig->bodylength = strtoul(cur_val->str,NULL,10);
             break;
             case 'h':
-              sig->headernames = malloc(strlen(cur_val->str)+1);
-              if (sig->headernames == NULL) break;
-              strcpy(sig->headernames, cur_val->str);
+              sig->headernames = strdup(cur_val->str);
             break;
             case 'z':
               sig->copiedheaders = pdkim_decode_qp(cur_val->str);
@@ -537,8 +540,8 @@ pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
   if (!(sig->domain      && (*(sig->domain)      != '\0') &&
         sig->selector    && (*(sig->selector)    != '\0') &&
         sig->headernames && (*(sig->headernames) != '\0') &&
-        sig->bodyhash    && (*(sig->bodyhash)    != '\0') &&
-        sig->sigdata     && (*(sig->sigdata)     != '\0') &&
+        sig->bodyhash    &&
+        sig->sigdata     &&
         sig->version)) {
     pdkim_free_sig(sig);
     return NULL;
@@ -563,6 +566,125 @@ pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
   return sig;
 }
 
+
+/* -------------------------------------------------------------------------- */
+pdkim_pubkey *pdkim_parse_pubkey_record(pdkim_ctx *ctx, char *raw_record) {
+  pdkim_pubkey *pub ;
+  char *p;
+  pdkim_str *cur_tag = NULL;
+  pdkim_str *cur_val = NULL;
+  int where = PDKIM_HDR_LIMBO;
+
+  pub = malloc(sizeof(pdkim_pubkey));
+  if (pub == NULL) return NULL;
+  memset(pub,0,sizeof(pdkim_pubkey));
+
+  p = raw_record;
+
+  while (*p != '\0') {
+
+    /* Ignore FWS */
+    if ( (*p == '\r') || (*p == '\n') )
+      goto NEXT_CHAR;
+
+    if (where == PDKIM_HDR_LIMBO) {
+      /* In limbo, just wait for a tag-char to appear */
+      if (!((*p >= 'a') && (*p <= 'z')))
+        goto NEXT_CHAR;
+
+      where = PDKIM_HDR_TAG;
+    }
+
+    if (where == PDKIM_HDR_TAG) {
+      if (cur_tag == NULL)
+        cur_tag = pdkim_strnew(NULL);
+
+      if ((*p >= 'a') && (*p <= 'z'))
+        pdkim_strncat(cur_tag,p,1);
+
+      if (*p == '=') {
+        where = PDKIM_HDR_VALUE;
+        goto NEXT_CHAR;
+      }
+    }
+
+    if (where == PDKIM_HDR_VALUE) {
+      if (cur_val == NULL)
+        cur_val = pdkim_strnew(NULL);
+
+      if ( (*p == '\r') || (*p == '\n') )
+        goto NEXT_CHAR;
+
+      if (*p == ';') {
+        if (cur_tag->len > 0) {
+          pdkim_strtrim(cur_val);
+          #ifdef PDKIM_DEBUG
+          if (ctx->debug_stream)
+            fprintf(ctx->debug_stream, "%s=%s\n", cur_tag->str, cur_val->str);
+          #endif
+          switch (cur_tag->str[0]) {
+            case 'v':
+              /* This tag isn't evaluated because:
+                 - We only support version DKIM1.
+                 - Which is the default for this value (set below)
+                 - Other versions are currently not specified.      */
+            break;
+            case 'h':
+              pub->hashes = strdup(cur_val->str);
+            break;
+            case 'g':
+              pub->granularity = strdup(cur_val->str);
+            break;
+            case 'n':
+              pub->notes = pdkim_decode_qp(cur_val->str);
+            break;
+            case 'p':
+              pub->key = pdkim_decode_base64(cur_val->str,&(pub->key_len));
+            break;
+            case 'k':
+              pub->hashes = strdup(cur_val->str);
+            break;
+            case 's':
+              pub->srvtype = strdup(cur_val->str);
+            break;
+            case 't':
+              if (strchr(cur_val->str,'t') != NULL) pub->testing = 1;
+              if (strchr(cur_val->str,'s') != NULL) pub->no_subdomaining = 1;
+            break;
+            default:
+              #ifdef PDKIM_DEBUG
+              if (ctx->debug_stream)
+                fprintf(ctx->debug_stream, "Unknown tag encountered\n");
+              #endif
+            break;
+          }
+        }
+        pdkim_strclear(cur_tag);
+        pdkim_strclear(cur_val);
+        where = PDKIM_HDR_LIMBO;
+        goto NEXT_CHAR;
+      }
+      else pdkim_strncat(cur_val,p,1);
+    }
+
+    NEXT_CHAR:
+    p++;
+  }
+
+  /* Set fallback defaults */
+  if (pub->version     == NULL) pub->version     = strdup(PDKIM_PUB_RECORD_VERSION);
+  if (pub->granularity == NULL) pub->granularity = strdup("*");
+  if (pub->keytype     == NULL) pub->keytype     = strdup("rsa");
+  if (pub->srvtype     == NULL) pub->srvtype     = strdup("*");
+
+  /* p= is required */
+  if (pub->key == NULL) {
+    pdkim_free_pubkey(pub);
+    return NULL;
+  }
+
+  return pub;
+}
 
 
 /* -------------------------------------------------------------------------- */
@@ -759,6 +881,9 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
     ctx->cur_header->len--;
   }
 
+  ctx->num_headers++;
+  if (ctx->num_headers > PDKIM_MAX_HEADERS) goto BAIL;
+
   /* Traverse all signatures */
   while (sig != NULL) {
 
@@ -822,6 +947,7 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
     }
   }
 
+  BAIL:
   pdkim_strclear(ctx->cur_header); /* Re-use existing pdkim_str */
   return PDKIM_OK;
 };
@@ -876,8 +1002,9 @@ int pdkim_feed (pdkim_ctx *ctx,
         ctx->cur_header = pdkim_strnew(NULL);
         if (ctx->cur_header == NULL) return PDKIM_ERR_OOM;
       }
-      if (pdkim_strncat(ctx->cur_header,&data[p],1) == NULL)
-        return PDKIM_ERR_OOM;
+      if (ctx->cur_header->len < PDKIM_MAX_HEADER_LEN)
+        if (pdkim_strncat(ctx->cur_header,&data[p],1) == NULL)
+          return PDKIM_ERR_OOM;
     }
   }
   return PDKIM_OK;
@@ -1048,7 +1175,7 @@ int pdkim_feed_finish(pdkim_ctx *ctx, char **signature) {
       if (sig->canon_body == PDKIM_CANON_RELAXED)
         rh = pdkim_relax_header(p->value,1); /* cook header for relaxed canon */
       else
-        rh = strdup(p->value);             /* just copy it for simple canon */
+        rh = strdup(p->value);               /* just copy it for simple canon */
 
       if (rh == NULL) return PDKIM_ERR_OOM;
 
@@ -1123,6 +1250,8 @@ int pdkim_feed_finish(pdkim_ctx *ctx, char **signature) {
     if (ctx->mode == PDKIM_MODE_SIGN) {
       rsa_context rsa;
 
+      rsa_init(&rsa,RSA_PKCS_V15,0,NULL,NULL);
+
       /* Perform private key operation */
       if (rsa_parse_key(&rsa, (unsigned char *)sig->rsa_privkey,
                         strlen(sig->rsa_privkey), NULL, 0) != 0) {
@@ -1160,7 +1289,107 @@ int pdkim_feed_finish(pdkim_ctx *ctx, char **signature) {
     }
     /* VERIFICATION ----------------------------------------------------------- */
     else {
+      rsa_context rsa;
+      char *dns_txt_name, *dns_txt_reply;
 
+      rsa_init(&rsa,RSA_PKCS_V15,0,NULL,NULL);
+
+      dns_txt_name  = malloc(PDKIM_DNS_TXT_MAX_NAMELEN);
+      if (dns_txt_name == NULL) return PDKIM_ERR_OOM;
+      dns_txt_reply = malloc(PDKIM_DNS_TXT_MAX_RECLEN);
+      if (dns_txt_reply == NULL) {
+        free(dns_txt_name);
+        return PDKIM_ERR_OOM;
+      }
+      memset(dns_txt_reply,0,PDKIM_DNS_TXT_MAX_RECLEN);
+      memset(dns_txt_name ,0,PDKIM_DNS_TXT_MAX_NAMELEN);
+
+      if (snprintf(dns_txt_name,PDKIM_DNS_TXT_MAX_NAMELEN,
+                   "%s._domainkey.%s.",
+                   sig->selector,sig->domain) >= PDKIM_DNS_TXT_MAX_NAMELEN) {
+        sig->verify_status =      PDKIM_VERIFY_INVALID;
+        sig->verify_ext_status =  PDKIM_VERIFY_INVALID_BUFFER_SIZE;
+        goto NEXT_VERIFY;
+      };
+
+      if ((ctx->dns_txt_callback(dns_txt_name, dns_txt_reply) != PDKIM_OK) ||
+          (dns_txt_reply[0] == '\0')) {
+        sig->verify_status =      PDKIM_VERIFY_INVALID;
+        sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE;
+        goto NEXT_VERIFY;
+      }
+
+      #ifdef PDKIM_DEBUG
+      if (ctx->debug_stream) {
+        fprintf(ctx->debug_stream,
+                "PDKIM >> Parsing public key record >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+        fprintf(ctx->debug_stream,"Raw record: ");
+        pdkim_quoteprint(ctx->debug_stream, dns_txt_reply, strlen(dns_txt_reply), 1);
+      }
+      #endif
+
+      sig->pubkey = pdkim_parse_pubkey_record(ctx,dns_txt_reply);
+      if (sig->pubkey == NULL) {
+        sig->verify_status =      PDKIM_VERIFY_INVALID;
+        sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_PARSING;
+        #ifdef PDKIM_DEBUG
+        if (ctx->debug_stream) {
+          fprintf(ctx->debug_stream,"Error while parsing public key record\n");
+          fprintf(ctx->debug_stream,
+            "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+        }
+        #endif
+        goto NEXT_VERIFY;
+      }
+
+      #ifdef PDKIM_DEBUG
+      if (ctx->debug_stream) {
+        fprintf(ctx->debug_stream,
+          "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+      }
+      #endif
+
+      if (rsa_parse_public_key(&rsa,
+                              (unsigned char *)sig->pubkey->key,
+                               sig->pubkey->key_len) != 0) {
+        sig->verify_status =      PDKIM_VERIFY_INVALID;
+        sig->verify_ext_status =  PDKIM_VERIFY_INVALID_PUBKEY_PARSING;
+        goto NEXT_VERIFY;
+      }
+
+      /* Check the signature */
+      if (rsa_pkcs1_verify(&rsa,
+                        RSA_PUBLIC,
+                        ((sig->algo == PDKIM_ALGO_RSA_SHA1)?
+                             RSA_SHA1:RSA_SHA256),
+                        0,
+                        (unsigned char *)headerhash,
+                        (unsigned char *)sig->sigdata) != 0) {
+        sig->verify_status =      PDKIM_VERIFY_FAIL;
+        sig->verify_ext_status =  PDKIM_VERIFY_FAIL_MESSAGE;
+        #ifdef PDKIM_DEBUG
+        if (ctx->debug_stream) {
+          fprintf(ctx->debug_stream, "PDKIM [%s] signature did NOT verify OK\n",
+                  sig->domain);
+        }
+        #endif
+        goto NEXT_VERIFY;
+      }
+
+      /* We have a winner! */
+      sig->verify_status = PDKIM_VERIFY_PASS;
+
+      #ifdef PDKIM_DEBUG
+      if (ctx->debug_stream) {
+        fprintf(ctx->debug_stream, "PDKIM [%s] signature verified OK\n",
+                sig->domain);
+      }
+      #endif
+
+      NEXT_VERIFY:
+      rsa_free(&rsa);
+      free(dns_txt_name);
+      free(dns_txt_reply);
     }
 
     sig = sig->next;
@@ -1171,17 +1400,23 @@ int pdkim_feed_finish(pdkim_ctx *ctx, char **signature) {
 
 
 /* -------------------------------------------------------------------------- */
-pdkim_ctx *pdkim_init_verify(void) {
+pdkim_ctx *pdkim_init_verify(int input_mode,
+                             int(*dns_txt_callback)(char *, char *)
+                             ) {
   pdkim_ctx *ctx = malloc(sizeof(pdkim_ctx));
   if (ctx == NULL) return NULL;
   memset(ctx,0,sizeof(pdkim_ctx));
   ctx->mode = PDKIM_MODE_VERIFY;
+  ctx->input_mode = input_mode;
+  ctx->dns_txt_callback = dns_txt_callback;
+
   return ctx;
 }
 
 
 /* -------------------------------------------------------------------------- */
-pdkim_ctx *pdkim_init_sign(char *domain,
+pdkim_ctx *pdkim_init_sign(int input_mode,
+                           char *domain,
                            char *selector,
                            char *rsa_privkey) {
   pdkim_ctx *ctx;
@@ -1199,6 +1434,7 @@ pdkim_ctx *pdkim_init_sign(char *domain,
   memset(sig,0,sizeof(pdkim_signature));
 
   ctx->mode = PDKIM_MODE_SIGN;
+  ctx->input_mode = input_mode;
   ctx->sig = sig;
 
   ctx->sig->domain = malloc(strlen(domain)+1);
@@ -1230,7 +1466,6 @@ void pdkim_set_debug_stream(pdkim_ctx *ctx,
 
 /* -------------------------------------------------------------------------- */
 int pdkim_set_optional(pdkim_ctx *ctx,
-                       int input_mode,
                        char *sign_headers,
                        char *identity,
                        int canon_headers,
@@ -1256,7 +1491,6 @@ int pdkim_set_optional(pdkim_ctx *ctx,
     strcpy(ctx->sig->sign_headers, sign_headers);
   }
 
-  ctx->input_mode = input_mode;
   ctx->sig->canon_headers = canon_headers;
   ctx->sig->canon_body = canon_body;
   ctx->sig->bodylength = bodylength;
@@ -1268,6 +1502,19 @@ int pdkim_set_optional(pdkim_ctx *ctx,
 };
 
 
+/* -------------------------------------------------------------------------- */
+void pdkim_free_pubkey(pdkim_pubkey *pub) {
+  if (pub) {
+    if (pub->version        != NULL) free(pub->version);
+    if (pub->granularity    != NULL) free(pub->granularity);
+    if (pub->hashes         != NULL) free(pub->hashes);
+    if (pub->keytype        != NULL) free(pub->keytype);
+    if (pub->srvtype        != NULL) free(pub->srvtype);
+    if (pub->notes          != NULL) free(pub->notes);
+    if (pub->key            != NULL) free(pub->key);
+    free(pub);
+  }
+}
 
 
 /* -------------------------------------------------------------------------- */
@@ -1292,6 +1539,8 @@ void pdkim_free_sig(pdkim_signature *sig) {
     if (sig->copiedheaders  != NULL) free(sig->copiedheaders);
     if (sig->rsa_privkey    != NULL) free(sig->rsa_privkey);
     if (sig->sign_headers   != NULL) free(sig->sign_headers);
+
+    if (sig->pubkey != NULL) pdkim_free_pubkey(sig->pubkey);
 
     free(sig);
     if (next != NULL) pdkim_free_sig(next);

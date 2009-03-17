@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/pdkim/rsa.h,v 1.1.2.1 2009/02/24 13:13:47 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/rsa.h,v 1.1.2.2 2009/03/17 12:57:37 tom Exp $ */
 /**
  * \file rsa.h
  *
@@ -342,6 +342,8 @@ int rsa_pkcs1_verify( rsa_context *ctx,
  * \brief          Free the components of an RSA key
  */
 void rsa_free( rsa_context *ctx );
+
+int rsa_parse_public_key( rsa_context *rsa, unsigned char *buf, int buflen );
 
 int rsa_parse_key( rsa_context *rsa, unsigned char *buf, int buflen,
                                      unsigned char *pwd, int pwdlen );
