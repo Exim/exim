@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.4 2009/03/17 21:31:10 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.5 2009/03/17 21:44:10 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -35,7 +35,7 @@ uschar *dkim_exim_sign(int dkim_fd,
                        uschar *dkim_sign_headers) {
   pdkim_ctx *ctx = NULL;
   uschar *rc = NULL;
-  char *signature;
+  pdkim_signature *signature;
   int pdkim_canon;
   int sread;
   char buf[4096];
@@ -154,8 +154,8 @@ uschar *dkim_exim_sign(int dkim_fd,
   if (pdkim_feed_finish(ctx,&signature) != PDKIM_OK)
     goto CLEANUP;
 
-  rc = store_get(strlen(signature)+3);
-  Ustrcpy(rc,US signature);
+  rc = store_get(strlen(signature->signature_header)+3);
+  Ustrcpy(rc,US signature->signature_header);
   Ustrcat(rc,US"\r\n");
 
   CLEANUP:
