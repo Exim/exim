@@ -1,4 +1,3 @@
-/* $Cambridge: exim/src/src/pdkim/bn_mul.h,v 1.1.2.1 2009/02/24 13:13:47 tom Exp $ */
 /**
  * \file bn_mul.h
  *
@@ -34,6 +33,9 @@
  *         . Alpha                . MIPS32
  *         . C, longlong          . C, generic
  */
+
+/* $Cambridge: exim/src/src/pdkim/bn_mul.h,v 1.1.2.2 2009/04/09 07:49:11 tom Exp $ */
+
 #ifndef POLARSSL_BN_MUL_H
 #define POLARSSL_BN_MUL_H
 

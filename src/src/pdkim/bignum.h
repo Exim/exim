@@ -1,4 +1,3 @@
-/* $Cambridge: exim/src/src/pdkim/bignum.h,v 1.1.2.1 2009/02/24 13:13:47 tom Exp $ */
 /**
  * \file bignum.h
  *
@@ -20,6 +19,9 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+/* $Cambridge: exim/src/src/pdkim/bignum.h,v 1.1.2.2 2009/04/09 07:49:11 tom Exp $ */
+
 #ifndef POLARSSL_BIGNUM_H
 #define POLARSSL_BIGNUM_H
 

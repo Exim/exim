@@ -1,4 +1,3 @@
-/* $Cambridge: exim/src/src/pdkim/rsa.h,v 1.1.2.3 2009/03/17 21:11:56 tom Exp $ */
 /**
  * \file rsa.h
  *
@@ -20,6 +19,9 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+/* $Cambridge: exim/src/src/pdkim/rsa.h,v 1.1.2.4 2009/04/09 07:49:11 tom Exp $ */
+
 #ifndef POLARSSL_RSA_H
 #define POLARSSL_RSA_H
 

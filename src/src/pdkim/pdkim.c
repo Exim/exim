@@ -1,12 +1,31 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.8 2009/03/17 16:20:13 tom Exp $ */
-/* pdkim.c */
+/*
+ *  PDKIM - a RFC4871 (DKIM) implementation
+ *
+ *  Copyright (C) 2009  Tom Kistner <tom@duncanthrax.net>
+ *
+ *  http://duncanthrax.net/pdkim/
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.9 2009/04/09 07:49:11 tom Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <strings.h>
 #include <ctype.h>
-#include <unistd.h>
 
 #include "pdkim.h"
 
@@ -22,7 +41,6 @@
 #define PDKIM_MAX_HEADERS           512
 #define PDKIM_MAX_BODY_LINE_LEN     1024
 #define PDKIM_DNS_TXT_MAX_NAMELEN   1024
-#define PDKIM_DNS_TXT_MAX_RECLEN    4096
 #define PDKIM_DEFAULT_SIGN_HEADERS "From:Sender:Reply-To:Subject:Date:"\
                              "Message-ID:To:Cc:MIME-Version:Content-Type:"\
                              "Content-Transfer-Encoding:Content-ID:"\
@@ -32,7 +50,7 @@
                              "List-Id:List-Help:List-Unsubscribe:"\
                              "List-Subscribe:List-Post:List-Owner:List-Archive"
 
-
+/* -------------------------------------------------------------------------- */
 struct pdkim_stringlist {
   char *value;
   void *next;
@@ -44,8 +62,6 @@ struct pdkim_str {
   unsigned int  len;
   unsigned int  allocated;
 };
-
-
 
 /* -------------------------------------------------------------------------- */
 /* A bunch of list constants */
@@ -122,7 +138,7 @@ void pdkim_hexprint(FILE *stream, char *data, int len, int lf) {
 
   for (i=0;i<len;i++) {
     int c = p[i];
-    fprintf(stream,"%02x ",c);
+    fprintf(stream,"%02x",c);
   }
   if (lf)
     fputc('\n',stream);
@@ -264,7 +280,7 @@ void pdkim_free_sig(pdkim_signature *sig) {
 
 
 /* -------------------------------------------------------------------------- */
-void pdkim_free_ctx(pdkim_ctx *ctx) {
+DLLEXPORT void pdkim_free_ctx(pdkim_ctx *ctx) {
   if (ctx) {
     pdkim_free_sig(ctx->sig);
     pdkim_strfree(ctx->cur_header);
@@ -471,6 +487,7 @@ pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
   sig = malloc(sizeof(pdkim_signature));
   if (sig == NULL) return NULL;
   memset(sig,0,sizeof(pdkim_signature));
+  sig->bodylength = -1;
 
   sig->rawsig_no_b_val = malloc(strlen(raw_hdr)+1);
   if (sig->rawsig_no_b_val == NULL) {
@@ -597,7 +614,7 @@ pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
               sig->expires = strtoul(cur_val->str,NULL,10);
             break;
             case 'l':
-              sig->bodylength = strtoul(cur_val->str,NULL,10);
+              sig->bodylength = strtol(cur_val->str,NULL,10);
             break;
             case 'h':
               sig->headernames = strdup(cur_val->str);
@@ -643,6 +660,12 @@ pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
   }
 
   *q = '\0';
+  /* Chomp raw header. The final newline must not be added to the signature. */
+  q--;
+  while( (q > sig->rawsig_no_b_val) && ((*q == '\r') || (*q == '\n')) ) {
+    *q = '\0'; q--;
+  }
+
   #ifdef PDKIM_DEBUG
   if (ctx->debug_stream) {
     fprintf(ctx->debug_stream,
@@ -836,7 +859,7 @@ int pdkim_update_bodyhash(pdkim_ctx *ctx, char *data, int len) {
     }
 
     /* Make sure we don't exceed the to-be-signed body length */
-    if (sig->bodylength &&
+    if ((sig->bodylength >= 0) &&
         ((sig->signed_body_bytes+(unsigned long)canon_len) > sig->bodylength))
       canon_len = (sig->bodylength - sig->signed_body_bytes);
 
@@ -893,7 +916,7 @@ int pdkim_finish_bodyhash(pdkim_ctx *ctx) {
 
       /* If bodylength limit is set, and we have received less bytes
          than the requested amount, effectively remove the limit tag. */
-      if (sig->signed_body_bytes < sig->bodylength) sig->bodylength = 0;
+      if (sig->signed_body_bytes < sig->bodylength) sig->bodylength = -1;
     }
     /* VERIFICATION --------------------------------------------------------- */
     else {
@@ -992,6 +1015,7 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
 
   /* Traverse all signatures */
   while (sig != NULL) {
+    pdkim_stringlist *list;
 
     /* SIGNING -------------------------------------------------------------- */
     if (ctx->mode == PDKIM_MODE_SIGN) {
@@ -1011,8 +1035,8 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
     }
 
     /* Add header to the signed headers list */
-    pdkim_stringlist *list = pdkim_append_stringlist(sig->headers,
-                                                     ctx->cur_header->str);
+    list = pdkim_append_stringlist(sig->headers,
+                                   ctx->cur_header->str);
     if (list == NULL) return PDKIM_ERR_OOM;
     sig->headers = list;
 
@@ -1025,13 +1049,14 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
        (strncasecmp(ctx->cur_header->str,
                     DKIM_SIGNATURE_HEADERNAME,
                     strlen(DKIM_SIGNATURE_HEADERNAME)) == 0) ) {
+     pdkim_signature *new_sig;
     /* Create and chain new signature block */
     #ifdef PDKIM_DEBUG
     if (ctx->debug_stream)
       fprintf(ctx->debug_stream,
         "PDKIM >> Found sig, trying to parse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
     #endif
-    pdkim_signature *new_sig = pdkim_parse_sig_header(ctx, ctx->cur_header->str);
+    new_sig = pdkim_parse_sig_header(ctx, ctx->cur_header->str);
     if (new_sig != NULL) {
       pdkim_signature *last_sig = ctx->sig;
       if (last_sig == NULL) {
@@ -1062,7 +1087,7 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
 
 /* -------------------------------------------------------------------------- */
 #define HEADER_BUFFER_FRAG_SIZE 256
-int pdkim_feed (pdkim_ctx *ctx,
+DLLEXPORT int pdkim_feed (pdkim_ctx *ctx,
                 char *data,
                 int   len) {
   int p;
@@ -1170,7 +1195,7 @@ char *pdkim_create_header(pdkim_signature *sig, int final) {
         goto BAIL;
       }
     }
-    if (sig->bodylength > 0) {
+    if (sig->bodylength >= 0) {
       if (!( pdkim_strcat(hdr,"l=")                             &&
              pdkim_numcat(hdr,sig->bodylength)                  &&
              pdkim_strcat(hdr,";") ) ) {
@@ -1210,7 +1235,7 @@ char *pdkim_create_header(pdkim_signature *sig, int final) {
 
 
 /* -------------------------------------------------------------------------- */
-int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatures) {
+DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatures) {
   pdkim_signature *sig = ctx->sig;
   pdkim_str *headernames = NULL;             /* Collected signed header names */
 
@@ -1344,10 +1369,14 @@ int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatures) {
     if (sig->algo == PDKIM_ALGO_RSA_SHA1) {
       sha1_update(&(sha1_headers),(unsigned char *)sig_hdr,strlen(sig_hdr));
       sha1_finish(&(sha1_headers),(unsigned char *)headerhash);
+      fprintf(ctx->debug_stream, "PDKIM [%s] hh computed: ", sig->domain);
+      pdkim_hexprint(ctx->debug_stream, headerhash, 20, 1);
     }
     else {
       sha2_update(&(sha2_headers),(unsigned char *)sig_hdr,strlen(sig_hdr));
       sha2_finish(&(sha2_headers),(unsigned char *)headerhash);
+      fprintf(ctx->debug_stream, "PDKIM [%s] hh computed: ", sig->domain);
+      pdkim_hexprint(ctx->debug_stream, headerhash, 32, 1);
     }
 
     free(sig_hdr);
@@ -1508,7 +1537,7 @@ int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatures) {
 
 
 /* -------------------------------------------------------------------------- */
-pdkim_ctx *pdkim_init_verify(int input_mode,
+DLLEXPORT pdkim_ctx *pdkim_init_verify(int input_mode,
                              int(*dns_txt_callback)(char *, char *)
                              ) {
   pdkim_ctx *ctx = malloc(sizeof(pdkim_ctx));
@@ -1530,11 +1559,12 @@ pdkim_ctx *pdkim_init_verify(int input_mode,
 
 
 /* -------------------------------------------------------------------------- */
-pdkim_ctx *pdkim_init_sign(int input_mode,
+DLLEXPORT pdkim_ctx *pdkim_init_sign(int input_mode,
                            char *domain,
                            char *selector,
                            char *rsa_privkey) {
   pdkim_ctx *ctx;
+  pdkim_signature *sig;
 
   if (!domain || !selector || !rsa_privkey) return NULL;
 
@@ -1548,13 +1578,14 @@ pdkim_ctx *pdkim_init_sign(int input_mode,
     return NULL;
   }
 
-  pdkim_signature *sig = malloc(sizeof(pdkim_signature));
+  sig = malloc(sizeof(pdkim_signature));
   if (sig == NULL) {
     free(ctx->linebuf);
     free(ctx);
     return NULL;
   }
   memset(sig,0,sizeof(pdkim_signature));
+  sig->bodylength = -1;
 
   ctx->mode = PDKIM_MODE_SIGN;
   ctx->input_mode = input_mode;
@@ -1588,19 +1619,19 @@ pdkim_ctx *pdkim_init_sign(int input_mode,
 
 #ifdef PDKIM_DEBUG
 /* -------------------------------------------------------------------------- */
-void pdkim_set_debug_stream(pdkim_ctx *ctx,
+DLLEXPORT void pdkim_set_debug_stream(pdkim_ctx *ctx,
                             FILE *debug_stream) {
   ctx->debug_stream = debug_stream;
 };
 #endif
 
 /* -------------------------------------------------------------------------- */
-int pdkim_set_optional(pdkim_ctx *ctx,
+DLLEXPORT int pdkim_set_optional(pdkim_ctx *ctx,
                        char *sign_headers,
                        char *identity,
                        int canon_headers,
                        int canon_body,
-                       unsigned long bodylength,
+                       long bodylength,
                        int algo,
                        unsigned long created,
                        unsigned long expires) {

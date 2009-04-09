@@ -1,4 +1,3 @@
-/* $Cambridge: exim/src/src/pdkim/sha1.c,v 1.1.2.2 2009/02/24 18:43:59 tom Exp $ */
 /*
  *  FIPS-180-1 compliant SHA-1 implementation
  *
@@ -25,6 +24,8 @@
  *
  *  http://www.itl.nist.gov/fipspubs/fip180-1.htm
  */
+
+/* $Cambridge: exim/src/src/pdkim/sha1.c,v 1.1.2.3 2009/04/09 07:49:11 tom Exp $ */
 
 #include "sha1.h"
 

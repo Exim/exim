@@ -1,10 +1,36 @@
-/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.8 2009/03/17 21:11:56 tom Exp $ */
-/* pdkim.h */
+/*
+ *  PDKIM - a RFC4871 (DKIM) implementation
+ *
+ *  Copyright (C) 2009  Tom Kistner <tom@duncanthrax.net>
+ *
+ *  http://duncanthrax.net/pdkim/
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program; if not, write to the Free Software Foundation, Inc.,
+ *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
+/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.9 2009/04/09 07:49:11 tom Exp $ */
 
 /* -------------------------------------------------------------------------- */
 /* Debugging. This can also be enabled/disabled at run-time. I recommend to
    leave it defined. */
 #define PDKIM_DEBUG
+
+/* -------------------------------------------------------------------------- */
+/* Length of the preallocated buffer for the "answer" from the dns/txt
+   callback function. */
+#define PDKIM_DNS_TXT_MAX_RECLEN    4096
 
 /* -------------------------------------------------------------------------- */
 /* Function success / error codes */
@@ -52,6 +78,18 @@ typedef struct sha1_context sha1_context;
 typedef struct sha2_context sha2_context;
 #define HAVE_SHA1_CONTEXT
 #define HAVE_SHA2_CONTEXT
+
+/* -------------------------------------------------------------------------- */
+/* Some concessions towards Redmond */
+#ifdef WINDOWS
+#define snprintf _snprintf
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#define DLLEXPORT __declspec(dllexport)
+#else
+#define DLLEXPORT
+#endif
+
 
 /* -------------------------------------------------------------------------- */
 /* Public key as (usually) fetched from DNS */
@@ -111,8 +149,9 @@ typedef struct pdkim_signature {
   /* (x=) Timestamp of expiry of signature */
   unsigned long expires;
 
-  /* (l=) Amount of hashed body bytes (after canonicalization) */
-  unsigned long bodylength;
+  /* (l=) Amount of hashed body bytes (after canonicalization). Default
+     is -1. Note: a value of 0 means that the body is unsigned! */
+  long bodylength;
 
   /* (h=) Colon-separated list of header names that are included in the
      signature */
@@ -246,26 +285,39 @@ typedef struct pdkim_ctx {
 
 
 /* -------------------------------------------------------------------------- */
-/* API functions. Please see pdkim-api.txt for documentation / example code.  */
+/* API functions. Please see the sample code in sample/test_sign.c and
+   sample/test_verify.c for documentation.
+*/
 
-pdkim_ctx
-     *pdkim_init_sign         (int, char *, char *, char *);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-pdkim_ctx
-     *pdkim_init_verify       (int, int(*)(char *, char *));
+DLLEXPORT
+pdkim_ctx *pdkim_init_sign    (int, char *, char *, char *);
 
-int   pdkim_set_optional      (pdkim_ctx *,
-                               char *, char *,
-                               int, int,
-                               unsigned long, int,
+DLLEXPORT
+pdkim_ctx *pdkim_init_verify  (int, int(*)(char *, char *));
+
+DLLEXPORT
+int        pdkim_set_optional (pdkim_ctx *, char *, char *,int, int,
+                               long, int,
                                unsigned long,
                                unsigned long);
 
-int   pdkim_feed              (pdkim_ctx *, char *, int);
-int   pdkim_feed_finish       (pdkim_ctx *, pdkim_signature **);
+DLLEXPORT
+int        ppdkim_feed        (pdkim_ctx *, char *, int);
+DLLEXPORT
+int        pdkim_feed_finish  (pdkim_ctx *, pdkim_signature **);
 
-void  pdkim_free_ctx          (pdkim_ctx *);
+DLLEXPORT
+void       pdkim_free_ctx     (pdkim_ctx *);
 
 #ifdef PDKIM_DEBUG
-void  pdkim_set_debug_stream  (pdkim_ctx *, FILE *);
+DLLEXPORT
+void       pdkim_set_debug_stream(pdkim_ctx *, FILE *);
+#endif
+
+#ifdef __cplusplus
+}
 #endif

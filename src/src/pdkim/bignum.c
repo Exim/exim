@@ -1,4 +1,3 @@
-/* $Cambridge: exim/src/src/pdkim/bignum.c,v 1.1.2.1 2009/02/24 13:13:47 tom Exp $ */
 /*
  *  Multi-precision integer library
  *
@@ -27,6 +26,8 @@
  *  http://www.stillhq.com/extracted/gnupg-api/mpi/
  *  http://math.libtomcrypt.com/files/tommath.pdf
  */
+
+/* $Cambridge: exim/src/src/pdkim/bignum.c,v 1.1.2.2 2009/04/09 07:49:11 tom Exp $ */
 
 #include "bignum.h"
 #include "bn_mul.h"

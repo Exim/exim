@@ -1,4 +1,3 @@
-/* $Cambridge: exim/src/src/pdkim/rsa.c,v 1.1.2.3 2009/03/17 21:11:56 tom Exp $ */
 /*
  *  The RSA public-key cryptosystem
  *
@@ -26,6 +25,8 @@
  *  http://theory.lcs.mit.edu/~rivest/rsapaper.pdf
  *  http://www.cacr.math.uwaterloo.ca/hac/about/chap8.pdf
  */
+
+/* $Cambridge: exim/src/src/pdkim/rsa.c,v 1.1.2.4 2009/04/09 07:49:11 tom Exp $ */
 
 #include "rsa.h"
 #include "base64.h"

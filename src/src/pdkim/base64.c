@@ -1,4 +1,3 @@
-/* $Cambridge: exim/src/src/pdkim/base64.c,v 1.1.2.1 2009/02/24 13:13:47 tom Exp $ */
 /*
  *  RFC 1521 base64 encoding/decoding
  *
@@ -20,6 +19,8 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
+/* $Cambridge: exim/src/src/pdkim/base64.c,v 1.1.2.2 2009/04/09 07:49:11 tom Exp $ */
 
 #include "base64.h"
 

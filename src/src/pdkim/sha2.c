@@ -1,4 +1,3 @@
-/* $Cambridge: exim/src/src/pdkim/sha2.c,v 1.1.2.1 2009/02/24 13:13:47 tom Exp $ */
 /*
  *  FIPS-180-2 compliant SHA-256 implementation
  *
@@ -25,6 +24,8 @@
  *
  *  http://csrc.nist.gov/publications/fips/fips180-2/fips180-2.pdf
  */
+
+/* $Cambridge: exim/src/src/pdkim/sha2.c,v 1.1.2.2 2009/04/09 07:49:11 tom Exp $ */
 
 #include "sha2.h"
 
