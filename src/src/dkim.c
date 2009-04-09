@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.5 2009/03/17 21:44:10 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.6 2009/04/09 13:57:21 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -16,16 +16,110 @@
 
 #include "pdkim/pdkim.h"
 
+pdkim_ctx       *dkim_verify_ctx = NULL;
+pdkim_signature *dkim_signatures = NULL;
 
-void dkim_exim_verify_init(void) {
+int dkim_exim_query_dns_txt(char *name, char *answer) {
+  dns_answer dnsa;
+  dns_scan   dnss;
+  dns_record *rr;
+
+  if (dns_lookup(&dnsa, (uschar *)name, T_TXT, NULL) != DNS_SUCCEED) return 1;
+
+  /* Search for TXT record */
+  for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
+       rr != NULL;
+       rr = dns_next_rr(&dnsa, &dnss, RESET_NEXT))
+    if (rr->type == T_TXT) break;
+
+  /* Copy record content to the answer buffer */
+  if (rr != NULL) {
+    int len = (rr->data)[0];
+    //if (len > 511) len = 127; // ???
+    snprintf(answer, PDKIM_DNS_TXT_MAX_RECLEN, "%.*s", len, (char *)(rr->data+1));
+  }
+  else return 1;
+
+  return PDKIM_OK;
 }
 
-void dkim_exim_verify_finish(void) {
+
+int dkim_exim_verify_init(void) {
+
+  /* Free previous context if there is one */
+  if (dkim_verify_ctx) pdkim_free_ctx(dkim_verify_ctx);
+
+  /* Create new context */
+  dkim_verify_ctx = pdkim_init_verify(PDKIM_INPUT_SMTP,
+                                      &dkim_exim_query_dns_txt
+                                     );
+
+  if (dkim_verify_ctx != NULL) {
+    dkim_collect_input = 1;
+    pdkim_set_debug_stream(dkim_verify_ctx,debug_file);
+    return 1;
+  }
+  else {
+    dkim_collect_input = 0;
+    return 0;
+  }
 }
+
+
+int dkim_exim_verify_feed(uschar *data, int len) {
+  if (pdkim_feed(dkim_verify_ctx,
+                 (char *)data,
+                 len) != PDKIM_OK) return 0;
+  return 1;
+}
+
+
+int dkim_exim_verify_finish(void) {
+  dkim_signatures = NULL;
+  dkim_collect_input = 0;
+  if (pdkim_feed_finish(dkim_verify_ctx,&dkim_signatures) != PDKIM_OK) return 0;
+
+  while (dkim_signatures != NULL) {
+    debug_printf("DKIM: Signature from domain '%s': ",dkim_signatures->domain);
+    switch(dkim_signatures->verify_status) {
+      case PDKIM_VERIFY_NONE:
+        debug_printf("not verified\n");
+        log_write(0, LOG_MAIN, "DKIM: Signature from domain '%s', selector '%s': "
+                  "not verified", dkim_signatures->domain, dkim_signatures->selector);
+      break;
+      case PDKIM_VERIFY_INVALID:
+        debug_printf("invalid\n");
+        log_write(0, LOG_MAIN, "DKIM: Signature from domain '%s', selector '%s': "
+                  "invalid", dkim_signatures->domain, dkim_signatures->selector);
+      break;
+      case PDKIM_VERIFY_FAIL:
+        debug_printf("verification failed\n");
+        log_write(0, LOG_MAIN, "DKIM: Signature from domain '%s', selector '%s': "
+                  "verification failed", dkim_signatures->domain, dkim_signatures->selector);
+      break;
+      case PDKIM_VERIFY_PASS:
+        debug_printf("verification succeeded\n");
+        log_write(0, LOG_MAIN, "DKIM: Signature from domain '%s', selector '%s': "
+                  "verification succeeded", dkim_signatures->domain, dkim_signatures->selector);
+      break;
+    }
+    /* Try next signature */
+    dkim_signatures = dkim_signatures->next;
+  }
+
+  return dkim_signatures?1:0;
+}
+
 
 int dkim_exim_verify_result(uschar *domain, uschar **result, uschar **error) {
+
+  if (dkim_verify_ctx) {
+
+  }
+
   return OK;
 }
+
 
 uschar *dkim_exim_sign(int dkim_fd,
                        uschar *dkim_private_key,
@@ -132,7 +226,7 @@ uschar *dkim_exim_sign(int dkim_fd,
                      NULL,
                      pdkim_canon,
                      pdkim_canon,
-                     0,
+                     -1,
                      PDKIM_ALGO_RSA_SHA256,
                      0,
                      0);

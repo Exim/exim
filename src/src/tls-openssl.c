@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.13 2008/09/03 18:53:29 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.13.2.1 2009/04/09 13:57:21 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -887,7 +887,9 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
     ssl_xfer_error = 1;
     return EOF;
     }
-
+#ifndef DISABLE_DKIM
+  if (dkim_collect_input) dkim_collect_input = dkim_exim_verify_feed(ssl_xfer_buffer, inbytes);
+#endif
   ssl_xfer_buffer_hwm = inbytes;
   ssl_xfer_buffer_lwm = 0;
   }

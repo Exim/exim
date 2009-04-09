@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.45.2.1 2009/02/24 15:57:55 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.45.2.2 2009/04/09 13:57:21 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1385,9 +1385,9 @@ message_linecount = body_linecount = body_zerocount =
   max_received_linelength = 0;
 
 #ifndef DISABLE_DKIM
-/* Call into DKIM to set up the context. Check if DKIM is to be run are carried out
-   inside dkim_exim_verify_init(). */
-dkim_exim_verify_init();
+/* Call into DKIM to set up the context. */
+if (smtp_input && dkim_do_verify) dkim_do_verify = dkim_exim_verify_init();
+else dkim_do_verify = 0;
 #endif
 
 
@@ -2971,7 +2971,7 @@ else
     {
 
 #ifndef DISABLE_DKIM
-    dkim_exim_verify_finish();
+    if (dkim_do_verify) dkim_do_verify = dkim_exim_verify_finish();
 #endif
 
 #ifdef WITH_CONTENT_SCAN

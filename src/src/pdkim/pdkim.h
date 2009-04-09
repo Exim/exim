@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.9 2009/04/09 07:49:11 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.10 2009/04/09 13:57:21 tom Exp $ */
 
 /* -------------------------------------------------------------------------- */
 /* Debugging. This can also be enabled/disabled at run-time. I recommend to
@@ -306,7 +306,7 @@ int        pdkim_set_optional (pdkim_ctx *, char *, char *,int, int,
                                unsigned long);
 
 DLLEXPORT
-int        ppdkim_feed        (pdkim_ctx *, char *, int);
+int        pdkim_feed        (pdkim_ctx *, char *, int);
 DLLEXPORT
 int        pdkim_feed_finish  (pdkim_ctx *, pdkim_signature **);
 

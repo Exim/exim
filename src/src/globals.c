@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.81.2.1 2009/02/24 15:57:55 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.81.2.2 2009/04/09 13:57:21 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -391,7 +391,7 @@ int     callout_cache_domain_negative_expire = 3*60*60;
 int     callout_cache_positive_expire = 24*60*60;
 int     callout_cache_negative_expire = 2*60*60;
 uschar *callout_random_local_part = US"$primary_hostname-$tod_epoch-testing";
-uschar *check_dns_names_pattern= US"(?i)^(?>(?(1)\\.|())[^\\W_](?>[a-z0-9/-]*[^\\W_])?)+$";
+uschar *check_dns_names_pattern= US"(?i)^(?>(?(1)\\.|())[^\\W](?>[a-z0-9/_-]*[^\\W])?)+(\.?)$";
 int     check_log_inodes       = 0;
 int     check_log_space        = 0;
 BOOL    check_rfc2047_length   = TRUE;
@@ -530,6 +530,7 @@ BOOL    disable_logging        = FALSE;
 uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
 int     dkim_do_verify           = 0;
+int     dkim_collect_input       = 0;
 #endif
 
 uschar *dns_again_means_nonexist = NULL;
