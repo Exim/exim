@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.10 2009/04/09 14:47:50 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.11 2009/04/09 19:07:18 tom Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -1371,13 +1371,21 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
     if (sig->algo == PDKIM_ALGO_RSA_SHA1) {
       sha1_update(&(sha1_headers),(unsigned char *)sig_hdr,strlen(sig_hdr));
       sha1_finish(&(sha1_headers),(unsigned char *)headerhash);
-      fprintf(ctx->debug_stream, "PDKIM [%s] hh computed: ", sig->domain);
+      #ifdef PDKIM_DEBUG
+      if (ctx->debug_stream) {
+        fprintf(ctx->debug_stream, "PDKIM [%s] hh computed: ", sig->domain);
+      }
+      #endif
       pdkim_hexprint(ctx->debug_stream, headerhash, 20, 1);
     }
     else {
       sha2_update(&(sha2_headers),(unsigned char *)sig_hdr,strlen(sig_hdr));
       sha2_finish(&(sha2_headers),(unsigned char *)headerhash);
-      fprintf(ctx->debug_stream, "PDKIM [%s] hh computed: ", sig->domain);
+      #ifdef PDKIM_DEBUG
+      if (ctx->debug_stream) {
+        fprintf(ctx->debug_stream, "PDKIM [%s] hh computed: ", sig->domain);
+      }
+      #endif
       pdkim_hexprint(ctx->debug_stream, headerhash, 32, 1);
     }
 
