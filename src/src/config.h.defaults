@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/config.h.defaults,v 1.16.2.1 2009/02/24 15:57:55 tom Exp $ */
+/* $Cambridge: exim/src/src/config.h.defaults,v 1.16.2.2 2009/04/29 20:44:13 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -156,7 +156,7 @@ it's a default value. */
 /* Things that are not routinely changed but are nevertheless configurable
 just in case. */
 
-#define DNS_MAXNAME                 256
+#define DNS_MAXNAME                1024
 #define EXPAND_MAXN                  20
 #define ROOT_UID                      0
 
