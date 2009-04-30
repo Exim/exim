@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.12 2009/04/09 19:18:11 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.13 2009/04/30 15:25:39 tom Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -270,6 +270,7 @@ void pdkim_free_sig(pdkim_signature *sig) {
     if (sig->signature_header != NULL) free(sig->signature_header);
     if (sig->sha1_body        != NULL) free(sig->sha1_body);
     if (sig->sha2_body        != NULL) free(sig->sha2_body);
+    if (sig->hnames_check     != NULL) free(sig->hnames_check);
 
     if (sig->pubkey != NULL) pdkim_free_pubkey(sig->pubkey);
 
@@ -295,21 +296,24 @@ DLLEXPORT void pdkim_free_ctx(pdkim_ctx *ctx) {
    "start". Returns the position of the header name in
    the list. */
 int header_name_match(char *header,
-                      char *list,
-                      int   start) {
+                      char *tick,
+                      int   do_tick) {
   char *hname;
   char *lcopy;
   char *p;
   char *q;
-  int pos = 0;
   int rc = PDKIM_FAIL;
+
+  /* Get header name */
   char *hcolon = strchr(header,':');
   if (hcolon == NULL) return rc; /* This isn't a header */
   hname = malloc((hcolon-header)+1);
   if (hname == NULL) return PDKIM_ERR_OOM;
   memset(hname,0,(hcolon-header)+1);
   strncpy(hname,header,(hcolon-header));
-  lcopy = strdup(list);
+
+  /* Copy tick-off list locally, so we can punch zeroes into it */
+  lcopy = strdup(tick);
   if (lcopy == NULL) {
     free(hname);
     return PDKIM_ERR_OOM;
@@ -318,20 +322,24 @@ int header_name_match(char *header,
   q = strchr(p,':');
   while (q != NULL) {
     *q = '\0';
-    if (pos >= start) {
-      if (strcasecmp(p,hname) == 0) {
-        rc = pos;
-        goto BAIL;
-      }
+
+    if (strcasecmp(p,hname) == 0) {
+      rc = PDKIM_OK;
+      /* Invalidate header name instance in tick-off list */
+      if (do_tick) tick[p-lcopy] = '_';
+      goto BAIL;
     }
+
     p = q+1;
     q = strchr(p,':');
-    pos++;
   }
-  if (pos >= start) {
-    if (strcasecmp(p,hname) == 0)
-      rc = pos;
+
+  if (strcasecmp(p,hname) == 0) {
+    rc = PDKIM_OK;
+    /* Invalidate header name instance in tick-off list */
+    if (do_tick) tick[p-lcopy] = '_';
   }
+
   BAIL:
   free(hname);
   free(lcopy);
@@ -659,6 +667,9 @@ pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
     pdkim_free_sig(sig);
     return NULL;
   }
+
+  /* Copy header list to 'tick-off' header list */
+  sig->hnames_check = strdup(sig->headernames);
 
   *q = '\0';
   /* Chomp raw header. The final newline must not be added to the signature. */
@@ -1024,16 +1035,13 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
       if (header_name_match(ctx->cur_header->str,
                             sig->sign_headers?
                               sig->sign_headers:
-                              PDKIM_DEFAULT_SIGN_HEADERS, 0) < 0) goto NEXT_SIG;
+                              PDKIM_DEFAULT_SIGN_HEADERS, 0) != PDKIM_OK) goto NEXT_SIG;
     }
     /* VERIFICATION --------------------------------------------------------- */
     else {
-      int rc = header_name_match(ctx->cur_header->str,
-                                 sig->headernames,
-                                 sig->headernames_pos);
-      /* Header is not included or out-of-sequence */
-      if (rc < 0) goto NEXT_SIG;
-      sig->headernames_pos = rc;
+      /* Header is not included or all instances were already 'ticked off' */
+      if (header_name_match(ctx->cur_header->str,
+                            sig->hnames_check, 1) != PDKIM_OK) goto NEXT_SIG;
     }
 
     /* Add header to the signed headers list */

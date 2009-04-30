@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.10 2009/04/09 13:57:21 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.11 2009/04/30 15:25:39 tom Exp $ */
 
 /* -------------------------------------------------------------------------- */
 /* Debugging. This can also be enabled/disabled at run-time. I recommend to
@@ -240,7 +240,9 @@ typedef struct pdkim_signature {
   char *rsa_privkey;     /* Private RSA key                             */
   char *sign_headers;    /* To-be-signed header names                   */
   /* Verification specific -------------------------------------------- */
-  int headernames_pos;   /* Current position in header name list        */
+  char *hnames_check;    /* Tick-off header list that we use to keep
+                            track of header names that we have already
+                            added to the signature                      */
   char *rawsig_no_b_val; /* Original signature header w/o b= tag value. */
 } pdkim_signature;
 
@@ -306,7 +308,7 @@ int        pdkim_set_optional (pdkim_ctx *, char *, char *,int, int,
                                unsigned long);
 
 DLLEXPORT
-int        pdkim_feed        (pdkim_ctx *, char *, int);
+int        pdkim_feed         (pdkim_ctx *, char *, int);
 DLLEXPORT
 int        pdkim_feed_finish  (pdkim_ctx *, pdkim_signature **);
 
