@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.13 2009/04/30 15:25:39 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.14 2009/04/30 19:15:48 tom Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -1313,7 +1313,7 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
       }
       /* ---------------------------------------------------------------------- */
 
-      if (sig->canon_body == PDKIM_CANON_RELAXED)
+      if (sig->canon_headers == PDKIM_CANON_RELAXED)
         rh = pdkim_relax_header(p->value,1); /* cook header for relaxed canon */
       else
         rh = strdup(p->value);               /* just copy it for simple canon */
