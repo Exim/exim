@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.6 2009/04/09 13:57:21 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.7 2009/04/30 08:21:30 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -34,9 +34,16 @@ int dkim_exim_query_dns_txt(char *name, char *answer) {
 
   /* Copy record content to the answer buffer */
   if (rr != NULL) {
-    int len = (rr->data)[0];
-    //if (len > 511) len = 127; // ???
-    snprintf(answer, PDKIM_DNS_TXT_MAX_RECLEN, "%.*s", len, (char *)(rr->data+1));
+    int rr_offset = 0;
+    int answer_offset = 0;
+    while (rr_offset < rr->size) {
+      uschar len = (rr->data)[rr_offset++];
+      snprintf(answer+(answer_offset),
+               PDKIM_DNS_TXT_MAX_RECLEN-(answer_offset),
+               "%.*s", (int)len, (char *)((rr->data)+rr_offset));
+      rr_offset+=len;
+      answer_offset+=len;
+    }
   }
   else return 1;
 

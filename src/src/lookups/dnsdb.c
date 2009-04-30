@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.17 2007/01/08 10:50:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.17.2.1 2009/04/30 08:21:30 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -303,8 +303,14 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
 
     if (type == T_TXT)
       {
-      yield = string_cat(yield, &size, &ptr, (uschar *)(rr->data+1),
-        (rr->data)[0]);
+      int data_offset = 0;
+      while (data_offset < rr->size)
+        {
+        uschar chunk_len = (rr->data)[data_offset++];
+        yield = string_cat(yield, &size, &ptr,
+                           (uschar *)((rr->data)+data_offset), chunk_len);
+        data_offset += chunk_len;
+        }
       }
     else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SRV */
       {
