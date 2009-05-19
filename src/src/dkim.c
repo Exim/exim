@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.8 2009/05/19 08:24:47 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.9 2009/05/19 09:30:41 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -87,46 +87,82 @@ int dkim_exim_verify_finish(void) {
   if (pdkim_feed_finish(dkim_verify_ctx,&dkim_signatures) != PDKIM_OK) return 0;
 
   while (dkim_signatures != NULL) {
-    uschar *dkim_log = string_sprintf("DKIM: v=%u d=%s s=%s c=%s/%s a=%s ",
-                                      dkim_signatures->version,
-                                      dkim_signatures->domain,
-                                      dkim_signatures->selector,
-                                      (dkim_signatures->canon_headers == PDKIM_CANON_SIMPLE)?"simple":"relaxed",
-                                      (dkim_signatures->canon_body    == PDKIM_CANON_SIMPLE)?"simple":"relaxed",
-                                      (dkim_signatures->algo          == PDKIM_ALGO_RSA_SHA256)?"rsa-sha256":"rsa-sha1"
+    int size = 0;
+    int ptr = 0;
+    uschar *logmsg = string_append(NULL, &size, &ptr, 5,
 
+      string_sprintf( "DKIM: v=%u d=%s s=%s c=%s/%s a=%s ",
+                      dkim_signatures->version,
+                      dkim_signatures->domain,
+                      dkim_signatures->selector,
+                      (dkim_signatures->canon_headers == PDKIM_CANON_SIMPLE)?"simple":"relaxed",
+                      (dkim_signatures->canon_body    == PDKIM_CANON_SIMPLE)?"simple":"relaxed",
+                      (dkim_signatures->algo          == PDKIM_ALGO_RSA_SHA256)?"rsa-sha256":"rsa-sha1"
+                    ),
 
-                                      (dkim_signatures->identity != NULL)?dkim_signatures->identity:"<void>",
-                                      (dkim_signatures->created>0)?
-
-                                      );
-
-    dkim_log = string_cat(dkim_log);
-
-
+      ((dkim_signatures->identity != NULL)?
+        string_sprintf("i=%s ", dkim_signatures->identity)
+        :
+        US""
+      ),
+      ((dkim_signatures->created > 0)?
+        string_sprintf("t=%lu ", dkim_signatures->created)
+        :
+        US""
+      ),
+      ((dkim_signatures->expires > 0)?
+        string_sprintf("x=%lu ", dkim_signatures->expires)
+        :
+        US""
+      ),
+      ((dkim_signatures->bodylength > -1)?
+        string_sprintf("x=%li ", dkim_signatures->bodylength)
+        :
+        US""
+      )
+    );
 
     switch(dkim_signatures->verify_status) {
       case PDKIM_VERIFY_NONE:
-        debug_printf("not verified\n");
-        log_write(0, LOG_MAIN, "DKIM: Signature from domain '%s', selector '%s': "
-                  "not verified", dkim_signatures->domain, dkim_signatures->selector);
+        logmsg = string_append(logmsg, &size, &ptr, 1, "[not verified]");
       break;
       case PDKIM_VERIFY_INVALID:
-        debug_printf("invalid\n");
-        log_write(0, LOG_MAIN, "DKIM: Signature from domain '%s', selector '%s': "
-                  "invalid", dkim_signatures->domain, dkim_signatures->selector);
+        logmsg = string_append(logmsg, &size, &ptr, 1, "[invalid - ");
+        switch (dkim_signatures->verify_ext_status) {
+          case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE:
+            logmsg = string_append(logmsg, &size, &ptr, 1, "public key record (currently?) unavailable]");
+          break;
+          case PDKIM_VERIFY_INVALID_BUFFER_SIZE:
+            logmsg = string_append(logmsg, &size, &ptr, 1, "overlong public key record]");
+          break;
+          case PDKIM_VERIFY_INVALID_PUBKEY_PARSING:
+            logmsg = string_append(logmsg, &size, &ptr, 1, "syntax error in public key record]");
+          break;
+          default:
+            logmsg = string_append(logmsg, &size, &ptr, 1, "unspecified problem]");
+        }
       break;
       case PDKIM_VERIFY_FAIL:
-        debug_printf("verification failed\n");
-        log_write(0, LOG_MAIN, "DKIM: Signature from domain '%s', selector '%s': "
-                  "verification failed", dkim_signatures->domain, dkim_signatures->selector);
+        logmsg = string_append(logmsg, &size, &ptr, 1, "[verification failed - ");
+        switch (dkim_signatures->verify_ext_status) {
+          case PDKIM_VERIFY_FAIL_BODY:
+            logmsg = string_append(logmsg, &size, &ptr, 1, "body hash mismatch (body probably modified in transit)]");
+          break;
+          case PDKIM_VERIFY_FAIL_MESSAGE:
+            logmsg = string_append(logmsg, &size, &ptr, 1, "signature did not verify (headers probably modified in transit)]");
+          break;
+          default:
+            logmsg = string_append(logmsg, &size, &ptr, 1, "unspecified reason]");
+        }
       break;
       case PDKIM_VERIFY_PASS:
-        debug_printf("verification succeeded\n");
-        log_write(0, LOG_MAIN, "DKIM: Signature from domain '%s', selector '%s': "
-                  "verification succeeded", dkim_signatures->domain, dkim_signatures->selector);
+        logmsg = string_append(logmsg, &size, &ptr, 1, "[verification succeeded]");
       break;
     }
+
+    logmsg[ptr] = '\0';
+    log_write(0, LOG_MAIN, (char *)logmsg);
+
     /* Try next signature */
     dkim_signatures = dkim_signatures->next;
   }
