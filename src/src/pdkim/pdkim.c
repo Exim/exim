@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.14 2009/04/30 19:15:48 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.15 2009/05/19 09:49:14 tom Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -442,6 +442,7 @@ char *pdkim_decode_qp(char *str) {
     }
     p++;
   }
+  *q = '\0';
   return n;
 }
 

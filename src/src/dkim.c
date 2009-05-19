@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.10 2009/05/19 09:34:59 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.11 2009/05/19 09:49:14 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -116,7 +116,7 @@ int dkim_exim_verify_finish(void) {
         US""
       ),
       ((dkim_signatures->bodylength > -1)?
-        string_sprintf("x=%lu ", dkim_signatures->bodylength)
+        string_sprintf("l=%lu ", dkim_signatures->bodylength)
         :
         US""
       )
