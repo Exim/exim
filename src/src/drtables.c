@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/drtables.c,v 1.9.2.1 2009/02/24 15:57:55 tom Exp $ */
+/* $Cambridge: exim/src/src/drtables.c,v 1.9.2.2 2009/05/19 08:24:48 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -105,11 +105,6 @@ be NULL for methods that don't need them. */
 #include "lookups/whoson.h"
 #endif
 
-#ifndef DISABLE_DKIM
-#include "lookups/dkim.h"
-#endif
-
-
 /* The second field in each item below is a set of bit flags:
 
   lookup_querystyle     => this is a query-style lookup,
@@ -169,23 +164,6 @@ of the key strings. */
   dbmdb_check,     /* sic */     /* check function */
   dbmnz_find,                    /* find function */
   dbmdb_close,     /* sic */     /* close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* DKIM lookups */
-
-  {
-  US"dkim",                      /* lookup name */
-  lookup_querystyle,             /* query style */
-#ifndef DISABLE_DKIM
-  dkim_open,                     /* open function */
-  NULL,                          /* check function */
-  dkim_find,                     /* find function */
-  NULL,                          /* no close function */
   NULL,                          /* no tidy function */
   NULL                           /* no quoting function */
 #else
