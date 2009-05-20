@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.45.2.2 2009/04/09 13:57:21 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.45.2.3 2009/05/20 14:30:14 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1386,10 +1386,8 @@ message_linecount = body_linecount = body_zerocount =
 
 #ifndef DISABLE_DKIM
 /* Call into DKIM to set up the context. */
-if (smtp_input && dkim_do_verify) dkim_do_verify = dkim_exim_verify_init();
-else dkim_do_verify = 0;
+if (smtp_input && !smtp_batched_input && !dkim_disable_verify) dkim_exim_verify_init();
 #endif
-
 
 /* Remember the time of reception. Exim uses time+pid for uniqueness of message
 ids, and fractions of a second are required. See the comments that precede the
@@ -2971,7 +2969,7 @@ else
     {
 
 #ifndef DISABLE_DKIM
-    if (dkim_do_verify) dkim_do_verify = dkim_exim_verify_finish();
+    if (!dkim_disable_verify) dkim_exim_verify_finish();
 #endif
 
 #ifdef WITH_CONTENT_SCAN

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.11 2009/05/19 09:49:14 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.12 2009/05/20 14:30:14 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -24,7 +24,7 @@ int dkim_exim_query_dns_txt(char *name, char *answer) {
   dns_scan   dnss;
   dns_record *rr;
 
-  if (dns_lookup(&dnsa, (uschar *)name, T_TXT, NULL) != DNS_SUCCEED) return 1;
+  if (dns_lookup(&dnsa, (uschar *)name, T_TXT, NULL) != DNS_SUCCEED) return PDKIM_FAIL;
 
   /* Search for TXT record */
   for (rr = dns_next_rr(&dnsa, &dnss, RESET_ANSWERS);
@@ -45,13 +45,13 @@ int dkim_exim_query_dns_txt(char *name, char *answer) {
       answer_offset+=len;
     }
   }
-  else return 1;
+  else return PDKIM_FAIL;
 
   return PDKIM_OK;
 }
 
 
-int dkim_exim_verify_init(void) {
+void dkim_exim_verify_init(void) {
 
   /* Free previous context if there is one */
   if (dkim_verify_ctx) pdkim_free_ctx(dkim_verify_ctx);
@@ -62,37 +62,47 @@ int dkim_exim_verify_init(void) {
                                      );
 
   if (dkim_verify_ctx != NULL) {
-    dkim_collect_input = 1;
+    dkim_collect_input = TRUE;
     pdkim_set_debug_stream(dkim_verify_ctx,debug_file);
-    return 1;
   }
-  else {
-    dkim_collect_input = 0;
-    return 0;
-  }
+  else dkim_collect_input = FALSE;
+
 }
 
 
-int dkim_exim_verify_feed(uschar *data, int len) {
-  if (pdkim_feed(dkim_verify_ctx,
+void dkim_exim_verify_feed(uschar *data, int len) {
+  if (dkim_collect_input &&
+      pdkim_feed(dkim_verify_ctx,
                  (char *)data,
-                 len) != PDKIM_OK) return 0;
-  return 1;
+                 len) != PDKIM_OK) dkim_collect_input = FALSE;
 }
 
 
-int dkim_exim_verify_finish(void) {
-  dkim_signatures = NULL;
-  dkim_collect_input = 0;
-  if (pdkim_feed_finish(dkim_verify_ctx,&dkim_signatures) != PDKIM_OK) return 0;
+void dkim_exim_verify_finish(void) {
 
+  /* Delete eventual previous signature chain */
+  dkim_signatures = NULL;
+
+  /* If we have arrived here with dkim_collect_input == FALSE, it
+     means there was a processing error somewhere along the way.
+     Log the incident and disable futher verification. */
+  if (!dkim_collect_input) {
+    log_write(0, LOG_MAIN|LOG_PANIC, "DKIM: Error while running this message through validation, disabling signature verification.");
+    dkim_disable_verify = TRUE;
+    return;
+  }
+  dkim_collect_input = FALSE;
+
+  /* Finish DKIM operation and fetch link to signatures chain */
+  if (pdkim_feed_finish(dkim_verify_ctx,&dkim_signatures) != PDKIM_OK) return;
+
+  /* Log a line for each signature */
   while (dkim_signatures != NULL) {
     int size = 0;
     int ptr = 0;
     uschar *logmsg = string_append(NULL, &size, &ptr, 5,
 
-      string_sprintf( "DKIM: v=%u d=%s s=%s c=%s/%s a=%s ",
-                      dkim_signatures->version,
+      string_sprintf( "DKIM: d=%s s=%s c=%s/%s a=%s ",
                       dkim_signatures->domain,
                       dkim_signatures->selector,
                       (dkim_signatures->canon_headers == PDKIM_CANON_SIMPLE)?"simple":"relaxed",
@@ -163,21 +173,16 @@ int dkim_exim_verify_finish(void) {
     logmsg[ptr] = '\0';
     log_write(0, LOG_MAIN, (char *)logmsg);
 
-    /* Try next signature */
+    /* Log next signature */
     dkim_signatures = dkim_signatures->next;
   }
-
-  return dkim_signatures?1:0;
 }
 
 
-int dkim_exim_verify_result(uschar *domain, uschar **result, uschar **error) {
-
+void dkim_exim_verify_result(uschar *domain, uschar **result, uschar **error) {
   if (dkim_verify_ctx) {
 
   }
-
-  return OK;
 }
 
 

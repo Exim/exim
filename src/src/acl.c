@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.82.2.1 2009/02/24 15:57:55 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.82.2.2 2009/05/20 14:30:14 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -197,7 +197,7 @@ static uschar *controls[] = {
   US"bmi_run",
   #endif
   #ifndef DISABLE_DKIM
-  US"dkim_verify",
+  US"dkim_disable_verify",
   #endif
   US"error",
   US"caseful_local_part",
@@ -493,7 +493,7 @@ static unsigned int control_forbids[] = {
   #endif
 
   #ifndef DISABLE_DKIM
-  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dkim_verify */
+  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dkim_disable_verify */
     (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
@@ -574,7 +574,7 @@ static control_def controls_list[] = {
   { US"bmi_run",                 CONTROL_BMI_RUN, FALSE },
 #endif
 #ifndef DISABLE_DKIM
-  { US"dkim_verify",             CONTROL_DKIM_VERIFY, FALSE },
+  { US"dkim_disable_verify",     CONTROL_DKIM_VERIFY, FALSE },
 #endif
   { US"caseful_local_part",      CONTROL_CASEFUL_LOCAL_PART, FALSE },
   { US"caselower_local_part",    CONTROL_CASELOWER_LOCAL_PART, FALSE },
@@ -2556,7 +2556,7 @@ for (; cb != NULL; cb = cb->next)
 
       #ifndef DISABLE_DKIM
       case CONTROL_DKIM_VERIFY:
-      dkim_do_verify = 1;
+      dkim_disable_verify = TRUE;
       break;
       #endif
 

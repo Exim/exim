@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_in.c,v 1.23.2.2 2009/04/09 13:57:21 tom Exp $ */
+/* $Cambridge: exim/src/src/spool_in.c,v 1.23.2.3 2009/05/20 14:30:14 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -279,8 +279,8 @@ bmi_verdicts = NULL;
 #endif
 
 #ifndef DISABLE_DKIM
-dkim_do_verify = 0;
-dkim_collect_input = 0;
+dkim_disable_verify = FALSE;
+dkim_collect_input = FALSE;
 #endif
 
 #ifdef SUPPORT_TLS

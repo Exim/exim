@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.11 2009/04/30 15:25:39 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.h,v 1.1.2.12 2009/05/20 14:30:15 tom Exp $ */
 
 /* -------------------------------------------------------------------------- */
 /* Debugging. This can also be enabled/disabled at run-time. I recommend to
@@ -242,7 +242,7 @@ typedef struct pdkim_signature {
   /* Verification specific -------------------------------------------- */
   char *hnames_check;    /* Tick-off header list that we use to keep
                             track of header names that we have already
-                            added to the signature                      */
+                            added to the signature candidates.          */
   char *rawsig_no_b_val; /* Original signature header w/o b= tag value. */
 } pdkim_signature;
 

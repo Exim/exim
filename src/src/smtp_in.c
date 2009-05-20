@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.63.2.2 2009/04/09 13:57:21 tom Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.63.2.3 2009/05/20 14:30:14 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -265,7 +265,7 @@ if (smtp_inptr >= smtp_inend)
     return EOF;
     }
 #ifndef DISABLE_DKIM
-  if (dkim_collect_input) dkim_collect_input = dkim_exim_verify_feed(smtp_inbuffer, rc);
+  dkim_exim_verify_feed(smtp_inbuffer, rc);
 #endif
   smtp_inend = smtp_inbuffer + rc;
   smtp_inptr = smtp_inbuffer;
@@ -1041,8 +1041,8 @@ bmi_run = 0;
 bmi_verdicts = NULL;
 #endif
 #ifndef DISABLE_DKIM
-dkim_do_verify = 0;
-dkim_collect_input = 0;
+dkim_disable_verify = FALSE;
+dkim_collect_input = FALSE;
 #endif
 #ifdef EXPERIMENTAL_SPF
 spf_header_comment = NULL;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.35 2008/02/12 12:52:51 nm4 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.35.2.1 2009/05/20 14:30:14 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -205,6 +205,9 @@ static optionlist optionlist_config[] = {
   { "disable_fsync",            opt_bool,        &disable_fsync },
 #endif
   { "disable_ipv6",             opt_bool,        &disable_ipv6 },
+#ifndef DISABLE_DKIM
+  { "dkim_verify_domains",      opt_stringptr,   &dkim_verify_domains },
+#endif
   { "dns_again_means_nonexist", opt_stringptr,   &dns_again_means_nonexist },
   { "dns_check_names_pattern",  opt_stringptr,   &check_dns_names_pattern },
   { "dns_csa_search_limit",     opt_int,         &dns_csa_search_limit },

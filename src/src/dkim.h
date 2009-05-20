@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.h,v 1.1.2.3 2009/04/09 13:57:21 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.h,v 1.1.2.4 2009/05/20 14:30:14 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -14,9 +14,9 @@ uschar *dkim_exim_sign(int,
                        uschar *,
                        uschar *);
 
-int dkim_exim_verify_init(void);
-int dkim_exim_verify_feed(uschar *, int);
-int dkim_exim_verify_finish(void);
-int dkim_exim_verify_result(uschar *,
-                            uschar **,
-                            uschar **);
+void dkim_exim_verify_init(void);
+void dkim_exim_verify_feed(uschar *, int);
+void dkim_exim_verify_finish(void);
+void dkim_exim_verify_result(uschar *,
+                             uschar **,
+                             uschar **);

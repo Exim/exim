@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.62.2.2 2009/04/09 13:57:21 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.62.2.3 2009/05/20 14:30:14 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -298,8 +298,9 @@ extern BOOL    disable_logging;        /* Disables log writing when TRUE */
 #ifndef DISABLE_DKIM
 extern uschar *dkim_signing_domain;      /* Domain used for signing a message. */
 extern uschar *dkim_signing_selector;    /* Selector used for signing a message. */
-extern int     dkim_do_verify;           /* DKIM verification switch. Set with ACL control statement. */
-extern int     dkim_collect_input;       /* Set during message reception, when SMTP input is to be fed to the validator. */
+extern uschar *dkim_verify_domains;      /* Colon-separated list of domains for each of which we call the DKIM ACL */
+extern BOOL    dkim_collect_input;       /* Runtime flag that tracks wether SMTP input is fed to DKIM validation */
+extern BOOL    dkim_disable_verify;      /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
 #endif
 
 extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */
