@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.16 2009/05/20 14:30:15 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.1.2.17 2009/05/27 17:26:55 tom Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -39,7 +39,7 @@
 
 #define PDKIM_MAX_HEADER_LEN        65536
 #define PDKIM_MAX_HEADERS           512
-#define PDKIM_MAX_BODY_LINE_LEN     1024
+#define PDKIM_MAX_BODY_LINE_LEN     16384
 #define PDKIM_DNS_TXT_MAX_NAMELEN   1024
 #define PDKIM_DEFAULT_SIGN_HEADERS "From:Sender:Reply-To:Subject:Date:"\
                              "Message-ID:To:Cc:MIME-Version:Content-Type:"\

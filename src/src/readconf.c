@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.35.2.1 2009/05/20 14:30:14 tom Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.35.2.2 2009/05/27 17:26:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -142,6 +142,9 @@ static optionlist optionlist_config[] = {
   { "acl_smtp_auth",            opt_stringptr,   &acl_smtp_auth },
   { "acl_smtp_connect",         opt_stringptr,   &acl_smtp_connect },
   { "acl_smtp_data",            opt_stringptr,   &acl_smtp_data },
+#ifndef DISABLE_DKIM
+  { "acl_smtp_dkim",            opt_stringptr,   &acl_smtp_dkim },
+#endif
   { "acl_smtp_etrn",            opt_stringptr,   &acl_smtp_etrn },
   { "acl_smtp_expn",            opt_stringptr,   &acl_smtp_expn },
   { "acl_smtp_helo",            opt_stringptr,   &acl_smtp_helo },

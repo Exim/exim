@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.12 2009/05/20 14:30:14 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.1.2.13 2009/05/27 17:26:54 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -79,6 +79,9 @@ void dkim_exim_verify_feed(uschar *data, int len) {
 
 
 void dkim_exim_verify_finish(void) {
+  int dkim_signing_domains_size = 0;
+  int dkim_signing_domains_ptr = 0;
+  dkim_signing_domains = NULL;
 
   /* Delete eventual previous signature chain */
   dkim_signatures = NULL;
@@ -96,10 +99,11 @@ void dkim_exim_verify_finish(void) {
   /* Finish DKIM operation and fetch link to signatures chain */
   if (pdkim_feed_finish(dkim_verify_ctx,&dkim_signatures) != PDKIM_OK) return;
 
-  /* Log a line for each signature */
+
   while (dkim_signatures != NULL) {
     int size = 0;
     int ptr = 0;
+    /* Log a line for each signature */
     uschar *logmsg = string_append(NULL, &size, &ptr, 5,
 
       string_sprintf( "DKIM: d=%s s=%s c=%s/%s a=%s ",
@@ -109,7 +113,6 @@ void dkim_exim_verify_finish(void) {
                       (dkim_signatures->canon_body    == PDKIM_CANON_SIMPLE)?"simple":"relaxed",
                       (dkim_signatures->algo          == PDKIM_ALGO_RSA_SHA256)?"rsa-sha256":"rsa-sha1"
                     ),
-
       ((dkim_signatures->identity != NULL)?
         string_sprintf("i=%s ", dkim_signatures->identity)
         :
@@ -173,9 +176,23 @@ void dkim_exim_verify_finish(void) {
     logmsg[ptr] = '\0';
     log_write(0, LOG_MAIN, (char *)logmsg);
 
-    /* Log next signature */
+    /* Build a colon-separated list of signing domains in dkim_signing_domains */
+    dkim_signing_domains = string_append(dkim_signing_domains,
+                                         &dkim_signing_domains_size,
+                                         &dkim_signing_domains_ptr,
+                                         2,
+                                         dkim_signatures->domain,
+                                         ":")
+                                        );
+
+    /* Process next signature */
     dkim_signatures = dkim_signatures->next;
   }
+
+  /* Chop the last colon from the domain list */
+  if ((dkim_signing_domains != NULL) &&
+      (Ustrlen(dkim_signing_domains) > 0))
+    dkim_signing_domains[strlen(dkim_signing_domains)-1] = '\0';
 }
 
 

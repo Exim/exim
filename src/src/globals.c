@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.81.2.4 2009/05/20 14:30:14 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.81.2.5 2009/05/27 17:26:54 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -182,6 +182,9 @@ uschar *acl_not_smtp_start     = NULL;
 uschar *acl_smtp_auth          = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;
+#ifndef DISABLE_DKIM
+uschar *acl_smtp_dkim          = NULL;
+#endif
 uschar *acl_smtp_etrn          = NULL;
 uschar *acl_smtp_expn          = NULL;
 uschar *acl_smtp_helo          = NULL;
@@ -210,6 +213,7 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"MAIL",
                                    US"PREDATA",
                                    US"MIME",
+                                   US"DKIM",
                                    US"DATA",
                                    US"non-SMTP",
                                    US"AUTH",
@@ -229,6 +233,7 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
                                    US"550",     /* MAIL */
                                    US"550",     /* PREDATA */
                                    US"550",     /* MIME */
+                                   US"550",     /* DKIM */
                                    US"550",     /* DATA */
                                    US"0",       /* not SMTP; not relevant */
                                    US"503",     /* AUTH */
@@ -527,9 +532,10 @@ BOOL    disable_ipv6           = FALSE;
 BOOL    disable_logging        = FALSE;
 
 #ifndef DISABLE_DKIM
+uschar *dkim_signing_domains     = NULL;
 uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
-uschar *dkim_verify_domains      = US"@dkim_signed";
+uschar *dkim_verify_domains      = US"$dkim_signing_domains";
 BOOL    dkim_collect_input       = FALSE;
 BOOL    dkim_disable_verify      = FALSE;
 #endif

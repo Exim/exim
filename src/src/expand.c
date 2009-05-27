@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.97.2.1 2009/02/24 15:57:55 tom Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.97.2.2 2009/05/27 17:26:54 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -404,6 +404,7 @@ static var_entry var_table[] = {
 #ifndef DISABLE_DKIM
   { "dkim_domain",         vtype_stringptr,   &dkim_signing_domain },
   { "dkim_selector",       vtype_stringptr,   &dkim_signing_selector },
+  { "dkim_signing_domains",vtype_stringptr,   &dkim_signing_domains },
 #endif
   { "dnslist_domain",      vtype_stringptr,   &dnslist_domain },
   { "dnslist_matched",     vtype_stringptr,   &dnslist_matched },
@@ -1544,6 +1545,7 @@ while (last > first)
       sprintf(CS var_buffer, "%d", inodes);
       }
     return var_buffer;
+
     }
   }
 

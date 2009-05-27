@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.45.2.3 2009/05/20 14:30:14 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.45.2.4 2009/05/27 17:26:55 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2969,8 +2969,46 @@ else
     {
 
 #ifndef DISABLE_DKIM
-    if (!dkim_disable_verify) dkim_exim_verify_finish();
-#endif
+    if (!dkim_disable_verify)
+      {
+      /* Finish verification, this will log individual signature results to
+         the mainlog */
+      dkim_exim_verify_finish();
+
+      /* Check if we must run the DKIM ACL */
+      if ((acl_smtp_dkim != NULL) &&
+          (dkim_verify_domains != NULL) &&
+          (dkim_verify_domains[0] != '\0'))
+        {
+        uschar *dkim_verify_domains_expanded =
+          expand_string(dkim_verify_domains);
+        if (dkim_verify_domains_expanded == NULL)
+          {
+          log_write(0, LOG_MAIN|LOG_PANIC,
+            "expansion of dkim_verify_domains option failed: %s",
+            expand_string_message);
+          }
+        else
+          {
+          int sep = 0;
+          uschar *ptr = dkim_verify_domains_expanded;
+          uschar *item = NULL;
+          uschar itembuf[256];
+          while ((item = string_nextinlist(&ptr, &sep,
+                                           itembuf,
+                                           sizeof(itembuf))) != NULL)
+            {
+
+
+            rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim, &user_msg, &log_msg);
+            if (rc != OK) break;
+            }
+
+          add_acl_headers(US"DKIM");
+          }
+        }
+      }
+#endif /* DISABLE_DKIM */
 
 #ifdef WITH_CONTENT_SCAN
     if (acl_smtp_mime != NULL &&
