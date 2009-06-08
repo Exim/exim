@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.45.2.4 2009/05/27 17:26:55 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.45.2.5 2009/06/08 21:06:32 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2998,20 +2998,35 @@ else
                                            itembuf,
                                            sizeof(itembuf))) != NULL)
             {
-
-
+            dkim_exim_acl_setup(item);
             rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim, &user_msg, &log_msg);
             if (rc != OK) break;
             }
-
           add_acl_headers(US"DKIM");
+          if (rc == DISCARD)
+            {
+            recipients_count = 0;
+            blackholed_by = US"DKIM ACL";
+            if (log_msg != NULL)
+              blackhole_log_msg = string_sprintf(": %s", log_msg);
+            }
+          else if (rc != OK)
+            {
+            Uunlink(spool_name);
+            if (smtp_handle_acl_fail(ACL_WHERE_DKIM, rc, user_msg, log_msg) != 0)
+              smtp_yield = FALSE;    /* No more messsages after dropped connection */
+            smtp_reply = US"";       /* Indicate reply already sent */
+            message_id[0] = 0;       /* Indicate no message accepted */
+            goto TIDYUP;             /* Skip to end of function */
+            }
           }
         }
       }
 #endif /* DISABLE_DKIM */
 
 #ifdef WITH_CONTENT_SCAN
-    if (acl_smtp_mime != NULL &&
+    if (recipients_count > 0 &&
+        acl_smtp_mime != NULL &&
         !run_mime_acl(acl_smtp_mime, &smtp_yield, &smtp_reply, &blackholed_by))
       goto TIDYUP;
 #endif /* WITH_CONTENT_SCAN */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.97.2.2 2009/05/27 17:26:54 tom Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.97.2.3 2009/06/08 21:06:31 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -364,6 +364,9 @@ enum {
   vtype_load_avg,       /* value not used; result is int from os_getloadavg */
   vtype_pspace,         /* partition space; value is T/F for spool/log */
   vtype_pinodes         /* partition inodes; value is T/F for spool/log */
+  #ifndef DISABLE_DKIM
+  ,vtype_dkim           /* Lookup of value in DKIM signature */
+  #endif
   };
 
 /* This table must be kept in alphabetical order. */
@@ -402,9 +405,25 @@ static var_entry var_table[] = {
   { "demime_reason",       vtype_stringptr,   &demime_reason },
 #endif
 #ifndef DISABLE_DKIM
+  { "dkim_algo",           vtype_dkim,        (void *)DKIM_ALGO },
+  { "dkim_bodylength",     vtype_dkim,        (void *)DKIM_BODYLENGTH },
+  { "dkim_canon_body",     vtype_dkim,        (void *)DKIM_CANON_BODY },
+  { "dkim_canon_headers",  vtype_dkim,        (void *)DKIM_CANON_HEADERS },
+  { "dkim_copiedheaders",  vtype_dkim,        (void *)DKIM_COPIEDHEADERS },
+  { "dkim_created",        vtype_dkim,        (void *)DKIM_CREATED },
   { "dkim_domain",         vtype_stringptr,   &dkim_signing_domain },
+  { "dkim_expires",        vtype_dkim,        (void *)DKIM_EXPIRES },
+  { "dkim_headernames",    vtype_dkim,        (void *)DKIM_HEADERNAMES },
+  { "dkim_identity",       vtype_dkim,        (void *)DKIM_IDENTITY },
+  { "dkim_key_granularity",vtype_dkim,        (void *)DKIM_KEY_GRANULARITY },
+  { "dkim_key_nosubdomains",vtype_dkim,       (void *)DKIM_NOSUBDOMAINS },
+  { "dkim_key_notes",      vtype_dkim,        (void *)DKIM_KEY_NOTES },
+  { "dkim_key_srvtype",    vtype_dkim,        (void *)DKIM_KEY_SRVTYPE },
+  { "dkim_key_testing",    vtype_dkim,        (void *)DKIM_KEY_TESTING },
   { "dkim_selector",       vtype_stringptr,   &dkim_signing_selector },
   { "dkim_signing_domains",vtype_stringptr,   &dkim_signing_domains },
+  { "dkim_verify_reason",  vtype_dkim,        (void *)DKIM_VERIFY_REASON },
+  { "dkim_verify_status",  vtype_dkim,        (void *)DKIM_VERIFY_STATUS},
 #endif
   { "dnslist_domain",      vtype_stringptr,   &dnslist_domain },
   { "dnslist_matched",     vtype_stringptr,   &dnslist_matched },
@@ -1545,6 +1564,11 @@ while (last > first)
       sprintf(CS var_buffer, "%d", inodes);
       }
     return var_buffer;
+
+    #ifndef DKIM_DISABLE
+    case vtype_dkim:
+    return dkim_exim_expand_query((int)var_table[middle].value);
+    #endif
 
     }
   }
