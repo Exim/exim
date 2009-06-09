@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.82.2.2 2009/05/20 14:30:14 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.82.2.3 2009/06/09 14:19:56 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -65,6 +65,10 @@ enum { ACLC_ACL,
 #ifdef WITH_OLD_DEMIME
        ACLC_DEMIME,
 #endif
+#ifndef DISABLE_DKIM
+       ACLC_DKIM_SIGNER,
+       ACLC_DKIM_STATUS,
+#endif
        ACLC_DNSLISTS,
        ACLC_DOMAINS,
        ACLC_ENCRYPTED,
@@ -122,6 +126,10 @@ static uschar *conditions[] = {
   US"delay",
 #ifdef WITH_OLD_DEMIME
   US"demime",
+#endif
+#ifndef DISABLE_DKIM
+  US"dkim_signer",
+  US"dkim_status",
 #endif
   US"dnslists",
   US"domains",
@@ -243,6 +251,10 @@ static uschar cond_expand_at_top[] = {
 #ifdef WITH_OLD_DEMIME
   TRUE,    /* demime */
 #endif
+#ifndef DISABLE_DKIM
+  TRUE,    /* dkim_signer */
+  TRUE,    /* dkim_status */
+#endif
   TRUE,    /* dnslists */
   FALSE,   /* domains */
   FALSE,   /* encrypted */
@@ -298,6 +310,10 @@ static uschar cond_modifiers[] = {
   TRUE,    /* delay */
 #ifdef WITH_OLD_DEMIME
   FALSE,   /* demime */
+#endif
+#ifndef DISABLE_DKIM
+  FALSE,   /* dkim_signer */
+  FALSE,   /* dkim_status */
 #endif
   FALSE,   /* dnslists */
   FALSE,   /* domains */
@@ -386,6 +402,14 @@ static unsigned int cond_forbids[] = {
   #ifdef WITH_OLD_DEMIME
   (unsigned int)
   ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)),   /* demime */
+  #endif
+
+  #ifndef DISABLE_DKIM
+  (unsigned int)
+  ~(1<<ACL_WHERE_DKIM),                            /* dkim_signer */
+
+  (unsigned int)
+  ~(1<<ACL_WHERE_DKIM),                            /* dkim_status */
   #endif
 
   (1<<ACL_WHERE_NOTSMTP)|                          /* dnslists */
@@ -2757,6 +2781,18 @@ for (; cb != NULL; cb = cb->next)
     #ifdef WITH_OLD_DEMIME
     case ACLC_DEMIME:
       rc = demime(&arg);
+    break;
+    #endif
+
+    #ifndef DISABLE_DKIM
+    case ACLC_DKIM_SIGNER:
+    rc = match_isinlist(dkim_signing_domain,
+                        &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
+    break;
+
+    case ACLC_DKIM_STATUS:
+    rc = match_isinlist(dkim_exim_expand_query(DKIM_VERIFY_STATUS),
+                        &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
     break;
     #endif
 
