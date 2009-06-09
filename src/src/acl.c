@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.82.2.4 2009/06/09 14:48:15 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.82.2.5 2009/06/09 14:58:32 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2795,6 +2795,10 @@ for (; cb != NULL; cb = cb->next)
         rc = match_isinlist(dkim_exim_expand_query(DKIM_IDENTITY),
                             &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
         }
+      }
+    else
+      {
+       rc = FAIL;
       }
     break;
 
