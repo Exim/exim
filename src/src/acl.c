@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.82.2.3 2009/06/09 14:19:56 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.82.2.4 2009/06/09 14:48:15 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2786,8 +2786,16 @@ for (; cb != NULL; cb = cb->next)
 
     #ifndef DISABLE_DKIM
     case ACLC_DKIM_SIGNER:
-    rc = match_isinlist(dkim_signing_domain,
-                        &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
+    if (dkim_signing_domain != NULL)
+      {
+      rc = match_isinlist(dkim_signing_domain,
+                          &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
+      if (rc == FAIL)
+        {
+        rc = match_isinlist(dkim_exim_expand_query(DKIM_IDENTITY),
+                            &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
+        }
+      }
     break;
 
     case ACLC_DKIM_STATUS:
