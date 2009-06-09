@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.35.2.2 2009/05/27 17:26:55 tom Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.35.2.3 2009/06/09 18:38:35 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -209,7 +209,7 @@ static optionlist optionlist_config[] = {
 #endif
   { "disable_ipv6",             opt_bool,        &disable_ipv6 },
 #ifndef DISABLE_DKIM
-  { "dkim_verify_domains",      opt_stringptr,   &dkim_verify_domains },
+  { "dkim_verify_signers",      opt_stringptr,   &dkim_verify_signers },
 #endif
   { "dns_again_means_nonexist", opt_stringptr,   &dns_again_means_nonexist },
   { "dns_check_names_pattern",  opt_stringptr,   &check_dns_names_pattern },

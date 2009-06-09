@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.81.2.5 2009/05/27 17:26:54 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.81.2.6 2009/06/09 18:38:35 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -535,7 +535,7 @@ BOOL    disable_logging        = FALSE;
 uschar *dkim_signing_domains     = NULL;
 uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
-uschar *dkim_verify_domains      = US"$dkim_signing_domains";
+uschar *dkim_verify_signers      = US"$dkim_signing_domains";
 BOOL    dkim_collect_input       = FALSE;
 BOOL    dkim_disable_verify      = FALSE;
 #endif

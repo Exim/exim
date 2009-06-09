@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.45.2.5 2009/06/08 21:06:32 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.45.2.6 2009/06/09 18:38:35 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2977,21 +2977,21 @@ else
 
       /* Check if we must run the DKIM ACL */
       if ((acl_smtp_dkim != NULL) &&
-          (dkim_verify_domains != NULL) &&
-          (dkim_verify_domains[0] != '\0'))
+          (dkim_verify_signers != NULL) &&
+          (dkim_verify_signers[0] != '\0'))
         {
-        uschar *dkim_verify_domains_expanded =
-          expand_string(dkim_verify_domains);
-        if (dkim_verify_domains_expanded == NULL)
+        uschar *dkim_verify_signers_expanded =
+          expand_string(dkim_verify_signers);
+        if (dkim_verify_signers_expanded == NULL)
           {
           log_write(0, LOG_MAIN|LOG_PANIC,
-            "expansion of dkim_verify_domains option failed: %s",
+            "expansion of dkim_verify_signers option failed: %s",
             expand_string_message);
           }
         else
           {
           int sep = 0;
-          uschar *ptr = dkim_verify_domains_expanded;
+          uschar *ptr = dkim_verify_signers_expanded;
           uschar *item = NULL;
           uschar itembuf[256];
           while ((item = string_nextinlist(&ptr, &sep,
