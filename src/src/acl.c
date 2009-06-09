@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.82.2.5 2009/06/09 14:58:32 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.82.2.6 2009/06/09 18:42:19 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -128,7 +128,7 @@ static uschar *conditions[] = {
   US"demime",
 #endif
 #ifndef DISABLE_DKIM
-  US"dkim_signer",
+  US"dkim_signers",
   US"dkim_status",
 #endif
   US"dnslists",
@@ -252,7 +252,7 @@ static uschar cond_expand_at_top[] = {
   TRUE,    /* demime */
 #endif
 #ifndef DISABLE_DKIM
-  TRUE,    /* dkim_signer */
+  TRUE,    /* dkim_signers */
   TRUE,    /* dkim_status */
 #endif
   TRUE,    /* dnslists */
@@ -312,7 +312,7 @@ static uschar cond_modifiers[] = {
   FALSE,   /* demime */
 #endif
 #ifndef DISABLE_DKIM
-  FALSE,   /* dkim_signer */
+  FALSE,   /* dkim_signers */
   FALSE,   /* dkim_status */
 #endif
   FALSE,   /* dnslists */
@@ -406,7 +406,7 @@ static unsigned int cond_forbids[] = {
 
   #ifndef DISABLE_DKIM
   (unsigned int)
-  ~(1<<ACL_WHERE_DKIM),                            /* dkim_signer */
+  ~(1<<ACL_WHERE_DKIM),                            /* dkim_signers */
 
   (unsigned int)
   ~(1<<ACL_WHERE_DKIM),                            /* dkim_status */
