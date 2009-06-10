@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.35 2008/02/12 12:52:51 nm4 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.36 2009/06/10 07:34:04 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -142,6 +142,9 @@ static optionlist optionlist_config[] = {
   { "acl_smtp_auth",            opt_stringptr,   &acl_smtp_auth },
   { "acl_smtp_connect",         opt_stringptr,   &acl_smtp_connect },
   { "acl_smtp_data",            opt_stringptr,   &acl_smtp_data },
+#ifndef DISABLE_DKIM
+  { "acl_smtp_dkim",            opt_stringptr,   &acl_smtp_dkim },
+#endif
   { "acl_smtp_etrn",            opt_stringptr,   &acl_smtp_etrn },
   { "acl_smtp_expn",            opt_stringptr,   &acl_smtp_expn },
   { "acl_smtp_helo",            opt_stringptr,   &acl_smtp_helo },
@@ -205,6 +208,9 @@ static optionlist optionlist_config[] = {
   { "disable_fsync",            opt_bool,        &disable_fsync },
 #endif
   { "disable_ipv6",             opt_bool,        &disable_ipv6 },
+#ifndef DISABLE_DKIM
+  { "dkim_verify_signers",      opt_stringptr,   &dkim_verify_signers },
+#endif
   { "dns_again_means_nonexist", opt_stringptr,   &dns_again_means_nonexist },
   { "dns_check_names_pattern",  opt_stringptr,   &check_dns_names_pattern },
   { "dns_csa_search_limit",     opt_int,         &dns_csa_search_limit },

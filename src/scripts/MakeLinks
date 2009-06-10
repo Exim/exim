@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Cambridge: exim/src/scripts/MakeLinks,v 1.14 2008/01/17 13:03:35 tom Exp $
+# $Cambridge: exim/src/scripts/MakeLinks,v 1.15 2009/06/10 07:34:04 tom Exp $
 
 # Script to build links for all the exim source files from the system-
 # specific build directory. It should be run from within that directory.
@@ -189,6 +189,27 @@ ln -s ../../src/auths/spa.c              spa.c
 ln -s ../../src/auths/spa.h              spa.h
 cd ..
 
+# Likewise for the code for the PDKIM library
+mkdir pdkim
+cd pdkim
+ln -s ../../src/pdkim/README             README
+ln -s ../../src/pdkim/Makefile           Makefile
+ln -s ../../src/pdkim/base64.c           base64.c
+ln -s ../../src/pdkim/base64.h           base64.h
+ln -s ../../src/pdkim/bignum.c           bignum.c
+ln -s ../../src/pdkim/bignum.h           bignum.h
+ln -s ../../src/pdkim/bn_mul.h           bn_mul.h
+ln -s ../../src/pdkim/pdkim.c            pdkim.c
+ln -s ../../src/pdkim/pdkim.h            pdkim.h
+ln -s ../../src/pdkim/pdkim-api.h        pdkim-api.h
+ln -s ../../src/pdkim/rsa.c              rsa.c
+ln -s ../../src/pdkim/rsa.h              rsa.h
+ln -s ../../src/pdkim/sha1.c             sha1.c
+ln -s ../../src/pdkim/sha1.h             sha1.h
+ln -s ../../src/pdkim/sha2.c             sha2.c
+ln -s ../../src/pdkim/sha2.h             sha2.h
+cd ..
+
 # The basic source files for Exim and utilities. NB local_scan.h gets linked,
 # but local_scan.c does not, because its location is taken from the build-time
 # configuration. Likewise for the os.c file, which gets build dynamically.
@@ -259,6 +280,8 @@ ln -s ../src/transport.c       transport.c
 ln -s ../src/tree.c            tree.c
 ln -s ../src/verify.c          verify.c
 ln -s ../src/version.c         version.c
+ln -s ../src/dkim.c            dkim.c
+ln -s ../src/dkim.h            dkim.h
 
 # WITH_CONTENT_SCAN
 ln -s ../src/spam.c            spam.c
@@ -280,10 +303,6 @@ ln -s ../src/spf.c             spf.c
 ln -s ../src/spf.h             spf.h
 ln -s ../src/srs.c             srs.c
 ln -s ../src/srs.h             srs.h
-ln -s ../src/dk.c              dk.c
-ln -s ../src/dk.h              dk.h
-ln -s ../src/dkim-exim.c       dkim-exim.c
-ln -s ../src/dkim-exim.h       dkim-exim.h
 ln -s ../src/dcc.c             dcc.c
 ln -s ../src/dcc.h             dcc.h
 

@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.16 2009/01/20 16:06:14 fanf2 Exp $
+# $Cambridge: exim/src/OS/Makefile-Base,v 1.17 2009/06/10 07:34:04 tom Exp $
 
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
@@ -96,7 +96,7 @@ config.h: Makefile buildconfig ../src/config.h.defaults $(EDITME)
 # therefore always be run, even if the files exist. This shouldn't in fact be a
 # problem, but it does no harm. Other make programs will just ignore this.
 
-.PHONY: all allexim buildauths buildlookups buildrouters \
+.PHONY: all allexim buildauths buildlookups buildpdkim buildrouters \
         buildtransports checklocalmake clean
 
 
@@ -109,7 +109,7 @@ allexim: config.h $(EXIM_MONITOR) exicyclog exinext exiwhat \
         exim_checkaccess \
         exim_dbmbuild exim_dumpdb exim_fixdb exim_tidydb exim_lock \
         buildlookups buildrouters buildtransports \
-        buildauths exim
+        buildauths buildpdkim exim
 
 
 # Targets for special-purpose configuration header builders
@@ -300,14 +300,14 @@ convert4r4: Makefile ../src/convert4r4.src
 
 OBJ_WITH_CONTENT_SCAN = malware.o mime.o regex.o spam.o spool_mbox.o
 OBJ_WITH_OLD_DEMIME = demime.o
-OBJ_EXPERIMENTAL = bmi_spam.o spf.o srs.o dk.o dkim-exim.o dcc.o
+OBJ_EXPERIMENTAL = bmi_spam.o spf.o srs.o dcc.o
 
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
 
 OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
-        filtertest.o globals.o \
+        filtertest.o globals.o dkim.o \
         header.o host.o ip.o log.o lss.o match.o moan.o \
         os.o parse.o queue.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
@@ -316,7 +316,7 @@ OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_WITH_OLD_DEMIME) $(OBJ_EXPERIMENTAL)
 
-exim:   lookups/lookups.a auths/auths.a \
+exim:   lookups/lookups.a auths/auths.a pdkim/pdkim.a \
         routers/routers.a transports/transports.a \
         $(OBJ_EXIM) version.c
 	@echo " "
@@ -328,7 +328,7 @@ exim:   lookups/lookups.a auths/auths.a \
 	@echo "$(LNCC) -o exim"
 	$(FE)$(PURIFY) $(LNCC) -o exim $(LFLAGS) $(OBJ_EXIM) version.o \
 	  routers/routers.a transports/transports.a lookups/lookups.a \
-	  auths/auths.a \
+	  auths/auths.a pdkim/pdkim.a \
 	  $(LIBRESOLV) $(LIBS) $(LIBS_EXIM) $(IPV6_LIBS) $(EXTRALIBS) \
 	  $(EXTRALIBS_EXIM) $(DBMLIB) $(LOOKUP_LIBS) $(AUTH_LIBS) \
 	  $(PERL_LIBS) $(TLS_LIBS) $(PCRE_LIBS) $(LDFLAGS)
@@ -578,7 +578,7 @@ tod.o:           $(HDRS) tod.c
 transport.o:     $(HDRS) transport.c
 tree.o:          $(HDRS) tree.c
 verify.o:        $(HDRS) verify.c
-
+dkim.o:          $(HDRS) dkim.c
 
 # Dependencies for WITH_CONTENT_SCAN modules
 
@@ -599,8 +599,6 @@ demime.o:        $(HDRS) demime.c
 bmi_spam.o:      $(HDRS) bmi_spam.c
 spf.o:           $(HDRS) spf.h spf.c
 srs.o:           $(HDRS) srs.h srs.c
-dk.o:            $(HDRS) dk.h dk.c
-dkim-exim.o:     $(HDRS) dkim-exim.h dkim-exim.c
 dcc.o:           $(HDRS) dcc.h dcc.c
 
 # The module containing tables of available lookups, routers, auths, and
@@ -666,6 +664,14 @@ buildtransports transports/transports.a: config.h
 
 buildauths auths/auths.a: config.h
 	 @cd auths; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
+	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
+	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"; \
+	 echo " "
+
+# The PDKIM library
+
+buildpdkim pdkim/pdkim.a: config.h
+	 @cd pdkim; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
 	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE)"; \
 	 echo " "

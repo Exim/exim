@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/OS/os.h-Linux,v 1.7 2007/10/04 13:28:06 tom Exp $ */
+/* $Cambridge: exim/src/OS/os.h-Linux,v 1.8 2009/06/10 07:34:04 tom Exp $ */
 
 /* Exim: OS-specific C header file for Linux */
 
@@ -10,10 +10,10 @@
 #define NO_IP_VAR_H
 #define SIG_IGN_WORKS
 
-/* When using the experimental Domainkeys/DKIM extensions, setting
-HAVE_LINUX_SENDFILE can increase performance on outgoing mail a bit.
-Note: With older glibc versions this setting will conflict with the
-_FILE_OFFSET_BITS=64 setting defined as part of the Linux CFLAGS. */
+/* When using the DKIM, setting HAVE_LINUX_SENDFILE can increase
+performance on outgoing mail a bit. Note: With older glibc versions
+this setting will conflict with the _FILE_OFFSET_BITS=64 setting
+defined as part of the Linux CFLAGS. */
 
 /* #define HAVE_LINUX_SENDFILE */
 

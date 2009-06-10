@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.81 2008/02/12 12:52:51 nm4 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.82 2009/06/10 07:34:04 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -182,6 +182,9 @@ uschar *acl_not_smtp_start     = NULL;
 uschar *acl_smtp_auth          = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;
+#ifndef DISABLE_DKIM
+uschar *acl_smtp_dkim          = NULL;
+#endif
 uschar *acl_smtp_etrn          = NULL;
 uschar *acl_smtp_expn          = NULL;
 uschar *acl_smtp_helo          = NULL;
@@ -210,6 +213,7 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"MAIL",
                                    US"PREDATA",
                                    US"MIME",
+                                   US"DKIM",
                                    US"DATA",
                                    US"non-SMTP",
                                    US"AUTH",
@@ -229,6 +233,7 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
                                    US"550",     /* MAIL */
                                    US"550",     /* PREDATA */
                                    US"550",     /* MIME */
+                                   US"550",     /* DKIM */
                                    US"550",     /* DATA */
                                    US"0",       /* not SMTP; not relevant */
                                    US"503",     /* AUTH */
@@ -391,7 +396,7 @@ int     callout_cache_domain_negative_expire = 3*60*60;
 int     callout_cache_positive_expire = 24*60*60;
 int     callout_cache_negative_expire = 2*60*60;
 uschar *callout_random_local_part = US"$primary_hostname-$tod_epoch-testing";
-uschar *check_dns_names_pattern= US"(?i)^(?>(?(1)\\.|())[^\\W_](?>[a-z0-9/-]*[^\\W_])?)+$";
+uschar *check_dns_names_pattern= US"(?i)^(?>(?(1)\\.|())[^\\W](?>[a-z0-9/_-]*[^\\W])?)+(\\.?)$";
 int     check_log_inodes       = 0;
 int     check_log_space        = 0;
 BOOL    check_rfc2047_length   = TRUE;
@@ -526,16 +531,13 @@ BOOL    disable_fsync          = FALSE;
 BOOL    disable_ipv6           = FALSE;
 BOOL    disable_logging        = FALSE;
 
-#ifdef EXPERIMENTAL_DOMAINKEYS
-uschar *dk_signing_domain      = NULL;
-uschar *dk_signing_selector    = NULL;
-int     dk_do_verify           = 0;
-#endif
-
-#ifdef EXPERIMENTAL_DKIM
+#ifndef DISABLE_DKIM
+uschar *dkim_signing_domains     = NULL;
 uschar *dkim_signing_domain      = NULL;
 uschar *dkim_signing_selector    = NULL;
-int     dkim_do_verify           = 0;
+uschar *dkim_verify_signers      = US"$dkim_signing_domains";
+BOOL    dkim_collect_input       = FALSE;
+BOOL    dkim_disable_verify      = FALSE;
 #endif
 
 uschar *dns_again_means_nonexist = NULL;

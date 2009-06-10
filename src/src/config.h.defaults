@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/config.h.defaults,v 1.16 2008/01/17 13:03:35 tom Exp $ */
+/* $Cambridge: exim/src/src/config.h.defaults,v 1.17 2009/06/10 07:34:04 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -150,15 +150,13 @@ it's a default value. */
 /* EXPERIMENTAL features */
 #define EXPERIMENTAL_SPF
 #define EXPERIMENTAL_SRS
-#define EXPERIMENTAL_DOMAINKEYS
-#define EXPERIMENTAL_DKIM
 #define EXPERIMENTAL_BRIGHTMAIL
 #define EXPERIMENTAL_DCC
 
 /* Things that are not routinely changed but are nevertheless configurable
 just in case. */
 
-#define DNS_MAXNAME                 256
+#define DNS_MAXNAME                1024
 #define EXPAND_MAXN                  20
 #define ROOT_UID                      0
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.61 2008/10/12 09:58:13 nm4 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.62 2009/06/10 07:34:04 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -905,6 +905,9 @@ fprintf(f, "Support for:");
 #ifdef WITH_CONTENT_SCAN
   fprintf(f, " Content_Scanning");
 #endif
+#ifndef DISABLE_DKIM
+  fprintf(f, " DKIM");
+#endif
 #ifdef WITH_OLD_DEMIME
   fprintf(f, " Old_Demime");
 #endif
@@ -916,12 +919,6 @@ fprintf(f, "Support for:");
 #endif
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   fprintf(f, " Experimental_Brightmail");
-#endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
-  fprintf(f, " Experimental_DomainKeys");
-#endif
-#ifdef EXPERIMENTAL_DKIM
-  fprintf(f, " Experimental_DKIM");
 #endif
 #ifdef EXPERIMENTAL_DCC
   fprintf(f, " Experimental_DCC");

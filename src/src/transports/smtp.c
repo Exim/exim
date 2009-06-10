@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.41 2009/01/02 17:22:12 nm4 Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.42 2009/06/10 07:34:05 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -39,19 +39,7 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, data_timeout) },
   { "delay_after_cutoff", opt_bool,
       (void *)offsetof(smtp_transport_options_block, delay_after_cutoff) },
-  #if (defined EXPERIMENTAL_DOMAINKEYS) || (defined EXPERIMENTAL_DKIM)
-  { "dk_canon", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dk_canon) },
-  { "dk_domain", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dk_domain) },
-  { "dk_headers", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dk_headers) },
-  { "dk_private_key", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dk_private_key) },
-  { "dk_selector", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dk_selector) },
-  { "dk_strict", opt_stringptr,
-      (void *)offsetof(smtp_transport_options_block, dk_strict) },
+#ifndef DISABLE_DKIM
   { "dkim_canon", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, dkim_canon) },
   { "dkim_domain", opt_stringptr,
@@ -64,7 +52,7 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, dkim_sign_headers) },
   { "dkim_strict", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, dkim_strict) },
-  #endif
+#endif
   { "dns_qualify_single",   opt_bool,
       (void *)offsetof(smtp_transport_options_block, dns_qualify_single) },
   { "dns_search_parents",   opt_bool,
@@ -75,14 +63,14 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, final_timeout) },
   { "gethostbyname",        opt_bool,
       (void *)offsetof(smtp_transport_options_block, gethostbyname) },
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   { "gnutls_require_kx",    opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, gnutls_require_kx) },
   { "gnutls_require_mac",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, gnutls_require_mac) },
   { "gnutls_require_protocols", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, gnutls_require_proto) },
-  #endif
+#endif
   { "helo_data",            opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, helo_data) },
   { "hosts",                opt_stringptr,
@@ -91,28 +79,28 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, hosts_avoid_esmtp) },
   { "hosts_avoid_pipelining", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_avoid_pipelining) },
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   { "hosts_avoid_tls",      opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_avoid_tls) },
-  #endif
+#endif
   { "hosts_max_try",        opt_int,
       (void *)offsetof(smtp_transport_options_block, hosts_max_try) },
   { "hosts_max_try_hardlimit", opt_int,
       (void *)offsetof(smtp_transport_options_block, hosts_max_try_hardlimit) },
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   { "hosts_nopass_tls",     opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_nopass_tls) },
-  #endif
+#endif
   { "hosts_override",       opt_bool,
       (void *)offsetof(smtp_transport_options_block, hosts_override) },
   { "hosts_randomize",      opt_bool,
       (void *)offsetof(smtp_transport_options_block, hosts_randomize) },
   { "hosts_require_auth",   opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_require_auth) },
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
   { "hosts_require_tls",    opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_require_tls) },
-  #endif
+#endif
   { "hosts_try_auth",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_auth) },
   { "interface",            opt_stringptr,
@@ -135,7 +123,7 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, serialize_hosts) },
   { "size_addition",        opt_int,
       (void *)offsetof(smtp_transport_options_block, size_addition) }
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
  ,{ "tls_certificate",      opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_certificate) },
   { "tls_crl",              opt_stringptr,
@@ -148,7 +136,7 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, tls_tempfail_tryclear) },
   { "tls_verify_certificates", opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_verify_certificates) }
-  #endif
+#endif
 };
 
 /* Size of the options list. An extern variable has to be used so that its
@@ -196,7 +184,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   TRUE,                /* keepalive */
   FALSE,               /* lmtp_ignore_quota */
   TRUE                 /* retry_include_ip_address */
-  #ifdef SUPPORT_TLS
+#ifdef SUPPORT_TLS
  ,NULL,                /* tls_certificate */
   NULL,                /* tls_crl */
   NULL,                /* tls_privatekey */
@@ -206,21 +194,15 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* gnutls_require_proto */
   NULL,                /* tls_verify_certificates */
   TRUE                 /* tls_tempfail_tryclear */
-  #endif
-  #if (defined EXPERIMENTAL_DOMAINKEYS) || (defined EXPERIMENTAL_DKIM)
- ,NULL,                /* dk_canon */
-  NULL,                /* dk_domain */
-  NULL,                /* dk_headers */
-  NULL,                /* dk_private_key */
-  NULL,                /* dk_selector */
-  NULL                 /* dk_strict */
+#endif
+#ifndef DISABLE_DKIM
  ,NULL,                /* dkim_canon */
   NULL,                /* dkim_domain */
   NULL,                /* dkim_private_key */
   NULL,                /* dkim_selector */
   NULL,                /* dkim_sign_headers */
   NULL                 /* dkim_strict */
-  #endif
+#endif
 };
 
 
@@ -1592,7 +1574,7 @@ if (!ok) ok = TRUE; else
   DEBUG(D_transport|D_v)
     debug_printf("  SMTP>> writing message and terminating \".\"\n");
   transport_count = 0;
-#if (defined EXPERIMENTAL_DOMAINKEYS) || (defined EXPERIMENTAL_DKIM)
+#ifndef DISABLE_DKIM
   ok = dkim_transport_write_message(addrlist, inblock.sock,
     topt_use_crlf | topt_end_dot | topt_escape_headers |
       (tblock->body_only? topt_no_headers : 0) |
@@ -1605,9 +1587,7 @@ if (!ok) ok = TRUE; else
     US".", US"..",    /* Escaping strings */
     tblock->rewrite_rules, tblock->rewrite_existflags,
     ob->dkim_private_key, ob->dkim_domain, ob->dkim_selector,
-    ob->dkim_canon, ob->dkim_strict, ob->dkim_sign_headers,
-    ob->dk_private_key, ob->dk_domain, ob->dk_selector,
-    ob->dk_canon, ob->dk_headers, ob->dk_strict
+    ob->dkim_canon, ob->dkim_strict, ob->dkim_sign_headers
     );
 #else
   ok = transport_write_message(addrlist, inblock.sock,

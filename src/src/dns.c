@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.17 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.18 2009/06/10 07:34:04 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -562,7 +562,12 @@ if (running_in_test_harness)
 else
   dnsa->answerlen = res_search(CS name, C_IN, type, dnsa->answer, MAXPACKET);
 
-if (dnsa->answerlen > MAXPACKET) dnsa->answerlen = MAXPACKET;
+if (dnsa->answerlen > MAXPACKET)
+  {
+  DEBUG(D_dns) debug_printf("DNS lookup of %s (%s) resulted in overlong packet (size %d), truncating to %d.\n",
+    name, dns_text_type(type), dnsa->answerlen, MAXPACKET);
+  dnsa->answerlen = MAXPACKET;
+  }
 
 if (dnsa->answerlen < 0) switch (h_errno)
   {

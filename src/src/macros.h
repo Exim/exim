@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.37 2008/09/29 11:41:07 nm4 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.38 2009/06/10 07:34:04 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -799,6 +799,7 @@ enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_MAIL,       /* )                                           */
        ACL_WHERE_PREDATA,    /* ) There are several tests for "in message", */
        ACL_WHERE_MIME,       /* ) implemented by <= WHERE_NOTSMTP           */
+       ACL_WHERE_DKIM,       /* )                                           */
        ACL_WHERE_DATA,       /* )                                           */
        ACL_WHERE_NOTSMTP,    /* )                                           */
 

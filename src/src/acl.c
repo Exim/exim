@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.82 2008/02/12 12:52:51 nm4 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.83 2009/06/10 07:34:04 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -65,13 +65,9 @@ enum { ACLC_ACL,
 #ifdef WITH_OLD_DEMIME
        ACLC_DEMIME,
 #endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
-       ACLC_DK_DOMAIN_SOURCE,
-       ACLC_DK_POLICY,
-       ACLC_DK_SENDER_DOMAINS,
-       ACLC_DK_SENDER_LOCAL_PARTS,
-       ACLC_DK_SENDERS,
-       ACLC_DK_STATUS,
+#ifndef DISABLE_DKIM
+       ACLC_DKIM_SIGNER,
+       ACLC_DKIM_STATUS,
 #endif
        ACLC_DNSLISTS,
        ACLC_DOMAINS,
@@ -131,13 +127,9 @@ static uschar *conditions[] = {
 #ifdef WITH_OLD_DEMIME
   US"demime",
 #endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
-  US"dk_domain_source",
-  US"dk_policy",
-  US"dk_sender_domains",
-  US"dk_sender_local_parts",
-  US"dk_senders",
-  US"dk_status",
+#ifndef DISABLE_DKIM
+  US"dkim_signers",
+  US"dkim_status",
 #endif
   US"dnslists",
   US"domains",
@@ -179,10 +171,7 @@ enum {
   #ifdef EXPERIMENTAL_BRIGHTMAIL
   CONTROL_BMI_RUN,
   #endif
-  #ifdef EXPERIMENTAL_DOMAINKEYS
-  CONTROL_DK_VERIFY,
-  #endif
-  #ifdef EXPERIMENTAL_DKIM
+  #ifndef DISABLE_DKIM
   CONTROL_DKIM_VERIFY,
   #endif
   CONTROL_ERROR,
@@ -215,11 +204,8 @@ static uschar *controls[] = {
   #ifdef EXPERIMENTAL_BRIGHTMAIL
   US"bmi_run",
   #endif
-  #ifdef EXPERIMENTAL_DOMAINKEYS
-  US"dk_verify",
-  #endif
-  #ifdef EXPERIMENTAL_DKIM
-  US"dkim_verify",
+  #ifndef DISABLE_DKIM
+  US"dkim_disable_verify",
   #endif
   US"error",
   US"caseful_local_part",
@@ -265,13 +251,9 @@ static uschar cond_expand_at_top[] = {
 #ifdef WITH_OLD_DEMIME
   TRUE,    /* demime */
 #endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
-  TRUE,    /* dk_domain_source */
-  TRUE,    /* dk_policy */
-  TRUE,    /* dk_sender_domains */
-  TRUE,    /* dk_sender_local_parts */
-  TRUE,    /* dk_senders */
-  TRUE,    /* dk_status */
+#ifndef DISABLE_DKIM
+  TRUE,    /* dkim_signers */
+  TRUE,    /* dkim_status */
 #endif
   TRUE,    /* dnslists */
   FALSE,   /* domains */
@@ -329,13 +311,9 @@ static uschar cond_modifiers[] = {
 #ifdef WITH_OLD_DEMIME
   FALSE,   /* demime */
 #endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
-  FALSE,   /* dk_domain_source */
-  FALSE,   /* dk_policy */
-  FALSE,   /* dk_sender_domains */
-  FALSE,   /* dk_sender_local_parts */
-  FALSE,   /* dk_senders */
-  FALSE,   /* dk_status */
+#ifndef DISABLE_DKIM
+  FALSE,   /* dkim_signers */
+  FALSE,   /* dkim_status */
 #endif
   FALSE,   /* dnslists */
   FALSE,   /* domains */
@@ -426,54 +404,12 @@ static unsigned int cond_forbids[] = {
   ~((1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)),   /* demime */
   #endif
 
-  #ifdef EXPERIMENTAL_DOMAINKEYS
-  (1<<ACL_WHERE_AUTH)|                             /* dk_domain_source */
-    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
-    (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
-    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
-    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_NOTSMTP_START),
+  #ifndef DISABLE_DKIM
+  (unsigned int)
+  ~(1<<ACL_WHERE_DKIM),                            /* dkim_signers */
 
-  (1<<ACL_WHERE_AUTH)|                             /* dk_policy */
-    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
-    (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
-    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
-    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_NOTSMTP_START),
-
-  (1<<ACL_WHERE_AUTH)|                             /* dk_sender_domains */
-    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
-    (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
-    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
-    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_NOTSMTP_START),
-
-  (1<<ACL_WHERE_AUTH)|                             /* dk_sender_local_parts */
-    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
-    (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
-    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
-    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_NOTSMTP_START),
-
-  (1<<ACL_WHERE_AUTH)|                             /* dk_senders */
-    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
-    (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
-    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
-    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_NOTSMTP_START),
-
-  (1<<ACL_WHERE_AUTH)|                             /* dk_status */
-    (1<<ACL_WHERE_CONNECT)|(1<<ACL_WHERE_HELO)|
-    (1<<ACL_WHERE_RCPT)|(1<<ACL_WHERE_PREDATA)|
-    (1<<ACL_WHERE_ETRN)|(1<<ACL_WHERE_EXPN)|
-    (1<<ACL_WHERE_MAILAUTH)|(1<<ACL_WHERE_QUIT)|
-    (1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_STARTTLS)|
-    (1<<ACL_WHERE_VRFY)|(1<<ACL_WHERE_NOTSMTP_START),
+  (unsigned int)
+  ~(1<<ACL_WHERE_DKIM),                            /* dkim_status */
   #endif
 
   (1<<ACL_WHERE_NOTSMTP)|                          /* dnslists */
@@ -580,13 +516,8 @@ static unsigned int control_forbids[] = {
   0,                                               /* bmi_run */
   #endif
 
-  #ifdef EXPERIMENTAL_DOMAINKEYS
-  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dk_verify */
-    (1<<ACL_WHERE_NOTSMTP_START),
-  #endif
-
-  #ifdef EXPERIMENTAL_DKIM
-  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dkim_verify */
+  #ifndef DISABLE_DKIM
+  (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dkim_disable_verify */
     (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
@@ -666,11 +597,8 @@ static control_def controls_list[] = {
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   { US"bmi_run",                 CONTROL_BMI_RUN, FALSE },
 #endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
-  { US"dk_verify",               CONTROL_DK_VERIFY, FALSE },
-#endif
-#ifdef EXPERIMENTAL_DKIM
-  { US"dkim_verify",             CONTROL_DKIM_VERIFY, FALSE },
+#ifndef DISABLE_DKIM
+  { US"dkim_disable_verify",     CONTROL_DKIM_VERIFY, FALSE },
 #endif
   { US"caseful_local_part",      CONTROL_CASEFUL_LOCAL_PART, FALSE },
   { US"caselower_local_part",    CONTROL_CASELOWER_LOCAL_PART, FALSE },
@@ -2650,15 +2578,9 @@ for (; cb != NULL; cb = cb->next)
       break;
       #endif
 
-      #ifdef EXPERIMENTAL_DOMAINKEYS
-      case CONTROL_DK_VERIFY:
-      dk_do_verify = 1;
-      break;
-      #endif
-
-      #ifdef EXPERIMENTAL_DKIM
+      #ifndef DISABLE_DKIM
       case CONTROL_DKIM_VERIFY:
-      dkim_do_verify = 1;
+      dkim_disable_verify = TRUE;
       break;
       #endif
 
@@ -2862,95 +2784,27 @@ for (; cb != NULL; cb = cb->next)
     break;
     #endif
 
-    #ifdef EXPERIMENTAL_DOMAINKEYS
-    case ACLC_DK_DOMAIN_SOURCE:
-    if (dk_verify_block == NULL) { rc = FAIL; break; };
-    /* check header source of domain against given string */
-    switch (dk_verify_block->address_source) {
-      case DK_EXIM_ADDRESS_FROM_FROM:
-        rc = match_isinlist(US"from", &arg, 0, NULL,
-                            NULL, MCL_STRING, TRUE, NULL);
-      break;
-      case DK_EXIM_ADDRESS_FROM_SENDER:
-        rc = match_isinlist(US"sender", &arg, 0, NULL,
-                            NULL, MCL_STRING, TRUE, NULL);
-      break;
-      case DK_EXIM_ADDRESS_NONE:
-        rc = match_isinlist(US"none", &arg, 0, NULL,
-                            NULL, MCL_STRING, TRUE, NULL);
-      break;
-      }
-    break;
-
-    case ACLC_DK_POLICY:
-    if (dk_verify_block == NULL) { rc = FAIL; break; };
-    /* check policy against given string, default FAIL */
-    rc = FAIL;
-    if (dk_verify_block->signsall)
-      rc = match_isinlist(US"signsall", &arg, 0, NULL,
-                          NULL, MCL_STRING, TRUE, NULL);
-    if (dk_verify_block->testing)
-      rc = match_isinlist(US"testing", &arg, 0, NULL,
-                          NULL, MCL_STRING, TRUE, NULL);
-    break;
-
-    case ACLC_DK_SENDER_DOMAINS:
-    if (dk_verify_block == NULL) { rc = FAIL; break; };
-    if (dk_verify_block->domain != NULL)
-      rc = match_isinlist(dk_verify_block->domain, &arg, 0, &domainlist_anchor,
-                          NULL, MCL_DOMAIN, TRUE, NULL);
-    else rc = FAIL;
-    break;
-
-    case ACLC_DK_SENDER_LOCAL_PARTS:
-    if (dk_verify_block == NULL) { rc = FAIL; break; };
-    if (dk_verify_block->local_part != NULL)
-      rc = match_isinlist(dk_verify_block->local_part, &arg, 0, &localpartlist_anchor,
-                          NULL, MCL_LOCALPART, TRUE, NULL);
-    else rc = FAIL;
-    break;
-
-    case ACLC_DK_SENDERS:
-    if (dk_verify_block == NULL) { rc = FAIL; break; };
-    if (dk_verify_block->address != NULL)
-      rc = match_address_list(dk_verify_block->address, TRUE, TRUE, &arg, NULL, -1, 0, NULL);
-    else rc = FAIL;
-    break;
-
-    case ACLC_DK_STATUS:
-    if (dk_verify_block == NULL) { rc = FAIL; break; };
-    if (dk_verify_block->result > 0) {
-      switch(dk_verify_block->result) {
-        case DK_EXIM_RESULT_BAD_FORMAT:
-          rc = match_isinlist(US"bad format", &arg, 0, NULL,
-                              NULL, MCL_STRING, TRUE, NULL);
-        break;
-        case DK_EXIM_RESULT_NO_KEY:
-          rc = match_isinlist(US"no key", &arg, 0, NULL,
-                              NULL, MCL_STRING, TRUE, NULL);
-        break;
-        case DK_EXIM_RESULT_NO_SIGNATURE:
-          rc = match_isinlist(US"no signature", &arg, 0, NULL,
-                              NULL, MCL_STRING, TRUE, NULL);
-        break;
-        case DK_EXIM_RESULT_REVOKED:
-          rc = match_isinlist(US"revoked", &arg, 0, NULL,
-                              NULL, MCL_STRING, TRUE, NULL);
-        break;
-        case DK_EXIM_RESULT_NON_PARTICIPANT:
-          rc = match_isinlist(US"non-participant", &arg, 0, NULL,
-                              NULL, MCL_STRING, TRUE, NULL);
-        break;
-        case DK_EXIM_RESULT_GOOD:
-          rc = match_isinlist(US"good", &arg, 0, NULL,
-                              NULL, MCL_STRING, TRUE, NULL);
-        break;
-        case DK_EXIM_RESULT_BAD:
-          rc = match_isinlist(US"bad", &arg, 0, NULL,
-                              NULL, MCL_STRING, TRUE, NULL);
-        break;
+    #ifndef DISABLE_DKIM
+    case ACLC_DKIM_SIGNER:
+    if (dkim_signing_domain != NULL)
+      {
+      rc = match_isinlist(dkim_signing_domain,
+                          &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
+      if (rc == FAIL)
+        {
+        rc = match_isinlist(dkim_exim_expand_query(DKIM_IDENTITY),
+                            &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
         }
       }
+    else
+      {
+       rc = FAIL;
+      }
+    break;
+
+    case ACLC_DKIM_STATUS:
+    rc = match_isinlist(dkim_exim_expand_query(DKIM_VERIFY_STATUS),
+                        &arg,0,NULL,NULL,MCL_STRING,TRUE,NULL);
     break;
     #endif
 

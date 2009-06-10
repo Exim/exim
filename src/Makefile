@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/Makefile,v 1.5 2008/02/14 13:49:35 fanf2 Exp $
+# $Cambridge: exim/src/Makefile,v 1.6 2009/06/10 07:34:04 tom Exp $
 
 # Top-level makefile for Exim; handles creating a build directory with
 # appropriate links, and then creating and running the main makefile in that
@@ -77,7 +77,7 @@ clean:; @echo ""; echo '*** "make clean" just removes all .o and .a files'
 	cd build-$(buildname); \
 	$(RM_COMMAND) -f *.o lookups/*.o lookups/*.a auths/*.o auths/*.a \
 	routers/*.o routers/*.a transports/*.o transports/*.a \
-	pcre/*.o pcre/*.a
+	pdkim/*.o pdkim/*.a
 
 clean_exim:; cd build-$(buildname); \
 	 $(RM_COMMAND) -f *.o lookups/*.o lookups/*.a auths/*.o auths/*.a \

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.24 2008/01/16 13:44:45 nm4 Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.25 2009/06/10 07:34:04 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -446,11 +446,8 @@ config.h, mytypes.h, and store.h, so we don't need to mention them explicitly.
 #ifdef EXPERIMENTAL_SRS
 #include "srs.h"
 #endif
-#ifdef EXPERIMENTAL_DOMAINKEYS
-#include "dk.h"
-#endif
-#ifdef EXPERIMENTAL_DKIM
-#include "dkim-exim.h"
+#ifndef DISABLE_DKIM
+#include "dkim.h"
 #endif
 
 /* The following stuff must follow the inclusion of config.h because it

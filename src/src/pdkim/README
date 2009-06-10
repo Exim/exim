@@ -1,0 +1,13 @@
+$Cambridge: exim/src/src/pdkim/README,v 1.2 2009/06/10 07:34:05 tom Exp $
+
+PDKIM - a RFC4871 (DKIM) implementation
+http://duncanthrax.net/pdkim/
+Copyright (C) 2009      Tom Kistner <tom@duncanthrax.net>
+
+Includes code from the PolarSSL project.
+http://polarssl.org
+Copyright (C) 2009      Paul Bakker <polarssl_maintainer@polarssl.org>
+Copyright (C) 2006-2008 Christophe Devine
+
+This copy of PDKIM is included with Exim. For a standalone distribution,
+visit http://duncanthrax.net/pdkim/.

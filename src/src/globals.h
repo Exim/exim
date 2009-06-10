@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.62 2008/02/12 12:52:51 nm4 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.63 2009/06/10 07:34:04 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -118,6 +118,9 @@ extern uschar *acl_not_smtp_start;     /* ACL run at the beginning of a non-SMTP
 extern uschar *acl_smtp_auth;          /* ACL run for AUTH */
 extern uschar *acl_smtp_connect;       /* ACL run on SMTP connection */
 extern uschar *acl_smtp_data;          /* ACL run after DATA received */
+#ifndef DISABLE_DKIM
+extern uschar *acl_smtp_dkim;          /* ACL run for DKIM signatures / domains */
+#endif
 extern uschar *acl_smtp_etrn;          /* ACL run for ETRN */
 extern uschar *acl_smtp_expn;          /* ACL run for EXPN */
 extern uschar *acl_smtp_helo;          /* ACL run for HELO/EHLO */
@@ -295,16 +298,13 @@ extern BOOL    disable_fsync;          /* Not for normal use */
 extern BOOL    disable_ipv6;           /* Don't do any IPv6 things */
 extern BOOL    disable_logging;        /* Disables log writing when TRUE */
 
-#ifdef EXPERIMENTAL_DOMAINKEYS
-extern uschar *dk_signing_domain;      /* Domain used for signing a message. */
-extern uschar *dk_signing_selector;    /* Selector used for signing a message. */
-extern int     dk_do_verify;           /* DK verification switch. Set with ACL control statement. */
-#endif
-
-#ifdef EXPERIMENTAL_DKIM
-extern uschar *dkim_signing_domain;      /* Domain used for signing a message. */
-extern uschar *dkim_signing_selector;    /* Selector used for signing a message. */
-extern int     dkim_do_verify;           /* DKIM verification switch. Set with ACL control statement. */
+#ifndef DISABLE_DKIM
+extern uschar *dkim_signing_domains;   /* Expansion variable, holds colon-separated list of domains that have signed a message */
+extern uschar *dkim_signing_domain;    /* Expansion variable, domain used for signing a message. */
+extern uschar *dkim_signing_selector;  /* Expansion variable, selector used for signing a message. */
+extern uschar *dkim_verify_signers;    /* Colon-separated list of domains for each of which we call the DKIM ACL */
+extern BOOL    dkim_collect_input;     /* Runtime flag that tracks wether SMTP input is fed to DKIM validation */
+extern BOOL    dkim_disable_verify;    /* Set via ACL control statement. When set, DKIM verification is disabled for the current message */
 #endif
 
 extern uschar *dns_again_means_nonexist; /* Domains that are badly set up */
