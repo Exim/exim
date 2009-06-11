@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.562 2009/01/02 17:22:12 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.563 2009/06/11 14:07:57 tom Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -93,6 +93,8 @@ NM/13 Bugzilla 590: Correct handling of Resent-Date headers.
 
 NM/14 Bugzilla 614: Added timeout setting to transport filter.
       Patch provided by Dean Brooks
+
+TK/05 Add native DKIM support (does not depend on external libraries).
 
 
 Exim version 4.69
