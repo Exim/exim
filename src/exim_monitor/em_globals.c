@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.14 2008/12/30 13:12:02 michael Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_globals.c,v 1.15 2009/06/15 19:54:32 tom Exp $ */
 
 /*************************************************
 *                Exim Monitor                    *
@@ -135,16 +135,13 @@ BOOL    deliver_freeze         = FALSE;
 int     deliver_frozen_at      = 0;
 BOOL    deliver_manual_thaw    = FALSE;
 
-#ifdef EXPERIMENTAL_DOMAINKEYS
-uschar *dk_signing_domain      = NULL;
-uschar *dk_signing_selector    = NULL;
-int     dk_do_verify           = 0;
-#endif
-
-#ifdef EXPERIMENTAL_DKIM
-uschar *dkim_signing_domain    = NULL;
-uschar *dkim_signing_selector  = NULL;
-int dkim_do_verify             = 0;
+#ifndef DISABLE_DKIM
+uschar *dkim_signing_domains     = NULL;
+uschar *dkim_signing_domain      = NULL;
+uschar *dkim_signing_selector    = NULL;
+uschar *dkim_verify_signers      = US"$dkim_signing_domains";
+BOOL    dkim_collect_input       = FALSE;
+BOOL    dkim_disable_verify      = FALSE;
 #endif
 
 BOOL    dont_deliver           = FALSE;
