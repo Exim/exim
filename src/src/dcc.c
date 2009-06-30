@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dcc.c,v 1.1 2008/01/17 13:03:35 tom Exp $ */
+/* $Cambridge: exim/src/src/dcc.c,v 1.2 2009/06/30 18:25:03 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -7,7 +7,7 @@
 /* Copyright (c) Wolfgang Breyha 2005-2008
  * Vienna University Computer Center
  * wbreyha@gmx.net
- * License: GPL
+ * See the file NOTICE for conditions of use and distribution.
  */
 
 /* This patch is based on code from Tom Kistners exiscan (ACL integration) and
