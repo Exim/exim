@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.52 2009/06/30 17:36:39 tom Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.53 2009/06/30 20:03:17 tom Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -34293,18 +34293,20 @@ different signature context.
 Signing is implemented by setting private options on the SMTP transport.
 These options take (expandable) strings as arguments.
 
-.vlist
-.vitem dkim_domain = <expanded string> [MANDATORY]
+.option dkim_domain smtp string&!! unset
+MANDATORY
 The domain you want to sign with. The result of this expanded
 option is put into the $dkim_domain expansion variable.
 
-.vitem dkim_selector = <expanded string> [MANDATORY]
+.option dkim_selector smtp string&!! unset
+MANDATORY
 This sets the key selector string. You can use the $dkim_domain expansion
 variable to look up a matching selector. The result is put in the expansion
 variable $dkim_selector which should be used in the dkim_private_key option
 along with $dkim_domain.
 
-.vitem dkim_private_key = <expanded string> [MANDATORY]
+.option dkim_private_key smtp string&!! unset
+MANDATORY
 This sets the private key to use. You can use the $dkim_domain and
 $dkim_selector expansion variables to determine the private key to use.
 The result can either
@@ -34318,24 +34320,26 @@ be "0", "false" or the empty string, in which case the message will not
 be signed. This case will not result in an error, even if dkim_strict is set.
 .endlist
 
-.vitem dkim_canon = <expanded string> [OPTIONAL]
+.option dkim_canon smtp string&!! unset
+OPTIONAL
 This option sets the canonicalization method used when signing a message.
 The DKIM RFC currently supports two methods: "simple" and "relaxed".
 The option defaults to "relaxed" when unset. Note: the current implementation
 only support using the same canonicalization method for both headers and body.
 
-.vitem dkim_strict = <expanded string> [OPTIONAL]
+.option dkim_strict smtp string&!! unset
+OPTIONAL
 This  option  defines  how  Exim  behaves  when  signing a message that
 should be signed fails for some reason.  When the expansion evaluates to
 either "1" or "true", Exim will defer. Otherwise Exim will send the message
 unsigned. You can use the $dkim_domain and $dkim_selector expansion
 variables here.
 
-.vitem dkim_sign_headers = <expanded string> [OPTIONAL]
+.option dkim_sign_headers smtp string&!! unset
+OPTIONAL
 When set, this option must expand to (or be specified as) a colon-separated
 list of header names. These headers will be included in the message
 signature. When unspecified, the headers recommended in RFC4871 will be used.
-.endlist
 
 
 
