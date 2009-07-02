@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.8 2007/12/01 15:53:55 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.9 2009/07/02 11:44:01 nm4 Exp $
 
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the document that describes Exim's filtering
@@ -1554,7 +1554,7 @@ $message_headers does not contain "\nList-Post:" and
 $message_headers does not contain "\nList-Owner:" and
 $message_headers does not contain "\nList-Archive:" and
 (
-"${if def h_auto-submitted:{present}{absent}}" is "absent" or
+"${if def:h_auto-submitted:{present}{absent}}" is "absent" or
 $header_auto-submitted: is "no"
 ) and
 $header_precedence: does not contain "bulk" and
