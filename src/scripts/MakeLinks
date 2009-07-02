@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Cambridge: exim/src/scripts/MakeLinks,v 1.15 2009/06/10 07:34:04 tom Exp $
+# $Cambridge: exim/src/scripts/MakeLinks,v 1.16 2009/07/02 11:38:57 nm4 Exp $
 
 # Script to build links for all the exim source files from the system-
 # specific build directory. It should be run from within that directory.
@@ -25,32 +25,7 @@ echo ""
 echo ">>> Creating links to source files..."
 
 
-# The PCRE regular expression library sources have to be linked
-# independently in their own sub-directory, since their .o files
-# are built using their own Makefile in the sub-directory.
-mkdir pcre
-cd pcre
-ln -s ../../src/pcre/Makefile            Makefile
-ln -s ../../src/pcre/config.h            config.h
-ln -s ../../src/pcre/pcre_internal.h     pcre_internal.h
-ln -s ../../src/pcre/pcre.h              pcre.h
-ln -s ../../src/pcre/pcre_maketables.c   pcre_maketables.c
-ln -s ../../src/pcre/pcre_chartables.c   pcre_chartables.c
-ln -s ../../src/pcre/pcre_config.c       pcre_config.c
-ln -s ../../src/pcre/pcre_get.c          pcre_get.c
-ln -s ../../src/pcre/pcre_globals.c      pcre_globals.c
-ln -s ../../src/pcre/pcre_newline.c      pcre_newline.c
-ln -s ../../src/pcre/pcre_compile.c      pcre_compile.c
-ln -s ../../src/pcre/pcre_exec.c         pcre_exec.c
-ln -s ../../src/pcre/pcre_fullinfo.c     pcre_fullinfo.c
-ln -s ../../src/pcre/pcretest.c          pcretest.c
-ln -s ../../src/pcre/pcre_printint.src   pcre_printint.src
-ln -s ../../src/pcre/pcre_study.c        pcre_study.c
-ln -s ../../src/pcre/pcre_tables.c       pcre_tables.c
-ln -s ../../src/pcre/pcre_try_flipped.c  pcre_try_flipped.c
-ln -s ../../src/pcre/pcre_version.c      pcre_version.c
-ln -s ../../src/pcre/ucp.h               ucp.h
-cd ..
+# PCRE is no longer part of the source distribution, so is no longer linked
 
 # Likewise for the lookups
 mkdir lookups

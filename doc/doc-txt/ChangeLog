@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.563 2009/06/11 14:07:57 tom Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.564 2009/07/02 11:38:56 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -95,6 +95,9 @@ NM/14 Bugzilla 614: Added timeout setting to transport filter.
       Patch provided by Dean Brooks
 
 TK/05 Add native DKIM support (does not depend on external libraries).
+
+NM/14 Bugzilla 854: Removed code that symlinks to pcre as its no longer useful.
+      Patch provided by Graeme Fowler
 
 
 Exim version 4.69
