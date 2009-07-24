@@ -3,7 +3,7 @@
 # Controlling script for xfpt tests
 
 $xfpt = "../src/xfpt -S ../share";
-$cf = (-f "/usr/local/bin/cf")? "cf" : "diff -u";
+$cf = (-f "/usr/local/bin/cf")? "cf" : "diff";
 
 $force_update = 0;
 $starttest = undef;

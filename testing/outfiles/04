@@ -1,0 +1,16 @@
+<preface>
+<title>A first preface</title>
+<para>
+This is text in the preface.
+</para>
+</preface>
+
+<?sdop toc_sections="no"?>
+
+<chapter>
+<title>A first chapter</title>
+<para>
+This is text in a chapter
+</para>
+</chapter>
+

@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2008 */
+/* Copyright (c) University of Cambridge, 2009 */
 /* Written by Philip Hazel. */
 
 /* Allocate storage and initialize global variables */
@@ -11,7 +11,7 @@
 
 
 uschar    *xfpt_share                = US DATADIR;
-uschar    *xfpt_version              = US "0.06 06-February-2008";
+uschar    *xfpt_version              = US "0.07 22-July-2009";
 
 tree_node *entities                  = NULL;
 

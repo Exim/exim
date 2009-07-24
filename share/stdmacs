@@ -30,6 +30,13 @@
 .literal off
 .endmacro
 
+.macro endpreface
+.literal layout
+.pop C
+.push C
+.literal off
+.endmacro
+
 .macro chapter
 .literal layout
 .pop C
@@ -42,6 +49,13 @@
 .arg 3
 &<titleabbrev>&$3&</titleabbrev>&
 .endarg
+.literal off
+.endmacro
+
+.macro endchapter
+.literal layout
+.pop C
+.push C
 .literal off
 .endmacro
 
@@ -60,6 +74,13 @@
 .literal off
 .endmacro
 
+.macro endappendix
+.literal layout
+.pop C
+.push C
+.literal off
+.endmacro
+
 .macro colophon "Colophon"
 .literal layout
 .pop C
@@ -70,6 +91,13 @@
 .arg 3
 &<titleabbrev>&$3&</titleabbrev>&
 .endarg
+.literal off
+.endmacro
+
+.macro endcolophon
+.literal layout
+.pop C
+.push C
 .literal off
 .endmacro
 
@@ -87,6 +115,13 @@
 .literal off
 .endmacro
 
+.macro endsection
+.literal layout
+.pop S
+.push S
+.literal off
+.endmacro
+
 .macro subsection
 .literal layout
 .pop U
@@ -98,6 +133,13 @@
 .arg 3
 &<titleabbrev>&$3&</titleabbrev>&
 .endarg
+.literal off
+.endmacro
+
+.macro endsubsection
+.literal layout
+.pop U
+.push U
 .literal off
 .endmacro
 
@@ -382,6 +424,14 @@
 &<imagedata fileref="$1" $=2+ scale="$2"+$=3+ align="$3"+&&&
   $=4+ depth="$4"+$=5+ width="$5"+>&
 &</imagedata>&&</imageobject>&&</mediaobject>&
+.literal off
+.endmacro
+
+. =============== Processing instructions =============
+
+.macro pi
+.literal layout
+&<?$1 $2?>&
 .literal off
 .endmacro
 

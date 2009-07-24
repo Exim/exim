@@ -13,14 +13,14 @@
 <bookinfo>
 <title>The xfpt plain text to XML processor</title>
 <titleabbrev>xfpt</titleabbrev>
-<date>06 February 2008</date>
+<date>22 July 2009</date>
 <author>
   <firstname>Philip</firstname>
   <surname>Hazel</surname>
 </author>
 <authorinitials>PH</authorinitials>
-<revhistory><revision><revnumber>0.06</revnumber><date>06 February 2008</date><authorinitials>PH</authorinitials></revision></revhistory>
-<copyright><year>2008</year><holder>University of Cambridge</holder></copyright>
+<revhistory><revision><revnumber>0.07</revnumber><date>22 July 2009</date><authorinitials>PH</authorinitials></revision></revhistory>
+<copyright><year>2009</year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
 
@@ -152,9 +152,9 @@ standard macros and flags:
 .ilist
 In the default mode, text is processed paragraph by paragraph. 
 .footnote
-&new("There is, however, a special case when a paragraph contains one or more 
+There is, however, a special case when a paragraph contains one or more 
 footnotes. In that situation, each part of the outer paragraph is processed 
-independently.")
+independently.
 .endnote
 The end of a paragraph is indicated by the end of the input, a blank line, or
 by an occurrence of the &*.literal*& directive. Other directives (for example,
@@ -374,6 +374,7 @@ you from generating invalid XML. For example, DocBook does not allow
 &`<emphasis>`& within &`<literal>`&, though it does allow &`<literal>`& within
 &`<emphasis>`&.
 
+
 .section "Unrecognized flag sequences" ID10
 If an ampersand is not followed by a character sequence in one of the forms
 described in the preceding sections, an error occurs.
@@ -521,9 +522,9 @@ way to revert to the previous definition.
 This directive must be followed by a single string argument that is the path to
 a file. The contents of the file are read and incorporated into the input at
 this point. If the string does not contain any slashes, the path to the &X;
-library is prepended. Otherwise, the path is used unaltered. &new("If 
+library is prepended. Otherwise, the path is used unaltered. If 
 &*.include*& is used inside a macro, it is evaluated each time the macro is 
-called, and thus can be used to include a different file on each occasion.")
+called, and thus can be used to include a different file on each occasion.
 
 
 .section "The &*.inliteral*& directive" ID21
@@ -619,7 +620,7 @@ terminated, and then &X; reverts to the previous state.
 
 .section "The &*.nonl*& directive" ID25
 This directive must be followed by a single string argument. It is processed 
-as &new("an input line") without a newline at the end. This facility is useful
+as an input line without a newline at the end. This facility is useful
 in macros when constructing a single data line from several text fragments. See
 for example the &*.new*& macro in the standard macros.
 
@@ -731,6 +732,20 @@ The &*.book*& macro has no arguments. It generates &`<book>`& and pushes
 &`</book>`& onto the stack so that it will be output at the end.
 
 
+.section "Processing instructions"
+XML processing instructions such as &`<?sdop`& &`toc_sections="no"?>`& can, of 
+course, be written written literally between &`.literal`& &`xml`& and
+&`.literal`& &`off`&. If there are a lot of them, this is perhaps the most
+convenient approach. A macro called &*.pi*& is provided as an easy way of
+setting up a short processing instruction. Its first argument is the name of
+the processor for which the instruction is intended, and its second argument is
+the contents of the instruction, for example:
+.code
+ .pi sdop 'toc_sections="yes,yes,no"'
+.endd
+This generates &`<?sdop`& &`toc_sections="yes,yes,no"?>`&.
+
+
 .section "Chapters, sections, and subsections" ID32
 Chapters, sections, and subsections are supported by three macros that all
 operate in the same way. They are &*.chapter*&, &*.section*&, and
@@ -761,15 +776,28 @@ argument can be an empty string. For example:
 Where and when the abbreviation is used in place of the full title is
 controlled by the stylesheet when the XML is processed.
 
-These three macros use the stack to ensure that each chapter, section, and
-subsection is terminated at the correct point. For example, starting a new
-section automatically terminates an open subsection and a previous section.
-
 
 .section "Prefaces, appendixes, and colophons" ID33
 The macros &*.preface*&, &*.appendix*&, and &*.colophon*& operate in the same 
 way as &*.chapter*&, except that the first and the last have the default title
 strings &"Preface"& and &"Colophon"&.
+
+
+.section "Terminating chapters, etc."
+The macros for chapters, sections, appendixes, etc. use the stack to ensure
+that each one is terminated at the correct point, without the need for an 
+explicit terminator. For example, starting a new section automatically
+terminates an open subsection and a previous section.
+
+Occasionally, however, there is a need to force an explicit termination. The
+&*.endchapter*&, &*.endsection*&, &*.endsubsection*&, &*.endpreface*&,
+&*.endappendix*&, and &*.endcolophon*& macros provide this facility. For
+example, if you want to include an XML processing instruction after a preface,
+but before the start of the following chapter, you must terminate the preface
+with &*.endpreface*&. Otherwise a processing instruction that precedes the next
+&*.chapter*& will end up inside the &`<preface>`& element. You should not 
+include any actual text items at these points.
+
 
 
 .section "URL references" ID34
@@ -1044,16 +1072,16 @@ optional; if present, it is a tag for references to the figure.
 A figure normally contains an image. The &*.image*& macro can be used in simple 
 cases. It generates a &`<mediaobject>`& element containing an
 &`<imageobject>`&. The first argument is the name of the file containing the
-image. The remaining arguments are optional; &new("an empty string must be
+image. The remaining arguments are optional; an empty string must be
 supplied as a placeholder when one that is not required is followed by one that
-is set.")
+is set.
 
 .ilist
 The second argument specifies a scaling factor for the image, as a percentage. 
 Thus, a value of 50 reduces the image to half size.
 .next
 The third argument specifies an alignment for the image. It must be one of 
-&`left`& &new("(default)"), &`right`& or &`center`& (or even &`centre`& if the
+&`left`& (default), &`right`& or &`center`& (or even &`centre`& if the
 DocBook processor you are using can handle it).
 .next
 The fourth and fifth arguments specify the depth and width, respectively. How 
