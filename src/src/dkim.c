@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.2 2009/06/10 07:34:04 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.3 2009/08/31 21:14:50 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -235,21 +235,33 @@ uschar *dkim_exim_expand_query(int what) {
 
   switch(what) {
     case DKIM_ALGO:
-      return dkim_cur_sig->algo?
-              (uschar *)(dkim_cur_sig->algo)
-              :dkim_exim_expand_defaults(what);
+      switch(dkim_cur_sig->algo) {
+        case PDKIM_ALGO_RSA_SHA1:
+          return US"rsa-sha1";
+        case PDKIM_ALGO_RSA_SHA256:
+        default:
+          return US"rsa-sha256";
+      }
     case DKIM_BODYLENGTH:
       return (dkim_cur_sig->bodylength >= 0)?
               (uschar *)string_sprintf(OFF_T_FMT,(LONGLONG_T)dkim_cur_sig->bodylength)
               :dkim_exim_expand_defaults(what);
     case DKIM_CANON_BODY:
-      return dkim_cur_sig->canon_body?
-              (uschar *)(dkim_cur_sig->canon_body)
-              :dkim_exim_expand_defaults(what);
+      switch(dkim_cur_sig->canon_body) {
+        case PDKIM_CANON_RELAXED:
+          return US"relaxed";
+        case PDKIM_CANON_SIMPLE:
+        default:
+          return US"simple";
+      }
     case DKIM_CANON_HEADERS:
-      return dkim_cur_sig->canon_headers?
-              (uschar *)(dkim_cur_sig->canon_headers)
-              :dkim_exim_expand_defaults(what);
+      switch(dkim_cur_sig->canon_headers) {
+        case PDKIM_CANON_RELAXED:
+          return US"relaxed";
+        case PDKIM_CANON_SIMPLE:
+        default:
+          return US"simple";
+      }
     case DKIM_COPIEDHEADERS:
       return dkim_cur_sig->copiedheaders?
               (uschar *)(dkim_cur_sig->copiedheaders)

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.99 2009/06/27 19:37:17 tom Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.100 2009/08/31 21:14:50 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1567,7 +1567,7 @@ while (last > first)
 
     #ifndef DISABLE_DKIM
     case vtype_dkim:
-    return dkim_exim_expand_query((int)var_table[middle].value);
+    return dkim_exim_expand_query((int)(long)var_table[middle].value);
     #endif
 
     }
