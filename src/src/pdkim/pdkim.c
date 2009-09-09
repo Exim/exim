@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.2 2009/06/10 07:34:05 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.3 2009/09/09 08:13:58 tom Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -161,6 +161,17 @@ pdkim_stringlist *pdkim_append_stringlist(pdkim_stringlist *base, char *str) {
     return base;
   }
   else return new_entry;
+};
+pdkim_stringlist *pdkim_prepend_stringlist(pdkim_stringlist *base, char *str) {
+  pdkim_stringlist *new_entry = malloc(sizeof(pdkim_stringlist));
+  if (new_entry == NULL) return NULL;
+  memset(new_entry,0,sizeof(pdkim_stringlist));
+  new_entry->value = strdup(str);
+  if (new_entry->value == NULL) return NULL;
+  if (base != NULL) {
+    new_entry->next = base;
+  }
+  return new_entry;
 };
 
 
@@ -1045,9 +1056,9 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
                             sig->hnames_check, 1) != PDKIM_OK) goto NEXT_SIG;
     }
 
-    /* Add header to the signed headers list */
-    list = pdkim_append_stringlist(sig->headers,
-                                   ctx->cur_header->str);
+    /* Add header to the signed headers list (in reverse order) */
+    list = pdkim_prepend_stringlist(sig->headers,
+                                    ctx->cur_header->str);
     if (list == NULL) return PDKIM_ERR_OOM;
     sig->headers = list;
 
@@ -1347,7 +1358,8 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
         q = strchr(p,':');
         if (q != NULL) *q = '\0';
         while (hdrs != NULL) {
-          if (strncasecmp(hdrs->value,p,strlen(p)) == 0) {
+          if ( (strncasecmp(hdrs->value,p,strlen(p)) == 0) &&
+               ((hdrs->value)[strlen(p)] == ':') ) {
             char *rh = NULL;
             if (sig->canon_headers == PDKIM_CANON_RELAXED)
               rh = pdkim_relax_header(hdrs->value,1); /* cook header for relaxed canon */
@@ -1364,6 +1376,8 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
               pdkim_quoteprint(ctx->debug_stream, rh, strlen(rh), 1);
             #endif
             free(rh);
+            (hdrs->value)[0] = '_';
+            break;
           }
           hdrs = hdrs->next;
         }
