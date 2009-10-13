@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/dcc.c,v 1.2 2009/06/30 18:25:03 tom Exp $ */
+/* $Cambridge: exim/src/src/dcc.c,v 1.3 2009/10/13 15:08:03 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Wolfgang Breyha 2005-2008
+/* Copyright (c) Wolfgang Breyha 2005-2009
  * Vienna University Computer Center
  * wbreyha@gmx.net
  * See the file NOTICE for conditions of use and distribution.
@@ -64,9 +64,10 @@ int dcc_process(uschar **listptr) {
   uschar *dcc_ip_option = US"";
   uschar *dcc_helo_option = US"localhost";
   uschar *dcc_reject_message = US"Rejected by DCC";
+  uschar *xtra_hdrs = NULL;
 
   /* from local_scan */
-  int i, j, k, c, retval, sockfd, servlen, resp, rcpt_count, portnr, line;
+  int i, j, k, c, retval, sockfd, servlen, resp, portnr, line;
   struct sockaddr_un  serv_addr;
   struct sockaddr_in  serv_addr_in;
   struct hostent *ipaddress;
@@ -82,9 +83,9 @@ int dcc_process(uschar **listptr) {
   uschar message_subdir[2];
   struct header_line *dcchdr;
   struct recipient_item *dcc_rcpt = recipients_list;
-  int some;
   uschar *dcc_acl_options;
   uschar dcc_acl_options_buffer[10];
+  uschar dcc_xtra_hdrs[1024];
 
   int offset, result;
   uschar *p,*q;
@@ -172,16 +173,7 @@ int dcc_process(uschar **listptr) {
   if(!(Ustrcmp(client_ip, ""))){
     /* Do we have a sender_host_address or is it NULL? */
     if(sender_host_address){
-      /* check if it is an ipv6 address */
-      if(Ustrchr(sender_host_address, ':')){
-        /* This is an IPv6 address
-         * For the moment we will not use it, but use 127.0.0.1 instead */
-        DEBUG(D_acl)
-          debug_printf("IPv6 address!\n");
-        Ustrncpy(client_ip, dcc_default_ip_option, sizeof(client_ip)-1);
-      } else {
-        Ustrncpy(client_ip, sender_host_address, sizeof(client_ip)-1);
-      }
+      Ustrncpy(client_ip, sender_host_address, sizeof(client_ip)-1);
     } else {
       /* sender_host_address is NULL which means it comes from localhost */
       Ustrncpy(client_ip, dcc_default_ip_option, sizeof(client_ip)-1);
@@ -199,7 +191,6 @@ int dcc_process(uschar **listptr) {
 
   /* initialize the other variables */
   dcchdr = header_list;
-  rcpt_count = 0;
   /* we set the default return value to DEFER */
   retval = DEFER;
 
@@ -208,7 +199,11 @@ int dcc_process(uschar **listptr) {
   bzero(rcpt,sizeof(rcpt));
   bzero(from,sizeof(from));
 
-  Ustrncpy(from, sender_address, sizeof(from));
+  /* send a null return path as "<>". */
+  if (Ustrlen(sender_address) > 0)
+    Ustrncpy(from, sender_address, sizeof(from));
+  else
+    Ustrncpy(from, "<>", sizeof(from));
   Ustrncat(from, "\n", sizeof(from)-Ustrlen(from)-1);
 
   /**************************************
@@ -380,10 +375,8 @@ int dcc_process(uschar **listptr) {
    ******************************************************************/
 
   line = 1;    /* we start at the first line of the output */
-  rcpt_count = 0; /* initializing the recipients counter */
   j = 0;       /* will be used as index for the recipients list */
   k = 0;       /* initializing the index of the X-DCC header: xhdr[k] */
-  some = 0;
 
   /* Let's read from the socket until there's nothing left to read */
   bzero(recvbuf, sizeof(recvbuf));
@@ -412,11 +405,13 @@ int dcc_process(uschar **listptr) {
               DEBUG(D_acl)
                 debug_printf("Overall result = A\treturning OK\n");
               Ustrcpy(dcc_return_text, "Mail accepted by DCC");
+              dcc_result = "A";
               retval = OK;
             }
             else if(recvbuf[i] == 'R') {
               DEBUG(D_acl)
                 debug_printf("Overall result = R\treturning FAIL\n");
+              dcc_result = "R";
               retval = FAIL;
               if(sender_host_name) {
                 log_write(0, LOG_MAIN, "H=%s [%s] F=<%s>: rejected by DCC", sender_host_name, sender_host_address, sender_address);
@@ -430,14 +425,17 @@ int dcc_process(uschar **listptr) {
               DEBUG(D_acl)
                 debug_printf("Overall result  = S\treturning OK\n");
               Ustrcpy(dcc_return_text, "Not all recipients accepted by DCC");
-              some = 1;
+              /* Since we're in an ACL we want a global result
+               * so we accept for all */
+              dcc_result = "A";
               retval = OK;
             }
             else if(recvbuf[i] == 'G') {
               DEBUG(D_acl)
                 debug_printf("Overall result  = G\treturning FAIL\n");
               Ustrcpy(dcc_return_text, "Greylisted by DCC");
-              retval = DEFER;
+              dcc_result = "G";
+              retval = FAIL;
             }
             else if(recvbuf[i] == 'T') {
               DEBUG(D_acl)
@@ -445,6 +443,7 @@ int dcc_process(uschar **listptr) {
               retval = DEFER;
               log_write(0,LOG_MAIN,"Temporary error with DCC: %s\n", recvbuf);
               Ustrcpy(dcc_return_text, "Temporary error with DCC");
+              dcc_result = "T";
             }
             else {
               DEBUG(D_acl)
@@ -452,6 +451,7 @@ int dcc_process(uschar **listptr) {
               retval = DEFER;
               log_write(0,LOG_MAIN,"Unknown DCC response: %s\n", recvbuf);
               Ustrcpy(dcc_return_text, "Unknown DCC response");
+              dcc_result = "T";
             }
           }
           else {
@@ -464,41 +464,15 @@ int dcc_process(uschar **listptr) {
         }
         else if(line == 2) {
           /* On the second line we get a list of
-           * answer for each recipient */
-           /* We only need to copy the list of recipients if we
-            * accept the mail i.e. if retval is LOCAL_SCAN_ACCEPT */
-// I don't care about results "SOME" since we're in the DATA stage. So we've a global result
-          if(some) {
-            if(j > recipients_count - 1) {
-              DEBUG(D_acl)
-                debug_printf("More recipients returned than sent!\nSent %d recipients, got %d in return.\n", recipients_count, j);
-            }
-            else {
-              if(recvbuf[i] == 'A') {
-                DEBUG(D_acl)
-                  debug_printf("Accepted recipient: %c - %s\n", recvbuf[i], recipients_list[j].address);
-//                Ustrcpy(dcc_rcpt[rcpt_count].address, recipients_list[j].address);
-                rcpt_count++;
-              }
-              else {
-                DEBUG(D_acl)
-                  debug_printf("Rejected recipient: %c - %s\n", recvbuf[i], recipients_list[j].address);
-              }
-              j++;
-            }
-          }
-          else {
-            DEBUG(D_acl)
-              debug_printf("result was not SOME, so we take the overall result\n");
-          }
+           * answer for each recipient. We don't care about
+           * it because we're in an acl and so just take the
+           * global result. */
         }
         else if(line > 2) {
           /* The third and following lines is the X-DCC header,
            * so we store it in xhdr. */
           /* check if we don't get more than what we can handle */
           if(k < sizeof(xhdr)) { /* xhdr has a length of 120 */
-//            DEBUG(D_acl)
-//              debug_printf("Writing X-DCC header: k = %d recvbuf[%d] = %c\n", k, i, recvbuf[i]);
             xhdr[k] = recvbuf[i];
             k++;
           }
@@ -525,34 +499,14 @@ int dcc_process(uschar **listptr) {
 
   /* Now let's sum up what we've got. */
   DEBUG(D_acl)
-    debug_printf("\n--------------------------\nOverall result = %d\nNumber of recipients accepted: %d\nX-DCC header: %s\nReturn message: %s\n", retval, rcpt_count, xhdr, dcc_return_text);
-
-  /* If some recipients were rejected, then rcpt_count is
-   * less than the original recipients_count.
-   * Then reconstruct the recipients list for those accepted
-   * recipients only. */
-  if((rcpt_count == 0) & (retval == OK)) { /* There should be at least 1 recipient; but who knows... */
-    DEBUG(D_acl)
-      debug_printf("List of accepted recipients is 0!\n");
-    retval = FAIL;
-  }
-  else {
-/*  if(rcpt_count < recipients_count) {
-    recipients_count=0;
-    for(i=0; i < rcpt_count; i++){
-      DEBUG(D_acl)
-        debug_printf("Adding the new recipient: %s\n", dcc_rcpt[i].address);
-      receive_add_recipient(dcc_rcpt[i].address, -1);
-    } */
-    retval = OK;
-  }
+    debug_printf("\n--------------------------\nOverall result = %d\nX-DCC header: %sReturn message: %s\ndcc_result: %s\n", retval, xhdr, dcc_return_text, dcc_result);
 
   /* We only add the X-DCC header if it starts with X-DCC */
   if(!(Ustrncmp(xhdr, "X-DCC", 5))){
     dcc_header = xhdr;
     if(dcc_direct_add_header) {
       header_add(' ' , "%s", xhdr);
-  /* since the MIME ACL already writes the .eml file to disk without DCC Header we've to earase it */
+  /* since the MIME ACL already writes the .eml file to disk without DCC Header we've to erase it */
       unspool_mbox();
     }
   }
@@ -561,10 +515,22 @@ int dcc_process(uschar **listptr) {
       debug_printf("Wrong format of the X-DCC header: %s\n", xhdr);
   }
 
+  /* check if we should add additional headers passed in acl_m_dcc_add_header */
+  if(dcc_direct_add_header) {
+    if (((xtra_hdrs = expand_string("$acl_m_dcc_add_header")) != NULL) && (xtra_hdrs[0] != '\0')) {
+      Ustrncpy(dcc_xtra_hdrs, xtra_hdrs, sizeof(dcc_xtra_hdrs) - 2);
+      if (dcc_xtra_hdrs[Ustrlen(dcc_xtra_hdrs)-1] != '\n')
+        Ustrcat(dcc_xtra_hdrs, "\n");
+      header_add(' ', "%s", dcc_xtra_hdrs);
+      DEBUG(D_acl)
+        debug_printf("adding additional headers in $acl_m_dcc_add_header: %s", dcc_xtra_hdrs);
+    }
+  }
+
   dcc_ok = 1;
   /* Now return to exim main process */
   DEBUG(D_acl)
-    debug_printf("Before returning to exim main process:\nreturn_text = %s - retval = %d\n", dcc_return_text, retval);
+    debug_printf("Before returning to exim main process:\nreturn_text = %s - retval = %d\ndcc_result = %s\n", dcc_return_text, retval, dcc_result);
 
   (void)fclose(data_file);
   return retval;
