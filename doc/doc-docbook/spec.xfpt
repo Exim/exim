@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.53 2009/06/30 20:03:17 tom Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.54 2009/10/13 08:46:06 tom Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -34287,6 +34287,24 @@ ACL (acl_smtp_dkim), which can be called several times per message, with
 different signature context.
 .endlist
 
+In typical Exim style, the verification implementation does not include any
+default "policy". Instead it enables you to build your own policy using
+Exim's standard controls.
+
+Please note that verification of DKIM signatures in incoming mail is turned
+on by default for logging purposes. For each signature in incoming email,
+exim will log a line displaying the most important signature details, and the
+signature status. Here is an example:
+.code
+2009-09-09 10:22:28 1MlIRf-0003LU-U3 DKIM: d=facebookmail.com s=q1-2009b c=relaxed/relaxed a=rsa-sha1 i=@facebookmail.com t=1252484542 [verification succeeded]
+.endd
+You might want to turn off DKIM verification processing entirely for internal
+or relay mail sources. To do that, set the &%dkim_disable_verify%& ACL
+control modifier. This should typically be done in the RCPT ACL, at points
+where you accept mail from relay sources (internal hosts or authenticated
+senders).
+
+
 .section "Signing outgoing messages" "SECID513"
 .cindex "DKIM" "signing"
 
@@ -34296,19 +34314,19 @@ These options take (expandable) strings as arguments.
 .option dkim_domain smtp string&!! unset
 MANDATORY
 The domain you want to sign with. The result of this expanded
-option is put into the $dkim_domain expansion variable.
+option is put into the &%$dkim_domain%& expansion variable.
 
 .option dkim_selector smtp string&!! unset
 MANDATORY
-This sets the key selector string. You can use the $dkim_domain expansion
+This sets the key selector string. You can use the &%$dkim_domain%& expansion
 variable to look up a matching selector. The result is put in the expansion
-variable $dkim_selector which should be used in the dkim_private_key option
-along with $dkim_domain.
+variable &%$dkim_selector%& which should be used in the &%dkim_private_key%&
+option along with &%$dkim_domain%&.
 
 .option dkim_private_key smtp string&!! unset
 MANDATORY
-This sets the private key to use. You can use the $dkim_domain and
-$dkim_selector expansion variables to determine the private key to use.
+This sets the private key to use. You can use the &%$dkim_domain%& and
+&%$dkim_selector%& expansion variables to determine the private key to use.
 The result can either
 .ilist
 be a valid RSA private key in ASCII armor, including line breaks.
@@ -34317,7 +34335,8 @@ start with a slash, in which case it is treated as a file that contains
 the private key.
 .next
 be "0", "false" or the empty string, in which case the message will not
-be signed. This case will not result in an error, even if dkim_strict is set.
+be signed. This case will not result in an error, even if &%dkim_strict%&
+is set.
 .endlist
 
 .option dkim_canon smtp string&!! unset
@@ -34325,22 +34344,180 @@ OPTIONAL
 This option sets the canonicalization method used when signing a message.
 The DKIM RFC currently supports two methods: "simple" and "relaxed".
 The option defaults to "relaxed" when unset. Note: the current implementation
-only support using the same canonicalization method for both headers and body.
+only supports using the same canonicalization method for both headers and body.
 
 .option dkim_strict smtp string&!! unset
 OPTIONAL
 This  option  defines  how  Exim  behaves  when  signing a message that
 should be signed fails for some reason.  When the expansion evaluates to
 either "1" or "true", Exim will defer. Otherwise Exim will send the message
-unsigned. You can use the $dkim_domain and $dkim_selector expansion
+unsigned. You can use the &%$dkim_domain%& and &%$dkim_selector%& expansion
 variables here.
 
 .option dkim_sign_headers smtp string&!! unset
 OPTIONAL
 When set, this option must expand to (or be specified as) a colon-separated
-list of header names. These headers will be included in the message
-signature. When unspecified, the headers recommended in RFC4871 will be used.
+list of header names. Headers with these names will be included in the message
+signature. When unspecified, the header names recommended in RFC4871 will be
+used.
 
+
+.section "Verifying DKIM signatures in incoming mail" "SECID514"
+.cindex "DKIM" "verification"
+
+Verification of DKIM signatures in incoming email is implemented via the
+&%acl_smtp_dkim%& ACL. By default, this ACL is called once for each
+syntactically(!) correct signature in the incoming message.
+
+To evaluate the signature in the ACL a large number of expansion variables
+containing the signature status and its details are set up during the
+runtime of the ACL.
+
+Calling the ACL only for existing signatures is not sufficient to build
+more advanced policies. For that reason, the global option
+&%dkim_verify_signers%&, and a global expansion variable
+&%$dkim_signing_domains%& exist.
+
+The global option &%dkim_verify_signers%& can be set to a colon-separated
+list of DKIM domains or identities for which the ACL &%acl_smtp_dkim%& is
+called. It is expanded when the message has been received. At this point,
+the expansion variable &%$dkim_signing_domains%& already contains a colon-
+separated list of signer domains for the message. When &%dkim_verify_signers%&
+is not specified in the main configuration, it defaults as:
+.code
+dkim_verify_signers = $dkim_signing_domains
+.endd
+This leads to the default behaviour of calling &%acl_smtp_dkim%& for each
+DKIM signature in the message. Current DKIM verifiers may want to explicitly
+call the ACL for known domains or identities. This would be achieved as follows:
+.code
+dkim_verify_signers = paypal.com:ebay.com:$dkim_signing_domains
+.endd
+This would result in &%acl_smtp_dkim%& always being called for "paypal.com"
+and "ebay.com", plus all domains that have signatures in the message. You can
+also be more creative in constructing your policy. Example:
+.code
+dkim_verify_signers = $sender_address_domain:$dkim_signing_domains
+.endd
+
+Inside the &%acl_smtp_dkim%&, the following expansion variables are
+available (from most to least important):
+
+.vlist
+.vitem &%$dkim_verify_status%&
+A string describing the general status of the signature. One of
+.ilist
+&%none%&: There is no signature in the message for the current domain or
+identity.
+.next
+&%invalid%&: The signature could not be verified due to a processing error.
+More detail is available in &%$dkim_verify_reason%&.
+.next
+&%fail%&: Verification of the signature failed.  More detail is
+available in &%$dkim_verify_reason%&.
+.next
+&%pass%&: The signature passed verification. It is valid.
+.endlist
+.vitem &%$dkim_verify_reason%&
+A string giving a litte bit more detail when &%$dkim_verify_status%& is either
+"fail" or "invalid". One of
+.ilist
+&%pubkey_unavailable%& (when &%$dkim_verify_status%&="invalid"): The public
+key for the domain could not be retrieved. This may be a temporary problem.
+.next
+&%pubkey_syntax%& (when &%$dkim_verify_status%&="invalid"): The public key
+record for the domain is syntactically invalid.
+.next
+&%bodyhash_mismatch%& (when &%$dkim_verify_status%&="fail"): The calculated
+body hash does not match the one specified in the signature header. This
+means that the message body was modified in transit.
+.next
+&%signature_incorrect%& (when &%$dkim_verify_status%&="fail"): The signature
+could not be verified. This may mean that headers were modified,
+re-written or otherwise changed in a way which is incompatible with
+DKIM verification. It may of course also mean that the signature is forged.
+.endlist
+.vitem &%$dkim_domain%&
+The signing domain. IMPORTANT: This variable is only populated if there is
+ab actual signature in the message. It does NOT neccessarily carry the
+domain that is currently being evaluated. Please use the &%dkim_signers%& ACL
+condition for that.
+.vitem &%$dkim_identity%&
+The signing identity. IMPORTANT: This variable is only populated if there is
+ab actual signature in the message. It does NOT neccessarily carry the
+identity that is currently being evaluated. Please use the &%dkim_signers%& ACL
+condition for that.
+.vitem &%$dkim_selector%&
+The key record selector string
+.vitem &%$dkim_algo%&
+The algorithm used. One of 'rsa-sha1' or 'rsa-sha256'.
+.vitem &%$dkim_canon_body%&
+The body canonicalization method. One of 'relaxed' or 'simple'.
+.vitem &%dkim_canon_headers%&
+The header canonicalization method. One of 'relaxed' or 'simple'.
+.vitem &%$dkim_copiedheaders%&
+A transcript of headers and their values which are included in the signature
+(copied from the 'z=' tag of the signature).
+.vitem &%$dkim_bodylength%&
+The number of signed body bytes. If zero ("0"), the body is unsigned. If no
+limit was set by the signer, "9999999999999" is returned. This makes sure
+that this variable always expands to an integer value.
+.vitem &%$dkim_created%&
+UNIX timestamp reflecting the date and time when the signature was created.
+When this was not specified by the signer, "0" is returned.
+.vitem &%$dkim_expires%&
+UNIX timestamp reflecting the date and time when the signer wants the
+signature to be treated as "expired". When this was not specified by the
+signer, "9999999999999" is returned. This makes it possible to do useful
+integer size comparisons against this value.
+.vitem &%$dkim_headernames%&
+A colon-separated list of names of headers included in the signature.
+.vitem &%$dkim_key_testing%&
+"1" if the key record has the "testing" flag set, "0" if not.
+.vitem &%$dkim_key_nosubdomaining%&
+"1" if the key record forbids subdomaining, "0" otherwise.
+.vitem &%$dkim_key_srvtype%&
+Service type (tag s=) from the key record. Defaults to "*" if not specified
+in the key record.
+.vitem &%$dkim_key_granularity%&
+Key granularity (tag g=) from the key record. Defaults to "*" if not specified
+in the key record.
+.vitem &%$dkim_key_notes%&
+Notes from the key record (tag n=)
+.endlist
+
+In addition, two ACL conditions are provided:
+
+.vlist
+.vitem &%dkim_signers%&
+ACL condition that checks a colon-separated list of domains or identities
+for a match against the domain or identity that the ACL is currently verifying.
+This is typically used to restrict an ACL verb to a group of domains or identities, like:
+
+.code
+# Warn when message apparently from GMail has no signature at all
+warn log_message = GMail sender without DKIM signature
+     sender_domains = gmail.com
+     dkim_signers = gmail.com
+     dkim_status = none
+.endd
+
+.vitem &%dkim_status%&
+ACL condition that checks a colon-separated list of possible DKIM verification
+results agains the actual result of verification. This is typically used
+to restrict an ACL verb to a list of verification outcomes, like:
+
+.code
+deny message = Message from Paypal with invalid or missing signature
+     sender_domains = paypal.com:paypal.de
+     dkim_signers = paypal.com:paypal.de
+     dkim_status = none:invalid:fail
+.endd
+
+The possible status keywords are: 'none','invalid','fail' and 'pass'. Please
+see the documentation of the &%$dkim_verify_status%& expansion variable above
+for more information of what they mean.
+.endlist
 
 
 . ////////////////////////////////////////////////////////////////////////////
