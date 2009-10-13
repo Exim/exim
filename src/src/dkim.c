@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.3 2009/08/31 21:14:50 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.4 2009/10/13 18:32:05 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -456,7 +456,13 @@ uschar *dkim_exim_sign(int dkim_fd,
     /* Looks like a filename, load the private key. */
     memset(big_buffer,0,big_buffer_size);
     privkey_fd = open(CS dkim_private_key,O_RDONLY);
-    (void)read(privkey_fd,big_buffer,16383);
+    if (privkey_fd < 0) {
+      log_write(0, LOG_MAIN|LOG_PANIC, "unable to open "
+        "private key file for reading: %s", dkim_private_key);
+      rc = NULL;
+      goto CLEANUP;
+    }
+    (void)read(privkey_fd,big_buffer,(big_buffer_size-2));
     (void)close(privkey_fd);
     dkim_private_key = big_buffer;
   }
