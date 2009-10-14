@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.21 2009/06/10 07:34:04 tom Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.22 2009/10/14 13:52:48 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1296,6 +1296,26 @@ tls_session = NULL;
 gnutls_global_deinit();
 
 tls_active = -1;
+}
+
+
+
+
+/*************************************************
+*         Report the library versions.           *
+*************************************************/
+
+/* See a description in tls-openssl.c for an explanation of why this exists.
+
+Arguments:   a FILE* to print the results to
+Returns:     nothing
+*/
+
+void
+tls_version_report(FILE *f)
+{
+fprintf(f, "GnuTLS compile-time version: %s\n", LIBGNUTLS_VERSION);
+fprintf(f, "GnuTLS runtime version: %s\n", gnutls_check_version(NULL));
 }
 
 /* End of tls-gnu.c */

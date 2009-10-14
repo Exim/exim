@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.62 2009/06/10 07:34:04 tom Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.63 2009/10/14 13:52:48 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1055,6 +1055,14 @@ if (fixed_never_users[0] > 0)
   }
 
 fprintf(f, "Size of off_t: %d\n", sizeof(off_t));
+
+/* This runtime check is to help diagnose library linkage mismatches which
+result in segfaults and the like; as such, it's left until the end,
+just in case.  There will still be a "Configuration file is" line still to
+come. */
+#ifdef SUPPORT_TLS
+tls_version_report(f);
+#endif
 }
 
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.14 2009/06/10 07:34:04 tom Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.15 2009/10/14 13:52:48 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1023,6 +1023,30 @@ SSL_free(ssl);
 ssl = NULL;
 
 tls_active = -1;
+}
+
+
+
+
+/*************************************************
+*         Report the library versions.           *
+*************************************************/
+
+/* There have historically been some issues with binary compatibility in
+OpenSSL libraries; if Exim (like many other applications) is built against
+one version of OpenSSL but the run-time linker picks up another version,
+it can result in serious failures, including crashing with a SIGSEGV.  So
+report the version found by the compiler and the run-time version.
+
+Arguments:   a FILE* to print the results to
+Returns:     nothing
+*/
+
+void
+tls_version_report(FILE *f)
+{
+fprintf(f, "OpenSSL compile-time version: %s\n", OPENSSL_VERSION_TEXT);
+fprintf(f, "OpenSSL runtime version: %s\n", SSLeay_version(SSLEAY_VERSION));
 }
 
 /* End of tls-openssl.c */
