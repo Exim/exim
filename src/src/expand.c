@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.100 2009/08/31 21:14:50 tom Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.101 2009/10/14 14:48:41 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -242,6 +242,7 @@ static uschar *cond_table[] = {
   US">",
   US">=",
   US"and",
+  US"bool",
   US"crypteq",
   US"def",
   US"eq",
@@ -283,6 +284,7 @@ enum {
   ECOND_NUM_G,
   ECOND_NUM_GE,
   ECOND_AND,
+  ECOND_BOOL,
   ECOND_CRYPTEQ,
   ECOND_DEF,
   ECOND_STR_EQ,
@@ -2407,6 +2409,53 @@ switch(cond_type)
     return s;
     }
 
+
+  /* The bool{} expansion condition maps a string to boolean.
+  The values supported should match those supported by the ACL condition
+  (acl.c, ACLC_CONDITION) so that we keep to a minimum the different ideas
+  of true/false.  Note that Router "condition" rules have a different
+  interpretation, where general data can be used and only a few values
+  map to FALSE.
+  Note that readconf.c boolean matching, for boolean configuration options,
+  only matches true/yes/false/no. */
+  case ECOND_BOOL:
+    {
+    uschar *sub_arg[1];
+    uschar *t;
+    size_t len;
+    BOOL boolvalue = FALSE;
+    while (isspace(*s)) s++;
+    if (*s != '{') goto COND_FAILED_CURLY_START;
+    switch(read_subs(sub_arg, 1, 1, &s, yield == NULL, FALSE, US"bool"))
+      {
+      case 1: expand_string_message = US"too few arguments or bracketing "
+        "error for bool";
+      /*FALLTHROUGH*/
+      case 2:
+      case 3: return NULL;
+      }
+    t = sub_arg[0];
+    while (isspace(*t)) t++;
+    len = Ustrlen(t);
+    DEBUG(D_expand)
+      debug_printf("considering bool: %s\n", len ? t : US"<empty>");
+    if (len == 0)
+      boolvalue = FALSE;
+    else if (Ustrspn(t, "0123456789") == len)
+      boolvalue = (Uatoi(t) == 0) ? FALSE : TRUE;
+    else if (strcmpic(t, US"true") == 0 || strcmpic(t, US"yes") == 0)
+      boolvalue = TRUE;
+    else if (strcmpic(t, US"false") == 0 || strcmpic(t, US"no") == 0)
+      boolvalue = FALSE;
+    else
+      {
+      expand_string_message = string_sprintf("unrecognised boolean "
+       "value \"%s\"", t);
+      return NULL;
+      }
+    if (yield != NULL) *yield = (boolvalue != 0);
+    return s;
+    }
 
   /* Unknown condition */
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.83 2009/06/10 07:34:04 tom Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.84 2009/10/14 14:48:41 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2540,6 +2540,9 @@ for (; cb != NULL; cb = cb->next)
     #endif
 
     case ACLC_CONDITION:
+    /* The true/false parsing here should be kept in sync with that used in
+    expand.c when dealing with ECOND_BOOL so that we don't have too many
+    different definitions of what can be a boolean. */
     if (Ustrspn(arg, "0123456789") == Ustrlen(arg))     /* Digits, or empty */
       rc = (Uatoi(arg) == 0)? FAIL : OK;
     else

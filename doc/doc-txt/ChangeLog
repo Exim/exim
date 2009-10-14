@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.568 2009/10/14 13:52:48 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.569 2009/10/14 14:48:41 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -105,7 +105,11 @@ NM/17 Changed NOTICE file to remove references to embedded PCRE.
 
 NM/18 Bugzilla 894: Fix issue with very long lines including comments in lsearch
 
-NM/18 Bugzilla 745: TLS version reporting
+NM/19 Bugzilla 745: TLS version reporting
+      Patch provided by Phil Pennock
+
+NM/20 Bugzilla 167: bool: condition support
+      Patch provided by Phil Pennock
 
 
 Exim version 4.69

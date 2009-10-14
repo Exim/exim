@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.54 2009/10/13 08:46:06 tom Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.55 2009/10/14 14:48:40 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -9731,6 +9731,22 @@ optionally followed by one of the letters &"K"& or &"M"& (in either upper or
 lower case), signifying multiplication by 1024 or 1024*1024, respectively.
 As a special case, the numerical value of an empty string is taken as
 zero.
+
+.vitem &*bool&~{*&<&'string'&>&*}*&
+.cindex "expansion" "boolean parsing"
+.cindex "&%bool%& expansion condition"
+This condition turns a string holding a true or false representation into
+a boolean state.  It parses &"true"&, &"false"&, &"yes"& and &"no"&
+(case-insensitively); also positive integer numbers map to true if non-zero,
+false if zero.  Leading whitespace is ignored.
+All other string values will result in expansion failure.
+
+When combined with ACL variables, this expansion condition will let you
+make decisions in one place and act on those decisions in another place.
+For example,
+.code
+${if bool{$acl_m_privileged_sender} ...
+.endd
 
 .vitem &*crypteq&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
 .cindex "expansion" "encrypted comparison"
