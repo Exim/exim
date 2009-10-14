@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/lsearch.c,v 1.8 2007/01/08 10:50:19 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/lsearch.c,v 1.9 2009/10/14 13:43:40 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -107,6 +107,7 @@ for (last_was_eol = TRUE;
   int ptr, size;
   int p = Ustrlen(buffer);
   int linekeylength;
+  BOOL this_is_comment;
   uschar *yield;
   uschar *s = buffer;
 
@@ -255,6 +256,7 @@ for (last_was_eol = TRUE;
 
   Initialize, and copy the first segment of data. */
 
+  this_is_comment = FALSE;
   size = 100;
   ptr = 0;
   yield = store_get(size);
@@ -285,11 +287,13 @@ for (last_was_eol = TRUE;
 
     if (last_was_eol)
       {
-      if (buffer[0] == 0 || buffer[0] == '#') continue;
+      this_is_comment ||= (buffer[0] == 0 || buffer[0] == '#');
+      if (this_is_comment) continue;
       if (!isspace((uschar)buffer[0])) break;
       while (isspace((uschar)*s)) s++;
       *(--s) = ' ';
       }
+    if (this_is_comment) continue;
 
     /* Join a physical or logical line continuation onto the result string. */
 
