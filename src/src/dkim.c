@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.5 2009/10/15 08:06:23 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.6 2009/10/15 08:27:37 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -19,7 +19,6 @@
 pdkim_ctx       *dkim_verify_ctx = NULL;
 pdkim_signature *dkim_signatures = NULL;
 pdkim_signature *dkim_cur_sig    = NULL;
-uschar          *dkim_cur_signer = NULL;
 
 int dkim_exim_query_dns_txt(char *name, char *answer) {
   dns_answer dnsa;

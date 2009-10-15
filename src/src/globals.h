@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.64 2009/10/15 08:06:23 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.65 2009/10/15 08:27:37 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -299,6 +299,7 @@ extern BOOL    disable_ipv6;           /* Don't do any IPv6 things */
 extern BOOL    disable_logging;        /* Disables log writing when TRUE */
 
 #ifndef DISABLE_DKIM
+extern uschar *dkim_cur_signer;        /* Expansion variable, holds the current "signer" domain or identity during a acl_smtp_dkim run */
 extern uschar *dkim_signers;           /* Expansion variable, holds colon-separated list of domains and identities that have signed a message */
 extern uschar *dkim_signing_domain;    /* Expansion variable, domain used for signing a message. */
 extern uschar *dkim_signing_selector;  /* Expansion variable, selector used for signing a message. */

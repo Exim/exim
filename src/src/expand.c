@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.102 2009/10/15 08:06:23 tom Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.103 2009/10/15 08:27:37 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -413,6 +413,7 @@ static var_entry var_table[] = {
   { "dkim_canon_headers",  vtype_dkim,        (void *)DKIM_CANON_HEADERS },
   { "dkim_copiedheaders",  vtype_dkim,        (void *)DKIM_COPIEDHEADERS },
   { "dkim_created",        vtype_dkim,        (void *)DKIM_CREATED },
+  { "dkim_cur_signer",     vtype_stringptr,   &dkim_cur_signer },
   { "dkim_domain",         vtype_stringptr,   &dkim_signing_domain },
   { "dkim_expires",        vtype_dkim,        (void *)DKIM_EXPIRES },
   { "dkim_headernames",    vtype_dkim,        (void *)DKIM_HEADERNAMES },
