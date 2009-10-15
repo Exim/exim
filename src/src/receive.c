@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.47 2009/10/15 08:06:23 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.48 2009/10/15 09:22:44 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3001,17 +3001,36 @@ else
                                            itembuf,
                                            sizeof(itembuf))) != NULL)
             {
+            /* Prevent running ACL for an empty item */
+            if (!item || (item[0] == '\0')) continue;
             /* Only run ACL once for each domain or identity, no matter how often it
                appears in the expanded list. */
-            if (seen_items != NULL) {
+            if (seen_items != NULL)
+              {
               if (match_isinlist(item,
-                    &seen_items,0,NULL,NULL,MCL_STRING,TRUE,NULL) == OK) continue;
+                    &seen_items,0,NULL,NULL,MCL_STRING,TRUE,NULL) == OK)
+                {
+                DEBUG(D_receive)
+                  debug_printf("acl_smtp_dkim: skipping signer %s, already seen\n", item);
+                continue;
+                }
               string_cat(seen_items,&seen_items_size,&seen_items_offset,":",1);
-            }
+              }
+
             string_cat(seen_items,&seen_items_size,&seen_items_offset,item,Ustrlen(item));
+
+            DEBUG(D_receive)
+              debug_printf("calling acl_smtp_dkim for dkim_cur_signer=%s\n", item);
+
             dkim_exim_acl_setup(item);
             rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim, &user_msg, &log_msg);
-            if (rc != OK) break;
+
+            if (rc != OK)
+              {
+                DEBUG(D_receive)
+                  debug_printf("acl_smtp_dkim: acl_check returned %d on %s, skipping remaining items\n", rc, item);
+                break;
+              }
             }
           add_acl_headers(US"DKIM");
           if (rc == DISCARD)
