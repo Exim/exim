@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.64 2009/06/10 07:34:04 tom Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.65 2009/10/15 08:06:23 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1041,7 +1041,7 @@ bmi_run = 0;
 bmi_verdicts = NULL;
 #endif
 #ifndef DISABLE_DKIM
-dkim_signing_domains = NULL;
+dkim_signers = NULL;
 dkim_disable_verify = FALSE;
 dkim_collect_input = FALSE;
 #endif

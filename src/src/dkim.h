@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.h,v 1.2 2009/06/10 07:34:04 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.h,v 1.3 2009/10/15 08:06:23 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -14,6 +14,8 @@ void    dkim_exim_verify_finish(void);
 void    dkim_exim_acl_setup(uschar *);
 uschar *dkim_exim_expand_query(int);
 uschar *dkim_exim_expand_defaults(int);
+
+extern uschar *dkim_cur_signer;
 
 #define DKIM_ALGO               1
 #define DKIM_BODYLENGTH         2

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.4 2009/10/13 18:32:05 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.5 2009/10/15 08:06:23 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -19,6 +19,7 @@
 pdkim_ctx       *dkim_verify_ctx = NULL;
 pdkim_signature *dkim_signatures = NULL;
 pdkim_signature *dkim_cur_sig    = NULL;
+uschar          *dkim_cur_signer = NULL;
 
 int dkim_exim_query_dns_txt(char *name, char *answer) {
   dns_answer dnsa;
@@ -81,9 +82,9 @@ void dkim_exim_verify_feed(uschar *data, int len) {
 
 void dkim_exim_verify_finish(void) {
   pdkim_signature *sig = NULL;
-  int dkim_signing_domains_size = 0;
-  int dkim_signing_domains_ptr = 0;
-  dkim_signing_domains = NULL;
+  int dkim_signers_size = 0;
+  int dkim_signers_ptr = 0;
+  dkim_signers = NULL;
 
   /* Delete eventual previous signature chain */
   dkim_signatures = NULL;
@@ -178,32 +179,42 @@ void dkim_exim_verify_finish(void) {
     logmsg[ptr] = '\0';
     log_write(0, LOG_MAIN, (char *)logmsg);
 
-    /* Build a colon-separated list of signing domains in dkim_signing_domains */
-    dkim_signing_domains = string_append(dkim_signing_domains,
-                                         &dkim_signing_domains_size,
-                                         &dkim_signing_domains_ptr,
-                                         2,
-                                         sig->domain,
-                                         ":"
-                                        );
+    /* Build a colon-separated list of signing domains (and identities, if present) in dkim_signers */
+    dkim_signers = string_append(dkim_signers,
+                                 &dkim_signers_size,
+                                 &dkim_signers_ptr,
+                                 2,
+                                 sig->domain,
+                                 ":"
+                                );
+
+    if (sig->identity != NULL) {
+      dkim_signers = string_append(dkim_signers,
+                                   &dkim_signers_size,
+                                   &dkim_signers_ptr,
+                                   2,
+                                   sig->identity,
+                                   ":"
+                                  );
+    }
 
     /* Process next signature */
     sig = sig->next;
   }
 
   /* Chop the last colon from the domain list */
-  if ((dkim_signing_domains != NULL) &&
-      (Ustrlen(dkim_signing_domains) > 0))
-    dkim_signing_domains[Ustrlen(dkim_signing_domains)-1] = '\0';
+  if ((dkim_signers != NULL) &&
+      (Ustrlen(dkim_signers) > 0))
+    dkim_signers[Ustrlen(dkim_signers)-1] = '\0';
 }
 
 
 void dkim_exim_acl_setup(uschar *id) {
   pdkim_signature *sig = dkim_signatures;
   dkim_cur_sig = NULL;
+  dkim_cur_signer = id;
   if (dkim_disable_verify ||
-      !id || !sig ||
-      !dkim_verify_ctx) return;
+      !id || !dkim_verify_ctx) return;
   /* Find signature to run ACL on */
   while (sig != NULL) {
     uschar *cmp_val = NULL;

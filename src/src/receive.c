@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.46 2009/06/10 07:34:04 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.47 2009/10/15 08:06:23 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2993,11 +2993,22 @@ else
           int sep = 0;
           uschar *ptr = dkim_verify_signers_expanded;
           uschar *item = NULL;
+          uschar *seen_items = NULL;
+          int     seen_items_size = 0;
+          int     seen_items_offset = 0;
           uschar itembuf[256];
           while ((item = string_nextinlist(&ptr, &sep,
                                            itembuf,
                                            sizeof(itembuf))) != NULL)
             {
+            /* Only run ACL once for each domain or identity, no matter how often it
+               appears in the expanded list. */
+            if (seen_items != NULL) {
+              if (match_isinlist(item,
+                    &seen_items,0,NULL,NULL,MCL_STRING,TRUE,NULL) == OK) continue;
+              string_cat(seen_items,&seen_items_size,&seen_items_offset,":",1);
+            }
+            string_cat(seen_items,&seen_items_size,&seen_items_offset,item,Ustrlen(item));
             dkim_exim_acl_setup(item);
             rc = acl_check(ACL_WHERE_DKIM, NULL, acl_smtp_dkim, &user_msg, &log_msg);
             if (rc != OK) break;

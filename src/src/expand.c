@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.101 2009/10/14 14:48:41 nm4 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.102 2009/10/15 08:06:23 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -423,7 +423,7 @@ static var_entry var_table[] = {
   { "dkim_key_srvtype",    vtype_dkim,        (void *)DKIM_KEY_SRVTYPE },
   { "dkim_key_testing",    vtype_dkim,        (void *)DKIM_KEY_TESTING },
   { "dkim_selector",       vtype_stringptr,   &dkim_signing_selector },
-  { "dkim_signing_domains",vtype_stringptr,   &dkim_signing_domains },
+  { "dkim_signers",        vtype_stringptr,   &dkim_signers },
   { "dkim_verify_reason",  vtype_dkim,        (void *)DKIM_VERIFY_REASON },
   { "dkim_verify_status",  vtype_dkim,        (void *)DKIM_VERIFY_STATUS},
 #endif
