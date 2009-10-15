@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.48 2009/10/15 09:22:44 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.49 2009/10/15 13:49:43 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3007,17 +3007,19 @@ else
                appears in the expanded list. */
             if (seen_items != NULL)
               {
+              uschar *seen_items_list = seen_items;
               if (match_isinlist(item,
-                    &seen_items,0,NULL,NULL,MCL_STRING,TRUE,NULL) == OK)
+                    &seen_items_list,0,NULL,NULL,MCL_STRING,TRUE,NULL) == OK)
                 {
                 DEBUG(D_receive)
                   debug_printf("acl_smtp_dkim: skipping signer %s, already seen\n", item);
                 continue;
                 }
-              string_cat(seen_items,&seen_items_size,&seen_items_offset,":",1);
+              seen_items = string_append(seen_items,&seen_items_size,&seen_items_offset,1,":");
               }
 
-            string_cat(seen_items,&seen_items_size,&seen_items_offset,item,Ustrlen(item));
+            seen_items = string_append(seen_items,&seen_items_size,&seen_items_offset,1,item);
+            seen_items[seen_items_offset] = '\0';
 
             DEBUG(D_receive)
               debug_printf("calling acl_smtp_dkim for dkim_cur_signer=%s\n", item);
