@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.6 2009/10/15 08:27:37 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.7 2009/10/15 15:44:51 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -201,10 +201,12 @@ void dkim_exim_verify_finish(void) {
     sig = sig->next;
   }
 
-  /* Chop the last colon from the domain list */
-  if ((dkim_signers != NULL) &&
-      (Ustrlen(dkim_signers) > 0))
-    dkim_signers[Ustrlen(dkim_signers)-1] = '\0';
+  /* NULL-terminate and chop the last colon from the domain list */
+  if (dkim_signers != NULL) {
+    dkim_signers[dkim_signers_ptr] = '\0';
+    if (Ustrlen(dkim_signers) > 0)
+      dkim_signers[Ustrlen(dkim_signers)-1] = '\0';
+  }
 }
 
 
