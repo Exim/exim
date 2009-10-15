@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/lsearch.c,v 1.9 2009/10/14 13:43:40 nm4 Exp $ */
+/* $Cambridge: exim/src/src/lookups/lsearch.c,v 1.10 2009/10/15 07:23:56 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -287,7 +287,7 @@ for (last_was_eol = TRUE;
 
     if (last_was_eol)
       {
-      this_is_comment ||= (buffer[0] == 0 || buffer[0] == '#');
+      this_is_comment = (this_is_comment || (buffer[0] == 0 || buffer[0] == '#'));
       if (this_is_comment) continue;
       if (!isspace((uschar)buffer[0])) break;
       while (isspace((uschar)*s)) s++;
