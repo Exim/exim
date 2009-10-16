@@ -1,4 +1,4 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.12 2007/12/01 15:53:55 nm4 Exp $
+# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.13 2009/10/16 10:36:52 nm4 Exp $
 
 # Make file for Exim documentation from xfpt source.
 
@@ -286,6 +286,18 @@ test.info:    test-info.xml
 	      ./TidyInfo <short_title.texi >test.texinfo
 	      /bin/rm -rf short_title.texi
 	      makeinfo -o test.info test.texinfo
+
+########################################################################
+
+
+############################## OS FIXUP ################################
+
+# Yes, we've advanced so far in text processing that we now have to
+# hardcode in complete paths and so become dependent upon exactly where
+# files were installed for xsl:import.  Which of course varies by OS.
+
+os-fixup:
+	./OS-Fixups
 
 ########################################################################
 

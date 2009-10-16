@@ -1,0 +1,46 @@
+#!/usr/bin/perl -w
+#  $Cambridge: exim/doc/doc-docbook/OS-Fixups,v 1.1 2009/10/16 10:36:52 nm4 Exp $
+use strict;
+
+# Script to hack around using absolute paths in xsl:import with fixups.
+# Let every OS define its own manipulations.
+# Uses the Perl $^O values to identify the current OS.
+#
+# Define filter_$^O to do substitutions, will be called for every line of
+# every .xsl file.
+
+sub filter_freebsd
+{
+s{"/usr/share/sgml/docbook/xsl-stylesheets-1.70.1/}
+ {"/usr/local/share/xsl/docbook/};
+s{"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"}
+ {"/usr/local/share/xml/docbook/4.2/docbookx.dtd"};
+}
+
+# Define OS filters above.
+
+my $os_filter;
+$os_filter = $main::{"filter_$^O"} if exists $main::{"filter_$^O"};
+
+unless (defined $os_filter)
+  {
+  print "No changes defined for your OS ($^O).\n";
+  exit 0;
+  }
+
+for my $fn (<*.xsl>, <*.xml>)
+  {
+  my $orig = "$fn.orig";
+  rename($fn, $orig) or die "Failed to rename($fn, $orig): $!\n";
+  # Most portable is two-argument form, and none of our filenames are
+  # untrusted or contain whitespace.
+  open(OLD, "< $orig") or die "Failed to read-open($orig): $!\n";
+  open(NEW, "> $fn") or die "Failed to write-open($fn): $!\n";
+  while (<OLD>)
+    {
+    $os_filter->();
+    print NEW $_ or die "Write to \"$fn\" failed: $!\n";
+    }
+  close(NEW) or die "Failed to close($fn) after writing: $!\n";
+  close(OLD);
+  }
