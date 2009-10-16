@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.63 2009/10/14 13:52:48 nm4 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.64 2009/10/16 08:51:34 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3939,7 +3939,8 @@ if (list_options)
       if (i < argc - 1 &&
           (Ustrcmp(argv[i], "router") == 0 ||
            Ustrcmp(argv[i], "transport") == 0 ||
-           Ustrcmp(argv[i], "authenticator") == 0))
+           Ustrcmp(argv[i], "authenticator") == 0 ||
+           Ustrcmp(argv[i], "macro") == 0))
         {
         readconf_print(argv[i+1], argv[i]);
         i++;

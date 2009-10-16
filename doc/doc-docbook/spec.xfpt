@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.56 2009/10/16 08:46:11 tom Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.57 2009/10/16 08:49:47 tom Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -2975,6 +2975,7 @@ local part) and outputs what it finds.
 
 .cindex "options" "router &-- extracting"
 .cindex "options" "transport &-- extracting"
+.cindex "options" "authenticator &-- extracting"
 If one of the words &%router%&, &%transport%&, or &%authenticator%& is given,
 followed by the name of an appropriate driver instance, the option settings for
 that driver are output. For example:
@@ -2988,6 +2989,11 @@ using one of the words &%router_list%&, &%transport_list%&, or
 settings can be obtained by using &%routers%&, &%transports%&, or
 &%authenticators%&.
 
+.cindex "options" "macro &-- extracting"
+If invoked by an admin user, then &%macro%&, &%macro_list%& and &%macros%&
+are available, similarly to the drivers.  Because macros are sometimes used
+for storing passwords, this option is restricted.
+The output format is one item per line.
 
 .vitem &%-bp%&
 .oindex "&%-bp%&"

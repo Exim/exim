@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.36 2009/06/10 07:34:04 tom Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.37 2009/10/16 08:51:34 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2366,15 +2366,17 @@ second argument is NULL. There are some special values:
   routers            print the routers' configurations
   transports         print the transports' configuration
   authenticators     print the authenticators' configuration
+  macros             print the macros' configuration
   router_list        print a list of router names
   transport_list     print a list of transport names
   authenticator_list print a list of authentication mechanism names
+  macro_list         print a list of macro names
   +name              print a named list item
   local_scan         print the local_scan options
 
-If the second argument is not NULL, it must be one of "router", "transport", or
-"authenticator" in which case the first argument identifies the driver whose
-options are to be printed.
+If the second argument is not NULL, it must be one of "router", "transport",
+"authenticator" or "macro" in which case the first argument identifies the
+driver whose options are to be printed.
 
 Arguments:
   name        option name if type == NULL; else driver name
@@ -2390,6 +2392,7 @@ BOOL names_only = FALSE;
 optionlist *ol;
 optionlist *ol2 = NULL;
 driver_instance *d = NULL;
+macro_item *m;
 int size = 0;
 
 if (type == NULL)
@@ -2471,11 +2474,10 @@ if (type == NULL)
     name = NULL;
     }
 
-  else if (Ustrcmp(name, "authenticator_list") == 0)
+  else if (Ustrcmp(name, "macros") == 0)
     {
-    type = US"authenticator";
+    type = US"macro";
     name = NULL;
-    names_only = TRUE;
     }
 
   else if (Ustrcmp(name, "router_list") == 0)
@@ -2484,12 +2486,28 @@ if (type == NULL)
     name = NULL;
     names_only = TRUE;
     }
+
   else if (Ustrcmp(name, "transport_list") == 0)
     {
     type = US"transport";
     name = NULL;
     names_only = TRUE;
     }
+
+  else if (Ustrcmp(name, "authenticator_list") == 0)
+    {
+    type = US"authenticator";
+    name = NULL;
+    names_only = TRUE;
+    }
+
+  else if (Ustrcmp(name, "macro_list") == 0)
+    {
+    type = US"macro";
+    name = NULL;
+    names_only = TRUE;
+    }
+
   else
     {
     print_ol(find_option(name, optionlist_config, optionlist_config_size),
@@ -2521,6 +2539,32 @@ else if (Ustrcmp(type, "authenticator") == 0)
   d = (driver_instance *)auths;
   ol2 = optionlist_auths;
   size = optionlist_auths_size;
+  }
+
+else if (Ustrcmp(type, "macro") == 0)
+  {
+  /* People store passwords in macros and they were previously not available
+  for printing.  So we have an admin_users restriction. */
+  if (!admin_user)
+    {
+    fprintf(stderr, "exim: permission denied\n");
+    exit(EXIT_FAILURE);
+    }
+  for (m = macros; m != NULL; m = m->next)
+    {
+    if (name == NULL || Ustrcmp(name, m->name) == 0)
+      {
+      if (names_only)
+        printf("%s\n", CS m->name);
+      else
+        printf("%s=%s\n", CS m->name, CS m->replacement);
+      if (name != NULL)
+        return;
+      }
+    }
+  if (name != NULL)
+    printf("%s %s not found\n", type, name);
+  return;
   }
 
 if (names_only)
