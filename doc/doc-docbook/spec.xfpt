@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.57 2009/10/16 08:49:47 tom Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.58 2009/10/16 08:52:05 tom Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -34406,39 +34406,48 @@ runtime of the ACL.
 Calling the ACL only for existing signatures is not sufficient to build
 more advanced policies. For that reason, the global option
 &%dkim_verify_signers%&, and a global expansion variable
-&%$dkim_signing_domains%& exist.
+&%$dkim_signers%& exist.
 
 The global option &%dkim_verify_signers%& can be set to a colon-separated
 list of DKIM domains or identities for which the ACL &%acl_smtp_dkim%& is
 called. It is expanded when the message has been received. At this point,
-the expansion variable &%$dkim_signing_domains%& already contains a colon-
-separated list of signer domains for the message. When &%dkim_verify_signers%&
-is not specified in the main configuration, it defaults as:
+the expansion variable &%$dkim_signers%& already contains a colon-
+separated list of signer domains and identities for the message. When
+&%dkim_verify_signers%& is not specified in the main configuration,
+it defaults as:
 .code
-dkim_verify_signers = $dkim_signing_domains
+dkim_verify_signers = $dkim_signers
 .endd
 This leads to the default behaviour of calling &%acl_smtp_dkim%& for each
 DKIM signature in the message. Current DKIM verifiers may want to explicitly
 call the ACL for known domains or identities. This would be achieved as follows:
 .code
-dkim_verify_signers = paypal.com:ebay.com:$dkim_signing_domains
+dkim_verify_signers = paypal.com:ebay.com:$dkim_signers
 .endd
 This would result in &%acl_smtp_dkim%& always being called for "paypal.com"
-and "ebay.com", plus all domains that have signatures in the message. You can
-also be more creative in constructing your policy. Example:
+and "ebay.com", plus all domains and identities that have signatures in the message.
+You can also be more creative in constructing your policy. Example:
 .code
-dkim_verify_signers = $sender_address_domain:$dkim_signing_domains
+dkim_verify_signers = $sender_address_domain:$dkim_signers
 .endd
+
+If a domain or identity is listed several times in the (expanded) value of
+&%dkim_verify_signers%&, the ACL is only called once for that domain or identity.
+
 
 Inside the &%acl_smtp_dkim%&, the following expansion variables are
 available (from most to least important):
 
 .vlist
+.vitem &%$dkim_cur_signer%&
+The signer that is being evaluated in this ACL run. This can be domain or
+an identity. This is one of the list items from the expanded main option
+&%dkim_verify_signers%& (see above).
 .vitem &%$dkim_verify_status%&
 A string describing the general status of the signature. One of
 .ilist
 &%none%&: There is no signature in the message for the current domain or
-identity.
+identity (as reflected by &%$dkim_cur_signer%&).
 .next
 &%invalid%&: The signature could not be verified due to a processing error.
 More detail is available in &%$dkim_verify_reason%&.
@@ -34469,14 +34478,12 @@ DKIM verification. It may of course also mean that the signature is forged.
 .endlist
 .vitem &%$dkim_domain%&
 The signing domain. IMPORTANT: This variable is only populated if there is
-ab actual signature in the message. It does NOT neccessarily carry the
-domain that is currently being evaluated. Please use the &%dkim_signers%& ACL
-condition for that.
+an actual signature in the message for the current domain or identity (as
+reflected by &%$dkim_cur_signer%&).
 .vitem &%$dkim_identity%&
-The signing identity. IMPORTANT: This variable is only populated if there is
-ab actual signature in the message. It does NOT neccessarily carry the
-identity that is currently being evaluated. Please use the &%dkim_signers%& ACL
-condition for that.
+The signing identity, if present. IMPORTANT: This variable is only populated
+if there is an actual signature in the message for the current domain or
+identity (as reflected by &%$dkim_cur_signer%&).
 .vitem &%$dkim_selector%&
 The key record selector string
 .vitem &%$dkim_algo%&
@@ -34521,8 +34528,9 @@ In addition, two ACL conditions are provided:
 .vlist
 .vitem &%dkim_signers%&
 ACL condition that checks a colon-separated list of domains or identities
-for a match against the domain or identity that the ACL is currently verifying.
-This is typically used to restrict an ACL verb to a group of domains or identities, like:
+for a match against the domain or identity that the ACL is currently verifying
+(reflected by &%$dkim_cur_signer%&). This is typically used to restrict an ACL
+verb to a group of domains or identities, like:
 
 .code
 # Warn when message apparently from GMail has no signature at all
