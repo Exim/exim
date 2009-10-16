@@ -1,4 +1,4 @@
-$Cambridge: exim/src/README.UPDATING,v 1.16 2007/06/20 14:19:23 ph10 Exp $
+$Cambridge: exim/src/README.UPDATING,v 1.17 2009/10/16 07:35:42 tom Exp $
 
 This document contains detailed information about incompatibilities that might
 be encountered when upgrading from one release of Exim to another. The
@@ -26,6 +26,17 @@ there have been two big upheavals...
 
 The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
+
+Exim version 4.70
+-----------------
+
+1. Experimental Yahoo! Domainkeys support has been dropped in this release.
+It has been superceded by a native implementation of its successor DKIM.
+
+2. Up to version 4.69, Exim came with an embedded version of the PCRE library.
+As of 4.70, this is no longer the case. To compile Exim, you will need PCRE
+installed. Most OS distributions have ready-made library and develoment
+packages.
 
 
 Exim version 4.68
