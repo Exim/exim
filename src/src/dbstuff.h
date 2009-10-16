@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dbstuff.h,v 1.7 2007/08/29 14:02:22 ph10 Exp $ */
+/* $Cambridge: exim/src/src/dbstuff.h,v 1.8 2009/10/16 08:40:53 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -300,6 +300,17 @@ before use, but we don't have to free anything after reading data. */
 /* Some text for messages */
 #define EXIM_DBTYPE   "db (v1)"
 
+/* When scanning, for the non-first case we historically just passed 0
+as the flags field and it worked.  On FreeBSD 8 it no longer works and
+instead leads to memory exhaustion.  The man-page on FreeBSD says to use
+R_NEXT, but this 1.x is a historical fallback and I've no idea how portable
+the use of that flag is; so the solution is to define R_NEXT here if it's not
+already defined, with a default value of 0 because that's what we've always
+before been able to pass successfully. */
+#ifndef R_NEXT
+#define R_NEXT 0
+#endif
+
 /* Access functions */
 
 /* EXIM_DBOPEN - sets *dbpp to point to an EXIM_DB, NULL if failed */
@@ -331,7 +342,7 @@ before use, but we don't have to free anything after reading data. */
 
 /* EXIM_DBSCAN - returns TRUE if data is returned, FALSE at end */
 #define EXIM_DBSCAN(db, key, data, first, cursor)      \
-       ((db)->seq(db, &key, &data, (first? R_FIRST : 0)) == 0)
+       ((db)->seq(db, &key, &data, (first? R_FIRST : R_NEXT)) == 0)
 
 /* EXIM_DBDELETE_CURSOR - terminate scanning operation (null). Make it
 refer to cursor, to keep picky compilers happy. */
