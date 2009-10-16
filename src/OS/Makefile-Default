@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-Default,v 1.4 2008/07/25 20:27:30 fanf2 Exp $
+# $Cambridge: exim/src/OS/Makefile-Default,v 1.5 2009/10/16 07:30:54 tom Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -91,7 +91,7 @@ CC=gcc
 
 # PCRE_LIBS contains the library to be linked for PCRE
 
-#PCRE_LIBS=-lpcre
+PCRE_LIBS=-lpcre
 
 
 # LIBS and EXTRALIBS contain library settings that are used on linking
