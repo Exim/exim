@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-gnu.c,v 1.22 2009/10/14 13:52:48 nm4 Exp $ */
+/* $Cambridge: exim/src/src/tls-gnu.c,v 1.23 2009/10/16 09:51:12 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -791,6 +791,18 @@ if (verify_requirement != VERIFY_NONE)
       GNUTLS_CERT_REQUEST : GNUTLS_CERT_REQUIRE);
 
 gnutls_db_set_cache_expiration(session, ssl_session_timeout);
+
+/* Reduce security in favour of increased compatibility, if the admin
+decides to make that trade-off. */
+if (gnutls_compat_mode)
+  {
+#if LIBGNUTLS_VERSION_NUMBER >= 0x020104
+  DEBUG(D_tls) debug_printf("lowering GnuTLS security, compatibility mode\n");
+  gnutls_session_enable_compatibility_mode(session);
+#else
+  DEBUG(D_tls) debug_printf("Unable to set gnutls_compat_mode - GnuTLS version too old\n");
+#endif
+  }
 
 DEBUG(D_tls) debug_printf("initialized GnuTLS session\n");
 return session;

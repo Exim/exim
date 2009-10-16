@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.58 2009/10/16 08:52:05 tom Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.59 2009/10/16 09:51:12 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -12368,6 +12368,7 @@ listed in more than one group.
 .row &%gnutls_require_kx%&           "control GnuTLS key exchanges"
 .row &%gnutls_require_mac%&          "control GnuTLS MAC algorithms"
 .row &%gnutls_require_protocols%&    "control GnuTLS protocols"
+.row &%gnutls_compat_mode%&          "use GnuTLS compatibility mode"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
 .row &%tls_certificate%&             "location of server certificate"
 .row &%tls_crl%&                     "certificate revocation list"
@@ -13366,6 +13367,11 @@ server. For details, see section &<<SECTreqciphgnu>>&.
 .option gnutls_require_protocols main string unset
 This option controls the protocols when GnuTLS is used in an Exim
 server. For details, see section &<<SECTreqciphgnu>>&.
+
+.option gnutls_compat_mode main boolean unset
+This option controls whether GnuTLS is used in compatibility mode in an Exim
+server. This reduces security slightly, but improves interworking with older
+implementations of TLS.
 
 
 .option headers_charset main string "see below"
@@ -21466,6 +21472,11 @@ client. For details, see section &<<SECTreqciphgnu>>&.
 .option gnutls_require_protocols main string unset
 This option controls the protocols when GnuTLS is used in an Exim
 client. For details, see section &<<SECTreqciphgnu>>&.
+
+.option gnutls_compat_mode main boolean unset
+This option controls whether GnuTLS is used in compatibility mode in an Exim
+server. This reduces security slightly, but improves interworking with older
+implementations of TLS.
 
 .option helo_data smtp string&!! "see below"
 .cindex "HELO" "argument, setting"

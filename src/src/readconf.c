@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.37 2009/10/16 08:51:34 tom Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.38 2009/10/16 09:51:12 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -235,6 +235,7 @@ static optionlist optionlist_config[] = {
   { "gecos_name",               opt_stringptr,   &gecos_name },
   { "gecos_pattern",            opt_stringptr,   &gecos_pattern },
 #ifdef SUPPORT_TLS
+  { "gnutls_compat_mode",       opt_bool,        &gnutls_compat_mode },
   { "gnutls_require_kx",        opt_stringptr,   &gnutls_require_kx },
   { "gnutls_require_mac",       opt_stringptr,   &gnutls_require_mac },
   { "gnutls_require_protocols", opt_stringptr,   &gnutls_require_proto },

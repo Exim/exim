@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.65 2009/10/15 08:27:37 tom Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.66 2009/10/16 09:51:12 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -71,6 +71,7 @@ extern uschar *tls_on_connect_ports;   /* Ports always tls-on-connect */
 extern uschar *tls_peerdn;             /* DN from peer */
 
 #ifdef SUPPORT_TLS
+extern BOOL    gnutls_compat_mode;     /* Less security, more compatibility */
 extern uschar *gnutls_require_mac;     /* So some can be avoided */
 extern uschar *gnutls_require_kx;      /* So some can be avoided */
 extern uschar *gnutls_require_proto;   /* So some can be avoided */
