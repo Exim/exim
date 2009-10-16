@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/host.c,v 1.29 2007/10/18 12:01:00 nm4 Exp $ */
+/* $Cambridge: exim/src/src/host.c,v 1.30 2009/10/16 09:10:40 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -70,6 +70,9 @@ sprintf(addr, "%d.%d.%d.%d",
 very good for the uses to which it is put. When running the regression tests,
 start with a fixed seed.
 
+If you need better, see pseudo_random_number() which is potentially stronger,
+if a crypto library is available, but might end up just calling this instead.
+
 Arguments:
   limit:    one more than the largest number required
 
@@ -79,6 +82,8 @@ Returns:    a pseudo-random number in the range 0 to limit-1
 int
 random_number(int limit)
 {
+if (limit < 1)
+  return 0;
 if (random_seed == 0)
   {
   if (running_in_test_harness) random_seed = 42; else

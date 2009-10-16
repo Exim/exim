@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.16 2009/10/16 08:34:50 tom Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.17 2009/10/16 09:10:40 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -26,8 +26,8 @@ functions from the OpenSSL library. */
 /* Structure for collecting random data for seeding. */
 
 typedef struct randstuff {
-  time_t t;
-  pid_t  p;
+  struct timeval tv;
+  pid_t          p;
 } randstuff;
 
 /* Local static variables */
@@ -327,7 +327,7 @@ afterwards. */
 if (!RAND_status())
   {
   randstuff r;
-  r.t = time(NULL);
+  gettimeofday(&r.tv, NULL);
   r.p = getpid();
 
   RAND_seed((uschar *)(&r), sizeof(r));
@@ -1051,6 +1051,74 @@ tls_version_report(FILE *f)
 {
 fprintf(f, "OpenSSL compile-time version: %s\n", OPENSSL_VERSION_TEXT);
 fprintf(f, "OpenSSL runtime version: %s\n", SSLeay_version(SSLEAY_VERSION));
+}
+
+
+
+
+/*************************************************
+*        Pseudo-random number generation         *
+*************************************************/
+
+/* Pseudo-random number generation.  The result is not expected to be
+cryptographically strong but not so weak that someone will shoot themselves
+in the foot using it as a nonce in input in some email header scheme or
+whatever weirdness they'll twist this into.  The result should handle fork()
+and avoid repeating sequences.  OpenSSL handles that for us.
+
+Arguments:
+  max       range maximum
+Returns     a random number in range [0, max-1]
+*/
+
+int
+pseudo_random_number(int max)
+{
+unsigned int r;
+int i, needed_len;
+uschar *p;
+uschar smallbuf[sizeof(r)];
+
+if (max <= 1)
+  return 0;
+
+/* OpenSSL auto-seeds from /dev/random, etc, but this a double-check. */
+if (!RAND_status())
+  {
+  randstuff r;
+  gettimeofday(&r.tv, NULL);
+  r.p = getpid();
+
+  RAND_seed((uschar *)(&r), sizeof(r));
+  }
+/* We're after pseudo-random, not random; if we still don't have enough data
+in the internal PRNG then our options are limited.  We could sleep and hope
+for entropy to come along (prayer technique) but if the system is so depleted
+in the first place then something is likely to just keep taking it.  Instead,
+we'll just take whatever little bit of pseudo-random we can still manage to
+get. */
+
+needed_len = sizeof(r);
+/* Don't take 8 times more entropy than needed if int is 8 octets and we were
+asked for a number less than 10. */
+for (r = max, i = 0; r; ++i)
+  r >>= 1;
+i = (i + 7) / 8;
+if (i < needed_len)
+  needed_len = i;
+
+/* We do not care if crypto-strong */
+(void) RAND_pseudo_bytes(smallbuf, needed_len);
+r = 0;
+for (p = smallbuf; needed_len; --needed_len, ++p)
+  {
+  r *= 256;
+  r += *p;
+  }
+
+/* We don't particularly care about weighted results; if someone wants
+smooth distribution and cares enough then they should submit a patch then. */
+return r % max;
 }
 
 /* End of tls-openssl.c */

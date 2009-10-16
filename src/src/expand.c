@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.103 2009/10/15 08:27:37 tom Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.104 2009/10/16 09:10:40 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -187,6 +187,7 @@ static uschar *op_table_main[] = {
   US"nh",
   US"nhash",
   US"quote",
+  US"randint",
   US"rfc2047",
   US"rfc2047d",
   US"rxquote",
@@ -219,6 +220,7 @@ enum {
   EOP_NH,
   EOP_NHASH,
   EOP_QUOTE,
+  EOP_RANDINT,
   EOP_RFC2047,
   EOP_RFC2047D,
   EOP_RXQUOTE,
@@ -758,6 +760,75 @@ return rc;
 }
 
 
+
+/*************************************************
+*        Pseudo-random number generation         *
+*************************************************/
+
+/* Pseudo-random number generation.  The result is not "expected" to be
+cryptographically strong but not so weak that someone will shoot themselves
+in the foot using it as a nonce in some email header scheme or whatever
+weirdness they'll twist this into.  The result should ideally handle fork().
+
+However, if we're stuck unable to provide this, then we'll fall back to
+appallingly bad randomness.
+
+If SUPPORT_TLS is defined and OpenSSL is used, then this will not be used.
+The GNUTLS randomness functions found do not seem amenable to extracting
+random numbers outside of a TLS context.  Any volunteers?
+
+Arguments:
+  max       range maximum
+Returns     a random number in range [0, max-1]
+*/
+
+#if !defined(SUPPORT_TLS) || defined(USE_GNUTLS)
+int
+pseudo_random_number(int max)
+{
+  static pid_t pid = 0;
+  pid_t p2;
+#if defined(HAVE_SRANDOM) && !defined(HAVE_SRANDOMDEV)
+  struct timeval tv;
+#endif
+
+  p2 = getpid();
+  if (p2 != pid)
+    {
+    if (pid != 0)
+      {
+
+#ifdef HAVE_ARC4RANDOM
+      /* cryptographically strong randomness, common on *BSD platforms, not
+      so much elsewhere.  Alas. */
+      arc4random_stir();
+#elif defined(HAVE_SRANDOM) || defined(HAVE_SRANDOMDEV)
+#ifdef HAVE_SRANDOMDEV
+      /* uses random(4) for seeding */
+      srandomdev();
+#else
+      gettimeofday(&tv, NULL);
+      srandom(tv.tv_sec | tv.tv_usec | getpid());
+#endif
+#else
+      /* Poor randomness and no seeding here */
+#endif
+
+      }
+    pid = p2;
+    }
+
+#ifdef HAVE_ARC4RANDOM
+  return arc4random() % max;
+#elif defined(HAVE_SRANDOM) || defined(HAVE_SRANDOMDEV)
+  return random() % max;
+#else
+  /* This one returns a 16-bit number, definitely not crypto-strong */
+  return random_number(max);
+#endif
+}
+
+#endif
 
 /*************************************************
 *             Pick out a name from a string      *
@@ -5700,6 +5771,21 @@ while (*s != 0)
           (long)st.st_dev, (long)st.st_nlink, (long)st.st_uid,
           (long)st.st_gid, st.st_size, (long)st.st_atime,
           (long)st.st_mtime, (long)st.st_ctime);
+        yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+        continue;
+        }
+
+      /* pseudo-random number less than N */
+
+      case EOP_RANDINT:
+        {
+        int max;
+        uschar *s;
+
+        max = expand_string_integer(sub, TRUE);
+        if (expand_string_message != NULL)
+          goto EXPAND_FAILED;
+        s = string_sprintf("%d", pseudo_random_number(max));
         yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         continue;
         }
