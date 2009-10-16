@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.570 2009/10/16 09:51:12 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.571 2009/10/16 12:33:09 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -113,6 +113,9 @@ NM/20 Bugzilla 167: bool: condition support
 
 NM/21 Bugzilla 665: gnutls_compat_mode to allow compatibility with broken clients
       Patch provided by Phil Pennock
+
+NM/22 Bugzilla 508: prepend (not append) Resent-Message-ID and Resent-Date
+      Patch provided by Brad "anomie" Jorsch
 
 
 Exim version 4.69

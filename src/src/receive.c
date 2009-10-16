@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.49 2009/10/15 13:49:43 tom Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.50 2009/10/16 12:33:09 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2337,8 +2337,9 @@ if (msgid_header == NULL &&
 
   /* Add the header line */
 
-  header_add(htype_id, "%sMessage-Id: <%s%s%s@%s>\n", resent_prefix,
-    message_id_external, (*id_text == 0)? "" : ".", id_text, id_domain);
+  header_add_at_position(FALSE, NULL, FALSE, htype_id,
+    "%sMessage-Id: <%s%s%s@%s>\n", resent_prefix, message_id_external,
+    (*id_text == 0)? "" : ".", id_text, id_domain);
   }
 
 /* If we are to log recipients, keep a copy of the raw ones before any possible
@@ -2608,7 +2609,8 @@ to be more confusing if Exim adds one to all remotely-originated messages. */
 if (!date_header_exists &&
       ((sender_host_address == NULL && !suppress_local_fixups)
         || submission_mode))
-  header_add(htype_other, "%sDate: %s\n", resent_prefix, tod_stamp(tod_full));
+  header_add_at_position(FALSE, NULL, FALSE, htype_other, "%sDate: %s\n",
+    resent_prefix, tod_stamp(tod_full));
 
 search_tidyup();    /* Free any cached resources */
 

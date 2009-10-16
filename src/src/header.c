@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/header.c,v 1.6 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/header.c,v 1.7 2009/10/16 12:33:09 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -118,7 +118,14 @@ if (name == NULL)
   else
     {
     hptr = &header_list;
-    h = header_list;
+
+    /* header_list->text can be NULL if we get here between when the new
+    received header is allocated and when it is acutally filled in. We want
+    that header to be first, so skip it for now. */
+
+    if (header_list->text == NULL)
+      hptr = &header_list->next;
+    h = *hptr;
     }
   }
 
