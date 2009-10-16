@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.55 2009/10/14 14:48:40 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.56 2009/10/16 08:46:11 tom Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -5885,6 +5885,10 @@ password are correct. In the examples it just produces an error message.
 To make the authenticators work, you can use a string expansion
 expression like one of the examples in &<<CHAPplaintext>>&.
 
+Beware that the sequence of the parameters to PLAIN and LOGIN differ; the
+usercode and password are in different positions.  &<<CHAPplaintext>>&
+covers both.
+
 .ecindex IIDconfiwal
 
 
@@ -10198,6 +10202,10 @@ password, separated by a colon. For example, in a LOGIN authenticator
 configuration, you might have this:
 .code
 server_condition = ${if pwcheck{$auth1:$auth2}}
+.endd
+Again, for a PLAIN authenticator configuration, this would be:
+.code
+server_condition = ${if pwcheck{$auth2:$auth3}}
 .endd
 .vitem &*queue_running*&
 .cindex "queue runner" "detecting when delivering from"
@@ -23813,7 +23821,7 @@ sasl_cram_md5:
 sasl_plain:
   driver = cyrus_sasl
   public_name = PLAIN
-  server_set_id = $auth1
+  server_set_id = $auth2
 .endd
 Cyrus SASL does implement the LOGIN authentication method, even though it is
 not a standard method. It is disabled by default in the source distribution,
@@ -23846,7 +23854,7 @@ dovecot_plain:
   driver = dovecot
   public_name = PLAIN
   server_socket = /var/run/dovecot/auth-client
-  server_set_id = $auth1
+  server_set_id = $auth2
 
 dovecot_ntlm:
   driver = dovecot
