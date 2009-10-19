@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.19 2009/10/16 13:10:34 tom Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.20 2009/10/19 11:25:31 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -305,7 +305,7 @@ tls_init(host_item *host, uschar *dhparam, uschar *certificate,
 SSL_load_error_strings();          /* basic set up */
 OpenSSL_add_ssl_algorithms();
 
-#if OPENSSL_VERSION_NUMBER > 0x0090800fL
+#if (OPENSSL_VERSION_NUMBER >= 0x0090800fL) && !defined(OPENSSL_NO_SHA256)
 /* SHA256 is becoming ever moar popular. This makes sure it gets added to the
 list of available digests. */
 EVP_add_digest(EVP_sha256());
