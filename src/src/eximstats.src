@@ -1,5 +1,5 @@
 #!PERL_COMMAND -w
-# $Cambridge: exim/src/src/eximstats.src,v 1.18 2009/10/19 11:41:27 nm4 Exp $
+# $Cambridge: exim/src/src/eximstats.src,v 1.19 2009/10/19 12:26:34 nm4 Exp $
 
 # Copyright (c) 2001 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -583,7 +583,7 @@ use vars qw($WEEK $DAY $HOUR $MINUTE);
 
 @days_per_month = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
 $gig     = 1024 * 1024 * 1024;
-$VERSION = '1.50';
+$VERSION = '1.60';
 
 # How much space do we allow for the Hosts/Domains/Emails/Edomains column headers?
 $COLUMN_WIDTHS = 8;
