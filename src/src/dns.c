@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.18 2009/06/10 07:34:04 tom Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.19 2009/10/19 14:20:58 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -505,7 +505,7 @@ For SRV records, we omit the initial _smtp._tcp. components at the start. */
 
 #ifndef STAND_ALONE   /* Omit this for stand-alone tests */
 
-if (check_dns_names_pattern[0] != 0 && type != T_PTR)
+if (check_dns_names_pattern[0] != 0 && type != T_PTR && type != T_TXT)
   {
   uschar *checkname = name;
   int ovector[3*(EXPAND_MAXN+1)];
