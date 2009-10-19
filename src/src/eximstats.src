@@ -1,5 +1,5 @@
 #!PERL_COMMAND -w
-# $Cambridge: exim/src/src/eximstats.src,v 1.17 2007/09/21 08:26:48 steve Exp $
+# $Cambridge: exim/src/src/eximstats.src,v 1.18 2009/10/19 11:41:27 nm4 Exp $
 
 # Copyright (c) 2001 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -281,6 +281,9 @@
 #
 # 2007-09-20  V1.59 Steve Campbell
 #             Added the -bylocaldomain option
+#
+# 2007-09-20  V1.60 Heiko Schlittermann
+#             Fix for misinterpreted log lines
 #
 #
 #
@@ -580,7 +583,7 @@ use vars qw($WEEK $DAY $HOUR $MINUTE);
 
 @days_per_month = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334);
 $gig     = 1024 * 1024 * 1024;
-$VERSION = '1.59';
+$VERSION = '1.50';
 
 # How much space do we allow for the Hosts/Domains/Emails/Edomains column headers?
 $COLUMN_WIDTHS = 8;
@@ -1922,7 +1925,12 @@ sub generate_parser {
     # "H=Host (UnverifiedHost) [IpAddr]" or "H=(UnverifiedHost) [IpAddr]".
     # We do 2 separate matches to keep the matches simple and fast.
     # Host is local unless otherwise specified.
-    $ip = (/\\bH=.*?(\\[[^]]+\\])/) ? $1 : "local";
+    $ip = (/\\bH=.*?(\\[[^]]+\\])/) ? $1
+     # 2008-03-31 06:25:22 Connection from [213.246.33.217]:39456 refused: too many connections from that IP address // .hs
+     : (/Connection from (\[\S+\])/) ? $1
+     # 2008-03-31 06:52:40 SMTP call from mail.cacoshrf.com (ccsd02.ccsd.local) [69.24.118.229]:4511 dropped: too many nonmail commands (last was "RSET") // .hs
+     : (/SMTP call from .*?(\[\S+\])/) ? $1
+     : "local";
     $host = (/\\bH=(\\S+)/) ? $1 : "local";
 
     $domain = "localdomain";  #Domain is localdomain unless otherwise specified.
@@ -2416,6 +2424,14 @@ sub generate_parser {
         ) {
         ++$rejected_count_by_reason{"\u$1$2"};
         ++$rejected_count_by_ip{$ip};
+      }
+      elsif (
+        # 2008-03-31 06:25:22 H=mail.densitron.com [216.70.140.224]:45386 temporarily rejected connection in "connect" ACL: too fast reconnects // .hs
+        # 2008-03-31 06:25:22 H=mail.densitron.com [216.70.140.224]:45386 temporarily rejected connection in "connect" ACL // .hs
+        /(temporarily rejected connection in .*?ACL:?.*)/
+        ) {
+        ++$temporarily_rejected_count_by_ip{$ip};
+        ++$temporarily_rejected_count_by_reason{"\u$1"};
       }
       else {
         ++$rejected_count_by_reason{Unknown};
