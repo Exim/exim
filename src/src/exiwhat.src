@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exiwhat.src,v 1.3 2009/01/02 16:58:05 nm4 Exp $
+# $Cambridge: exim/src/src/exiwhat.src,v 1.4 2009/10/19 11:47:44 nm4 Exp $
 
 # Copyright (c) 2003 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -130,7 +130,7 @@ fi
 sleep 1
 
 if [ ! -s ${log} ] ; then echo "No exim process data" ;
-  else sed 's/^[0-9-]* [0-9:]* \([+-][0-9]* \)*//' ${log} | sort -n | uniq ; fi
+  else sed 's/^[0-9-]* [0-9:]* \([+-][0-9]* \)*\(\[[0-9]\+\] \)\?//' ${log} | sort -n | uniq ; fi
 
 
 # End of exiwhat
