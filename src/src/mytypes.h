@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mytypes.h,v 1.5 2008/09/29 11:41:07 nm4 Exp $ */
+/* $Cambridge: exim/src/src/mytypes.h,v 1.6 2009/10/19 12:29:31 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -15,10 +15,17 @@ local_scan.h includes it and exim.h includes them both (to get this earlier). */
 #ifndef MYTYPES_H
 #define MYTYPES_H
 
-
+#ifndef FALSE
 #define FALSE         0
+#endif
+
+#ifndef TRUE
 #define TRUE          1
+#endif
+
+#ifndef TRUE_UNSET
 #define TRUE_UNSET    2
+#endif
 
 
 /* If gcc is being used to compile Exim, we can use its facility for checking
