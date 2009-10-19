@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.59 2009/10/16 09:51:12 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.60 2009/10/19 12:57:33 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -27000,7 +27000,7 @@ entry must set the rate for the same key (otherwise it will always be zero).
 For example:
 .code
 acl_check_connect:
-  deny ratelimit = 100 / 5m / strict / noupdate
+  deny ratelimit = 100 / 5m / strict / per_cmd / noupdate
        log_message = RATE: $sender_rate/$sender_rate_period \
                      (max $sender_rate_limit)
 .endd
