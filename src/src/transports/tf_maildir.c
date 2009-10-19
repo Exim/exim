@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.11 2008/05/16 12:02:19 nm4 Exp $ */
+/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.12 2009/10/19 12:42:13 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -392,7 +392,7 @@ the same thing. */
 filename = string_sprintf("%s/maildirsize", path);
 
 DEBUG(D_transport) debug_printf("looking for maildirsize in %s\n", path);
-fd = Uopen(filename, O_RDWR|O_APPEND, 0600);
+fd = Uopen(filename, O_RDWR|O_APPEND, ob->mode ? ob->mode : 0600);
 if (fd < 0)
   {
   if (errno != ENOENT) return -1;

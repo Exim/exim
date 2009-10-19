@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.575 2009/10/19 11:47:43 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.576 2009/10/19 12:42:13 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -122,6 +122,8 @@ NM/23 Bugzilla 687: Fix misparses in eximstats
 
 NM/24 Bugzilla 688: Fix exiwhat to handle log_selector = +pid
       Patch provided by Heiko Schlittermann
+
+NM/24 Bugzilla 727: Use transport mode as default mode for maildirsize file
 
 
 Exim version 4.69
