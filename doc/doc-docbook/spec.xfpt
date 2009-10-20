@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.60 2009/10/19 12:57:33 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.61 2009/10/20 12:46:31 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -6138,7 +6138,7 @@ IPv6 addresses must be enclosed in quotes to prevent the first internal colon
 being interpreted as a key terminator. For example:
 .code
 1.2.3.4:           data for 1.2.3.4
-192.168.0.0/16     data for 192.168.0.0/16
+192.168.0.0/16:    data for 192.168.0.0/16
 "abcd::cdab":      data for abcd::cdab
 "abcd:abcd::/32"   data for abcd:abcd::/32
 .endd
