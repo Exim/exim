@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.578 2009/10/20 12:45:49 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.579 2009/10/20 13:10:15 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -129,6 +129,8 @@ NM/26 Bugzilla 799: Documentation correction for ratelimit
 
 NM/27 Bugzilla 802: Improvements to local interface IP addr detection
       Patch provided by David Brownlee
+
+NM/27 Bugzilla 807: Improvements to LMTP delivery logging
 
 
 Exim version 4.69

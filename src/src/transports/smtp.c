@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/smtp.c,v 1.42 2009/06/10 07:34:05 tom Exp $ */
+/* $Cambridge: exim/src/src/transports/smtp.c,v 1.43 2009/10/20 13:10:15 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1715,6 +1715,7 @@ if (!ok) ok = TRUE; else
           continue;
           }
         completed_address = TRUE;   /* NOW we can set this flag */
+        conf = string_sprintf("LMTP Successful delivery:%s", string_printing(buffer));
         }
 
       /* SMTP, or success return from LMTP for this address. Pass back the
