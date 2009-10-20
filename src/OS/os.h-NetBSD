@@ -1,8 +1,9 @@
-/* $Cambridge: exim/src/OS/os.h-NetBSD,v 1.4 2007/06/27 08:46:28 ph10 Exp $ */
+/* $Cambridge: exim/src/OS/os.h-NetBSD,v 1.5 2009/10/20 12:39:47 nm4 Exp $ */
 
 /* Exim: OS-specific C header file for NetBSD */
 
 #define HAVE_BSD_GETLOADAVG
+#define HAVE_GETIFADDRS
 #define HAVE_MMAP
 #define HAVE_SYS_MOUNT_H
 #define SIOCGIFCONF_GIVES_ADDR

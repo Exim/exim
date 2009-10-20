@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/os.c,v 1.6 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/os.c,v 1.7 2009/10/20 12:39:47 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -463,6 +463,75 @@ calls the common function; on Linux it calls the Linux function.
 This function finds the addresses of all the running interfaces on the machine.
 A chain of blocks containing the textual form of the addresses is returned.
 
+getifaddrs() provides a sane consistent way to query this on modern OSs,
+otherwise fall back to a maze of twisty ioctl() calls
+
+Arguments:    none
+Returns:      a chain of ip_address_items, each pointing to a textual
+              version of an IP address, with the port field set to zero
+*/
+
+
+#ifndef NO_FIND_INTERFACES
+
+#ifdef HAVE_GETIFADDRS
+
+#include <ifaddrs.h>
+
+ip_address_item *
+os_common_find_running_interfaces(void)
+{
+struct ifaddrs *ifalist = NULL;
+ip_address_item *yield = NULL;
+ip_address_item *last = NULL;
+ip_address_item  *next;
+
+if (getifaddrs(&ifalist) != 0)
+  log_write(0, LOG_PANIC_DIE, "Unable to call getifaddrs: %d %s",
+    errno, strerror(errno));
+
+struct ifaddrs *ifa;
+for (ifa = ifalist; ifa != NULL; ifa = ifa->ifa_next)
+  {
+  if (ifa->ifa_addr->sa_family != AF_INET
+#if HAVE_IPV6
+    && ifa->ifa_addr->sa_family != AF_INET6
+#endif /* HAVE_IPV6 */
+    )
+    continue;
+
+  if ( !(ifa->ifa_flags & IFF_UP) ) /* Only want 'UP' interfaces */
+    continue;
+
+  /* Create a data block for the address, fill in the data, and put it on the
+  chain. */
+
+  next = store_get(sizeof(ip_address_item));
+  next->next = NULL;
+  next->port = 0;
+  (void)host_ntoa(-1, ifa->ifa_addr, next->address, NULL);
+
+  if (yield == NULL)
+    yield = last = next;
+  else
+    {
+    last->next = next;
+    last = next;
+    }
+
+  DEBUG(D_interface) debug_printf("Actual local interface address is %s (%s)\n",
+    last->address, ifa->ifa_name);
+  }
+
+/* free the list of addresses, and return the chain of data blocks. */
+
+freeifaddrs (ifalist);
+return yield;
+}
+
+#else /* HAVE_GETIFADDRS */
+
+/*
 Problems:
 
   (1) Solaris 2 has the SIOGIFNUM call to get the number of interfaces, but
@@ -486,14 +555,7 @@ Problems:
   the former, calling the latter does no harm, but it causes grief on Linux and
   BSD systems in the case of IP aliasing, so a means of cutting it out is
   provided.
-
-Arguments:    none
-Returns:      a chain of ip_address_items, each pointing to a textual
-              version of an IP address, with the port field set to zero
 */
-
-
-#ifndef NO_FIND_INTERFACES
 
 /* If there is IPv6 support, and SIOCGLIFCONF is defined, define macros to
 use these new, longer versions of the old IPv4 interfaces. Otherwise, define
@@ -556,7 +618,7 @@ char *cp;
 char buf[MAX_INTERFACES*sizeof(struct V_ifreq)];
 struct sockaddr *addrp;
 size_t len = 0;
-char addrbuf[256];
+char addrbuf[512];
 
 /* We have to create a socket in order to do ioctls on it to find out
 what we want to know. */
@@ -700,6 +762,8 @@ for (cp = buf; cp < buf + ifc.V_ifc_len; cp += len)
 (void)close(vs);
 return yield;
 }
+
+#endif /* HAVE_GETIFADDRS */
 
 #else  /* NO_FIND_INTERFACES */
 
