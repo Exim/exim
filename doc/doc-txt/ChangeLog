@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.577 2009/10/19 12:57:33 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.578 2009/10/20 12:45:49 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -126,6 +126,9 @@ NM/24 Bugzilla 688: Fix exiwhat to handle log_selector = +pid
 NM/25 Bugzilla 727: Use transport mode as default mode for maildirsize file
 
 NM/26 Bugzilla 799: Documentation correction for ratelimit
+
+NM/27 Bugzilla 802: Improvements to local interface IP addr detection
+      Patch provided by David Brownlee
 
 
 Exim version 4.69
