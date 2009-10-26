@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.10 2008/05/16 12:22:08 nm4 Exp $ */
+/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.11 2009/10/26 13:18:54 nm4 Exp $ */
 
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
@@ -131,6 +131,7 @@ for (;;)
     {
     sbp = read(fd, sbuffer, sizeof(sbuffer));
     if (sbp == 0) { if (count == 0) return NULL; else break; }
+    p = 0;
     }
 
   while (p < sbp)
