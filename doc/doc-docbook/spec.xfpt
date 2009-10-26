@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.61 2009/10/20 12:46:31 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.62 2009/10/26 13:10:23 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -11000,7 +11000,7 @@ precise size of the file that has been written. See also
 &$message_body_size$&, &$body_linecount$&, and &$body_zerocount$&.
 
 .cindex "RCPT" "value of &$message_size$&"
-While running an ACL at the time of an SMTP RCPT command, &$message_size$&
+While running a per message ACL (mail/rcpt/predata), &$message_size$&
 contains the size supplied on the MAIL command, or -1 if no size was given. The
 value may not, of course, be truthful.
 
@@ -13444,7 +13444,7 @@ do.
 By default, Exim just checks the syntax of HELO and EHLO commands (see
 &%helo_accept_junk_hosts%& and &%helo_allow_chars%&). However, some sites like
 to do more extensive checking of the data supplied by these commands. The ACL
-condition &`verify`& &`=`& &`helo`& is provided to make this possible.
+condition &`verify = helo`& is provided to make this possible.
 Formerly, it was necessary also to set this option (&%helo_try_verify_hosts%&)
 to force the check to occur. From release 4.53 onwards, this is no longer
 necessary. If the check has not been done before &`verify`& &`=`& &`helo`& is
@@ -17846,10 +17846,10 @@ redirection items of the form
 :defer:
 :fail:
 .endd
-respectively. When a redirection list contains such an item, it applies to the
-entire redirection; any other items in the list are ignored (&':blackhole:'& is
-different). Any text following &':fail:'& or &':defer:'& is placed in the error
-text associated with the failure. For example, an alias file might contain:
+respectively. When a redirection list contains such an item, it applies
+to the entire redirection; any other items in the list are ignored. Any
+text following &':fail:'& or &':defer:'& is placed in the error text
+associated with the failure. For example, an alias file might contain:
 .code
 X.Employee:  :fail: Gone away, no forwarding address
 .endd
