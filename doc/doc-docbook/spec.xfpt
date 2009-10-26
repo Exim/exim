@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.62 2009/10/26 13:10:23 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.63 2009/10/26 13:14:23 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -24454,13 +24454,10 @@ unencrypted.
 The &%tls_certificate%& and &%tls_privatekey%& options of the &(smtp)&
 transport provide the client with a certificate, which is passed to the server
 if it requests it. If the server is Exim, it will request a certificate only if
-&%tls_verify_hosts%& or &%tls_try_verify_hosts%& matches the client. &*Note*&:
-These options must be set in the &(smtp)& transport for Exim to use TLS when it
-is operating as a client. Exim does not assume that a server certificate (set
-by the global options of the same name) should also be used when operating as a
-client.
+&%tls_verify_hosts%& or &%tls_try_verify_hosts%& matches the client.
 
-If &%tls_verify_certificates%& is set, it must name a file or,
+If the &%tls_verify_certificates%& option is set on the &(smtp)& transport, it
+must name a file or,
 for OpenSSL only (not GnuTLS), a directory, that contains a collection of
 expected server certificates. The client verifies the server's certificate
 against this collection, taking into account any revoked certificates that are
@@ -24471,6 +24468,12 @@ If
 list of permitted cipher suites. If either of these checks fails, delivery to
 the current host is abandoned, and the &(smtp)& transport tries to deliver to
 alternative hosts, if any.
+
+ &*Note*&:
+These options must be set in the &(smtp)& transport for Exim to use TLS when it
+is operating as a client. Exim does not assume that a server certificate (set
+by the global options of the same name) should also be used when operating as a
+client.
 
 .vindex "&$host$&"
 .vindex "&$host_address$&"

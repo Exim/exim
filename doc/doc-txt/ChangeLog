@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.580 2009/10/26 13:10:23 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.581 2009/10/26 13:14:23 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -133,6 +133,8 @@ NM/27 Bugzilla 802: Improvements to local interface IP addr detection
 NM/28 Bugzilla 807: Improvements to LMTP delivery logging
 
 NM/29 Bugzilla 862, 866, 875: Documentation bugfixes
+
+NM/30 Bugzilla 888: TLS documentation bugfixes
 
 
 Exim version 4.69
