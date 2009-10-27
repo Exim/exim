@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.63 2009/10/26 13:14:23 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.64 2009/10/27 14:42:57 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -172,14 +172,14 @@
 <bookinfo>
 <title>Specification of the Exim Mail Transfer Agent</title>
 <titleabbrev>The Exim MTA</titleabbrev>
-<date>09 June 2009</date>
+<date>27 October 2009</date>
 <author><firstname>Philip</firstname><surname>Hazel</surname></author>
 <authorinitials>PH</authorinitials>
 <affiliation><orgname>University of Cambridge Computing Service</orgname></affiliation>
 <address>New Museums Site, Pembroke Street, Cambridge CB2 3QH, England</address>
 <revhistory><revision>
   <revnumber>4.70</revnumber>
-  <date>10 June 2009</date>
+  <date>27 October 2009</date>
   <authorinitials>PH</authorinitials>
 </revision></revhistory>
 <copyright><year>2009</year><holder>University of Cambridge</holder></copyright>
@@ -728,12 +728,14 @@ the Exim documentation, &"spool"& is always used in the first sense.
 A number of pieces of external code are included in the Exim distribution.
 
 .ilist
+.new
 Regular expressions are supported in the main Exim program and in the
 Exim monitor using the freely-distributable PCRE library, copyright
 &copy; University of Cambridge. The source to PCRE is no longer shipped with
 Exim, so you will need to use the version of PCRE shipped with your system,
 or obtain and install the full version of the library from
 &url(ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre).
+.wen
 .next
 .cindex "cdb" "acknowledgment"
 Support for the cdb (Constant DataBase) lookup method is provided by code
@@ -2221,12 +2223,14 @@ configuration. (If a default alias file is created, its name &'is'& modified.)
 For backwards compatibility, ROOT is used if DESTDIR is not set,
 but this usage is deprecated.
 
+.new
 .cindex "installing Exim" "what is not installed"
 Running &'make install'& does not copy the Exim 4 conversion script
 &'convert4r4'&. You will probably run this only once if you are
 upgrading from Exim 3. None of the documentation files in the &_doc_&
 directory are copied, except for the info files when you have set
 INFO_DIRECTORY, as described in section &<<SECTinsinfdoc>>& below.
+.wen
 
 For the utility programs, old versions are renamed by adding the suffix &_.O_&
 to their names. The Exim binary itself, however, is handled differently. It is
@@ -2989,11 +2993,13 @@ using one of the words &%router_list%&, &%transport_list%&, or
 settings can be obtained by using &%routers%&, &%transports%&, or
 &%authenticators%&.
 
+.new
 .cindex "options" "macro &-- extracting"
 If invoked by an admin user, then &%macro%&, &%macro_list%& and &%macros%&
 are available, similarly to the drivers.  Because macros are sometimes used
 for storing passwords, this option is restricted.
 The output format is one item per line.
+.wen
 
 .vitem &%-bp%&
 .oindex "&%-bp%&"
@@ -5891,9 +5897,11 @@ password are correct. In the examples it just produces an error message.
 To make the authenticators work, you can use a string expansion
 expression like one of the examples in &<<CHAPplaintext>>&.
 
+.new
 Beware that the sequence of the parameters to PLAIN and LOGIN differ; the
 usercode and password are in different positions.  &<<CHAPplaintext>>&
 covers both.
+.wen
 
 .ecindex IIDconfiwal
 
@@ -5913,12 +5921,14 @@ regular expressions is discussed in many Perl reference books, and also in
 Jeffrey Friedl's &'Mastering Regular Expressions'&, which is published by
 O'Reilly (see &url(http://www.oreilly.com/catalog/regex2/)).
 
+.new
 The documentation for the syntax and semantics of the regular expressions that
 are supported by PCRE is included in the PCRE distribution, and no further
 description is included here. The PCRE functions are called from Exim using
 the default option settings (that is, with no PCRE options set), except that
 the PCRE_CASELESS option is set when the matching is required to be
 case-insensitive.
+.wen
 
 In most cases, when a regular expression is required in an Exim configuration,
 it has to start with a circumflex, in order to distinguish it from plain text
@@ -9742,6 +9752,7 @@ lower case), signifying multiplication by 1024 or 1024*1024, respectively.
 As a special case, the numerical value of an empty string is taken as
 zero.
 
+.new
 .vitem &*bool&~{*&<&'string'&>&*}*&
 .cindex "expansion" "boolean parsing"
 .cindex "&%bool%& expansion condition"
@@ -9757,6 +9768,7 @@ For example,
 .code
 ${if bool{$acl_m_privileged_sender} ...
 .endd
+.wen
 
 .vitem &*crypteq&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
 .cindex "expansion" "encrypted comparison"
@@ -10209,10 +10221,12 @@ configuration, you might have this:
 .code
 server_condition = ${if pwcheck{$auth1:$auth2}}
 .endd
+.new
 Again, for a PLAIN authenticator configuration, this would be:
 .code
 server_condition = ${if pwcheck{$auth2:$auth3}}
 .endd
+.wen
 .vitem &*queue_running*&
 .cindex "queue runner" "detecting when delivering from"
 .cindex "expansion" "queue runner test"
@@ -10999,10 +11013,12 @@ doing a delivery in maildir format, the value of &$message_size$& is the
 precise size of the file that has been written. See also
 &$message_body_size$&, &$body_linecount$&, and &$body_zerocount$&.
 
+.new
 .cindex "RCPT" "value of &$message_size$&"
 While running a per message ACL (mail/rcpt/predata), &$message_size$&
 contains the size supplied on the MAIL command, or -1 if no size was given. The
 value may not, of course, be truthful.
+.wen
 
 .vitem &$mime_$&&'xxx'&
 A number of variables whose names start with &$mime$& are
@@ -13368,11 +13384,12 @@ server. For details, see section &<<SECTreqciphgnu>>&.
 This option controls the protocols when GnuTLS is used in an Exim
 server. For details, see section &<<SECTreqciphgnu>>&.
 
+.new
 .option gnutls_compat_mode main boolean unset
 This option controls whether GnuTLS is used in compatibility mode in an Exim
 server. This reduces security slightly, but improves interworking with older
 implementations of TLS.
-
+.wen
 
 .option headers_charset main string "see below"
 This option sets a default character set for translating from encoded MIME
@@ -17846,10 +17863,12 @@ redirection items of the form
 :defer:
 :fail:
 .endd
+.new
 respectively. When a redirection list contains such an item, it applies
 to the entire redirection; any other items in the list are ignored. Any
 text following &':fail:'& or &':defer:'& is placed in the error text
 associated with the failure. For example, an alias file might contain:
+.wen
 .code
 X.Employee:  :fail: Gone away, no forwarding address
 .endd
@@ -18993,10 +19012,12 @@ destination. The process that writes the message to the filter, the
 filter itself, and the original process that reads the result and delivers it
 are all run in parallel, like a shell pipeline.
 
+.new
 The filter can perform any transformations it likes, but of course should take
 care not to break RFC 2822 syntax. Exim does not check the result, except to
 test for a final newline when SMTP is in use. All messages transmitted over
 SMTP must end with a newline, so Exim supplies one if it is missing.
+.wen
 
 .cindex "content scanning" "per user"
 A transport filter can be used to provide content-scanning on a per-user basis
@@ -21473,10 +21494,12 @@ client. For details, see section &<<SECTreqciphgnu>>&.
 This option controls the protocols when GnuTLS is used in an Exim
 client. For details, see section &<<SECTreqciphgnu>>&.
 
+.new
 .option gnutls_compat_mode main boolean unset
 This option controls whether GnuTLS is used in compatibility mode in an Exim
 server. This reduces security slightly, but improves interworking with older
 implementations of TLS.
+.wen
 
 .option helo_data smtp string&!! "see below"
 .cindex "HELO" "argument, setting"
@@ -23570,6 +23593,7 @@ login:
              ldap://ldap.example.org/} }} }
   server_set_id = uid=$auth1,ou=people,o=example.org
 .endd
+.new
 We have to check that the username is not empty before using it, because LDAP
 does not permit empty DN components. We must also use the &%quote_ldap_dn%&
 operator to correctly quote the DN for authentication. However, the basic
@@ -23577,7 +23601,7 @@ operator to correctly quote the DN for authentication. However, the basic
 correct one to use for the password, because quoting is needed only to make
 the password conform to the Exim syntax. At the LDAP level, the password is an
 uninterpreted string.
-
+.wen
 
 
 .section "Support for different kinds of authentication" "SECID174"
@@ -24469,11 +24493,13 @@ list of permitted cipher suites. If either of these checks fails, delivery to
 the current host is abandoned, and the &(smtp)& transport tries to deliver to
 alternative hosts, if any.
 
+.new
  &*Note*&:
 These options must be set in the &(smtp)& transport for Exim to use TLS when it
 is operating as a client. Exim does not assume that a server certificate (set
 by the global options of the same name) should also be used when operating as a
 client.
+.wen
 
 .vindex "&$host$&"
 .vindex "&$host_address$&"
@@ -24809,7 +24835,7 @@ client are given temporary error responses until QUIT is received or the
 connection is closed. In these special cases, the QUIT ACL does not run.
 
 
-
+.new
 .section "The not-QUIT ACL" "SECTNOTQUITACL"
 .vindex &$acl_smtp_notquit$&
 The not-QUIT ACL, specified by &%acl_smtp_notquit%&, is run in most cases when
@@ -24817,6 +24843,7 @@ an SMTP session ends without sending QUIT. However, when Exim itself is is bad
 trouble, such as being unable to write to its log files, this ACL is not run,
 because it might try to do things (such as write to log files) that make the
 situation even worse.
+.wen
 
 Like the QUIT ACL, this ACL is provided to make it possible to do customized
 logging or to gather statistics, and its outcome is ignored. The &%delay%&
@@ -27598,10 +27625,12 @@ the third string (in this case &"1"&), whether or not the cryptographic and
 timeout checks succeed. The &$prvscheck_result$& variable contains the result
 of the checks (empty for failure, &"1"& for success).
 
+.new
 There is one more issue you must consider when implementing prvs-signing:
 you have to ensure that the routers accept prvs-signed addresses and
 deliver them correctly. The easiest way to handle this is to use a &(redirect)&
 router to remove the signature with a configuration along these lines:
+.wen
 .code
 batv_redirect:
   driver = redirect
@@ -34314,6 +34343,7 @@ unqualified domain &'foundation'&.
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 
+.new
 .chapter "Support for DKIM (DomainKeys Identified Mail) - RFC4871" "CHID12" &&&
          "DKIM Support"
 .cindex "DKIM"
@@ -34570,7 +34600,7 @@ The possible status keywords are: 'none','invalid','fail' and 'pass'. Please
 see the documentation of the &%$dkim_verify_status%& expansion variable above
 for more information of what they mean.
 .endlist
-
+.wen
 
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
