@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.5 2009/10/29 10:12:28 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.6 2009/10/29 11:08:01 tom Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -864,7 +864,10 @@ int pdkim_update_bodyhash(pdkim_ctx *ctx, char *data, int len) {
         if (relaxed_data == NULL) return PDKIM_ERR_OOM;
         while (*p != '\0') {
           char c = *p;
-          if ( (c == '\t') || (c == ' ') ) {
+          if (c == '\r') {
+            if ( (q > 0) && (relaxed_data[q-1] == ' ') ) q--;
+          }
+          else if ( (c == '\t') || (c == ' ') ) {
             c = ' '; /* Turns WSP into SP */
             if (seen_wsp) {
               p++;
