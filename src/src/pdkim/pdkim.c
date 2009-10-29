@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.3 2009/09/09 08:13:58 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.4 2009/10/29 10:02:40 tom Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -366,7 +366,7 @@ char *pdkim_relax_header (char *header, int crlf) {
   int seen_wsp = 0;
   char *p = header;
   char *q;
-  char *relaxed = malloc(strlen(header));
+  char *relaxed = malloc(strlen(header)+2);
   if (relaxed == NULL) return NULL;
   q = relaxed;
   while (*p != '\0') {
