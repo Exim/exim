@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.12 2009/10/19 12:42:13 nm4 Exp $ */
+/* $Cambridge: exim/src/src/transports/tf_maildir.c,v 1.13 2009/10/30 15:08:25 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -559,7 +559,7 @@ else
   tempname = string_sprintf("%s/tmp/%lu.H%luP%lu.%s", path, tv.tv_sec,
     tv.tv_usec, getpid(), primary_hostname);
 
-  fd = Uopen(tempname, O_RDWR|O_CREAT|O_EXCL, 0600);
+  fd = Uopen(tempname, O_RDWR|O_CREAT|O_EXCL, ob->mode ? ob->mode : 0600);
   if (fd >= 0)
     {
     (void)sprintf(CS buffer, OFF_T_FMT "S,%dC\n" OFF_T_FMT " %d\n",
