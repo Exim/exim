@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/exim_install,v 1.2 2005/09/06 13:18:13 ph10 Exp $
+# $Cambridge: exim/src/scripts/exim_install,v 1.3 2009/10/30 15:14:04 nm4 Exp $
 
 # Script to install Exim binaries in BIN_DIRECTORY, which is defined in
 # the local Makefile. It expects to be run in a build directory. It needs
@@ -378,7 +378,7 @@ done
 
 echo $com ""
 
-if [ `expr "${CONFIGURE_FILE}" : ".*:"` -ne 0 ] ; then
+if [ `expr -- "${CONFIGURE_FILE}" : ".*:"` -ne 0 ] ; then
   echo $com Runtime configuration is specified as the following list:
   echo $com ' ' ${CONFIGURE_FILE}
   echo $com Therefore, skipping automatic installation.

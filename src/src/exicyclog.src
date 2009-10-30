@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exicyclog.src,v 1.9 2009/01/20 16:06:14 fanf2 Exp $
+# $Cambridge: exim/src/src/exicyclog.src,v 1.10 2009/10/30 15:14:04 nm4 Exp $
 
 # Copyright (c) 2006 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -251,7 +251,7 @@ count=$keep
 if [ $count -lt 10 ]; then countt=0$count; else countt=$count; fi
 
 while [ $count -gt 1 ]; do
-  old=`expr $count - 1`
+  old=`expr -- $count - 1`
   if [ $keep -gt 99 ]; then
     if   [ $old -lt 10 ]; then oldt=00$old
     elif [ $old -lt 100 ]; then oldt=0$old
@@ -334,7 +334,7 @@ while [ $count -le $keep ]; do
     $chown $user:$group $paniclog.$countt.$suffix
   fi
 
-  count=`expr $count + 1`
+  count=`expr -- $count + 1`
 done
 
 # End of exicyclog

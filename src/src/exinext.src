@@ -1,5 +1,5 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exinext.src,v 1.3 2007/07/29 21:49:46 magnus Exp $
+# $Cambridge: exim/src/src/exinext.src,v 1.4 2009/10/30 15:14:04 nm4 Exp $
 
 # Copyright (c) 1996-2004 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
@@ -26,16 +26,16 @@ config=
 eximmacdef=
 exim_path=
 
-if expr $1 : '\-' >/dev/null ; then
-  while expr $1 : '\-' >/dev/null ; do
+if expr -- $1 : '\-' >/dev/null ; then
+  while expr -- $1 : '\-' >/dev/null ; do
     if [ "$1" = "-C" ]; then
       config=$2
       shift
       shift
-    elif expr $1 : '\-D' >/dev/null ; then
+    elif expr -- $1 : '\-D' >/dev/null ; then
       eximmacdef="$eximmacdef $1"
-      if expr $1 : '\-DEXIM_PATH=' >/dev/null ; then
-        exim_path=`expr $1 : '\-DEXIM_PATH=\(.*\)'`
+      if expr -- $1 : '\-DEXIM_PATH=' >/dev/null ; then
+        exim_path=`expr -- $1 : '\-DEXIM_PATH=\(.*\)'`
       fi
       shift
     else

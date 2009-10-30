@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.584 2009/10/30 15:08:25 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.585 2009/10/30 15:14:04 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -138,6 +138,9 @@ NM/29 Bugzilla 862, 866, 875: Documentation bugfixes
 NM/30 Bugzilla 888: TLS documentation bugfixes
 
 NM/31 Bugzilla 896: Dovecot buffer overrun fix
+
+NM/32 Bugzilla 889: Change all instances of "expr" in shell scripts to "expr --"
+      Unlike the original bugzilla I have changed all shell scripts in src tree
 
 
 Exim version 4.69
