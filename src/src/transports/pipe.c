@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/pipe.c,v 1.12 2007/01/08 10:50:20 ph10 Exp $ */
+/* $Cambridge: exim/src/src/transports/pipe.c,v 1.13 2009/11/05 19:28:10 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -922,6 +922,18 @@ if ((rc = child_close(pid, timeout)) != 0)
     addr->transport_return = PANIC;
     addr->message = string_sprintf("Wait() failed for child process of %s "
       "transport: %s%s", tblock->name, strerror(errno), tmsg);
+    }
+
+  /* Since the transport_filter timed out we assume it has sent the child process
+  a malformed or incomplete data stream.  Kill off the child process
+  and prevent checking its exit status as it will has probably exited in error.
+  This prevents the transport_filter timeout message from getting overwritten
+  by the exit error which is not the cause of the problem. */
+
+  else if (transport_filter_timed_out)
+    {
+    killpg(pid, SIGKILL);
+    kill(outpid, SIGKILL);
     }
 
   /* Either the process completed, but yielded a non-zero (necessarily
