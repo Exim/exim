@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.64 2009/10/27 14:42:57 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.65 2009/11/05 19:24:35 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -172,15 +172,13 @@
 <bookinfo>
 <title>Specification of the Exim Mail Transfer Agent</title>
 <titleabbrev>The Exim MTA</titleabbrev>
-<date>27 October 2009</date>
-<author><firstname>Philip</firstname><surname>Hazel</surname></author>
-<authorinitials>PH</authorinitials>
-<affiliation><orgname>University of Cambridge Computing Service</orgname></affiliation>
-<address>New Museums Site, Pembroke Street, Cambridge CB2 3QH, England</address>
+<date>5 November 2009</date>
+<author><firstname>Exim</firstname><surname>Maintainers</surname></author>
+<authorinitials>EM</authorinitials>
 <revhistory><revision>
   <revnumber>4.70</revnumber>
-  <date>27 October 2009</date>
-  <authorinitials>PH</authorinitials>
+  <date>5 November 2009</date>
+  <authorinitials>EM</authorinitials>
 </revision></revhistory>
 <copyright><year>2009</year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
