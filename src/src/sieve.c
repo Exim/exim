@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/sieve.c,v 1.37 2009/02/04 11:31:13 michael Exp $ */
+/* $Cambridge: exim/src/src/sieve.c,v 1.38 2009/11/05 19:40:51 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2971,7 +2971,7 @@ while (*filter->pc)
     subject.character=(uschar*)0;
     body.length=-1;
     body.character=(uschar*)0;
-    envelope_from=(sender_address && sender_address[0]) ? expand_string("$local_part_prefix$local_part$local_part_suffix@$domain") : US "";
+    envelope_from=(sender_address && sender_address[0]) ? expand_string(US"$local_part_prefix$local_part$local_part_suffix@$domain") : US "";
     for (;;)
       {
       if (parse_white(filter)==-1) return -1;
@@ -3038,11 +3038,11 @@ while (*filter->pc)
         for (already=filter->notified; already; already=already->next)
           {
           if (already->method.length==method.length
-              && (method.length==-1 || strcmp(already->method.character,method.character)==0)
+              && (method.length==-1 || Ustrcmp(already->method.character,method.character)==0)
               && already->importance.length==importance.length
-              && (importance.length==-1 || strcmp(already->importance.character,importance.character)==0)
+              && (importance.length==-1 || Ustrcmp(already->importance.character,importance.character)==0)
               && already->message.length==message.length
-              && (message.length==-1 || strcmp(already->message.character,message.character)==0))
+              && (message.length==-1 || Ustrcmp(already->message.character,message.character)==0))
             break;
           }
         if (already==(struct Notification*)0)
@@ -3068,7 +3068,7 @@ while (*filter->pc)
               int buffer_capacity;
 
               f = fdopen(fd, "wb");
-              fprintf(f,"From: %s\n",from.length==-1 ? expand_string("$local_part_prefix$local_part$local_part_suffix@$domain") : from.character);
+              fprintf(f,"From: %s\n",from.length==-1 ? expand_string(US"$local_part_prefix$local_part$local_part_suffix@$domain") : from.character);
               for (p=recipient; p; p=p->next) fprintf(f,"To: %s\n",p->text);
               fprintf(f,"Auto-Submitted: auto-notified; %s\n",filter->enotify_mailto_owner);
               if (header.length>0) fprintf(f,"%s",header.character);

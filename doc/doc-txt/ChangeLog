@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.586 2009/11/05 19:31:15 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.587 2009/11/05 19:40:51 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -144,6 +144,9 @@ NM/32 Bugzilla 889: Change all instances of "expr" in shell scripts to "expr --"
 
 NM/33 Bugzilla 898: Transport filter timeout fix
       Patch by Todd Rinaldo
+
+NM/34 Bugzilla 901: Fix sign/unsigned and UTF mistmatches
+      Patch by Serge Demonchaux
 
 
 Exim version 4.69

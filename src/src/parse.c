@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/parse.c,v 1.13 2008/06/06 14:40:21 michael Exp $ */
+/* $Cambridge: exim/src/src/parse.c,v 1.14 2009/11/05 19:40:51 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1775,8 +1775,7 @@ day-name        =       "Mon" / "Tue" / "Wed" / "Thu" /
 obs-day-of-week =       [CFWS] day-name [CFWS]
 */
 
-uschar *o;
-static const uschar *day_name[7]={ "mon", "tue", "wed", "thu", "fri", "sat", "sun" };
+static const uschar *day_name[7]={ US"mon", US"tue", US"wed", US"thu", US"fri", US"sat", US"sun" };
 int i;
 uschar day[4];
 
@@ -1787,7 +1786,7 @@ for (i=0; i<3; ++i)
   ++str;
   }
 day[3]='\0';
-for (i=0; i<7; ++i) if (strcmp(day,day_name[i])==0) break;
+for (i=0; i<7; ++i) if (Ustrcmp(day,day_name[i])==0) break;
 if (i==7) return NULL;
 str=skip_comment(str);
 return str;
@@ -1834,7 +1833,7 @@ obs-day         =       [CFWS] 1*2DIGIT [CFWS]
 */
 
 uschar *c,*n;
-static const uschar *month_name[]={ "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec" };
+static const uschar *month_name[]={ US"jan", US"feb", US"mar", US"apr", US"may", US"jun", US"jul", US"aug", US"sep", US"oct", US"nov", US"dec" };
 int i;
 uschar month[4];
 

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.20 2009/10/19 11:25:31 nm4 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.21 2009/11/05 19:40:51 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -73,13 +73,13 @@ tls_error(uschar *prefix, host_item *host, uschar *msg)
 if (msg == NULL)
   {
   ERR_error_string(ERR_get_error(), ssl_errstring);
-  msg = ssl_errstring;
+  msg = (uschar *)ssl_errstring;
   }
 
 if (host == NULL)
   {
   uschar *conn_info = smtp_get_connection_info();
-  if (strncmp(conn_info, "SMTP ", 5) == 0)
+  if (Ustrncmp(conn_info, US"SMTP ", 5) == 0)
     conn_info += 5;
   log_write(0, LOG_MAIN, "TLS error on %s (%s): %s",
     conn_info, prefix, msg);
@@ -253,7 +253,7 @@ if (dhexpanded == NULL) return TRUE;
 if ((bio = BIO_new_file(CS dhexpanded, "r")) == NULL)
   {
   tls_error(string_sprintf("could not read dhparams file %s", dhexpanded),
-    host, strerror(errno));
+    host, (uschar *)strerror(errno));
   yield = FALSE;
   }
 else
@@ -338,7 +338,7 @@ if (!RAND_status())
 
   if (!RAND_status())
     return tls_error(US"RAND_status", host,
-      "unable to seed random number generator");
+      US"unable to seed random number generator");
   }
 
 /* Set up the information callback, which outputs if debugging is at a suitable
@@ -621,7 +621,7 @@ uschar *expciphers;
 
 if (tls_active >= 0)
   {
-  tls_error("STARTTLS received after TLS started", NULL, "");
+  tls_error(US"STARTTLS received after TLS started", NULL, US"");
   smtp_printf("554 Already in TLS\r\n");
   return FAIL;
   }
