@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/Exim4.upgrade,v 1.1 2004/10/07 15:04:35 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/Exim4.upgrade,v 1.2 2009/11/05 19:37:00 nm4 Exp $
 
 Upgrading Exim from Release 3.33 to 4.xx
 ----------------------------------------
@@ -1096,7 +1096,7 @@ Authentication
   controlled by ACLs.
 
 . The auth_always_advertise option has been abolished because it depended on
-  auth_hosts and and host_auth_accept_relay, both of which are no more. In its
+  auth_hosts and host_auth_accept_relay, both of which are no more. In its
   place there is a new option called auth_advertise_hosts, whose default value
   is *, meaning "advertise AUTH to all".
 

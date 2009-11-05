@@ -1,4 +1,4 @@
-## $Cambridge: exim/doc/doc-src/FAQ.src,v 1.7 2005/05/06 08:28:16 ph10 Exp $
+## $Cambridge: exim/doc/doc-src/FAQ.src,v 1.8 2009/11/05 19:37:00 nm4 Exp $
 ##
 ## This file is processed by Perl scripts to produce an ASCII and an HTML
 ## version. Lines starting with ## are omitted. The markup used with paragraphs
@@ -467,7 +467,7 @@ A0020: These kinds of delay are usually caused by some kind of network problem
 ==>          deny  hosts = *.x.example
 
            If at all possible, you should use IP addresses instead of host
-           names in blocking lists in order to to avoid this problem.
+           names in blocking lists in order to avoid this problem.
 
        You can use the \-bh-\ option to get more information about what is
        happening at the start of a connection. However, note that the \-bh-\
@@ -2684,7 +2684,7 @@ A0408: Set the \qualify_preserve_domain\ option on the \%redirect%\ router.
 Q0409: I want mail for any local part at certain virtual domains to go
        to a single address for each domain.
 
-A0409: One way to to this is
+A0409: One way to do this is
 
 ==>      virtual:
            driver = redirect

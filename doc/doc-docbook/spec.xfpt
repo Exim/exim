@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.65 2009/11/05 19:24:35 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.66 2009/11/05 19:37:00 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -13462,7 +13462,7 @@ to do more extensive checking of the data supplied by these commands. The ACL
 condition &`verify = helo`& is provided to make this possible.
 Formerly, it was necessary also to set this option (&%helo_try_verify_hosts%&)
 to force the check to occur. From release 4.53 onwards, this is no longer
-necessary. If the check has not been done before &`verify`& &`=`& &`helo`& is
+necessary. If the check has not been done before &`verify = helo`& is
 encountered, it is done at that time. Consequently, this option is obsolete.
 Its specification is retained here for backwards compatibility.
 
@@ -13484,7 +13484,7 @@ available) yields the calling host address.
 
 However, the EHLO or HELO command is not rejected if any of the checks
 fail. Processing continues, but the result of the check is remembered, and can
-be detected later in an ACL by the &`verify`& &`=`& &`helo`& condition.
+be detected later in an ACL by the &`verify = helo`& condition.
 
 .option helo_verify_hosts main "host list&!!" unset
 .cindex "HELO verifying" "mandatory"
@@ -13540,8 +13540,8 @@ this check fails, Exim behaves as if the name lookup failed.
 .vindex "&$sender_host_name$&"
 After any kind of failure, the host name (in &$sender_host_name$&) remains
 unset, and &$host_lookup_failed$& is set to the string &"1"&. See also
-&%dns_again_means_nonexist%&, &%helo_lookup_domains%&, and &`verify`& &`=`&
-&`reverse_host_lookup`& in ACLs.
+&%dns_again_means_nonexist%&, &%helo_lookup_domains%&, and
+&`verify = reverse_host_lookup`& in ACLs.
 
 
 .option host_lookup_order main "string list" &`bydns:byaddr`&
@@ -25835,7 +25835,7 @@ This control is permitted only for the MAIL, RCPT, and start of data ACLs (the
 latter is the one defined by &%acl_smtp_predata%&). Setting it tells Exim that
 the current message is a submission from a local MUA. In this case, Exim
 operates in &"submission mode"&, and applies certain fixups to the message if
-necessary. For example, it add a &'Date:'& header line if one is not present.
+necessary. For example, it adds a &'Date:'& header line if one is not present.
 This control is not permitted in the &%acl_smtp_data%& ACL, because that is too
 late (the message has already been created).
 
@@ -25848,7 +25848,7 @@ that may be received in the same SMTP connection.
 .vitem &*control&~=&~suppress_local_fixups*&
 .cindex "submission fixups, suppressing"
 This control applies to locally submitted (non TCP/IP) messages, and is the
-complement of &`control`& &`=`& &`submission`&. It disables the fixups that are
+complement of &`control = submission`&. It disables the fixups that are
 normally applied to locally-submitted messages. Specifically:
 
 .ilist
@@ -25877,12 +25877,12 @@ All four possibilities for message fixups can be specified:
 .ilist
 Locally submitted, fixups applied: the default.
 .next
-Locally submitted, no fixups applied: use &`control`& &`=`&
-&`suppress_local_fixups`&.
+Locally submitted, no fixups applied: use
+&`control = suppress_local_fixups`&.
 .next
 Remotely submitted, no fixups applied: the default.
 .next
-Remotely submitted, fixups applied: use &`control`& &`=`& &`submission`&.
+Remotely submitted, fixups applied: use &`control = submission`&.
 .endlist
 
 
