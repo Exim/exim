@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.15 2006/09/05 15:34:41 ph10 Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.16 2009/11/06 13:29:47 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -74,122 +74,156 @@ uschar *mime_decode_qp_char(uschar *qp_p, int *c) {
 }
 
 
+/* just dump MIME part without any decoding */
+static int mime_decode_asis(FILE* in, FILE* out, uschar* boundary)
+{
+  int len, size = 0;
+  uschar buffer[MIME_MAX_LINE_LENGTH];
 
-uschar *mime_parse_line(uschar *buffer, uschar *data, uschar *encoding, int *num_decoded) {
+  while(fgets(CS buffer, MIME_MAX_LINE_LENGTH, mime_stream) != NULL) {
+    if (boundary != NULL
+      && Ustrncmp(buffer, "--", 2) == 0
+      && Ustrncmp((buffer+2), boundary, Ustrlen(boundary)) == 0
+    )
+      break;
 
-  if (encoding == NULL) {
-    /* no encoding type at all */
-    NO_DECODING:
-    memcpy(data, buffer, Ustrlen(buffer));
-    data[(Ustrlen(buffer))] = 0;
-    *num_decoded = Ustrlen(data);
-    return data;
-  }
-  else if (Ustrcmp(encoding,"base64") == 0) {
-    uschar *p = buffer;
-    int offset = 0;
+    len = Ustrlen(buffer);
+    if (fwrite(buffer, 1, (size_t)len, out) < len)
+      return -1;
+    size += len;
+  } /* while */
+  return size;
+}
 
-    /* ----- BASE64 ---------------------------------------------------- */
-    /* NULL out '\r' and '\n' chars */
-    while (Ustrrchr(p,'\r') != NULL) {
-      *(Ustrrchr(p,'\r')) = '\0';
-    };
-    while (Ustrrchr(p,'\n') != NULL) {
-      *(Ustrrchr(p,'\n')) = '\0';
-    };
 
-    while (*(p+offset) != '\0') {
-      /* hit illegal char ? */
-      if (mime_b64[*(p+offset)] == 128) {
+/* decode base64 MIME part */
+static int mime_decode_base64(FILE* in, FILE* out, uschar* boundary)
+{
+  uschar ibuf[MIME_MAX_LINE_LENGTH], obuf[MIME_MAX_LINE_LENGTH];
+  uschar *ipos, *opos;
+  size_t len, size = 0;
+  int bytestate = 0;
+
+  opos = obuf;
+
+  while (fgets(ibuf, MIME_MAX_LINE_LENGTH, in) != NULL)
+  {
+    if (boundary != NULL
+      && Ustrncmp(ibuf, "--", 2) == 0
+      && Ustrncmp((ibuf+2), boundary, Ustrlen(boundary)) == 0
+    )
+      break;
+
+    for (ipos = ibuf ; *ipos != '\r' && *ipos != '\n' && *ipos != 0; ++ipos) {
+      /* skip padding */
+      if (*ipos == '=') {
+        ++bytestate;
+        continue;
+      }
+      /* skip bad characters */
+      if (mime_b64[*ipos] == 128) {
         mime_set_anomaly(MIME_ANOMALY_BROKEN_BASE64);
-        offset++;
+        continue;
       }
-      else {
-        *p = mime_b64[*(p+offset)];
-        p++;
-      };
-    };
-    *p = 255;
+      /* simple state-machine */
+      switch((bytestate++) & 3) {
+        case 0:
+          *opos = mime_b64[*ipos] << 2;
+           break;
+        case 1:
+          *opos |= mime_b64[*ipos] >> 4;
+          ++opos;
+          *opos = mime_b64[*ipos] << 4;
+          break;
+        case 2:
+          *opos |= mime_b64[*ipos] >> 2;
+          ++opos;
+          *opos = mime_b64[*ipos] << 6;
+          break;
+        case 3:
+          *opos |= mime_b64[*ipos];
+          ++opos;
+          break;
+      } /* switch */
+    } /* for */
+    /* something to write? */
+    len = opos - obuf;
+    if (len > 0) {
+      if (fwrite(obuf, 1, len, out) != len)
+        return -1; /* error */
+      size += len;
+      /* copy incomplete last byte to start of obuf, where we continue */
+      if (bytestate & 3 != 0)
+        *obuf = *opos;
+      opos = obuf;
+    }
+  } /* while */
 
-    /* line is translated, start bit shifting */
-    p = buffer;
-    *num_decoded = 0;
-    while(*p != 255) {
-      uschar tmp_c;
-
-      /* byte 0 ---------------------- */
-      if (*(p+1) == 255) {
-        break;
-      }
-      data[(*num_decoded)] = *p;
-      data[(*num_decoded)] <<= 2;
-      tmp_c = *(p+1);
-      tmp_c >>= 4;
-      data[(*num_decoded)] |= tmp_c;
-      (*num_decoded)++;
-      p++;
-      /* byte 1 ---------------------- */
-      if (*(p+1) == 255) {
-        break;
-      }
-      data[(*num_decoded)] = *p;
-      data[(*num_decoded)] <<= 4;
-      tmp_c = *(p+1);
-      tmp_c >>= 2;
-      data[(*num_decoded)] |= tmp_c;
-      (*num_decoded)++;
-      p++;
-      /* byte 2 ---------------------- */
-      if (*(p+1) == 255) {
-        break;
-      }
-      data[(*num_decoded)] = *p;
-      data[(*num_decoded)] <<= 6;
-      data[(*num_decoded)] |= *(p+1);
-      (*num_decoded)++;
-      p+=2;
-
-    };
-    return data;
-    /* ----------------------------------------------------------------- */
+  /* write out last byte if it was incomplete */
+  if (bytestate & 3) {
+      if (fwrite(obuf, 1, 1, out) != 1)
+          return -1;
+      ++size;
   }
-  else if (Ustrcmp(encoding,"quoted-printable") == 0) {
-    uschar *p = buffer;
 
-    /* ----- QP -------------------------------------------------------- */
-    *num_decoded = 0;
-    while (*p != 0) {
-      if (*p == '=') {
+  return size;
+}
+
+
+/* decode quoted-printable MIME part */
+static int mime_decode_qp(FILE* in, FILE* out, uschar* boundary)
+{
+  uschar ibuf[MIME_MAX_LINE_LENGTH], obuf[MIME_MAX_LINE_LENGTH];
+  uschar *ipos, *opos;
+  size_t len, size = 0;
+
+  while (fgets(CS ibuf, MIME_MAX_LINE_LENGTH, in) != NULL)
+  {
+    if (boundary != NULL
+      && Ustrncmp(ibuf, "--", 2) == 0
+      && Ustrncmp((ibuf+2), boundary, Ustrlen(boundary)) == 0
+    )
+      break; /* todo: check for missing boundary */
+
+    ipos = ibuf;
+    opos = obuf;
+
+    while (*ipos != 0) {
+      if (*ipos == '=') {
         int decode_qp_result;
 
-        p = mime_decode_qp_char(p,&decode_qp_result);
+        ipos = mime_decode_qp_char(ipos, &decode_qp_result);
 
         if (decode_qp_result == -2) {
-          /* Error from decoder. p is unchanged. */
+          /* Error from decoder. ipos is unchanged. */
           mime_set_anomaly(MIME_ANOMALY_BROKEN_QP);
-          data[(*num_decoded)] = '=';
-          (*num_decoded)++;
-          p++;
+          *opos = '=';
+          ++opos;
+          ++ipos;
         }
         else if (decode_qp_result == -1) {
           break;
         }
         else if (decode_qp_result >= 0) {
-          data[(*num_decoded)] = decode_qp_result;
-          (*num_decoded)++;
-        };
+          *opos = decode_qp_result;
+          ++opos;
+        }
       }
       else {
-        data[(*num_decoded)] = *p;
-        (*num_decoded)++;
-        p++;
-      };
-    };
-    return data;
-    /* ----------------------------------------------------------------- */
+        *opos = *ipos;
+        ++opos;
+        ++ipos;
+      }
+    }
+    /* something to write? */
+    len = opos - obuf;
+    if (len > 0) {
+      if (fwrite(obuf, 1, len, out) != len)
+        return -1; /* error */
+      size += len;
+    }
   }
-  /* unknown encoding type, just dump as-is */
-  else goto NO_DECODING;
+  return size;
 }
 
 
@@ -238,10 +272,9 @@ int mime_decode(uschar **listptr) {
   uschar option_buffer[1024];
   uschar decode_path[1024];
   FILE *decode_file = NULL;
-  uschar *buffer = NULL;
-  uschar *decode_buffer = NULL;
   long f_pos = 0;
   unsigned int size_counter = 0;
+  int (*decode_function)(FILE*, FILE*, uschar*);
 
   if (mime_stream == NULL)
     return FAIL;
@@ -250,21 +283,6 @@ int mime_decode(uschar **listptr) {
 
   /* build default decode path (will exist since MBOX must be spooled up) */
   (void)string_format(decode_path,1024,"%s/scan/%s",spool_directory,message_id);
-
-  /* reserve a line and decoder buffer to work in */
-  buffer = (uschar *)malloc(MIME_MAX_LINE_LENGTH+1);
-  if (buffer == NULL) {
-    log_write(0, LOG_PANIC,
-                 "decode ACL condition: can't allocate %d bytes of memory.", MIME_MAX_LINE_LENGTH+1);
-    return DEFER;
-  };
-
-  decode_buffer = (uschar *)malloc(MIME_MAX_LINE_LENGTH+1);
-  if (decode_buffer == NULL) {
-    log_write(0, LOG_PANIC,
-                 "decode ACL condition: can't allocate %d bytes of memory.", MIME_MAX_LINE_LENGTH+1);
-    return DEFER;
-  };
 
   /* try to find 1st option */
   if ((option = string_nextinlist(&list, &sep,
@@ -306,50 +324,28 @@ int mime_decode(uschar **listptr) {
   if (decode_file == NULL)
     return DEFER;
 
-  /* read data linewise and dump it to the file,
-     while looking for the current boundary */
-  while(fgets(CS buffer, MIME_MAX_LINE_LENGTH, mime_stream) != NULL) {
-    uschar *decoded_line = NULL;
-    int decoded_line_length = 0;
+  /* decode according to mime type */
+  if (mime_content_transfer_encoding == NULL)
+    /* no encoding, dump as-is */
+    decode_function = mime_decode_asis;
+  else if (Ustrcmp(mime_content_transfer_encoding, "base64") == 0)
+    decode_function = mime_decode_base64;
+  else if (Ustrcmp(mime_content_transfer_encoding, "quoted-printable") == 0)
+    decode_function = mime_decode_qp;
+  else
+    /* unknown encoding type, just dump as-is */
+    decode_function = mime_decode_asis;
 
-    if (mime_current_boundary != NULL) {
-      /* boundary line must start with 2 dashes */
-      if (Ustrncmp(buffer,"--",2) == 0) {
-        if (Ustrncmp((buffer+2),mime_current_boundary,Ustrlen(mime_current_boundary)) == 0)
-          break;
-      };
-    };
-
-    decoded_line = mime_parse_line(buffer, decode_buffer, mime_content_transfer_encoding, &decoded_line_length);
-
-    /* write line to decode file */
-    if (fwrite(decoded_line, 1, decoded_line_length, decode_file) < decoded_line_length) {
-      /* error/short write */
-      clearerr(mime_stream);
-      fseek(mime_stream,f_pos,SEEK_SET);
-      return DEFER;
-    };
-    size_counter += decoded_line_length;
-
-    if (size_counter > 1023) {
-      if ((mime_content_size + (size_counter / 1024)) < 65535)
-        mime_content_size += (size_counter / 1024);
-      else
-        mime_content_size = 65535;
-      size_counter = (size_counter % 1024);
-    };
-
-  }
-
-  (void)fclose(decode_file);
+  size_counter = decode_function(mime_stream, decode_file, mime_current_boundary);
 
   clearerr(mime_stream);
-  fseek(mime_stream,f_pos,SEEK_SET);
+  fseek(mime_stream, f_pos, SEEK_SET);
 
-  /* round up remaining size bytes to one k */
-  if (size_counter) {
-    mime_content_size++;
-  };
+  if (size_counter < 0 || fclose(decode_file) != 0)
+    return DEFER;
+
+  /* round up to the next KiB */
+  mime_content_size = (size_counter + 1023) / 1024;
 
   return OK;
 }
