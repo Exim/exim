@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.16 2009/11/06 13:29:47 nm4 Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.17 2009/11/07 17:17:15 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -341,7 +341,7 @@ int mime_decode(uschar **listptr) {
   clearerr(mime_stream);
   fseek(mime_stream, f_pos, SEEK_SET);
 
-  if (size_counter < 0 || fclose(decode_file) != 0)
+  if (fclose(decode_file) != 0 || size_counter < 0)
     return DEFER;
 
   /* round up to the next KiB */
