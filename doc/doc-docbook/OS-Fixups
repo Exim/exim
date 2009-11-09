@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-#  $Cambridge: exim/doc/doc-docbook/OS-Fixups,v 1.1 2009/10/16 10:36:52 nm4 Exp $
+#  $Cambridge: exim/doc/doc-docbook/OS-Fixups,v 1.2 2009/11/09 16:12:37 nm4 Exp $
 use strict;
 
 # Script to hack around using absolute paths in xsl:import with fixups.
@@ -16,6 +16,16 @@ s{"/usr/share/sgml/docbook/xsl-stylesheets-1.70.1/}
 s{"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"}
  {"/usr/local/share/xml/docbook/4.2/docbookx.dtd"};
 }
+
+sub filter_darwin
+{
+# NB - this uses the Mac Ports installations
+s{"/usr/share/sgml/docbook/xsl-stylesheets-1.70.1/}
+ {"/opt/local/share/xsl/docbook-xsl/};
+s{"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"}
+ {"/opt/local/share/xml/docbook/4.2/docbookx.dtd"};
+}
+
 
 # Define OS filters above.
 
