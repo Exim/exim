@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.6 2009/10/29 11:08:01 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.7 2009/11/09 14:19:48 tom Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -156,12 +156,12 @@ pdkim_stringlist *pdkim_append_stringlist(pdkim_stringlist *base, char *str) {
   if (new_entry->value == NULL) return NULL;
   if (base != NULL) {
     pdkim_stringlist *last = base;
-    while (last->next != NULL) { last = last->next; };
+    while (last->next != NULL) { last = last->next; }
     last->next = new_entry;
     return base;
   }
   else return new_entry;
-};
+}
 pdkim_stringlist *pdkim_prepend_stringlist(pdkim_stringlist *base, char *str) {
   pdkim_stringlist *new_entry = malloc(sizeof(pdkim_stringlist));
   if (new_entry == NULL) return NULL;
@@ -172,7 +172,7 @@ pdkim_stringlist *pdkim_prepend_stringlist(pdkim_stringlist *base, char *str) {
     new_entry->next = base;
   }
   return new_entry;
-};
+}
 
 
 /* -------------------------------------------------------------------------- */
@@ -191,7 +191,7 @@ pdkim_str *pdkim_strnew (char *cstr) {
   p->len=len;
   if (cstr) strcpy(p->str,cstr);
   return p;
-};
+}
 char *pdkim_strncat(pdkim_str *str, char *data, int len) {
   if ((str->allocated - str->len) < (len+1)) {
     /* Extend the buffer */
@@ -206,20 +206,20 @@ char *pdkim_strncat(pdkim_str *str, char *data, int len) {
   str->len+=len;
   str->str[str->len] = '\0';
   return str->str;
-};
+}
 char *pdkim_strcat(pdkim_str *str, char *cstr) {
   return pdkim_strncat(str, cstr, strlen(cstr));
-};
+}
 char *pdkim_numcat(pdkim_str *str, unsigned long num) {
   char minibuf[20];
   snprintf(minibuf,20,"%lu",num);
   return pdkim_strcat(str,minibuf);
-};
+}
 char *pdkim_strtrim(pdkim_str *str) {
   char *p = str->str;
   char *q = str->str;
   while ( (*p != '\0') && ((*p == '\t') || (*p == ' ')) ) p++;
-  while (*p != '\0') {*q = *p; q++; p++;};
+  while (*p != '\0') {*q = *p; q++; p++;}
   *q = '\0';
   while ( (q != str->str) && ( (*q == '\0') || (*q == '\t') || (*q == ' ') ) ) {
     *q = '\0';
@@ -227,17 +227,17 @@ char *pdkim_strtrim(pdkim_str *str) {
   }
   str->len = strlen(str->str);
   return str->str;
-};
+}
 char *pdkim_strclear(pdkim_str *str) {
   str->str[0] = '\0';
   str->len = 0;
   return str->str;
-};
+}
 void pdkim_strfree(pdkim_str *str) {
   if (str == NULL) return;
   if (str->str != NULL) free(str->str);
   free(str);
-};
+}
 
 
 
@@ -288,7 +288,7 @@ void pdkim_free_sig(pdkim_signature *sig) {
     free(sig);
     if (next != NULL) pdkim_free_sig(next);
   }
-};
+}
 
 
 /* -------------------------------------------------------------------------- */
@@ -298,7 +298,7 @@ DLLEXPORT void pdkim_free_ctx(pdkim_ctx *ctx) {
     pdkim_strfree(ctx->cur_header);
     free(ctx);
   }
-};
+}
 
 
 /* -------------------------------------------------------------------------- */
@@ -401,7 +401,7 @@ char *pdkim_relax_header (char *header, int crlf) {
   *q = '\0';
   if (crlf) strcat(relaxed,"\r\n");
   return relaxed;
-};
+}
 
 
 /* -------------------------------------------------------------------------- */
@@ -416,12 +416,12 @@ char *pdkim_decode_qp_char(char *qp_p, int *c) {
   if (isxdigit(*qp_p) && isxdigit(qp_p[1])) {
     /* Do hex conversion */
     if (isdigit(*qp_p)) {*c = *qp_p - '0';}
-    else {*c = toupper(*qp_p) - 'A' + 10;};
+    else {*c = toupper(*qp_p) - 'A' + 10;}
     *c <<= 4;
     if (isdigit(qp_p[1])) {*c |= qp_p[1] - '0';}
-    else {*c |= toupper(qp_p[1]) - 'A' + 10;};
+    else {*c |= toupper(qp_p[1]) - 'A' + 10;}
     return qp_p + 2;
-  };
+  }
 
   /* Illegal char here */
   *c = PDKIM_QP_ERROR_DECODE;
@@ -908,7 +908,7 @@ int pdkim_update_bodyhash(pdkim_ctx *ctx, char *data, int len) {
 
   if (relaxed_data != NULL) free(relaxed_data);
   return PDKIM_OK;
-};
+}
 
 
 /* -------------------------------------------------------------------------- */
@@ -976,7 +976,7 @@ int pdkim_finish_bodyhash(pdkim_ctx *ctx) {
   }
 
   return PDKIM_OK;
-};
+}
 
 
 
@@ -1088,7 +1088,7 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
         ctx->sig = new_sig;
       }
       else {
-        while (last_sig->next != NULL) { last_sig = last_sig->next; };
+        while (last_sig->next != NULL) { last_sig = last_sig->next; }
         last_sig->next = new_sig;
       }
     }
@@ -1106,7 +1106,7 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
   BAIL:
   pdkim_strclear(ctx->cur_header); /* Re-use existing pdkim_str */
   return PDKIM_OK;
-};
+}
 
 
 
@@ -1164,7 +1164,7 @@ DLLEXPORT int pdkim_feed (pdkim_ctx *ctx,
     }
   }
   return PDKIM_OK;
-};
+}
 
 
 /* -------------------------------------------------------------------------- */
@@ -1516,7 +1516,7 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
         sig->verify_status =      PDKIM_VERIFY_INVALID;
         sig->verify_ext_status =  PDKIM_VERIFY_INVALID_BUFFER_SIZE;
         goto NEXT_VERIFY;
-      };
+      }
 
       if ((ctx->dns_txt_callback(dns_txt_name, dns_txt_reply) != PDKIM_OK) ||
           (dns_txt_reply[0] == '\0')) {
@@ -1689,14 +1689,14 @@ DLLEXPORT pdkim_ctx *pdkim_init_sign(int input_mode,
   sha2_starts(ctx->sig->sha2_body,0);
 
   return ctx;
-};
+}
 
 #ifdef PDKIM_DEBUG
 /* -------------------------------------------------------------------------- */
 DLLEXPORT void pdkim_set_debug_stream(pdkim_ctx *ctx,
                             FILE *debug_stream) {
   ctx->debug_stream = debug_stream;
-};
+}
 #endif
 
 /* -------------------------------------------------------------------------- */
@@ -1728,4 +1728,4 @@ DLLEXPORT int pdkim_set_optional(pdkim_ctx *ctx,
   ctx->sig->expires = expires;
 
   return PDKIM_OK;
-};
+}
