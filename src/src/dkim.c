@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.7 2009/10/15 15:44:51 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.8 2009/11/09 14:31:24 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -525,6 +525,6 @@ uschar *dkim_exim_sign(int dkim_fd,
   store_pool = old_pool;
   errno = save_errno;
   return rc;
-};
+}
 
 #endif
