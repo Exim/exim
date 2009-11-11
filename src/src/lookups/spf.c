@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/spf.c,v 1.2 2005/06/27 18:01:02 tom Exp $ */
+/* $Cambridge: exim/src/src/lookups/spf.c,v 1.3 2009/11/11 14:43:28 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -59,11 +59,11 @@ int spf_find(void *handle, uschar *filename, uschar *keystring, int key_len,
     return FAIL;
   }
 
-  if (SPF_request_set_ipv4_str(spf_request, filename)) {
+  if (SPF_request_set_ipv4_str(spf_request, CS filename)) {
     *errmsg = string_sprintf("invalid IP address '%s'", filename);
     return FAIL;
   }
-  if (SPF_request_set_env_from(spf_request, keystring)) {
+  if (SPF_request_set_env_from(spf_request, CS keystring)) {
     *errmsg = string_sprintf("invalid envelope from address '%s'", keystring);
     return FAIL;
   }
