@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.50 2009/10/16 12:33:09 nm4 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.51 2009/11/11 10:08:02 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1067,7 +1067,7 @@ unsigned long mbox_size;
 header_line *my_headerlist;
 uschar *user_msg, *log_msg;
 int mime_part_count_buffer = -1;
-int rc;
+int rc = OK;
 
 memset(CS rfc822_file_path,0,2048);
 
@@ -1285,7 +1285,8 @@ not. */
 BOOL
 receive_msg(BOOL extract_recip)
 {
-int  i, rc;
+int  i;
+int  rc = FAIL;
 int  msg_size = 0;
 int  process_info_len = Ustrlen(process_info);
 int  error_rc = (error_handling == ERRORS_SENDER)?

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/mime.c,v 1.18 2009/11/09 14:31:24 tom Exp $ */
+/* $Cambridge: exim/src/src/mime.c,v 1.19 2009/11/11 10:08:02 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -106,7 +106,7 @@ static int mime_decode_base64(FILE* in, FILE* out, uschar* boundary)
 
   opos = obuf;
 
-  while (fgets((char *)ibuf, MIME_MAX_LINE_LENGTH, in) != NULL)
+  while (Ufgets(ibuf, MIME_MAX_LINE_LENGTH, in) != NULL)
   {
     if (boundary != NULL
       && Ustrncmp(ibuf, "--", 2) == 0
@@ -153,7 +153,7 @@ static int mime_decode_base64(FILE* in, FILE* out, uschar* boundary)
         return -1; /* error */
       size += len;
       /* copy incomplete last byte to start of obuf, where we continue */
-      if (bytestate & 3 != 0)
+      if ((bytestate & 3) != 0)
         *obuf = *opos;
       opos = obuf;
     }

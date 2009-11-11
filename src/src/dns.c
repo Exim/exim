@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dns.c,v 1.19 2009/10/19 14:20:58 tom Exp $ */
+/* $Cambridge: exim/src/src/dns.c,v 1.20 2009/11/11 10:08:01 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -462,8 +462,8 @@ Returns:    DNS_SUCCEED   successful lookup
 int
 dns_basic_lookup(dns_answer *dnsa, uschar *name, int type)
 {
-int rc = -1;
 #ifndef STAND_ALONE
+int rc = -1;
 uschar *save;
 #endif
 

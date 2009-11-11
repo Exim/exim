@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dcc.c,v 1.3 2009/10/13 15:08:03 tom Exp $ */
+/* $Cambridge: exim/src/src/dcc.c,v 1.4 2009/11/11 10:08:01 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -50,16 +50,8 @@ int flushbuffer (int socket, uschar *buffer)
 int dcc_process(uschar **listptr) {
   int sep = 0;
   uschar *list = *listptr;
-  uschar *user_name;
-  uschar *body_begin;
-  uschar user_name_buffer[128];
-  unsigned long mbox_size;
   FILE *data_file;
-  int dcc_sock;
-  uschar dcc_buffer[32600];
   uschar *dcc_daemon_ip = US"";
-  int dcc_daemon_port = 6276;
-  uschar *dcc_request = US"header";
   uschar *dcc_default_ip_option = US"127.0.0.1";
   uschar *dcc_ip_option = US"";
   uschar *dcc_helo_option = US"localhost";
@@ -67,7 +59,8 @@ int dcc_process(uschar **listptr) {
   uschar *xtra_hdrs = NULL;
 
   /* from local_scan */
-  int i, j, k, c, retval, sockfd, servlen, resp, portnr, line;
+  int i, j, k, c, retval, sockfd, servlen, resp, line;
+  unsigned int portnr;
   struct sockaddr_un  serv_addr;
   struct sockaddr_in  serv_addr_in;
   struct hostent *ipaddress;
@@ -82,22 +75,9 @@ int dcc_process(uschar **listptr) {
   uschar mbox_path[1024];
   uschar message_subdir[2];
   struct header_line *dcchdr;
-  struct recipient_item *dcc_rcpt = recipients_list;
   uschar *dcc_acl_options;
   uschar dcc_acl_options_buffer[10];
   uschar dcc_xtra_hdrs[1024];
-
-  int offset, result;
-  uschar *p,*q;
-  int override = 0;
-  time_t start;
-  struct sockaddr_un server;
-#ifndef NO_POLL_H
-  struct pollfd pollfd;
-#endif
-
-  /* stop compiler warning */
-  result = result;
 
   /* grep 1st option */
   if ((dcc_acl_options = string_nextinlist(&list, &sep,
@@ -153,7 +133,7 @@ int dcc_process(uschar **listptr) {
     if (dccifd_address[0] == '/')
       Ustrncpy(sockpath, dccifd_address, sizeof(sockpath));
     else
-      if( sscanf(CS dccifd_address, "%s %u", sockip, portnr) != 2) {
+      if( sscanf(CS dccifd_address, "%s %u", sockip, &portnr) != 2) {
         log_write(0, LOG_MAIN,
           "dcc acl condition: warning - invalid dccifd address: '%s'", dccifd_address);
         (void)fclose(data_file);
@@ -329,7 +309,7 @@ int dcc_process(uschar **listptr) {
   Ustrncat(sendbuf, "\n", sizeof(sendbuf)-Ustrlen(sendbuf)-1);
   flushbuffer(sockfd, sendbuf);
   DEBUG(D_acl)
-    debug_printf("\n****************************\n", sendbuf);
+    debug_printf("\n****************************\n%s", sendbuf);
 
   /* Clear the input buffer */
   bzero(sendbuf, sizeof(sendbuf));
@@ -380,7 +360,7 @@ int dcc_process(uschar **listptr) {
 
   /* Let's read from the socket until there's nothing left to read */
   bzero(recvbuf, sizeof(recvbuf));
-  while(resp = read(sockfd, recvbuf, sizeof(recvbuf)-1) > 0) {
+  while((resp = read(sockfd, recvbuf, sizeof(recvbuf)-1)) > 0) {
     /* How much did we get from the socket */
     c = Ustrlen(recvbuf) + 1;
     DEBUG(D_acl)
@@ -405,13 +385,13 @@ int dcc_process(uschar **listptr) {
               DEBUG(D_acl)
                 debug_printf("Overall result = A\treturning OK\n");
               Ustrcpy(dcc_return_text, "Mail accepted by DCC");
-              dcc_result = "A";
+              dcc_result = US"A";
               retval = OK;
             }
             else if(recvbuf[i] == 'R') {
               DEBUG(D_acl)
                 debug_printf("Overall result = R\treturning FAIL\n");
-              dcc_result = "R";
+              dcc_result = US"R";
               retval = FAIL;
               if(sender_host_name) {
                 log_write(0, LOG_MAIN, "H=%s [%s] F=<%s>: rejected by DCC", sender_host_name, sender_host_address, sender_address);
@@ -427,14 +407,14 @@ int dcc_process(uschar **listptr) {
               Ustrcpy(dcc_return_text, "Not all recipients accepted by DCC");
               /* Since we're in an ACL we want a global result
                * so we accept for all */
-              dcc_result = "A";
+              dcc_result = US"A";
               retval = OK;
             }
             else if(recvbuf[i] == 'G') {
               DEBUG(D_acl)
                 debug_printf("Overall result  = G\treturning FAIL\n");
               Ustrcpy(dcc_return_text, "Greylisted by DCC");
-              dcc_result = "G";
+              dcc_result = US"G";
               retval = FAIL;
             }
             else if(recvbuf[i] == 'T') {
@@ -443,7 +423,7 @@ int dcc_process(uschar **listptr) {
               retval = DEFER;
               log_write(0,LOG_MAIN,"Temporary error with DCC: %s\n", recvbuf);
               Ustrcpy(dcc_return_text, "Temporary error with DCC");
-              dcc_result = "T";
+              dcc_result = US"T";
             }
             else {
               DEBUG(D_acl)
@@ -451,7 +431,7 @@ int dcc_process(uschar **listptr) {
               retval = DEFER;
               log_write(0,LOG_MAIN,"Unknown DCC response: %s\n", recvbuf);
               Ustrcpy(dcc_return_text, "Unknown DCC response");
-              dcc_result = "T";
+              dcc_result = US"T";
             }
           }
           else {
@@ -517,7 +497,7 @@ int dcc_process(uschar **listptr) {
 
   /* check if we should add additional headers passed in acl_m_dcc_add_header */
   if(dcc_direct_add_header) {
-    if (((xtra_hdrs = expand_string("$acl_m_dcc_add_header")) != NULL) && (xtra_hdrs[0] != '\0')) {
+    if (((xtra_hdrs = expand_string(US"$acl_m_dcc_add_header")) != NULL) && (xtra_hdrs[0] != '\0')) {
       Ustrncpy(dcc_xtra_hdrs, xtra_hdrs, sizeof(dcc_xtra_hdrs) - 2);
       if (dcc_xtra_hdrs[Ustrlen(dcc_xtra_hdrs)-1] != '\n')
         Ustrcat(dcc_xtra_hdrs, "\n");

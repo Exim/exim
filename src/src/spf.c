@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spf.c,v 1.8 2008/02/12 12:52:51 nm4 Exp $ */
+/* $Cambridge: exim/src/src/spf.c,v 1.9 2009/11/11 10:08:02 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -43,7 +43,7 @@ int spf_init(uschar *spf_helo_domain, uschar *spf_remote_addr) {
     return 0;
   }
 
-  if (SPF_server_set_rec_dom(spf_server, primary_hostname)) {
+  if (SPF_server_set_rec_dom(spf_server, CS primary_hostname)) {
     debug_printf("spf: SPF_server_set_rec_dom() failed.\n");
     spf_server = NULL;
     return 0;
@@ -51,14 +51,14 @@ int spf_init(uschar *spf_helo_domain, uschar *spf_remote_addr) {
 
   spf_request = SPF_request_new(spf_server);
 
-  if (SPF_request_set_ipv4_str(spf_request, spf_remote_addr)) {
+  if (SPF_request_set_ipv4_str(spf_request, CS spf_remote_addr)) {
     debug_printf("spf: SPF_request_set_ipv4_str() failed.\n");
     spf_server = NULL;
     spf_request = NULL;
     return 0;
   }
 
-  if (SPF_request_set_helo_dom(spf_request, spf_helo_domain)) {
+  if (SPF_request_set_helo_dom(spf_request, CS spf_helo_domain)) {
     debug_printf("spf: SPF_set_helo_dom() failed.\n");
     spf_server = NULL;
     spf_request = NULL;
@@ -86,7 +86,7 @@ int spf_process(uschar **listptr, uschar *spf_envelope_sender, int action) {
     goto SPF_EVALUATE;
   };
 
-  if (SPF_request_set_env_from(spf_request, spf_envelope_sender)) {
+  if (SPF_request_set_env_from(spf_request, CS spf_envelope_sender)) {
     /* Invalid sender address. This should be a real rare occurence */
     rc = SPF_RESULT_PERMERROR;
     goto SPF_EVALUATE;
@@ -94,7 +94,7 @@ int spf_process(uschar **listptr, uschar *spf_envelope_sender, int action) {
 
   /* get SPF result */
   if (action == SPF_PROCESS_FALLBACK)
-    SPF_request_query_fallback(spf_request, &spf_response, spf_guess);
+    SPF_request_query_fallback(spf_request, &spf_response, CS spf_guess);
   else
     SPF_request_query_mailfrom(spf_request, &spf_response);
 
