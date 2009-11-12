@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.590 2009/11/12 08:34:23 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.591 2009/11/12 13:02:16 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -152,6 +152,8 @@ NM/35 Bugzilla 39: Base64 decode bug fixes
       Patch by Jakob Hirsch
 
 NM/36 Bugzilla 909: Correct connect() call in dcc code
+
+NM/36 Bugzilla 910: Correct issue with relaxed/simple handling
 
 
 Exim version 4.69

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.8 2009/11/09 14:31:24 tom Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.9 2009/11/12 13:02:17 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -430,7 +430,7 @@ uschar *dkim_exim_sign(int dkim_fd,
   if (Ustrcmp(dkim_canon, "relaxed") == 0)
     pdkim_canon = PDKIM_CANON_RELAXED;
   else if (Ustrcmp(dkim_canon, "simple") == 0)
-    pdkim_canon = PDKIM_CANON_RELAXED;
+    pdkim_canon = PDKIM_CANON_SIMPLE;
   else {
     log_write(0, LOG_MAIN, "DKIM: unknown canonicalization method '%s', defaulting to 'relaxed'.\n",dkim_canon);
     pdkim_canon = PDKIM_CANON_RELAXED;
