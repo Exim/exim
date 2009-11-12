@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.589 2009/11/09 10:22:10 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.590 2009/11/12 08:34:23 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -150,6 +150,8 @@ NM/34 Bugzilla 901: Fix sign/unsigned and UTF mistmatches
 
 NM/35 Bugzilla 39: Base64 decode bug fixes
       Patch by Jakob Hirsch
+
+NM/36 Bugzilla 909: Correct connect() call in dcc code
 
 
 Exim version 4.69

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dcc.c,v 1.4 2009/11/11 10:08:01 nm4 Exp $ */
+/* $Cambridge: exim/src/src/dcc.c,v 1.5 2009/11/12 08:34:23 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -59,7 +59,7 @@ int dcc_process(uschar **listptr) {
   uschar *xtra_hdrs = NULL;
 
   /* from local_scan */
-  int i, j, k, c, retval, sockfd, servlen, resp, line;
+  int i, j, k, c, retval, sockfd, resp, line;
   unsigned int portnr;
   struct sockaddr_un  serv_addr;
   struct sockaddr_in  serv_addr_in;
@@ -219,7 +219,6 @@ int dcc_process(uschar **listptr) {
     bzero((char *)&serv_addr,sizeof(serv_addr));
     serv_addr.sun_family = AF_UNIX;
     Ustrcpy(serv_addr.sun_path, sockpath);
-    servlen = Ustrlen(serv_addr.sun_path) + sizeof(serv_addr.sun_family);
     if ((sockfd = socket(AF_UNIX, SOCK_STREAM,0)) < 0){
       DEBUG(D_acl)
         debug_printf("Creating socket failed: %s\n", strerror(errno));
@@ -229,7 +228,7 @@ int dcc_process(uschar **listptr) {
       return retval;
     }
     /* Now connecting the socket (UNIX) */
-    if (connect(sockfd, (struct sockaddr *) &serv_addr, servlen) < 0){
+    if (connect(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0){
       DEBUG(D_acl)
                             debug_printf("Connecting socket failed: %s\n", strerror(errno));
       log_write(0,LOG_REJECT,"Connecting socket failed: %s\n", strerror(errno));
