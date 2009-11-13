@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.592 2009/11/13 12:18:35 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.593 2009/11/13 15:58:16 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -156,6 +156,8 @@ NM/36 Bugzilla 909: Correct connect() call in dcc code
 NM/37 Bugzilla 910: Correct issue with relaxed/simple handling
 
 NM/38 Bugzilla 908: Removed NetBSD3 support as no longer needed
+
+NM/39 Bugzilla 911: Fixed MakeLinks build script
 
 
 Exim version 4.69
