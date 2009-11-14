@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.159 2008/10/16 07:57:01 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.160 2009/11/14 20:35:55 nm4 Exp $
 
 New Features in Exim
 --------------------
@@ -8,11 +8,15 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+Version 4.71
+------------
+
 Version 4.70
 ------------
 
- 1. Preliminary SPF Best Guess support.  Documentation for this is in
-    experimental-spec.txt.
+ 1. Native DKIM support without an external library.
+
+ 2. Experimental DCC support via dccifd (contributed by Wolfgang Breyha).
 
 
 Version 4.68
