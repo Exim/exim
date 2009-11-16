@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/lookups/lsearch.c,v 1.10 2009/10/15 07:23:56 tom Exp $ */
+/* $Cambridge: exim/src/src/lookups/lsearch.c,v 1.11 2009/11/16 19:50:38 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2007 */
+/* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #include "../exim.h"

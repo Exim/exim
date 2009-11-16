@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.9 2009/11/12 13:02:17 nm4 Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.10 2009/11/16 19:50:36 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 2009 */
+/* Copyright (c) University of Cambridge, 1995 - 2007 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Code for DKIM support. Other DKIM relevant code is in

@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/lookups/dsearch.c,v 1.5 2007/05/31 12:42:07 magnus Exp $ */
+/* $Cambridge: exim/src/src/lookups/dsearch.c,v 1.6 2009/11/16 19:50:38 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2007 */
+/* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* The idea for this code came from Matthew Byng-Maddick, but his original has

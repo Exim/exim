@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/route.c,v 1.13 2008/02/06 18:57:46 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/route.c,v 1.14 2009/11/16 19:50:37 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2007 */
+/* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions concerned with routing, and the list of generic router options. */

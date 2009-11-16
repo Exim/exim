@@ -1,10 +1,10 @@
-# $Cambridge: exim/src/Makefile,v 1.6 2009/06/10 07:34:04 tom Exp $
+# $Cambridge: exim/src/Makefile,v 1.7 2009/11/16 19:50:36 nm4 Exp $
 
 # Top-level makefile for Exim; handles creating a build directory with
 # appropriate links, and then creating and running the main makefile in that
 # directory.
 
-# Copyright (c) 2004 University of Cambridge.
+# Copyright (c) University of Cambridge, 1995 - 2007
 # See the file NOTICE for conditions of use and distribution.
 
 # IRIX make uses the shell that is in the SHELL variable, which often defaults

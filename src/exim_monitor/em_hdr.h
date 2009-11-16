@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/exim_monitor/em_hdr.h,v 1.7 2008/01/16 13:44:45 nm4 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_hdr.h,v 1.8 2009/11/16 19:50:36 nm4 Exp $ */
 
 /*************************************************
 *                 Exim Monitor                   *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2007 */
+/* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

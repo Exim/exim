@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.53 2009/01/21 19:14:53 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.54 2009/11/16 19:50:37 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2007 */
+/* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions concerned with verifying things. The original code for callout

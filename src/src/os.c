@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/os.c,v 1.7 2009/10/20 12:39:47 nm4 Exp $ */
+/* $Cambridge: exim/src/src/os.c,v 1.8 2009/11/16 19:50:37 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2007 */
+/* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 #ifdef STAND_ALONE

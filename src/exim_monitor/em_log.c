@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/exim_monitor/em_log.c,v 1.5 2007/01/31 16:52:12 ph10 Exp $ */
+/* $Cambridge: exim/src/exim_monitor/em_log.c,v 1.6 2009/11/16 19:50:36 nm4 Exp $ */
 
 /*************************************************
 *                 Exim Monitor                   *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2007 */
+/* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This module contains code for scanning the main log,

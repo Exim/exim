@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/parse.c,v 1.14 2009/11/05 19:40:51 nm4 Exp $ */
+/* $Cambridge: exim/src/src/parse.c,v 1.15 2009/11/16 19:50:37 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2007 */
+/* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for parsing addresses */

@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.85 2009/10/16 09:51:12 nm4 Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.86 2009/11/16 19:50:37 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2007 */
+/* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* All the global variables are defined together in this one module, so
@@ -1301,7 +1301,7 @@ uschar *warnmsg_delay          = NULL;
 uschar *warnmsg_recipients     = NULL;
 BOOL    write_rejectlog        = TRUE;
 
-uschar *version_copyright      = US"Copyright (c) University of Cambridge 2006";
+uschar *version_copyright      = US"Copyright (c) University of Cambridge, 1995 - 2007";
 uschar *version_date           = US"?";
 uschar *version_cnumber        = US"????";
 uschar *version_string         = US"?";

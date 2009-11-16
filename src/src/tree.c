@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/tree.c,v 1.5 2007/01/08 10:50:18 ph10 Exp $ */
+/* $Cambridge: exim/src/src/tree.c,v 1.6 2009/11/16 19:50:37 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2007 */
+/* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* Functions for maintaining binary balanced trees and some associated

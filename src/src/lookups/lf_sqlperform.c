@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/lookups/lf_sqlperform.c,v 1.1 2007/08/23 10:16:51 ph10 Exp $ */
+/* $Cambridge: exim/src/src/lookups/lf_sqlperform.c,v 1.2 2009/11/16 19:50:38 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2007 */
+/* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

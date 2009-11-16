@@ -1,10 +1,10 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.38 2009/06/10 07:34:04 tom Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.39 2009/11/16 19:50:37 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) University of Cambridge 1995 - 2007 */
+/* Copyright (c) University of Cambridge 1995 - 2009 */
 /* See the file NOTICE for conditions of use and distribution. */
 
 

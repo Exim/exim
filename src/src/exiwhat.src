@@ -1,7 +1,7 @@
 #! /bin/sh
-# $Cambridge: exim/src/src/exiwhat.src,v 1.4 2009/10/19 11:47:44 nm4 Exp $
+# $Cambridge: exim/src/src/exiwhat.src,v 1.5 2009/11/16 19:50:36 nm4 Exp $
 
-# Copyright (c) 2003 University of Cambridge.
+# Copyright (c) University of Cambridge, 1995 - 2007
 # See the file NOTICE for conditions of use and distribution.
 
 # Except when they appear in comments, the following placeholders in this
