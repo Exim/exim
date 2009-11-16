@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.51 2009/11/11 10:08:02 nm4 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.52 2009/11/16 12:47:19 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3000,6 +3000,8 @@ else
           int     seen_items_size = 0;
           int     seen_items_offset = 0;
           uschar itembuf[256];
+          /* Default to OK when no items are present */
+          rc = OK;
           while ((item = string_nextinlist(&ptr, &sep,
                                            itembuf,
                                            sizeof(itembuf))) != NULL)
