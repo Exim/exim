@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.160 2009/11/14 20:35:55 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.161 2009/11/16 19:06:35 nm4 Exp $
 
 New Features in Exim
 --------------------
@@ -8,15 +8,37 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
-Version 4.71
-------------
 
-Version 4.70
-------------
+Version 4.70 / 4.71
+-------------------
 
  1. Native DKIM support without an external library.
 
  2. Experimental DCC support via dccifd (contributed by Wolfgang Breyha).
+
+ 3. There is now a bool{} expansion condition which maps certain strings to
+    true/false condition values (most likely of use in conjuction with the
+    and{} expansion operator).
+
+ 4. The $spam_score, $spam_bar and $spam_report variables are now available
+    at delivery time.
+
+ 5. exim -bP now supports "macros", "macro_list" or "macro MACRO_NAME" as
+    options, provided that Exim is invoked by an admin_user.
+
+ 6. There is a new option gnutls_compat_mode, when linked against GnuTLS,
+    which increases compatibility with older clients at the cost of decreased
+    security.  Don't set this unless you need to support such clients.
+
+ 7. There is a new expansion operator, ${randint:...} which will produce a
+    "random" number less than the supplied integer.  This randomness is
+    not guaranteed to be cryptographically strong, but depending upon how
+    Exim was built may be better than the most naive schemes.
+
+ 8. Exim now explicitly ensures that SHA256 is available when linked against
+    OpenSSL.
+
+ 9. The transport_filter_timeout option now applies to SMTP transports too.
 
 
 Version 4.68
