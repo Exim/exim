@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.68 2009/11/16 19:10:45 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.69 2009/11/16 19:15:36 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -9587,6 +9587,17 @@ two%20%5C2A%20two
 .endd
 For single-key lookup types, no quoting is ever necessary and this operator
 yields an unchanged string.
+
+
+.vitem &*${randint:*&<&'n'&>&*}*&
+.cindex "random number"
+This operator returns a somewhat random number which is less than the
+supplied number and is at least 0.  The quality of this randomness depends
+on how Exim was built; the values are not suitable for keying material.
+If Exim is linked against OpenSSL then RAND_pseudo_bytes() is used.
+Otherwise, the implementation may be arc4random(), random() seeded by
+srandomdev() or srandom(), or a custom implementation even weaker than
+random().
 
 
 .vitem &*${rfc2047:*&<&'string'&>&*}*&

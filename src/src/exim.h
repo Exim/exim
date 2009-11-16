@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.h,v 1.25 2009/06/10 07:34:04 tom Exp $ */
+/* $Cambridge: exim/src/src/exim.h,v 1.26 2009/11/16 19:15:36 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -16,6 +16,11 @@ most of these includes. */
 /* Assume most systems have statfs() unless os.h undefines this macro */
 
 #define HAVE_STATFS
+
+/* Similarly, assume most systems have srandom() unless os.h undefines it.
+This call dates back at least as far as SUSv2. */
+
+#define HAVE_SRANDOM
 
 /* First of all include the os-specific header, which might set things that
 are needed by any of the other headers, including system headers. */

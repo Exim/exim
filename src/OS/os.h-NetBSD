@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/OS/os.h-NetBSD,v 1.5 2009/10/20 12:39:47 nm4 Exp $ */
+/* $Cambridge: exim/src/OS/os.h-NetBSD,v 1.6 2009/11/16 19:15:36 nm4 Exp $ */
 
 /* Exim: OS-specific C header file for NetBSD */
 
@@ -7,6 +7,7 @@
 #define HAVE_MMAP
 #define HAVE_SYS_MOUNT_H
 #define SIOCGIFCONF_GIVES_ADDR
+#define HAVE_ARC4RANDOM
 
 typedef struct flock flock_t;
 
