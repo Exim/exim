@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.594 2009/11/14 20:35:55 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.595 2009/11/16 19:10:45 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -7,6 +7,8 @@ Exim version 4.71
 -----------------
 
 TK/01 Bugzilla 912: Fix DKIM segfault on empty headers/body
+
+NM/01 Bugzilla 913: Documentation fix for gnutls_* options.
 
 
 Exim version 4.70

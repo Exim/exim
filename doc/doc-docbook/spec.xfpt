@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.67 2009/11/14 20:35:54 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.68 2009/11/16 19:10:45 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -21480,20 +21480,20 @@ being used, names are looked up using &[gethostbyname()]&
 instead of using the DNS. Of course, that function may in fact use the DNS, but
 it may also consult other sources of information such as &_/etc/hosts_&.
 
-.option gnutls_require_kx main string unset
+.option gnutls_require_kx smtp string unset
 This option controls the key exchange mechanisms when GnuTLS is used in an Exim
 client. For details, see section &<<SECTreqciphgnu>>&.
 
-.option gnutls_require_mac main string unset
+.option gnutls_require_mac smtp string unset
 This option controls the MAC algorithms when GnuTLS is used in an Exim
 client. For details, see section &<<SECTreqciphgnu>>&.
 
-.option gnutls_require_protocols main string unset
+.option gnutls_require_protocols smtp string unset
 This option controls the protocols when GnuTLS is used in an Exim
 client. For details, see section &<<SECTreqciphgnu>>&.
 
 .new
-.option gnutls_compat_mode main boolean unset
+.option gnutls_compat_mode smtp boolean unset
 This option controls whether GnuTLS is used in compatibility mode in an Exim
 server. This reduces security slightly, but improves interworking with older
 implementations of TLS.
