@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.31 2009/10/14 11:34:57 nm4 Exp $
+# $Cambridge: exim/test/runtest,v 1.32 2009/11/19 18:51:11 nm4 Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -723,12 +723,19 @@ while(<IN>)
 
     s/\bgethostbyname2?|\bgetipnodebyname/get[host|ipnode]byname[2]/;
 
+    # drop gnutls version strings
+    next if /GnuTLS compile-time version: \d+[\.\d]+$/;
+    next if /GnuTLS runtime version: \d+[\.\d]+$/;
+
     # We have to omit the localhost ::1 address so that all is well in
     # the IPv4-only case.
 
     print MUNGED "MUNGED: ::1 will be omitted in what follows\n"
       if (/looked up these IP addresses/);
     next if /name=localhost address=::1/;
+
+    # drop pdkim debugging header
+    next if /^PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<+$/;
 
     # Various other IPv6 lines must be omitted too
 
