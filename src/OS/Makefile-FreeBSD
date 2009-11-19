@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/OS/Makefile-FreeBSD,v 1.5 2008/07/25 20:39:55 fanf2 Exp $
+# $Cambridge: exim/src/OS/Makefile-FreeBSD,v 1.6 2009/11/19 18:58:44 nm4 Exp $
 
 # Exim: OS-specific make file for FreeBSD
 # There's no setting of CFLAGS here, to allow the system default
@@ -18,14 +18,19 @@ LIBS=-lcrypt -lm -lutil
 # FreeBSD always ships with Berkeley DB
 USE_DB=yes
 
-# This setting changed on Sheldon Hearn's recommendation
-# X11=/usr/X11R6
-X11=$(X11BASE)
+# This code for building outside ports suggested by Richard Clayton
+.ifdef   X11BASE
+X11=${X11BASE}
+.elifdef LOCALBASE
+X11=$(LOCALBASE)
+.else
+X11=/usr/local
+.endif
 
 XINCLUDE=-I$(X11)/include
 XLFLAGS=-L$(X11)/lib
 .if ${PORTOBJFORMAT} == "elf"
-XLFLAGS+=-Wl,-rpath,${X11BASE}/lib
+XLFLAGS+=-Wl,-rpath,${X11}/lib
 .endif
 X11_LD_LIB=$(X11)/lib
 
