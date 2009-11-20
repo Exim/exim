@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.22 2008/07/25 20:23:25 fanf2 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.23 2009/11/20 12:18:19 nm4 Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -260,9 +260,9 @@ TRANSPORT_SMTP=yes
 
 LOOKUP_DBM=yes
 LOOKUP_LSEARCH=yes
+LOOKUP_DNSDB=yes
 
 # LOOKUP_CDB=yes
-# LOOKUP_DNSDB=yes
 # LOOKUP_DSEARCH=yes
 # LOOKUP_IBASE=yes
 # LOOKUP_LDAP=yes
