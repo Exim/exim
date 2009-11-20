@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.597 2009/11/20 12:18:19 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.598 2009/11/20 21:22:20 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -13,6 +13,8 @@ NM/01 Bugzilla 913: Documentation fix for gnutls_* options.
 NM/02 Bugzilla 722: Documentation for randint.  Better randomness defaults.
 
 NM/03 Bugzilla 847: Enable DNSDB lookup by default.
+
+NM/04 Bugzilla 915: Flag broken perl installation during build.
 
 
 Exim version 4.70
