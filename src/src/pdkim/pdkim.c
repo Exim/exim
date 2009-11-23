@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.9 2009/11/19 18:52:48 nm4 Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.10 2009/11/23 08:34:05 tom Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -103,6 +103,27 @@ pdkim_combined_canon_entry pdkim_combined_canons[] = {
   { "relaxed",          PDKIM_CANON_RELAXED,  PDKIM_CANON_SIMPLE },
   { NULL,               0,                    0 }
 };
+
+
+char *pdkim_verify_status_str(int status) {
+  switch(status) {
+    case PDKIM_VERIFY_NONE:    return "PDKIM_VERIFY_NONE";
+    case PDKIM_VERIFY_INVALID: return "PDKIM_VERIFY_INVALID";
+    case PDKIM_VERIFY_FAIL:    return "PDKIM_VERIFY_FAIL";
+    case PDKIM_VERIFY_PASS:    return "PDKIM_VERIFY_PASS";
+    default:                   return "PDKIM_VERIFY_UNKNOWN";
+  }
+}
+char *pdkim_verify_ext_status_str(int ext_status) {
+  switch(ext_status) {
+    case PDKIM_VERIFY_FAIL_BODY: return "PDKIM_VERIFY_FAIL_BODY";
+    case PDKIM_VERIFY_FAIL_MESSAGE: return "PDKIM_VERIFY_FAIL_MESSAGE";
+    case PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE: return "PDKIM_VERIFY_INVALID_PUBKEY_UNAVAILABLE";
+    case PDKIM_VERIFY_INVALID_BUFFER_SIZE: return "PDKIM_VERIFY_INVALID_BUFFER_SIZE";
+    case PDKIM_VERIFY_INVALID_PUBKEY_PARSING: return "PDKIM_VERIFY_INVALID_PUBKEY_PARSING";
+    default: return "PDKIM_VERIFY_UNKNOWN";
+  }
+}
 
 
 /* -------------------------------------------------------------------------- */
@@ -1283,7 +1304,7 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
     #ifdef PDKIM_DEBUG
     if (ctx->debug_stream)
       fprintf(ctx->debug_stream,
-        "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+        "\nPDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
     #endif
   }
 
@@ -1573,26 +1594,30 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
                         (unsigned char *)sig->sigdata) != 0) {
         sig->verify_status =      PDKIM_VERIFY_FAIL;
         sig->verify_ext_status =  PDKIM_VERIFY_FAIL_MESSAGE;
-        #ifdef PDKIM_DEBUG
-        if (ctx->debug_stream) {
-          fprintf(ctx->debug_stream, "PDKIM [%s] signature did NOT verify OK\n",
-                  sig->domain);
-        }
-        #endif
         goto NEXT_VERIFY;
       }
 
-      /* We have a winner! */
-      sig->verify_status = PDKIM_VERIFY_PASS;
+      /* We have a winner! (if bodydhash was correct earlier) */
+      if (sig->verify_status == PDKIM_VERIFY_NONE) {
+        sig->verify_status = PDKIM_VERIFY_PASS;
+      }
+
+      NEXT_VERIFY:
 
       #ifdef PDKIM_DEBUG
       if (ctx->debug_stream) {
-        fprintf(ctx->debug_stream, "PDKIM [%s] signature verified OK\n",
-                sig->domain);
+        fprintf(ctx->debug_stream, "PDKIM [%s] signature status: %s",
+                sig->domain, pdkim_verify_status_str(sig->verify_status));
+        if (sig->verify_ext_status > 0) {
+          fprintf(ctx->debug_stream, " (%s)\n",
+                  pdkim_verify_ext_status_str(sig->verify_ext_status));
+        }
+        else {
+          fprintf(ctx->debug_stream, "\n");
+        }
       }
       #endif
 
-      NEXT_VERIFY:
       rsa_free(&rsa);
       free(dns_txt_name);
       free(dns_txt_reply);
