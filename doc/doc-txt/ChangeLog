@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.598 2009/11/20 21:22:20 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.599 2009/11/23 12:27:52 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -21,7 +21,7 @@ Exim version 4.70
 -----------------
 
 TK/01 Added patch by Johannes Berg that expands the main option
-      "spamd_servers" if it starts with a dollar sign.
+      "spamd_address" if it starts with a dollar sign.
 
 TK/02 Write list of recipients to X-Envelope-Sender header when building
       the mbox-format spool file for content scanning (suggested by Jakob
@@ -29,8 +29,7 @@ TK/02 Write list of recipients to X-Envelope-Sender header when building
 
 TK/03 Added patch by Wolfgang Breyha that adds experimental DCC
       (http://www.dcc-servers.net/) support via dccifd. Activated by
-      setting EXPERIMENTAL_DCC=yes in Local/Makefile. Check out
-      experimental_spec.txt for more documentation.
+      setting EXPERIMENTAL_DCC=yes in Local/Makefile.
 
 TK/04 Bugzilla 673: Add f-protd malware scanner support. Patch submitted
       by Mark Daniel Reidel <mr@df.eu>.
