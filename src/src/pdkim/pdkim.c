@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.10 2009/11/23 08:34:05 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.11 2009/11/23 12:34:51 nm4 Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -1304,7 +1304,7 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
     #ifdef PDKIM_DEBUG
     if (ctx->debug_stream)
       fprintf(ctx->debug_stream,
-        "\nPDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+        "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
     #endif
   }
 
