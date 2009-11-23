@@ -1,3 +1,3 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 10HmaX-0005vi-00 TLS recv error on connection from [127.0.0.1]: A TLS packet with unexpected length was received.
+1999-03-02 09:44:33 10HmaX-0005vi-00 TLS error on connection from [127.0.0.1] (recv): A TLS packet with unexpected length was received.
 1999-03-02 09:44:33 10HmaX-0005vi-00 SMTP connection lost after final dot H=[127.0.0.1] P=smtps
