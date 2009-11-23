@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.9 2009/07/02 11:44:01 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.10 2009/11/23 13:24:13 nm4 Exp $
 
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the document that describes Exim's filtering
@@ -61,15 +61,15 @@
 <bookinfo>
 <title>Exim's interfaces to mail filtering</title>
 <titleabbrev>Exim filtering</titleabbrev>
-<date>23 August 2007</date>
+<date>23 November 2009</date>
 <author><firstname>Philip</firstname><surname>Hazel</surname></author>
 <authorinitials>PH</authorinitials>
 <revhistory><revision>
-  <revnumber>4.69</revnumber>
-  <date>23 August2007</date>
+  <revnumber>4.71</revnumber>
+  <date>23 November 2009</date>
   <authorinitials>PH</authorinitials>
 </revision></revhistory>
-<copyright><year>2007</year><holder>University of Cambridge</holder></copyright>
+<copyright><year>2009</year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
 
@@ -80,7 +80,7 @@
 .chapter "Forwarding and filtering in Exim" "CHAPforandfilt"
 This document describes the user interfaces to Exim's in-built mail filtering
 facilities, and is copyright &copy; University of Cambridge 2007. It
-corresponds to Exim version 4.68.
+corresponds to Exim version 4.71.
 
 
 
