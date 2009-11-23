@@ -3,6 +3,8 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Resent-Date: Tue, 2 Mar 1999 09:44:33 +0000
+Resent-Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 To: userx@test.ex
 To: usery@test.ex
 Cc: Him@test.ex
@@ -13,9 +15,7 @@ Resent-to: a@b, aa@bb
 Resent-to: c@d
 Reply-to: r@s
 Reply-to: t@u
-Resent-Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 Resent-From: CALLER_NAME <CALLER@test.ex>
-Resent-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Found: yes
 Found2: yes
 FOUND-found2: !!
@@ -39,6 +39,8 @@ ALL: Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Resent-Date: Tue, 2 Mar 1999 09:44:33 +0000
+Resent-Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 To: userx@test.ex
 To: usery@test.ex
 Cc: Him@test.ex
@@ -49,9 +51,7 @@ Resent-to: a@b, aa@bb
 Resent-to: c@d
 Reply-to: r@s
 Reply-to: t@u
-Resent-Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 Resent-From: CALLER_NAME <CALLER@test.ex>
-Resent-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Found: yes
 Found2: yes
 

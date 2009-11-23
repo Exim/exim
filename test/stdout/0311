@@ -20,12 +20,12 @@ dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaX-0005vi-00
 	for xx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+038  Date: Tue, 2 Mar 1999 09:44:33 +0000
+047I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 ddd* return-path: x@y
 ddd* Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 ddd* envelope-to: p@q
-047I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 dddF From: CALLER_NAME <CALLER@myhost.test.ex>
-038  Date: Tue, 2 Mar 1999 09:44:33 +0000
 10HmaY-0005vi-00-H
 CALLER UID GID
 <CALLER@myhost.test.ex>
@@ -48,9 +48,9 @@ dddP Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaY-0005vi-00
 	for xx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+038  Date: Tue, 2 Mar 1999 09:44:33 +0000
+047I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 017  return-path: x@y
 ddd* Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 ddd* envelope-to: p@q
-047I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 dddF From: CALLER_NAME <CALLER@myhost.test.ex>
-038  Date: Tue, 2 Mar 1999 09:44:33 +0000

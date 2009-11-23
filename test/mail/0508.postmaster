@@ -2,13 +2,13 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for postmaster@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 X-Failed-Recipients: userx@myhost.test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: postmaster@test.ex
 Subject: Mail delivery failed
-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message was created automatically by mail delivery software.
 
@@ -35,8 +35,8 @@ Return-path: <>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaX-0005vi-00
 	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 
 This is a test message
 

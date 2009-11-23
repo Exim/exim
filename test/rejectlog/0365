@@ -4,18 +4,18 @@ Envelope-to: <x@y>
 P Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
 	id 10HmaX-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
-F From: <bad@syntax
-I Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+F From: <bad@syntax
 1999-03-02 09:44:33 10HmaY-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
 Envelope-from: <>
 Envelope-to: <x@y>
 P Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
-F From: bad@domain
-I Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+F From: bad@domain
 1999-03-02 09:44:33 U=CALLER sender verify defer for <callout@x>: could not connect to V4NET.0.0.0 [V4NET.0.0.0]: Network Error
 1999-03-02 09:44:33 U=CALLER F=<callout@x> temporarily rejected RCPT <x@y>: Could not complete sender verify callout
 1999-03-02 09:44:33 10HmaZ-0005vi-00 U=CALLER F=<nosyntax@x> rejected after DATA
@@ -25,18 +25,18 @@ P Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <nosyntax@x>)
 	id 10HmaZ-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
-F From: <bad@syntax
-I Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+F From: <bad@syntax
 1999-03-02 09:44:33 10HmbA-0005vi-00 U=CALLER F=<> rejected after DATA: there is no valid sender in any header line
 Envelope-from: <>
 Envelope-to: <x@y>
 P Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
 	id 10HmbA-0005vi-00
 	for x@y; Tue, 2 Mar 1999 09:44:33 +0000
-F From: <unverifiable@y>
-I Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
   Date: Tue, 2 Mar 1999 09:44:33 +0000
+I Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+F From: <unverifiable@y>
 1999-03-02 09:44:33 U=CALLER F=<recipcallout@y> temporarily rejected RCPT <callout@y>: could not connect to V4NET.0.0.0 [V4NET.0.0.0]: Network Error
 1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <cantverify.fail@y>: failure message
 1999-03-02 09:44:33 U=CALLER F=<> temporarily rejected RCPT <cantverify.defer@y>: defer message

@@ -3,10 +3,10 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Transport: local_delivery
-Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
-From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+Transport: local_delivery
+From: CALLER_NAME <CALLER@test.ex>
 
 First message.
 
@@ -15,10 +15,10 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaY-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Transport: local_delivery
-Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
-From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+Transport: local_delivery
+From: CALLER_NAME <CALLER@test.ex>
 
 Second message
 
@@ -27,10 +27,10 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaZ-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Transport: local_delivery_fcntl
-Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
-From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+Transport: local_delivery_fcntl
+From: CALLER_NAME <CALLER@test.ex>
 
 Third message
 
@@ -39,10 +39,10 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbA-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Transport: local_delivery_fcntl_blocking
-Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
-From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+Transport: local_delivery_fcntl_blocking
+From: CALLER_NAME <CALLER@test.ex>
 
 Fourth message
 

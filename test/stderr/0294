@@ -29,9 +29,9 @@ SMTP>> 354 Enter message, ending with "." on a line by itself
 >>Headers received:
 
 >>Headers after rewriting and local additions:
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 F From: x@y
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
@@ -57,9 +57,9 @@ SMTP>> 354 Enter message, ending with "." on a line by itself
 >>Headers received:
 
 >>Headers after rewriting and local additions:
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 F From: x@y
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file written for message 10HmaY-0005vi-00
 >>Generated Received: header line

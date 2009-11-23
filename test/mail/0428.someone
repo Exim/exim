@@ -5,6 +5,8 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	id 10HmbM-0005vi-00
 	for someone@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbM-0005vi-00@mail.test.ex>
 From: userx@test.ex
 To: someone@test.ex
 Subject: Automated reply
@@ -15,8 +17,6 @@ MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <E10HmbM-0005vi-00@mail.test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 I am gone.  Not here.
 

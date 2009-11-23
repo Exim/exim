@@ -33,10 +33,10 @@ Received: from CALLER by the.local.host.name with local-smtp (Exim x.yz)
 	(envelope-from <postmaster@exim.test.ex>)
 	id 10HmaZ-0005vi-00
 	for userx@exim.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-sysmail: yes
-Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
-From: postmaster@exim.test.ex
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
+sysmail: yes
+From: postmaster@exim.test.ex
 
 Testing mail from system filter
 
@@ -47,13 +47,13 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	id 10HmbA-0005vi-00
 	for userx@exim.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 To: userx@exim.test.ex
 In-Reply-To: <E10HmaZ-0005vi-00@the.local.host.name>
 References: <E10HmaZ-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
-Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 From: CALLER@exim.test.ex
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 testing testing
 

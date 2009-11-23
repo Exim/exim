@@ -5,13 +5,13 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 X-Failed-Recipients: bounce@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
 Subject: Mail delivery failed: returning message to sender
-Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message was created automatically by mail delivery software.
 
@@ -30,10 +30,10 @@ Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-Subject: first message
-Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
-From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
+Subject: first message
+From: CALLER_NAME <CALLER@test.ex>
 
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
@@ -43,20 +43,20 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbA-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
 Subject: Warning: message 10HmaZ-0005vi-00 delayed 0 minutes
-Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message was created automatically by mail delivery software.
 A message that you sent has not yet been delivered to one or more of its
 recipients after more than 0 minutes on the queue on the.local.host.name.
 
 The message identifier is:     10HmaZ-0005vi-00
-The subject of the message is: second message
 The date of the message is:    Tue, 2 Mar 1999 09:44:33 +0000
+The subject of the message is: second message
 
 The addresses to which the message has not yet been delivered are:
 

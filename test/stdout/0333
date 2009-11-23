@@ -17,9 +17,9 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
 	for ok@no.delay; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Message 1
 .
@@ -33,9 +33,9 @@ DATA
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Message 2
 .

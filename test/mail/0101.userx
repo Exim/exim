@@ -3,9 +3,9 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test message
 >From the deep abyss
@@ -20,9 +20,9 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaY-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -159,9 +159,9 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaZ-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -298,9 +298,9 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbC-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -437,9 +437,9 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbD-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Last line ending without a newline and with a partial match: 
 From
@@ -453,9 +453,9 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbE-0005vi-00
 	for filter-userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbE-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test message
 From the deep abyss
@@ -474,9 +474,9 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbF-0005vi-00
 	for filter-userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbF-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Last line ending without a newline and with a partial match: 
 From
@@ -486,9 +486,9 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbG-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbG-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Last line ending without a newline and being a single dot:
 .
@@ -498,9 +498,9 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbH-0005vi-00
 	for mmdf-userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbH-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Line consisting of four ^A characters
  
@@ -511,10 +511,10 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbI-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Subject: From
-Message-Id: <E10HmbI-0005vi-00@the.local.host.name>
-From: CALLER_NAME <CALLER@test.ex>
 Date: Tue, 2 Mar 1999 09:44:33 +0000
+Message-Id: <E10HmbI-0005vi-00@the.local.host.name>
+Subject: From
+From: CALLER_NAME <CALLER@test.ex>
 
 >From is the very first word of the message.
 >From starts the second line.

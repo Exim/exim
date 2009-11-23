@@ -5,9 +5,9 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test1>)
 	id 10HmaX-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 F From: userx@test1
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 1999-03-02 09:44:33 10HmaY-0005vi-00 F=<ok@test2> rejected by non-SMTP ACL: cannot test hosts condition in non-SMTP ACL
 Envelope-from: <ok@test2>
 Envelope-to: <userx@test.ex>
@@ -15,9 +15,9 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <ok@test2>)
 	id 10HmaY-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 F From: ok@test2
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 1999-03-02 09:44:33 10HmaZ-0005vi-00 F=<ok@test4> rejected by non-SMTP ACL: no verified certificate
 Envelope-from: <ok@test4>
 Envelope-to: <userx@test.ex>
@@ -25,9 +25,9 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <ok@test4>)
 	id 10HmaZ-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 F From: ok@test4
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 1999-03-02 09:44:33 H=[10.9.8.7] U=CALLER rejected connection in "connect" ACL
 1999-03-02 09:44:33 H=[10.9.8.8] U=CALLER rejected MAIL <bad@test1>
 1999-03-02 09:44:33 mail accepted "mail from:<ok@test1>" "<ok@test1>"
@@ -42,9 +42,9 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test1>)
 	id 10HmbA-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 F From: userx@test1
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 1999-03-02 09:44:33 10HmbB-0005vi-00 F=<userx@test1> rejected by non-SMTP ACL: don't like sender userx@test1
 Envelope-from: <userx@test1>
 Envelope-to: <userx@test.ex>
@@ -52,8 +52,8 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <userx@test1>)
 	id 10HmbB-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 F From: userx@test1
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 1999-03-02 09:44:33 H=(test.ex) [10.9.8.8] U=CALLER rejected EHLO or HELO test.ex
 1999-03-02 09:44:33 mail accepted "mail from: <ok@test3> SIZE=ssss" "<ok@test3> SIZE=1234"
