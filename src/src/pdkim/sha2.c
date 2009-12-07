@@ -1,9 +1,10 @@
 /*
  *  FIPS-180-2 compliant SHA-256 implementation
  *
- *  Based on XySSL: Copyright (C) 2006-2008  Christophe Devine
+ *  Copyright (C) 2006-2009, Paul Bakker <polarssl_maintainer at polarssl.org>
+ *  All rights reserved.
  *
- *  Copyright (C) 2009  Paul Bakker <polarssl_maintainer at polarssl dot org>
+ *  Joined copyright on original XySSL code with: Christophe Devine
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,7 +26,7 @@
  *  http://csrc.nist.gov/publications/fips/fips180-2/fips180-2.pdf
  */
 
-/* $Cambridge: exim/src/src/pdkim/sha2.c,v 1.2 2009/06/10 07:34:05 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/sha2.c,v 1.3 2009/12/07 13:05:07 tom Exp $ */
 
 #include "sha2.h"
 

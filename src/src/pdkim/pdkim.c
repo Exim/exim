@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.11 2009/11/23 12:34:51 nm4 Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.12 2009/12/07 13:05:07 tom Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -822,7 +822,7 @@ pdkim_pubkey *pdkim_parse_pubkey_record(pdkim_ctx *ctx, char *raw_record) {
               pub->srvtype = strdup(cur_val->str);
             break;
             case 't':
-              if (strchr(cur_val->str,'t') != NULL) pub->testing = 1;
+              if (strchr(cur_val->str,'y') != NULL) pub->testing = 1;
               if (strchr(cur_val->str,'s') != NULL) pub->no_subdomaining = 1;
             break;
             default:
@@ -1304,7 +1304,7 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
     #ifdef PDKIM_DEBUG
     if (ctx->debug_stream)
       fprintf(ctx->debug_stream,
-        "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+        "\nPDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
     #endif
   }
 
@@ -1494,7 +1494,7 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
 
       if (rsa_pkcs1_sign( &rsa, RSA_PRIVATE,
                           ((sig->algo == PDKIM_ALGO_RSA_SHA1)?
-                             RSA_SHA1:RSA_SHA256),
+                             SIG_RSA_SHA1:SIG_RSA_SHA256),
                           0,
                           (unsigned char *)headerhash,
                           (unsigned char *)sig->sigdata ) != 0) {
@@ -1588,7 +1588,7 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
       if (rsa_pkcs1_verify(&rsa,
                         RSA_PUBLIC,
                         ((sig->algo == PDKIM_ALGO_RSA_SHA1)?
-                             RSA_SHA1:RSA_SHA256),
+                             SIG_RSA_SHA1:SIG_RSA_SHA256),
                         0,
                         (unsigned char *)headerhash,
                         (unsigned char *)sig->sigdata) != 0) {

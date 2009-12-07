@@ -1,9 +1,10 @@
 /**
  * \file sha2.h
  *
- *  Based on XySSL: Copyright (C) 2006-2008  Christophe Devine
+ *  Copyright (C) 2006-2009, Paul Bakker <polarssl_maintainer at polarssl.org>
+ *  All rights reserved.
  *
- *  Copyright (C) 2009  Paul Bakker <polarssl_maintainer at polarssl dot org>
+ *  Joined copyright on original XySSL code with: Christophe Devine
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,7 +21,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/sha2.h,v 1.2 2009/06/10 07:34:05 tom Exp $ */
+/* $Cambridge: exim/src/src/pdkim/sha2.h,v 1.3 2009/12/07 13:05:07 tom Exp $ */
 
 #ifndef POLARSSL_SHA2_H
 #define POLARSSL_SHA2_H
