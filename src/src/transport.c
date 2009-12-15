@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.25 2009/11/16 19:50:37 nm4 Exp $ */
+/* $Cambridge: exim/src/src/transport.c,v 1.26 2009/12/15 08:23:15 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1034,7 +1034,9 @@ dkim_transport_write_message(address_item *addr, int fd, int options,
         if (dkim_strict_result != NULL) {
           if ( (strcmpic(dkim_strict,US"1") == 0) ||
                (strcmpic(dkim_strict,US"true") == 0) ) {
-            save_errno = errno;
+            /* Set errno to something halfway meaningful */
+            save_errno = EACCES;
+            log_write(0, LOG_MAIN, "DKIM: message could not be signed, and dkim_strict is set. Deferring message delivery.");
             rc = FALSE;
             goto CLEANUP;
           }

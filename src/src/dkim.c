@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.10 2009/11/16 19:50:36 nm4 Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.11 2009/12/15 08:23:15 tom Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -391,6 +391,7 @@ uschar *dkim_exim_sign(int dkim_fd,
   uschar *rc = NULL;
   pdkim_signature *signature;
   int pdkim_canon;
+  int pdkim_rc;
   int sread;
   char buf[4096];
   int save_errno = 0;
@@ -511,8 +512,11 @@ uschar *dkim_exim_sign(int dkim_fd,
     goto CLEANUP;
   }
 
-  if (pdkim_feed_finish(ctx,&signature) != PDKIM_OK)
+  pdkim_rc = pdkim_feed_finish(ctx,&signature);
+  if (pdkim_rc != PDKIM_OK) {
+    log_write(0, LOG_MAIN|LOG_PANIC, "DKIM: signing failed (RC %d)", pdkim_rc);
     goto CLEANUP;
+  }
 
   rc = store_get(strlen(signature->signature_header)+3);
   Ustrcpy(rc,US signature->signature_header);
