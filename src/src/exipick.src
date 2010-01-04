@@ -1,5 +1,5 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.14 2006/11/17 22:27:41 jetmore Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.15 2010/01/04 18:16:54 jetmore Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
@@ -14,10 +14,10 @@ use strict;
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
-my $p_version = "20061117.2";
+my $p_version = "20100104.1";
 my $p_usage   = "Usage: $p_name [--help|--version] (see --help for details)";
 my $p_cp      = <<EOM;
-        Copyright (c) 2003-2006 John Jetmore <jj33\@pobox.com>
+        Copyright (c) 2003-2010 John Jetmore <jj33\@pobox.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -827,6 +827,8 @@ sub _parse_body {
 sub _parse_header {
   my $self = shift;
   my $f    = $self->{_path} . '/' . $self->{_message} . '-H';
+  $self->{_vars}{header_path} = $f;
+  $self->{_vars}{data_path}   = $self->{_path} . '/' . $self->{_message} . '-D';
 
   if (!open(I, "<$f")) {
     # assume message went away and silently ignore
@@ -914,6 +916,8 @@ sub _parse_header {
         $self->{_vars}{host_lookup_failed} = 1;
       } elsif ($tag eq '-body_linecount') {
         $self->{_vars}{body_linecount} = $arg;
+      } elsif ($tag eq '-max_received_linelength') {
+        $self->{_vars}{max_received_linelength} = $arg;
       } elsif ($tag eq '-body_zerocount') {
         $self->{_vars}{body_zerocount} = $arg;
       } elsif ($tag eq '-frozen') {
@@ -1341,7 +1345,7 @@ Override the default local character set for $header_ decoding
 
 =item -f <regexp>
 
-Same as '$sender_address = <regexp>' (exiqgrep)
+Same as '$sender_address =~ /<regexp>/' (exiqgrep).  Note that this preserves the default case sensitivity of exiqgrep's interface.
 
 =item --flatq
 
@@ -1381,7 +1385,7 @@ Same as --reverse (exiqgrep)
 
 =item -r <regexp>
 
-Same as '$recipients = <regexp>' (exiqgrep)
+Same as '$recipients =~ /<regexp>/' (exiqgrep).  Note that this preserves the default case sensitivity of exiqgrep's interface.
 
 =item --random
 
@@ -1535,6 +1539,10 @@ The number of lines in the message's body.
 
 The number of binary zero bytes in the message's body.
 
+=item S + $data_path
+
+The path to the body file's location in the filesystem.
+
 =item B + $deliver_freeze
 
 TRUE if the message is currently frozen.
@@ -1567,6 +1575,10 @@ TRUE if the message has never been deferred.
 
 This will always match the contents of the corresponding $bheader_* variable currently (the same behaviour Exim displays when iconv is not installed).
 
+=item S + $header_path
+
+The path to the header file's location in the filesystem.
+
 =item B . $host_lookup_deferred
 
 TRUE if there was an attempt to look up the host's name from its IP address, but an error occurred that during the attempt.
@@ -1586,6 +1598,10 @@ The text returned by the local_scan() function when a message is received.
 =item B . $manually_thawed
 
 TRUE when the message has been manually thawed.
+
+=item N . $max_received_linelength
+
+The number of bytes in the longest line that was received as part of the message, not counting line termination characters.
 
 =item N . $message_age
 
@@ -1657,7 +1673,7 @@ The epoch time at which the message was received.
 
 =item S # $recipients
 
-The list of envelope recipients for a message.  Unlike Exim's version, this variable always contains every recipient of the message.  The recipients are seperated by a comma and a space.  See also $each_recipients.
+The list of envelope recipients for a message.  Unlike Exim's version, this variable always contains every recipient of the message.  The recipients are separated by a comma and a space.  See also $each_recipients.
 
 =item N . $recipients_count
 
