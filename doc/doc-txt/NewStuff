@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.161 2009/11/16 19:06:35 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.162 2010/01/04 19:35:50 nm4 Exp $
 
 New Features in Exim
 --------------------
@@ -7,6 +7,10 @@ This file contains descriptions of new features that have been added to Exim.
 Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
+
+
+Version 4.72
+------------
 
 
 Version 4.70 / 4.71
