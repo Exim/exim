@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.12 2010/02/18 12:09:15 michael Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.13 2010/02/19 10:30:13 michael Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -458,13 +458,16 @@ uschar *dkim_exim_sign(int dkim_fd,
       pdkim_canon = PDKIM_CANON_RELAXED;
     }
 
-    dkim_sign_headers_expanded = expand_string(dkim_sign_headers);
-    if (dkim_sign_headers_expanded == NULL) {
-      log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand "
-                "dkim_sign_headers: %s", expand_string_message);
-      rc = NULL;
-      goto CLEANUP;
+    if (dkim_sign_headers) {
+      dkim_sign_headers_expanded = expand_string(dkim_sign_headers);
+      if (dkim_sign_headers_expanded == NULL) {
+        log_write(0, LOG_MAIN|LOG_PANIC, "failed to expand "
+                  "dkim_sign_headers: %s", expand_string_message);
+        rc = NULL;
+        goto CLEANUP;
+      }
     }
+    /* else pass NULL, which means default header list */
 
     /* Get private key to use. */
     dkim_private_key_expanded = expand_string(dkim_private_key);
