@@ -1,5 +1,5 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.15 2010/01/04 18:16:54 jetmore Exp $
+# $Cambridge: exim/src/src/exipick.src,v 1.16 2010/02/23 03:01:57 jetmore Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';
@@ -14,7 +14,7 @@ use strict;
 use Getopt::Long;
 
 my($p_name)   = $0 =~ m|/?([^/]+)$|;
-my $p_version = "20100104.1";
+my $p_version = "20100222.0";
 my $p_usage   = "Usage: $p_name [--help|--version] (see --help for details)";
 my $p_cp      = <<EOM;
         Copyright (c) 2003-2010 John Jetmore <jj33\@pobox.com>
@@ -40,6 +40,8 @@ $| = 1; # unbuffer STDOUT
 Getopt::Long::Configure("bundling_override");
 GetOptions(
   'spool=s'     => \$G::spool,      # exim spool dir
+  'input-dir=s' => \$G::input_dir,  # name of the "input" dir
+  'finput'      => \$G::finput,     # same as "--input-dir Finput"
   'bp'          => \$G::mailq_bp,   # List the queue (noop - default)
   'bpa'         => \$G::mailq_bpa,  # ... with generated address as well
   'bpc'         => \$G::mailq_bpc,  # ... but just show a count of messages
@@ -111,11 +113,12 @@ $G::msg_ids         = {};                  # short circuit when crit is only MID
 $G::caseless        = $G::caseful ? 0 : 1; # nocase by default, case if both
 @G::recipients_crit = ();                  # holds per-recip criteria
 $spool              = $G::spool if ($G::spool);
+my $input_dir       = $G::input_dir || ($G::finput ? "Finput" : "input");
 my $count_only      = 1 if ($G::mailq_bpc  || $G::qgrep_c);
 my $unsorted        = 1 if ($G::mailq_bpr  || $G::mailq_bpra ||
                             $G::mailq_bpru || $G::unsorted);
 my $msg             = $G::thaw ? thaw_message_list()
-                               : get_all_msgs($spool, $unsorted,
+                               : get_all_msgs($spool, $input_dir, $unsorted,
                                               $G::reverse, $G::random);
 die "Problem accessing thaw file\n" if ($G::thaw && !$msg);
 my $crit            = process_criteria(\@ARGV);
@@ -131,7 +134,7 @@ $e->output_brief()               if ($G::qgrep_b);
 $e->output_flatq()               if ($G::flatq);
 $e->output_vars_only()           if ($G::just_vars && $G::show_vars);
 $e->set_show_vars($G::show_vars) if ($G::show_vars);
-$e->set_spool($spool);
+$e->set_spool($spool, $input_dir);
 
 MSG:
 foreach my $m (@$msg) {
@@ -396,11 +399,14 @@ sub process_criteria {
 }
 
 sub get_all_msgs {
-  my $d = shift() . '/input';
+  my $d = shift();
+  my $i = shift();
   my $u = shift; # don't sort
   my $r = shift; # right before returning, reverse order
   my $o = shift; # if true, randomize list order before returning
   my @m = ();
+
+  if ($i =~ m|^/|) { $d = $i; } else { $d = $d . '/' . $i; }
 
   opendir(D, "$d") || die "Couldn't opendir $d: $!\n";
   foreach my $e (grep !/^\./, readdir(D)) {
@@ -446,6 +452,7 @@ sub new {
   bless($self, $class);
 
   $self->{_spool_dir}        = '';
+  $self->{_input_path}       = '';
   $self->{_undelivered_only} = 0;
   $self->{_show_generated}   = 0;
   $self->{_output_long}      = 1;
@@ -563,7 +570,7 @@ sub parse_message {
   $self->_reset();
   $self->{_message} = shift || return(0);
   $self->{_path}    = shift; # optional path to message
-  return(0) if (!$self->{_spool_dir});
+  return(0) if (!$self->{_input_path});
   if (!$self->{_path} && !$self->_find_path()) {
     # assume the message was delivered from under us and ignore
     $self->{_delivered} = 1;
@@ -584,7 +591,7 @@ sub restore_state {
   return(1) if ($h->{_delivered});
   $self->_reset();
   $self->{_message} = $h->{_message} || return(0);
-  return(0) if (!$self->{_spool_dir});
+  return(0) if (!$self->{_input_path});
 
   $self->{_path}      = $h->{_path};
   $self->{_vars}      = $h->{_vars};
@@ -630,13 +637,13 @@ sub _find_path {
   my $self = shift;
 
   return(0) if (!$self->{_message});
-  return(0) if (!$self->{_spool_dir});
+  return(0) if (!$self->{_input_path});
 
   # test split spool first on the theory that people concerned about
   # performance will have split spool set =).
   foreach my $f (substr($self->{_message}, 5, 1).'/', '') {
-    if (-f "$self->{_spool_dir}/input/$f$self->{_message}-H") {
-      $self->{_path} = $self->{_spool_dir} . "/input/$f";
+    if (-f "$self->{_input_path}/$f$self->{_message}-H") {
+      $self->{_path} = "$self->{_input_path}}/$f";
       return(1);
     }
   }
@@ -646,6 +653,10 @@ sub _find_path {
 sub set_spool {
   my $self = shift;
   $self->{_spool_dir} = shift;
+  $self->{_input_path} = shift;
+  if ($self->{_input_path} !~ m|^/|) {
+    $self->{_input_path} = $self->{_spool_dir} . '/' . $self->{_input_path};
+  }
 }
 
 sub get_matching_vars {
@@ -1347,6 +1358,10 @@ Override the default local character set for $header_ decoding
 
 Same as '$sender_address =~ /<regexp>/' (exiqgrep).  Note that this preserves the default case sensitivity of exiqgrep's interface.
 
+=item --finput
+
+Same as '--input-dir Finput'.  'Finput' is where exim copies frozen messages when compiled with SUPPORT_MOVE_FROZEN_MESSAGES.
+
 =item --flatq
 
 Use a single-line output format
@@ -1362,6 +1377,10 @@ Display this output
 =item -i
 
 Display only the message IDs (exiqgrep)
+
+=item --input-dir <inputname>
+
+Set the name of the directory under the spool directory.  By defaut this is "input".  If this starts with '/', the value of --spool is ignored.  See also --finput.
 
 =item -l
 
@@ -1401,7 +1420,7 @@ Same as '$shown_message_size eq <string>' (exiqgrep)
 
 =item --spool <path>
 
-Set the path to the exim spool to use
+Set the path to the exim spool to use.  This value will have the argument to --input or 'input' appended, or be ignored if --input is a full path.
 
 =item --show-rules
 
