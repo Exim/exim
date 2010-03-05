@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/mysql.c,v 1.6 2009/11/16 19:50:38 nm4 Exp $ */
+/* $Cambridge: exim/src/src/lookups/mysql.c,v 1.7 2010/03/05 15:59:29 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -202,7 +202,7 @@ if (cn == NULL)
   if (mysql_real_connect(mysql_handle,
       /*  host        user         passwd     database */
       CS sdata[0], CS sdata[2], CS sdata[3], CS sdata[1],
-      port, CS socket, 0) == NULL)
+      port, CS socket, CLIENT_MULTI_RESULTS) == NULL)
     {
     *errmsg = string_sprintf("MYSQL connection failed: %s",
       mysql_error(mysql_handle));
@@ -290,6 +290,21 @@ while ((mysql_row_data = mysql_fetch_row(mysql_result)) != NULL)
       result, &ssize, &offset);
     }
   }
+
+/* more results? -1 = no, >0 = error, 0 = yes (keep looping)
+   This is needed because of the CLIENT_MULTI_RESULTS on mysql_real_connect(),
+   we don't expect any more results. */
+
+while((i = mysql_next_result(mysql_handle)) >= 0) {
+   if(i == 0) {   /* Just ignore more results */
+     DEBUG(D_lookup) debug_printf("MYSQL: got unexpected more results\n");
+     continue;
+   }
+
+   *errmsg = string_sprintf("MYSQL: lookup result error when checking for more results: %s\n",
+       mysql_error(mysql_handle));
+   goto MYSQL_EXIT;
+}
 
 /* If result is NULL then no data has been found and so we return FAIL.
 Otherwise, we must terminate the string which has been built; string_cat()
