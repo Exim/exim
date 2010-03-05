@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.70 2010/01/04 19:35:49 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.71 2010/03/05 16:08:14 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -30307,8 +30307,8 @@ If a message contains a number of different addresses, all those with the same
 characteristics (for example, the same envelope sender) that resolve to the
 same set of hosts, in the same order, are sent in a single SMTP transaction,
 even if they are for different domains, unless there are more than the setting
-of the &%max_rcpts%& option in the &(smtp)& transport allows, in which case
-they are split into groups containing no more than &%max_rcpts%& addresses
+of the &%max_rcpt%&s option in the &(smtp)& transport allows, in which case
+they are split into groups containing no more than &%max_rcpt%&s addresses
 each. If &%remote_max_parallel%& is greater than one, such groups may be sent
 in parallel sessions. The order of hosts with identical MX values is not
 significant when checking whether addresses can be batched in this way.
