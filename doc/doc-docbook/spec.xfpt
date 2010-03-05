@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.71 2010/03/05 16:08:14 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.72 2010/03/05 16:26:46 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -21170,6 +21170,7 @@ procmail_pipe:
   envelope_to_add
   check_string = "From "
   escape_string = ">From "
+  umask = 077
   user = $local_part
   group = mail
 
