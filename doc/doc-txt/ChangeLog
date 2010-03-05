@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.604 2010/03/05 16:08:15 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.605 2010/03/05 16:11:11 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -17,6 +17,9 @@ NM/02 Bugzilla 961: Spacing fix (syntax error) on Makefile directives for NetBSD
 
 NM/03 Bugzilla 955: Documentation fix for max_rcpts.
       Patch from Andreas Metzler
+
+NM/04 Bugzilla 954: Fix for unknown responses from Dovecot authenticator.
+      Patch from Kirill Miazine
 
 
 Exim version 4.71

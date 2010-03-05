@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.11 2009/10/26 13:18:54 nm4 Exp $ */
+/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.12 2010/03/05 16:11:11 nm4 Exp $ */
 
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
@@ -209,35 +209,23 @@ int auth_dovecot_server(auth_instance *ablock, uschar *data)
                HDEBUG(D_auth) debug_printf("received: %s\n", buffer);
                nargs = strcut(buffer, args, sizeof(args) / sizeof(args[0]));
 
-               switch (toupper(*args[0])) {
-               case 'C':
+               /* Code below rewritten by Kirill Miazine (km@krot.org). Only check commands that
+                  Exim will need. Original code also failed if Dovecot server sent unknown
+                  command. E.g. COOKIE in version 1.1 of the protocol would cause troubles. */
+               if (Ustrcmp(args[0], US"CUID") == 0) {
                        CHECK_COMMAND("CUID", 1, 1);
                        cuid = Uatoi(args[1]);
-                       break;
-
-               case 'D':
-                       CHECK_COMMAND("DONE", 0, 0);
-                       cont = 0;
-                       break;
-
-               case 'M':
-                       CHECK_COMMAND("MECH", 1, INT_MAX);
-                       if (strcmpic(US args[1], ablock->public_name) == 0)
-                               found = 1;
-                       break;
-
-               case 'S':
-                       CHECK_COMMAND("SPID", 1, 1);
-                       break;
-
-               case 'V':
+               } else if (Ustrcmp(args[0], US"VERSION") == 0) {
                        CHECK_COMMAND("VERSION", 2, 2);
                        if (Uatoi(args[1]) != VERSION_MAJOR)
                                OUT("authentication socket protocol version mismatch");
-                       break;
-
-               default:
-                       goto out;
+               } else if (Ustrcmp(args[0], US"MECH") == 0) {
+                       CHECK_COMMAND("MECH", 1, INT_MAX);
+                       if (strcmpic(US args[1], ablock->public_name) == 0)
+                               found = 1;
+               } else if (Ustrcmp(args[0], US"DONE") == 0) {
+                       CHECK_COMMAND("DONE", 0, 0);
+                       cont = 0;
                }
        }
 
