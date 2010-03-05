@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.601 2010/02/23 03:01:55 jetmore Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.602 2010/03/05 16:03:59 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -9,6 +9,10 @@ Exim version 4.72
 JJ/01 installed exipick 20100104.1, adding $max_received_linelength, $data_path, and $header_path variables; fixed documentation bugs and typos
 
 JJ/02 installed exipick 20100222.0, added --input-dir and --finput to allow exipick to access non-standard spools, including the "frozen" queue (Finput)
+
+NM/01 Bugzilla 965: Support mysql stored procedures.
+      Patch from Alain Williams
+
 
 Exim version 4.71
 -----------------
