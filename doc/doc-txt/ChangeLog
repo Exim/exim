@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.602 2010/03/05 16:03:59 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.603 2010/03/05 16:05:02 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -12,6 +12,8 @@ JJ/02 installed exipick 20100222.0, added --input-dir and --finput to allow exip
 
 NM/01 Bugzilla 965: Support mysql stored procedures.
       Patch from Alain Williams
+
+NM/02 Bugzilla 961: Spacing fix (syntax error) on Makefile directives for NetBSD
 
 
 Exim version 4.71

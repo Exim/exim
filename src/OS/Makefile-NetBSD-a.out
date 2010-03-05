@@ -1,11 +1,11 @@
-# $Cambridge: exim/src/OS/Makefile-NetBSD-a.out,v 1.4 2008/07/25 20:39:55 fanf2 Exp $
+# $Cambridge: exim/src/OS/Makefile-NetBSD-a.out,v 1.5 2010/03/05 16:03:59 nm4 Exp $
 
 # Exim: OS-specific make file for NetBSD (a.out/COFF object format)
 
 CHOWN_COMMAND=/usr/sbin/chown
 CHMOD_COMMAND=/bin/chmod
 
-CFLAGS?=-O2
+CFLAGS ?= -O2
 
 HAVE_SA_LEN=YES
 HAVE_IPV6=YES
