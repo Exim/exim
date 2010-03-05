@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.605 2010/03/05 16:11:11 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.606 2010/03/05 16:28:04 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -20,6 +20,8 @@ NM/03 Bugzilla 955: Documentation fix for max_rcpts.
 
 NM/04 Bugzilla 954: Fix for unknown responses from Dovecot authenticator.
       Patch from Kirill Miazine
+
+NM/05 Bugzilla 671: Added umask to procmail example.
 
 
 Exim version 4.71
