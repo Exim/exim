@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.606 2010/03/05 16:28:04 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.607 2010/03/23 14:06:48 jetmore Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -22,6 +22,8 @@ NM/04 Bugzilla 954: Fix for unknown responses from Dovecot authenticator.
       Patch from Kirill Miazine
 
 NM/05 Bugzilla 671: Added umask to procmail example.
+
+JJ/03 installed exipick 20100323.0, fixing doc bug
 
 
 Exim version 4.71
