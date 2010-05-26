@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.607 2010/03/23 14:06:48 jetmore Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.608 2010/05/26 12:26:00 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -24,6 +24,9 @@ NM/04 Bugzilla 954: Fix for unknown responses from Dovecot authenticator.
 NM/05 Bugzilla 671: Added umask to procmail example.
 
 JJ/03 installed exipick 20100323.0, fixing doc bug
+
+NM/06 Bugzilla 988: CVE-2010-2023 - prevent hardlink attack on sticky mail
+      directory.  Notification and patch from Dan Rosenberg
 
 
 Exim version 4.71

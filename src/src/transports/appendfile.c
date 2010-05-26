@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.24 2009/11/16 19:50:39 nm4 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.25 2010/05/26 12:26:01 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1804,6 +1804,18 @@ if (!isdirectory)
         addr->message = string_sprintf("mailbox %s%s has wrong gid (%d != %d)",
           filename, islink? " (symlink)" : "", statbuf.st_gid, gid);
         goto RETURN;
+        }
+
+      /* Just in case this is a sticky-bit mail directory, we don't want
+      users to be able to create hard links to other users' files. */
+
+      if (statbuf.st_nlink != 1)
+        {
+        addr->basic_errno = ERRNO_NOTREGULAR;
+        addr->message = string_sprintf("mailbox %s%s has too many links (%d)",
+          filename, islink? " (symlink)" : "", statbuf.st_nlink);
+        goto RETURN;
+
         }
 
       /* If symlinks are permitted (not recommended), the lstat() above will
