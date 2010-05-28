@@ -1,4 +1,4 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-chunk-html.xsl,v 1.5 2009/11/09 16:12:37 nm4 Exp $ -->
+<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-chunk-html.xsl,v 1.6 2010/05/28 15:38:18 nm4 Exp $ -->
 
 <!-- This stylesheet driver imports the DocBook XML stylesheet for chunked
 HTML output, and then imports my common stylesheet for HTML output. Finally, it
@@ -7,7 +7,7 @@ section chunking). -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>
 
-<xsl:import href="/usr/share/sgml/docbook/xsl-stylesheets-1.70.1/xhtml/chunk.xsl"/>
+<xsl:import href="/usr/share/xml/docbook/stylesheet/nwalsh/1.71.1/xhtml/chunk.xsl"/>
 <xsl:import href="MyStyle-html.xsl"/>
 
 

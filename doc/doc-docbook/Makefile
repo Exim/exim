@@ -1,4 +1,4 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.13 2009/10/16 10:36:52 nm4 Exp $
+# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.14 2010/05/28 15:38:18 nm4 Exp $
 
 # Make file for Exim documentation from xfpt source.
 
@@ -12,8 +12,9 @@ notarget:;    @echo "** You must specify a target, in the form x.y, where x is '
 #
 # Generate all the documentation files...
 #
-everything:		spec.pdf 	spec.ps 	spec.html 	spec.info 	spec.txt \
-				filter.pdf 	filter.ps 	filter.html filter.info filter.txt \
+## removed info files as I cannot generate them -  spec.info filter.info
+everything:		spec.pdf 	spec.ps 	spec.html  	spec.txt \
+				filter.pdf 	filter.ps 	filter.html filter.txt \
 				exim.8
 
 ############################## MAN PAGE ################################
