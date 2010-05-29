@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.73 2010/05/29 19:23:25 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.74 2010/05/29 19:26:31 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -47,8 +47,8 @@
 . the <bookinfo> element must also be updated for each new edition.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.69"
-.set version "4.71"
+.set previousversion "4.71"
+.set version "4.72"
 
 .set ACL "access control lists (ACLs)"
 .set I   "&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -172,12 +172,12 @@
 <bookinfo>
 <title>Specification of the Exim Mail Transfer Agent</title>
 <titleabbrev>The Exim MTA</titleabbrev>
-<date>5 November 2009</date>
+<date>29 May 2010</date>
 <author><firstname>Exim</firstname><surname>Maintainers</surname></author>
 <authorinitials>EM</authorinitials>
 <revhistory><revision>
-  <revnumber>4.71</revnumber>
-  <date>5 November 2009</date>
+  <revnumber>4.72</revnumber>
+  <date>29 May 2010</date>
   <authorinitials>EM</authorinitials>
 </revision></revhistory>
 <copyright><year>2009</year><holder>University of Cambridge</holder></copyright>
