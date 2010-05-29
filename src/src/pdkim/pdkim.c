@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.13 2010/05/29 18:59:18 nm4 Exp $ */
+/* $Cambridge: exim/src/src/pdkim/pdkim.c,v 1.14 2010/05/29 19:14:06 nm4 Exp $ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -211,6 +211,7 @@ pdkim_str *pdkim_strnew (char *cstr) {
   p->allocated=(len+1);
   p->len=len;
   if (cstr) strcpy(p->str,cstr);
+  else p->str[p->len] = '\0';
   return p;
 }
 char *pdkim_strncat(pdkim_str *str, char *data, int len) {
