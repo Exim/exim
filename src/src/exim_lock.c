@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim_lock.c,v 1.3 2005/06/27 14:29:43 ph10 Exp $ */
+/* $Cambridge: exim/src/src/exim_lock.c,v 1.4 2010/05/29 12:11:48 pdp Exp $ */
 
 /* A program to lock a file exactly as Exim would, for investigation of
 interlocking problems.
@@ -310,7 +310,8 @@ if (use_lockfile)
 for (j = 0; j < lock_retries; j++)
   {
   int sleep_before_retry = TRUE;
-  struct stat statbuf, ostatbuf;
+  struct stat statbuf, ostatbuf, lstatbuf, statbuf2;
+  int mbx_tmp_oflags;
 
   /* Try to build a lock file if so configured */
 
@@ -431,11 +432,39 @@ for (j = 0; j < lock_retries; j++)
         }
       }
 
-    md = open(tempname, O_RDWR | O_CREAT, 0600);
+    mbx_tmp_oflags = O_RDWR | O_CREAT;
+#ifdef O_NOFOLLOW
+    mbx_tmp_oflags |= O_NOFOLLOW;
+#endif
+    md = open(tempname, mbx_tmp_oflags, 0600);
     if (md < 0)
       {
       printf("exim_lock: failed to create mbx lock file %s: %s\n",
         tempname, strerror(errno));
+      goto CLEAN_UP;
+      }
+
+    /* security fixes from 2010-05 */
+    if (lstat(tempname, &lstatbuf) < 0)
+      {
+      printf("exim_lock: failed to lstat(%s) after opening it: %s\n",
+          tempname, strerror(errno));
+      goto CLEAN_UP;
+      }
+    if (fstat(md, &statbuf2) < 0)
+      {
+      printf("exim_lock: failed to fstat() open fd of \"%s\": %s\n",
+          tempname, strerror(errno));
+      goto CLEAN_UP;
+      }
+    if ((statbuf2.st_nlink > 1) ||
+        (lstatbuf.st_nlink > 1) ||
+        (!S_ISREG(lstatbuf.st_mode)) ||
+        (lstatbuf.st_dev != statbuf2.st_dev) ||
+        (lstatbuf.st_ino != statbuf2.st_ino))
+      {
+      printf("exim_lock: race condition exploited against us when "
+          "locking \"%s\"\n", tempname);
       goto CLEAN_UP;
       }
 

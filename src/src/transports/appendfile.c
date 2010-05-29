@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.25 2010/05/26 12:26:01 nm4 Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.26 2010/05/29 12:11:48 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2010,6 +2010,8 @@ if (!isdirectory)
     #ifdef SUPPORT_MBX
     else if (ob->use_mbx_lock)
       {
+      int mbx_tmp_oflags;
+      struct stat lstatbuf, statbuf2;
       if (apply_lock(fd, F_RDLCK, ob->use_fcntl, ob->lock_fcntl_timeout,
            ob->use_flock, ob->lock_flock_timeout) >= 0 &&
            fstat(fd, &statbuf) >= 0)
@@ -2017,6 +2019,21 @@ if (!isdirectory)
         sprintf(CS mbx_lockname, "/tmp/.%lx.%lx", (long)statbuf.st_dev,
           (long)statbuf.st_ino);
 
+        /*
+         * 2010-05-29: SECURITY
+         * Dan Rosenberg reported the presence of a race-condition in the
+         * original code here.  Beware that many systems still allow symlinks
+         * to be followed in /tmp so an attacker can create a symlink pointing
+         * elsewhere between a stat and an open, which we should avoid
+         * following.
+         *
+         * It's unfortunate that we can't just use all the heavily debugged
+         * locking from above.
+         *
+         * Also: remember to mirror changes into exim_lock.c */
+
+        /* first leave the old pre-check in place, it provides better
+         * diagnostics for common cases */
         if (Ulstat(mbx_lockname, &statbuf) >= 0)
           {
           if ((statbuf.st_mode & S_IFMT) == S_IFLNK)
@@ -2035,12 +2052,78 @@ if (!isdirectory)
             }
           }
 
-        mbx_lockfd = Uopen(mbx_lockname, O_RDWR | O_CREAT, ob->lockfile_mode);
+        /* If we could just declare "we must be the ones who create this
+         * file" then a hitching post in a subdir would work, since a
+         * subdir directly in /tmp/ which we create wouldn't follow links
+         * but this isn't our locking logic, so we can't safely change the
+         * file existence rules. */
+
+        /* On systems which support O_NOFOLLOW, it's the easiest and most
+         * obviously correct security fix */
+        mbx_tmp_oflags = O_RDWR | O_CREAT;
+#ifdef O_NOFOLLOW
+        mbx_tmp_oflags |= O_NOFOLLOW;
+#endif
+        mbx_lockfd = Uopen(mbx_lockname, mbx_tmp_oflags, ob->lockfile_mode);
         if (mbx_lockfd < 0)
           {
           addr->basic_errno = ERRNO_LOCKFAILED;
           addr->message = string_sprintf("failed to open MBX lock file %s :%s",
             mbx_lockname, strerror(errno));
+          goto RETURN;
+          }
+
+        if (lstat(mbx_lockname, &lstatbuf) < 0)
+          {
+          addr->basic_errno = ERRNO_LOCKFAILED;
+          addr->message = string_sprintf("attempting to lstat open MBX "
+             "lock file %s: %s", mbx_lockname, strerror(errno));
+          goto RETURN;
+          }
+        if (fstat(mbx_lockfd, &statbuf2) < 0)
+          {
+          addr->basic_errno = ERRNO_LOCKFAILED;
+          addr->message = string_sprintf("attempting to stat fd of open MBX "
+              "lock file %s: %s", mbx_lockname, strerror(errno));
+          goto RETURN;
+          }
+
+        /*
+         * At this point:
+         *  statbuf: if exists, is file which existed prior to opening the
+         *           lockfile, might have been replaced since then
+         *  statbuf2: result of stat'ing the open fd, is what was actually
+         *            opened
+         *  lstatbuf: result of lstat'ing the filename immediately after
+         *            the open but there's a race condition again between
+         *            those two steps: before open, symlink to foo, after
+         *            open but before lstat have one of:
+         *             * was no symlink, so is the opened file
+         *               (we created it, no messing possible after that point)
+         *             * hardlink to foo
+         *             * symlink elsewhere
+         *             * hardlink elsewhere
+         *             * new file/other
+         * Don't want to compare to device of /tmp because some modern systems
+         * have regressed to having /tmp be the safe actual filesystem as
+         * valuable data, so is mostly worthless, unless we assume that *only*
+         * Linux systems do this and that all Linux has O_NOFOLLOW.  Something
+         * for further consideration.
+         * No point in doing a readlink on the lockfile as that will always be
+         * at a different point in time from when we open it, so tells us
+         * nothing; attempts to clean up and delete after ourselves would risk
+         * deleting a *third* filename.
+         */
+        if ((statbuf2.st_nlink > 1) ||
+            (lstatbuf.st_nlink > 1) ||
+            (!S_ISREG(lstatbuf.st_mode)) ||
+            (lstatbuf.st_dev != statbuf2.st_dev) ||
+            (lstatbuf.st_ino != statbuf2.st_ino))
+          {
+          addr->basic_errno = ERRNO_LOCKFAILED;
+          addr->message = string_sprintf("RACE CONDITION detected: "
+              "mismatch post-initial-checks between \"%s\" and opened "
+              "fd lead us to abort!", mbx_lockname);
           goto RETURN;
           }
 
