@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.13 2010/02/19 10:30:13 michael Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.14 2010/05/29 19:16:50 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -467,7 +467,10 @@ uschar *dkim_exim_sign(int dkim_fd,
         goto CLEANUP;
       }
     }
-    /* else pass NULL, which means default header list */
+    else {
+      /* pass NULL, which means default header list */
+      dkim_sign_headers_expanded = NULL;
+    }
 
     /* Get private key to use. */
     dkim_private_key_expanded = expand_string(dkim_private_key);
