@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.19 2009/11/16 19:50:38 nm4 Exp $ */
+/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.20 2010/05/29 19:23:26 nm4 Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -88,17 +88,23 @@ consist of a number of parts.
 separator character that is used when multiple records are found. The default
 separator is newline.
 
-(b) If the next sequence of characters is 'defer_FOO' followed by a comma,
+(b) If the next character is ',' then the next character is the separator
+character used for multiple items of text in "TXT" records. Alternatively,
+if the next character is ';' then these multiple items are concatenated with
+no separator. With neither of these options specified, only the first item
+is output.
+
+(c) If the next sequence of characters is 'defer_FOO' followed by a comma,
 the defer behaviour is set to FOO. The possible behaviours are: 'strict', where
 any defer causes the whole lookup to defer; 'lax', where a defer causes the
 whole lookup to defer only if none of the DNS queries succeeds; and 'never',
 where all defers are as if the lookup failed. The default is 'lax'.
 
-(c) If the next sequence of characters is a sequence of letters and digits
+(d) If the next sequence of characters is a sequence of letters and digits
 followed by '=', it is interpreted as the name of the DNS record type. The
 default is "TXT".
 
-(d) Then there follows list of domain names. This is a generalized Exim list,
+(e) Then there follows list of domain names. This is a generalized Exim list,
 which may start with '<' in order to set a specific separator. The default
 separator, as always, is colon. */
 
@@ -114,6 +120,7 @@ int defer_mode = PASS;
 int type = T_TXT;
 int failrc = FAIL;
 uschar *outsep = US"\n";
+uschar *outsep2 = NULL;
 uschar *equals, *domain, *found;
 uschar buffer[256];
 
@@ -131,13 +138,24 @@ filename = filename;
 length = length;
 do_cache = do_cache;
 
-/* If the string starts with '>' we change the output separator */
+/* If the string starts with '>' we change the output separator.
+If it's followed by ';' or ',' we set the TXT output separator. */
 
 while (isspace(*keystring)) keystring++;
 if (*keystring == '>')
   {
   outsep = keystring + 1;
   keystring += 2;
+  if (*keystring == ',')
+    {
+    outsep2 = keystring + 1;
+    keystring += 2;
+    }
+  else if (*keystring == ';')
+    {
+    outsep2 = US"";
+    keystring++;
+    }
   while (isspace(*keystring)) keystring++;
   }
 
@@ -303,13 +321,25 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
 
     if (type == T_TXT)
       {
-      int data_offset = 0;
-      while (data_offset < rr->size)
+      if (outsep2 == NULL)
         {
-        uschar chunk_len = (rr->data)[data_offset++];
-        yield = string_cat(yield, &size, &ptr,
-                           (uschar *)((rr->data)+data_offset), chunk_len);
-        data_offset += chunk_len;
+        /* output only the first item of data */
+        yield = string_cat(yield, &size, &ptr, (uschar *)(rr->data+1),
+          (rr->data)[0]);
+        }
+      else
+        {
+        /* output all items */
+        int data_offset = 0;
+        while (data_offset < rr->size)
+          {
+          uschar chunk_len = (rr->data)[data_offset++];
+          if (outsep2[0] != '\0' && data_offset != 1)
+            yield = string_cat(yield, &size, &ptr, outsep2, 1);
+          yield = string_cat(yield, &size, &ptr,
+                             (uschar *)((rr->data)+data_offset), chunk_len);
+          data_offset += chunk_len;
+          }
         }
       }
     else   /* T_CNAME, T_CSA, T_MX, T_MXH, T_NS, T_PTR, T_SRV */

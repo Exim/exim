@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.72 2010/03/05 16:26:46 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.73 2010/05/29 19:23:25 nm4 Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -6627,6 +6627,20 @@ ${lookup dnsdb{>: a=host1.example}}
 .endd
 It is permitted to specify a space as the separator character. Further
 white space is ignored.
+
+.new
+.cindex "TXT record" "in &(dnsdb)& lookup"
+For TXT records with multiple items of data, only the first item is returned,
+unless a separator for them is specified using a comma after the separator
+character followed immediately by the TXT record item separator. To concatenate
+items without a separator, use a semicolon instead.
+.code
+${lookup dnsdb{>\n,: txt=a.b.example}}
+${lookup dnsdb{>\n; txt=a.b.example}}
+.endd
+It is permitted to specify a space as the separator character. Further
+white space is ignored.
+.wen
 
 .section "Pseudo dnsdb record types" "SECID66"
 .cindex "MX record" "in &(dnsdb)& lookup"
