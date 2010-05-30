@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.611 2010/05/29 19:23:26 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.612 2010/05/30 18:01:48 nm4 Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -41,6 +41,9 @@ NM/07 Null terminate DKIM strings, Null initialise DKIM variable
 
 NM/08 Bugzilla 967. DKIM DNS TXT record bug fix
       Patch by Simon Arlott
+
+PP/01 Bugzilla 989: CVE-2010-2024 - work round race condition on
+      MBX locking.  Notification and patch from Dan Rosenberg
 
 
 Exim version 4.71
