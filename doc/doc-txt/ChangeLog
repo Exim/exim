@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.612 2010/05/30 18:01:48 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.613 2010/06/01 11:13:54 pdp Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -26,7 +26,7 @@ NM/05 Bugzilla 671: Added umask to procmail example.
 JJ/03 installed exipick 20100323.0, fixing doc bug
 
 NM/06 Bugzilla 988: CVE-2010-2023 - prevent hardlink attack on sticky mail
-      directory.  Notification and patch from Dan Rosenberg
+      directory.  Notification and patch from Dan Rosenberg.
 
 TK/01 PDKIM: Upgrade PolarSSL files to upstream version 0.12.1.
 
@@ -39,11 +39,11 @@ MH/01 Treat the transport option dkim_domain as a colon separated
 NM/07 Null terminate DKIM strings, Null initialise DKIM variable
       Bugzilla 985, 986.  Patch by Simon Arlott
 
-NM/08 Bugzilla 967. DKIM DNS TXT record bug fix
+NM/08 Bugzilla 967. dnsdb DNS TXT record bug fix (DKIM-related)
       Patch by Simon Arlott
 
 PP/01 Bugzilla 989: CVE-2010-2024 - work round race condition on
-      MBX locking.  Notification and patch from Dan Rosenberg
+      MBX locking.  Notification from Dan Rosenberg.
 
 
 Exim version 4.71

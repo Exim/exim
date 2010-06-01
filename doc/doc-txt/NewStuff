@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.162 2010/01/04 19:35:50 nm4 Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.163 2010/06/01 11:13:54 pdp Exp $
 
 New Features in Exim
 --------------------
@@ -12,6 +12,34 @@ the documentation is updated, this file is reduced to a short list.
 Version 4.72
 ------------
 
+ 1. TWO SECURITY FIXES: one relating to mail-spools which are globally
+    writable, the other to locking of MBX folders (not mbox).
+
+ 2. MySQL stored procedures are now supported.
+
+ 3. The dkim_domain transport option is now a list, not a single string, and
+    messages will be signed for each element in the list (discarding
+    duplicates).
+
+ 4. The 4.70 release unexpectedly changed the behaviour of dnsdb TXT lookups
+    in the presence of multiple character strings within the RR. Prior to 4.70,
+    only the first string would be returned.  The dnsdb lookup now, by default,
+    preserves the pre-4.70 semantics, but also now takes an extended output
+    separator specification. The first output separator is used to join
+    multiple TXT records together; use a second separator character, followed
+    by a colon, to join the strings within a TXT record on that second
+    character, or use a semicolon to concatenate strings within a TXT record
+    with no separator.  Administrators are reminded that DNS provides no
+    ordering guarantees between multiple records in an RRset.  For example:
+
+      foo.example.  IN TXT "a" "b" "c"
+      foo.example.  IN TXT "d" "e" "f"
+
+      ${lookup dnsdb{>/ txt=foo.example}}   -> "a/d"
+      ${lookup dnsdb{>/; txt=foo.example}}  -> "def/abc"
+      ${lookup dnsdb{>/+: txt=foo.example}} -> "a+b+c/d+e+f"
+
+    Some character combinations are currently unsupported.
 
 Version 4.70 / 4.71
 -------------------
