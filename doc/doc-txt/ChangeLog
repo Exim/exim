@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.615 2010/06/03 08:19:13 pdp Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.616 2010/06/03 15:20:41 jetmore Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -11,6 +11,8 @@ PP/01 Date: & Message-Id: revert to normally being appended to a message,
 
 PP/02 Include check_rfc2047_length in configure.default because we're seeing
       increasing numbers of administrators be bitten by this.
+
+JJ/01 Added DISABLE_DKIM and comment to src/EDITME
 
 Exim version 4.72
 -----------------

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.164 2010/06/01 11:21:30 pdp Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.165 2010/06/03 15:20:41 jetmore Exp $
 
 New Features in Exim
 --------------------
@@ -44,6 +44,9 @@ Version 4.70 / 4.71
 -------------------
 
  1. Native DKIM support without an external library.
+    (Note that if no action to prevent it is taken, a straight upgrade will
+    result in DKIM verification of all signed incoming emails.  See spec
+    for details on conditionally disabling)
 
  2. Experimental DCC support via dccifd (contributed by Wolfgang Breyha).
 

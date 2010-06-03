@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.23 2009/11/20 12:18:19 nm4 Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.24 2010/06/03 15:20:41 jetmore Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -351,6 +351,16 @@ EXIM_MONITOR=eximon.bin
 # the "demime" condition.
 
 # WITH_OLD_DEMIME=yes
+
+#------------------------------------------------------------------------------
+# By default Exim includes code to support DKIM (DomainKeys Identified
+# Mail, RFC4871) signing and verification.  Verification of signatures is
+# turned on by default.  See the spec for information on conditionally
+# disabling it.  To disable the inclusion of the entire feature, set
+# DISABLE_DKIM to "yes"
+
+# DISABLE_DKIM=yes
+
 
 #------------------------------------------------------------------------------
 # Compiling Exim with experimental features. These are documented in
