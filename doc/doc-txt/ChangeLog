@@ -1,7 +1,13 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.613 2010/06/01 11:13:54 pdp Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.614 2010/06/03 05:43:24 pdp Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
+
+Exim version 4.73
+
+PP/01 Date: & Message-Id: revert to normally being appended to a message,
+      only prepend for the Resent-* case.  Fixes regression introduced in
+      Exim 4.70 by NM/22 for Bugzilla 607.
 
 Exim version 4.72
 -----------------
