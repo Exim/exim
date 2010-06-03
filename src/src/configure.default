@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/configure.default,v 1.14 2009/10/16 07:46:13 tom Exp $
+# $Cambridge: exim/src/src/configure.default,v 1.15 2010/06/03 08:19:13 pdp Exp $
 
 ######################################################################
 #                  Runtime configuration file for Exim               #
@@ -290,6 +290,20 @@ timeout_frozen_after = 7d
 
 # split_spool_directory = true
 
+
+# If you're in a part of the world where ASCII is not sufficient for most
+# text, then you're probably familiar with RFC2047 message header extensions.
+# By default, Exim adheres to the specification, including a limit of 76
+# characters to a line, with encoded words fitting within a line.
+# If you wish to use decoded headers in message filters in such a way
+# that successful decoding of malformed messages matters, you may wish to
+# configure Exim to be more lenient.
+#
+# check_rfc2047_length = false
+#
+# In particular, the Exim maintainers have had multiple reports of problems
+# from Russian administrators of issues until they disable this check,
+# because of some popular, yet buggy, mail composition software.
 
 
 ######################################################################
