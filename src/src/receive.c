@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.53 2009/11/16 19:50:37 nm4 Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.54 2010/06/03 05:40:27 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2336,9 +2336,11 @@ if (msgid_header == NULL &&
       }
     }
 
-  /* Add the header line */
+  /* Add the header line
+   * Resent-* headers are prepended, per RFC 5322 3.6.6.  Non-Resent-* are
+   * appended, to preserve classical expectations of header ordering. */
 
-  header_add_at_position(FALSE, NULL, FALSE, htype_id,
+  header_add_at_position(!resents_exist, NULL, FALSE, htype_id,
     "%sMessage-Id: <%s%s%s@%s>\n", resent_prefix, message_id_external,
     (*id_text == 0)? "" : ".", id_text, id_domain);
   }
@@ -2605,13 +2607,15 @@ changes in RFC 2822, this was dropped in November 2003. */
 /* If there is no date header, generate one if the message originates locally
 (i.e. not over TCP/IP) and suppress_local_fixups is not set, or if the
 submission mode flag is set. Messages without Date: are not valid, but it seems
-to be more confusing if Exim adds one to all remotely-originated messages. */
+to be more confusing if Exim adds one to all remotely-originated messages.
+As per Message-Id, we prepend if resending, else append.
+*/
 
 if (!date_header_exists &&
       ((sender_host_address == NULL && !suppress_local_fixups)
         || submission_mode))
-  header_add_at_position(FALSE, NULL, FALSE, htype_other, "%sDate: %s\n",
-    resent_prefix, tod_stamp(tod_full));
+  header_add_at_position(!resents_exist, NULL, FALSE, htype_other,
+    "%sDate: %s\n", resent_prefix, tod_stamp(tod_full));
 
 search_tidyup();    /* Free any cached resources */
 
