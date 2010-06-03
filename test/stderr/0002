@@ -174,7 +174,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0002.lsearch"
 search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
   key="ten-1.test.ex" partial=2 affix=*. starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0002.lsearch
+  :TESTSUITE/aux-fixed/0002.lsearch
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
   type=lsearch key="ten-1.test.ex"
@@ -219,7 +219,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0002.lsearch"
 search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
   key="V4NET.0.0.2" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0002.lsearch
+  :TESTSUITE/aux-fixed/0002.lsearch
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0002.lsearch"
   type=lsearch key="V4NET.0.0.2"

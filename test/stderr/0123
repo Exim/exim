@@ -20,7 +20,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases1"
 search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
   key="x" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases1
+  :TESTSUITE/aux-fixed/0123.aliases1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
   type=lsearch key="x"
@@ -39,8 +39,8 @@ search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases2"
 search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
   key="x" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases2
-  ;TESTSUITE/aux-fixed/0123.aliases1
+  :TESTSUITE/aux-fixed/0123.aliases2
+  :TESTSUITE/aux-fixed/0123.aliases1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
   type=lsearch key="x"
@@ -57,12 +57,12 @@ calling l3 router
 rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases3}}
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases3"
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases1
+  closing :TESTSUITE/aux-fixed/0123.aliases1
 search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
   key="x" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases3
-  ;TESTSUITE/aux-fixed/0123.aliases2
+  :TESTSUITE/aux-fixed/0123.aliases3
+  :TESTSUITE/aux-fixed/0123.aliases2
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
   type=lsearch key="x"
@@ -79,12 +79,12 @@ calling c1 router
 rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases4}}
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases4"
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases2
+  closing :TESTSUITE/aux-fixed/0123.aliases2
 search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
   key="x" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases4
-  ;TESTSUITE/aux-fixed/0123.aliases3
+  :TESTSUITE/aux-fixed/0123.aliases4
+  :TESTSUITE/aux-fixed/0123.aliases3
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
   type=lsearch key="x"
@@ -101,12 +101,12 @@ calling c2 router
 rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases5}}
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases5"
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases3
+  closing :TESTSUITE/aux-fixed/0123.aliases3
 search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
   key="x" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases5
-  ;TESTSUITE/aux-fixed/0123.aliases4
+  :TESTSUITE/aux-fixed/0123.aliases5
+  :TESTSUITE/aux-fixed/0123.aliases4
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
   type=lsearch key="x"
@@ -123,12 +123,12 @@ calling c3 router
 rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.aliases6}}
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases6"
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases4
+  closing :TESTSUITE/aux-fixed/0123.aliases4
 search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
   key="x" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases6
-  ;TESTSUITE/aux-fixed/0123.aliases5
+  :TESTSUITE/aux-fixed/0123.aliases6
+  :TESTSUITE/aux-fixed/0123.aliases5
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
   type=lsearch key="x"
@@ -153,12 +153,12 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases1"
   cached closed
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases5
+  closing :TESTSUITE/aux-fixed/0123.aliases5
 search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
   key="y" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases1
-  ;TESTSUITE/aux-fixed/0123.aliases6
+  :TESTSUITE/aux-fixed/0123.aliases1
+  :TESTSUITE/aux-fixed/0123.aliases6
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
   type=lsearch key="y"
@@ -176,12 +176,12 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases2"
   cached closed
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases6
+  closing :TESTSUITE/aux-fixed/0123.aliases6
 search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
   key="y" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases2
-  ;TESTSUITE/aux-fixed/0123.aliases1
+  :TESTSUITE/aux-fixed/0123.aliases2
+  :TESTSUITE/aux-fixed/0123.aliases1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
   type=lsearch key="y"
@@ -199,12 +199,12 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases3"
   cached closed
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases1
+  closing :TESTSUITE/aux-fixed/0123.aliases1
 search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
   key="y" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases3
-  ;TESTSUITE/aux-fixed/0123.aliases2
+  :TESTSUITE/aux-fixed/0123.aliases3
+  :TESTSUITE/aux-fixed/0123.aliases2
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
   type=lsearch key="y"
@@ -222,12 +222,12 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases4"
   cached closed
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases2
+  closing :TESTSUITE/aux-fixed/0123.aliases2
 search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
   key="y" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases4
-  ;TESTSUITE/aux-fixed/0123.aliases3
+  :TESTSUITE/aux-fixed/0123.aliases4
+  :TESTSUITE/aux-fixed/0123.aliases3
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
   type=lsearch key="y"
@@ -245,12 +245,12 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases5"
   cached closed
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases3
+  closing :TESTSUITE/aux-fixed/0123.aliases3
 search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
   key="y" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases5
-  ;TESTSUITE/aux-fixed/0123.aliases4
+  :TESTSUITE/aux-fixed/0123.aliases5
+  :TESTSUITE/aux-fixed/0123.aliases4
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
   type=lsearch key="y"
@@ -268,12 +268,12 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases6"
   cached closed
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases4
+  closing :TESTSUITE/aux-fixed/0123.aliases4
 search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
   key="y" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases6
-  ;TESTSUITE/aux-fixed/0123.aliases5
+  :TESTSUITE/aux-fixed/0123.aliases6
+  :TESTSUITE/aux-fixed/0123.aliases5
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
   type=lsearch key="y"
@@ -298,12 +298,12 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases1"
   cached closed
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases5
+  closing :TESTSUITE/aux-fixed/0123.aliases5
 search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
   key="z" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases1
-  ;TESTSUITE/aux-fixed/0123.aliases6
+  :TESTSUITE/aux-fixed/0123.aliases1
+  :TESTSUITE/aux-fixed/0123.aliases6
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases1"
   type=lsearch key="z"
@@ -321,12 +321,12 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases2"
   cached closed
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases6
+  closing :TESTSUITE/aux-fixed/0123.aliases6
 search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
   key="z" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases2
-  ;TESTSUITE/aux-fixed/0123.aliases1
+  :TESTSUITE/aux-fixed/0123.aliases2
+  :TESTSUITE/aux-fixed/0123.aliases1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases2"
   type=lsearch key="z"
@@ -344,12 +344,12 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases3"
   cached closed
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases1
+  closing :TESTSUITE/aux-fixed/0123.aliases1
 search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
   key="z" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases3
-  ;TESTSUITE/aux-fixed/0123.aliases2
+  :TESTSUITE/aux-fixed/0123.aliases3
+  :TESTSUITE/aux-fixed/0123.aliases2
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases3"
   type=lsearch key="z"
@@ -367,12 +367,12 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases4"
   cached closed
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases2
+  closing :TESTSUITE/aux-fixed/0123.aliases2
 search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
   key="z" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases4
-  ;TESTSUITE/aux-fixed/0123.aliases3
+  :TESTSUITE/aux-fixed/0123.aliases4
+  :TESTSUITE/aux-fixed/0123.aliases3
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases4"
   type=lsearch key="z"
@@ -390,12 +390,12 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases5"
   cached closed
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases3
+  closing :TESTSUITE/aux-fixed/0123.aliases3
 search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
   key="z" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases5
-  ;TESTSUITE/aux-fixed/0123.aliases4
+  :TESTSUITE/aux-fixed/0123.aliases5
+  :TESTSUITE/aux-fixed/0123.aliases4
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases5"
   type=lsearch key="z"
@@ -413,12 +413,12 @@ rda_interpret (string): ${lookup{$local_part}lsearch{TESTSUITE/aux-fixed/0123.al
 search_open: lsearch "TESTSUITE/aux-fixed/0123.aliases6"
   cached closed
 Too many lookup files open
-  closing ;TESTSUITE/aux-fixed/0123.aliases4
+  closing :TESTSUITE/aux-fixed/0123.aliases4
 search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
   key="z" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0123.aliases6
-  ;TESTSUITE/aux-fixed/0123.aliases5
+  :TESTSUITE/aux-fixed/0123.aliases6
+  :TESTSUITE/aux-fixed/0123.aliases5
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0123.aliases6"
   type=lsearch key="z"

@@ -48,7 +48,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
 search_find: file="TESTSUITE/aux-fixed/0085.data"
   key="smart.domain" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0085.data
+  :TESTSUITE/aux-fixed/0085.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
   type=lsearch key="smart.domain"
@@ -62,7 +62,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
 search_find: file="TESTSUITE/aux-fixed/0085.data"
   key="smart.domain" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0085.data
+  :TESTSUITE/aux-fixed/0085.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
   type=lsearch key="smart.domain"
@@ -117,7 +117,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
 search_find: file="TESTSUITE/aux-fixed/0085.data"
   key="test.ex" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0085.data
+  :TESTSUITE/aux-fixed/0085.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
   type=lsearch key="test.ex"
@@ -131,7 +131,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
 search_find: file="TESTSUITE/aux-fixed/0085.data"
   key="test.ex" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0085.data
+  :TESTSUITE/aux-fixed/0085.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
   type=lsearch key="test.ex"
@@ -151,7 +151,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
 search_find: file="TESTSUITE/aux-fixed/0085.data"
   key="test.ex.files" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0085.data
+  :TESTSUITE/aux-fixed/0085.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
   type=lsearch key="test.ex.files"
@@ -247,7 +247,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
 search_find: file="TESTSUITE/aux-fixed/0085.data"
   key="smart.domain" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0085.data
+  :TESTSUITE/aux-fixed/0085.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
   type=lsearch key="smart.domain"
@@ -261,7 +261,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
 search_find: file="TESTSUITE/aux-fixed/0085.data"
   key="smart.domain" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0085.data
+  :TESTSUITE/aux-fixed/0085.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
   type=lsearch key="smart.domain"
@@ -314,7 +314,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
 search_find: file="TESTSUITE/aux-fixed/0085.data"
   key="test.ex" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0085.data
+  :TESTSUITE/aux-fixed/0085.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
   type=lsearch key="test.ex"
@@ -328,7 +328,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0085.data"
 search_find: file="TESTSUITE/aux-fixed/0085.data"
   key="test.ex" partial=-1 affix=NULL starflags=0
 LRU list:
-  ;TESTSUITE/aux-fixed/0085.data
+  :TESTSUITE/aux-fixed/0085.data
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0085.data"
   type=lsearch key="test.ex"

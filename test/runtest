@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.33 2009/11/23 13:22:05 nm4 Exp $
+# $Cambridge: exim/test/runtest,v 1.34 2010/06/03 02:42:19 jetmore Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -23,7 +23,7 @@ use Socket;
 
 # Start by initializing some global variables
 
-$testversion = "4.71 (23-Nov-09)";
+$testversion = "4.72 (02-Jun-10)";
 
 $cf = "bin/cf";
 $cr = "\r";
@@ -726,6 +726,10 @@ while(<IN>)
     # drop gnutls version strings
     next if /GnuTLS compile-time version: \d+[\.\d]+$/;
     next if /GnuTLS runtime version: \d+[\.\d]+$/;
+
+    # drop openssl version strings
+    next if /OpenSSL compile-time version: OpenSSL \d+[\.\da-z]+/;
+    next if /OpenSSL runtime version: OpenSSL \d+[\.\da-z]+/;
 
     # We have to omit the localhost ::1 address so that all is well in
     # the IPv4-only case.
