@@ -2,13 +2,13 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 X-Failed-Recipients: userx@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
 Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message was created automatically by mail delivery software.
 
@@ -24,9 +24,9 @@ Return-path: <CALLER@myhost.test.ex>
 Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message.
 
@@ -34,13 +34,13 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbA-0005vi-00
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 X-Failed-Recipients: userx@retry.test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
 Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message was created automatically by mail delivery software.
 
@@ -57,9 +57,9 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaZ-0005vi-00
 	for userx@retry.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message.
 
@@ -67,13 +67,13 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbC-0005vi-00
 	for CALLER@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
 X-Failed-Recipients: userx@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: CALLER@myhost.test.ex
 Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message was created automatically by mail delivery software.
 
@@ -91,9 +91,9 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbB-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message.
 

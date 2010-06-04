@@ -15,10 +15,10 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbD-0005vi-00
 	for userx@domain.com; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
 ..dotheader: This is perfectly legal
+Message-Id: <E10HmbD-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 A message containing
 .. a line starting with a dot
@@ -46,10 +46,10 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbM-0005vi-00
 	for userx@filtered.com; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbM-0005vi-00@the.local.host.name>
 ..dotheader: This is perfectly legal
+Message-Id: <E10HmbM-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 A message containing
 .. a line starting with a dot

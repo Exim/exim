@@ -6,15 +6,15 @@ Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbG-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbG-0005vi-00@mail.test.ex>
 X-Sieve: 99
 Filter: require["fileinto","comparator-i;ascii-numeric"];
         if header :comparator "i;ascii-numeric" "X-Sieve" "99" {
           fileinto "inbox.JUNK";
           stop;
         }
+Message-Id: <E10HmbG-0005vi-00@mail.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test 8
 
@@ -26,15 +26,15 @@ Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbI-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbI-0005vi-00@mail.test.ex>
 X-Sieve: 99-
 Filter: require["fileinto","comparator-i;ascii-numeric"];
         if header :comparator "i;ascii-numeric" "X-Sieve" "99" {
           fileinto "inbox.JUNK";
           stop;
         }
+Message-Id: <E10HmbI-0005vi-00@mail.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test 10
 
@@ -46,15 +46,15 @@ Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbJ-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbJ-0005vi-00@mail.test.ex>
 X-Sieve: -99
 Filter: require["fileinto","comparator-i;ascii-numeric"];
         if header :comparator "i;ascii-numeric" "X-Sieve" "-99" {
           fileinto "inbox.JUNK";
           stop;
         }
+Message-Id: <E10HmbJ-0005vi-00@mail.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test 11
 
@@ -66,15 +66,15 @@ Received: from CALLER by mail.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbK-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbK-0005vi-00@mail.test.ex>
 X-Sieve: -99
 Filter: require["fileinto","comparator-i;ascii-numeric"];
         if header :comparator "i;ascii-numeric" "X-Sieve" "-98" {
           fileinto "inbox.JUNK";
           stop;
         }
+Message-Id: <E10HmbK-0005vi-00@mail.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test 12
 

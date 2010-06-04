@@ -6,10 +6,10 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 Subject: Test 1
+Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-added: qualify_domain is test.ex
 
 
@@ -21,10 +21,10 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbC-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
 Subject: reply to this
+Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-added: qualify_domain is test.ex
 
 Reply to this.
@@ -37,10 +37,10 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbA-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 Subject: should freeze this
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-added: qualify_domain is test.ex
 X-added: qualify_domain is test.ex
 
@@ -54,10 +54,10 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbS-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbS-0005vi-00@the.local.host.name>
 Subject: should freeze this
+Message-Id: <E10HmbS-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-added: qualify_domain is test.ex
 X-added: qualify_domain is test.ex
 
@@ -71,9 +71,9 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbX-0005vi-00
 	for filter-userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 X-added: qualify_domain is test.ex
 
 

@@ -2,13 +2,13 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 X-Failed-Recipients: system-filter
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
 Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message was created automatically by mail delivery software.
 
@@ -55,9 +55,9 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
 	for pipe@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 
 ------------------
@@ -69,22 +69,22 @@ Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00
 	for pipe@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 
 From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbA-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 X-Failed-Recipients: system-filter
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
 Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message was created automatically by mail delivery software.
 
@@ -132,9 +132,9 @@ USER=system-filter
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 
 ------------------
@@ -145,8 +145,8 @@ Return-path: <CALLER@test.ex>
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 

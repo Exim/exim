@@ -23,9 +23,9 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <user1@test.ex>)
 	id 10HmaX-0005vi-00
 	for user1@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 F From: user1@test.ex
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 1999-03-02 09:44:33 10HmaY-0005vi-00 F=<user2@test.ex> rejected by non-SMTP ACL: 599 Main code
 Envelope-from: <user2@test.ex>
 Envelope-to: <user1@myhost.test.ex>
@@ -33,9 +33,9 @@ P Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <user2@test.ex>)
 	id 10HmaY-0005vi-00
 	for user1@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 F From: user2@test.ex
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user20@test.ex>: No code
 1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user21@test.ex>: Main code
 1999-03-02 09:44:33 U=CALLER F=<> rejected RCPT <user22@test.ex>: Main and extended code

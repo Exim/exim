@@ -5,12 +5,12 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmaY-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
 Subject: Warning: message 10HmaX-0005vi-00 delayed 0 minutes
+Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message was created automatically by mail delivery software.
 A message that you sent has not yet been delivered to one or more of its
@@ -38,12 +38,12 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbA-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
 Subject: Warning: message 10HmaZ-0005vi-00 delayed 0 minutes
+Message-Id: <E10HmbA-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message was created automatically by mail delivery software.
 A message that you sent has not yet been delivered to one or more of its
@@ -71,12 +71,12 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbC-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
 Subject: Warning: message 10HmaX-0005vi-00 delayed 0 minutes
+Message-Id: <E10HmbC-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message was created automatically by mail delivery software.
 A message that you sent has not yet been delivered to one or more of its
@@ -104,12 +104,12 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbE-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbE-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
 Subject: Warning: message 10HmaX-0005vi-00 delayed by 10 minutes
+Message-Id: <E10HmbE-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 warn_message_delay      = 10 minutes
 warn_message_recipients = CALLER@test.ex
@@ -132,12 +132,12 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbF-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbF-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
 Subject: Warning: message 10HmaZ-0005vi-00 delayed by 0 minutes
+Message-Id: <E10HmbF-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 warn_message_delay      = 0 minutes
 warn_message_recipients = CALLER@test.ex
@@ -160,12 +160,12 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbG-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbG-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
 Subject: Warning: message 10HmbB-0005vi-00 delayed by 0 minutes
+Message-Id: <E10HmbG-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 warn_message_delay      = 0 minutes
 warn_message_recipients = CALLER@test.ex
@@ -185,12 +185,12 @@ Delivery-date: Tue, 2 Mar 1999 09:44:33 +0000
 Received: from EXIMUSER by the.local.host.name with local (Exim x.yz)
 	id 10HmbH-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbH-0005vi-00@the.local.host.name>
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
 Subject: Warning: message 10HmbD-0005vi-00 delayed by 0 minutes
+Message-Id: <E10HmbH-0005vi-00@the.local.host.name>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 warn_message_delay      = 0 minutes
 warn_message_recipients = CALLER@test.ex

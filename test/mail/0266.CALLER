@@ -4,13 +4,13 @@ Envelope-to: CALLER@test.ex
 Received: from EXIMUSER by myhost.test.ex with local (Exim x.yz)
 	id 10HmbF-0005vi-00
 	for CALLER@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
 X-Failed-Recipients: nmlist@test.ex
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@test.ex>
 To: CALLER@test.ex
 Subject: Mail delivery failed: returning message to sender
+Message-Id: <E10HmbF-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message was created automatically by mail delivery software.
 
@@ -26,9 +26,9 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmbD-0005vi-00
 	for nmlist@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Message to nmlist.
 

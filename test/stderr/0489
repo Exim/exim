@@ -10,9 +10,9 @@ Recipients:
 >>Headers received:
 
 >>Headers after rewriting and local additions:
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 F From: "Phil Q. Hazel" <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file written for message 10HmaX-0005vi-00
 >>Generated Received: header line
@@ -40,9 +40,9 @@ Recipients:
 >>Headers received:
 
 >>Headers after rewriting and local additions:
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 F From: John "Jack" Smith <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file written for message 10HmaY-0005vi-00
 >>Generated Received: header line
@@ -69,9 +69,9 @@ Recipients:
 >>Headers received:
 
 >>Headers after rewriting and local additions:
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 F From: John "Jack" "Q." Smith <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file written for message 10HmaZ-0005vi-00
 >>Generated Received: header line
@@ -98,9 +98,9 @@ Recipients:
 >>Headers received:
 
 >>Headers after rewriting and local additions:
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 F From: "John (Jack) Q. Smith" <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file written for message 10HmbA-0005vi-00
 >>Generated Received: header line
@@ -127,9 +127,9 @@ Recipients:
 >>Headers received:
 
 >>Headers after rewriting and local additions:
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 F From: John ("Jack") "Q." Smith <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file written for message 10HmbB-0005vi-00
 >>Generated Received: header line
@@ -156,9 +156,9 @@ Recipients:
 >>Headers received:
 
 >>Headers after rewriting and local additions:
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
 F From: "John (\"Jack\") Q. Smith" <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file written for message 10HmbC-0005vi-00
 >>Generated Received: header line
@@ -185,9 +185,9 @@ Recipients:
 >>Headers received:
 
 >>Headers after rewriting and local additions:
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
 F From: "Phil \"Q Hazel" <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file written for message 10HmbD-0005vi-00
 >>Generated Received: header line
@@ -214,9 +214,9 @@ Recipients:
 >>Headers received:
 
 >>Headers after rewriting and local additions:
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
 I Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
 F From: "Phil \"Q" "X." Hazel <CALLER@myhost.test.ex>
+  Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Data file written for message 10HmbE-0005vi-00
 >>Generated Received: header line

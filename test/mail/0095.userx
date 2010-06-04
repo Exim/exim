@@ -3,9 +3,9 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaX-0005vi-00
 	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message
 
@@ -14,11 +14,11 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaY-0005vi-00
 	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 quota: 0
 threshold: 10
+Message-Id: <E10HmaY-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message
 
@@ -27,11 +27,11 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmaZ-0005vi-00
 	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 quota: 10K
 threshold: 900
+Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 A test message
 
@@ -39,13 +39,13 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmbA-0005vi-00
 	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
 Auto-Submitted: auto-replied
 From : p@q
 Reply-To: a@b
 To: userx@myhost.test.ex
 Subject: Your mailbox
+Message-Id: <E10HmbA-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Your mailbox has crossed the threshold
 
@@ -54,11 +54,11 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbB-0005vi-00
 	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 quota: 2200
 threshold: 90%
+Message-Id: <E10HmbB-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This is a test message
 
@@ -66,13 +66,13 @@ From MAILER-DAEMON Tue Mar 02 09:44:33 1999
 Received: from root by myhost.test.ex with local (Exim x.yz)
 	id 10HmbC-0005vi-00
 	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
-Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
 Reply-To: x@y
 Auto-Submitted: auto-replied
 From: Mail Delivery System <Mailer-Daemon@myhost.test.ex>
 To: userx@myhost.test.ex
 Subject: Your mailbox
+Message-Id: <E10HmbC-0005vi-00@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 This message is automatically created by mail delivery software (Exim).
 
@@ -84,9 +84,9 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbD-0005vi-00
 	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbD-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
@@ -194,9 +194,9 @@ Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 	(envelope-from <CALLER@myhost.test.ex>)
 	id 10HmbE-0005vi-00
 	for userx@myhost.test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmbE-0005vi-00@myhost.test.ex>
 From: CALLER_NAME <CALLER@myhost.test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
