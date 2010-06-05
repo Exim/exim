@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.78 2010/06/05 21:42:53 pdp Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.79 2010/06/05 23:50:18 pdp Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -9613,6 +9613,21 @@ If Exim is linked against OpenSSL then RAND_pseudo_bytes() is used.
 Otherwise, the implementation may be arc4random(), random() seeded by
 srandomdev() or srandom(), or a custom implementation even weaker than
 random().
+
+
+.vitem &*${reverse_ip:*&<&'ipaddr'&>&*}*&
+.cindex "expansion" "IP address"
+This operator reverses an IP address; for IPv4 addresses, the result is in
+dotted-quad decimal form, while for IPv6 addreses the result is in
+dotted-nibble hexadecimal form.  In both cases, this is the "natural" form
+for DNS.  For example,
+.code
+${reverse_ip:192.0.2.4} and ${reverse_ip:2001:0db8:c42:9:1:abcd:192.0.2.3}
+.endd
+returns
+.code
+4.2.0.192 and 3.0.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
+.endd
 
 
 .vitem &*${rfc2047:*&<&'string'&>&*}*&

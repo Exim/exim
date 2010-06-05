@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/verify.c,v 1.54 2009/11/16 19:50:37 nm4 Exp $ */
+/* $Cambridge: exim/src/src/verify.c,v 1.55 2010/06/05 23:50:18 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2513,16 +2513,18 @@ return verify_check_this_host(listptr, sender_host_cache, NULL,
 
 
 /*************************************************
-*    Invert an IP address for a DNS black list   *
+*              Invert an IP address              *
 *************************************************/
 
-/*
+/* Originally just used for DNS xBL lists, now also used for the
+reverse_ip expansion operator.
+
 Arguments:
   buffer         where to put the answer
   address        the address to invert
 */
 
-static void
+void
 invert_address(uschar *buffer, uschar *address)
 {
 int bin[4];

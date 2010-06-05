@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.168 2010/06/05 11:13:29 pdp Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.169 2010/06/05 23:50:18 pdp Exp $
 
 New Features in Exim
 --------------------
@@ -42,6 +42,14 @@ Version 4.73
     takes one parameter, a filename, and scans that file with Exim's
     malware-scanning framework.  This is intended purely as a debugging aid
     to ensure that Exim's scanning is working, not to replace other tools.
+
+ 5. There is a new expansion operator, "reverse_ip", which will reverse IP
+    addresses; IPv4 into dotted quad, IPv6 into dotted nibble.  Examples:
+
+      ${reverse_ip:192.0.2.4}
+       -> 4.2.0.192
+      ${reverse_ip:2001:0db8:c42:9:1:abcd:192.0.2.3}
+       -> 3.0.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
 
 
 Version 4.72

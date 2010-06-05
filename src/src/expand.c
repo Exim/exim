@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.105 2009/11/16 19:50:36 nm4 Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.106 2010/06/05 23:50:18 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -156,6 +156,7 @@ static uschar *op_table_underscore[] = {
   US"from_utf8",
   US"local_part",
   US"quote_local_part",
+  US"reverse_ip",
   US"time_eval",
   US"time_interval"};
 
@@ -163,6 +164,7 @@ enum {
   EOP_FROM_UTF8,
   EOP_LOCAL_PART,
   EOP_QUOTE_LOCAL_PART,
+  EOP_REVERSE_IP,
   EOP_TIME_EVAL,
   EOP_TIME_INTERVAL };
 
@@ -5787,6 +5789,25 @@ while (*s != 0)
           goto EXPAND_FAILED;
         s = string_sprintf("%d", pseudo_random_number(max));
         yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
+        continue;
+        }
+
+      /* Reverse IP, including IPv6 to dotted-nibble */
+
+      case EOP_REVERSE_IP:
+        {
+        int family, maskptr;
+        uschar reversed[128];
+
+        family = string_is_ip_address(sub, &maskptr);
+        if (family == 0)
+          {
+          expand_string_message = string_sprintf(
+              "reverse_ip() not given an IP address [%s]", sub);
+          goto EXPAND_FAILED;
+          }
+        invert_address(reversed, sub);
+        yield = string_cat(yield, &size, &ptr, reversed, Ustrlen(reversed));
         continue;
         }
 

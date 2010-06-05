@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.621 2010/06/05 11:13:29 pdp Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.622 2010/06/05 23:50:18 pdp Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -30,6 +30,8 @@ PP/07 If TLS negotiated an anonymous cipher, we could end up with SSL but
 PP/08 Bugzilla 926: switch ClamAV to use the new zINSTREAM API for content
       filtering; old API available if built with WITH_OLD_CLAMAV_STREAM=yes
       NB: ClamAV planning to remove STREAM in "middle of 2010".
+
+PP/09 Implemented reverse_ip expansion operator.
 
 
 Exim version 4.72

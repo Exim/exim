@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.49 2010/06/05 11:13:30 pdp Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.50 2010/06/05 23:50:18 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -141,6 +141,7 @@ extern int     host_nmtoa(int, int *, int, uschar *, int);
 extern uschar *host_ntoa(int, const void *, uschar *, int *);
 extern int     host_scan_for_local_hosts(host_item *, host_item **, BOOL *);
 
+extern void    invert_address(uschar *, uschar *);
 extern int     ip_bind(int, int, uschar *, int);
 extern int     ip_connect(int, int, uschar *, int, int);
 extern void    ip_keepalive(int, uschar *, BOOL);
