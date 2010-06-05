@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.34 2010/06/03 02:42:19 jetmore Exp $
+# $Cambridge: exim/test/runtest,v 1.35 2010/06/05 01:58:39 jetmore Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -25,7 +25,7 @@ use Socket;
 
 $testversion = "4.72 (02-Jun-10)";
 
-$cf = "bin/cf";
+$cf = "bin/cf -exact";
 $cr = "\r";
 $debug = 0;
 $force_update = 0;
@@ -548,6 +548,9 @@ while(<IN>)
   # The amount of space between "host" and the address in verification output
   # depends on the length of the host name. We therefore reduce it to one space
   # for all of them.
+  # Also, the length of space at the end of the host line is dependent
+  # on the length of the longest line, so strip it also on otherwise
+  # un-rewritten lines like localhost
 
   s/^\s+host\s(\S+)\s+(\S+)/  host $1 $2/;
   s/^\s+(host\s\S+\s\S+)\s+(port=.*)/  host $1 $2/;
@@ -558,6 +561,7 @@ while(<IN>)
   s/\b\Q$parm_ipv6\E\b/ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6/g;
   s/\b\Q$parm_ipv4r\E\b/ip4-reverse/g;
   s/\b\Q$parm_ipv6r\E\b/ip6-reverse/g;
+  s/^(\s+host\s\S+\s+\[\S+\]) +$/$1 /;
 
 
   # ======== Test network IP addresses ========

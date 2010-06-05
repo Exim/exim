@@ -48,7 +48,7 @@ x@manual.route
   router = r1, transport = t1
   host ten-1.test.ex [V4NET.0.0.1] MX=5
   host eximtesthost.test.ex [ip4.ip4.ip4.ip4] MX=5
-  host ten-6.test.ex [V4NET.0.0.6]      
+  host ten-6.test.ex [V4NET.0.0.6] 
 x@manual.route is undeliverable: lowest numbered MX record points to local host
 x@random.manual.route cannot be resolved at this time: lookup of host "localhost.test.ex" failed in r2 router
 x@random.manual.route

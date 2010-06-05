@@ -97,17 +97,17 @@ y@batch4
 userx@bdomain1
   router = r3, transport = smtp2
   host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4] 
-  host 127.0.0.1 [127.0.0.1]      
+  host 127.0.0.1 [127.0.0.1] 
   host the.local.host.name [ip4.ip4.ip4.ip4] 
 userx@bdomain2
   router = r3, transport = smtp2
   host the.local.host.name [ip4.ip4.ip4.ip4] 
-  host 127.0.0.1 [127.0.0.1]      
+  host 127.0.0.1 [127.0.0.1] 
   host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4] 
 userx@bdomain3
   router = r3, transport = smtp2
   host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4] 
-  host 127.0.0.1 [127.0.0.1]      
+  host 127.0.0.1 [127.0.0.1] 
   host the.local.host.name [ip4.ip4.ip4.ip4] 
 
 ******** SERVER ********
@@ -126,9 +126,9 @@ DATA
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test message
 .
@@ -151,9 +151,9 @@ DATA
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test message
 .
@@ -176,9 +176,9 @@ DATA
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaX-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test message
 .
@@ -203,9 +203,9 @@ DATA
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test message
 .
@@ -228,9 +228,9 @@ DATA
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaY-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaY-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test message
 .
@@ -257,9 +257,9 @@ DATA
 Received: from CALLER by the.local.host.name with local (Exim x.yz)
 	(envelope-from <CALLER@test.ex>)
 	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-Date: Tue, 2 Mar 1999 09:44:33 +0000
 Message-Id: <E10HmaZ-0005vi-00@the.local.host.name>
 From: CALLER_NAME <CALLER@test.ex>
+Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 Test message
 .
