@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/auths/spa.c,v 1.10 2009/11/16 19:50:38 nm4 Exp $ */
+/* $Cambridge: exim/src/src/auths/spa.c,v 1.11 2010/06/05 10:16:36 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -14,6 +14,7 @@ server support. I (PH) have only modified it in very trivial ways.
 References:
   http://www.innovation.ch/java/ntlm.html
   http://www.kuro5hin.org/story/2002/4/28/1436/66154
+  http://download.microsoft.com/download/9/5/e/95ef66af-9026-4bb0-a41d-a4f81802d92c/%5bMS-SMTP%5d.pdf
 
  * It seems that some systems have existing but different definitions of some
  * of the following types. I received a complaint about "int16" causing
@@ -28,6 +29,7 @@ References:
 07-August-2003:  PH: Patched up the code to avoid assert bombouts for stupid
                      input data. Find appropriate comment by grepping for "PH".
 16-October-2006: PH: Added a call to auth_check_serv_cond() at the end
+05-June-2010:    PP: handle SASL initial response
 */
 
 
@@ -128,9 +130,11 @@ SPAAuthResponse  *responseptr = &response;
 uschar msgbuf[2048];
 uschar *clearpass;
 
-/* send a 334, MS Exchange style, and grab the client's request */
+/* send a 334, MS Exchange style, and grab the client's request,
+unless we already have it via an initial response. */
 
-if (auth_get_no64_data(&data, US"NTLM supported") != OK)
+if ((*data == '\0') &&
+    (auth_get_no64_data(&data, US"NTLM supported") != OK))
   {
   /* something borked */
   return FAIL;
