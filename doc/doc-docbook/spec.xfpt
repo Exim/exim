@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.77 2010/06/05 11:13:29 pdp Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.78 2010/06/05 21:42:53 pdp Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -3756,7 +3756,7 @@ written to the standard output. This option can be used only by an admin user.
 .vitem &%-Mvc%&&~<&'message&~id'&>
 .oindex "&%-Mvc%&"
 .cindex "message" "listing in RFC 2822 format"
-.cindex "listing" "message in RFC 2922 format"
+.cindex "listing" "message in RFC 2822 format"
 This option causes a copy of the complete message (header lines plus body) to
 be written to the standard output in RFC 2822 format. This option can be used
 only by an admin user.

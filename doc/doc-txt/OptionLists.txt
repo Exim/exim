@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.35 2007/08/29 13:37:28 ph10 Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.36 2010/06/05 21:42:53 pdp Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -11,7 +11,7 @@ This file contains complete lists of four kinds of Exim option:
   4. Those that can appear in the build time configuration for the Exim monitor
      (Local/eximon.conf).
 
-This file was last updated for Exim release 4.67.
+This file was last updated for Exim release 4.72.
 
 
 1. RUN TIME OPTIONS
@@ -159,6 +159,13 @@ deliver_drop_privilege               boolean         false         main         
 deliver_queue_load_max               fixed-point     unset         main              1.70
 delivery_date_add                    boolean         false         transports
 delivery_date_remove                 boolean         true          main
+dkim_canon                           string*         unset         smtp              4.70
+dkim_domain                          string list*    unset         smtp              4.72
+dkim_private_key                     string*         unset         smtp              4.70
+dkim_selector                        string*         unset         smtp              4.70
+dkim_sign_headers                    string*         (RFC4871)     smtp              4.70
+dkim_strict                          string*         unset         smtp              4.70
+dkim_verify_signers                  string*         $dkim_signers main              4.70
 directory                            string*         unset         appendfile
 directory_file                       string*         +             appendfile
 directory_mode                       octal-integer   0700          appendfile
@@ -233,6 +240,7 @@ from                                 string*         unset         autoreply
 gecos_name                           string*         unset         main
 gecos_pattern                        string          unset         main
 gethostbyname                        boolean         false         smtp
+gnutls_compat_mode                   boolean         unset         main              4.70
 gnutls_require_kx                    string*         unset         main              4.67
                                      string*         unset         smtp              4.67
 gnutls_require_mac                   string*         unset         main              4.67
@@ -365,6 +373,7 @@ once                                 string*         unset         autoreply
 once_file_size                       integer         0             autoreply         3.20
 once_repeat                          time            0s            autoreply         2.95
 one_time                             boolean         false         redirect          4.00
+openssl_options                      string "+dont_insert_empty_fragments" main      4.73
 optional                             boolean         false         iplookup          4.00
 oracle_servers                       string          unset         main              4.00
 owners                               string list     unset         redirect          4.00
@@ -375,6 +384,7 @@ path                                 string          "/usr/bin"    pipe
 percent_hack_domains                 domain list     unset         main
 perl_at_start                        boolean         false         main              2.10
 perl_startup                         string          unset         main              2.10
+permit_coredump                      boolean         false         pipe              4.73
 pgsql_servers                        string list     unset         main              3.14
 pid_file_path                        string          ++            main
 pipe_as_creator                      boolean         false         pipe
@@ -495,7 +505,7 @@ smtp_receive_timeout                 time            5m            main
 smtp_reserve_hosts                   host list       unset         main
 smtp_return_error_details            boolean         false         main              4.11
 socket                               string*         unset         lmtp              4.11
-spamd_address                        string          +             main              4.50 with content scan
+spamd_address                        string*         +             main              4.50 with content scan
 split_spool_directory                boolean         false         main              1.70
 spool_directory                      string          ++            main
 sqlite_lock_timeout                  time            5s            main              4.53
@@ -605,6 +615,7 @@ provide compatibility with Sendmail.
 -bhc             Test incoming SMTP call, with callouts
 -bi            * Run <command>bi_command</command>
 -bm              Accept message on standard input
+-bmalware      + Invoke configured malware scanning against supplied filename
 -bnq             Don't qualify addresses in locally submitted messages
 -bP              Show configuration option settings
 -bp            + List the queue
@@ -652,6 +663,7 @@ provide compatibility with Sendmail.
 -Mset          + Load message's variables when testing with -be
 -Mt            + Thaw message(s)
 -Mvb           + View message body
+-Mvc           + View entire message in RFC 2822 format
 -Mvh           + View message header
 -Mvl           + View message log
 -m             * Ignored
@@ -792,6 +804,7 @@ DB_MODE                      optional*    mode for hints files
 DEFAULT_CRYPT                optional     default crypt() function
 DELIVER_IN_BUFFER_SIZE       optional*
 DELIVER_OUT_BUFFER_SIZE      optional*
+DISABLE_DKIM                 optional     disables DKIM support
 DISABLE_D_OPTION             optional     disables -D option
 ERRNO_QUOTA                  optional*    error code for system quota failures
 EXICYCLOG_MAX                optional     number of old log files to keep
@@ -909,6 +922,7 @@ USE_GNUTLS                   optional     use GnuTLS instead of OpenSSL
 USE_READLINE                 optional     try to load libreadline for -be
 USE_TCP_WRAPPERS             system       link with tcpwrappers
 USE_TDB                      optional     use the tdb DB interface
+WITH_OLD_CLAMAV_STREAM       optional*    use ClamAV API from before ClamAV 0.95
 X11                          system**     X11 base directory
 X11_LD_LIB                   system**     X11 link library
 XINCLUDE                     system**     X11 include directory
