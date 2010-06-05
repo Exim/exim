@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.67 2009/11/16 19:50:37 nm4 Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.68 2010/06/05 09:10:10 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -75,6 +75,7 @@ extern BOOL    gnutls_compat_mode;     /* Less security, more compatibility */
 extern uschar *gnutls_require_mac;     /* So some can be avoided */
 extern uschar *gnutls_require_kx;      /* So some can be avoided */
 extern uschar *gnutls_require_proto;   /* So some can be avoided */
+extern uschar *openssl_options;        /* OpenSSL compatibility options */
 extern const pcre *regex_STARTTLS;     /* For recognizing STARTTLS settings */
 extern uschar *tls_advertise_hosts;    /* host for which TLS is advertised */
 extern uschar *tls_certificate;        /* Certificate file */

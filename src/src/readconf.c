@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.39 2009/11/16 19:50:37 nm4 Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.40 2010/06/05 09:10:10 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -291,6 +291,9 @@ static optionlist optionlist_config[] = {
   { "mysql_servers",            opt_stringptr,   &mysql_servers },
 #endif
   { "never_users",              opt_uidlist,     &never_users },
+#ifdef SUPPORT_TLS
+  { "openssl_options",          opt_stringptr,   &openssl_options },
+#endif
 #ifdef LOOKUP_ORACLE
   { "oracle_servers",           opt_stringptr,   &oracle_servers },
 #endif
@@ -2748,6 +2751,7 @@ void
 readconf_main(void)
 {
 int sep = 0;
+long dummy_l;
 struct stat statbuf;
 uschar *s, *filename;
 uschar *list = config_main_filelist;
@@ -3156,6 +3160,20 @@ if ((tls_verify_hosts != NULL || tls_try_verify_hosts != NULL) &&
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "tls_%sverify_hosts is set, but tls_verify_certificates is not set",
     (tls_verify_hosts != NULL)? "" : "try_");
+
+/* If openssl_options is set, validate it */
+if (openssl_options != NULL)
+  {
+# ifdef USE_GNUTLS
+  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+    "openssl_options is set but we're using GnuTLS\n");
+# else
+  long dummy;
+  if (!(tls_openssl_options_parse(openssl_options, &dummy)))
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+      "openssl_options parse error: %s\n", openssl_options);
+# endif
+  }
 #endif
 }
 

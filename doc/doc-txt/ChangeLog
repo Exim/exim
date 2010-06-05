@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.616 2010/06/03 15:20:41 jetmore Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.617 2010/06/05 09:10:09 pdp Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -13,6 +13,8 @@ PP/02 Include check_rfc2047_length in configure.default because we're seeing
       increasing numbers of administrators be bitten by this.
 
 JJ/01 Added DISABLE_DKIM and comment to src/EDITME
+
+PP/03 Bugzilla 994: added openssl_options main configuration option.
 
 Exim version 4.72
 -----------------

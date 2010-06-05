@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.165 2010/06/03 15:20:41 jetmore Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.166 2010/06/05 09:10:09 pdp Exp $
 
 New Features in Exim
 --------------------
@@ -7,6 +7,18 @@ This file contains descriptions of new features that have been added to Exim.
 Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
+
+
+Version 4.73
+------------
+
+ 1. A new main configuration option, "openssl_options", is available if Exim
+    is built with SSL support provided by OpenSSL.  The option allows
+    administrators to specify OpenSSL options to be used on connections;
+    typically this is to set bug compatibility features which the OpenSSL
+    developers have not enabled by default.  There may be security
+    consequences for certain options, so these should not be changed
+    frivolously.
 
 
 Version 4.72

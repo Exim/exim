@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.47 2009/11/16 19:50:37 nm4 Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.48 2010/06/05 09:10:10 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -36,6 +36,9 @@ extern BOOL    tls_smtp_buffered(void);
 extern int     tls_ungetc(int);
 extern int     tls_write(const uschar *, size_t);
 extern void    tls_version_report(FILE *);
+#ifndef USE_GNUTLS
+extern BOOL    tls_openssl_options_parse(uschar *, long *);
+#endif
 #endif
 
 

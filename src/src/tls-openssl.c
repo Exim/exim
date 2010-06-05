@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.22 2009/11/16 19:50:37 nm4 Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.23 2010/06/05 09:10:10 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -302,11 +302,14 @@ static int
 tls_init(host_item *host, uschar *dhparam, uschar *certificate,
   uschar *privatekey, address_item *addr)
 {
+long init_options;
+BOOL okay;
+
 SSL_load_error_strings();          /* basic set up */
 OpenSSL_add_ssl_algorithms();
 
 #if (OPENSSL_VERSION_NUMBER >= 0x0090800fL) && !defined(OPENSSL_NO_SHA256)
-/* SHA256 is becoming ever moar popular. This makes sure it gets added to the
+/* SHA256 is becoming ever more popular. This makes sure it gets added to the
 list of available digests. */
 EVP_add_digest(EVP_sha256());
 #endif
@@ -346,21 +349,28 @@ level. */
 
 SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
 
-/* The following patch was supplied by Robert Roselius */
+/* Apply administrator-supplied work-arounds.
+Historically we applied just one requested option,
+SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS, but when bug 994 requested a second, we
+moved to an administrator-controlled list of options to specify and
+grandfathered in the first one as the default value for "openssl_options".
 
-#if OPENSSL_VERSION_NUMBER > 0x00906040L
-/* Enable client-bug workaround.
-   Versions of OpenSSL as of 0.9.6d include a "CBC countermeasure" feature,
-   which causes problems with some clients (such as the Certicom SSL Plus
-   library used by Eudora).  This option, SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS,
-   disables the coutermeasure allowing Eudora to connect.
-   Some poppers and MTAs use SSL_OP_ALL, which enables all such bug
-   workarounds. */
-/* XXX (Silently?) ignore failure here? XXX*/
+No OpenSSL version number checks: the options we accept depend upon the
+availability of the option value macros from OpenSSL.  */
 
-if (!(SSL_CTX_set_options(ctx, SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS)))
-  return tls_error(US"SSL_CTX_set_option", host, NULL);
-#endif
+okay = tls_openssl_options_parse(openssl_options, &init_options);
+if (!okay)
+  return tls_error("openssl_options parsing failed", host, NULL);
+
+if (init_options)
+  {
+  DEBUG(D_tls) debug_printf("setting SSL CTX options: %#lx\n", init_options);
+  if (!(SSL_CTX_set_options(ctx, init_options)))
+    return tls_error(string_sprintf(
+          "SSL_CTX_set_option(%#lx)", init_options), host, NULL);
+  }
+else
+  DEBUG(D_tls) debug_printf("no SSL CTX options to set\n");
 
 /* Initialize with DH parameters if supplied */
 
@@ -702,6 +712,9 @@ alarm(0);
 if (rc <= 0)
   {
   tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL);
+  if (ERR_get_error() == 0)
+    log_write(0, LOG_MAIN,
+        "  => client disconnected cleanly (rejected our certificate?)\n");
   return FAIL;
   }
 
@@ -1121,6 +1134,190 @@ for (p = smallbuf; needed_len; --needed_len, ++p)
 /* We don't particularly care about weighted results; if someone wants
 smooth distribution and cares enough then they should submit a patch then. */
 return r % max;
+}
+
+
+
+
+/*************************************************
+*        OpenSSL option parse                    *
+*************************************************/
+
+/* Parse one option for tls_openssl_options_parse below
+
+Arguments:
+  name    one option name
+  value   place to store a value for it
+Returns   success or failure in parsing
+*/
+
+struct exim_openssl_option {
+  uschar *name;
+  long    value;
+};
+/* We could use a macro to expand, but we need the ifdef and not all the
+options document which version they were introduced in.  Policylet: include
+all options unless explicitly for DTLS, let the administrator choose which
+to apply.
+
+This list is current as of:
+  ==>  0.9.8n  <==  */
+static struct exim_openssl_option exim_openssl_options[] = {
+/* KEEP SORTED ALPHABETICALLY! */
+#ifdef SSL_OP_ALL
+  { "all", SSL_OP_ALL },
+#endif
+#ifdef SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
+  { "allow_unsafe_legacy_renegotiation", SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION },
+#endif
+#ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
+  { "cipher_server_preference", SSL_OP_CIPHER_SERVER_PREFERENCE },
+#endif
+#ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
+  { "dont_insert_empty_fragments", SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS },
+#endif
+#ifdef SSL_OP_EPHEMERAL_RSA
+  { "ephemeral_rsa", SSL_OP_EPHEMERAL_RSA },
+#endif
+#ifdef SSL_OP_LEGACY_SERVER_CONNECT
+  { "legacy_server_connect", SSL_OP_LEGACY_SERVER_CONNECT },
+#endif
+#ifdef SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER
+  { "microsoft_big_sslv3_buffer", SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER },
+#endif
+#ifdef SSL_OP_MICROSOFT_SESS_ID_BUG
+  { "microsoft_sess_id_bug", SSL_OP_MICROSOFT_SESS_ID_BUG },
+#endif
+#ifdef SSL_OP_MSIE_SSLV2_RSA_PADDING
+  { "msie_sslv2_rsa_padding", SSL_OP_MSIE_SSLV2_RSA_PADDING },
+#endif
+#ifdef SSL_OP_NETSCAPE_CHALLENGE_BUG
+  { "netscape_challenge_bug", SSL_OP_NETSCAPE_CHALLENGE_BUG },
+#endif
+#ifdef SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG
+  { "netscape_reuse_cipher_change_bug", SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG },
+#endif
+#ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
+  { "no_session_resumption_on_renegotiation", SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION },
+#endif
+#ifdef SSL_OP_SINGLE_DH_USE
+  { "single_dh_use", SSL_OP_SINGLE_DH_USE },
+#endif
+#ifdef SSL_OP_SINGLE_ECDH_USE
+  { "single_ecdh_use", SSL_OP_SINGLE_ECDH_USE },
+#endif
+#ifdef SSL_OP_SSLEAY_080_CLIENT_DH_BUG
+  { "ssleay_080_client_dh_bug", SSL_OP_SSLEAY_080_CLIENT_DH_BUG },
+#endif
+#ifdef SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG
+  { "sslref2_reuse_cert_type_bug", SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG },
+#endif
+#ifdef SSL_OP_TLS_BLOCK_PADDING_BUG
+  { "tls_block_padding_bug", SSL_OP_TLS_BLOCK_PADDING_BUG },
+#endif
+#ifdef SSL_OP_TLS_D5_BUG
+  { "tls_d5_bug", SSL_OP_TLS_D5_BUG },
+#endif
+#ifdef SSL_OP_TLS_ROLLBACK_BUG
+  { "tls_rollback_bug", SSL_OP_TLS_ROLLBACK_BUG },
+#endif
+};
+static int exim_openssl_options_size =
+  sizeof(exim_openssl_options)/sizeof(struct exim_openssl_option);
+
+static BOOL
+tls_openssl_one_option_parse(uschar *name, long *value)
+{
+int first = 0;
+int last = exim_openssl_options_size;
+while (last > first)
+  {
+  int middle = (first + last)/2;
+  int c = Ustrcmp(name, exim_openssl_options[middle].name);
+  if (c == 0)
+    {
+    *value = exim_openssl_options[middle].value;
+    return TRUE;
+    }
+  else if (c > 0)
+    first = middle + 1;
+  else
+    last = middle;
+  }
+return FALSE;
+}
+
+
+
+
+/*************************************************
+*        OpenSSL option parsing logic            *
+*************************************************/
+
+/* OpenSSL has a number of compatibility options which an administrator might
+reasonably wish to set.  Interpret a list similarly to decode_bits(), so that
+we look like log_selector.
+
+Arguments:
+  option_spec  the administrator-supplied string of options
+  results      ptr to long storage for the options bitmap
+Returns        success or failure
+*/
+
+BOOL
+tls_openssl_options_parse(uschar *option_spec, long *results)
+{
+long result, item;
+uschar *s, *end;
+uschar keep_c;
+BOOL adding, item_parsed;
+
+/* We grandfather in as default the one option which we used to set always. */
+#ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
+result = SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS;
+#else
+result = 0L;
+#endif
+
+if (option_spec == NULL)
+  {
+  *results = result;
+  return TRUE;
+  }
+
+for (s=option_spec; *s != '\0'; /**/)
+  {
+  while (isspace(*s)) ++s;
+  if (*s == '\0')
+    break;
+  if (*s != '+' && *s != '-')
+    {
+    DEBUG(D_tls) debug_printf("malformed openssl option setting: "
+        "+ or - expected but found \"%s\"", s);
+    return FALSE;
+    }
+  adding = *s++ == '+';
+  for (end = s; (*end != '\0') && !isspace(*end); ++end) /**/ ;
+  keep_c = *end;
+  *end = '\0';
+  item_parsed = tls_openssl_one_option_parse(s, &item);
+  if (!item_parsed)
+    {
+    DEBUG(D_tls) debug_printf("openssl option setting unrecognised: \"%s\"", s);
+    return FALSE;
+    }
+  DEBUG(D_tls) debug_printf("openssl option, %s from %lx: %lx (%s)\n",
+      adding ? "adding" : "removing", result, item, s);
+  if (adding)
+    result |= item;
+  else
+    result &= ~item;
+  *end = keep_c;
+  s = end;
+  }
+
+*results = result;
+return TRUE;
 }
 
 /* End of tls-openssl.c */

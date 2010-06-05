@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.74 2010/05/29 19:26:31 nm4 Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.75 2010/06/05 09:10:08 pdp Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -12392,6 +12392,7 @@ listed in more than one group.
 .row &%gnutls_require_mac%&          "control GnuTLS MAC algorithms"
 .row &%gnutls_require_protocols%&    "control GnuTLS protocols"
 .row &%gnutls_compat_mode%&          "use GnuTLS compatibility mode"
+.row &%openssl_options%&             "adjust OpenSSL compatibility options"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
 .row &%tls_certificate%&             "location of server certificate"
 .row &%tls_crl%&                     "certificate revocation list"
@@ -14001,6 +14002,36 @@ never_users = root:daemon:bin
 Including root is redundant if it is also on the fixed list, but it does no
 harm. This option overrides the &%pipe_as_creator%& option of the &(pipe)&
 transport driver.
+
+
+.option openssl_options main "string list" +dont_insert_empty_fragments
+.cindex "OpenSSL "compatibility options"
+This option allows an administrator to adjust the SSL options applied
+by OpenSSL to connections.  It is given as a space-separated list of items,
+each one to be +added or -subtracted from the current value.  The default
+value is one option which happens to have been set historically.  You can
+remove all options with:
+.code
+openssl_options = -all
+.endd
+This option is only available if Exim is built against OpenSSL.  The values
+available for this option vary according to the age of your OpenSSL install.
+The &"all"& value controls a subset of flags which are available, typically
+the bug workaround options.  The &'SSL_CTX_set_options'& man page will
+list the values known on your system and Exim should support all the
+&"bug workaround"& options and many of the &"modifying"& options.  The Exim
+names lose the leading &"SSL_OP_"& and are lower-cased.
+
+Note that adjusting the options can have severe impact upon the security of
+SSL as used by Exim.  It is possible to disable safety checks and shoot
+yourself in the foot in various unpleasant ways.  This option should not be
+adjusted lightly.  An unrecognised item will be detected at by invoking Exim
+with the &%-bV%& flag.
+
+An example:
+.code
+openssl_options = -all +microsoft_big_sslv3_buffer
+.endd
 
 
 .option oracle_servers main "string list" unset
