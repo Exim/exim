@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/deliver.c,v 1.47 2009/11/16 19:50:36 nm4 Exp $ */
+/* $Cambridge: exim/src/src/deliver.c,v 1.48 2010/06/05 10:04:44 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1727,7 +1727,20 @@ if ((pid = fork()) == 0)
   HP-UX doesn't have RLIMIT_CORE; I don't know how to do this in that
   system. Some experimental/developing systems (e.g. GNU/Hurd) may define
   RLIMIT_CORE but not support it in setrlimit(). For such systems, do not
-  complain if the error is "not supported". */
+  complain if the error is "not supported".
+
+  There are two scenarios where changing the max limit has an effect.  In one,
+  the user is using a .forward and invoking a command of their choice via pipe;
+  for these, we do need the max limit to be 0 unless the admin chooses to
+  permit an increased limit.  In the other, the command is invoked directly by
+  the transport and is under administrator control, thus being able to raise
+  the limit aids in debugging.  So there's no general always-right answer.
+
+  Thus we inhibit core-dumps completely but let individual transports, while
+  still root, re-raise the limits back up to aid debugging.  We make the
+  default be no core-dumps -- few enough people can use core dumps in
+  diagnosis that it's reasonable to make them something that has to be explicitly requested.
+  */
 
   #ifdef RLIMIT_CORE
   struct rlimit rl;

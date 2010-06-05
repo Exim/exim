@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/pipe.c,v 1.14 2009/11/16 19:50:39 nm4 Exp $ */
+/* $Cambridge: exim/src/src/transports/pipe.c,v 1.15 2010/06/05 10:04:44 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -57,6 +57,8 @@ optionlist pipe_transport_options[] = {
       (void *)offsetof(pipe_transport_options_block, message_suffix) },
   { "path",              opt_stringptr,
       (void *)offsetof(pipe_transport_options_block, path) },
+  { "permit_coredump",   opt_bool,
+      (void *)offsetof(pipe_transport_options_block, permit_coredump) },
   { "pipe_as_creator",   opt_bool | opt_public,
       (void *)offsetof(transport_instance, deliver_as_creator) },
   { "restrict_to_path",  opt_bool,
@@ -110,6 +112,7 @@ pipe_transport_options_block pipe_transport_option_defaults = {
   0,              /* options */
   FALSE,          /* freeze_exec_fail */
   FALSE,          /* ignore_status */
+  FALSE,          /* permit_coredump */
   FALSE,          /* restrict_to_path */
   FALSE,          /* timeout_defer */
   FALSE,          /* use_shell */
@@ -127,7 +130,7 @@ pipe_transport_options_block pipe_transport_option_defaults = {
 /* Called for each delivery in the privileged state, just before the uid/gid
 are changed and the main entry point is called. In a system that supports the
 login_cap facilities, this function is used to set the class resource limits
-for the user.
+for the user.  It may also re-enable coredumps.
 
 Arguments:
   tblock     points to the transport instance
@@ -166,6 +169,24 @@ if (ob->use_classresources)
       setclassresources(lc);
       login_close(lc);
       }
+    }
+  }
+#endif
+
+#ifdef RLIMIT_CORE
+if (ob->permit_coredump)
+  {
+  struct rlimit rl;
+  rl.rlim_cur = RLIM_INFINITY;
+  rl.rlim_max = RLIM_INFINITY;
+  if (setrlimit(RLIMIT_CORE, &rl) < 0)
+    {
+#ifdef SETRLIMIT_NOT_SUPPORTED
+    if (errno != ENOSYS && errno != ENOTSUP)
+#endif
+      log_write(0, LOG_MAIN,
+          "delivery setrlimit(RLIMIT_CORE, RLIMI_INFINITY) failed: %s",
+          strerror(errno));
     }
   }
 #endif

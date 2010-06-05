@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/pipe.h,v 1.7 2009/11/16 19:56:54 nm4 Exp $ */
+/* $Cambridge: exim/src/src/transports/pipe.h,v 1.8 2010/06/05 10:04:44 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -25,6 +25,7 @@ typedef struct {
   int   options;
   BOOL  freeze_exec_fail;
   BOOL  ignore_status;
+  BOOL  permit_coredump;
   BOOL  restrict_to_path;
   BOOL  timeout_defer;
   BOOL  use_shell;

@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.166 2010/06/05 09:10:09 pdp Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.167 2010/06/05 10:04:43 pdp Exp $
 
 New Features in Exim
 --------------------
@@ -19,6 +19,12 @@ Version 4.73
     developers have not enabled by default.  There may be security
     consequences for certain options, so these should not be changed
     frivolously.
+
+ 2. A new pipe transport option, "permit_coredumps", may help with problem
+    diagnosis in some scenarios.  Note that Exim is typically installed as
+    a setuid binary, which on most OSes will inhibit coredumps by default,
+    so that safety mechanism would have to be overriden for this option to
+    be able to take effect.
 
 
 Version 4.72

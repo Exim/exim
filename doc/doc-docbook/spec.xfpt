@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.75 2010/06/05 09:10:08 pdp Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.76 2010/06/05 10:04:43 pdp Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -21073,6 +21073,17 @@ variable of the subprocess. The default is:
 If the &%command%& option does not yield an absolute path name, the command is
 sought in the PATH directories, in the usual way. &*Warning*&: This does not
 apply to a command specified as a transport filter.
+
+
+.option permit_coredump pipe boolean false
+Normally Exim inhibits core-dumps during delivery.  If you have a need to get
+a core-dump of a pipe command, enable this command.  This enables core-dumps
+during delivery and affects both the Exim binary and the pipe command run.
+It is recommended that this option remain off unless and until you have a need
+for it and that this only be enabled when needed, as the risk of excessive
+resource consumption can be quite high.  Note also that Exim is typically
+installed as a setuid binary and most operating systems will inhibit coredumps
+of these by default, so further OS-specific action may be required.
 
 
 .option pipe_as_creator pipe boolean false
