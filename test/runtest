@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.35 2010/06/05 01:58:39 jetmore Exp $
+# $Cambridge: exim/test/runtest,v 1.36 2010/06/05 02:25:16 jetmore Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -441,7 +441,7 @@ while(<IN>)
     \d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d/Exim statistics from <time> to <time>/x;
 
 
-  # ======== Caller's login, uid, gid, home ========
+  # ======== Caller's login, uid, gid, home, gecos ========
 
   s/\Q$parm_caller_home\E/CALLER_HOME/g;   # NOTE: these must be done
   s/\b\Q$parm_caller\E\b/CALLER/g;         #       in this order!
@@ -452,6 +452,8 @@ while(<IN>)
 
   s/\buid=$parm_caller_uid\b/uid=CALLER_UID/g;
   s/\bgid=$parm_caller_gid\b/gid=CALLER_GID/g;
+
+  s/\bname=$parm_caller_gecos\b/name=CALLER_GECOS/g;
 
   # When looking at spool files with -Mvh, we will find not only the caller
   # login, but also the uid and gid. It seems that $) in some Perls gives all
@@ -2367,12 +2369,11 @@ if (defined $parm_support{'Expand_dlfunc'} && !-e "bin/loaded")
 # Find the caller of this program.
 
 ($parm_caller,$pwpw,$parm_caller_uid,$parm_caller_gid,$pwquota,$pwcomm,
- $pwgecos, $parm_caller_home) = getpwuid($>);
+ $parm_caller_gecos, $parm_caller_home) = getpwuid($>);
 
 $pwpw = $pwpw;       # Kill Perl warnings
 $pwquota = $pwquota;
 $pwcomm = $pwcomm;
-$pwgecos = $pwgecos;
 
 $parm_caller_group = getgrgid($parm_caller_gid);
 
