@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.25 2010/06/05 09:36:11 pdp Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.26 2010/06/05 10:34:29 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -833,10 +833,16 @@ if (rc <= 0)
 
 DEBUG(D_tls) debug_printf("SSL_connect succeeded\n");
 
+/* Beware anonymous ciphers which lead to server_cert being NULL */
 server_cert = SSL_get_peer_certificate (ssl);
-tls_peerdn = US X509_NAME_oneline(X509_get_subject_name(server_cert),
-  CS txt, sizeof(txt));
-tls_peerdn = txt;
+if (server_cert)
+  {
+  tls_peerdn = US X509_NAME_oneline(X509_get_subject_name(server_cert),
+    CS txt, sizeof(txt));
+  tls_peerdn = txt;
+  }
+else
+  tls_peerdn = NULL;
 
 construct_cipher_name(ssl);   /* Sets tls_cipher */
 
