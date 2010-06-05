@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.620 2010/06/05 10:34:29 pdp Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.621 2010/06/05 11:13:29 pdp Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -26,6 +26,10 @@ PP/07 If TLS negotiated an anonymous cipher, we could end up with SSL but
       without a peer certificate (I believe), leading to a segfault because of
       an assumption that peers always have certificates.  Be a little more
       paranoid.  Problem reported by Martin Tscholak.
+
+PP/08 Bugzilla 926: switch ClamAV to use the new zINSTREAM API for content
+      filtering; old API available if built with WITH_OLD_CLAMAV_STREAM=yes
+      NB: ClamAV planning to remove STREAM in "middle of 2010".
 
 
 Exim version 4.72

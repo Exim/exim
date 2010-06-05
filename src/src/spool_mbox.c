@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.14 2008/01/16 09:56:55 tom Exp $ */
+/* $Cambridge: exim/src/src/spool_mbox.c,v 1.15 2010/06/05 11:13:30 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -25,9 +25,10 @@ extern int spam_ok;
 int spool_mbox_ok = 0;
 uschar spooled_message_id[17];
 
-/* returns a pointer to the FILE, and puts the size in bytes into mbox_file_size */
+/* returns a pointer to the FILE, and puts the size in bytes into mbox_file_size
+ * normally, source_file_override is NULL */
 
-FILE *spool_mbox(unsigned long *mbox_file_size) {
+FILE *spool_mbox(unsigned long *mbox_file_size, uschar *source_file_override) {
   uschar message_subdir[2];
   uschar buffer[16384];
   uschar *temp_string;
@@ -100,13 +101,17 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
     (void)fwrite("\n", 1, 1, mbox_file);
 
     /* copy body file */
-    message_subdir[1] = '\0';
-    for (i = 0; i < 2; i++) {
-      message_subdir[0] = (split_spool_directory == (i == 0))? message_id[5] : 0;
-      temp_string = string_sprintf("%s/input/%s/%s-D", spool_directory,
-        message_subdir, message_id);
-      data_file = Ufopen(temp_string, "rb");
-      if (data_file != NULL) break;
+    if (source_file_override == NULL) {
+      message_subdir[1] = '\0';
+      for (i = 0; i < 2; i++) {
+        message_subdir[0] = (split_spool_directory == (i == 0))? message_id[5] : 0;
+        temp_string = string_sprintf("%s/input/%s/%s-D", spool_directory,
+          message_subdir, message_id);
+        data_file = Ufopen(temp_string, "rb");
+        if (data_file != NULL) break;
+      };
+    } else {
+      data_file = Ufopen(source_file_override, "rb");
     };
 
     if (data_file == NULL) {
@@ -125,7 +130,8 @@ FILE *spool_mbox(unsigned long *mbox_file_size) {
      * explicitly, because the one in the file is parted of the locked area.
      */
 
-    (void)fseek(data_file, SPOOL_DATA_START_OFFSET, SEEK_SET);
+    if (!source_file_override)
+      (void)fseek(data_file, SPOOL_DATA_START_OFFSET, SEEK_SET);
 
     do {
       j = fread(buffer, 1, sizeof(buffer), data_file);
@@ -188,6 +194,12 @@ void unspool_mbox(void) {
     mbox_path = string_sprintf("%s/scan/%s", spool_directory, spooled_message_id);
 
     tempdir = opendir(CS mbox_path);
+    if (!tempdir) {
+      debug_printf("Unable to opendir(%s): %s\n", mbox_path, strerror(errno));
+      /* Just in case we still can: */
+      rmdir(CS mbox_path);
+      return;
+    }
     /* loop thru dir & delete entries */
     while((entry = readdir(tempdir)) != NULL) {
       uschar *name = US entry->d_name;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.48 2010/06/05 09:10:10 pdp Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.49 2010/06/05 11:13:30 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -297,7 +297,7 @@ extern BOOL    smtp_verify_helo(void);
 extern int     smtp_write_command(smtp_outblock *, BOOL, char *, ...);
 #ifdef WITH_CONTENT_SCAN
 extern int     spam(uschar **);
-extern FILE   *spool_mbox(unsigned long *);
+extern FILE   *spool_mbox(unsigned long *, uschar *);
 #endif
 extern BOOL    spool_move_message(uschar *, uschar *, uschar *, uschar *);
 extern BOOL    spool_open_datafile(uschar *);

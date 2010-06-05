@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/config.h.defaults,v 1.18 2009/11/16 19:50:36 nm4 Exp $ */
+/* $Cambridge: exim/src/src/config.h.defaults,v 1.19 2010/06/05 11:13:29 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -146,6 +146,7 @@ it's a default value. */
 
 #define WITH_CONTENT_SCAN
 #define WITH_OLD_DEMIME
+#define WITH_OLD_CLAMAV_STREAM
 
 /* EXPERIMENTAL features */
 #define EXPERIMENTAL_SPF

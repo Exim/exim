@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.76 2010/06/05 10:04:43 pdp Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.77 2010/06/05 11:13:29 pdp Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -3168,6 +3168,17 @@ whether the standard input is a TCP/IP socket. When Exim is called from
 above concerning senders and qualification do not apply. In this situation,
 Exim behaves in exactly the same way as it does when receiving a message via
 the listening daemon.
+
+.vitem &%-bmalware%&&~<&'filename'&>
+.oindex "&%-bmalware%&"
+.cindex "testing", "malware"
+.cindex "malware scan test"
+This debugging option causes Exim to scan the given file,
+using the malware scanning framework.  The option of av_scanner influences
+this option, so if av_scanner's value is dependent upon an expansion then
+the expansion should have defaults which apply to this invocation.  Exim will
+have changed working directory before resolving the filename, so using fully
+qualified pathnames is advisable.  This option requires admin privileges.
 
 .vitem &%-bt%&
 .oindex "&%-bt%&"
@@ -13951,6 +13962,14 @@ failure message to the sender, depending on the &%-oe%& setting. Rejection of
 an oversized message is logged in both the main and the reject logs. See also
 the generic transport option &%message_size_limit%&, which limits the size of
 message that an individual transport can process.
+
+If you use a virus-scanner and set this option to to a value larger than the
+maximum size that your virus-scanner is configured to support, you may get
+failures triggered by large mails.  The right size to configure for the
+virus-scanner depends upon what data is passed and the options in use but it's
+probably safest to just set it to a little larger than this value.  Eg, with a
+default Exim message size of 50M and a default ClamAV StreamMaxLength of 10M,
+some problems may result.
 
 
 .option move_frozen_messages main boolean false
@@ -27884,8 +27903,16 @@ required: either the path and name of a UNIX socket file, or a hostname or IP
 number, and a port, separated by space, as in the second of these examples:
 .code
 av_scanner = clamd:/opt/clamd/socket
-av_scanner = clamd:192.168.2.100 1234
+av_scanner = clamd:192.0.2.3 1234
+av_scanner = clamd:192.0.2.3 1234:local
 .endd
+If the value of av_scanner points to a UNIX socket file or contains the local
+keyword, then the ClamAV interface will pass a filename containing the data
+to be scanned, which will should normally result in less I/O happening and be
+more efficient.  Normally in the TCP case, the data is streamed to ClamAV as
+Exim does not assume that there is a common filesystem with the remote host.
+There is an option WITH_OLD_CLAMAV_STREAM in &_src/EDITME_& available, should
+you be running a version of ClamAV prior to 0.95.
 If the option is unset, the default is &_/tmp/clamd_&. Thanks to David Saez for
 contributing the code for this scanner.
 
@@ -28024,6 +28051,9 @@ logging data.
 If your virus scanner cannot unpack MIME and TNEF containers itself, you should
 use the &%demime%& condition (see section &<<SECTdemimecond>>&) before the
 &%malware%& condition.
+
+Beware the interaction of Exim's &%message_size_limit%& with any size limits
+imposed by your anti-virus scanner.
 
 Here is a very simple scanning example:
 .code

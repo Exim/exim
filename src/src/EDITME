@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/EDITME,v 1.24 2010/06/03 15:20:41 jetmore Exp $
+# $Cambridge: exim/src/src/EDITME,v 1.25 2010/06/05 11:13:29 pdp Exp $
 
 ##################################################
 #          The Exim mail transport agent         #
@@ -351,6 +351,15 @@ EXIM_MONITOR=eximon.bin
 # the "demime" condition.
 
 # WITH_OLD_DEMIME=yes
+
+# If you're using ClamAV and are backporting fixes to an old version, instead
+# of staying current (which is the more usual approach) then you may need to
+# use an older API which uses a STREAM command, now deprecated, instead of
+# zINSTREAM.  If you need to set this, please let the Exim developers know, as
+# if nobody reports a need for it, we'll remove this option and clean up the
+# code.  zINSTREAM was introduced with ClamAV 0.95.
+#
+# WITH_OLD_CLAMAV_STREAM=yes
 
 #------------------------------------------------------------------------------
 # By default Exim includes code to support DKIM (DomainKeys Identified

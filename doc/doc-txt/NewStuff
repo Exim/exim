@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.167 2010/06/05 10:04:43 pdp Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.168 2010/06/05 11:13:29 pdp Exp $
 
 New Features in Exim
 --------------------
@@ -25,6 +25,23 @@ Version 4.73
     a setuid binary, which on most OSes will inhibit coredumps by default,
     so that safety mechanism would have to be overriden for this option to
     be able to take effect.
+
+ 3. ClamAV 0.95 is now required for ClamAV support in Exim, unless
+    Local/Makefile sets: WITH_OLD_CLAMAV_STREAM=yes
+    Note that this switches Exim to use a new API ("INSTREAM") and a future
+    release of ClamAV will remove support for the old API ("STREAM").
+
+    The av_scanner option, when set to "clamd", now takes an optional third
+    part, "local", which causes Exim to pass a filename to ClamAV instead of
+    the file content.  This is the same behaviour as when clamd is pointed at
+    a Unix-domain socket.  For example:
+
+      av_scanner = clamd:192.0.2.3 1234:local
+
+ 4. There is now a -bmalware option, restricted to admin users.  This option
+    takes one parameter, a filename, and scans that file with Exim's
+    malware-scanning framework.  This is intended purely as a debugging aid
+    to ensure that Exim's scanning is working, not to replace other tools.
 
 
 Version 4.72

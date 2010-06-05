@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.54 2010/06/03 05:40:27 pdp Exp $ */
+/* $Cambridge: exim/src/src/receive.c,v 1.55 2010/06/05 11:13:30 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1094,7 +1094,7 @@ return TRUE;
 
 DO_MIME_ACL:
 /* make sure the eml mbox file is spooled up */
-mbox_file = spool_mbox(&mbox_size);
+mbox_file = spool_mbox(&mbox_size, NULL);
 if (mbox_file == NULL) {
   /* error while spooling */
   log_write(0, LOG_MAIN|LOG_PANIC,

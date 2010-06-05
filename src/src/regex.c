@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/regex.c,v 1.7 2005/07/01 10:49:02 ph10 Exp $ */
+/* $Cambridge: exim/src/src/regex.c,v 1.8 2010/06/05 11:13:30 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -47,7 +47,7 @@ int regex(uschar **listptr) {
 
   if (mime_stream == NULL) {
     /* We are in the DATA ACL */
-    mbox_file = spool_mbox(&mbox_size);
+    mbox_file = spool_mbox(&mbox_size, NULL);
     if (mbox_file == NULL) {
       /* error while spooling */
       log_write(0, LOG_MAIN|LOG_PANIC,

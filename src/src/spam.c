@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/spam.c,v 1.17 2008/07/18 17:55:42 fanf2 Exp $ */
+/* $Cambridge: exim/src/src/spam.c,v 1.18 2010/06/05 11:13:30 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -80,7 +80,7 @@ int spam(uschar **listptr) {
   };
 
   /* make sure the eml mbox file is spooled up */
-  mbox_file = spool_mbox(&mbox_size);
+  mbox_file = spool_mbox(&mbox_size, NULL);
 
   if (mbox_file == NULL) {
     /* error while spooling */

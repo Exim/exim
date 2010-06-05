@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/demime.c,v 1.9 2006/02/22 14:46:44 ph10 Exp $ */
+/* $Cambridge: exim/src/src/demime.c,v 1.10 2010/06/05 11:13:29 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -47,7 +47,7 @@ int demime(uschar **listptr) {
   };
 
   /* make sure the eml mbox file is spooled up */
-  mbox_file = spool_mbox(&mbox_size);
+  mbox_file = spool_mbox(&mbox_size, NULL);
 
   if (mbox_file == NULL) {
     /* error while spooling */

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.65 2009/11/16 19:50:36 nm4 Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.66 2010/06/05 11:13:29 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1355,6 +1355,7 @@ uschar *ftest_domain = NULL;
 uschar *ftest_localpart = NULL;
 uschar *ftest_prefix = NULL;
 uschar *ftest_suffix = NULL;
+uschar *malware_test_file = NULL;
 uschar *real_sender_address;
 uschar *originator_home = US"/";
 void *reset_point;
@@ -1820,6 +1821,14 @@ for (i = 1; i < argc; i++)
     receiving_message, which got turned off for all -b options. */
 
     else if (Ustrcmp(argrest, "m") == 0) receiving_message = TRUE;
+
+    /* -bmalware: test the filename given for malware */
+
+    else if (Ustrcmp(argrest, "malware") == 0)
+      {
+      if (++i >= argc) { badarg = TRUE; break; }
+      malware_test_file = argv[i];
+      }
 
     /* -bnq: For locally originating messages, do not qualify unqualified
     addresses. In the envelope, this causes errors; in header lines they
@@ -3592,12 +3601,13 @@ configuration, but the queue run restriction can be relaxed. Only an admin
 user may request that a message be returned to its sender forthwith. Only an
 admin user may specify a debug level greater than D_v (because it might show
 passwords, etc. in lookup queries). Only an admin user may request a queue
-count. */
+count. Only an admin user can use the test interface to scan for email
+(because Exim will be in the spool dir and able to look at mails). */
 
 if (!admin_user)
   {
   BOOL debugset = (debug_selector & ~D_v) != 0;
-  if (deliver_give_up || daemon_listen ||
+  if (deliver_give_up || daemon_listen || malware_test_file ||
      (count_queue && queue_list_requires_admin) ||
      (list_queue && queue_list_requires_admin) ||
      (queue_interval >= 0 && prod_requires_admin) ||
@@ -3747,6 +3757,29 @@ if (!unprivileged &&                      /* originally had root AND */
 /* When we are retaining a privileged uid, we still change to the exim gid. */
 
 else setgid(exim_gid);
+
+/* Handle a request to scan a file for malware */
+if (malware_test_file)
+  {
+  int result;
+  set_process_info("scanning file for malware");
+  result = malware_in_file(malware_test_file);
+  if (result == FAIL)
+    {
+    printf("No malware found.\n");
+    exit(EXIT_SUCCESS);
+    }
+  if (result != OK)
+    {
+    printf("Malware lookup returned non-okay/fail: %d\n", result);
+    exit(EXIT_FAILURE);
+    }
+  if (malware_name)
+    printf("Malware found: %s\n", malware_name);
+  else
+    printf("Malware scan detected malware of unknown name.\n");
+  exit(EXIT_FAILURE);
+  }
 
 /* Handle a request to list the delivery queue */
 
