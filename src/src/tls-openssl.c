@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.24 2010/06/05 09:32:31 pdp Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.25 2010/06/05 09:36:11 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -903,7 +903,7 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
   else if (error == SSL_ERROR_SSL)
     {
     ERR_error_string(ERR_get_error(), ssl_errstring);
-    log_write(0, LOG_MAIN, "TLS error (SSL_write): %s", ssl_errstring);
+    log_write(0, LOG_MAIN, "TLS error (SSL_read): %s", ssl_errstring);
     ssl_xfer_error = 1;
     return EOF;
     }
