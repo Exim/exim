@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.51 2010/06/06 00:27:52 pdp Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.52 2010/06/06 22:46:34 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -156,6 +156,7 @@ extern void    log_close_all(void);
 
 #ifdef WITH_CONTENT_SCAN
 extern int     malware(uschar **);
+extern int     malware_in_file(uschar *);
 #endif
 extern int     match_address_list(uschar *, BOOL, BOOL, uschar **,
                  unsigned int *, int, int, uschar **);

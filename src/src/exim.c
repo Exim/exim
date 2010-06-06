@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.69 2010/06/06 02:46:13 pdp Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.70 2010/06/06 22:46:34 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3623,6 +3623,7 @@ else setgid(exim_gid);
 /* Handle a request to scan a file for malware */
 if (malware_test_file)
   {
+#ifdef WITH_CONTENT_SCAN
   int result;
   set_process_info("scanning file for malware");
   result = malware_in_file(malware_test_file);
@@ -3640,6 +3641,9 @@ if (malware_test_file)
     printf("Malware found: %s\n", malware_name);
   else
     printf("Malware scan detected malware of unknown name.\n");
+#else
+  printf("Malware scanning not enabled at compile time.\n");
+#endif
   exit(EXIT_FAILURE);
   }
 

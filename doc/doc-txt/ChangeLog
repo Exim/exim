@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.626 2010/06/06 02:46:13 pdp Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.627 2010/06/06 22:46:33 pdp Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -41,6 +41,8 @@ PP/11 Bugzilla 922: Documentation dusting, patch provided by John Horne.
 PP/12 Bugzilla 973: Implement --version.
 
 PP/13 Bugzilla 752: Refuse to build/run if Exim user is root/0.
+
+PP/14 Build without WITH_CONTENT_SCAN. Path from Andreas Metzler.
 
 
 Exim version 4.72
