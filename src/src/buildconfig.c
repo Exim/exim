@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.15 2009/11/16 19:50:36 nm4 Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.16 2010/06/06 02:46:13 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -356,6 +356,7 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
     uid_t uid = 0;
     gid_t gid = 0;
     int gid_set = 0;
+    int uid_not_set = 0;
     char *username = NULL;
     char *groupname = NULL;
     char *s;
@@ -410,6 +411,7 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
       while (isspace(*user)) user++;
       username = user;
       gid_set = 1;
+      uid_not_set = 1;
       }
 
     else
@@ -500,6 +502,18 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
       {
       printf("\n*** No group set for Exim. Please review your build-time "
         "configuration.\n\n");
+      return 1;
+      }
+
+    /* security sanity checks
+    if ref: is being used, we can never be sure, but we can take reasonable
+    steps to filter out the most obvious ones.  */
+
+    if ((!uid_not_set && uid == 0) ||
+        (strcmp(username, "root") == 0) ||
+        (strcmp(username, "toor") == 0) )
+      {
+      printf("\n*** Exim's internal user must not be root.\n\n");
       return 1;
       }
 

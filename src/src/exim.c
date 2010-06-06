@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.68 2010/06/06 02:08:50 pdp Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.69 2010/06/06 02:46:13 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1234,6 +1234,12 @@ This is a feature to make the lives of binary distributors easier. */
 #ifdef EXIM_USERNAME
 if (route_finduser(US EXIM_USERNAME, &pw, &exim_uid))
   {
+  if (exim_uid == 0)
+    {
+    fprintf(stderr, "exim: refusing to run with uid 0 for \"%s\"\n",
+      EXIM_USERNAME);
+    exit(EXIT_FAILURE);
+    }
   exim_gid = pw->pw_gid;
   }
 else

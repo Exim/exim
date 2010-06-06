@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.171 2010/06/06 01:35:41 pdp Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.172 2010/06/06 02:46:13 pdp Exp $
 
 New Features in Exim
 --------------------
@@ -62,6 +62,18 @@ Version 4.73
       control = debug/tag=.$sender_host_address
       control = debug/opts=+expand+acl
       control = debug/tag=.$message_exim_id/opts=+expand
+
+ 7. It has always been implicit in the design and the documentation that
+    "the Exim user" is not root.  src/EDITME said that using root was
+    "very strongly discouraged".  This is not enough to keep people from
+    shooting themselves in the foot in days when many don't configure Exim
+    themselves but via package build managers.  The security consequences of
+    running various bits of network code are severe if there should be bugs in
+    them.  As such, the Exim user may no longer be root.  If configured
+    statically, Exim will refuse to build.  If configured as ref:user then Exim
+    will exit shortly after start-up.  If you must shoot yourself in the foot,
+    then henceforth you will have to maintain your own local patches to strip
+    the safeties off.
 
 
 Version 4.72
