@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.170 2010/06/06 00:27:52 pdp Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.171 2010/06/06 01:35:41 pdp Exp $
 
 New Features in Exim
 --------------------
@@ -106,7 +106,7 @@ Version 4.70 / 4.71
  2. Experimental DCC support via dccifd (contributed by Wolfgang Breyha).
 
  3. There is now a bool{} expansion condition which maps certain strings to
-    true/false condition values (most likely of use in conjuction with the
+    true/false condition values (most likely of use in conjunction with the
     and{} expansion operator).
 
  4. The $spam_score, $spam_bar and $spam_report variables are now available
@@ -128,6 +128,12 @@ Version 4.70 / 4.71
     OpenSSL.
 
  9. The transport_filter_timeout option now applies to SMTP transports too.
+
+
+Version 4.69
+------------
+
+ 1. Preliminary DKIM support in Experimental.
 
 
 Version 4.68

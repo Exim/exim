@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.623 2010/06/06 00:27:52 pdp Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.624 2010/06/06 01:35:41 pdp Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -35,6 +35,8 @@ PP/08 Bugzilla 926: switch ClamAV to use the new zINSTREAM API for content
 PP/09 Implemented reverse_ip expansion operator.
 
 PP/10 Bugzilla 937: provide a "debug" ACL control.
+
+PP/11 Bugzilla 922: Documentation dusting, patch provided by John Horne.
 
 
 Exim version 4.72
@@ -87,7 +89,7 @@ PP/01 Bugzilla 989: CVE-2010-2024 - work round race condition on
 Exim version 4.71
 -----------------
 
-TK/01 Bugzilla 912: Fix DKIM segfault on empty headers/body
+TK/01 Bugzilla 912: Fix DKIM segfault on empty headers/body.
 
 NM/01 Bugzilla 913: Documentation fix for gnutls_* options.
 
@@ -106,7 +108,7 @@ TK/01 Added patch by Johannes Berg that expands the main option
 
 TK/02 Write list of recipients to X-Envelope-Sender header when building
       the mbox-format spool file for content scanning (suggested by Jakob
-      Hirsch)
+      Hirsch).
 
 TK/03 Added patch by Wolfgang Breyha that adds experimental DCC
       (http://www.dcc-servers.net/) support via dccifd. Activated by
@@ -122,16 +124,16 @@ NM/01 Bugzilla 657: Embedded PCRE removed from the exim source tree.
 
 NM/02 Bugzilla 646: Removed unwanted C/R in Dovecot authenticator
       conversation.  Added nologin parameter to request.
-      Patch contributed by Kirill Miazine
+      Patch contributed by Kirill Miazine.
 
 TF/01 Do not log submission mode rewrites if they do not change the address.
 
 TF/02 Bugzilla 662: Fix stack corruption before exec() in daemon.c.
 
 NM/03 Bugzilla 602: exicyclog now handles panic log, and creates empty
-      log files in place.  Contributed by Roberto Lima
+      log files in place.  Contributed by Roberto Lima.
 
-NM/04 Bugzilla 667: close socket used by dovecot authenticator
+NM/04 Bugzilla 667: Close socket used by dovecot authenticator.
 
 TF/03 Bugzilla 615: When checking the local_parts router precondition
       after a local_part_suffix or local_part_prefix option, Exim now
@@ -139,14 +141,14 @@ TF/03 Bugzilla 615: When checking the local_parts router precondition
       contains cached lookups for the whole local part.
 
 NM/05 Bugzilla 521: Integrated SPF Best Guess support contributed by
-      Robert Millan.  Documentation is in experimental-spec.txt
+      Robert Millan.  Documentation is in experimental-spec.txt.
 
 TF/04 Bugzilla 668: Fix parallel build (make -j).
 
-NM/05.2 Bugzilla 437: Prevent Maildir aux files being created with mode 000
+NM/05.2 Bugzilla 437: Prevent Maildir aux files being created with mode 000.
 
 NM/05.3 Bugzilla 598: Improvement to Dovecot authenticator handling.
-      Patch provided by Jan Srzednicki
+      Patch provided by Jan Srzednicki.
 
 TF/05 Leading white space used to be stripped from $spam_report which
       wrecked the formatting. Now it is preserved.
@@ -163,95 +165,96 @@ TF/09 Produce a more useful error message if an SMTP transport's hosts
       setting expands to an empty string.
 
 NM/06 Bugzilla 744: EXPN did not work under TLS.
-      Patch provided by Phil Pennock
+      Patch provided by Phil Pennock.
 
 NM/07 Bugzilla 769: Extraneous comma in usage fprintf
-      Patch provided by Richard Godbee
+      Patch provided by Richard Godbee.
 
 NM/08 Fixed erroneous documentation references to smtp_notquit_acl to be
       acl_smtp_notquit, added index entry.
 
-NM/09 Bugzilla 787: Potential buffer overflow in string_format
-      Patch provided by Eugene Bujak
+NM/09 Bugzilla 787: Potential buffer overflow in string_format.
+      Patch provided by Eugene Bujak.
 
-NM/10 Bugzilla 770: Problem on some platforms modifying the len parameter to accept()
-      Patch provided by Maxim Dounin
+NM/10 Bugzilla 770: Problem on some platforms modifying the len parameter to
+      accept(). Patch provided by Maxim Dounin.
 
 NM/11 Bugzilla 749: Preserve old behaviour of blanks comparing equal to zero.
-      Patch provided by Phil Pennock
+      Patch provided by Phil Pennock.
 
 NM/12 Bugzilla 497: Correct behaviour of exiwhat when no config exists.
 
 NM/13 Bugzilla 590: Correct handling of Resent-Date headers.
-      Patch provided by Brad "anomie" Jorsch
+      Patch provided by Brad "anomie" Jorsch.
 
 NM/14 Bugzilla 622: Added timeout setting to transport filter.
-      Patch provided by Dean Brooks
+      Patch provided by Dean Brooks.
 
 TK/05 Add native DKIM support (does not depend on external libraries).
 
 NM/15 Bugzilla 854: Removed code that symlinks to pcre as its no longer useful.
-      Patch provided by Graeme Fowler
+      Patch provided by Graeme Fowler.
 
 NM/16 Bugzilla 851: Documentation example syntax fix.
 
 NM/17 Changed NOTICE file to remove references to embedded PCRE.
 
-NM/18 Bugzilla 894: Fix issue with very long lines including comments in lsearch
+NM/18 Bugzilla 894: Fix issue with very long lines including comments in
+      lsearch.
 
-NM/19 Bugzilla 745: TLS version reporting
-      Patch provided by Phil Pennock
+NM/19 Bugzilla 745: TLS version reporting.
+      Patch provided by Phil Pennock.
 
-NM/20 Bugzilla 167: bool: condition support
-      Patch provided by Phil Pennock
+NM/20 Bugzilla 167: bool: condition support.
+      Patch provided by Phil Pennock.
 
-NM/21 Bugzilla 665: gnutls_compat_mode to allow compatibility with broken clients
-      Patch provided by Phil Pennock
+NM/21 Bugzilla 665: gnutls_compat_mode to allow compatibility with broken
+      clients. Patch provided by Phil Pennock.
 
-NM/22 Bugzilla 607: prepend (not append) Resent-Message-ID and Resent-Date
-      Patch provided by Brad "anomie" Jorsch
+NM/22 Bugzilla 607: prepend (not append) Resent-Message-ID and Resent-Date.
+      Patch provided by Brad "anomie" Jorsch.
 
-NM/23 Bugzilla 687: Fix misparses in eximstats
-      Patch provided by Heiko Schlittermann
+NM/23 Bugzilla 687: Fix misparses in eximstats.
+      Patch provided by Heiko Schlittermann.
 
-NM/24 Bugzilla 688: Fix exiwhat to handle log_selector = +pid
-      Patch provided by Heiko Schlittermann
+NM/24 Bugzilla 688: Fix exiwhat to handle log_selector = +pid.
+      Patch provided by Heiko Schlittermann.
 
-NM/25 Bugzilla 727: Use transport mode as default mode for maildirsize file
+NM/25 Bugzilla 727: Use transport mode as default mode for maildirsize file.
       plus update to original patch.
 
-NM/26 Bugzilla 799: Documentation correction for ratelimit
+NM/26 Bugzilla 799: Documentation correction for ratelimit.
 
-NM/27 Bugzilla 802: Improvements to local interface IP addr detection
-      Patch provided by David Brownlee
+NM/27 Bugzilla 802: Improvements to local interface IP addr detection.
+      Patch provided by David Brownlee.
 
-NM/28 Bugzilla 807: Improvements to LMTP delivery logging
+NM/28 Bugzilla 807: Improvements to LMTP delivery logging.
 
-NM/29 Bugzilla 862, 866, 875: Documentation bugfixes
+NM/29 Bugzilla 862, 866, 875: Documentation bugfixes.
 
-NM/30 Bugzilla 888: TLS documentation bugfixes
+NM/30 Bugzilla 888: TLS documentation bugfixes.
 
-NM/31 Bugzilla 896: Dovecot buffer overrun fix
+NM/31 Bugzilla 896: Dovecot buffer overrun fix.
 
 NM/32 Bugzilla 889: Change all instances of "expr" in shell scripts to "expr --"
-      Unlike the original bugzilla I have changed all shell scripts in src tree
+      Unlike the original bugzilla I have changed all shell scripts in src tree.
 
-NM/33 Bugzilla 898: Transport filter timeout fix
-      Patch by Todd Rinaldo
+NM/33 Bugzilla 898: Transport filter timeout fix.
+      Patch by Todd Rinaldo.
 
-NM/34 Bugzilla 901: Fix sign/unsigned and UTF mistmatches
-      Patch by Serge Demonchaux
+NM/34 Bugzilla 901: Fix sign/unsigned and UTF mistmatches.
+      Patch by Serge Demonchaux.
 
-NM/35 Bugzilla 39: Base64 decode bug fixes
-      Patch by Jakob Hirsch
+NM/35 Bugzilla 39: Base64 decode bug fixes.
+      Patch by Jakob Hirsch.
 
-NM/36 Bugzilla 909: Correct connect() call in dcc code
+NM/36 Bugzilla 909: Correct connect() call in dcc code.
 
-NM/37 Bugzilla 910: Correct issue with relaxed/simple handling
+NM/37 Bugzilla 910: Correct issue with relaxed/simple handling.
 
-NM/38 Bugzilla 908: Removed NetBSD3 support as no longer needed
+NM/38 Bugzilla 908: Removed NetBSD3 support as no longer needed.
 
-NM/39 Bugzilla 911: Fixed MakeLinks build script
+NM/39 Bugzilla 911: Fixed MakeLinks build script.
 
 
 Exim version 4.69
@@ -273,11 +276,11 @@ NM/01 Bugzilla 592: --help option is handled incorrectly if exim is invoked
 
 SC/01 Added the -bylocaldomain option to eximstats.
 
-NM/02 Bugzilla 619: Defended against bad data coming back from gethostbyaddr
+NM/02 Bugzilla 619: Defended against bad data coming back from gethostbyaddr.
 
-NM/03 Bugzilla 613: Documentation fix for acl_not_smtp
+NM/03 Bugzilla 613: Documentation fix for acl_not_smtp.
 
-NM/04 Bugzilla 628: PCRE update to 7.4 (work done by John Hall)
+NM/04 Bugzilla 628: PCRE update to 7.4 (work done by John Hall).
 
 
 Exim version 4.68

@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.80 2010/06/06 00:25:46 pdp Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.81 2010/06/06 01:35:41 pdp Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -9802,7 +9802,7 @@ All other string values will result in expansion failure.
 
 When combined with ACL variables, this expansion condition will let you
 make decisions in one place and act on those decisions in another place.
-For example,
+For example:
 .code
 ${if bool{$acl_m_privileged_sender} ...
 .endd
@@ -12363,6 +12363,7 @@ listed in more than one group.
 .row &%acl_smtp_auth%&               "ACL for AUTH"
 .row &%acl_smtp_connect%&            "ACL for connection"
 .row &%acl_smtp_data%&               "ACL for DATA"
+.row &%acl_smtp_dkim%&               "ACL for DKIM verification"
 .row &%acl_smtp_etrn%&               "ACL for ETRN"
 .row &%acl_smtp_expn%&               "ACL for EXPN"
 .row &%acl_smtp_helo%&               "ACL for EHLO or HELO"
@@ -12824,7 +12825,7 @@ It specifies which anti-virus scanner to use. The default value is:
 .code
 sophie:/var/run/sophie
 .endd
-If the value of &%av_scanner%& starts with dollar character, it is expanded
+If the value of &%av_scanner%& starts with a dollar character, it is expanded
 before use. See section &<<SECTscanvirus>>& for further details.
 
 
@@ -27911,7 +27912,7 @@ If you do not set &%av_scanner%&, it defaults to
 .code
 av_scanner = sophie:/var/run/sophie
 .endd
-If the value of &%av_scanner%& starts with dollar character, it is expanded
+If the value of &%av_scanner%& starts with a dollar character, it is expanded
 before use. The following scanner types are supported in this release:
 
 .vlist
@@ -28209,9 +28210,8 @@ it always return &"true"& by appending &`:true`& to the username.
 
 .cindex "spam scanning" "returned variables"
 When the &%spam%& condition is run, it sets up a number of expansion
-variables. With the exception of &$spam_score_int$&, these are usable only
-within ACLs; their values are not retained with the message and so cannot be
-used at delivery time.
+variables. These variables are saved with the received message, thus they are
+available for use at delivery time.
 
 .vlist
 .vitem &$spam_score$&
@@ -28222,11 +28222,8 @@ for inclusion in log or reject messages.
 The spam score of the message, multiplied by ten, as an integer value. For
 example &"34"& or &"305"&. It may appear to disagree with &$spam_score$&
 because &$spam_score$& is rounded and &$spam_score_int$& is truncated.
-The integer value is useful for numeric comparisons in
-conditions. This variable is special; its value is saved with the message, and
-written to Exim's spool file. This means that it can be used during the whole
-life of the message on your Exim system, in particular, in routers or
-transports during the later delivery phase.
+The integer value is useful for numeric comparisons in conditions.
+
 
 .vitem &$spam_bar$&
 A string consisting of a number of &"+"& or &"-"& characters, representing the
@@ -34453,7 +34450,7 @@ It can co-exist with all other Exim features, including transport filters.
 .next
 Verify signatures in incoming messages: This is implemented by an additional
 ACL (acl_smtp_dkim), which can be called several times per message, with
-different signature context.
+different signature contexts.
 .endlist
 
 In typical Exim style, the verification implementation does not include any
@@ -34481,19 +34478,19 @@ Signing is implemented by setting private options on the SMTP transport.
 These options take (expandable) strings as arguments.
 
 .option dkim_domain smtp string&!! unset
-MANDATORY
+MANDATORY:
 The domain you want to sign with. The result of this expanded
 option is put into the &%$dkim_domain%& expansion variable.
 
 .option dkim_selector smtp string&!! unset
-MANDATORY
+MANDATORY:
 This sets the key selector string. You can use the &%$dkim_domain%& expansion
 variable to look up a matching selector. The result is put in the expansion
 variable &%$dkim_selector%& which should be used in the &%dkim_private_key%&
 option along with &%$dkim_domain%&.
 
 .option dkim_private_key smtp string&!! unset
-MANDATORY
+MANDATORY:
 This sets the private key to use. You can use the &%$dkim_domain%& and
 &%$dkim_selector%& expansion variables to determine the private key to use.
 The result can either
@@ -34509,14 +34506,14 @@ is set.
 .endlist
 
 .option dkim_canon smtp string&!! unset
-OPTIONAL
+OPTIONAL:
 This option sets the canonicalization method used when signing a message.
 The DKIM RFC currently supports two methods: "simple" and "relaxed".
 The option defaults to "relaxed" when unset. Note: the current implementation
 only supports using the same canonicalization method for both headers and body.
 
 .option dkim_strict smtp string&!! unset
-OPTIONAL
+OPTIONAL:
 This  option  defines  how  Exim  behaves  when  signing a message that
 should be signed fails for some reason.  When the expansion evaluates to
 either "1" or "true", Exim will defer. Otherwise Exim will send the message
@@ -34524,7 +34521,7 @@ unsigned. You can use the &%$dkim_domain%& and &%$dkim_selector%& expansion
 variables here.
 
 .option dkim_sign_headers smtp string&!! unset
-OPTIONAL
+OPTIONAL:
 When set, this option must expand to (or be specified as) a colon-separated
 list of header names. Headers with these names will be included in the message
 signature. When unspecified, the header names recommended in RFC4871 will be
@@ -34550,8 +34547,8 @@ more advanced policies. For that reason, the global option
 The global option &%dkim_verify_signers%& can be set to a colon-separated
 list of DKIM domains or identities for which the ACL &%acl_smtp_dkim%& is
 called. It is expanded when the message has been received. At this point,
-the expansion variable &%$dkim_signers%& already contains a colon-
-separated list of signer domains and identities for the message. When
+the expansion variable &%$dkim_signers%& already contains a colon-separated
+list of signer domains and identities for the message. When
 &%dkim_verify_signers%& is not specified in the main configuration,
 it defaults as:
 .code
@@ -34565,7 +34562,7 @@ dkim_verify_signers = paypal.com:ebay.com:$dkim_signers
 .endd
 This would result in &%acl_smtp_dkim%& always being called for "paypal.com"
 and "ebay.com", plus all domains and identities that have signatures in the message.
-You can also be more creative in constructing your policy. Example:
+You can also be more creative in constructing your policy. For example:
 .code
 dkim_verify_signers = $sender_address_domain:$dkim_signers
 .endd
@@ -34579,7 +34576,7 @@ available (from most to least important):
 
 .vlist
 .vitem &%$dkim_cur_signer%&
-The signer that is being evaluated in this ACL run. This can be domain or
+The signer that is being evaluated in this ACL run. This can be a domain or
 an identity. This is one of the list items from the expanded main option
 &%dkim_verify_signers%& (see above).
 .vitem &%$dkim_verify_status%&
@@ -34624,7 +34621,7 @@ The signing identity, if present. IMPORTANT: This variable is only populated
 if there is an actual signature in the message for the current domain or
 identity (as reflected by &%$dkim_cur_signer%&).
 .vitem &%$dkim_selector%&
-The key record selector string
+The key record selector string.
 .vitem &%$dkim_algo%&
 The algorithm used. One of 'rsa-sha1' or 'rsa-sha256'.
 .vitem &%$dkim_canon_body%&
@@ -34659,7 +34656,7 @@ in the key record.
 Key granularity (tag g=) from the key record. Defaults to "*" if not specified
 in the key record.
 .vitem &%$dkim_key_notes%&
-Notes from the key record (tag n=)
+Notes from the key record (tag n=).
 .endlist
 
 In addition, two ACL conditions are provided:
@@ -34669,7 +34666,7 @@ In addition, two ACL conditions are provided:
 ACL condition that checks a colon-separated list of domains or identities
 for a match against the domain or identity that the ACL is currently verifying
 (reflected by &%$dkim_cur_signer%&). This is typically used to restrict an ACL
-verb to a group of domains or identities, like:
+verb to a group of domains or identities. For example:
 
 .code
 # Warn when message apparently from GMail has no signature at all
