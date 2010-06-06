@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.79 2010/06/05 23:50:18 pdp Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.80 2010/06/06 00:25:46 pdp Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -25771,6 +25771,23 @@ warn  control = caseful_local_part
 .endd
 Notice that we put back the lower cased version afterwards, assuming that
 is what is wanted for subsequent tests.
+
+.vitem &*control&~=&~debug/*&<&'options'&>
+.cindex "&ACL;" "enabling debug logging"
+.cindex "debugging" "enabling from an ACL"
+This control turns on debug logging, almost as though Exim had been invoked
+with &`-d`&, with the output going to a new logfile, by default called
+&'debuglog'&.  The filename can be adjusted with the &'tag'& option, which
+may access any variables already defined.  The logging may be adjusted with
+the &'opts'& option, which takes the same values as the &`-d`& command-line
+option.  Some examples (which depend on variables that don't exist in all
+contexts):
+.code
+      control = debug
+      control = debug/tag=.$sender_host_address
+      control = debug/opts=+expand+acl
+      control = debug/tag=.$message_exim_id/opts=+expand
+.endd
 
 .vitem &*control&~=&~enforce_sync*& &&&
        &*control&~=&~no_enforce_sync*&

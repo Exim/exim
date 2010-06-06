@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.169 2010/06/05 23:50:18 pdp Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.170 2010/06/06 00:27:52 pdp Exp $
 
 New Features in Exim
 --------------------
@@ -50,6 +50,18 @@ Version 4.73
        -> 4.2.0.192
       ${reverse_ip:2001:0db8:c42:9:1:abcd:192.0.2.3}
        -> 3.0.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
+
+ 6. There is a new ACL control called "debug", to enable debug logging.
+    This allows selective logging of certain incoming transactions within
+    production environments, with some care.  It takes two options, "tag"
+    and "opts"; "tag" is included in the filename of the log and "opts"
+    is used as per the -d<options> command-line option.  Examples, which
+    don't all make sense in all contexts:
+
+      control = debug
+      control = debug/tag=.$sender_host_address
+      control = debug/opts=+expand+acl
+      control = debug/tag=.$message_exim_id/opts=+expand
 
 
 Version 4.72

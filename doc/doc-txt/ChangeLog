@@ -1,9 +1,10 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.622 2010/06/05 23:50:18 pdp Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.623 2010/06/06 00:27:52 pdp Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
 
 Exim version 4.73
+-----------------
 
 PP/01 Date: & Message-Id: revert to normally being appended to a message,
       only prepend for the Resent-* case.  Fixes regression introduced in
@@ -32,6 +33,8 @@ PP/08 Bugzilla 926: switch ClamAV to use the new zINSTREAM API for content
       NB: ClamAV planning to remove STREAM in "middle of 2010".
 
 PP/09 Implemented reverse_ip expansion operator.
+
+PP/10 Bugzilla 937: provide a "debug" ACL control.
 
 
 Exim version 4.72

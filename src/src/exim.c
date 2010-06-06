@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.66 2010/06/05 11:13:29 pdp Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.67 2010/06/06 00:27:52 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -677,155 +677,6 @@ else
   if (rc == FAIL) *exit_value = 2;
     else if (rc == DEFER && *exit_value == 0) *exit_value = 1;
   }
-}
-
-
-
-/*************************************************
-*         Decode bit settings for log/debug      *
-*************************************************/
-
-/* This function decodes a string containing bit settings in the form of +name
-and/or -name sequences, and sets/unsets bits in a bit string accordingly. It
-also recognizes a numeric setting of the form =<number>, but this is not
-intended for user use. It's an easy way for Exim to pass the debug settings
-when it is re-exec'ed.
-
-The log options are held in two unsigned ints (because there became too many
-for one). The top bit in the table means "put in 2nd selector". This does not
-yet apply to debug options, so the "=" facility sets only the first selector.
-
-The "all" selector, which must be equal to 0xffffffff, is recognized specially.
-It sets all the bits in both selectors. However, there is a facility for then
-unsetting certain bits, because we want to turn off "memory" in the debug case.
-
-A bad value for a debug setting is treated as an unknown option - error message
-to stderr and die. For log settings, which come from the configuration file,
-we write to the log on the way out...
-
-Arguments:
-  selector1      address of the first bit string
-  selector2      address of the second bit string, or NULL
-  notall1        bits to exclude from "all" for selector1
-  notall2        bits to exclude from "all" for selector2
-  string         the configured string
-  options        the table of option names
-  count          size of table
-  which          "log" or "debug"
-
-Returns:         nothing on success - bomb out on failure
-*/
-
-static void
-decode_bits(unsigned int *selector1, unsigned int *selector2, int notall1,
-  int notall2, uschar *string, bit_table *options, int count, uschar *which)
-{
-uschar *errmsg;
-if (string == NULL) return;
-
-if (*string == '=')
-  {
-  char *end;    /* Not uschar */
-  *selector1 = strtoul(CS string+1, &end, 0);
-  if (*end == 0) return;
-  errmsg = string_sprintf("malformed numeric %s_selector setting: %s", which,
-    string);
-  goto ERROR_RETURN;
-  }
-
-/* Handle symbolic setting */
-
-else for(;;)
-  {
-  BOOL adding;
-  uschar *s;
-  int len;
-  bit_table *start, *end;
-
-  while (isspace(*string)) string++;
-  if (*string == 0) return;
-
-  if (*string != '+' && *string != '-')
-    {
-    errmsg = string_sprintf("malformed %s_selector setting: "
-      "+ or - expected but found \"%s\"", which, string);
-    goto ERROR_RETURN;
-    }
-
-  adding = *string++ == '+';
-  s = string;
-  while (isalnum(*string) || *string == '_') string++;
-  len = string - s;
-
-  start = options;
-  end = options + count;
-
-  while (start < end)
-    {
-    bit_table *middle = start + (end - start)/2;
-    int c = Ustrncmp(s, middle->name, len);
-    if (c == 0)
-      {
-      if (middle->name[len] != 0) c = -1; else
-        {
-        unsigned int bit = middle->bit;
-        unsigned int *selector;
-
-        /* The value with all bits set means "force all bits in both selectors"
-        in the case where two are being handled. However, the top bit in the
-        second selector is never set. When setting, some bits can be excluded.
-        */
-
-        if (bit == 0xffffffff)
-          {
-          if (adding)
-            {
-            *selector1 = 0xffffffff ^ notall1;
-            if (selector2 != NULL) *selector2 = 0x7fffffff ^ notall2;
-            }
-          else
-            {
-            *selector1 = 0;
-            if (selector2 != NULL) *selector2 = 0;
-            }
-          }
-
-        /* Otherwise, the 0x80000000 bit means "this value, without the top
-        bit, belongs in the second selector". */
-
-        else
-          {
-          if ((bit & 0x80000000) != 0)
-            {
-            selector = selector2;
-            bit &= 0x7fffffff;
-            }
-          else selector = selector1;
-          if (adding) *selector |= bit; else *selector &= ~bit;
-          }
-        break;  /* Out of loop to match selector name */
-        }
-      }
-    if (c < 0) end = middle; else start = middle + 1;
-    }  /* Loop to match selector name */
-
-  if (start >= end)
-    {
-    errmsg = string_sprintf("unknown %s_selector setting: %c%.*s", which,
-      adding? '+' : '-', len, s);
-    goto ERROR_RETURN;
-    }
-  }    /* Loop for selector names */
-
-/* Handle disasters */
-
-ERROR_RETURN:
-if (Ustrcmp(which, "debug") == 0)
-  {
-  fprintf(stderr, "exim: %s\n", errmsg);
-  exit(EXIT_FAILURE);
-  }
-else log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "%s", errmsg);
 }
 
 
@@ -2080,7 +1931,7 @@ for (i = 1; i < argc; i++)
         }
       if (*argrest != 0)
         decode_bits(&selector, NULL, D_memory, 0, argrest, debug_options,
-          debug_options_count, US"debug");
+          debug_options_count, US"debug", 0);
       debug_selector = selector;
       }
     break;
@@ -3249,8 +3100,8 @@ readconf_main();
 
 /* Handle the decoding of logging options. */
 
-decode_bits(&log_write_selector, &log_extra_selector, 0, 0, log_selector_string,
-  log_options, log_options_count, US"log");
+decode_bits(&log_write_selector, &log_extra_selector, 0, 0,
+  log_selector_string, log_options, log_options_count, US"log", 0);
 
 DEBUG(D_any)
   {

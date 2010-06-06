@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/macros.h,v 1.39 2009/11/16 19:50:37 nm4 Exp $ */
+/* $Cambridge: exim/src/src/macros.h,v 1.40 2010/06/06 00:27:52 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -706,6 +706,9 @@ local_scan.h */
 #define LOG_CONFIG       128      /* Add "Exim configuration error" */
 #define LOG_CONFIG_FOR  (256+128) /* Add " for" instead of ":\n" */
 #define LOG_CONFIG_IN   (512+128) /* Add " in line x[ of file y]" */
+
+/* and for debug_bits() logging action control: */
+#define DEBUG_FROM_CONFIG       0x0001
 
 /* SMTP command identifiers for the smtp_connection_had field that records the
 most recent SMTP commands. Must be kept in step with the list of names in

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/acl.c,v 1.87 2009/11/16 19:50:36 nm4 Exp $ */
+/* $Cambridge: exim/src/src/acl.c,v 1.88 2010/06/06 00:27:52 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -171,6 +171,7 @@ enum {
   #ifdef EXPERIMENTAL_BRIGHTMAIL
   CONTROL_BMI_RUN,
   #endif
+  CONTROL_DEBUG,
   #ifndef DISABLE_DKIM
   CONTROL_DKIM_VERIFY,
   #endif
@@ -204,6 +205,7 @@ static uschar *controls[] = {
   #ifdef EXPERIMENTAL_BRIGHTMAIL
   US"bmi_run",
   #endif
+  US"debug",
   #ifndef DISABLE_DKIM
   US"dkim_disable_verify",
   #endif
@@ -517,6 +519,8 @@ static unsigned int control_forbids[] = {
   0,                                               /* bmi_run */
   #endif
 
+  0,                                               /* debug */
+
   #ifndef DISABLE_DKIM
   (1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP)|      /* dkim_disable_verify */
     (1<<ACL_WHERE_NOTSMTP_START),
@@ -598,6 +602,7 @@ static control_def controls_list[] = {
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   { US"bmi_run",                 CONTROL_BMI_RUN, FALSE },
 #endif
+  { US"debug",                   CONTROL_DEBUG, TRUE },
 #ifndef DISABLE_DKIM
   { US"dkim_disable_verify",     CONTROL_DKIM_VERIFY, FALSE },
 #endif
@@ -2416,6 +2421,8 @@ acl_check_condition(int verb, acl_condition_block *cb, int where,
 {
 uschar *user_message = NULL;
 uschar *log_message = NULL;
+uschar *debug_tag = NULL;
+uschar *debug_opts = NULL;
 uschar *p = NULL;
 int rc = OK;
 #ifdef WITH_CONTENT_SCAN
@@ -2701,6 +2708,27 @@ for (; cb != NULL; cb = cb->next)
         *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
         return ERROR;
         }
+      break;
+
+      case CONTROL_DEBUG:
+      while (*p == '/')
+        {
+        if (Ustrncmp(p, "/tag=", 5) == 0)
+          {
+          uschar *pp = p + 5;
+          while (*pp != '\0' && *pp != '/') pp++;
+          debug_tag = string_copyn(p+5, pp-p-5);
+          p = pp;
+          }
+        else if (Ustrncmp(p, "/opts=", 6) == 0)
+          {
+          uschar *pp = p + 6;
+          while (*pp != '\0' && *pp != '/') pp++;
+          debug_opts = string_copyn(p+6, pp-p-6);
+          p = pp;
+          }
+        }
+        debug_logging_activate(debug_tag, debug_opts);
       break;
 
       case CONTROL_SUPPRESS_LOCAL_FIXUPS:

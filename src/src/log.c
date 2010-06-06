@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/log.c,v 1.14 2009/11/16 19:50:37 nm4 Exp $ */
+/* $Cambridge: exim/src/src/log.c,v 1.15 2010/06/06 00:27:52 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -19,9 +19,9 @@ log files was originally contributed by Tony Sheen. */
 #define LOG_MODE_FILE   1
 #define LOG_MODE_SYSLOG 2
 
-enum { lt_main, lt_reject, lt_panic, lt_process };
+enum { lt_main, lt_reject, lt_panic, lt_debug, lt_process };
 
-static uschar *log_names[] = { US"main", US"reject", US"panic", US"process" };
+static uschar *log_names[] = { US"main", US"reject", US"panic", US"debug", US"process" };
 
 
 
@@ -31,6 +31,7 @@ static uschar *log_names[] = { US"main", US"reject", US"panic", US"process" };
 
 static uschar mainlog_name[LOG_NAME_SIZE];
 static uschar rejectlog_name[LOG_NAME_SIZE];
+static uschar debuglog_name[LOG_NAME_SIZE];
 
 static uschar *mainlog_datestamp = NULL;
 static uschar *rejectlog_datestamp = NULL;
@@ -226,16 +227,17 @@ avoid races.
 
 Arguments:
   fd         where to return the resulting file descriptor
-  type       lt_main, lt_reject, lt_panic, or lt_process
+  type       lt_main, lt_reject, lt_panic, lt_debug or lt_process
+  tag        optional tag to include in the name (only hooked up for debug)
 
 Returns:   nothing
 */
 
 static void
-open_log(int *fd, int type)
+open_log(int *fd, int type, uschar *tag)
 {
 uid_t euid;
-BOOL ok;
+BOOL ok, ok2;
 uschar buffer[LOG_NAME_SIZE];
 
 /* Sort out the file name. This depends on the type of log we are opening. The
@@ -280,6 +282,22 @@ else
     {
     Ustrcpy(rejectlog_name, buffer);
     rejectlog_datestamp = rejectlog_name + string_datestamp_offset;
+    }
+
+  /* and deal with the debug log (which keeps the datestamp, but does not
+  update it) */
+
+  else if (type == lt_debug)
+    {
+    Ustrcpy(debuglog_name, buffer);
+    if (tag)
+      {
+      /* this won't change the offset of the datestamp */
+      ok2 = string_format(buffer, sizeof(buffer), "%s%s",
+          debuglog_name, tag);
+      if (ok2)
+        Ustrcpy(debuglog_name, buffer);
+      }
     }
 
   /* Remove any datestamp if this is the panic log. This is rare, so there's no
@@ -860,7 +878,7 @@ if ((flags & LOG_MAIN) != 0 &&
 
     if (mainlogfd < 0)
       {
-      open_log(&mainlogfd, lt_main);     /* No return on error */
+      open_log(&mainlogfd, lt_main, NULL);     /* No return on error */
       if (fstat(mainlogfd, &statbuf) >= 0) mainlog_inode = statbuf.st_ino;
       }
 
@@ -984,7 +1002,7 @@ if ((flags & LOG_REJECT) != 0)
 
     if (rejectlogfd < 0)
       {
-      open_log(&rejectlogfd, lt_reject); /* No return on error */
+      open_log(&rejectlogfd, lt_reject, NULL); /* No return on error */
       if (fstat(rejectlogfd, &statbuf) >= 0) rejectlog_inode = statbuf.st_ino;
       }
 
@@ -1005,7 +1023,7 @@ written to a file - never to syslog. */
 if ((flags & LOG_PROCESS) != 0)
   {
   int processlogfd;
-  open_log(&processlogfd, lt_process);  /* No return on error */
+  open_log(&processlogfd, lt_process, NULL);  /* No return on error */
   if ((rc = write(processlogfd, log_buffer, length)) != length)
     {
     log_write_failed(US"process log", length, rc);
@@ -1036,7 +1054,7 @@ if ((flags & LOG_PANIC) != 0)
   if ((logging_mode & LOG_MODE_FILE) != 0)
     {
     panic_recurseflag = TRUE;
-    open_log(&paniclogfd, lt_panic);  /* Won't return on failure */
+    open_log(&paniclogfd, lt_panic, NULL);  /* Won't return on failure */
     panic_recurseflag = FALSE;
 
     if (panic_save_buffer != NULL)
@@ -1078,5 +1096,215 @@ if (rejectlogfd >= 0)
 closelog();
 syslog_open = FALSE;
 }
+
+
+
+/*************************************************
+*         Decode bit settings for log/debug      *
+*************************************************/
+
+/* This function decodes a string containing bit settings in the form of +name
+and/or -name sequences, and sets/unsets bits in a bit string accordingly. It
+also recognizes a numeric setting of the form =<number>, but this is not
+intended for user use. It's an easy way for Exim to pass the debug settings
+when it is re-exec'ed.
+
+The log options are held in two unsigned ints (because there became too many
+for one). The top bit in the table means "put in 2nd selector". This does not
+yet apply to debug options, so the "=" facility sets only the first selector.
+
+The "all" selector, which must be equal to 0xffffffff, is recognized specially.
+It sets all the bits in both selectors. However, there is a facility for then
+unsetting certain bits, because we want to turn off "memory" in the debug case.
+
+The action taken for bad values varies depending upon why we're here.
+For log messages, or if the debugging is triggered from config, then we write
+to the log on the way out.  For debug setting triggered from the command-line,
+we treat it as an unknown option: error message to stderr and die.
+
+Arguments:
+  selector1      address of the first bit string
+  selector2      address of the second bit string, or NULL
+  notall1        bits to exclude from "all" for selector1
+  notall2        bits to exclude from "all" for selector2
+  string         the configured string
+  options        the table of option names
+  count          size of table
+  which          "log" or "debug"
+  flags          DEBUG_FROM_CONFIG
+
+Returns:         nothing on success - bomb out on failure
+*/
+
+void
+decode_bits(unsigned int *selector1, unsigned int *selector2, int notall1,
+  int notall2, uschar *string, bit_table *options, int count, uschar *which,
+  int flags)
+{
+uschar *errmsg;
+if (string == NULL) return;
+
+if (*string == '=')
+  {
+  char *end;    /* Not uschar */
+  *selector1 = strtoul(CS string+1, &end, 0);
+  if (*end == 0) return;
+  errmsg = string_sprintf("malformed numeric %s_selector setting: %s", which,
+    string);
+  goto ERROR_RETURN;
+  }
+
+/* Handle symbolic setting */
+
+else for(;;)
+  {
+  BOOL adding;
+  uschar *s;
+  int len;
+  bit_table *start, *end;
+
+  while (isspace(*string)) string++;
+  if (*string == 0) return;
+
+  if (*string != '+' && *string != '-')
+    {
+    errmsg = string_sprintf("malformed %s_selector setting: "
+      "+ or - expected but found \"%s\"", which, string);
+    goto ERROR_RETURN;
+    }
+
+  adding = *string++ == '+';
+  s = string;
+  while (isalnum(*string) || *string == '_') string++;
+  len = string - s;
+
+  start = options;
+  end = options + count;
+
+  while (start < end)
+    {
+    bit_table *middle = start + (end - start)/2;
+    int c = Ustrncmp(s, middle->name, len);
+    if (c == 0)
+      {
+      if (middle->name[len] != 0) c = -1; else
+        {
+        unsigned int bit = middle->bit;
+        unsigned int *selector;
+
+        /* The value with all bits set means "force all bits in both selectors"
+        in the case where two are being handled. However, the top bit in the
+        second selector is never set. When setting, some bits can be excluded.
+        */
+
+        if (bit == 0xffffffff)
+          {
+          if (adding)
+            {
+            *selector1 = 0xffffffff ^ notall1;
+            if (selector2 != NULL) *selector2 = 0x7fffffff ^ notall2;
+            }
+          else
+            {
+            *selector1 = 0;
+            if (selector2 != NULL) *selector2 = 0;
+            }
+          }
+
+        /* Otherwise, the 0x80000000 bit means "this value, without the top
+        bit, belongs in the second selector". */
+
+        else
+          {
+          if ((bit & 0x80000000) != 0)
+            {
+            selector = selector2;
+            bit &= 0x7fffffff;
+            }
+          else selector = selector1;
+          if (adding) *selector |= bit; else *selector &= ~bit;
+          }
+        break;  /* Out of loop to match selector name */
+        }
+      }
+    if (c < 0) end = middle; else start = middle + 1;
+    }  /* Loop to match selector name */
+
+  if (start >= end)
+    {
+    errmsg = string_sprintf("unknown %s_selector setting: %c%.*s", which,
+      adding? '+' : '-', len, s);
+    goto ERROR_RETURN;
+    }
+  }    /* Loop for selector names */
+
+/* Handle disasters */
+
+ERROR_RETURN:
+if (Ustrcmp(which, "debug") == 0)
+  {
+  if (flags & DEBUG_FROM_CONFIG)
+    {
+    log_write(0, LOG_CONFIG|LOG_PANIC, "%s", errmsg);
+    return;
+    }
+  fprintf(stderr, "exim: %s\n", errmsg);
+  exit(EXIT_FAILURE);
+  }
+else log_write(0, LOG_CONFIG|LOG_PANIC_DIE, "%s", errmsg);
+}
+
+
+
+/*************************************************
+*        Activate a debug logfile (late)         *
+*************************************************/
+
+/* Normally, debugging is activated from the command-line; it may be useful
+within the configuration to activate debugging later, based on certain
+conditions.  If debugging is already in progress, we return early, no action
+taken (besides debug-logging that we wanted debug-logging).
+
+Failures in options are not fatal but will result in paniclog entries for the
+misconfiguration.
+
+The first use of this is in ACL logic, "control = debug/tag=foo/opts=+expand"
+which can be combined with conditions, etc, to activate extra logging only
+for certain sources. */
+
+void
+debug_logging_activate(uschar *tag_name, uschar *opts)
+{
+int fd = -1;
+
+if (debug_file)
+  {
+  debug_printf("DEBUGGING ACTIVATED FROM WITHIN CONFIG.\n"
+      "DEBUG: Tag=\"%s\" Opts=\"%s\"\n", tag_name, opts);
+  return;
+  }
+
+if (tag_name != NULL && (Ustrchr(tag_name, '/') != NULL))
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "debug tag may not contain a '/' in: %s",
+      tag_name);
+  return;
+  }
+
+debug_selector = D_default;
+if (opts)
+  {
+  decode_bits(&debug_selector, NULL, D_memory, 0, opts,
+      debug_options, debug_options_count, US"debug", DEBUG_FROM_CONFIG);
+  }
+
+open_log(&fd, lt_debug, tag_name);
+
+if (fd != -1)
+  debug_file = fdopen(fd, "w");
+else
+  log_write(0, LOG_MAIN|LOG_PANIC, "unable to open debug log");
+}
+
 
 /* End of log.c */

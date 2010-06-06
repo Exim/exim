@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.50 2010/06/05 23:50:18 pdp Exp $ */
+/* $Cambridge: exim/src/src/functions.h,v 1.51 2010/06/06 00:27:52 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -72,11 +72,14 @@ extern void    daemon_go(void);
 extern int     dcc_process(uschar **);
 #endif
 
+extern void    debug_logging_activate(uschar *, uschar *);
 extern void    debug_print_argv(uschar **);
 extern void    debug_print_ids(uschar *);
 extern void    debug_print_string(uschar *);
 extern void    debug_print_tree(tree_node *);
 extern void    debug_vprintf(char *, va_list);
+extern void    decode_bits(unsigned int *, unsigned int *,
+                  int, int, uschar *, bit_table *, int, uschar *, int);
 extern address_item *deliver_make_addr(uschar *, BOOL);
 extern int     deliver_message(uschar *, BOOL, BOOL);
 extern void    deliver_msglog(const char *, ...);
