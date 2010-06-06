@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.67 2010/06/06 00:27:52 pdp Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.68 2010/06/06 02:08:50 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -685,8 +685,8 @@ else
 *          Show supported features               *
 *************************************************/
 
-/* This function is called for -bV and for -d to output the optional features
-of the current Exim binary.
+/* This function is called for -bV/--version and for -d to output the optional
+features of the current Exim binary.
 
 Arguments:  a FILE for printing
 Returns:    nothing
@@ -1489,16 +1489,6 @@ running in an unprivileged state. */
 
 unprivileged = (real_uid != root_uid && original_euid != root_uid);
 
-/* If the first argument is --help, set usage_wanted and pretend there
-are no arguments. This will cause a brief message to be given.   We do
-the message generation downstream so we can pick up how we were invoked */
-
-if (argc > 1 && Ustrcmp(argv[1], "--help") == 0)
-  {
-  argc = 1;
-  usage_wanted = TRUE;
-  }
-
 /* Scan the program's arguments. Some can be dealt with right away; others are
 simply recorded for checking and handling afterwards. Do a high-level switch
 on the second character (the one after '-'), to save some effort. */
@@ -1561,6 +1551,21 @@ for (i = 1; i < argc; i++)
     {
     switchchar = 'v';
     argrest++;
+    }
+
+  /* deal with --option_aliases */
+  else if (switchchar == '-')
+    {
+    if (Ustrcmp(argrest, "help") == 0)
+      {
+      usage_wanted = TRUE;
+      break;
+      }
+    else if (Ustrcmp(argrest, "version") == 0)
+      {
+      switchchar = 'b';
+      argrest = "V";
+      }
     }
 
   /* High-level switch on active initial letter */

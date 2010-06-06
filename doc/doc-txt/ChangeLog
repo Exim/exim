@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.624 2010/06/06 01:35:41 pdp Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.625 2010/06/06 02:08:50 pdp Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -37,6 +37,8 @@ PP/09 Implemented reverse_ip expansion operator.
 PP/10 Bugzilla 937: provide a "debug" ACL control.
 
 PP/11 Bugzilla 922: Documentation dusting, patch provided by John Horne.
+
+PP/12 Bugzilla 973: Implement --version.
 
 
 Exim version 4.72

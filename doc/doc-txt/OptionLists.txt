@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.36 2010/06/05 21:42:53 pdp Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.37 2010/06/06 02:08:50 pdp Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -600,6 +600,7 @@ provide compatibility with Sendmail.
 
 --               Terminate options
 --help           Give a little help (not a lot)
+--version        Give version information (alias for -bV)
 -B             * Ignored
 -bd            + Start daemon
 -bdf           + Start daemon and run it in the foreground

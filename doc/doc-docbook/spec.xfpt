@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.81 2010/06/06 01:35:41 pdp Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.82 2010/06/06 02:08:50 pdp Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -2603,6 +2603,11 @@ rather than options, even if they begin with hyphens.
 This option causes Exim to output a few sentences stating what it is.
 The same output is generated if the Exim binary is called with no options and
 no arguments.
+
+.vitem &%--version%&
+.oindex "&%--version%&"
+This option is an alias for &%-bV%& and causes version information to be
+displayed.
 
 .vitem &%-B%&<&'type'&>
 .oindex "&%-B%&"
