@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.629 2010/06/07 08:23:20 pdp Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.630 2010/06/07 08:42:15 pdp Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -47,7 +47,8 @@ PP/14 Build without WITH_CONTENT_SCAN. Path from Andreas Metzler.
 PP/15 Bugzilla 816: support multiple condition rules on Routers.
 
 PP/16 Add bool_lax{} expansion operator and use that for combining multiple
-      condition rules, instead of bool{}.
+      condition rules, instead of bool{}.  Make both bool{} and bool_lax{}
+      ignore trailing whitespace.
 
 
 Exim version 4.72

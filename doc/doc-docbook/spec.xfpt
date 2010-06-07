@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.84 2010/06/07 08:23:20 pdp Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.85 2010/06/07 08:42:15 pdp Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -9802,7 +9802,7 @@ zero.
 This condition turns a string holding a true or false representation into
 a boolean state.  It parses &"true"&, &"false"&, &"yes"& and &"no"&
 (case-insensitively); also positive integer numbers map to true if non-zero,
-false if zero.  Leading whitespace is ignored.
+false if zero.  Leading and trailing whitespace is ignored.
 All other string values will result in expansion failure.
 
 When combined with ACL variables, this expansion condition will let you
@@ -9819,7 +9819,7 @@ Like &%bool%&, this condition turns a string into a boolean state.  But
 where &%bool%& accepts a strict set of strings, &%bool_lax%& uses the same
 loose definition that the Router &%condition%& option uses.  The empty string
 and the values &"false"&, &"no"& and &"0"& map to false, all others map to
-true.
+true.  Leading and trailing whitespace is ignored.
 
 Note that where &"bool{00}"& is false, &"bool_lax{00}"& is true.
 

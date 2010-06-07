@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.107 2010/06/07 08:23:20 pdp Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.108 2010/06/07 08:42:15 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2502,7 +2502,7 @@ switch(cond_type)
   case ECOND_BOOL_LAX:
     {
     uschar *sub_arg[1];
-    uschar *t;
+    uschar *t, *t2;
     uschar *ourname;
     size_t len;
     BOOL boolvalue = FALSE;
@@ -2521,6 +2521,17 @@ switch(cond_type)
     t = sub_arg[0];
     while (isspace(*t)) t++;
     len = Ustrlen(t);
+    if (len)
+      {
+      /* trailing whitespace: seems like a good idea to ignore it too */
+      t2 = t + len - 1;
+      while (isspace(*t2)) t2--;
+      if (t2 != (t + len))
+        {
+        *++t2 = '\0';
+        len = t2 - t;
+        }
+      }
     DEBUG(D_expand)
       debug_printf("considering %s: %s\n", ourname, len ? t : US"<empty>");
     /* logic for the lax case from expand_check_condition(), which also does
