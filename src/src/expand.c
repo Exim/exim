@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/expand.c,v 1.106 2010/06/05 23:50:18 pdp Exp $ */
+/* $Cambridge: exim/src/src/expand.c,v 1.107 2010/06/07 08:23:20 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -247,6 +247,7 @@ static uschar *cond_table[] = {
   US">=",
   US"and",
   US"bool",
+  US"bool_lax",
   US"crypteq",
   US"def",
   US"eq",
@@ -289,6 +290,7 @@ enum {
   ECOND_NUM_GE,
   ECOND_AND,
   ECOND_BOOL,
+  ECOND_BOOL_LAX,
   ECOND_CRYPTEQ,
   ECOND_DEF,
   ECOND_STR_EQ,
@@ -733,6 +735,8 @@ return -1;
 or "false" value. Failure of the expansion yields FALSE; logged unless it was a
 forced fail or lookup defer. All store used by the function can be released on
 exit.
+
+The actual false-value tests should be replicated for ECOND_BOOL_LAX.
 
 Arguments:
   condition     the condition string
@@ -2491,19 +2495,25 @@ switch(cond_type)
   interpretation, where general data can be used and only a few values
   map to FALSE.
   Note that readconf.c boolean matching, for boolean configuration options,
-  only matches true/yes/false/no. */
+  only matches true/yes/false/no.
+  The bool_lax{} condition matches the Router logic, which is much more
+  liberal. */
   case ECOND_BOOL:
+  case ECOND_BOOL_LAX:
     {
     uschar *sub_arg[1];
     uschar *t;
+    uschar *ourname;
     size_t len;
     BOOL boolvalue = FALSE;
     while (isspace(*s)) s++;
     if (*s != '{') goto COND_FAILED_CURLY_START;
-    switch(read_subs(sub_arg, 1, 1, &s, yield == NULL, FALSE, US"bool"))
+    ourname = cond_type == ECOND_BOOL_LAX ? US"bool_lax" : US"bool";
+    switch(read_subs(sub_arg, 1, 1, &s, yield == NULL, FALSE, ourname))
       {
-      case 1: expand_string_message = US"too few arguments or bracketing "
-        "error for bool";
+      case 1: expand_string_message = string_sprintf(
+                  "too few arguments or bracketing error for %s",
+                  ourname);
       /*FALLTHROUGH*/
       case 2:
       case 3: return NULL;
@@ -2512,15 +2522,25 @@ switch(cond_type)
     while (isspace(*t)) t++;
     len = Ustrlen(t);
     DEBUG(D_expand)
-      debug_printf("considering bool: %s\n", len ? t : US"<empty>");
+      debug_printf("considering %s: %s\n", ourname, len ? t : US"<empty>");
+    /* logic for the lax case from expand_check_condition(), which also does
+    expands, and the logic is both short and stable enough that there should
+    be no maintenance burden from replicating it. */
     if (len == 0)
       boolvalue = FALSE;
     else if (Ustrspn(t, "0123456789") == len)
+      {
       boolvalue = (Uatoi(t) == 0) ? FALSE : TRUE;
+      /* expand_check_condition only does a literal string "0" check */
+      if ((cond_type == ECOND_BOOL_LAX) && (len > 1))
+        boolvalue = TRUE;
+      }
     else if (strcmpic(t, US"true") == 0 || strcmpic(t, US"yes") == 0)
       boolvalue = TRUE;
     else if (strcmpic(t, US"false") == 0 || strcmpic(t, US"no") == 0)
       boolvalue = FALSE;
+    else if (cond_type == ECOND_BOOL_LAX)
+      boolvalue = TRUE;
     else
       {
       expand_string_message = string_sprintf("unrecognised boolean "

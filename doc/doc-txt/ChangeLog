@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.628 2010/06/07 07:09:10 pdp Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.629 2010/06/07 08:23:20 pdp Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -45,6 +45,9 @@ PP/13 Bugzilla 752: Refuse to build/run if Exim user is root/0.
 PP/14 Build without WITH_CONTENT_SCAN. Path from Andreas Metzler.
 
 PP/15 Bugzilla 816: support multiple condition rules on Routers.
+
+PP/16 Add bool_lax{} expansion operator and use that for combining multiple
+      condition rules, instead of bool{}.
 
 
 Exim version 4.72

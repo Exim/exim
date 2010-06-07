@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.42 2010/06/07 07:09:10 pdp Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.43 2010/06/07 08:23:20 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1516,12 +1516,25 @@ switch (type)
       str_target = (uschar **)((uschar *)data_block + (long int)(ol->value));
     if (extra_condition)
       {
-      /* We already have a condition, we're conducting a crude hack to let multiple
-      condition rules be chained together, despite storing them in text form. */
+      /* We already have a condition, we're conducting a crude hack to let
+      multiple condition rules be chained together, despite storing them in
+      text form. */
       saved_condition = *str_target;
-      strtemp = string_sprintf("${if and{{bool{%s}}{bool{%s}}}}",
+      strtemp = string_sprintf("${if and{{bool_lax{%s}}{bool_lax{%s}}}}",
           saved_condition, sptr);
       *str_target = string_copy_malloc(strtemp);
+      /* TODO(pdp): there is a memory leak here when we set 3 or more
+      conditions; I still don't understand the store mechanism enough
+      to know what's the safe way to free content from an earlier store.
+      AFAICT, stores stack, so freeing an early stored item also stores
+      all data alloc'd after it.  If we knew conditions were adjacent,
+      we could survive that, but we don't.  So I *think* we need to take
+      another bit from opt_type to indicate "malloced"; this seems like
+      quite a hack, especially for this one case.  It also means that
+      we can't ever reclaim the store from the *first* condition.
+
+      Because we only do this once, near process start-up, I'm prepared to
+      let this slide for the time being, even though it rankles.  */
       }
     else
       {
