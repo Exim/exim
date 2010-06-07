@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.17 2010/06/07 00:12:42 pdp Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.18 2010/06/07 18:09:07 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -104,8 +104,10 @@ main(int argc, char **argv)
 {
 off_t test_off_t = 0;
 time_t test_time_t = 0;
+#if !(__STDC_VERSION__ >= 199901L) && !defined(PRIdMAX)
 size_t test_size_t = 0;
 unsigned long test_ulong_t = 0L;
+#endif
 long test_long_t = 0;
 FILE *base;
 FILE *new;
@@ -185,8 +187,7 @@ with C99 not being ubiquitous yet.  Unfortunately. */
 #if __STDC_VERSION__ >= 199901L
 fprintf(new, "#define SIZE_T_FMT  \"%%zu\"\n");
 #else
-/*# ifdef PRIdMAX */
-#if 0
+# ifdef PRIdMAX
 fprintf(new, "#define SIZE_T_FMT  \"%%" PRIdMAX "\"\n");
 # else
 if (sizeof(test_size_t) > sizeof (test_ulong_t))
