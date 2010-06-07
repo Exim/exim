@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.627 2010/06/06 22:46:33 pdp Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.628 2010/06/07 07:09:10 pdp Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -43,6 +43,8 @@ PP/12 Bugzilla 973: Implement --version.
 PP/13 Bugzilla 752: Refuse to build/run if Exim user is root/0.
 
 PP/14 Build without WITH_CONTENT_SCAN. Path from Andreas Metzler.
+
+PP/15 Bugzilla 816: support multiple condition rules on Routers.
 
 
 Exim version 4.72

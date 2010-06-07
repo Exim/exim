@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.172 2010/06/06 02:46:13 pdp Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.173 2010/06/07 07:09:10 pdp Exp $
 
 New Features in Exim
 --------------------
@@ -74,6 +74,15 @@ Version 4.73
     will exit shortly after start-up.  If you must shoot yourself in the foot,
     then henceforth you will have to maintain your own local patches to strip
     the safeties off.
+
+ 8. Routers now support multiple "condition" tests, IF each router yields
+    a string which the bool{} operator recognises.  Note that this is a departure
+    from normal Router "condition" truth, requiring the stricter standard of
+    "true" that ACLS use.  This might be relaxed in a future release if there
+    is sufficient demand.
+    When debugging, bear in mind that these are internally wrapped up into
+    a longer, more complicated, string.  There's a reason that the bool{}
+    logic is a dependency.
 
 
 Version 4.72

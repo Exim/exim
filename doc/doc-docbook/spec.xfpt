@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.82 2010/06/06 02:08:50 pdp Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.83 2010/06/07 07:09:10 pdp Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -15669,6 +15669,12 @@ router is skipped, and the address is offered to the next one.
 If the result is any other value, the router is run (as this is the last
 precondition to be evaluated, all the other preconditions must be true).
 
+This option is unique in that multiple &%condition%& options may be present.
+In this case, the previous statement does not quite apply: the result of each
+&%condition%& option must be a string recognised by the &%bool%& expansion
+operator, or failure will be forced.  The effect is to "and" the conditions
+together, as each must pass.
+
 The &%condition%& option provides a means of applying custom conditions to the
 running of routers. Note that in the case of a simple conditional expansion,
 the default expansion values are exactly what is wanted. For example:
@@ -15678,6 +15684,11 @@ condition = ${if >{$message_age}{600}}
 Because of the default behaviour of the string expansion, this is equivalent to
 .code
 condition = ${if >{$message_age}{600}{true}{}}
+.endd
+A multiple condition example:
+.code
+condition = ${if >{$message_age}{600}}
+condition = ${if !eq{${lc:$local_part}}{postmaster}}
 .endd
 If the expansion fails (other than forced failure) delivery is deferred. Some
 of the other precondition options are common special cases that could in fact

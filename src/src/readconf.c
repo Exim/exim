@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.41 2010/06/07 00:12:42 pdp Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.42 2010/06/07 07:09:10 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1358,6 +1358,7 @@ uid_t uid;
 gid_t gid;
 BOOL boolvalue = TRUE;
 BOOL freesptr = TRUE;
+BOOL extra_condition = FALSE;
 optionlist *ol, *ol2;
 struct passwd *pw;
 void *reset_point;
@@ -1365,6 +1366,8 @@ int intbase = 0;
 uschar *inttype = US"";
 uschar *sptr;
 uschar *s = buffer;
+uschar *saved_condition, *strtemp;
+uschar **str_target;
 uschar name[64];
 uschar name2[64];
 
@@ -1422,8 +1425,11 @@ if ((ol->type & opt_set) != 0)
   {
   uschar *mname = name;
   if (Ustrncmp(mname, "no_", 3) == 0) mname += 3;
-  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-    "\"%s\" option set for the second time", mname);
+  if (Ustrcmp(mname, "condition") == 0)
+    extra_condition = TRUE;
+  else
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
+      "\"%s\" option set for the second time", mname);
   }
 
 ol->type |= opt_set | issecure;
@@ -1504,6 +1510,26 @@ switch (type)
     control block and flags word. */
 
     case opt_stringptr:
+    if (data_block == NULL)
+      str_target = (uschar **)(ol->value);
+    else
+      str_target = (uschar **)((uschar *)data_block + (long int)(ol->value));
+    if (extra_condition)
+      {
+      /* We already have a condition, we're conducting a crude hack to let multiple
+      condition rules be chained together, despite storing them in text form. */
+      saved_condition = *str_target;
+      strtemp = string_sprintf("${if and{{bool{%s}}{bool{%s}}}}",
+          saved_condition, sptr);
+      *str_target = string_copy_malloc(strtemp);
+      }
+    else
+      {
+      *str_target = sptr;
+      freesptr = FALSE;
+      }
+    break;
+
     case opt_rewrite:
     if (data_block == NULL)
       *((uschar **)(ol->value)) = sptr;
