@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.40 2010/06/05 09:10:10 pdp Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.41 2010/06/07 00:12:42 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2751,7 +2751,6 @@ void
 readconf_main(void)
 {
 int sep = 0;
-long dummy_l;
 struct stat statbuf;
 uschar *s, *filename;
 uschar *list = config_main_filelist;

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/exim.c,v 1.70 2010/06/06 22:46:34 pdp Exp $ */
+/* $Cambridge: exim/src/src/exim.c,v 1.71 2010/06/07 00:12:42 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -905,7 +905,7 @@ if (fixed_never_users[0] > 0)
   fprintf(f, "%d\n", (unsigned int)fixed_never_users[i]);
   }
 
-fprintf(f, "Size of off_t: %d\n", sizeof(off_t));
+fprintf(f, "Size of off_t: " SIZE_T_FMT "\n", sizeof(off_t));
 
 /* This runtime check is to help diagnose library linkage mismatches which
 result in segfaults and the like; as such, it's left until the end,
@@ -1570,7 +1570,7 @@ for (i = 1; i < argc; i++)
     else if (Ustrcmp(argrest, "version") == 0)
       {
       switchchar = 'b';
-      argrest = "V";
+      argrest = US"V";
       }
     }
 

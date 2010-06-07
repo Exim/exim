@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.26 2010/05/29 12:11:48 pdp Exp $ */
+/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.27 2010/06/07 00:12:42 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -2073,7 +2073,7 @@ if (!isdirectory)
           goto RETURN;
           }
 
-        if (lstat(mbx_lockname, &lstatbuf) < 0)
+        if (Ulstat(mbx_lockname, &lstatbuf) < 0)
           {
           addr->basic_errno = ERRNO_LOCKFAILED;
           addr->message = string_sprintf("attempting to lstat open MBX "

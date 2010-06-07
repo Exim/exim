@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.16 2010/06/06 02:46:13 pdp Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.17 2010/06/07 00:12:42 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -34,6 +34,7 @@ normally called independently. */
 
 
 #include <ctype.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -103,6 +104,9 @@ main(int argc, char **argv)
 {
 off_t test_off_t = 0;
 time_t test_time_t = 0;
+size_t test_size_t = 0;
+unsigned long test_ulong_t = 0L;
+long test_long_t = 0;
 FILE *base;
 FILE *new;
 int last_initial = 'A';
@@ -145,7 +149,7 @@ printing long long variables, and there will be support for the long long type.
 This assumption is known to be OK for the common operating systems. */
 
 fprintf(new, "#ifndef OFF_T_FMT\n");
-if (sizeof(test_off_t) > 4)
+if (sizeof(test_off_t) > sizeof(test_long_t))
   {
   fprintf(new, "#define OFF_T_FMT  \"%%lld\"\n");
   fprintf(new, "#define LONGLONG_T long long int\n");
@@ -163,7 +167,7 @@ length is 4 or less, we can leave LONGLONG_T to whatever was defined above for
 off_t. */
 
 fprintf(new, "#ifndef TIME_T_FMT\n");
-if (sizeof(test_time_t) > 4)
+if (sizeof(test_time_t) > sizeof(test_long_t))
   {
   fprintf(new, "#define TIME_T_FMT  \"%%lld\"\n");
   fprintf(new, "#undef  LONGLONG_T\n");
@@ -174,6 +178,23 @@ else
   fprintf(new, "#define TIME_T_FMT  \"%%ld\"\n");
   }
 fprintf(new, "#endif\n\n");
+
+/* And for sizeof() results, size_t, which should with C99 be just %zu, deal
+with C99 not being ubiquitous yet.  Unfortunately. */
+
+#if __STDC_VERSION__ >= 199901L
+fprintf(new, "#define SIZE_T_FMT  \"%%zu\"\n");
+#else
+/*# ifdef PRIdMAX */
+#if 0
+fprintf(new, "#define SIZE_T_FMT  \"%%" PRIdMAX "\"\n");
+# else
+if (sizeof(test_size_t) > sizeof (test_ulong_t))
+  fprintf(new, "#define SIZE_T_FMT  \"%%llu\"\n");
+else
+  fprintf(new, "#define SIZE_T_FMT  \"%%lu\"\n");
+# endif
+#endif
 
 /* Now search the makefile for certain settings */
 

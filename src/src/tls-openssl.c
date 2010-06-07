@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.26 2010/06/05 10:34:29 pdp Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.27 2010/06/07 00:12:42 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -360,7 +360,7 @@ availability of the option value macros from OpenSSL.  */
 
 okay = tls_openssl_options_parse(openssl_options, &init_options);
 if (!okay)
-  return tls_error("openssl_options parsing failed", host, NULL);
+  return tls_error(US"openssl_options parsing failed", host, NULL);
 
 if (init_options)
   {
@@ -1179,61 +1179,61 @@ This list is current as of:
 static struct exim_openssl_option exim_openssl_options[] = {
 /* KEEP SORTED ALPHABETICALLY! */
 #ifdef SSL_OP_ALL
-  { "all", SSL_OP_ALL },
+  { US"all", SSL_OP_ALL },
 #endif
 #ifdef SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION
-  { "allow_unsafe_legacy_renegotiation", SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION },
+  { US"allow_unsafe_legacy_renegotiation", SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION },
 #endif
 #ifdef SSL_OP_CIPHER_SERVER_PREFERENCE
-  { "cipher_server_preference", SSL_OP_CIPHER_SERVER_PREFERENCE },
+  { US"cipher_server_preference", SSL_OP_CIPHER_SERVER_PREFERENCE },
 #endif
 #ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
-  { "dont_insert_empty_fragments", SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS },
+  { US"dont_insert_empty_fragments", SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS },
 #endif
 #ifdef SSL_OP_EPHEMERAL_RSA
-  { "ephemeral_rsa", SSL_OP_EPHEMERAL_RSA },
+  { US"ephemeral_rsa", SSL_OP_EPHEMERAL_RSA },
 #endif
 #ifdef SSL_OP_LEGACY_SERVER_CONNECT
-  { "legacy_server_connect", SSL_OP_LEGACY_SERVER_CONNECT },
+  { US"legacy_server_connect", SSL_OP_LEGACY_SERVER_CONNECT },
 #endif
 #ifdef SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER
-  { "microsoft_big_sslv3_buffer", SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER },
+  { US"microsoft_big_sslv3_buffer", SSL_OP_MICROSOFT_BIG_SSLV3_BUFFER },
 #endif
 #ifdef SSL_OP_MICROSOFT_SESS_ID_BUG
-  { "microsoft_sess_id_bug", SSL_OP_MICROSOFT_SESS_ID_BUG },
+  { US"microsoft_sess_id_bug", SSL_OP_MICROSOFT_SESS_ID_BUG },
 #endif
 #ifdef SSL_OP_MSIE_SSLV2_RSA_PADDING
-  { "msie_sslv2_rsa_padding", SSL_OP_MSIE_SSLV2_RSA_PADDING },
+  { US"msie_sslv2_rsa_padding", SSL_OP_MSIE_SSLV2_RSA_PADDING },
 #endif
 #ifdef SSL_OP_NETSCAPE_CHALLENGE_BUG
-  { "netscape_challenge_bug", SSL_OP_NETSCAPE_CHALLENGE_BUG },
+  { US"netscape_challenge_bug", SSL_OP_NETSCAPE_CHALLENGE_BUG },
 #endif
 #ifdef SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG
-  { "netscape_reuse_cipher_change_bug", SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG },
+  { US"netscape_reuse_cipher_change_bug", SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG },
 #endif
 #ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
-  { "no_session_resumption_on_renegotiation", SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION },
+  { US"no_session_resumption_on_renegotiation", SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION },
 #endif
 #ifdef SSL_OP_SINGLE_DH_USE
-  { "single_dh_use", SSL_OP_SINGLE_DH_USE },
+  { US"single_dh_use", SSL_OP_SINGLE_DH_USE },
 #endif
 #ifdef SSL_OP_SINGLE_ECDH_USE
-  { "single_ecdh_use", SSL_OP_SINGLE_ECDH_USE },
+  { US"single_ecdh_use", SSL_OP_SINGLE_ECDH_USE },
 #endif
 #ifdef SSL_OP_SSLEAY_080_CLIENT_DH_BUG
-  { "ssleay_080_client_dh_bug", SSL_OP_SSLEAY_080_CLIENT_DH_BUG },
+  { US"ssleay_080_client_dh_bug", SSL_OP_SSLEAY_080_CLIENT_DH_BUG },
 #endif
 #ifdef SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG
-  { "sslref2_reuse_cert_type_bug", SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG },
+  { US"sslref2_reuse_cert_type_bug", SSL_OP_SSLREF2_REUSE_CERT_TYPE_BUG },
 #endif
 #ifdef SSL_OP_TLS_BLOCK_PADDING_BUG
-  { "tls_block_padding_bug", SSL_OP_TLS_BLOCK_PADDING_BUG },
+  { US"tls_block_padding_bug", SSL_OP_TLS_BLOCK_PADDING_BUG },
 #endif
 #ifdef SSL_OP_TLS_D5_BUG
-  { "tls_d5_bug", SSL_OP_TLS_D5_BUG },
+  { US"tls_d5_bug", SSL_OP_TLS_D5_BUG },
 #endif
 #ifdef SSL_OP_TLS_ROLLBACK_BUG
-  { "tls_rollback_bug", SSL_OP_TLS_ROLLBACK_BUG },
+  { US"tls_rollback_bug", SSL_OP_TLS_ROLLBACK_BUG },
 #endif
 };
 static int exim_openssl_options_size =

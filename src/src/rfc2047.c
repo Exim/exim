@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/rfc2047.c,v 1.5 2009/11/16 19:50:37 nm4 Exp $ */
+/* $Cambridge: exim/src/src/rfc2047.c,v 1.6 2010/06/07 00:12:42 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -279,7 +279,7 @@ while (mimeword != NULL)
       else
         {
         DEBUG(D_any) debug_printf("iconv error translating \"%.*s\" to %s: "
-        "%s\n", endword + 2 - mimeword, mimeword, target, strerror(errno));
+        "%s\n", (int)(endword + 2 - mimeword), mimeword, target, strerror(errno));
         }
       }
 
