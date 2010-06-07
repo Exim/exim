@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.18 2010/06/07 18:09:07 pdp Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.19 2010/06/07 18:25:57 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -532,8 +532,9 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
     steps to filter out the most obvious ones.  */
 
     if ((!uid_not_set && uid == 0) ||
-        (strcmp(username, "root") == 0) ||
-        (strcmp(username, "toor") == 0) )
+        ((username != NULL) && (
+          (strcmp(username, "root") == 0) ||
+          (strcmp(username, "toor") == 0) )))
       {
       printf("\n*** Exim's internal user must not be root.\n\n");
       return 1;
