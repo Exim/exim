@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2008 */
+/* Copyright (c) University of Cambridge, 2010 */
 /* Written by Philip Hazel. */
 
 /* This module contains code for reading the input. */
@@ -224,7 +224,10 @@ if (popto > 0)
   }
 
 /* Get the next line from the current macro or the current file. We need a loop
-for handling the ends of macros and files. */
+for handling the ends of macros and files. First check for having previously
+reached the end of the input. */
+
+if (from_type_ptr < 0) return NULL;
 
 for (;;)
   {
@@ -249,7 +252,6 @@ for (;;)
 
   else
     {
-    if (istack == NULL) return NULL;
     if (Ufgets(inbuffer, INBUFFSIZE, istack->file) == NULL)
       {
       istackstr *prev = istack->prev;
@@ -291,9 +293,10 @@ for (;;)
 
   /* We get here if the end of a macro or a file was reached. The appropriate
   chain has been popped. Back up the stack of input types before the loop
-  repeats. */
+  repeats. When we reach the end of the stack, we have reached the end of all
+  the input. */
 
-  from_type_ptr--;
+  if (--from_type_ptr < 0) return NULL;
   }
 
 return inbuffer;

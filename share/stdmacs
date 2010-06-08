@@ -422,7 +422,7 @@
 .literal layout
 &<mediaobject>&&<imageobject>&
 &<imagedata fileref="$1" $=2+ scale="$2"+$=3+ align="$3"+&&&
-  $=4+ depth="$4"+$=5+ width="$5"+>&
+  $=4+ depth="$4"+$=5+ width="$5"+>&&&&
 &</imagedata>&&</imageobject>&&</mediaobject>&
 .literal off
 .endmacro
