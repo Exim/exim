@@ -78,6 +78,7 @@ max_output = 20K
 message_prefix = From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
 message_suffix = \n
 path = /bin:/usr/bin
+no_permit_coredump
 no_pipe_as_creator
 no_restrict_to_path
 no_return_fail_output
@@ -129,6 +130,7 @@ max_output = 20K
 message_prefix = From ${if def:return_path{$return_path}{MAILER-DAEMON}} ${tod_bsdinbox}\n
 message_suffix = \n
 path = /bin:/usr/bin
+no_permit_coredump
 no_pipe_as_creator
 no_restrict_to_path
 no_return_fail_output

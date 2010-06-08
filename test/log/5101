@@ -23,10 +23,10 @@ DATA
 <<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 <<< 	(envelope-from <CALLER@myhost.test.ex>)
 <<< 	id 10HmaX-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-<<< Date: Tue, 2 Mar 1999 09:44:33 +0000
-<<< Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 <<< mailbox: copied
+<<< Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 <<< From: CALLER_NAME <CALLER@myhost.test.ex>
+<<< Date: Tue, 2 Mar 1999 09:44:33 +0000
 <<< 
 <<< This is a test message.
 <<< Here's a new line.
@@ -69,9 +69,9 @@ DATA
 <<< Received: from CALLER by myhost.test.ex with local (Exim x.yz)
 <<< 	(envelope-from <CALLER@myhost.test.ex>)
 <<< 	id 10HmaZ-0005vi-00; Tue, 2 Mar 1999 09:44:33 +0000
-<<< Date: Tue, 2 Mar 1999 09:44:33 +0000
 <<< Message-Id: <E10HmaZ-0005vi-00@myhost.test.ex>
 <<< From: CALLER_NAME <CALLER@myhost.test.ex>
+<<< Date: Tue, 2 Mar 1999 09:44:33 +0000
 <<< 
 <<< This is another test message.
 <<< Here's a new line.
@@ -82,9 +82,9 @@ DATA
 QUIT
 <<< QUIT
 250 OK
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery (mailbox TESTSUITE/test-mail/ is not a regular file)
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx <userx@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery (mailbox TESTSUITE/test-mail/ has too many links (2))
 1999-03-02 09:44:33 10HmaZ-0005vi-00 ** jack@myhost.test.ex R=smartuser T=lmtp: LMTP error after end of data: 550 Number 2 fails
-1999-03-02 09:44:33 10HmaZ-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery (mailbox TESTSUITE/test-mail/ is not a regular file)
+1999-03-02 09:44:33 10HmaZ-0005vi-00 -> jill <jill@myhost.test.ex> R=smartuser T=lmtp ST=local_delivery (mailbox TESTSUITE/test-mail/ has too many links (2))
 1999-03-02 09:44:33 10HmbA-0005vi-00 <= <> R=10HmaZ-0005vi-00 U=EXIMUSER P=local S=sss
 1999-03-02 09:44:33 10HmbA-0005vi-00 => CALLER <CALLER@myhost.test.ex> R=bounces T=local_delivery
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
