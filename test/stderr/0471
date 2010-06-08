@@ -25205,8 +25205,6 @@ cached data used for lookup of *.test.ex
 lookup failed
 search_tidyup called
 >>Headers after rewriting and local additions:
-  Date: Tue, 2 Mar 1999 09:44:33 +0000
-I Message-Id: <E10HmaX-0005vi-00@myhost.test.ex>
 * To: random@test.example,
     random@test.example,
     random@test.example,
