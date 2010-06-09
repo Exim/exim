@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.85 2010/06/07 08:42:15 pdp Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.86 2010/06/09 01:30:16 pdp Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -3183,7 +3183,13 @@ using the malware scanning framework.  The option of av_scanner influences
 this option, so if av_scanner's value is dependent upon an expansion then
 the expansion should have defaults which apply to this invocation.  Exim will
 have changed working directory before resolving the filename, so using fully
-qualified pathnames is advisable.  This option requires admin privileges.
+qualified pathnames is advisable.  Exim will be running as the Exim user
+when it tries to open the file, rather than as the invoking user.
+This option requires admin privileges.
+
+The &%-bmalware%& option will not be extended to be more generally useful,
+there are better tools for file-scanning.  This option exists to help
+administrators verify their Exim and AV scanner configuration.
 
 .vitem &%-bt%&
 .oindex "&%-bt%&"
