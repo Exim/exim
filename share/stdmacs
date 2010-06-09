@@ -1,0 +1,438 @@
+. Standard macros for xfpt
+
+. =============== Standard boilerplate ===============
+
+.macro docbook
+.literal layout
+&<?xml version="1.0" encoding="UTF-8"?>&
+&<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">&
+.endmacro
+
+. =============== Large text items ===============
+
+.macro book
+.literal layout
+.push &</book&xfpt.rev;>&
+&<book>&
+.literal off
+.endmacro
+
+.macro preface "Preface"
+.literal layout
+.pop C
+.push C
+.push &</preface>&
+&<preface$=2+ id="$2"+&xfpt.rev;>&
+&<title>&$1&</title>&
+.arg 3
+&<titleabbrev>&$3&</titleabbrev>&
+.endarg
+.literal off
+.endmacro
+
+.macro endpreface
+.literal layout
+.pop C
+.push C
+.literal off
+.endmacro
+
+.macro chapter
+.literal layout
+.pop C
+.push C
+.push &</chapter>&
+&<chapter$=2+ id="$2"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.arg 3
+&<titleabbrev>&$3&</titleabbrev>&
+.endarg
+.literal off
+.endmacro
+
+.macro endchapter
+.literal layout
+.pop C
+.push C
+.literal off
+.endmacro
+
+.macro appendix
+.literal layout
+.pop C
+.push C
+.push &</appendix>&
+&<appendix$=2+ id="$2"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.arg 3
+&<titleabbrev>&$3&</titleabbrev>&
+.endarg
+.literal off
+.endmacro
+
+.macro endappendix
+.literal layout
+.pop C
+.push C
+.literal off
+.endmacro
+
+.macro colophon "Colophon"
+.literal layout
+.pop C
+.push C
+.push &</colophon>&
+&<colophon$=2+ id="$2"+&xfpt.rev;>&
+&<title>&$1&</title>&
+.arg 3
+&<titleabbrev>&$3&</titleabbrev>&
+.endarg
+.literal off
+.endmacro
+
+.macro endcolophon
+.literal layout
+.pop C
+.push C
+.literal off
+.endmacro
+
+.macro section
+.literal layout
+.pop S
+.push S &</section>&
+&<section$=2+ id="$2"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.arg 3
+&<titleabbrev>&$3&</titleabbrev>&
+.endarg
+.literal off
+.endmacro
+
+.macro endsection
+.literal layout
+.pop S
+.push S
+.literal off
+.endmacro
+
+.macro subsection
+.literal layout
+.pop U
+.push U &</section>&
+&<section$=2+ id="$2"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.arg 3
+&<titleabbrev>&$3&</titleabbrev>&
+.endarg
+.literal off
+.endmacro
+
+.macro endsubsection
+.literal layout
+.pop U
+.push U
+.literal off
+.endmacro
+
+. =============== Lists ===============
+
+.macro ilist
+.literal layout
+.push L &</itemizedlist>&
+.push I &</listitem>&
+&<itemizedlist$=1/ mark="$1"/&xfpt.rev;>&
+&<listitem>&
+.literal off
+.endmacro
+
+.macro olist "arabic"
+.literal layout
+.push L &</orderedlist>&
+.push I &</listitem>&
+&<orderedlist numeration="$1"&xfpt.rev;>&
+&<listitem>&
+.literal off
+.endmacro
+
+.macro next
+.literal layout
+.pop I
+.push I &</listitem>&
+&<listitem>&
+.literal off
+.endmacro
+
+.macro endlist
+.literal layout
+.pop L
+.literal off
+.endmacro
+
+.macro vlist
+.literal layout
+.push L &</variablelist>&
+&<variablelist&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.literal off
+.endmacro
+
+.macro vitem
+.literal layout
+.pop I
+.push I &</listitem>&&</varlistentry>&
+&<varlistentry&xfpt.rev;>&
+.eacharg
+&<term>&$+1&</term>&
+.endeach
+&<listitem>&
+.literal off
+.endmacro
+
+. =============== Displayed text ===============
+
+.macro display
+.literal layout
+&<literallayout&xfpt.rev;>&
+.endmacro
+
+.macro code
+.literal layout
+&<literallayout class="monospaced"&xfpt.rev;>&
+.literal text
+.endmacro
+
+.macro endd
+.literal layout
+&</literallayout>&
+.literal off
+.endmacro
+
+. =============== Block quotes ===============
+
+.macro blockquote
+.literal layout
+&<blockquote&xfpt.rev;>&
+.literal off
+.endmacro
+
+.macro endblockquote
+.literal layout
+&</blockquote>&
+.literal off
+.endmacro
+
+. =============== Tables ===============
+
+.macro itable "none" "0" "0" "2"
+.literal layout
+.push &</informaltable>&
+&<informaltable frame="$1"&xfpt.rev;>&
+&<tgroup cols="$4" colsep="$2" rowsep="$3">&
+.eacharg 5
+&<colspec colwidth="$+1" align="$+2"/>&
+.endeach 2
+&<tbody>&
+.endmacro
+
+.macro table "title" "ref" "none" "0" "0" "2"
+.literal layout
+.push &</table>&
+&<table$=2+ id="$2"+ $=3+frame="$3"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+&<tgroup cols="$6" colsep="$4" rowsep="$5">&
+.eacharg 7
+&<colspec colwidth="$+1" align="$+2"/>&
+.endeach 2
+&<tbody>&
+.endmacro
+
+.macro row
+.literal layout
+&<row>&
+.eacharg
+&<entry>&$+1&</entry>&
+.endeach
+&</row>&
+.endmacro
+
+.macro endtable
+.literal layout
+&</tbody>&
+&</tgroup>&
+.pop
+.literal off
+.endmacro
+
+. =============== Indexing ===============
+
+.macro index
+&<indexterm>&
+&<primary>&$1&</primary>&
+.arg 2
+&<secondary>&$2&</secondary>&
+.endarg
+&</indexterm>&
+.endmacro
+
+.macro index-from
+&<indexterm id="$1" class="startofrange">&
+&<primary>&$2&</primary>&
+.arg 3
+&<secondary>&$3&</secondary>&
+.endarg
+&</indexterm>&
+.endmacro
+
+.macro index-to
+&<indexterm startref="$1" class="endofrange"/>&
+.endmacro
+
+.macro index-see
+&<indexterm>&
+&<primary>&$2&</primary>&
+.arg 3
+&<secondary>&$3&</secondary>&
+.endarg
+&<see>&$1&</see>&
+&</indexterm>&
+.endmacro
+
+.macro index-seealso
+&<indexterm>&
+&<primary>&$2&</primary>&
+.arg 3
+&<secondary>&$3&</secondary>&
+.endarg
+&<seealso>&$1&</seealso>&
+&</indexterm>&
+.endmacro
+
+.macro makeindex "Index"
+.literal layout
+.pop C
+.push C
+.push &</index>&
+.arg -2
+&<index>&
+.endarg
+.arg 2
+&<index role="$2">&
+.endarg
+&<title>&$1&</title>&
+.literal off
+.endmacro
+
+. =============== URL ===============
+
+.macro url
+.arg -2
+&*&<ulink url="$1">&$1&</ulink>&*&
+.endarg
+.arg 2
+&*&<ulink url="$1">&$2&</ulink>&*&
+.endarg
+.endmacro
+
+. =============== Change flags ===============
+
+.macro new
+.arg -1
+.inliteral off
+.literal layout
+.revision changed
+.literal off
+.endinliteral
+.inliteral layout
+.nonl '&<phrase revisionflag="changed">&'
+.endinliteral
+.inliteral text
+.literal layout
+.nonl '&<phrase revisionflag="changed">&'
+.literal text
+.endinliteral
+.endarg
+.arg 1
+&<phrase revisionflag="changed">&$1&</phrase>&
+.endmacro
+
+.macro wen
+.inliteral off
+.literal layout
+.revision off
+.literal off
+.endinliteral
+.inliteral layout
+.nonl &</phrase>&
+.endinliteral
+.inliteral text
+.literal layout
+.nonl &</phrase>&
+.literal text
+.endinliteral
+.endmacro
+
+. =============== Footnotes ===============
+
+.macro footnote
+&<footnote>&
+.push &</footnote>&
+.nest begin
+.endmacro
+
+.macro endnote
+.nest end
+.pop
+.endmacro
+
+. =============== Figures ===============
+
+.macro figure
+.literal layout
+&<figure$=2+ id="$2"+&xfpt.rev;>&
+.arg 1
+&<title>&$1&</title>&
+.endarg
+.literal off
+.endmacro
+
+.macro endfigure
+.literal layout
+&</figure>&
+.literal off
+.endmacro
+
+. =============== Images ===============
+
+. This is a complete image wrapped inside a <mediaobject>.
+.
+.macro image
+.literal layout
+&<mediaobject>&&<imageobject>&
+&<imagedata fileref="$1" $=2+ scale="$2"+$=3+ align="$3"+&&&
+  $=4+ depth="$4"+$=5+ width="$5"+>&&&&
+&</imagedata>&&</imageobject>&&</mediaobject>&
+.literal off
+.endmacro
+
+. =============== Processing instructions =============
+
+.macro pi
+.literal layout
+&<?$1 $2?>&
+.literal off
+.endmacro
+
+. End

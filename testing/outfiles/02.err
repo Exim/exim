@@ -1,0 +1,105 @@
+** Error: unknown flag "&;"
+   Detected near line 7 of infiles/02
+
+** Error: missing semicolon after "&abcd"
+   Detected near line 7 of infiles/02
+
+** Error: missing semicolon after "&abcd"
+   Detected near line 7 of infiles/02
+
+** Error: malformed directive
+   .flag &:
+   Detected near line 8 of infiles/02
+
+** Error: malformed directive
+   .flag &: "abc" "xyz"
+   Detected near line 9 of infiles/02
+
+** Error: a flag must begin with "&"
+   Detected near line 10 of infiles/02
+
+** Error: malformed directive
+   .flag &: :& &'
+   Detected near line 11 of infiles/02
+
+** Warning: extra characters at end of directive
+   .set abcd "abcd" xyz
+                    ^^^
+   Detected near line 13 of infiles/02
+
+** Error: .arg is permitted only inside a macro
+   Detected near line 15 of infiles/02
+
+** Error: .arg is permitted only inside a macro
+   Detected near line 16 of infiles/02
+
+** Error: .endarg is permitted only inside a macro
+   Detected near line 18 of infiles/02
+
+** Error: .endarg is permitted only inside a macro
+   Detected near line 19 of infiles/02
+
+** Error: .eacharg is permitted only inside a macro
+   Detected near line 21 of infiles/02
+
+** Error: .eacharg is permitted only inside a macro
+   Detected near line 22 of infiles/02
+
+** Error: .endeach is permitted only inside a macro
+   Detected near line 24 of infiles/02
+
+** Error: .endeach is permitted only inside a macro
+   Detected near line 25 of infiles/02
+
+** Error: unknown directive line: .rhubarb and custard
+   Detected near line 27 of infiles/02
+
+** Warning: extra characters at end of directive
+   .literal xml stuff
+                ^^^^^
+   Detected near line 29 of infiles/02
+
+** Warning: extra characters at end of directive
+   .literal off more stuff
+                ^^^^^^^^^^
+   Detected near line 31 of infiles/02
+
+** Error: malformed directive
+   .arg 4n
+   Processing macro x
+   Detected near line 41 of infiles/02
+
+** Error: malformed directive
+   .arg
+   Processing macro x
+   Detected near line 41 of infiles/02
+
+** Warning: extra characters at end of directive
+   .endarg 99
+           ^^
+   Processing macro x
+   Detected near line 41 of infiles/02
+
+** Warning: extra characters at end of directive
+   .eacharg 6 G
+              ^
+   Processing macro x
+   Detected near line 41 of infiles/02
+
+** Warning: extra characters at end of directive
+   .nonl more than one argument
+              ^^^^^^^^^^^^^^^^^
+   Detected near line 43 of infiles/02
+
+** Error: malformed directive
+   .arg 4n
+   Processing macro b
+   Detected near line 1 of infiles/02.inc
+   Processing macro a
+   Detected near line 53 of infiles/02
+
+** Error: .arg is permitted only inside a macro
+   Detected near line 3 of infiles/02.inc
+   Processing macro a
+   Detected near line 53 of infiles/02
+
