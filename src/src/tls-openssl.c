@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.27 2010/06/07 00:12:42 pdp Exp $ */
+/* $Cambridge: exim/src/src/tls-openssl.c,v 1.28 2010/06/12 17:56:32 jetmore Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -714,7 +714,7 @@ if (rc <= 0)
   tls_error(US"SSL_accept", NULL, sigalrm_seen ? US"timed out" : NULL);
   if (ERR_get_error() == 0)
     log_write(0, LOG_MAIN,
-        "  => client disconnected cleanly (rejected our certificate?)\n");
+        "TLS client disconnected cleanly (rejected our certificate?)");
   return FAIL;
   }
 

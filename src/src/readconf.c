@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.44 2010/06/12 15:21:26 jetmore Exp $ */
+/* $Cambridge: exim/src/src/readconf.c,v 1.45 2010/06/12 17:56:32 jetmore Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -3207,12 +3207,12 @@ if (openssl_options != NULL)
   {
 # ifdef USE_GNUTLS
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-    "openssl_options is set but we're using GnuTLS\n");
+    "openssl_options is set but we're using GnuTLS");
 # else
   long dummy;
   if (!(tls_openssl_options_parse(openssl_options, &dummy)))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
-      "openssl_options parse error: %s\n", openssl_options);
+      "openssl_options parse error: %s", openssl_options);
 # endif
   }
 #endif
