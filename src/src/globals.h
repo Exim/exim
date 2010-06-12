@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.h,v 1.68 2010/06/05 09:10:10 pdp Exp $ */
+/* $Cambridge: exim/src/src/globals.h,v 1.69 2010/06/12 15:21:26 jetmore Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -758,6 +758,9 @@ extern BOOL    system_filter_uid_set;  /* TRUE if uid set */
 extern BOOL    system_filtering;       /* TRUE when running system filter */
 
 extern BOOL    tcp_nodelay;            /* Controls TCP_NODELAY on daemon */
+#ifdef USE_TCP_WRAPPERS
+extern uschar *tcp_wrappers_daemon_name; /* tcpwrappers daemon lookup name */
+#endif
 extern int     test_harness_load_avg;  /* For use when testing */
 extern int     thismessage_size_limit; /* Limit for this message */
 extern int     timeout_frozen_after;   /* Max time to keep frozen messages */

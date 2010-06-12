@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.19 2010/06/07 18:25:57 pdp Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.20 2010/06/12 15:21:26 jetmore Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -807,9 +807,10 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
         fprintf(new, "\"%s\"\n", value);
         }
 
-      /* Timezone values and HEADERS_CHARSET get quoted */
+      /* Timezone values HEADERS_CHARSET, and TCP_WRAPPERS_DAEMON_NAME get quoted */
 
       else if (strcmp(name, "TIMEZONE_DEFAULT") == 0||
+               strcmp(name, "TCP_WRAPPERS_DAEMON_NAME") == 0||
                strcmp(name, "HEADERS_CHARSET") == 0)
         fprintf(new, "\"%s\"\n", value);
 

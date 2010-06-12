@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.37 2010/06/06 02:08:50 pdp Exp $
+$Cambridge: exim/doc/doc-txt/OptionLists.txt,v 1.38 2010/06/12 15:21:25 jetmore Exp $
 
 LISTS OF EXIM OPTIONS
 ---------------------
@@ -529,6 +529,7 @@ system_filter_reply_transport        string          unset         main         
 system_filter_user                   string          unset         main              4.00 replacing message_filter
 tcp_nodelay                          boolean         true          main              4.23
                                                      true          smtp              4.23
+tcp_wrappers_daemon_name             string*         ++            main              4.73
 temp_errors                          string list     +             pipe              1.95
 text                                 string*         unset         autoreply
 timeout                              time            5m            lmtp              3.20
@@ -909,6 +910,7 @@ SUPPORT_TRANSLATE_IP_ADDRESS optional*    support for address translation
 SYSLOG_LOG_PID               optional     add pid to syslog lines
 SYSLOG_LONG_LINES            optional     do not split long syslog lines
 SYSTEM_ALIASES_FILE          optional     defaults to /etc/aliases
+TCP_WRAPPERS_DAEMON_NAME     system*      daemon name used by tcpwrappers libraru
 TIMEZONE_DEFAULT             optional     default for timezone option
 TLS_INCLUDE                  optional     path to include files for TLS
 TLS_LIBS                     optional     additional libraries for TLS

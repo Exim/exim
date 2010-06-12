@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/config.h.defaults,v 1.19 2010/06/05 11:13:29 pdp Exp $ */
+/* $Cambridge: exim/src/src/config.h.defaults,v 1.20 2010/06/12 15:21:26 jetmore Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -128,6 +128,7 @@ it's a default value. */
 #define SYSLOG_LOG_PID
 #define SYSLOG_LONG_LINES
 
+#define TCP_WRAPPERS_DAEMON_NAME "exim"
 #define TIMEZONE_DEFAULT
 #define TMPDIR
 

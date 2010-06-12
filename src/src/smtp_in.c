@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.66 2009/11/16 19:50:37 nm4 Exp $ */
+/* $Cambridge: exim/src/src/smtp_in.c,v 1.67 2010/06/12 15:21:26 jetmore Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -31,6 +31,7 @@ including that header, and restore its value afterwards. */
 
 int allow_severity = LOG_INFO;
 int deny_severity  = LOG_NOTICE;
+uschar *tcp_wrappers_name;
 #endif
 
 
@@ -1692,7 +1693,14 @@ if (!sender_host_unknown)
 
   #ifdef USE_TCP_WRAPPERS
   errno = 0;
-  if (!hosts_ctl("exim",
+  tcp_wrappers_name = expand_string(tcp_wrappers_daemon_name);
+  if (tcp_wrappers_name == NULL)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" "
+      "(tcp_wrappers_name) failed: %s", string_printing(tcp_wrappers_name),
+        expand_string_message);
+    }
+  if (!hosts_ctl(tcp_wrappers_name,
          (sender_host_name == NULL)? STRING_UNKNOWN : CS sender_host_name,
          (sender_host_address == NULL)? STRING_UNKNOWN : CS sender_host_address,
          (sender_ident == NULL)? STRING_UNKNOWN : CS sender_ident))

@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/globals.c,v 1.87 2010/06/05 09:10:10 pdp Exp $ */
+/* $Cambridge: exim/src/src/globals.c,v 1.88 2010/06/12 15:21:26 jetmore Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -1193,6 +1193,9 @@ BOOL    system_filter_uid_set  = FALSE;
 BOOL    system_filtering       = FALSE;
 
 BOOL    tcp_nodelay            = TRUE;
+#ifdef USE_TCP_WRAPPERS
+uschar *tcp_wrappers_daemon_name = US TCP_WRAPPERS_DAEMON_NAME;
+#endif
 int     test_harness_load_avg  = 0;
 int     thismessage_size_limit = 0;
 int     timeout_frozen_after   = 0;

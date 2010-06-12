@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.631 2010/06/09 01:30:16 pdp Exp $
+$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.632 2010/06/12 15:21:25 jetmore Exp $
 
 Change log file for Exim from version 4.21
 -------------------------------------------
@@ -50,6 +50,10 @@ PP/16 Add bool_lax{} expansion operator and use that for combining multiple
       condition rules, instead of bool{}.  Make both bool{} and bool_lax{}
       ignore trailing whitespace.
 
+JJ/02 prevent non-panic DKIM error from being sent to paniclog
+
+JJ/03 added tcp_wrappers_daemon_name to allow host entries other than
+      "exim" to be used
 
 Exim version 4.72
 -----------------

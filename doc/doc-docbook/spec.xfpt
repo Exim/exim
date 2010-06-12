@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.86 2010/06/09 01:30:16 pdp Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.87 2010/06/12 15:21:25 jetmore Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -1896,6 +1896,8 @@ given in chapter &<<CHAPTLS>>&.
 .section "Use of tcpwrappers" "SECID27"
 .cindex "tcpwrappers, building Exim to support"
 .cindex "USE_TCP_WRAPPERS"
+.cindex "TCP_WRAPPERS_DAEMON_NAME"
+.cindex "tcp_wrappers_daemon_name"
 Exim can be linked with the &'tcpwrappers'& library in order to check incoming
 SMTP calls using the &'tcpwrappers'& control files. This may be a convenient
 alternative to Exim's own checking facilities for installations that are
@@ -1910,14 +1912,17 @@ USE_TCP_WRAPPERS=yes
 CFLAGS=-O -I/usr/local/include
 EXTRALIBS_EXIM=-L/usr/local/lib -lwrap
 .endd
-in &_Local/Makefile_&. The name to use in the &'tcpwrappers'& control files is
-&"exim"&. For example, the line
+in &_Local/Makefile_&. The daemon name to use in the &'tcpwrappers'& control
+files is &"exim"&. For example, the line
 .code
 exim : LOCAL  192.168.1.  .friendly.domain.example
 .endd
 in your &_/etc/hosts.allow_& file allows connections from the local host, from
 the subnet 192.168.1.0/24, and from all hosts in &'friendly.domain.example'&.
-All other connections are denied. Consult the &'tcpwrappers'& documentation for
+All other connections are denied. The daemon name used by &'tcpwrappers'&
+can be changed at build time by setting TCP_WRAPPERS_DAEMON_NAME in
+in &_Local/Makefile_&, or by setting tcp_wrappers_daemon_name in the
+configure file. Consult the &'tcpwrappers'& documentation for
 further details.
 
 
