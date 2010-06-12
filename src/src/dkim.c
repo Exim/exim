@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.14 2010/05/29 19:16:50 nm4 Exp $ */
+/* $Cambridge: exim/src/src/dkim.c,v 1.15 2010/06/12 13:54:38 jetmore Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -92,7 +92,7 @@ void dkim_exim_verify_finish(void) {
      means there was a processing error somewhere along the way.
      Log the incident and disable futher verification. */
   if (!dkim_collect_input) {
-    log_write(0, LOG_MAIN|LOG_PANIC, "DKIM: Error while running this message through validation, disabling signature verification.");
+    log_write(0, LOG_MAIN, "DKIM: Error while running this message through validation, disabling signature verification.");
     dkim_disable_verify = TRUE;
     return;
   }
