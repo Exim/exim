@@ -1,4 +1,4 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.20 2010/06/12 15:21:26 jetmore Exp $ */
+/* $Cambridge: exim/src/src/buildconfig.c,v 1.21 2010/06/13 08:26:40 pdp Exp $ */
 
 /*************************************************
 *     Exim - an Internet mail transport agent    *
@@ -34,7 +34,6 @@ normally called independently. */
 
 
 #include <ctype.h>
-#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -104,10 +103,8 @@ main(int argc, char **argv)
 {
 off_t test_off_t = 0;
 time_t test_time_t = 0;
-#if !(__STDC_VERSION__ >= 199901L) && !defined(PRIdMAX)
 size_t test_size_t = 0;
 unsigned long test_ulong_t = 0L;
-#endif
 long test_long_t = 0;
 FILE *base;
 FILE *new;
@@ -187,14 +184,10 @@ with C99 not being ubiquitous yet.  Unfortunately. */
 #if __STDC_VERSION__ >= 199901L
 fprintf(new, "#define SIZE_T_FMT  \"%%zu\"\n");
 #else
-# ifdef PRIdMAX
-fprintf(new, "#define SIZE_T_FMT  \"%%" PRIdMAX "\"\n");
-# else
 if (sizeof(test_size_t) > sizeof (test_ulong_t))
   fprintf(new, "#define SIZE_T_FMT  \"%%llu\"\n");
 else
   fprintf(new, "#define SIZE_T_FMT  \"%%lu\"\n");
-# endif
 #endif
 
 /* Now search the makefile for certain settings */
