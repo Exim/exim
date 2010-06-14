@@ -502,6 +502,45 @@
 > abcdea a       abcdea
 > abcdea abc z   zzzdez
 > 
+> # Boolean
+> "TrUe"                true      EXPECT: true
+> "FALSE"               false     EXPECT: false
+> " yes"                true      EXPECT: true
+> " no"                 false     EXPECT: false
+> "yes "                true      EXPECT: true
+> Failed: unrecognised boolean value "-1"
+> "0"                   false     EXPECT: false
+> "1"                   true      EXPECT: true
+> " 0 "                 false     EXPECT: false
+> " 1 "                 true      EXPECT: true
+> "1111111111111111111" true      EXPECT: true
+> "9"                   true      EXPECT: true
+> " "                   false     EXPECT: false
+> Failed: unrecognised boolean value "text"
+> Failed: unrecognised boolean value "text"
+> Failed: unrecognised boolean value "text"
+> Failed: unrecognised boolean value "text"
+> "00"                  false     EXPECT: false
+> 
+> "TrUe"                true      EXPECT: true
+> "FALSE"               false     EXPECT: false
+> " yes"                true      EXPECT: true
+> " no"                 false     EXPECT: false
+> "yes "                true      EXPECT: true
+> "-1"                  true      EXPECT: true
+> "0"                   false     EXPECT: false
+> "1"                   true      EXPECT: true
+> " 0 "                 false     EXPECT: false
+> " 1 "                 true      EXPECT: true
+> "1111111111111111111" true      EXPECT: true
+> "9"                   true      EXPECT: true
+> " "                   false     EXPECT: false
+> "text"                true      EXPECT: true
+> " text"               true      EXPECT: true
+> "text "               true      EXPECT: true
+> " text "              true      EXPECT: true
+> "00"                  true      EXPECT: true
+> 
 > # RFC 2047
 > 
 > abcd      abcd

@@ -532,6 +532,45 @@ abcdea a   z   ${tr{abcdea}{a}{z}}
 abcdea a       ${tr{abcdea}{a}{}}
 abcdea abc z   ${tr{abcdea}{abc}{z}}
 
+# Boolean
+"TrUe"                ${if bool{TrUe}{true}{false}}      EXPECT: true
+"FALSE"               ${if bool{FALSE}{true}{false}}     EXPECT: false
+" yes"                ${if bool{ yes}{true}{false}}      EXPECT: true
+" no"                 ${if bool{ no}{true}{false}}     EXPECT: false
+"yes "                ${if bool{yes }{true}{false}}      EXPECT: true
+"-1"                  ${if bool{-1}{true}{false}}     EXPECT: error
+"0"                   ${if bool{0}{true}{false}}     EXPECT: false
+"1"                   ${if bool{1}{true}{false}}      EXPECT: true
+" 0 "                 ${if bool{ 0 }{true}{false}}     EXPECT: false
+" 1 "                 ${if bool{ 1 }{true}{false}}      EXPECT: true
+"1111111111111111111" ${if bool{1111111111111111111}{true}{false}}      EXPECT: true
+"9"                   ${if bool{9}{true}{false}}      EXPECT: true
+" "                   ${if bool{ }{true}{false}}     EXPECT: false
+"text"                ${if bool{text}{true}{false}}     EXPECT: error
+" text"               ${if bool{ text}{true}{false}}     EXPECT: error
+"text "               ${if bool{text }{true}{false}}     EXPECT: error
+" text "              ${if bool{ text }{true}{false}}     EXPECT: error
+"00"                  ${if bool{00}{true}{false}}     EXPECT: false
+
+"TrUe"                ${if bool_lax{TrUe}{true}{false}}      EXPECT: true
+"FALSE"               ${if bool_lax{FALSE}{true}{false}}     EXPECT: false
+" yes"                ${if bool_lax{ yes}{true}{false}}      EXPECT: true
+" no"                 ${if bool_lax{ no}{true}{false}}     EXPECT: false
+"yes "                ${if bool_lax{yes }{true}{false}}      EXPECT: true
+"-1"                  ${if bool_lax{-1}{true}{false}}      EXPECT: true
+"0"                   ${if bool_lax{0}{true}{false}}     EXPECT: false
+"1"                   ${if bool_lax{1}{true}{false}}      EXPECT: true
+" 0 "                 ${if bool_lax{ 0 }{true}{false}}     EXPECT: false
+" 1 "                 ${if bool_lax{ 1 }{true}{false}}      EXPECT: true
+"1111111111111111111" ${if bool_lax{1111111111111111111}{true}{false}}      EXPECT: true
+"9"                   ${if bool_lax{9}{true}{false}}      EXPECT: true
+" "                   ${if bool_lax{ }{true}{false}}     EXPECT: false
+"text"                ${if bool_lax{text}{true}{false}}      EXPECT: true
+" text"               ${if bool_lax{ text}{true}{false}}      EXPECT: true
+"text "               ${if bool_lax{text }{true}{false}}      EXPECT: true
+" text "              ${if bool_lax{ text }{true}{false}}      EXPECT: true
+"00"                  ${if bool_lax{00}{true}{false}}      EXPECT: true
+
 # RFC 2047
 
 abcd      ${rfc2047:abcd}
