@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/runtest,v 1.36 2010/06/05 02:25:16 jetmore Exp $
+# $Cambridge: exim/test/runtest,v 1.37 2010/06/14 20:30:12 jetmore Exp $
 
 ###############################################################################
 # This is the controlling script for the "new" test suite for Exim. It should #
@@ -2038,7 +2038,10 @@ while (<EXIMINFO>)
 
   elsif (/^Size of off_t: (\d+)/)
     {
+    print;
     $have_largefiles = 1 if $1 > 4;
+    die "** Size of off_t > 32 which seems improbable, not running tests\n"
+        if ($1 > 32);
     }
 
   elsif (/^Support for: (.*)/)
