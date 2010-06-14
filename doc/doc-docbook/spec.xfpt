@@ -1,4 +1,4 @@
-. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.87 2010/06/12 15:21:25 jetmore Exp $
+. $Cambridge: exim/doc/doc-docbook/spec.xfpt,v 1.88 2010/06/14 18:51:09 pdp Exp $
 .
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the Exim Manual. It is an xfpt document that is
@@ -3184,12 +3184,15 @@ the listening daemon.
 .cindex "testing", "malware"
 .cindex "malware scan test"
 This debugging option causes Exim to scan the given file,
-using the malware scanning framework.  The option of av_scanner influences
-this option, so if av_scanner's value is dependent upon an expansion then
-the expansion should have defaults which apply to this invocation.  Exim will
-have changed working directory before resolving the filename, so using fully
-qualified pathnames is advisable.  Exim will be running as the Exim user
-when it tries to open the file, rather than as the invoking user.
+using the malware scanning framework.  The option of &%av_scanner%& influences
+this option, so if &%av_scanner%&'s value is dependent upon an expansion then
+the expansion should have defaults which apply to this invocation.  ACLs are
+not invoked, so if &%av_scanner%& references an ACL variable then that variable
+will never be populated and &%-bmalware%& will fail.
+
+Exim will have changed working directory before resolving the filename, so
+using fully qualified pathnames is advisable.  Exim will be running as the Exim
+user when it tries to open the file, rather than as the invoking user.
 This option requires admin privileges.
 
 The &%-bmalware%& option will not be extended to be more generally useful,

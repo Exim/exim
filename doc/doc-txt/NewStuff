@@ -1,4 +1,4 @@
-$Cambridge: exim/doc/doc-txt/NewStuff,v 1.175 2010/06/12 15:21:25 jetmore Exp $
+$Cambridge: exim/doc/doc-txt/NewStuff,v 1.176 2010/06/14 18:51:10 pdp Exp $
 
 New Features in Exim
 --------------------
@@ -42,6 +42,8 @@ Version 4.73
     takes one parameter, a filename, and scans that file with Exim's
     malware-scanning framework.  This is intended purely as a debugging aid
     to ensure that Exim's scanning is working, not to replace other tools.
+    Note that the ACL framework is not invoked, so if av_scanner references
+    ACL variables without a fallback then this will fail.
 
  5. There is a new expansion operator, "reverse_ip", which will reverse IP
     addresses; IPv4 into dotted quad, IPv6 into dotted nibble.  Examples:
