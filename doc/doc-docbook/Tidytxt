@@ -1,7 +1,6 @@
 #! /usr/bin/perl
 
-# $Cambridge: exim/doc/doc-docbook/Tidytxt,v 1.6 2008/02/04 17:18:18 fanf2 Exp $
-
+#
 # Script to tidy up the output of w3m when it makes a text file. First we
 # convert sequences of blank lines into a single blank line, to get everything
 # uniform. Then we go through and insert blank lines before chapter and
