@@ -17,13 +17,6 @@ doc-misc         This directory contains a number of miscellaneous documents
                  that are relevant to Exim, but not part of its distribution
                  tarball.
 
-doc-scripts      This directory contains scripts for building exported
-                 documentation from the original SGCAL input source. These were
-                 used up to and including release 4.50.
-
-doc-src          This directory contains the SGCAL source documents that were
-                 used up to and including release 4.50.
-
 doc-txt          This directory contains documentation that is maintained only
                  as text files.
 
