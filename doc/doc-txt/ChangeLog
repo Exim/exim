@@ -31,6 +31,8 @@ PP/07 If TLS negotiated an anonymous cipher, we could end up with SSL but
 PP/08 Bugzilla 926: switch ClamAV to use the new zINSTREAM API for content
       filtering; old API available if built with WITH_OLD_CLAMAV_STREAM=yes
       NB: ClamAV planning to remove STREAM in "middle of 2010".
+      CL also introduces -bmalware, various -d+acl logging additions and
+      more caution in buffer sizes.
 
 PP/09 Implemented reverse_ip expansion operator.
 
@@ -54,6 +56,10 @@ JJ/02 prevent non-panic DKIM error from being sent to paniclog
 
 JJ/03 added tcp_wrappers_daemon_name to allow host entries other than
       "exim" to be used
+
+PP/17 Fix malware regression for cmdline scanner introduced in PP/08.
+      Notification from Dr Andrew Aitchison.
+
 
 Exim version 4.72
 -----------------
