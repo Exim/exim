@@ -137,9 +137,12 @@ at the time of writing):
   These are all installed on my box; I do not know which of libxml or libxml2
   the various scripts are actually using.
 
-. xsl-stylesheets-1.70.1
+. xsl-stylesheets-<version>
 
   These are the standard DocBook XSL stylesheets.
+
+  The documents use http://docbook.sourceforge.net/release/xsl/current/ whic
+  should be mapped to an appropriate local path via the system catalogs.
 
 . fop 0.93
 
@@ -232,6 +235,39 @@ overridden by local versions. There is one that applies to all styles, called
 MyStyle.xsl, and others for the different output formats. I have included
 comments in these style files to explain what changes I have made. Some of the
 changes are quite significant.
+
+
+XSL INCLUDES
+
+References to XSL paths should use the public URLs, such as:
+  http://docbook.sourceforge.net/release/xsl/current/xhtml/docbook.xsl
+If this fails to work for you, then there is a problem with your system
+catalogs.  As a work-around, you can adjust the OS-Fixups script and then:
+$ make os-fixup
+
+As an example of how this should normally work, on a FreeBSD system the
+resolution goes to /usr/local/share/xml/catalog which contains a directive:
+  <nextCatalog catalog="/usr/local/share/xml/catalog.ports" />
+to pull in the file automatically maintained by the Ports system.  That file
+will contain:
+  <delegateSystem
+   systemIdStartString="http://docbook.sourceforge.net/release/xsl/"
+   catalog="file:///usr/local/share/xsl/docbook/catalog" />
+  <delegateURI
+   uriStartString="http://docbook.sourceforge.net/release/xsl/"
+   catalog="file:///usr/local/share/xsl/docbook/catalog" />
+and that catalog file contains:
+  <rewriteSystem
+   systemIdStartString="http://docbook.sourceforge.net/release/xsl/current"
+   rewritePrefix="file:///usr/local/share/xsl/docbook" />
+  <rewriteURI
+   uriStartString="http://docbook.sourceforge.net/release/xsl/current"
+    rewritePrefix="file:///usr/local/share/xsl/docbook" />
+and the full path is thus eventually arrived at.
+
+See also the tools:
+  xmlcatalog(1) from libxml2
+  xmlcatmgr(1) for a lightweight tool written for the NetBSD Packages system.
 
 
 THE PRE-XML SCRIPT
@@ -672,5 +708,6 @@ spec.xfpt                      xfpt source of the specification document
 x2man                          Script to make the Exim man page from the XML
 
 
-Philip Hazel
-Last updated: 31 August 2007
+(Originally, and for the most part: Philip Hazel)
+The Exim Maintainers
+Last updated: 5 July 2010

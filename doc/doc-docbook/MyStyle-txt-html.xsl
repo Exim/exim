@@ -7,7 +7,7 @@ HTML output, and then imports my common stylesheet for HTML output. Then it
 adds an instruction to use "(c)" for copyright rather than the Unicode
 character. -->
 
-<xsl:import href="/usr/share/sgml/docbook/xsl-stylesheets-1.70.1/xhtml/docbook.xsl"/>
+<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/xhtml/docbook.xsl"/>
 <xsl:import href="MyStyle-html.xsl"/>
 
 <xsl:template name="dingbat.characters">

@@ -8,7 +8,7 @@ all forms of output. Then it imports my FO stylesheet that contains changes for
 all printed output. Finally, there are some changes that apply only when
 printing the Exim specification document. -->
 
-<xsl:import href="/usr/share/sgml/docbook/xsl-stylesheets-1.70.1/fo/docbook.xsl"/>
+<xsl:import href="http://docbook.sourceforge.net/release/xsl/current/fo/docbook.xsl"/>
 <xsl:import href="MyStyle.xsl"/>
 <xsl:import href="MyStyle-fo.xsl"/>
 

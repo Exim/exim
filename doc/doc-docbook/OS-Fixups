@@ -2,7 +2,7 @@
 #  $Cambridge: exim/doc/doc-docbook/OS-Fixups,v 1.3 2010/05/28 15:38:18 nm4 Exp $
 use strict;
 
-# Script to hack around using absolute paths in xsl:import with fixups.
+# Script to hack around xsl:import paths; ideally, the system catalogs are used.
 # Let every OS define its own manipulations.
 # Uses the Perl $^O values to identify the current OS.
 #
@@ -11,7 +11,7 @@ use strict;
 
 sub filter_freebsd
 {
-s{"/usr/share/sgml/docbook/xsl-stylesheets-1.70.1/}
+s{"http://docbook.sourceforge.net/release/xsl/current/}
  {"/usr/local/share/xsl/docbook/};
 s{"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"}
  {"/usr/local/share/xml/docbook/4.2/docbookx.dtd"};
@@ -20,7 +20,7 @@ s{"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"}
 sub filter_linux
 {
 # SUSE 10 with extra pkgs
-s{"/usr/share/sgml/docbook/xsl-stylesheets-1.70.1/}
+s{"http://docbook.sourceforge.net/release/xsl/current/}
  {"/usr/share/xml/docbook/stylesheet/nwalsh/1.71.1/};
 s{"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"}
  {"/usr/share/xml/docbook/schema/dtd/4.2/docbookx.dtd"};
@@ -29,7 +29,7 @@ s{"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"}
 sub filter_darwin
 {
 # NB - this uses the Mac Ports installations
-s{"/usr/share/sgml/docbook/xsl-stylesheets-1.70.1/}
+s{"http://docbook.sourceforge.net/release/xsl/current/}
  {"/opt/local/share/xsl/docbook-xsl/};
 s{"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"}
  {"/opt/local/share/xml/docbook/4.2/docbookx.dtd"};
