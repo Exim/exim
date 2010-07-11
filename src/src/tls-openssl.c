@@ -438,7 +438,10 @@ static void
 construct_cipher_name(SSL *ssl)
 {
 static uschar cipherbuf[256];
-SSL_CIPHER *c;
+/* With OpenSSL 1.0.0a, this needs to be const but the documentation doesn't
+yet reflect that.  It should be a safe change anyway, even 0.9.8 versions have
+the accessor functions use const in the prototype. */
+const SSL_CIPHER *c;
 uschar *ver;
 int bits;
 
@@ -460,7 +463,7 @@ switch (ssl->session->ssl_version)
   ver = US"UNKNOWN";
   }
 
-c = SSL_get_current_cipher(ssl);
+c = (const SSL_CIPHER *) SSL_get_current_cipher(ssl);
 SSL_CIPHER_get_bits(c, &bits);
 
 string_format(cipherbuf, sizeof(cipherbuf), "%s:%s:%u", ver,
