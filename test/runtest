@@ -2621,6 +2621,12 @@ if (system("cp $parm_exim_dir/eximstats eximdir") != 0)
 
 print "Exim user is $parm_eximuser ($parm_exim_uid)\n";
 print "Exim group is $parm_eximgroup ($parm_exim_gid)\n";
+
+if ($parm_caller_uid eq $parm_exim_uid) {
+  tests_exit(-1, "Exim user ($parm_eximuser,$parm_exim_uid) cannot be "
+                ."the same as caller ($parm_caller,$parm_caller_uid)");
+}
+
 print "The Exim user needs access to the test suite directory. Checking ...";
 
 if (($rc = system("sudo bin/checkaccess $parm_cwd/eximdir/exim $parm_eximuser $parm_eximgroup")) != 0)

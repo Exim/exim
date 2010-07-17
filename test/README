@@ -65,8 +65,9 @@ In order to run this test suite, the following requirements must be met:
       Defaults timestamp_timeout=480
 
     in /etc/sudoers, a password lasts for 8 hours (a working day). It is
-    probably not a good idea to run the tests as the Exim user, as this is
-    recognized as special by Exim.
+    not permitted to run the tests as the Exim user because the test suite
+    tracks the two users independently.  Using the same user would result
+    in false positives on some tests.
 
 (3) The login under which you run the tests must be in the exim group so that
     it has access to logs, spool files, etc. The login should not be one of the
