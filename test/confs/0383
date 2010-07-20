@@ -24,7 +24,7 @@ r0:
   driver = redirect
   local_parts = redking
   allow_filter
-  file = DIR/aux-var/TESTNUM.f
+  file = DIR/aux-var/TESTNUM.F2
   user = CALLER
   pipe_transport = t1
 
