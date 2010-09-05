@@ -60,6 +60,10 @@ JJ/03 added tcp_wrappers_daemon_name to allow host entries other than
 PP/17 Fix malware regression for cmdline scanner introduced in PP/08.
       Notification from Dr Andrew Aitchison.
 
+PP/18 Change ClamAV response parsing to be more robust and to handle ClamAV's
+      ExtendedDetectionInfo response format.
+      Notification from John Horne.
+
 
 Exim version 4.72
 -----------------

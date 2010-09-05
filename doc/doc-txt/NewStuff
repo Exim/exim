@@ -38,6 +38,8 @@ Version 4.73
 
       av_scanner = clamd:192.0.2.3 1234:local
 
+    ClamAV's ExtendedDetectionInfo response format is now handled.
+
  4. There is now a -bmalware option, restricted to admin users.  This option
     takes one parameter, a filename, and scans that file with Exim's
     malware-scanning framework.  This is intended purely as a debugging aid
