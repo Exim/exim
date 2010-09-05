@@ -64,6 +64,13 @@ PP/18 Change ClamAV response parsing to be more robust and to handle ClamAV's
       ExtendedDetectionInfo response format.
       Notification from John Horne.
 
+PP/19 OpenSSL 1.0.0a compatibility const-ness change, should be backwards
+      compatible.
+
+PP/20 Added a CONTRIBUTING file.  Fixed the documentation build to use http:
+      XSL and documented dependency on system catalogs, with examples of how
+      it normally works.
+
 
 Exim version 4.72
 -----------------

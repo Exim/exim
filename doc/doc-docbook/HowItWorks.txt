@@ -141,7 +141,7 @@ at the time of writing):
 
   These are the standard DocBook XSL stylesheets.
 
-  The documents use http://docbook.sourceforge.net/release/xsl/current/ whic
+  The documents use http://docbook.sourceforge.net/release/xsl/current/ which
   should be mapped to an appropriate local path via the system catalogs.
 
 . fop 0.93
