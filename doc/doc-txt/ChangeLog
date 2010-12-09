@@ -71,6 +71,9 @@ PP/20 Added a CONTRIBUTING file.  Fixed the documentation build to use http:
       XSL and documented dependency on system catalogs, with examples of how
       it normally works.
 
+DW/21 Added Valgrind hooks in store.c to help it capture out-of-bounds store
+      access.
+
 
 Exim version 4.72
 -----------------

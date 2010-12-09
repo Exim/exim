@@ -254,6 +254,8 @@ ln -s ../src/verify.c          verify.c
 ln -s ../src/version.c         version.c
 ln -s ../src/dkim.c            dkim.c
 ln -s ../src/dkim.h            dkim.h
+ln -s ../src/valgrind.h        valgrind.h
+ln -s ../src/memcheck.h        memcheck.h
 
 # WITH_CONTENT_SCAN
 ln -s ../src/spam.c            spam.c
