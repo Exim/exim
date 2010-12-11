@@ -458,32 +458,18 @@ FIXED_NEVER_USERS=root
 
 #------------------------------------------------------------------------------
 # The -C option allows Exim to be run with an alternate runtime configuration
-# file. When this is used by root or the Exim user, root privilege is retained
-# by the binary (for any other caller, it is dropped). You can restrict the
-# location of alternate configurations by defining a prefix below. Any file
-# used with -C must then start with this prefix (except that /dev/null is also
-# permitted if the caller is root, because that is used in the install script).
-# If the prefix specifies a directory that is owned by root, a compromise of
-# the Exim account does not permit arbitrary alternate configurations to be
-# used. The prefix can be more restrictive than just a directory (the second
-# example).
+# file. When this is used by root, root privilege is retained by the binary
+# (for any other caller including the Exim user, it is dropped). You can
+# restrict the location of alternate configurations by defining a prefix below.
+# Any file used with -C must then start with this prefix (except that /dev/null
+# is also permitted if the caller is root, because that is used in the install
+# script). If the prefix specifies a directory that is owned by root, a
+# compromise of the Exim account does not permit arbitrary alternate
+# configurations to be used. The prefix can be more restrictive than just a
+# directory (the second example).
 
 # ALT_CONFIG_PREFIX=/some/directory/
 # ALT_CONFIG_PREFIX=/some/directory/exim.conf-
-
-
-#------------------------------------------------------------------------------
-# If you uncomment the following line, only root may use the -C or -D options
-# without losing root privilege. The -C option specifies an alternate runtime
-# configuration file, and the -D option changes macro values in the runtime
-# configuration. Uncommenting this line restricts what can be done with these
-# options. A call to receive a message (either one-off or via a daemon) cannot
-# successfully continue to deliver it, because the re-exec of Exim to regain
-# root privilege will fail, owing to the use of -C or -D by the Exim user.
-# However, you can still use -C for testing (as root) if you do separate Exim
-# calls for receiving a message and subsequently delivering it.
-
-# ALT_CONFIG_ROOT_ONLY=yes
 
 
 #------------------------------------------------------------------------------

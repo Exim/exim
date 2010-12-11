@@ -3031,11 +3031,11 @@ if (setgroups(0, NULL) != 0)
 
 /* If the configuration file name has been altered by an argument on the
 command line (either a new file name or a macro definition) and the caller is
-not root or the exim user, or if this is a filter testing run, remove any
-setuid privilege the program has, and run as the underlying user.
+not root, or if this is a filter testing run, remove any setuid privilege the
+program has and run as the underlying user.
 
-If ALT_CONFIG_ROOT_ONLY is defined, the exim user is locked out of this, which
-severely restricts the use of -C for some purposes.
+The exim user is locked out of this, which severely restricts the use of -C
+for some purposes.
 
 Otherwise, set the real ids to the effective values (should be root unless run
 from inetd, which it can either be root or the exim uid, if one is configured).
@@ -3049,9 +3049,6 @@ configuration file changes and macro definitions haven't happened. */
 if ((                                            /* EITHER */
     (!trusted_config || macros != NULL) &&       /* Config changed, and */
     real_uid != root_uid &&                      /* Not root, and */
-    #ifndef ALT_CONFIG_ROOT_ONLY                 /* (when not locked out) */
-    real_uid != exim_uid &&                      /* Not exim, and */
-    #endif
     !running_in_test_harness                     /* Not fudged */
     ) ||                                         /*   OR   */
     expansion_test                               /* expansion testing */
@@ -3239,15 +3236,12 @@ else
   }
 
 /* Handle the case when we have removed the setuid privilege because of -C or
--D. This means that the caller of Exim was not root, and, provided that
-ALT_CONFIG_ROOT_ONLY is not defined, was not the Exim user that is built into
-the binary.
+-D. This means that the caller of Exim was not root.
 
-If ALT_CONFIG_ROOT_ONLY is not defined, there is a problem if it turns out we
-were running as the exim user defined in the configuration file (different to
-the one in the binary). The sysadmin may expect this case to retain privilege
-because "the binary was called by the Exim user", but it hasn't, because of the
-order in which it handles this stuff. There are two possibilities:
+There is a problem if we were running as the Exim user. The sysadmin may
+expect this case to retain privilege because "the binary was called by the
+Exim user", but it hasn't, because either the -D option set macros, or the
+-C option set a non-default configuration file. There are two possibilities:
 
   (1) If deliver_drop_privilege is set, Exim is not going to re-exec in order
       to do message deliveries. Thus, the fact that it is running as a
@@ -3259,27 +3253,18 @@ order in which it handles this stuff. There are two possibilities:
 
   (2) If deliver_drop_privilege is not set, the configuration won't work as
       apparently intended, and so we log a panic message. In order to retain
-      root for -C or -D, the caller must either be root or the Exim user
-      defined in the binary (when deliver_drop_ privilege is false).
-
-If ALT_CONFIG_ROOT_ONLY is defined, we don't know whether we were called by the
-built-in exim user or one defined in the configuration. In either event,
-re-enable log processing, assuming the sysadmin knows what they are doing. */
+      root for -C or -D, the caller must be root (when deliver_drop_privilege
+      is false). */
 
 if (removed_privilege && (!trusted_config || macros != NULL) &&
     real_uid == exim_uid)
   {
-  #ifdef ALT_CONFIG_ROOT_ONLY
-  really_exim = TRUE;   /* let logging work normally */
-  #else
-
   if (deliver_drop_privilege)
     really_exim = TRUE; /* let logging work normally */
   else
     log_write(0, LOG_MAIN|LOG_PANIC,
-      "exim user (uid=%d) is defined only at runtime; privilege lost for %s",
+      "exim user lost privilege for using %s option",
       (int)exim_uid, trusted_config? "-D" : "-C");
-  #endif
   }
 
 /* Start up Perl interpreter if Perl support is configured and there is a

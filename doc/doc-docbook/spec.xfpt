@@ -3331,25 +3331,17 @@ name, but it can be a colon-separated list of names. In this case, the first
 file that exists is used. Failure to open an existing file stops Exim from
 proceeding any further along the list, and an error is generated.
 
-When this option is used by a caller other than root or the Exim user, and the
-list is different from the compiled-in list, Exim gives up its root privilege
-immediately, and runs with the real and effective uid and gid set to those of
-the caller. However, if ALT_CONFIG_ROOT_ONLY is defined in
-&_Local/Makefile_&, root privilege is retained for &%-C%& only if the caller of
-Exim is root.
+When this option is used by a caller other than root, and the list is different
+from the compiled-in list, Exim gives up its root privilege immediately, and
+runs with the real and effective uid and gid set to those of the caller.
 
-That is, the Exim user is no longer privileged in this regard. This build-time
-option is not set by default in the Exim source distribution tarbundle.
-However, if you are using a &"packaged"& version of Exim (source or binary),
-the packagers might have enabled it.
-
-Setting ALT_CONFIG_ROOT_ONLY locks out the possibility of testing a
-configuration using &%-C%& right through message reception and delivery, even
-if the caller is root. The reception works, but by that time, Exim is running
-as the Exim user, so when it re-executes to regain privilege for the delivery,
-the use of &%-C%& causes privilege to be lost. However, root can test reception
-and delivery using two separate commands (one to put a message on the queue,
-using &%-odq%&, and another to do the delivery, using &%-M%&).
+This behaviour precludes the possibility of testing a configuration using
+&%-C%& right through message reception and delivery, even if the caller is
+root. The reception works, but by that time, Exim is running as the Exim user,
+so when it re-executes to regain privilege for the delivery, the use of &%-C%&
+causes privilege to be lost. However, root can test reception and delivery
+using two separate commands (one to put a message on the queue, using &%-odq%&,
+and another to do the delivery, using &%-M%&).
 
 If ALT_CONFIG_PREFIX is defined &_in Local/Makefile_&, it specifies a
 prefix string with which any file named in a &%-C%& command line option
@@ -4531,21 +4523,21 @@ configuration.
 .cindex "configuration file" "alternate"
 A one-off alternate configuration can be specified by the &%-C%& command line
 option, which may specify a single file or a list of files. However, when
-&%-C%& is used, Exim gives up its root privilege, unless called by root or the
-Exim user (or unless the argument for &%-C%& is identical to the built-in value
-from CONFIGURE_FILE). &%-C%& is useful mainly for checking the syntax of
+&%-C%& is used, Exim gives up its root privilege, unless called by root (or
+unless the argument for &%-C%& is identical to the built-in value from
+CONFIGURE_FILE). &%-C%& is useful mainly for checking the syntax of
 configuration files before installing them. No owner or group checks are done
 on a configuration file specified by &%-C%&.
 
-The privileged use of &%-C%& by the Exim user can be locked out by setting
-ALT_CONFIG_ROOT_ONLY in &_Local/Makefile_& when building Exim. However,
-if you do this, you also lock out the possibility of testing a
-configuration using &%-C%& right through message reception and delivery, even
-if the caller is root. The reception works, but by that time, Exim is running
-as the Exim user, so when it re-execs to regain privilege for the delivery, the
-use of &%-C%& causes privilege to be lost. However, root can test reception and
-delivery using two separate commands (one to put a message on the queue, using
-&%-odq%&, and another to do the delivery, using &%-M%&).
+The Exim user is not trusted to specify an arbitrary configuration file with
+the &%-C%& option to be executed with root privileges. This locks out the
+possibility of testing a configuration using &%-C%& right through message
+reception and delivery, even if the caller is root. The reception works, but
+by that time, Exim is running as the Exim user, so when it re-execs to regain
+privilege for the delivery, the use of &%-C%& causes privilege to be lost.
+However, root can test reception and delivery using two separate commands
+(one to put a message on the queue, using &%-odq%&, and another to do the
+delivery, using &%-M%&).
 
 If ALT_CONFIG_PREFIX is defined &_in Local/Makefile_&, it specifies a
 prefix string with which any file named in a &%-C%& command line option must
@@ -33805,15 +33797,14 @@ which only root has access, this guards against someone who has broken
 into the Exim account from running a privileged Exim with an arbitrary
 configuration file, and using it to break into other accounts.
 .next
-If ALT_CONFIG_ROOT_ONLY is defined, root privilege is retained for &%-C%&
-and &%-D%& only if the caller of Exim is root. Without it, the Exim user may
-also use &%-C%& and &%-D%& and retain privilege. Setting this option locks out
-the possibility of testing a configuration using &%-C%& right through message
-reception and delivery, even if the caller is root. The reception works, but by
-that time, Exim is running as the Exim user, so when it re-execs to regain
-privilege for the delivery, the use of &%-C%& causes privilege to be lost.
-However, root can test reception and delivery using two separate commands.
-ALT_CONFIG_ROOT_ONLY is not set by default.
+If a non-default configuration file is specified with &%-C%&, or macros are
+given with &%-D%&, then root privilege is retained only if the caller of Exim
+is root. This locks out the possibility of testing a configuration using &%-C%&
+right through message reception and delivery, even if the caller is root. The
+reception works, but by that time, Exim is running as the Exim user, so when
+it re-execs to regain privilege for the delivery, the use of &%-C%& causes
+privilege to be lost. However, root can test reception and delivery using two
+separate commands.
 .next
 If DISABLE_D_OPTION is defined, the use of the &%-D%& command line option
 is disabled.
@@ -33869,11 +33860,10 @@ uid and gid in the following cases:
 .oindex "&%-D%&"
 If the &%-C%& option is used to specify an alternate configuration file, or if
 the &%-D%& option is used to define macro values for the configuration, and the
-calling process is not running as root or the Exim user, the uid and gid are
-changed to those of the calling process.
-However, if ALT_CONFIG_ROOT_ONLY is defined in &_Local/Makefile_&, only
-root callers may use &%-C%& and &%-D%& without losing privilege, and if
-DISABLE_D_OPTION is set, the &%-D%& option may not be used at all.
+calling process is not running as root, the uid and gid are changed to those of
+ the calling process.
+However, if DISABLE_D_OPTION is defined in &_Local/Makefile_&, the &%-D%&
+option may not be used at all.
 .next
 .oindex "&%-be%&"
 .oindex "&%-bf%&"
