@@ -1268,6 +1268,7 @@ tree_node  *tree_nonrecipients = NULL;
 tree_node  *tree_unusable      = NULL;
 
 BOOL    trusted_caller         = FALSE;
+BOOL    trusted_config         = TRUE;
 gid_t  *trusted_groups         = NULL;
 uid_t  *trusted_users          = NULL;
 uschar *timezone_string        = US TIMEZONE_DEFAULT;

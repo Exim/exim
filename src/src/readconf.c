@@ -2874,10 +2874,10 @@ else
       "configuration file %s", filename));
   }
 
-/* Check the status of the file we have opened, unless it was specified on
-the command line, in which case privilege was given away at the start. */
+/* Check the status of the file we have opened, if we have retained root
+privileges. */
 
-if (!config_changed)
+if (trusted_config)
   {
   if (fstat(fileno(config_file), &statbuf) != 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to stat configuration file %s",

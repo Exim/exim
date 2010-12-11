@@ -78,6 +78,11 @@ DW/22 Bugzilla 1044: CVE-2010-4345 - partial fix: restrict default behaviour
       of CONFIGURE_OWNER and CONFIGURE_GROUP options to no longer allow a
       configuration file which is writeable by the Exim user or group.
 
+DW/23 Bugzilla 1044: CVE-2010-4345 - part two: extend checks for writeability
+      of configuration files to cover files specified with the -C option if
+      they are going to be used with root privileges, not just the default
+      configuration file.
+
 
 Exim version 4.72
 -----------------

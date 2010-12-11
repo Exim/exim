@@ -783,6 +783,7 @@ extern tree_node *tree_nonrecipients;  /* Tree of nonrecipient addresses */
 extern tree_node *tree_unusable;       /* Tree of unusable addresses */
 
 extern BOOL    trusted_caller;         /* Caller is trusted */
+extern BOOL    trusted_config;         /* Configuration file is trusted */
 extern gid_t  *trusted_groups;         /* List of trusted groups */
 extern uid_t  *trusted_users;          /* List of trusted users */
 extern uschar *timezone_string;        /* Required timezone setting */

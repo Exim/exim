@@ -1848,6 +1848,7 @@ for (i = 1; i < argc; i++)
 
       config_main_filelist = argrest;
       config_changed = TRUE;
+      trusted_config = FALSE;
       }
     break;
 
@@ -3046,7 +3047,7 @@ values (such as the path name). If running in the test harness, pretend that
 configuration file changes and macro definitions haven't happened. */
 
 if ((                                            /* EITHER */
-    (config_changed || macros != NULL) &&        /* Config changed, and */
+    (!trusted_config || macros != NULL) &&       /* Config changed, and */
     real_uid != root_uid &&                      /* Not root, and */
     #ifndef ALT_CONFIG_ROOT_ONLY                 /* (when not locked out) */
     real_uid != exim_uid &&                      /* Not exim, and */
@@ -3265,7 +3266,7 @@ If ALT_CONFIG_ROOT_ONLY is defined, we don't know whether we were called by the
 built-in exim user or one defined in the configuration. In either event,
 re-enable log processing, assuming the sysadmin knows what they are doing. */
 
-if (removed_privilege && (config_changed || macros != NULL) &&
+if (removed_privilege && (!trusted_config || macros != NULL) &&
     real_uid == exim_uid)
   {
   #ifdef ALT_CONFIG_ROOT_ONLY
@@ -3277,7 +3278,7 @@ if (removed_privilege && (config_changed || macros != NULL) &&
   else
     log_write(0, LOG_MAIN|LOG_PANIC,
       "exim user (uid=%d) is defined only at runtime; privilege lost for %s",
-      (int)exim_uid, config_changed? "-C" : "-D");
+      (int)exim_uid, trusted_config? "-D" : "-C");
   #endif
   }
 
