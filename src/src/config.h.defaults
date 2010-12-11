@@ -161,5 +161,6 @@ just in case. */
 #define DNS_MAXNAME                1024
 #define EXPAND_MAXN                  20
 #define ROOT_UID                      0
+#define ROOT_GID                      0
 
 /* End of config.h.defaults */

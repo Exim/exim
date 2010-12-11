@@ -74,6 +74,10 @@ PP/20 Added a CONTRIBUTING file.  Fixed the documentation build to use http:
 DW/21 Added Valgrind hooks in store.c to help it capture out-of-bounds store
       access.
 
+DW/22 Bugzilla 1044: CVE-2010-4345 - partial fix: restrict default behaviour
+      of CONFIGURE_OWNER and CONFIGURE_GROUP options to no longer allow a
+      configuration file which is writeable by the Exim user or group.
+
 
 Exim version 4.72
 -----------------

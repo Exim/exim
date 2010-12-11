@@ -4501,17 +4501,21 @@ existing file in the list.
 .cindex "configuration file" "ownership"
 .cindex "ownership" "configuration file"
 The run time configuration file must be owned by root or by the user that is
-specified at compile time by the EXIM_USER option, or by the user that is
 specified at compile time by the CONFIGURE_OWNER option (if set). The
-configuration file must not be world-writeable or group-writeable, unless its
-group is the one specified at compile time by the EXIM_GROUP option or by the
+configuration file must not be world-writeable, or group-writeable unless its
+group is the root group or the one specified at compile time by the
 CONFIGURE_GROUP option.
 
 &*Warning*&: In a conventional configuration, where the Exim binary is setuid
 to root, anybody who is able to edit the run time configuration file has an
-easy way to run commands as root. If you make your mail administrators members
-of the Exim group, but do not trust them with root, make sure that the run time
-configuration is not group writeable.
+easy way to run commands as root. If you specify a user or group in the
+CONFIGURE_OWNER or CONFIGURE_GROUP options, then that user and/or any users
+who are members of that group will trivially be able to obtain root privileges.
+
+Up to Exim version 4.72, the run time configuration file was also permitted to
+be writeable by the Exim user and/or group. That has been changed in Exim 4.73
+since it offered a simple privilege escalation for any attacker who managed to
+compromise the Exim user account.
 
 A default configuration file, which will work correctly in simple situations,
 is provided in the file &_src/configure.default_&. If CONFIGURE_FILE

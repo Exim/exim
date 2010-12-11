@@ -430,14 +430,13 @@ FIXED_NEVER_USERS=root
 
 
 #------------------------------------------------------------------------------
-# By default, Exim insists that its configuration file be owned either by root
-# or by the Exim user. You can specify one additional permitted owner here.
+# By default, Exim insists that its configuration file be owned by root. You
+# can specify one additional permitted owner here.
 
 # CONFIGURE_OWNER=
 
 # If the configuration file is group-writeable, Exim insists by default that it
-# is owned by root or the Exim user. You can specify one additional permitted
-# group owner here.
+# is owned by root. You can specify one additional permitted group owner here.
 
 # CONFIGURE_GROUP=
 

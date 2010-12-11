@@ -946,6 +946,7 @@ int     rewrite_existflags     = 0;
 uschar *rfc1413_hosts          = US"*";
 int     rfc1413_query_timeout  = 5;
 /* BOOL    rfc821_domains         = FALSE;  <<< on the way out */
+uid_t   root_gid               = ROOT_GID;
 uid_t   root_uid               = ROOT_UID;
 
 router_instance  *routers  = NULL;

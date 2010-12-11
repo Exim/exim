@@ -2883,13 +2883,12 @@ if (!config_changed)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to stat configuration file %s",
       big_buffer);
 
-  if ((statbuf.st_uid != root_uid &&             /* owner not root */
-       statbuf.st_uid != exim_uid                /* owner not exim */
+  if ((statbuf.st_uid != root_uid                /* owner not root */
        #ifdef CONFIGURE_OWNER
        && statbuf.st_uid != config_uid           /* owner not the special one */
        #endif
          ) ||                                    /* or */
-      (statbuf.st_gid != exim_gid                /* group not exim & */
+      (statbuf.st_gid != root_gid                /* group not root & */
        #ifdef CONFIGURE_GROUP
        && statbuf.st_gid != config_gid           /* group not the special one */
        #endif

@@ -610,6 +610,7 @@ extern int     rewrite_existflags;     /* Indicate which headers have rewrites *
 extern uschar *rfc1413_hosts;          /* RFC hosts */
 extern int     rfc1413_query_timeout;  /* Timeout on RFC 1413 calls */
 /* extern BOOL    rfc821_domains;  */       /* If set, syntax is 821, not 822 => being abolished */
+extern uid_t   root_gid;               /* The gid for root */
 extern uid_t   root_uid;               /* The uid for root */
 extern router_info routers_available[];/* Vector of available routers */
 extern router_instance *routers;       /* Chain of instantiated routers */
