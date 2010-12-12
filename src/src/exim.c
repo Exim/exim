@@ -1888,7 +1888,7 @@ for (i = 1; i < argc; i++)
                 uschar *start = big_buffer, *nl;
                 while (*start && isspace(*start))
                 start++;
-                if (*start == '#')
+                if (*start != '/')
                   continue;
                 nl = Ustrchr(start, '\n');
                 if (nl)
@@ -1920,6 +1920,7 @@ for (i = 1; i < argc; i++)
                     break;
                     }
                   }
+                store_reset(reset_point);
                 }
               else
                 {
