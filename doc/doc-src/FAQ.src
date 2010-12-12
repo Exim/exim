@@ -851,7 +851,9 @@ A0044: Exim has been unable to create a file in its spool area in which to
 
        If you are running Exim with an alternate configuration file using a
        command such as \"exim -C altconfig..."\, remember that the use of -C
-       takes away Exim's root privilege.
+       takes away Exim's root privilege, unless \\TRUSTED_CONFIG_PREFIX_FILE\\
+       is set in \(Local/Makefile)\ and the corresponding file contains a
+       prefix which matches the alternative configuration file being used.
 
        Check that you have defined the spool directory correctly by running
 
@@ -1147,25 +1149,17 @@ Q0065: When (as \/root/\) I use -C to run Exim with an alternate configuration
        trying to run an \%autoreply%\ transport. Why is this?
 
 A0065: When Exim is called with -C, it passes on -C to any instances of itself
-       that it calls (so that the whole sequence uses the same config file). If
-       it's running as \/exim/\ when it does this, all is well. However, if it
-       happens as a consequence of a non-privileged user running \%autoreply%\,
-       the called Exim gives up its root privilege. Then it can't write to the
-       spool.
+       that it calls (so that the whole sequence uses the same config file).
+       However, Exim gives up its root privilege if any user except \/root\/
+       passes a -C option to use a non-default configuration file, and that
+       includes the case where Exim re-execs itself to regain root privilege.
+       Thus it can't write to the spool.
 
-       This means that you can't use -C (even as \/root/\) to run an instance of
-       Exim that is going to try to run \%autoreply%\ from a process that is
-       neither \/root/\ nor \/exim/\. Because of the architecture of Exim (using
-       re-execs to regain privilege), there isn't any way round this
-       restriction. Therefore, the only way you can make this scenario work is
-       to run the \%autoreply%\ transport as \/exim/\ (that is, the user that
-       owns the Exim spool files). This may be satisfactory for autoreplies
-       that are essentially system-generated, but of course is no good for
-       autoreplies from unprivileged users, where you want the \%autoreply%\
-       transport to be run as the user. To get that to work with an alternate
-       configuration, you'll have to use two Exim binaries, with different
-       configuration file names in each. See S001 for a script that patches
-       the configuration name in an Exim binary.
+       The fix for this is to use the \\TRUSTED_CONFIG_PREFIX_LIST\\ build-time
+       option. This defines a file containing a list of 'trusted' prefixes for
+       configuration files. Any configuration file specified with -C, if it
+       matches a prefix listed in that file, will be used without dropping root
+       privileges (as long as it is not writeable by a non-root user).
 
 
 Q0066: What does the message \*unable to set gid=xxx or uid=xxx*\ mean?

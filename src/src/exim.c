@@ -1845,10 +1845,103 @@ for (i = 1; i < argc; i++)
           }
         }
       #endif
+      if (real_uid != root_uid)
+        {
+        #ifdef TRUSTED_CONFIG_PREFIX_LIST
+
+	if (Ustrstr(argrest, "/../"))
+          trusted_config = FALSE;
+        else
+          {
+          FILE *trust_list = Ufopen(TRUSTED_CONFIG_PREFIX_LIST, "rb");
+          if (trust_list)
+            {
+            struct stat statbuf;
+
+            if (fstat(fileno(trust_list), &statbuf) != 0 ||
+                (statbuf.st_uid != root_uid        /* owner not root */
+                 #ifdef CONFIGURE_OWNER
+                 && statbuf.st_uid != config_uid   /* owner not the special one */
+                 #endif
+                   ) ||                            /* or */
+                (statbuf.st_gid != root_gid        /* group not root */
+                 #ifdef CONFIGURE_GROUP
+                 && statbuf.st_gid != config_gid   /* group not the special one */
+                 #endif
+                 && (statbuf.st_mode & 020) != 0   /* group writeable */
+                   ) ||                            /* or */
+                (statbuf.st_mode & 2) != 0)        /* world writeable */
+              {
+              trusted_config = FALSE;
+              fclose(trust_list);
+              }
+	    else
+              {
+              /* Well, the trust list at least is up to scratch... */
+              void *reset_point = store_get(0);
+              uschar *trusted_prefixes[32];
+              int nr_prefixes = 0;
+              int i = 0;
+
+              while (Ufgets(big_buffer, big_buffer_size, trust_list))
+                {
+                uschar *start = big_buffer, *nl;
+                while (*start && isspace(*start))
+                start++;
+                if (*start == '#')
+                  continue;
+                nl = Ustrchr(start, '\n');
+                if (nl)
+                  *nl = 0;
+                trusted_prefixes[nr_prefixes++] = string_copy(start);
+                if (nr_prefixes == 32)
+                  break;
+                }
+              fclose(trust_list);
+
+              if (nr_prefixes)
+                {
+                int sep = 0;
+                uschar *list = argrest;
+                uschar *filename;
+                while (trusted_config && (filename = string_nextinlist(&list,
+                        &sep, big_buffer, big_buffer_size)) != NULL)
+                  {
+                  for (i=0; i < nr_prefixes; i++)
+                    {
+                    int len = Ustrlen(trusted_prefixes[i]);
+                    if (Ustrlen(filename) >= len &&
+                        Ustrncmp(filename, trusted_prefixes[i], len) == 0)
+                      break;
+                    }
+                  if (i == nr_prefixes)
+                    {
+                    trusted_config = FALSE;
+                    break;
+                    }
+                  }
+                }
+              else
+                {
+                /* No valid prefixes found in trust_list file. */
+                trusted_config = FALSE;
+                }
+              }
+	    }
+          else
+            {
+            /* Could not open trust_list file. */
+            trusted_config = FALSE;
+            }
+          }
+      #else
+        /* Not root; don't trust config */
+        trusted_config = FALSE;
+      #endif
+        }
 
       config_main_filelist = argrest;
       config_changed = TRUE;
-      trusted_config = FALSE;
       }
     break;
 
@@ -3241,7 +3334,7 @@ else
 There is a problem if we were running as the Exim user. The sysadmin may
 expect this case to retain privilege because "the binary was called by the
 Exim user", but it hasn't, because either the -D option set macros, or the
--C option set a non-default configuration file. There are two possibilities:
+-C option set a non-trusted configuration file. There are two possibilities:
 
   (1) If deliver_drop_privilege is set, Exim is not going to re-exec in order
       to do message deliveries. Thus, the fact that it is running as a
@@ -3253,8 +3346,8 @@ Exim user", but it hasn't, because either the -D option set macros, or the
 
   (2) If deliver_drop_privilege is not set, the configuration won't work as
       apparently intended, and so we log a panic message. In order to retain
-      root for -C or -D, the caller must be root (when deliver_drop_privilege
-      is false). */
+      root for -C or -D, the caller must either be root or be invoking a
+      trusted configuration file (when deliver_drop_privilege is false). */
 
 if (removed_privilege && (!trusted_config || macros != NULL) &&
     real_uid == exim_uid)

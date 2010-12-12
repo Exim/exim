@@ -473,6 +473,19 @@ FIXED_NEVER_USERS=root
 
 
 #------------------------------------------------------------------------------
+# When a user other than root uses the -C option to override the configuration
+# file (including the Exim user when re-executing Exim to regain root
+# privileges for local message delivery), this will normally cause Exim to
+# drop root privileges. The TRUSTED_CONFIG_PREFIX_LIST option, specifies
+# a file which contains a list of trusted configuration prefixes (like the
+# ALT_CONFIG_PREFIX above), one per line. If the -C option is used to specify
+# a configuration file which matches a trusted prefix, root privileges are not
+# dropped by Exim.
+
+# TRUSTED_CONFIG_PREFIX_LIST=/usr/exim/trusted_configs
+
+
+#------------------------------------------------------------------------------
 # Uncommenting this option disables the use of the -D command line option,
 # which changes the values of macros in the runtime configuration file.
 # This is another protection against somebody breaking into the Exim account.

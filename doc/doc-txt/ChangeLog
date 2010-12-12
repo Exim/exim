@@ -86,6 +86,9 @@ DW/23 Bugzilla 1044: CVE-2010-4345 - part two: extend checks for writeability
 DW/24 Bugzilla 1044: CVE-2010-4345 - part three: remove ALT_CONFIG_ROOT_ONLY
       option (effectively making it always true).
 
+DW/25 Add TRUSTED_CONFIG_PREFIX_FILE option to allow alternative configuration
+      files to be used while preserving root privileges.
+
 
 Exim version 4.72
 -----------------

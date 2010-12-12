@@ -13,6 +13,7 @@ in config.h unless some value is defined in Local/Makefile. If there is data,
 it's a default value. */
 
 #define ALT_CONFIG_PREFIX
+#define TRUSTED_CONFIG_PREFIX_LIST
 
 #define APPENDFILE_MODE            0600
 #define APPENDFILE_DIRECTORY_MODE  0700
