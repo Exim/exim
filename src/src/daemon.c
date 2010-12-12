@@ -425,6 +425,13 @@ if (pid == 0)
 
   for (i = 0; i < listen_socket_count; i++) (void)close(listen_sockets[i]);
 
+  /* Set FD_CLOEXEC on the SMTP socket. We don't want any rogue child processes
+  to be able to communicate with them, under any circumstances. */
+  (void)fcntl(accept_socket, F_SETFD,
+              fcntl(accept_socket, F_GETFD) | FD_CLOEXEC);
+  (void)fcntl(dup_accept_socket, F_SETFD,
+              fcntl(dup_accept_socket, F_GETFD) | FD_CLOEXEC);
+
   #ifdef SA_NOCLDWAIT
   act.sa_handler = SIG_IGN;
   sigemptyset(&(act.sa_mask));

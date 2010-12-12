@@ -89,6 +89,9 @@ DW/24 Bugzilla 1044: CVE-2010-4345 - part three: remove ALT_CONFIG_ROOT_ONLY
 DW/25 Add TRUSTED_CONFIG_PREFIX_FILE option to allow alternative configuration
       files to be used while preserving root privileges.
 
+DW/26 Set FD_CLOEXEC on SMTP sockets after forking in the daemon, to ensure
+      that rogue child processes cannot use them.
+
 
 Exim version 4.72
 -----------------
