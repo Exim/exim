@@ -594,6 +594,9 @@ extern const pcre  *regex_PIPELINING;  /* For recognizing PIPELINING */
 extern const pcre  *regex_SIZE;        /* For recognizing SIZE settings */
 extern const pcre  *regex_smtp_code;   /* For recognizing SMTP codes */
 extern const pcre  *regex_ismsgid;     /* Compiled r.e. for message it */
+#ifdef WHITELIST_D_MACROS
+extern const pcre  *regex_whitelisted_macro; /* For -D macro values */
+#endif
 #ifdef WITH_CONTENT_SCAN
 extern uschar *regex_match_string;     /* regex that matched a line (regex ACL condition) */
 #endif

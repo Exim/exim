@@ -930,6 +930,9 @@ const pcre *regex_PIPELINING   = NULL;
 const pcre *regex_SIZE         = NULL;
 const pcre *regex_smtp_code    = NULL;
 const pcre *regex_ismsgid      = NULL;
+#ifdef WHITELIST_D_MACROS
+const pcre *regex_whitelisted_macro = NULL;
+#endif
 #ifdef WITH_CONTENT_SCAN
 uschar *regex_match_string     = NULL;
 #endif

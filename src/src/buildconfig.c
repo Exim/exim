@@ -800,11 +800,13 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
         fprintf(new, "\"%s\"\n", value);
         }
 
-      /* Timezone values HEADERS_CHARSET, and TCP_WRAPPERS_DAEMON_NAME get quoted */
+      /* Timezone values HEADERS_CHARSET, TCP_WRAPPERS_DAEMON_NAME and
+      WHITELIST_D_MACROS get quoted */
 
       else if (strcmp(name, "TIMEZONE_DEFAULT") == 0||
                strcmp(name, "TCP_WRAPPERS_DAEMON_NAME") == 0||
-               strcmp(name, "HEADERS_CHARSET") == 0)
+               strcmp(name, "HEADERS_CHARSET") == 0||
+	       strcmp(name, "WHITELIST_D_MACROS") == 0)
         fprintf(new, "\"%s\"\n", value);
 
       /* For others, quote any paths and don't quote anything else */

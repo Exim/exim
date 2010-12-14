@@ -1132,6 +1132,102 @@ exit(EXIT_FAILURE);
 
 
 /*************************************************
+*    Validate that the macros given are okay     *
+*************************************************/
+
+/* Typically, Exim will drop privileges if macros are supplied.  In some
+cases, we want to not do so.
+
+Arguments:    none (macros is a global)
+Returns:      true if trusted, false otherwise
+*/
+
+static BOOL
+macros_trusted(void)
+{
+#ifdef WHITELIST_D_MACROS
+macro_item *m;
+uschar *whitelisted, *end, *p, **whites, **w;
+int white_count, i, n;
+size_t len;
+BOOL prev_char_item, found;
+#endif
+
+if (macros == NULL)
+  return TRUE;
+#ifndef WHITELIST_D_MACROS
+return FALSE;
+#else
+
+/* Get a list of macros which are whitelisted */
+whitelisted = string_copy_malloc(US WHITELIST_D_MACROS);
+prev_char_item = FALSE;
+white_count = 0;
+for (p = whitelisted; *p != '\0'; ++p)
+  {
+  if (*p == ':' || isspace(*p))
+    {
+    *p = '\0';
+    if (prev_char_item)
+      ++white_count;
+    prev_char_item = FALSE;
+    continue;
+    }
+  if (!prev_char_item)
+    prev_char_item = TRUE;
+  }
+end = p;
+if (prev_char_item)
+  ++white_count;
+if (!white_count)
+  return FALSE;
+whites = store_malloc(sizeof(uschar *) * (white_count+1));
+for (p = whitelisted, i = 0; (p != end) && (i < white_count); ++p)
+  {
+  if (*p != '\0')
+    {
+    whites[i++] = p;
+    if (i == white_count)
+      break;
+    while (*p != '\0' && p < end)
+      ++p;
+    }
+  }
+whites[i] = NULL;
+
+/* The list of macros should be very short.  Accept the N*M complexity. */
+for (m = macros; m != NULL; m = m->next)
+  {
+  found = FALSE;
+  for (w = whites; *w; ++w)
+    if (Ustrcmp(*w, m->name) == 0)
+      {
+      found = TRUE;
+      break;
+      }
+  if (!found)
+    return FALSE;
+  if (m->replacement == NULL)
+    continue;
+  len = Ustrlen(m->replacement);
+  if (len == 0)
+    continue;
+  n = pcre_exec(regex_whitelisted_macro, NULL, CS m->replacement, len,
+   0, PCRE_EOPT, NULL, 0);
+  if (n < 0)
+    {
+    if (n != PCRE_ERROR_NOMATCH)
+      debug_printf("macros_trusted checking %s returned %d\n", m->name, n);
+    return FALSE;
+    }
+  }
+debug_printf("macros_trusted overriden to true by whitelisting\n");
+return TRUE;
+#endif
+}
+
+
+/*************************************************
 *          Entry point and high-level code       *
 *************************************************/
 
@@ -1416,6 +1512,15 @@ terminating whitespace character is included. */
 regex_smtp_code =
   regex_must_compile(US"^\\d\\d\\d\\s(?:\\d\\.\\d\\d?\\d?\\.\\d\\d?\\d?\\s)?",
     FALSE, TRUE);
+
+#ifdef WHITELIST_D_MACROS
+/* Precompile the regular expression used to filter the content of macros
+given to -D for permissibility. */
+
+regex_whitelisted_macro =
+  regex_must_compile(US"^[A-Za-z0-9_/.-]*$", FALSE, TRUE);
+#endif
+
 
 /* If the program is called as "mailq" treat it as equivalent to "exim -bp";
 this seems to be a generally accepted convention, since one finds symbolic
@@ -3145,7 +3250,8 @@ values (such as the path name). If running in the test harness, pretend that
 configuration file changes and macro definitions haven't happened. */
 
 if ((                                            /* EITHER */
-    (!trusted_config || macros != NULL) &&       /* Config changed, and */
+    (!trusted_config ||                          /* Config changed, or */
+     !macros_trusted()) &&                       /*  impermissible macros and */
     real_uid != root_uid &&                      /* Not root, and */
     !running_in_test_harness                     /* Not fudged */
     ) ||                                         /*   OR   */
