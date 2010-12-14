@@ -92,6 +92,9 @@ DW/25 Add TRUSTED_CONFIG_PREFIX_FILE option to allow alternative configuration
 DW/26 Set FD_CLOEXEC on SMTP sockets after forking in the daemon, to ensure
       that rogue child processes cannot use them.
 
+PP/27 Bugzilla 1047: change the default for system_filter_user to be the Exim
+      run-time user, instead of root.
+
 
 Exim version 4.72
 -----------------

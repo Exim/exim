@@ -94,6 +94,9 @@ Version 4.73
     default value is set at build time using the TCP_WRAPPERS_DAEMON_NAME
     build option.
 
+11. [POSSIBLE CONFIG BREAKAGE] The default value for system_filter_user is now
+    the Exim run-time user, instead of root.
+
 
 Version 4.72
 ------------

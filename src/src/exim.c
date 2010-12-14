@@ -1268,6 +1268,10 @@ if (!route_finduser(US CONFIGURE_OWNERNAME, NULL, &config_uid))
   }
 #endif
 
+/* We default the system_filter_user to be the Exim run-time user, as a
+sane non-root value. */
+system_filter_uid = exim_uid;
+
 #ifdef CONFIGURE_GROUPNAME
 if (!route_findgroup(US CONFIGURE_GROUPNAME, &config_gid))
   {
