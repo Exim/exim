@@ -15202,9 +15202,10 @@ is used in a system filter.
 
 .option system_filter_user main string unset
 .cindex "uid (user id)" "system filter"
-If this option is not set, the system filter is run in the main Exim delivery
-process, as root. When the option is set, the system filter runs in a separate
-process, as the given user. Unless the string consists entirely of digits, it
+If this option is set to root, the system filter is run in the main Exim
+delivery process, as root.  Otherwise, the system filter runs in a separate
+process, as the given user, defaulting to the Exim run-time user.
+Unless the string consists entirely of digits, it
 is looked up in the password data. Failure to find the named user causes a
 configuration error. The gid is either taken from the password data, or
 specified by &%system_filter_group%&. When the uid is specified numerically,
@@ -15212,8 +15213,7 @@ specified by &%system_filter_group%&. When the uid is specified numerically,
 
 If the system filter generates any pipe, file, or reply deliveries, the uid
 under which the filter is run is used when transporting them, unless a
-transport option overrides. Normally you should set &%system_filter_user%& if
-your system filter generates these kinds of delivery.
+transport option overrides.
 
 
 .option tcp_nodelay main boolean true
