@@ -12,6 +12,9 @@ the documentation is updated, this file is reduced to a short list.
 Version 4.73
 ------------
 
+ NOTE: this version is not guaranteed backwards-compatible, please read the
+       items below carefully
+
  1. A new main configuration option, "openssl_options", is available if Exim
     is built with SSL support provided by OpenSSL.  The option allows
     administrators to specify OpenSSL options to be used on connections;
@@ -96,6 +99,22 @@ Version 4.73
 
 11. [POSSIBLE CONFIG BREAKAGE] The default value for system_filter_user is now
     the Exim run-time user, instead of root.
+
+12. [POSSIBLE CONFIG BREAKAGE] ALT_CONFIG_ROOT_ONLY is no longer optional and
+    is forced on.  This is mitigated by the new build option
+    TRUSTED_CONFIG_PREFIX_LIST which defines a list of pathname prefices which
+    are trusted; if a config file is owned by root and is under that prefix,
+    then it may be used by the Exim run-time user.
+
+13. [POSSIBLE CONFIG BREAKAGE] The Exim user is no longer automatically
+    trusted to supply -D<Macro[=Value]> overrides on the command-line.  Going
+    forward, we recommend using TRUSTED_CONFIG_PREFIX_LIST with shim configs
+    that include the main config.  As a transition mechanism, we are
+    temporarily providing a work-around: the new build option
+    WHITELIST_D_MACROS provides a colon-separated list of macro names which
+    may be overriden by the Exim run-time user.  The values of these macros
+    are constrained to the regex ^[A-Za-z0-9_/.-]*$ (which explicitly does
+    allow for empty values).
 
 
 Version 4.72

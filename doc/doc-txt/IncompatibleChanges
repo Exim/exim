@@ -35,11 +35,25 @@ Exim version 4.73
    CONFIGURE_OWNER, which we discourage.  Exim now checks to ensure that
    files are not writable by other accounts.
 
- * ALT_CONFIG_ROOT_ONLY is no longer optional and is forced on; the Exim
-   user can no longer use -C/-D and retain privilege.
+ * The ALT_CONFIG_ROOT_ONLY build option is no longer optional and is forced
+   on; the Exim user can, by default, no longer use -C/-D and retain privilege.
+   Two new build options mitigate this.
+
+    * TRUSTED_CONFIG_PREFIX_LIST defines a path prefix within which files
+      owned by root can be used by the Exim user; this is the recommended
+      approach going forward.
+
+    * WHITELIST_D_MACROS defines a colon-separated list of macro names which
+      the Exim run-time user may safely pass without dropping privileges.
+      Because changes to this involve a recompile, this is not the recommended
+      approach but may ease transition.  The values of the macros, when
+      overriden, are constrained to match this regex: ^[A-Za-z0-9_/.-]*$
 
  * The system_filter_user option now defaults to the Exim run-time user,
    rather than root.  You can still set it explicitly to root and this
    can be done with prior versions too, letting you roll versions
    without needing to change this configuration option.
+
+ * ClamAV must be at least version 0.95 unless WITH_OLD_CLAMAV_STREAM is
+   defined at build time.
 
