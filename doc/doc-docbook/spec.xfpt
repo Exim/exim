@@ -3374,6 +3374,14 @@ unprivileged caller, it causes Exim to give up its root privilege.
 If DISABLE_D_OPTION is defined in &_Local/Makefile_&, the use of &%-D%& is
 completely disabled, and its use causes an immediate error exit.
 
+If WHITELIST_D_MACROS is defined in &_Local/Makefile_& then it should be a
+colon-separated list of macros which are considered safe and, if &%-D%& only
+supplies macros from this list, and the values are acceptable, then Exim will
+not give up root privilege if the caller is root, the Exim run-time user, or
+the CONFIGURE_OWNER, if set.  This is a transition mechanism and is expected
+to be removed in the future.  Acceptable values for the macros satisfy the
+regexp: &`^[A-Za-z0-9_/.-]*$`&
+
 The entire option (including equals sign if present) must all be within one
 command line item. &%-D%& can be used to set the value of a macro to the empty
 string, in which case the equals sign is optional. These two commands are
@@ -4556,6 +4564,16 @@ configuration file. However, like &%-C%&, the use of this option by a
 non-privileged user causes Exim to discard its root privilege.
 If DISABLE_D_OPTION is defined in &_Local/Makefile_&, the use of &%-D%& is
 completely disabled, and its use causes an immediate error exit.
+
+The WHITELIST_D_MACROS option in &_Local/Makefile_& permits the binary builder
+to declare certain macro names trusted, such that root privilege will not
+necessarily be discarded.
+WHITELIST_D_MACROS defines a colon-separated list of macros which are
+considered safe and, if &%-D%& only supplies macros from this list, and the
+values are acceptable, then Exim will not give up root privilege if the caller
+is root, the Exim run-time user, or the CONFIGURE_OWNER, if set.  This is a
+transition mechanism and is expected to be removed in the future.  Acceptable
+values for the macros satisfy the regexp: &`^[A-Za-z0-9_/.-]*$`&
 
 Some sites may wish to use the same Exim binary on different machines that
 share a file system, but to use different configuration files on each machine.
@@ -33805,13 +33823,22 @@ configuration file, and using it to break into other accounts.
 If a non-trusted configuration file (i.e. the default configuration file or
 one which is trusted by virtue of matching a prefix listed in the
 TRUSTED_CONFIG_PREFIX_LIST file) is specified with &%-C%&, or if macros are
-given with &%-D%&, then root privilege is retained only if the caller of Exim
+given with &%-D%& (but see the next item),
+then root privilege is retained only if the caller of Exim
 is root. This locks out the possibility of testing a configuration using &%-C%&
 right through message reception and delivery, even if the caller is root. The
 reception works, but by that time, Exim is running as the Exim user, so when
 it re-execs to regain privilege for the delivery, the use of &%-C%& causes
 privilege to be lost. However, root can test reception and delivery using two
 separate commands.
+.next
+The WHITELIST_D_MACROS build option declares some macros to be safe to override
+with &%-D%& if the real uid is one of root, the Exim run-time user or the
+CONFIGURE_OWNER, if defined.  The potential impact of this option is limited by
+requiring the run-time value supplied to &%-D%& to match a regex that errs on
+the restrictive side.  Requiring build-time selection of safe macros is onerous
+but this option is intended solely as a transition mechanism to permit
+previously-working configurations to continue to work after release 4.73.
 .next
 If DISABLE_D_OPTION is defined, the use of the &%-D%& command line option
 is disabled.
@@ -33868,9 +33895,12 @@ uid and gid in the following cases:
 If the &%-C%& option is used to specify an alternate configuration file, or if
 the &%-D%& option is used to define macro values for the configuration, and the
 calling process is not running as root, the uid and gid are changed to those of
- the calling process.
+the calling process.
 However, if DISABLE_D_OPTION is defined in &_Local/Makefile_&, the &%-D%&
 option may not be used at all.
+If WHITELIST_D_MACROS is defined in &_Local/Makefile_&, then some macro values
+can be supplied if the calling process is running as root, the Exim run-time
+user or CONFIGURE_OWNER, if defined.
 .next
 .oindex "&%-be%&"
 .oindex "&%-bf%&"

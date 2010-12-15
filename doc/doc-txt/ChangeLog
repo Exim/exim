@@ -99,6 +99,7 @@ PP/28 Add WHITELIST_D_MACROS option to let some macros be overriden by the
       Exim run-time user without dropping privileges.
 
 
+
 Exim version 4.72
 -----------------
 

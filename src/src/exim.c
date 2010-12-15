@@ -1159,6 +1159,21 @@ if (macros == NULL)
 return FALSE;
 #else
 
+/* We only trust -D overrides for some invoking users:
+root, the exim run-time user, the optional config owner user.
+I don't know why config-owner would be needed, but since they can own the
+config files anyway, there's no security risk to letting them override -D. */
+if ( ! ((real_uid == root_uid)
+     || (real_uid == exim_uid)
+#ifdef CONFIGURE_OWNER
+     || (real_uid == config_uid)
+#endif
+   ))
+  {
+  debug_printf("macros_trusted rejecting macros for uid %d\n", (int) real_uid);
+  return FALSE;
+  }
+
 /* Get a list of macros which are whitelisted */
 whitelisted = string_copy_malloc(US WHITELIST_D_MACROS);
 prev_char_item = FALSE;
