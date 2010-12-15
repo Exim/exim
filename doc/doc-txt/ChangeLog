@@ -98,6 +98,9 @@ PP/27 Bugzilla 1047: change the default for system_filter_user to be the Exim
 PP/28 Add WHITELIST_D_MACROS option to let some macros be overriden by the
       Exim run-time user without dropping privileges.
 
+DW/29 Remove use of va_copy() which breaks pre-C99 systems. Duplicate the
+      result string, instead of calling string_vformat() twice with the same
+      arguments.
 
 
 Exim version 4.72

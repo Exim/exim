@@ -387,29 +387,28 @@ va_end(ap);
 
 /* This is split off so that verify.c:respond_printf() can, in effect, call
 smtp_printf(), bearing in mind that in C a vararg function can't directly
-call another vararg function, only a function which accepts a va_list.
-
-Note also that repeated calls to va_start()/va_end() pairs is claimed to be
-non-portable; meanwhile, va_copy() is also non-portable in that it's C99, so
-we end up needing OS support to define it for us. */
+call another vararg function, only a function which accepts a va_list. */
 
 void
 smtp_vprintf(char *format, va_list ap)
 {
-va_list ap_d;
+BOOL yield;
+
+yield = string_vformat(big_buffer, big_buffer_size, format, ap);
 
 DEBUG(D_receive)
   {
-  uschar *cr, *end;
-  va_copy(ap_d, ap);
-  (void) string_vformat(big_buffer, big_buffer_size, format, ap_d);
-  end = big_buffer + Ustrlen(big_buffer);
-  while ((cr = Ustrchr(big_buffer, '\r')) != NULL)   /* lose CRs */
-    memmove(cr, cr + 1, (end--) - cr);
-  debug_printf("SMTP>> %s", big_buffer);
+  void *reset_point = store_get(0);
+  uschar *msg_copy, *cr, *end;
+  msg_copy = string_copy(big_buffer);
+  end = msg_copy + Ustrlen(msg_copy);
+  while ((cr = Ustrchr(msg_copy, '\r')) != NULL)   /* lose CRs */
+  memmove(cr, cr + 1, (end--) - cr);
+  debug_printf("SMTP>> %s", msg_copy);
+  store_reset(reset_point);
   }
 
-if (!string_vformat(big_buffer, big_buffer_size, format, ap))
+if (!yield)
   {
   log_write(0, LOG_MAIN|LOG_PANIC, "string too large in smtp_printf()");
   smtp_closedown(US"Unexpected error");

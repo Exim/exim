@@ -844,19 +844,4 @@ explicit port number. */
 
 enum { FILTER_UNSET, FILTER_FORWARD, FILTER_EXIM, FILTER_SIEVE };
 
-/* C99 defines va_copy() for copying a varargs ap so that it can be reused,
-since on some platforms multiple iterations of va_start()/va_end() are not
-supported.  But va_copy() is itself not so portable.  Hack around it.
-See portability notes at: http://unixpapa.com/incnote/variadic.html */
-
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-/* va_copy exists for us or the system is broken and we need OS hacks */
-#elif defined(va_copy)
-/* trust it; hope that va_copy is always a macro when defined */
-#elif !defined(va_copy) && defined(__va_copy)
-#define va_copy(dest, src)  __va_copy(dest, src)
-#else
-#define va_copy(dest, src) do { memcpy(dest, src, sizeof(va_list) } while (0)
-#endif
-
 /* End of macros.h */
