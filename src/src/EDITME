@@ -478,8 +478,9 @@ FIXED_NEVER_USERS=root
 # privileges for local message delivery), this will normally cause Exim to
 # drop root privileges. The TRUSTED_CONFIG_PREFIX_LIST option, specifies
 # a file which contains a list of trusted configuration prefixes (like the
-# ALT_CONFIG_PREFIX above), one per line. If the -C option is used to specify
-# a configuration file which matches a trusted prefix, root privileges are not
+# ALT_CONFIG_PREFIX above), one per line. If the -C option is used by the Exim
+# user or by the user specified in the CONFIGURE_OWNER setting, to specify a
+# configuration file which matches a trusted prefix, root privileges are not
 # dropped by Exim.
 
 # TRUSTED_CONFIG_PREFIX_LIST=/usr/exim/trusted_configs

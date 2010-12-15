@@ -102,6 +102,10 @@ DW/29 Remove use of va_copy() which breaks pre-C99 systems. Duplicate the
       result string, instead of calling string_vformat() twice with the same
       arguments.
 
+DW/30 Allow TRUSTED_CONFIG_PREFIX_FILE only for Exim or CONFIGURE_OWNER, not
+      for other users. Others should always drop root privileges if they use
+      -C on the command line, even for a whitelisted configure file.
+
 
 Exim version 4.72
 -----------------

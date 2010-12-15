@@ -1973,7 +1973,11 @@ for (i = 1; i < argc; i++)
         {
         #ifdef TRUSTED_CONFIG_PREFIX_LIST
 
-	if (Ustrstr(argrest, "/../"))
+        if ((real_uid != exim_uid
+             #ifdef CONFIGURE_OWNER
+             && real_uid != config_uid
+             #endif
+             ) || Ustrstr(argrest, "/../"))
           trusted_config = FALSE;
         else
           {
