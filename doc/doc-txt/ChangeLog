@@ -106,6 +106,8 @@ DW/30 Allow TRUSTED_CONFIG_PREFIX_FILE only for Exim or CONFIGURE_OWNER, not
       for other users. Others should always drop root privileges if they use
       -C on the command line, even for a whitelisted configure file.
 
+DW/31 Turn TRUSTED_CONFIG_PREFIX_FILE into TRUSTED_CONFIG_FILE. No prefixes.
+
 
 Exim version 4.72
 -----------------

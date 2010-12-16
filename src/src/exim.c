@@ -1971,17 +1971,17 @@ for (i = 1; i < argc; i++)
       #endif
       if (real_uid != root_uid)
         {
-        #ifdef TRUSTED_CONFIG_PREFIX_LIST
+        #ifdef TRUSTED_CONFIG_LIST
 
-        if ((real_uid != exim_uid
-             #ifdef CONFIGURE_OWNER
-             && real_uid != config_uid
-             #endif
-             ) || Ustrstr(argrest, "/../"))
+        if (real_uid != exim_uid
+            #ifdef CONFIGURE_OWNER
+            && real_uid != config_uid
+            #endif
+            )
           trusted_config = FALSE;
         else
           {
-          FILE *trust_list = Ufopen(TRUSTED_CONFIG_PREFIX_LIST, "rb");
+          FILE *trust_list = Ufopen(TRUSTED_CONFIG_LIST, "rb");
           if (trust_list)
             {
             struct stat statbuf;
@@ -2007,8 +2007,8 @@ for (i = 1; i < argc; i++)
               {
               /* Well, the trust list at least is up to scratch... */
               void *reset_point = store_get(0);
-              uschar *trusted_prefixes[32];
-              int nr_prefixes = 0;
+              uschar *trusted_configs[32];
+              int nr_configs = 0;
               int i = 0;
 
               while (Ufgets(big_buffer, big_buffer_size, trust_list))
@@ -2021,13 +2021,13 @@ for (i = 1; i < argc; i++)
                 nl = Ustrchr(start, '\n');
                 if (nl)
                   *nl = 0;
-                trusted_prefixes[nr_prefixes++] = string_copy(start);
-                if (nr_prefixes == 32)
+                trusted_configs[nr_configs++] = string_copy(start);
+                if (nr_configs == 32)
                   break;
                 }
               fclose(trust_list);
 
-              if (nr_prefixes)
+              if (nr_configs)
                 {
                 int sep = 0;
                 uschar *list = argrest;
@@ -2035,14 +2035,12 @@ for (i = 1; i < argc; i++)
                 while (trusted_config && (filename = string_nextinlist(&list,
                         &sep, big_buffer, big_buffer_size)) != NULL)
                   {
-                  for (i=0; i < nr_prefixes; i++)
+                  for (i=0; i < nr_configs; i++)
                     {
-                    int len = Ustrlen(trusted_prefixes[i]);
-                    if (Ustrlen(filename) >= len &&
-                        Ustrncmp(filename, trusted_prefixes[i], len) == 0)
+                    if (Ustrcmp(filename, trusted_configs[i]) == 0)
                       break;
                     }
-                  if (i == nr_prefixes)
+                  if (i == nr_configs)
                     {
                     trusted_config = FALSE;
                     break;
@@ -3487,7 +3485,7 @@ if (removed_privilege && (!trusted_config || macros != NULL) &&
   else
     log_write(0, LOG_MAIN|LOG_PANIC,
       "exim user lost privilege for using %s option",
-      (int)exim_uid, trusted_config? "-D" : "-C");
+      trusted_config? "-D" : "-C");
   }
 
 /* Start up Perl interpreter if Perl support is configured and there is a

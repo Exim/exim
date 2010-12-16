@@ -39,9 +39,9 @@ Exim version 4.73
    on; the Exim user can, by default, no longer use -C/-D and retain privilege.
    Two new build options mitigate this.
 
-    * TRUSTED_CONFIG_PREFIX_LIST defines a path prefix within which files
-      owned by root can be used by the Exim user; this is the recommended
-      approach going forward.
+    * TRUSTED_CONFIG_LIST defines a file containing a whitelist of config
+      files that are trusted to be selected by the Exim user; this is the
+      recommended approach going forward.
 
     * WHITELIST_D_MACROS defines a colon-separated list of macro names which
       the Exim run-time user may safely pass without dropping privileges.

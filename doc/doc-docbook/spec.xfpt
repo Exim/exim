@@ -3334,13 +3334,13 @@ proceeding any further along the list, and an error is generated.
 When this option is used by a caller other than root, and the list is different
 from the compiled-in list, Exim gives up its root privilege immediately, and
 runs with the real and effective uid and gid set to those of the caller.
-However, if a TRUSTED_CONFIG_PREFIX_LIST file is defined in &_Local/Makefile_&,
-root privilege is retained for any configuration file which matches a prefix
-listed in that file as long as the caller is the Exim user (or the user
-specified in the CONFIGURE_OWNER option, if any).
+However, if a TRUSTED_CONFIG_LIST file is defined in &_Local/Makefile_&, root
+privilege is retained for any configuration file which is listed in that file
+as long as the caller is the Exim user (or the user specified in the
+CONFIGURE_OWNER option, if any).
 
-Leaving TRUSTED_CONFIG_PREFIX_LIST unset precludes the possibility of testing
-a configuration using &%-C%& right through message reception and delivery,
+Leaving TRUSTED_CONFIG_LIST unset precludes the possibility of testing a
+configuration using &%-C%& right through message reception and delivery,
 even if the caller is root. The reception works, but by that time, Exim is
 running as the Exim user, so when it re-executes to regain privilege for the
 delivery, the use of &%-C%& causes privilege to be lost. However, root can
@@ -4537,17 +4537,16 @@ A one-off alternate configuration can be specified by the &%-C%& command line
 option, which may specify a single file or a list of files. However, when
 &%-C%& is used, Exim gives up its root privilege, unless called by root (or
 unless the argument for &%-C%& is identical to the built-in value from
-CONFIGURE_FILE), or matches a prefix listed in the TRUSTED_CONFIG_PREFIX_LIST
-file and the caller is the Exim user or the user specified in the
-CONFIGURE_OWNER setting. &%-C%& is useful mainly for checking the syntax of
-configuration files before installing them. No owner or group checks are done
-on a configuration file specified by &%-C%&, if root privilege has been
-dropped.
+CONFIGURE_FILE), or is listed in the TRUSTED_CONFIG_LIST file and the caller
+is the Exim user or the user specified in the CONFIGURE_OWNER setting. &%-C%&
+is useful mainly for checking the syntax of configuration files before
+installing them. No owner or group checks are done on a configuration file
+specified by &%-C%&, if root privilege has been dropped.
 
 Even the Exim user is not trusted to specify an arbitrary configuration file
 with the &%-C%& option to be used with root privileges, unless that file is
-listed in the TRUSTED_CONFIG_PREFIX_LIST file. This locks out the possibility
-of testing a configuration using &%-C%& right through message reception and
+listed in the TRUSTED_CONFIG_LIST file. This locks out the possibility of
+testing a configuration using &%-C%& right through message reception and
 delivery, even if the caller is root. The reception works, but by that time,
 Exim is running as the Exim user, so when it re-execs to regain privilege for
 the delivery, the use of &%-C%& causes privilege to be lost. However, root
@@ -33824,15 +33823,15 @@ into the Exim account from running a privileged Exim with an arbitrary
 configuration file, and using it to break into other accounts.
 .next
 If a non-trusted configuration file (i.e. not the default configuration file
-or one which is trusted by virtue of matching a prefix listed in the
-TRUSTED_CONFIG_PREFIX_LIST file) is specified with &%-C%&, or if macros are
-given with &%-D%& (but see the next item), then root privilege is retained only
-if the caller of Exim is root. This locks out the possibility of testing a
-configuration using &%-C%& right through message reception and delivery, even
-if the caller is root. The reception works, but by that time, Exim is running
-as the Exim user, so when it re-execs to regain privilege for the delivery, the
-use of &%-C%& causes privilege to be lost. However, root can test reception and
-delivery using two separate commands.
+or one which is trusted by virtue of being listed in the TRUSTED_CONFIG_LIST
+file) is specified with &%-C%&, or if macros are given with &%-D%& (but see
+the next item), then root privilege is retained only if the caller of Exim is
+root. This locks out the possibility of testing a configuration using &%-C%&
+right through message reception and delivery, even if the caller is root. The
+reception works, but by that time, Exim is running as the Exim user, so when
+it re-execs to regain privilege for the delivery, the use of &%-C%& causes
+privilege to be lost. However, root can test reception and delivery using two
+separate commands.
 .next
 The WHITELIST_D_MACROS build option declares some macros to be safe to override
 with &%-D%& if the real uid is one of root, the Exim run-time user or the
