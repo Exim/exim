@@ -8,6 +8,7 @@ use Carp;
 use File::Copy;
 use File::Spec;
 use File::Path;
+use File::Temp;
 use Getopt::Long;
 use Pod::Usage;
 
@@ -20,7 +21,7 @@ sub get_and_check_version {
     my $release = shift;
 
     # make sure this looks like a real release version
-    # which should (currently) be 4.xx
+    # which should (currently) be 4.xx or 4.xx_RCx
     unless ( $release =~ /^(4\.\d\d(?:_RC\d+)?)$/ ) {
         croak "The given version number does not look right - $release";
     }
@@ -29,7 +30,7 @@ sub get_and_check_version {
 
 # ------------------------------------------------------------------
 
-sub build_cvs_tag {
+sub build_tag {
     my $context = shift;
 
     # The CVS tag consists of exim-$version where $version
@@ -66,21 +67,36 @@ sub deal_with_working_directory {
 
 # ------------------------------------------------------------------
 
-sub export_cvs_tree {
+sub export_git_tree {
     my $context = shift;
 
-    # build CVS command
-    my @cmd = ( 'cvs', '-d', $context->{cvsroot}, '-Q', 'export', '-r', $context->{tag}, $context->{pkgname}, );
+    # build git command
+    my $archive_file = sprintf( '%s/%s-%s.tar', $context->{tmp_dir}, $context->{pkgname}, $context->{release} );
+    $context->{tmp_archive_file} = $archive_file;
+    my @cmd = ( 'git', 'archive', '--format=tar', "--output=$archive_file", $context->{tag} );
 
-    # run cvs command
+    # run git command
     print( "Running: ", join( ' ', @cmd ), "\n" ) if ($verbose);
     system(@cmd) == 0 || croak "Export failed";
 }
 
 # ------------------------------------------------------------------
 
+sub unpack_tree {
+    my $context = shift;
+
+    die "Cannot see archive file\n" unless ( -f $context->{tmp_archive_file} );
+    my @cmd = ( 'tar', 'xf', $context->{tmp_archive_file} );
+
+    # run  command
+    print( "Running: ", join( ' ', @cmd ), "\n" ) if ($verbose);
+    system(@cmd) == 0 || croak "Unpack failed";
+}
+
+# ------------------------------------------------------------------
+
 sub build_documentation {
-    system("cd exim/exim-doc/doc-docbook && ./OS-Fixups && make everything") == 0
+    system("cd doc/doc-docbook && ./OS-Fixups && make everything") == 0
       || croak "Doc build failed";
 }
 
@@ -89,7 +105,7 @@ sub build_documentation {
 sub move_text_docs_into_pkg {
     my $context = shift;
 
-    my $old_docdir = 'exim/exim-doc/doc-docbook';
+    my $old_docdir = 'doc/doc-docbook';
     my $new_docdir = File::Spec->catdir( $context->{pkgdir}, 'doc' );
     mkpath( $new_docdir, { verbose => ( $verbose || $debug ) } );
 
@@ -99,7 +115,7 @@ sub move_text_docs_into_pkg {
     }
 
     # move text documents across
-    foreach my $file ( glob( File::Spec->catfile( 'exim/exim-doc/doc-txt', '*' ) ) ) {
+    foreach my $file ( glob( File::Spec->catfile( 'doc/doc-txt', '*' ) ) ) {
 
         # skip a few we dont want
         my $fn = ( File::Spec->splitpath($file) )[2];
@@ -126,7 +142,7 @@ sub build_pspdfinfo_directory {
         foreach my $file (
             glob(
                 File::Spec->catfile(
-                    'exim/exim-doc/doc-docbook',
+                    'doc/doc-docbook',
                     (
                         ( $format eq 'postscript' )
                         ? '*.ps'
@@ -152,8 +168,8 @@ sub build_html_directory {
     mkpath( $target, { verbose => ( $verbose || $debug ) } );
 
     # move documents across
-    move( File::Spec->catdir( 'exim/exim-doc/doc-docbook', 'spec_html' ), File::Spec->catdir( $target, 'spec_html' ) );
-    foreach my $file ( glob( File::Spec->catfile( 'exim/exim-doc/doc-docbook', '*.html' ) ) ) {
+    move( File::Spec->catdir( 'doc/doc-docbook', 'spec_html' ), File::Spec->catdir( $target, 'spec_html' ) );
+    foreach my $file ( glob( File::Spec->catfile( 'doc/doc-docbook', '*.html' ) ) ) {
         my $fn = ( File::Spec->splitpath($file) )[2];
         move( $file, File::Spec->catfile( $target, $fn ) );
     }
@@ -167,7 +183,7 @@ sub build_main_package_directory {
     # initially we move the exim-src directory to the new directory name
     my $pkgdir = sprintf( 'exim-%s', $context->{release} );
     $context->{pkgdir} = $pkgdir;
-    rename( 'exim/exim-src', $pkgdir ) || croak "Rename of src dir failed - $!";
+    rename( 'src', $pkgdir ) || croak "Rename of src dir failed - $!";
 
     # add Local subdirectory
     my $target = File::Spec->catdir( $pkgdir, 'Local' );
@@ -203,17 +219,16 @@ sub create_tar_files {
     my $man;
     my $help;
     my $context = {
-        cvsroot  => ':ext:nm4@vcs.exim.org:/home/cvs',
         pkgname  => 'exim',
         orig_dir => File::Spec->curdir(),
+        tmp_dir  => File::Temp->newdir(),
     };
     my $delete;
-    $ENV{'PATH'} = '/opt/local/bin:' . $ENV{'PATH'};
+    ##$ENV{'PATH'} = '/opt/local/bin:' . $ENV{'PATH'};
 
     unless (
         GetOptions(
             'directory=s' => \$context->{directory},
-            'cvsroot=s'   => \$context->{cvsroot},
             'verbose!'    => \$verbose,
             'debug!'      => \$debug,
             'help|?'      => \$help,
@@ -228,10 +243,11 @@ sub create_tar_files {
     pod2usage( -verbose => 2 ) if $man;
 
     $context->{release} = get_and_check_version(shift);
-    $context->{tag}     = build_cvs_tag($context);
+    $context->{tag}     = build_tag($context);
     deal_with_working_directory( $context, $delete );
+    export_git_tree($context);
     chdir( $context->{directory} ) || die;
-    export_cvs_tree($context);
+    unpack_tree($context);
     build_documentation($context);
     build_package_directories($context);
     create_tar_files($context);
@@ -255,7 +271,6 @@ mk_exim_release.pl [options] version
    --help              display this help and exits
    --man               displays man page
    --directory=dir     dir to package
-   --cvsroot=s         CVS root spec
    --delete            Delete packaging directory at start
 
 =head1 OPTIONS
@@ -285,11 +300,8 @@ Display man page
 
 Builds an exim release.
 
-Starting in an empty directory, with the CVS repo already tagged
-for release, build docs, build packages etc.
-
-NB The CVS root spec is embedded in the script or can be given via
-the I<--cvsroot> parameter
+Starting in a populated git repo that has already been tagged for
+release, build docs, build packages etc.
 
 Parameter is the version number to build as - ie 4.72 4.72RC1 etc
 
@@ -299,6 +311,6 @@ Nigel Metheringham <Nigel.Metheringham@dev.intechnology.co.uk>
 
 =head1 COPYRIGHT
 
-Copyright 2009 Someone. All rights reserved.
+Copyright 2010 Exim Maintainers. All rights reserved.
 
 =cut
