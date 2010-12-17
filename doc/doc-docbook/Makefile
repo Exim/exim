@@ -13,8 +13,9 @@ notarget:;    @echo "** You must specify a target, in the form x.y, where x is '
 # Generate all the documentation files...
 #
 ## removed info files as I cannot generate them -  spec.info filter.info
-everything:		spec.pdf 	spec.ps 	spec.html  	spec.txt \
-				filter.pdf 	filter.ps 	filter.html filter.txt \
+## removed html files as superceded by new website code
+everything:		spec.pdf 	spec.ps  	spec.txt \
+				filter.pdf 	filter.ps filter.txt \
 				exim.8
 
 ############################## MAN PAGE ################################
@@ -32,9 +33,6 @@ filter.xml:      filter.xfpt
 
 filter-pr.xml:   filter.xml Pre-xml
 		 ./Pre-xml -bookinfo <filter.xml >filter-pr.xml
-
-filter-html.xml: filter.xml Pre-xml
-		 ./Pre-xml -html <filter.xml >filter-html.xml
 
 filter-txt.xml:  filter.xml Pre-xml
 		 ./Pre-xml -ascii -html -quoteliteral <filter.xml >filter-txt.xml
@@ -85,13 +83,6 @@ filter.pdf: sdop-filter.pdf
 ###
 ###
 
-filter.html:  filter-html.xml TidyHTML-filter MyStyle-nochunk-html.xsl \
-                MyStyle-html.xsl MyStyle.xsl
-	      /bin/rm -rf filter.html filter-html.html
-	      xmlto -x MyStyle-nochunk-html.xsl html-nochunks filter-html.xml
-	      /bin/mv -f filter-html.html filter.html
-	      ./TidyHTML-filter
-
 filter.txt:   filter-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
                 MyStyle.xsl
 	      /bin/rm -rf filter-txt.html
@@ -119,10 +110,6 @@ spec.xml:      spec.xfpt
 
 spec-pr.xml:   spec.xml Pre-xml
 	       ./Pre-xml -optbreak <spec.xml >spec-pr.xml
-
-spec-html.xml: spec.xml Pre-xml
-	       ./Pre-xml -html -oneindex \
-		 <spec.xml >spec-html.xml
 
 spec-txt.xml:  spec.xml Pre-xml
 	       ./Pre-xml -ascii -html -noindex -quoteliteral \
@@ -175,12 +162,6 @@ spec.pdf: sdop-spec.pdf
 
 ###
 ###
-
-spec.html:    spec-html.xml TidyHTML-spec MyStyle-chunk-html.xsl \
-                MyStyle-html.xsl MyStyle.xsl
-	      /bin/rm -rf spec_html
-	      xmlto -x MyStyle-chunk-html.xsl -o spec_html html spec-html.xml
-	      ./TidyHTML-spec
 
 spec.txt:     spec-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
                 MyStyle.xsl
@@ -265,12 +246,6 @@ test.pdf: sdop-test.pdf
 ###
 ###
 
-
-test.html:    test-html.xml MyStyle-nochunk-html.xsl MyStyle-html.xsl \
-                MyStyle.xsl
-	      /bin/rm -rf test.html test-html.html
-	      xmlto -x MyStyle-nochunk-html.xsl html-nochunks test-html.xml
-	      /bin/mv -f test-html.html test.html
 
 test.txt:     test-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
                 MyStyle.xsl

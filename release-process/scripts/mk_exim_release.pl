@@ -160,23 +160,6 @@ sub build_pspdfinfo_directory {
 
 # ------------------------------------------------------------------
 
-sub build_html_directory {
-    my $context = shift;
-
-    my $dir = sprintf( 'exim-%s-%s', 'html', $context->{release} );
-    my $target = File::Spec->catdir( $dir, 'doc', 'html' );
-    mkpath( $target, { verbose => ( $verbose || $debug ) } );
-
-    # move documents across
-    move( File::Spec->catdir( 'doc/doc-docbook', 'spec_html' ), File::Spec->catdir( $target, 'spec_html' ) );
-    foreach my $file ( glob( File::Spec->catfile( 'doc/doc-docbook', '*.html' ) ) ) {
-        my $fn = ( File::Spec->splitpath($file) )[2];
-        move( $file, File::Spec->catfile( $target, $fn ) );
-    }
-}
-
-# ------------------------------------------------------------------
-
 sub build_main_package_directory {
     my $context = shift;
 
@@ -200,7 +183,6 @@ sub build_package_directories {
 
     build_main_package_directory($context);
     build_pspdfinfo_directory($context);
-    build_html_directory($context);
 }
 
 # ------------------------------------------------------------------
