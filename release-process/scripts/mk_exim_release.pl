@@ -9,6 +9,7 @@ use File::Copy;
 use File::Spec;
 use File::Path;
 use File::Temp;
+use FindBin;
 use Getopt::Long;
 use Pod::Usage;
 
@@ -19,13 +20,19 @@ my $verbose = 0;
 
 sub get_and_check_version {
     my $release = shift;
+    my $context = shift;
 
     # make sure this looks like a real release version
     # which should (currently) be 4.xx or 4.xx_RCx
     unless ( $release =~ /^(4\.\d\d(?:_RC\d+)?)$/ ) {
         croak "The given version number does not look right - $release";
     }
-    return $1;    # untainted here...
+    my $full_release  = $1;              # untainted here...
+    my $trunc_release = $full_release;
+    $trunc_release =~ s/^(4\.\d\d)(?:_RC\d+)?$/$1/;
+
+    $context->{release}  = $full_release;
+    $context->{trelease} = $trunc_release;
 }
 
 # ------------------------------------------------------------------
@@ -95,9 +102,36 @@ sub unpack_tree {
 
 # ------------------------------------------------------------------
 
+sub build_html_documentation {
+    my $context = shift;
+
+    my $genpath   = $context->{webgen_base} . '/script/gen.pl';
+    my $templates = $context->{webgen_base} . '/templates';
+    my $dir       = 'html';
+    mkdir($dir);
+
+    my @cmd = (
+        $genpath,                     '--spec',    'doc/doc-docbook/spec.xml', '--filter',
+        'doc/doc-docbook/filter.xml', '--latest',  $context->{trelease},       '--tmpl',
+        $templates,                   '--docroot', $dir
+    );
+
+    print "Executing ", join( ' ', @cmd ), "\n";
+    system(@cmd);
+
+    # move directory into right place
+    rename( sprintf( 'html/exim-html-%s', $context->{trelease} ), sprintf( 'exim-html-%s', $context->{release} ) );
+}
+
+# ------------------------------------------------------------------
+
 sub build_documentation {
+    my $context = shift;
+
     system("cd doc/doc-docbook && ./OS-Fixups && make everything") == 0
       || croak "Doc build failed";
+
+    build_html_documentation($context);
 }
 
 # ------------------------------------------------------------------
@@ -201,21 +235,23 @@ sub create_tar_files {
     my $man;
     my $help;
     my $context = {
-        pkgname  => 'exim',
-        orig_dir => File::Spec->curdir(),
-        tmp_dir  => File::Temp->newdir(),
+        pkgname     => 'exim',
+        orig_dir    => File::Spec->curdir(),
+        tmp_dir     => File::Temp->newdir(),
+        webgen_base => "$FindBin::Bin/../../../exim-website",
     };
     my $delete;
     ##$ENV{'PATH'} = '/opt/local/bin:' . $ENV{'PATH'};
 
     unless (
         GetOptions(
-            'directory=s' => \$context->{directory},
-            'verbose!'    => \$verbose,
-            'debug!'      => \$debug,
-            'help|?'      => \$help,
-            'man!'        => \$man,
-            'delete!'     => \$delete,
+            'directory=s'   => \$context->{directory},
+            'webgen_base=s' => \$context->{webgen_base},
+            'verbose!'      => \$verbose,
+            'debug!'        => \$debug,
+            'help|?'        => \$help,
+            'man!'          => \$man,
+            'delete!'       => \$delete,
         )
       )
     {
@@ -224,8 +260,8 @@ sub create_tar_files {
     pod2usage(0) if $help;
     pod2usage( -verbose => 2 ) if $man;
 
-    $context->{release} = get_and_check_version(shift);
-    $context->{tag}     = build_tag($context);
+    get_and_check_version( shift, $context );
+    $context->{tag} = build_tag($context);
     deal_with_working_directory( $context, $delete );
     export_git_tree($context);
     chdir( $context->{directory} ) || die;
