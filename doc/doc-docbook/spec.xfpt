@@ -3334,10 +3334,12 @@ proceeding any further along the list, and an error is generated.
 When this option is used by a caller other than root, and the list is different
 from the compiled-in list, Exim gives up its root privilege immediately, and
 runs with the real and effective uid and gid set to those of the caller.
-However, if a TRUSTED_CONFIG_LIST file is defined in &_Local/Makefile_&, root
-privilege is retained for any configuration file which is listed in that file
-as long as the caller is the Exim user (or the user specified in the
-CONFIGURE_OWNER option, if any).
+However, if a TRUSTED_CONFIG_LIST file is defined in &_Local/Makefile_&, that
+file contains a list of full pathnames, one per line, for configuration files
+which are trusted. Root privilege is retained for any configuration file so
+listed, as long as the caller is the Exim user (or the user specified in the
+CONFIGURE_OWNER option, if any), and as long as the configuration file is
+not writeable by inappropriate users or groups.
 
 Leaving TRUSTED_CONFIG_LIST unset precludes the possibility of testing a
 configuration using &%-C%& right through message reception and delivery,

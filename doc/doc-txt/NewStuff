@@ -103,9 +103,9 @@ Version 4.73
 12. [POSSIBLE CONFIG BREAKAGE] ALT_CONFIG_ROOT_ONLY is no longer optional and
     is forced on.  This is mitigated by the new build option
     TRUSTED_CONFIG_LIST which defines a list of configuration files which
-    are trusted; if a config file is owned by root and matches a pathname in
-    the list, then it may be invoked by the Exim build-time user without Exim
-    relinquishing root privileges.
+    are trusted; one per line. If a config file is owned by root and matches
+    a pathname in the list, then it may be invoked by the Exim build-time
+    user without Exim relinquishing root privileges.
 
 13. [POSSIBLE CONFIG BREAKAGE] The Exim user is no longer automatically
     trusted to supply -D<Macro[=Value]> overrides on the command-line.  Going
