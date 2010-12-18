@@ -12,7 +12,7 @@
 #include "exim.h"
 
 
-#define THIS_VERSION  "4.72"
+#define THIS_VERSION  "4.73"
 
 
 /* The header file cnumber.h contains a single line containing the
