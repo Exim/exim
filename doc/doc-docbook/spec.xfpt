@@ -1894,6 +1894,7 @@ given in chapter &<<CHAPTLS>>&.
 
 
 .section "Use of tcpwrappers" "SECID27"
+.new
 .cindex "tcpwrappers, building Exim to support"
 .cindex "USE_TCP_WRAPPERS"
 .cindex "TCP_WRAPPERS_DAEMON_NAME"
@@ -1924,7 +1925,7 @@ can be changed at build time by setting TCP_WRAPPERS_DAEMON_NAME in
 in &_Local/Makefile_&, or by setting tcp_wrappers_daemon_name in the
 configure file. Consult the &'tcpwrappers'& documentation for
 further details.
-
+.wen
 
 
 .section "Including support for IPv6" "SECID28"
@@ -2609,10 +2610,12 @@ This option causes Exim to output a few sentences stating what it is.
 The same output is generated if the Exim binary is called with no options and
 no arguments.
 
+.new
 .vitem &%--version%&
 .oindex "&%--version%&"
 This option is an alias for &%-bV%& and causes version information to be
 displayed.
+.wen
 
 .vitem &%-B%&<&'type'&>
 .oindex "&%-B%&"
@@ -3179,6 +3182,7 @@ above concerning senders and qualification do not apply. In this situation,
 Exim behaves in exactly the same way as it does when receiving a message via
 the listening daemon.
 
+.new
 .vitem &%-bmalware%&&~<&'filename'&>
 .oindex "&%-bmalware%&"
 .cindex "testing", "malware"
@@ -3198,6 +3202,7 @@ This option requires admin privileges.
 The &%-bmalware%& option will not be extended to be more generally useful,
 there are better tools for file-scanning.  This option exists to help
 administrators verify their Exim and AV scanner configuration.
+.wen
 
 .vitem &%-bt%&
 .oindex "&%-bt%&"
@@ -3319,6 +3324,7 @@ This option acts like &%-bv%&, but verifies the address as a sender rather
 than a recipient address. This affects any rewriting and qualification that
 might happen.
 
+.new
 .vitem &%-C%&&~<&'filelist'&>
 .oindex "&%-C%&"
 .cindex "configuration file" "alternate"
@@ -3367,7 +3373,9 @@ syntactically correct, but cannot be used for test deliveries, unless the
 caller is privileged, or unless it is an exotic configuration that does not
 require privilege. No check is made on the owner or group of the files
 specified by this option.
+.wen
 
+.new
 .vitem &%-D%&<&'macro'&>=<&'value'&>
 .oindex "&%-D%&"
 .cindex "macro" "setting on command line"
@@ -3400,6 +3408,7 @@ example:
 exim '-D ABC = something' ...
 .endd
 &%-D%& may be repeated up to 10 times on a command line.
+.wen
 
 .vitem &%-d%&<&'debug&~options'&>
 .oindex "&%-d%&"
@@ -4500,6 +4509,7 @@ most configurations, this specifies a single file. However, it is permitted to
 give a colon-separated list of file names, in which case Exim uses the first
 existing file in the list.
 
+.new
 .cindex "EXIM_USER"
 .cindex "EXIM_GROUP"
 .cindex "CONFIGURE_OWNER"
@@ -4530,7 +4540,7 @@ configuration to a new file of that name if it did not previously exist. If
 CONFIGURE_FILE is a list, no default is automatically installed. Chapter
 &<<CHAPdefconfil>>& is a &"walk-through"& discussion of the default
 configuration.
-
+.wen
 
 
 .section "Using a different configuration file" "SECID40"
@@ -4569,6 +4579,7 @@ non-privileged user causes Exim to discard its root privilege.
 If DISABLE_D_OPTION is defined in &_Local/Makefile_&, the use of &%-D%& is
 completely disabled, and its use causes an immediate error exit.
 
+.new
 The WHITELIST_D_MACROS option in &_Local/Makefile_& permits the binary builder
 to declare certain macro names trusted, such that root privilege will not
 necessarily be discarded.
@@ -4578,6 +4589,7 @@ values are acceptable, then Exim will not give up root privilege if the caller
 is root, the Exim run-time user, or the CONFIGURE_OWNER, if set.  This is a
 transition mechanism and is expected to be removed in the future.  Acceptable
 values for the macros satisfy the regexp: &`^[A-Za-z0-9_/.-]*$`&
+.wen
 
 Some sites may wish to use the same Exim binary on different machines that
 share a file system, but to use different configuration files on each machine.
@@ -9655,6 +9667,7 @@ srandomdev() or srandom(), or a custom implementation even weaker than
 random().
 
 
+.new
 .vitem &*${reverse_ip:*&<&'ipaddr'&>&*}*&
 .cindex "expansion" "IP address"
 This operator reverses an IP address; for IPv4 addresses, the result is in
@@ -9668,6 +9681,7 @@ returns
 .code
 4.2.0.192 and 3.0.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
 .endd
+.wen
 
 
 .vitem &*${rfc2047:*&<&'string'&>&*}*&
@@ -9831,6 +9845,8 @@ lower case), signifying multiplication by 1024 or 1024*1024, respectively.
 As a special case, the numerical value of an empty string is taken as
 zero.
 
+
+.new
 .vitem &*bool&~{*&<&'string'&>&*}*&
 .cindex "expansion" "boolean parsing"
 .cindex "&%bool%& expansion condition"
@@ -9846,6 +9862,8 @@ For example:
 .code
 ${if bool{$acl_m_privileged_sender} ...
 .endd
+.wen
+
 
 .vitem &*bool_lax&~{*&<&'string'&>&*}*&
 .cindex "expansion" "boolean parsing"
@@ -14030,6 +14048,7 @@ an oversized message is logged in both the main and the reject logs. See also
 the generic transport option &%message_size_limit%&, which limits the size of
 message that an individual transport can process.
 
+.new
 If you use a virus-scanner and set this option to to a value larger than the
 maximum size that your virus-scanner is configured to support, you may get
 failures triggered by large mails.  The right size to configure for the
@@ -14037,6 +14056,7 @@ virus-scanner depends upon what data is passed and the options in use but it's
 probably safest to just set it to a little larger than this value.  Eg, with a
 default Exim message size of 50M and a default ClamAV StreamMaxLength of 10M,
 some problems may result.
+.wen
 
 
 .option move_frozen_messages main boolean false
@@ -14090,6 +14110,7 @@ harm. This option overrides the &%pipe_as_creator%& option of the &(pipe)&
 transport driver.
 
 
+.new
 .option openssl_options main "string list" +dont_insert_empty_fragments
 .cindex "OpenSSL "compatibility options"
 This option allows an administrator to adjust the SSL options applied
@@ -14118,6 +14139,7 @@ An example:
 .code
 openssl_options = -all +microsoft_big_sslv3_buffer
 .endd
+.wen
 
 
 .option oracle_servers main "string list" unset
@@ -15220,6 +15242,7 @@ contains the pipe command.
 This specifies the transport driver that is to be used when a &%mail%& command
 is used in a system filter.
 
+.new
 .option system_filter_user main string unset
 .cindex "uid (user id)" "system filter"
 If this option is set to root, the system filter is run in the main Exim
@@ -15234,6 +15257,7 @@ specified by &%system_filter_group%&. When the uid is specified numerically,
 If the system filter generates any pipe, file, or reply deliveries, the uid
 under which the filter is run is used when transporting them, unless a
 transport option overrides.
+.wen
 
 
 .option tcp_nodelay main boolean true
@@ -15715,8 +15739,10 @@ router is skipped, and the address is offered to the next one.
 If the result is any other value, the router is run (as this is the last
 precondition to be evaluated, all the other preconditions must be true).
 
+.new
 This option is unique in that multiple &%condition%& options may be present.
 All &%condition%& options must succeed.
+.wen
 
 The &%condition%& option provides a means of applying custom conditions to the
 running of routers. Note that in the case of a simple conditional expansion,
@@ -15728,12 +15754,14 @@ Because of the default behaviour of the string expansion, this is equivalent to
 .code
 condition = ${if >{$message_age}{600}{true}{}}
 .endd
+.new
 A multiple condition example, which succeeds:
 .code
 condition = ${if >{$message_age}{600}}
 condition = ${if !eq{${lc:$local_part}}{postmaster}}
 condition = foobar
 .endd
+.wen
 If the expansion fails (other than forced failure) delivery is deferred. Some
 of the other precondition options are common special cases that could in fact
 be specified using &%condition%&.
@@ -21170,6 +21198,7 @@ sought in the PATH directories, in the usual way. &*Warning*&: This does not
 apply to a command specified as a transport filter.
 
 
+.new
 .option permit_coredump pipe boolean false
 Normally Exim inhibits core-dumps during delivery.  If you have a need to get
 a core-dump of a pipe command, enable this command.  This enables core-dumps
@@ -21179,6 +21208,7 @@ for it and that this only be enabled when needed, as the risk of excessive
 resource consumption can be quite high.  Note also that Exim is typically
 installed as a setuid binary and most operating systems will inhibit coredumps
 of these by default, so further OS-specific action may be required.
+.wen
 
 
 .option pipe_as_creator pipe boolean false
@@ -25833,6 +25863,7 @@ warn  control = caseful_local_part
 Notice that we put back the lower cased version afterwards, assuming that
 is what is wanted for subsequent tests.
 
+.new
 .vitem &*control&~=&~debug/*&<&'options'&>
 .cindex "&ACL;" "enabling debug logging"
 .cindex "debugging" "enabling from an ACL"
@@ -25849,6 +25880,7 @@ contexts):
       control = debug/opts=+expand+acl
       control = debug/tag=.$message_exim_id/opts=+expand
 .endd
+.wen
 
 .vitem &*control&~=&~enforce_sync*& &&&
        &*control&~=&~no_enforce_sync*&
@@ -28145,8 +28177,10 @@ If your virus scanner cannot unpack MIME and TNEF containers itself, you should
 use the &%demime%& condition (see section &<<SECTdemimecond>>&) before the
 &%malware%& condition.
 
+.new
 Beware the interaction of Exim's &%message_size_limit%& with any size limits
 imposed by your anti-virus scanner.
+.wen
 
 Here is a very simple scanning example:
 .code
@@ -28268,10 +28302,12 @@ SpamAssassin profile has been matched or exceeded. If you want to use the
 &%spam%& condition for its side effects (see the variables below), you can make
 it always return &"true"& by appending &`:true`& to the username.
 
+.new
 .cindex "spam scanning" "returned variables"
 When the &%spam%& condition is run, it sets up a number of expansion
 variables. These variables are saved with the received message, thus they are
 available for use at delivery time.
+.wen
 
 .vlist
 .vitem &$spam_score$&
@@ -33822,6 +33858,7 @@ which only root has access, this guards against someone who has broken
 into the Exim account from running a privileged Exim with an arbitrary
 configuration file, and using it to break into other accounts.
 .next
+.new
 If a non-trusted configuration file (i.e. not the default configuration file
 or one which is trusted by virtue of being listed in the TRUSTED_CONFIG_LIST
 file) is specified with &%-C%&, or if macros are given with &%-D%& (but see
@@ -33832,6 +33869,7 @@ reception works, but by that time, Exim is running as the Exim user, so when
 it re-execs to regain privilege for the delivery, the use of &%-C%& causes
 privilege to be lost. However, root can test reception and delivery using two
 separate commands.
+.wen
 .next
 The WHITELIST_D_MACROS build option declares some macros to be safe to override
 with &%-D%& if the real uid is one of root, the Exim run-time user or the
