@@ -851,7 +851,7 @@ A0044: Exim has been unable to create a file in its spool area in which to
 
        If you are running Exim with an alternate configuration file using a
        command such as \"exim -C altconfig..."\, remember that the use of -C
-       takes away Exim's root privilege, unless \\TRUSTED_CONFIG_PREFIX_FILE\\
+       takes away Exim's root privilege, unless \\TRUSTED_CONFIG_LIST\\
        is set in \(Local/Makefile)\ and the corresponding file contains a
        prefix which matches the alternative configuration file being used.
 
@@ -1155,7 +1155,7 @@ A0065: When Exim is called with -C, it passes on -C to any instances of itself
        includes the case where Exim re-execs itself to regain root privilege.
        Thus it can't write to the spool.
 
-       The fix for this is to use the \\TRUSTED_CONFIG_PREFIX_LIST\\ build-time
+       The fix for this is to use the \\TRUSTED_CONFIG_LIST\\ build-time
        option. This defines a file containing a list of 'trusted' prefixes for
        configuration files. Any configuration file specified with -C, if it
        matches a prefix listed in that file, will be used without dropping root
