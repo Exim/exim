@@ -498,7 +498,7 @@ FIXED_NEVER_USERS=root
 # to override values with -D and assumes that these will be passed through to
 # the delivery processes.  As of Exim 4.73, this is no longer the case by
 # default.  Going forward, we strongly recommend that you use a shim Exim
-# configuration file owned by root stored under TRUSTED_CONFIG_PREFIX_LIST.
+# configuration file owned by root stored under TRUSTED_CONFIG_LIST.
 # That shim can set macros before .include'ing your main configuration file.
 #
 # As a strictly transient measure to ease migration to 4.73, the
