@@ -31005,8 +31005,8 @@ rejected (there seems little point) but instead just get qualified. HELO
 and EHLO act as RSET; VRFY, EXPN, ETRN and  HELP, act
 as NOOP; QUIT quits.
 
-No policy checking is done for BSMTP input. That is, no ACL is run at anytime.
-In this respect it is like non-SMTP local input.
+Minimal policy checking is done for BSMTP input. Only the non-SMTP
+ACL is run in the same way as for non-SMTP local input.
 
 If an error is detected while reading a message, including a missing &"."& at
 the end, Exim gives up immediately. It writes details of the error to the
