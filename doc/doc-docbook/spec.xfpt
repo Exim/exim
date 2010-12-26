@@ -23752,7 +23752,7 @@ login:
   driver = plaintext
   public_name = LOGIN
   server_prompts = Username:: : Password::
-  server_condition = ${if and{{
+  server_condition = ${if and{{ \
     !eq{}{$auth1} }{ \
     ldapauth{user="cn=${quote_ldap_dn:$auth1},ou=people,o=example.org" \
              pass=${quote:$auth2} \
