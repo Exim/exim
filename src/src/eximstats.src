@@ -389,7 +389,7 @@ Useful for finding out which of your mailing lists are receiving mail.
 
 Show the delivery times (B<DT>)for all the messages.
 
-Exim must have been configured to use the +delivery_time logging option
+Exim must have been configured to use the +deliver_time logging option
 for this option to work.
 
 I<list> is an optional list of times. Eg -show_dt1,2,4,8 will show
