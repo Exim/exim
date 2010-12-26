@@ -624,7 +624,7 @@ for (dup = addr_duplicate; dup != NULL; dup = dup->next)
   {
   if (Ustrcmp(addr->unique, dup->unique) == 0)
     {
-    tree_add_nonrecipient(dup->address);
+    tree_add_nonrecipient(dup->unique);
     child_done(dup, now);
     }
   }
