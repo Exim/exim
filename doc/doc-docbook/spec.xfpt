@@ -3255,7 +3255,7 @@ doing such tests.
 .cindex "version number of Exim"
 This option causes Exim to write the current version number, compilation
 number, and compilation date of the &'exim'& binary to the standard output.
-It also lists the DBM library this is being used, the optional modules (such as
+It also lists the DBM library that is being used, the optional modules (such as
 specific lookup types), the drivers that are included in the binary, and the
 name of the run time configuration file that is in use.
 
