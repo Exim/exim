@@ -1544,7 +1544,6 @@ If a host is unreachable for a period of time, a number of messages may be
 waiting for it by the time it recovers, and sending them in a single SMTP
 connection is clearly beneficial. Whenever a delivery to a remote host is
 deferred,
-
 .cindex "hints database"
 Exim makes a note in its hints database, and whenever a successful
 SMTP delivery has happened, it looks to see if any other messages are waiting
