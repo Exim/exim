@@ -24966,6 +24966,19 @@ and try again later, but that is their problem, though it does waste some of
 your resources.
 
 
+.new
+.section "The SMTP DKIM ACL" "SECTDKIMACL"
+The &%acl_smtp_dkim%& ACL is available only when Exim is compiled with DKIM support
+enabled (which is the default).
+
+The ACL test specified by &%acl_smtp_dkim%& happens after a message has been
+received, and is executed for each DKIM signature found in a message.  If not
+otherwise specified, the default action is to accept.
+
+For details on the operation of DKIM, see chapter &<<CHID12>>&.
+.wen
+
+
 .section "The SMTP MIME ACL" "SECID194"
 The &%acl_smtp_mime%& option is available only when Exim is compiled with the
 content-scanning extension. For details, see chapter &<<CHAPexiscan>>&.
