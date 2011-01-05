@@ -9,7 +9,6 @@
 
 #include "../exim.h"
 #include "lf_functions.h"
-#include "lsearch.h"
 
 /* Codes for the different kinds of lsearch that are supported */
 
@@ -28,7 +27,7 @@ enum {
 
 /* See local README for interface description */
 
-void *
+static void *
 lsearch_open(uschar *filename, uschar **errmsg)
 {
 FILE *f = Ufopen(filename, "rb");
@@ -48,7 +47,7 @@ return f;
 *             Check entry point                  *
 *************************************************/
 
-BOOL
+static BOOL
 lsearch_check(void *handle, uschar *filename, int modemask, uid_t *owners,
   gid_t *owngroups, uschar **errmsg)
 {
@@ -324,7 +323,7 @@ return FAIL;
 
 /* See local README for interface description */
 
-int
+static int
 lsearch_find(void *handle, uschar *filename, uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -341,7 +340,7 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 
 /* See local README for interface description */
 
-int
+static int
 wildlsearch_find(void *handle, uschar *filename, uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -358,7 +357,7 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 
 /* See local README for interface description */
 
-int
+static int
 nwildlsearch_find(void *handle, uschar *filename, uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -376,7 +375,7 @@ return internal_lsearch_find(handle, filename, keystring, length, result,
 
 /* See local README for interface description */
 
-int
+static int
 iplsearch_find(void *handle, uschar *filename, uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -405,10 +404,64 @@ else
 
 /* See local README for interface description */
 
-void
+static void
 lsearch_close(void *handle)
 {
 (void)fclose((FILE *)handle);
 }
+
+static lookup_info iplsearch_lookup_info = {
+  US"iplsearch",                 /* lookup name */
+  lookup_absfile,                /* uses absolute file name */
+  lsearch_open,                  /* open function */
+  lsearch_check,                 /* check function */
+  iplsearch_find,                /* find function */
+  lsearch_close,                 /* close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+static lookup_info lsearch_lookup_info = {
+  US"lsearch",                   /* lookup name */
+  lookup_absfile,                /* uses absolute file name */
+  lsearch_open,                  /* open function */
+  lsearch_check,                 /* check function */
+  lsearch_find,                  /* find function */
+  lsearch_close,                 /* close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+static lookup_info nwildlsearch_lookup_info = {
+  US"nwildlsearch",              /* lookup name */
+  lookup_absfile,                /* uses absolute file name */
+  lsearch_open,                  /* open function */
+  lsearch_check,                 /* check function */
+  nwildlsearch_find,             /* find function */
+  lsearch_close,                 /* close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+static lookup_info wildlsearch_lookup_info = {
+  US"wildlsearch",               /* lookup name */
+  lookup_absfile,                /* uses absolute file name */
+  lsearch_open,                  /* open function */
+  lsearch_check,                 /* check function */
+  wildlsearch_find,              /* find function */
+  lsearch_close,                 /* close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define lsearch_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &iplsearch_lookup_info,
+                                       &lsearch_lookup_info,
+                                       &nwildlsearch_lookup_info,
+                                       &wildlsearch_lookup_info };
+lookup_module_info lsearch_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 4 };
 
 /* End of lookups/lsearch.c */

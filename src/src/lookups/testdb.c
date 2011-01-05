@@ -9,7 +9,6 @@
 
 #include "../exim.h"
 #include "lf_functions.h"
-#include "testdb.h"
 
 
 /* These are not real lookup functions; they are just a way of testing the
@@ -23,7 +22,7 @@ the find function. */
 
 /* See local README for interface description. */
 
-void *
+static void *
 testdb_open(uschar *filename, uschar **errmsg)
 {
 filename = filename;   /* Keep picky compilers happy */
@@ -39,7 +38,7 @@ return (void *)(1);    /* Just return something non-null */
 
 /* See local README for interface description. */
 
-int
+static int
 testdb_find(void *handle, uschar *filename, uschar *query, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -65,5 +64,23 @@ if (Ustrcmp(query, "nocache") == 0) *do_cache = FALSE;
 *result = string_copy(query);
 return OK;
 }
+
+static lookup_info _lookup_info = {
+  US"testdb",                    /* lookup name */
+  lookup_querystyle,             /* query-style lookup */
+  testdb_open,                   /* open function */
+  NULL,                          /* check function */
+  testdb_find,                   /* find function */
+  NULL,                          /* no close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define testdb_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &_lookup_info };
+lookup_module_info testdb_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 /* End of lookups/testdb.c */

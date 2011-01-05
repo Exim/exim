@@ -71,7 +71,7 @@ int top = lookup_list_count;
 while (top > bot)
   {
   int mid = (top + bot)/2;
-  int c = Ustrncmp(name, lookup_list[mid].name, len);
+  int c = Ustrncmp(name, lookup_list[mid]->name, len);
 
   /* If c == 0 we have matched the incoming name with the start of the search
   type name. However, some search types are substrings of others (e.g. nis and
@@ -81,9 +81,9 @@ while (top > bot)
   are testing. By leaving c == 0 when the lengths are different, and doing a
   > 0 test below, this all falls out correctly. */
 
-  if (c == 0 && Ustrlen(lookup_list[mid].name) == len)
+  if (c == 0 && Ustrlen(lookup_list[mid]->name) == len)
     {
-    if (lookup_list[mid].find != NULL) return mid;
+    if (lookup_list[mid]->find != NULL) return mid;
     search_error_message  = string_sprintf("lookup type \"%.*s\" is not "
       "available (not in the binary - check buildtime LOOKUP configuration)",
       len, name);
@@ -237,8 +237,8 @@ if (t->left != NULL) tidyup_subtree(t->left);
 if (t->right != NULL) tidyup_subtree(t->right);
 if (c != NULL &&
     c->handle != NULL &&
-    lookup_list[c->search_type].close != NULL)
-  lookup_list[c->search_type].close(c->handle);
+    lookup_list[c->search_type]->close != NULL)
+  lookup_list[c->search_type]->close(c->handle);
 }
 
 
@@ -270,7 +270,7 @@ open_filecount = 0;
 /* Call the general tidyup entry for any drivers that have one. */
 
 for (i = 0; i < lookup_list_count; i++)
-  if (lookup_list[i].tidy != NULL) (lookup_list[i].tidy)();
+  if (lookup_list[i]->tidy != NULL) (lookup_list[i]->tidy)();
 
 if (search_reset_point != NULL) store_reset(search_reset_point);
 search_reset_point = NULL;
@@ -335,7 +335,7 @@ search_open(uschar *filename, int search_type, int modemask, uid_t *owners,
 void *handle;
 tree_node *t;
 search_cache *c;
-lookup_info *lk = lookup_list + search_type;
+lookup_info *lk = lookup_list[search_type];
 uschar keybuffer[256];
 int old_pool = store_pool;
 
@@ -388,7 +388,7 @@ if (lk->type == lookup_absfile && open_filecount >= lookup_open_max)
       ((search_cache *)(open_bot->data.ptr))->down = NULL;
     else
       open_top = NULL;
-    ((lookup_list + c->search_type)->close)(c->handle);
+    ((lookup_list[c->search_type])->close)(c->handle);
     c->handle = NULL;
     open_filecount--;
     }
@@ -480,7 +480,7 @@ search_find_defer = FALSE;
 
 DEBUG(D_lookup) debug_printf("internal_search_find: file=\"%s\"\n  "
   "type=%s key=\"%s\"\n", filename,
-  lookup_list[search_type].name, keystring);
+  lookup_list[search_type]->name, keystring);
 
 /* Insurance. If the keystring is empty, just fail. */
 
@@ -511,7 +511,7 @@ if ((t = tree_search(c->item_cache, keystring)) == NULL)
   like FAIL, except that search_find_defer is set so the caller can
   distinguish if necessary. */
 
-  if (lookup_list[search_type].find(c->handle, filename, keystring, keylength,
+  if (lookup_list[search_type]->find(c->handle, filename, keystring, keylength,
       &data, &search_error_message, &do_cache) == DEFER)
     {
     search_find_defer = TRUE;
@@ -622,7 +622,7 @@ DEBUG(D_lookup)
 that opens real files. */
 
 if (open_top != (tree_node *)handle &&
-    lookup_list[t->name[0]-'0'].type == lookup_absfile)
+    lookup_list[t->name[0]-'0']->type == lookup_absfile)
   {
   search_cache *c = (search_cache *)(t->data.ptr);
   tree_node *up = c->up;

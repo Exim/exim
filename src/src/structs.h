@@ -322,34 +322,7 @@ typedef struct router_info {
 
 /* Structure for holding information about a lookup type. */
 
-typedef struct lookup_info {
-  uschar *name;                   /* e.g. "lsearch" */
-  int type;                       /* query/singlekey/abs-file */
-  void *(*open)(                  /* open function */
-    uschar *,                     /* file name for those that have one */
-    uschar **);                   /* for error message */
-  BOOL (*check)(                  /* file checking function */
-    void *,                       /* handle */
-    uschar *,                     /* file name */
-    int,                          /* modemask for file checking */
-    uid_t *,                      /* owners for file checking */
-    gid_t *,                      /* owngroups for file checking */
-    uschar **);                   /* for error messages */
-  int (*find)(                    /* find function */
-    void *,                       /* handle */
-    uschar *,                     /* file name or NULL */
-    uschar *,                     /* key or query */
-    int,                          /* length of key or query */
-    uschar **,                    /* for returning answer */
-    uschar **,                    /* for error message */
-    BOOL *);                      /* to request cache cleanup */
-  void (*close)(                  /* close function */
-    void *);                      /* handle */
-  void (*tidy)(void);             /* tidy function */
-  uschar *(*quote)(               /* quoting function */
-    uschar *,                     /* string to quote */
-    uschar *);                    /* additional data from quote name */
-} lookup_info;
+#include "lookupapi.h"
 
 
 /* Structure for holding information about the configured authentication

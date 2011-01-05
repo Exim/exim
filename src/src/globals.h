@@ -441,7 +441,7 @@ extern BOOL    log_testing_mode;       /* TRUE in various testing modes */
 extern BOOL    log_timezone;           /* TRUE to include the timezone in log lines */
 extern unsigned int log_write_selector;/* Bit map of logging options for log_write() */
 extern uschar *login_sender_address;   /* The actual sender address */
-extern lookup_info lookup_list[];      /* Vector of available lookups */
+extern lookup_info **lookup_list;      /* Array of pointers to available lookups */
 extern int     lookup_list_count;      /* Number of entries in the list */
 extern int     lookup_open_max;        /* Max lookup files to cache */
 extern uschar *lookup_value;           /* Value looked up from file */

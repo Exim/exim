@@ -11,14 +11,7 @@
 
 #include "../exim.h"
 #include "lf_functions.h"
-#include "ibase.h"
 
-#ifndef LOOKUP_IBASE
-static void dummy(int x)
-{
-    dummy(x - 1);
-}
-#else
 #include <ibase.h>              /* The system header */
 
 /* Structure and anchor for caching connections. */
@@ -40,7 +33,7 @@ static ibase_connection *ibase_connections = NULL;
 
 /* See local README for interface description. */
 
-void *ibase_open(uschar * filename, uschar ** errmsg)
+static void *ibase_open(uschar * filename, uschar ** errmsg)
 {
     return (void *) (1);        /* Just return something non-null */
 }
@@ -53,7 +46,7 @@ void *ibase_open(uschar * filename, uschar ** errmsg)
 
 /* See local README for interface description. */
 
-void ibase_tidy(void)
+static void ibase_tidy(void)
 {
     ibase_connection *cn;
     ISC_STATUS status[20];
@@ -458,7 +451,7 @@ always leaves enough room for a terminating zero. */
 arguments are not used. Loop through a list of servers while the query is
 deferred with a retryable error. */
 
-int
+static int
 ibase_find(void *handle, uschar * filename, uschar * query, int length,
            uschar ** result, uschar ** errmsg, BOOL *do_cache)
 {
@@ -510,7 +503,7 @@ Arguments:
 Returns:     the processed string or NULL for a bad option
 */
 
-uschar *ibase_quote(uschar * s, uschar * opt)
+static uschar *ibase_quote(uschar * s, uschar * opt)
 {
     register int c;
     int count = 0;
@@ -553,6 +546,22 @@ uschar *ibase_quote(uschar * s, uschar * opt)
     return quoted;
 }
 
+static lookup_info _lookup_info = {
+  US"ibase",                     /* lookup name */
+  lookup_querystyle,             /* query-style lookup */
+  ibase_open,                    /* open function */
+  NULL,                          /* no check function */
+  ibase_find,                    /* find function */
+  NULL,                          /* no close function */
+  ibase_tidy,                    /* tidy function */
+  ibase_quote                    /* quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define ibase_lookup_module_info _lookup_module_info
 #endif
+ 
+static lookup_info *_lookup_list[] = { &_lookup_info };
+lookup_module_info ibase_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 /* End of lookups/ibase.c */

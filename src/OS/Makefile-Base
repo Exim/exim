@@ -313,6 +313,7 @@ OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
         store.o string.o tls.o tod.o transport.o tree.o verify.o \
+        lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_WITH_OLD_DEMIME) $(OBJ_EXPERIMENTAL)
 

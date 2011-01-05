@@ -107,7 +107,7 @@ do   if test -r ../$f
             echo "# End of $f"
             echo ""
      fi
-done >> $mft || exit 1
+done | sed 's/^LOOKUP_/export LOOKUP_/' >> $mft || exit 1
 
 # See if there is a definition of EXIM_PERL in what we have built so far.
 # If so, run Perl to find the default values for PERL_CC, PERL_CCOPTS,

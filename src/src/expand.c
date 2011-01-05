@@ -5506,8 +5506,8 @@ while (*s != 0)
           goto EXPAND_FAILED;
           }
 
-        if (lookup_list[n].quote != NULL)
-          sub = (lookup_list[n].quote)(sub, opt);
+        if (lookup_list[n]->quote != NULL)
+          sub = (lookup_list[n]->quote)(sub, opt);
         else if (opt != NULL) sub = NULL;
 
         if (sub == NULL)

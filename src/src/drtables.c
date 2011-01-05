@@ -10,6 +10,8 @@
 
 #include "exim.h"
 
+#include <dlfcn.h>
+#include <string.h>
 
 /* This module contains tables that define the lookup methods and drivers
 that are actually included in the binary. Its contents are controlled by
@@ -17,527 +19,8 @@ various macros in config.h that ultimately come from Local/Makefile. They are
 all described in src/EDITME. */
 
 
-/* The OSF1 (Digital Unix) linker puts out a worrying warning if any sections
-contain no executable code. It says
-
-Warning: Linking some objects which contain exception information sections
-        and some which do not. This may cause fatal runtime exception handling
-        problems.
-
-As this may cause people to worry needlessly, include a dummy function here
-to stop the message from appearing. Make it call itself to stop picky compilers
-compilers complaining that it is unused, and put in a dummy argument to stop
-even pickier compilers complaining about infinite loops. */
-
-static void dummy(int x) { dummy(x-1); }
-
-
-/* Table of information about all possible lookup methods. The entries are
-always present, but the "open" and "find" functions are set to NULL for those
-that are not compiled into the binary. The "check" and "close" functions can
-be NULL for methods that don't need them. */
-
-#ifdef LOOKUP_CDB
-#include "lookups/cdb.h"
-#endif
-
-#ifdef LOOKUP_DBM
-#include "lookups/dbmdb.h"
-#endif
-
-#ifdef LOOKUP_DNSDB
-#include "lookups/dnsdb.h"
-#endif
-
-#ifdef LOOKUP_DSEARCH
-#include "lookups/dsearch.h"
-#endif
-
-#ifdef LOOKUP_IBASE
-#include "lookups/ibase.h"
-#endif
-
-#ifdef LOOKUP_LDAP
-#include "lookups/ldap.h"
-#endif
-
-#ifdef LOOKUP_LSEARCH
-#include "lookups/lsearch.h"
-#endif
-
-#ifdef LOOKUP_MYSQL
-#include "lookups/mysql.h"
-#endif
-
-#ifdef LOOKUP_NIS
-#include "lookups/nis.h"
-#endif
-
-#ifdef LOOKUP_NISPLUS
-#include "lookups/nisplus.h"
-#endif
-
-#ifdef LOOKUP_ORACLE
-#include "lookups/oracle.h"
-#endif
-
-#ifdef LOOKUP_PASSWD
-#include "lookups/passwd.h"
-#endif
-
-#ifdef LOOKUP_PGSQL
-#include "lookups/pgsql.h"
-#endif
-
-#ifdef EXPERIMENTAL_SPF
-#include "lookups/spf.h"
-#endif
-
-#ifdef LOOKUP_SQLITE
-#include "lookups/sqlite.h"
-#endif
-
-#ifdef LOOKUP_TESTDB
-#include "lookups/testdb.h"
-#endif
-
-#ifdef LOOKUP_WHOSON
-#include "lookups/whoson.h"
-#endif
-
-/* The second field in each item below is a set of bit flags:
-
-  lookup_querystyle     => this is a query-style lookup,
-                             else single-key (+ file) style
-  lookup_absfile        => an absolute file name is required,
-                             (for single-key style only)
-
-This list must be in alphabetical order of lookup name because it is
-searched by binary chop, having got rather large for the original linear
-searching. */
-
-lookup_info lookup_list[] = {
-
-/* cdb lookup in single file */
-
-  {
-  US"cdb",                       /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-#ifdef LOOKUP_CDB
-  cdb_open,                      /* open function */
-  cdb_check,                     /* check function */
-  cdb_find,                      /* find function */
-  cdb_close,                     /* close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* DBM file lookup; called "dbm" because that is the name in Exim,
-but the code is called dbmdb to avoid name clashes. */
-
-  {
-  US"dbm",                       /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-#ifdef LOOKUP_DBM
-  dbmdb_open,                    /* open function */
-  dbmdb_check,                   /* check function */
-  dbmdb_find,                    /* find function */
-  dbmdb_close,                   /* close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* This variant of DBM does not include the binary zero on the end
-of the key strings. */
-
-  {
-  US"dbmnz",                     /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-#ifdef LOOKUP_DBM
-  dbmdb_open,      /* sic */     /* open function */
-  dbmdb_check,     /* sic */     /* check function */
-  dbmnz_find,                    /* find function */
-  dbmdb_close,     /* sic */     /* close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* Using DNS TXT records as a database */
-
-  {
-  US"dnsdb",                     /* lookup name */
-  lookup_querystyle,             /* query style */
-#ifdef LOOKUP_DNSDB
-  dnsdb_open,                    /* open function */
-  NULL,                          /* check function */
-  dnsdb_find,                    /* find function */
-  NULL,                          /* no close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* Search of files in a directory */
-
-  {
-  US"dsearch",                   /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-#ifdef LOOKUP_DSEARCH
-  dsearch_open,                  /* open function */
-  dsearch_check,                 /* check function */
-  dsearch_find,                  /* find function */
-  dsearch_close,                 /* close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* Interbase lookup */
-
-  {
-  US"ibase",                     /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-#ifdef LOOKUP_IBASE
-  ibase_open,                    /* open function */
-  NULL,                          /* no check function */
-  ibase_find,                    /* find function */
-  NULL,                          /* no close function */
-  ibase_tidy,                    /* tidy function */
-  ibase_quote                    /* quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* Linear search of single file with ip-addresses and networks; shares many
-functions with lsearch. */
-
-  {
-  US"iplsearch",                 /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-#ifdef LOOKUP_LSEARCH
-  lsearch_open,                  /* open function */
-  lsearch_check,                 /* check function */
-  iplsearch_find,                /* find function */
-  lsearch_close,                 /* close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* LDAP lookup, allowing data from only one entry to be returned */
-
-  {
-  US"ldap",                      /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-#ifdef LOOKUP_LDAP
-  eldap_open,                    /* open function */
-  NULL,                          /* check function */
-  eldap_find,                    /* find function */
-  NULL,                          /* no close function */
-  eldap_tidy,                    /* tidy function */
-  eldap_quote                    /* quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* LDAP lookup, allowing the DN from more one entry to be returned */
-
-  {
-  US"ldapdn",                     /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-#ifdef LOOKUP_LDAP
-  eldap_open,       /* sic */    /* open function */
-  NULL,                          /* check function */
-  eldapdn_find,                  /* find function */
-  NULL,                          /* no close function */
-  eldap_tidy,       /* sic */    /* tidy function */
-  eldap_quote       /* sic */    /* quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* LDAP lookup, allowing data from more than one entry to be returned */
-
-  {
-  US"ldapm",                     /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-#ifdef LOOKUP_LDAP
-  eldap_open,       /* sic */    /* open function */
-  NULL,                          /* check function */
-  eldapm_find,                   /* find function */
-  NULL,                          /* no close function */
-  eldap_tidy,       /* sic */    /* tidy function */
-  eldap_quote       /* sic */    /* quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* Linear search of single file */
-
-  {
-  US"lsearch",                   /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-#ifdef LOOKUP_LSEARCH
-  lsearch_open,                  /* open function */
-  lsearch_check,                 /* check function */
-  lsearch_find,                  /* find function */
-  lsearch_close,                 /* close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* MYSQL lookup */
-
-  {
-  US"mysql",                     /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-#ifdef LOOKUP_MYSQL
-  mysql_open,                    /* open function */
-  NULL,                          /* no check function */
-  mysql_find,                    /* find function */
-  NULL,                          /* no close function */
-  mysql_tidy,                    /* tidy function */
-  mysql_quote                    /* quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* NIS lookup, excluding trailing 0 from key */
-
-  {
-  US"nis",                       /* lookup name */
-  0,                             /* not abs file, not query style*/
-#ifdef LOOKUP_NIS
-  nis_open,                      /* open function */
-  NULL,                          /* check function */
-  nis_find,                      /* find function */
-  NULL,                          /* no close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* NIS lookup, including trailing 0 in key */
-
-  {
-  US"nis0",                      /* lookup name */
-  0,                             /* not absfile, not query style */
-#ifdef LOOKUP_NIS
-  nis_open,    /* sic */         /* open function */
-  NULL,                          /* check function */
-  nis0_find,                     /* find function */
-  NULL,                          /* no close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* NIS+ lookup */
-
-  {
-  US"nisplus",                   /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-#ifdef LOOKUP_NISPLUS
-  nisplus_open,                  /* open function */
-  NULL,                          /* check function */
-  nisplus_find,                  /* find function */
-  NULL,                          /* no close function */
-  NULL,                          /* no tidy function */
-  nisplus_quote                  /* quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* Linear search of single file, with wildcarding but no pattern expansion.
-Shares many functions with lsearch. */
-
-  {
-  US"nwildlsearch",              /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-#ifdef LOOKUP_LSEARCH
-  lsearch_open,                  /* open function */
-  lsearch_check,                 /* check function */
-  nwildlsearch_find,             /* find function */
-  lsearch_close,                 /* close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* Oracle lookup */
-
-  {
-  US"oracle",                    /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-#ifdef LOOKUP_ORACLE
-  oracle_open,                   /* open function */
-  NULL,                          /* check function */
-  oracle_find,                   /* find function */
-  NULL,                          /* no close function */
-  oracle_tidy,                   /* tidy function */
-  oracle_quote                   /* quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* passwd lookup */
-
-  {
-  US"passwd",                    /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-#ifdef LOOKUP_PASSWD
-  passwd_open,                   /* open function */
-  NULL,                          /* no check function */
-  passwd_find,                   /* find function */
-  NULL,                          /* no close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL   /* lookup not present */
-#endif
-  },
-
-/* PGSQL lookup */
-
-  {
-  US"pgsql",                     /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-#ifdef LOOKUP_PGSQL
-  pgsql_open,                    /* open function */
-  NULL,                          /* no check function */
-  pgsql_find,                    /* find function */
-  NULL,                          /* no close function */
-  pgsql_tidy,                    /* tidy function */
-  pgsql_quote                    /* quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL   /* lookup not present */
-#endif
-  },
-
-/* SPF lookup */
-
-  {
-  US"spf",                       /* lookup name */
-  0,                             /* not absfile, not query style */
-#ifdef EXPERIMENTAL_SPF
-  spf_open,                      /* open function */
-  NULL,                          /* no check function */
-  spf_find,                      /* find function */
-  spf_close,                     /* close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* sqlite lookup */
-
-  {
-  US"sqlite",                    /* lookup name */
-  lookup_absfilequery,           /* query-style lookup, starts with file name */
-#ifdef LOOKUP_SQLITE
-  sqlite_open,                   /* open function */
-  NULL,                          /* no check function */
-  sqlite_find,                   /* find function */
-  sqlite_close,                  /* close function */
-  NULL,                          /* no tidy function */
-  sqlite_quote                   /* quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  },
-
-/* Testdb lookup is for testing Exim, not useful for normal running.
-For that reason, we omit the entry entirely when not building it into
-the binary, so that attempts to use it give "unknown lookup type" instead
-of "lookup type not available". */
-
-#ifdef LOOKUP_TESTDB
-  {
-  US"testdb",                    /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-  testdb_open,                   /* open function */
-  NULL,                          /* check function */
-  testdb_find,                   /* find function */
-  NULL,                          /* no close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-  },
-#endif
-
-/* "Whoson" lookup */
-
-  {
-  US"whoson",                    /* lookup name */
-  lookup_querystyle,             /* query-style lookup */
-#ifdef LOOKUP_WHOSON
-  whoson_open,                   /* open function */
-  NULL,                          /* check function */
-  whoson_find,                   /* find function */
-  NULL,                          /* no close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL   /* lookup not present */
-#endif
-  },
-
-/* Linear search of single file, with wildcarding and pattern expansion. Shares
-many functions with lsearch. */
-
-  {
-  US"wildlsearch",               /* lookup name */
-  lookup_absfile,                /* uses absolute file name */
-#ifdef LOOKUP_LSEARCH
-  lsearch_open,                  /* open function */
-  lsearch_check,                 /* check function */
-  wildlsearch_find,              /* find function */
-  lsearch_close,                 /* close function */
-  NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
-#else
-  NULL, NULL, NULL, NULL, NULL, NULL /* lookup not present */
-#endif
-  }
-};
-
-/* Number of entries in the list */
-
-int lookup_list_count = sizeof(lookup_list)/sizeof(lookup_info);
-
-
+lookup_info **lookup_list;
+int lookup_list_count = 0;
 
 /* Table of information about all possible authentication mechamisms. All
 entries are always present if any mechanism is declared, but the functions are
@@ -864,5 +347,227 @@ transport_info transports_available[] = {
 #endif
 { US"", NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, FALSE }
 };
+
+struct lookupmodulestr
+{
+  void *dl;
+  struct lookup_module_info *info;
+  struct lookupmodulestr *next;
+};
+
+static struct lookupmodulestr *lookupmodules = NULL;
+
+static void addlookupmodule(void *dl, struct lookup_module_info *info)
+{
+  struct lookupmodulestr *p = store_malloc(sizeof(struct lookupmodulestr));
+  p->dl = dl;
+  p->info = info;
+  p->next = lookupmodules;
+  lookupmodules = p;
+  lookup_list_count += info->lookupcount;
+}
+
+/* only valid after lookup_list and lookup_list_count are assigned */
+static void add_lookup_to_list(lookup_info *info)
+{
+  /* need to add the lookup to lookup_list, sorted */
+  int pos = 0;
+
+  /* strategy is to go through the list until we find
+   * either an empty spot or a name that is higher.
+   * this can't fail because we have enough space. */
+  while (lookup_list[pos]
+      && (Ustrcmp(lookup_list[pos]->name, info->name) <= 0)) {
+    pos++;
+  }
+  if (lookup_list[pos]) {
+    /* need to insert it, so move all the other items up
+     * (last slot is still empty, of course) */
+    memmove(&lookup_list[pos+1],
+            &lookup_list[pos],
+            sizeof(lookup_info **) * (lookup_list_count-pos-1));
+  }
+  lookup_list[pos] = info;
+}
+
+void init_lookup_list(void)
+{
+  DIR *dd;
+  struct dirent *ent;
+  const pcre *regex_islookupmod = regex_must_compile(US"\\.so$", FALSE, TRUE);
+  int countmodules = 0;
+  int moduleerrors = 0;
+  struct lookupmodulestr *p;
+
+#if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
+extern lookup_module_info cdb_lookup_module_info;
+  addlookupmodule(NULL, &cdb_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
+extern lookup_module_info dbmdb_lookup_module_info;
+  addlookupmodule(NULL, &dbmdb_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
+extern lookup_module_info dnsdb_lookup_module_info;
+  addlookupmodule(NULL, &dnsdb_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
+extern lookup_module_info dsearch_lookup_module_info;
+  addlookupmodule(NULL, &dsearch_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
+extern lookup_module_info ibase_lookup_module_info;
+  addlookupmodule(NULL, &ibase_lookup_module_info);
+#endif
+
+#ifdef LOOKUP_LDAP
+extern lookup_module_info ldap_lookup_module_info;
+  addlookupmodule(NULL, &ldap_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
+extern lookup_module_info lsearch_lookup_module_info;
+  addlookupmodule(NULL, &lsearch_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
+extern lookup_module_info mysql_lookup_module_info;
+  addlookupmodule(NULL, &mysql_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
+extern lookup_module_info nis_lookup_module_info;
+  addlookupmodule(NULL, &nis_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
+extern lookup_module_info nisplus_lookup_module_info;
+  addlookupmodule(NULL, &nisplus_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
+extern lookup_module_info oracle_lookup_module_info;
+  addlookupmodule(NULL, &oracle_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
+extern lookup_module_info passwd_lookup_module_info;
+  addlookupmodule(NULL, &passwd_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
+extern lookup_module_info pgsql_lookup_module_info;
+  addlookupmodule(NULL, &pgsql_lookup_module_info);
+#endif
+
+#ifdef EXPERIMENTAL_SPF
+extern lookup_module_info spf_lookup_module_info;
+  addlookupmodule(NULL, &spf_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
+extern lookup_module_info sqlite_lookup_module_info;
+  addlookupmodule(NULL, &sqlite_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
+extern lookup_module_info testdb_lookup_module_info;
+  addlookupmodule(NULL, &testdb_lookup_module_info);
+#endif
+
+#if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
+extern lookup_module_info whoson_lookup_module_info;
+  addlookupmodule(NULL, &whoson_lookup_module_info);
+#endif
+
+#ifdef LOOKUP_MODULE_DIR
+  dd = opendir(LOOKUP_MODULE_DIR);
+  if (dd == NULL) {
+    DEBUG(5) debug_printf("Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
+    log_write(0, LOG_MAIN, "Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
+  }
+  else {
+    DEBUG(9) debug_printf("Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
+    while ((ent = readdir(dd)) != NULL) {
+      char *name = ent->d_name;
+      int len = (int)strlen(name);
+      if (pcre_exec(regex_islookupmod, NULL, name, len, 0, PCRE_EOPT, NULL, 0) >= 0) {
+        int pathnamelen = len + (int)strlen(LOOKUP_MODULE_DIR) + 2;
+        void *dl;
+        struct lookup_module_info *info;
+        char *errormsg;
+
+        /* SRH: am I being paranoid here or what? */
+        if (pathnamelen > big_buffer_size) {
+          fprintf(stderr, "Loading lookup modules: %s/%s: name too long\n", LOOKUP_MODULE_DIR, name);
+          log_write(0, LOG_MAIN|LOG_PANIC, "%s/%s: name too long\n", LOOKUP_MODULE_DIR, name);
+          continue;
+        }
+
+        /* SRH: snprintf here? */
+        sprintf(CS big_buffer, "%s/%s", LOOKUP_MODULE_DIR, name);
+
+        dl = dlopen(CS big_buffer, RTLD_NOW);// TJ was LAZY
+        if (dl == NULL) {
+          fprintf(stderr, "Error loading %s: %s\n", name, dlerror());
+          moduleerrors++;
+          log_write(0, LOG_MAIN|LOG_PANIC, "Error loading lookup module %s: %s\n", name, dlerror());
+          continue;
+        }
+
+        info = (struct lookup_module_info*) dlsym(dl, "_lookup_module_info");
+        if ((errormsg = dlerror()) != NULL) {
+          fprintf(stderr, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
+          dlclose(dl);
+          moduleerrors++;
+          log_write(0, LOG_MAIN|LOG_PANIC, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
+          continue;
+        }
+        if (info->magic != LOOKUP_MODULE_INFO_MAGIC) {
+          fprintf(stderr, "Lookup module %s is not compatible with this version of Exim\n", name);
+          dlclose(dl);
+          moduleerrors++;
+          log_write(0, LOG_MAIN|LOG_PANIC, "Lookup module %s is not compatible with this version of Exim\n", name);
+          continue;
+        }
+
+        addlookupmodule(dl, info);
+        DEBUG(9) debug_printf("Loaded \"%s\" (%d lookup types)\n", name, info->lookupcount);
+        countmodules++;
+      }
+    }
+    closedir(dd);
+  }
+
+  DEBUG(9) debug_printf("Loaded %d lookup modules\n", countmodules);
+#endif
+
+  store_free((void*)regex_islookupmod);
+
+  DEBUG(4) debug_printf("Total %d lookups\n", lookup_list_count);
+
+  lookup_list = store_malloc(sizeof(lookup_info *) * lookup_list_count);
+  memset(lookup_list, 0, sizeof(lookup_info *) * lookup_list_count);
+
+  /* now add all lookups to the real list */
+  p = lookupmodules;
+  while (p) {
+    int j;
+    struct lookupmodulestr *pnext;
+
+    for (j = 0; j < p->info->lookupcount; j++)
+      add_lookup_to_list(p->info->lookups[j]);
+
+    pnext = p->next;
+    store_free(p);
+    p = pnext;
+  }
+  /* just to be sure */
+  lookupmodules = NULL;
+}
 
 /* End of drtables.c */

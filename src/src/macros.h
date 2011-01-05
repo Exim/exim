@@ -96,7 +96,7 @@ don't make the file descriptors two-way. */
 
 /* A macro to simplify testing bits in lookup types */
 
-#define mac_islookup(a,b) ((lookup_list[a].type & (b)) != 0)
+#define mac_islookup(a,b) ((lookup_list[a]->type & (b)) != 0)
 
 /* Debugging control */
 

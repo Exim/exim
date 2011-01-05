@@ -9,19 +9,6 @@
 
 #include "../exim.h"
 #include "lf_functions.h"
-#include "nis.h"
-
-/* We can't just compile this code and allow the library mechanism to omit the
-functions if they are not wanted, because we need to have the NIS header
-available for compiling. Therefore, compile these functions only if LOOKUP_NIS
-is defined. However, some compilers don't like compiling empty modules, so keep
-them happy with a dummy when skipping the rest. Make it reference itself to
-stop picky compilers complaining that it is unused, and put in a dummy argument
-to stop even pickier compilers complaining about infinite loops. */
-
-#ifndef LOOKUP_NIS
-static void dummy(int x) { dummy(x-1); }
-#else
 
 #include <rpcsvc/ypclnt.h>
 
@@ -33,7 +20,7 @@ static void dummy(int x) { dummy(x-1); }
 /* See local README for interface description. This serves for both
 the "nis" and "nis0" lookup types. */
 
-void *
+static void *
 nis_open(uschar *filename, uschar **errmsg)
 {
 char *nis_domain;
@@ -55,7 +42,7 @@ return nis_domain;
 for nis0 because they are so short it isn't worth trying to use any common
 code. */
 
-int
+static int
 nis_find(void *handle, uschar *filename, uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -81,7 +68,7 @@ return (rc == YPERR_KEY || rc == YPERR_MAP)? FAIL : DEFER;
 
 /* See local README for interface description. */
 
-int
+static int
 nis0_find(void *handle, uschar *filename, uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -99,6 +86,33 @@ if ((rc = yp_match(CS handle, CS filename, CS keystring, length + 1,
 return (rc == YPERR_KEY || rc == YPERR_MAP)? FAIL : DEFER;
 }
 
-#endif  /* LOOKUP_NIS */
+static lookup_info nis_lookup_info = {
+  US"nis",                       /* lookup name */
+  0,                             /* not abs file, not query style*/
+  nis_open,                      /* open function */
+  NULL,                          /* check function */
+  nis_find,                      /* find function */
+  NULL,                          /* no close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+static lookup_info nis0_lookup_info = {
+  US"nis0",                      /* lookup name */
+  0,                             /* not absfile, not query style */
+  nis_open,    /* sic */         /* open function */
+  NULL,                          /* check function */
+  nis0_find,                     /* find function */
+  NULL,                          /* no close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define nis_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &nis_lookup_info, &nis0_lookup_info };
+lookup_module_info nis_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 2 };
 
 /* End of lookups/nis.c */

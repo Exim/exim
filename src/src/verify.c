@@ -2256,7 +2256,7 @@ if (iplookup)
     }
   else   /* Single-key style */
     {
-    int sep = (Ustrcmp(lookup_list[search_type].name, "iplsearch") == 0)?
+    int sep = (Ustrcmp(lookup_list[search_type]->name, "iplsearch") == 0)?
       ':' : '.';
     insize = host_aton(cb->host_address, incoming);
     host_mask(insize, incoming, mlen);

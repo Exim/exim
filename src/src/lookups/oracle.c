@@ -15,26 +15,11 @@ some comments from my position of Oracle ignorance. */
 #include "../exim.h"
 
 
-/* We can't just compile this code and allow the library mechanism to omit the
-functions if they are not wanted, because we need to have the ORACLE headers
-available for compiling. Therefore, compile these functions only if
-LOOKUP_ORACLE is defined. However, some compilers don't like compiling empty
-modules, so keep them happy with a dummy when skipping the rest. Make it
-reference itself to stop picky compilers complaining that it is unused, and put
-in a dummy argument to stop even pickier compilers complaining about infinite
-loops. */
-
-#ifndef LOOKUP_ORACLE
-static void dummy(int x) { dummy(x-1); }
-#else
-
 /* The Oracle system headers */
 
 #include <oratypes.h>
 #include <ocidfn.h>
 #include <ocikpr.h>
-
-#include "oracle.h"                    /* The local header */
 
 #define PARSE_NO_DEFER           0     /* parse straight away */
 #define PARSE_V7_LNG             2
@@ -212,7 +197,7 @@ return col;
 
 /* See local README for interface description. */
 
-void *
+static void *
 oracle_open(uschar *filename, uschar **errmsg)
 {
 return (void *)(1);    /* Just return something non-null */
@@ -226,7 +211,7 @@ return (void *)(1);    /* Just return something non-null */
 
 /* See local README for interface description. */
 
-void
+static void
 oracle_tidy(void)
 {
 oracle_connection *cn;
@@ -532,7 +517,7 @@ else
 arguments are not used. Loop through a list of servers while the query is
 deferred with a retryable error. */
 
-int
+static int
 oracle_find(void *handle, uschar *filename, uschar *query, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -577,7 +562,7 @@ Arguments:
 Returns:     the processed string or NULL for a bad option
 */
 
-uschar *
+static uschar *
 oracle_quote(uschar *s, uschar *opt)
 {
 register int c;
@@ -619,6 +604,22 @@ while ((c = *s++) != 0)
 return quoted;
 }
 
-#endif  /* LOOKUP_ORACLE */
+static lookup_info _lookup_info = {
+  US"oracle",                    /* lookup name */
+  lookup_querystyle,             /* query-style lookup */
+  oracle_open,                   /* open function */
+  NULL,                          /* check function */
+  oracle_find,                   /* find function */
+  NULL,                          /* no close function */
+  oracle_tidy,                   /* tidy function */
+  oracle_quote                   /* quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define oracle_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &_lookup_info };
+lookup_module_info oracle_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 /* End of lookups/oracle.c */

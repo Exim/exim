@@ -56,7 +56,6 @@
 
 #include "../exim.h"
 #include "lf_functions.h"
-#include "cdb.h"
 
 #ifdef HAVE_MMAP
 #  include <sys/mman.h>
@@ -144,7 +143,9 @@ cdb_unpack(uschar *buf)
   return num;
 }
 
-void *
+static void cdb_close(void *handle);
+
+static void *
 cdb_open(uschar *filename,
          uschar **errmsg)
 {
@@ -245,7 +246,7 @@ cdb_open(uschar *filename,
 *             Check entry point                  *
 *************************************************/
 
-BOOL
+static BOOL
 cdb_check(void *handle,
          uschar *filename,
          int modemask,
@@ -270,7 +271,7 @@ cdb_check(void *handle,
 *              Find entry point                  *
 *************************************************/
 
-int
+static int
 cdb_find(void *handle,
         uschar *filename,
         uschar *keystring,
@@ -418,7 +419,7 @@ cdb_find(void *handle,
 
 /* See local README for interface description */
 
-void
+static void
 cdb_close(void *handle)
 {
 struct cdb_state * cdbp = handle;
@@ -433,5 +434,23 @@ struct cdb_state * cdbp = handle;
 
  (void)close(cdbp->fileno);
 }
+
+lookup_info cdb_lookup_info = {
+  US"cdb",                       /* lookup name */
+  lookup_absfile,                /* uses absolute file name */
+  cdb_open,                      /* open function */
+  cdb_check,                     /* check function */
+  cdb_find,                      /* find function */
+  cdb_close,                     /* close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define cdb_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &cdb_lookup_info };
+lookup_module_info cdb_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 /* End of lookups/cdb.c */

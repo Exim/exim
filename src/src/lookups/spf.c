@@ -24,7 +24,6 @@ static void dummy(int x) { dummy(x-1); }
 #else
 
 #include "lf_functions.h"
-#include "spf.h"
 #ifndef HAVE_NS_TYPE
 #define HAVE_NS_TYPE
 #endif
@@ -32,7 +31,7 @@ static void dummy(int x) { dummy(x-1); }
 #include <spf2/spf_dns_resolv.h>
 #include <spf2/spf_dns_cache.h>
 
-void *spf_open(uschar *filename, uschar **errmsg) {
+static void *spf_open(uschar *filename, uschar **errmsg) {
   SPF_server_t *spf_server = NULL;
   spf_server = SPF_server_new(SPF_DNS_CACHE, 0);
   if (spf_server == NULL) {
@@ -42,12 +41,12 @@ void *spf_open(uschar *filename, uschar **errmsg) {
   return (void *) spf_server;
 }
 
-void spf_close(void *handle) {
+static void spf_close(void *handle) {
   SPF_server_t *spf_server = handle;
   if (spf_server) SPF_server_free(spf_server);
 }
 
-int spf_find(void *handle, uschar *filename, uschar *keystring, int key_len,
+static int spf_find(void *handle, uschar *filename, uschar *keystring, int key_len,
              uschar **result, uschar **errmsg, BOOL *do_cache) {
   SPF_server_t *spf_server = handle;
   SPF_request_t *spf_request = NULL;
@@ -74,5 +73,23 @@ int spf_find(void *handle, uschar *filename, uschar *keystring, int key_len,
   SPF_request_free(spf_request);
   return OK;
 }
+
+static lookup_info _lookup_info = {
+  US"spf",                       /* lookup name */
+  0,                             /* not absfile, not query style */
+  spf_open,                      /* open function */
+  NULL,                          /* no check function */
+  spf_find,                      /* find function */
+  spf_close,                     /* close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define spf_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &_lookup_info };
+lookup_module_info spf_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 #endif /* EXPERIMENTAL_SPF */

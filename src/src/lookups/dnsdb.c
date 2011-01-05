@@ -9,7 +9,6 @@
 
 #include "../exim.h"
 #include "lf_functions.h"
-#include "dnsdb.h"
 
 
 
@@ -67,7 +66,7 @@ static int type_values[] = {
 
 /* See local README for interface description. */
 
-void *
+static void *
 dnsdb_open(uschar *filename, uschar **errmsg)
 {
 filename = filename;   /* Keep picky compilers happy */
@@ -108,7 +107,7 @@ default is "TXT".
 which may start with '<' in order to set a specific separator. The default
 separator, as always, is colon. */
 
-int
+static int
 dnsdb_find(void *handle, uschar *filename, uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -429,5 +428,23 @@ yield[ptr] = 0;
 *result = yield;
 return OK;
 }
+
+static lookup_info _lookup_info = {
+  US"dnsdb",                     /* lookup name */
+  lookup_querystyle,             /* query style */
+  dnsdb_open,                    /* open function */
+  NULL,                          /* check function */
+  dnsdb_find,                    /* find function */
+  NULL,                          /* no close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define dnsdb_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &_lookup_info };
+lookup_module_info dnsdb_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 /* End of lookups/dnsdb.c */

@@ -13,21 +13,6 @@ that they are easy to find. */
 #include "exim.h"
 
 
-/* The OSF1 linker puts out a worrying warning if any sections contain no
-executable code. It says
-
-Warning: Linking some objects which contain exception information sections
-        and some which do not. This may cause fatal runtime exception handling
-        problems.
-
-As this may cause people to worry needlessly, include a dummy function here
-to stop the message from appearing. Make it reference itself to stop picky
-compilers complaining that it is unused, and put in a dummy argument to stop
-even pickier compilers complaining about infinite loops. */
-
-static void dummy(int x) { dummy(x-1); }
-
-
 /* Generic options for auths, all of which live inside auth_instance
 data blocks and hence have the opt_public flag set. */
 

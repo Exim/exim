@@ -32,39 +32,23 @@ mkdir lookups
 cd lookups
 ln -s ../../src/lookups/README           README
 ln -s ../../src/lookups/Makefile         Makefile
-ln -s ../../src/lookups/cdb.h            cdb.h
 ln -s ../../src/lookups/cdb.c            cdb.c
-ln -s ../../src/lookups/dbmdb.h          dbmdb.h
 ln -s ../../src/lookups/dbmdb.c          dbmdb.c
-ln -s ../../src/lookups/dnsdb.h          dnsdb.h
 ln -s ../../src/lookups/dnsdb.c          dnsdb.c
-ln -s ../../src/lookups/dsearch.h        dsearch.h
 ln -s ../../src/lookups/dsearch.c        dsearch.c
-ln -s ../../src/lookups/ibase.h          ibase.h
 ln -s ../../src/lookups/ibase.c          ibase.c
 ln -s ../../src/lookups/ldap.h           ldap.h
 ln -s ../../src/lookups/ldap.c           ldap.c
-ln -s ../../src/lookups/lsearch.h        lsearch.h
 ln -s ../../src/lookups/lsearch.c        lsearch.c
-ln -s ../../src/lookups/mysql.h          mysql.h
 ln -s ../../src/lookups/mysql.c          mysql.c
-ln -s ../../src/lookups/nis.h            nis.h
 ln -s ../../src/lookups/nis.c            nis.c
-ln -s ../../src/lookups/nisplus.h        nisplus.h
 ln -s ../../src/lookups/nisplus.c        nisplus.c
-ln -s ../../src/lookups/oracle.h         oracle.h
 ln -s ../../src/lookups/oracle.c         oracle.c
-ln -s ../../src/lookups/passwd.h         passwd.h
 ln -s ../../src/lookups/passwd.c         passwd.c
-ln -s ../../src/lookups/pgsql.h          pgsql.h
 ln -s ../../src/lookups/pgsql.c          pgsql.c
-ln -s ../../src/lookups/spf.h            spf.h
 ln -s ../../src/lookups/spf.c            spf.c
-ln -s ../../src/lookups/sqlite.h         sqlite.h
 ln -s ../../src/lookups/sqlite.c         sqlite.c
-ln -s ../../src/lookups/testdb.h         testdb.h
 ln -s ../../src/lookups/testdb.c         testdb.c
-ln -s ../../src/lookups/whoson.h         whoson.h
 ln -s ../../src/lookups/whoson.c         whoson.c
 
 ln -s ../../src/lookups/lf_functions.h   lf_functions.h
@@ -197,6 +181,7 @@ ln -s ../src/mytypes.h         mytypes.h
 ln -s ../src/osfunctions.h     osfunctions.h
 ln -s ../src/store.h           store.h
 ln -s ../src/structs.h         structs.h
+ln -s ../src/lookupapi.h       lookupapi.h
 
 ln -s ../src/acl.c             acl.c
 ln -s ../src/buildconfig.c     buildconfig.c

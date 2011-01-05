@@ -249,6 +249,10 @@ TRANSPORT_SMTP=yes
 
 
 #------------------------------------------------------------------------------
+# See below for dynamic lookup modules.
+# LOOKUP_MODULE_DIR=/usr/lib/exim/lookups/
+
+#------------------------------------------------------------------------------
 # These settings determine which file and database lookup methods are included
 # in the binary. See the manual chapter entitled "File and database lookups"
 # for discussion. DBM and lsearch (linear search) are included by default. If
@@ -256,6 +260,18 @@ TRANSPORT_SMTP=yes
 # LOOKUP_DNSDB does *not* refer to general mail routing using the DNS. It is
 # for the specialist case of using the DNS as a general database facility (not
 # common).
+# If set to "2" instead of "yes" then the corresponding lookup will be
+# built as a module and must be installed into LOOKUP_MODULE_DIR. You need to
+# add -export-dynamic -rdynamic to EXTRALIBS. You may also need to add -ldl to
+# EXTRALIBS so that dlopen() is available to Exim. You need to define
+# LOOKUP_MODULE_DIR above so the exim binary actually loads dynamic lookup
+# modules.
+# Also, instead of adding all the libraries/includes to LOOKUP_INCLUDE and
+# LOOKUP_LIBS, add them to the respective LOOKUP_*_INCLUDE and LOOKUP_*_LIBS
+# (where * is the name as given here in this list). That ensures that only
+# the dynamic library and not the exim binary will be linked against the
+# library.
+# NOTE: LDAP cannot be built as a module!
 
 LOOKUP_DBM=yes
 LOOKUP_LSEARCH=yes

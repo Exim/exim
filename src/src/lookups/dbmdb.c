@@ -9,7 +9,6 @@
 
 #include "../exim.h"
 #include "lf_functions.h"
-#include "dbmdb.h"
 
 
 /*************************************************
@@ -18,7 +17,7 @@
 
 /* See local README for interface description */
 
-void *
+static void *
 dbmdb_open(uschar *filename, uschar **errmsg)
 {
 EXIM_DB *yield;
@@ -45,7 +44,7 @@ file name. If USE_TDB or USE_GDBM is set, we know it is tdb or gdbm, which do
 the same. Otherwise, for safety, we have to check for x.db or x.dir and x.pag.
 */
 
-BOOL
+static BOOL
 dbmdb_check(void *handle, uschar *filename, int modemask, uid_t *owners,
   gid_t *owngroups, uschar **errmsg)
 {
@@ -88,7 +87,7 @@ return rc == 0;
 /* See local README for interface description. This function adds 1 to
 the keylength in order to include the terminating zero. */
 
-int
+static int
 dbmdb_find(void *handle, uschar *filename, uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -122,7 +121,7 @@ return FAIL;
 /* See local README for interface description */
 
 int
-dbmnz_find(void *handle, uschar *filename, uschar *keystring, int length,
+static dbmnz_find(void *handle, uschar *filename, uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 return dbmdb_find(handle, filename, keystring, length-1, result, errmsg,
@@ -138,9 +137,38 @@ return dbmdb_find(handle, filename, keystring, length-1, result, errmsg,
 /* See local README for interface description */
 
 void
-dbmdb_close(void *handle)
+static dbmdb_close(void *handle)
 {
 EXIM_DBCLOSE((EXIM_DB *)handle);
 }
+
+lookup_info dbm_lookup_info = {
+  US"dbm",                       /* lookup name */
+  lookup_absfile,                /* uses absolute file name */
+  dbmdb_open,                    /* open function */
+  dbmdb_check,                   /* check function */
+  dbmdb_find,                    /* find function */
+  dbmdb_close,                   /* close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+lookup_info dbmz_lookup_info = {
+  US"dbmnz",                     /* lookup name */
+  lookup_absfile,                /* uses absolute file name */
+  dbmdb_open,      /* sic */     /* open function */
+  dbmdb_check,     /* sic */     /* check function */
+  dbmnz_find,                    /* find function */
+  dbmdb_close,     /* sic */     /* close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define dbmdb_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &dbm_lookup_info, &dbmz_lookup_info };
+lookup_module_info dbmdb_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 2 };
 
 /* End of lookups/dbmdb.c */

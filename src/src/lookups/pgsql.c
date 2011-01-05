@@ -13,21 +13,6 @@ socket extension. */
 
 #include "../exim.h"
 #include "lf_functions.h"
-#include "pgsql.h"       /* The local header */
-
-/* We can't just compile this code and allow the library mechanism to omit the
-functions if they are not wanted, because we need to have the PGSQL header
-available for compiling. Therefore, compile these functions only if
-LOOKUP_PGSQL is defined. However, some compilers don't like compiling empty
-modules, so keep them happy with a dummy when skipping the rest. Make it
-reference itself to stop picky compilers complaining that it is unused, and put
-in a dummy argument to stop even pickier compilers complaining about infinite
-loops. */
-
-#ifndef LOOKUP_PGSQL
-static void dummy(int x) { dummy(x-1); }
-#else
-
 
 #include <libpq-fe.h>       /* The system header */
 
@@ -49,7 +34,7 @@ static pgsql_connection *pgsql_connections = NULL;
 
 /* See local README for interface description. */
 
-void *
+static void *
 pgsql_open(uschar *filename, uschar **errmsg)
 {
 return (void *)(1);    /* Just return something non-null */
@@ -63,7 +48,7 @@ return (void *)(1);    /* Just return something non-null */
 
 /* See local README for interface description. */
 
-void
+static void
 pgsql_tidy(void)
 {
 pgsql_connection *cn;
@@ -414,7 +399,7 @@ arguments are not used. The code to loop through a list of servers while the
 query is deferred with a retryable error is now in a separate function that is
 shared with other SQL lookups. */
 
-int
+static int
 pgsql_find(void *handle, uschar *filename, uschar *query, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -454,7 +439,7 @@ Arguments:
 Returns:     the processed string or NULL for a bad option
 */
 
-uschar *
+static uschar *
 pgsql_quote(uschar *s, uschar *opt)
 {
 register int c;
@@ -501,6 +486,22 @@ while ((c = *s++) != 0)
 return quoted;
 }
 
-#endif  /* PGSQL_LOOKUP */
+static lookup_info _lookup_info = {
+  US"pgsql",                     /* lookup name */
+  lookup_querystyle,             /* query-style lookup */
+  pgsql_open,                    /* open function */
+  NULL,                          /* no check function */
+  pgsql_find,                    /* find function */
+  NULL,                          /* no close function */
+  pgsql_tidy,                    /* tidy function */
+  pgsql_quote                    /* quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define pgsql_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &_lookup_info };
+lookup_module_info pgsql_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 /* End of lookups/pgsql.c */

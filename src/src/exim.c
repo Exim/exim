@@ -776,53 +776,53 @@ fprintf(f, "Support for:");
 #endif
 fprintf(f, "\n");
 
-fprintf(f, "Lookups:");
-#ifdef LOOKUP_LSEARCH
+fprintf(f, "Lookups (built-in):");
+#if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
   fprintf(f, " lsearch wildlsearch nwildlsearch iplsearch");
 #endif
-#ifdef LOOKUP_CDB
+#if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
   fprintf(f, " cdb");
 #endif
-#ifdef LOOKUP_DBM
+#if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
   fprintf(f, " dbm dbmnz");
 #endif
-#ifdef LOOKUP_DNSDB
+#if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
   fprintf(f, " dnsdb");
 #endif
-#ifdef LOOKUP_DSEARCH
+#if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
   fprintf(f, " dsearch");
 #endif
-#ifdef LOOKUP_IBASE
+#if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
   fprintf(f, " ibase");
 #endif
-#ifdef LOOKUP_LDAP
+#if defined(LOOKUP_LDAP) && LOOKUP_LDAP!=2
   fprintf(f, " ldap ldapdn ldapm");
 #endif
-#ifdef LOOKUP_MYSQL
+#if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
   fprintf(f, " mysql");
 #endif
-#ifdef LOOKUP_NIS
+#if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
   fprintf(f, " nis nis0");
 #endif
-#ifdef LOOKUP_NISPLUS
+#if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
   fprintf(f, " nisplus");
 #endif
-#ifdef LOOKUP_ORACLE
+#if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
   fprintf(f, " oracle");
 #endif
-#ifdef LOOKUP_PASSWD
+#if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
   fprintf(f, " passwd");
 #endif
-#ifdef LOOKUP_PGSQL
+#if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
   fprintf(f, " pgsql");
 #endif
-#ifdef LOOKUP_SQLITE
+#if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
   fprintf(f, " sqlite");
 #endif
-#ifdef LOOKUP_TESTDB
+#if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
   fprintf(f, " testdb");
 #endif
-#ifdef LOOKUP_WHOSON
+#if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
   fprintf(f, " whoson");
 #endif
 fprintf(f, "\n");
@@ -3509,6 +3509,10 @@ if (opt_perl_at_start && opt_perl_startup != NULL)
   opt_perl_started = TRUE;
   }
 #endif /* EXIM_PERL */
+
+/* Initialise lookup_list */
+extern void init_lookup_list(void);
+init_lookup_list();
 
 /* Log the arguments of the call if the configuration file said so. This is
 a debugging feature for finding out what arguments certain MUAs actually use.

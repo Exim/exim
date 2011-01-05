@@ -12,22 +12,7 @@
 #include "../exim.h"
 
 
-/* We can't just compile this code and allow the library mechanism to omit the
-functions if they are not wanted, because we need to have the WHOSON headers
-available for compiling. Therefore, compile these functions only if
-LOOKUP_WHOSON is defined. However, some compilers don't like compiling empty
-modules, so keep them happy with a dummy when skipping the rest. Make it
-reference itself to stop picky compilers complaining that it is unused, and put
-in a dummy argument to stop even pickier compilers complaining about infinite
-loops. */
-
-#ifndef LOOKUP_WHOSON
-static void dummy(int x) { dummy(x-1); }
-#else
-
-
 #include <whoson.h>        /* Public header */
-#include "whoson.h"        /* Local header */
 
 
 /*************************************************
@@ -36,7 +21,7 @@ static void dummy(int x) { dummy(x-1); }
 
 /* See local README for interface description. */
 
-void *
+static void *
 whoson_open(uschar *filename, uschar **errmsg)
 {
 filename = filename;   /* Keep picky compilers happy */
@@ -51,7 +36,7 @@ return (void *)(1);    /* Just return something non-null */
 
 /* See local README for interface description. */
 
-int
+static int
 whoson_find(void *handle, uschar *filename, uschar *query, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -77,6 +62,22 @@ switch (wso_query(query, CS buffer, sizeof(buffer)))
   }
 }
 
-#endif  /* LOOKUP_WHOSON */
+static lookup_info _lookup_info = {
+  US"whoson",                    /* lookup name */
+  lookup_querystyle,             /* query-style lookup */
+  whoson_open,                   /* open function */
+  NULL,                          /* check function */
+  whoson_find,                   /* find function */
+  NULL,                          /* no close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define whoson_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &_lookup_info };
+lookup_module_info whoson_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 /* End of lookups/whoson.c */

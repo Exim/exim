@@ -9,11 +9,7 @@
 
 #include "../exim.h"
 #include "lf_functions.h"
-#include "sqlite.h"
 
-#ifndef LOOKUP_SQLITE
-static void dummy(int x) { dummy(x-1); }
-#else
 #include <sqlite3.h>
 
 
@@ -23,7 +19,7 @@ static void dummy(int x) { dummy(x-1); }
 
 /* See local README for interface description. */
 
-void *
+static void *
 sqlite_open(uschar *filename, uschar **errmsg)
 {
 sqlite3 *db = NULL;
@@ -85,7 +81,7 @@ return 0;
 }
 
 
-int
+static int
 sqlite_find(void *handle, uschar *filename, uschar *query, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -113,7 +109,7 @@ return OK;
 
 /* See local README for interface description. */
 
-void sqlite_close(void *handle)
+static void sqlite_close(void *handle)
 {
 sqlite3_close(handle);
 }
@@ -134,7 +130,7 @@ Arguments:
 Returns:     the processed string or NULL for a bad option
 */
 
-uschar *
+static uschar *
 sqlite_quote(uschar *s, uschar *opt)
 {
 register int c;
@@ -159,6 +155,22 @@ while ((c = *s++) != 0)
 return quoted;
 }
 
-#endif /* LOOKUP_SQLITE */
+static lookup_info _lookup_info = {
+  US"sqlite",                    /* lookup name */
+  lookup_absfilequery,           /* query-style lookup, starts with file name */
+  sqlite_open,                   /* open function */
+  NULL,                          /* no check function */
+  sqlite_find,                   /* find function */
+  sqlite_close,                  /* close function */
+  NULL,                          /* no tidy function */
+  sqlite_quote                   /* quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define sqlite_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &_lookup_info };
+lookup_module_info sqlite_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 /* End of lookups/sqlite.c */

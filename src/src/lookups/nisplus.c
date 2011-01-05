@@ -9,21 +9,6 @@
 
 #include "../exim.h"
 #include "lf_functions.h"
-#include "nisplus.h"
-
-/* We can't just compile this code and allow the library mechanism to omit the
-functions if they are not wanted, because we need to have the NIS+ header
-available for compiling. Therefore, compile these functions only if
-LOOKUP_NISPLUS is defined. However, some compilers don't like compiling empty
-modules, so keep them happy with a dummy when skipping the rest. Make it
-reference itself to stop picky compilers complaining that it is unused, and put
-in a dummy argument to stop even pickier compilers complaining about infinite
-loops. */
-
-#ifndef LOOKUP_NISPLUS
-static void dummy(int x) { dummy(x-1); }
-#else
-
 
 #include <rpcsvc/nis.h>
 
@@ -34,7 +19,7 @@ static void dummy(int x) { dummy(x-1); }
 
 /* See local README for interface description. */
 
-void *
+static void *
 nisplus_open(uschar *filename, uschar **errmsg)
 {
 return (void *)(1);    /* Just return something non-null */
@@ -58,7 +43,7 @@ name tagged on the end after a colon. If there is no result-field name, the
 yield is the concatenation of all the fields, preceded by their names and an
 equals sign. */
 
-int
+static int
 nisplus_find(void *handle, uschar *filename, uschar *query, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -250,7 +235,7 @@ Arguments:
 Returns:     the processed string or NULL for a bad option
 */
 
-uschar *
+static uschar *
 nisplus_quote(uschar *s, uschar *opt)
 {
 int count = 0;
@@ -274,6 +259,22 @@ while (*s != 0)
 return quoted;
 }
 
-#endif  /* LOOKUP_NISPLUS */
+static lookup_info _lookup_info = {
+  US"nisplus",                   /* lookup name */
+  lookup_querystyle,             /* query-style lookup */
+  nisplus_open,                  /* open function */
+  NULL,                          /* check function */
+  nisplus_find,                  /* find function */
+  NULL,                          /* no close function */
+  NULL,                          /* no tidy function */
+  nisplus_quote                  /* quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define nisplus_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &_lookup_info };
+lookup_module_info nisplus_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 /* End of lookups/nisplus.c */

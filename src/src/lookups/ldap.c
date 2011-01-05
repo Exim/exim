@@ -15,20 +15,6 @@ researching how to handle the different kinds of error. */
 
 #include "../exim.h"
 #include "lf_functions.h"
-#include "ldap.h"
-
-
-/* We can't just compile this code and allow the library mechanism to omit the
-functions if they are not wanted, because we need to have the LDAP headers
-available for compiling. Therefore, compile these functions only if LOOKUP_LDAP
-is defined. However, some compilers don't like compiling empty modules, so keep
-them happy with a dummy when skipping the rest. Make it reference itself to
-stop picky compilers complaining that it is unused, and put in a dummy argument
-to stop even pickier compilers complaining about infinite loops. */
-
-#ifndef LOOKUP_LDAP
-static void dummy(int x) { dummy(x-1); }
-#else
 
 
 /* Include LDAP headers. The code below uses some "old" LDAP interfaces that
@@ -1196,7 +1182,7 @@ return DEFER;
 are handled by a common function, with a flag to differentiate between them.
 The handle and filename arguments are not used. */
 
-int
+static int
 eldap_find(void *handle, uschar *filename, uschar *ldap_url, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -1205,7 +1191,7 @@ do_cache = do_cache;
 return(control_ldap_search(ldap_url, SEARCH_LDAP_SINGLE, result, errmsg));
 }
 
-int
+static int
 eldapm_find(void *handle, uschar *filename, uschar *ldap_url, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -1214,7 +1200,7 @@ do_cache = do_cache;
 return(control_ldap_search(ldap_url, SEARCH_LDAP_MULTIPLE, result, errmsg));
 }
 
-int
+static int
 eldapdn_find(void *handle, uschar *filename, uschar *ldap_url, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
@@ -1240,7 +1226,7 @@ return(control_ldap_search(ldap_url, SEARCH_LDAP_AUTH, result, errmsg));
 
 /* See local README for interface description. */
 
-void *
+static void *
 eldap_open(uschar *filename, uschar **errmsg)
 {
 return (void *)(1);    /* Just return something non-null */
@@ -1255,7 +1241,7 @@ return (void *)(1);    /* Just return something non-null */
 /* See local README for interface description.
 Make sure that eldap_dn does not refer to reclaimed or worse, freed store */
 
-void
+static void
 eldap_tidy(void)
 {
 LDAP_CONNECTION *lcp = NULL;
@@ -1351,7 +1337,7 @@ quote_ldap_dn, respectively. */
 
 
 
-uschar *
+static uschar *
 eldap_quote(uschar *s, uschar *opt)
 {
 register int c;
@@ -1470,6 +1456,44 @@ else
 return quoted;
 }
 
-#endif  /* LOOKUP_LDAP */
+static lookup_info ldap_lookup_info = {
+  US"ldap",                      /* lookup name */
+  lookup_querystyle,             /* query-style lookup */
+  eldap_open,                    /* open function */
+  NULL,                          /* check function */
+  eldap_find,                    /* find function */
+  NULL,                          /* no close function */
+  eldap_tidy,                    /* tidy function */
+  eldap_quote                    /* quoting function */
+};
+
+static lookup_info ldapdn_lookup_info = {
+  US"ldapdn",                     /* lookup name */
+  lookup_querystyle,             /* query-style lookup */
+  eldap_open,       /* sic */    /* open function */
+  NULL,                          /* check function */
+  eldapdn_find,                  /* find function */
+  NULL,                          /* no close function */
+  eldap_tidy,       /* sic */    /* tidy function */
+  eldap_quote       /* sic */    /* quoting function */
+};
+
+static lookup_info ldapm_lookup_info = {
+  US"ldapm",                     /* lookup name */
+  lookup_querystyle,             /* query-style lookup */
+  eldap_open,       /* sic */    /* open function */
+  NULL,                          /* check function */
+  eldapm_find,                   /* find function */
+  NULL,                          /* no close function */
+  eldap_tidy,       /* sic */    /* tidy function */
+  eldap_quote       /* sic */    /* quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define ldap_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &ldap_lookup_info, &ldapdn_lookup_info, &ldapm_lookup_info };
+lookup_module_info ldap_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 3 };
 
 /* End of lookups/ldap.c */

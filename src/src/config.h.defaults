@@ -90,6 +90,8 @@ it's a default value. */
 #define LOOKUP_WILDLSEARCH
 #define LOOKUP_NWILDLSEARCH
 
+#define LOOKUP_MODULE_DIR
+
 #define MAX_FILTER_SIZE           (1024*1024)
 #define MAX_LOCALHOST_NUMBER        256
 #define MAX_INCLUDE_SIZE          (1024*1024)

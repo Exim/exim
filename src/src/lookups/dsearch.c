@@ -14,7 +14,6 @@ lstat()) rather than a directory scan). */
 
 #include "../exim.h"
 #include "lf_functions.h"
-#include "dsearch.h"
 
 
 
@@ -27,7 +26,7 @@ whether it exists and whether it is searchable. However, we don't need to keep
 it open, because the "search" can be done by a call to lstat() rather than
 actually scanning through the list of files. */
 
-void *
+static void *
 dsearch_open(uschar *dirname, uschar **errmsg)
 {
 DIR *dp = opendir(CS dirname);
@@ -51,7 +50,7 @@ return (void *)(-1);
 integer as this gives warnings on 64-bit systems. */
 
 BOOL
-dsearch_check(void *handle, uschar *filename, int modemask, uid_t *owners,
+static dsearch_check(void *handle, uschar *filename, int modemask, uid_t *owners,
   gid_t *owngroups, uschar **errmsg)
 {
 handle = handle;
@@ -69,7 +68,7 @@ scanning the directory, as it is hopefully faster to let the OS do the scanning
 for us. */
 
 int
-dsearch_find(void *handle, uschar *dirname, uschar *keystring, int length,
+static dsearch_find(void *handle, uschar *dirname, uschar *keystring, int length,
   uschar **result, uschar **errmsg, BOOL *do_cache)
 {
 struct stat statbuf;
@@ -115,9 +114,27 @@ return DEFER;
 /* See local README for interface description */
 
 void
-dsearch_close(void *handle)
+static dsearch_close(void *handle)
 {
 handle = handle;   /* Avoid compiler warning */
 }
+
+static lookup_info _lookup_info = {
+  US"dsearch",                   /* lookup name */
+  lookup_absfile,                /* uses absolute file name */
+  dsearch_open,                  /* open function */
+  dsearch_check,                 /* check function */
+  dsearch_find,                  /* find function */
+  dsearch_close,                 /* close function */
+  NULL,                          /* no tidy function */
+  NULL                           /* no quoting function */
+};
+
+#ifdef DYNLOOKUP
+#define dsearch_lookup_module_info _lookup_module_info
+#endif
+
+static lookup_info *_lookup_list[] = { &_lookup_info };
+lookup_module_info dsearch_lookup_module_info = { LOOKUP_MODULE_INFO_MAGIC, _lookup_list, 1 };
 
 /* End of lookups/dsearch.c */

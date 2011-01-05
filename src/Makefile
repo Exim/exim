@@ -81,7 +81,7 @@ clean:; @echo ""; echo '*** "make clean" just removes all .o and .a files'
 
 clean_exim:; cd build-$(buildname); \
 	 $(RM_COMMAND) -f *.o lookups/*.o lookups/*.a auths/*.o auths/*.a \
-	routers/*.o routers/*.a transports/*.o transports/*.a
+	routers/*.o routers/*.a transports/*.o transports/*.a lookups/*.so
 
 distclean:; $(RM_COMMAND) -rf build-*
 
