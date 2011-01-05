@@ -462,7 +462,7 @@ requires various things that are set therein. */
 #include <iconv.h>
 #endif
 
-#if defined(USE_READLINE) || defined(EXPAND_DLFUNC)
+#if defined(USE_READLINE) || defined(EXPAND_DLFUNC) || defined (LOOKUP_MODULE_DIR)
 #include <dlfcn.h>
 #endif
 

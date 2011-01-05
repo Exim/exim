@@ -10,7 +10,6 @@
 
 #include "exim.h"
 
-#include <dlfcn.h>
 #include <string.h>
 
 /* This module contains tables that define the lookup methods and drivers
