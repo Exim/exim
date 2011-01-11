@@ -9,6 +9,10 @@ Exim version 4.75
 NM/01 Workround for PCRE version dependancy in version reporting
       Bugzilla 1073
 
+TF/01 Update valgrind.h and memcheck.h to copies from valgrind-3.6.0.
+      This fixes portability to compilers other than gcc, notably
+      Solaris CC and HP-UX CC. Fixes Bugzilla 1050.
+
 
 Exim version 4.74
 -----------------
