@@ -1078,12 +1078,10 @@ if (tls_offered && !suppress_tls &&
   if (!smtp_read_response(&inblock, buffer2, sizeof(buffer2), '2',
       ob->command_timeout))
     {
+    Ustrncpy(buffer, buffer2, sizeof(buffer));
     if (errno != 0 || buffer2[0] == 0 ||
          (buffer2[0] == '4' && !ob->tls_tempfail_tryclear))
-      {
-      Ustrncpy(buffer, buffer2, sizeof(buffer));
       goto RESPONSE_FAILED;
-      }
     }
 
   /* STARTTLS accepted: try to negotiate a TLS session. */

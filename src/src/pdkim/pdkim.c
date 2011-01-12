@@ -420,6 +420,7 @@ char *pdkim_relax_header (char *header, int crlf) {
     p++;
     q++;
   }
+  if (seen_wsp) q--;
   *q = '\0';
   if (crlf) strcat(relaxed,"\r\n");
   return relaxed;
