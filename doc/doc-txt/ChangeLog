@@ -9,6 +9,9 @@ Exim version 4.74
 TF/01 Failure to get a lock on a hints database can have serious
       consequences so log it to the panic log.
 
+TF/02 Log LMTP confirmation messages in the same way as SMTP,
+      controlled using the smtp_confirmation log selector.
+
 
 Exim version 4.73
 -----------------

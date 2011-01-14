@@ -1715,7 +1715,11 @@ if (!ok) ok = TRUE; else
           continue;
           }
         completed_address = TRUE;   /* NOW we can set this flag */
-        conf = string_sprintf("LMTP Successful delivery:%s", string_printing(buffer));
+        if ((log_extra_selector & LX_smtp_confirmation) != 0)
+          {
+          uschar *s = string_printing(buffer);
+          conf = (s == buffer)? (uschar *)string_copy(s) : s;
+          }
         }
 
       /* SMTP, or success return from LMTP for this address. Pass back the
