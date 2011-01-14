@@ -142,7 +142,7 @@ alarm(0);
 if (sigalrm_seen) errno = ETIMEDOUT;
 if (rc < 0)
   {
-  log_write(0, LOG_MAIN, "Failed to get %s lock for %s: %s",
+  log_write(0, LOG_MAIN|LOG_PANIC, "Failed to get %s lock for %s: %s",
     read_only? "read" : "write", buffer,
     (errno == ETIMEDOUT)? "timed out" : strerror(errno));
   (void)close(dbblock->lockfd);

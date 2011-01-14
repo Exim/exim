@@ -3,6 +3,13 @@ $Cambridge: exim/doc/doc-txt/ChangeLog,v 1.632 2010/06/12 15:21:25 jetmore Exp $
 Change log file for Exim from version 4.21
 -------------------------------------------
 
+Exim version 4.74
+-----------------
+
+TF/01 Failure to get a lock on a hints database can have serious
+      consequences so log it to the panic log.
+
+
 Exim version 4.73
 -----------------
 
