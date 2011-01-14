@@ -6568,7 +6568,8 @@ if (addr_defer == NULL)
     else
       {
       if (Uunlink(spoolname) < 0)
-        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s", spoolname);
+        log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
+		  spoolname, strerror(errno));
       }
     }
 

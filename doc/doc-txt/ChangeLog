@@ -12,6 +12,8 @@ TF/01 Failure to get a lock on a hints database can have serious
 TF/02 Log LMTP confirmation messages in the same way as SMTP,
       controlled using the smtp_confirmation log selector.
 
+TF/03 Include the error message when we fail to unlink a spool file.
+
 
 Exim version 4.73
 -----------------
