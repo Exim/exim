@@ -1,7 +1,7 @@
 CONTRIBUTING TO EXIM
 ====================
 
-Exim is an open-source project licensed under the GNU General Product License.
+Exim is an open-source project licensed under the GNU General Public License.
 At time of writing, all the developers work on Exim on a volunteer basis.
 We welcome patches and contributions.  There is no copyright assignment
 policy; if you offer a patch, it is assumed to be under the GPL, of whichever
