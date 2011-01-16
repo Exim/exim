@@ -14,6 +14,14 @@ TF/02 Log LMTP confirmation messages in the same way as SMTP,
 
 TF/03 Include the error message when we fail to unlink a spool file.
 
+DW/01 Bugzilla 139: Support dynamically loaded lookups as modules.
+      With thanks to Steve Haslam, Johannes Berg & Serge Demonchaux
+      for maintaining out-of-tree patches for some time.
+
+PP/01 Bugzilla 139: Documentation and portability issues.
+      Avoid GNU Makefile-isms, let Exim continue to build on BSD.
+      Handle per-OS dynamic-module compilation flags.
+
 
 Exim version 4.73
 -----------------

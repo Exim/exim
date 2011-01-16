@@ -1946,6 +1946,36 @@ support has not been tested for some time.
 
 
 
+.section "Dynamically loaded lookup module support" "SECTdynamicmodules"
+.cindex "lookup modules"
+.cindex "dynamic modules"
+.cindex ".so building"
+On some platforms, Exim supports not compiling all lookup types directly into
+the main binary, instead putting some into external modules which can be loaded
+on demand.
+This permits packagers to build Exim with support for lookups with extensive
+library dependencies without requiring all users to install all of those
+dependencies.
+Most, but not all, lookup types can be built this way.
+
+Set &`LOOKUP_MODULE_DIR`& to the directory into which the modules will be
+installed; Exim will only load modules from that directory, as a security
+measure.  You will need to set &`CFLAGS_DYNAMIC`& if not already defined
+for your OS; see &_OS/Makefile-Linux_& for an example.
+Some other requirements for adjusting &`EXTRALIBS`& may also be necessary,
+see &_src/EDITME_& for details.
+
+Then, for each module to be loaded dynamically, define the relevant
+&`LOOKUP_`&<&'lookup_type'&> flags to have the value "2" instead of "yes".
+For example, this will build in lsearch but load sqlite and mysql support
+on demand:
+.code
+LOOKUP_LSEARCH=yes
+LOOKUP_SQLITE=2
+LOOKUP_MYSQL=2
+.endd
+
+
 .section "The building process" "SECID29"
 .cindex "build directory"
 Once &_Local/Makefile_& (and &_Local/eximon.conf_&, if required) have been
@@ -34205,6 +34235,13 @@ Exim uses its own path name, which is embedded in the code, only when it needs
 to re-exec in order to regain root privilege. Therefore, it is not root when it
 does so. If some bug allowed the path to get overwritten, it would lead to an
 arbitrary program's being run as exim, not as root.
+
+
+
+.section "Dynamic module directory" "SECTdynmoddir"
+Any dynamically loadable modules must be installed into the directory
+defined in &`LOOKUP_MODULE_DIR`& in &_Local/Makefile_& for Exim to permit
+loading it.
 
 
 

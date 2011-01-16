@@ -11,6 +11,7 @@ CHGRP_COMMAND=look_for_it
 CHMOD_COMMAND=look_for_it
 
 CFLAGS=-O -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
+CFLAGS_DYNAMIC=-shared -rdynamic
 
 DBMLIB = -ldb
 USE_DB = yes

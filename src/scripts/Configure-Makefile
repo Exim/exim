@@ -78,10 +78,13 @@ mf=Makefile
 mft=$mf-t
 mftt=$mf-tt
 
+look_mf=lookups/Makefile.predynamic
+look_mft=${look_mf}-t
+
 # Ensure the temporary does not exist and start the new one by setting
 # the OSTYPE and ARCHTYPE variables.
 
-rm -f $mft $mftt
+rm -f $mft $mftt $look_mf-t
 (echo "OSTYPE=$ostype"; echo "ARCHTYPE=$archtype"; echo "") > $mft || exit 1
 
 # Now concatenate the files to the temporary file. Copy the files using sed to
@@ -107,7 +110,13 @@ do   if test -r ../$f
             echo "# End of $f"
             echo ""
      fi
-done | sed 's/^LOOKUP_/export LOOKUP_/' >> $mft || exit 1
+done >> $mft || exit 1
+
+# make the lookups Makefile with the definitions
+
+## prepend stuff here; eg: grep LOOKUP_ $mft > $look_mft
+## cat ../src/lookups/Makefile >> $look_mft
+cp ../src/lookups/Makefile $look_mft
 
 # See if there is a definition of EXIM_PERL in what we have built so far.
 # If so, run Perl to find the default values for PERL_CC, PERL_CCOPTS,
@@ -158,18 +167,20 @@ cat ../OS/Makefile-Base >> $mft || exit 1
 # If the new makefile is the same as the existing one, say so, and just
 # update the timestamp. Otherwise remove the old and install the new.
 
-if      [ -s $mf ] && cmp -s $mft $mf
+if      [ -s $mf ] && cmp -s $mft $mf && [ -s $look_mf ] && cmp -s $look_mft $look_mf
 then    echo ">>> rebuilt $mf unchanged"
         echo " "
         touch $mf || exit
         rm -f $mft
-elif    rm -f $mf
+elif    rm -f $mf $look_mf
         mv $mft $mf
-then    echo ">>> New $mf installed"
+	mv $look_mft $look_mf
+then    echo ">>> New $mf & $look_mf installed"
         echo '>>> Use "make makefile" if you need to force rebuilding of the makefile'
         echo " "
 else    echo " "
         echo "*** Failed to install $mf - see $mft"
+	echo "    (or $look_mft)"
         echo " "
         exit 1;
 fi

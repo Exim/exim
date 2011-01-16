@@ -54,14 +54,16 @@ build-directory:
 
 configure: build-directory
 	@cd build-$(buildname); \
-	  build=$(build) $(SHELL) ../scripts/Configure-Makefile
+	  build=$(build) $(SHELL) ../scripts/Configure-Makefile; \
+	  $(SHELL) ../scripts/lookups-Makefile
 
 # The "makefile" target forces a rebuild of the makefile (as opposed to
 # "configure", which doesn't force it).
 
 makefile: build-directory
 	@cd build-$(buildname); $(RM_COMMAND) -f Makefile; \
-	  build=$(build) $(SHELL) ../scripts/Configure-Makefile
+	  build=$(build) $(SHELL) ../scripts/Configure-Makefile; \
+	  $(SHELL) ../scripts/lookups-Makefile
 
 # The installation commands are kept in a separate script, which expects
 # to be run from inside the build directory.

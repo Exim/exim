@@ -252,6 +252,11 @@ TRANSPORT_SMTP=yes
 # See below for dynamic lookup modules.
 # LOOKUP_MODULE_DIR=/usr/lib/exim/lookups/
 
+# To build a module dynamically, you'll need to define CFLAGS_DYNAMIC for
+# your platform.  Eg:
+# CFLAGS_DYNAMIC=-shared -rdynamic
+# CFLAGS_DYNAMIC=-shared -rdynamic -fPIC
+
 #------------------------------------------------------------------------------
 # These settings determine which file and database lookup methods are included
 # in the binary. See the manual chapter entitled "File and database lookups"

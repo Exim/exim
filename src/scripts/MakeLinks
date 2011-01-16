@@ -31,7 +31,7 @@ echo ">>> Creating links to source files..."
 mkdir lookups
 cd lookups
 ln -s ../../src/lookups/README           README
-ln -s ../../src/lookups/Makefile         Makefile
+# Makefile is generated
 ln -s ../../src/lookups/cdb.c            cdb.c
 ln -s ../../src/lookups/dbmdb.c          dbmdb.c
 ln -s ../../src/lookups/dnsdb.c          dnsdb.c
