@@ -8,18 +8,14 @@ defs_source=Makefile
 tag_marker='MAGIC-TAG-MODS-OBJ-RULES-GO-HERE'
 
 tab='	'
-if grep -q "^LOOKUP.*=[ $tab]*2" "$defs_source"
-then
-  # we have work to do
-else
-  echo "No dynamic module loading support"
-  cp "$input" "$target"
-  exit 0
-fi
+
+# We always do something now, since there should always be a lookup,
+# and now we need to run in order to put the OBJ+= rules in.
 
 if grep -q "^CFLAGS_DYNAMIC[ $tab]*=" "$defs_source"
 then
   # we have a definition, we're good to go
+  : # noop (true) statement for bash compatibility
 else
   echo >&2 "Missing CFLAGS_DYNAMIC inhibits building dynamic module lookup"
   exit 1
