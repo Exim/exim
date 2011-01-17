@@ -9,6 +9,16 @@ test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
 
+Version 4.74
+------------
+
+ 1. Exim now supports loading some lookup types at run-time, using your
+    platform's dlopen() functionality.  This has limited platform support
+    and the intention is not to support every variant, it's limited to
+    dlopen().  This permits the main Exim binary to not be linked against
+    all the libraries needed for all the lookup types.
+
+
 Version 4.73
 ------------
 
