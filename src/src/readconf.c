@@ -2875,9 +2875,9 @@ else
   }
 
 /* Check the status of the file we have opened, if we have retained root
-privileges. */
+privileges and the file isn't /dev/null (which *should* be 0666). */
 
-if (trusted_config)
+if (trusted_config && Ustrcmp(filename, US"/dev/null"))
   {
   if (fstat(fileno(config_file), &statbuf) != 0)
     log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to stat configuration file %s",

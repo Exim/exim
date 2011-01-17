@@ -22,6 +22,11 @@ PP/01 Bugzilla 139: Documentation and portability issues.
       Avoid GNU Makefile-isms, let Exim continue to build on BSD.
       Handle per-OS dynamic-module compilation flags.
 
+PP/02 Let /dev/null have normal permissions.
+      The 4.73 fixes were a little too stringent and complained about the
+      permissions on /dev/null.  Exempt it from some checks.
+      Reported by Andreas M. Kirchwitz.
+
 
 Exim version 4.73
 -----------------
