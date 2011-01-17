@@ -518,6 +518,13 @@ extern lookup_module_info whoson_lookup_module_info;
           continue;
         }
 
+        /* FreeBSD nsdispatch() can trigger dlerror() errors about
+         * _nss_cache_cycle_prevention_function; we need to clear the dlerror()
+         * state before calling dlsym(), so that any error afterwards only
+         * comes from dlsym().
+         */
+        errormsg = dlerror();
+
         info = (struct lookup_module_info*) dlsym(dl, "_lookup_module_info");
         if ((errormsg = dlerror()) != NULL) {
           fprintf(stderr, "%s does not appear to be a lookup module (%s)\n", name, errormsg);
