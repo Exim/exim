@@ -15431,6 +15431,13 @@ are using OpenSSL, you can set &%tls_verify_certificates%& to the name of a
 directory containing certificate files. This does not work with GnuTLS; the
 option must be set to the name of a single file if you are using GnuTLS.
 
+These certificates should be for the certificate authorities trusted, rather
+than the public cert of individual clients.  With both OpenSSL and GnuTLS, if
+the value is a file then the certificates are sent by Exim as a server to
+connecting clients, defining the list of accepted certificate authorities.
+Thus the values defined should be considered public data.  To avoid this,
+use OpenSSL with a directory.
+
 
 .option tls_verify_hosts main "host list&!!" unset
 .cindex "TLS" "client certificate verification"
