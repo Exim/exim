@@ -1300,7 +1300,7 @@ int  arg_error_handling = error_handling;
 int  filter_sfd = -1;
 int  filter_ufd = -1;
 int  group_count;
-int  i;
+int  i, rv;
 int  list_queue_option = 0;
 int  msg_action = 0;
 int  msg_action_arg = -1;
@@ -1639,8 +1639,20 @@ real_gid = getgid();
 
 if (real_uid == root_uid)
   {
-  setgid(real_gid);
-  setuid(real_uid);
+  rv = setgid(real_gid);
+  if (rv)
+    {
+    fprintf(stderr, "exim: setgid(%ld) failed: %s\n",
+        (long int)real_gid, strerror(errno));
+    exit(EXIT_FAILURE);
+    }
+  rv = setuid(real_uid);
+  if (rv)
+    {
+    fprintf(stderr, "exim: setuid(%ld) failed: %s\n",
+        (long int)real_uid, strerror(errno));
+    exit(EXIT_FAILURE);
+    }
   }
 
 /* If neither the original real uid nor the original euid was root, Exim is
@@ -3862,7 +3874,28 @@ if (!unprivileged &&                      /* originally had root AND */
 
 /* When we are retaining a privileged uid, we still change to the exim gid. */
 
-else setgid(exim_gid);
+else
+  {
+  int rv;
+  rv = setgid(exim_gid);
+  /* Impact of failure is that some stuff might end up with an incorrect group.
+  We track this for failures from root, since any attempt to change privilege
+  by root should succeed and failures should be examined.  For non-root,
+  there's no security risk.  For me, it's { exim -bV } on a just-built binary,
+  no need to complain then. */
+  if (rv == -1)
+    {
+    if (!unprivileged)
+      {
+      fprintf(stderr,
+          "exim: changing group failed: %s\n", strerror(errno));
+      exit(EXIT_FAILURE);
+      }
+    else
+      debug_printf("changing group to %ld failed: %s\n",
+          (long int)exim_gid, strerror(errno));
+    }
+  }
 
 /* Handle a request to scan a file for malware */
 if (malware_test_file)

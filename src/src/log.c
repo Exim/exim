@@ -361,17 +361,26 @@ are neither exim nor root, creation is not attempted. */
 
 else if (euid == root_uid)
   {
-  int status;
+  int status, rv;
   pid_t pid = fork();
 
   /* In the subprocess, change uid/gid and do the creation. Return 0 from the
-  subprocess on success. There doesn't seem much point in testing for setgid
-  and setuid errors. */
+  subprocess on success. If we don't check for setuid failures, then the file
+  can be created as root, so vulnerabilities which cause setuid to fail mean
+  that the Exim user can use symlinks to cause a file to be opened/created as
+  root.  We always open for append, so can't nuke existing content but it would
+  still be Rather Bad. */
 
   if (pid == 0)
     {
-    (void)setgid(exim_gid);
-    (void)setuid(exim_uid);
+    rv = setgid(exim_gid);
+    if (rv)
+      die(US"exim: setgid for log-file creation failed, aborting",
+	  US"Unexpected log failure, please try later");
+    rv = setuid(exim_uid);
+    if (rv)
+      die(US"exim: setuid for log-file creation failed, aborting",
+	  US"Unexpected log failure, please try later");
     _exit((create_log(buffer) < 0)? 1 : 0);
     }
 

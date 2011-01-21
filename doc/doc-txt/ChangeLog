@@ -32,6 +32,11 @@ PP/03 Report version information for many libraries, including
       version.h, now support a version extension string for distributors
       who patch heavily. Dynamic module ABI change.
 
+PP/04 CVE-2011-0017 - check return value of setuid/setgid. This is a
+      privilege escalation vulnerability whereby the Exim run-time user
+      can cause root to append content of the attacker's choosing to
+      arbitrary files.
+
 
 Exim version 4.73
 -----------------

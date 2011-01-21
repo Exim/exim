@@ -12,7 +12,12 @@ the documentation is updated, this file is reduced to a short list.
 Version 4.74
 ------------
 
- 1. Exim now supports loading some lookup types at run-time, using your
+ 1. SECURITY FIX: privilege escalation flaw fixed. On Linux (and only Linux)
+    the flaw permitted the Exim run-time user to cause root to append to
+    arbitrary files of the attacker's choosing, with the content based
+    on content supplied by the attacker.
+
+ 2. Exim now supports loading some lookup types at run-time, using your
     platform's dlopen() functionality.  This has limited platform support
     and the intention is not to support every variant, it's limited to
     dlopen().  This permits the main Exim binary to not be linked against
