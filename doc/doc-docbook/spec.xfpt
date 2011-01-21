@@ -48,7 +48,7 @@
 . /////////////////////////////////////////////////////////////////////////////
 
 .set previousversion "4.72"
-.set version "4.73"
+.set version "4.74"
 
 .set ACL "access control lists (ACLs)"
 .set I   "&nbsp;&nbsp;&nbsp;&nbsp;"

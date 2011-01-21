@@ -773,7 +773,6 @@ Option                       Type         Description
 ------------------------------------------------------------------------------
 
 ALT_CONFIG_PREFIX            optional     restricts location of -C files
-ALT_CONFIG_ROOT_ONLY         optional*    privileged -C needs root (not exim)
 APPENDFILE_MODE              optional*
 APPENDFILE_DIRECTORY_MODE    optional*
 APPENDFILE_LOCKFILE_MODE     optional*
@@ -788,6 +787,7 @@ BASE_62=62                   optional*    not normally changed for Unix
 BIN_DIRECTORY                mandatory    Exim binary directory
 CC                           system**     C compiler
 CFLAGS                       system**     flags for C compiler
+CFLAGS_DYNAMIC               system**     extra flags needed for .so modules
 CHGRP_COMMAND                system**     path to chgrp
 CHOWN_COMMAND                system**     path to chown
 COMPRESS_COMMAND             system       path to a compress command
@@ -860,6 +860,7 @@ LOOKUP_INCLUDE               lookup       include files for lookups
 LOOKUP_LDAP                  lookup       include ldap lookup
 LOOKUP_LIBS                  lookup       include libraries for lookups
 LOOKUP_LSEARCH               lookup       include all lsearch lookups
+LOOKUP_MODULE_DIR            optional*    where dynamic lookup modules live
 LOOKUP_MYSQL                 lookup       include mysql lookup
 LOOKUP_NIS                   lookup       include nis lookup
 LOOKUP_NISPLUS               lookup       include nisplus lookup
@@ -867,6 +868,8 @@ LOOKUP_ORACLE                lookup       include oracle lookup
 LOOKUP_PGSQL                 lookup       include pgsql lookup
 LOOKUP_TESTDB                lookup*
 LOOKUP_WHOSON                lookup       include whoson lookup
+LOOKUP_*_INCLUDE             optional*    include files for dynamic module
+LOOKUP_*_LIBS                optional*    libraries for dynamic module
 MAKE_SHELL                   optional*    shell to use for make
 MAX_FILTER_SIZE              optional*    max file size for filter files
 MAX_INCLUDE_SIZE             optional*    max file size for :include: files
@@ -910,7 +913,7 @@ SUPPORT_TRANSLATE_IP_ADDRESS optional*    support for address translation
 SYSLOG_LOG_PID               optional     add pid to syslog lines
 SYSLOG_LONG_LINES            optional     do not split long syslog lines
 SYSTEM_ALIASES_FILE          optional     defaults to /etc/aliases
-TCP_WRAPPERS_DAEMON_NAME     system*      daemon name used by tcpwrappers libraru
+TCP_WRAPPERS_DAEMON_NAME     system*      daemon name used by tcpwrappers library
 TIMEZONE_DEFAULT             optional     default for timezone option
 TLS_INCLUDE                  optional     path to include files for TLS
 TLS_LIBS                     optional     additional libraries for TLS
@@ -920,11 +923,13 @@ TRANSPORT_AUTOREPLY          driver       include autoreply transport
 TRANSPORT_LMTP               driver       include lmtp transport
 TRANSPORT_PIPE               driver       include pipe transport
 TRANSPORT_SMTP               driver       include smtp transport
+TRUSTED_CONFIG_LIST          optional     config files safe to retain privileges
 USE_DB                       system**     use native DB interface
 USE_GNUTLS                   optional     use GnuTLS instead of OpenSSL
 USE_READLINE                 optional     try to load libreadline for -be
 USE_TCP_WRAPPERS             system       link with tcpwrappers
 USE_TDB                      optional     use the tdb DB interface
+WHITELIST_D_MACROS           optional     -Dmacros safe to retain privileges with
 WITH_OLD_CLAMAV_STREAM       optional*    use ClamAV API from before ClamAV 0.95
 X11                          system**     X11 base directory
 X11_LD_LIB                   system**     X11 link library
