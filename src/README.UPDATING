@@ -27,6 +27,52 @@ there have been two big upheavals...
 The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
+
+Exim version 4.74
+-----------------
+
+ * No incompatible changes within Exim itself, but the integrated support for
+   dynamically loadable lookup modules has an ABI change from the modules
+   supported by some OS vendors through an unofficial patch. Don't try to
+   mix & match.
+
+
+Exim version 4.73
+-----------------
+
+ * The Exim run-time user can no longer be root; this was always
+   strongly discouraged, but is now prohibited both at build and
+   run-time.  If you need Exim to run routinely as root, you'll need to
+   patch the source and accept the risk.  Here be dragons.
+
+ * Exim will no longer accept a configuration file owned by the Exim
+   run-time user, unless that account is explicitly the value in
+   CONFIGURE_OWNER, which we discourage.  Exim now checks to ensure that
+   files are not writable by other accounts.
+
+ * The ALT_CONFIG_ROOT_ONLY build option is no longer optional and is forced
+   on; the Exim user can, by default, no longer use -C/-D and retain privilege.
+   Two new build options mitigate this.
+
+    * TRUSTED_CONFIG_LIST defines a file containing a whitelist of config
+      files that are trusted to be selected by the Exim user; one per line.
+      This is the recommended approach going forward.
+
+    * WHITELIST_D_MACROS defines a colon-separated list of macro names which
+      the Exim run-time user may safely pass without dropping privileges.
+      Because changes to this involve a recompile, this is not the recommended
+      approach but may ease transition.  The values of the macros, when
+      overriden, are constrained to match this regex: ^[A-Za-z0-9_/.-]*$
+
+ * The system_filter_user option now defaults to the Exim run-time user,
+   rather than root.  You can still set it explicitly to root and this
+   can be done with prior versions too, letting you roll versions
+   without needing to change this configuration option.
+
+ * ClamAV must be at least version 0.95 unless WITH_OLD_CLAMAV_STREAM is
+   defined at build time.
+
+
 Exim version 4.70
 -----------------
 
