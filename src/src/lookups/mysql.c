@@ -413,6 +413,27 @@ while ((c = *s++) != 0)
 return quoted;
 }
 
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+mysql_version_report(FILE *f)
+{
+fprintf(f, "Library version: MySQL: Compile: %s [%s]\n"
+           "                        Runtime: %s\n",
+        MYSQL_SERVER_VERSION, MYSQL_COMPILATION_COMMENT,
+        mysql_get_client_info());
+#ifdef DYNLOOKUP
+fprintf(f, "                        Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
 /* These are the lookup_info blocks for this driver */
 
 static lookup_info mysql_lookup_info = {
@@ -423,7 +444,8 @@ static lookup_info mysql_lookup_info = {
   mysql_find,                    /* find function */
   NULL,                          /* no close function */
   mysql_tidy,                    /* tidy function */
-  mysql_quote                    /* quoting function */
+  mysql_quote,                   /* quoting function */
+  mysql_version_report           /* version reporting */
 };
 
 #ifdef DYNLOOKUP

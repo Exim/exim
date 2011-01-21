@@ -259,6 +259,24 @@ while (*s != 0)
 return quoted;
 }
 
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+nisplus_version_report(FILE *f)
+{
+#ifdef DYNLOOKUP
+fprintf(f, "Library version: NIS+: Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
+
 static lookup_info _lookup_info = {
   US"nisplus",                   /* lookup name */
   lookup_querystyle,             /* query-style lookup */
@@ -267,7 +285,8 @@ static lookup_info _lookup_info = {
   nisplus_find,                  /* find function */
   NULL,                          /* no close function */
   NULL,                          /* no tidy function */
-  nisplus_quote                  /* quoting function */
+  nisplus_quote,                 /* quoting function */
+  nisplus_version_report         /* version reporting */
 };
 
 #ifdef DYNLOOKUP

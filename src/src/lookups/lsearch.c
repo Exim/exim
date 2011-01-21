@@ -410,6 +410,25 @@ lsearch_close(void *handle)
 (void)fclose((FILE *)handle);
 }
 
+
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+lsearch_version_report(FILE *f)
+{
+#ifdef DYNLOOKUP
+fprintf(f, "Library version: lsearch: Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
+
 static lookup_info iplsearch_lookup_info = {
   US"iplsearch",                 /* lookup name */
   lookup_absfile,                /* uses absolute file name */
@@ -418,7 +437,8 @@ static lookup_info iplsearch_lookup_info = {
   iplsearch_find,                /* find function */
   lsearch_close,                 /* close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  NULL                           /* no version reporting (redundant) */
 };
 
 static lookup_info lsearch_lookup_info = {
@@ -429,7 +449,8 @@ static lookup_info lsearch_lookup_info = {
   lsearch_find,                  /* find function */
   lsearch_close,                 /* close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  lsearch_version_report         /* version reporting */
 };
 
 static lookup_info nwildlsearch_lookup_info = {
@@ -440,7 +461,8 @@ static lookup_info nwildlsearch_lookup_info = {
   nwildlsearch_find,             /* find function */
   lsearch_close,                 /* close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  NULL                           /* no version reporting (redundant) */
 };
 
 static lookup_info wildlsearch_lookup_info = {
@@ -451,7 +473,8 @@ static lookup_info wildlsearch_lookup_info = {
   wildlsearch_find,              /* find function */
   lsearch_close,                 /* close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  NULL                           /* no version reporting (redundant) */
 };
 
 #ifdef DYNLOOKUP

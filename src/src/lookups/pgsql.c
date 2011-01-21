@@ -486,6 +486,30 @@ while ((c = *s++) != 0)
 return quoted;
 }
 
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+pgsql_version_report(FILE *f)
+{
+#ifdef DYNLOOKUP
+fprintf(f, "Library version: PostgreSQL: Exim version %s\n", EXIM_VERSION_STR);
+#endif
+
+/* Version reporting: there appears to be no available information about
+the client library in libpq-fe.h; once you have a connection object, you
+can access the server version and the chosen protocol version, but those
+aren't really what we want.  It might make sense to debug_printf those
+when the connection is established though? */
+}
+
+
 static lookup_info _lookup_info = {
   US"pgsql",                     /* lookup name */
   lookup_querystyle,             /* query-style lookup */
@@ -494,7 +518,8 @@ static lookup_info _lookup_info = {
   pgsql_find,                    /* find function */
   NULL,                          /* no close function */
   pgsql_tidy,                    /* tidy function */
-  pgsql_quote                    /* quoting function */
+  pgsql_quote,                   /* quoting function */
+  pgsql_version_report           /* version reporting */
 };
 
 #ifdef DYNLOOKUP

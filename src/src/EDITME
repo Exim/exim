@@ -251,6 +251,10 @@ TRANSPORT_SMTP=yes
 #------------------------------------------------------------------------------
 # See below for dynamic lookup modules.
 # LOOKUP_MODULE_DIR=/usr/lib/exim/lookups/
+# If not using package management but using this anyway, then think about how
+# you perform upgrades and revert them. You should consider the benefit of
+# embedding the Exim version number into LOOKUP_MODULE_DIR, so that you can
+# maintain two concurrent sets of modules.
 
 # To build a module dynamically, you'll need to define CFLAGS_DYNAMIC for
 # your platform.  Eg:

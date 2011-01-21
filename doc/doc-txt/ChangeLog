@@ -27,6 +27,11 @@ PP/02 Let /dev/null have normal permissions.
       permissions on /dev/null.  Exempt it from some checks.
       Reported by Andreas M. Kirchwitz.
 
+PP/03 Report version information for many libraries, including
+      Exim version information for dynamically loaded libraries.  Created
+      version.h, now support a version extension string for distributors
+      who patch heavily. Dynamic module ABI change.
+
 
 Exim version 4.73
 -----------------

@@ -21,6 +21,8 @@ all described in src/EDITME. */
 lookup_info **lookup_list;
 int lookup_list_count = 0;
 
+static int lookup_list_init_done = 0;
+
 /* Table of information about all possible authentication mechamisms. All
 entries are always present if any mechanism is declared, but the functions are
 set to NULL for those that are not compiled into the binary. */
@@ -397,6 +399,10 @@ void init_lookup_list(void)
   int countmodules = 0;
   int moduleerrors = 0;
   struct lookupmodulestr *p;
+
+  if (lookup_list_init_done)
+    return;
+  lookup_list_init_done = 1;
 
 #if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
 extern lookup_module_info cdb_lookup_module_info;

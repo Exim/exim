@@ -429,6 +429,25 @@ yield[ptr] = 0;
 return OK;
 }
 
+
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+dnsdb_version_report(FILE *f)
+{
+#ifdef DYNLOOKUP
+fprintf(f, "Library version: DNSDB: Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
+
 static lookup_info _lookup_info = {
   US"dnsdb",                     /* lookup name */
   lookup_querystyle,             /* query style */
@@ -437,7 +456,8 @@ static lookup_info _lookup_info = {
   dnsdb_find,                    /* find function */
   NULL,                          /* no close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  dnsdb_version_report           /* version reporting */
 };
 
 #ifdef DYNLOOKUP

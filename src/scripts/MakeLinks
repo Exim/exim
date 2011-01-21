@@ -182,6 +182,7 @@ ln -s ../src/osfunctions.h     osfunctions.h
 ln -s ../src/store.h           store.h
 ln -s ../src/structs.h         structs.h
 ln -s ../src/lookupapi.h       lookupapi.h
+ln -s ../src/version.h         version.h
 
 ln -s ../src/acl.c             acl.c
 ln -s ../src/buildconfig.c     buildconfig.c

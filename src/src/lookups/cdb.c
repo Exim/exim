@@ -435,6 +435,25 @@ struct cdb_state * cdbp = handle;
  (void)close(cdbp->fileno);
 }
 
+
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+cdb_version_report(FILE *f)
+{
+#ifdef DYNLOOKUP
+fprintf(f, "Library version: CDB: Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
+
 lookup_info cdb_lookup_info = {
   US"cdb",                       /* lookup name */
   lookup_absfile,                /* uses absolute file name */
@@ -443,7 +462,8 @@ lookup_info cdb_lookup_info = {
   cdb_find,                      /* find function */
   cdb_close,                     /* close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  cdb_version_report             /* version reporting */
 };
 
 #ifdef DYNLOOKUP

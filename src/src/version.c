@@ -11,8 +11,7 @@
 
 #include "exim.h"
 
-
-#define THIS_VERSION  "4.73"
+#include "version.h"
 
 
 /* The header file cnumber.h contains a single line containing the
@@ -41,7 +40,7 @@ sprintf() call is the gcc -Wall warns about a \0 in a format string. */
 version_cnumber = cnumber_buffer;
 version_cnumber_format = US"%d\0<<eximcnumber>>";
 sprintf(CS version_cnumber, CS version_cnumber_format, cnumber);
-version_string = US THIS_VERSION "\0<<eximversion>>";
+version_string = US EXIM_VERSION_STR "\0<<eximversion>>";
 
 Ustrcpy(today, __DATE__);
 if (today[4] == ' ') today[4] = '0';

@@ -74,6 +74,24 @@ static int spf_find(void *handle, uschar *filename, uschar *keystring, int key_l
   return OK;
 }
 
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+spf_version_report(FILE *f)
+{
+#ifdef DYNLOOKUP
+fprintf(f, "Library version: SPF: Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
+
 static lookup_info _lookup_info = {
   US"spf",                       /* lookup name */
   0,                             /* not absfile, not query style */
@@ -82,7 +100,8 @@ static lookup_info _lookup_info = {
   spf_find,                      /* find function */
   spf_close,                     /* close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  spf_version_report             /* version reporting */
 };
 
 #ifdef DYNLOOKUP

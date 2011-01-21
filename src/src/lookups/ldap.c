@@ -1456,6 +1456,25 @@ else
 return quoted;
 }
 
+
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+ldap_version_report(FILE *f)
+{
+#ifdef DYNLOOKUP
+fprintf(f, "Library version: LDAP: Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
+
 static lookup_info ldap_lookup_info = {
   US"ldap",                      /* lookup name */
   lookup_querystyle,             /* query-style lookup */
@@ -1464,7 +1483,8 @@ static lookup_info ldap_lookup_info = {
   eldap_find,                    /* find function */
   NULL,                          /* no close function */
   eldap_tidy,                    /* tidy function */
-  eldap_quote                    /* quoting function */
+  eldap_quote,                   /* quoting function */
+  ldap_version_report            /* version reporting */
 };
 
 static lookup_info ldapdn_lookup_info = {
@@ -1475,7 +1495,8 @@ static lookup_info ldapdn_lookup_info = {
   eldapdn_find,                  /* find function */
   NULL,                          /* no close function */
   eldap_tidy,       /* sic */    /* tidy function */
-  eldap_quote       /* sic */    /* quoting function */
+  eldap_quote,      /* sic */    /* quoting function */
+  NULL                           /* no version reporting (redundant) */
 };
 
 static lookup_info ldapm_lookup_info = {
@@ -1486,7 +1507,8 @@ static lookup_info ldapm_lookup_info = {
   eldapm_find,                   /* find function */
   NULL,                          /* no close function */
   eldap_tidy,       /* sic */    /* tidy function */
-  eldap_quote       /* sic */    /* quoting function */
+  eldap_quote,      /* sic */    /* quoting function */
+  NULL                           /* no version reporting (redundant) */
 };
 
 #ifdef DYNLOOKUP

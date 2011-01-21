@@ -65,6 +65,24 @@ if (Ustrcmp(query, "nocache") == 0) *do_cache = FALSE;
 return OK;
 }
 
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+testdb_version_report(FILE *f)
+{
+#ifdef DYNLOOKUP
+fprintf(f, "Library version: TestDB: Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
+
 static lookup_info _lookup_info = {
   US"testdb",                    /* lookup name */
   lookup_querystyle,             /* query-style lookup */
@@ -73,7 +91,8 @@ static lookup_info _lookup_info = {
   testdb_find,                   /* find function */
   NULL,                          /* no close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  testdb_version_report          /* version reporting */
 };
 
 #ifdef DYNLOOKUP

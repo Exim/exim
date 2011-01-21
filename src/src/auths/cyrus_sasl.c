@@ -346,6 +346,21 @@ return 0;  /* Stop compiler complaints */
 }
 
 /*************************************************
+*                Diagnostic API                  *
+*************************************************/
+
+void
+auth_cyrus_sasl_version_report(FILE *f)
+{
+  const char *implementation, *version;
+  sasl_version_info(&implementation, &version, NULL, NULL, NULL, NULL);
+  fprintf(f, "Library version: Cyrus SASL: Compile: %d.%d.%d\n"
+             "                             Runtime: %s [%s]\n",
+          SASL_VERSION_MAJOR, SASL_VERSION_MINOR, SASL_VERSION_STEP,
+          version, implementation);
+}
+
+/*************************************************
 *              Client entry point                *
 *************************************************/
 

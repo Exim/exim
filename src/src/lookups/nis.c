@@ -86,6 +86,25 @@ if ((rc = yp_match(CS handle, CS filename, CS keystring, length + 1,
 return (rc == YPERR_KEY || rc == YPERR_MAP)? FAIL : DEFER;
 }
 
+
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+nis_version_report(FILE *f)
+{
+#ifdef DYNLOOKUP
+fprintf(f, "Library version: NIS: Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
+
 static lookup_info nis_lookup_info = {
   US"nis",                       /* lookup name */
   0,                             /* not abs file, not query style*/
@@ -94,7 +113,8 @@ static lookup_info nis_lookup_info = {
   nis_find,                      /* find function */
   NULL,                          /* no close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  nis_version_report             /* version reporting */
 };
 
 static lookup_info nis0_lookup_info = {
@@ -105,7 +125,8 @@ static lookup_info nis0_lookup_info = {
   nis0_find,                     /* find function */
   NULL,                          /* no close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  NULL                           /* no version reporting (redundant) */
 };
 
 #ifdef DYNLOOKUP

@@ -119,6 +119,24 @@ static dsearch_close(void *handle)
 handle = handle;   /* Avoid compiler warning */
 }
 
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+dsearch_version_report(FILE *f)
+{
+#ifdef DYNLOOKUP
+fprintf(f, "Library version: dsearch: Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
+
 static lookup_info _lookup_info = {
   US"dsearch",                   /* lookup name */
   lookup_absfile,                /* uses absolute file name */
@@ -127,7 +145,8 @@ static lookup_info _lookup_info = {
   dsearch_find,                  /* find function */
   dsearch_close,                 /* close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  dsearch_version_report         /* version reporting */
 };
 
 #ifdef DYNLOOKUP

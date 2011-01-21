@@ -43,11 +43,14 @@ typedef struct lookup_info {
   uschar *(*quote)(               /* quoting function */
     uschar *,                     /* string to quote */
     uschar *);                    /* additional data from quote name */
+  void (*version_report)(         /* diagnostic function */
+    FILE *);                      /* fh to write to */
 } lookup_info;
 
 /* This magic number is used by the following lookup_module_info structure
-   for checking API compatibility. It's equivalent to the string"LMM1" */
-#define LOOKUP_MODULE_INFO_MAGIC 0x4c4d4d31
+   for checking API compatibility. It's equivalent to the string"LMM2" */
+#define LOOKUP_MODULE_INFO_MAGIC 0x4c4d4d32
+/* Version 2 adds: version_report */
 
 typedef struct lookup_module_info {
   uint magic;

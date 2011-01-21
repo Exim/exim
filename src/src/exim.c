@@ -14,6 +14,8 @@ Also a few functions that don't naturally fit elsewhere. */
 
 #include "exim.h"
 
+extern void init_lookup_list(void);
+
 
 
 /*************************************************
@@ -914,6 +916,33 @@ come. */
 #ifdef SUPPORT_TLS
 tls_version_report(f);
 #endif
+
+/* Everything else is details which are only worth reporting when debugging.
+Perhaps the tls_version_report should move into this too. */
+DEBUG(D_any) do {
+
+  int i;
+
+#ifdef AUTH_CYRUS_SASL
+  auth_cyrus_sasl_version_report(f);
+#endif
+
+  fprintf(f, "Library version: PCRE: Compile: %d.%d%s\n"
+             "                       Runtime: %s\n",
+          PCRE_MAJOR, PCRE_MINOR,
+          /* PRE_PRERELEASE is either defined and empty or a string.
+           * This should work: */
+          PCRE_PRERELEASE "",
+          pcre_version());
+
+  init_lookup_list();
+  for (i = 0; i < lookup_list_count; i++)
+    {
+    if (lookup_list[i]->version_report)
+      lookup_list[i]->version_report(f);
+    }
+
+} while (0);
 }
 
 
@@ -3143,7 +3172,8 @@ if (debug_selector != 0)
     debug_printf("Exim version %s uid=%ld gid=%ld pid=%d D=%x\n",
       version_string, (long int)real_uid, (long int)real_gid, (int)getpid(),
       debug_selector);
-    show_whats_supported(stderr);
+    if (!version_printed)
+      show_whats_supported(stderr);
     }
   }
 
@@ -3510,8 +3540,11 @@ if (opt_perl_at_start && opt_perl_startup != NULL)
   }
 #endif /* EXIM_PERL */
 
-/* Initialise lookup_list */
-extern void init_lookup_list(void);
+/* Initialise lookup_list
+If debugging, already called above via version reporting.
+This does mean that debugging causes the list to be initialised while root.
+This *should* be harmless -- all modules are loaded from a fixed dir and
+it's code that would, if not a module, be part of Exim already. */
 init_lookup_list();
 
 /* Log the arguments of the call if the configuration file said so. This is

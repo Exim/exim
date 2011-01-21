@@ -62,6 +62,25 @@ switch (wso_query(query, CS buffer, sizeof(buffer)))
   }
 }
 
+
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+whoson_version_report(FILE *f)
+{
+fprintf(f, "Library version: Whoson: Runtime: %s\n", wso_version());
+#ifdef DYNLOOKUP
+fprintf(f, "                         Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
 static lookup_info _lookup_info = {
   US"whoson",                    /* lookup name */
   lookup_querystyle,             /* query-style lookup */
@@ -70,7 +89,8 @@ static lookup_info _lookup_info = {
   whoson_find,                   /* find function */
   NULL,                          /* no close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  whoson_version_report          /* version reporting */
 };
 
 #ifdef DYNLOOKUP

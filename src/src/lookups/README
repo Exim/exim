@@ -5,7 +5,10 @@ LOOKUPS
 
 Each lookup type is implemented by 6 functions, xxx_open(), xxx_check(),
 xxx_find(), xxx_close(), xxx_tidy(), and xxx_quote(), where xxx is the name of
-the lookup type (e.g. lsearch, dbm, or whatever).
+the lookup type (e.g. lsearch, dbm, or whatever). In addition, there is
+a version reporting function used to trace compile-vs-runtime conflicts and
+to help administrators ensure that the modules from the correct build are
+in use by the main binary.
 
 The xxx_check(), xxx_close(), xxx_tidy(), and xxx_quote() functions need not
 exist. There is a table in drtables.c which links the lookup names to the
@@ -157,5 +160,15 @@ the lookup, and return a pointer to the revised string. If quoting is not
 needed, it can return its single argument, which is a uschar *. This function
 does NOT use the POOL_SEARCH store, because it's usually never called from any
 lookup code.
+
+xxx_report_version()
+--------------------
+
+This is called to report diagnostic information to a file stream.
+Typically it would report both compile-time and run-time version information.
+The arguments are:
+
+  FILE *stream    where to fprintf() the data to
+
 
 ****

@@ -546,6 +546,24 @@ static uschar *ibase_quote(uschar * s, uschar * opt)
     return quoted;
 }
 
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+ibase_version_report(FILE *f)
+{
+#ifdef DYNLOOKUP
+fprintf(f, "Library version: ibase: Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
+
 static lookup_info _lookup_info = {
   US"ibase",                     /* lookup name */
   lookup_querystyle,             /* query-style lookup */
@@ -554,7 +572,8 @@ static lookup_info _lookup_info = {
   ibase_find,                    /* find function */
   NULL,                          /* no close function */
   ibase_tidy,                    /* tidy function */
-  ibase_quote                    /* quoting function */
+  ibase_quote,                   /* quoting function */
+  ibase_version_report           /* version reporting */
 };
 
 #ifdef DYNLOOKUP

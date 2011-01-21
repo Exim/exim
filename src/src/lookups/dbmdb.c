@@ -142,6 +142,25 @@ static dbmdb_close(void *handle)
 EXIM_DBCLOSE((EXIM_DB *)handle);
 }
 
+
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+dbm_version_report(FILE *f)
+{
+#ifdef DYNLOOKUP
+fprintf(f, "Library version: DBM: Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
+
 lookup_info dbm_lookup_info = {
   US"dbm",                       /* lookup name */
   lookup_absfile,                /* uses absolute file name */
@@ -150,7 +169,8 @@ lookup_info dbm_lookup_info = {
   dbmdb_find,                    /* find function */
   dbmdb_close,                   /* close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  dbm_version_report             /* version reporting */
 };
 
 lookup_info dbmz_lookup_info = {
@@ -161,7 +181,8 @@ lookup_info dbmz_lookup_info = {
   dbmnz_find,                    /* find function */
   dbmdb_close,     /* sic */     /* close function */
   NULL,                          /* no tidy function */
-  NULL                           /* no quoting function */
+  NULL,                          /* no quoting function */
+  NULL                           /* no version reporting (redundant) */
 };
 
 #ifdef DYNLOOKUP

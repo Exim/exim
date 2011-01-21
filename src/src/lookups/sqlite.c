@@ -155,6 +155,27 @@ while ((c = *s++) != 0)
 return quoted;
 }
 
+
+
+/*************************************************
+*         Version reporting entry point          *
+*************************************************/
+
+/* See local README for interface description. */
+
+#include "../version.h"
+
+void
+sqlite_version_report(FILE *f)
+{
+fprintf(f, "Library version: SQLite: Compile: %s\n"
+           "                         Runtime: %s\n",
+        SQLITE_VERSION, sqlite3_libversion());
+#ifdef DYNLOOKUP
+fprintf(f, "                         Exim version %s\n", EXIM_VERSION_STR);
+#endif
+}
+
 static lookup_info _lookup_info = {
   US"sqlite",                    /* lookup name */
   lookup_absfilequery,           /* query-style lookup, starts with file name */
@@ -163,7 +184,8 @@ static lookup_info _lookup_info = {
   sqlite_find,                   /* find function */
   sqlite_close,                  /* close function */
   NULL,                          /* no tidy function */
-  sqlite_quote                   /* quoting function */
+  sqlite_quote,                  /* quoting function */
+  sqlite_version_report          /* version reporting */
 };
 
 #ifdef DYNLOOKUP
