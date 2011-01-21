@@ -3885,14 +3885,14 @@ else
   no need to complain then. */
   if (rv == -1)
     {
-    if (!unprivileged)
+    if (!(unprivileged || removed_privilege))
       {
       fprintf(stderr,
           "exim: changing group failed: %s\n", strerror(errno));
       exit(EXIT_FAILURE);
       }
     else
-      debug_printf("changing group to %ld failed: %s\n",
+      DEBUG(D_any) debug_printf("changing group to %ld failed: %s\n",
           (long int)exim_gid, strerror(errno));
     }
   }

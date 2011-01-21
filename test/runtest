@@ -2003,7 +2003,7 @@ if ($parm_exim eq "")
 #          Find what is in the binary            #
 ##################################################
 
-open(EXIMINFO, "$parm_exim -C confs/0000 -DDIR=$parm_cwd " .
+open(EXIMINFO, "$parm_exim -C $parm_cwd/confs/0000 -DDIR=$parm_cwd " .
                "-bP exim_user exim_group|") ||
   die "** Cannot run $parm_exim: $!\n";
 while(<EXIMINFO>)
@@ -2025,7 +2025,7 @@ if (defined $parm_eximgroup)
     else { $parm_exim_gid = getgrnam($parm_eximgroup); }
   }
 
-open(EXIMINFO, "$parm_exim -bV -C confs/0000 -DDIR=$parm_cwd |") ||
+open(EXIMINFO, "$parm_exim -bV -C $parm_cwd/confs/0000 -DDIR=$parm_cwd |") ||
   die "** Cannot run $parm_exim: $!\n";
 
 print "-" x 78, "\n";
@@ -2052,7 +2052,7 @@ while (<EXIMINFO>)
     %parm_support = @temp;
     }
 
-  elsif (/^Lookups: (.*)/)
+  elsif (/^Lookups \(built-in\): (.*)/)
     {
     print;
     @temp = split /(\s+)/, $1;
