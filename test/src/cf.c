@@ -31,6 +31,11 @@ Translated back into C, March 1990! */
 #ifdef __STDC__
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
+#endif
+
+#ifndef intptr_t
+# define intptr_t long long int
 #endif
 
 /* ----- parameters ----- */
@@ -354,7 +359,7 @@ if (lastline_one != NULL) lastline_one->next = nextline;
 lastline_one = nextline;
 pline_one = nextline;
 
-bufnext_one = (char *) (((int)bufnext_one+3) & (-4));
+bufnext_one = (char *) (((intptr_t)bufnext_one+ sizeof (intptr_t) - 1)  & (-(sizeof (intptr_t))));
 }
 
 
@@ -403,7 +408,7 @@ if (lastline_two != NULL) lastline_two->next = nextline;
 lastline_two = nextline;
 pline_two = nextline;
 
-bufnext_two = (char *) (((int)bufnext_two+3) & (-4));
+bufnext_two = (char *) (((intptr_t)bufnext_two+ sizeof (intptr_t) - 1)  & (-(sizeof (intptr_t))));
 }
 
 
