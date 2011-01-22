@@ -1101,6 +1101,9 @@ if (mbox_file == NULL) {
          "acl_smtp_mime: error while creating mbox spool file, message temporarily rejected.");
   Uunlink(spool_name);
   unspool_mbox();
+#ifdef EXPERIMENTAL_DCC
+  dcc_ok = 0;
+#endif
   smtp_respond(US"451", 3, TRUE, US"temporary local problem");
   message_id[0] = 0;            /* Indicate no message accepted */
   *smtp_reply_ptr = US"";       /* Indicate reply already sent */
@@ -1180,6 +1183,9 @@ else if (rc != OK)
   {
   Uunlink(spool_name);
   unspool_mbox();
+#ifdef EXPERIMENTAL_DCC
+  dcc_ok = 0;
+#endif
   if (smtp_handle_acl_fail(ACL_WHERE_MIME, rc, user_msg, log_msg) != 0)
     *smtp_yield_ptr = FALSE;    /* No more messsages after dropped connection */
   *smtp_reply_ptr = US"";       /* Indicate reply already sent */
@@ -3092,6 +3098,9 @@ else
 #ifdef WITH_CONTENT_SCAN
         unspool_mbox();
 #endif
+#ifdef EXPERIMENTAL_DCC
+	dcc_ok = 0;
+#endif
         if (smtp_handle_acl_fail(ACL_WHERE_DATA, rc, user_msg, log_msg) != 0)
           smtp_yield = FALSE;    /* No more messsages after dropped connection */
         smtp_reply = US"";       /* Indicate reply already sent */
@@ -3130,6 +3139,9 @@ else
         Uunlink(spool_name);
 #ifdef WITH_CONTENT_SCAN
         unspool_mbox();
+#endif
+#ifdef EXPERIMENTAL_DCC
+	dcc_ok = 0;
 #endif
         /* The ACL can specify where rejections are to be logged, possibly
         nowhere. The default is main and reject logs. */

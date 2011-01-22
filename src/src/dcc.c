@@ -512,7 +512,8 @@ int dcc_process(uschar **listptr) {
     debug_printf("Before returning to exim main process:\nreturn_text = %s - retval = %d\ndcc_result = %s\n", dcc_return_text, retval, dcc_result);
 
   (void)fclose(data_file);
-  return retval;
+  dcc_rc = retval;
+  return dcc_rc;
 }
 
 #endif
