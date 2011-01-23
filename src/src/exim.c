@@ -3338,9 +3338,13 @@ if ((                                            /* EITHER */
   and should be used for any logging information because attempts to write
   to the log will usually fail. To arrange this, we unset really_exim. However,
   if no stderr is available there is no point - we might as well have a go
-  at the log (if it fails, syslog will be written). */
+  at the log (if it fails, syslog will be written).
 
-  if (log_stderr != NULL) really_exim = FALSE;
+  Note that if the invoker is Exim, the logs remain available. Messing with
+  this causes unlogged successful deliveries.  */
+
+  if ((log_stderr != NULL) && (real_uid != exim_uid))
+    really_exim = FALSE;
   }
 
 /* Privilege is to be retained for the moment. It may be dropped later,
