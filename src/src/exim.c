@@ -942,6 +942,17 @@ DEBUG(D_any) do {
       lookup_list[i]->version_report(f);
     }
 
+#ifdef WHITELIST_D_MACROS
+  fprintf(f, "WHITELIST_D_MACROS: \"%s\"\n", WHITELIST_D_MACROS);
+#else
+  fprintf(f, "WHITELIST_D_MACROS unset\n");
+#endif
+#ifdef TRUSTED_CONFIG_LIST
+  fprintf(f, "TRUSTED_CONFIG_LIST: \"%s\"\n", TRUSTED_CONFIG_LIST);
+#else
+  fprintf(f, "TRUSTED_CONFIG_LIST unset\n");
+#endif
+
 } while (0);
 }
 
