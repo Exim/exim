@@ -37,6 +37,9 @@ PP/04 CVE-2011-0017 - check return value of setuid/setgid. This is a
       can cause root to append content of the attacker's choosing to
       arbitrary files.
 
+PP/05 Bugzilla 1041: merged DCC maintainer's fixes for return code.
+      (Wolfgang Breyha)
+
 
 Exim version 4.73
 -----------------
