@@ -492,11 +492,11 @@ extern lookup_module_info whoson_lookup_module_info;
 #ifdef LOOKUP_MODULE_DIR
   dd = opendir(LOOKUP_MODULE_DIR);
   if (dd == NULL) {
-    DEBUG(5) debug_printf("Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
+    DEBUG(D_lookup) debug_printf("Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
     log_write(0, LOG_MAIN, "Couldn't open %s: not loading lookup modules\n", LOOKUP_MODULE_DIR);
   }
   else {
-    DEBUG(9) debug_printf("Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
+    DEBUG(D_lookup) debug_printf("Loading lookup modules from %s\n", LOOKUP_MODULE_DIR);
     while ((ent = readdir(dd)) != NULL) {
       char *name = ent->d_name;
       int len = (int)strlen(name);
@@ -548,19 +548,19 @@ extern lookup_module_info whoson_lookup_module_info;
         }
 
         addlookupmodule(dl, info);
-        DEBUG(9) debug_printf("Loaded \"%s\" (%d lookup types)\n", name, info->lookupcount);
+        DEBUG(D_lookup) debug_printf("Loaded \"%s\" (%d lookup types)\n", name, info->lookupcount);
         countmodules++;
       }
     }
     closedir(dd);
   }
 
-  DEBUG(9) debug_printf("Loaded %d lookup modules\n", countmodules);
+  DEBUG(D_lookup) debug_printf("Loaded %d lookup modules\n", countmodules);
 #endif
 
   store_free((void*)regex_islookupmod);
 
-  DEBUG(4) debug_printf("Total %d lookups\n", lookup_list_count);
+  DEBUG(D_lookup) debug_printf("Total %d lookups\n", lookup_list_count);
 
   lookup_list = store_malloc(sizeof(lookup_info *) * lookup_list_count);
   memset(lookup_list, 0, sizeof(lookup_info *) * lookup_list_count);
