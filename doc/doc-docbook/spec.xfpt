@@ -366,6 +366,7 @@ contributors.
 
 .section "Exim documentation" "SECID1"
 . Keep this example change bar when updating the documentation!
+
 .new
 .cindex "documentation"
 This edition of the Exim specification applies to version &version; of Exim.
@@ -1540,6 +1541,7 @@ is on a file system where the user is over quota. Exim can be configured to
 impose its own quotas on local mailboxes; where system quotas are set they will
 also apply.
 
+.new
 If a host is unreachable for a period of time, a number of messages may be
 waiting for it by the time it recovers, and sending them in a single SMTP
 connection is clearly beneficial. Whenever a delivery to a remote host is
@@ -1550,7 +1552,7 @@ SMTP delivery has happened, it looks to see if any other messages are waiting
 for the same host. If any are found, they are sent over the same SMTP
 connection, subject to a configuration limit as to the maximum number in any
 one connection.
-
+.wen
 
 
 
@@ -1892,8 +1894,9 @@ given in chapter &<<CHAPTLS>>&.
 
 
 
-.section "Use of tcpwrappers" "SECID27"
 .new
+.section "Use of tcpwrappers" "SECID27"
+
 .cindex "tcpwrappers, building Exim to support"
 .cindex "USE_TCP_WRAPPERS"
 .cindex "TCP_WRAPPERS_DAEMON_NAME"
@@ -1946,6 +1949,7 @@ support has not been tested for some time.
 
 
 
+.new
 .section "Dynamically loaded lookup module support" "SECTdynamicmodules"
 .cindex "lookup modules"
 .cindex "dynamic modules"
@@ -1974,7 +1978,7 @@ LOOKUP_LSEARCH=yes
 LOOKUP_SQLITE=2
 LOOKUP_MYSQL=2
 .endd
-
+.wen
 
 .section "The building process" "SECID29"
 .cindex "build directory"
@@ -3279,6 +3283,7 @@ whose behaviour depends on the contents of an incoming message, you cannot test
 those conditions using &%-bt%&. The &%-N%& option provides a possible way of
 doing such tests.
 
+.new
 .vitem &%-bV%&
 .oindex "&%-bV%&"
 .cindex "version number of Exim"
@@ -3287,7 +3292,7 @@ number, and compilation date of the &'exim'& binary to the standard output.
 It also lists the DBM library that is being used, the optional modules (such as
 specific lookup types), the drivers that are included in the binary, and the
 name of the run time configuration file that is in use.
-
+.wen
 As part of its operation, &%-bV%& causes Exim to read and syntax check its
 configuration file. However, this is a static check only. It cannot check
 values that are to be expanded. For example, although a misspelt ACL verb is
@@ -3353,7 +3358,6 @@ This option acts like &%-bv%&, but verifies the address as a sender rather
 than a recipient address. This affects any rewriting and qualification that
 might happen.
 
-.new
 .vitem &%-C%&&~<&'filelist'&>
 .oindex "&%-C%&"
 .cindex "configuration file" "alternate"
@@ -3366,6 +3370,7 @@ name, but it can be a colon-separated list of names. In this case, the first
 file that exists is used. Failure to open an existing file stops Exim from
 proceeding any further along the list, and an error is generated.
 
+.new
 When this option is used by a caller other than root, and the list is different
 from the compiled-in list, Exim gives up its root privilege immediately, and
 runs with the real and effective uid and gid set to those of the caller.
@@ -3383,7 +3388,7 @@ running as the Exim user, so when it re-executes to regain privilege for the
 delivery, the use of &%-C%& causes privilege to be lost. However, root can
 test reception and delivery using two separate commands (one to put a message
 on the queue, using &%-odq%&, and another to do the delivery, using &%-M%&).
-
+.wen
 If ALT_CONFIG_PREFIX is defined &_in Local/Makefile_&, it specifies a
 prefix string with which any file named in a &%-C%& command line option
 must start. In addition, the file name must not contain the sequence &`/../`&.
@@ -3402,9 +3407,8 @@ syntactically correct, but cannot be used for test deliveries, unless the
 caller is privileged, or unless it is an exotic configuration that does not
 require privilege. No check is made on the owner or group of the files
 specified by this option.
-.wen
 
-.new
+
 .vitem &%-D%&<&'macro'&>=<&'value'&>
 .oindex "&%-D%&"
 .cindex "macro" "setting on command line"
@@ -3414,6 +3418,7 @@ unprivileged caller, it causes Exim to give up its root privilege.
 If DISABLE_D_OPTION is defined in &_Local/Makefile_&, the use of &%-D%& is
 completely disabled, and its use causes an immediate error exit.
 
+.new
 If WHITELIST_D_MACROS is defined in &_Local/Makefile_& then it should be a
 colon-separated list of macros which are considered safe and, if &%-D%& only
 supplies macros from this list, and the values are acceptable, then Exim will
@@ -3421,7 +3426,7 @@ not give up root privilege if the caller is root, the Exim run-time user, or
 the CONFIGURE_OWNER, if set.  This is a transition mechanism and is expected
 to be removed in the future.  Acceptable values for the macros satisfy the
 regexp: &`^[A-Za-z0-9_/.-]*$`&
-
+.wen
 The entire option (including equals sign if present) must all be within one
 command line item. &%-D%& can be used to set the value of a macro to the empty
 string, in which case the equals sign is optional. These two commands are
@@ -3437,7 +3442,7 @@ example:
 exim '-D ABC = something' ...
 .endd
 &%-D%& may be repeated up to 10 times on a command line.
-.wen
+
 
 .vitem &%-d%&<&'debug&~options'&>
 .oindex "&%-d%&"
@@ -3816,6 +3821,7 @@ by an admin user.
 This option causes the contents of the message body (-D) spool file to be
 written to the standard output. This option can be used only by an admin user.
 
+.new
 .vitem &%-Mvc%&&~<&'message&~id'&>
 .oindex "&%-Mvc%&"
 .cindex "message" "listing in RFC 2822 format"
@@ -3823,7 +3829,7 @@ written to the standard output. This option can be used only by an admin user.
 This option causes a copy of the complete message (header lines plus body) to
 be written to the standard output in RFC 2822 format. This option can be used
 only by an admin user.
-
+.wen
 .vitem &%-Mvh%&&~<&'message&~id'&>
 .oindex "&%-Mvh%&"
 .cindex "listing" "message headers"
@@ -4561,7 +4567,7 @@ Up to Exim version 4.72, the run time configuration file was also permitted to
 be writeable by the Exim user and/or group. That has been changed in Exim 4.73
 since it offered a simple privilege escalation for any attacker who managed to
 compromise the Exim user account.
-
+.wen
 A default configuration file, which will work correctly in simple situations,
 is provided in the file &_src/configure.default_&. If CONFIGURE_FILE
 defines just one file name, the installation process copies the default
@@ -4569,9 +4575,10 @@ configuration to a new file of that name if it did not previously exist. If
 CONFIGURE_FILE is a list, no default is automatically installed. Chapter
 &<<CHAPdefconfil>>& is a &"walk-through"& discussion of the default
 configuration.
-.wen
 
 
+
+.new
 .section "Using a different configuration file" "SECID40"
 .cindex "configuration file" "alternate"
 A one-off alternate configuration can be specified by the &%-C%& command line
@@ -4594,7 +4601,7 @@ the delivery, the use of &%-C%& causes privilege to be lost. However, root
 can test reception and delivery using two separate commands (one to put a
 message on the queue, using &%-odq%&, and another to do the delivery, using
 &%-M%&).
-
+.wen
 If ALT_CONFIG_PREFIX is defined &_in Local/Makefile_&, it specifies a
 prefix string with which any file named in a &%-C%& command line option must
 start. In addition, the file name must not contain the sequence &"&`/../`&"&.
@@ -9894,6 +9901,7 @@ ${if bool{$acl_m_privileged_sender} ...
 .wen
 
 
+.new
 .vitem &*bool_lax&~{*&<&'string'&>&*}*&
 .cindex "expansion" "boolean parsing"
 .cindex "&%bool_lax%& expansion condition"
@@ -9904,7 +9912,7 @@ and the values &"false"&, &"no"& and &"0"& map to false, all others map to
 true.  Leading and trailing whitespace is ignored.
 
 Note that where &"bool{00}"& is false, &"bool_lax{00}"& is true.
-
+.wen
 .vitem &*crypteq&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
 .cindex "expansion" "encrypted comparison"
 .cindex "encrypted strings, comparing"
@@ -12917,6 +12925,7 @@ saying &"keep on trying, even though there are big problems"&.
 &%ignore_bounce_errors_after%&. It is retained for compatibility, but it is not
 thought to be very useful any more, and its use should probably be avoided.
 
+.new
 .option av_scanner main string "see below"
 This option is available if Exim is built with the content-scanning extension.
 It specifies which anti-virus scanner to use. The default value is:
@@ -12925,7 +12934,7 @@ sophie:/var/run/sophie
 .endd
 If the value of &%av_scanner%& starts with a dollar character, it is expanded
 before use. See section &<<SECTscanvirus>>& for further details.
-
+.wen
 
 
 .option bi_command main string unset
@@ -15431,13 +15440,14 @@ are using OpenSSL, you can set &%tls_verify_certificates%& to the name of a
 directory containing certificate files. This does not work with GnuTLS; the
 option must be set to the name of a single file if you are using GnuTLS.
 
+.new
 These certificates should be for the certificate authorities trusted, rather
 than the public cert of individual clients.  With both OpenSSL and GnuTLS, if
 the value is a file then the certificates are sent by Exim as a server to
 connecting clients, defining the list of accepted certificate authorities.
 Thus the values defined should be considered public data.  To avoid this,
 use OpenSSL with a directory.
-
+.wen
 
 .option tls_verify_hosts main "host list&!!" unset
 .cindex "TLS" "client certificate verification"
@@ -15780,6 +15790,7 @@ This option is unique in that multiple &%condition%& options may be present.
 All &%condition%& options must succeed.
 .wen
 
+.new
 The &%condition%& option provides a means of applying custom conditions to the
 running of routers. Note that in the case of a simple conditional expansion,
 the default expansion values are exactly what is wanted. For example:
@@ -15790,18 +15801,18 @@ Because of the default behaviour of the string expansion, this is equivalent to
 .code
 condition = ${if >{$message_age}{600}{true}{}}
 .endd
-.new
+
 A multiple condition example, which succeeds:
 .code
 condition = ${if >{$message_age}{600}}
 condition = ${if !eq{${lc:$local_part}}{postmaster}}
 condition = foobar
 .endd
-.wen
+
 If the expansion fails (other than forced failure) delivery is deferred. Some
 of the other precondition options are common special cases that could in fact
 be specified using &%condition%&.
-
+.wen
 
 
 .option debug_print routers string&!! unset
@@ -23779,6 +23790,7 @@ with the AUTH command (in contravention of the specification of LOGIN), but
 if the client does not supply it (as is the case for LOGIN clients), the prompt
 strings are used to obtain two data items.
 
+.new
 Some clients are very particular about the precise text of the prompts. For
 example, Outlook Express is reported to recognize only &"Username:"& and
 &"Password:"&. Here is an example of a LOGIN authenticator that uses those
@@ -23803,7 +23815,7 @@ operator to correctly quote the DN for authentication. However, the basic
 correct one to use for the password, because quoting is needed only to make
 the password conform to the Exim syntax. At the LDAP level, the password is an
 uninterpreted string.
-
+.wen
 
 .section "Support for different kinds of authentication" "SECID174"
 A number of string expansion features are provided for the purpose of
@@ -28042,6 +28054,7 @@ It supports a &"generic"& interface to scanners called via the shell, and
 specialized interfaces for &"daemon"& type virus scanners, which are resident
 in memory and thus are much faster.
 
+.new
 .oindex "&%av_scanner%&"
 You can set the &%av_scanner%& option in first part of the Exim configuration
 file to specify which scanner to use, together with any additional options that
@@ -28055,7 +28068,7 @@ av_scanner = sophie:/var/run/sophie
 .endd
 If the value of &%av_scanner%& starts with a dollar character, it is expanded
 before use. The following scanner types are supported in this release:
-
+.wen
 .vlist
 .vitem &%aveserver%&
 .cindex "virus scanners" "Kaspersky"
@@ -28067,6 +28080,7 @@ example:
 av_scanner = aveserver:/var/run/aveserver
 .endd
 
+.new
 .vitem &%clamd%&
 .cindex "virus scanners" "clamd"
 This daemon-type scanner is GPL and free. You can get it at
@@ -28089,7 +28103,7 @@ There is an option WITH_OLD_CLAMAV_STREAM in &_src/EDITME_& available, should
 you be running a version of ClamAV prior to 0.95.
 If the option is unset, the default is &_/tmp/clamd_&. Thanks to David Saez for
 contributing the code for this scanner.
-
+.wen
 .vitem &%cmdline%&
 .cindex "virus scanners" "command line interface"
 This is the keyword for the generic command line scanner interface. It can be
@@ -28363,12 +28377,13 @@ available for use at delivery time.
 The spam score of the message, for example &"3.4"& or &"30.5"&. This is useful
 for inclusion in log or reject messages.
 
+.new
 .vitem &$spam_score_int$&
 The spam score of the message, multiplied by ten, as an integer value. For
 example &"34"& or &"305"&. It may appear to disagree with &$spam_score$&
 because &$spam_score$& is rounded and &$spam_score_int$& is truncated.
 The integer value is useful for numeric comparisons in conditions.
-
+.wen
 
 .vitem &$spam_bar$&
 A string consisting of a number of &"+"& or &"-"& characters, representing the
@@ -31055,9 +31070,10 @@ rejected (there seems little point) but instead just get qualified. HELO
 and EHLO act as RSET; VRFY, EXPN, ETRN and  HELP, act
 as NOOP; QUIT quits.
 
+.new
 Minimal policy checking is done for BSMTP input. Only the non-SMTP
 ACL is run in the same way as for non-SMTP local input.
-
+.wen
 If an error is detected while reading a message, including a missing &"."& at
 the end, Exim gives up immediately. It writes details of the error to the
 standard output in a stylized way that the calling program should be able to
@@ -33902,12 +33918,13 @@ value of the &%-C%& option is identical to the value of CONFIGURE_FILE in
 &_Local/Makefile_&, Exim ignores &%-C%& and proceeds as usual.) There is no
 default setting for &%ALT_CONFIG_PREFIX%&.
 
+.new
 If the permitted configuration files are confined to a directory to
 which only root has access, this guards against someone who has broken
 into the Exim account from running a privileged Exim with an arbitrary
 configuration file, and using it to break into other accounts.
 .next
-.new
+
 If a non-trusted configuration file (i.e. not the default configuration file
 or one which is trusted by virtue of being listed in the TRUSTED_CONFIG_LIST
 file) is specified with &%-C%&, or if macros are given with &%-D%& (but see
@@ -33918,7 +33935,7 @@ reception works, but by that time, Exim is running as the Exim user, so when
 it re-execs to regain privilege for the delivery, the use of &%-C%& causes
 privilege to be lost. However, root can test reception and delivery using two
 separate commands.
-.wen
+
 .next
 The WHITELIST_D_MACROS build option declares some macros to be safe to override
 with &%-D%& if the real uid is one of root, the Exim run-time user or the
@@ -33937,7 +33954,7 @@ option, but it cannot be overridden; the runtime option adds additional users
 to the list. The default setting is &"root"&; this prevents a non-root user who
 is permitted to modify the runtime file from using Exim as a way to get root.
 .endlist
-
+.wen
 
 
 
@@ -33977,6 +33994,7 @@ abdication; the process cannot regain root afterwards. Prior to release 4.00,
 After a new Exim process has interpreted its command line options, it changes
 uid and gid in the following cases:
 
+.new
 .ilist
 .oindex "&%-C%&"
 .oindex "&%-D%&"
@@ -34010,7 +34028,7 @@ option).
 For a daemon, queue runner, delivery, or address testing process, the uid
 remains as root at this stage, but the gid is changed to the Exim group.
 .endlist
-
+.wen
 The processes that initially retain root privilege behave as follows:
 
 .ilist
@@ -34245,11 +34263,12 @@ arbitrary program's being run as exim, not as root.
 
 
 
+.new
 .section "Dynamic module directory" "SECTdynmoddir"
 Any dynamically loadable modules must be installed into the directory
 defined in &`LOOKUP_MODULE_DIR`& in &_Local/Makefile_& for Exim to permit
 loading it.
-
+.wen
 
 
 .section "Use of sprintf()" "SECID279"
@@ -34608,6 +34627,7 @@ unqualified domain &'foundation'&.
 Since version 4.70, DKIM support is compiled into Exim by default. It can be
 disabled by setting DISABLE_DKIM=yes in Local/Makefile.
 
+.new
 Exim's DKIM implementation allows to
 .olist
 Sign outgoing messages: This function is implemented in the SMTP transport.
@@ -34617,7 +34637,7 @@ Verify signatures in incoming messages: This is implemented by an additional
 ACL (acl_smtp_dkim), which can be called several times per message, with
 different signature contexts.
 .endlist
-
+.wen
 In typical Exim style, the verification implementation does not include any
 default "policy". Instead it enables you to build your own policy using
 Exim's standard controls.
@@ -34642,6 +34662,7 @@ senders).
 Signing is implemented by setting private options on the SMTP transport.
 These options take (expandable) strings as arguments.
 
+.new
 .option dkim_domain smtp string&!! unset
 MANDATORY:
 The domain you want to sign with. The result of this expanded
@@ -34691,7 +34712,7 @@ When set, this option must expand to (or be specified as) a colon-separated
 list of header names. Headers with these names will be included in the message
 signature. When unspecified, the header names recommended in RFC4871 will be
 used.
-
+.wen
 
 .section "Verifying DKIM signatures in incoming mail" "SECID514"
 .cindex "DKIM" "verification"
@@ -34709,6 +34730,7 @@ more advanced policies. For that reason, the global option
 &%dkim_verify_signers%&, and a global expansion variable
 &%$dkim_signers%& exist.
 
+.new
 The global option &%dkim_verify_signers%& can be set to a colon-separated
 list of DKIM domains or identities for which the ACL &%acl_smtp_dkim%& is
 called. It is expanded when the message has been received. At this point,
@@ -34731,7 +34753,7 @@ You can also be more creative in constructing your policy. For example:
 .code
 dkim_verify_signers = $sender_address_domain:$dkim_signers
 .endd
-
+.wen
 If a domain or identity is listed several times in the (expanded) value of
 &%dkim_verify_signers%&, the ACL is only called once for that domain or identity.
 
@@ -34739,6 +34761,7 @@ If a domain or identity is listed several times in the (expanded) value of
 Inside the &%acl_smtp_dkim%&, the following expansion variables are
 available (from most to least important):
 
+.new
 .vlist
 .vitem &%$dkim_cur_signer%&
 The signer that is being evaluated in this ACL run. This can be a domain or
@@ -34823,16 +34846,17 @@ in the key record.
 .vitem &%$dkim_key_notes%&
 Notes from the key record (tag n=).
 .endlist
-
+.wen
 In addition, two ACL conditions are provided:
 
+.new
 .vlist
 .vitem &%dkim_signers%&
 ACL condition that checks a colon-separated list of domains or identities
 for a match against the domain or identity that the ACL is currently verifying
 (reflected by &%$dkim_cur_signer%&). This is typically used to restrict an ACL
 verb to a group of domains or identities. For example:
-
+.wen
 .code
 # Warn when message apparently from GMail has no signature at all
 warn log_message = GMail sender without DKIM signature
