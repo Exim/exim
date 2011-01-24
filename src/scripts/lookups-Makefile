@@ -2,13 +2,13 @@
 
 # We turn the configure-built build-$foo/lookups/Makefile.predynamic into Makefile
 
-if [ -x /usr/xpg4/bin/sh ] && [ -z "EXIM_BLOCK_XPG4_LOOP" ]
+if [ -x /usr/xpg4/bin/sh ] && [ -z "$EXIM_BLOCK_XPG4_LOOP" ]
 then
   EXIM_BLOCK_XPG4_LOOP=yes
   export EXIM_BLOCK_XPG4_LOOP
   PATH="/usr/xpg4/bin:$PATH"
   export PATH
-  exec /usr/xpg4/bin/sh "$@"
+  exec /usr/xpg4/bin/sh "$0" "$@"
 fi
 
 input=lookups/Makefile.predynamic
