@@ -2,6 +2,15 @@
 
 # We turn the configure-built build-$foo/lookups/Makefile.predynamic into Makefile
 
+if [ -x /usr/xpg4/bin/sh ] && [ -z "EXIM_BLOCK_XPG4_LOOP" ]
+then
+  EXIM_BLOCK_XPG4_LOOP=yes
+  export EXIM_BLOCK_XPG4_LOOP
+  PATH="/usr/xpg4/bin:$PATH"
+  export PATH
+  exec /usr/xpg4/bin/sh "$@"
+fi
+
 input=lookups/Makefile.predynamic
 target=lookups/Makefile
 defs_source=Makefile
@@ -15,10 +24,10 @@ tab='	'
 if grep -q "^CFLAGS_DYNAMIC[ $tab]*=" "$defs_source"
 then
   # we have a definition, we're good to go
-  : # noop (true) statement for bash compatibility
+  enable_dynamic=yes
 else
   echo >&2 "Missing CFLAGS_DYNAMIC inhibits building dynamic module lookup"
-  exit 1
+  enable_dynamic=''
 fi
 
 tmp="$target.t"
@@ -46,6 +55,10 @@ emit_module_rule() {
 
   if want_dynamic "$lookup_name"
   then
+    if [ -z "$enable_dynamic" ]; then
+      echo >&2 "Inhibited dynamic modules prevents building dynamic $lookup_name"
+      exit 1
+    fi
     echo "MODS += ${mod_name}.so"
     grep "^LOOKUP_${lookup_name}_" "$defs_source"
     echo "LOOKUP_${mod_name}_INCLUDE = \$(LOOKUP_${lookup_name}_INCLUDE)"

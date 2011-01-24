@@ -31,10 +31,17 @@ that might affect a running system.
 Exim version 4.74
 -----------------
 
- * No incompatible changes within Exim itself, but the integrated support for
-   dynamically loadable lookup modules has an ABI change from the modules
-   supported by some OS vendors through an unofficial patch. Don't try to
-   mix & match.
+ * The integrated support for dynamically loadable lookup modules has an ABI
+   change from the modules supported by some OS vendors through an unofficial
+   patch. Don't try to mix & match.
+
+ * Some parts of the build system are now beginning to assume that the host
+   environment is POSIX. If you're building on a system where POSIX tools are
+   not the default, you might have an easier time if you switch to the POSIX
+   tools.  Feel free to report non-POSIX issues as a request for a feature
+   enhancement, but if the POSIX variants are available then the fix will
+   probably just involve some coercion.  See the README instructions for
+   building on such hosts.
 
 
 Exim version 4.73

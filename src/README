@@ -80,6 +80,12 @@ to which Exim has already been ported, the building process is as follows:
   comments in exim_monitor/EDITME about the values set therein, but in this
   case everything can be defaulted if you wish.
 
+. If your system is not POSIX compliant by default, then you might experience
+  fewer problems if you help point the build tools to the POSIX variants. For
+  instance, on Solaris:
+
+  PATH=/usr/xpg4/bin:$PATH make SHELL=/usr/xpg4/bin/sh
+
 . Type "make". This will determine what your machine's architecture and
   operating system are, and create a build directory from those names (e.g.
   "build-SunOS5-sparc"). Symbolic links are created from the build directory
