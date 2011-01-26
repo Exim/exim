@@ -931,8 +931,13 @@ DEBUG(D_any) do {
              "                       Runtime: %s\n",
           PCRE_MAJOR, PCRE_MINOR,
           /* PRE_PRERELEASE is either defined and empty or a string.
-           * This should work: */
+           * unless its an ancient version of PCRE in which case it
+           * is not defined */
+#ifdef PCRE_PRERELEASE
           PCRE_PRERELEASE "",
+#else
+          "",
+#endif
           pcre_version());
 
   init_lookup_list();
