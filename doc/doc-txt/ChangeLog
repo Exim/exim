@@ -13,6 +13,9 @@ TF/01 Update valgrind.h and memcheck.h to copies from valgrind-3.6.0.
       This fixes portability to compilers other than gcc, notably
       Solaris CC and HP-UX CC. Fixes Bugzilla 1050.
 
+TF/02 Bugzilla 139: Avoid using the += operator in the modular lookup
+      makefiles for portability to HP-UX and POSIX correctness.
+
 
 Exim version 4.74
 -----------------

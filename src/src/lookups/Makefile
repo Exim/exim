@@ -8,12 +8,6 @@
 # This is called from the main make file, after cd'ing
 # to the lookups subdirectory.
 
-# because the variable is EXPERIMENTAL_SPF and not LOOKUP_SPF
-# we put this one here by default and compile a dummy if
-# EXPERIMENTAL_SPF is not defined
-OBJ=spf.o
-MODS=
-
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 
 
