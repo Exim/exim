@@ -20,6 +20,9 @@ PP/01 Permit LOOKUP_foo enabling on the make command-line.
       Also via indented variable definition in the Makefile.
       (Debugging by Oliver Heesakkers).
 
+PP/02 Restore caching of spamd results with expanded spamd_address.
+      Patch from author of expandable spamd_address patch, Wolfgang Breyha.
+
 
 Exim version 4.74
 -----------------

@@ -20,6 +20,7 @@ uschar spam_report_buffer[32600];
 uschar prev_user_name[128] = "";
 int spam_ok = 0;
 int spam_rc = 0;
+uschar *prev_spamd_address_work = NULL;
 
 int spam(uschar **listptr) {
   int sep = 0;
@@ -71,6 +72,23 @@ int spam(uschar **listptr) {
     override = 1;
   };
 
+  /* expand spamd_address if needed */
+  if (*spamd_address == '$') {
+    spamd_address_work = expand_string(spamd_address);
+    if (spamd_address_work == NULL) {
+      log_write(0, LOG_MAIN|LOG_PANIC,
+        "spamassassin acl condition: spamd_address starts with $, but expansion failed: %s", expand_string_message);
+      return DEFER;
+    }
+  }
+  else
+    spamd_address_work = spamd_address;
+
+  /* check if previous spamd_address was expanded and has changed. dump cached results if so */
+  if ( spam_ok && ( prev_spamd_address_work != NULL) && (Ustrcmp(prev_spamd_address_work, spamd_address_work) != 0)) {
+    spam_ok = 0;
+  }
+
   /* if we scanned for this username last time, just return */
   if ( spam_ok && ( Ustrcmp(prev_user_name, user_name) == 0 ) ) {
     if (override)
@@ -90,17 +108,6 @@ int spam(uschar **listptr) {
   };
 
   start = time(NULL);
-
-  if (*spamd_address == '$') {
-    spamd_address_work = expand_string(spamd_address);
-    if (spamd_address_work == NULL) {
-      log_write(0, LOG_MAIN|LOG_PANIC,
-        "spamassassin acl condition: spamd_address starts with $, but expansion failed: %s", expand_string_message);
-      return DEFER;
-    }
-  }
-  else
-    spamd_address_work = spamd_address;
 
   /* socket does not start with '/' -> network socket */
   if (*spamd_address_work != '/') {
@@ -405,11 +412,13 @@ again:
     spam_rc = FAIL;
   };
 
-  /* remember user name and "been here" for it unless spamd_socket was expanded */
-  if (spamd_address_work == spamd_address) {
-    Ustrcpy(prev_user_name, user_name);
-    spam_ok = 1;
+  /* remember expanded spamd_address if needed */
+  if (spamd_address_work != spamd_address) {
+    prev_spamd_address_work = string_copy(spamd_address_work);
   }
+  /* remember user name and "been here" for it */
+  Ustrcpy(prev_user_name, user_name);
+  spam_ok = 1;
 
   if (override) {
     /* always return OK, no matter what the score */
