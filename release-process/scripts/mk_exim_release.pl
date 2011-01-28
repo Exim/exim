@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # $Cambridge: exim/release-process/scripts/mk_exim_release.pl,v 1.1 2010/06/03 12:00:38 nm4 Exp $
 #
@@ -69,7 +69,14 @@ sub deal_with_working_directory {
         }
     }
 
+    # create base directory
     mkpath( $context->{directory}, { verbose => ( $verbose || $debug ) } );
+
+    # set and create subdirectories
+    foreach (qw(release_tree pkgs pkgdirs docbook)) {
+        $context->{$_} = File::Spec->catdir( $context->{directory}, $_ );
+        mkpath( $context->{$_}, { verbose => ( $verbose || $debug ) } );
+    }
 }
 
 # ------------------------------------------------------------------
@@ -93,7 +100,7 @@ sub unpack_tree {
     my $context = shift;
 
     die "Cannot see archive file\n" unless ( -f $context->{tmp_archive_file} );
-    my @cmd = ( 'tar', 'xf', $context->{tmp_archive_file} );
+    my @cmd = ( 'tar', 'xf', $context->{tmp_archive_file}, '-C', $context->{release_tree} );
 
     # run  command
     print( "Running: ", join( ' ', @cmd ), "\n" ) if ($verbose);
@@ -107,20 +114,46 @@ sub build_html_documentation {
 
     my $genpath   = $context->{webgen_base} . '/script/gen.pl';
     my $templates = $context->{webgen_base} . '/templates';
-    my $dir       = 'html';
+    my $dir       = File::Spec->catdir( $context->{release_tree}, 'html' );
+    my $spec      = File::Spec->catfile( $context->{docbook}, 'spec.xml' );
+    my $filter    = File::Spec->catfile( $context->{docbook}, 'filter.xml' );
+
     mkdir($dir);
 
-    my @cmd = (
-        $genpath,                     '--spec',    'doc/doc-docbook/spec.xml', '--filter',
-        'doc/doc-docbook/filter.xml', '--latest',  $context->{trelease},       '--tmpl',
-        $templates,                   '--docroot', $dir
-    );
+    my @cmd =
+      ( $genpath, '--spec', $spec, '--filter', $filter, '--latest', $context->{trelease}, '--tmpl', $templates, '--docroot', $dir );
 
     print "Executing ", join( ' ', @cmd ), "\n";
     system(@cmd);
 
     # move directory into right place
-    rename( sprintf( 'html/exim-html-%s', $context->{trelease} ), sprintf( 'exim-html-%s', $context->{release} ) );
+    my $sourcedir = File::Spec->catdir( $context->{docbook}, 'filter.xml' );
+
+    rename(
+        File::Spec->catdir( $dir,                sprintf( 'exim-html-%s', $context->{trelease} ) ),
+        File::Spec->catdir( $context->{pkgdirs}, sprintf( 'exim-html-%s', $context->{release} ) )
+    );
+}
+
+# ------------------------------------------------------------------
+
+sub copy_docbook_files {
+    my $context = shift;
+
+    # where the generated docbook files can be found
+    my $docdir = File::Spec->catdir( $context->{release_tree}, 'doc', 'doc-docbook' );
+
+    # where the website docbook source dir is - push files to here
+    my $webdir = File::Spec->catdir( $context->{webgen_base}, 'docbook', $context->{trelease} );
+    mkpath( $webdir, { verbose => ( $verbose || $debug ) } );
+
+    foreach my $file ( 'spec.xml', 'filter.xml' ) {
+        my $from  = File::Spec->catfile( $docdir,             $file );
+        my $to    = File::Spec->catfile( $context->{docbook}, $file );
+        my $webto = File::Spec->catfile( $webdir,             $file );
+        copy( $from, $to );
+        copy( $from, $webto );
+    }
 }
 
 # ------------------------------------------------------------------
@@ -128,9 +161,11 @@ sub build_html_documentation {
 sub build_documentation {
     my $context = shift;
 
-    system("cd doc/doc-docbook && ./OS-Fixups && make everything") == 0
+    my $docdir = File::Spec->catdir( $context->{release_tree}, 'doc', 'doc-docbook' );
+    system("cd '$docdir' && ./OS-Fixups && make everything") == 0
       || croak "Doc build failed";
 
+    copy_docbook_files($context);
     build_html_documentation($context);
 }
 
@@ -139,8 +174,8 @@ sub build_documentation {
 sub move_text_docs_into_pkg {
     my $context = shift;
 
-    my $old_docdir = 'doc/doc-docbook';
-    my $new_docdir = File::Spec->catdir( $context->{pkgdir}, 'doc' );
+    my $old_docdir = File::Spec->catdir( $context->{eximpkgdir}, 'doc', 'doc-docbook' );
+    my $new_docdir = File::Spec->catdir( $context->{eximpkgdir}, 'doc' );
     mkpath( $new_docdir, { verbose => ( $verbose || $debug ) } );
 
     # move generated documents from docbook stuff
@@ -168,15 +203,16 @@ sub build_pspdfinfo_directory {
 
     ##foreach my $format (qw/pdf postscript texinfo info/) {
     foreach my $format (qw/pdf postscript/) {
-        my $dir = sprintf( 'exim-%s-%s', $format, $context->{release} );
-        my $target = File::Spec->catdir( $dir, 'doc' );
+        my $target = File::Spec->catdir( $context->{pkgdirs}, sprintf( 'exim-%s-%s', $format, $context->{release} ), 'doc' );
         mkpath( $target, { verbose => ( $verbose || $debug ) } );
 
         # move documents across
         foreach my $file (
             glob(
                 File::Spec->catfile(
-                    'doc/doc-docbook',
+                    $context->{release_tree},
+                    'doc',
+                    'doc-docbook',
                     (
                         ( $format eq 'postscript' )
                         ? '*.ps'
@@ -186,8 +222,7 @@ sub build_pspdfinfo_directory {
             )
           )
         {
-            my $fn = ( File::Spec->splitpath($file) )[2];
-            move( $file, File::Spec->catfile( $target, $fn ) );
+            move( $file, File::Spec->catfile( $target, ( File::Spec->splitpath($file) )[2] ) );
         }
     }
 }
@@ -197,14 +232,15 @@ sub build_pspdfinfo_directory {
 sub build_main_package_directory {
     my $context = shift;
 
+    # build the exim package directory path
+    $context->{eximpkgdir} = File::Spec->catdir( $context->{pkgdirs}, sprintf( 'exim-%s', $context->{release} ) );
+
     # initially we move the exim-src directory to the new directory name
-    my $pkgdir = sprintf( 'exim-%s', $context->{release} );
-    $context->{pkgdir} = $pkgdir;
-    rename( 'src', $pkgdir ) || croak "Rename of src dir failed - $!";
+    rename( File::Spec->catdir( $context->{release_tree}, 'src' ), $context->{eximpkgdir} )
+      || croak "Rename of src dir failed - $!";
 
     # add Local subdirectory
-    my $target = File::Spec->catdir( $pkgdir, 'Local' );
-    mkpath( $target, { verbose => ( $verbose || $debug ) } );
+    mkpath( File::Spec->catdir( $context->{eximpkgdir}, 'Local' ), { verbose => ( $verbose || $debug ) } );
 
     # now add the text docs
     move_text_docs_into_pkg($context);
@@ -221,12 +257,26 @@ sub build_package_directories {
 
 # ------------------------------------------------------------------
 
+sub do_cleanup {
+    my $context = shift;
+
+    print "Cleaning up\n" if ($verbose);
+    rmtree( $context->{release_tree}, { verbose => $debug } );
+    rmtree( $context->{docbook},      { verbose => $debug } );
+    rmtree( $context->{pkgdirs},      { verbose => $debug } );
+}
+
+# ------------------------------------------------------------------
+
 sub create_tar_files {
     my $context = shift;
 
-    foreach my $dir ( glob( 'exim*-' . $context->{release} ) ) {
-        system("tar cfz ${dir}.tar.gz ${dir}");
-        system("tar cfj ${dir}.tar.bz2 ${dir}");
+    my $pkgs    = $context->{pkgs};
+    my $pkgdirs = $context->{pkgdirs};
+    foreach my $dir ( glob( File::Spec->catdir( $pkgdirs, ( 'exim*-' . $context->{release} ) ) ) ) {
+        my $dirname = ( File::Spec->splitdir($dir) )[-1];
+        system("tar cfz ${pkgs}/${dirname}.tar.gz  -C ${pkgdirs} ${dirname}");
+        system("tar cfj ${pkgs}/${dirname}.tar.bz2 -C ${pkgdirs} ${dirname}");
     }
 }
 
@@ -241,6 +291,7 @@ sub create_tar_files {
         webgen_base => "$FindBin::Bin/../../../exim-website",
     };
     my $delete;
+    my $cleanup = 1;
     ##$ENV{'PATH'} = '/opt/local/bin:' . $ENV{'PATH'};
 
     unless (
@@ -252,6 +303,7 @@ sub create_tar_files {
             'help|?'        => \$help,
             'man!'          => \$man,
             'delete!'       => \$delete,
+            'cleanup!'      => \$cleanup,
         )
       )
     {
@@ -269,6 +321,7 @@ sub create_tar_files {
     build_documentation($context);
     build_package_directories($context);
     create_tar_files($context);
+    do_cleanup($context) if ($cleanup);
 }
 
 1;
