@@ -21,6 +21,9 @@ tab='	'
 # We always do something now, since there should always be a lookup,
 # and now we need to run in order to put the OBJ=$(OBJ)+ rules in.
 
+# nb: do not permit leading whitespace for this, as CFLAGS_DYNAMIC is exported
+# to the lookups subdir via a line with leading whitespace which otherwise
+# matches
 if grep -q "^CFLAGS_DYNAMIC[ $tab]*=" "$defs_source"
 then
   # we have a definition, we're good to go
@@ -32,14 +35,23 @@ fi
 
 tmp="$target.t"
 
+# For the want_ checks, we need to let the user override values from the make
+# command-line, not just check the Makefile.
+
 want_dynamic() {
   local dyn_name="$1"
-  grep -q "^LOOKUP_${dyn_name}[ $tab]*=[ $tab]*2" "$defs_source"
+  local re="LOOKUP_${dyn_name}[ $tab]*=[ $tab]*2"
+  env | grep -q "^$re"
+  if [ $? -eq 0 ]; then return 0; fi
+  grep -q "^[ $tab]*$re" "$defs_source"
 }
 
 want_at_all() {
   local want_name="$1"
-  grep -q "^LOOKUP_${want_name}[ $tab]*=[ $tab]*." "$defs_source"
+  local re="LOOKUP_${want_name}[ $tab]*=[ $tab]*."
+  env | grep -q "^$re"
+  if [ $? -eq 0 ]; then return 0; fi
+  grep -q "^[ $tab]*$re" "$defs_source"
 }
 
 # The values of these variables will be emitted into the Makefile.
