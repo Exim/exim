@@ -23,6 +23,9 @@ PP/01 Permit LOOKUP_foo enabling on the make command-line.
 PP/02 Restore caching of spamd results with expanded spamd_address.
       Patch from author of expandable spamd_address patch, Wolfgang Breyha.
 
+PP/03 Build issue: lookups-Makefile now exports LC_ALL=C
+      Improves build reliability.  Fix from: Frank Elsner
+
 
 Exim version 4.74
 -----------------

@@ -18,8 +18,12 @@ tag_marker='MAGIC-TAG-MODS-OBJ-RULES-GO-HERE'
 
 tab='	'
 
-# We always do something now, since there should always be a lookup,
-# and now we need to run in order to put the OBJ=$(OBJ)+ rules in.
+# We rely on tr(1) for translating case below.  Some people export
+# values of LC_CTYPE and LC_COLLATE which apparently break our assumptions.
+# We're a script expecting certain output based on known inputs and not dealing
+# with UTF8, so we should be safe doingthis:
+LC_ALL=C
+export LC_ALL
 
 # nb: do not permit leading whitespace for this, as CFLAGS_DYNAMIC is exported
 # to the lookups subdir via a line with leading whitespace which otherwise
@@ -31,6 +35,9 @@ then
 else
   echo >&2 "Missing CFLAGS_DYNAMIC inhibits building dynamic module lookup"
   enable_dynamic=''
+  # We always do something now, since there should always be a lookup,
+  # and now we need to run in order to put the OBJ=$(OBJ)+ rules in.  So we
+  # continue on.
 fi
 
 tmp="$target.t"
