@@ -88,6 +88,7 @@ filter.txt:   filter-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
 	      /bin/rm -rf filter-txt.html
 	      xmlto -x MyStyle-txt-html.xsl html-nochunks filter-txt.xml
 	      w3m -dump filter-txt.html | ./Tidytxt >filter.txt
+	      ./SanityTestText filter.txt
 
 # I have not found a way of making docbook2texi write its output anywhere
 # other than the file name that it makes up. The --to-stdout option does not
@@ -168,6 +169,7 @@ spec.txt:     spec-txt.xml Tidytxt MyStyle-txt-html.xsl MyStyle-html.xsl \
 	      /bin/rm -rf spec-txt.html
 	      xmlto -x MyStyle-txt-html.xsl html-nochunks spec-txt.xml
 	      w3m -dump spec-txt.html | ./Tidytxt >spec.txt
+	      ./SanityTestText spec.txt
 
 # I have not found a way of making docbook2texi write its output anywhere
 # other than the file name that it makes up. The --to-stdout option does not
