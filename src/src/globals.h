@@ -35,7 +35,14 @@ extern uschar *ibase_servers;
 #endif
 
 #ifdef LOOKUP_LDAP
+extern uschar *eldap_ca_cert_dir;      /* Directory with CA certificates */
+extern uschar *eldap_ca_cert_file;     /* CA certificate file */
+extern uschar *eldap_cert_file;        /* Certificate file */
+extern uschar *eldap_cert_key;         /* Certificate key file */
+extern uschar *eldap_cipher_suite;     /* Allowed cipher suite */
 extern uschar *eldap_default_servers;  /* List of default servers */
+extern uschar *eldap_require_cert;     /* Peer certificate checking strategy */
+extern BOOL    eldap_start_tls;        /* Use STARTTLS */
 extern int     eldap_version;          /* LDAP version */
 #endif
 
