@@ -38,6 +38,11 @@ foreach $line (@lines)
   $line =~ s/\x{e2}\x{95}\x{b2}/\\/g;
   $line =~ s/\x{e2}\x{95}\x{b3}/X/g;
 
+  # w3m rendering issue apparently only seen by pdp
+  # affects section numbers after the ToC
+  #$line =~ s/^(\d+(?:\.\d+)?)\x{c2}/$1./g;
+  $line =~ s/\x{c2}//g;
+
   if ($line =~ /^\s*$/)
     {
     $line = "" if $lastwasblank;

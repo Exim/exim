@@ -431,6 +431,60 @@ if (lcp == NULL)
     }
   #endif  /* LDAP_OPT_X_TLS */
 
+  #ifdef LDAP_OPT_X_TLS_CACERTFILE
+  if (eldap_ca_cert_file != NULL)
+    {
+    ldap_set_option(ld, LDAP_OPT_X_TLS_CACERTFILE, eldap_ca_cert_file);
+    }
+  #endif
+  #ifdef LDAP_OPT_X_TLS_CACERTDIR
+  if (eldap_ca_cert_dir != NULL)
+    {
+    ldap_set_option(ld, LDAP_OPT_X_TLS_CACERTDIR, eldap_ca_cert_dir);
+    }
+  #endif
+  #ifdef LDAP_OPT_X_TLS_CERTFILE
+  if (eldap_cert_file != NULL)
+    {
+    ldap_set_option(ld, LDAP_OPT_X_TLS_CERTFILE, eldap_cert_file);
+    }
+  #endif
+  #ifdef LDAP_OPT_X_TLS_KEYFILE
+  if (eldap_cert_key != NULL)
+    {
+    ldap_set_option(ld, LDAP_OPT_X_TLS_KEYFILE, eldap_cert_key);
+    }
+  #endif
+  #ifdef LDAP_OPT_X_TLS_CIPHER_SUITE
+  if (eldap_cipher_suite != NULL)
+    {
+    ldap_set_option(ld, LDAP_OPT_X_TLS_CIPHER_SUITE, eldap_cipher_suite);
+    }
+  #endif
+  #ifdef LDAP_OPT_X_TLS_REQUIRE_CERT
+  if (eldap_require_cert != NULL)
+    {
+    int cert_option = LDAP_OPT_X_TLS_NEVER;
+    if (Ustrcmp(eldap_require_cert, "hard") == 0)
+      {
+      cert_option = LDAP_OPT_X_TLS_HARD;
+      }
+    else if (Ustrcmp(eldap_require_cert, "demand") == 0)
+      {
+      cert_option = LDAP_OPT_X_TLS_DEMAND;
+      }
+    else if (Ustrcmp(eldap_require_cert, "allow") == 0)
+      {
+      cert_option = LDAP_OPT_X_TLS_ALLOW;
+      }
+    else if (Ustrcmp(eldap_require_cert, "try") == 0)
+      {
+      cert_option = LDAP_OPT_X_TLS_TRY;
+      }
+    ldap_set_option(ld, LDAP_OPT_X_TLS_REQUIRE_CERT, cert_option);
+    }
+  #endif
+
   /* Now add this connection to the chain of cached connections */
 
   lcp = store_get(sizeof(LDAP_CONNECTION));
@@ -467,6 +521,10 @@ if (!lcp->bound ||
   {
   DEBUG(D_lookup) debug_printf("%sbinding with user=%s password=%s\n",
     (lcp->bound)? "re-" : "", user, password);
+  if (eldap_start_tls)
+    {
+    ldap_start_tls_s(lcp->ld, NULL, NULL);
+    }
   if ((msgid = ldap_bind(lcp->ld, CS user, CS password, LDAP_AUTH_SIMPLE))
        == -1)
     {
