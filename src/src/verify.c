@@ -3038,7 +3038,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
 
   for (s = domain; *s != 0; s++)
     {
-    if (!isalnum(*s) && *s != '-' && *s != '.')
+    if (!isalnum(*s) && *s != '-' && *s != '.' && *s != '_')
       {
       log_write(0, LOG_MAIN, "dnslists domain \"%s\" contains "
         "strange characters - is this right?", domain);
@@ -3050,7 +3050,7 @@ while ((domain = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL
 
   if (domain_txt != domain) for (s = domain_txt; *s != 0; s++)
     {
-    if (!isalnum(*s) && *s != '-' && *s != '.')
+    if (!isalnum(*s) && *s != '-' && *s != '.' && *s != '_')
       {
       log_write(0, LOG_MAIN, "dnslists domain \"%s\" contains "
         "strange characters - is this right?", domain_txt);

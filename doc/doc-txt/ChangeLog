@@ -29,6 +29,9 @@ PP/03 Build issue: lookups-Makefile now exports LC_ALL=C
 NM/02 Fix wide character breakage in the rfc2047 coding
       Fixes bug 1064. Patch from Andrey N. Oktyabrski
 
+NM/03 Allow underscore in dnslist lookups
+      Fixes bug 1026. Patch from Graeme Fowler
+
 
 
 Exim version 4.74
