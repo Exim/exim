@@ -26,6 +26,10 @@ PP/02 Restore caching of spamd results with expanded spamd_address.
 PP/03 Build issue: lookups-Makefile now exports LC_ALL=C
       Improves build reliability.  Fix from: Frank Elsner
 
+NM/02 Fix wide character breakage in the rfc2047 coding
+      Fixes bug 1064. Patch from Andrey N. Oktyabrski
+
+
 
 Exim version 4.74
 -----------------
