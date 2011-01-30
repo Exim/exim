@@ -69,6 +69,12 @@ In order to run this test suite, the following requirements must be met:
     tracks the two users independently.  Using the same user would result
     in false positives on some tests.
 
+    Further, some tests invoke sudo in an environment where there might not be
+    a TTY, so tickets should be global, not per-TTY.  Taking this all together
+    and assuming a user of "exim-build", you might have this in sudoers:
+
+      Defaults:exim-build     timestamp_timeout=480,!tty_tickets
+
 (3) The login under which you run the tests must be in the exim group so that
     it has access to logs, spool files, etc. The login should not be one of the
     names "userx", "usery", "userz", or a few other simple ones such as "abcd"
@@ -115,6 +121,10 @@ In order to run this test suite, the following requirements must be met:
     
      DIR:EXIM_PATH:AA:ACL:ACLRCPT:ACL_MAIL:ACL_PREDATA:ACL_RCPT:AFFIX:ALLOW:ARG1:ARG2:AUTHF:AUTHS:AUTH_ID_DOMAIN:BAD:BANNER:BB:BR:BRB:CERT:COM:COMMAND_USER:CONNECTCOND:CONTROL:CREQCIP:CREQMAC:CRL:CSS:D6:DATA:DCF:DDF:DEFAULTDWC:DELAY:DETAILS:DRATELIMIT:DYNAMIC_OPTION:ELI:ERROR_DETAILS:ERT:FAKE:FALLBACK:FILTER:FILTER_PREPEND_HOME:FORBID:FORBID_SMTP_CODE:FUSER:HAI:HAP:HARDLIMIT:HEADER_LINE_MAXSIZE:HEADER_MAXSIZE:HELO_MSG:HL:HOSTS:HOSTS_AVOID_TLS:HOSTS_MAX_TRY:HVH:IFACE:IGNORE_QUOTA:INC:INSERT:IP1:IP2:LAST:LDAPSERVERS:LENCHECK:LIMIT:LIST:LOG_SELECTOR:LS:MAXNM:MESSAGE_LOGS:MSIZE:NOTDAEMON:ONCE:ONLY:OPT:OPTION:ORDER:PAH:PEX:PORT:PTBC:QDG:QOLL:QUOTA:QUOTA_FILECOUNT:QWM:RCPT_MSG:REMEMBER:REQUIRE:RETRY:RETRY1:RETRY2:RETURN:RETURN_ERROR_DETAILS:REWRITE:ROUTE_DATA:RRATELIMIT:RT:S:SELECTOR:SELF:SERVER:SERVERS:SREQCIP:SREQMAC:SRV:STD:STRICT:SUB:SUBMISSION_OPTIONS:TIMEOUTDEFER:TIMES:TRUSTED:TRYCLEAR:UL:USE_SENDER:UTF8:VALUE:WMF:X:Y
 
+(10) Exim must *not* be built with USE_READLINE, as the test-suite's automation
+     assumes the simpler I/O model.
+     Exim must *not* be built with HEADERS_CHARSET set to UTF-8.
+
 
 
 OPTIONAL EXTRAS
@@ -137,7 +147,7 @@ RUNNING THE TEST SUITE
 (3) Run "./configure" and then "make". This builds a few auxiliary programs
     that are written in C.
 
-(4) ls -1 $PWD/confs/* >> your_TRUSTED_CONFIG_LIST_filename
+(4) echo $PWD/test-config >> your_TRUSTED_CONFIG_LIST_filename
 
 (5) Run "./runtest" (a Perl script) as described below.
 
