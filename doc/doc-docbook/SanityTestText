@@ -4,14 +4,19 @@
 # This tool is only used in building spec.txt for a release, not used as
 # part of the normal build/install process, so only Maintainers are affected
 # by requirements here.
-#
-# This tool requires pcregrep(1).
 
 filename="$1"
 
-pcregrep -q '[^\x{20}-\x{7E}]' "$filename"
+if echo a | pcregrep -q a 2>/dev/null
+then
+	pcregrep -q '[^\x{20}-\x{7E}]' "$filename"
+	grepstatus=$?
+else
+	perl -ne 'BEGIN {$rv=1};END {exit $rv};
+		if (/[^\r\n\x{20}-\x{7E}]/) { $rv = 0; last }' < "$filename"
+	grepstatus=$?
+fi
 
-grepstatus=$?
 case $grepstatus in
 0)
 	echo >&2 "$0: found non-ASCII characters in $filename"
