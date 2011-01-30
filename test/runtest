@@ -299,6 +299,7 @@ $spid = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
 while(<IN>)
   {
+RESET_AFTER_EXTRA_LINE_READ:
   # Check for "*** truncated ***"
   $yield = 1 if /\*\*\* truncated \*\*\*/;
 
@@ -736,6 +737,33 @@ while(<IN>)
     # drop openssl version strings
     next if /OpenSSL compile-time version: OpenSSL \d+[\.\da-z]+/;
     next if /OpenSSL runtime version: OpenSSL \d+[\.\da-z]+/;
+
+    # drop lookups
+    next if /^Lookups \(built-in\):/;
+    next if /^Total \d+ lookups/;
+
+    # and the ugly bit
+    # different libraries will have different numbers (possibly 0) of follow-up
+    # lines, indenting with more data
+    if (/^Library version:/) {
+      while (1) {
+	$_ = <IN>;
+	next if /^\s/;
+	goto RESET_AFTER_EXTRA_LINE_READ;
+      }
+    }
+
+    # drop other build-time controls emitted for debugging
+    next if /^WHITELIST_D_MACROS:/;
+    next if /^TRUSTED_CONFIG_LIST:/;
+
+    # As of Exim 4.74, we log when a setgid fails; because we invoke Exim
+    # with -be, privileges will have been dropped, so this will always
+    # be the case
+    next if /^changing group to \d+ failed: Operation not permitted/;
+
+    # We invoke Exim with -D, so we hit this new messag as of Exim 4.73:
+    next if /^macros_trusted overriden to true by whitelisting/;
 
     # We have to omit the localhost ::1 address so that all is well in
     # the IPv4-only case.
