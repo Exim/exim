@@ -876,6 +876,7 @@ uschar *s = string;
 uschar *p, *t;
 int hlen;
 BOOL coded = FALSE;
+BOOL first_byte = FALSE;
 
 if (charset == NULL) charset = US"iso-8859-1";
 
@@ -893,7 +894,7 @@ for (; len > 0; len--)
   int ch = *s++;
   if (t > buffer + buffer_size - hlen - 8) break;
 
-  if (t - p > 70)
+  if ((t - p > 67) && !first_byte)
     {
     *t++ = '?';
     *t++ = '=';
@@ -907,14 +908,20 @@ for (; len > 0; len--)
   if (ch < 33 || ch > 126 ||
       Ustrchr("?=()<>@,;:\\\".[]_", ch) != NULL)
     {
-    if (ch == ' ') *t++ = '_'; else
+    if (ch == ' ')
+      {
+      *t++ = '_';
+      first_byte = FALSE;
+      } 
+    else
       {
       sprintf(CS t, "=%02X", ch);
       while (*t != 0) t++;
       coded = TRUE;
+      first_byte = !first_byte;
       }
     }
-  else *t++ = ch;
+  else { *t++ = ch; first_byte = FALSE; }
   }
 
 *t++ = '?';
