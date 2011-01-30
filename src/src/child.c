@@ -340,6 +340,7 @@ output when things go wrong. */
 if (pid == 0)
   {
   signal(SIGUSR1, SIG_IGN);
+  signal(SIGPIPE, SIG_DFL);
 
   if (newgid != NULL && setgid(*newgid) < 0)
     {
