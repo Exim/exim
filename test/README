@@ -123,6 +123,7 @@ In order to run this test suite, the following requirements must be met:
 
 (10) Exim must *not* be built with USE_READLINE, as the test-suite's automation
      assumes the simpler I/O model.
+     Exim must *not* be built with HEADERS_CHARSET set to UTF-8.
 
 
 
