@@ -9,6 +9,16 @@ test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
 
+Version 4.75
+------------
+
+ 1. In addition to the existing LDAP and LDAP/SSL ("ldaps") support, there
+    is now LDAP/TLS support, given sufficiently modern OpenLDAP client
+    libraries.  The following global options have been added in support of
+    this: ldap_ca_cert_dir, ldap_ca_cert_file, ldap_cert_file, ldap_cert_key,
+    ldap_cipher_suite, ldap_require_cert, ldap_start_tls.
+
+
 Version 4.74
 ------------
 

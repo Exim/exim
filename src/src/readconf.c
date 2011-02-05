@@ -262,7 +262,14 @@ static optionlist optionlist_config[] = {
   { "ignore_fromline_local",    opt_bool,        &ignore_fromline_local },
   { "keep_malformed",           opt_time,        &keep_malformed },
 #ifdef LOOKUP_LDAP
+  { "ldap_ca_cert_dir",         opt_stringptr,   &eldap_ca_cert_dir },
+  { "ldap_ca_cert_file",        opt_stringptr,   &eldap_ca_cert_file },
+  { "ldap_cert_file",           opt_stringptr,   &eldap_cert_file },
+  { "ldap_cert_key",            opt_stringptr,   &eldap_cert_key },
+  { "ldap_cipher_suite",        opt_stringptr,   &eldap_cipher_suite },
   { "ldap_default_servers",     opt_stringptr,   &eldap_default_servers },
+  { "ldap_require_cert",        opt_stringptr,   &eldap_require_cert },
+  { "ldap_start_tls",           opt_bool,        &eldap_start_tls },
   { "ldap_version",             opt_int,         &eldap_version },
 #endif
   { "local_from_check",         opt_bool,        &local_from_check },

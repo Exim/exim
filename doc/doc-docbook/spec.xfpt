@@ -6885,6 +6885,12 @@ The URL may begin with &`ldap`& or &`ldaps`& if your LDAP library supports
 secure (encrypted) LDAP connections. The second of these ensures that an
 encrypted TLS connection is used.
 
+.new
+With sufficiently modern LDAP libraries, Exim supports forcing TLS over regular
+LDAP connections, rather than the SSL-on-connect &`ldaps`&.
+See the &%ldap_start_tls%& option.
+.wen
+
 
 .section "LDAP quoting" "SECID68"
 .cindex "LDAP" "quoting"
@@ -12393,7 +12399,14 @@ listed in more than one group.
 .section "Data lookups" "SECID101"
 .table2
 .row &%ibase_servers%&               "InterBase servers"
+.row &%ldap_ca_cert_dir%&            "dir of CA certs to verify LDAP server's"
+.row &%ldap_ca_cert_file%&           "file of CA certs to verify LDAP server's"
+.row &%ldap_cert_file%&              "client cert file for LDAP"
+.row &%ldap_cert_key%&               "client key file for LDAP"
+.row &%ldap_cipher_suite%&           "TLS negotiation preference control"
 .row &%ldap_default_servers%&        "used if no server in query"
+.row &%ldap_require_cert%&           "action to take without LDAP server cert"
+.row &%ldap_start_tls%&              "require TLS within LDAP"
 .row &%ldap_version%&                "set protocol version"
 .row &%lookup_open_max%&             "lookup files held open"
 .row &%mysql_servers%&               "default MySQL servers"
@@ -13805,12 +13818,85 @@ next attempt to deliver such a message, it gets removed. The incident is
 logged.
 
 
+.new
+.option ldap_ca_cert_dir main string unset
+.cindex "LDAP", "TLS CA certificate directory"
+This option indicates which directory contains CA certificates for verifying
+a TLS certificate presented by an LDAP server.
+While Exim does not provide a default value, your SSL library may.
+Analogous to &%tls_verify_certificates%& but as a client-side option for LDAP
+and constrained to be a directory.
+.wen
+
+
+.new
+.option ldap_ca_cert_file main string unset
+.cindex "LDAP", "TLS CA certificate file"
+This option indicates which file contains CA certificates for verifying
+a TLS certificate presented by an LDAP server.
+While Exim does not provide a default value, your SSL library may.
+Analogous to &%tls_verify_certificates%& but as a client-side option for LDAP
+and constrained to be a file.
+.wen
+
+
+.new
+.option ldap_cert_file main string unset
+.cindex "LDAP" "TLS client certificate file"
+This option indicates which file contains an TLS client certificate which
+Exim should present to the LDAP server during TLS negotiation.
+Should be used together with &%ldap_cert_key%&.
+.wen
+
+
+.new
+.option ldap_cert_key main string unset
+.cindex "LDAP" "TLS client key file"
+This option indicates which file contains the secret/private key to use
+to prove identity to the LDAP server during TLS negotiation.
+Should be used together with &%ldap_cert_file%&, which contains the
+identity to be proven.
+.wen
+
+
+.new
+.option ldap_cipher_suite main string unset
+.cindex "LDAP" "TLS cipher suite"
+This controls the TLS cipher-suite negotiation during TLS negotiation with
+the LDAP server.  See &<<SECTreqciphssl>>& for more details of the format of
+cipher-suite options with OpenSSL (as used by LDAP client libraries).
+.wen
+
+
 .option ldap_default_servers main "string list" unset
 .cindex "LDAP" "default servers"
 This option provides a list of LDAP servers which are tried in turn when an
 LDAP query does not contain a server. See section &<<SECTforldaque>>& for
 details of LDAP queries. This option is available only when Exim has been built
 with LDAP support.
+
+
+.new
+.option ldap_require_cert main string unset.
+.cindex "LDAP" "policy for LDAP server TLS cert presentation"
+This should be one of the values "hard", "demand", "allow", "try" or "never".
+A value other than one of these is interpreted as "never".
+See the entry "TLS_REQCERT" in your system man page for ldap.conf(5).
+Although Exim does not set a default, the LDAP library probably defaults
+to hard/demand.
+.wen
+
+
+.new
+.option ldap_start_tls main boolean false
+.cindex "LDAP" "whether or not to negotiate TLS"
+If set, Exim will attempt to negotiate TLS with the LDAP server when
+connecting on a regular LDAP port.  This is the LDAP equivalent of SMTP's
+"STARTTLS".  This is distinct from using "ldaps", which is the LDAP form
+of SSL-on-connect.
+In the event of failure to negotiate TLS, the action taken is controlled
+by &%ldap_require_cert%&.
+.wen
 
 
 .option ldap_version main integer unset

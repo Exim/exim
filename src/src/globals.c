@@ -60,8 +60,15 @@ uschar *ibase_servers          = NULL;
 #endif
 
 #ifdef LOOKUP_LDAP
+uschar *eldap_ca_cert_dir      = NULL;
+uschar *eldap_ca_cert_file     = NULL;
+uschar *eldap_cert_file        = NULL;
+uschar *eldap_cert_key         = NULL;
+uschar *eldap_cipher_suite     = NULL;
 uschar *eldap_default_servers  = NULL;
+uschar *eldap_require_cert     = NULL;
 int     eldap_version          = -1;
+BOOL    eldap_start_tls        = FALSE;
 #endif
 
 #ifdef LOOKUP_MYSQL

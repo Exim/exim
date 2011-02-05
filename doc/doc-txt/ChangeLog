@@ -32,6 +32,8 @@ NM/02 Fix wide character breakage in the rfc2047 coding
 NM/03 Allow underscore in dnslist lookups
       Fixes bug 1026. Patch from Graeme Fowler
 
+PP/04 Bugzilla 230: Support TLS-enabled LDAP (in addition to ldaps).
+      Code patches from Adam Ciarcinski of NetBSD.
 
 
 Exim version 4.74
