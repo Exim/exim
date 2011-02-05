@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# Portability note:
+# This tool is only used in building spec.txt for a release, not used as
+# part of the normal build/install process, so only Maintainers are affected
+# by requirements here.
+
+filename="$1"
+
+if echo a | pcregrep -q a 2>/dev/null
+then
+	pcregrep -q '[^\x{20}-\x{7E}]' "$filename"
+	grepstatus=$?
+else
+	perl -ne 'BEGIN {$rv=1};END {exit $rv};
+		if (/[^\r\n\x{20}-\x{7E}]/) { $rv = 0; last }' < "$filename"
+	grepstatus=$?
+fi
+
+case $grepstatus in
+0)
+	echo >&2 "$0: found non-ASCII characters in $filename"
+	exit 1
+	;;
+1)
+	exit 0
+	;;
+2)
+	echo >&2 "$0: problem checking for non-ASCII characters in $filename"
+	exit 2
+	;;
+*)
+	echo >&2 "$0: unhandled return value from pcregrep: $grepstatus"
+	exit 3
+	;;
+esac
