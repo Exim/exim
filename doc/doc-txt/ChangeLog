@@ -35,6 +35,9 @@ NM/03 Allow underscore in dnslist lookups
 PP/04 Bugzilla 230: Support TLS-enabled LDAP (in addition to ldaps).
       Code patches from Adam Ciarcinski of NetBSD.
 
+NM/04 Fixed exiqgrep to cope with mailq missing size issue
+      Fixes bug 943.
+
 
 Exim version 4.74
 -----------------
