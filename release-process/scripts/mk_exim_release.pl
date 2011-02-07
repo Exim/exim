@@ -11,6 +11,7 @@ use File::Path;
 use File::Temp;
 use FindBin;
 use Getopt::Long;
+use IO::File;
 use Pod::Usage;
 
 my $debug   = 0;
@@ -105,6 +106,54 @@ sub unpack_tree {
     # run  command
     print( "Running: ", join( ' ', @cmd ), "\n" ) if ($verbose);
     system(@cmd) == 0 || croak "Unpack failed";
+}
+
+# ------------------------------------------------------------------
+
+sub adjust_version_extension {
+    my $context = shift;
+
+    return if ($context->{release} eq $context->{trelease});
+
+    my $variant = substr( $context->{release}, length($context->{trelease}) );
+    if ( $context->{release} ne $context->{trelease} . $variant ) {
+        die "Broken version numbering, I'm buggy";
+    }
+ 
+    my $srcdir    = File::Spec->catdir( $context->{release_tree}, 'src', 'src' );
+    my $version_h = File::Spec->catfile( $srcdir, 'version.h' );
+
+    my $fh        = new IO::File $version_h, 'r';
+    die "Cannot read version.h: $!\n" unless ( defined $fh );
+    my @lines = <$fh>;
+    $fh->close() or die "Failed to close-read($version_h): $!\n";
+
+    my $found = 0;
+    my $i;
+    for ( $i = 0 ; $i < @lines ; ++$i ) {
+        if ( $lines[$i] =~ /EXIM_VARIANT_VERSION/ ) {
+            $found = 1;
+	    last;
+        }
+    }
+    die "Cannot find version.h EXIM_VARIANT_VERSION\n" unless $found;
+    unless ( $lines[$i] =~ m/^\s* \# \s* define \s+ EXIM_VARIANT_VERSION \s+ "(.*)" \s* $/x ) {
+        die "Broken version.h EXIM_VARIANT_VERSION line\n";
+    }
+    if ( length $1 ) {
+        print( "WARNING: version.h has a variant tag already defined: $1\n" );
+        print( "         not changing that tag\n" );
+        return;
+    }
+
+    $lines[$i] = qq{#define EXIM_VARIANT_VERSION\t\t"$variant"\n};
+    # deliberately not verbose constrained:
+    print( "Adjusting version.h for $variant release.\n" );
+
+    $fh = new IO::File $version_h, "w";
+    die "Cannot write version.h: $!\n" unless ( defined $fh );
+    $fh->print( @lines );
+    $fh->close() or die "Failed to close-write($version_h): $!\n";
 }
 
 # ------------------------------------------------------------------
@@ -318,6 +367,7 @@ sub create_tar_files {
     export_git_tree($context);
     chdir( $context->{directory} ) || die;
     unpack_tree($context);
+    adjust_version_extension($context);
     build_documentation($context);
     build_package_directories($context);
     create_tar_files($context);
