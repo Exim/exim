@@ -1952,6 +1952,22 @@ if (unseen && r->next != NULL)
 /* Unset the address expansions, and return the final result. */
 
 ROUTE_EXIT:
+if (yield == DEFER) {
+  if (
+    ((Ustrstr(addr->message, "failed to expand") != NULL) || (Ustrstr(addr->message, "expansion of ") != NULL)) &&
+    (
+      Ustrstr(addr->message, "mysql") != NULL ||
+      Ustrstr(addr->message, "pgsql") != NULL ||
+      Ustrstr(addr->message, "sqlite") != NULL ||
+      Ustrstr(addr->message, "ldap:") != NULL ||
+      Ustrstr(addr->message, "ldapdn:") != NULL ||
+      Ustrstr(addr->message, "ldapm:") != NULL
+    )
+  ) {
+    addr->message = string_sprintf("Temporary internal error");
+  }
+}
+
 deliver_set_expansions(NULL);
 disable_logging = FALSE;
 return yield;

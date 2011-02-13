@@ -744,17 +744,15 @@ malformed, it won't ever have gone near LDAP.) */
 if (addr->message != NULL)
   {
   addr->message = string_printing(addr->message);
-  if (Ustrstr(addr->message, "failed to expand") != NULL &&
-      (Ustrstr(addr->message, "ldap:") != NULL ||
+  if (((Ustrstr(addr->message, "failed to expand") != NULL) || (Ustrstr(addr->message, "expansion of ") != NULL)) &&
+      (Ustrstr(addr->message, "mysql") != NULL ||
+       Ustrstr(addr->message, "pgsql") != NULL ||
+       Ustrstr(addr->message, "sqlite") != NULL ||
+       Ustrstr(addr->message, "ldap:") != NULL ||
        Ustrstr(addr->message, "ldapdn:") != NULL ||
        Ustrstr(addr->message, "ldapm:") != NULL))
     {
-    uschar *p = Ustrstr(addr->message, "pass=");
-    if (p != NULL)
-      {
-      p += 5;
-      while (*p != 0 && !isspace(*p)) *p++ = 'x';
-      }
+      addr->message = string_sprintf("Temporary internal error");
     }
   }
 

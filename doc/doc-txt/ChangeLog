@@ -44,6 +44,10 @@ PP/05 Bugzilla 1083: when lookup expansion defers, escape the output which
 PP/06 Bugzilla 1042: implement freeze_signal on pipe transports.
       Patch from Jakob Hirsch.
 
+PP/07 Bugzilla 1061: restrict error messages sent over SMTP to not reveal
+      SQL string expansion failure details.
+      Patch from Andrey Oktyabrski.
+
 
 Exim version 4.74
 -----------------
