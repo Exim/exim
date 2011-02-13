@@ -38,6 +38,9 @@ PP/04 Bugzilla 230: Support TLS-enabled LDAP (in addition to ldaps).
 NM/04 Fixed exiqgrep to cope with mailq missing size issue
       Fixes bug 943.
 
+PP/05 Bugzilla 1083: when lookup expansion defers, escape the output which
+      is logged, to avoid truncation. Patch from John Horne.
+
 
 Exim version 4.74
 -----------------

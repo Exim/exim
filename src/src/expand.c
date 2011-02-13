@@ -3675,8 +3675,8 @@ while (*s != 0)
         if (search_find_defer)
           {
           expand_string_message =
-            string_sprintf("lookup of \"%s\" gave DEFER: %s", key,
-              search_error_message);
+            string_sprintf("lookup of \"%s\" gave DEFER: %s",
+              string_printing2(key, FALSE), search_error_message);
           goto EXPAND_FAILED;
           }
         if (expand_setup > 0) expand_nmax = expand_setup;
