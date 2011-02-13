@@ -22,6 +22,9 @@ Version 4.75
     false.  When true, if the external delivery command exits on a signal then
     Exim will freeze the message in the queue, instead of generating a bounce.
 
+ 3. Log filenames may now use %M as an escape, instead of %D (still available).
+    The %M pattern expands to yyyymm, providing month-level resolution.
+
 
 Version 4.74
 ------------

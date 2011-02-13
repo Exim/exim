@@ -645,8 +645,8 @@ stripchart_init();
 only, and we can't tail the log. If not, open the log file and position to the
 end of it. Before doing so, we have to detect whether the log files are
 datestamped, and if so, sort out the name. The string in log_file already has
-%s replaced by "main"; if datestamping is occurring, %D will be present. In
-fact, we don't need to test explicitly - just process the string with
+%s replaced by "main"; if datestamping is occurring, %D or %M will be present.
+In fact, we don't need to test explicitly - just process the string with
 string_format.
 
 Once opened, save the file's inode so that we can detect when the file is

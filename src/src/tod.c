@@ -34,17 +34,18 @@ a leading zero for the full stamp, since Ustrftime() doesn't provide this
 option.
 
 Argument:  type of timestamp required:
-             tod_bsdin          BSD inbox format
-             tod_epoch          Unix epoch format
-             tod_full           full date and time
-             tod_log            log file data line format,
-                                  with zone if log_timezone is TRUE
-             tod_log_bare       always without zone
-             tod_log_datestamp  for log file names when datestamped
-             tod_log_zone       always with zone
-             tod_mbx            MBX inbox format
-             tod_zone           just the timezone offset
-             tod_zulu           time in 8601 zulu format
+             tod_bsdin                  BSD inbox format
+             tod_epoch                  Unix epoch format
+             tod_full                   full date and time
+             tod_log                    log file data line format,
+                                          with zone if log_timezone is TRUE
+             tod_log_bare               always without zone
+             tod_log_datestamp_daily    for log file names when datestamped daily
+             tod_log_datestamp_monthly  for log file names when datestamped monthly
+             tod_log_zone               always with zone
+             tod_mbx                    MBX inbox format
+             tod_zone                   just the timezone offset
+             tod_zulu                   time in 8601 zulu format
 
 Returns:   pointer to fixed buffer containing the timestamp
 */
@@ -91,15 +92,24 @@ switch(type)
   /* Format used as suffix of log file name when 'log_datestamp' is active. For
   testing purposes, it changes the file every second. */
 
-  case tod_log_datestamp:
   #ifdef TESTING_LOG_DATESTAMP
+  case tod_log_datestamp_daily:
+  case tod_log_datestamp_monthly:
   (void) sprintf(CS timebuf, "%04d%02d%02d%02d%02d",
     1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday, t->tm_hour, t->tm_min);
+  break;
+
   #else
+  case tod_log_datestamp_daily:
   (void) sprintf(CS timebuf, "%04d%02d%02d",
     1900 + t->tm_year, 1 + t->tm_mon, t->tm_mday);
-  #endif
   break;
+
+  case tod_log_datestamp_monthly:
+  (void) sprintf(CS timebuf, "%04d%02d",
+    1900 + t->tm_year, 1 + t->tm_mon);
+  break;
+  #endif
 
   /* Format used in BSD inbox separator lines. Sort-of documented in RFC 976
   ("UUCP Mail Interchange Format Standard") but only by example, not by

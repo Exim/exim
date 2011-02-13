@@ -744,6 +744,8 @@ extern BOOL    srs_usetimestamp;       /* SRS use timestamp flag */
 #endif
 extern BOOL    strict_acl_vars;        /* ACL variables have to be set before being used */
 extern int     string_datestamp_offset;/* After insertion by string_format */
+extern int     string_datestamp_length;/* After insertion by string_format */
+extern int     string_datestamp_type;  /* After insertion by string_format */
 extern BOOL    strip_excess_angle_brackets; /* Surrounding route-addrs */
 extern BOOL    strip_trailing_dot;     /* Remove dots at ends of domains */
 extern uschar *submission_domain;      /* Domain for submission mode */

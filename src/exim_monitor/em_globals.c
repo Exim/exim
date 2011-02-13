@@ -209,6 +209,8 @@ uschar *smtp_active_hostname   = NULL;
 BOOL    split_spool_directory  = FALSE;
 uschar *spool_directory        = US SPOOL_DIRECTORY;
 int     string_datestamp_offset=-1;
+int     string_datestamp_length= 0;
+int     string_datestamp_type  = -1;
 
 BOOL    timestamps_utc         = FALSE;
 BOOL    tls_certificate_verified = FALSE;

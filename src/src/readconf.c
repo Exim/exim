@@ -3038,8 +3038,8 @@ if (s == NULL)
 spool_directory = s;
 
 /* Expand log_file_path, which must contain "%s" in any component that isn't
-the null string or "syslog". It is also allowed to contain one instance of %D.
-However, it must NOT contain % followed by anything else. */
+the null string or "syslog". It is also allowed to contain one instance of %D
+or %M. However, it must NOT contain % followed by anything else. */
 
 if (*log_file_path != 0)
   {
@@ -3063,7 +3063,7 @@ if (*log_file_path != 0)
     t = Ustrchr(sss, '%');
     if (t != NULL)
       {
-      if (t[1] != 'D' || Ustrchr(t+2, '%') != NULL)
+      if ((t[1] != 'D' && t[1] != 'M') || Ustrchr(t+2, '%') != NULL)
         log_write(0, LOG_MAIN|LOG_PANIC_DIE, "log_file_path \"%s\" contains "
           "unexpected \"%%\" character", s);
       }

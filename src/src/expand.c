@@ -1587,7 +1587,7 @@ while (last > first)
     return tod_stamp(tod_zulu);
 
     case vtype_todlf:                          /* Log file datestamp tod */
-    return tod_stamp(tod_log_datestamp);
+    return tod_stamp(tod_log_datestamp_daily);
 
     case vtype_reply:                          /* Get reply address */
     s = find_header(US"reply-to:", exists_only, newsize, TRUE,

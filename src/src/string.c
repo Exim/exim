@@ -1039,7 +1039,7 @@ as a va_list item.
 The formats are the usual printf() ones, with some omissions (never used) and
 two additions for strings: %S forces lower case, and %#s or %#S prints nothing
 for a NULL string. Without the # "NULL" is printed (useful in debugging). There
-is also the addition of %D, which inserts the date in the form used for
+is also the addition of %D and %M, which insert the date in the form used for
 datestamped log files.
 
 Arguments:
@@ -1075,6 +1075,8 @@ uschar *p = buffer;
 uschar *last = buffer + buflen - 1;
 
 string_datestamp_offset = -1;  /* Datestamp not inserted */
+string_datestamp_length = 0;   /* Datestamp not inserted */
+string_datestamp_type = 0;     /* Datestamp not inserted */
 
 /* Scan the format and handle the insertions */
 
@@ -1229,18 +1231,30 @@ while (*fp != 0)
     *p++ = va_arg(ap, int);
     break;
 
-    case 'D':                   /* Insert datestamp for log file names */
-    s = CS tod_stamp(tod_log_datestamp);
+    case 'D':                   /* Insert daily datestamp for log file names */
+    s = CS tod_stamp(tod_log_datestamp_daily);
     string_datestamp_offset = p - buffer;   /* Passed back via global */
+    string_datestamp_length = Ustrlen(s);   /* Passed back via global */
+    string_datestamp_type = tod_log_datestamp_daily;
+    slen = string_datestamp_length;
+    goto INSERT_STRING;
+
+    case 'M':                   /* Insert monthly datestamp for log file names */
+    s = CS tod_stamp(tod_log_datestamp_monthly);
+    string_datestamp_offset = p - buffer;   /* Passed back via global */
+    string_datestamp_length = Ustrlen(s);   /* Passed back via global */
+    string_datestamp_type = tod_log_datestamp_monthly;
+    slen = string_datestamp_length;
     goto INSERT_STRING;
 
     case 's':
     case 'S':                   /* Forces *lower* case */
     s = va_arg(ap, char *);
 
-    INSERT_STRING:              /* Come to from %D above */
     if (s == NULL) s = null;
     slen = Ustrlen(s);
+
+    INSERT_STRING:              /* Come to from %D or %M above */
 
     /* If the width is specified, check that there is a precision
     set; if not, set it to the width to prevent overruns of long

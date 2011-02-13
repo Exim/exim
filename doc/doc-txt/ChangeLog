@@ -48,6 +48,9 @@ PP/07 Bugzilla 1061: restrict error messages sent over SMTP to not reveal
       SQL string expansion failure details.
       Patch from Andrey Oktyabrski.
 
+PP/08 Bugzilla 486: implement %M datestamping in log filenames.
+      Patch from Simon Arlott.
+
 
 Exim version 4.74
 -----------------

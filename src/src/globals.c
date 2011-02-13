@@ -1164,6 +1164,8 @@ BOOL    srs_usetimestamp       = TRUE;
 #endif
 BOOL    strict_acl_vars        = FALSE;
 int     string_datestamp_offset= -1;
+int     string_datestamp_length= 0;
+int     string_datestamp_type  = -1;
 BOOL    strip_excess_angle_brackets = FALSE;
 BOOL    strip_trailing_dot     = FALSE;
 uschar *submission_domain      = NULL;
