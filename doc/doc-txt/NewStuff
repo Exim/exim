@@ -18,6 +18,10 @@ Version 4.75
     this: ldap_ca_cert_dir, ldap_ca_cert_file, ldap_cert_file, ldap_cert_key,
     ldap_cipher_suite, ldap_require_cert, ldap_start_tls.
 
+ 2. The pipe transport now takes a boolean option, "freeze_signal", default
+    false.  When true, if the external delivery command exits on a signal then
+    Exim will freeze the message in the queue, instead of generating a bounce.
+
 
 Version 4.74
 ------------

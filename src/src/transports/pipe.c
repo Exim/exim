@@ -41,6 +41,8 @@ optionlist pipe_transport_options[] = {
       (void *)offsetof(pipe_transport_options_block, escape_string) },
   { "freeze_exec_fail",  opt_bool,
       (void *)offsetof(pipe_transport_options_block, freeze_exec_fail) },
+  { "freeze_signal",     opt_bool,
+      (void *)offsetof(pipe_transport_options_block, freeze_signal) },
   { "ignore_status",     opt_bool,
       (void *)offsetof(pipe_transport_options_block, ignore_status) },
   { "log_defer_output",  opt_bool | opt_public,
@@ -111,6 +113,7 @@ pipe_transport_options_block pipe_transport_option_defaults = {
   60*60,          /* timeout */
   0,              /* options */
   FALSE,          /* freeze_exec_fail */
+  FALSE,          /* freeze_signal */
   FALSE,          /* ignore_status */
   FALSE,          /* permit_coredump */
   FALSE,          /* restrict_to_path */
@@ -960,11 +963,20 @@ if ((rc = child_close(pid, timeout)) != 0)
   /* Either the process completed, but yielded a non-zero (necessarily
   positive) status, or the process was terminated by a signal (rc will contain
   the negation of the signal number). Treat killing by signal as failure unless
-  status is being ignored. */
+  status is being ignored. By default, the message is bounced back, unless
+  freeze_signal is set, in which case it is frozen instead. */
 
   else if (rc < 0)
     {
-    if (!ob->ignore_status)
+    if (ob->freeze_signal)
+      {
+      addr->transport_return = DEFER;
+      addr->special_action = SPECIAL_FREEZE;
+      addr->message = string_sprintf("Child process of %s transport (running "
+        "command \"%s\") was terminated by signal %d (%s)%s", tblock->name, cmd,
+        -rc, os_strsignal(-rc), tmsg);
+      }
+    else if (!ob->ignore_status)
       {
       addr->transport_return = FAIL;
       addr->message = string_sprintf("Child process of %s transport (running "

@@ -21033,9 +21033,14 @@ later"&. In this case, delivery is deferred. Details of a permanent failure are
 logged, but are not included in the bounce message, which merely contains
 &"local delivery failed"&.
 
+If the command exits on a signal and the &%freeze_signal%& option is set then
+the message will be frozen in the queue. If that option is not set, a bounce
+will be sent as normal.
+
 If the return code is greater than 128 and the command being run is a shell
 script, it normally means that the script was terminated by a signal whose
-value is the return code minus 128.
+value is the return code minus 128. The &%freeze_signal%& option does not
+apply in this case.
 
 If Exim is unable to run the command (that is, if &[execve()]& fails), the
 return code is set to 127. This is the value that a shell returns if it is
@@ -21242,6 +21247,16 @@ Failure to exec the command in a pipe transport is by default treated like
 any other failure while running the command. However, if &%freeze_exec_fail%&
 is set, failure to exec is treated specially, and causes the message to be
 frozen, whatever the setting of &%ignore_status%&.
+
+
+.new
+.otion freeze_signal pipe boolean false
+.cindex "signal exit"
+.cidenx "&(pipe)& transport", "signal exit"
+Normally if the process run by a command in a pipe transport exits on a signal,
+a bounce message is sent. If &%freeze_signal%& is set, the message will be
+frozen in Exim's queue instead.
+.wen
 
 
 .option ignore_status pipe boolean false

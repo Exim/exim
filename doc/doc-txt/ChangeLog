@@ -41,6 +41,9 @@ NM/04 Fixed exiqgrep to cope with mailq missing size issue
 PP/05 Bugzilla 1083: when lookup expansion defers, escape the output which
       is logged, to avoid truncation. Patch from John Horne.
 
+PP/06 Bugzilla 1042: implement freeze_signal on pipe transports.
+      Patch from Jakob Hirsch.
+
 
 Exim version 4.74
 -----------------

@@ -24,6 +24,7 @@ typedef struct {
   int   timeout;
   int   options;
   BOOL  freeze_exec_fail;
+  BOOL  freeze_signal;
   BOOL  ignore_status;
   BOOL  permit_coredump;
   BOOL  restrict_to_path;
