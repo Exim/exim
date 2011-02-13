@@ -51,6 +51,10 @@ PP/07 Bugzilla 1061: restrict error messages sent over SMTP to not reveal
 PP/08 Bugzilla 486: implement %M datestamping in log filenames.
       Patch from Simon Arlott.
 
+PP/09 New lookups functionality failed to compile on old gcc which rejects
+      extern declarations in function scope.
+      Patch from Oliver Fleischmann
+
 
 Exim version 4.74
 -----------------

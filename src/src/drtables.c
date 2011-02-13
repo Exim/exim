@@ -391,6 +391,63 @@ static void add_lookup_to_list(lookup_info *info)
   lookup_list[pos] = info;
 }
 
+
+/* These need to be at file level for old versions of gcc (2.95.2 reported),
+ * which give parse errors on an extern in function scope.  Each entry needs
+ * to also be invoked in init_lookup_list() below  */
+
+#if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
+extern lookup_module_info whoson_lookup_module_info;
+#endif
+#if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
+extern lookup_module_info testdb_lookup_module_info;
+#endif
+#if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
+extern lookup_module_info sqlite_lookup_module_info;
+#endif
+#ifdef EXPERIMENTAL_SPF
+extern lookup_module_info spf_lookup_module_info;
+#endif
+#if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
+extern lookup_module_info pgsql_lookup_module_info;
+#endif
+#if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
+extern lookup_module_info passwd_lookup_module_info;
+#endif
+#if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
+extern lookup_module_info oracle_lookup_module_info;
+#endif
+#if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
+extern lookup_module_info nisplus_lookup_module_info;
+#endif
+#if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
+extern lookup_module_info nis_lookup_module_info;
+#endif
+#if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
+extern lookup_module_info mysql_lookup_module_info;
+#endif
+#if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
+extern lookup_module_info lsearch_lookup_module_info;
+#endif
+#ifdef LOOKUP_LDAP
+extern lookup_module_info ldap_lookup_module_info;
+#endif
+#if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
+extern lookup_module_info ibase_lookup_module_info;
+#endif
+#if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
+extern lookup_module_info dsearch_lookup_module_info;
+#endif
+#if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
+extern lookup_module_info dnsdb_lookup_module_info;
+#endif
+#if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
+extern lookup_module_info dbmdb_lookup_module_info;
+#endif
+#if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
+extern lookup_module_info cdb_lookup_module_info;
+#endif
+
 void init_lookup_list(void)
 {
   DIR *dd;
@@ -405,87 +462,70 @@ void init_lookup_list(void)
   lookup_list_init_done = 1;
 
 #if defined(LOOKUP_CDB) && LOOKUP_CDB!=2
-extern lookup_module_info cdb_lookup_module_info;
   addlookupmodule(NULL, &cdb_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
-extern lookup_module_info dbmdb_lookup_module_info;
   addlookupmodule(NULL, &dbmdb_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
-extern lookup_module_info dnsdb_lookup_module_info;
   addlookupmodule(NULL, &dnsdb_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_DSEARCH) && LOOKUP_DSEARCH!=2
-extern lookup_module_info dsearch_lookup_module_info;
   addlookupmodule(NULL, &dsearch_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_IBASE) && LOOKUP_IBASE!=2
-extern lookup_module_info ibase_lookup_module_info;
   addlookupmodule(NULL, &ibase_lookup_module_info);
 #endif
 
 #ifdef LOOKUP_LDAP
-extern lookup_module_info ldap_lookup_module_info;
   addlookupmodule(NULL, &ldap_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_LSEARCH) && LOOKUP_LSEARCH!=2
-extern lookup_module_info lsearch_lookup_module_info;
   addlookupmodule(NULL, &lsearch_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_MYSQL) && LOOKUP_MYSQL!=2
-extern lookup_module_info mysql_lookup_module_info;
   addlookupmodule(NULL, &mysql_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_NIS) && LOOKUP_NIS!=2
-extern lookup_module_info nis_lookup_module_info;
   addlookupmodule(NULL, &nis_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_NISPLUS) && LOOKUP_NISPLUS!=2
-extern lookup_module_info nisplus_lookup_module_info;
   addlookupmodule(NULL, &nisplus_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_ORACLE) && LOOKUP_ORACLE!=2
-extern lookup_module_info oracle_lookup_module_info;
   addlookupmodule(NULL, &oracle_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_PASSWD) && LOOKUP_PASSWD!=2
-extern lookup_module_info passwd_lookup_module_info;
   addlookupmodule(NULL, &passwd_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_PGSQL) && LOOKUP_PGSQL!=2
-extern lookup_module_info pgsql_lookup_module_info;
   addlookupmodule(NULL, &pgsql_lookup_module_info);
 #endif
 
 #ifdef EXPERIMENTAL_SPF
-extern lookup_module_info spf_lookup_module_info;
   addlookupmodule(NULL, &spf_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_SQLITE) && LOOKUP_SQLITE!=2
-extern lookup_module_info sqlite_lookup_module_info;
   addlookupmodule(NULL, &sqlite_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_TESTDB) && LOOKUP_TESTDB!=2
-extern lookup_module_info testdb_lookup_module_info;
   addlookupmodule(NULL, &testdb_lookup_module_info);
 #endif
 
 #if defined(LOOKUP_WHOSON) && LOOKUP_WHOSON!=2
-extern lookup_module_info whoson_lookup_module_info;
   addlookupmodule(NULL, &whoson_lookup_module_info);
 #endif
 
