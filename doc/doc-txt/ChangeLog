@@ -69,6 +69,9 @@ PP/12 Bugzilla 1056: Improved spamd server selection.
 PP/13 Bugzilla 1086: Deal with maildir quota file races.
       Based on patch from Heiko Schlittermann.
 
+PP/14 Bugzilla 1019: DKIM multiple signature generation fix.
+      Patch from Uwe Doering, sign-off by Michael Haardt.
+
 
 Exim version 4.74
 -----------------

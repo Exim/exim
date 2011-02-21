@@ -397,6 +397,9 @@ uschar *dkim_exim_sign(int dkim_fd,
   uschar *dkim_private_key_expanded;
   pdkim_ctx *ctx = NULL;
   uschar *rc = NULL;
+  uschar *sigbuf = NULL;
+  int sigsize = 0;
+  int sigptr = 0;
   pdkim_signature *signature;
   int pdkim_canon;
   int pdkim_rc;
@@ -404,6 +407,8 @@ uschar *dkim_exim_sign(int dkim_fd,
   char buf[4096];
   int save_errno = 0;
   int old_pool = store_pool;
+
+  store_pool = POOL_MAIN;
 
   dkim_domain = expand_string(dkim_domain);
   if (dkim_domain == NULL) {
@@ -484,8 +489,7 @@ uschar *dkim_exim_sign(int dkim_fd,
          (Ustrcmp(dkim_private_key_expanded,"0") == 0) ||
          (Ustrcmp(dkim_private_key_expanded,"false") == 0) ) {
       /* don't sign, but no error */
-      rc = US"";
-      goto CLEANUP;
+      continue;
     }
 
     if (dkim_private_key_expanded[0] == '/') {
@@ -522,6 +526,7 @@ uschar *dkim_exim_sign(int dkim_fd,
                        0,
                        0);
 
+    lseek(dkim_fd, 0, SEEK_SET);
     while((sread = read(dkim_fd,&buf,4096)) > 0) {
       if (pdkim_feed(ctx,buf,sread) != PDKIM_OK) {
         rc = NULL;
@@ -539,16 +544,23 @@ uschar *dkim_exim_sign(int dkim_fd,
     pdkim_rc = pdkim_feed_finish(ctx,&signature);
     if (pdkim_rc != PDKIM_OK) {
       log_write(0, LOG_MAIN|LOG_PANIC, "DKIM: signing failed (RC %d)", pdkim_rc);
+      rc = NULL;
       goto CLEANUP;
     }
 
-    rc = store_get(strlen(signature->signature_header)+3);
-    Ustrcpy(rc,US signature->signature_header);
-    Ustrcat(rc,US"\r\n");
+    sigbuf = string_append(sigbuf, &sigsize, &sigptr, 2,
+                           US signature->signature_header,
+                           US"\r\n");
 
     pdkim_free_ctx(ctx);
     ctx = NULL;
   }
+
+  if (sigbuf != NULL) {
+    sigbuf[sigptr] = '\0';
+    rc = sigbuf;
+  } else
+    rc = US"";
 
   CLEANUP:
   if (ctx != NULL)
