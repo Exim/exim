@@ -55,6 +55,11 @@ PP/09 New lookups functionality failed to compile on old gcc which rejects
       extern declarations in function scope.
       Patch from Oliver Fleischmann
 
+PP/10 Use sig_atomic_t for flags set from signal handlers.
+      Check getgroups() return and improve debugging.
+      Fixed developed for diagnosis in bug 927 (which turned out to be
+      a kernel bug).
+
 
 Exim version 4.74
 -----------------

@@ -42,8 +42,10 @@ the arguments of printf-like functions. This is done by a macro. */
 the standard header files, so we use "uschar". Solaris has u_char in
 sys/types.h. This is just a typing convenience, of course. */
 
-typedef int BOOL;
 typedef unsigned char uschar;
+typedef int BOOL;
+/* We also have SIGNAL_BOOL, which requires signal.h be included, so is defined
+elsewhere */
 
 
 /* These macros save typing for the casting that is needed to cope with the

@@ -31,8 +31,8 @@ static smtp_slot empty_smtp_slot = { 0, NULL };
 *               Local static variables           *
 *************************************************/
 
-static volatile BOOL sigchld_seen;
-static volatile BOOL sighup_seen;
+static SIGNAL_BOOL sigchld_seen;
+static SIGNAL_BOOL sighup_seen;
 
 static int   accept_retry_count = 0;
 static int   accept_retry_errno;

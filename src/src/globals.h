@@ -18,6 +18,12 @@ local_scan.h header file. */
 extern int h_errno;
 #endif
 
+/* We need to be careful about width of int and atomicity in signal handlers,
+especially with the rise of 64-bit systems breaking older assumptions.  But
+sig_atomic_t comes from signal.h so can't go into mytypes.h without including
+signal support in local_scan, which seems precipitous. */
+typedef volatile sig_atomic_t SIGNAL_BOOL;
+
 /* Now things that are present only when configured. */
 
 #ifdef EXIM_PERL
@@ -659,7 +665,7 @@ extern address_item *sender_verified_list; /* Saved chain of sender verifies */
 extern address_item *sender_verified_failed; /* The one that caused denial */
 extern uschar *sending_ip_address;     /* Address of outgoing (SMTP) interface */
 extern int     sending_port;           /* Port of outgoing interface */
-extern volatile BOOL sigalrm_seen;     /* Flag for sigalrm_handler */
+extern SIGNAL_BOOL sigalrm_seen;       /* Flag for sigalrm_handler */
 extern uschar **sighup_argv;           /* Args for re-execing after SIGHUP */
 extern int     smtp_accept_count;      /* Count of connections */
 extern BOOL    smtp_accept_keepalive;  /* Set keepalive on incoming */

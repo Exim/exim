@@ -570,17 +570,20 @@ if (euid == root_uid || euid != uid || egid != gid || igflag)
 
 DEBUG(D_uid)
   {
-  int group_count;
+  int group_count, save_errno;
   gid_t group_list[NGROUPS_MAX];
   debug_printf("changed uid/gid: %s\n  uid=%ld gid=%ld pid=%ld\n", msg,
     (long int)geteuid(), (long int)getegid(), (long int)getpid());
   group_count = getgroups(NGROUPS_MAX, group_list);
+  save_errno = errno;
   debug_printf("  auxiliary group list:");
   if (group_count > 0)
     {
     int i;
     for (i = 0; i < group_count; i++) debug_printf(" %d", (int)group_list[i]);
     }
+  else if (group_count < 0)
+    debug_printf(" <error: %s>", strerror(save_errno));
   else debug_printf(" <none>");
   debug_printf("\n");
   }
@@ -3281,6 +3284,11 @@ till after reading the config, which might specify the exim gid. Therefore,
 save the group list here first. */
 
 group_count = getgroups(NGROUPS_MAX, group_list);
+if (group_count < 0)
+  {
+  fprintf(stderr, "exim: getgroups() failed: %s\n", strerror(errno));
+  exit(EXIT_FAILURE);
+  }
 
 /* There is a fundamental difference in some BSD systems in the matter of
 groups. FreeBSD and BSDI are known to be different; NetBSD and OpenBSD are
