@@ -6,7 +6,7 @@ Change log file for Exim from version 4.21
 Exim version 4.75
 -----------------
 
-NM/01 Workround for PCRE version dependancy in version reporting
+NM/01 Workround for PCRE version dependency in version reporting
       Bugzilla 1073
 
 TF/01 Update valgrind.h and memcheck.h to copies from valgrind-3.6.0.
