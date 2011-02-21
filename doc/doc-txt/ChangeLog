@@ -72,6 +72,10 @@ PP/13 Bugzilla 1086: Deal with maildir quota file races.
 PP/14 Bugzilla 1019: DKIM multiple signature generation fix.
       Patch from Uwe Doering, sign-off by Michael Haardt.
 
+NM/05 Fix to spam.c to accommodate older gcc versions which dislike
+      variable declaration deep within a block.  Bug and patch from
+      Dennis Davis.
+
 
 Exim version 4.74
 -----------------

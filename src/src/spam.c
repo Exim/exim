@@ -150,6 +150,7 @@ int spam(uschar **listptr) {
     };
 
     while ( num_servers > 0 ) {
+      int i;
 
       /* Randomly pick a server to try */
       current_server = random_number( num_servers );
@@ -185,7 +186,6 @@ int spam(uschar **listptr) {
 
       /* Remove the server from the list. XXX We should free the memory */
       num_servers--;
-      int i;
       for( i = current_server; i < num_servers; i++ )
         spamd_address_vector[i] = spamd_address_vector[i+1];
     }
