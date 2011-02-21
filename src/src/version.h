@@ -6,7 +6,7 @@
 /* See the file NOTICE for conditions of use and distribution. */
 
 /* This is bumped by the Exim Maintainers, the release engineer: */
-#define EXIM_RELEASE_VERSION_STR        "4.74"
+#define EXIM_RELEASE_VERSION_STR        "4.75"
 /* If you apply extensive local patches, consider putting -foo into here */
 #define EXIM_VARIANT_VERSION            ""
 

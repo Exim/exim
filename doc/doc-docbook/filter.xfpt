@@ -65,8 +65,8 @@
 <author><firstname>Philip</firstname><surname>Hazel</surname></author>
 <authorinitials>PH</authorinitials>
 <revhistory><revision>
-  <revnumber>4.74</revnumber>
-  <date>21 Jan 2011</date>
+  <revnumber>4.75</revnumber>
+  <date>21 Feb 2011</date>
   <authorinitials>PH</authorinitials>
 </revision></revhistory>
 <copyright><year>2010</year><holder>University of Cambridge</holder></copyright>
@@ -80,7 +80,7 @@
 .chapter "Forwarding and filtering in Exim" "CHAPforandfilt"
 This document describes the user interfaces to Exim's in-built mail filtering
 facilities, and is copyright &copy; University of Cambridge 2007. It
-corresponds to Exim version 4.74.
+corresponds to Exim version 4.75.
 
 
 
