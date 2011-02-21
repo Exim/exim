@@ -11137,8 +11137,15 @@ number of lines received. Before delivery happens (that is, before filters,
 routers, and transports run) the count is increased to include the
 &'Received:'& header line that Exim standardly adds, and also any other header
 lines that are added by ACLs. The blank line that separates the message header
-from the body is not counted. Here is an example of the use of this variable in
-a DATA ACL:
+from the body is not counted.
+
+As with the special case of &$message_size$&, during the expansion of the
+appendfile transport's maildir_tag option in maildir format, the value of
+&$message_linecount$& is the precise size of the number of newlines in the
+file that has been written (minus one for the blank line between the
+header and the body).
+
+Here is an example of the use of this variable in a DATA ACL:
 .code
 deny message   = Too many lines in message header
      condition = \

@@ -25,6 +25,10 @@ Version 4.75
  3. Log filenames may now use %M as an escape, instead of %D (still available).
     The %M pattern expands to yyyymm, providing month-level resolution.
 
+ 4. The $message_linecount variable is now updated for the maildir_tag option,
+    in the same way as $message_size, to reflect the real number of lines,
+    including any header additions or removals from transport.
+
 
 Version 4.74
 ------------

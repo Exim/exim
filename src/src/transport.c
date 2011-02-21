@@ -426,6 +426,7 @@ for (ptr = start; ptr < end; ptr++)
 
     if (use_crlf) *chunk_ptr++ = '\r';
     *chunk_ptr++ = '\n';
+    transport_newlines++;
 
     /* The check_string test (formerly "from hack") replaces the specific
     string at the start of a line with an escape string (e.g. "From " becomes

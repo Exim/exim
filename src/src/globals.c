@@ -1254,6 +1254,7 @@ transport_instance  transport_defaults = {
 };
 
 int     transport_count;
+int     transport_newlines;
 uschar **transport_filter_argv  = NULL;
 int     transport_filter_timeout;
 BOOL    transport_filter_timed_out = FALSE;

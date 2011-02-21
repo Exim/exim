@@ -60,6 +60,9 @@ PP/10 Use sig_atomic_t for flags set from signal handlers.
       Fixed developed for diagnosis in bug 927 (which turned out to be
       a kernel bug).
 
+PP/11 Bugzilla 1055: Update $message_linecount for maildir_tag.
+      Patch from Mark Zealey.
+
 
 Exim version 4.74
 -----------------

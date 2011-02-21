@@ -785,6 +785,7 @@ extern int     thismessage_size_limit; /* Limit for this message */
 extern int     timeout_frozen_after;   /* Max time to keep frozen messages */
 extern BOOL    timestamps_utc;         /* Use UTC for all times */
 extern int     transport_count;        /* Count of bytes transported */
+extern int     transport_newlines;     /* Accurate count of number of newline chars transported */
 extern uschar **transport_filter_argv; /* For on-the-fly filtering */
 extern int     transport_filter_timeout; /* Timeout for same */
 extern BOOL    transport_filter_timed_out; /* True if it did */
