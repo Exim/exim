@@ -21273,9 +21273,9 @@ frozen, whatever the setting of &%ignore_status%&.
 
 
 .new
-.otion freeze_signal pipe boolean false
+.option freeze_signal pipe boolean false
 .cindex "signal exit"
-.cidenx "&(pipe)& transport", "signal exit"
+.cindex "&(pipe)& transport", "signal exit"
 Normally if the process run by a command in a pipe transport exits on a signal,
 a bounce message is sent. If &%freeze_signal%& is set, the message will be
 frozen in Exim's queue instead.

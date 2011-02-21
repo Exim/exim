@@ -235,6 +235,7 @@ forbid_pipe                          boolean         false         redirect     
 forbid_sieve_filter                  boolean         false         redirect          4.44
 forbid_smtp_code                     boolean         false         redirect          4.63
 freeze_exec_fail                     boolean         false         pipe              1.89
+freeze_signal                        boolean         false         pipe              4.75
 freeze_tell                          boolean         false         main              4.00 replaces freeze_tell_mailmaster
 from                                 string*         unset         autoreply
 gecos_name                           string*         unset         main
