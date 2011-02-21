@@ -11139,11 +11139,13 @@ routers, and transports run) the count is increased to include the
 lines that are added by ACLs. The blank line that separates the message header
 from the body is not counted.
 
+.new
 As with the special case of &$message_size$&, during the expansion of the
 appendfile transport's maildir_tag option in maildir format, the value of
 &$message_linecount$& is the precise size of the number of newlines in the
 file that has been written (minus one for the blank line between the
 header and the body).
+.wen
 
 Here is an example of the use of this variable in a DATA ACL:
 .code
@@ -20190,6 +20192,7 @@ The regular expression should not assume that the length is at the end of the
 file name (even though &%maildir_tag%& puts it there) because maildir MUAs
 sometimes add other information onto the ends of message file names.
 
+Section &<<SECID136>>& contains further information.
 
 
 .option quota_warn_message appendfile string&!! "see below"
@@ -20604,6 +20607,7 @@ tag is added to its name. However, if adding the tag takes the length of the
 name to the point where the test &[stat()]& call fails with ENAMETOOLONG,
 the tag is dropped and the maildir file is created with no tag.
 
+.new
 .vindex "&$message_size$&"
 Tags can be used to encode the size of files in their names; see
 &%quota_size_regex%& above for an example. The expansion of &%maildir_tag%&
@@ -20613,8 +20617,20 @@ forced to fail, the tag is ignored, but a non-forced failure causes delivery to
 be deferred. The expanded tag may contain any printing characters except &"/"&.
 Non-printing characters in the string are ignored; if the resulting string is
 empty, it is ignored. If it starts with an alphanumeric character, a leading
-colon is inserted.
+colon is inserted; this default has not proven to be the path that popular
+maildir implementations have chosen (but changing it in Exim would break
+backwards compatibility).
 
+For one common implementation, you might set:
+.code
+maildir_tag = ,S=${message_size}
+.endd
+but you should check the documentation of the other software to be sure.
+
+It is advisable to also set &%quota_size_regex%& when setting &%maildir_tag%&
+as this allows Exim to extract the size from your tag, instead of having to
+&[stat()]& each message file.
+.wen
 
 
 .section "Using a maildirsize file" "SECID136"
