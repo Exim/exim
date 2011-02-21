@@ -29,6 +29,9 @@ Version 4.75
     in the same way as $message_size, to reflect the real number of lines,
     including any header additions or removals from transport.
 
+ 5. When contacting a pool of SpamAssassin servers configured in spamd_address,
+    Exim now selects entries randomly, to better scale in a cluster setup.
+
 
 Version 4.74
 ------------

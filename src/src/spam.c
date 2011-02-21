@@ -111,10 +111,8 @@ int spam(uschar **listptr) {
 
   /* socket does not start with '/' -> network socket */
   if (*spamd_address_work != '/') {
-    time_t now = time(NULL);
     int num_servers = 0;
-    int current_server = 0;
-    int start_server = 0;
+    int current_server;
     uschar *address = NULL;
     uschar *spamd_address_list_ptr = spamd_address_work;
     uschar address_buffer[256];
@@ -126,6 +124,7 @@ int spam(uschar **listptr) {
                                         address_buffer,
                                         sizeof(address_buffer))) != NULL) {
 
+      /* Potential memory leak as we never free the store. */
       spamd_address_container *this_spamd =
         (spamd_address_container *)store_get(sizeof(spamd_address_container));
 
@@ -150,9 +149,10 @@ int spam(uschar **listptr) {
       return DEFER;
     };
 
-    current_server = start_server = (int)now % num_servers;
+    while ( num_servers > 0 ) {
 
-    while (1) {
+      /* Randomly pick a server to try */
+      current_server = random_number( num_servers );
 
       debug_printf("trying server %s, port %u\n",
                    spamd_address_vector[current_server]->tcp_addr,
@@ -180,16 +180,21 @@ int spam(uschar **listptr) {
          spamd_address_vector[current_server]->tcp_addr,
          spamd_address_vector[current_server]->tcp_port,
          strerror(errno));
-      current_server++;
-      if (current_server >= num_servers)
-        current_server = 0;
-      if (current_server == start_server) {
-        log_write(0, LOG_MAIN|LOG_PANIC, "spam acl condition: all spamd servers failed");
-        (void)fclose(mbox_file);
-        (void)close(spamd_sock);
-        return DEFER;
-      };
-    };
+
+      (void)close(spamd_sock);
+
+      /* Remove the server from the list. XXX We should free the memory */
+      num_servers--;
+      int i;
+      for( i = current_server; i < num_servers; i++ )
+        spamd_address_vector[i] = spamd_address_vector[i+1];
+    }
+
+    if ( num_servers == 0 ) {
+      log_write(0, LOG_MAIN|LOG_PANIC, "spam acl condition: all spamd servers failed");
+      (void)fclose(mbox_file);
+      return DEFER;
+    }
 
   }
   else {

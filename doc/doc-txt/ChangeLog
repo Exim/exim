@@ -63,6 +63,9 @@ PP/10 Use sig_atomic_t for flags set from signal handlers.
 PP/11 Bugzilla 1055: Update $message_linecount for maildir_tag.
       Patch from Mark Zealey.
 
+PP/12 Bugzilla 1056: Improved spamd server selection.
+      Patch from Mark Zealey.
+
 
 Exim version 4.74
 -----------------
