@@ -584,7 +584,7 @@ else
       "a later subdirectory modification\n");
     (void)Uunlink(filename);
     (void)close(fd);
-    fd = -1;
+    fd = -2;
     }
   }
 

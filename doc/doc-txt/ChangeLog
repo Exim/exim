@@ -66,6 +66,9 @@ PP/11 Bugzilla 1055: Update $message_linecount for maildir_tag.
 PP/12 Bugzilla 1056: Improved spamd server selection.
       Patch from Mark Zealey.
 
+PP/13 Bugzilla 1086: Deal with maildir quota file races.
+      Based on patch from Heiko Schlittermann.
+
 
 Exim version 4.74
 -----------------

@@ -2419,9 +2419,18 @@ else
           "%s/maildirsize", check_path);
         return FALSE;
         }
+      else if (maildirsize_fd == -2)
+        {
+        DEBUG(D_transport) debug_printf("disabling quota check because of "
+          "races updating %s/maildirsize", check_path);
+        disable_quota = TRUE;
+        }
 
-      if (mailbox_size < 0) mailbox_size = size;
-      if (mailbox_filecount < 0) mailbox_filecount = filecount;
+      if (maildirsize_fd >= 0)
+        {
+        if (mailbox_size < 0) mailbox_size = size;
+        if (mailbox_filecount < 0) mailbox_filecount = filecount;
+        }
       }
 
     /* No quota enforcement; ensure file does *not* exist; calculate size if
