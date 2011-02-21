@@ -223,7 +223,8 @@ sub build_documentation {
 sub move_text_docs_into_pkg {
     my $context = shift;
 
-    my $old_docdir = File::Spec->catdir( $context->{eximpkgdir}, 'doc', 'doc-docbook' );
+    my $old_docdir = File::Spec->catdir( $context->{release_tree}, 'doc', 'doc-docbook' );
+    my $old_txtdir = File::Spec->catdir( $context->{release_tree}, 'doc', 'doc-txt' );
     my $new_docdir = File::Spec->catdir( $context->{eximpkgdir}, 'doc' );
     mkpath( $new_docdir, { verbose => ( $verbose || $debug ) } );
 
@@ -233,7 +234,7 @@ sub move_text_docs_into_pkg {
     }
 
     # move text documents across
-    foreach my $file ( glob( File::Spec->catfile( 'doc/doc-txt', '*' ) ) ) {
+    foreach my $file ( glob( File::Spec->catfile( $old_txtdir, '*' ) ) ) {
 
         # skip a few we dont want
         my $fn = ( File::Spec->splitpath($file) )[2];
