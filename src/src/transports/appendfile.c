@@ -2419,18 +2419,12 @@ else
           "%s/maildirsize", check_path);
         return FALSE;
         }
-      else if (maildirsize_fd == -2)
-        {
-        DEBUG(D_transport) debug_printf("disabling quota check because of "
-          "races updating %s/maildirsize", check_path);
-        disable_quota = TRUE;
-        }
+      /* can also return -2, which means that the file was removed because of
+      raciness; but in this case, the size & filecount will still have been
+      updated. */
 
-      if (maildirsize_fd >= 0)
-        {
-        if (mailbox_size < 0) mailbox_size = size;
-        if (mailbox_filecount < 0) mailbox_filecount = filecount;
-        }
+      if (mailbox_size < 0) mailbox_size = size;
+      if (mailbox_filecount < 0) mailbox_filecount = filecount;
       }
 
     /* No quota enforcement; ensure file does *not* exist; calculate size if
@@ -2927,7 +2921,8 @@ if (!disable_quota)
   if (yield == OK && maildirsize_fd >= 0)
     maildir_record_length(maildirsize_fd, message_size);
   maildir_save_errno = errno;    /* Preserve errno while closing the file */
-  (void)close(maildirsize_fd);
+  if (maildirsize_fd >= 0)
+    (void)close(maildirsize_fd);
   errno = maildir_save_errno;
   }
 #endif  /* SUPPORT_MAILDIR */
