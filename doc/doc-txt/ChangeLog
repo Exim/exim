@@ -78,6 +78,8 @@ NM/05 Fix to spam.c to accommodate older gcc versions which dislike
 
 PP/15 lookups-Makefile IRIX compatibilty coercion.
 
+PP/16 Make DISABLE_DKIM build knob functional.
+
 
 Exim version 4.74
 -----------------

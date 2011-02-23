@@ -40,6 +40,7 @@ it's a default value. */
 #define DEFAULT_CRYPT              crypt
 #define DELIVER_IN_BUFFER_SIZE     8192
 #define DELIVER_OUT_BUFFER_SIZE    8192
+#define DISABLE_DKIM
 #define DISABLE_D_OPTION
 
 #define ENABLE_DISABLE_FSYNC
