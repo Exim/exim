@@ -2,13 +2,29 @@
 
 # We turn the configure-built build-$foo/lookups/Makefile.predynamic into Makefile
 
-if [ -x /usr/xpg4/bin/sh ] && [ -z "$EXIM_BLOCK_XPG4_LOOP" ]
+# We always re-exec ourselves at least once, because it's the cleanest and
+# most portable way to turn on various features we expect of POSIX sh.
+if [ -z "$EXIM_LOOKUP_MAKEFILE_ADJUSTED" ]
 then
-  EXIM_BLOCK_XPG4_LOOP=yes
-  export EXIM_BLOCK_XPG4_LOOP
-  PATH="/usr/xpg4/bin:$PATH"
-  export PATH
-  exec /usr/xpg4/bin/sh "$0" "$@"
+  SHELL=/bin/sh
+  EXIM_LOOKUP_MAKEFILE_ADJUSTED=yes
+  export EXIM_LOOKUP_MAKEFILE_ADJUSTED
+
+  # Solaris sh and tr are problematic until we get xpg4 variants
+  if [ -x /usr/xpg4/bin/sh ]
+  then
+    PATH="/usr/xpg4/bin:$PATH"
+    export PATH
+    SHELL=/usr/xpg4/bin/sh
+    export SHELL
+  fi
+
+  # IRIX uses /bin/ksh for sh but in a compatibility mode unless $_XPG == 1,
+  # where said compatibility mode disables $(...)
+  _XPG=1
+  export _XPG
+
+  exec "$SHELL" "$0" "$@"
 fi
 
 input=lookups/Makefile.predynamic

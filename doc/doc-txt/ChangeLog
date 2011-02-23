@@ -76,6 +76,8 @@ NM/05 Fix to spam.c to accommodate older gcc versions which dislike
       variable declaration deep within a block.  Bug and patch from
       Dennis Davis.
 
+PP/15 lookups-Makefile IRIX compatibilty coercion.
+
 
 Exim version 4.74
 -----------------
