@@ -80,6 +80,8 @@ PP/15 lookups-Makefile IRIX compatibilty coercion.
 
 PP/16 Make DISABLE_DKIM build knob functional.
 
+NM/06 Bugzilla 698: child_open_uid: restore default SIGPIPE handler
+
 
 Exim version 4.74
 -----------------
