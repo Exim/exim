@@ -4417,8 +4417,13 @@ vg_VALGRIND_DO_CLIENT_REQUEST_EXPR(uintptr_t _zzq_default,
 
 #if defined(NVALGRIND)
 
-#  define VALGRIND_PRINTF(...)
-#  define VALGRIND_PRINTF_BACKTRACE(...)
+/* In Exim the following two lines have been changed from the original
+   version for portability to C89 compilers that don't support variable
+   argument macros. We don't use these macros so it doesn't matter much what
+   we do with them, but the following will work OK in most situations though
+   it may cause complaints about expressions without side-effects. */
+#  define VALGRIND_PRINTF (void)
+#  define VALGRIND_PRINTF_BACKTRACE (void)
 
 #else /* NVALGRIND */
 

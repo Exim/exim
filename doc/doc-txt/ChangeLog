@@ -83,6 +83,9 @@ PP/16 Make DISABLE_DKIM build knob functional.
 NM/06 Bugzilla 968: child_open_uid: restore default SIGPIPE handler
       Patch by Simon Arlott
 
+TF/03 Fix valgrind.h portability to C89 compilers that do not support
+      variable argument macros. Our copy now differs from upstream.
+
 
 Exim version 4.74
 -----------------
