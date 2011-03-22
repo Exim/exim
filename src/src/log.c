@@ -573,7 +573,7 @@ Returns:    nothing
 */
 
 void
-log_write(unsigned int selector, int flags, char *format, ...)
+log_write(unsigned int selector, int flags, const char *format, ...)
 {
 uschar *ptr;
 int length, rc;

@@ -77,7 +77,7 @@ extern void    debug_print_argv(uschar **);
 extern void    debug_print_ids(uschar *);
 extern void    debug_print_string(uschar *);
 extern void    debug_print_tree(tree_node *);
-extern void    debug_vprintf(char *, va_list);
+extern void    debug_vprintf(const char *, va_list);
 extern void    decode_bits(unsigned int *, unsigned int *,
                   int, int, uschar *, bit_table *, int, uschar *, int);
 extern address_item *deliver_make_addr(uschar *, BOOL);
@@ -89,7 +89,7 @@ extern void    deliver_succeeded(address_item *);
 #ifdef WITH_OLD_DEMIME
 extern int     demime(uschar **);
 #endif
-extern BOOL    directory_make(uschar *, uschar *, int, BOOL);
+extern BOOL    directory_make(const uschar *, const uschar *, int, BOOL);
 #ifndef DISABLE_DKIM
 extern BOOL    dkim_transport_write_message(address_item *, int, int,
                    int, uschar *, uschar *, uschar *, uschar *, rewrite_rule *,
@@ -121,7 +121,7 @@ extern BOOL    filter_personal(string_item *, BOOL);
 extern BOOL    filter_runtest(int, uschar *, BOOL, BOOL);
 extern BOOL    filter_system_interpret(address_item **, uschar **);
 
-extern void    header_add(int, char *, ...);
+extern void    header_add(int, const char *, ...);
 extern int     header_checkname(header_line *, BOOL);
 extern BOOL    header_match(uschar *, BOOL, BOOL, string_item *, int, ...);
 extern int     host_address_extract_port(uschar *);
@@ -181,12 +181,12 @@ extern int     mime_regex(uschar **);
 extern uschar *moan_check_errorcopy(uschar *);
 extern BOOL    moan_skipped_syntax_errors(uschar *, error_block *, uschar *,
                  BOOL, uschar *);
-extern void    moan_smtp_batch(uschar *, char *, ...);
-extern void    moan_tell_someone(uschar *, address_item *, uschar *, char *,
-                 ...);
+extern void    moan_smtp_batch(uschar *, const char *, ...);
+extern void    moan_tell_someone(uschar *, address_item *,
+                 const uschar *, const char *, ...);
 extern BOOL    moan_to_sender(int, error_block *, header_line *, FILE *, BOOL);
 extern void    moan_write_from(FILE *);
-extern FILE   *modefopen(uschar *, char *, mode_t);
+extern FILE   *modefopen(const uschar *, const char *, mode_t);
 
 extern uschar *parse_extract_address(uschar *, uschar **, int *, int *, int *,
                  BOOL);
@@ -271,7 +271,7 @@ extern int     search_findtype_partial(uschar *, int *, uschar **, int *,
                  int *);
 extern void   *search_open(uschar *, int, int, uid_t *, gid_t *);
 extern void    search_tidyup(void);
-extern void    set_process_info(char *, ...);
+extern void    set_process_info(const char *, ...);
 extern void    sha1_end(sha1 *, const uschar *, int, uschar *);
 extern void    sha1_mid(sha1 *, const uschar *);
 extern void    sha1_start(sha1 *);
@@ -299,7 +299,7 @@ extern int     smtp_setup_msg(void);
 extern BOOL    smtp_start_session(void);
 extern int     smtp_ungetc(int);
 extern BOOL    smtp_verify_helo(void);
-extern int     smtp_write_command(smtp_outblock *, BOOL, char *, ...);
+extern int     smtp_write_command(smtp_outblock *, BOOL, const char *, ...);
 #ifdef WITH_CONTENT_SCAN
 extern int     spam(uschar **);
 extern FILE   *spool_mbox(unsigned long *, uschar *);
@@ -321,18 +321,18 @@ extern uschar *string_copy_malloc(uschar *);
 extern uschar *string_copylc(uschar *);
 extern uschar *string_copynlc(uschar *, int);
 extern uschar *string_dequote(uschar **);
-extern BOOL    string_format(uschar *, int, char *, ...);
+extern BOOL    string_format(uschar *, int, const char *, ...);
 extern uschar *string_format_size(int, uschar *);
 extern int     string_interpret_escape(uschar **);
 extern int     string_is_ip_address(uschar *, int *);
 extern uschar *string_log_address(address_item *, BOOL, BOOL);
 extern uschar *string_nextinlist(uschar **, int *, uschar *, int);
-extern uschar *string_open_failed(int, char *, ...);
+extern uschar *string_open_failed(int, const char *, ...);
 extern uschar *string_printing2(uschar *, BOOL);
 extern uschar *string_split_message(uschar *);
-extern BOOL    string_vformat(uschar *, int, char *, va_list);
-extern int     strcmpic(uschar *, uschar *);
-extern int     strncmpic(uschar *, uschar *, int);
+extern BOOL    string_vformat(uschar *, int, const char *, va_list);
+extern int     strcmpic(const uschar *, const uschar *);
+extern int     strncmpic(const uschar *, const uschar *, int);
 extern uschar *strstric(uschar *, uschar *, BOOL);
 
 extern uschar *tod_stamp(int);
@@ -346,7 +346,7 @@ extern BOOL    transport_set_up_command(uschar ***, uschar *, BOOL, int,
                  address_item *, uschar *, uschar **);
 extern void    transport_update_waiting(host_item *, uschar *);
 extern BOOL    transport_write_block(int, uschar *, int);
-extern BOOL    transport_write_string(int, char *, ...);
+extern BOOL    transport_write_string(int, const char *, ...);
 extern BOOL    transport_write_message(address_item *, int, int, int, uschar *,
                  uschar *, uschar *, uschar *, rewrite_rule *, int);
 extern void    tree_add_duplicate(uschar *, address_item *);

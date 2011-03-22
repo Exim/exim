@@ -30,7 +30,7 @@ Returns:    TRUE or FALSE
 */
 
 BOOL
-header_testname(header_line *h, uschar *name, int len, BOOL notdel)
+header_testname(header_line *h, const uschar *name, int len, BOOL notdel)
 {
 uschar *tt;
 if (h->type == '*' && notdel) return FALSE;
@@ -46,7 +46,8 @@ return *tt == ':';
    header_testname() above. */
 
 BOOL
-header_testname_incomplete(header_line *h, uschar *name, int len, BOOL notdel)
+header_testname_incomplete(header_line *h, const uschar *name,
+    int len, BOOL notdel)
 {
 if (h->type == '*' && notdel) return FALSE;
 if (h->text == NULL || strncmpic(h->text, name, len) != 0) return FALSE;
@@ -92,7 +93,7 @@ Returns:    nothing
 
 static void
 header_add_backend(BOOL after, uschar *name, BOOL topnot, int type,
-  char *format, va_list ap)
+  const char *format, va_list ap)
 {
 header_line *h, *new;
 header_line **hptr;
@@ -213,7 +214,7 @@ Returns:    nothing
 
 void
 header_add_at_position(BOOL after, uschar *name, BOOL topnot, int type,
-  char *format, ...)
+  const char *format, ...)
 {
 va_list ap;
 va_start(ap, format);
@@ -238,7 +239,7 @@ Returns:    nothing
 */
 
 void
-header_add(int type, char *format, ...)
+header_add(int type, const char *format, ...)
 {
 va_list ap;
 va_start(ap, format);
@@ -264,7 +265,7 @@ Returns:        nothing
 */
 
 void
-header_remove(int occ, uschar *name)
+header_remove(int occ, const uschar *name)
 {
 header_line *h;
 int hcount = 0;

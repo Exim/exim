@@ -167,8 +167,8 @@ that have nothing. It provides a basic translation for the common standard
 signal numbers. I've been extra cautious with the ifdef's here. Probably more
 than is necessary... */
 
-char *
-os_strsignal(int n)
+const char *
+os_strsignal(const int n)
 {
 switch (n)
   {
@@ -284,8 +284,8 @@ switch (n)
 exit codes into text, but this function is implemented this way so that if any
 OS does have such a thing, it could be used instead of this build-in one. */
 
-char *
-os_strexit(int n)
+const char *
+os_strexit(const int n)
 {
 switch (n)
   {

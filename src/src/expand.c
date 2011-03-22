@@ -328,9 +328,9 @@ enum {
 /* Type for main variable table */
 
 typedef struct {
-  char *name;
-  int   type;
-  void *value;
+  const char *name;
+  int         type;
+  void       *value;
 } var_entry;
 
 /* Type for entries pointing to address/length pairs. Not currently
@@ -632,9 +632,9 @@ static BOOL malformed_header;
 
 /* For textual hashes */
 
-static char *hashcodes = "abcdefghijklmnopqrtsuvwxyz"
-                         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                         "0123456789";
+static const char *hashcodes = "abcdefghijklmnopqrtsuvwxyz"
+                               "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                               "0123456789";
 
 enum { HMAC_MD5, HMAC_SHA1 };
 

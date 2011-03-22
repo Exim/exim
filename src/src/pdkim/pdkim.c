@@ -65,32 +65,32 @@ struct pdkim_str {
 
 /* -------------------------------------------------------------------------- */
 /* A bunch of list constants */
-char *pdkim_querymethods[] = {
+const char *pdkim_querymethods[] = {
   "dns/txt",
   NULL
 };
-char *pdkim_algos[] = {
+const char *pdkim_algos[] = {
   "rsa-sha256",
   "rsa-sha1",
   NULL
 };
-char *pdkim_canons[] = {
+const char *pdkim_canons[] = {
   "simple",
   "relaxed",
   NULL
 };
-char *pdkim_hashes[] = {
+const char *pdkim_hashes[] = {
   "sha256",
   "sha1",
   NULL
 };
-char *pdkim_keytypes[] = {
+const char *pdkim_keytypes[] = {
   "rsa",
   NULL
 };
 
 typedef struct pdkim_combined_canon_entry {
-  char *str;
+  const char *str;
   int canon_headers;
   int canon_body;
 } pdkim_combined_canon_entry;
@@ -105,7 +105,7 @@ pdkim_combined_canon_entry pdkim_combined_canons[] = {
 };
 
 
-char *pdkim_verify_status_str(int status) {
+const char *pdkim_verify_status_str(int status) {
   switch(status) {
     case PDKIM_VERIFY_NONE:    return "PDKIM_VERIFY_NONE";
     case PDKIM_VERIFY_INVALID: return "PDKIM_VERIFY_INVALID";
@@ -114,7 +114,7 @@ char *pdkim_verify_status_str(int status) {
     default:                   return "PDKIM_VERIFY_UNKNOWN";
   }
 }
-char *pdkim_verify_ext_status_str(int ext_status) {
+const char *pdkim_verify_ext_status_str(int ext_status) {
   switch(ext_status) {
     case PDKIM_VERIFY_FAIL_BODY: return "PDKIM_VERIFY_FAIL_BODY";
     case PDKIM_VERIFY_FAIL_MESSAGE: return "PDKIM_VERIFY_FAIL_MESSAGE";
@@ -129,12 +129,12 @@ char *pdkim_verify_ext_status_str(int ext_status) {
 /* -------------------------------------------------------------------------- */
 /* Print debugging functions */
 #ifdef PDKIM_DEBUG
-void pdkim_quoteprint(FILE *stream, char *data, int len, int lf) {
+void pdkim_quoteprint(FILE *stream, const char *data, int len, int lf) {
   int i;
-  unsigned char *p = (unsigned char *)data;
+  const unsigned char *p = (const unsigned char *)data;
 
   for (i=0;i<len;i++) {
-    int c = p[i];
+    const int c = p[i];
     switch (c) {
       case ' ' : fprintf(stream,"{SP}"); break;
       case '\t': fprintf(stream,"{TB}"); break;
@@ -153,12 +153,12 @@ void pdkim_quoteprint(FILE *stream, char *data, int len, int lf) {
   if (lf)
     fputc('\n',stream);
 }
-void pdkim_hexprint(FILE *stream, char *data, int len, int lf) {
+void pdkim_hexprint(FILE *stream, const char *data, int len, int lf) {
   int i;
-  unsigned char *p = (unsigned char *)data;
+  const unsigned char *p = (const unsigned char *)data;
 
   for (i=0;i<len;i++) {
-    int c = p[i];
+    const int c = p[i];
     fprintf(stream,"%02x",c);
   }
   if (lf)
@@ -198,7 +198,7 @@ pdkim_stringlist *pdkim_prepend_stringlist(pdkim_stringlist *base, char *str) {
 
 /* -------------------------------------------------------------------------- */
 /* A small "growing string" implementation to escape malloc/realloc hell */
-pdkim_str *pdkim_strnew (char *cstr) {
+pdkim_str *pdkim_strnew (const char *cstr) {
   unsigned int len = cstr?strlen(cstr):0;
   pdkim_str *p = malloc(sizeof(pdkim_str));
   if (p == NULL) return NULL;
@@ -214,7 +214,7 @@ pdkim_str *pdkim_strnew (char *cstr) {
   else p->str[p->len] = '\0';
   return p;
 }
-char *pdkim_strncat(pdkim_str *str, char *data, int len) {
+char *pdkim_strncat(pdkim_str *str, const char *data, int len) {
   if ((str->allocated - str->len) < (len+1)) {
     /* Extend the buffer */
     int num_frags = ((len+1)/PDKIM_STR_ALLOC_FRAG)+1;
@@ -229,7 +229,7 @@ char *pdkim_strncat(pdkim_str *str, char *data, int len) {
   str->str[str->len] = '\0';
   return str->str;
 }
-char *pdkim_strcat(pdkim_str *str, char *cstr) {
+char *pdkim_strcat(pdkim_str *str, const char *cstr) {
   return pdkim_strncat(str, cstr, strlen(cstr));
 }
 char *pdkim_numcat(pdkim_str *str, unsigned long num) {
@@ -328,9 +328,9 @@ DLLEXPORT void pdkim_free_ctx(pdkim_ctx *ctx) {
    the passed colon-separated "list", starting at entry
    "start". Returns the position of the header name in
    the list. */
-int header_name_match(char *header,
-                      char *tick,
-                      int   do_tick) {
+int header_name_match(const char *header,
+                      char       *tick,
+                      int         do_tick) {
   char *hname;
   char *lcopy;
   char *p;
@@ -865,7 +865,7 @@ pdkim_pubkey *pdkim_parse_pubkey_record(pdkim_ctx *ctx, char *raw_record) {
 
 
 /* -------------------------------------------------------------------------- */
-int pdkim_update_bodyhash(pdkim_ctx *ctx, char *data, int len) {
+int pdkim_update_bodyhash(pdkim_ctx *ctx, const char *data, int len) {
   pdkim_signature *sig = ctx->sig;
   /* Cache relaxed version of data */
   char *relaxed_data = NULL;
@@ -874,14 +874,14 @@ int pdkim_update_bodyhash(pdkim_ctx *ctx, char *data, int len) {
   /* Traverse all signatures, updating their hashes. */
   while (sig != NULL) {
     /* Defaults to simple canon (no further treatment necessary) */
-    char *canon_data = data;
-    int   canon_len = len;
+    const char *canon_data = data;
+    int         canon_len = len;
 
     if (sig->canon_body == PDKIM_CANON_RELAXED) {
       /* Relax the line if not done already */
       if (relaxed_data == NULL) {
         int seen_wsp = 0;
-        char *p = data;
+        const char *p = data;
         int q = 0;
         relaxed_data = malloc(len+1);
         if (relaxed_data == NULL) return PDKIM_ERR_OOM;

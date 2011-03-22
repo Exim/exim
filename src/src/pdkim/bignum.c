@@ -428,7 +428,7 @@ int mpi_read_file( mpi *X, int radix, FILE *fin )
 /*
  * Write X into an opened file (or stdout if fout == NULL)
  */
-int mpi_write_file( char *p, mpi *X, int radix, FILE *fout )
+int mpi_write_file( const char *p, mpi *X, int radix, FILE *fout )
 {
     int n, ret;
     size_t slen;

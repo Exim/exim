@@ -14,10 +14,10 @@ that uses a type that isn't defined for them. */
 extern ip_address_item *os_common_find_running_interfaces(void);
 #endif
 
-extern int     os_getloadavg(void);
-extern void    os_restarting_signal(int, void (*)(int));
-extern void    os_non_restarting_signal(int, void (*)(int));
-extern char   *os_strexit(int);     /* char to match os_strsignal */
-extern char   *os_strsignal(int);   /* char to match strsignal in some OS */
+extern int           os_getloadavg(void);
+extern void          os_restarting_signal(int, void (*)(int));
+extern void          os_non_restarting_signal(int, void (*)(int));
+extern const char   *os_strexit(int);     /* char to match os_strsignal */
+extern const char   *os_strsignal(int);   /* char to match strsignal in some OS */
 
 /* End of osfunctions.h */

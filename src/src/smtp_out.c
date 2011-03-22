@@ -318,7 +318,7 @@ Returns:     0 if command added to pipelining buffer, with nothing transmitted
 */
 
 int
-smtp_write_command(smtp_outblock *outblock, BOOL noflush, char *format, ...)
+smtp_write_command(smtp_outblock *outblock, BOOL noflush, const char *format, ...)
 {
 int count;
 int rc = 0;

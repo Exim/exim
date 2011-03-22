@@ -360,7 +360,7 @@ Returns:   nothing
 */
 
 void
-set_process_info(char *format, ...)
+set_process_info(const char *format, ...)
 {
 int len;
 va_list ap;
@@ -397,7 +397,7 @@ Returns:          the fopened FILE or NULL
 */
 
 FILE *
-modefopen(uschar *filename, char *options, mode_t mode)
+modefopen(const uschar *filename, const char *options, mode_t mode)
 {
 mode_t saved_umask = umask(0777);
 FILE *f = Ufopen(filename, options);
@@ -1038,8 +1038,8 @@ Returns:            the dlopen handle or NULL on failure
 */
 
 static void *
-set_readline(char * (**fn_readline_ptr)(char *),
-             char * (**fn_addhist_ptr)(char *))
+set_readline(char * (**fn_readline_ptr)(const char *),
+             void   (**fn_addhist_ptr)(const char *))
 {
 void *dlhandle;
 void *dlhandle_curses = dlopen("libcurses.so", RTLD_GLOBAL|RTLD_LAZY);
@@ -1049,8 +1049,12 @@ if (dlhandle_curses != NULL) dlclose(dlhandle_curses);
 
 if (dlhandle != NULL)
   {
-  *fn_readline_ptr = (char *(*)(char*))dlsym(dlhandle, "readline");
-  *fn_addhist_ptr = (char *(*)(char*))dlsym(dlhandle, "add_history");
+  /* Checked manual pages; at least in GNU Readline 6.1, the prototypes are:
+   *   char * readline (const char *prompt);
+   *   void add_history (const char *string);
+   */
+  *fn_readline_ptr = (char *(*)(const char*))dlsym(dlhandle, "readline");
+  *fn_addhist_ptr = (void(*)(const char*))dlsym(dlhandle, "add_history");
   }
 else
   {
@@ -1080,7 +1084,7 @@ Returns:        pointer to dynamic memory, or NULL at end of file
 */
 
 static uschar *
-get_stdinput(char *(*fn_readline)(char *), char *(*fn_addhist)(char *))
+get_stdinput(char *(*fn_readline)(const char *), void(*fn_addhist)(const char *))
 {
 int i;
 int size = 0;
@@ -4555,8 +4559,8 @@ if (expansion_test)
 
   else
     {
-    char *(*fn_readline)(char *) = NULL;
-    char *(*fn_addhist)(char *) = NULL;
+    char *(*fn_readline)(const char *) = NULL;
+    void (*fn_addhist)(const char *) = NULL;
 
     #ifdef USE_READLINE
     void *dlhandle = set_readline(&fn_readline, &fn_addhist);

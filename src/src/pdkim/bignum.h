@@ -202,7 +202,7 @@ int mpi_read_file( mpi *X, int radix, FILE *fin );
  *
  * \note           Set fout == NULL to print X on the console.
  */
-int mpi_write_file( char *p, mpi *X, int radix, FILE *fout );
+int mpi_write_file( const char *p, mpi *X, int radix, FILE *fout );
 
 /**
  * \brief          Import X from unsigned binary data, big endian

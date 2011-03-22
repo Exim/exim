@@ -76,8 +76,8 @@ permitted to include \n followed by white space) first, and then the body text
 one (it can have \n anywhere). Then the file names and once_repeat, which may
 not contain \n. */
 
-static char *mailargs[] = {  /* "to" must be first, and */
-  "to",                      /* "cc" and "bcc" must follow */
+static const char *mailargs[] = {  /* "to" must be first, and */
+  "to",                            /* "cc" and "bcc" must follow */
   "cc",
   "bcc",
   "from",
@@ -146,14 +146,14 @@ enum { cond_and, cond_or, cond_personal, cond_begins, cond_BEGINS,
        cond_above, cond_below, cond_errormsg, cond_firsttime,
        cond_manualthaw, cond_foranyaddress };
 
-static char *cond_names[] = {
+static const char *cond_names[] = {
   "and", "or", "personal",
   "begins", "BEGINS", "ends", "ENDS",
   "is", "IS", "matches", "MATCHES", "contains",
   "CONTAINS", "delivered", "above", "below", "error_message",
   "first_delivery", "manually_thawed", "foranyaddress" };
 
-static char *cond_not_names[] = {
+static const char *cond_not_names[] = {
   "", "", "not personal",
   "does not begin", "does not BEGIN",
   "does not end", "does not END",
@@ -165,7 +165,7 @@ static char *cond_not_names[] = {
 /* Tables of binary condition words and their corresponding types. Not easy
 to amalgamate with the above because of the different variants. */
 
-static char *cond_words[] = {
+static const char *cond_words[] = {
    "BEGIN",
    "BEGINS",
    "CONTAIN",
@@ -203,7 +203,7 @@ enum { add_command, defer_command, deliver_command, elif_command, else_command,
        mail_command, noerror_command, pipe_command, save_command, seen_command,
        testprint_command, unseen_command, vacation_command };
 
-static char *command_list[] = {
+static const char *command_list[] = {
   "add",     "defer",   "deliver", "elif", "else",      "endif",    "finish",
   "fail",    "freeze",  "headers", "if",   "logfile",   "logwrite", "mail",
   "noerror", "pipe",    "save",    "seen", "testprint", "unseen",   "vacation"
@@ -777,7 +777,7 @@ Returns:      nothing
 static void
 print_condition(condition_block *c, BOOL toplevel)
 {
-char *name = (c->testfor)? cond_names[c->type] : cond_not_names[c->type];
+const char *name = (c->testfor)? cond_names[c->type] : cond_not_names[c->type];
 switch(c->type)
   {
   case cond_personal:
@@ -800,7 +800,7 @@ switch(c->type)
   case cond_ENDS:
   case cond_above:
   case cond_below:
-  debug_printf("%s %s %s", c->left.u, (char *)name, c->right.u);
+  debug_printf("%s %s %s", c->left.u, name, c->right.u);
   break;
 
   case cond_and:

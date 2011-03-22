@@ -23,9 +23,9 @@ uschar *mime_current_boundary = NULL;
    give info on detected "problems" in MIME
    encodings. Those are defined in mime.h. */
 
-void mime_set_anomaly(int level, char *text) {
+void mime_set_anomaly(int level, const char *text) {
   mime_anomaly_level = level;
-  mime_anomaly_text = US text;
+  mime_anomaly_text = CUS text;
 }
 
 

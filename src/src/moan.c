@@ -437,8 +437,8 @@ Returns:        nothing
 */
 
 void
-moan_tell_someone(uschar *who, address_item *addr, uschar *subject,
-  char *format, ...)
+moan_tell_someone(uschar *who, address_item *addr,
+  const uschar *subject, const char *format, ...)
 {
 FILE *f;
 va_list ap;
@@ -505,7 +505,7 @@ Returns:       does not return; exits from the program
 */
 
 void
-moan_smtp_batch(uschar *cmd_buffer, char *format, ...)
+moan_smtp_batch(uschar *cmd_buffer, const char *format, ...)
 {
 va_list ap;
 int yield = (receive_messagecount > 0)? 1 : 2;

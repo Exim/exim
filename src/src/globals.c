@@ -633,7 +633,7 @@ uschar *helo_try_verify_hosts  = NULL;
 BOOL    helo_verified          = FALSE;
 BOOL    helo_verify_failed     = FALSE;
 uschar *helo_verify_hosts      = NULL;
-uschar *hex_digits             = US"0123456789abcdef";
+const uschar *hex_digits       = CUS"0123456789abcdef";
 uschar *hold_domains           = NULL;
 BOOL    host_checking          = FALSE;
 BOOL    host_checking_callout  = FALSE;
@@ -787,7 +787,7 @@ uschar *message_reference      = NULL;
 /* MIME ACL expandables */
 #ifdef WITH_CONTENT_SCAN
 int     mime_anomaly_level     = 0;
-uschar *mime_anomaly_text      = NULL;
+const uschar *mime_anomaly_text      = NULL;
 uschar *mime_boundary          = NULL;
 uschar *mime_charset           = NULL;
 uschar *mime_content_description = NULL;

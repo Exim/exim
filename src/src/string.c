@@ -641,7 +641,7 @@ Returns:    pointer to fresh piece of store containing sprintf'ed string
 */
 
 uschar *
-string_sprintf(char *format, ...)
+string_sprintf(const char *format, ...)
 {
 va_list ap;
 uschar buffer[STRING_SPRINTF_BUFFER_SIZE];
@@ -669,7 +669,7 @@ Returns:    < 0, = 0, or > 0, according to the comparison
 */
 
 int
-strncmpic(uschar *s, uschar *t, int n)
+strncmpic(const uschar *s, const uschar *t, int n)
 {
 while (n--)
   {
@@ -693,7 +693,7 @@ Returns:    < 0, = 0, or > 0, according to the comparison
 */
 
 int
-strcmpic(uschar *s, uschar *t)
+strcmpic(const uschar *s, const uschar *t)
 {
 while (*s != 0)
   {
@@ -1052,7 +1052,7 @@ Returns:       TRUE if the result fitted in the buffer
 */
 
 BOOL
-string_format(uschar *buffer, int buflen, char *format, ...)
+string_format(uschar *buffer, int buflen, const char *format, ...)
 {
 BOOL yield;
 va_list ap;
@@ -1064,13 +1064,13 @@ return yield;
 
 
 BOOL
-string_vformat(uschar *buffer, int buflen, char *format, va_list ap)
+string_vformat(uschar *buffer, int buflen, const char *format, va_list ap)
 {
 enum { L_NORMAL, L_SHORT, L_LONG, L_LONGLONG, L_LONGDOUBLE };
 
 BOOL yield = TRUE;
 int width, precision;
-char *fp = format;             /* Deliberately not unsigned */
+const char *fp = format;       /* Deliberately not unsigned */
 uschar *p = buffer;
 uschar *last = buffer + buflen - 1;
 
@@ -1085,8 +1085,8 @@ while (*fp != 0)
   int length = L_NORMAL;
   int *nptr;
   int slen;
-  char *null = "NULL";         /* ) These variables */
-  char *item_start, *s;        /* ) are deliberately */
+  const char *null = "NULL";   /* ) These variables */
+  const char *item_start, *s;  /* ) are deliberately */
   char newformat[16];          /* ) not unsigned */
 
   /* Non-% characters just get copied verbatim */
@@ -1340,7 +1340,7 @@ Returns:        a message, in dynamic store
 */
 
 uschar *
-string_open_failed(int eno, char *format, ...)
+string_open_failed(int eno, const char *format, ...)
 {
 va_list ap;
 uschar buffer[1024];

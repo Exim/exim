@@ -544,7 +544,7 @@ void init_lookup_list(void)
         int pathnamelen = len + (int)strlen(LOOKUP_MODULE_DIR) + 2;
         void *dl;
         struct lookup_module_info *info;
-        char *errormsg;
+        const char *errormsg;
 
         /* SRH: am I being paranoid here or what? */
         if (pathnamelen > big_buffer_size) {

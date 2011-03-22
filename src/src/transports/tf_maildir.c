@@ -48,7 +48,7 @@ BOOL maildir_ensure_directories(uschar *path, address_item *addr,
 {
 int i;
 struct stat statbuf;
-char *subdirs[] = { "/tmp", "/new", "/cur" };
+const char *subdirs[] = { "/tmp", "/new", "/cur" };
 
 DEBUG(D_transport)
   debug_printf("ensuring maildir directories exist in %s\n", path);
@@ -62,16 +62,16 @@ loop so that code can be shared. */
 for (i = 0; i < 4; i++)
   {
   int j;
-  uschar *dir, *mdir;
+  const uschar *dir, *mdir;
 
   if (i == 0)
     {
-    mdir = US"";
+    mdir = CUS"";
     dir = path;
     }
   else
     {
-    mdir = US subdirs[i-1];
+    mdir = CUS subdirs[i-1];
     dir = mdir + 1;
     }
 

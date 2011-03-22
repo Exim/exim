@@ -117,9 +117,9 @@ typedef struct header_line {
 /* Entries in lists options are in this form. */
 
 typedef struct {
-  char   *name;
-  int     type;
-  void   *value;
+  const char   *name;
+  int           type;
+  void         *value;
 } optionlist;
 
 /*Structure for holding information about an envelope address. The errors_to
@@ -168,14 +168,14 @@ extern int     child_close(pid_t, int);
 extern pid_t   child_open(uschar **, uschar **, int, int *, int *, BOOL);
 extern pid_t   child_open_exim(int *);
 extern pid_t   child_open_exim2(int *, uschar *, uschar *);
-extern void    debug_printf(char *, ...) PRINTF_FUNCTION(1,2);
+extern void    debug_printf(const char *, ...) PRINTF_FUNCTION(1,2);
 extern uschar *expand_string(uschar *);
-extern void    header_add(int, char *, ...);
-extern void    header_add_at_position(BOOL, uschar *, BOOL, int, char *, ...);
-extern void    header_remove(int, uschar *);
-extern BOOL    header_testname(header_line *, uschar *, int, BOOL);
-extern BOOL    header_testname_incomplete(header_line *, uschar *, int, BOOL);
-extern void    log_write(unsigned int, int, char *format, ...);
+extern void    header_add(int, const char *, ...);
+extern void    header_add_at_position(BOOL, uschar *, BOOL, int, const char *, ...);
+extern void    header_remove(int, const uschar *);
+extern BOOL    header_testname(header_line *, const uschar *, int, BOOL);
+extern BOOL    header_testname_incomplete(header_line *, const uschar *, int, BOOL);
+extern void    log_write(unsigned int, int, const char *format, ...);
 extern int     lss_b64decode(uschar *, uschar **);
 extern uschar *lss_b64encode(uschar *, int);
 extern int     lss_match_domain(uschar *, uschar *);
@@ -186,10 +186,10 @@ extern void    receive_add_recipient(uschar *, int);
 extern BOOL    receive_remove_recipient(uschar *);
 extern uschar *rfc2047_decode(uschar *, BOOL, uschar *, int, int *, uschar **);
 extern int     smtp_fflush(void);
-extern void    smtp_printf(char *, ...) PRINTF_FUNCTION(1,2);
-extern void    smtp_vprintf(char *, va_list);
+extern void    smtp_printf(const char *, ...) PRINTF_FUNCTION(1,2);
+extern void    smtp_vprintf(const char *, va_list);
 extern uschar *string_copy(uschar *);
 extern uschar *string_copyn(uschar *, int);
-extern uschar *string_sprintf(char *, ...);
+extern uschar *string_sprintf(const char *, ...);
 
 /* End of local_scan.h */

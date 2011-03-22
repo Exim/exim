@@ -21,7 +21,7 @@ supported only if SUPPORT_MBX is set. */
 
 enum { mbf_unix, mbf_mbx, mbf_smail, mbf_maildir, mbf_mailstore };
 
-static char *mailbox_formats[] = {
+static const char *mailbox_formats[] = {
   "unix", "mbx", "smail", "maildir", "mailstore" };
 
 

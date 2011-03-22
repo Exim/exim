@@ -21,7 +21,7 @@ header files. */
 
 /* Table of recognized DNS record types and their integer values. */
 
-static char *type_names[] = {
+static const char *type_names[] = {
   "a",
 #if HAVE_IPV6
   "aaaa",

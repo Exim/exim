@@ -36,10 +36,12 @@ Returns:    panic on failure if panic is set; otherwise return FALSE;
 */
 
 BOOL
-directory_make(uschar *parent, uschar *name, int mode, BOOL panic)
+directory_make(const uschar *parent, const uschar *name,
+               int mode, BOOL panic)
 {
 BOOL use_chown = parent == spool_directory && geteuid() == root_uid;
-uschar *p, *slash;
+uschar *p;
+const uschar *slash;
 int c = 1;
 struct stat statbuf;
 uschar buffer[256];
@@ -47,7 +49,7 @@ uschar buffer[256];
 if (parent == NULL)
   {
   p = buffer + 1;
-  slash = parent = US"";
+  slash = parent = CUS"";
   }
 else
   {

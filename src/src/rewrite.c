@@ -14,7 +14,7 @@
 
 /* Names for testing rewriting */
 
-static char *rrname[] = {
+static const char *rrname[] = {
   "  sender",
   "    from",
   "      to",
@@ -29,20 +29,20 @@ static char *rrname[] = {
 
 typedef struct where_list_block {
   int bit;
-  uschar *string;
+  const uschar *string;
 } where_list_block;
 
 static where_list_block where_list[] = {
-  { rewrite_sender,  US"sender:" },
-  { rewrite_from,    US"from:" },
-  { rewrite_to,      US"to:" },
-  { rewrite_cc,      US"cc:" },
-  { rewrite_bcc,     US"bcc:" },
-  { rewrite_replyto, US"reply-to:" },
-  { rewrite_envfrom, US"env-from" },
-  { rewrite_envto,   US"env-to" },
-  { rewrite_smtp,    US"smtp recipient" },
-  { rewrite_smtp|rewrite_smtp_sender, US"smtp sender" }
+  { rewrite_sender,  CUS"sender:" },
+  { rewrite_from,    CUS"from:" },
+  { rewrite_to,      CUS"to:" },
+  { rewrite_cc,      CUS"cc:" },
+  { rewrite_bcc,     CUS"bcc:" },
+  { rewrite_replyto, CUS"reply-to:" },
+  { rewrite_envfrom, CUS"env-from" },
+  { rewrite_envto,   CUS"env-to" },
+  { rewrite_smtp,    CUS"smtp recipient" },
+  { rewrite_smtp|rewrite_smtp_sender, CUS"smtp sender" }
 };
 
 static int where_list_size = sizeof(where_list)/sizeof(where_list_block);
@@ -252,7 +252,7 @@ for (rule = rewrite_rules;
       (debug_selector & D_rewrite) != 0)
     {
     int i;
-    uschar *where = US"?";
+    const uschar *where = CUS"?";
 
     for (i = 0; i < where_list_size; i++)
       {

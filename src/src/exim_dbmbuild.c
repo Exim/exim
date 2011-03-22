@@ -39,7 +39,7 @@ characters. */
 /* This is global because it's defined in the headers and compilers grumble
 if it is made static. */
 
-uschar *hex_digits = US"0123456789abcdef";
+const uschar *hex_digits = CUS"0123456789abcdef";
 
 
 #ifdef STRERROR_FROM_ERRLIST

@@ -148,7 +148,7 @@ get interleaved. Since some calls to debug_printf() don't end with newline,
 we save up the text until we do get the newline. */
 
 void
-debug_printf(char *format, ...)
+debug_printf(const char *format, ...)
 {
 va_list ap;
 va_start(ap, format);
@@ -157,7 +157,7 @@ va_end(ap);
 }
 
 void
-debug_vprintf(char *format, va_list ap)
+debug_vprintf(const char *format, va_list ap)
 {
 if (debug_file == NULL) return;
 

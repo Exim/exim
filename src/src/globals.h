@@ -398,7 +398,7 @@ extern uschar *helo_try_verify_hosts;  /* Soft check HELO argument for these */
 extern BOOL    helo_verified;          /* True if HELO verified */
 extern BOOL    helo_verify_failed;     /* True if attempt failed */
 extern uschar *helo_verify_hosts;      /* Hard check HELO argument for these */
-extern uschar *hex_digits;             /* Used in several places */
+extern const uschar *hex_digits;             /* Used in several places */
 extern uschar *hold_domains;           /* Hold up deliveries to these */
 extern BOOL    host_find_failed_syntax;/* DNS syntax check failure */
 extern BOOL    host_checking_callout;  /* TRUE if real callout wanted */
@@ -489,7 +489,7 @@ extern uschar *message_reference;      /* Reference for error messages */
 /* MIME ACL expandables */
 #ifdef WITH_CONTENT_SCAN
 extern int     mime_anomaly_level;
-extern uschar *mime_anomaly_text;
+extern const uschar *mime_anomaly_text;
 extern uschar *mime_boundary;
 extern uschar *mime_charset;
 extern uschar *mime_content_description;

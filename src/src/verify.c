@@ -885,7 +885,7 @@ Returns:
 */
 
 static void PRINTF_FUNCTION(2,3)
-respond_printf(FILE *f, char *format, ...)
+respond_printf(FILE *f, const char *format, ...)
 {
 va_list ap;
 

@@ -212,7 +212,7 @@ Returns:     TRUE if successful, FALSE if not, with errno set
 */
 
 static BOOL
-lmtp_write_command(int fd, char *format, ...)
+lmtp_write_command(int fd, const char *format, ...)
 {
 int count, rc;
 va_list ap;

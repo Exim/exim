@@ -324,7 +324,7 @@ Returns:      the yield of transport_write_block()
 */
 
 BOOL
-transport_write_string(int fd, char *format, ...)
+transport_write_string(int fd, const char *format, ...)
 {
 va_list ap;
 va_start(ap, format);

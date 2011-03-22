@@ -49,7 +49,7 @@ the data can be quite long. */
 /* Structure for SMTP command list */
 
 typedef struct {
-  char *name;
+  const char *name;
   int len;
   short int cmd;
   short int has_arg;
@@ -376,7 +376,7 @@ Returns:      nothing
 */
 
 void
-smtp_printf(char *format, ...)
+smtp_printf(const char *format, ...)
 {
 va_list ap;
 
@@ -390,7 +390,7 @@ smtp_printf(), bearing in mind that in C a vararg function can't directly
 call another vararg function, only a function which accepts a va_list. */
 
 void
-smtp_vprintf(char *format, va_list ap)
+smtp_vprintf(const char *format, va_list ap)
 {
 BOOL yield;
 
