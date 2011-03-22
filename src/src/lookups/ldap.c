@@ -481,7 +481,7 @@ if (lcp == NULL)
       {
       cert_option = LDAP_OPT_X_TLS_TRY;
       }
-    ldap_set_option(ld, LDAP_OPT_X_TLS_REQUIRE_CERT, cert_option);
+    ldap_set_option(ld, LDAP_OPT_X_TLS_REQUIRE_CERT, &cert_option);
     }
   #endif
 

@@ -3,6 +3,12 @@ $Cambridge: exim/doc/doc-txt/ChangeLog,v 1.632 2010/06/12 15:21:25 jetmore Exp $
 Change log file for Exim from version 4.21
 -------------------------------------------
 
+Exim version 4.76
+-----------------
+
+PP/01 The new ldap_require_cert option would segfault if used.  Fixed.
+
+
 Exim version 4.75
 -----------------
 
