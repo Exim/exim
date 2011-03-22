@@ -182,6 +182,7 @@ dns_qualify_single                   boolean         true          smtp
 dns_retrans                          time            0s            main              1.60
 dns_retry                            integer         0             main              1.60
 dns_search_parents                   boolean         false         smtp
+dns_use_edns0                        integer         -1            main              4.76
 domains                              domain list     unset         routers           4.00
 driver                               string          unset         authenticators
                                                      unset         routers           4.00
