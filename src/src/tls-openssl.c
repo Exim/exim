@@ -1180,7 +1180,7 @@ all options unless explicitly for DTLS, let the administrator choose which
 to apply.
 
 This list is current as of:
-  ==>  0.9.8n  <==  */
+  ==>  1.0.0c  <==  */
 static struct exim_openssl_option exim_openssl_options[] = {
 /* KEEP SORTED ALPHABETICALLY! */
 #ifdef SSL_OP_ALL
@@ -1218,6 +1218,18 @@ static struct exim_openssl_option exim_openssl_options[] = {
 #endif
 #ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
   { US"no_session_resumption_on_renegotiation", SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION },
+#endif
+#ifdef SSL_OP_NO_SSLv2
+  { US"no_sslv2", SSL_OP_NO_SSLv2 },
+#endif
+#ifdef SSL_OP_NO_SSLv3
+  { US"no_sslv3", SSL_OP_NO_SSLv3 },
+#endif
+#ifdef SSL_OP_NO_TICKET
+  { US"no_ticket", SSL_OP_NO_TICKET },
+#endif
+#ifdef SSL_OP_NO_TLSv1
+  { US"no_tlsv1", SSL_OP_NO_TLSv1 },
 #endif
 #ifdef SSL_OP_SINGLE_DH_USE
   { US"single_dh_use", SSL_OP_SINGLE_DH_USE },
