@@ -70,6 +70,7 @@ command = /x/y
 environment = 
 escape_string = 
 no_freeze_exec_fail
+no_freeze_signal
 no_ignore_status
 no_log_defer_output
 no_log_fail_output
@@ -122,6 +123,7 @@ command = /x/y
 environment = 
 escape_string = 
 no_freeze_exec_fail
+no_freeze_signal
 no_ignore_status
 no_log_defer_output
 no_log_fail_output
