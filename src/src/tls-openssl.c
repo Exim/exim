@@ -1303,11 +1303,10 @@ uschar *s, *end;
 uschar keep_c;
 BOOL adding, item_parsed;
 
+result = 0L;
 /* We grandfather in as default the one option which we used to set always. */
 #ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
-result = SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS;
-#else
-result = 0L;
+result |= SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS;
 #endif
 
 if (option_spec == NULL)
@@ -1324,7 +1323,7 @@ for (s=option_spec; *s != '\0'; /**/)
   if (*s != '+' && *s != '-')
     {
     DEBUG(D_tls) debug_printf("malformed openssl option setting: "
-        "+ or - expected but found \"%s\"", s);
+        "+ or - expected but found \"%s\"\n", s);
     return FALSE;
     }
   adding = *s++ == '+';
@@ -1334,7 +1333,7 @@ for (s=option_spec; *s != '\0'; /**/)
   item_parsed = tls_openssl_one_option_parse(s, &item);
   if (!item_parsed)
     {
-    DEBUG(D_tls) debug_printf("openssl option setting unrecognised: \"%s\"", s);
+    DEBUG(D_tls) debug_printf("openssl option setting unrecognised: \"%s\"\n", s);
     return FALSE;
     }
   DEBUG(D_tls) debug_printf("openssl option, %s from %lx: %lx (%s)\n",
