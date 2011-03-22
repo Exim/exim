@@ -8,6 +8,9 @@ Exim version 4.76
 
 PP/01 The new ldap_require_cert option would segfault if used.  Fixed.
 
+PP/02 Harmonised TLS library version reporting; only show if debugging.
+      Layout now matches that introduced for other libraries in 4.74 PP/03.
+
 
 Exim version 4.75
 -----------------

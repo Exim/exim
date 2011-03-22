@@ -1326,8 +1326,10 @@ Returns:     nothing
 void
 tls_version_report(FILE *f)
 {
-fprintf(f, "GnuTLS compile-time version: %s\n", LIBGNUTLS_VERSION);
-fprintf(f, "GnuTLS runtime version: %s\n", gnutls_check_version(NULL));
+fprintf(f, "Library version: GnuTLS: Compile: %s\n"
+           "                         Runtime: %s\n",
+           LIBGNUTLS_VERSION,
+           gnutls_check_version(NULL));
 }
 
 /* End of tls-gnu.c */

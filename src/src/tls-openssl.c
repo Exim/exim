@@ -1081,8 +1081,10 @@ Returns:     nothing
 void
 tls_version_report(FILE *f)
 {
-fprintf(f, "OpenSSL compile-time version: %s\n", OPENSSL_VERSION_TEXT);
-fprintf(f, "OpenSSL runtime version: %s\n", SSLeay_version(SSLEAY_VERSION));
+fprintf(f, "Library version: OpenSSL: Compile: %s\n"
+           "                          Runtime: %s\n",
+           OPENSSL_VERSION_TEXT,
+           SSLeay_version(SSLEAY_VERSION));
 }
 
 

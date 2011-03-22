@@ -912,14 +912,6 @@ if (fixed_never_users[0] > 0)
 
 fprintf(f, "Size of off_t: " SIZE_T_FMT "\n", sizeof(off_t));
 
-/* This runtime check is to help diagnose library linkage mismatches which
-result in segfaults and the like; as such, it's left until the end,
-just in case.  There will still be a "Configuration file is" line still to
-come. */
-#ifdef SUPPORT_TLS
-tls_version_report(f);
-#endif
-
 /* Everything else is details which are only worth reporting when debugging.
 Perhaps the tls_version_report should move into this too. */
 DEBUG(D_any) do {
@@ -939,6 +931,10 @@ DEBUG(D_any) do {
       );
 #else
   fprintf(f, "Compiler: <unknown>\n");
+#endif
+
+#ifdef SUPPORT_TLS
+  tls_version_report(f);
 #endif
 
 #ifdef AUTH_CYRUS_SASL
