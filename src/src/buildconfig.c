@@ -103,8 +103,10 @@ main(int argc, char **argv)
 {
 off_t test_off_t = 0;
 time_t test_time_t = 0;
+#if ! (__STDC_VERSION__ >= 199901L)
 size_t test_size_t = 0;
 unsigned long test_ulong_t = 0L;
+#endif
 long test_long_t = 0;
 FILE *base;
 FILE *new;

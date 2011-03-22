@@ -926,6 +926,21 @@ DEBUG(D_any) do {
 
   int i;
 
+/* clang defines __GNUC__ (at least, for me) so test for it first */
+#if defined(__clang__)
+  fprintf(f, "Compiler: CLang [%s]\n", __clang_version__);
+#elif defined(__GNUC__)
+  fprintf(f, "Compiler: GCC [%s]\n",
+# ifdef __VERSION__
+      __VERSION__
+# else
+      "? unknown version ?"
+# endif
+      );
+#else
+  fprintf(f, "Compiler: <unknown>\n");
+#endif
+
 #ifdef AUTH_CYRUS_SASL
   auth_cyrus_sasl_version_report(f);
 #endif

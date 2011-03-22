@@ -47,7 +47,7 @@ length = length;
 errmsg = errmsg;
 do_cache = do_cache;
 
-switch (wso_query(query, CS buffer, sizeof(buffer)))
+switch (wso_query(CS query, CS buffer, sizeof(buffer)))
   {
   case 0:
   *result = string_copy(buffer);    /* IP in database; return name of user */

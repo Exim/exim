@@ -31,7 +31,7 @@ local_scan.h includes it and exim.h includes them both (to get this earlier). */
 /* If gcc is being used to compile Exim, we can use its facility for checking
 the arguments of printf-like functions. This is done by a macro. */
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__clang__)
 #define PRINTF_FUNCTION(A,B)  __attribute__((format(printf,A,B)))
 #else
 #define PRINTF_FUNCTION(A,B)
