@@ -13,6 +13,8 @@ PP/02 Harmonised TLS library version reporting; only show if debugging.
 
 PP/03 New openssl_options items: no_sslv2 no_sslv3 no_ticket no_tlsv1
 
+PP/04 New "dns_use_edns0" global option.
+
 
 Exim version 4.75
 -----------------

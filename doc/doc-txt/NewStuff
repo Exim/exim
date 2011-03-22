@@ -9,6 +9,13 @@ test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
 
+Version 4.76
+------------
+
+ 1. The global option "dns_use_edns0" may be set to coerce EDNS0 usage on
+    or off in the resolver library.
+
+
 Version 4.75
 ------------
 

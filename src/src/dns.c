@@ -180,6 +180,24 @@ _res.options |= (qualify_single? RES_DEFNAMES : 0) |
                 (search_parents? RES_DNSRCH : 0);
 if (dns_retrans > 0) _res.retrans = dns_retrans;
 if (dns_retry > 0) _res.retry = dns_retry;
+
+#ifdef RES_USE_EDNS0
+if (dns_use_edns0 >= 0)
+  {
+  if (dns_use_edns0)
+    _res.options |= RES_USE_EDNS0;
+  else
+    _res.options &= ~RES_USE_EDNS0;
+  DEBUG(D_resolver)
+    debug_printf("Coerced resolver EDNS0 support %s.\n",
+        dns_use_edns0 ? "on" : "off");
+  }
+#else
+if (dns_use_edns0 >= 0)
+  DEBUG(D_resolver)
+    debug_printf("Unable to %sset EDNS0 without resolver support.\n",
+        dns_use_edns0 ? "" : "un");
+#endif
 }
 
 

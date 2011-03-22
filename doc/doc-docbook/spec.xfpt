@@ -12669,6 +12669,7 @@ See also the &'Policy controls'& section above.
 .row &%dns_ipv4_lookup%&             "only v4 lookup for these domains"
 .row &%dns_retrans%&                 "parameter for resolver"
 .row &%dns_retry%&                   "parameter for resolver"
+.row &%dns_use_edns0%&               "parameter for resolver"
 .row &%hold_domains%&                "hold delivery for these domains"
 .row &%local_interfaces%&            "for routing checks"
 .row &%queue_domains%&               "no immediate delivery for these"
@@ -13299,6 +13300,19 @@ to set in them.
 
 .option dns_retry main integer 0
 See &%dns_retrans%& above.
+
+
+.new
+.option dns_use_edns0 main integer -1
+.cindex "DNS" "resolver options"
+.cindex "DNS" "EDNS0"
+If this option is set to a non-negative number then Exim will initialise the
+DNS resolver library to either use or not use EDNS0 extensions, overriding
+the system default. A value of 0 coerces EDNS0 off, a value of 1 coerces EDNS0
+on.
+
+If the resolver library does not support EDNS0 then this option has no effect.
+.wen
 
 
 .option drop_cr main boolean false
