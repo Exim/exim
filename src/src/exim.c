@@ -1414,7 +1414,19 @@ if (route_finduser(US EXIM_USERNAME, &pw, &exim_uid))
       EXIM_USERNAME);
     exit(EXIT_FAILURE);
     }
-  exim_gid = pw->pw_gid;
+  /* If ref:name uses a number as the name, route_finduser() returns
+  TRUE with exim_uid set and pw coerced to NULL. */
+  if (pw)
+    exim_gid = pw->pw_gid;
+#ifndef EXIM_GROUPNAME
+  else
+    {
+    fprintf(stderr,
+        "exim: ref:name should specify a usercode, not a group.\n"
+        "exim: can't let you get away with it unless you also specify a group.\n");
+    exit(EXIT_FAILURE);
+    }
+#endif
   }
 else
   {

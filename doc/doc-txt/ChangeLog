@@ -15,6 +15,9 @@ PP/03 New openssl_options items: no_sslv2 no_sslv3 no_ticket no_tlsv1
 
 PP/04 New "dns_use_edns0" global option.
 
+PP/05 Don't segfault on misconfiguration of ref:name exim-user as uid.
+      Bugzilla 1098.
+
 
 Exim version 4.75
 -----------------
