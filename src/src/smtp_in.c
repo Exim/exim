@@ -3861,6 +3861,15 @@ while (done <= 0)
       /* and if TLS is already active, tls_server_start() should fail */
       }
 
+    /* There is nothing we value in the input buffer and if TLS is succesfully
+    negotiated, we won't use this buffer again; if TLS fails, we'll just read
+    fresh content into it.  The buffer contains arbitrary content from an
+    untrusted remote source; eg: NOOP <shellcode>\r\nSTARTTLS\r\n
+    It seems safest to just wipe away the content rather than leave it as a
+    target to jump to. */
+
+    memset(smtp_inbuffer, 0, in_buffer_size);
+
     /* Attempt to start up a TLS session, and if successful, discard all
     knowledge that was obtained previously. At least, that's what the RFC says,
     and that's what happens by default. However, in order to work round YAEB,

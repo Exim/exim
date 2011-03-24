@@ -18,7 +18,8 @@ PP/04 New "dns_use_edns0" global option.
 PP/05 Don't segfault on misconfiguration of ref:name exim-user as uid.
       Bugzilla 1098.
 
-PP/06 Extra paranoia around STARTTLS-with-data-in-buffer.
+PP/06 Extra paranoia around buffer usage at the STARTTLS transition.
+      nb: Exim is not vulnerable to http://www.kb.cert.org/vuls/id/555316
 
 
 Exim version 4.75
