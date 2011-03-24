@@ -3844,6 +3844,23 @@ while (done <= 0)
     toomany = FALSE;
     cmd_list[CMD_LIST_STARTTLS].is_mail_cmd = FALSE;
 
+    /* There's an attack where more data is read in past the STARTTLS command
+    before TLS is negotiated, then assumed to be part of the secure session
+    when used afterwards; we use segregated input buffers, so are not
+    vulnerable, but we want to note when it happens and, for sheer paranoia,
+    ensure that the buffer is "wiped".
+    Pipelining sync checks will normally have protected us too, unless disabled
+    by configuration. */
+
+    if (receive_smtp_buffered())
+      {
+      DEBUG(D_any)
+        debug_printf("Non-empty input buffer after STARTTLS; naive attack?");
+      if (tls_active < 0)
+        smtp_inend = smtp_inptr = smtp_inbuffer;
+      /* and if TLS is already active, tls_server_start() should fail */
+      }
+
     /* Attempt to start up a TLS session, and if successful, discard all
     knowledge that was obtained previously. At least, that's what the RFC says,
     and that's what happens by default. However, in order to work round YAEB,
