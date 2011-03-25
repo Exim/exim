@@ -1,10 +1,12 @@
 /*
  *  The RSA public-key cryptosystem
  *
- *  Copyright (C) 2006-2009, Paul Bakker <polarssl_maintainer at polarssl.org>
- *  All rights reserved.
+ *  Copyright (C) 2006-2010, Brainspark B.V.
  *
- *  Joined copyright on original XySSL code with: Christophe Devine
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
+ *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,12 +39,13 @@
 #include <stdio.h>
 
 
+
 /* *************** begin copy from x509parse.c ********************/
 /*
  * ASN.1 DER decoding routines
  */
 static int asn1_get_len( unsigned char **p,
-                         unsigned char *end,
+                         const unsigned char *end,
                          int *len )
 {
     if( ( end - *p ) < 1 )
@@ -83,7 +86,7 @@ static int asn1_get_len( unsigned char **p,
 }
 
 static int asn1_get_tag( unsigned char **p,
-                         unsigned char *end,
+                         const unsigned char *end,
                          int *len, int tag )
 {
     if( ( end - *p ) < 1 )
@@ -98,7 +101,7 @@ static int asn1_get_tag( unsigned char **p,
 }
 
 static int asn1_get_int( unsigned char **p,
-                         unsigned char *end,
+                         const unsigned char *end,
                          int *val )
 {
     int ret, len;
@@ -121,7 +124,7 @@ static int asn1_get_int( unsigned char **p,
 }
 
 static int asn1_get_mpi( unsigned char **p,
-                         unsigned char *end,
+                         const unsigned char *end,
                          mpi *X )
 {
     int ret, len;
@@ -139,29 +142,101 @@ static int asn1_get_mpi( unsigned char **p,
 
 
 
+
 /*
  * Initialize an RSA context
  */
 void rsa_init( rsa_context *ctx,
                int padding,
-               int hash_id,
-               int (*f_rng)(void *),
-               void *p_rng )
+               int hash_id )
 {
     memset( ctx, 0, sizeof( rsa_context ) );
 
     ctx->padding = padding;
     ctx->hash_id = hash_id;
-
-    ctx->f_rng = f_rng;
-    ctx->p_rng = p_rng;
 }
 
+#if defined(POLARSSL_GENPRIME)
+
+/*
+ * Generate an RSA keypair
+ */
+int rsa_gen_key( rsa_context *ctx,
+        int (*f_rng)(void *),
+        void *p_rng,
+        int nbits, int exponent )
+{
+    int ret;
+    mpi P1, Q1, H, G;
+
+    if( f_rng == NULL || nbits < 128 || exponent < 3 )
+        return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
+
+    mpi_init( &P1, &Q1, &H, &G, NULL );
+
+    /*
+     * find primes P and Q with Q < P so that:
+     * GCD( E, (P-1)*(Q-1) ) == 1
+     */
+    MPI_CHK( mpi_lset( &ctx->E, exponent ) );
+
+    do
+    {
+        MPI_CHK( mpi_gen_prime( &ctx->P, ( nbits + 1 ) >> 1, 0, 
+                                f_rng, p_rng ) );
+
+        MPI_CHK( mpi_gen_prime( &ctx->Q, ( nbits + 1 ) >> 1, 0,
+                                f_rng, p_rng ) );
+
+        if( mpi_cmp_mpi( &ctx->P, &ctx->Q ) < 0 )
+            mpi_swap( &ctx->P, &ctx->Q );
+
+        if( mpi_cmp_mpi( &ctx->P, &ctx->Q ) == 0 )
+            continue;
+
+        MPI_CHK( mpi_mul_mpi( &ctx->N, &ctx->P, &ctx->Q ) );
+        if( mpi_msb( &ctx->N ) != nbits )
+            continue;
+
+        MPI_CHK( mpi_sub_int( &P1, &ctx->P, 1 ) );
+        MPI_CHK( mpi_sub_int( &Q1, &ctx->Q, 1 ) );
+        MPI_CHK( mpi_mul_mpi( &H, &P1, &Q1 ) );
+        MPI_CHK( mpi_gcd( &G, &ctx->E, &H  ) );
+    }
+    while( mpi_cmp_int( &G, 1 ) != 0 );
+
+    /*
+     * D  = E^-1 mod ((P-1)*(Q-1))
+     * DP = D mod (P - 1)
+     * DQ = D mod (Q - 1)
+     * QP = Q^-1 mod P
+     */
+    MPI_CHK( mpi_inv_mod( &ctx->D , &ctx->E, &H  ) );
+    MPI_CHK( mpi_mod_mpi( &ctx->DP, &ctx->D, &P1 ) );
+    MPI_CHK( mpi_mod_mpi( &ctx->DQ, &ctx->D, &Q1 ) );
+    MPI_CHK( mpi_inv_mod( &ctx->QP, &ctx->Q, &ctx->P ) );
+
+    ctx->len = ( mpi_msb( &ctx->N ) + 7 ) >> 3;
+
+cleanup:
+
+    mpi_free( &G, &H, &Q1, &P1, NULL );
+
+    if( ret != 0 )
+    {
+        rsa_free( ctx );
+        return( POLARSSL_ERR_RSA_KEY_GEN_FAILED | ret );
+    }
+
+    return( 0 );   
+}
+
+#endif
 
 /*
  * Check a public RSA key
  */
-int rsa_check_pubkey( rsa_context *ctx )
+int rsa_check_pubkey( const rsa_context *ctx )
 {
     if( !ctx->N.p || !ctx->E.p )
         return( POLARSSL_ERR_RSA_KEY_CHECK_FAILED );
@@ -184,10 +259,10 @@ int rsa_check_pubkey( rsa_context *ctx )
 /*
  * Check a private RSA key
  */
-int rsa_check_privkey( rsa_context *ctx )
+int rsa_check_privkey( const rsa_context *ctx )
 {
     int ret;
-    mpi PQ, DE, P1, Q1, H, I, G;
+    mpi PQ, DE, P1, Q1, H, I, G, G2, L1, L2;
 
     if( ( ret = rsa_check_pubkey( ctx ) ) != 0 )
         return( ret );
@@ -195,27 +270,35 @@ int rsa_check_privkey( rsa_context *ctx )
     if( !ctx->P.p || !ctx->Q.p || !ctx->D.p )
         return( POLARSSL_ERR_RSA_KEY_CHECK_FAILED );
 
-    mpi_init( &PQ, &DE, &P1, &Q1, &H, &I, &G, NULL );
+    mpi_init( &PQ, &DE, &P1, &Q1, &H, &I, &G, &G2, &L1, &L2, NULL );
 
     MPI_CHK( mpi_mul_mpi( &PQ, &ctx->P, &ctx->Q ) );
     MPI_CHK( mpi_mul_mpi( &DE, &ctx->D, &ctx->E ) );
     MPI_CHK( mpi_sub_int( &P1, &ctx->P, 1 ) );
     MPI_CHK( mpi_sub_int( &Q1, &ctx->Q, 1 ) );
     MPI_CHK( mpi_mul_mpi( &H, &P1, &Q1 ) );
-    MPI_CHK( mpi_mod_mpi( &I, &DE, &H  ) );
     MPI_CHK( mpi_gcd( &G, &ctx->E, &H  ) );
 
+    MPI_CHK( mpi_gcd( &G2, &P1, &Q1 ) );
+    MPI_CHK( mpi_div_mpi( &L1, &L2, &H, &G2 ) );  
+    MPI_CHK( mpi_mod_mpi( &I, &DE, &L1  ) );
+
+    /*
+     * Check for a valid PKCS1v2 private key
+     */
     if( mpi_cmp_mpi( &PQ, &ctx->N ) == 0 &&
+        mpi_cmp_int( &L2, 0 ) == 0 &&
         mpi_cmp_int( &I, 1 ) == 0 &&
         mpi_cmp_int( &G, 1 ) == 0 )
     {
-        mpi_free( &G, &I, &H, &Q1, &P1, &DE, &PQ, NULL );
+        mpi_free( &G, &I, &H, &Q1, &P1, &DE, &PQ, &G2, &L1, &L2, NULL );
         return( 0 );
     }
 
+    
 cleanup:
 
-    mpi_free( &G, &I, &H, &Q1, &P1, &DE, &PQ, NULL );
+    mpi_free( &G, &I, &H, &Q1, &P1, &DE, &PQ, &G2, &L1, &L2, NULL );
     return( POLARSSL_ERR_RSA_KEY_CHECK_FAILED | ret );
 }
 
@@ -223,7 +306,7 @@ cleanup:
  * Do an RSA public key operation
  */
 int rsa_public( rsa_context *ctx,
-                unsigned char *input,
+                const unsigned char *input,
                 unsigned char *output )
 {
     int ret, olen;
@@ -257,7 +340,7 @@ cleanup:
  * Do an RSA private key operation
  */
 int rsa_private( rsa_context *ctx,
-                 unsigned char *input,
+                 const unsigned char *input,
                  unsigned char *output )
 {
     int ret, olen;
@@ -316,8 +399,10 @@ cleanup:
  * Add the message padding, then do an RSA operation
  */
 int rsa_pkcs1_encrypt( rsa_context *ctx,
+                       int (*f_rng)(void *),
+                       void *p_rng,
                        int mode, int  ilen,
-                       unsigned char *input,
+                       const unsigned char *input,
                        unsigned char *output )
 {
     int nb_pad, olen;
@@ -329,7 +414,7 @@ int rsa_pkcs1_encrypt( rsa_context *ctx,
     {
         case RSA_PKCS_V15:
 
-            if( ilen < 0 || olen < ilen + 11 )
+            if( ilen < 0 || olen < ilen + 11 || f_rng == NULL )
                 return( POLARSSL_ERR_RSA_BAD_INPUT_DATA );
 
             nb_pad = olen - 3 - ilen;
@@ -339,9 +424,17 @@ int rsa_pkcs1_encrypt( rsa_context *ctx,
 
             while( nb_pad-- > 0 )
             {
+                int rng_dl = 100;
+
                 do {
-                    *p = (unsigned char) rand();
-                } while( *p == 0 );
+                    *p = (unsigned char) f_rng( p_rng );
+                } while( *p == 0 && --rng_dl );
+
+                // Check if RNG failed to generate data
+                //
+                if( rng_dl == 0 )
+                    return POLARSSL_ERR_RSA_RNG_FAILED;
+
                 p++;
             }
             *p++ = 0;
@@ -363,7 +456,7 @@ int rsa_pkcs1_encrypt( rsa_context *ctx,
  */
 int rsa_pkcs1_decrypt( rsa_context *ctx,
                        int mode, int *olen,
-                       unsigned char *input,
+                       const unsigned char *input,
                        unsigned char *output,
                        int output_max_len)
 {
@@ -422,7 +515,7 @@ int rsa_pkcs1_sign( rsa_context *ctx,
                     int mode,
                     int hash_id,
                     int hashlen,
-                    unsigned char *hash,
+                    const unsigned char *hash,
                     unsigned char *sig )
 {
     int nb_pad, olen;
@@ -548,7 +641,7 @@ int rsa_pkcs1_verify( rsa_context *ctx,
                       int mode,
                       int hash_id,
                       int hashlen,
-                      unsigned char *hash,
+                      const unsigned char *hash,
                       unsigned char *sig )
 {
     int ret, len, siglen;
@@ -658,6 +751,8 @@ void rsa_free( rsa_context *ctx )
               &ctx->E,  &ctx->N,  NULL );
 }
 
+
+/* PDKIM code (not copied from polarssl) */
 /*
  * Parse a public RSA key
 

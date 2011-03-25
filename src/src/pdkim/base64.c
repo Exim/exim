@@ -1,10 +1,12 @@
 /*
  *  RFC 1521 base64 encoding/decoding
  *
- *  Copyright (C) 2006-2009, Paul Bakker <polarssl_maintainer at polarssl.org>
- *  All rights reserved.
+ *  Copyright (C) 2006-2010, Brainspark B.V.
  *
- *  Joined copyright on original XySSL code with: Christophe Devine
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
+ *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +24,7 @@
  */
 
 /* $Cambridge: exim/src/src/pdkim/base64.c,v 1.3 2009/12/07 13:05:07 tom Exp $ */
+
 
 #include "base64.h"
 
@@ -57,7 +60,7 @@ static const unsigned char base64_dec_map[128] =
  * Encode a buffer into base64 format
  */
 int base64_encode( unsigned char *dst, int *dlen,
-                   unsigned char *src, int  slen )
+                   const unsigned char *src, int  slen )
 {
     int i, n;
     int C1, C2, C3;
@@ -120,7 +123,7 @@ int base64_encode( unsigned char *dst, int *dlen,
  * Decode a base64-formatted buffer
  */
 int base64_decode( unsigned char *dst, int *dlen,
-                   unsigned char *src, int  slen )
+                   const unsigned char *src, int  slen )
 {
     int i, j, n;
     unsigned long x;

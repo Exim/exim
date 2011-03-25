@@ -1482,7 +1482,7 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
     if (ctx->mode == PDKIM_MODE_SIGN) {
       rsa_context rsa;
 
-      rsa_init(&rsa,RSA_PKCS_V15,0,NULL,NULL);
+      rsa_init(&rsa,RSA_PKCS_V15,0);
 
       /* Perform private key operation */
       if (rsa_parse_key(&rsa, (unsigned char *)sig->rsa_privkey,
@@ -1521,7 +1521,7 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
       rsa_context rsa;
       char *dns_txt_name, *dns_txt_reply;
 
-      rsa_init(&rsa,RSA_PKCS_V15,0,NULL,NULL);
+      rsa_init(&rsa,RSA_PKCS_V15,0);
 
       dns_txt_name  = malloc(PDKIM_DNS_TXT_MAX_NAMELEN);
       if (dns_txt_name == NULL) return PDKIM_ERR_OOM;
