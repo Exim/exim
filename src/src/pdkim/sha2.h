@@ -1,10 +1,12 @@
 /**
  * \file sha2.h
  *
- *  Copyright (C) 2006-2009, Paul Bakker <polarssl_maintainer at polarssl.org>
- *  All rights reserved.
+ *  Copyright (C) 2006-2010, Brainspark B.V.
  *
- *  Joined copyright on original XySSL code with: Christophe Devine
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
+ *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,7 +66,7 @@ void sha2_starts( sha2_context *ctx, int is224 );
  * \param input    buffer holding the  data
  * \param ilen     length of the input data
  */
-void sha2_update( sha2_context *ctx, unsigned char *input, int ilen );
+void sha2_update( sha2_context *ctx, const unsigned char *input, int ilen );
 
 /**
  * \brief          SHA-256 final digest
@@ -82,7 +84,7 @@ void sha2_finish( sha2_context *ctx, unsigned char output[32] );
  * \param output   SHA-224/256 checksum result
  * \param is224    0 = use SHA256, 1 = use SHA224
  */
-void sha2( unsigned char *input, int ilen,
+void sha2( const unsigned char *input, int ilen,
            unsigned char output[32], int is224 );
 
 /**
@@ -95,7 +97,7 @@ void sha2( unsigned char *input, int ilen,
  * \return         0 if successful, 1 if fopen failed,
  *                 or 2 if fread failed
  */
-int sha2_file( char *path, unsigned char output[32], int is224 );
+int sha2_file( const char *path, unsigned char output[32], int is224 );
 
 /**
  * \brief          SHA-256 HMAC context setup
@@ -105,7 +107,7 @@ int sha2_file( char *path, unsigned char output[32], int is224 );
  * \param keylen   length of the HMAC key
  * \param is224    0 = use SHA256, 1 = use SHA224
  */
-void sha2_hmac_starts( sha2_context *ctx, unsigned char *key, int keylen,
+void sha2_hmac_starts( sha2_context *ctx, const unsigned char *key, int keylen,
                        int is224 );
 
 /**
@@ -115,7 +117,7 @@ void sha2_hmac_starts( sha2_context *ctx, unsigned char *key, int keylen,
  * \param input    buffer holding the  data
  * \param ilen     length of the input data
  */
-void sha2_hmac_update( sha2_context *ctx, unsigned char *input, int ilen );
+void sha2_hmac_update( sha2_context *ctx, const unsigned char *input, int ilen );
 
 /**
  * \brief          SHA-256 HMAC final digest
@@ -124,6 +126,13 @@ void sha2_hmac_update( sha2_context *ctx, unsigned char *input, int ilen );
  * \param output   SHA-224/256 HMAC checksum result
  */
 void sha2_hmac_finish( sha2_context *ctx, unsigned char output[32] );
+
+/**
+ * \brief          SHA-256 HMAC context reset
+ *
+ * \param ctx      HMAC context to be reset
+ */
+void sha2_hmac_reset( sha2_context *ctx );
 
 /**
  * \brief          Output = HMAC-SHA-256( hmac key, input buffer )
@@ -135,8 +144,8 @@ void sha2_hmac_finish( sha2_context *ctx, unsigned char output[32] );
  * \param output   HMAC-SHA-224/256 result
  * \param is224    0 = use SHA256, 1 = use SHA224
  */
-void sha2_hmac( unsigned char *key, int keylen,
-                unsigned char *input, int ilen,
+void sha2_hmac( const unsigned char *key, int keylen,
+                const unsigned char *input, int ilen,
                 unsigned char output[32], int is224 );
 
 #ifdef __cplusplus

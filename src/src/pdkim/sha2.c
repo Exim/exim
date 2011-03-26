@@ -1,10 +1,12 @@
 /*
  *  FIPS-180-2 compliant SHA-256 implementation
  *
- *  Copyright (C) 2006-2009, Paul Bakker <polarssl_maintainer at polarssl.org>
- *  All rights reserved.
+ *  Copyright (C) 2006-2010, Brainspark B.V.
  *
- *  Joined copyright on original XySSL code with: Christophe Devine
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
+ *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -92,7 +94,7 @@ void sha2_starts( sha2_context *ctx, int is224 )
     ctx->is224 = is224;
 }
 
-static void sha2_process( sha2_context *ctx, unsigned char data[64] )
+static void sha2_process( sha2_context *ctx, const unsigned char data[64] )
 {
     unsigned long temp1, temp2, W[64];
     unsigned long A, B, C, D, E, F, G, H;
@@ -226,7 +228,7 @@ static void sha2_process( sha2_context *ctx, unsigned char data[64] )
 /*
  * SHA-256 process buffer
  */
-void sha2_update( sha2_context *ctx, unsigned char *input, int ilen )
+void sha2_update( sha2_context *ctx, const unsigned char *input, int ilen )
 {
     int fill;
     unsigned long left;
@@ -312,7 +314,7 @@ void sha2_finish( sha2_context *ctx, unsigned char output[32] )
 /*
  * output = SHA-256( input buffer )
  */
-void sha2( unsigned char *input, int ilen,
+void sha2( const unsigned char *input, int ilen,
            unsigned char output[32], int is224 )
 {
     sha2_context ctx;
@@ -327,7 +329,7 @@ void sha2( unsigned char *input, int ilen,
 /*
  * output = SHA-256( file contents )
  */
-int sha2_file( char *path, unsigned char output[32], int is224 )
+int sha2_file( const char *path, unsigned char output[32], int is224 )
 {
     FILE *f;
     size_t n;
@@ -359,7 +361,7 @@ int sha2_file( char *path, unsigned char output[32], int is224 )
 /*
  * SHA-256 HMAC context setup
  */
-void sha2_hmac_starts( sha2_context *ctx, unsigned char *key, int keylen,
+void sha2_hmac_starts( sha2_context *ctx, const unsigned char *key, int keylen,
                        int is224 )
 {
     int i;
@@ -390,7 +392,7 @@ void sha2_hmac_starts( sha2_context *ctx, unsigned char *key, int keylen,
 /*
  * SHA-256 HMAC process buffer
  */
-void sha2_hmac_update( sha2_context *ctx, unsigned char *input, int ilen )
+void sha2_hmac_update( sha2_context *ctx, const unsigned char *input, int ilen )
 {
     sha2_update( ctx, input, ilen );
 }
@@ -416,10 +418,19 @@ void sha2_hmac_finish( sha2_context *ctx, unsigned char output[32] )
 }
 
 /*
+ * SHA-256 HMAC context reset
+ */
+void sha2_hmac_reset( sha2_context *ctx )
+{
+    sha2_starts( ctx, ctx->is224 );
+    sha2_update( ctx, ctx->ipad, 64 );
+}
+
+/*
  * output = HMAC-SHA-256( hmac key, input buffer )
  */
-void sha2_hmac( unsigned char *key, int keylen,
-                unsigned char *input, int ilen,
+void sha2_hmac( const unsigned char *key, int keylen,
+                const unsigned char *input, int ilen,
                 unsigned char output[32], int is224 )
 {
     sha2_context ctx;

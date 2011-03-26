@@ -1,10 +1,12 @@
 /**
  * \file sha1.h
  *
- *  Copyright (C) 2006-2009, Paul Bakker <polarssl_maintainer at polarssl.org>
- *  All rights reserved.
+ *  Copyright (C) 2006-2010, Brainspark B.V.
  *
- *  Joined copyright on original XySSL code with: Christophe Devine
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
+ *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,7 +31,6 @@
 /**
  * \brief          SHA-1 context structure
  */
-
 #ifndef HAVE_SHA1_CONTEXT
 #define HAVE_SHA1_CONTEXT
 typedef struct sha1_context sha1_context;
@@ -44,7 +45,6 @@ struct sha1_context
     unsigned char ipad[64];     /*!< HMAC: inner padding        */
     unsigned char opad[64];     /*!< HMAC: outer padding        */
 };
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -64,7 +64,7 @@ void sha1_starts( sha1_context *ctx );
  * \param input    buffer holding the  data
  * \param ilen     length of the input data
  */
-void sha1_update( sha1_context *ctx, unsigned char *input, int ilen );
+void sha1_update( sha1_context *ctx, const unsigned char *input, int ilen );
 
 /**
  * \brief          SHA-1 final digest
@@ -81,7 +81,7 @@ void sha1_finish( sha1_context *ctx, unsigned char output[20] );
  * \param ilen     length of the input data
  * \param output   SHA-1 checksum result
  */
-void sha1( unsigned char *input, int ilen, unsigned char output[20] );
+void sha1( const unsigned char *input, int ilen, unsigned char output[20] );
 
 /**
  * \brief          Output = SHA-1( file contents )
@@ -92,7 +92,7 @@ void sha1( unsigned char *input, int ilen, unsigned char output[20] );
  * \return         0 if successful, 1 if fopen failed,
  *                 or 2 if fread failed
  */
-int sha1_file( char *path, unsigned char output[20] );
+int sha1_file( const char *path, unsigned char output[20] );
 
 /**
  * \brief          SHA-1 HMAC context setup
@@ -101,7 +101,7 @@ int sha1_file( char *path, unsigned char output[20] );
  * \param key      HMAC secret key
  * \param keylen   length of the HMAC key
  */
-void sha1_hmac_starts( sha1_context *ctx, unsigned char *key, int keylen );
+void sha1_hmac_starts( sha1_context *ctx, const unsigned char *key, int keylen );
 
 /**
  * \brief          SHA-1 HMAC process buffer
@@ -110,7 +110,7 @@ void sha1_hmac_starts( sha1_context *ctx, unsigned char *key, int keylen );
  * \param input    buffer holding the  data
  * \param ilen     length of the input data
  */
-void sha1_hmac_update( sha1_context *ctx, unsigned char *input, int ilen );
+void sha1_hmac_update( sha1_context *ctx, const unsigned char *input, int ilen );
 
 /**
  * \brief          SHA-1 HMAC final digest
@@ -121,6 +121,13 @@ void sha1_hmac_update( sha1_context *ctx, unsigned char *input, int ilen );
 void sha1_hmac_finish( sha1_context *ctx, unsigned char output[20] );
 
 /**
+ * \brief          SHA-1 HMAC context reset
+ *
+ * \param ctx      HMAC context to be reset
+ */
+void sha1_hmac_reset( sha1_context *ctx );
+
+/**
  * \brief          Output = HMAC-SHA-1( hmac key, input buffer )
  *
  * \param key      HMAC secret key
@@ -129,8 +136,8 @@ void sha1_hmac_finish( sha1_context *ctx, unsigned char output[20] );
  * \param ilen     length of the input data
  * \param output   HMAC-SHA-1 result
  */
-void sha1_hmac( unsigned char *key, int keylen,
-                unsigned char *input, int ilen,
+void sha1_hmac( const unsigned char *key, int keylen,
+                const unsigned char *input, int ilen,
                 unsigned char output[20] );
 
 #ifdef __cplusplus

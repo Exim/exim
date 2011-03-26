@@ -1,10 +1,12 @@
 /**
  * \file base64.h
  *
- *  Copyright (C) 2006-2009, Paul Bakker <polarssl_maintainer at polarssl.org>
- *  All rights reserved.
+ *  Copyright (C) 2006-2010, Brainspark B.V.
  *
- *  Joined copyright on original XySSL code with: Christophe Devine
+ *  This file is part of PolarSSL (http://www.polarssl.org)
+ *  Lead Maintainer: Paul Bakker <polarssl_maintainer at polarssl.org>
+ *
+ *  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,7 +51,7 @@ extern "C" {
  *                 required buffer size in *dlen
  */
 int base64_encode( unsigned char *dst, int *dlen,
-                   unsigned char *src, int  slen );
+                   const unsigned char *src, int  slen );
 
 /**
  * \brief          Decode a base64-formatted buffer
@@ -68,7 +70,7 @@ int base64_encode( unsigned char *dst, int *dlen,
  *                 required buffer size in *dlen
  */
 int base64_decode( unsigned char *dst, int *dlen,
-                   unsigned char *src, int  slen );
+                   const unsigned char *src, int  slen );
 
 #ifdef __cplusplus
 }
