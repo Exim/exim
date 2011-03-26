@@ -14,10 +14,25 @@ that uses a type that isn't defined for them. */
 extern ip_address_item *os_common_find_running_interfaces(void);
 #endif
 
+/* If these exist as a macro, then they're overriden away from us and we
+rely upon the system headers to provide prototype declarations for us.
+Notably, strsignal() is not in the Single Unix Specification (v3) and
+predicting constness is awkward. */
+
+#ifndef os_getloadavg
 extern int           os_getloadavg(void);
+#endif
+#ifndef os_restarting_signal
 extern void          os_restarting_signal(int, void (*)(int));
+#endif
+#ifndef os_non_restarting_signal
 extern void          os_non_restarting_signal(int, void (*)(int));
+#endif
+#ifndef os_strexit
 extern const char   *os_strexit(int);     /* char to match os_strsignal */
+#endif
+#ifndef os_strsignal
 extern const char   *os_strsignal(int);   /* char to match strsignal in some OS */
+#endif
 
 /* End of osfunctions.h */
