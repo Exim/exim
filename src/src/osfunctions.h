@@ -18,6 +18,11 @@ extern int           os_getloadavg(void);
 extern void          os_restarting_signal(int, void (*)(int));
 extern void          os_non_restarting_signal(int, void (*)(int));
 extern const char   *os_strexit(int);     /* char to match os_strsignal */
+
+/* When os_strsignal aliases to a system function, don't define an
+additional prototype */
+#ifndef os_strsignal
 extern const char   *os_strsignal(int);   /* char to match strsignal in some OS */
+#endif
 
 /* End of osfunctions.h */
