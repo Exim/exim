@@ -3106,18 +3106,21 @@ if (*error == NULL)
     int op = *s++;
     int y = eval_op_unary(&s, decimal, error);
     if (*error != NULL) break;
-    if (op == '*') x *= y;
-      else if (op == '/')
+    if (op == '*')
+      x *= y;
+    else
+      {
+      if (y == 0)
         {
-        if (y == 0)
-          {
-          *error = US"divide by zero";
-          x = 0;
-          break;
-          }
-        x /= y;
+        *error = (op == '/') ? US"divide by zero" : US"modulo by zero";
+        x = 0;
+        break;
         }
-      else x %= y;
+      if (op == '/')
+        x /= y;
+      else
+        x %= y;
+      }
     }
   }
 *sptr = s;
