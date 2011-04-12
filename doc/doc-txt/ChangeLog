@@ -21,6 +21,9 @@ PP/05 Don't segfault on misconfiguration of ref:name exim-user as uid.
 PP/06 Extra paranoia around buffer usage at the STARTTLS transition.
       nb: Exim is not vulnerable to http://www.kb.cert.org/vuls/id/555316
 
+PP/07 Catch divide-by-zero in ${eval:...}.
+      Fixes bugzilla 1102.
+
 
 Exim version 4.75
 -----------------

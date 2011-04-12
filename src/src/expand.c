@@ -3107,7 +3107,16 @@ if (*error == NULL)
     int y = eval_op_unary(&s, decimal, error);
     if (*error != NULL) break;
     if (op == '*') x *= y;
-      else if (op == '/') x /= y;
+      else if (op == '/')
+        {
+        if (y == 0)
+          {
+          *error = US"divide by zero";
+          x = 0;
+          break;
+          }
+        x /= y;
+        }
       else x %= y;
     }
   }
