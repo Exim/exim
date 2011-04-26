@@ -2558,7 +2558,7 @@ switch(cond_type)
        "value \"%s\"", t);
       return NULL;
       }
-    if (yield != NULL) *yield = (boolvalue != 0);
+    if (yield != NULL) *yield = (boolvalue == testfor);
     return s;
     }
 

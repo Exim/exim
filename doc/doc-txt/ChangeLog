@@ -24,6 +24,9 @@ PP/06 Extra paranoia around buffer usage at the STARTTLS transition.
 PP/07 Catch divide-by-zero in ${eval:...}.
       Fixes bugzilla 1102.
 
+PP/08 Condition negation of bool{}/bool_lax{} did not negate.  Fixed.
+      Bugzilla 1104.
+
 
 Exim version 4.75
 -----------------
