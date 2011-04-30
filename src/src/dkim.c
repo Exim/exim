@@ -108,7 +108,7 @@ void dkim_exim_verify_finish(void) {
     /* Log a line for each signature */
     uschar *logmsg = string_append(NULL, &size, &ptr, 5,
 
-      string_sprintf( "DKIM: d=%s s=%s c=%s/%s a=%s ",
+      string_sprintf( "d=%s s=%s c=%s/%s a=%s ",
                       sig->domain,
                       sig->selector,
                       (sig->canon_headers == PDKIM_CANON_SIMPLE)?"simple":"relaxed",
@@ -176,7 +176,7 @@ void dkim_exim_verify_finish(void) {
     }
 
     logmsg[ptr] = '\0';
-    log_write(0, LOG_MAIN, (char *)logmsg);
+    log_write(0, LOG_MAIN, "DKIM: %s", logmsg);
 
     /* Build a colon-separated list of signing domains (and identities, if present) in dkim_signers */
     dkim_signers = string_append(dkim_signers,
