@@ -21,11 +21,17 @@ PP/05 Don't segfault on misconfiguration of ref:name exim-user as uid.
 PP/06 Extra paranoia around buffer usage at the STARTTLS transition.
       nb: Exim is not vulnerable to http://www.kb.cert.org/vuls/id/555316
 
+TK/01 Updated PolarSSL code to 0.14.2.
+      Bugzilla 1097. Patch from Andreas Metzler.
+
 PP/07 Catch divide-by-zero in ${eval:...}.
       Fixes bugzilla 1102.
 
 PP/08 Condition negation of bool{}/bool_lax{} did not negate.  Fixed.
       Bugzilla 1104.
+
+TK/02 Bugzilla 1106: CVE-2011-1764 - DKIM log line was subject to a
+      format-string attack.
 
 
 Exim version 4.75
