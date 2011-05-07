@@ -540,7 +540,7 @@ mailing list exim-users@exim.org.
 This program does not perfectly handle messages whose received
 and delivered log lines are in different files, which can happen
 when you have multiple mail servers and a message cannot be
-immeadiately delivered. Fixing this could be tricky...
+immediately delivered. Fixing this could be tricky...
 
 Merging of xls files is not (yet) possible. Be free to implement :)
 

@@ -1488,7 +1488,7 @@ Boolean variables are checked simply by being true or false.  There is no real o
 
 =item NUMERIC
 
-Valid comparisons are <, <=, >, >=, ==, and !=.  Numbers can be integers or floats.  Any number in a test suffixed with d, h, m, s, M, K, or B will be mulitplied by 86400, 3600, 60, 1, 1048576, 1024, or 1 respectively.  Examples of valid numeric tests:
+Valid comparisons are <, <=, >, >=, ==, and !=.  Numbers can be integers or floats.  Any number in a test suffixed with d, h, m, s, M, K, or B will be multiplied by 86400, 3600, 60, 1, 1048576, 1024, or 1 respectively.  Examples of valid numeric tests:
   '$message_age >= 3d'
   '$local_interface == 587'
   '$message_size < 30K'
@@ -1502,7 +1502,7 @@ The string operators are =, eq, ne, =~, and !~.  With the exception of '=', the 
 
 =item NEGATION
 
-There are many ways to negate tests, each having a reason for existing.  Many tests can be negated using native operators.  For instance, >1 is the opposite of <=1 and eq and ne are opposites.  In addition, each individual test can be negated by adding a ! at the beginning of the test.  For instance, '!$acl_m1 =~ /^DENY$/' is the same as '$acl_m1 !~ /^DENY$/'.  Finally, every test can be specified by using the command line argument --not.  This is functionally equivilant to adding a ! to the beginning of every test.
+There are many ways to negate tests, each having a reason for existing.  Many tests can be negated using native operators.  For instance, >1 is the opposite of <=1 and eq and ne are opposites.  In addition, each individual test can be negated by adding a ! at the beginning of the test.  For instance, '!$acl_m1 =~ /^DENY$/' is the same as '$acl_m1 !~ /^DENY$/'.  Finally, every test can be specified by using the command line argument --not.  This is functionally equivalent to adding a ! to the beginning of every test.
 
 =back
 

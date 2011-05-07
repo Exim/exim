@@ -254,7 +254,7 @@ DW/26 Set FD_CLOEXEC on SMTP sockets after forking in the daemon, to ensure
 PP/27 Bugzilla 1047: change the default for system_filter_user to be the Exim
       run-time user, instead of root.
 
-PP/28 Add WHITELIST_D_MACROS option to let some macros be overriden by the
+PP/28 Add WHITELIST_D_MACROS option to let some macros be overridden by the
       Exim run-time user without dropping privileges.
 
 DW/29 Remove use of va_copy() which breaks pre-C99 systems. Duplicate the

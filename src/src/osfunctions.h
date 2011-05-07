@@ -14,7 +14,7 @@ that uses a type that isn't defined for them. */
 extern ip_address_item *os_common_find_running_interfaces(void);
 #endif
 
-/* If these exist as a macro, then they're overriden away from us and we
+/* If these exist as a macro, then they're overridden away from us and we
 rely upon the system headers to provide prototype declarations for us.
 Notably, strsignal() is not in the Single Unix Specification (v3) and
 predicting constness is awkward. */

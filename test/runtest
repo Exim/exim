@@ -763,7 +763,7 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^changing group to \d+ failed: Operation not permitted/;
 
     # We invoke Exim with -D, so we hit this new messag as of Exim 4.73:
-    next if /^macros_trusted overriden to true by whitelisting/;
+    next if /^macros_trusted overridden to true by whitelisting/;
 
     # We have to omit the localhost ::1 address so that all is well in
     # the IPv4-only case.

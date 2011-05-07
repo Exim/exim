@@ -72,7 +72,7 @@ Version 4.73
  2. A new pipe transport option, "permit_coredumps", may help with problem
     diagnosis in some scenarios.  Note that Exim is typically installed as
     a setuid binary, which on most OSes will inhibit coredumps by default,
-    so that safety mechanism would have to be overriden for this option to
+    so that safety mechanism would have to be overridden for this option to
     be able to take effect.
 
  3. ClamAV 0.95 is now required for ClamAV support in Exim, unless
@@ -158,7 +158,7 @@ Version 4.73
     forward, we recommend using TRUSTED_CONFIG_LIST with shim configs that
     include the main config.  As a transition mechanism, we are temporarily
     providing a work-around: the new build option WHITELIST_D_MACROS provides
-    a colon-separated list of macro names which may be overriden by the Exim
+    a colon-separated list of macro names which may be overridden by the Exim
     run-time user.  The values of these macros are constrained to the regex
     ^[A-Za-z0-9_/.-]*$ (which explicitly does allow for empty values).
 

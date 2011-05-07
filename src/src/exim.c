@@ -1299,7 +1299,7 @@ for (m = macros; m != NULL; m = m->next)
     return FALSE;
     }
   }
-DEBUG(D_any) debug_printf("macros_trusted overriden to true by whitelisting\n");
+DEBUG(D_any) debug_printf("macros_trusted overridden to true by whitelisting\n");
 return TRUE;
 #endif
 }

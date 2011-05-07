@@ -528,7 +528,7 @@ FIXED_NEVER_USERS=root
 #
 # As a strictly transient measure to ease migration to 4.73, the
 # WHITELIST_D_MACROS value definies a colon-separated list of macro-names
-# which are permitted to be overriden from the command-line which will be
+# which are permitted to be overridden from the command-line which will be
 # honoured by the Exim user.  So these are macros that can persist to delivery
 # time.
 # Examples might be -DTLS or -DSPOOL=/some/dir.  The values on the

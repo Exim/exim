@@ -69,7 +69,7 @@ Exim version 4.73
       the Exim run-time user may safely pass without dropping privileges.
       Because changes to this involve a recompile, this is not the recommended
       approach but may ease transition.  The values of the macros, when
-      overriden, are constrained to match this regex: ^[A-Za-z0-9_/.-]*$
+      overridden, are constrained to match this regex: ^[A-Za-z0-9_/.-]*$
 
  * The system_filter_user option now defaults to the Exim run-time user,
    rather than root.  You can still set it explicitly to root and this
