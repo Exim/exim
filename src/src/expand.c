@@ -3106,6 +3106,32 @@ if (*error == NULL)
     int op = *s++;
     int y = eval_op_unary(&s, decimal, error);
     if (*error != NULL) break;
+    /* SIGFPE both on div/mod by zero and on INT_MIN / -1, which would give
+     * a value of INT_MAX+1. Note that INT_MIN * -1 gives INT_MIN for me, which
+     * is a bug somewhere in [gcc 4.2.1, FreeBSD, amd64].  In fact, -N*-M where
+     * -N*M is INT_MIN will yielf INT_MIN.
+     * Since we don't support floating point, this is somewhat simpler.
+     * Ideally, we'd return an error, but since we overflow for all other
+     * arithmetic, consistency suggests otherwise, but what's the correct value
+     * to use?  There is none.
+     * The C standard guarantees overflow for unsigned arithmetic but signed
+     * overflow invokes undefined behaviour; in practice, this is overflow
+     * except for converting INT_MIN to INT_MAX+1.  We also can't guarantee
+     * that long/longlong larger than int are available, or we could just work
+     * with larger types.  We should consider whether to guarantee 32bit eval
+     * and 64-bit working variables, with errors returned.  For now ...
+     * So, the only SIGFPEs occur with a non-shrinking div/mod, thus -1; we
+     * can just let the other invalid results occur otherwise, as they have
+     * until now.  For this one case, we can coerce.
+     */
+    if (y == -1 && x == INT_MIN && op != '*')
+      {
+      DEBUG(D_expand)
+        debug_printf("Integer exception dodging: %d%c-1 coerced to %d\n",
+            INT_MIN, op, INT_MAX);
+      x = INT_MAX;
+      continue;
+      }
     if (op == '*')
       x *= y;
     else
