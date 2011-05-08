@@ -3022,14 +3022,29 @@ else
                appears in the expanded list. */
             if (seen_items != NULL)
               {
+              uschar *seen_item = NULL;
+              uschar seen_item_buf[256];
               uschar *seen_items_list = seen_items;
-              if (match_isinlist(item,
-                    &seen_items_list,0,NULL,NULL,MCL_STRING,TRUE,NULL) == OK)
+              int seen_this_item = 0;
+              
+              while ((seen_item = string_nextinlist(&seen_items_list, &sep,
+                                                    seen_item_buf,
+                                                    sizeof(seen_item_buf))) != NULL)
+                {
+                  if (Ustrcmp(seen_item,item) == 0)
+                    {
+                      seen_this_item = 1;
+                      break;
+                    } 
+                }
+
+              if (seen_this_item > 0)
                 {
                 DEBUG(D_receive)
                   debug_printf("acl_smtp_dkim: skipping signer %s, already seen\n", item);
                 continue;
                 }
+              
               seen_items = string_append(seen_items,&seen_items_size,&seen_items_offset,1,":");
               }
 
