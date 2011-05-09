@@ -742,6 +742,9 @@ RESET_AFTER_EXTRA_LINE_READ:
     next if /^Lookups \(built-in\):/;
     next if /^Total \d+ lookups/;
 
+    # drop compiler information
+    next if /^Compiler:/;
+
     # and the ugly bit
     # different libraries will have different numbers (possibly 0) of follow-up
     # lines, indenting with more data

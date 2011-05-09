@@ -552,7 +552,7 @@ abcdea abc z   ${tr{abcdea}{abc}{z}}
 " text "              ${if bool{ text }{true}{false}}     EXPECT: error
 "00"                  ${if bool{00}{true}{false}}     EXPECT: false
 "!true"               ${if !bool{true}{true}{false}}     EXPECT: false
-"!false"              ${if !bool{false}{true}{false}}     EXPECT: true
+"!false"              ${if !bool{false}{true}{false}}      EXPECT: true
 
 "TrUe"                ${if bool_lax{TrUe}{true}{false}}      EXPECT: true
 "FALSE"               ${if bool_lax{FALSE}{true}{false}}     EXPECT: false
@@ -572,7 +572,7 @@ abcdea abc z   ${tr{abcdea}{abc}{z}}
 "text "               ${if bool_lax{text }{true}{false}}      EXPECT: true
 " text "              ${if bool_lax{ text }{true}{false}}      EXPECT: true
 "00"                  ${if bool_lax{00}{true}{false}}      EXPECT: true
-"!true"               ${if !bool_lax{true}{true}{false}}      EXPECT: false
+"!true"               ${if !bool_lax{true}{true}{false}}     EXPECT: false
 "!false"              ${if !bool_lax{false}{true}{false}}      EXPECT: true
 
 # RFC 2047
