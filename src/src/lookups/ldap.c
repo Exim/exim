@@ -521,10 +521,13 @@ if (!lcp->bound ||
   {
   DEBUG(D_lookup) debug_printf("%sbinding with user=%s password=%s\n",
     (lcp->bound)? "re-" : "", user, password);
+#ifdef LDAP_OPT_X_TLS
+  /* The Oracle LDAP libraries (LDAP_LIB_TYPE=SOLARIS) don't support this: */
   if (eldap_start_tls)
     {
     ldap_start_tls_s(lcp->ld, NULL, NULL);
     }
+#endif
   if ((msgid = ldap_bind(lcp->ld, CS user, CS password, LDAP_AUTH_SIMPLE))
        == -1)
     {

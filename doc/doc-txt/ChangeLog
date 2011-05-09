@@ -3,6 +3,13 @@ $Cambridge: exim/doc/doc-txt/ChangeLog,v 1.632 2010/06/12 15:21:25 jetmore Exp $
 Change log file for Exim from version 4.21
 -------------------------------------------
 
+Exim version 4.77
+-----------------
+
+PP/01 Solaris build fix for Oracle's LDAP libraries.
+      Bugzilla 1109, patch from Stephen Usher.
+
+
 Exim version 4.76
 -----------------
 
