@@ -31,7 +31,15 @@ PP/08 Condition negation of bool{}/bool_lax{} did not negate.  Fixed.
       Bugzilla 1104.
 
 TK/02 Bugzilla 1106: CVE-2011-1764 - DKIM log line was subject to a
-      format-string attack.
+      format-string attack -- SECURITY: remote arbitrary code execution.
+
+TK/03 SECURITY - DKIM signature header parsing was double-expanded, second
+      time unintentionally subject to list matching rules, letting the header
+      cause arbitrary Exim lookups (of items which can occur in lists, *not*
+      arbitrary string expansion). This allowed for information disclosure.
+
+PP/09 Fix another SIGFPE (x86) in ${eval:...} expansion, this time related to
+      INT_MIN/-1 -- value coerced to INT_MAX.
 
 
 Exim version 4.75
