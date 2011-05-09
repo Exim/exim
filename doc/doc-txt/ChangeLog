@@ -9,6 +9,8 @@ Exim version 4.77
 PP/01 Solaris build fix for Oracle's LDAP libraries.
       Bugzilla 1109, patch from Stephen Usher.
 
+TF/01 HP/UX build fix: avoid arithmetic on a void pointer.
+
 
 Exim version 4.76
 -----------------
