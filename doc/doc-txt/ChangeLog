@@ -11,6 +11,8 @@ PP/01 Solaris build fix for Oracle's LDAP libraries.
 
 TF/01 HP/UX build fix: avoid arithmetic on a void pointer.
 
+TK/01 DKIM Verification: Fix relaxed canon for empty headers w/o
+      whitespace trailer
 
 Exim version 4.76
 -----------------

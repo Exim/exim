@@ -420,7 +420,7 @@ char *pdkim_relax_header (char *header, int crlf) {
     p++;
     q++;
   }
-  if (seen_wsp) q--;
+  if ((q>relaxed) && (*(q-1) == ' ')) q--; /* Squash eventual trailing SP */
   *q = '\0';
   if (crlf) strcat(relaxed,"\r\n");
   return relaxed;
