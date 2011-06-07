@@ -17,6 +17,21 @@ TK/01 DKIM Verification: Fix relaxed canon for empty headers w/o
 TF/02 Fix a couple more cases where we did not log the error message
       when unlink() failed. See also change 4.74-TF/03.
 
+TF/03 Make the exiwhat support code safe for signals. Previously Exim might
+      lock up or crash if it happened to be inside a call to libc when it
+      got a SIGUSR1 from exiwhat.
+
+      The SIGUSR1 handler appends the current process status to the process
+      log which is later printed by exiwhat. It used to use the general
+      purpose logging code to do this, but several functions it calls are
+      not safe for signals.
+
+      The new output code in the SIGUSR1 handler is specific to the process
+      log, and simple enough that it's easy to inspect for signal safety.
+      Removing some special cases also simplifies the general logging code.
+      Removing the spurious timestamps from the process log simplifies
+      exiwhat.
+
 
 Exim version 4.76
 -----------------

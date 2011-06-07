@@ -141,6 +141,38 @@ return yield;
 
 
 /*************************************************
+*            Set up processing details           *
+*************************************************/
+
+/* Save a text string for dumping when SIGUSR1 is received.
+Do checks for overruns.
+
+Arguments: format and arguments, as for printf()
+Returns:   nothing
+*/
+
+void
+set_process_info(const char *format, ...)
+{
+int len;
+va_list ap;
+sprintf(CS process_info, "%5d ", (int)getpid());
+len = Ustrlen(process_info);
+va_start(ap, format);
+if (!string_vformat(process_info + len, PROCESS_INFO_SIZE - len - 2, format, ap))
+  Ustrcpy(process_info + len, "**** string overflowed buffer ****");
+len = Ustrlen(process_info);
+process_info[len+0] = '\n';
+process_info[len+1] = '\0';
+process_info_len = len + 1;
+DEBUG(D_process_info) debug_printf("set_process_info: %s", process_info);
+va_end(ap);
+}
+
+
+
+
+/*************************************************
 *             Handler for SIGUSR1                *
 *************************************************/
 
@@ -149,6 +181,8 @@ what it is currently doing. It will only be used if the OS is capable of
 setting up a handler that causes automatic restarting of any system call
 that is in progress at the time.
 
+This function takes care to be signal-safe.
+
 Argument: the signal number (SIGUSR1)
 Returns:  nothing
 */
@@ -156,10 +190,32 @@ Returns:  nothing
 static void
 usr1_handler(int sig)
 {
-sig = sig;      /* Keep picky compilers happy */
-log_write(0, LOG_PROCESS, "%s", process_info);
-log_close_all();
-os_restarting_signal(SIGUSR1, usr1_handler);
+int fd;
+
+os_restarting_signal(sig, usr1_handler);
+
+fd = Uopen(process_log_path, O_APPEND|O_WRONLY, LOG_MODE);
+if (fd < 0)
+  {
+  /* If we are already running as the Exim user, try to create it in the
+  current process (assuming spool_directory exists). Otherwise, if we are
+  root, do the creation in an exim:exim subprocess. */
+
+  int euid = geteuid();
+  if (euid == exim_uid)
+    fd = Uopen(process_log_path, O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
+  else if (euid == root_uid)
+    fd = log_create_as_exim(process_log_path);
+  }
+
+/* If we are neither exim nor root, or if we failed to create the log file,
+give up. There is not much useful we can do with errors, since we don't want
+to disrupt whatever is going on outside the signal handler. */
+
+if (fd < 0) return;
+
+(void)write(fd, process_info, process_info_len);
+(void)close(fd);
 }
 
 
@@ -344,35 +400,6 @@ if (exim_tvcmp(&now_tv, then_tv) <= 0)
   milliwait(&itval);
   }
 }
-
-
-
-
-/*************************************************
-*            Set up processing details           *
-*************************************************/
-
-/* Save a text string for dumping when SIGUSR1 is received.
-Do checks for overruns.
-
-Arguments: format and arguments, as for printf()
-Returns:   nothing
-*/
-
-void
-set_process_info(const char *format, ...)
-{
-int len;
-va_list ap;
-sprintf(CS process_info, "%5d ", (int)getpid());
-len = Ustrlen(process_info);
-va_start(ap, format);
-if (!string_vformat(process_info + len, PROCESS_INFO_SIZE - len, format, ap))
-  Ustrcpy(process_info + len, "**** string overflowed buffer ****");
-DEBUG(D_process_info) debug_printf("set_process_info: %s\n", process_info);
-va_end(ap);
-}
-
 
 
 

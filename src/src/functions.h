@@ -151,7 +151,8 @@ extern void    ip_keepalive(int, uschar *, BOOL);
 extern int     ip_recv(int, uschar *, int, int);
 extern int     ip_socket(int, int);
 
-extern uschar *local_part_quote(uschar *lpart);
+extern uschar *local_part_quote(uschar *);
+extern int     log_create_as_exim(uschar *);
 extern void    log_close_all(void);
 
 #ifdef WITH_CONTENT_SCAN

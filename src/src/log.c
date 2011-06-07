@@ -19,9 +19,9 @@ log files was originally contributed by Tony Sheen. */
 #define LOG_MODE_FILE   1
 #define LOG_MODE_SYSLOG 2
 
-enum { lt_main, lt_reject, lt_panic, lt_debug, lt_process };
+enum { lt_main, lt_reject, lt_panic, lt_debug };
 
-static uschar *log_names[] = { US"main", US"reject", US"panic", US"debug", US"process" };
+static uschar *log_names[] = { US"main", US"reject", US"panic", US"debug" };
 
 
 
@@ -182,7 +182,7 @@ Returns:       a file descriptor, or < 0 on failure (errno set)
 */
 
 static int
-create_log(uschar *name)
+log_create(uschar *name)
 {
 int fd = Uopen(name, O_CREAT|O_APPEND|O_WRONLY, LOG_MODE);
 
@@ -206,15 +206,66 @@ return fd;
 
 
 
+/*************************************************
+*     Create a log file as the exim user         *
+*************************************************/
+
+/* This function is called when we are root to spawn an exim:exim subprocess
+in which we can create a log file. It must be signal-safe since it is called
+by the usr1_handler().
+
+Arguments:
+  name         the file name
+
+Returns:       a file descriptor, or < 0 on failure (errno set)
+*/
+
+int
+log_create_as_exim(uschar *name)
+{
+pid_t pid = fork();
+int status = 1;
+int fd = -1;
+
+/* In the subprocess, change uid/gid and do the creation. Return 0 from the
+subprocess on success. If we don't check for setuid failures, then the file
+can be created as root, so vulnerabilities which cause setuid to fail mean
+that the Exim user can use symlinks to cause a file to be opened/created as
+root. We always open for append, so can't nuke existing content but it would
+still be Rather Bad. */
+
+if (pid == 0)
+  {
+  if (setgid(exim_gid) < 0)
+    die(US"exim: setgid for log-file creation failed, aborting",
+      US"Unexpected log failure, please try later");
+  if (setuid(exim_uid) < 0)
+    die(US"exim: setuid for log-file creation failed, aborting",
+      US"Unexpected log failure, please try later");
+  _exit((log_create(name) < 0)? 1 : 0);
+  }
+
+/* If we created a subprocess, wait for it. If it succeeded, try the open. */
+
+while (pid > 0 && waitpid(pid, &status, 0) != pid);
+if (status == 0) fd = Uopen(name, O_APPEND|O_WRONLY, LOG_MODE);
+
+/* If we failed to create a subprocess, we are in a bad way. We return
+with fd still < 0, and errno set, letting the caller handle the error. */
+
+return fd;
+}
+
+
+
 
 /*************************************************
 *                Open a log file                 *
 *************************************************/
 
-/* This function opens one of a number of logs, which all (except for the
-"process log") reside in the same directory, creating the directory if it does
-not exist. This may be called recursively on failure, in order to open the
-panic log.
+/* This function opens one of a number of logs, creating the log directory if
+it does not exist. This may be called recursively on failure, in order to open
+the panic log.
 
 The directory is in the static variable file_path. This is static so that it
 the work of sorting out the path is done just once per Exim process.
@@ -227,7 +278,7 @@ avoid races.
 
 Arguments:
   fd         where to return the resulting file descriptor
-  type       lt_main, lt_reject, lt_panic, lt_debug or lt_process
+  type       lt_main, lt_reject, lt_panic, or lt_debug
   tag        optional tag to include in the name (only hooked up for debug)
 
 Returns:   nothing
@@ -240,21 +291,8 @@ uid_t euid;
 BOOL ok, ok2;
 uschar buffer[LOG_NAME_SIZE];
 
-/* Sort out the file name. This depends on the type of log we are opening. The
-process "log" is written in the spool directory by default, but a path name can
-be specified in the configuration. */
-
-if (type == lt_process)
-  {
-  if (process_log_path == NULL)
-    ok = string_format(buffer, sizeof(buffer), "%s/exim-process.info",
-      spool_directory);
-  else
-    ok = string_format(buffer, sizeof(buffer), "%s", process_log_path);
-  }
-
-/* The names of the other three logs are controlled by file_path. The panic log
-is written to the same directory as the main and reject logs, but its name does
+/* The names of the log files are controlled by file_path. The panic log is
+written to the same directory as the main and reject logs, but its name does
 not have a datestamp. The use of datestamps is indicated by %D/%M in file_path.
 When opening the panic log, if %D or %M is present, we remove the datestamp
 from the generated name; if it is at the start, remove a following
@@ -262,66 +300,63 @@ non-alphanumeric character as well; otherwise, remove a preceding
 non-alphanumeric character. This is definitely kludgy, but it sort of does what
 people want, I hope. */
 
-else
+ok = string_format(buffer, sizeof(buffer), CS file_path, log_names[type]);
+
+/* Save the name of the mainlog for rollover processing. Without a datestamp,
+it gets statted to see if it has been cycled. With a datestamp, the datestamp
+will be compared. The static slot for saving it is the same size as buffer,
+and the text has been checked above to fit, so this use of strcpy() is OK. */
+
+if (type == lt_main)
   {
-  ok = string_format(buffer, sizeof(buffer), CS file_path, log_names[type]);
+  Ustrcpy(mainlog_name, buffer);
+  mainlog_datestamp = mainlog_name + string_datestamp_offset;
+  }
 
-  /* Save the name of the mainlog for rollover processing. Without a datestamp,
-  it gets statted to see if it has been cycled. With a datestamp, the datestamp
-  will be compared. The static slot for saving it is the same size as buffer,
-  and the text has been checked above to fit, so this use of strcpy() is OK. */
+/* Ditto for the reject log */
 
-  if (type == lt_main)
+else if (type == lt_reject)
+  {
+  Ustrcpy(rejectlog_name, buffer);
+  rejectlog_datestamp = rejectlog_name + string_datestamp_offset;
+  }
+
+/* and deal with the debug log (which keeps the datestamp, but does not
+update it) */
+
+else if (type == lt_debug)
+  {
+  Ustrcpy(debuglog_name, buffer);
+  if (tag)
     {
-    Ustrcpy(mainlog_name, buffer);
-    mainlog_datestamp = mainlog_name + string_datestamp_offset;
+    /* this won't change the offset of the datestamp */
+    ok2 = string_format(buffer, sizeof(buffer), "%s%s",
+      debuglog_name, tag);
+    if (ok2)
+      Ustrcpy(debuglog_name, buffer);
+    }
+  }
+
+/* Remove any datestamp if this is the panic log. This is rare, so there's no
+need to optimize getting the datestamp length. We remove one non-alphanumeric
+char afterwards if at the start, otherwise one before. */
+
+else if (string_datestamp_offset >= 0)
+  {
+  uschar *from = buffer + string_datestamp_offset;
+  uschar *to = from + string_datestamp_length;
+  if (from == buffer || from[-1] == '/')
+    {
+    if (!isalnum(*to)) to++;
+    }
+  else
+    {
+    if (!isalnum(from[-1])) from--;
     }
 
-  /* Ditto for the reject log */
+  /* This strcpy is ok, because we know that to is a substring of from. */
 
-  else if (type == lt_reject)
-    {
-    Ustrcpy(rejectlog_name, buffer);
-    rejectlog_datestamp = rejectlog_name + string_datestamp_offset;
-    }
-
-  /* and deal with the debug log (which keeps the datestamp, but does not
-  update it) */
-
-  else if (type == lt_debug)
-    {
-    Ustrcpy(debuglog_name, buffer);
-    if (tag)
-      {
-      /* this won't change the offset of the datestamp */
-      ok2 = string_format(buffer, sizeof(buffer), "%s%s",
-          debuglog_name, tag);
-      if (ok2)
-        Ustrcpy(debuglog_name, buffer);
-      }
-    }
-
-  /* Remove any datestamp if this is the panic log. This is rare, so there's no
-  need to optimize getting the datestamp length. We remove one non-alphanumeric
-  char afterwards if at the start, otherwise one before. */
-
-  else if (string_datestamp_offset >= 0)
-    {
-    uschar *from = buffer + string_datestamp_offset;
-    uschar *to = from + string_datestamp_length;
-    if (from == buffer || from[-1] == '/')
-      {
-      if (!isalnum(*to)) to++;
-      }
-    else
-      {
-      if (!isalnum(from[-1])) from--;
-      }
-
-    /* This strcpy is ok, because we know that to is a substring of from. */
-
-    Ustrcpy(from, to);
-    }
+  Ustrcpy(from, to);
   }
 
 /* If the file name is too long, it is an unrecoverable disaster */
@@ -355,47 +390,12 @@ euid = geteuid();
 /* If we are already running as the Exim user (even if that user is root),
 we can go ahead and create in the current process. */
 
-if (euid == exim_uid) *fd = create_log(buffer);
+if (euid == exim_uid) *fd = log_create(buffer);
 
 /* Otherwise, if we are root, do the creation in an exim:exim subprocess. If we
 are neither exim nor root, creation is not attempted. */
 
-else if (euid == root_uid)
-  {
-  int status, rv;
-  pid_t pid = fork();
-
-  /* In the subprocess, change uid/gid and do the creation. Return 0 from the
-  subprocess on success. If we don't check for setuid failures, then the file
-  can be created as root, so vulnerabilities which cause setuid to fail mean
-  that the Exim user can use symlinks to cause a file to be opened/created as
-  root.  We always open for append, so can't nuke existing content but it would
-  still be Rather Bad. */
-
-  if (pid == 0)
-    {
-    rv = setgid(exim_gid);
-    if (rv)
-      die(US"exim: setgid for log-file creation failed, aborting",
-	  US"Unexpected log failure, please try later");
-    rv = setuid(exim_uid);
-    if (rv)
-      die(US"exim: setuid for log-file creation failed, aborting",
-	  US"Unexpected log failure, please try later");
-    _exit((create_log(buffer) < 0)? 1 : 0);
-    }
-
-  /* If we created a subprocess, wait for it. If it succeeded retry the open. */
-
-  if (pid > 0)
-    {
-    while (waitpid(pid, &status, 0) != pid);
-    if (status == 0) *fd = Uopen(buffer, O_APPEND|O_WRONLY, LOG_MODE);
-    }
-
-  /* If we failed to create a subprocess, we are in a bad way. We fall through
-  with *fd still < 0, and errno set, letting the code below handle the error. */
-  }
+else if (euid == root_uid) *fd = log_create_as_exim(buffer);
 
 /* If we now have an open file, set the close-on-exec flag and return. */
 
@@ -523,10 +523,6 @@ recognized:
   log_file_path = "syslog"         write to syslog
   log_file_path = "syslog : xxx"   write to syslog and to files (any order)
 
-The one exception to this is messages containing LOG_PROCESS. These are always
-written to exim-process.info in the spool directory. They aren't really log
-messages in the same sense as the others.
-
 The message always gets '\n' added on the end of it, since more than one
 process may be writing to the log at once and we don't want intermingling to
 happen in the middle of lines. To be absolutely sure of this we write the data
@@ -565,7 +561,6 @@ Arguments:
               LOG_REJECT      write to reject log or syslog LOG_NOTICE
               LOG_PANIC       write to panic log or syslog LOG_ALERT
               LOG_PANIC_DIE   write to panic log or LOG_ALERT and then crash
-              LOG_PROCESS     write to process log (always a file)
   format    a printf() format
   ...       arguments for format
 
@@ -724,7 +719,6 @@ DEBUG(D_any|D_v)
     ((flags & LOG_MAIN) != 0)?    " MAIN"   : "",
     ((flags & LOG_PANIC) != 0)?   " PANIC"  : "",
     ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE)? " DIE" : "",
-    ((flags & LOG_PROCESS) != 0)? " PROCESS": "",
     ((flags & LOG_REJECT) != 0)?  " REJECT" : "");
 
   while(*ptr) ptr++;
@@ -742,7 +736,7 @@ DEBUG(D_any|D_v)
 
 /* If no log file is specified, we are in a mess. */
 
-if ((flags & (LOG_MAIN|LOG_PANIC|LOG_REJECT|LOG_PROCESS)) == 0)
+if ((flags & (LOG_MAIN|LOG_PANIC|LOG_REJECT)) == 0)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE, "log_write called with no log "
     "flags set");
 
@@ -758,8 +752,8 @@ if (disable_logging)
 
 if (!write_rejectlog) flags &= ~LOG_REJECT;
 
-/* Create the main message in the log buffer, including the message
-id except for the process log and when called by a utility. */
+/* Create the main message in the log buffer. Do not include the message id
+when called by a utility. */
 
 ptr = log_buffer;
 sprintf(CS ptr, "%s ", tod_stamp(tod_log));
@@ -771,7 +765,7 @@ if ((log_extra_selector & LX_pid) != 0)
   while (*ptr) ptr++;
   }
 
-if (really_exim && (flags & LOG_PROCESS) == 0 && message_id[0] != 0)
+if (really_exim && message_id[0] != 0)
   {
   sprintf(CS ptr, "%s ", message_id);
   while(*ptr) ptr++;
@@ -1022,24 +1016,6 @@ if ((flags & LOG_REJECT) != 0)
       /* That function does not return */
       }
     }
-  }
-
-
-/* Handle the process log file, where exim processes can be made to dump
-details of what they are doing by sending them a USR1 signal. Note that
-a message id is not automatically added above. This information is always
-written to a file - never to syslog. */
-
-if ((flags & LOG_PROCESS) != 0)
-  {
-  int processlogfd;
-  open_log(&processlogfd, lt_process, NULL);  /* No return on error */
-  if ((rc = write(processlogfd, log_buffer, length)) != length)
-    {
-    log_write_failed(US"process log", length, rc);
-    /* That function does not return */
-    }
-  (void)close(processlogfd);
   }
 
 

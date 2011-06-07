@@ -3113,6 +3113,11 @@ if (*pid_file_path != 0)
   pid_file_path = s;
   }
 
+/* Set default value of process_log_path */
+
+if (process_log_path == NULL || *process_log_path =='\0')
+  process_log_path = string_sprintf("%s/exim-process.info", spool_directory);
+
 /* Compile the regex for matching a UUCP-style "From_" line in an incoming
 message. */
 

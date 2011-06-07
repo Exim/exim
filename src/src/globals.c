@@ -832,6 +832,7 @@ BOOL    preserve_message_logs  = FALSE;
 uschar *primary_hostname       = NULL;
 BOOL    print_topbitchars      = FALSE;
 uschar  process_info[PROCESS_INFO_SIZE];
+int     process_info_len       = 0;
 uschar *process_log_path       = NULL;
 BOOL    prod_requires_admin    = TRUE;
 uschar *prvscheck_address      = NULL;

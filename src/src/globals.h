@@ -540,6 +540,7 @@ extern BOOL    preserve_message_logs;  /* Save msglog files */
 extern uschar *primary_hostname;       /* Primary name of this computer */
 extern BOOL    print_topbitchars;      /* Topbit chars are printing chars */
 extern uschar  process_info[];         /* For SIGUSR1 output */
+extern int     process_info_len;
 extern uschar *process_log_path;       /* Alternate path */
 extern BOOL    prod_requires_admin;    /* TRUE if prodding requires admin */
 extern uschar *prvscheck_address;      /* Set during prvscheck expansion item */

@@ -130,7 +130,7 @@ fi
 sleep 1
 
 if [ ! -s ${log} ] ; then echo "No exim process data" ;
-  else sed 's/^[0-9-]* [0-9:]* \([+-][0-9]* \)*\(\[[0-9]\+\] \)\?//' ${log} | sort -n | uniq ; fi
+  else sort -nu ${log} ; fi
 
 
 # End of exiwhat

@@ -700,7 +700,6 @@ local_scan.h */
 #define LOG_MAIN           1      /* Write to the main log */
 #define LOG_PANIC          2      /* Write to the panic log */
 #define LOG_PANIC_DIE      6      /* Write to the panic log and then die */
-#define LOG_PROCESS        8      /* Write to the process log */
 #define LOG_REJECT        16      /* Write to the reject log, with headers */
 #define LOG_SENDER        32      /* Add raw sender to the message */
 #define LOG_RECIPIENTS    64      /* Add raw recipients to the message */
