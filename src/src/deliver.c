@@ -6575,10 +6575,12 @@ if (addr_defer == NULL)
 
   sprintf(CS spoolname, "%s/input/%s/%s-D", spool_directory, message_subdir, id);
   if (Uunlink(spoolname) < 0)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s", spoolname);
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
+      spoolname, strerror(errno));
   sprintf(CS spoolname, "%s/input/%s/%s-H", spool_directory, message_subdir, id);
   if (Uunlink(spoolname) < 0)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s", spoolname);
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "failed to unlink %s: %s",
+      spoolname, strerror(errno));
 
   /* Log the end of this message, with queue time if requested. */
 

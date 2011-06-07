@@ -14,6 +14,10 @@ TF/01 HP/UX build fix: avoid arithmetic on a void pointer.
 TK/01 DKIM Verification: Fix relaxed canon for empty headers w/o
       whitespace trailer
 
+TF/02 Fix a couple more cases where we did not log the error message
+      when unlink() failed. See also change 4.74-TF/03.
+
+
 Exim version 4.76
 -----------------
 
