@@ -27226,69 +27226,118 @@ rate at which a recipient receives messages, you can use the key
 &`$local_part@$domain`& with the &%per_rcpt%& option (see below) in a RCPT
 ACL.
 
-Internally, Exim appends the smoothing constant &'p'& and the options onto the
-lookup key because they alter the meaning of the stored data. This is not true
-for the limit &'m'&, so you can alter the configured maximum rate and Exim will
-still remember clients' past behaviour, but if you alter the other ratelimit
-parameters Exim forgets past behaviour.
+Each &%ratelimit%& condition can have up to four options. A &%per_*%& option
+specifies what Exim measures the rate of, for example messages or recipients
+or bytes. You can adjust the measurement using the &%unique=%& and/or
+&%count=%& options. You can also control when Exim updates the recorded rate
+using a &%strict%&, &%leaky%&, or &%readonly%& option. The options are
+separated by a slash, like the other parameters. They may appear in any order.
 
-Each &%ratelimit%& condition can have up to three options. One option
-specifies what Exim measures the rate of, and the second specifies how Exim
-handles excessively fast clients. The third option can be &`noupdate`&, to
-disable updating of the ratelimiting database (see section &<<rearatdat>>&).
-The options are separated by a slash, like the other parameters. They may
-appear in any order.
+Internally, Exim appends the smoothing constant &'p'& onto the lookup key with
+any options that alter the meaning of the stored data. The limit &'m'& is not
+stored, so you can alter the configured maximum rate and Exim will still
+remember clients' past behaviour. If you change the &%per_*%& mode or add or
+remove the &%unique=%& option, the lookup key changes so Exim will forget past
+behaviour. The lookup key is not affected by changes to the update mode and
+the &%count=%& option.
+
 
 .section "Ratelimit options for what is being measured" "ratoptmea"
-The &%per_conn%& option limits the client's connection rate.
+.cindex "rate limiting" "per_* options"
+The &%per_conn%& option limits the client's connection rate. It is not
+normally used in the &%acl_not_smtp%&, &%acl_not_smtp_mime%&, or
+&%acl_not_smtp_start%& ACLs.
 
 The &%per_mail%& option limits the client's rate of sending messages. This is
-the default if none of the &%per_*%& options is specified.
+the default if none of the &%per_*%& options is specified. It can be used in
+&%acl_smtp_mail%&, &%acl_smtp_rcpt%&, &%acl_smtp_predata%&, &%acl_smtp_mime%&,
+&%acl_smtp_data%&, or &%acl_not_smtp%&.
 
-The &%per_byte%& option limits the sender's email bandwidth. Note that it is
-best to use this option in the DATA ACL; if it is used in an earlier ACL it
-relies on the SIZE parameter specified by the client in its MAIL command,
-which may be inaccurate or completely missing. You can follow the limit &'m'&
-in the configuration with K, M, or G to specify limits in kilobytes,
-megabytes, or gigabytes, respectively.
+The &%per_byte%& option limits the sender's email bandwidth. It can be used in
+the same ACLs as the &%per_mail%& option, though it is best to use this option
+in the &%acl_smtp_mime%&, &%acl_smtp_data%& or &%acl_not_smtp%& ACLs; if it is
+used in an earlier ACL, Exim relies on the SIZE parameter given by the client
+in its MAIL command, which may be inaccurate or completely missing. You can
+follow the limit &'m'& in the configuration with K, M, or G to specify limits
+in kilobytes, megabytes, or gigabytes, respectively.
 
-The &%per_rcpt%& option causes Exim to limit the rate at which
-recipients are accepted. To be effective, it would need to be used in
-either the &%acl_smtp_rcpt%& or the &%acl_not_smtp%& ACL. In the
-&%acl_smtp_rcpt%& ACL, the number of recipients is incremented by one.
-In the case of a locally submitted message in the &%acl_not_smtp%& ACL,
-the number of recipients is incremented by the &%$recipients_count%&
-for the entire message. Note that in either case the rate limiting
-engine will see a message with many recipients as a large high-speed
-burst.
+The &%per_rcpt%& option causes Exim to limit the rate at which recipients are
+accepted. It can be used in the &%acl_smtp_rcpt%&, &%acl_smtp_predata%&,
+&%acl_smtp_mime%&, &%acl_smtp_data%&, or &%acl_smtp_rcpt%& ACLs. In
+&%acl_smtp_rcpt%& the rate is updated one recipient at a time; in the other
+ACLs the rate is updated with the total recipient count in one go. Note that
+in either case the rate limiting engine will see a message with many
+recipients as a large high-speed burst.
+
+The &%per_addr%& option is like the &%per_rcpt%& option, except it counts the
+number of different recipients that the client has sent messages to in the
+last time period. That is, if the client repeatedly sends messages to the same
+recipient, its measured rate is not increased. This option can only be used in
+&%acl_smtp_rcpt%&.
 
 The &%per_cmd%& option causes Exim to recompute the rate every time the
-condition is processed. This can be used to limit the SMTP command rate.
-This command is essentially an alias of &%per_rcpt%& to make it clear
-that the effect is to limit the rate at which individual commands,
-rather than recipients, are accepted.
+condition is processed. This can be used to limit the rate of any SMTP
+command. If it is used in multiple ACLs it can limit the aggregate rate of
+multiple different commands.
 
-.section "Ratelimit options for handling fast clients" "ratophanfas"
+The &%count=%& option can be used to alter how much Exim adds to the client's
+measured rate. For example, the &%per_byte%& option is equivalent to
+&`per_mail/count=$message_size`&. If there is no &%count=%& option, Exim
+increases the measured rate by one (except for the &%per_rcpt%& option in ACLs
+other than &%acl_smtp_rcpt%&). The count does not have to be an integer.
+
+The &%unique=%& option is described in section &<<ratoptuniq>>& below.
+
+
+.section "Ratelimit update modes" "ratoptupd"
+.cindex "rate limiting" "reading data without updating"
+You can specify one of three options with the &%ratelimit%& condition to
+control when its database is updated. This section describes the &%readonly%&
+mode, and the next section describes the &%strict%& and &%leaky%& modes.
+
+If the &%ratelimit%& condition is used in &%readonly%& mode, Exim looks up a
+previously-computed rate to check against the limit.
+
+For example, you can test the client's sending rate and deny it access (when
+it is too fast) in the connect ACL. If the client passes this check then it
+can go on to send a message, in which case its recorded rate will be updated
+in the MAIL ACL. Subsequent connections from the same client will check this
+new rate.
+.code
+acl_check_connect:
+  deny ratelimit = 100 / 5m / readonly
+       log_message = RATE CHECK: $sender_rate/$sender_rate_period \
+                     (max $sender_rate_limit)
+# ...
+acl_check_mail:
+  warn ratelimit = 100 / 5m / strict
+       log_message  = RATE UPDATE: $sender_rate/$sender_rate_period \
+                      (max $sender_rate_limit)
+.endd
+
+If Exim encounters multiple &%ratelimit%& conditions with the same key when
+processing a message then it may increase the client's measured rate more than
+it should. For example, this will happen if you check the &%per_rcpt%& option
+in both &%acl_smtp_rcpt%& and &%acl_smtp_data%&. However it's OK to check the
+same &%ratelimit%& condition multiple times in the same ACL. You can avoid any
+multiple update problems by using the &%readonly%& option on later ratelimit
+checks.
+
+The &%per_*%& options described above do not make sense in some ACLs. If you
+use a &%per_*%& option in an ACL where it is not normally permitted then the
+update mode defaults to &%readonly%& and you cannot specify the &%strict&% or
+&%leaky%& modes. In other ACLs the default update mode is &%leaky%& (see the
+next section) so you must specify the &%readonly%& option explicitly.
+
+
+.section "Ratelimit options for handling fast clients" "ratoptfast"
+.cindex "rate limiting" "strict and leaky modes"
 If a client's average rate is greater than the maximum, the rate limiting
 engine can react in two possible ways, depending on the presence of the
-&%strict%& or &%leaky%& options. This is independent of the other
+&%strict%& or &%leaky%& update modes. This is independent of the other
 counter-measures (such as rejecting the message) that may be specified by the
-rest of the ACL. The default mode is leaky, which avoids a sender's
-over-aggressive retry rate preventing it from getting any email through.
+rest of the ACL.
 
-The &%strict%& option means that the client's recorded rate is always
-updated. The effect of this is that Exim measures the client's average rate
-of attempts to send email, which can be much higher than the maximum it is
-actually allowed. If the client is over the limit it may be subjected to
-counter-measures by the ACL until it slows down below the maximum rate. If
-the client stops attempting to send email for the time specified in the &'p'&
-parameter then its computed rate will decay exponentially to 37% of its peak
-value. You can work out the time (the number of smoothing periods) that a
-client is subjected to counter-measures after an over-limit burst with this
-formula:
-.code
-        ln(peakrate/maxrate)
-.endd
 The &%leaky%& (default) option means that the client's recorded rate is not
 updated if it is above the limit. The effect of this is that Exim measures the
 client's average rate of successfully sent email, which cannot be greater than
@@ -27296,6 +27345,59 @@ the maximum allowed. If the client is over the limit it may suffer some
 counter-measures (as specified in the ACL), but it will still be able to send
 email at the configured maximum rate, whatever the rate of its attempts. This
 is generally the better choice if you have clients that retry automatically.
+For example, it does not prevent a sender with an over-aggressive retry rate
+from getting any email through.
+
+The &%strict%& option means that the client's recorded rate is always
+updated. The effect of this is that Exim measures the client's average rate
+of attempts to send email, which can be much higher than the maximum it is
+actually allowed. If the client is over the limit it may be subjected to
+counter-measures by the ACL. It must slow down and allow sufficient time to
+pass that its computed rate falls below the maximum before it can send email
+again. The time (the number of smoothing periods) it must wait and not
+attempt to send mail can be calculated with this formula:
+.code
+        ln(peakrate/maxrate)
+.endd
+
+
+.section "Limiting the rate of different events" "ratoptuniq"
+.cindex "rate limiting" "counting unique events"
+The &%ratelimit%& &%unique=%& option controls a mechanism for counting the
+rate of different events. For example, the &%per_addr%& option uses this
+mechanism to count the number of different recipients that the client has
+sent messages to in the last time period; it is equivalent to
+&`per_rcpt/unique=$local_part@$domain`&. You could use this feature to
+measure the rate that a client uses different sender addresses with the
+options &`per_mail/unique=$sender_address`&.
+
+For each &%ratelimit%& key Exim stores the set of &%unique=%& values that it
+has seen for that key. The whole set is thrown away when it is older than the
+rate smoothing period &'p'&, so each different event is counted at most once
+per period. In the &%leaky%& update mode, an event that causes the client to
+go over the limit is not added to the set, in the same way that the client's
+recorded rate is not updated in the same situation.
+
+When you combine the &%unique=%& and &%readonly%& options, the specific
+%&unique=%& value is ignored, and Exim just retrieves the client's stored
+rate.
+
+The &%unique=%& mechanism needs more space in the ratelimit database than the
+other &%ratelimit%& options in order to store the event set. The number of
+unique values is potentially as large as the rate limit, so the extra space
+required increases with larger limits.
+
+The uniqueification is not perfect: there is a small probability that Exim
+will think a new event has happened before. If the sender's rate is less than
+the limit, Exim should be more than 99.9% correct. However in &%strict%& mode
+the measured rate can go above the limit, in which case Exim may under-count
+events by a significant margin. Fortunately, if the rate is high enough (2.7
+times the limit) that the false positive rate goes above 9%, then Exim will
+throw away the over-full event set before the measured rate falls below the
+limit. Therefore the only harm should be that exceptionally high sending rates
+are logged incorrectly; any countermeasures you configure will be as effective
+as intended.
+
 
 .section "Using rate limiting" "useratlim"
 Exim's other ACL facilities are used to define what counter-measures are taken
@@ -27337,36 +27439,6 @@ making your ACLs less complicated, you can reduce the problem by using a
 RAM disk for Exim's hints directory (usually &_/var/spool/exim/db/_&). However
 this means that Exim will lose its hints data after a reboot (including retry
 hints, the callout cache, and ratelimit data).
-
-
-.section "Reading ratelimit data without updating" "rearatdat"
-.cindex "rate limitint" "reading data without updating"
-If the &%noupdate%& option is present on a &%ratelimit%& ACL condition, Exim
-computes the rate and checks the limit as normal, but it does not update the
-saved data. This means that, in relevant ACLs, it is possible to lookup the
-existence of a specified (or auto-generated) ratelimit key without incrementing
-the ratelimit counter for that key. In order for this to be useful, another ACL
-entry must set the rate for the same key (otherwise it will always be zero).
-For example:
-.code
-acl_check_connect:
-  deny ratelimit = 100 / 5m / strict / per_cmd / noupdate
-       log_message = RATE: $sender_rate/$sender_rate_period \
-                     (max $sender_rate_limit)
-.endd
-.display
-&'... some other logic and tests...'&
-.endd
-.code
-acl_check_mail:
-  warn ratelimit = 100 / 5m / strict / per_cmd
-       condition = ${if le{$sender_rate}{$sender_rate_limit}}
-       logwrite  = RATE UPDATE: $sender_rate/$sender_rate_period \
-                     (max $sender_rate_limit)
-.endd
-In this example, the rate is tested and used to deny access (when it is too
-high) in the connect ACL, but the actual computation of the remembered rate
-happens later, on a per-command basis, in another ACL.
 
 
 

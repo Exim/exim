@@ -27,38 +27,7 @@ There are a number of common subroutines, followed by three main programs,
 whose inclusion is controlled by -D on the compilation command. */
 
 
-/* Standard C headers and Unix headers */
-
-#include <ctype.h>
-#include <signal.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-
-
-/* These are two values from macros.h which should perhaps be accessible in
-some better way than just repeating them here. */
-
-#define WAIT_NAME_MAX            50
-#define MESSAGE_ID_LENGTH        16
-
-
-/* This selection of Exim headers contains exactly what we need, and hopefully
-not too much extra baggage. */
-
-#include "config.h"              /* Needed to get the DB type */
-#include "mytypes.h"
-#include "macros.h"
-#include "dbstuff.h"
-#include "osfunctions.h"
-#include "store.h"
+#include "exim.h"
 
 
 /* Identifiers for the different database types. */
@@ -69,6 +38,10 @@ not too much extra baggage. */
 #define type_callout   4
 #define type_ratelimit 5
 
+
+/* This is used by our cut-down dbfn_open(). */
+
+uschar *spool_directory;
 
 
 
@@ -101,7 +74,7 @@ printf("Berkeley DB error: %s\n", msg);
 *              SIGALRM handler                   *
 *************************************************/
 
-static int sigalrm_seen;
+SIGNAL_BOOL sigalrm_seen;
 
 void
 sigalrm_handler(int sig)
@@ -169,7 +142,7 @@ Returns:    nothing
 */
 
 void
-log_write(unsigned int selector, int flags, char *format, ...)
+log_write(unsigned int selector, int flags, const char *format, ...)
 {
 va_list ap;
 va_start(ap, format);
@@ -266,18 +239,18 @@ uses. We assume the database exists, and therefore give up if we cannot open
 the lock file.
 
 Arguments:
-  spool    The spool directory
   name     The single-component name of one of Exim's database files.
   flags    O_RDONLY or O_RDWR
   dbblock  Points to an open_db block to be filled in.
+  lof      Unused.
 
 Returns:   NULL if the open failed, or the locking failed.
            On success, dbblock is returned. This contains the dbm pointer and
            the fd of the locked lock file.
 */
 
-static open_db *
-dbfn_open(uschar *spool, uschar *name, int flags, open_db *dbblock)
+open_db *
+dbfn_open(uschar *name, int flags, open_db *dbblock, BOOL lof)
 {
 int rc;
 struct flock lock_data;
@@ -288,7 +261,7 @@ uschar buffer[256];
 ensures that Exim has exclusive use of the database before it even tries to
 open it. If there is a database, there should be a lock file in existence. */
 
-sprintf(CS buffer, "%s/db/%s.lockfile", spool, name);
+sprintf(CS buffer, "%s/db/%s.lockfile", spool_directory, name);
 
 dbblock->lockfd = Uopen(buffer, flags, 0);
 if (dbblock->lockfd < 0)
@@ -323,7 +296,7 @@ if (rc < 0)
 /* At this point we have an opened and locked separate lock file, that is,
 exclusive access to the database, so we can go ahead and open it. */
 
-sprintf(CS buffer, "%s/db/%s", spool, name);
+sprintf(CS buffer, "%s/db/%s", spool_directory, name);
 EXIM_DBOPEN(buffer, flags, 0, &(dbblock->dbptr));
 
 if (dbblock->dbptr == NULL)
@@ -357,7 +330,7 @@ Argument: a pointer to an open database block
 Returns:  nothing
 */
 
-static void
+void
 dbfn_close(open_db *dbblock)
 {
 EXIM_DBCLOSE(dbblock->dbptr);
@@ -384,7 +357,7 @@ Returns: a pointer to the retrieved record, or
          NULL if the record is not found
 */
 
-static void *
+void *
 dbfn_read_with_length(open_db *dbblock, uschar *key, int *length)
 {
 void *yield;
@@ -424,7 +397,7 @@ Returns:    the yield of the underlying dbm or db "write" function. If this
             is dbm, the value is zero for OK.
 */
 
-static int
+int
 dbfn_write(open_db *dbblock, uschar *key, void *ptr, int length)
 {
 EXIM_DATUM key_datum, value_datum;
@@ -454,7 +427,7 @@ Arguments:
 Returns: the yield of the underlying dbm or db "delete" function.
 */
 
-static int
+int
 dbfn_delete(open_db *dbblock, uschar *key)
 {
 EXIM_DATUM key_datum;
@@ -485,7 +458,7 @@ Returns:   the next record from the file, or
            NULL if there are no more
 */
 
-static uschar *
+uschar *
 dbfn_scan(open_db *dbblock, BOOL start, EXIM_CURSOR **cursor)
 {
 EXIM_DATUM key_datum, value_datum;
@@ -531,7 +504,8 @@ uschar keybuffer[1024];
 /* Check the arguments, and open the database */
 
 dbdata_type = check_args(argc, argv, US"dumpdb", US"");
-dbm = dbfn_open(argv[1], argv[2], O_RDONLY, &dbblock);
+spool_directory = argv[1];
+dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE);
 if (dbm == NULL) exit(1);
 
 /* Scan the file, formatting the information for each entry. Note
@@ -545,6 +519,7 @@ while (key != NULL)
   dbdata_wait *wait;
   dbdata_callout_cache *callout;
   dbdata_ratelimit *ratelimit;
+  dbdata_ratelimit_unique *rate_unique;
   int count_bad = 0;
   int i, length;
   uschar *t;
@@ -673,12 +648,24 @@ while (key != NULL)
       break;
 
       case type_ratelimit:
-      ratelimit = (dbdata_ratelimit *)value;
-
-      printf("%s.%06d rate: %10.3f key: %s\n",
-        print_time(ratelimit->time_stamp), ratelimit->time_usec,
-        ratelimit->rate, keybuffer);
-
+      if (Ustrstr(key, "/unique/") != NULL && length >= sizeof(*rate_unique))
+        {
+        ratelimit = (dbdata_ratelimit *)value;
+        rate_unique = (dbdata_ratelimit_unique *)value;
+        printf("%s.%06d rate: %10.3f epoch: %s size: %u key: %s\n",
+          print_time(ratelimit->time_stamp),
+          ratelimit->time_usec, ratelimit->rate,
+          print_time(rate_unique->bloom_epoch), rate_unique->bloom_size,
+          keybuffer);
+        }
+      else
+        {
+        ratelimit = (dbdata_ratelimit *)value;
+        printf("%s.%06d rate: %10.3f key: %s\n",
+          print_time(ratelimit->time_stamp),
+          ratelimit->time_usec, ratelimit->rate,
+          keybuffer);
+        }
       break;
       }
     store_reset(value);
@@ -752,6 +739,7 @@ for(;;)
   dbdata_wait *wait;
   dbdata_callout_cache *callout;
   dbdata_ratelimit *ratelimit;
+  dbdata_ratelimit_unique *rate_unique;
   int i, oldlength;
   uschar *t;
   uschar field[256], value[256];
@@ -788,7 +776,8 @@ for(;;)
   if (field[0] != 0)
     {
     int verify = 1;
-    dbm = dbfn_open(argv[1], argv[2], O_RDWR, &dbblock);
+    spool_directory = argv[1];
+    dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE);
     if (dbm == NULL) continue;
 
     if (Ustrcmp(field, "d") == 0)
@@ -895,7 +884,6 @@ for(;;)
 
             case type_ratelimit:
             ratelimit = (dbdata_ratelimit *)record;
-            length = sizeof(dbdata_ratelimit);
             switch(fieldno)
               {
               case 0:
@@ -911,6 +899,51 @@ for(;;)
               ratelimit->rate = Ustrtod(value, NULL);
               break;
 
+              case 3:
+              if (Ustrstr(name, "/unique/") != NULL
+                && oldlength >= sizeof(dbdata_ratelimit_unique))
+                {
+                rate_unique = (dbdata_ratelimit_unique *)record;
+                if ((tt = read_time(value)) > 0) rate_unique->bloom_epoch = tt;
+                  else printf("bad time value\n");
+                break;
+                }
+              /* else fall through */
+
+              case 4:
+              case 5:
+              if (Ustrstr(name, "/unique/") != NULL
+                && oldlength >= sizeof(dbdata_ratelimit_unique))
+                {
+                /* see acl.c */
+                BOOL seen;
+                unsigned n, hash, hinc;
+                uschar md5sum[16];
+                md5 md5info;
+                md5_start(&md5info);
+                md5_end(&md5info, value, Ustrlen(value), md5sum);
+                hash = md5sum[0] <<  0 | md5sum[1] <<  8
+                     | md5sum[2] << 16 | md5sum[3] << 24;
+                hinc = md5sum[4] <<  0 | md5sum[5] <<  8
+                     | md5sum[6] << 16 | md5sum[7] << 24;
+                rate_unique = (dbdata_ratelimit_unique *)record;
+                seen = TRUE;
+                for (n = 0; n < 8; n++, hash += hinc)
+                  {
+                  int bit = 1 << (hash % 8);
+                  int byte = (hash / 8) % rate_unique->bloom_size;
+                  if ((rate_unique->bloom[byte] & bit) == 0)
+                    {
+                    seen = FALSE;
+                    if (fieldno == 5) rate_unique->bloom[byte] |= bit;
+                    }
+                  }
+                printf("%s %s\n",
+                  seen ? "seen" : fieldno == 5 ? "added" : "unseen", value);
+                break;
+                }
+              /* else fall through */
+
               default:
               printf("unknown field number\n");
               verify = 0;
@@ -919,7 +952,7 @@ for(;;)
             break;
             }
 
-          dbfn_write(dbm, name, record, length);
+          dbfn_write(dbm, name, record, oldlength);
           }
         }
       }
@@ -940,7 +973,8 @@ for(;;)
 
   /* Handle a read request, or verify after an update. */
 
-  dbm = dbfn_open(argv[1], argv[2], O_RDONLY, &dbblock);
+  spool_directory = argv[1];
+  dbm = dbfn_open(argv[2], O_RDONLY, &dbblock, FALSE);
   if (dbm == NULL) continue;
 
   record = dbfn_read_with_length(dbm, name, &oldlength);
@@ -1020,6 +1054,14 @@ for(;;)
       printf("0 time stamp:  %s\n", print_time(ratelimit->time_stamp));
       printf("1 fract. time: .%06d\n", ratelimit->time_usec);
       printf("2 sender rate: % .3f\n", ratelimit->rate);
+      if (Ustrstr(name, "/unique/") != NULL
+       && oldlength >= sizeof(dbdata_ratelimit_unique))
+       {
+       rate_unique = (dbdata_ratelimit_unique *)record;
+       printf("3 filter epoch: %s\n", print_time(rate_unique->bloom_epoch));
+       printf("4 test filter membership\n");
+       printf("5 add element to filter\n");
+       }
       break;
       }
     }
@@ -1118,7 +1160,8 @@ database */
 oldest = time(NULL) - maxkeep;
 printf("Tidying Exim hints database %s/db/%s\n", argv[1], argv[2]);
 
-dbm = dbfn_open(argv[1], argv[2], O_RDWR, &dbblock);
+spool_directory = argv[1];
+dbm = dbfn_open(argv[2], O_RDWR, &dbblock, FALSE);
 if (dbm == NULL) exit(1);
 
 /* Prepare for building file names */

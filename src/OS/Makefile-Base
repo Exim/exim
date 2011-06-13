@@ -361,10 +361,10 @@ exim_dumpdb: $(OBJ_DUMPDB)
 
 OBJ_FIXDB = exim_fixdb.o util-os.o util-store.o
 
-exim_fixdb:  $(OBJ_FIXDB)
+exim_fixdb:  $(OBJ_FIXDB) auths/auths.a
 	@echo "$(LNCC) -o exim_fixdb"
 	$(FE)$(LNCC) $(CFLAGS) $(INCLUDE) -o exim_fixdb $(LFLAGS) $(OBJ_FIXDB) \
-	  $(LIBS) $(EXTRALIBS) $(DBMLIB)
+	  auths/auths.a $(LIBS) $(EXTRALIBS) $(DBMLIB)
 	@if [ x"$(STRIP_COMMAND)" != x"" ]; then \
 	  echo $(STRIP_COMMAND) exim_fixdb; \
 	  $(STRIP_COMMAND) exim_fixdb; \

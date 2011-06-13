@@ -654,5 +654,14 @@ typedef struct {
   double rate;            /* Smoothed sending rate at that time */
 } dbdata_ratelimit;
 
+/* Same as above, plus a Bloom filter for uniquifying events. */
+
+typedef struct {
+  dbdata_ratelimit dbd;
+  time_t   bloom_epoch;   /* When the Bloom filter was last reset */
+  unsigned bloom_size;    /* Number of bytes in the Bloom filter */
+  uschar   bloom[40];     /* Bloom filter which may be larger than this */
+} dbdata_ratelimit_unique;
+
 
 /* End of dbstuff.h */

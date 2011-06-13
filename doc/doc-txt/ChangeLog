@@ -32,6 +32,57 @@ TF/03 Make the exiwhat support code safe for signals. Previously Exim might
       Removing the spurious timestamps from the process log simplifies
       exiwhat.
 
+TF/04 Improved ratelimit ACL condition.
+
+      The /noupdate option has been deprecated in favour of /readonly which
+      has clearer semantics. The /leaky, /strict, and /readonly update modes
+      are mutually exclusive. The update mode is no longer included in the
+      database key; it just determines when the database is updated. (This
+      means that when you upgrde Exim will forget old rate measurements.)
+
+      Exim now checks that the per_* options are used with an update mode that
+      makes sense for the current ACL. For example, when Exim is processing a
+      message (e.g. acl_smtp_rcpt or acl_smtp_data, etc.) you can specify
+      per_mail/leaky or per_mail/strict; otherwise (e.g. in acl_smtp_helo) you
+      must specify per_mail/readonly. If you omit the update mode it defaults to
+      /leaky where that makes sense (as before) or /readonly where required.
+
+      The /noupdate option is now undocumented but still supported for
+      backwards compatibility. It is equivalent to /readonly except that in
+      ACLs where /readonly is required you may specify /leaky/noupdate or
+      /strict/noupdate which are treated the same as /readonly.
+
+      A useful new feature is the /count= option. This is a generalization
+      of the per_byte option, so that you can measure the throughput of other
+      aggregate values. For example, the per_byte option is now equivalent
+      to per_mail/count=${if >{0}{$message_size} {0} {$message_size} }.
+
+      The per_rcpt option has been generalized using the /count= mechanism
+      (though it's more complicated than the per_byte equivalence). When it is
+      used in acl_smtp_rcpt, the per_rcpt option adds recipients to the
+      measured rate one at a time; if it is used later (e.g. in acl_smtp_data)
+      or in a non-SMTP ACL it adds all the recipients in one go. (The latter
+      /count=$recipients_count behaviour used to work only in non-SMTP ACLs.)
+      Note that using per_rcpt with a non-readonly update mode in more than
+      one ACL will cause the recipients to be double-counted. (The per_mail
+      and per_byte options don't have this problem.)
+
+      The handling of very low rates has changed slightly. If the computed rate
+      is less than the event's count (usually one) then this event is the first
+      after a long gap. In this case the rate is set to the same as this event's
+      count, so that the first message of a spam run is counted properly.
+
+      The major new feature is a mechanism for counting the rate of unique
+      events. The new per_addr option counts the number of different
+      recipients that someone has sent messages to in the last time period. It
+      behaves like per_rcpt if all the recipient addresses are different, but
+      duplicate recipient addresses do not increase the measured rate. Like
+      the /count= option this is a general mechanism, so the per_addr option
+      is equivalent to per_rcpt/unique=$local_part@$domain. You can, for
+      example, measure the rate that a client uses different sender addresses
+      with the options per_mail/unique=$sender_address. There are further
+      details in the main documentation.
+
 
 Exim version 4.76
 -----------------
