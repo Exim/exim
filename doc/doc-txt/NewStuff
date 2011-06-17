@@ -8,6 +8,12 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+Version 4.77
+------------
+
+ 1. New options for the ratelimit ACL condition: /count= and /unique=.
+    The /noupdate option has been replaced by a /readonly option.
+
 
 Version 4.76
 ------------
