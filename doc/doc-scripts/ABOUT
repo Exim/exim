@@ -1,7 +1,5 @@
-$Cambridge: exim/doc/doc-scripts/ABOUT,v 1.2 2005/06/16 10:32:31 ph10 Exp $
-
-CVS directory exim/exim-doc/doc-scripts
----------------------------------------
+Exim repository: doc/doc-scripts
+--------------------------------
 
 This directory contains various scripts that are used to build the distributed
 documentation from its SGCAL source files. This method of maintaining the

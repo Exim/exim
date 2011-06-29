@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/smtp_in.c,v 1.67 2010/06/12 15:21:26 jetmore Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

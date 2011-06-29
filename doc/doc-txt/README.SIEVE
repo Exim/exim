@@ -1,5 +1,3 @@
-$Cambridge: exim/doc/doc-txt/README.SIEVE,v 1.12 2008/01/28 12:26:31 michael Exp $
-
               Notes on the Sieve implementation for Exim
 
 Exim Filter Versus Sieve Filter

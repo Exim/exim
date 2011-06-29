@@ -1,5 +1,3 @@
-# $Cambridge: exim/src/OS/Makefile-Darwin,v 1.4 2009/11/10 17:15:03 nm4 Exp $
-
 # Exim: OS-specific make file for Darwin (Mac OS X).
 
 CC=cc

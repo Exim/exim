@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-# $Cambridge: exim/doc/doc-scripts/f2txt,v 1.1 2004/10/07 15:04:35 ph10 Exp $
 
 # Script to turn the Exim FAQ into plain ASCII.
 

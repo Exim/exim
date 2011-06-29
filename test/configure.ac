@@ -1,5 +1,3 @@
-dnl $Cambridge: exim/test/configure.ac,v 1.2 2007/01/23 11:01:10 ph10 Exp $
-
 dnl Process this file with autoconf to produce a configure script.
 
 dnl This is required at the start; the name is the name of a file

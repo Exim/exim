@@ -1,5 +1,3 @@
-# $Cambridge: exim/src/src/auths/Makefile,v 1.6 2008/02/14 13:49:35 fanf2 Exp $
-
 # Make file for building a library containing all the available authorization
 # methods, and calling it auths.a. In addition, there are functions that are
 # of general use in several methods; these are in separate modules so they are

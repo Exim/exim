@@ -1,5 +1,3 @@
-# $Cambridge: exim/src/Makefile,v 1.7 2009/11/16 19:50:36 nm4 Exp $
-
 # Top-level makefile for Exim; handles creating a build directory with
 # appropriate links, and then creating and running the main makefile in that
 # directory.

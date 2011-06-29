@@ -1,5 +1,3 @@
-. $Cambridge: exim/doc/doc-docbook/filter.xfpt,v 1.11 2010/05/29 19:26:31 nm4 Exp $
-
 . /////////////////////////////////////////////////////////////////////////////
 . This is the primary source of the document that describes Exim's filtering
 . facilities. It is an xfpt document that is converted into DocBook XML for

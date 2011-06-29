@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/Configure,v 1.1 2004/10/06 15:07:40 ph10 Exp $
 
 # A script to be called to run all the other configuring scripts manually.
 

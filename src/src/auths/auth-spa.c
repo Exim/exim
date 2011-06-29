@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/auths/auth-spa.c,v 1.3 2005/08/02 13:23:19 ph10 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

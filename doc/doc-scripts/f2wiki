@@ -2,8 +2,6 @@
 #
 # Script to convert Exim FAQ into wiki markup - moin flavour
 #
-# $Cambridge: exim/doc/doc-scripts/f2wiki,v 1.2 2004/11/12 15:25:39 nm4 Exp $
-#
 use strict;
 use integer;
 use bytes;

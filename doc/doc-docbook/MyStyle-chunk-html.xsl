@@ -1,5 +1,3 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-chunk-html.xsl,v 1.7 2010/05/30 18:16:12 nm4 Exp $ -->
-
 <!-- This stylesheet driver imports the DocBook XML stylesheet for chunked
 HTML output, and then imports my common stylesheet for HTML output. Finally, it
 fiddles with the chunking parameters to arrange for chapter chunking only (no

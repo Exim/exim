@@ -1,7 +1,5 @@
-$Cambridge: exim/doc/doc-misc/ABOUT,v 1.1 2004/10/08 10:38:47 ph10 Exp $
-
-CVS directory exim/exim-doc/doc-misc
-------------------------------------
+Exim repository: doc/doc-misc
+-----------------------------
 
 This directory contains some miscellaneous documentation files that do not form 
 part of Exim distributions, but are related to its maintenance and development.

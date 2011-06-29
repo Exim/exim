@@ -1,5 +1,4 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exiqgrep.src,v 1.1 2004/10/07 10:39:01 ph10 Exp $
 
 # Utility for searching and displaying queue information.
 # Written by Matt Hubbard 15 August 2002

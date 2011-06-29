@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/lookups/dnsdb.c,v 1.20 2010/05/29 19:23:26 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

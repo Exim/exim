@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Cambridge: exim/doc/doc-scripts/BuildHTML,v 1.1 2004/10/07 15:04:35 ph10 Exp $
 
 if [ $# != 1 ]; then
   echo "*** Usage: BuildHTML <Exim version>"

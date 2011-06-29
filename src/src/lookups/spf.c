@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/lookups/spf.c,v 1.3 2009/11/11 14:43:28 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

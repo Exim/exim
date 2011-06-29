@@ -28,8 +28,6 @@
  *  http://www.itl.nist.gov/fipspubs/fip180-1.htm
  */
 
-/* $Cambridge: exim/src/src/pdkim/sha1.c,v 1.3 2009/12/07 13:05:07 tom Exp $ */
-
 #include "sha1.h"
 
 #include <string.h>

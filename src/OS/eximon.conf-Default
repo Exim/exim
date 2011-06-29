@@ -1,5 +1,3 @@
-# $Cambridge: exim/src/OS/eximon.conf-Default,v 1.1 2004/10/06 15:07:39 ph10 Exp $
-
 # Exim: Default settings for the eximon script which fires up the Exim monitor.
 # These can be overridden by OS-specific scripts and local installation
 # scripts, and also at run time by shell variables.

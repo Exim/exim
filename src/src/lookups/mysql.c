@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/lookups/mysql.c,v 1.7 2010/03/05 15:59:29 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

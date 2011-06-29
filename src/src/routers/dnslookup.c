@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/routers/dnslookup.c,v 1.12 2009/11/16 19:50:38 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

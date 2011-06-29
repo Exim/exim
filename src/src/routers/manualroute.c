@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/routers/manualroute.c,v 1.7 2009/11/16 19:50:38 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

@@ -1,5 +1,3 @@
-# $Cambridge: exim/src/src/eximon.src,v 1.1 2004/10/07 10:39:01 ph10 Exp $
-
 # Base source of start-up shell script for the Exim Monitor. Used to set the
 # required environment variables before running the program. Using script
 # rather than a configuration file means that computation can be done.

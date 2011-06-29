@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-# $Cambridge: exim/src/util/cramtest.pl,v 1.2 2005/08/30 09:19:33 ph10 Exp $
 
 # This script is contributed by Vadim Vygonets to aid in debugging CRAM-MD5
 # authentication.

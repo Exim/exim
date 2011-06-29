@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-#  $Cambridge: exim/doc/doc-docbook/OS-Fixups,v 1.3 2010/05/28 15:38:18 nm4 Exp $
+
 use strict;
 
 # Script to hack around xsl:import paths; ideally, the system catalogs are used.

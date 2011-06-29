@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/receive.c,v 1.55 2010/06/05 11:13:30 pdp Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

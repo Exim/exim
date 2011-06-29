@@ -1,5 +1,3 @@
-# $Cambridge: exim/src/src/transports/Makefile,v 1.4 2008/02/14 13:49:35 fanf2 Exp $
-
 # Make file for building a library containing all the available transports and
 # calling it transports.a. This is called from the main make file, after cd'ing
 # to the transports subdirectory.

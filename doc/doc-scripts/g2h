@@ -1,5 +1,4 @@
 #! /usr/bin/perl -w
-# $Cambridge: exim/doc/doc-scripts/g2h,v 1.3 2005/02/17 12:17:09 ph10 Exp $
 
 # This is a script that turns the SGCAL source of Exim's documentation into
 # HTML. It can be used for both the filter document and the main Exim

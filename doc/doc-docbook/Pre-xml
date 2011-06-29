@@ -1,7 +1,5 @@
 #! /usr/bin/perl
 
-# $Cambridge: exim/doc/doc-docbook/Pre-xml,v 1.4 2007/04/11 15:26:09 ph10 Exp $
-
 # Script to pre-process XML input before processing it for various purposes.
 # Options specify which transformations are to be done. Monospaced literal
 # layout blocks are never touched.

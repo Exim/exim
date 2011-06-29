@@ -1,10 +1,7 @@
-$Cambridge: exim/configs/ABOUT,v 1.1 2004/10/08 10:50:49 ph10 Exp $
+Exim repository: configs
+------------------------
 
-CVS directory exim/exim-conf
-----------------------------
-
-This directory contains sample configurations and similar files that have been 
-submitted by Exim users. The files are not locally modified, and so do not have 
-CVS version Ids.
+This directory contains sample configurations and similar files that have been
+submitted by Exim users. The files are not locally modified.
 
 End

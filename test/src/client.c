@@ -1,5 +1,3 @@
-/* $Cambridge: exim/test/src/client.c,v 1.2 2006/10/16 13:42:19 ph10 Exp $ */
-
 /* A little hacked up program that makes a TCP/IP call and reads a script to
 drive it, for testing Exim server code running as a daemon. It's got a bit
 messy with the addition of support for either OpenSSL or GnuTLS. The code for

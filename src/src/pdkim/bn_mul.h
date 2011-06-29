@@ -37,8 +37,6 @@
  *         . C, longlong          . C, generic
  */
 
-/* $Cambridge: exim/src/src/pdkim/bn_mul.h,v 1.3 2009/12/07 13:05:07 tom Exp $ */
-
 #ifndef POLARSSL_BN_MUL_H
 #define POLARSSL_BN_MUL_H
 

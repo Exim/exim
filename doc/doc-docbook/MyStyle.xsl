@@ -1,5 +1,3 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle.xsl,v 1.4 2006/12/19 12:28:35 ph10 Exp $ -->
-
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>
 
 <!-- This file contains changes to the Docbook XML stylesheets that I want to

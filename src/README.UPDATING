@@ -1,5 +1,3 @@
-$Cambridge: exim/src/README.UPDATING,v 1.17 2009/10/16 07:35:42 tom Exp $
-
 This document contains detailed information about incompatibilities that might
 be encountered when upgrading from one release of Exim to another. The
 information is in reverse order of release numbers. Mostly these are relatively

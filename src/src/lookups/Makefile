@@ -1,12 +1,10 @@
-# $Cambridge: exim/src/src/lookups/Makefile,v 1.9 2009/06/10 07:34:05 tom Exp $
-#
+# Make file for building Exim's lookup modules.
+# This is called from the main make file, after cd'ing
+# to the lookups subdirectory.
+
 # nb: at build time, the version of this file used will have had some
 #     extra variable definitions and prepended to it and module build rules
 #     interpolated below.
-
-# Make file for building all the available lookups.
-# This is called from the main make file, after cd'ing
-# to the lookups subdirectory.
 
 # MAGIC-TAG-MODS-OBJ-RULES-GO-HERE
 

@@ -1,6 +1,3 @@
-/* $Cambridge: exim/src/exim_monitor/em_TextPop.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
-/* $XConsortium: TextPop.c,v 1.22 91/07/25 18:10:22 rws Exp $ */
-
 /***********************************************************
 Copyright 1989 by the Massachusetts Institute of Technology,
 Cambridge, Massachusetts.

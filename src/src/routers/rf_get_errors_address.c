@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/routers/rf_get_errors_address.c,v 1.8 2009/11/16 19:50:38 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

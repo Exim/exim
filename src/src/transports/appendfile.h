@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/transports/appendfile.h,v 1.7 2009/11/16 19:50:39 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

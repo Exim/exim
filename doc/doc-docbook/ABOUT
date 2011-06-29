@@ -1,7 +1,5 @@
-$Cambridge: exim/doc/doc-docbook/ABOUT,v 1.1 2005/06/16 10:32:31 ph10 Exp $
-
-CVS directory exim/exim-doc/doc-docbook
----------------------------------------
+Exim repository: doc/doc-docbook
+--------------------------------
 
 This directory contains the AsciiDoc and DocBook sources for the Exim
 specification and the filter description. It also contains a Makefile and all

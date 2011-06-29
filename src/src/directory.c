@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/directory.c,v 1.6 2009/11/16 19:50:36 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

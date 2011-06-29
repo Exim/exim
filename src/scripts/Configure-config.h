@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/Configure-config.h,v 1.2 2005/05/04 10:17:29 ph10 Exp $
 
 # Build the config.h file, using the buildconfig program, first ensuring that
 # it exists.

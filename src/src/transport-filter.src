@@ -1,5 +1,4 @@
 #! PERL_COMMAND -w
-# $Cambridge: exim/src/src/transport-filter.src,v 1.1 2004/10/07 10:39:01 ph10 Exp $
 
 # This is a Perl script to demonstrate the possibilities of on-the-fly
 # delivery filtering in Exim. It is presented with a message on its standard

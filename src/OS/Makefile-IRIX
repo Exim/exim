@@ -1,5 +1,3 @@
-# $Cambridge: exim/src/OS/Makefile-IRIX,v 1.2 2005/05/23 16:58:55 fanf2 Exp $
-
 # Exim: OS-specific make file for IRIX
 
 HAVE_ICONV=yes

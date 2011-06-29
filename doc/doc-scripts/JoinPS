@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-# $Cambridge: exim/doc/doc-scripts/JoinPS,v 1.1 2004/10/07 15:04:35 ph10 Exp $
 
 # Make the basic PostScript file for the Exim spec from the gcode file, then
 # join it together with the contents and the index, to make a single

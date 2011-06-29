@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/auths/dovecot.c,v 1.12 2010/03/05 16:11:11 nm4 Exp $ */
-
 /*
  * Copyright (c) 2004 Andrey Panin <pazke@donpac.ru>
  *

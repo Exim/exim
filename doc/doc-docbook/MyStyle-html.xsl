@@ -1,5 +1,3 @@
-<!-- $Cambridge: exim/doc/doc-docbook/MyStyle-html.xsl,v 1.2 2005/11/10 12:30:13 ph10 Exp $ -->
-
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version='1.0'>
 
 <!-- This stylesheet driver imports my common stylesheet that makes some

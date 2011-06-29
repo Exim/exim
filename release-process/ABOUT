@@ -1,0 +1,9 @@
+Exim repository: release-process
+--------------------------------
+
+This directory contains stuff for preparing a release of Exim.
+
+Initially the scripts directory contains some scripting to build
+the release packages and to sign the packages.
+
+End

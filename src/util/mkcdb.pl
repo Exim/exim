@@ -1,5 +1,4 @@
 #!/usr/bin/perl -wT
-# $Cambridge: exim/src/util/mkcdb.pl,v 1.1 2005/05/24 11:20:40 ph10 Exp $
 #
 # Create cdb file from flat alias file. DPC: 15/10/98.
 # Args:      source  (may be relative or absolute)

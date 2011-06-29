@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/os-type,v 1.6 2009/11/13 12:18:35 nm4 Exp $
 
 # Shell script to determine the operating system type. Some of the heuristics
 # herein have accumulated over the years and may not strictly be needed now,

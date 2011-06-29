@@ -1,5 +1,3 @@
-/* $Cambridge: exim/test/src/fd.c,v 1.1 2006/02/06 16:24:05 ph10 Exp $ */
-
 /* A program to check on open file descriptors. There are some weird options
 for running it in Exim testing. If -q is given, make output suitable for
 queryprogram. If -f is given, copy the input as for a transport filter. If -s

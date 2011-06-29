@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/lookups/cdb.c,v 1.3 2005/06/27 14:29:44 ph10 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

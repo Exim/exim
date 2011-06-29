@@ -1,5 +1,3 @@
-; $Cambridge: exim/test/dnszones-src/db.test.ex,v 1.6 2007/03/14 11:22:23 ph10 Exp $
-
 ; This is a testing zone file for use when testing DNS handling in Exim. This
 ; is a fake zone of no real use - hence no SOA record. The zone name is
 ; test.ex. This file is passed through the substitution mechanism before being

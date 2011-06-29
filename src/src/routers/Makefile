@@ -1,5 +1,3 @@
-# $Cambridge: exim/src/src/routers/Makefile,v 1.4 2008/02/14 13:49:35 fanf2 Exp $
-
 # Make file for building a library containing all the available routers and
 # calling it routers.a. This is called from the main make file, after cd'ing
 # to the directors subdirectory. The library also contains functions that

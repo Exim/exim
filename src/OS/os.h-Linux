@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/OS/os.h-Linux,v 1.8 2009/06/10 07:34:04 tom Exp $ */
-
 /* Exim: OS-specific C header file for Linux */
 
 #define CRYPT_H

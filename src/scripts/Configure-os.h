@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/Configure-os.h,v 1.3 2008/04/13 09:22:45 tom Exp $
 
 # Shell script to create a link to the appropriate OS-specific header file.
 

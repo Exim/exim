@@ -1,5 +1,3 @@
-# $Cambridge: exim/src/src/aliases.default,v 1.1 2004/10/07 10:39:01 ph10 Exp $
-
 # Default aliases file, installed by Exim. This file contains no real aliases.
 # You should edit it to taste.
 

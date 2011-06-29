@@ -1,5 +1,4 @@
 #! /usr/bin/perl -w
-# $Cambridge: exim/doc/doc-scripts/g2t,v 1.2 2005/01/27 10:25:35 ph10 Exp $
 
 # A Perl script to turn the SGCAL source of the Exim documentation into
 # Texinfo input, more or less...

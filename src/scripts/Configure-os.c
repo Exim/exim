@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/Configure-os.c,v 1.1 2004/10/06 15:07:40 ph10 Exp $
 
 # Shell script to build os.c. There doesn't have to be an OS-specific os.c
 # file, but if there is, it gets copied at the start of os.c. The basic src

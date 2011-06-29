@@ -30,8 +30,6 @@
  *  http://math.libtomcrypt.com/files/tommath.pdf
  */
 
-/* $Cambridge: exim/src/src/pdkim/bignum.c,v 1.3 2009/12/07 13:05:07 tom Exp $ */
-
 #include "bignum.h"
 #include "bn_mul.h"
 

@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/lookups/lf_sqlperform.c,v 1.2 2009/11/16 19:50:38 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

@@ -1,5 +1,3 @@
-/* $Cambridge: exim/test/src/loaded.c,v 1.1 2006/02/06 16:24:05 ph10 Exp $ */
-
 /* This is a test function for dynamic loading in Exim expansions. It uses the
 number of arguments to control the result. */
 

@@ -1,5 +1,4 @@
 #! /usr/bin/perl -w
-# $Cambridge: exim/doc/doc-scripts/DoIndex,v 1.1 2004/10/07 15:04:35 ph10 Exp $
 
 # Script for producing the Index for the Exim manual from the output of the
 # SGCAL run. This is copied from the script for the Exim book.

@@ -1,5 +1,4 @@
 #! PERL_COMMAND -w
-# $Cambridge: exim/src/src/exiqsumm.src,v 1.2 2006/11/20 11:57:57 ph10 Exp $
 
 # Mail Queue Summary
 # Christoph Lameter, 21 May 1997

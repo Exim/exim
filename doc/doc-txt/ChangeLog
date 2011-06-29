@@ -1,5 +1,3 @@
-$Cambridge: exim/doc/doc-txt/ChangeLog,v 1.632 2010/06/12 15:21:25 jetmore Exp $
-
 Change log file for Exim from version 4.21
 -------------------------------------------
 
@@ -82,6 +80,8 @@ TF/04 Improved ratelimit ACL condition.
       example, measure the rate that a client uses different sender addresses
       with the options per_mail/unique=$sender_address. There are further
       details in the main documentation.
+
+TF/05 Removed obsolete $Cambridge$ CVS revision strings.
 
 
 Exim version 4.76

@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Cambridge: exim/src/util/unknownuser.sh,v 1.1 2004/10/07 10:39:03 ph10 Exp $
 
 # This is a sample script for demonstrating how to handle unknown users in
 # a more friendly way than just returning a "user unknown" error. It can

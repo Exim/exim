@@ -1,4 +1,3 @@
-# $Cambridge: exim/test/Makefile.in,v 1.2 2007/01/23 11:01:10 ph10 Exp $
 # This Makefile builds the support programs for the Exim test suite.
 
 ##############################################################################

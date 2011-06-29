@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Cambridge: exim/src/util/logargs.sh,v 1.1 2004/10/07 10:39:03 ph10 Exp $
 
 # This script can be interposed between a calling program and another
 # program, in order to log the arguments which are being used. This can

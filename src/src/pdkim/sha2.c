@@ -28,8 +28,6 @@
  *  http://csrc.nist.gov/publications/fips/fips180-2/fips180-2.pdf
  */
 
-/* $Cambridge: exim/src/src/pdkim/sha2.c,v 1.3 2009/12/07 13:05:07 tom Exp $ */
-
 #include "sha2.h"
 
 #include <string.h>

@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/exim_lock.c,v 1.4 2010/05/29 12:11:48 pdp Exp $ */
-
 /* A program to lock a file exactly as Exim would, for investigation of
 interlocking problems.
 

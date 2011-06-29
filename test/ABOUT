@@ -1,7 +1,5 @@
-$Cambridge: exim/test/ABOUT,v 1.1 2006/02/06 16:07:10 ph10 Exp $
-
-CVS directory exim/exim-test
-----------------------------
+Exim repository: test
+---------------------
 
 The files in this directory are those that comprise the Exim test suite. The
 README file contains a complete description of the suite and how it works. The

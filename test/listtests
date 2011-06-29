@@ -1,7 +1,5 @@
 #! /bin/sh
 
-# $Cambridge: exim/test/listtests,v 1.1 2006/02/06 16:07:10 ph10 Exp $
-
 # This script scans the directories of Exim test scripts and lists the first
 # comment line of each one, which gives a description. The output is piped via
 # "more". If the script has an argument, it is a pattern that is used to select

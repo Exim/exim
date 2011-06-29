@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/spool_mbox.c,v 1.15 2010/06/05 11:13:30 pdp Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

@@ -23,9 +23,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/base64.c,v 1.3 2009/12/07 13:05:07 tom Exp $ */
-
-
 #include "base64.h"
 
 static const unsigned char base64_enc_map[64] =

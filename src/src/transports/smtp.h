@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/transports/smtp.h,v 1.16 2009/11/16 19:56:54 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

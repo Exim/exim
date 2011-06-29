@@ -1,5 +1,3 @@
-# $Cambridge: exim/doc/doc-docbook/Makefile,v 1.14 2010/05/28 15:38:18 nm4 Exp $
-
 # Make file for Exim documentation from xfpt source.
 
 notarget:;    @echo "** You must specify a target, in the form x.y, where x is 'filter', 'spec',"

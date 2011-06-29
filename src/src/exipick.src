@@ -1,5 +1,4 @@
 #!PERL_COMMAND
-# $Cambridge: exim/src/src/exipick.src,v 1.17 2010/03/23 14:06:48 jetmore Exp $
 
 # This variable should be set by the building process to Exim's spool directory.
 my $spool = 'SPOOL_DIRECTORY';

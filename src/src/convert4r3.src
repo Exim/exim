@@ -1,5 +1,4 @@
 #! PERL_COMMAND -w
-# $Cambridge: exim/src/src/convert4r3.src,v 1.1 2004/10/07 10:39:01 ph10 Exp $
 
 # This is a Perl script that reads an Exim run-time configuration file and
 # checks for settings that were valid prior to release 3.00 but which were

@@ -1,9 +1,7 @@
-$Cambridge: exim/doc/doc-txt/ABOUT,v 1.1 2004/10/08 10:38:48 ph10 Exp $
+Exim repository: doc/doc-txt
+----------------------------
 
-CVS directory exim/exim-doc/doc-txt
------------------------------------
-
-This directory contains various documentation files that exist only as plain 
-text files, and are distributed in that format.
+This directory contains various documentation files that exist only as
+plain text files, and are distributed in that format.
 
 End

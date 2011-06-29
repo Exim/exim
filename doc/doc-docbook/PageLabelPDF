@@ -1,7 +1,5 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/doc/doc-docbook/PageLabelPDF,v 1.2 2006/04/04 14:03:49 ph10 Exp $
-
 # Program to add page label information to the PDF output file. I have not
 # found a way of automatically discovering the number of frontmatter pages
 # in the document. It is therefore taken as an argument to be inserted into the

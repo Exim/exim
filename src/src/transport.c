@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/transport.c,v 1.26 2009/12/15 08:23:15 tom Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

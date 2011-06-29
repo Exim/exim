@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/crypt16.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
-
 /*
  * Copyright (c) 2000-2002
  *   Chris Adams <cmadams@iruntheinter.net>

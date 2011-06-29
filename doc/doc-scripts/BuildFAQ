@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Cambridge: exim/doc/doc-scripts/BuildFAQ,v 1.2 2004/10/15 13:20:28 ph10 Exp $
 
 # Script to build the Exim FAQ in text and HTML formats.
 

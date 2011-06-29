@@ -1,7 +1,5 @@
-$Cambridge: exim/doc/ABOUT,v 1.1 2005/06/16 10:32:31 ph10 Exp $
-
-CVS directory exim/exim-doc
----------------------------
+Exim repository: doc
+--------------------
 
 This directory contains all the files related to Exim documentation. They are
 held in a number of subdirectories.

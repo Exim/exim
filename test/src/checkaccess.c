@@ -1,5 +1,3 @@
-/* $Cambridge: exim/test/src/checkaccess.c,v 1.1 2006/02/06 16:24:05 ph10 Exp $ */
-
 /* This is a baby program that is run as root from the runtest script. It is
 passed the Exim uid and gid as arguments, and the name of a file in the
 test-suite directory. It gives up all supplementary groups, changes to the

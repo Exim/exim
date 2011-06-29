@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/routers/rf_expand_data.c,v 1.5 2009/11/16 19:50:38 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

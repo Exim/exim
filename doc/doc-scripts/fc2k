@@ -1,5 +1,4 @@
 #! /usr/bin/perl -w
-# $Cambridge: exim/doc/doc-scripts/fc2k,v 1.2 2004/10/14 09:53:11 ph10 Exp $
 
 # Script to read the HTML table of contents for the Exim FAQ and create an
 # HTML KWIC index out of it.

@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/dkim.c,v 1.15 2010/06/12 13:54:38 jetmore Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

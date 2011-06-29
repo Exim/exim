@@ -1,16 +1,7 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/doc/doc-docbook/x2man,v 1.7 2007/01/23 12:13:50 ph10 Exp $
-
 # Script to find the command line options in the DocBook source of the Exim
 # spec, and turn them into a man page, because people like that.
-
-
-
-
-##################################################
-#              Main Program                      #
-##################################################
 
 open(IN, "spec.xml") || die "Can't open spec.xml\n";
 open(OUT, ">exim.8" ) || die "Can't open exim.8\n";

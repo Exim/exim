@@ -1,6 +1,3 @@
-/* $Cambridge: exim/src/exim_monitor/em_StripChart.c,v 1.1 2004/10/07 10:39:01 ph10 Exp $ */
-/* $XConsortium: StripChart.c,v 1.20 91/05/24 17:20:42 converse Exp $ */
-
 /***********************************************************
 Copyright 1987, 1988 by Digital Equipment Corporation, Maynard, Massachusetts,
 and the Massachusetts Institute of Technology, Cambridge, Massachusetts.

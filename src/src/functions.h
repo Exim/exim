@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/functions.h,v 1.52 2010/06/06 22:46:34 pdp Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

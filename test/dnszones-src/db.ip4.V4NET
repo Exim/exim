@@ -1,5 +1,3 @@
-; $Cambridge: exim/test/dnszones-src/db.ip4.V4NET,v 1.3 2006/02/16 10:05:33 ph10 Exp $
-
 ; This is a testing reverse zone file for use when testing DNS handling in
 ; Exim. This is a fake zone of no real use - hence no SOA record. The zone name
 ; is determined by the V4NET substitution. This file is passed through the

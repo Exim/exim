@@ -1,5 +1,3 @@
-/* $Cambridge: exim/test/src/iefbr14.c,v 1.1 2006/02/06 16:24:05 ph10 Exp $ */
-
 /* This is a program that does nothing, and returns zero. It is exactly the
 same as the Unix "true" utility. Why do we need it? Well, not all systems have
 "true" in the same place, and sometimes it's a shell built-in. Given that we

@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Cambridge: exim/doc/doc-scripts/BuildPDF,v 1.1 2004/10/07 15:04:35 ph10 Exp $
 
 echo "PDFing the spec"
 ps2pdf spec.ps spec.pdf

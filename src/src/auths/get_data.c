@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/auths/get_data.c,v 1.6 2009/11/16 19:50:38 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

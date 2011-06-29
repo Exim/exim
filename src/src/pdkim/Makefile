@@ -1,4 +1,4 @@
-# $Cambridge: exim/src/src/pdkim/Makefile,v 1.2 2009/06/10 07:34:05 tom Exp $
+# Make file for building the pdkim library.
 
 OBJ = base64.o bignum.o pdkim.o rsa.o sha1.o sha2.o
 

@@ -1,11 +1,9 @@
-$Cambridge: exim/src/ABOUT,v 1.1 2004/10/08 10:38:48 ph10 Exp $
+Exim repository: src
+--------------------
 
-CVS directory exim/exim-src
----------------------------
-
-This directory contains everything that is included in an Exim distribution 
+This directory contains everything that is included in an Exim distribution
 tarball, with the exception of the doc directory and an empty Local directory.
-You can build Exim from the contents of this directory by adding a Local 
+You can build Exim from the contents of this directory by adding a Local
 directory that contains appropriate configuration files.
 
 End

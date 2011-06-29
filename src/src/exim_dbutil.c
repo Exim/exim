@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/exim_dbutil.c,v 1.12 2009/11/16 19:50:36 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

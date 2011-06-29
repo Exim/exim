@@ -29,16 +29,12 @@
  *  http://www.cacr.math.uwaterloo.ca/hac/about/chap8.pdf
  */
 
-/* $Cambridge: exim/src/src/pdkim/rsa.c,v 1.3 2009/12/07 13:05:07 tom Exp $ */
-
 #include "rsa.h"
 #include "base64.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
-
 
 /* *************** begin copy from x509parse.c ********************/
 /*

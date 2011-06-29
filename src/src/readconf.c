@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/readconf.c,v 1.45 2010/06/12 17:56:32 jetmore Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

@@ -1,5 +1,3 @@
-$Cambridge: exim/doc/doc-txt/Exim3.upgrade,v 1.1 2004/10/07 15:04:35 ph10 Exp $
-
 This document contains information about upgrading Exim to the last of the 3.xx
 releases. It is provided to help anybody who is upgrading to release 4.xx from
 a release that is earlier than 3.33. It goes back as far as release 2.12. If

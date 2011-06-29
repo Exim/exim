@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/filtertest.c,v 1.12 2009/11/16 19:50:37 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

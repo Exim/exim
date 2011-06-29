@@ -1,7 +1,5 @@
 #!/usr/bin/env perl
-#
-# $Cambridge: exim/release-process/scripts/mk_exim_release.pl,v 1.1 2010/06/03 12:00:38 nm4 Exp $
-#
+
 use strict;
 use warnings;
 use Carp;

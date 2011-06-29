@@ -1,5 +1,3 @@
-/* $Cambridge: exim/test/src/mtpscript.c,v 1.1 2006/02/06 16:24:05 ph10 Exp $ */
-
 /* A little hacked up program that allows a script to play the part of a remote
 SMTP/LMTP server on stdin/stdout for testing purposes. Hacked from the more
 complicated version that does it over a socket. */

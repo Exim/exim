@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/transports/tf_maildir.h,v 1.7 2009/11/16 19:56:54 nm4 Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

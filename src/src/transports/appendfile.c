@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/transports/appendfile.c,v 1.27 2010/06/07 00:12:42 pdp Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

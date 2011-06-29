@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/buildconfig.c,v 1.21 2010/06/13 08:26:40 pdp Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

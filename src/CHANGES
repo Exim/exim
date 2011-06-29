@@ -1,12 +1,10 @@
-$Cambridge: exim/src/CHANGES,v 1.1 2004/10/06 14:12:40 ph10 Exp $
-
 Change Information for Exim
 ---------------------------
 
 Complete lists of all changes to the code, including bug fixes, are listed in
 doc/ChangeLog, and documentation for changes that have not yet made it
-into the manual is available in doc/NewStuff. The ftp site has a directory 
-called ChangeLogs which contains individual ChangeLog and NewStuff files for 
+into the manual is available in doc/NewStuff. The ftp site has a directory
+called ChangeLogs which contains individual ChangeLog and NewStuff files for
 each separate release.
 
 ****

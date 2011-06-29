@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/auths/pwcheck.c,v 1.4 2006/10/16 10:37:19 ph10 Exp $ */
-
 /* SASL server API implementation
  * Rob Siemborski
  * Tim Martin

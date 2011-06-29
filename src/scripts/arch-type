@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/arch-type,v 1.1 2004/10/06 15:07:40 ph10 Exp $
 
 # Shell script to determine the architecture type.
 

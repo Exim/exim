@@ -23,8 +23,6 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* $Cambridge: exim/src/src/pdkim/base64.h,v 1.3 2009/12/07 13:05:07 tom Exp $ */
-
 #ifndef POLARSSL_BASE64_H
 #define POLARSSL_BASE64_H
 

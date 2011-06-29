@@ -1,5 +1,4 @@
 #! PERL_COMMAND -w
-# $Cambridge: exim/src/src/exigrep.src,v 1.9 2007/03/13 16:37:57 ph10 Exp $
 
 use strict;
 

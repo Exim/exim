@@ -1,5 +1,3 @@
-/* $Cambridge: exim/test/src/server.c,v 1.1 2006/02/06 16:24:05 ph10 Exp $ */
-
 /* A little hacked up program that listens on a given port and allows a script
 to play the part of a remote MTA for testing purposes. This scripted version is
 hacked from my original interactive version. A further hack allows it to listen

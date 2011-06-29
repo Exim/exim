@@ -1,5 +1,3 @@
-# $Cambridge: exim/src/OS/Makefile-Base,v 1.17 2009/06/10 07:34:04 tom Exp $
-
 # This file is the basis of the main makefile for Exim and friends. The
 # makefile at the top level arranges to build the main makefile by calling
 # scripts/Configure-Makefile from within the build directory. This

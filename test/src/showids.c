@@ -1,5 +1,3 @@
-/* $Cambridge: exim/test/src/showids.c,v 1.1 2006/02/06 16:24:05 ph10 Exp $ */
-
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>

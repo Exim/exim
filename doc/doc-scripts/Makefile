@@ -1,5 +1,3 @@
-# $Cambridge: exim/doc/doc-scripts/Makefile,v 1.1 2004/10/07 15:04:35 ph10 Exp $
-
 # Makefile for Exim documentation
 
 ps:;        sgcal-fr spec.src -v -to z-gcode -index z-rawindex

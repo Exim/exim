@@ -1,7 +1,5 @@
 #! /usr/bin/perl -w
 
-# $Cambridge: exim/test/patchexim,v 1.2 2007/06/29 09:20:37 ph10 Exp $
-
 ###############################################################################
 # This is an auxiliary script that is part of the Exim test suite. It must be #
 # run as root, and is normally called from the main controlling script. Its   #

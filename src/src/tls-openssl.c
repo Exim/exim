@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/tls-openssl.c,v 1.28 2010/06/12 17:56:32 jetmore Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

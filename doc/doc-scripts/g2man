@@ -1,5 +1,4 @@
 #! /usr/bin/perl -w
-# $Cambridge: exim/doc/doc-scripts/g2man,v 1.1 2004/10/07 15:04:35 ph10 Exp $
 
 # Script to find the command line options in the Exim spec, and turn them
 # into a man page, because people like that.

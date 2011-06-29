@@ -1,6 +1,4 @@
 #!/usr/bin/perl -wT
-#
-# $Cambridge: exim/src/util/ratelimit.pl,v 1.3 2006/04/12 13:37:29 fanf2 Exp $
 
 use strict;
 

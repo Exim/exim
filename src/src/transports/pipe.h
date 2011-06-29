@@ -1,5 +1,3 @@
-/* $Cambridge: exim/src/src/transports/pipe.h,v 1.8 2010/06/05 10:04:44 pdp Exp $ */
-
 /*************************************************
 *     Exim - an Internet mail transport agent    *
 *************************************************/

@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Cambridge: exim/src/scripts/Configure-eximon,v 1.1 2004/10/06 15:07:40 ph10 Exp $
 
 # Shell script to build the configurable part of the Exim monitor's start-up
 # script. This is built from various configuration files. The final part is
