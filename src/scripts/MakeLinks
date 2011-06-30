@@ -24,9 +24,11 @@ echo ""
 echo ">>> Creating links to source files..."
 
 
-# PCRE is no longer part of the source distribution, so is no longer linked
+# The sources for modular parts of Exim have to be linked independently
+# in their own sub-directories, since their .o files are built using
+# their own Makefile in their sub-directory.
 
-# Likewise for the lookups
+# Firstly the lookups
 mkdir lookups
 cd lookups
 ln -s ../../src/lookups/README           README
