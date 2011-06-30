@@ -83,6 +83,8 @@ TF/04 Improved ratelimit ACL condition.
 
 TF/05 Removed obsolete $Cambridge$ CVS revision strings.
 
+TF/06 Removed a few PCRE remnants.
+
 
 Exim version 4.76
 -----------------

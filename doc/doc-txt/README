@@ -13,8 +13,6 @@ This directory should contain the following files:
   Exim4.upgrade    information about upgrading from release 3.33 to 4.00
   dbm.discuss.txt  discussion of DBM libraries
   filter.txt       specification of filter file contents
-  pcrepattern.txt  specification of PCRE regular expression patterns
-  pcretest.txt     specification of the PCRE test program
   spec.txt         main specification of Exim
   experimental-spec.txt  specification of experimental features
 
