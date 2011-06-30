@@ -32,7 +32,7 @@ FE       = $(FULLECHO)
 # up-to-date. Then the os-specific source files and the C configuration file
 # are set up, and finally it goes to the main Exim target.
 
-all:    $(EDITME) checklocalmake Makefile os.h os.c config.h allexim
+all:    $(EDITME) checklocalmake Makefile os.h os.c config.h version.h allexim
 
 checklocalmake:
 	@if $(SHELL) $(SCRIPTS)/newer $(EDITME)-$(OSTYPE) $(EDITME) || \
@@ -317,13 +317,7 @@ OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
 
 exim:   lookups/lookups.a auths/auths.a pdkim/pdkim.a \
         routers/routers.a transports/transports.a \
-        $(OBJ_EXIM) version.c
-	@echo " "
-	awk '{ print ($$1+1) }' cnumber.h > cnumber.temp
-	rm -f cnumber.h; mv cnumber.temp cnumber.h
-	@echo "$(CC) version.c"
-	$(FE)$(CC) -c $(CFLAGS) $(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) version.c
-	rm -f exim
+        $(OBJ_EXIM) version.o
 	@echo "$(LNCC) -o exim"
 	$(FE)$(PURIFY) $(LNCC) -o exim $(LFLAGS) $(OBJ_EXIM) version.o \
 	  routers/routers.a transports/transports.a lookups/lookups.a \
@@ -458,6 +452,13 @@ PHDRS = ../config.h ../dbfunctions.h ../dbstuff.h ../exim.h ../functions.h ../gl
 .SUFFIXES: .o .c
 .c.o:;  @echo "$(CC) $*.c"
 	$(FE)$(CC) -c $(CFLAGS) -I. $(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) $*.c
+
+# Update Exim's version information and build the version object.
+
+version.h::
+	@../scripts/reversion
+
+version.o: $(HDRS) cnumber.h version.h version.c
 
 # This is the dummy module for use by test compiles of individual modules. It
 # contains functions such as log_write() that may be called from bits of Exim
@@ -637,10 +638,10 @@ $(MONBIN): $(HDRS)
 
 # The lookups library.
 
-buildlookups lookups/lookups.a: config.h
+buildlookups lookups/lookups.a: config.h version.h
 	 @cd lookups; $(MAKE) SHELL=$(SHELL) AR="$(AR)" $(MFLAGS) CC="$(CC)" CFLAGS="$(CFLAGS)" \
-	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" \
-	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" HDRS="$(PHDRS)" \
+	   CFLAGS_DYNAMIC="$(CFLAGS_DYNAMIC)" HDRS="../version.h $(PHDRS)" \
+	   FE="$(FE)" RANLIB="$(RANLIB)" RM_COMMAND="$(RM_COMMAND)" \
 	   INCLUDE="$(INCLUDE) $(IPV6_INCLUDE) $(TLS_INCLUDE) $(LOOKUP_INCLUDE)"; \
 	 echo " "
 

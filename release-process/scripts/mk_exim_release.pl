@@ -72,7 +72,7 @@ sub deal_with_working_directory {
     mkpath( $context->{directory}, { verbose => ( $verbose || $debug ) } );
 
     # set and create subdirectories
-    foreach (qw(release_tree pkgs pkgdirs docbook)) {
+    foreach (qw(release_tree pkgs pkgdirs docbook tmp)) {
         $context->{$_} = File::Spec->catdir( $context->{directory}, $_ );
         mkpath( $context->{$_}, { verbose => ( $verbose || $debug ) } );
     }
@@ -84,7 +84,7 @@ sub export_git_tree {
     my $context = shift;
 
     # build git command
-    my $archive_file = sprintf( '%s/%s-%s.tar', $context->{tmp_dir}, $context->{pkgname}, $context->{release} );
+    my $archive_file = sprintf( '%s/%s-%s.tar', $context->{tmp}, $context->{pkgname}, $context->{release} );
     $context->{tmp_archive_file} = $archive_file;
     my @cmd = ( 'git', 'archive', '--format=tar', "--output=$archive_file", $context->{tag} );
 
@@ -108,7 +108,7 @@ sub unpack_tree {
 
 # ------------------------------------------------------------------
 
-sub adjust_version_extension {
+sub make_version_script {
     my $context = shift;
 
     return if ($context->{release} eq $context->{trelease});
@@ -117,41 +117,22 @@ sub adjust_version_extension {
     if ( $context->{release} ne $context->{trelease} . $variant ) {
         die "Broken version numbering, I'm buggy";
     }
- 
+
     my $srcdir    = File::Spec->catdir( $context->{release_tree}, 'src', 'src' );
-    my $version_h = File::Spec->catfile( $srcdir, 'version.h' );
+    chdir $srcdir or die "chdir $srcdir: $\n";
 
-    my $fh        = new IO::File $version_h, 'r';
-    die "Cannot read version.h: $!\n" unless ( defined $fh );
-    my @lines = <$fh>;
-    $fh->close() or die "Failed to close-read($version_h): $!\n";
-
-    my $found = 0;
-    my $i;
-    for ( $i = 0 ; $i < @lines ; ++$i ) {
-        if ( $lines[$i] =~ /EXIM_VARIANT_VERSION/ ) {
-            $found = 1;
-	    last;
-        }
-    }
-    die "Cannot find version.h EXIM_VARIANT_VERSION\n" unless $found;
-    unless ( $lines[$i] =~ m/^\s* \# \s* define \s+ EXIM_VARIANT_VERSION \s+ "(.*)" \s* $/x ) {
-        die "Broken version.h EXIM_VARIANT_VERSION line\n";
-    }
-    if ( length $1 ) {
-        print( "WARNING: version.h has a variant tag already defined: $1\n" );
-        print( "         not changing that tag\n" );
+    if ( -f "version.sh" ) {
+        print( "WARNING: version.sh already exists - leaving it in place\n" );
         return;
     }
 
-    $lines[$i] = qq{#define EXIM_VARIANT_VERSION\t\t"$variant"\n};
-    # deliberately not verbose constrained:
-    print( "Adjusting version.h for $variant release.\n" );
+    my @cmd = ("../scripts/reversion", "release");
+    print( "Running: ", join( ' ', @cmd ), "\n" ) if ($verbose);
+    system(@cmd) == 0 || croak "reversion failed";
 
-    $fh = new IO::File $version_h, "w";
-    die "Cannot write version.h: $!\n" unless ( defined $fh );
-    $fh->print( @lines );
-    $fh->close() or die "Failed to close-write($version_h): $!\n";
+    unlink "version.h";
+
+    -f "version.sh" or die "failed to create version.h";
 }
 
 # ------------------------------------------------------------------
@@ -366,7 +347,7 @@ sub create_tar_files {
     export_git_tree($context);
     chdir( $context->{directory} ) || die;
     unpack_tree($context);
-    adjust_version_extension($context);
+    make_version_script($context);
     build_documentation($context);
     build_package_directories($context);
     create_tar_files($context);

@@ -85,6 +85,9 @@ TF/05 Removed obsolete $Cambridge$ CVS revision strings.
 
 TF/06 Removed a few PCRE remnants.
 
+TF/07 Automatically extract Exim's version number from tags in the git
+      repository when doing development or release builds.
+
 
 Exim version 4.76
 -----------------
