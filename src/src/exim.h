@@ -477,13 +477,15 @@ requires various things that are set therein. */
 #endif
 
 /* Define a union to hold either an IPv4 or an IPv6 sockaddr structure; this
-simplifies some of the coding. */
+simplifies some of the coding.  We include the sockaddr to reduce type-punning
+issues in C99. */
 
 union sockaddr_46 {
   struct sockaddr_in v4;
   #if HAVE_IPV6
   struct sockaddr_in6 v6;
   #endif
+  struct sockaddr v0;
 };
 
 /* If SUPPORT_TLS is not defined, ensure that USE_GNUTLS is also not defined
