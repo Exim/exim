@@ -91,6 +91,10 @@ TF/07 Automatically extract Exim's version number from tags in the git
 PP/02 Raise smtp_cmd_buffer_size to 16kB. Patch from Paul Fisher.
       Bugzilla 879.
 
+PP/03 Implement SSL-on-connect outbound with protocol=smtps on smtp transport.
+      Heavily based on revision 40f9a89a from Simon Arlott's tree.
+      Bugzilla 97.
+
 
 Exim version 4.76
 -----------------

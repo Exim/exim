@@ -302,7 +302,8 @@ if (tblock->retry_use_local_part == TRUE_UNSET)
 /* Set the default port according to the protocol */
 
 if (ob->port == NULL)
-  ob->port = (strcmpic(ob->protocol, US"lmtp") == 0)? US"lmtp" : US"smtp";
+  ob->port = (strcmpic(ob->protocol, US"lmtp") == 0)? US"lmtp" :
+    (strcmpic(ob->protocol, US"smtps") == 0)? US"smtps" : US"smtp";
 
 /* Set up the setup entry point, to be called before subprocesses for this
 transport. */
@@ -843,6 +844,7 @@ time_t start_delivery_time = time(NULL);
 smtp_transport_options_block *ob =
   (smtp_transport_options_block *)(tblock->options_block);
 BOOL lmtp = strcmpic(ob->protocol, US"lmtp") == 0;
+BOOL smtps = strcmpic(ob->protocol, US"smtps") == 0;
 BOOL ok = FALSE;
 BOOL send_rset = TRUE;
 BOOL send_quit = TRUE;
@@ -913,6 +915,14 @@ if (ob->authenticated_sender != NULL)
   else if (new[0] != 0) local_authenticated_sender = new;
   }
 
+#ifndef SUPPORT_TLS
+if (smtps)
+  {
+    set_errno(addrlist, 0, US"TLS support not available", DEFER, FALSE);
+    return ERROR;
+  }
+#endif
+
 /* Make a connection to the host if this isn't a continued delivery, and handle
 the initial interaction and HELO/EHLO/LHLO. Connect timeout errors are handled
 specially so they can be identified for retries. */
@@ -940,19 +950,22 @@ if (continue_hostname == NULL)
   is nevertheless a reasonably clean way of programming this kind of logic,
   where you want to escape on any error. */
 
-  if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
-    ob->command_timeout)) goto RESPONSE_FAILED;
-
-  /* Now check if the helo_data expansion went well, and sign off cleanly if it
-  didn't. */
-
-  if (helo_data == NULL)
+  if (!smtps)
     {
-    uschar *message = string_sprintf("failed to expand helo_data: %s",
-      expand_string_message);
-    set_errno(addrlist, 0, message, DEFER, FALSE);
-    yield = DEFER;
-    goto SEND_QUIT;
+    if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
+      ob->command_timeout)) goto RESPONSE_FAILED;
+
+    /* Now check if the helo_data expansion went well, and sign off cleanly if
+    it didn't. */
+
+    if (helo_data == NULL)
+      {
+      uschar *message = string_sprintf("failed to expand helo_data: %s",
+        expand_string_message);
+      set_errno(addrlist, 0, message, DEFER, FALSE);
+      yield = DEFER;
+      goto SEND_QUIT;
+      }
     }
 
 /** Debugging without sending a message
@@ -992,6 +1005,20 @@ goto SEND_QUIT;
 
   esmtp = verify_check_this_host(&(ob->hosts_avoid_esmtp), NULL,
      host->name, host->address, NULL) != OK;
+
+  /* Alas; be careful, since this goto is not an error-out, so conceivably
+  we might set data between here and the target which we assume to exist
+  and be usable.  I can see this coming back to bite us. */
+  #ifdef SUPPORT_TLS
+  if (smtps)
+    {
+    tls_offered = TRUE;
+    suppress_tls = FALSE;
+    ob->tls_tempfail_tryclear = FALSE;
+    smtp_command = US"SSL-on-connect";
+    goto TLS_NEGOTIATE;
+    }
+  #endif
 
   if (esmtp)
     {
@@ -1087,6 +1114,7 @@ if (tls_offered && !suppress_tls &&
   /* STARTTLS accepted: try to negotiate a TLS session. */
 
   else
+  TLS_NEGOTIATE:
     {
     int rc = tls_client_start(inblock.sock,
       host,
@@ -1127,6 +1155,10 @@ if (tls_offered && !suppress_tls &&
     }
   }
 
+/* if smtps, we'll have smtp_command set to something else; always safe to
+reset it here. */
+smtp_command = big_buffer;
+
 /* If we started TLS, redo the EHLO/LHLO exchange over the secure channel. If
 helo_data is null, we are dealing with a connection that was passed from
 another process, and so we won't have expanded helo_data above. We have to
@@ -1135,6 +1167,7 @@ start of the Exim process (in exim.c). */
 
 if (tls_active >= 0)
   {
+  char *greeting_cmd;
   if (helo_data == NULL)
     {
     helo_data = expand_string(ob->helo_data);
@@ -1148,8 +1181,25 @@ if (tls_active >= 0)
       }
     }
 
-  if (smtp_write_command(&outblock, FALSE, "%s %s\r\n", lmtp? "LHLO" : "EHLO",
-        helo_data) < 0)
+  /* For SMTPS we need to wait for the initial OK response.
+  Also, it seems likely that a server not supporting STARTTLS is broken
+  enough to perhaps not support EHLO. */
+  if (smtps)
+    {
+    if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
+      ob->command_timeout)) goto RESPONSE_FAILED;
+    if (esmtp)
+      greeting_cmd = "EHLO";
+    else
+      {
+      greeting_cmd = "HELO";
+      DEBUG(D_transport)
+        debug_printf("not sending EHLO (host matches hosts_avoid_esmtp)\n");
+      }
+    }
+
+  if (smtp_write_command(&outblock, FALSE, "%s %s\r\n",
+        lmtp? "LHLO" : greeting_cmd, helo_data) < 0)
     goto SEND_FAILED;
   if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
        ob->command_timeout))
@@ -1990,9 +2040,12 @@ if (completed_address && ok && send_quit)
       if (tls_active >= 0)
         {
         tls_close(TRUE);
-        ok = smtp_write_command(&outblock,FALSE,"EHLO %s\r\n",helo_data) >= 0 &&
-             smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
-               ob->command_timeout);
+        if (smtps)
+          ok = FALSE;
+        else
+          ok = smtp_write_command(&outblock,FALSE,"EHLO %s\r\n",helo_data) >= 0 &&
+               smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
+                 ob->command_timeout);
         }
       #endif
 

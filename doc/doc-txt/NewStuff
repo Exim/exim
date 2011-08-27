@@ -12,6 +12,9 @@ Version 4.77
  1. New options for the ratelimit ACL condition: /count= and /unique=.
     The /noupdate option has been replaced by a /readonly option.
 
+ 2. The SMTP transport's protocol option may now be set to "smtps", to
+    use SSL-on-connect outbound.
+
 
 Version 4.76
 ------------

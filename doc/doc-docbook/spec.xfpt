@@ -22044,11 +22044,21 @@ is deferred.
 
 .option protocol smtp string smtp
 .cindex "LMTP" "over TCP/IP"
+.cindex "ssmtp protocol" "outbound"
+.cindex "TLS" "SSL-on-connect outbound"
+.vindex "&$port$&"
 If this option is set to &"lmtp"& instead of &"smtp"&, the default value for
 the &%port%& option changes to &"lmtp"&, and the transport operates the LMTP
 protocol (RFC 2033) instead of SMTP. This protocol is sometimes used for local
 deliveries into closed message stores. Exim also has support for running LMTP
 over a pipe to a local process &-- see chapter &<<CHAPLMTP>>&.
+
+.new
+If this option is set to &"smtps"&, the default vaule for the &%port%& option
+changes to &"smtps"&, and the transport initiates TLS immediately after
+connecting, as an outbound SSL-on-connect, instead of using STARTTLS to upgrade.
+The Internet standards bodies strongly discourage use of this mode.
+.wen
 
 
 .option retry_include_ip_address smtp boolean true
