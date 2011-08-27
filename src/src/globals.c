@@ -348,6 +348,7 @@ uschar *auth_defer_user_msg    = US"";
 uschar *auth_vars[AUTH_VARS];
 int     auto_thaw              = 0;
 #ifdef WITH_CONTENT_SCAN
+BOOL    av_failed              = FALSE;
 uschar *av_scanner             = US"sophie:/var/run/sophie";  /* AV scanner */
 #endif
 

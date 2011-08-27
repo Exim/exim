@@ -15,6 +15,9 @@ Version 4.77
  2. The SMTP transport's protocol option may now be set to "smtps", to
     use SSL-on-connect outbound.
 
+ 3. New variable $av_failed, set true if the AV scanner deferred; ie, when
+    there is a problem talking to the AV scanner, or the AV scanner running.
+
 
 Version 4.76
 ------------

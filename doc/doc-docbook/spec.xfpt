@@ -10610,6 +10610,15 @@ is empty and &$authentication_failed$& is set to &"1"&). Failure includes any
 negative response to an AUTH command, including (for example) an attempt to use
 an undefined mechanism.
 
+.new
+.vitem &$av_failed$&
+.cindex "content scanning" "AV scanner failure"
+This variable is available when Exim is compiled with the content-scanning
+extension. It is set to &"0"& by default, but will be set to &"1"& if any
+problem occurs with the virus scanner (specified by &%av_scanner%&) during
+the ACL malware condition.
+.wen
+
 .vitem &$body_linecount$&
 .cindex "message body" "line count"
 .cindex "body of message" "line count"

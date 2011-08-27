@@ -387,6 +387,9 @@ static var_entry var_table[] = {
   { "authenticated_id",    vtype_stringptr,   &authenticated_id },
   { "authenticated_sender",vtype_stringptr,   &authenticated_sender },
   { "authentication_failed",vtype_int,        &authentication_failed },
+#ifdef WITH_CONTENT_SCAN
+  { "av_failed",           vtype_int,         &av_failed },
+#endif
 #ifdef EXPERIMENTAL_BRIGHTMAIL
   { "bmi_alt_location",    vtype_stringptr,   &bmi_alt_location },
   { "bmi_base64_tracker_verdict", vtype_stringptr, &bmi_base64_tracker_verdict },

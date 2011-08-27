@@ -97,6 +97,10 @@ PP/03 Implement SSL-on-connect outbound with protocol=smtps on smtp transport.
 
 PP/04 Use .dylib instead of .so for dynamic library loading on MacOS.
 
+PP/05 Variable $av_failed, true if the AV scanner deferred.
+      Patch from John Horne.
+      Bugzilla 1078.
+
 
 Exim version 4.76
 -----------------

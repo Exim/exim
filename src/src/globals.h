@@ -184,6 +184,7 @@ extern uschar *auth_defer_user_msg;    /* Error message for user */
 extern uschar *auth_vars[];            /* $authn variables */
 extern int     auto_thaw;              /* Auto-thaw interval */
 #ifdef WITH_CONTENT_SCAN
+extern BOOL    av_failed;              /* TRUE if the AV process failed */
 extern uschar *av_scanner;             /* AntiVirus scanner to use for the malware condition */
 #endif
 
