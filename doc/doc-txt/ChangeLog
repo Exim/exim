@@ -103,6 +103,9 @@ PP/05 Variable $av_failed, true if the AV scanner deferred.
 PP/06 Stop make process more reliably on build failure.
       Bugzilla 1087.  Patch from Heiko Schlittermann.
 
+PP/07 Make maildir_use_size_file an _expandable_ boolean.
+      Bugzilla 1089.  Patch Heiko Schlittermann.
+
 
 Exim version 4.76
 -----------------

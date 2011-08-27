@@ -19955,13 +19955,16 @@ This option applies only to deliveries in maildir format, and is described in
 section &<<SECTmaildirdelivery>>& below.
 
 
-.option maildir_use_size_file appendfile boolean false
+.new
+.option maildir_use_size_file appendfile&!! boolean false
 .cindex "maildir format" "&_maildirsize_& file"
-Setting this option true enables support for &_maildirsize_& files. Exim
+The result of string expansion for this option must be a valid boolean value.
+If it is true, it enables support for &_maildirsize_& files. Exim
 creates a &_maildirsize_& file in a maildir if one does not exist, taking the
 quota from the &%quota%& option of the transport. If &%quota%& is unset, the
 value is zero. See &%maildir_quota_directory_regex%& above and section
 &<<SECTmaildirdelivery>>& below for further details.
+.wen
 
 .option maildirfolder_create_regex appendfile string unset
 .cindex "maildir format" "&_maildirfolder_& file"

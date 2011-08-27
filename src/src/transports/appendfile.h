@@ -21,6 +21,7 @@ typedef struct {
   uschar *quota_warn_threshold;
   uschar *mailbox_size_string;
   uschar *mailbox_filecount_string;
+  uschar *expand_maildir_use_size_file;
   uschar *maildir_dir_regex;
   uschar *maildir_tag;
   uschar *maildirfolder_create_regex;
