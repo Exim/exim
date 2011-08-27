@@ -88,8 +88,8 @@ TF/06 Removed a few PCRE remnants.
 TF/07 Automatically extract Exim's version number from tags in the git
       repository when doing development or release builds.
 
-PP/02 Raise smtp_cmd_buffer_size to 16kB. Patch from Paul Fisher.
-      Bugzilla 879.
+PP/02 Raise smtp_cmd_buffer_size to 16kB.
+      Bugzilla 879.  Patch from Paul Fisher.
 
 PP/03 Implement SSL-on-connect outbound with protocol=smtps on smtp transport.
       Heavily based on revision 40f9a89a from Simon Arlott's tree.
@@ -98,8 +98,10 @@ PP/03 Implement SSL-on-connect outbound with protocol=smtps on smtp transport.
 PP/04 Use .dylib instead of .so for dynamic library loading on MacOS.
 
 PP/05 Variable $av_failed, true if the AV scanner deferred.
-      Patch from John Horne.
-      Bugzilla 1078.
+      Bugzilla 1078.  Patch from John Horne.
+
+PP/06 Stop make process more reliably on build failure.
+      Bugzilla 1087.  Patch from Heiko Schlittermann.
 
 
 Exim version 4.76

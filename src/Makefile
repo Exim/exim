@@ -66,7 +66,8 @@ makefile: build-directory
 # The installation commands are kept in a separate script, which expects
 # to be run from inside the build directory.
 
-install:;	@cd build-$(buildname); \
+install:        all
+		@cd build-$(buildname); \
 		build=$(build) $(SHELL) ../scripts/exim_install $(INSTALL_ARG)
 
 # Tidy-up targets
