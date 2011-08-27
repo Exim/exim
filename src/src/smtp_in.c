@@ -36,9 +36,14 @@ uschar *tcp_wrappers_name;
 /* Size of buffer for reading SMTP commands. We used to use 512, as defined
 by RFC 821. However, RFC 1869 specifies that this must be increased for SMTP
 commands that accept arguments, and this in particular applies to AUTH, where
-the data can be quite long. */
+the data can be quite long.  More recently this value was 2048 in Exim; 
+however, RFC 4954 (circa 2007) recommends 12288 bytes to handle AUTH.  Clients
+such as Thunderbird will send an AUTH with an initial-response for GSSAPI. 
+The maximum size of a Kerberos ticket under Windows 2003 is 12000 bytes, and 
+we need room to handle large base64-encoded AUTHs for GSSAPI.
+*/
 
-#define smtp_cmd_buffer_size  2048
+#define smtp_cmd_buffer_size  16384
 
 /* Size of buffer for reading SMTP incoming packets */
 

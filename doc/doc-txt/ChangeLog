@@ -88,6 +88,9 @@ TF/06 Removed a few PCRE remnants.
 TF/07 Automatically extract Exim's version number from tags in the git
       repository when doing development or release builds.
 
+PP/02 Raise smtp_cmd_buffer_size to 16kB. Patch from Paul Fisher.
+      Bugzilla 879.
+
 
 Exim version 4.76
 -----------------
