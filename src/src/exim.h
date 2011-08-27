@@ -48,6 +48,11 @@ making unique names. */
 #define LOCALHOST_MAX  10
 #endif
 
+/* If not overriden by os.h, dynamic libraries have filenames ending .so */
+#ifndef DYNLIB_FN_EXT
+# define DYNLIB_FN_EXT "so"
+#endif
+
 /* ANSI C standard includes */
 
 #include <ctype.h>

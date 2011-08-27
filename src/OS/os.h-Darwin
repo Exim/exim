@@ -32,4 +32,7 @@ updating Exim to use the newer interface. */
 
 #define BIND_8_COMPAT
 
+/* It's not .so for dynamic libraries on Darwin. */
+#define DYNLIB_FN_EXT "dylib"
+
 /* End */

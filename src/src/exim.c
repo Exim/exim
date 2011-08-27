@@ -1078,9 +1078,9 @@ set_readline(char * (**fn_readline_ptr)(const char *),
              void   (**fn_addhist_ptr)(const char *))
 {
 void *dlhandle;
-void *dlhandle_curses = dlopen("libcurses.so", RTLD_GLOBAL|RTLD_LAZY);
+void *dlhandle_curses = dlopen("libcurses." DYNLIB_FN_EXT, RTLD_GLOBAL|RTLD_LAZY);
 
-dlhandle = dlopen("libreadline.so", RTLD_GLOBAL|RTLD_NOW);
+dlhandle = dlopen("libreadline." DYNLIB_FN_EXT, RTLD_GLOBAL|RTLD_NOW);
 if (dlhandle_curses != NULL) dlclose(dlhandle_curses);
 
 if (dlhandle != NULL)

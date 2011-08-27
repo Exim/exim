@@ -450,7 +450,8 @@ void init_lookup_list(void)
 {
   DIR *dd;
   struct dirent *ent;
-  const pcre *regex_islookupmod = regex_must_compile(US"\\.so$", FALSE, TRUE);
+  const pcre *regex_islookupmod = regex_must_compile(
+      US"\\." DYNLIB_FN_EXT "$", FALSE, TRUE);
   int countmodules = 0;
   int moduleerrors = 0;
   struct lookupmodulestr *p;
