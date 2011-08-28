@@ -4404,13 +4404,24 @@ while (*s != 0)
 
         (void)close(fd_in);
 
+        /* Read the pipe to get the command's output into $value (which is kept
+        in lookup_value). Read during execution, so that if the output exceeds
+        the OS pipe buffer limit, we don't block forever. */
+
+        f = fdopen(fd_out, "rb");
+        sigalrm_seen = FALSE;
+        alarm(60);
+        lookup_value = cat_file(f, lookup_value, &lsize, &lptr, NULL);
+        alarm(0);
+        (void)fclose(f);
+
         /* Wait for the process to finish, applying the timeout, and inspect its
         return code for serious disasters. Simple non-zero returns are passed on.
         */
 
-        if ((runrc = child_close(pid, 60)) < 0)
+        if (sigalrm_seen == TRUE || (runrc = child_close(pid, 30)) < 0)
           {
-          if (runrc == -256)
+          if (sigalrm_seen == TRUE || runrc == -256)
             {
             expand_string_message = string_sprintf("command timed out");
             killpg(pid, SIGKILL);       /* Kill the whole process group */
@@ -4426,14 +4437,6 @@ while (*s != 0)
 
           goto EXPAND_FAILED;
           }
-
-        /* Read the pipe to get the command's output into $value (which is kept
-        in lookup_value). */
-
-        f = fdopen(fd_out, "rb");
-        lookup_value = NULL;
-        lookup_value = cat_file(f, lookup_value, &lsize, &lptr, NULL);
-        (void)fclose(f);
         }
 
       /* Process the yes/no strings; $value may be useful in both cases */

@@ -104,7 +104,10 @@ PP/06 Stop make process more reliably on build failure.
       Bugzilla 1087.  Patch from Heiko Schlittermann.
 
 PP/07 Make maildir_use_size_file an _expandable_ boolean.
-      Bugzilla 1089.  Patch Heiko Schlittermann.
+      Bugzilla 1089.  Patch from Heiko Schlittermann.
+
+PP/08 Handle ${run} returning more data than OS pipe buffer size.
+      Bugzilla 1131.  Patch from Holger Weiß.
 
 
 Exim version 4.76
