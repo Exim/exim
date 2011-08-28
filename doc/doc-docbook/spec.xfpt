@@ -27345,7 +27345,7 @@ checks.
 
 The &%per_*%& options described above do not make sense in some ACLs. If you
 use a &%per_*%& option in an ACL where it is not normally permitted then the
-update mode defaults to &%readonly%& and you cannot specify the &%strict&% or
+update mode defaults to &%readonly%& and you cannot specify the &%strict%& or
 &%leaky%& modes. In other ACLs the default update mode is &%leaky%& (see the
 next section) so you must specify the &%readonly%& option explicitly.
 
@@ -27399,7 +27399,7 @@ go over the limit is not added to the set, in the same way that the client's
 recorded rate is not updated in the same situation.
 
 When you combine the &%unique=%& and &%readonly%& options, the specific
-%&unique=%& value is ignored, and Exim just retrieves the client's stored
+&%unique=%& value is ignored, and Exim just retrieves the client's stored
 rate.
 
 The &%unique=%& mechanism needs more space in the ratelimit database than the
