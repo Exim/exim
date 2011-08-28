@@ -109,6 +109,9 @@ PP/07 Make maildir_use_size_file an _expandable_ boolean.
 PP/08 Handle ${run} returning more data than OS pipe buffer size.
       Bugzilla 1131.  Patch from Holger Weiß.
 
+PP/09 Handle IPv6 addresses with SPF.
+      Bugzilla 860.  Patch from Wolfgang Breyha.
+
 
 Exim version 4.76
 -----------------

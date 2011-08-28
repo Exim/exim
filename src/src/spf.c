@@ -42,22 +42,23 @@ int spf_init(uschar *spf_helo_domain, uschar *spf_remote_addr) {
   }
 
   if (SPF_server_set_rec_dom(spf_server, CS primary_hostname)) {
-    debug_printf("spf: SPF_server_set_rec_dom() failed.\n");
+    debug_printf("spf: SPF_server_set_rec_dom(\"%s\") failed.\n", primary_hostname);
     spf_server = NULL;
     return 0;
   }
 
   spf_request = SPF_request_new(spf_server);
 
-  if (SPF_request_set_ipv4_str(spf_request, CS spf_remote_addr)) {
-    debug_printf("spf: SPF_request_set_ipv4_str() failed.\n");
+  if (SPF_request_set_ipv4_str(spf_request, CS spf_remote_addr)
+      && SPF_request_set_ipv6_str(spf_request, CS spf_remote_addr)) {
+    debug_printf("spf: SPF_request_set_ipv4_str() and SPF_request_set_ipv6_str() failed [%s]\n", spf_remote_addr);
     spf_server = NULL;
     spf_request = NULL;
     return 0;
   }
 
   if (SPF_request_set_helo_dom(spf_request, CS spf_helo_domain)) {
-    debug_printf("spf: SPF_set_helo_dom() failed.\n");
+    debug_printf("spf: SPF_set_helo_dom(\"%s\") failed.\n", spf_helo_domain);
     spf_server = NULL;
     spf_request = NULL;
     return 0;
