@@ -14169,6 +14169,10 @@ probably safest to just set it to a little larger than this value.  Eg, with a
 default Exim message size of 50M and a default ClamAV StreamMaxLength of 10M,
 some problems may result.
 
+A value of 0 will disable size limit checking; Exim will still advertise the
+SIZE extension in an EHLO response, but without a limit, so as to permit
+SMTP clients to still indicate the message size along with the MAIL verb.
+
 
 .option move_frozen_messages main boolean false
 .cindex "frozen messages" "moving"
