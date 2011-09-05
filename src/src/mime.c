@@ -73,9 +73,10 @@ uschar *mime_decode_qp_char(uschar *qp_p, int *c) {
 
 
 /* just dump MIME part without any decoding */
-static int mime_decode_asis(FILE* in, FILE* out, uschar* boundary)
+static ssize_t
+mime_decode_asis(FILE* in, FILE* out, uschar* boundary)
 {
-  int len, size = 0;
+  ssize_t len, size = 0;
   uschar buffer[MIME_MAX_LINE_LENGTH];
 
   while(fgets(CS buffer, MIME_MAX_LINE_LENGTH, mime_stream) != NULL) {
@@ -95,11 +96,12 @@ static int mime_decode_asis(FILE* in, FILE* out, uschar* boundary)
 
 
 /* decode base64 MIME part */
-static int mime_decode_base64(FILE* in, FILE* out, uschar* boundary)
+static ssize_t
+mime_decode_base64(FILE* in, FILE* out, uschar* boundary)
 {
   uschar ibuf[MIME_MAX_LINE_LENGTH], obuf[MIME_MAX_LINE_LENGTH];
   uschar *ipos, *opos;
-  size_t len, size = 0;
+  ssize_t len, size = 0;
   int bytestate = 0;
 
   opos = obuf;
@@ -169,11 +171,12 @@ static int mime_decode_base64(FILE* in, FILE* out, uschar* boundary)
 
 
 /* decode quoted-printable MIME part */
-static int mime_decode_qp(FILE* in, FILE* out, uschar* boundary)
+static ssize_t
+mime_decode_qp(FILE* in, FILE* out, uschar* boundary)
 {
   uschar ibuf[MIME_MAX_LINE_LENGTH], obuf[MIME_MAX_LINE_LENGTH];
   uschar *ipos, *opos;
-  size_t len, size = 0;
+  ssize_t len, size = 0;
 
   while (fgets(CS ibuf, MIME_MAX_LINE_LENGTH, in) != NULL)
   {
@@ -271,8 +274,8 @@ int mime_decode(uschar **listptr) {
   uschar decode_path[1024];
   FILE *decode_file = NULL;
   long f_pos = 0;
-  unsigned int size_counter = 0;
-  int (*decode_function)(FILE*, FILE*, uschar*);
+  ssize_t size_counter = 0;
+  ssize_t (*decode_function)(FILE*, FILE*, uschar*);
 
   if (mime_stream == NULL)
     return FAIL;
