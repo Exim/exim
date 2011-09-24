@@ -26,6 +26,16 @@ The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
 
+Exim version 4.77
+-----------------
+
+ * GnuTLS will now attempt to use TLS 1.2 and TLS 1.1 before TLS 1.0 and SSL3,
+   if supported by your GnuTLS library.  Use the existing
+   "gnutls_require_protocols" option to downgrade this if that will be a
+   problem.  Prior to this release, supported values were "TLS1" and "SSL3",
+   so you should be able to update configuration prior to update.
+
+
 Exim version 4.74
 -----------------
 

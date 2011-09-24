@@ -24595,8 +24595,14 @@ DHE_DSS). The default list contains RSA, DHE_DSS, DHE_RSA.
 For &%gnutls_require_mac%&, the recognized names are SHA (synonym SHA1), and
 MD5. The default list contains SHA, MD5.
 
-For &%gnutls_require_protocols%&, the recognized names are TLS1 and SSL3.
-The default list contains TLS1, SSL3.
+.new
+For &%gnutls_require_protocols%&, the recognized names are TLS1.2, TLS1.1,
+TLS1.0, (TLS1) and SSL3.
+The default list contains TLS1.2, TLS1.1, TLS1.0, SSL3.
+TLS1 is an alias for TLS1.0, for backwards compatibility.
+For sufficiently old versions of the GnuTLS library, TLS1.2 or TLS1.1 might
+not be supported and will not be recognised by Exim.
+.wen
 
 In a server, the order of items in these lists is unimportant. The server
 advertises the availability of all the relevant cipher suites. However, in a

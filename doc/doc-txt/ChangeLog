@@ -112,6 +112,9 @@ PP/08 Handle ${run} returning more data than OS pipe buffer size.
 PP/09 Handle IPv6 addresses with SPF.
       Bugzilla 860.  Patch from Wolfgang Breyha.
 
+PP/10 GnuTLS: support TLS 1.2 & 1.1.
+      Bugzilla 1156.
+
 
 Exim version 4.76
 -----------------

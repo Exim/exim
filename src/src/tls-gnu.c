@@ -12,6 +12,13 @@ is based on a patch that was contributed by Nikos Mavroyanopoulos.
 No cryptographic code is included in Exim. All this module does is to call
 functions from the GnuTLS library. */
 
+/* Note: This appears to be using an old API from compat.h; it is likely that
+someone familiary with GnuTLS programming could rework a lot of this to a
+modern API and perhaps remove the explicit knowledge of crypto algorithms from
+Exim.  Such a re-work would be most welcome and we'd sacrifice support for
+older GnuTLS releases without too many qualms -- maturity and experience
+in crypto libraries tends to improve their robustness against attack.
+Frankly, if you maintain it, you decide what's supported and what isn't. */
 
 /* Heading stuff for GnuTLS */
 
@@ -46,6 +53,13 @@ static int  verify_requirement;
 and space into which it can be copied and altered. */
 
 static const int default_proto_priority[16] = {
+  /* These are gnutls_protocol_t enum values */
+#if GNUTLS_VERSION_MAJOR > 1 || GNUTLS_VERSION_MINOR >= 7
+  GNUTLS_TLS1_2,
+#endif
+#if GNUTLS_VERSION_MAJOR > 1 || GNUTLS_VERSION_MINOR >= 2
+  GNUTLS_TLS1_1,
+#endif
   GNUTLS_TLS1,
   GNUTLS_SSL3,
   0 };
@@ -89,11 +103,27 @@ typedef struct pri_item {
 } pri_item;
 
 
-static int tls1_codes[] = { GNUTLS_TLS1, 0 };
+#if GNUTLS_VERSION_MAJOR > 1 || GNUTLS_VERSION_MINOR >= 7
+static int tls1_2_codes[] = { GNUTLS_TLS1_2, 0 };
+#endif
+#if GNUTLS_VERSION_MAJOR > 1 || GNUTLS_VERSION_MINOR >= 2
+static int tls1_1_codes[] = { GNUTLS_TLS1_1, 0 };
+#endif
+/* more recent libraries define this as an equivalent value to the
+canonical GNUTLS_TLS1_0; since they're the same, we stick to the
+older name. */
+static int tls1_0_codes[] = { GNUTLS_TLS1, 0 };
 static int ssl3_codes[] = { GNUTLS_SSL3, 0 };
 
 static pri_item proto_index[] = {
-  { US"TLS1", tls1_codes },
+#if GNUTLS_VERSION_MAJOR > 1 || GNUTLS_VERSION_MINOR >= 7
+  { US"TLS1.2", tls1_2_codes },
+#endif
+#if GNUTLS_VERSION_MAJOR > 1 || GNUTLS_VERSION_MINOR >= 2
+  { US"TLS1.1", tls1_1_codes },
+#endif
+  { US"TLS1.0", tls1_0_codes },
+  { US"TLS1", tls1_0_codes },
   { US"SSL3", ssl3_codes }
 };
 
