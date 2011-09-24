@@ -235,7 +235,7 @@ Returns:     TRUE/FALSE
 static BOOL
 verify_certificate(gnutls_session session, const char **error)
 {
-int rc;
+int rc = -1;
 uschar *dn_string = US"";
 const gnutls_datum *cert;
 unsigned int verify, cert_size = 0;
