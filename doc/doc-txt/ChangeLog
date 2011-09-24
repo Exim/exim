@@ -114,6 +114,8 @@ PP/09 Handle IPv6 addresses with SPF.
 
 PP/10 GnuTLS: support TLS 1.2 & 1.1.
       Bugzilla 1156.
+      Use gnutls_certificate_verify_peers2() [patch from Andreas Metzler].
+      Bugzilla 1095.
 
 
 Exim version 4.76

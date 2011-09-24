@@ -235,10 +235,10 @@ Returns:     TRUE/FALSE
 static BOOL
 verify_certificate(gnutls_session session, const char **error)
 {
-int verify;
+int rc;
 uschar *dn_string = US"";
 const gnutls_datum *cert;
-unsigned int cert_size = 0;
+unsigned int verify, cert_size = 0;
 
 *error = NULL;
 
@@ -262,7 +262,7 @@ if (cert != NULL)
       dn_string = string_copy_malloc(buff);
     }
 
-  verify = gnutls_certificate_verify_peers(session);
+  rc = gnutls_certificate_verify_peers2(session, &verify);
   }
 else
   {
@@ -274,7 +274,7 @@ else
 /* Handle the result of verification. INVALID seems to be set as well
 as REVOKED, but leave the test for both. */
 
-if ((verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED)) != 0)
+if ((rc < 0) || (verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED)) != 0)
   {
   tls_certificate_verified = FALSE;
   if (*error == NULL) *error = ((verify & GNUTLS_CERT_REVOKED) != 0)?
