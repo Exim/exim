@@ -13,7 +13,7 @@
 
 /* Recursively called function */
 
-static uschar *expand_string_internal(uschar *, BOOL, uschar **, BOOL);
+static uschar *expand_string_internal(uschar *, BOOL, uschar **, BOOL, BOOL);
 
 #ifdef STAND_ALONE
 #ifndef SUPPORT_CRYPTEQ
@@ -1703,7 +1703,7 @@ for (i = 0; i < n; i++)
     sub[i] = NULL;
     break;
     }
-  sub[i] = expand_string_internal(s+1, TRUE, &s, skipping);
+  sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
   if (sub[i] == NULL) return 3;
   if (*s++ != '}') return 1;
   while (isspace(*s)) s++;
@@ -1775,6 +1775,7 @@ eval_condition(uschar *s, BOOL *yield)
 BOOL testfor = TRUE;
 BOOL tempcond, combined_cond;
 BOOL *subcondptr;
+BOOL *sub2_honour_dollar = TRUE;
 int i, rc, cond_type, roffset;
 int num[2];
 struct stat statbuf;
@@ -1907,7 +1908,7 @@ switch(cond_type)
   while (isspace(*s)) s++;
   if (*s != '{') goto COND_FAILED_CURLY_START;
 
-  sub[0] = expand_string_internal(s+1, TRUE, &s, yield == NULL);
+  sub[0] = expand_string_internal(s+1, TRUE, &s, yield == NULL, TRUE);
   if (sub[0] == NULL) return NULL;
   if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
@@ -2031,14 +2032,19 @@ switch(cond_type)
   match_local_part:  matches in a local part list
   */
 
-  case ECOND_CRYPTEQ:
-  case ECOND_INLIST:
-  case ECOND_INLISTI:
-  case ECOND_MATCH:
   case ECOND_MATCH_ADDRESS:
   case ECOND_MATCH_DOMAIN:
   case ECOND_MATCH_IP:
   case ECOND_MATCH_LOCAL_PART:
+#ifndef EXPAND_LISTMATCH_RHS
+    sub2_honour_dollar = FALSE;
+#endif
+    /* FALLTHROUGH */
+
+  case ECOND_CRYPTEQ:
+  case ECOND_INLIST:
+  case ECOND_INLISTI:
+  case ECOND_MATCH:
 
   case ECOND_NUM_L:     /* Numerical comparisons */
   case ECOND_NUM_LE:
@@ -2060,6 +2066,13 @@ switch(cond_type)
 
   for (i = 0; i < 2; i++)
     {
+    /* Sometimes, we don't expand substrings; too many insecure configurations
+    created using match_address{}{} and friends, where the second param
+    includes information from untrustworthy sources. */
+    BOOL honour_dollar = TRUE;
+    if ((i > 0) && !sub2_honour_dollar)
+      honour_dollar = FALSE;
+
     while (isspace(*s)) s++;
     if (*s != '{')
       {
@@ -2068,7 +2081,8 @@ switch(cond_type)
         "after \"%s\"", name);
       return NULL;
       }
-    sub[i] = expand_string_internal(s+1, TRUE, &s, yield == NULL);
+    sub[i] = expand_string_internal(s+1, TRUE, &s, yield == NULL,
+        honour_dollar);
     if (sub[i] == NULL) return NULL;
     if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
@@ -2469,7 +2483,7 @@ switch(cond_type)
 
     while (isspace(*s)) s++;
     if (*s++ != '{') goto COND_FAILED_CURLY_START;
-    sub[0] = expand_string_internal(s, TRUE, &s, (yield == NULL));
+    sub[0] = expand_string_internal(s, TRUE, &s, (yield == NULL), TRUE);
     if (sub[0] == NULL) return NULL;
     if (*s++ != '}') goto COND_FAILED_CURLY_END;
 
@@ -2751,7 +2765,7 @@ if (*s++ != '{') goto FAILED_CURLY;
 want this string. Set skipping in the call in the fail case (this will always
 be the case if we were already skipping). */
 
-sub1 = expand_string_internal(s, TRUE, &s, !yes);
+sub1 = expand_string_internal(s, TRUE, &s, !yes, TRUE);
 if (sub1 == NULL && (yes || !expand_string_forcedfail)) goto FAILED;
 expand_string_forcedfail = FALSE;
 if (*s++ != '}') goto FAILED_CURLY;
@@ -2776,7 +2790,7 @@ already skipping. */
 while (isspace(*s)) s++;
 if (*s == '{')
   {
-  sub2 = expand_string_internal(s+1, TRUE, &s, yes || skipping);
+  sub2 = expand_string_internal(s+1, TRUE, &s, yes || skipping, TRUE);
   if (sub2 == NULL && (!yes || !expand_string_forcedfail)) goto FAILED;
   expand_string_forcedfail = FALSE;
   if (*s++ != '}') goto FAILED_CURLY;
@@ -3339,6 +3353,8 @@ Arguments:
                  expansion is placed here (typically used with ket_ends)
   skipping       TRUE for recursive calls when the value isn't actually going
                  to be used (to allow for optimisation)
+  honour_dollar  TRUE if $ is to be expanded,
+                 FALSE if it's just another character
 
 Returns:         NULL if expansion fails:
                    expand_string_forcedfail is set TRUE if failure was forced
@@ -3348,7 +3364,7 @@ Returns:         NULL if expansion fails:
 
 static uschar *
 expand_string_internal(uschar *string, BOOL ket_ends, uschar **left,
-  BOOL skipping)
+  BOOL skipping, BOOL honour_dollar)
 {
 int ptr = 0;
 int size = Ustrlen(string)+ 64;
@@ -3404,7 +3420,7 @@ while (*s != 0)
 
   if (ket_ends && *s == '}') break;
 
-  if (*s != '$')
+  if (*s != '$' || !honour_dollar)
     {
     yield = string_cat(yield, &size, &ptr, s++, 1);
     continue;
@@ -3620,7 +3636,7 @@ while (*s != 0)
       while (isspace(*s)) s++;
       if (*s == '{')
         {
-        key = expand_string_internal(s+1, TRUE, &s, skipping);
+        key = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
         if (key == NULL) goto EXPAND_FAILED;
         if (*s++ != '}') goto EXPAND_FAILED_CURLY;
         while (isspace(*s)) s++;
@@ -3686,7 +3702,7 @@ while (*s != 0)
       first. */
 
       if (*s != '{') goto EXPAND_FAILED_CURLY;
-      filename = expand_string_internal(s+1, TRUE, &s, skipping);
+      filename = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
       if (filename == NULL) goto EXPAND_FAILED;
       if (*s++ != '}') goto EXPAND_FAILED_CURLY;
       while (isspace(*s)) s++;
@@ -4355,7 +4371,7 @@ while (*s != 0)
 
       if (*s == '{')
         {
-        if (expand_string_internal(s+1, TRUE, &s, TRUE) == NULL)
+        if (expand_string_internal(s+1, TRUE, &s, TRUE, TRUE) == NULL)
           goto EXPAND_FAILED;
         if (*s++ != '}') goto EXPAND_FAILED_CURLY;
         while (isspace(*s)) s++;
@@ -4370,7 +4386,7 @@ while (*s != 0)
       SOCK_FAIL:
       if (*s != '{') goto EXPAND_FAILED;
       DEBUG(D_any) debug_printf("%s\n", expand_string_message);
-      arg = expand_string_internal(s+1, TRUE, &s, FALSE);
+      arg = expand_string_internal(s+1, TRUE, &s, FALSE, TRUE);
       if (arg == NULL) goto EXPAND_FAILED;
       yield = string_cat(yield, &size, &ptr, arg, Ustrlen(arg));
       if (*s++ != '}') goto EXPAND_FAILED_CURLY;
@@ -4399,7 +4415,7 @@ while (*s != 0)
 
       while (isspace(*s)) s++;
       if (*s != '{') goto EXPAND_FAILED_CURLY;
-      arg = expand_string_internal(s+1, TRUE, &s, skipping);
+      arg = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
       if (arg == NULL) goto EXPAND_FAILED;
       while (isspace(*s)) s++;
       if (*s++ != '}') goto EXPAND_FAILED_CURLY;
@@ -4830,7 +4846,7 @@ while (*s != 0)
         while (isspace(*s)) s++;
         if (*s == '{')
           {
-          sub[i] = expand_string_internal(s+1, TRUE, &s, skipping);
+          sub[i] = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
           if (sub[i] == NULL) goto EXPAND_FAILED;
           if (*s++ != '}') goto EXPAND_FAILED_CURLY;
 
@@ -4925,7 +4941,7 @@ while (*s != 0)
       while (isspace(*s)) s++;
       if (*s++ != '{') goto EXPAND_FAILED_CURLY;
 
-      list = expand_string_internal(s, TRUE, &s, skipping);
+      list = expand_string_internal(s, TRUE, &s, skipping, TRUE);
       if (list == NULL) goto EXPAND_FAILED;
       if (*s++ != '}') goto EXPAND_FAILED_CURLY;
 
@@ -4933,7 +4949,7 @@ while (*s != 0)
         {
         while (isspace(*s)) s++;
         if (*s++ != '{') goto EXPAND_FAILED_CURLY;
-        temp = expand_string_internal(s, TRUE, &s, skipping);
+        temp = expand_string_internal(s, TRUE, &s, skipping, TRUE);
         if (temp == NULL) goto EXPAND_FAILED;
         lookup_value = temp;
         if (*s++ != '}') goto EXPAND_FAILED_CURLY;
@@ -4957,7 +4973,7 @@ while (*s != 0)
         }
       else
         {
-        temp = expand_string_internal(s, TRUE, &s, TRUE);
+        temp = expand_string_internal(s, TRUE, &s, TRUE, TRUE);
         }
 
       if (temp == NULL)
@@ -5016,7 +5032,7 @@ while (*s != 0)
 
         else
           {
-          temp = expand_string_internal(expr, TRUE, NULL, skipping);
+          temp = expand_string_internal(expr, TRUE, NULL, skipping, TRUE);
           if (temp == NULL)
             {
             iterate_item = save_iterate_item;
@@ -5198,7 +5214,7 @@ while (*s != 0)
     {
     int c;
     uschar *arg = NULL;
-    uschar *sub = expand_string_internal(s+1, TRUE, &s, skipping);
+    uschar *sub = expand_string_internal(s+1, TRUE, &s, skipping, TRUE);
     if (sub == NULL) goto EXPAND_FAILED;
     s++;
 
@@ -5273,7 +5289,7 @@ while (*s != 0)
 
       case EOP_EXPAND:
         {
-        uschar *expanded = expand_string_internal(sub, FALSE, NULL, skipping);
+        uschar *expanded = expand_string_internal(sub, FALSE, NULL, skipping, TRUE);
         if (expanded == NULL)
           {
           expand_string_message =
@@ -6041,7 +6057,7 @@ expand_string(uschar *string)
 search_find_defer = FALSE;
 malformed_header = FALSE;
 return (Ustrpbrk(string, "$\\") == NULL)? string :
-  expand_string_internal(string, FALSE, NULL, FALSE);
+  expand_string_internal(string, FALSE, NULL, FALSE, TRUE);
 }
 
 
