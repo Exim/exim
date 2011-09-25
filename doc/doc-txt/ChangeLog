@@ -112,6 +112,10 @@ PP/08 Handle ${run} returning more data than OS pipe buffer size.
 PP/09 Handle IPv6 addresses with SPF.
       Bugzilla 860.  Patch from Wolfgang Breyha.
 
+PP/10 match_* no longer expand right-hand-side by default.
+      New compile-time build option, EXPAND_LISTMATCH_RHS.
+      New expansion conditions, "inlist", "inlisti".
+
 
 Exim version 4.76
 -----------------

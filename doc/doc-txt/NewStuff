@@ -18,6 +18,15 @@ Version 4.77
  3. New variable $av_failed, set true if the AV scanner deferred; ie, when
     there is a problem talking to the AV scanner, or the AV scanner running.
 
+ 4. New expansion conditions, "inlist" and "inlisti", which take simple lists
+    and check if the search item is a member of the list.  This does not
+    support named lists, but does subject the list part to string expansion.
+
+ 5. Unless the new EXPAND_LISTMATCH_RHS build option is set when Exim was
+    built, Exim no longer performs string expansion on the second string of
+    the match_* expansion conditions: "match_address", "match_domain",
+    "match_ip" & "match_local_part".  Named lists can still be used.
+
 
 Version 4.76
 ------------

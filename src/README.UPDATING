@@ -26,6 +26,17 @@ The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
 
+Exim version 4.77
+-----------------
+
+ * The match_<type>{string1}{string2} expansion conditions no longer subject
+   string2 to string expansion, unless Exim was built with the new
+   "EXPAND_LISTMATCH_RHS" option.  Too many people have inadvertently created
+   insecure configurations that way.  If you need the functionality and turn on
+   that build option, please let the developers know, and know why, so we can
+   try to provide a safer mechanism for you.
+
+
 Exim version 4.74
 -----------------
 

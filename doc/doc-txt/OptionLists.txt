@@ -825,6 +825,7 @@ EXIWHAT_MULTIKILL_CMD        system**
 EXIWHAT_MULTIKILL_ARG        system**
 EXIWHAT_PS_ARG               system**     to list all processes
 EXIWHAT_PS_CMD               system**     path to ps command
+EXPAND_LISTMATCH_RHS         optional*    restore pre-4.77 match_*{}{} behaviour
 EXTRALIBS                    system       additional libraries
 EXTRALIBS_EXIM               system       additional libraries for Exim only
 EXTRALIBS_EXIMON             system       additional libraries for the monitor
