@@ -51,6 +51,7 @@ it's a default value. */
 /* Both uid and gid are triggered by this */
 #define EXIM_UID
 #define EXPAND_DLFUNC
+#define EXPAND_LISTMATCH_RHS
 
 #define FIXED_NEVER_USERS         "root"
 
