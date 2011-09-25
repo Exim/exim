@@ -258,6 +258,8 @@ static uschar *cond_table[] = {
   US"gei",
   US"gt",
   US"gti",
+  US"inlist",
+  US"inlisti",
   US"isip",
   US"isip4",
   US"isip6",
@@ -301,6 +303,8 @@ enum {
   ECOND_STR_GEI,
   ECOND_STR_GT,
   ECOND_STR_GTI,
+  ECOND_INLIST,
+  ECOND_INLISTI,
   ECOND_ISIP,
   ECOND_ISIP4,
   ECOND_ISIP6,
@@ -2016,22 +2020,25 @@ switch(cond_type)
   /* symbolic operators for numeric and string comparison, and a number of
   other operators, all requiring two arguments.
 
+  crypteq:           encrypts plaintext and compares against an encrypted text,
+                       using crypt(), crypt16(), MD5 or SHA-1
+  inlist/inlisti:    checks if first argument is in the list of the second
   match:             does a regular expression match and sets up the numerical
                        variables if it succeeds
   match_address:     matches in an address list
   match_domain:      matches in a domain list
   match_ip:          matches a host list that is restricted to IP addresses
   match_local_part:  matches in a local part list
-  crypteq:           encrypts plaintext and compares against an encrypted text,
-                       using crypt(), crypt16(), MD5 or SHA-1
   */
 
+  case ECOND_CRYPTEQ:
+  case ECOND_INLIST:
+  case ECOND_INLISTI:
   case ECOND_MATCH:
   case ECOND_MATCH_ADDRESS:
   case ECOND_MATCH_DOMAIN:
   case ECOND_MATCH_IP:
   case ECOND_MATCH_LOCAL_PART:
-  case ECOND_CRYPTEQ:
 
   case ECOND_NUM_L:     /* Numerical comparisons */
   case ECOND_NUM_LE:
@@ -2320,6 +2327,7 @@ switch(cond_type)
       }
 
     else   /* {crypt} or {crypt16} and non-{ at start */
+           /* }-for-text-editors */
       {
       int which = 0;
       uschar *coded;
@@ -2366,6 +2374,30 @@ switch(cond_type)
       }
     break;
     #endif  /* SUPPORT_CRYPTEQ */
+
+    case ECOND_INLIST:
+    case ECOND_INLISTI:
+      {
+      int sep = 0;
+      BOOL found = FALSE;
+      uschar *save_iterate_item = iterate_item;
+      int (*compare)(const uschar *, const uschar *);
+
+      if (cond_type == ECOND_INLISTI)
+        compare = strcmpic;
+      else
+        compare = (int (*)(const uschar *, const uschar *)) strcmp;
+
+      while ((iterate_item = string_nextinlist(&sub[1], &sep, NULL, 0)) != NULL)
+        if (compare(sub[0], iterate_item) == 0)
+          {
+          found = TRUE;
+          break;
+          }
+      iterate_item = save_iterate_item;
+      *yield = found;
+      }
+
     }   /* Switch for comparison conditions */
 
   return s;    /* End of comparison conditions */
