@@ -46,7 +46,7 @@
 . /////////////////////////////////////////////////////////////////////////////
 
 .set previousversion "4.75"
-.set version "4.76"
+.set version "4.77"
 
 .set ACL "access control lists (ACLs)"
 .set I   "&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -174,8 +174,8 @@
 <author><firstname>Exim</firstname><surname>Maintainers</surname></author>
 <authorinitials>EM</authorinitials>
 <revhistory><revision>
-  <revnumber>4.76</revnumber>
-  <date>06 May 2011</date>
+  <revnumber>4.77</revnumber>
+  <date>03 Oct 2011</date>
   <authorinitials>EM</authorinitials>
 </revision></revhistory>
 <copyright><year>2011</year><holder>University of Cambridge</holder></copyright>
