@@ -117,6 +117,10 @@ PP/10 GnuTLS: support TLS 1.2 & 1.1.
       Use gnutls_certificate_verify_peers2() [patch from Andreas Metzler].
       Bugzilla 1095.
 
+PP/11 match_* no longer expand right-hand-side by default.
+      New compile-time build option, EXPAND_LISTMATCH_RHS.
+      New expansion conditions, "inlist", "inlisti".
+
 
 Exim version 4.76
 -----------------

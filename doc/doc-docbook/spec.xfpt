@@ -10079,6 +10079,25 @@ string is lexically greater than the second string. For &%gt%& the comparison
 includes the case of letters, whereas for &%gti%& the comparison is
 case-independent.
 
+.new
+.vitem &*inlist&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*& &&&
+       &*inlisti&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
+.cindex "string" "comparison"
+.cindex "list" "iterative conditions"
+Both strings are expanded; the second string is treated as a list of simple
+strings; if the first string is a member of the second, then the condition
+is true.
+
+These are simpler to use versions of the more powerful &*forany*& condition.
+Examples, and the &*forany*& equivalents:
+.code
+${if inlist{needle}{foo:needle:bar}}
+  ${if forany{foo:needle:bar}{eq{$item}{needle}}}
+${if inlisti{Needle}{fOo:NeeDLE:bAr}}
+  ${if forany{fOo:NeeDLE:bAr}{eqi{$item}{Needle}}}
+.endd
+.wen
+
 .vitem &*isip&~{*&<&'string'&>&*}*&  &&&
        &*isip4&~{*&<&'string'&>&*}*& &&&
        &*isip6&~{*&<&'string'&>&*}*&
@@ -10264,6 +10283,11 @@ For address lists, the matching starts off caselessly, but the &`+caseful`&
 item can be used, as in all address lists, to cause subsequent items to
 have their local parts matched casefully. Domains are always matched
 caselessly.
+
+.new
+Note that <&'string2'&> is not itself subject to string expansion, unless
+Exim was built with the EXPAND_LISTMATCH_RHS option.
+.wen
 
 &*Note*&: Host lists are &'not'& supported in this way. This is because
 hosts have two identities: a name and an IP address, and it is not clear
