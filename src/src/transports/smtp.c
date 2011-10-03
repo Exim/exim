@@ -1181,21 +1181,20 @@ if (tls_active >= 0)
       }
     }
 
-  /* For SMTPS we need to wait for the initial OK response.
-  Also, it seems likely that a server not supporting STARTTLS is broken
-  enough to perhaps not support EHLO. */
+  /* For SMTPS we need to wait for the initial OK response. */
   if (smtps)
     {
     if (!smtp_read_response(&inblock, buffer, sizeof(buffer), '2',
       ob->command_timeout)) goto RESPONSE_FAILED;
-    if (esmtp)
-      greeting_cmd = "EHLO";
-    else
-      {
-      greeting_cmd = "HELO";
-      DEBUG(D_transport)
-        debug_printf("not sending EHLO (host matches hosts_avoid_esmtp)\n");
-      }
+    }
+
+  if (esmtp)
+    greeting_cmd = "EHLO";
+  else
+    {
+    greeting_cmd = "HELO";
+    DEBUG(D_transport)
+      debug_printf("not sending EHLO (host matches hosts_avoid_esmtp)\n");
     }
 
   if (smtp_write_command(&outblock, FALSE, "%s %s\r\n",
