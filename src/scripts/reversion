@@ -52,7 +52,7 @@ fi
 # create your own version.sh as part of your release process, or you
 # can modify EXIM_VARIANT_VERSION at this point in this script.
 
-case $EXIM_RELEASE_VERSION in
+case "$EXIM_RELEASE_VERSION" in
 '')	echo "*** Your copy of Exim lacks any version information."
 	exit 1
 esac
