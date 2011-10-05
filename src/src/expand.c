@@ -1775,7 +1775,7 @@ eval_condition(uschar *s, BOOL *yield)
 BOOL testfor = TRUE;
 BOOL tempcond, combined_cond;
 BOOL *subcondptr;
-BOOL *sub2_honour_dollar = TRUE;
+BOOL sub2_honour_dollar = TRUE;
 int i, rc, cond_type, roffset;
 int num[2];
 struct stat statbuf;
