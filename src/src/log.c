@@ -713,7 +713,7 @@ DEBUG(D_any|D_v)
       }
     }
 
-  sprintf(CS ptr, "%s%s%s%s%s\n  ",
+  sprintf(CS ptr, "%s%s%s%s\n  ",
     ((flags & LOG_MAIN) != 0)?    " MAIN"   : "",
     ((flags & LOG_PANIC) != 0)?   " PANIC"  : "",
     ((flags & LOG_PANIC_DIE) == LOG_PANIC_DIE)? " DIE" : "",
