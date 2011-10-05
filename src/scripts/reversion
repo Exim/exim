@@ -32,7 +32,7 @@ fi
 
 # If this tree is a git working directory, use that to get version information.
 
-if [ -e ../../.git ] || [ "$1" = "release" ]
+if [ -d ../../.git ] || [ "$1" = "release" ]
 then
 	# Modify the output of git describe into separate parts for
 	# the name "exim" and the release and variant versions.
