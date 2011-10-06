@@ -123,7 +123,7 @@ PP/11 match_* no longer expand right-hand-side by default.
 
 PP/12 fix uninitialised greeting string from PP/03 (smtps client support).
 
-PP/13 shell and compiler warnings fixes for RC1-RC3 changes.
+PP/13 shell and compiler warnings fixes for RC1-RC4 changes.
 
 PP/14 fix log_write() format string regression from TF/03.
       Bugzilla 1152.  Patch from Dmitry Isaikin.

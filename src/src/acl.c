@@ -2340,6 +2340,7 @@ case RATE_PER_RCPT:
   anchor = &ratelimiters_cmd;
   break;
 default:
+  anchor = NULL; /* silence an "unused" complaint */
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "internal ACL error: unknown ratelimit mode %d", mode);
   break;
