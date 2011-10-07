@@ -574,15 +574,17 @@ system_aliases:
 # file starts with the string "# Exim filter" or "# Sieve filter", uncomment
 # the "allow_filter" option.
 
-# If you want this router to treat local parts with suffixes introduced by "-"
-# or "+" characters as if the suffixes did not exist, uncomment the two local_
-# part_suffix options. Then, for example, xxxx-foo@your.domain will be treated
-# in the same way as xxxx@your.domain by this router. You probably want to make
-# the same change to the localuser router.
-
 # The no_verify setting means that this router is skipped when Exim is
 # verifying addresses. Similarly, no_expn means that this router is skipped if
 # Exim is processing an EXPN command.
+
+# If you want this router to treat local parts with suffixes introduced by "-"
+# or "+" characters as if the suffixes did not exist, uncomment the two local_
+# part_suffix options. Then, for example, xxxx-foo@your.domain will be treated
+# in the same way as xxxx@your.domain by this router. Because this router is
+# not used for verification, if you choose to uncomment those options, then you
+# will *need* to make the same change to the localuser router.  (There are
+# other approaches, if this is undesirable, but they add complexity).
 
 # The check_ancestor option means that if the forward file generates an
 # address that is an ancestor of the current one, the current one gets
