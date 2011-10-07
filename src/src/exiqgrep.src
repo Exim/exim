@@ -87,7 +87,7 @@ sub collect() {
 		chomp();
 		my $line = $_;
 		#Should be 1st line of record, if not error.
-		if ($line =~ /^\s*(\w+)\s+((?:\d+(?:\.\d+)?[A-Z])?)\s*(\w{6}-\w{6}-\w{2})\s+(<.*?>)/) {
+		if ($line =~ /^\s*(\w+)\s+((?:\d+(?:\.\d+)?[A-Z]?)?)\s*(\w{6}-\w{6}-\w{2})\s+(<.*?>)/) {
 			my $msg = $3;
 			$id{$msg}{age} = $1;
 			$id{$msg}{size} = $2;
