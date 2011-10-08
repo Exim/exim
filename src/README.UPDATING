@@ -42,6 +42,19 @@ Exim version 4.77
    that build option, please let the developers know, and know why, so we can
    try to provide a safer mechanism for you.
 
+   The match{}{} expansion condition (for regular expressions) is NOT affected.
+   For match_<type>{s1}{s2}, all list functionality is unchanged.  The only
+   change is that a '$' appearing in s2 will not trigger expansion, but instead
+   will be treated as a literal $ sign; the effect is very similar to having
+   wrapped s2 with \N...\N.  If s2 contains a named list and the list definition
+   uses $expansions then those _will_ be processed as normal.  It is only the
+   point at which s2 is read where expansion is inhibited.
+
+   If you are trying to test if two email addresses are equal, use eqi{s1}{s2}.
+   If you are testing if the address in s1 occurs in the list of items given
+   in s2, either use the new inlisti{s1}{s2} condition (added in 4.77) or use
+   the pre-existing forany{s2}{eqi{$item}{s1}} condition.
+
 
 Exim version 4.74
 -----------------
@@ -70,7 +83,7 @@ Exim version 4.73
  * Exim will no longer accept a configuration file owned by the Exim
    run-time user, unless that account is explicitly the value in
    CONFIGURE_OWNER, which we discourage.  Exim now checks to ensure that
-   files are not writable by other accounts.
+   files are not writeable by other accounts.
 
  * The ALT_CONFIG_ROOT_ONLY build option is no longer optional and is forced
    on; the Exim user can, by default, no longer use -C/-D and retain privilege.
@@ -103,7 +116,7 @@ It has been superceded by a native implementation of its successor DKIM.
 
 2. Up to version 4.69, Exim came with an embedded version of the PCRE library.
 As of 4.70, this is no longer the case. To compile Exim, you will need PCRE
-installed. Most OS distributions have ready-made library and develoment
+installed. Most OS distributions have ready-made library and development
 packages.
 
 
