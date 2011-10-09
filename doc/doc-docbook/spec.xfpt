@@ -7779,7 +7779,7 @@ pattern must be an appropriate query for the lookup type, as described in
 chapter &<<CHAPfdlookup>>&. For example:
 .code
 hold_domains = mysql;select domain from holdlist \
-  where domain = '$domain';
+  where domain = '${quote_mysql:$domain}';
 .endd
 In most cases, the data that is looked up is not used (so for an SQL query, for
 example, it doesn't matter what field you select). Exim is interested only in
