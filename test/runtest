@@ -2032,7 +2032,13 @@ if ($parm_exim eq "")
 #          Find what is in the binary            #
 ##################################################
 
-open(EXIMINFO, "$parm_exim -C $parm_cwd/confs/0000 -DDIR=$parm_cwd " .
+# deal with TRUSTED_CONFIG_LIST restrictions
+unlink("$parm_cwd/test-config") if -e "$parm_cwd/test-config";
+symlink("$parm_cwd/confs/0000", "$parm_cwd/test-config")
+  or die "Unable to link initial config into place: $!\n";
+
+print("Probing with config file: $parm_cwd/test-config\n");
+open(EXIMINFO, "$parm_exim -d -C $parm_cwd/test-config -DDIR=$parm_cwd " .
                "-bP exim_user exim_group|") ||
   die "** Cannot run $parm_exim: $!\n";
 while(<EXIMINFO>)
@@ -2047,6 +2053,13 @@ if (defined $parm_eximuser)
   if ($parm_eximuser =~ /^\d+$/) { $parm_exim_uid = $parm_eximuser; }
     else { $parm_exim_uid = getpwnam($parm_eximuser); }
   }
+else
+  {
+  print "Unable to extract exim_user from binary.\n";
+  print "Check if Exim refused to run; if so, consider:\n";
+  print "  TRUSTED_CONFIG_LIST ALT_CONFIG_PREFIX WHITELIST_D_MACROS\n";
+  die "Failing to get information from binary.\n";
+  }
 
 if (defined $parm_eximgroup)
   {
@@ -2054,7 +2067,7 @@ if (defined $parm_eximgroup)
     else { $parm_exim_gid = getgrnam($parm_eximgroup); }
   }
 
-open(EXIMINFO, "$parm_exim -bV -C $parm_cwd/confs/0000 -DDIR=$parm_cwd |") ||
+open(EXIMINFO, "$parm_exim -bV -C $parm_cwd/test-config -DDIR=$parm_cwd |") ||
   die "** Cannot run $parm_exim: $!\n";
 
 print "-" x 78, "\n";
@@ -2131,6 +2144,7 @@ while (<EXIMINFO>)
 close(EXIMINFO);
 print "-" x 78, "\n";
 
+unlink("$parm_cwd/test-config");
 
 ##################################################
 #    Check for SpamAssassin and ClamAV           #
@@ -2411,6 +2425,12 @@ $parm_caller_group = getgrgid($parm_caller_gid);
 
 print "Program caller is $parm_caller, whose group is $parm_caller_group\n";
 print "Home directory is $parm_caller_home\n";
+
+unless (defined $parm_eximgroup)
+  {
+  print "Unable to derive \$parm_eximgroup.\n";
+  die "** ABANDONING.\n";
+  }
 
 print "You need to be in the Exim group to run these tests. Checking ...";
 
@@ -3229,4 +3249,4 @@ tests_exit(-1, "No runnable tests selected") if @test_list == 0;
 tests_exit(0);
 
 # End of runtest script
-
+# vim: set sw=2 :
