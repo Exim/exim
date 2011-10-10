@@ -311,7 +311,8 @@ RESET_AFTER_EXTRA_LINE_READ:
   s?\Q$parm_cwd\E?TESTSUITE?g;
 
   # Replace the Exim version number (may appear in various places)
-  s/Exim \d+\.\d+[\w-]*/Exim x.yz/i;
+  # patchexim should have fixed this for us
+  #s/(Exim) \d+\.\d+[\w-]*/$1 x.yz/i;
 
   # Replace Exim message ids by a unique series
   s/((?:[^\W_]{6}-){2}[^\W_]{2})
@@ -738,6 +739,8 @@ RESET_AFTER_EXTRA_LINE_READ:
 
     # drop lookups
     next if /^Lookups \(built-in\):/;
+    next if /^Loading lookup modules from/;
+    next if /^Loaded \d+ lookup modules/;
     next if /^Total \d+ lookups/;
 
     # drop compiler information

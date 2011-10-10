@@ -521,6 +521,8 @@
 > Failed: unrecognised boolean value "text"
 > Failed: unrecognised boolean value "text"
 > "00"                  false     EXPECT: false
+> "!true"               false     EXPECT: false
+> "!false"              true      EXPECT: true
 > 
 > "TrUe"                true      EXPECT: true
 > "FALSE"               false     EXPECT: false
@@ -540,6 +542,8 @@
 > "text "               true      EXPECT: true
 > " text "              true      EXPECT: true
 > "00"                  true      EXPECT: true
+> "!true"               false     EXPECT: false
+> "!false"              true      EXPECT: true
 > 
 > # RFC 2047
 > 
