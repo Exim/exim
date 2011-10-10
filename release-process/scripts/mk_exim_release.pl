@@ -111,8 +111,6 @@ sub unpack_tree {
 sub make_version_script {
     my $context = shift;
 
-    return if ($context->{release} eq $context->{trelease});
-
     my $variant = substr( $context->{release}, length($context->{trelease}) );
     if ( $context->{release} ne $context->{trelease} . $variant ) {
         die "Broken version numbering, I'm buggy";
