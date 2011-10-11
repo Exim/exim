@@ -973,7 +973,9 @@ DEBUG(D_any) do {
            * unless its an ancient version of PCRE in which case it
            * is not defined */
 #ifdef PCRE_PRERELEASE
-          PCRE_PRERELEASE "",
+# define STRINGIFY(x) #x
+          STRINGIFY(PCRE_PRERELEASE) "",
+# undef STRINGIFY
 #else
           "",
 #endif
