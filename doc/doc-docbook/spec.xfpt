@@ -10208,10 +10208,12 @@ See &*match_local_part*&.
 
 .vitem &*match_ip&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
 .cindex "&%match_ip%& expansion condition"
+.new
 This condition matches an IP address to a list of IP address patterns. It must
 be followed by two argument strings. The first (after expansion) must be an IP
-address or an empty string. The second (after expansion) is a restricted host
+address or an empty string. The second (not expanded) is a restricted host
 list that can match only an IP address, not a host name. For example:
+.wen
 .code
 ${if match_ip{$sender_host_address}{1.2.3.4:5.6.7.8}{...}{...}}
 .endd
@@ -10256,6 +10258,11 @@ just as easy to use the fact that a lookup is itself a condition, and write:
   ${lookup{${mask:$sender_host_address/24}}dbm{/a/file}...
 .endd
 .endlist ilist
+
+.new
+Note that <&'string2'&> is not itself subject to string expansion, unless
+Exim was built with the EXPAND_LISTMATCH_RHS option.
+.wen
 
 Consult section &<<SECThoslispatip>>& for further details of these patterns.
 
