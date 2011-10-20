@@ -10663,7 +10663,7 @@ number of lines in the message's body. See also &$message_linecount$&.
 .cindex "binary zero" "in message body"
 .vindex "&$body_zerocount$&"
 When a message is being received or delivered, this variable contains the
-number of binary zero bytes in the message's body.
+number of binary zero bytes (ASCII NULs) in the message's body.
 
 .vitem &$bounce_recipient$&
 .vindex "&$bounce_recipient$&"
