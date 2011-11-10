@@ -303,6 +303,8 @@ OBJ_EXPERIMENTAL = bmi_spam.o spf.o srs.o dcc.o
 # Targets for final binaries; the main one has a build number which is
 # updated each time. We don't bother with that for the auxiliaries.
 
+OBJ_LOOKUPS = lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o
+
 OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         directory.o dns.o drtables.o enq.o exim.o expand.o filter.o \
         filtertest.o globals.o dkim.o \
@@ -311,7 +313,7 @@ OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
         store.o string.o tls.o tod.o transport.o tree.o verify.o \
-        lookups/lf_quote.o lookups/lf_check_file.o lookups/lf_sqlperform.o \
+        $(OBJ_LOOKUPS) \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_WITH_OLD_DEMIME) $(OBJ_EXPERIMENTAL)
 
@@ -457,6 +459,8 @@ PHDRS = ../config.h ../dbfunctions.h ../dbstuff.h ../exim.h ../functions.h ../gl
 
 version.h::
 	@../scripts/reversion
+
+cnumber.h: version.h
 
 version.o: $(HDRS) cnumber.h version.h version.c
 
@@ -611,6 +615,11 @@ dcc.o:           $(HDRS) dcc.h dcc.c
 
 drtables.o:      $(HDRS) drtables.c
 
+# We depend upon object files built as part of building the lookups library
+# When using parallel make, we don't have the dependency to force building
+# in the sub-directory unless we force that dependency:
+
+$(OBJ_LOOKUPS):  buildlookups
 
 # The exim monitor's private modules - the sources live in a private
 # subdirectory. The final binary combines the private modules with some

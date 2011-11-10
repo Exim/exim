@@ -24,44 +24,44 @@ lookups.a:       $(OBJ)
 .c.so:;          @echo "$(CC) -shared $*.c"
 		 $(FE)$(CC) $(LOOKUP_$*_INCLUDE) $(LOOKUP_$*_LIBS) -DDYNLOOKUP $(CFLAGS_DYNAMIC) $(CFLAGS) $(INCLUDE) $(DLFLAGS) $*.c -o $@
 
-lf_check_file.o: $(HDRS) lf_check_file.c  lf_functions.h
-lf_quote.o:      $(HDRS) lf_quote.c       lf_functions.h
-lf_sqlperform.o: $(HDRS) lf_sqlperform.c  lf_functions.h
+lf_check_file.o: $(PHDRS) lf_check_file.c  lf_functions.h
+lf_quote.o:      $(PHDRS) lf_quote.c       lf_functions.h
+lf_sqlperform.o: $(PHDRS) lf_sqlperform.c  lf_functions.h
 
-cdb.o:           $(HDRS) cdb.c
-dbmdb.o:         $(HDRS) dbmdb.c
-dnsdb.o:         $(HDRS) dnsdb.c
-dsearch.o:       $(HDRS) dsearch.c
-ibase.o:         $(HDRS) ibase.c
-ldap.o:          $(HDRS) ldap.c
-lsearch.o:       $(HDRS) lsearch.c
-mysql.o:         $(HDRS) mysql.c
-nis.o:           $(HDRS) nis.c
-nisplus.o:       $(HDRS) nisplus.c
-oracle.o:        $(HDRS) oracle.c
-passwd.o:        $(HDRS) passwd.c
-pgsql.o:         $(HDRS) pgsql.c
-spf.o:           $(HDRS) spf.c
-sqlite.o:        $(HDRS) sqlite.c
-testdb.o:        $(HDRS) testdb.c
-whoson.o:        $(HDRS) whoson.c
+cdb.o:           $(PHDRS) cdb.c
+dbmdb.o:         $(PHDRS) dbmdb.c
+dnsdb.o:         $(PHDRS) dnsdb.c
+dsearch.o:       $(PHDRS) dsearch.c
+ibase.o:         $(PHDRS) ibase.c
+ldap.o:          $(PHDRS) ldap.c
+lsearch.o:       $(PHDRS) lsearch.c
+mysql.o:         $(PHDRS) mysql.c
+nis.o:           $(PHDRS) nis.c
+nisplus.o:       $(PHDRS) nisplus.c
+oracle.o:        $(PHDRS) oracle.c
+passwd.o:        $(PHDRS) passwd.c
+pgsql.o:         $(PHDRS) pgsql.c
+spf.o:           $(PHDRS) spf.c
+sqlite.o:        $(PHDRS) sqlite.c
+testdb.o:        $(PHDRS) testdb.c
+whoson.o:        $(PHDRS) whoson.c
 
-cdb.so:           $(HDRS) cdb.c
-dbmdb.so:         $(HDRS) dbmdb.c
-dnsdb.so:         $(HDRS) dnsdb.c
-dsearch.so:       $(HDRS) dsearch.c
-ibase.so:         $(HDRS) ibase.c
-ldap.so:          $(HDRS) ldap.c
-lsearch.so:       $(HDRS) lsearch.c
-mysql.so:         $(HDRS) mysql.c
-nis.so:           $(HDRS) nis.c
-nisplus.so:       $(HDRS) nisplus.c
-oracle.so:        $(HDRS) oracle.c
-passwd.so:        $(HDRS) passwd.c
-pgsql.so:         $(HDRS) pgsql.c
-spf.so:           $(HDRS) spf.c
-sqlite.so:        $(HDRS) sqlite.c
-testdb.so:        $(HDRS) testdb.c
-whoson.so:        $(HDRS) whoson.c
+cdb.so:           $(PHDRS) cdb.c
+dbmdb.so:         $(PHDRS) dbmdb.c
+dnsdb.so:         $(PHDRS) dnsdb.c
+dsearch.so:       $(PHDRS) dsearch.c
+ibase.so:         $(PHDRS) ibase.c
+ldap.so:          $(PHDRS) ldap.c
+lsearch.so:       $(PHDRS) lsearch.c
+mysql.so:         $(PHDRS) mysql.c
+nis.so:           $(PHDRS) nis.c
+nisplus.so:       $(PHDRS) nisplus.c
+oracle.so:        $(PHDRS) oracle.c
+passwd.so:        $(PHDRS) passwd.c
+pgsql.so:         $(PHDRS) pgsql.c
+spf.so:           $(PHDRS) spf.c
+sqlite.so:        $(PHDRS) sqlite.c
+testdb.so:        $(PHDRS) testdb.c
+whoson.so:        $(PHDRS) whoson.c
 
 # End
