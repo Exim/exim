@@ -480,6 +480,11 @@ log, which can happen if a disk gets full or a file gets too large or whatever.
 We try to save the relevant message in the panic_save buffer before crashing
 out.
 
+The potential invoker should probably not call us for EINTR -1 writes.  But
+otherwise, short writes are bad as we don't do non-blocking writes to fds
+subject to flow control.  (If we do, that's new and the logic of this should
+be reconsidered).
+
 Arguments:
   name      the name of the log being written
   length    the string length being written
@@ -571,6 +576,7 @@ log_write(unsigned int selector, int flags, const char *format, ...)
 uschar *ptr;
 int length, rc;
 int paniclogfd;
+ssize_t written_len;
 va_list ap;
 
 /* If panic_recurseflag is set, we have failed to open the panic log. This is
@@ -886,9 +892,14 @@ if ((flags & LOG_MAIN) != 0 &&
 
     /* Failing to write to the log is disastrous */
 
-    if ((rc = write(mainlogfd, log_buffer, length)) != length)
+    while (
+        ((written_len = write(mainlogfd, log_buffer, length)) == (ssize_t)-1)
+        &&
+        (errno == EINTR)
+        ) /**/;
+    if (written_len != length)
       {
-      log_write_failed(US"main log", length, rc);
+      log_write_failed(US"main log", length, written_len);
       /* That function does not return */
       }
     }
