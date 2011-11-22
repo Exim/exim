@@ -1,6 +1,14 @@
 Change log file for Exim from version 4.21
 -------------------------------------------
 
+Exim version 4.78
+-----------------
+
+PP/01 Handle short writes when writing local log-files.
+      In practice, only affects FreeBSD (8 onwards).
+      Bugzilla 1053, with thanks to Dmitry Isaikin.
+
+
 Exim version 4.77
 -----------------
 

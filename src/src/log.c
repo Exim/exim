@@ -514,6 +514,49 @@ log_write(0, LOG_PANIC_DIE, "failed to write to %s: length=%d result=%d "
 
 
 /*************************************************
+*     Write to an fd, retrying after signals     *
+*************************************************/
+
+/* Basic write to fd for logs, handling EINTR.
+
+Arguments:
+  fd        the fd to write to
+  buf       the string to write
+  length    the string length being written
+
+Returns:
+  length actually written, persisting an errno from write()
+*/
+ssize_t
+write_to_fd_buf(int fd, uschar *buf, size_t length)
+{
+ssize_t wrote;
+size_t total_written = 0;
+uschar *p = buf;
+size_t left = length;
+
+while (1)
+  {
+  wrote = write(fd, p, left);
+  if (wrote == (ssize_t)-1)
+    {
+    if (errno == EINTR) continue;
+    return wrote;
+    }
+  total_written += wrote;
+  if (wrote == left)
+    break;
+  else
+    {
+    p += wrote;
+    left -= wrote;
+    }
+  }
+return total_written;
+}
+
+
+/*************************************************
 *            Write message to log file           *
 *************************************************/
 
@@ -574,7 +617,7 @@ void
 log_write(unsigned int selector, int flags, const char *format, ...)
 {
 uschar *ptr;
-int length, rc;
+int length;
 int paniclogfd;
 ssize_t written_len;
 va_list ap;
@@ -892,11 +935,7 @@ if ((flags & LOG_MAIN) != 0 &&
 
     /* Failing to write to the log is disastrous */
 
-    while (
-        ((written_len = write(mainlogfd, log_buffer, length)) == (ssize_t)-1)
-        &&
-        (errno == EINTR)
-        ) /**/;
+    written_len = write_to_fd_buf(mainlogfd, log_buffer, length);
     if (written_len != length)
       {
       log_write_failed(US"main log", length, written_len);
@@ -1019,9 +1058,10 @@ if ((flags & LOG_REJECT) != 0)
       if (fstat(rejectlogfd, &statbuf) >= 0) rejectlog_inode = statbuf.st_ino;
       }
 
-    if ((rc = write(rejectlogfd, log_buffer, length)) != length)
+    written_len = write_to_fd_buf(rejectlogfd, log_buffer, length);
+    if (written_len != length)
       {
-      log_write_failed(US"reject log", length, rc);
+      log_write_failed(US"reject log", length, written_len);
       /* That function does not return */
       }
     }
@@ -1055,12 +1095,13 @@ if ((flags & LOG_PANIC) != 0)
     if (panic_save_buffer != NULL)
       (void) write(paniclogfd, panic_save_buffer, Ustrlen(panic_save_buffer));
 
-    if ((rc = write(paniclogfd, log_buffer, length)) != length)
+    written_len = write_to_fd_buf(paniclogfd, log_buffer, length);
+    if (written_len != length)
       {
       int save_errno = errno;
       write_syslog(LOG_CRIT, log_buffer);
       sprintf(CS log_buffer, "write failed on panic log: length=%d result=%d "
-        "errno=%d (%s)", length, rc, save_errno, strerror(save_errno));
+        "errno=%d (%s)", length, (int)written_len, save_errno, strerror(save_errno));
       write_syslog(LOG_CRIT, log_buffer);
       flags |= LOG_PANIC_DIE;
       }
