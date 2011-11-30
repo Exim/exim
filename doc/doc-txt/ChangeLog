@@ -10,6 +10,11 @@ PP/01 Handle short writes when writing local log-files.
 
 NM/01 Bugzilla 949 - Documentation tweak
 
+NM/02 Bugzilla 1093 - eximstats DATA reject detection regexps
+      improved.
+
+
+
 
 Exim version 4.77
 -----------------

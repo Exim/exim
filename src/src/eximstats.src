@@ -2366,6 +2366,7 @@ sub generate_parser {
         # 2005-09-23 15:07:49 1EInHJ-0007Ex-Au H=(a.b.c) [10.0.0.1] F=<> rejected after DATA: This message contains a virus: (Eicar-Test-Signature) please scan your system.
         # 2005-10-06 10:50:07 1ENRS3-0000Nr-Kt => blackhole (DATA ACL discarded recipients): This message contains a virus: (Worm.SomeFool.P) please scan your system.
         / rejected after DATA: (.*)/ ||
+        / (rejected DATA: .*)/ ||
         /.DATA ACL discarded recipients.: (.*)/ ||
         /rejected after DATA: (unqualified address not permitted)/ ||
         /(VRFY rejected)/ ||
