@@ -8,6 +8,8 @@ PP/01 Handle short writes when writing local log-files.
       In practice, only affects FreeBSD (8 onwards).
       Bugzilla 1053, with thanks to Dmitry Isaikin.
 
+NM/01 Bugzilla 949 - Documentation tweak
+
 
 Exim version 4.77
 -----------------
