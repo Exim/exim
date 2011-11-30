@@ -13,6 +13,8 @@ NM/01 Bugzilla 949 - Documentation tweak
 NM/02 Bugzilla 1093 - eximstats DATA reject detection regexps
       improved.
 
+NM/03 Bugzilla 1169 - primary_hostname spelling was incorrect in docs.
+
 
 
 

@@ -13073,7 +13073,7 @@ section &<<SECTcallvercache>>& for details of the caching.
 This option defines the &"random"& local part that can be used as part of
 callout verification. The default value is
 .code
-$primary_host_name-$tod_epoch-testing
+$primary_hostname-$tod_epoch-testing
 .endd
 See section &<<CALLaddparcall>>& for details of how this value is used.
 
@@ -27776,7 +27776,7 @@ check for a &"random"& local part at the same domain. The local part is not
 really random &-- it is defined by the expansion of the option
 &%callout_random_local_part%&, which defaults to
 .code
-$primary_host_name-$tod_epoch-testing
+$primary_hostname-$tod_epoch-testing
 .endd
 The idea here is to try to determine whether the remote host accepts all local
 parts without checking. If it does, there is no point in doing callouts for
