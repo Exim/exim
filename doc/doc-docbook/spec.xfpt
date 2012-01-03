@@ -9871,7 +9871,10 @@ zero.
 This condition turns a string holding a true or false representation into
 a boolean state.  It parses &"true"&, &"false"&, &"yes"& and &"no"&
 (case-insensitively); also positive integer numbers map to true if non-zero,
-false if zero.  Leading and trailing whitespace is ignored.
+false if zero.
+An empty string is treated as false.
+Leading and trailing whitespace is ignored;
+thus a string consisting only of whitespace is false.
 All other string values will result in expansion failure.
 
 When combined with ACL variables, this expansion condition will let you
