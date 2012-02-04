@@ -441,7 +441,6 @@ yet reflect that.  It should be a safe change anyway, even 0.9.8 versions have
 the accessor functions use const in the prototype. */
 const SSL_CIPHER *c;
 uschar *ver;
-int bits;
 
 switch (ssl->session->ssl_version)
   {
@@ -462,10 +461,10 @@ switch (ssl->session->ssl_version)
   }
 
 c = (const SSL_CIPHER *) SSL_get_current_cipher(ssl);
-SSL_CIPHER_get_bits(c, &bits);
+SSL_CIPHER_get_bits(c, &tls_bits);
 
 string_format(cipherbuf, sizeof(cipherbuf), "%s:%s:%u", ver,
-  SSL_CIPHER_get_name(c), bits);
+  SSL_CIPHER_get_name(c), tls_bits);
 tls_cipher = cipherbuf;
 
 DEBUG(D_tls) debug_printf("Cipher: %s\n", cipherbuf);

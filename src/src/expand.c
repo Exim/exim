@@ -611,6 +611,7 @@ static var_entry var_table[] = {
   { "srs_status",          vtype_stringptr,   &srs_status },
 #endif
   { "thisaddress",         vtype_stringptr,   &filter_thisaddress },
+  { "tls_bits",            vtype_int,         &tls_bits },
   { "tls_certificate_verified", vtype_int,    &tls_certificate_verified },
   { "tls_cipher",          vtype_stringptr,   &tls_cipher },
   { "tls_peerdn",          vtype_stringptr,   &tls_peerdn },
