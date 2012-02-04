@@ -15,7 +15,9 @@ NM/02 Bugzilla 1093 - eximstats DATA reject detection regexps
 
 NM/03 Bugzilla 1169 - primary_hostname spelling was incorrect in docs.
 
-
+PP/02 New expansion variable $tls_bits; Cyrus SASL server connection
+      properties get this fed in as external SSF.  A number of robustness
+      and debugging improvements to the cyrus_sasl authenticator.
 
 
 Exim version 4.77

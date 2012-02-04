@@ -11784,6 +11784,16 @@ command in a filter file. Its use is explained in the description of that
 command, which can be found in the separate document entitled &'Exim's
 interfaces to mail filtering'&.
 
+.new
+.vitem &$tls_bits$&
+.vindex "&$tls_bits$&"
+Contains an approximation of the TLS cipher's bit-strength; the meaning of
+this depends upon the TLS implementation used.
+If TLS has not been negotiated, the value will be 0.
+The value of this is automatically fed into the Cyrus SASL authenticator
+when acting as a server, to specify the "external SSF" (a SASL term).
+.wen
+
 .vitem &$tls_certificate_verified$&
 .vindex "&$tls_certificate_verified$&"
 This variable is set to &"1"& if a TLS certificate was verified when the
