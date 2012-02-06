@@ -553,6 +553,7 @@ FIXED_NEVER_USERS=root
 # AUTH_CRAM_MD5=yes
 # AUTH_CYRUS_SASL=yes
 # AUTH_DOVECOT=yes
+# AUTH_GSASL=yes
 # AUTH_PLAINTEXT=yes
 # AUTH_SPA=yes
 
@@ -560,9 +561,10 @@ FIXED_NEVER_USERS=root
 #------------------------------------------------------------------------------
 # If you specified AUTH_CYRUS_SASL above, you should ensure that you have the
 # Cyrus SASL library installed before trying to build Exim, and you probably
-# want to uncomment the following line:
+# want to uncomment the first line below.  Similarly for GNU SASL.
 
 # AUTH_LIBS=-lsasl2
+# AUTH_LIBS=-lgsasl
 
 
 #------------------------------------------------------------------------------

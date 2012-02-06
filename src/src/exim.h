@@ -538,12 +538,4 @@ default to EDQUOT if it exists, otherwise ENOSPC. */
   #endif
 #endif
 
-/* These are for reporting version information from various componenents, to
-figure out what's actually happening. They need to be available to the main
-function, so we declare them here. Unfortunate. */
-
-#ifdef AUTH_CYRUS_SASL
-extern void auth_cyrus_sasl_version_report(FILE *);
-#endif
-
 /* End of exim.h */

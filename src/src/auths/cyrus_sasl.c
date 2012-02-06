@@ -113,7 +113,7 @@ if(ob->server_mech == NULL)
  * authenticator of type whatever mechanism we're using
  */
 
-cbs[0].proc = &mysasl_config;
+cbs[0].proc = (int(*)(void))&mysasl_config;
 cbs[0].context = ob->server_mech;
 
 rc=sasl_server_init(cbs, "exim");

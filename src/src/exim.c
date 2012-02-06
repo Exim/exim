@@ -725,6 +725,8 @@ Returns:    nothing
 static void
 show_whats_supported(FILE *f)
 {
+  auth_info *authi;
+
 #ifdef DB_VERSION_STRING
 fprintf(f, "Berkeley DB: %s\n", DB_VERSION_STRING);
 #elif defined(BTREEVERSION) && defined(HASHVERSION)
@@ -867,6 +869,9 @@ fprintf(f, "Authenticators:");
 #ifdef AUTH_DOVECOT
   fprintf(f, " dovecot");
 #endif
+#ifdef AUTH_GSASL
+  fprintf(f, " gsasl");
+#endif
 #ifdef AUTH_PLAINTEXT
   fprintf(f, " plaintext");
 #endif
@@ -962,9 +967,11 @@ DEBUG(D_any) do {
   tls_version_report(f);
 #endif
 
-#ifdef AUTH_CYRUS_SASL
-  auth_cyrus_sasl_version_report(f);
-#endif
+  for (authi = auths_available; *authi->driver_name != '\0'; ++authi) {
+    if (authi->version_report) {
+      (*authi->version_report)(f);
+    }
+  }
 
   fprintf(f, "Library version: PCRE: Compile: %d.%d%s\n"
              "                       Runtime: %s\n",

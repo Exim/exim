@@ -40,6 +40,7 @@ static int ssl_xfer_buffer_hwm = 0;
 static int ssl_xfer_eof = 0;
 static int ssl_xfer_error = 0;
 
+uschar *tls_channelbinding_b64 = NULL;
 
 
 /*************************************************

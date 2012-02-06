@@ -37,6 +37,10 @@ set to NULL for those that are not compiled into the binary. */
 #include "auths/dovecot.h"
 #endif
 
+#ifdef AUTH_GSASL
+#include "auths/gsasl_exim.h"
+#endif
+
 #ifdef AUTH_PLAINTEXT
 #include "auths/plaintext.h"
 #endif
@@ -58,7 +62,8 @@ auth_info auths_available[] = {
   sizeof(auth_cram_md5_options_block),
   auth_cram_md5_init,                        /* init function */
   auth_cram_md5_server,                      /* server function */
-  auth_cram_md5_client                       /* client function */
+  auth_cram_md5_client,                      /* client function */
+  NULL                                       /* diagnostic function */
   },
 #endif
 
@@ -71,7 +76,8 @@ auth_info auths_available[] = {
   sizeof(auth_cyrus_sasl_options_block),
   auth_cyrus_sasl_init,                      /* init function */
   auth_cyrus_sasl_server,                    /* server function */
-  NULL                                       /* client function */
+  NULL,                                      /* client function */
+  auth_cyrus_sasl_version_report             /* diagnostic function */
   },
 #endif
 
@@ -84,7 +90,22 @@ auth_info auths_available[] = {
   sizeof(auth_dovecot_options_block),
   auth_dovecot_init,                          /* init function */
   auth_dovecot_server,                        /* server function */
-  NULL                                        /* client function */
+  NULL,                                       /* client function */
+  NULL                                        /* diagnostic function */
+  },
+#endif
+
+#ifdef AUTH_GSASL
+  {
+  US"gsasl",                                  /* lookup name */
+  auth_gsasl_options,
+  &auth_gsasl_options_count,
+  &auth_gsasl_option_defaults,
+  sizeof(auth_gsasl_options_block),
+  auth_gsasl_init,                            /* init function */
+  auth_gsasl_server,                          /* server function */
+  NULL,                                       /* client function */
+  auth_gsasl_version_report                   /* diagnostic function */
   },
 #endif
 
@@ -97,7 +118,8 @@ auth_info auths_available[] = {
   sizeof(auth_plaintext_options_block),
   auth_plaintext_init,                       /* init function */
   auth_plaintext_server,                     /* server function */
-  auth_plaintext_client                      /* client function */
+  auth_plaintext_client,                     /* client function */
+  NULL                                       /* diagnostic function */
   },
 #endif
 
@@ -110,11 +132,12 @@ auth_info auths_available[] = {
   sizeof(auth_spa_options_block),
   auth_spa_init,                             /* init function */
   auth_spa_server,                           /* server function */
-  auth_spa_client                            /* client function */
+  auth_spa_client,                           /* client function */
+  NULL                                       /* diagnostic function */
   },
 #endif
 
-{ US"", NULL, NULL, NULL, 0, NULL, NULL, NULL  }
+{ US"", NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL  }
 };
 
 

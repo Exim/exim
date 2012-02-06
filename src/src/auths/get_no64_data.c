@@ -14,8 +14,8 @@
 
 /* This function is used by authentication drivers to output a challenge
 to the SMTP client and read the response line. This version does not use base
-64 encoding for the text on the 334 line. It is used by the SPA and dovecot
-authenticators.
+64 encoding for the text on the 334 line. It is used by the SPA, dovecot
+and gsasl authenticators.
 
 Arguments:
    aptr       set to point to the response (which is in big_buffer)

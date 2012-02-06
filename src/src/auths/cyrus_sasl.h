@@ -31,5 +31,6 @@ extern void auth_cyrus_sasl_init(auth_instance *);
 extern int auth_cyrus_sasl_server(auth_instance *, uschar *);
 extern int auth_cyrus_sasl_client(auth_instance *, smtp_inblock *,
                                 smtp_outblock *, int, uschar *, int);
+extern void auth_cyrus_sasl_version_report(FILE *f);
 
 /* End of cyrus_sasl.h */

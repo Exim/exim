@@ -90,6 +90,7 @@ extern uschar *openssl_options;        /* OpenSSL compatibility options */
 extern const pcre *regex_STARTTLS;     /* For recognizing STARTTLS settings */
 extern uschar *tls_advertise_hosts;    /* host for which TLS is advertised */
 extern uschar *tls_certificate;        /* Certificate file */
+extern uschar *tls_channelbinding_b64; /* string of base64 channel binding */
 extern uschar *tls_crl;                /* CRL File */
 extern uschar *tls_dhparam;            /* DH param file */
 extern BOOL    tls_offered;            /* Server offered TLS */
@@ -99,6 +100,10 @@ extern uschar *tls_require_ciphers;    /* So some can be avoided */
 extern uschar *tls_try_verify_hosts;   /* Optional client verification */
 extern uschar *tls_verify_certificates;/* Path for certificates to check */
 extern uschar *tls_verify_hosts;       /* Mandatory client verification */
+#endif
+
+#ifdef USE_GNUTLS
+extern 
 #endif
 
 

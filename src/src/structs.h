@@ -367,6 +367,8 @@ typedef struct auth_info {
     int,                          /* command timeout */
     uschar *,                     /* buffer for reading response */
     int);                         /* sizeof buffer */
+  void (*version_report)(         /* diagnostic version reporting */
+    FILE *);                      /* I/O stream to print to */
 } auth_info;
 
 

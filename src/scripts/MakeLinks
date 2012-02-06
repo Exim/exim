@@ -123,6 +123,8 @@ ln -s ../../src/auths/call_radius.c      call_radius.c
 ln -s ../../src/auths/check_serv_cond.c  check_serv_cond.c
 ln -s ../../src/auths/cyrus_sasl.c       cyrus_sasl.c
 ln -s ../../src/auths/cyrus_sasl.h       cyrus_sasl.h
+ln -s ../../src/auths/gsasl_exim.c       gsasl_exim.c
+ln -s ../../src/auths/gsasl_exim.h       gsasl_exim.h
 ln -s ../../src/auths/get_data.c         get_data.c
 ln -s ../../src/auths/get_no64_data.c    get_no64_data.c
 ln -s ../../src/auths/md5.c              md5.c

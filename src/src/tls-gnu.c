@@ -854,7 +854,10 @@ construct_cipher_name(gnutls_session session)
 {
 static uschar cipherbuf[256];
 uschar *ver;
-int bits, c, kx, mac;
+int bits, c, kx, mac, rc;
+#ifdef GNUTLS_CB_TLS_UNIQUE
+gnutls_datum_t channel;
+#endif
 
 ver = string_copy(
   US gnutls_protocol_get_name(gnutls_protocol_get_version(session)));
@@ -871,6 +874,21 @@ string_format(cipherbuf, sizeof(cipherbuf), "%s:%s:%u", ver,
 tls_cipher = cipherbuf;
 
 DEBUG(D_tls) debug_printf("cipher: %s\n", cipherbuf);
+
+if (tls_channelbinding_b64)
+  free(tls_channelbinding_b64);
+tls_channelbinding_b64 = NULL;
+
+#ifdef GNUTLS_CB_TLS_UNIQUE
+channel = { NULL, 0 };
+rc = gnutls_session_channel_binding(session, GNUTLS_CB_TLS_UNIQUE, &channel);
+if (rc) {
+  DEBUG(D_tls) debug_printf("Channel binding error: %s\n", gnutls_strerror(rc));
+} else {
+  tls_channelbinding_b64 = auth_b64encode(channel.data, (int)channel.size);
+  DEBUG(D_tls) debug_printf("Have channel bindings cached for possible auth usage.\n");
+}
+#endif
 }
 
 

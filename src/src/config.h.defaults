@@ -20,6 +20,7 @@ it's a default value. */
 #define AUTH_CRAM_MD5
 #define AUTH_CYRUS_SASL
 #define AUTH_DOVECOT
+#define AUTH_GSASL
 #define AUTH_PLAINTEXT
 #define AUTH_SPA
 

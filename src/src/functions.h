@@ -54,6 +54,8 @@ extern int     auth_call_radius(uschar *, uschar **);
 extern int     auth_call_saslauthd(uschar *, uschar *, uschar *, uschar *,
                  uschar **);
 extern int     auth_check_serv_cond(auth_instance *);
+extern int     auth_check_some_cond(auth_instance *, uschar *, uschar *, int);
+
 extern int     auth_get_data(uschar **, uschar *, int);
 extern int     auth_get_no64_data(uschar **, uschar *);
 extern uschar *auth_xtextencode(uschar *, int);
