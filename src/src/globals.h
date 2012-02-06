@@ -102,10 +102,6 @@ extern uschar *tls_verify_certificates;/* Path for certificates to check */
 extern uschar *tls_verify_hosts;       /* Mandatory client verification */
 #endif
 
-#ifdef USE_GNUTLS
-extern 
-#endif
-
 
 /* Input-reading functions for messages, so we can use special ones for
 incoming TCP/IP. */
