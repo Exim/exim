@@ -146,12 +146,20 @@ auth_gsasl_init(auth_instance *ablock)
               ablock->name, ob->server_mech);
 
   if ((ablock->server_condition == NULL) &&
-      (strcmpic(ob->server_mech, US"EXTERNAL") ||
-       strcmpic(ob->server_mech, US"ANONYMOUS") ||
-       strcmpic(ob->server_mech, US"PLAIN") ||
-       strcmpic(ob->server_mech, US"LOGIN")))
+      (streqic(ob->server_mech, US"EXTERNAL") ||
+       streqic(ob->server_mech, US"ANONYMOUS") ||
+       streqic(ob->server_mech, US"PLAIN") ||
+       streqic(ob->server_mech, US"LOGIN")))
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
               "Need server_condition for %s mechanism",
+              ablock->name, ob->server_mech);
+
+  /* This does *not* scale to new SASL mechanisms.  Need a better way to ask
+  which properties will be needed. */
+  if ((ob->server_realm == NULL) &&
+      streqic(ob->server_mech, US"DIGEST-MD5"))
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
+              "Need server_realm for %s mechanism",
               ablock->name, ob->server_mech);
 
   /* At present, for mechanisms we don't panic on absence of server_condition;
@@ -176,8 +184,9 @@ main_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop)
   struct callback_exim_state *cb_state =
     (struct callback_exim_state *)gsasl_session_hook_get(sctx);
 
-  HDEBUG(D_auth) debug_printf("Callback entered, prop=%d (loop prop=%d)\n",
-      prop, callback_loop);
+  HDEBUG(D_auth)
+    debug_printf("GNU SASL Callback entered, prop=%d (loop prop=%d)\n",
+        prop, callback_loop);
 
   if (cb_state == NULL) {
     HDEBUG(D_auth) debug_printf("  not from our server/client processing.\n");
@@ -305,7 +314,9 @@ auth_gsasl_server(auth_instance *ablock, uschar *initial_data)
 
     switch (rc) {
       case GSASL_OK:
-        goto STOP_INTERACTION;
+        if (!to_send)
+          goto STOP_INTERACTION;
+        break;
 
       case GSASL_NEEDS_MORE:
         break;
@@ -337,8 +348,16 @@ auth_gsasl_server(auth_instance *ablock, uschar *initial_data)
         goto STOP_INTERACTION;
     }
 
-    exim_error =
-      auth_get_no64_data((uschar **)&received, (uschar *)to_send);
+    if ((rc == GSASL_NEEDS_MORE) ||
+        (to_send && *to_send))
+      exim_error =
+        auth_get_no64_data((uschar **)&received, (uschar *)to_send);
+
+    if (to_send) {
+      free(to_send);
+      to_send = NULL;
+    }
+
     if (exim_error)
       break; /* handles * cancelled check */
 

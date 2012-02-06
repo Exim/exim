@@ -72,6 +72,11 @@ as unsigned. */
   ((uschar)(c) > 127 && print_topbitchars))
 
 
+/* Convenience for testing strings */
+
+#define streqic(Foo, Bar) (strcmpic(Foo, Bar) == 0)
+
+
 /* When built with TLS support, the act of flushing SMTP output becomes
 a no-op once an SSL session is in progress. */
 
