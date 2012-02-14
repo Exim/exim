@@ -6,6 +6,19 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+Version 4.78
+------------
+
+ 1. New authenticator driver, "gsasl".  Server-only (at present).
+    This is a SASL interface, licensed under GPL, which can be found at
+    http://www.gnu.org/software/gsasl/.
+    This system does not provide sources of data for authentication, so
+    careful use needs to be made of the conditions in Exim.  Note that
+    this can not yet be used as a drop-in replacement for Cyrus SASL, as
+    Exim is currently unable to construct strings with embedded NULs for
+    use as keys in lookups against sasldb2.
+
+
 Version 4.77
 ------------
 

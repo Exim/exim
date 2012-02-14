@@ -15,7 +15,7 @@ NM/02 Bugzilla 1093 - eximstats DATA reject detection regexps
 
 NM/03 Bugzilla 1169 - primary_hostname spelling was incorrect in docs.
 
-
+PP/02 Implemented gsasl authenticator.
 
 
 Exim version 4.77

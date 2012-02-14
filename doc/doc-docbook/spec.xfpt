@@ -23396,15 +23396,26 @@ included by setting
 .code
 AUTH_CRAM_MD5=yes
 AUTH_CYRUS_SASL=yes
+.new
+AUTH_DOVECOT=yes
+AUTH_GSASL=yes
+.wen
 AUTH_PLAINTEXT=yes
 AUTH_SPA=yes
 .endd
 in &_Local/Makefile_&, respectively. The first of these supports the CRAM-MD5
 authentication mechanism (RFC 2195), and the second provides an interface to
-the Cyrus SASL authentication library. The third can be configured to support
+the Cyrus SASL authentication library.
+.new
+The third is an interface to Dovecot's authentication system, delegating the
+work via a socket interface.
+The fourth provides an interface to the GNU SASL authentication library, which
+provides mechanisms but typically not data sources.
+The fifth can be configured to support
 the PLAIN authentication mechanism (RFC 2595) or the LOGIN mechanism, which is
-not formally documented, but used by several MUAs. The fourth authenticator
+not formally documented, but used by several MUAs. The sixth authenticator
 supports Microsoft's &'Secure Password Authentication'& mechanism.
+.wen
 
 The authenticators are configured using the same syntax as other drivers (see
 section &<<SECTfordricon>>&). If no authenticators are required, no
@@ -23435,6 +23446,28 @@ Descriptions of the individual authenticators are given in subsequent chapters.
 The remainder of this chapter covers the generic options for the
 authenticators, followed by general discussion of the way authentication works
 in Exim.
+
+.new
+&*Beware:*& the meaning of &$auth1$&, &$auth2$&, ... varies on a per-driver and
+per-mechanism basis.  Please read carefully to determine which variables hold
+account labels such as usercodes and which hold passwords or other
+authenticating data.
+
+Note that some mechanisms support two different identifiers for accounts: the
+&'authentication id'& and the &'authorization id'&.  The contractions &'authn'&
+and &'authz'& are commonly encountered.  The American spelling is standard here.
+Conceptually, authentication data such as passwords are tied to the identifier
+used to authenticate; servers may have rules to permit one user to act as a
+second user, so that after login the session is treated as though that second
+user had logged in.  That second user is the &'authorization id'&.  A robust
+configuration might confirm that the &'authz'& field is empty or matches the
+&'authn'& field.  Often this is just ignored.
+
+A &'realm'& is a text string, typically a domain name, presented by a server
+to a client to help it select an account and credentials to use.  In some
+mechanisms, the client and server provably agree on the realm, but clients
+typically can not treat the realm as secure data to be blindly trusted.
+.wen
 
 
 
@@ -23481,6 +23514,11 @@ See section &<<SECTauthexiser>>& below for further discussion.
 This option must be set for a &%plaintext%& server authenticator, where it
 is used directly to control authentication. See section &<<SECTplainserver>>&
 for details.
+
+.new
+For the &(gsasl)& authenticator, this option is required for various
+mechanisms; see chapter &<<CHAPgsasl>>& for details.
+.wen
 
 For the other authenticators, &%server_condition%& can be used as an additional
 authentication or authorization mechanism that is applied after the other
@@ -24163,6 +24201,11 @@ implementation. For example, for Heimdal, the environment variable KRB5_KTNAME
 may be set to point to an alternative keytab file. Exim will pass this
 variable through from its own inherited environment when started as root or the
 Exim user. The keytab file needs to be readable by the Exim user.
+.new
+With some releases of Heimdal, a setuid Exim may cause Heimdal to discard the
+environment variable.  In practice, for those releases, the Cyrus authenticator
+is not a suitable interface for GSSAPI (Kerberos) support.
+.wen
 
 
 .section "Using cyrus_sasl as a server" "SECID178"
@@ -24264,6 +24307,151 @@ who authenticated is placed in &$auth1$&.
 .ecindex IIDdcotauth1
 .ecindex IIDdcotauth2
 
+
+. ////////////////////////////////////////////////////////////////////////////
+. ////////////////////////////////////////////////////////////////////////////
+.new
+.chapter "The gsasl authenticator" "CHAPgsasl"
+.scindex IIDgsaslauth1 "&(gsasl)& authenticator"
+.scindex IIDgsaslauth2 "authenticators" "&(gsasl)&"
+.cindex "authentication" "GNU SASL"
+.cindex "authentication" "SASL"
+.cindex "authentication" "EXTERNAL"
+.cindex "authentication" "ANONYMOUS"
+.cindex "authentication" "PLAIN"
+.cindex "authentication" "LOGIN"
+.cindex "authentication" "DIGEST-MD5"
+.cindex "authentication" "CRAM-MD5"
+.cindex "authentication" "SCRAM-SHA-1"
+The &(gsasl)& authenticator provides server integration for the GNU SASL
+library and the mechanisms it provides.  This is new as of the 4.78 release
+and there are a few areas where the library does not let Exim smoothly
+scale to handle future authentication mechanisms, so no guarantee can be
+made that any particular new authentication mechanism will be supported
+without code changes in Exim.
+
+
+.option server_channelbinding gsasl bool false
+Some authentication mechanisms are able to use external context at both ends
+of the session to bind the authentication to that context, and fail the
+authentication process if that context differs.  Specifically, some TLS
+ciphersuites can provide identifying information about the cryptographic
+context.
+
+This means that certificate identity and verification becomes a non-issue,
+as a man-in-the-middle attack will cause the correct client and server to
+see different identifiers and authentication will fail.
+
+This is currently only supported when using the GnuTLS library.  This is
+only usable by mechanisms which support "channel binding"; at time of
+writing, that's the SCRAM family.
+
+This defaults off to ensure smooth upgrade across Exim releases, in case
+this option causes some clients to start failing.  Some future release
+of Exim may switch the default to be true.
+
+
+.option server_hostname gsasl string&!! "see below"
+This option selects the hostname that is used when communicating with the
+library. The default value is &`$primary_hostname`&.
+Some mechanisms will use this data.
+
+
+.option server_mech gsasl string "see below"
+This option selects the authentication mechanism this driver should use. The
+default is the value of the generic &%public_name%& option. This option allows
+you to use a different underlying mechanism from the advertised name. For
+example:
+.code
+sasl:
+  driver = gsasl
+  public_name = X-ANYTHING
+  server_mech = CRAM-MD5
+  server_set_id = $auth1
+.endd
+
+
+.option server_password gsasl string&!! unset
+Various mechanisms need access to the cleartext password on the server, so
+that proof-of-possession can be demonstrated on the wire, without sending
+the password itself.
+
+The data available for lookup varies per mechanism.
+In all cases, &$auth1$& is set to the &'authentication id'&.
+The &$auth2$& variable will always be the &'authorization id'& (&'authz'&)
+if available, else the empty string.
+The &$auth3$& variable will always be the &'realm'& if available,
+else the empty string.
+
+A forced failure will cause authentication to defer.
+
+If using this option, it may make sense to set the &%server_condition%&
+option to be simply "true".
+
+
+.option server_realm gsasl string&!! unset
+This specifies the SASL realm that the server claims to be in.
+Some mechanisms will use this data.
+
+
+.option server_scram_iter gsasl string&!! unset
+This option provides data for the SCRAM family of mechanisms.
+&$auth1$& is not available at evaluation time.
+(This may change, as we receive feedback on use)
+
+
+.option server_scram_salt gsasl string&!! unset
+This option provides data for the SCRAM family of mechanisms.
+&$auth1$& is not available at evaluation time.
+(This may change, as we receive feedback on use)
+
+
+.option server_service gsasl string &`smtp`&
+This is the SASL service that the server claims to implement.
+Some mechanisms will use this data.
+
+
+.section "&(gsasl)& auth variables" "SECTgsaslauthvar"
+.vindex "&$auth1$&, &$auth2$&, etc"
+These may be set when evaluating specific options, as detailed above.
+They will also be set when evaluating &%server_condition%&.
+
+Unless otherwise stated below, the &(gsasl)& integration will use the following
+meanings for these variables:
+
+.ilist
+.vindex "&$auth1$&"
+&$auth1$&: the &'authentication id'&
+.next
+.vindex "&$auth2$&"
+&$auth2$&: the &'authorization id'&
+.next
+.vindex "&$auth3$&"
+&$auth3$&: the &'realm'&
+.endlist
+
+On a per-mechanism basis:
+
+.ilist
+.cindex "authentication" "EXTERNAL"
+EXTERNAL: only &$auth1$& is set, to the possibly empty &'authorization id'&;
+the &%server_condition%& option must be present.
+.next
+.cindex "authentication" "ANONYMOUS"
+ANONYMOUS: only &$auth1$& is set, to the possibly empty &'anonymous token'&;
+the &%server_condition%& option must be present.
+.next
+.cindex "authentication" "GSSAPI"
+GSSAPI: &$auth1$& will be set to the &'authorization id'&,
+&$auth2$& will be set to the &'GSSAPI Display Name'&;
+the &%server_condition%& option must be present.
+.endlist
+
+An &'anonymous token'& is something passed along as an unauthenticated
+identifier; this is analogous to FTP anonymous authentication passing an
+email address, or software-identifier@, as the "password".
+
+.wen
 
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
