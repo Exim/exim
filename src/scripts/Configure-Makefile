@@ -111,6 +111,52 @@ do   if test -r ../$f
      fi
 done >> $mft || exit 1
 
+# handle pkg-config
+# beware portability of extended regexps with sed.
+
+egrep "^[$st]*(AUTH|LOOKUP)_[A-Z0-9_]*[$st]*=[$st]*" $mft | \
+  sed "s/[$st]*=/='/" | \
+  sed "s/\$/'/" > $mftt
+if test -s $mftt
+then
+  (
+  echo "# pkg-config fixups"
+  . ./$mftt
+  for var in `cut -d = -f 1 < $mftt`; do
+    case $var in
+      *_PC)
+        eval "pc_value=\"\$$var\""
+        base=`echo $var | sed 's/_PC$//'`
+        eval "basevalue=\"\$$base\""
+        if [ ".$basevalue" = "." ]; then
+          # not pulling in this module, _PC defined as default? Ignore
+          true
+        elif [ $basevalue = 2 ]; then
+          # module; handled in scripts/lookups-Makefile
+          true
+        else
+          # main binary
+          cflags=`pkg-config --cflags $pc_value`
+          libs=`pkg-config --libs $pc_value`
+          if [ "$var" != "${var#LOOKUP_}" ]; then
+            echo "LOOKUP_INCLUDE += $cflags"
+            echo "LOOKUP_LIBS += $libs"
+          elif [ "$var" != "${var#AUTH_}" ]; then
+            echo "CFLAGS += $cflags"
+            echo "AUTH_LIBS += $libs"
+          else
+            echo >&2 "Don't know how to handle pkg-config for $var"
+          fi
+        fi
+        ;;
+    esac
+  done
+  echo "# End of pkg-config fixups"
+  echo
+  ) >> $mft
+fi
+rm -f $mftt
+
 # make the lookups Makefile with the definitions
 
 ## prepend stuff here; eg: grep LOOKUP_ $mft > $look_mft
@@ -184,4 +230,5 @@ else    echo " "
         exit 1;
 fi
 
+# vim: set ft=sh :
 # End of Configure-Makefile

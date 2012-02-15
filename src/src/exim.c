@@ -872,6 +872,9 @@ fprintf(f, "Authenticators:");
 #ifdef AUTH_GSASL
   fprintf(f, " gsasl");
 #endif
+#ifdef AUTH_HEIMDAL_GSSAPI
+  fprintf(f, " heimdal_gssapi");
+#endif
 #ifdef AUTH_PLAINTEXT
   fprintf(f, " plaintext");
 #endif

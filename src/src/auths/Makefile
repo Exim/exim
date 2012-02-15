@@ -7,7 +7,7 @@
 
 OBJ = auth-spa.o b64decode.o b64encode.o call_pam.o call_pwcheck.o \
       call_radius.o check_serv_cond.o cram_md5.o cyrus_sasl.o dovecot.o \
-      get_data.o get_no64_data.o gsasl_exim.o \
+      get_data.o get_no64_data.o gsasl_exim.o heimdal_gssapi.o \
       md5.o plaintext.o pwcheck.o sha1.o \
       spa.o xtextdecode.o xtextencode.o
 
@@ -40,6 +40,7 @@ cram_md5.o:         $(HDRS) cram_md5.c cram_md5.h
 cyrus_sasl.o:       $(HDRS) cyrus_sasl.c cyrus_sasl.h
 dovecot.o:          $(HDRS) dovecot.c dovecot.h
 gsasl_exim.o:       $(HDRS) gsasl_exim.c gsasl_exim.h
+heimdal_gssapi.o:   $(HDRS) heimdal_gssapi.c heimdal_gssapi.h
 plaintext.o:        $(HDRS) plaintext.c plaintext.h
 spa.o:              $(HDRS) spa.c spa.h
 

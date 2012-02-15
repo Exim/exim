@@ -41,6 +41,10 @@ set to NULL for those that are not compiled into the binary. */
 #include "auths/gsasl_exim.h"
 #endif
 
+#ifdef AUTH_HEIMDAL_GSSAPI
+#include "auths/heimdal_gssapi.h"
+#endif
+
 #ifdef AUTH_PLAINTEXT
 #include "auths/plaintext.h"
 #endif
@@ -106,6 +110,20 @@ auth_info auths_available[] = {
   auth_gsasl_server,                          /* server function */
   NULL,                                       /* client function */
   auth_gsasl_version_report                   /* diagnostic function */
+  },
+#endif
+
+#ifdef AUTH_HEIMDAL_GSSAPI
+  {
+  US"heimdal_gssapi",                         /* lookup name */
+  auth_heimdal_gssapi_options,
+  &auth_heimdal_gssapi_options_count,
+  &auth_heimdal_gssapi_option_defaults,
+  sizeof(auth_heimdal_gssapi_options_block),
+  auth_heimdal_gssapi_init,                   /* init function */
+  auth_heimdal_gssapi_server,                 /* server function */
+  NULL,                                       /* client function */
+  auth_heimdal_gssapi_version_report          /* diagnostic function */
   },
 #endif
 

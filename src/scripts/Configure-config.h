@@ -34,7 +34,7 @@ $MAKE buildconfig || exit 1
 st='	 '
 
 (sed -n \
-  "/\\\$/d;s/#.*\$//;s/^[$st]*\\([A-Z][^:$st]*\\)[$st]*=[$st]*\\([^$st]*\\)[$st]*\$/\\1=\\2 export \\1/p" \
+  "/\\\$/d;s/#.*\$//;s/^[$st]*\\([A-Z][^:!+$st]*\\)[$st]*=[$st]*\\([^$st]*\\)[$st]*\$/\\1=\\2 export \\1/p" \
   < Makefile ; echo "./buildconfig") | /bin/sh
 
 # If buildconfig ends with an error code, it will have output an error
@@ -56,4 +56,5 @@ fi
 echo ">>> config.h built"
 echo ""
 
+# vim: set ft=sh :
 # End of Configure-config.h

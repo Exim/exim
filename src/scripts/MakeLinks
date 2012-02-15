@@ -127,6 +127,8 @@ ln -s ../../src/auths/gsasl_exim.c       gsasl_exim.c
 ln -s ../../src/auths/gsasl_exim.h       gsasl_exim.h
 ln -s ../../src/auths/get_data.c         get_data.c
 ln -s ../../src/auths/get_no64_data.c    get_no64_data.c
+ln -s ../../src/auths/heimdal_gssapi.c   heimdal_gssapi.c
+ln -s ../../src/auths/heimdal_gssapi.h   heimdal_gssapi.h
 ln -s ../../src/auths/md5.c              md5.c
 ln -s ../../src/auths/xtextencode.c      xtextencode.c
 ln -s ../../src/auths/xtextdecode.c      xtextdecode.c
