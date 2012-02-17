@@ -7,6 +7,7 @@
 
 /* Copyright (c) Twitter Inc 2012
    Author: Phil Pennock <pdp@exim.org> */
+/* Copyright (c) Phil Pennock 2012 */
 
 /* Interface to Heimdal SASL library for GSSAPI authentication. */
 
@@ -79,11 +80,6 @@ auth_heimdal_gssapi_options_block auth_heimdal_gssapi_option_defaults = {
 };
 
 /* "Globals" for managing the heimdal_gssapi interface. */
-
-/* hack around unavailable __gss_krb5_register_acceptor_identity_x_oid_desc
-OID: 1.2.752.43.13.5
-from heimdal lib/gssapi/krb5/external.c */
-gss_OID_desc exim_register_keytab_OID = {6, rk_UNCONST("\x2a\x85\x70\x2b\x0d\x05")};
 
 /* Utility functions */
 static void
@@ -238,6 +234,7 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
     (auth_heimdal_gssapi_options_block *)(ablock->options_block);
   BOOL handled_empty_ir;
   uschar *store_reset_point;
+  uschar *keytab;
   uschar sasl_config[4];
   uschar requested_qop;
 
@@ -260,15 +257,13 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
 
   /* Use a specific keytab, if specified */
   if (ob->server_keytab) {
-    gbufdesc.value = (void *) string_sprintf("file:%s", expand_string(ob->server_keytab));
-    gbufdesc.length = strlen(CS gbufdesc.value);
-    maj_stat = gss_set_sec_context_option(&min_stat,
-        &gcontext,                  /* create new security context */
-        &exim_register_keytab_OID,  /* GSS_KRB5_REGISTER_ACCEPTOR_IDENTITY_X */
-        &gbufdesc);
+    keytab = expand_string(ob->server_keytab);
+    maj_stat = gsskrb5_register_acceptor_identity(CCS keytab);
     if (GSS_ERROR(maj_stat))
       return exim_gssapi_error_defer(store_reset_point, maj_stat, min_stat,
-          "registering keytab \"%s\"", CS gbufdesc.value);
+          "registering keytab \"%s\"", keytab);
+    HDEBUG(D_auth)
+      debug_printf("heimdal: using keytab \"%s\"\n", keytab);
   }
 
   /* Acquire our credentials */
@@ -285,6 +280,8 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
         "gss_acquire_cred(%s)", ex_server_str);
 
   maj_stat = gss_release_name(&min_stat, &gserver);
+
+  HDEBUG(D_auth) debug_printf("heimdal: have server credentials.\n");
 
   /* Loop talking to client */
   step = 0;
@@ -321,6 +318,7 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
         }
         /* We should now have the opening data from the client, base64-encoded. */
         step += 1;
+        HDEBUG(D_auth) debug_printf("heimdal: have initial client data\n");
         break;
 
       case 1:
@@ -356,8 +354,12 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
           gss_release_buffer(&min_stat, &gbufdesc_out);
           EmptyBuf(gbufdesc_out);
         }
-        if (maj_stat == GSS_S_COMPLETE)
+        if (maj_stat == GSS_S_COMPLETE) {
           step += 1;
+          HDEBUG(D_auth) debug_printf("heimdal: GSS complete\n");
+        } else {
+          HDEBUG(D_auth) debug_printf("heimdal: need more data\n");
+        }
         break;
 
       case 2:
@@ -386,6 +388,9 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
           error_out = FAIL;
           goto ERROR_OUT;
         }
+
+        HDEBUG(D_auth) debug_printf("heimdal SASL: requesting QOP with no security layers\n");
+
         error_out = auth_get_data(&from_client,
             gbufdesc_out.value, gbufdesc_out.length);
         if (error_out != OK)
@@ -462,6 +467,12 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
         expand_nlength[1] = gbufdesc_out.length;
         auth_vars[0] = expand_nstring[1] =
           string_copyn(gbufdesc_out.value, gbufdesc_out.length);
+
+        HDEBUG(D_auth)
+          debug_printf("heimdal SASL: happy with client request\n"
+             "  auth1 (verified GSSAPI display-name): \"%s\"\n"
+             "  auth2 (unverified SASL requested authzid): \"%s\"\n",
+             auth_vars[0], auth_vars[1]);
 
         step += 1;
         break;
