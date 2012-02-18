@@ -9,7 +9,7 @@
    Author: Phil Pennock <pdp@exim.org> */
 /* Copyright (c) Phil Pennock 2012 */
 
-/* Interface to Heimdal SASL library for GSSAPI authentication. */
+/* Interface to Heimdal library for GSSAPI authentication. */
 
 /* Naming and rationale
 
@@ -34,8 +34,9 @@ Without rename, we could add an option for GS2 support in the future.
 * heimdal sources and man-pages, plus http://www.h5l.org/manual/
 * FreeBSD man-pages (very informative!)
 * http://www.ggf.org/documents/GFD.24.pdf confirming GSS_KRB5_REGISTER_ACCEPTOR_IDENTITY_X
-  semantics, that found by browsing Heimdal source to find how to set the keytab
-
+  semantics, that found by browsing Heimdal source to find how to set the keytab; however,
+  after multiple attempts I failed to get that to work and instead switched to
+  gsskrb5_register_acceptor_identity().
 */
 
 #include "../exim.h"
@@ -50,9 +51,6 @@ static void dummy(int x) { dummy(x-1); }
 
 /* for the _init debugging */
 #include <krb5.h>
-
-/* Because __gss_krb5_register_acceptor_identity_x_oid_desc is internal */
-#include <roken.h>
 
 #include "heimdal_gssapi.h"
 
@@ -99,8 +97,8 @@ static int
 enable consistency checks to be done, or anything else that needs
 to be set up. */
 
-/* Heimdal provides a GSSAPI extension method (via an OID) for setting the
-keytab; in the init, we mostly just use raw krb5 methods so that we can report
+/* Heimdal provides a GSSAPI extension method for setting the keytab;
+in the init, we mostly just use raw krb5 methods so that we can report
 the keytab contents, for -D+auth debugging. */
 
 void
@@ -313,6 +311,7 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
             error_out = auth_get_data(&from_client, US"", 0);
             if (error_out != OK)
               goto ERROR_OUT;
+            handled_empty_ir = TRUE;
             continue;
           }
         }
@@ -369,7 +368,7 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
         0x02 Integrity protection
         0x04 Confidentiality protection
 
-        The remaining three octets are the maximum buffer size for wrappe
+        The remaining three octets are the maximum buffer size for wrapped
         content. */
         sasl_config[0] = 0x01;  /* Exim does not wrap/unwrap SASL layers after auth */
         gbufdesc.value = (void *) sasl_config;
