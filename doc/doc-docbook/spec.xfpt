@@ -2110,6 +2110,27 @@ files or libraries are required. When a lookup type is not included in the
 binary, attempts to configure Exim to use it cause run time configuration
 errors.
 
+.new
+.cindex "pkg-config" "specifying"
+Many systems now use a tool called &'pkg-config'& to encapsulate information
+about how to compile against a library; Exim has some initial support for
+being able to use pkg-config for lookups and authenticators.  For any given
+makefile variable which starts &`LOOKUP_`& or &`AUTH_`&, you can add a new
+variable with the &`_PC`& suffix in the name and assign as the value the
+name of the package to be queried.  The results of querying via the
+&'pkg-config'& command will be added to the appropriate Makefile variables
+with &`+=`& directives, so your version of &'make'& will need to support that
+syntax.  For instance:
+.code
+LOOKUP_SQLITE=yes
+LOOKUP_SQLITE_PC=sqlite3
+AUTH_GSASL=yes
+AUTH_GSASL_PC=libgsasl
+AUTH_HEIMDAL_GSSAPI=yes
+AUTH_HEIMDAL_GSSAPI_PC=heimdal-gssapi
+.endd
+.wen
+
 .cindex "Perl" "including support for"
 Exim can be linked with an embedded Perl interpreter, allowing Perl
 subroutines to be called during string expansion. To enable this facility,

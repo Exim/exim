@@ -23,6 +23,11 @@ Version 4.78
     is no longer honoured for setuid programs by Heimdal.  Use the
     "server_keytab" option to point to the keytab.
 
+ 3. The "pkg-config" system can now be used when building Exim to reference
+    cflags and library information for lookups and authenticators, rather
+    than having to update "CFLAGS", "AUTH_LIBS", "LOOKUP_INCLUDE" and
+    "LOOKUP_LIBS" directly.
+
 
 Version 4.77
 ------------
