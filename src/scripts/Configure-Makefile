@@ -117,6 +117,9 @@ done >> $mft || exit 1
 egrep "^[$st]*(AUTH|LOOKUP)_[A-Z0-9_]*[$st]*=[$st]*" $mft | \
   sed "s/[$st]*=/='/" | \
   sed "s/\$/'/" > $mftt
+egrep "^[$st]*((USE_(OPENSSL|GNUTLS)_PC)|SUPPORT_TLS|USE_GNUTLS)[$st]*=[$st]*" $mft | \
+  sed "s/[$st]*=/='/" | \
+  sed "s/\$/'/" >> $mftt
 if test -s $mftt
 then
   (
@@ -124,6 +127,26 @@ then
   . ./$mftt
   for var in `cut -d = -f 1 < $mftt`; do
     case $var in
+
+      USE_*_PC)
+        eval "pc_value=\"\$$var\""
+        need_this=''
+        if [ ".$SUPPORT_TLS" = "." ]; then
+          # no TLS, not referencing
+          true
+        elif [ ".$var" = ".USE_GNUTLS_PC" ] && [ ".$USE_GNUTLS" != "." ]; then
+          need_this=t
+        elif [ ".$var" = ".USE_OPENSSL_PC" ] && [ ".$USE_GNUTLS" = "." ]; then
+          need_this=t
+        fi
+        if [ ".$need_this" != "." ]; then
+          tls_include=`pkg-config --cflags $pc_value`
+          tls_libs=`pkg-config --libs $pc_value`
+          echo "TLS_INCLUDE=$tls_include"
+          echo "TLS_LIBS=$tls_libs"
+        fi
+        ;;
+
       *_PC)
         eval "pc_value=\"\$$var\""
         base=`echo $var | sed 's/_PC$//'`
@@ -149,6 +172,7 @@ then
           fi
         fi
         ;;
+
     esac
   done
   echo "# End of pkg-config fixups"
