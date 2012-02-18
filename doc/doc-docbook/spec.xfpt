@@ -1868,6 +1868,14 @@ SUPPORT_TLS=yes
 TLS_LIBS=-L/usr/local/openssl/lib -lssl -lcrypto
 TLS_INCLUDE=-I/usr/local/openssl/include/
 .endd
+.new
+.cindex "pkg-config" "OpenSSL"
+If you have &'pkg-config'& available, then instead you can just use:
+.code
+SUPPORT_TLS=yes
+USE_OPENSSL_PC=openssl
+.endd
+.wen
 .cindex "USE_GNUTLS"
 If GnuTLS is installed, you should set
 .code
@@ -1883,6 +1891,16 @@ USE_GNUTLS=yes
 TLS_LIBS=-L/usr/gnu/lib -lgnutls -ltasn1 -lgcrypt
 TLS_INCLUDE=-I/usr/gnu/include
 .endd
+.new
+.cindex "pkg-config" "GnuTLS"
+If you have &'pkg-config'& available, then instead you can just use:
+.code
+SUPPORT_TLS=yes
+USE_GNUTLS=yes
+USE_GNUTLS_PC=gnutls
+.endd
+.wen
+
 You do not need to set TLS_INCLUDE if the relevant directory is already
 specified in INCLUDE. Details of how to configure Exim to make use of TLS are
 given in chapter &<<CHAPTLS>>&.
@@ -2111,7 +2129,8 @@ binary, attempts to configure Exim to use it cause run time configuration
 errors.
 
 .new
-.cindex "pkg-config" "specifying"
+.cindex "pkg-config" "lookups"
+.cindex "pkg-config" "authenticators"
 Many systems now use a tool called &'pkg-config'& to encapsulate information
 about how to compile against a library; Exim has some initial support for
 being able to use pkg-config for lookups and authenticators.  For any given

@@ -25,6 +25,9 @@ PP/04 Local/Makefile support for (AUTH|LOOKUP)_*_PC=foo to use
 PP/05 Swapped $auth1/$auth2 for gsasl GSSAPI mechanism, to be more consistent
       with rest of GSASL and with heimdal_gssapi.
 
+PP/06 Local/Makefile support for USE_(GNUTLS|OPENSSL)_PC=foo to use
+      `pkg-config foo` for cflags/libs for the TLS implementation.
+
 
 Exim version 4.77
 -----------------
