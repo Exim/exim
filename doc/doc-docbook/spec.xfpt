@@ -24483,9 +24483,6 @@ If set, then Heimdal will not use the system default keytab (typically
 &_/etc/krb5.keytab_&) but instead the pathname given in this option.
 The value should be a pathname, with no &"file:"& prefix.
 
-.option server_realm heimdal_gssapi string&!! unset
-Er, unused.  XXXFIXMEXXX
-
 .option server_service heimdal_gssapi string&!! "smtp"
 This option specifies the service identifier used, in conjunction with
 &%server_hostname%&, for building the identifer for finding credentials

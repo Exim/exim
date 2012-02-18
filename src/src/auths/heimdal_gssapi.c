@@ -60,8 +60,6 @@ optionlist auth_heimdal_gssapi_options[] = {
       (void *)(offsetof(auth_heimdal_gssapi_options_block, server_hostname)) },
   { "server_keytab",        opt_stringptr,
       (void *)(offsetof(auth_heimdal_gssapi_options_block, server_keytab)) },
-  { "server_realm",         opt_stringptr,
-      (void *)(offsetof(auth_heimdal_gssapi_options_block, server_realm)) },
   { "server_service",       opt_stringptr,
       (void *)(offsetof(auth_heimdal_gssapi_options_block, server_service)) }
 };
@@ -73,7 +71,6 @@ int auth_heimdal_gssapi_options_count =
 auth_heimdal_gssapi_options_block auth_heimdal_gssapi_option_defaults = {
   US"$primary_hostname",    /* server_hostname */
   NULL,                     /* server_keytab */
-  NULL,                     /* server_realm */
   US"smtp",                 /* server_service */
 };
 

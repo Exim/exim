@@ -5,7 +5,9 @@
 /* Copyright (c) University of Cambridge 1995 - 2012 */
 /* See the file NOTICE for conditions of use and distribution. */
 
-/* Copyright (c) Twitter Inc 2012 */
+/* Copyright (c) Twitter Inc 2012
+   Author: Phil Pennock <pdp@exim.org> */
+/* Copyright (c) Phil Pennock 2012 */
 
 /* Interface to Heimdal library for GSSAPI authentication. */
 
@@ -14,7 +16,6 @@
 typedef struct {
   uschar *server_hostname;
   uschar *server_keytab;
-  uschar *server_realm;
   uschar *server_service;
 } auth_heimdal_gssapi_options_block;
 
