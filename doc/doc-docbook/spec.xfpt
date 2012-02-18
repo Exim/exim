@@ -24293,8 +24293,10 @@ sasl:
   server_set_id = $auth1
 .endd
 
-.option server_realm cyrus_sasl string unset
+.new
+.option server_realm cyrus_sasl string&!! unset
 This specifies the SASL realm that the server claims to be in.
+.wen
 
 
 .option server_service cyrus_sasl string &`smtp`&

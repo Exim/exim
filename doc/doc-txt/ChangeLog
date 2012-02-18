@@ -32,6 +32,8 @@ PP/07 New expansion variable $tls_bits; Cyrus SASL server connection
       properties get this fed in as external SSF.  A number of robustness
       and debugging improvements to the cyrus_sasl authenticator.
 
+PP/08 cyrus_sasl server now expands the server_realm option.
+
 
 Exim version 4.77
 -----------------

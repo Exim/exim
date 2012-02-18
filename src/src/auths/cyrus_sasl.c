@@ -99,6 +99,7 @@ uschar *list, *listptr, *buffer;
 int rc, i;
 unsigned int len;
 uschar *rs_point, *expanded_hostname;
+char *realm_expanded;
 
 sasl_conn_t *conn;
 sasl_callback_t cbs[]={
@@ -115,6 +116,15 @@ if (expanded_hostname == NULL)
       "couldn't expand server_hostname [%s]: %s",
       ablock->name, ob->server_hostname, expand_string_message);
 
+realm_expanded=NULL;
+if (ob->server_realm != NULL) {
+  realm_expanded = CS expand_string(ob->server_realm);
+  if (realm_expanded == NULL)
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
+        "couldn't expand server_realm [%s]: %s",
+        ablock->name, ob->server_realm, expand_string_message);
+}
+
 /* we're going to initialise the library to check that there is an
  * authenticator of type whatever mechanism we're using
  */
@@ -129,7 +139,7 @@ if( rc != SASL_OK )
       "couldn't initialise Cyrus SASL library.", ablock->name);
 
 rc=sasl_server_new(CS ob->server_service, CS expanded_hostname,
-                   CS ob->server_realm, NULL, NULL, NULL, 0, &conn);
+                   realm_expanded, NULL, NULL, NULL, 0, &conn);
 if( rc != SASL_OK )
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
       "couldn't initialise Cyrus SASL server connection.", ablock->name);
@@ -144,7 +154,7 @@ listptr=list;
 
 HDEBUG(D_auth) {
   debug_printf("Initialised Cyrus SASL service=\"%s\" fqdn=\"%s\" realm=\"%s\"\n",
-      ob->server_service, expanded_hostname, ob->server_realm);
+      ob->server_service, expanded_hostname, realm_expanded);
   debug_printf("Cyrus SASL knows mechanisms: %s\n", list);
 }
 
@@ -194,6 +204,7 @@ uschar *output, *out2, *input, *clear, *hname;
 uschar *debug = NULL;   /* Stops compiler complaining */
 sasl_callback_t cbs[]={{SASL_CB_LIST_END, NULL, NULL}};
 sasl_conn_t *conn;
+char *realm_expanded;
 int rc, firsttime=1, clen, negotiated_ssf;
 unsigned int inlen, outlen;
 
@@ -203,7 +214,11 @@ inlen=Ustrlen(data);
 HDEBUG(D_auth) debug=string_copy(data);
 
 hname=expand_string(ob->server_hostname);
-if(hname == NULL)
+realm_expanded=NULL;
+if (hname && ob->server_realm)
+  realm_expanded= CS expand_string(ob->server_realm);
+if((hname == NULL) ||
+   ((realm_expanded == NULL) && (ob->server_realm != NULL)))
   {
   auth_defer_msg = expand_string_message;
   return DEFER;
@@ -227,12 +242,12 @@ if (rc != SASL_OK)
   return DEFER;
   }
 
-rc=sasl_server_new(CS ob->server_service, CS hname, CS ob->server_realm, NULL,
+rc=sasl_server_new(CS ob->server_service, CS hname, realm_expanded, NULL,
   NULL, NULL, 0, &conn);
 
 HDEBUG(D_auth)
   debug_printf("Initialised Cyrus SASL server connection; service=\"%s\" fqdn=\"%s\" realm=\"%s\"\n",
-      ob->server_service, hname, ob->server_realm);
+      ob->server_service, hname, realm_expanded);
 
 if( rc != SASL_OK )
   {
