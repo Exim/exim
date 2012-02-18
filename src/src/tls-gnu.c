@@ -854,8 +854,9 @@ construct_cipher_name(gnutls_session session)
 {
 static uschar cipherbuf[256];
 uschar *ver;
-int bits, c, kx, mac, rc;
+int c, kx, mac;
 #ifdef GNUTLS_CB_TLS_UNIQUE
+int rc;
 gnutls_datum_t channel;
 #endif
 
@@ -864,13 +865,14 @@ ver = string_copy(
 if (Ustrncmp(ver, "TLS ", 4) == 0) ver[3] = '-';   /* Don't want space */
 
 c = gnutls_cipher_get(session);
-bits = gnutls_cipher_get_key_size(c);
+/* returns size in "bytes" */
+tls_bits = gnutls_cipher_get_key_size(c) * 8;
 
 mac = gnutls_mac_get(session);
 kx = gnutls_kx_get(session);
 
 string_format(cipherbuf, sizeof(cipherbuf), "%s:%s:%u", ver,
-  gnutls_cipher_suite_get_name(kx, c, mac), bits);
+  gnutls_cipher_suite_get_name(kx, c, mac), tls_bits);
 tls_cipher = cipherbuf;
 
 DEBUG(D_tls) debug_printf("cipher: %s\n", cipherbuf);

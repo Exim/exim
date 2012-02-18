@@ -94,6 +94,7 @@ cluttered in several places (e.g. during logging) if we can always refer to
 them. Also, the tls_ variables are now always visible. */
 
 BOOL    tls_active             = -1;
+int     tls_bits               = 0;
 BOOL    tls_certificate_verified = FALSE;
 uschar *tls_cipher             = NULL;
 BOOL    tls_on_connect         = FALSE;

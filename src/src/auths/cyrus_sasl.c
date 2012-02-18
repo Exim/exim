@@ -98,7 +98,7 @@ auth_cyrus_sasl_options_block *ob =
 uschar *list, *listptr, *buffer;
 int rc, i;
 unsigned int len;
-uschar *rs_point;
+uschar *rs_point, *expanded_hostname;
 
 sasl_conn_t *conn;
 sasl_callback_t cbs[]={
@@ -109,11 +109,17 @@ sasl_callback_t cbs[]={
 if(ob->server_mech == NULL)
   ob->server_mech=string_copy(ablock->public_name);
 
+expanded_hostname = expand_string(ob->server_hostname);
+if (expanded_hostname == NULL)
+  log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
+      "couldn't expand server_hostname [%s]: %s",
+      ablock->name, ob->server_hostname, expand_string_message);
+
 /* we're going to initialise the library to check that there is an
  * authenticator of type whatever mechanism we're using
  */
 
-cbs[0].proc = (int(*)(void))&mysasl_config;
+cbs[0].proc = (int(*)(void)) &mysasl_config;
 cbs[0].context = ob->server_mech;
 
 rc=sasl_server_init(cbs, "exim");
@@ -122,7 +128,7 @@ if( rc != SASL_OK )
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
       "couldn't initialise Cyrus SASL library.", ablock->name);
 
-rc=sasl_server_new(CS ob->server_service, CS primary_hostname,
+rc=sasl_server_new(CS ob->server_service, CS expanded_hostname,
                    CS ob->server_realm, NULL, NULL, NULL, 0, &conn);
 if( rc != SASL_OK )
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG_FOR, "%s authenticator:  "
@@ -136,7 +142,11 @@ if( rc != SASL_OK )
 i=':';
 listptr=list;
 
-HDEBUG(D_auth) debug_printf("Cyrus SASL knows about: %s\n", list);
+HDEBUG(D_auth) {
+  debug_printf("Initialised Cyrus SASL service=\"%s\" fqdn=\"%s\" realm=\"%s\"\n",
+      ob->server_service, expanded_hostname, ob->server_realm);
+  debug_printf("Cyrus SASL knows mechanisms: %s\n", list);
+}
 
 /* the store_get / store_reset mechanism is hierarchical
  * the hierarchy is stored for us behind our back. This point
@@ -184,7 +194,7 @@ uschar *output, *out2, *input, *clear, *hname;
 uschar *debug = NULL;   /* Stops compiler complaining */
 sasl_callback_t cbs[]={{SASL_CB_LIST_END, NULL, NULL}};
 sasl_conn_t *conn;
-int rc, firsttime=1, clen;
+int rc, firsttime=1, clen, negotiated_ssf;
 unsigned int inlen, outlen;
 
 input=data;
@@ -220,12 +230,33 @@ if (rc != SASL_OK)
 rc=sasl_server_new(CS ob->server_service, CS hname, CS ob->server_realm, NULL,
   NULL, NULL, 0, &conn);
 
+HDEBUG(D_auth)
+  debug_printf("Initialised Cyrus SASL server connection; service=\"%s\" fqdn=\"%s\" realm=\"%s\"\n",
+      ob->server_service, hname, ob->server_realm);
+
 if( rc != SASL_OK )
   {
   auth_defer_msg = US"couldn't initialise Cyrus SASL connection";
   sasl_done();
   return DEFER;
   }
+
+if (tls_cipher)
+  {
+  rc = sasl_setprop(conn, SASL_SSF_EXTERNAL, &tls_bits);
+  if (rc != SASL_OK)
+    {
+    HDEBUG(D_auth) debug_printf("Cyrus SASL EXTERNAL SSF set %d failed: %s\n",
+        tls_bits, sasl_errstring(rc, NULL, NULL));
+    auth_defer_msg = US"couldn't set Cyrus SASL EXTERNAL SSF";
+    sasl_done();
+    return DEFER;
+    }
+  else
+    HDEBUG(D_auth) debug_printf("Cyrus SASL set EXTERNAL SSF to %d\n", tls_bits);
+  }
+else
+  HDEBUG(D_auth) debug_printf("Cyrus SASL: no TLS, no EXTERNAL SSF set\n");
 
 rc=SASL_CONTINUE;
 
@@ -325,12 +356,53 @@ while(rc==SASL_CONTINUE)
     /* Get the username and copy it into $auth1 and $1. The former is now the
     preferred variable; the latter is the original variable. */
     rc = sasl_getprop(conn, SASL_USERNAME, (const void **)(&out2));
+    if (rc != SASL_OK)
+      {
+      HDEBUG(D_auth)
+        debug_printf("Cyrus SASL library will not tell us the username: %s\n",
+            sasl_errstring(rc, NULL, NULL));
+      log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
+         "Cyrus SASL username fetch problem: %s", ablock->name, ob->server_mech,
+         sasl_errstring(rc, NULL, NULL));
+      sasl_dispose(&conn);
+      sasl_done();
+      return FAIL;
+      }
+
     auth_vars[0] = expand_nstring[1] = string_copy(out2);
     expand_nlength[1] = Ustrlen(expand_nstring[1]);
     expand_nmax = 1;
 
     HDEBUG(D_auth)
-      debug_printf("Cyrus SASL %s authentication succeeded for %s\n", ob->server_mech, out2);
+      debug_printf("Cyrus SASL %s authentication succeeded for %s\n",
+          ob->server_mech, auth_vars[0]);
+
+    rc = sasl_getprop(conn, SASL_SSF, (const void **)(&negotiated_ssf));
+    if (rc != SASL_OK)
+      {
+      HDEBUG(D_auth)
+        debug_printf("Cyrus SASL library will not tell us the SSF: %s\n",
+            sasl_errstring(rc, NULL, NULL));
+      log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
+          "Cyrus SASL SSF value not available: %s", ablock->name, ob->server_mech,
+          sasl_errstring(rc, NULL, NULL));
+      sasl_dispose(&conn);
+      sasl_done();
+      return FAIL;
+      }
+    HDEBUG(D_auth)
+      debug_printf("Cyrus SASL %s negotiated SSF: %d\n", ob->server_mech, negotiated_ssf);
+    if (negotiated_ssf > 0)
+      {
+      HDEBUG(D_auth)
+        debug_printf("Exim does not implement SASL wrapping (needed for SSF %d).\n", negotiated_ssf);
+      log_write(0, LOG_REJECT, "%s authenticator (%s):\n  "
+          "Cyrus SASL SSF %d not supported by Exim", ablock->name, ob->server_mech, negotiated_ssf);
+      sasl_dispose(&conn);
+      sasl_done();
+      return FAIL;
+      }
+
     /* close down the connection, freeing up library's memory */
     sasl_dispose(&conn);
     sasl_done();

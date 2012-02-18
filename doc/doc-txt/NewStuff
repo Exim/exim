@@ -29,6 +29,8 @@ Version 4.78
     "LOOKUP_LIBS" directly.  Similarly for handling the TLS library support
     without adjusting "TLS_INCLUDE" and "TLS_LIBS".
 
+ 4. New expansion variable $tls_bits.
+
 
 Version 4.77
 ------------

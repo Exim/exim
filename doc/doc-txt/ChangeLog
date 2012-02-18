@@ -28,6 +28,10 @@ PP/05 Swapped $auth1/$auth2 for gsasl GSSAPI mechanism, to be more consistent
 PP/06 Local/Makefile support for USE_(GNUTLS|OPENSSL)_PC=foo to use
       `pkg-config foo` for cflags/libs for the TLS implementation.
 
+PP/07 New expansion variable $tls_bits; Cyrus SASL server connection
+      properties get this fed in as external SSF.  A number of robustness
+      and debugging improvements to the cyrus_sasl authenticator.
+
 
 Exim version 4.77
 -----------------

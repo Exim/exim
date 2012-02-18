@@ -75,6 +75,7 @@ cluttered in several places (e.g. during logging) if we can always refer to
 them. Also, the tls_ variables are now always visible. */
 
 extern int     tls_active;             /* fd/socket when in a TLS session */
+extern int     tls_bits;               /* bits used in TLS session */
 extern BOOL    tls_certificate_verified; /* Client certificate verified */
 extern uschar *tls_cipher;             /* Cipher used */
 extern BOOL    tls_on_connect;         /* For older MTAs that don't STARTTLS */
