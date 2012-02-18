@@ -24449,8 +24449,8 @@ ANONYMOUS: only &$auth1$& is set, to the possibly empty &'anonymous token'&;
 the &%server_condition%& option must be present.
 .next
 .cindex "authentication" "GSSAPI"
-GSSAPI: &$auth1$& will be set to the &'authorization id'&,
-&$auth2$& will be set to the &'GSSAPI Display Name'&;
+GSSAPI: &$auth1$& will be set to the &'GSSAPI Display Name'&;
+&$auth2$& will be set to the &'authorization id'&,
 the &%server_condition%& option must be present.
 .endlist
 

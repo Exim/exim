@@ -5,7 +5,9 @@
 /* Copyright (c) University of Cambridge 1995 - 2012 */
 /* See the file NOTICE for conditions of use and distribution. */
 
-/* Copyright (c) Twitter Inc 2012 */
+/* Copyright (c) Twitter Inc 2012
+   Author: Phil Pennock <pdp@exim.org> */
+/* Copyright (c) Phil Pennock 2012 */
 
 /* Interface to GNU SASL library for generic authentication. */
 
@@ -480,10 +482,18 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
       break;
 
     case GSASL_VALIDATE_GSSAPI:
-      /* GSASL_AUTHZID and GSASL_GSSAPI_DISPLAY_NAME */
-      propval = (uschar *) gsasl_property_get(sctx, GSASL_AUTHZID);
-      auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
+      /* GSASL_AUTHZID and GSASL_GSSAPI_DISPLAY_NAME
+      The display-name is authenticated as part of GSS, the authzid is claimed
+      by the SASL integration after authentication; protected against tampering
+      (if the SASL mechanism supports that, which Kerberos does) but is
+      unverified, same as normal for other mechanisms.
+
+      First coding, we had these values swapped, but for consistency and prior
+      to the first release of Exim with this authenticator, they've been
+      switched to match the ordering of GSASL_VALIDATE_SIMPLE. */
       propval = (uschar *) gsasl_property_get(sctx, GSASL_GSSAPI_DISPLAY_NAME);
+      auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
+      propval = (uschar *) gsasl_property_get(sctx, GSASL_AUTHZID);
       auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
       expand_nmax = 2;
       for (i = 1; i <= 2; ++i)

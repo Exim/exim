@@ -22,6 +22,9 @@ PP/03 Implemented heimdal_gssapi authenticator with "server_keytab" option.
 PP/04 Local/Makefile support for (AUTH|LOOKUP)_*_PC=foo to use
       `pkg-config foo` for cflags/libs.
 
+PP/05 Swapped $auth1/$auth2 for gsasl GSSAPI mechanism, to be more consistent
+      with rest of GSASL and with heimdal_gssapi.
+
 
 Exim version 4.77
 -----------------
