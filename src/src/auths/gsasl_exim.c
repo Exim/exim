@@ -433,11 +433,11 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
   switch (prop) {
     case GSASL_VALIDATE_SIMPLE:
       /* GSASL_AUTHID, GSASL_AUTHZID, and GSASL_PASSWORD */
-      propval = (uschar *) gsasl_property_get(sctx, GSASL_AUTHID);
+      propval = (uschar *) gsasl_property_fast(sctx, GSASL_AUTHID);
       auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
-      propval = (uschar *) gsasl_property_get(sctx, GSASL_AUTHZID);
+      propval = (uschar *) gsasl_property_fast(sctx, GSASL_AUTHZID);
       auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
-      propval = (uschar *) gsasl_property_get(sctx, GSASL_PASSWORD);
+      propval = (uschar *) gsasl_property_fast(sctx, GSASL_PASSWORD);
       auth_vars[2] = expand_nstring[3] = propval ? propval : US"";
       expand_nmax = 3;
       for (i = 1; i <= 3; ++i)
@@ -453,7 +453,7 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
         cbrc = GSASL_AUTHENTICATION_ERROR;
         break;
       }
-      propval = (uschar *) gsasl_property_get(sctx, GSASL_AUTHZID);
+      propval = (uschar *) gsasl_property_fast(sctx, GSASL_AUTHZID);
       /* We always set $auth1, even if only to empty string. */
       auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
       expand_nlength[1] = Ustrlen(expand_nstring[1]);
@@ -470,7 +470,7 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
         cbrc = GSASL_AUTHENTICATION_ERROR;
         break;
       }
-      propval = (uschar *) gsasl_property_get(sctx, GSASL_ANONYMOUS_TOKEN);
+      propval = (uschar *) gsasl_property_fast(sctx, GSASL_ANONYMOUS_TOKEN);
       /* We always set $auth1, even if only to empty string. */
       auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
       expand_nlength[1] = Ustrlen(expand_nstring[1]);
@@ -491,9 +491,9 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
       First coding, we had these values swapped, but for consistency and prior
       to the first release of Exim with this authenticator, they've been
       switched to match the ordering of GSASL_VALIDATE_SIMPLE. */
-      propval = (uschar *) gsasl_property_get(sctx, GSASL_GSSAPI_DISPLAY_NAME);
+      propval = (uschar *) gsasl_property_fast(sctx, GSASL_GSSAPI_DISPLAY_NAME);
       auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
-      propval = (uschar *) gsasl_property_get(sctx, GSASL_AUTHZID);
+      propval = (uschar *) gsasl_property_fast(sctx, GSASL_AUTHZID);
       auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
       expand_nmax = 2;
       for (i = 1; i <= 2; ++i)
@@ -520,16 +520,17 @@ server_callback(Gsasl *ctx, Gsasl_session *sctx, Gsasl_property prop, auth_insta
         tmps = CS expand_string(ob->server_scram_salt);
         gsasl_property_set(sctx, GSASL_SCRAM_SALT, tmps);
       }
-      /* Asking for GSASL_AUTHZID will probably call back into us.
+      /* Asking for GSASL_AUTHZID calls back into us if we use
+      gsasl_property_get(), thus the use of gsasl_property_fast().
       Do we really want to hardcode limits per mechanism?  What happens when
       a new mechanism is added to the library.  It *shouldn't* result in us
       needing to add more glue, since avoiding that is a large part of the
       point of SASL. */
-      propval = (uschar *) gsasl_property_get(sctx, GSASL_AUTHID);
+      propval = (uschar *) gsasl_property_fast(sctx, GSASL_AUTHID);
       auth_vars[0] = expand_nstring[1] = propval ? propval : US"";
-      propval = (uschar *) gsasl_property_get(sctx, GSASL_AUTHZID);
+      propval = (uschar *) gsasl_property_fast(sctx, GSASL_AUTHZID);
       auth_vars[1] = expand_nstring[2] = propval ? propval : US"";
-      propval = (uschar *) gsasl_property_get(sctx, GSASL_REALM);
+      propval = (uschar *) gsasl_property_fast(sctx, GSASL_REALM);
       auth_vars[2] = expand_nstring[3] = propval ? propval : US"";
       expand_nmax = 3;
       for (i = 1; i <= 3; ++i)
