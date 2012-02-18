@@ -18,6 +18,11 @@ Version 4.78
     Exim is currently unable to construct strings with embedded NULs for
     use as keys in lookups against sasldb2.
 
+ 2. New authenticator driver, "heimdal_gssapi".  Server-only.
+    A replacement for using cyrus_sasl with Heimdal, now that $KRB5_KTNAME
+    is no longer honoured for setuid programs by Heimdal.  Use the
+    "server_keytab" option to point to the keytab.
+
 
 Version 4.77
 ------------

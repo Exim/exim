@@ -23399,6 +23399,7 @@ AUTH_CYRUS_SASL=yes
 .new
 AUTH_DOVECOT=yes
 AUTH_GSASL=yes
+AUTH_HEIMDAL_GSSAPI=yes
 .wen
 AUTH_PLAINTEXT=yes
 AUTH_SPA=yes
@@ -23411,9 +23412,11 @@ The third is an interface to Dovecot's authentication system, delegating the
 work via a socket interface.
 The fourth provides an interface to the GNU SASL authentication library, which
 provides mechanisms but typically not data sources.
-The fifth can be configured to support
+The fifth provides direct access to Heimdal GSSAPI, geared for Kerberos, but
+supporting setting a server keytab.
+The sixth can be configured to support
 the PLAIN authentication mechanism (RFC 2595) or the LOGIN mechanism, which is
-not formally documented, but used by several MUAs. The sixth authenticator
+not formally documented, but used by several MUAs. The seventh authenticator
 supports Microsoft's &'Secure Password Authentication'& mechanism.
 .wen
 
@@ -23461,7 +23464,9 @@ used to authenticate; servers may have rules to permit one user to act as a
 second user, so that after login the session is treated as though that second
 user had logged in.  That second user is the &'authorization id'&.  A robust
 configuration might confirm that the &'authz'& field is empty or matches the
-&'authn'& field.  Often this is just ignored.
+&'authn'& field.  Often this is just ignored.  The &'authn'& can be considered
+as verified data, the &'authz'& as an unverified request which the server might
+choose to honour.
 
 A &'realm'& is a text string, typically a domain name, presented by a server
 to a client to help it select an account and credentials to use.  In some
@@ -24197,14 +24202,16 @@ be set in &_exim.conf_& in your SASL directory. If you are using GSSAPI for
 Kerberos, note that because of limitations in the GSSAPI interface,
 changing the server keytab might need to be communicated down to the Kerberos
 layer independently. The mechanism for doing so is dependent upon the Kerberos
-implementation. For example, for Heimdal, the environment variable KRB5_KTNAME
+implementation.
+.new
+For example, for older releases of Heimdal, the environment variable KRB5_KTNAME
 may be set to point to an alternative keytab file. Exim will pass this
 variable through from its own inherited environment when started as root or the
 Exim user. The keytab file needs to be readable by the Exim user.
-.new
-With some releases of Heimdal, a setuid Exim may cause Heimdal to discard the
+With newer releases of Heimdal, a setuid Exim may cause Heimdal to discard the
 environment variable.  In practice, for those releases, the Cyrus authenticator
-is not a suitable interface for GSSAPI (Kerberos) support.
+is not a suitable interface for GSSAPI (Kerberos) support.  Instead, consider
+the &(heimdal_gssapi)& authenticator, described in chapter &<<CHAPheimdalgss>>&
 .wen
 
 
@@ -24450,6 +24457,60 @@ the &%server_condition%& option must be present.
 An &'anonymous token'& is something passed along as an unauthenticated
 identifier; this is analogous to FTP anonymous authentication passing an
 email address, or software-identifier@, as the "password".
+
+.wen
+
+. ////////////////////////////////////////////////////////////////////////////
+. ////////////////////////////////////////////////////////////////////////////
+
+.new
+.chapter "The heimdal_gssapi authenticator" "CHAPheimdalgss"
+.scindex IIDheimdalgssauth1 "&(heimdal_gssapi)& authenticator"
+.scindex IIDheimdalgssauth2 "authenticators" "&(heimdal_gssapi)&"
+.cindex "authentication" "GSSAPI"
+.cindex "authentication" "Kerberos"
+The &(heimdal_gssapi)& authenticator provides server integration for the
+Heimdal GSSAPI/Kerberos library, permitting Exim to set a keytab pathname
+reliably.
+
+.option server_hostname heimdal_gssapi string&!! "see below"
+This option selects the hostname that is used, with &%server_service%&,
+for constructing the GSS server name, as a &'GSS_C_NT_HOSTBASED_SERVICE'&
+identifier.  The default value is &`$primary_hostname`&.
+
+.option server_keytab heimdal_gssapi string&!! unset
+If set, then Heimdal will not use the system default keytab (typically
+&_/etc/krb5.keytab_&) but instead the pathname given in this option.
+The value should be a pathname, with no &"file:"& prefix.
+
+.option server_realm heimdal_gssapi string&!! unset
+Er, unused.  XXXFIXMEXXX
+
+.option server_service heimdal_gssapi string&!! "smtp"
+This option specifies the service identifier used, in conjunction with
+&%server_hostname%&, for building the identifer for finding credentials
+from the keytab.
+
+
+.section "&(heimdal_gssapi)& auth variables" "SECTheimdalgssauthvar"
+Beware that these variables will typically include a realm, thus will appear
+to be roughly like an email address already.  The &'authzid'& in &$auth2$& is
+not verified, so a malicious client can set it to anything.
+
+The &$auth1$& field should be safely trustable as a value from the Key
+Distribution Center.  Note that these are not quite email addresses.
+Each identifier is for a role, and so the left-hand-side may include a
+role suffix.  For instance, &"joe/admin@EXAMPLE.ORG"&.
+
+.vindex "&$auth1$&, &$auth2$&, etc"
+.ilist
+.vindex "&$auth1$&"
+&$auth1$&: the &'authentication id'&, set to the GSS Display Name.
+.next
+.vindex "&$auth2$&"
+&$auth2$&: the &'authorization id'&, sent within SASL encapsulation after
+authentication.
+.endlist
 
 .wen
 
