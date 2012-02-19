@@ -2200,8 +2200,13 @@ if (where == ACL_WHERE_RCPT || where == ACL_WHERE_DATA)
 if (where == ACL_WHERE_RCPT || where == ACL_WHERE_DATA || where == ACL_WHERE_MIME)
 #endif
   {
-  sender_info = string_sprintf("F=<%s> ", (sender_address_unrewritten != NULL)?
-    sender_address_unrewritten : sender_address);
+  sender_info = string_sprintf("F=<%s>%s%s%s%s ",
+    sender_address_unrewritten ? sender_address_unrewritten : sender_address,
+    sender_host_authenticated ? US" A="                                    : US"",
+    sender_host_authenticated ? sender_host_authenticated                  : US"",
+    sender_host_authenticated && authenticated_id ? US":"                  : US"",
+    sender_host_authenticated && authenticated_id ? authenticated_id       : US""
+    );
   }
 
 /* If there's been a sender verification failure with a specific message, and

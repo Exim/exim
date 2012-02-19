@@ -34,6 +34,9 @@ PP/07 New expansion variable $tls_bits; Cyrus SASL server connection
 
 PP/08 cyrus_sasl server now expands the server_realm option.
 
+PP/09 Bugzilla 1214 - Log authentication information in reject log.
+      Patch by Jeremy Harris.
+
 
 Exim version 4.77
 -----------------
