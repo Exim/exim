@@ -816,7 +816,7 @@ fprintf(f, "Lookups (built-in):");
   fprintf(f, " cdb");
 #endif
 #if defined(LOOKUP_DBM) && LOOKUP_DBM!=2
-  fprintf(f, " dbm dbmnz");
+  fprintf(f, " dbm dbmjz dbmnz");
 #endif
 #if defined(LOOKUP_DNSDB) && LOOKUP_DNSDB!=2
   fprintf(f, " dnsdb");

@@ -31,6 +31,10 @@ Version 4.78
 
  4. New expansion variable $tls_bits.
 
+ 5. New lookup type, "dbmjz".  Key is an Exim list, the elements of which will
+    be joined together with ASCII NUL characters to construct the key to pass
+    into the DBM library.
+
 
 Version 4.77
 ------------
