@@ -316,6 +316,7 @@ static optionlist optionlist_config[] = {
 #endif
   { "pid_file_path",            opt_stringptr,   &pid_file_path },
   { "pipelining_advertise_hosts", opt_stringptr, &pipelining_advertise_hosts },
+  { "prdr_enable",              opt_bool,        &prdr_enable },
   { "preserve_message_logs",    opt_bool,        &preserve_message_logs },
   { "primary_hostname",         opt_stringptr,   &primary_hostname },
   { "print_topbitchars",        opt_bool,        &print_topbitchars },

@@ -143,6 +143,10 @@ uschar *tls_verify_certificates= NULL;
 uschar *tls_verify_hosts       = NULL;
 #endif
 
+/* Per Recipient Data Response variables */
+BOOL    prdr_enable            = TRUE;
+BOOL    prdr_requested         = FALSE;
+recipient_item  *prdr_recipients_list = NULL;
 
 /* Input-reading functions for messages, so we can use special ones for
 incoming TCP/IP. The defaults use stdin. We never need these for any
@@ -200,6 +204,7 @@ uschar *acl_removed_headers    = NULL;
 uschar *acl_smtp_auth          = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;
+uschar *acl_smtp_data_prdr     = NULL;
 #ifndef DISABLE_DKIM
 uschar *acl_smtp_dkim          = NULL;
 #endif
@@ -246,6 +251,7 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"STARTTLS",
                                    US"VRFY",
 				   US"expansion"
+                                   US"PRDR"
                                  };
 
 uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
@@ -267,6 +273,7 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
                                    US"550",     /* STARTTLS */
                                    US"252",     /* VRFY */
 				   US"0"        /* unknown; not relevant */
+                                   US"550",     /* RCPT PRDR */
                                  };
 
 BOOL    active_local_from_check = FALSE;

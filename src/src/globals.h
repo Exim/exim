@@ -556,6 +556,8 @@ extern uschar *percent_hack_domains;   /* Local domains for which '% operates */
 extern uschar *pid_file_path;          /* For writing daemon pids */
 extern uschar *pipelining_advertise_hosts; /* As it says */
 extern BOOL    pipelining_enable;      /* As it says */
+extern BOOL    prdr_enable;            /* As it says */
+extern BOOL    prdr_requested;         /* Connecting mail server wants PRDR */
 extern BOOL    preserve_message_logs;  /* Save msglog files */
 extern uschar *primary_hostname;       /* Primary name of this computer */
 extern BOOL    print_topbitchars;      /* Topbit chars are printing chars */

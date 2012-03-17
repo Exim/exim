@@ -222,7 +222,8 @@ static env_mail_type_t env_mail_type_list[] = {
     { US"SIZE",   ENV_MAIL_OPT_SIZE,   TRUE  },
     { US"BODY",   ENV_MAIL_OPT_BODY,   TRUE  },
     { US"AUTH",   ENV_MAIL_OPT_AUTH,   TRUE  },
-    { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE }  /* Placeholder for ending */
+    { US"PRDR",   ENV_MAIL_OPT_PRDR,   FALSE },
+    { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE }
   };
 
 /* When reading SMTP from a remote host, we have to use our own versions of the
@@ -998,19 +999,23 @@ uschar *n;
 uschar *v = smtp_cmd_data + Ustrlen(smtp_cmd_data) - 1;
 while (isspace(*v)) v--;
 v[1] = 0;
-
 while (v > smtp_cmd_data && *v != '=' && !isspace(*v)) v--;
-if (*v != '=') return FALSE;
 
 n = v;
-while(isalpha(n[-1])) n--;
-
-/* RFC says SP, but TAB seen in wild and other major MTAs accept it */
-if (!isspace(n[-1])) return FALSE;
-
-n[-1] = 0;
-*name = n;
+if (*v == '=')
+{
+  while(isalpha(n[-1])) n--;
+  /* RFC says SP, but TAB seen in wild and other major MTAs accept it */
+  if (!isspace(n[-1])) return FALSE;
+  n[-1] = 0;
+}
+else
+{
+  n++;
+  if (v == smtp_cmd_data) return FALSE;
+}
 *v++ = 0;
+*name = n;
 *value = v;
 return TRUE;
 }
@@ -3119,6 +3124,7 @@ while (done <= 0)
         pipelining_advertised = TRUE;
         }
 
+
       /* If any server authentication mechanisms are configured, advertise
       them if the current host is in auth_advertise_hosts. The problem with
       advertising always is that some clients then require users to
@@ -3176,6 +3182,12 @@ while (done <= 0)
         tls_advertised = TRUE;
         }
       #endif
+
+      /* Per Recipient Data Response, draft by Eric A. Hall extending RFC */
+      if (prdr_enable) {
+        s = string_cat(s, &size, &ptr, smtp_code, 3);
+        s = string_cat(s, &size, &ptr, US"-PRDR\r\n", 7);
+      }
 
       /* Finish off the multiline reply with one that is always available. */
 
@@ -3395,12 +3407,17 @@ while (done <= 0)
               }
             }
             break;
- 
+
+        case ENV_MAIL_OPT_PRDR:
+          if ( prdr_enable )
+            prdr_requested = TRUE;
+          break;
+
         /* Unknown option. Stick back the terminator characters and break
         the loop. An error for a malformed address will occur. */
         default:
-
           /* BAD_MAIL_ARGS: */
+BAD_MAIL_ARGS:
           name[-1] = ' ';
           value[-1] = '=';
           break;
@@ -3524,8 +3541,16 @@ while (done <= 0)
 
     if (rc == OK || rc == DISCARD)
       {
-      if (user_msg == NULL) smtp_printf("250 OK\r\n");
-        else smtp_user_msg(US"250", user_msg);
+      if (user_msg == NULL) 
+        smtp_printf("%s%s%s", US"250 OK",
+                    prdr_requested == TRUE ? US", PRDR Requested" : US"",
+                    US"\r\n");
+        else 
+           {
+           if ( prdr_requested == TRUE ) 
+              user_msg = string_sprintf(US"%s%s", user_msg, US", PRDR Requested");
+           smtp_user_msg(US"250",user_msg);
+           }
       smtp_delay_rcpt = smtp_rlr_base;
       recipients_discarded = (rc == DISCARD);
       was_rej_mail = FALSE;
@@ -3789,9 +3814,11 @@ while (done <= 0)
 
     if (rc == OK)
       {
+      uschar * code;
+      code = prdr_requested ? "353" : "354";
       if (user_msg == NULL)
-        smtp_printf("354 Enter message, ending with \".\" on a line by itself\r\n");
-      else smtp_user_msg(US"354", user_msg);
+        smtp_printf("%i Enter message, ending with \".\" on a line by itself\r\n", code);
+      else smtp_user_msg(code, user_msg);
       done = 3;
       message_ended = END_NOTENDED;   /* Indicate in middle of data */
       }
