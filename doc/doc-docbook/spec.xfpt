@@ -24558,7 +24558,8 @@ role suffix.  For instance, &"joe/admin@EXAMPLE.ORG"&.
 .next
 .vindex "&$auth2$&"
 &$auth2$&: the &'authorization id'&, sent within SASL encapsulation after
-authentication.
+authentication.  If that was empty, this will also be set to the
+GSS Display Name.
 .endlist
 
 .wen

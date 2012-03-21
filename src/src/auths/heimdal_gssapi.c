@@ -412,10 +412,10 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
           error_out = FAIL;
           goto ERROR_OUT;
         }
-        if (gbufdesc_out.length < 5) {
+        if (gbufdesc_out.length < 4) {
           HDEBUG(D_auth)
             debug_printf("gssapi: final message too short; "
-                "need flags, buf sizes and authzid\n");
+                "need flags, buf sizes and optional authzid\n");
           error_out = FAIL;
           goto ERROR_OUT;
         }
@@ -434,14 +434,17 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
 
         /* Identifiers:
         The SASL provided identifier is an unverified authzid.
-        GSSAPI provides us with a verified identifier.
+        GSSAPI provides us with a verified identifier, but it might be empty
+        for some clients.
         */
 
         /* $auth2 is authzid requested at SASL layer */
-        expand_nlength[2] = gbufdesc_out.length - 4;
-        auth_vars[1] = expand_nstring[2] =
-          string_copyn((US gbufdesc_out.value) + 4, expand_nlength[2]);
-        expand_nmax = 2;
+        if (gbufdesc_out.length > 4) {
+          expand_nlength[2] = gbufdesc_out.length - 4;
+          auth_vars[1] = expand_nstring[2] =
+            string_copyn((US gbufdesc_out.value) + 4, expand_nlength[2]);
+          expand_nmax = 2;
+        }
 
         gss_release_buffer(&min_stat, &gbufdesc_out);
         EmptyBuf(gbufdesc_out);
@@ -463,6 +466,14 @@ auth_heimdal_gssapi_server(auth_instance *ablock, uschar *initial_data)
         expand_nlength[1] = gbufdesc_out.length;
         auth_vars[0] = expand_nstring[1] =
           string_copyn(gbufdesc_out.value, gbufdesc_out.length);
+
+        if (expand_nmax == 0) { /* should be: authzid was empty */
+          expand_nmax = 2;
+          expand_nlength[2] = expand_nlength[1];
+          auth_vars[1] = expand_nstring[2] = string_copyn(expand_nstring[1], expand_nlength[1]);
+          HDEBUG(D_auth)
+            debug_printf("heimdal SASL: empty authzid, set to dup of GSSAPI display name\n");
+        }
 
         HDEBUG(D_auth)
           debug_printf("heimdal SASL: happy with client request\n"
