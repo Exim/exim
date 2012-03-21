@@ -37,7 +37,9 @@ PP/08 cyrus_sasl server now expands the server_realm option.
 PP/09 Bugzilla 1214 - Log authentication information in reject log.
       Patch by Jeremy Harris.
 
-PP/10 Let heimdal_gssapi authenticator take a SASL message without an authzid.
+PP/10 Added dbmjz lookup type.
+
+PP/11 Let heimdal_gssapi authenticator take a SASL message without an authzid.
 
 
 Exim version 4.77

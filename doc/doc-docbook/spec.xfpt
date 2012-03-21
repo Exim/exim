@@ -6223,13 +6223,26 @@ using Berkeley DB versions 3 or 4, it opens existing databases for reading with
 the DB_UNKNOWN option. This enables it to handle any of the types of database
 that the library supports, and can be useful for accessing DBM files created by
 other applications. (For earlier DB versions, DB_HASH is always used.)
+.new
+.next
+.cindex "lookup" "dbmjz"
+.cindex "lookup" "dbm &-- embedded NULs"
+.cindex "sasldb2"
+.cindex "dbmjz lookup type"
+&(dbmjz)&: This is the same as &(dbm)&, except that the lookup key is
+interpreted as an Exim list; the elements of the list are joined together with
+ASCII NUL characters to form the lookup key.  An example usage would be to
+authenticate incoming SMTP calls using the passwords from Cyrus SASL's
+&_/etc/sasldb2_& file with the &(gsasl)& authenticator or Exim's own
+&(cram_md5)& authenticator.
+.wen
 .next
 .cindex "lookup" "dbmnz"
 .cindex "lookup" "dbm &-- terminating zero"
 .cindex "binary zero" "in lookup key"
 .cindex "Courier"
 .cindex "&_/etc/userdbshadow.dat_&"
-.cindex "dmbnz lookup type"
+.cindex "dbmnz lookup type"
 &(dbmnz)&: This is the same as &(dbm)&, except that a terminating binary zero
 is not included in the key that is passed to the DBM library. You may need this
 if you want to look up data in files that are created by or shared with some
@@ -24179,6 +24192,20 @@ lookup_cram:
 Note that this expansion explicitly forces failure if the lookup fails
 because &$auth1$& contains an unknown user name.
 
+.new
+As another example, if you wish to re-use a Cyrus SASL sasldb2 file without
+using the relevant libraries, you need to know the realm to specify in the
+lookup and then ask for the &"userPassword"& attribute for that user in that
+realm, with:
+.code
+cyrusless_crammd5:
+  driver = cram_md5
+  public_name = CRAM-MD5
+  server_secret = ${lookup{$auth1:mail.example.org:userPassword}\
+                  dbmjz{/etc/sasldb2}}
+  server_set_id = $auth1
+.endd
+.wen
 
 .section "Using cram_md5 as a client" "SECID177"
 .cindex "options" "&(cram_md5)& authenticator (client)"
@@ -24509,6 +24536,20 @@ the &%server_condition%& option must be present.
 An &'anonymous token'& is something passed along as an unauthenticated
 identifier; this is analogous to FTP anonymous authentication passing an
 email address, or software-identifier@, as the "password".
+
+
+An example showing the password having the realm specified in the callback
+and demonstrating a Cyrus SASL to GSASL migration approach is:
+.code
+gsasl_cyrusless_crammd5:
+  driver = gsasl
+  public_name = CRAM-MD5
+  server_realm = imap.example.org
+  server_password = ${lookup{$auth1:$auth3:userPassword}\
+                    dbmjz{/etc/sasldb2}{$value}fail}
+  server_set_id = ${quote:$auth1}
+  server_condition = yes
+.endd
 
 .wen
 
