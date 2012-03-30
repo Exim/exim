@@ -312,7 +312,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # Replace the Exim version number (may appear in various places)
   # patchexim should have fixed this for us
-  #s/(Exim) \d+\.\d+[\w-]*/$1 x.yz/i;
+  #s/(Exim) \d+\.\d+[\w_-]*/$1 x.yz/i;
 
   # Replace Exim message ids by a unique series
   s/((?:[^\W_]{6}-){2}[^\W_]{2})
