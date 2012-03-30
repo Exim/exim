@@ -593,7 +593,12 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   # ======== Output from ls ========
   # Different operating systems use different spacing on long output
-  s/ +/ /g if /^[-rwd]{10} /;
+  #s/ +/ /g if /^[-rwd]{10} /;
+  # (Bug 1226) SUSv3 allows a trailing printable char for modified access method control.
+  # Handle only the Gnu and MacOS space, dot, plus and at-sign.  A full [[:graph:]]
+  # unfortunately matches a non-ls linefull of dashes.
+  # Allow the case where we've already picked out the file protection bits.
+  s/^([-d](?:[-r][-w][-SsTtx]){3})[.+@]?( +|$)/\1 /;
 
 
   # ======== Message sizes =========
