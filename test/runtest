@@ -560,9 +560,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/host\s\Q$parm_ipv4\E\s\[\Q$parm_ipv4\E\]/host ipv4.ipv4.ipv4.ipv4 [ipv4.ipv4.ipv4.ipv4]/;
   s/host\s\Q$parm_ipv6\E\s\[\Q$parm_ipv6\E\]/host ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6 [ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6]/;
   s/\b\Q$parm_ipv4\E\b/ip4.ip4.ip4.ip4/g;
-  s/\b\Q$parm_ipv6\E\b/ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6/g;
+  s/(^|\W)\K\Q$parm_ipv6\E/ip6:ip6:ip6:ip6:ip6:ip6:ip6:ip6/g;
   s/\b\Q$parm_ipv4r\E\b/ip4-reverse/g;
-  s/\b\Q$parm_ipv6r\E\b/ip6-reverse/g;
+  s/(^|\W)\K\Q$parm_ipv6r\E/ip6-reverse/g;
   s/^(\s+host\s\S+\s+\[\S+\]) +$/$1 /;
 
 
