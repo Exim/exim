@@ -8536,6 +8536,13 @@ start of a portion of the string that is interpreted and replaced as described
 below in section &<<SECTexpansionitems>>& onwards. Backslash is used as an
 escape character, as described in the following section.
 
+Whether a string is expanded depends upon the context.  Usually this is solely
+dependent upon the option for which a value is sought; in this documentation,
+options for which string expansion is performed are marked with &dagger; after
+the data type.  ACL rules always expand strings.  A couple of expansion
+conditions do not expand some of the brace-delimited branches, for security
+reasons.
+
 
 
 .section "Literal text in expanded strings" "SECTlittext"
@@ -9916,6 +9923,10 @@ optionally followed by one of the letters &"K"& or &"M"& (in either upper or
 lower case), signifying multiplication by 1024 or 1024*1024, respectively.
 As a special case, the numerical value of an empty string is taken as
 zero.
+
+In all cases, a relative comparator OP is testing if <&'string1'&> OP
+<&'string2'&>; the above example is checking if &$message_size$& is larger than
+10M, not if 10M is larger than &$message_size$&.
 
 
 .vitem &*bool&~{*&<&'string'&>&*}*&
