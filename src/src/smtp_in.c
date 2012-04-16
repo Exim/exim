@@ -983,7 +983,8 @@ if (*v != '=') return FALSE;
 n = v;
 while(isalpha(n[-1])) n--;
 
-if (n[-1] != ' ') return FALSE;
+/* RFC says SP, but TAB seen in wild and other major MTAs accept it */
+if (!isspace(n[-1])) return FALSE;
 
 n[-1] = 0;
 *name = n;

@@ -336,7 +336,7 @@ mailbox_size                         string*         unset         appendfile   
 maildir_format                       boolean         false         appendfile        1.70
 maildir_retries                      integer         10            appendfile        1.70
 maildir_tag                          string*         unset         appendfile        1.92
-maildir_use_size_file                boolean         false         appendfile        4.30
+maildir_use_size_file                boolean*        false         appendfile        4.30 expanded in 4.77
 maildirfolder_create_regex           string          unset         appendfile        4.62
 mailstore_format                     boolean         false         appendfile        2.00
 mailstore_prefix                     string*         unset         appendfile        2.00
@@ -466,14 +466,19 @@ sender_unqualified_hosts             host list       unset         main
 senders                              address list    unset         routers           4.00
 serialize_hosts                      host list       unset         smtp              1.60
 server_advertise_condition           string*         unset         authenticators    4.14
+server_channelbinding                bool            false         gsasl             4.78
 server_condition                     string*         unset         authenticators    3.10 (plaintext) 4.64 (others)
-server_hostname                      string*   "$primary_hostname" cyrus_sasl        4.43
+server_hostname                      string*   "$primary_hostname" cyrus_sasl,gsasl,heimdal_gssapi (cyrus-only) 4.78 (others)
+server_keytab                        string*         unset         heimdal_gssapi    4.78
 server_mail_auth_condition           string*         unset         authenticators    3.22
-server_mech                          string          public_name   cyrus_sasl        4.43
+server_mech                          string          public_name   cyrus_sasl,gsasl  4.43 (cyrus-only) 4.78 (others)
+server_password                      string          unset         gsasl             4.78
 server_prompts                       string*         unset         plaintext         3.10
-server_realm                         string          unset         cyrus_sasl        4.43
+server_realm                         string          unset         cyrus_sasl,gsasl  4.43 (cyrus-only) 4.78 (others)
+server_scram_iter                    string*         unset         gsasl             4.78
+server_scram_salt                    string*         unset         gsasl             4.78
 server_secret                        string*         unset         cram_md5          3.10
-server_service                       string          "smtp"        cyrus_sasl        4.43
+server_service                       string          "smtp"  cyrus_sasl,gsasl,heimdal_gssapi  (cyrus-only) 4.78 (others)
 server_set_id                        string*         unset         authenticators    3.10
 shadow_condition                     string*         unset         transports
 shadow_transport                     string          unset         transports
@@ -737,9 +742,12 @@ provide compatibility with Sendmail.
 3. BUILD TIME OPTIONS FOR EXIM
 ------------------------------
 
-The table below contains a complete list of options that can be set in
-Local/Makefile when building Exim. More information about individual options
-can be found in src/EDITME and OS/Makefile-Default.
+The table below contains a "mostly" complete list of options that can be
+set in Local/Makefile when building Exim.  The only items not included are
+those whose names can be trivially derived from rules stated below.
+
+More information about individual options can be found in src/EDITME and
+OS/Makefile-Default.
 
 The second column below gives the type of option:
 
@@ -769,6 +777,23 @@ empty by default, and is provided for just this reason. Of course, if you do
 actually want to modify a setting from the OS-specific file, there is nothing
 to stop you overriding it in your Local/Makefile.
 
+When building Exim with dynamically loaded lookup support, for "LOOKUP_FOO",
+you can define "LOOKUP_FOO_INCLUDE" and "LOOKUP_FOO_LIBS", for includes and
+libraries specific only to that module.  These rules are only used where the
+relevant lookup is a module.  These options are not explicitly listed below.
+
+Variables with names endined `_PC' are used for pkg-config integration; setting
+the value to the name of a pkg-config package will cause Exim's build system to
+query the --cflags and --libs for the given name, when building anything
+dependent upon the component associated with the `_PC' variable.  For lookups,
+if the lookup is dynamically loaded, then this *replaces* the use of the
+corresponding _INCLUDE and _LIBS options, which will be ignored.  If the lookup
+is statically loaded into Exim, the results will be inserted into the
+"LOOKUP_INCLUDE" and "LOOKUP_LIBS" options.  For authenticator, the results
+will be inserted into the "CFLAGS" and "AUTH_LIBS" options.  These options are
+only listed below for the TLS implementation cases.
+
+
 Option                       Type         Description
 ------------------------------------------------------------------------------
 
@@ -779,6 +804,9 @@ APPENDFILE_LOCKFILE_MODE     optional*
 AR                           system       command to build a library
 AUTH_CRAM_MD5                driver       include cram_md5 authenticator
 AUTH_CYRUS_SASL              driver       include Cyrus SASL authenticator
+AUTH_GSASL                   driver       include GNU SASL authenticator
+AUTH_HEIMDAL_GSSAPI          driver       include Heimdal GSSAPI authenticator
+AUTH_LIBS                    system       library linkage for authenticators
 AUTH_PLAINTEXT               driver       include plaintext authenticator
 AUTH_SPA                     driver       include SPA (NTLM) authenticator
 AUTH_VARS=3                  optional*    number of $auth variables
@@ -927,6 +955,8 @@ TRANSPORT_SMTP               driver       include smtp transport
 TRUSTED_CONFIG_LIST          optional     config files safe to retain privileges
 USE_DB                       system**     use native DB interface
 USE_GNUTLS                   optional     use GnuTLS instead of OpenSSL
+USE_GNUTLS_PC                optional     probably "gnutls"
+USE_OPENSSL_PC               optional     probably "openssl"
 USE_READLINE                 optional     try to load libreadline for -be
 USE_TCP_WRAPPERS             system       link with tcpwrappers
 USE_TDB                      optional     use the tdb DB interface

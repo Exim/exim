@@ -41,6 +41,10 @@ PP/10 Added dbmjz lookup type.
 
 PP/11 Let heimdal_gssapi authenticator take a SASL message without an authzid.
 
+PP/12 MAIL args handles TAB as well as SP, for better interop with
+      non-compliant senders.
+      Analysis and variant patch by Todd Lyons.
+
 
 Exim version 4.77
 -----------------
