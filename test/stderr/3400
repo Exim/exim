@@ -187,7 +187,7 @@ LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@te
 >>> accept: condition test failed
 >>> processing "deny"
 >>> deny: condition test succeeded
-LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> rejected RCPT <userx@cus.cam.ac.uk>: relay not permitted
+LOG: H=(test.host) [10.0.0.1] F=<junk@jink.jonk.test.ex> A=mylogin rejected RCPT <userx@cus.cam.ac.uk>: relay not permitted
 >>> using ACL "check_vrfy"
 >>> processing "deny"
 >>> check hosts = +auth_hosts

@@ -81,4 +81,4 @@ LOG: H=[5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> auth2 in "auth1"? no (end of list)
 >>> accept: condition test failed
 >>> end of ACL "acl_5_6_10": implicit DENY
-LOG: H=(rhu.barb) [5.6.10.1] F=<x@y> rejected RCPT <x@y>
+LOG: H=(rhu.barb) [5.6.10.1] F=<x@y> A=auth2 rejected RCPT <x@y>

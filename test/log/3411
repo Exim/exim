@@ -1,4 +1,4 @@
-1999-03-02 09:44:33 H=(rhu.barb) [10.0.0.0] U=CALLER F=<userx@test.ex> rejected RCPT <x@y>: Unrouteable address
+1999-03-02 09:44:33 H=(rhu.barb) [10.0.0.0] U=CALLER F=<userx@test.ex> A=plain rejected RCPT <x@y>: Unrouteable address
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= userx@test.ex H=(rhu.barb) [10.0.0.0] U=CALLER P=esmtpa A=plain S=sss
 1999-03-02 09:44:33 10HmaX-0005vi-00 => postmaster <postmaster@test.ex> R=r2 T=local_delivery
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userx <userx@test.ex> R=r2 T=local_delivery
