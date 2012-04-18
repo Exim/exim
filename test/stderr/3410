@@ -15,7 +15,7 @@ LOG: H=[5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>> rhu.barb in helo_lookup_domains? no (end of list)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts? yes (matched "*")
->>> auth1 authenticator:
+>>> auth1 authenticator server_condition:
 >>>   $auth1 = 
 >>>   $auth2 = userx
 >>>   $auth3 = secret
@@ -45,7 +45,7 @@ LOG: H=[5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> rhu.barb in helo_lookup_domains? no (end of list)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts? yes (matched "*")
->>> auth1 authenticator:
+>>> auth1 authenticator server_condition:
 >>>   $auth1 = 
 >>>   $auth2 = userx
 >>>   $auth3 = secret
@@ -69,7 +69,7 @@ LOG: H=[5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> rhu.barb in helo_lookup_domains? no (end of list)
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> host in auth_advertise_hosts? yes (matched "*")
->>> auth2 authenticator:
+>>> auth2 authenticator server_condition:
 >>>   $auth1 = userx
 >>>   $auth2 = secret
 >>>   $1 = userx

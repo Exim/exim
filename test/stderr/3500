@@ -28,7 +28,7 @@
 >>>           challenge = <1896.697170952@postoffice.reston.mci.net>
 >>>           received  = b913a602c7eda7a495b4e6e7334d3890
 >>>           digest    = b913a602c7eda7a495b4e6e7334d3890
->>> cram_md5 authenticator:
+>>> cram_md5 authenticator server_condition:
 >>>   $auth1 = tim
 >>>   $1 = tim
 >>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
@@ -76,7 +76,7 @@ LOG: 10HmaY-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.1] P=esmtpa A=c
 >>>           challenge = <1896.697170952@postoffice.reston.mci.net>
 >>>           received  = b913a602c7eda7a495b4e6e7334d3890
 >>>           digest    = b913a602c7eda7a495b4e6e7334d3890
->>> cram_md5 authenticator:
+>>> cram_md5 authenticator server_condition:
 >>>   $auth1 = tim
 >>>   $1 = tim
 >>> +++CRAM-MD5 $auth1="tim" $auth2="" $auth3=""
