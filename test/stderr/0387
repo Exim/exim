@@ -6,7 +6,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="a.b.c" partial=2 affix=*. starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="a.b.c"
@@ -30,7 +30,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="x.y.c" partial=2 affix=*. starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="x.y.c"
@@ -54,7 +54,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="x.y.c" partial=2 affix=*. starflags=1
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="x.y.c"
@@ -84,7 +84,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="x.y.c" partial=1 affix=*. starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="x.y.c"
@@ -114,7 +114,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="x@y.c" partial=1 affix=*. starflags=2
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="x@y.c"
@@ -138,7 +138,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="x@y.c" partial=-1 affix=NULL starflags=2
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="x@y.c"
@@ -156,7 +156,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="a.b.c" partial=2 affix=*. starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="a.b.c"
@@ -180,7 +180,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="a.b.c" partial=2 affix=. starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="a.b.c"
@@ -204,7 +204,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="a.b.c" partial=2 affix= starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="a.b.c"
@@ -222,7 +222,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="a.b.c" partial=2 affix=* starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="a.b.c"
@@ -246,7 +246,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="p.q.r" partial=0 affix=*. starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="p.q.r"
@@ -282,7 +282,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="p.q.r" partial=0 affix=. starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="p.q.r"
@@ -318,7 +318,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="x.aa.bb" partial=0 affix=++ starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="x.aa.bb"
@@ -342,7 +342,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="x.aa.zz" partial=0 affix=++ starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="x.aa.zz"
@@ -378,7 +378,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="x.aa.zz" partial=1 affix=++ starflags=1
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="x.aa.zz"
@@ -414,7 +414,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0387.1"
 search_find: file="TESTSUITE/aux-fixed/0387.1"
   key="a.b.c" partial=2 affix=*. starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0387.1
+  0TESTSUITE/aux-fixed/0387.1
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0387.1"
   type=lsearch key="a.b.c"

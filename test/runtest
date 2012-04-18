@@ -687,6 +687,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/^\d\d\d(?=[PFS*])/ddd/;
 
 
+  # Lookups have a char which depends on the number of lookup types compiled in.
+  s%(?<!lsearch)[0-?]TESTSUITE/aux-fixed/%0TESTSUITE/aux-fixed/%g;
+
   # ==========================================================
   # Some munging is specific to the specific file types
 
