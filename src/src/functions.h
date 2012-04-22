@@ -82,7 +82,7 @@ extern void    decode_bits(unsigned int *, unsigned int *,
                   int, int, uschar *, bit_table *, int, uschar *, int);
 extern address_item *deliver_make_addr(uschar *, BOOL);
 extern int     deliver_message(uschar *, BOOL, BOOL);
-extern void    deliver_msglog(const char *, ...);
+extern void    deliver_msglog(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    deliver_set_expansions(address_item *);
 extern int     deliver_split_address(address_item *);
 extern void    deliver_succeeded(address_item *);
@@ -182,9 +182,9 @@ extern int     mime_regex(uschar **);
 extern uschar *moan_check_errorcopy(uschar *);
 extern BOOL    moan_skipped_syntax_errors(uschar *, error_block *, uschar *,
                  BOOL, uschar *);
-extern void    moan_smtp_batch(uschar *, const char *, ...);
+extern void    moan_smtp_batch(uschar *, const char *, ...) PRINTF_FUNCTION(2,3);
 extern void    moan_tell_someone(uschar *, address_item *,
-                 const uschar *, const char *, ...);
+                 const uschar *, const char *, ...) PRINTF_FUNCTION(4,5);
 extern BOOL    moan_to_sender(int, error_block *, header_line *, FILE *, BOOL);
 extern void    moan_write_from(FILE *);
 extern FILE   *modefopen(const uschar *, const char *, mode_t);
@@ -272,7 +272,7 @@ extern int     search_findtype_partial(uschar *, int *, uschar **, int *,
                  int *);
 extern void   *search_open(uschar *, int, int, uid_t *, gid_t *);
 extern void    search_tidyup(void);
-extern void    set_process_info(const char *, ...);
+extern void    set_process_info(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    sha1_end(sha1 *, const uschar *, int, uschar *);
 extern void    sha1_mid(sha1 *, const uschar *);
 extern void    sha1_start(sha1 *);
@@ -300,7 +300,7 @@ extern int     smtp_setup_msg(void);
 extern BOOL    smtp_start_session(void);
 extern int     smtp_ungetc(int);
 extern BOOL    smtp_verify_helo(void);
-extern int     smtp_write_command(smtp_outblock *, BOOL, const char *, ...);
+extern int     smtp_write_command(smtp_outblock *, BOOL, const char *, ...) PRINTF_FUNCTION(3,4);
 #ifdef WITH_CONTENT_SCAN
 extern int     spam(uschar **);
 extern FILE   *spool_mbox(unsigned long *, uschar *);
@@ -322,13 +322,13 @@ extern uschar *string_copy_malloc(uschar *);
 extern uschar *string_copylc(uschar *);
 extern uschar *string_copynlc(uschar *, int);
 extern uschar *string_dequote(uschar **);
-extern BOOL    string_format(uschar *, int, const char *, ...);
+extern BOOL    string_format(uschar *, int, const char *, ...) PRINTF_FUNCTION(3,4);
 extern uschar *string_format_size(int, uschar *);
 extern int     string_interpret_escape(uschar **);
 extern int     string_is_ip_address(uschar *, int *);
 extern uschar *string_log_address(address_item *, BOOL, BOOL);
 extern uschar *string_nextinlist(uschar **, int *, uschar *, int);
-extern uschar *string_open_failed(int, const char *, ...);
+extern uschar *string_open_failed(int, const char *, ...) PRINTF_FUNCTION(2,3);
 extern uschar *string_printing2(uschar *, BOOL);
 extern uschar *string_split_message(uschar *);
 extern BOOL    string_vformat(uschar *, int, const char *, va_list);

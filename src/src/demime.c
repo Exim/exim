@@ -821,7 +821,7 @@ void mime_trigger_error(int level, uschar *format, ...) {
     (void)string_vformat(US f, 16383,(char *)format, ap);
     va_end(ap);
     f-=22;
-    log_write(0, LOG_MAIN, f);
+    log_write(0, LOG_MAIN, "%s", f);
     /* then copy to demime_reason_buffer if new
     level is greater than old level */
     if (level > demime_errorlevel) {

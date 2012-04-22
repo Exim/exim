@@ -173,7 +173,7 @@ extern void    header_add_at_position(BOOL, uschar *, BOOL, int, const char *, .
 extern void    header_remove(int, const uschar *);
 extern BOOL    header_testname(header_line *, const uschar *, int, BOOL);
 extern BOOL    header_testname_incomplete(header_line *, const uschar *, int, BOOL);
-extern void    log_write(unsigned int, int, const char *format, ...);
+extern void    log_write(unsigned int, int, const char *format, ...) PRINTF_FUNCTION(3,4);
 extern int     lss_b64decode(uschar *, uschar **);
 extern uschar *lss_b64encode(uschar *, int);
 extern int     lss_match_domain(uschar *, uschar *);
@@ -188,6 +188,6 @@ extern void    smtp_printf(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    smtp_vprintf(const char *, va_list);
 extern uschar *string_copy(uschar *);
 extern uschar *string_copyn(uschar *, int);
-extern uschar *string_sprintf(const char *, ...);
+extern uschar *string_sprintf(const char *, ...) PRINTF_FUNCTION(1,2);
 
 /* End of local_scan.h */
