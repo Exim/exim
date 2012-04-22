@@ -9,7 +9,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
 search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   key="list" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/3212.aliases
+  0TESTSUITE/aux-fixed/3212.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   type=lsearch key="list"
@@ -21,7 +21,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
 search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   key="list" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/3212.aliases
+  0TESTSUITE/aux-fixed/3212.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   type=lsearch key="list"
@@ -33,7 +33,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
 search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   key="root" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/3212.aliases
+  0TESTSUITE/aux-fixed/3212.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   type=lsearch key="root"
@@ -45,7 +45,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
 search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   key="root" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/3212.aliases
+  0TESTSUITE/aux-fixed/3212.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   type=lsearch key="root"
@@ -57,7 +57,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
 search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   key="list" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/3212.aliases
+  0TESTSUITE/aux-fixed/3212.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   type=lsearch key="list"
@@ -68,7 +68,7 @@ search_open: testdb "NULL"
 search_find: file="NULL"
   key="something" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/3212.aliases
+  0TESTSUITE/aux-fixed/3212.aliases
   End
 internal_search_find: file="NULL"
   type=testdb key="something"
@@ -79,7 +79,7 @@ search_open: testdb "NULL"
 search_find: file="NULL"
   key="something" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/3212.aliases
+  0TESTSUITE/aux-fixed/3212.aliases
   End
 internal_search_find: file="NULL"
   type=testdb key="something"
@@ -90,7 +90,7 @@ search_open: testdb "NULL"
 search_find: file="NULL"
   key="nocache" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/3212.aliases
+  0TESTSUITE/aux-fixed/3212.aliases
   End
 internal_search_find: file="NULL"
   type=testdb key="nocache"
@@ -102,7 +102,7 @@ search_open: testdb "NULL"
 search_find: file="NULL"
   key="something" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/3212.aliases
+  0TESTSUITE/aux-fixed/3212.aliases
   End
 internal_search_find: file="NULL"
   type=testdb key="something"
@@ -113,7 +113,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
 search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   key="list" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/3212.aliases
+  0TESTSUITE/aux-fixed/3212.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   type=lsearch key="list"
@@ -125,7 +125,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/3212.aliases"
 search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   key="root" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/3212.aliases
+  0TESTSUITE/aux-fixed/3212.aliases
   End
 internal_search_find: file="TESTSUITE/aux-fixed/3212.aliases"
   type=lsearch key="root"
