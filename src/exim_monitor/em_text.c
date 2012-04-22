@@ -58,6 +58,8 @@ XawTextSetInsertionPoint(w, text_count);
 *           Display text from format             *
 *************************************************/
 
+void text_showf(Widget w, char *s, ...) PRINTF_FUNCTION(2,3);
+
 void text_showf(Widget w, char *s, ...)
 {
 va_list ap;

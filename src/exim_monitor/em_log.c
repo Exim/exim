@@ -56,6 +56,8 @@ static int scrolled = FALSE;
 static int size = 0;
 static int top = 0;
 
+static void show_log(char *s, ...) PRINTF_FUNCTION(1,2);
+
 static void show_log(char *s, ...)
 {
 int length, newtop;
@@ -362,7 +364,7 @@ link count of zero on the currently open file. */
 if (log_datestamping)
   {
   uschar log_file_wanted[256];
-  string_format(log_file_wanted, sizeof(log_file_wanted), CS log_file);
+  string_format(log_file_wanted, sizeof(log_file_wanted), "%s", CS log_file);
   if (Ustrcmp(log_file_wanted, log_file_open) != 0)
     {
     if (LOG != NULL)

@@ -45,6 +45,10 @@ PP/12 MAIL args handles TAB as well as SP, for better interop with
       non-compliant senders.
       Analysis and variant patch by Todd Lyons.
 
+NM/04 Bugzilla 1237 - fix cases where printf format usage no indicated
+      Bug report from Lars Müller <lars@samba.org> (via SUSE), 
+      Patch from Dirk Mueller <dmueller@suse.com>
+
 
 Exim version 4.77
 -----------------
