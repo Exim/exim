@@ -1464,6 +1464,60 @@ switch (dns_lookup(&dnsa, target, type, NULL))
 *     Handle verification (address & other)      *
 *************************************************/
 
+enum { VERIFY_REV_HOST_LKUP, VERIFY_CERT, VERIFY_HELO, VERIFY_CSA, VERIFY_HDR_SYNTAX,
+  VERIFY_NOT_BLIND, VERIFY_HDR_SNDR, VERIFY_SNDR, VERIFY_RCPT
+  };
+typedef struct {
+  uschar * name;
+  int	   value;
+  unsigned where_allowed;	/* bitmap */
+  BOOL	   no_options;		/* Never has /option(s) following */
+  unsigned alt_opt_sep;		/* >0 Non-/ option separator (custom parser) */
+  } verify_type_t;
+static verify_type_t verify_type_list[] = {
+    { US"reverse_host_lookup",	VERIFY_REV_HOST_LKUP,	~0,	TRUE, 0 },
+    { US"certificate",	  	VERIFY_CERT,	 	~0,	TRUE, 0 },
+    { US"helo",	  		VERIFY_HELO,	 	~0,	TRUE, 0 },
+    { US"csa",	  		VERIFY_CSA,	 	~0,	FALSE, 0 },
+    { US"header_syntax",	VERIFY_HDR_SYNTAX,	(1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP), TRUE, 0 },
+    { US"not_blind",	  	VERIFY_NOT_BLIND,	(1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP), TRUE, 0 },
+    { US"header_sender",	VERIFY_HDR_SNDR,	(1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP), FALSE, 0 },
+    { US"sender",	  	VERIFY_SNDR,		(1<<ACL_WHERE_MAIL)|(1<<ACL_WHERE_RCPT)
+			|(1<<ACL_WHERE_PREDATA)|(1<<ACL_WHERE_DATA)|(1<<ACL_WHERE_NOTSMTP),
+										FALSE, 6 },
+    { US"recipient",	  	VERIFY_RCPT,	 	(1<<ACL_WHERE_RCPT),	FALSE, 0 }
+  };
+
+
+enum { CALLOUT_DEFER_OK, CALLOUT_NOCACHE, CALLOUT_RANDOM, CALLOUT_USE_SENDER,
+  CALLOUT_USE_POSTMASTER, CALLOUT_POSTMASTER, CALLOUT_FULLPOSTMASTER,
+  CALLOUT_MAILFROM, CALLOUT_POSTMASTER_MAILFROM, CALLOUT_MAXWAIT, CALLOUT_CONNECT,
+  CALLOUT_TIME
+  };
+typedef struct {
+  uschar * name;
+  int      value;
+  int	   flag;
+  BOOL     has_option;	/* Has =option(s) following */
+  BOOL     timeval;	/* Has a time value */
+  } callout_opt_t;
+static callout_opt_t callout_opt_list[] = {
+    { US"defer_ok",   	  CALLOUT_DEFER_OK,	 0,				FALSE, FALSE },
+    { US"no_cache",   	  CALLOUT_NOCACHE,	 vopt_callout_no_cache,		FALSE, FALSE },
+    { US"random",	  CALLOUT_RANDOM,	 vopt_callout_random,		FALSE, FALSE },
+    { US"use_sender",     CALLOUT_USE_SENDER,	 vopt_callout_recipsender,	FALSE, FALSE },
+    { US"use_postmaster", CALLOUT_USE_POSTMASTER,vopt_callout_recippmaster,	FALSE, FALSE },
+    { US"postmaster_mailfrom",CALLOUT_POSTMASTER_MAILFROM,0,			TRUE,  FALSE },
+    { US"postmaster",	  CALLOUT_POSTMASTER,	 0,				FALSE, FALSE },
+    { US"fullpostmaster", CALLOUT_FULLPOSTMASTER,vopt_callout_fullpm,		FALSE, FALSE },
+    { US"mailfrom",	  CALLOUT_MAILFROM,	 0,				TRUE,  FALSE },
+    { US"maxwait",	  CALLOUT_MAXWAIT,	 0,				TRUE,  TRUE },
+    { US"connect",	  CALLOUT_CONNECT,	 0,				TRUE,  TRUE },
+    { NULL,		  CALLOUT_TIME,		 0,				FALSE, TRUE }
+  };
+
+
+
 /* This function implements the "verify" condition. It is called when
 encountered in any ACL, because some tests are almost always permitted. Some
 just don't make sense, and always fail (for example, an attempt to test a host
@@ -1504,141 +1558,126 @@ uschar *pm_mailfrom = NULL;
 uschar *se_mailfrom = NULL;
 
 /* Some of the verify items have slash-separated options; some do not. Diagnose
-an error if options are given for items that don't expect them. This code has
-now got very message. Refactoring to use a table would be a good idea one day.
+an error if options are given for items that don't expect them.
 */
 
 uschar *slash = Ustrchr(arg, '/');
 uschar *list = arg;
 uschar *ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size);
+verify_type_t * vp;
 
 if (ss == NULL) goto BAD_VERIFY;
 
 /* Handle name/address consistency verification in a separate function. */
 
-if (strcmpic(ss, US"reverse_host_lookup") == 0)
+for (vp= verify_type_list;
+     (char *)vp < (char *)verify_type_list + sizeof(verify_type_list);
+     vp++
+    )
+  if (vp->alt_opt_sep ? strncmpic(ss, vp->name, vp->alt_opt_sep) == 0
+                      : strcmpic (ss, vp->name) == 0)
+   break;
+if ((char *)vp >= (char *)verify_type_list + sizeof(verify_type_list))
+  goto BAD_VERIFY;
+
+if (vp->no_options && slash != NULL)
   {
-  if (slash != NULL) goto NO_OPTIONS;
-  if (sender_host_address == NULL) return OK;
-  return acl_verify_reverse(user_msgptr, log_msgptr);
+  *log_msgptr = string_sprintf("unexpected '/' found in \"%s\" "
+    "(this verify item has no options)", arg);
+  return ERROR;
   }
-
-/* TLS certificate verification is done at STARTTLS time; here we just
-test whether it was successful or not. (This is for optional verification; for
-mandatory verification, the connection doesn't last this long.) */
-
-if (strcmpic(ss, US"certificate") == 0)
+if (!(vp->where_allowed & (1<<where)))
   {
-  if (slash != NULL) goto NO_OPTIONS;
-  if (tls_certificate_verified) return OK;
-  *user_msgptr = US"no verified certificate";
-  return FAIL;
+  *log_msgptr = string_sprintf("cannot verify %s in ACL for %s", vp->name, acl_wherenames[where]);
+  return ERROR;
   }
-
-/* We can test the result of optional HELO verification that might have
-occurred earlier. If not, we can attempt the verification now. */
-
-if (strcmpic(ss, US"helo") == 0)
+switch(vp->value)
   {
-  if (slash != NULL) goto NO_OPTIONS;
-  if (!helo_verified && !helo_verify_failed) smtp_verify_helo();
-  return helo_verified? OK : FAIL;
-  }
+  case VERIFY_REV_HOST_LKUP:
+    if (sender_host_address == NULL) return OK;
+    return acl_verify_reverse(user_msgptr, log_msgptr);
 
-/* Do Client SMTP Authorization checks in a separate function, and turn the
-result code into user-friendly strings. */
+  case VERIFY_CERT:
+    /* TLS certificate verification is done at STARTTLS time; here we just
+    test whether it was successful or not. (This is for optional verification; for
+    mandatory verification, the connection doesn't last this long.) */
 
-if (strcmpic(ss, US"csa") == 0)
-  {
-  rc = acl_verify_csa(list);
-  *log_msgptr = *user_msgptr = string_sprintf("client SMTP authorization %s",
+      if (tls_certificate_verified) return OK;
+      *user_msgptr = US"no verified certificate";
+      return FAIL;
+
+  case VERIFY_HELO:
+    /* We can test the result of optional HELO verification that might have
+    occurred earlier. If not, we can attempt the verification now. */
+
+      if (!helo_verified && !helo_verify_failed) smtp_verify_helo();
+      return helo_verified? OK : FAIL;
+
+  case VERIFY_CSA:
+    /* Do Client SMTP Authorization checks in a separate function, and turn the
+    result code into user-friendly strings. */
+
+      rc = acl_verify_csa(list);
+      *log_msgptr = *user_msgptr = string_sprintf("client SMTP authorization %s",
                                               csa_reason_string[rc]);
-  csa_status = csa_status_string[rc];
-  DEBUG(D_acl) debug_printf("CSA result %s\n", csa_status);
-  return csa_return_code[rc];
-  }
+      csa_status = csa_status_string[rc];
+      DEBUG(D_acl) debug_printf("CSA result %s\n", csa_status);
+      return csa_return_code[rc];
 
-/* Check that all relevant header lines have the correct syntax. If there is
-a syntax error, we return details of the error to the sender if configured to
-send out full details. (But a "message" setting on the ACL can override, as
-always). */
+  case VERIFY_HDR_SYNTAX:
+    /* Check that all relevant header lines have the correct syntax. If there is
+    a syntax error, we return details of the error to the sender if configured to
+    send out full details. (But a "message" setting on the ACL can override, as
+    always). */
 
-if (strcmpic(ss, US"header_syntax") == 0)
-  {
-  if (slash != NULL) goto NO_OPTIONS;
-  if (where != ACL_WHERE_DATA && where != ACL_WHERE_NOTSMTP) goto WRONG_ACL;
-  rc = verify_check_headers(log_msgptr);
-  if (rc != OK && smtp_return_error_details && *log_msgptr != NULL)
-    *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
-  return rc;
-  }
-
-/* Check that no recipient of this message is "blind", that is, every envelope
-recipient must be mentioned in either To: or Cc:. */
-
-if (strcmpic(ss, US"not_blind") == 0)
-  {
-  if (slash != NULL) goto NO_OPTIONS;
-  if (where != ACL_WHERE_DATA && where != ACL_WHERE_NOTSMTP) goto WRONG_ACL;
-  rc = verify_check_notblind();
-  if (rc != OK)
-    {
-    *log_msgptr = string_sprintf("bcc recipient detected");
-    if (smtp_return_error_details)
+    rc = verify_check_headers(log_msgptr);
+    if (rc != OK && smtp_return_error_details && *log_msgptr != NULL)
       *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
-    }
-  return rc;
-  }
+    return rc;
 
-/* The remaining verification tests check recipient and sender addresses,
-either from the envelope or from the header. There are a number of
-slash-separated options that are common to all of them. */
+  case VERIFY_NOT_BLIND:
+    /* Check that no recipient of this message is "blind", that is, every envelope
+    recipient must be mentioned in either To: or Cc:. */
 
+    rc = verify_check_notblind();
+    if (rc != OK)
+      {
+      *log_msgptr = string_sprintf("bcc recipient detected");
+      if (smtp_return_error_details)
+        *user_msgptr = string_sprintf("Rejected after DATA: %s", *log_msgptr);
+      }
+    return rc;
 
-/* Check that there is at least one verifiable sender address in the relevant
-header lines. This can be followed by callout and defer options, just like
-sender and recipient. */
+  /* The remaining verification tests check recipient and sender addresses,
+  either from the envelope or from the header. There are a number of
+  slash-separated options that are common to all of them. */
 
-if (strcmpic(ss, US"header_sender") == 0)
-  {
-  if (where != ACL_WHERE_DATA && where != ACL_WHERE_NOTSMTP) goto WRONG_ACL;
-  verify_header_sender = TRUE;
-  }
+  case VERIFY_HDR_SNDR:
+    verify_header_sender = TRUE;
+    break;
 
-/* Otherwise, first item in verify argument must be "sender" or "recipient".
-In the case of a sender, this can optionally be followed by an address to use
-in place of the actual sender (rare special-case requirement). */
-
-else if (strncmpic(ss, US"sender", 6) == 0)
-  {
-  uschar *s = ss + 6;
-  if (where > ACL_WHERE_NOTSMTP)
+  case VERIFY_SNDR:
+    /* In the case of a sender, this can optionally be followed by an address to use
+    in place of the actual sender (rare special-case requirement). */
     {
-    *log_msgptr = string_sprintf("cannot verify sender in ACL for %s "
-      "(only possible for MAIL, RCPT, PREDATA, or DATA)",
-      acl_wherenames[where]);
-    return ERROR;
+    uschar *s = ss + 6;
+    if (*s == 0)
+      verify_sender_address = sender_address;
+    else
+      {
+      while (isspace(*s)) s++;
+      if (*s++ != '=') goto BAD_VERIFY;
+      while (isspace(*s)) s++;
+      verify_sender_address = string_copy(s);
+      }
     }
-  if (*s == 0)
-    verify_sender_address = sender_address;
-  else
-    {
-    while (isspace(*s)) s++;
-    if (*s++ != '=') goto BAD_VERIFY;
-    while (isspace(*s)) s++;
-    verify_sender_address = string_copy(s);
-    }
+    break;
+
+  case VERIFY_RCPT:
+    break;
   }
-else
-  {
-  if (strcmpic(ss, US"recipient") != 0) goto BAD_VERIFY;
-  if (addr == NULL)
-    {
-    *log_msgptr = string_sprintf("cannot verify recipient in ACL for %s "
-      "(only possible for RCPT)", acl_wherenames[where]);
-    return ERROR;
-    }
-  }
+
+
 
 /* Remaining items are optional; they apply to sender and recipient
 verification, including "header sender" verification. */
@@ -1680,112 +1719,60 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
         uschar buffer[256];
         while (isspace(*ss)) ss++;
 
-        /* This callout option handling code has become a mess as new options
-        have been added in an ad hoc manner. It should be tidied up into some
-        kind of table-driven thing. */
-
         while ((opt = string_nextinlist(&ss, &optsep, buffer, sizeof(buffer)))
               != NULL)
           {
-          if (strcmpic(opt, US"defer_ok") == 0) callout_defer_ok = TRUE;
-          else if (strcmpic(opt, US"no_cache") == 0)
-             verify_options |= vopt_callout_no_cache;
-          else if (strcmpic(opt, US"random") == 0)
-             verify_options |= vopt_callout_random;
-          else if (strcmpic(opt, US"use_sender") == 0)
-             verify_options |= vopt_callout_recipsender;
-          else if (strcmpic(opt, US"use_postmaster") == 0)
-             verify_options |= vopt_callout_recippmaster;
-          else if (strcmpic(opt, US"postmaster") == 0) pm_mailfrom = US"";
-          else if (strcmpic(opt, US"fullpostmaster") == 0)
-            {
-            pm_mailfrom = US"";
-            verify_options |= vopt_callout_fullpm;
-            }
+	  callout_opt_t * op;
+	  double period;
 
-          else if (strncmpic(opt, US"mailfrom", 8) == 0)
-            {
-            if (!verify_header_sender)
-              {
-              *log_msgptr = string_sprintf("\"mailfrom\" is allowed as a "
-                "callout option only for verify=header_sender (detected in ACL "
-                "condition \"%s\")", arg);
-              return ERROR;
-              }
-            opt += 8;
+	  for (op= callout_opt_list; op->name; op++)
+	    if (strncmpic(opt, op->name, strlen(op->name)) == 0)
+	      break;
+
+	  verify_options |= op->flag;
+	  if (op->has_option)
+	    {
+	    opt += strlen(op->name);
             while (isspace(*opt)) opt++;
             if (*opt++ != '=')
               {
               *log_msgptr = string_sprintf("'=' expected after "
-                "\"mailfrom\" in ACL condition \"%s\"", arg);
+                "\"%s\" in ACL verify condition \"%s\"", op->name, arg);
               return ERROR;
               }
             while (isspace(*opt)) opt++;
-            se_mailfrom = string_copy(opt);
-            }
-
-          else if (strncmpic(opt, US"postmaster_mailfrom", 19) == 0)
-            {
-            opt += 19;
-            while (isspace(*opt)) opt++;
-            if (*opt++ != '=')
-              {
-              *log_msgptr = string_sprintf("'=' expected after "
-                "\"postmaster_mailfrom\" in ACL condition \"%s\"", arg);
-              return ERROR;
-              }
-            while (isspace(*opt)) opt++;
-            pm_mailfrom = string_copy(opt);
-            }
-
-          else if (strncmpic(opt, US"maxwait", 7) == 0)
-            {
-            opt += 7;
-            while (isspace(*opt)) opt++;
-            if (*opt++ != '=')
-              {
-              *log_msgptr = string_sprintf("'=' expected after \"maxwait\" in "
-                "ACL condition \"%s\"", arg);
-              return ERROR;
-              }
-            while (isspace(*opt)) opt++;
-            callout_overall = readconf_readtime(opt, 0, FALSE);
-            if (callout_overall < 0)
+	    }
+	  if (op->timeval)
+	    {
+            period = readconf_readtime(opt, 0, FALSE);
+            if (period < 0)
               {
               *log_msgptr = string_sprintf("bad time value in ACL condition "
                 "\"verify %s\"", arg);
               return ERROR;
               }
-            }
-          else if (strncmpic(opt, US"connect", 7) == 0)
-            {
-            opt += 7;
-            while (isspace(*opt)) opt++;
-            if (*opt++ != '=')
-              {
-              *log_msgptr = string_sprintf("'=' expected after "
-                "\"callout_overaall\" in ACL condition \"%s\"", arg);
-              return ERROR;
-              }
-            while (isspace(*opt)) opt++;
-            callout_connect = readconf_readtime(opt, 0, FALSE);
-            if (callout_connect < 0)
-              {
-              *log_msgptr = string_sprintf("bad time value in ACL condition "
-                "\"verify %s\"", arg);
-              return ERROR;
-              }
-            }
-          else    /* Plain time is callout connect/command timeout */
-            {
-            callout = readconf_readtime(opt, 0, FALSE);
-            if (callout < 0)
-              {
-              *log_msgptr = string_sprintf("bad time value in ACL condition "
-                "\"verify %s\"", arg);
-              return ERROR;
-              }
-            }
+	    }
+
+	  switch(op->value)
+	    {
+            case CALLOUT_DEFER_OK:		callout_defer_ok = TRUE; break;
+            case CALLOUT_POSTMASTER:		pm_mailfrom = US"";	break;
+            case CALLOUT_FULLPOSTMASTER:	pm_mailfrom = US"";	break;
+            case CALLOUT_MAILFROM:
+              if (!verify_header_sender)
+                {
+                *log_msgptr = string_sprintf("\"mailfrom\" is allowed as a "
+                  "callout option only for verify=header_sender (detected in ACL "
+                  "condition \"%s\")", arg);
+                return ERROR;
+                }
+              se_mailfrom = string_copy(opt);
+  	      break;
+            case CALLOUT_POSTMASTER_MAILFROM:	pm_mailfrom = string_copy(opt); break;
+            case CALLOUT_MAXWAIT:		callout_overall = period;	break;
+            case CALLOUT_CONNECT:		callout_connect = period;	break;
+            case CALLOUT_TIME:			callout = period;		break;
+	    }
           }
         }
       else
@@ -2033,20 +2020,6 @@ BAD_VERIFY:
   "\"helo\", \"header_syntax\", \"header_sender\" or "
   "\"reverse_host_lookup\" at start of ACL condition "
   "\"verify %s\"", arg);
-return ERROR;
-
-/* Options supplied when not allowed come here */
-
-NO_OPTIONS:
-*log_msgptr = string_sprintf("unexpected '/' found in \"%s\" "
-  "(this verify item has no options)", arg);
-return ERROR;
-
-/* Calls in the wrong ACL come here */
-
-WRONG_ACL:
-*log_msgptr = string_sprintf("cannot check header contents in ACL for %s "
-  "(only possible in ACL for DATA)", acl_wherenames[where]);
 return ERROR;
 }
 
