@@ -32,6 +32,7 @@ SSL info: SSLv3 write client key exchange A
 SSL info: SSLv3 write change cipher spec A
 SSL info: SSLv3 write finished A
 SSL info: SSLv3 flush data
+SSL info: SSLv3 read server session ticket A
 SSL info: SSLv3 read finished A
 SSL info: SSL negotiation finished successfully
 SSL info: SSL negotiation finished successfully

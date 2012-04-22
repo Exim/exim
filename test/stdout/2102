@@ -26,6 +26,7 @@ SSL info: SSLv3 write client key exchange A
 SSL info: SSLv3 write change cipher spec A
 SSL info: SSLv3 write finished A
 SSL info: SSLv3 flush data
+SSL info: SSLv3 read server session ticket A
 SSL info: SSLv3 read finished A
 SSL info: SSL negotiation finished successfully
 SSL info: SSL negotiation finished successfully
@@ -78,8 +79,8 @@ SSL info: SSLv3 write client key exchange A
 SSL info: SSLv3 write change cipher spec A
 SSL info: SSLv3 write finished A
 SSL info: SSLv3 flush data
-SSL info: SSLv3 read finished A
-SSL info: SSLv3 read finished A
+SSL info: SSLv3 read server session ticket A
+SSL info: SSLv3 read server session ticket A
 pppp:error:14094410:SSL routines:SSL3_READ_BYTES:sslv3 alert handshake failure:s3_pkt.c:dddd:SSL alert number 40
 Failed to start TLS
 End of script
@@ -116,6 +117,7 @@ SSL info: SSLv3 write certificate verify A
 SSL info: SSLv3 write change cipher spec A
 SSL info: SSLv3 write finished A
 SSL info: SSLv3 flush data
+SSL info: SSLv3 read server session ticket A
 SSL info: SSLv3 read finished A
 SSL info: SSL negotiation finished successfully
 SSL info: SSL negotiation finished successfully

@@ -31,8 +31,8 @@ SSL info: SSLv3 write certificate verify A
 SSL info: SSLv3 write change cipher spec A
 SSL info: SSLv3 write finished A
 SSL info: SSLv3 flush data
-SSL info: SSLv3 read finished A
-SSL info: SSLv3 read finished A
+SSL info: SSLv3 read server session ticket A
+SSL info: SSLv3 read server session ticket A
 pppp:error:14094418:SSL routines:SSL3_READ_BYTES:tlsv1 alert unknown ca:s3_pkt.c:dddd:SSL alert number 48
 Failed to start TLS
 End of script
