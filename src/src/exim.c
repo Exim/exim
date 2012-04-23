@@ -3456,6 +3456,17 @@ if ((filter_test & FTEST_USER) != 0)
     }
   }
 
+/* Initialise lookup_list
+If debugging, already called above via version reporting.
+In either case, we initialise the list of available lookups while running
+as root.  All dynamically modules are loaded from a directory which is
+hard-coded into the binary and is code which, if not a module, would be
+part of Exim already.  Ability to modify the content of the directory
+is equivalent to the ability to modify a setuid binary!
+
+This needs to happen before we read the main configuration. */
+init_lookup_list();
+
 /* Read the main runtime configuration data; this gives up if there
 is a failure. It leaves the configuration file open so that the subsequent
 configuration data for delivery can be read if needed. */
@@ -3643,13 +3654,6 @@ if (opt_perl_at_start && opt_perl_startup != NULL)
   opt_perl_started = TRUE;
   }
 #endif /* EXIM_PERL */
-
-/* Initialise lookup_list
-If debugging, already called above via version reporting.
-This does mean that debugging causes the list to be initialised while root.
-This *should* be harmless -- all modules are loaded from a fixed dir and
-it's code that would, if not a module, be part of Exim already. */
-init_lookup_list();
 
 /* Log the arguments of the call if the configuration file said so. This is
 a debugging feature for finding out what arguments certain MUAs actually use.
