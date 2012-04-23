@@ -1396,6 +1396,7 @@ smtp_cmd_buffer = (uschar *)malloc(2*smtp_cmd_buffer_size + 2);
 if (smtp_cmd_buffer == NULL)
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
     "malloc() failed for SMTP command buffer");
+smtp_cmd_buffer[0] = 0;
 smtp_data_buffer = smtp_cmd_buffer + smtp_cmd_buffer_size + 1;
 
 /* For batched input, the protocol setting can be overridden from the
