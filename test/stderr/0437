@@ -3,7 +3,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
 search_find: file="TESTSUITE/aux-fixed/0437.ls"
   key="spool" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0437.ls
+  0TESTSUITE/aux-fixed/0437.ls
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
   type=lsearch key="spool"
@@ -19,7 +19,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
 search_find: file="TESTSUITE/aux-fixed/0437.ls"
   key="transport" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0437.ls
+  0TESTSUITE/aux-fixed/0437.ls
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
   type=lsearch key="transport"
@@ -32,7 +32,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
 search_find: file="TESTSUITE/aux-fixed/0437.ls"
   key="file" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0437.ls
+  0TESTSUITE/aux-fixed/0437.ls
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
   type=lsearch key="file"
@@ -50,7 +50,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
 search_find: file="TESTSUITE/aux-fixed/0437.ls"
   key="transport" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0437.ls
+  0TESTSUITE/aux-fixed/0437.ls
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
   type=lsearch key="transport"
@@ -63,7 +63,7 @@ search_open: lsearch "TESTSUITE/aux-fixed/0437.ls"
 search_find: file="TESTSUITE/aux-fixed/0437.ls"
   key="file" partial=-1 affix=NULL starflags=0
 LRU list:
-  :TESTSUITE/aux-fixed/0437.ls
+  0TESTSUITE/aux-fixed/0437.ls
   End
 internal_search_find: file="TESTSUITE/aux-fixed/0437.ls"
   type=lsearch key="file"
