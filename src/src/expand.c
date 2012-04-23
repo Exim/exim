@@ -363,6 +363,7 @@ enum {
                         /* local_scan()) */
   vtype_todbsdin,       /* value not used; generate BSD inbox tod */
   vtype_tode,           /* value not used; generate tod in epoch format */
+  vtype_todel,          /* value not used; generate tod in epoch/usec format */
   vtype_todf,           /* value not used; generate full tod */
   vtype_todl,           /* value not used; generate log tod */
   vtype_todlf,          /* value not used; generate log file datestamp tod */
@@ -620,6 +621,7 @@ static var_entry var_table[] = {
 #endif
   { "tod_bsdinbox",        vtype_todbsdin,    NULL },
   { "tod_epoch",           vtype_tode,        NULL },
+  { "tod_epoch_l",         vtype_todel,       NULL },
   { "tod_full",            vtype_todf,        NULL },
   { "tod_log",             vtype_todl,        NULL },
   { "tod_logfile",         vtype_todlf,       NULL },
@@ -1588,6 +1590,9 @@ while (last > first)
 
     case vtype_tode:                           /* Unix epoch time of day */
     return tod_stamp(tod_epoch);
+
+    case vtype_todel:                          /* Unix epoch/usec time of day */
+    return tod_stamp(tod_epoch_l);
 
     case vtype_todf:                           /* Full time of day */
     return tod_stamp(tod_full);

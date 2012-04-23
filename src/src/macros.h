@@ -196,7 +196,7 @@ enum { RESET_NEXT, RESET_ANSWERS, RESET_AUTHORITY, RESET_ADDITIONAL };
 
 enum { tod_log, tod_log_bare, tod_log_zone, tod_log_datestamp_daily,
        tod_log_datestamp_monthly, tod_zone, tod_full, tod_bsdin,
-       tod_mbx, tod_epoch, tod_zulu };
+       tod_mbx, tod_epoch, tod_epoch_l, tod_zulu };
 
 /* For identifying types of driver */
 

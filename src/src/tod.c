@@ -34,6 +34,7 @@ option.
 Argument:  type of timestamp required:
              tod_bsdin                  BSD inbox format
              tod_epoch                  Unix epoch format
+             tod_epochl                 Unix epoch/usec format
              tod_full                   full date and time
              tod_log                    log file data line format,
                                           with zone if log_timezone is TRUE
@@ -51,8 +52,18 @@ Returns:   pointer to fixed buffer containing the timestamp
 uschar *
 tod_stamp(int type)
 {
-time_t now = time(NULL);
+time_t now;
 struct tm *t;
+
+if (type == tod_epoch_l)
+  {
+  struct timeval tv;
+  gettimeofday(&tv, NULL);
+  (void) sprintf(CS timebuf, "%ld%06ld", tv.tv_sec, tv.tv_usec );  /* Unix epoch/usec format */
+  return timebuf;
+  }
+
+now = time(NULL);
 
 /* Vary log type according to timezone requirement */
 
