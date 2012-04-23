@@ -12,6 +12,6 @@ gecos_name = CALLER_NAME
 
 # ----- Main settings -----
 
-message_size_limit = 2048M
+message_size_limit = 8796093022208M
 
 # End

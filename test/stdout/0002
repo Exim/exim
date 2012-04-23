@@ -221,9 +221,12 @@
 > mask:   NO
 > 
 > # Numeric overflow
+> # >32b should work, >64b not
 > 
-> Failed: absolute value of integer "4096M" is too large (overflow)
-> Failed: absolute value of integer "4096000000" is too large (overflow)
+> 4096M      y
+> 4096000000 y
+> 4611686018427387904  y
+> Failed: absolute value of integer "46116860184273879040" is too large (overflow)
 > 
 > # Conditions
 > 

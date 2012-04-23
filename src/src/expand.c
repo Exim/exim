@@ -1781,7 +1781,7 @@ BOOL tempcond, combined_cond;
 BOOL *subcondptr;
 BOOL sub2_honour_dollar = TRUE;
 int i, rc, cond_type, roffset;
-int num[2];
+int64_t num[2];
 struct stat statbuf;
 uschar name[256];
 uschar *sub[4];
@@ -3069,14 +3069,14 @@ Returns:      on success: the value of the expression, with *error still NULL
               on failure: an undefined value, with *error = a message
 */
 
-static int eval_op_or(uschar **, BOOL, uschar **);
+static int64_t eval_op_or(uschar **, BOOL, uschar **);
 
 
-static int
+static int64_t
 eval_expr(uschar **sptr, BOOL decimal, uschar **error, BOOL endket)
 {
 uschar *s = *sptr;
-int x = eval_op_or(&s, decimal, error);
+int64_t x = eval_op_or(&s, decimal, error);
 if (*error == NULL)
   {
   if (endket)
@@ -3093,18 +3093,18 @@ return x;
 }
 
 
-static int
+static int64_t
 eval_number(uschar **sptr, BOOL decimal, uschar **error)
 {
 register int c;
-int n;
+int64_t n;
 uschar *s = *sptr;
 while (isspace(*s)) s++;
 c = *s;
 if (isdigit(c))
   {
   int count;
-  (void)sscanf(CS s, (decimal? "%d%n" : "%i%n"), &n, &count);
+  (void)sscanf(CS s, (decimal? "%lld%n" : "%lli%n"), &n, &count);
   s += count;
   if (tolower(*s) == 'k') { n *= 1024; s++; }
     else if (tolower(*s) == 'm') { n *= 1024*1024; s++; }
@@ -3125,10 +3125,11 @@ return n;
 }
 
 
-static int eval_op_unary(uschar **sptr, BOOL decimal, uschar **error)
+static int64_t
+eval_op_unary(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int x;
+int64_t x;
 while (isspace(*s)) s++;
 if (*s == '+' || *s == '-' || *s == '~')
   {
@@ -3146,16 +3147,17 @@ return x;
 }
 
 
-static int eval_op_mult(uschar **sptr, BOOL decimal, uschar **error)
+static int64_t
+eval_op_mult(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int x = eval_op_unary(&s, decimal, error);
+int64_t x = eval_op_unary(&s, decimal, error);
 if (*error == NULL)
   {
   while (*s == '*' || *s == '/' || *s == '%')
     {
     int op = *s++;
-    int y = eval_op_unary(&s, decimal, error);
+    int64_t y = eval_op_unary(&s, decimal, error);
     if (*error != NULL) break;
     /* SIGFPE both on div/mod by zero and on INT_MIN / -1, which would give
      * a value of INT_MAX+1. Note that INT_MIN * -1 gives INT_MIN for me, which
@@ -3175,12 +3177,12 @@ if (*error == NULL)
      * can just let the other invalid results occur otherwise, as they have
      * until now.  For this one case, we can coerce.
      */
-    if (y == -1 && x == INT_MIN && op != '*')
+    if (y == -1 && x == LLONG_MIN && op != '*')
       {
       DEBUG(D_expand)
-        debug_printf("Integer exception dodging: %d%c-1 coerced to %d\n",
-            INT_MIN, op, INT_MAX);
-      x = INT_MAX;
+        debug_printf("Integer exception dodging: %lld%c-1 coerced to %lld\n",
+            LLONG_MIN, op, LLONG_MAX);
+      x = LLONG_MAX;
       continue;
       }
     if (op == '*')
@@ -3205,16 +3207,17 @@ return x;
 }
 
 
-static int eval_op_sum(uschar **sptr, BOOL decimal, uschar **error)
+static int64_t
+eval_op_sum(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int x = eval_op_mult(&s, decimal, error);
+int64_t x = eval_op_mult(&s, decimal, error);
 if (*error == NULL)
   {
   while (*s == '+' || *s == '-')
     {
     int op = *s++;
-    int y = eval_op_mult(&s, decimal, error);
+    int64_t y = eval_op_mult(&s, decimal, error);
     if (*error != NULL) break;
     if (op == '+') x += y; else x -= y;
     }
@@ -3224,15 +3227,16 @@ return x;
 }
 
 
-static int eval_op_shift(uschar **sptr, BOOL decimal, uschar **error)
+static int64_t
+eval_op_shift(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int x = eval_op_sum(&s, decimal, error);
+int64_t x = eval_op_sum(&s, decimal, error);
 if (*error == NULL)
   {
   while ((*s == '<' || *s == '>') && s[1] == s[0])
     {
-    int y;
+    int64_t y;
     int op = *s++;
     s++;
     y = eval_op_sum(&s, decimal, error);
@@ -3245,15 +3249,16 @@ return x;
 }
 
 
-static int eval_op_and(uschar **sptr, BOOL decimal, uschar **error)
+static int64_t
+eval_op_and(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int x = eval_op_shift(&s, decimal, error);
+int64_t x = eval_op_shift(&s, decimal, error);
 if (*error == NULL)
   {
   while (*s == '&')
     {
-    int y;
+    int64_t y;
     s++;
     y = eval_op_shift(&s, decimal, error);
     if (*error != NULL) break;
@@ -3265,15 +3270,16 @@ return x;
 }
 
 
-static int eval_op_xor(uschar **sptr, BOOL decimal, uschar **error)
+static int64_t
+eval_op_xor(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int x = eval_op_and(&s, decimal, error);
+int64_t x = eval_op_and(&s, decimal, error);
 if (*error == NULL)
   {
   while (*s == '^')
     {
-    int y;
+    int64_t y;
     s++;
     y = eval_op_and(&s, decimal, error);
     if (*error != NULL) break;
@@ -3285,15 +3291,16 @@ return x;
 }
 
 
-static int eval_op_or(uschar **sptr, BOOL decimal, uschar **error)
+static int64_t
+eval_op_or(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int x = eval_op_xor(&s, decimal, error);
+int64_t x = eval_op_xor(&s, decimal, error);
 if (*error == NULL)
   {
   while (*s == '|')
     {
-    int y;
+    int64_t y;
     s++;
     y = eval_op_xor(&s, decimal, error);
     if (*error != NULL) break;
@@ -5693,7 +5700,7 @@ while (*s != 0)
         {
         uschar *save_sub = sub;
         uschar *error = NULL;
-        int n = eval_expr(&sub, (c == EOP_EVAL10), &error, FALSE);
+        int64_t n = eval_expr(&sub, (c == EOP_EVAL10), &error, FALSE);
         if (error != NULL)
           {
           expand_string_message = string_sprintf("error in expression "
@@ -5701,7 +5708,7 @@ while (*s != 0)
               save_sub);
           goto EXPAND_FAILED;
           }
-        sprintf(CS var_buffer, "%d", n);
+        sprintf(CS var_buffer, "%lld", n);
         yield = string_cat(yield, &size, &ptr, var_buffer, Ustrlen(var_buffer));
         continue;
         }
@@ -5906,13 +5913,13 @@ while (*s != 0)
 
       case EOP_RANDINT:
         {
-        int max;
+        int64_t max;
         uschar *s;
 
         max = expand_string_integer(sub, TRUE);
         if (expand_string_message != NULL)
           goto EXPAND_FAILED;
-        s = string_sprintf("%d", pseudo_random_number(max));
+        s = string_sprintf("%d", pseudo_random_number((int)max));
         yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         continue;
         }
@@ -6103,10 +6110,10 @@ Returns:  the integer value, or
           expand_string_message is set NULL for an OK integer
 */
 
-int
+int64_t
 expand_string_integer(uschar *string, BOOL isplus)
 {
-long int value;
+int64_t value;
 uschar *s = expand_string(string);
 uschar *msg = US"invalid integer \"%s\"";
 uschar *endptr;
@@ -6138,7 +6145,7 @@ if (isspace(*s))
     }
   }
 
-value = strtol(CS s, CSS &endptr, 10);
+value = strtoll(CS s, CSS &endptr, 10);
 
 if (endptr == s)
   {
@@ -6150,24 +6157,18 @@ else if (value < 0 && isplus)
   }
 else
   {
-  /* Ensure we can cast this down to an int */
-  if (value > INT_MAX  || value < INT_MIN) errno = ERANGE;
-
-  if (errno != ERANGE)
+  if (tolower(*endptr) == 'k')
     {
-    if (tolower(*endptr) == 'k')
-      {
-      if (value > INT_MAX/1024 || value < INT_MIN/1024) errno = ERANGE;
-        else value *= 1024;
-      endptr++;
-      }
+    if (value > LLONG_MAX/1024 || value < LLONG_MIN/1024) errno = ERANGE;
+      else value *= 1024;
+    endptr++;
+    }
     else if (tolower(*endptr) == 'm')
-      {
-      if (value > INT_MAX/(1024*1024) || value < INT_MIN/(1024*1024))
-        errno = ERANGE;
-      else value *= 1024*1024;
-      endptr++;
-      }
+    {
+    if (value > LLONG_MAX/(1024*1024) || value < LLONG_MIN/(1024*1024))
+      errno = ERANGE;
+    else value *= 1024*1024;
+    endptr++;
     }
   if (errno == ERANGE)
     msg = US"absolute value of integer \"%s\" is too large (overflow)";
