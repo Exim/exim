@@ -725,10 +725,10 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
             DEBUG(D_lookup) debug_printf("LDAP attr loop %s:%s\n", attr, value);
 
             if (values != firstval)
-              data = string_cat(data, &size, &ptr, US", ", 2);
+              data = string_cat(data, &size, &ptr, US",", 1);
 
             /* For multiple attributes, the data is in quotes. We must escape
-            internal quotes, backslashes, newlines. */
+            internal quotes, backslashes, newlines, and must double commas. */
 
             if (attr_count != 1)
               {
@@ -737,6 +737,8 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
                 {
                 if (value[j] == '\n')
                   data = string_cat(data, &size, &ptr, US"\\n", 2);
+                else if (value[j] == ',')
+                  data = string_cat(data, &size, &ptr, US",,", 2);
                 else
                   {
                   if (value[j] == '\"' || value[j] == '\\')
@@ -746,9 +748,20 @@ while ((rc = ldap_result(lcp->ld, msgid, 0, timeoutptr, &result)) ==
                 }
               }
 
-            /* For single attributes, copy the value verbatim */
+            /* For single attributes, just double commas */
 
-            else data = string_cat(data, &size, &ptr, value, len);
+	    else
+	      {
+	      int j;
+	      for (j = 0; j < len; j++)
+	        {
+	        if (value[j] == ',')
+	          data = string_cat(data, &size, &ptr, US",,", 2);
+	        else
+	          data = string_cat(data, &size, &ptr, value+j, 1);
+	        }
+	      }
+
 
             /* Move on to the next value */
 
