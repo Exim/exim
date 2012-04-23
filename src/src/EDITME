@@ -979,6 +979,10 @@ SYSTEM_ALIASES_FILE=/etc/aliases
 # dynamic loading library is not otherwise included.
 
 
+#------------------------------------------------------------------------------
+# Uncomment this setting to include IPv6 support.
+
+# HAVE_IPV6
 
 ###############################################################################
 #              THINGS YOU ALMOST NEVER NEED TO MENTION                        #
