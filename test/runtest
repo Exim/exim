@@ -598,7 +598,9 @@ RESET_AFTER_EXTRA_LINE_READ:
   # Handle only the Gnu and MacOS space, dot, plus and at-sign.  A full [[:graph:]]
   # unfortunately matches a non-ls linefull of dashes.
   # Allow the case where we've already picked out the file protection bits.
-  s/^([-d](?:[-r][-w][-SsTtx]){3})[.+@]?( +|$)/\1 /;
+  if (s/^([-d](?:[-r][-w][-SsTtx]){3})[.+@]?( +|$)/\1\2/) {
+    s/ +/ /g;
+  }
 
 
   # ======== Message sizes =========
