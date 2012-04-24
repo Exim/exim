@@ -11,12 +11,12 @@
 >>> check domains = +ok_domains
 >>> ten-1.test.ex in "ten-1.test.ex"? yes (matched "ten-1.test.ex")
 >>> ten-1.test.ex in "+ok_domains"? yes (matched "+ok_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl1"
 >>> using ACL "acl1"
 >>> processing "accept"
 >>> check domains = +ok_domains
 >>> junk.junk in ""? no (end of list)
 >>> junk.junk in "+ok_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl1"
 >>> end of ACL "acl1": implicit DENY
 LOG: H=[V4NET.2.3.4] F=<x@y> rejected RCPT <x@junk.junk>

@@ -64,9 +64,9 @@ routed by r1 router
   transport: t1
 ----------- end verify ------------
 sender a@b verified ok as rewritten-a@rewritten-b
-require: condition test succeeded
+require: condition test succeeded in ACL "rcpt"
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in ACL "rcpt"
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<e@f>
 using ACL "rcpt"
@@ -77,9 +77,9 @@ LOG: MAIN
   sender address is <rewritten-a@rewritten-b>
 check verify = sender
 using cached sender verify result
-require: condition test succeeded
+require: condition test succeeded in ACL "rcpt"
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in ACL "rcpt"
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 the.local.host.name closing connection

@@ -25,12 +25,12 @@
 >>> calling exeter_listf router
 >>> routed by exeter_listf router
 >>> ----------- end verify ------------
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> listr.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
 >>> listr.test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "deny"
 >>> check !verify = recipient
@@ -42,11 +42,11 @@
 >>> calling exeter_listf router
 >>> routed by exeter_listf router
 >>> ----------- end verify ------------
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> listr.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
 >>> listr.test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 
 ******** SERVER ********

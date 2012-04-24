@@ -37,26 +37,26 @@
 >>> processing "warn"
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check hosts = +auth_hosts
 >>> host in "+auth_hosts"? yes (matched "+auth_hosts" - cached)
 >>> check !authenticated = *
 >>> cram_md5 in "*"? yes (matched "*")
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaY-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.1] P=esmtpa A=cram_md5:tim S=sss
 >>> host in hosts_connection_nolog? no (option unset)
@@ -86,10 +86,10 @@ LOG: cram_md5 authenticator failed for (test.host) [10.0.0.5]: 535 Incorrect aut
 >>> processing "warn"
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"? yes (matched "10.0.0.5")
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = 10.0.0.5
 >>> host in "10.0.0.5"? yes (matched "10.0.0.5")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaZ-0005vi-00 <= userx@some.domain H=(test.host) [10.0.0.5] P=esmtp S=sss

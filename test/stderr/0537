@@ -39,8 +39,8 @@ LOG: sender_host_name=
 >>> check logwrite = sender_ident=$sender_ident
 >>>                = sender_ident=
 LOG: sender_ident=
->>> accept: condition test succeeded
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "log"
+>>> accept: condition test succeeded in ACL "connect"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -80,8 +80,8 @@ LOG: sender_host_name=hostname
 >>> check logwrite = sender_ident=$sender_ident
 >>>                = sender_ident=ident
 LOG: sender_ident=ident
->>> accept: condition test succeeded
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "log"
+>>> accept: condition test succeeded in ACL "connect"
 >>> host in pipelining_advertise_hosts? yes (matched "*")
 >>> using ACL "mail"
 >>> processing "accept"
@@ -114,7 +114,7 @@ LOG: sender_host_name=hostname
 >>> check logwrite = sender_ident=$sender_ident
 >>>                = sender_ident=ident
 LOG: sender_ident=ident
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "log"
 >>> check acl = auth
 >>> using ACL "auth"
 >>> processing "accept"
@@ -122,8 +122,8 @@ LOG: sender_ident=ident
 >>> authname in "*"? yes (matched "*")
 >>> check logwrite = +++ host is authenticated +++
 LOG: +++ host is authenticated +++
->>> accept: condition test succeeded
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "auth"
+>>> accept: condition test succeeded in ACL "mail"
 >>> using ACL "mail"
 >>> processing "accept"
 >>> check acl = log
@@ -155,7 +155,7 @@ LOG: sender_host_name=hostname
 >>> check logwrite = sender_ident=$sender_ident
 >>>                = sender_ident=ident
 LOG: sender_ident=ident
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "log"
 >>> check acl = auth
 >>> using ACL "auth"
 >>> processing "accept"
@@ -163,5 +163,5 @@ LOG: sender_ident=ident
 >>> authname in "*"? yes (matched "*")
 >>> check logwrite = +++ host is authenticated +++
 LOG: +++ host is authenticated +++
->>> accept: condition test succeeded
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "auth"
+>>> accept: condition test succeeded in ACL "mail"

@@ -14,5 +14,5 @@
 >>> new DNS lookup for 1.0.0.V4NET.test.again.dns
 >>> 1.0.0.V4NET.test.again.dns in dns_again_means_nonexist? no (option unset)
 LOG: DNS list lookup defer (probably timeout) for 1.0.0.V4NET.test.again.dns: returned DEFER
->>> deny: condition test deferred
+>>> deny: condition test deferred in ACL "check_rcpt"
 LOG: H=[V4NET.0.0.1] F=<userx@x> temporarily rejected RCPT <userx@y>

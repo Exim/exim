@@ -58,21 +58,21 @@ checking addresses for x.co.uk.test.ex
 sender_fullhost = x.gov.uk.test.ex [V4NET.99.99.97]
 sender_rcvhost = x.gov.uk.test.ex ([V4NET.99.99.97] ident=CALLER)
 host in "*.gov.uk.test.ex"? yes (matched "*.gov.uk.test.ex")
-warn: condition test succeeded
+warn: condition test succeeded in ACL "check_rcpt"
 processing "warn"
 check hosts = !*.gov.uk.test.ex
 host in "!*.gov.uk.test.ex"? no (matched "!*.gov.uk.test.ex")
-warn: condition test failed
+warn: condition test failed in ACL "check_rcpt"
 processing "warn"
 check hosts = *.co.uk.test.ex
 host in "*.co.uk.test.ex"? yes (matched "*.co.uk.test.ex")
-warn: condition test succeeded
+warn: condition test succeeded in ACL "check_rcpt"
 processing "warn"
 check hosts = !*.co.uk.test.ex
 host in "!*.co.uk.test.ex"? no (matched "!*.co.uk.test.ex")
-warn: condition test failed
+warn: condition test failed in ACL "check_rcpt"
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in ACL "check_rcpt"
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

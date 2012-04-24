@@ -13,30 +13,30 @@
 >>> new DNS lookup for 14.12.11.V4NET.rbl4.test.ex
 >>> DNS lookup for 14.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.14 is not listed at rbl4.test.ex
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_mail"
 >>> processing "warn"
 >>> check dnslists = rbl4.test.ex&127.0.0.3
 >>> DNS list check: rbl4.test.ex&127.0.0.3
 >>> using result of previous DNS lookup
 >>> DNS lookup for 14.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.14 is not listed at rbl4.test.ex
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_mail"
 >>> processing "warn"
 >>> check dnslists = rbl4.test.ex!&0.0.0.7
 >>> DNS list check: rbl4.test.ex!&0.0.0.7
 >>> using result of previous DNS lookup
 >>> DNS lookup for 14.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.14 is not listed at rbl4.test.ex
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_mail"
 >>> processing "warn"
 >>> check dnslists = rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> DNS list check: rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> using result of previous DNS lookup
 >>> DNS lookup for 14.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.14 is not listed at rbl4.test.ex
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_mail"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_mail"
 >>> using ACL "check_recipient"
 >>> processing "warn"
 >>> check dnslists = rbl3.test.ex!=127.0.0.3
@@ -44,7 +44,7 @@
 >>> new DNS lookup for 14.12.11.V4NET.rbl3.test.ex
 >>> DNS lookup for 14.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.14 is listed at rbl3.test.ex
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
 >>> check dnslists = rbl3.test.ex=127.0.0.3
 >>> DNS list check: rbl3.test.ex=127.0.0.3
@@ -52,7 +52,7 @@
 >>> DNS lookup for 14.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.2)
 >>> => but we are not accepting this block class because
 >>> => there was no match for =127.0.0.3
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "require"
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -67,7 +67,7 @@
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -78,12 +78,12 @@
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> exim.test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "warn"
 >>> check dnslists = rbl3.test.ex!=127.0.0.3
@@ -91,7 +91,7 @@
 >>> using result of previous DNS lookup
 >>> DNS lookup for 14.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.14 is listed at rbl3.test.ex
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
 >>> check dnslists = rbl3.test.ex=127.0.0.3
 >>> DNS list check: rbl3.test.ex=127.0.0.3
@@ -99,11 +99,11 @@
 >>> DNS lookup for 14.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.2)
 >>> => but we are not accepting this block class because
 >>> => there was no match for =127.0.0.3
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "require"
 >>> check verify = sender
 >>> using cached sender verify result
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -111,12 +111,12 @@
 >>> calling system_aliases router
 >>> routed by system_aliases router
 >>> ----------- end verify ------------
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> exim.test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
@@ -134,30 +134,30 @@ LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
 >>> new DNS lookup for 15.12.11.V4NET.rbl4.test.ex
 >>> DNS lookup for 15.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.15 is not listed at rbl4.test.ex
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_mail"
 >>> processing "warn"
 >>> check dnslists = rbl4.test.ex&127.0.0.3
 >>> DNS list check: rbl4.test.ex&127.0.0.3
 >>> using result of previous DNS lookup
 >>> DNS lookup for 15.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.15 is not listed at rbl4.test.ex
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_mail"
 >>> processing "warn"
 >>> check dnslists = rbl4.test.ex!&0.0.0.7
 >>> DNS list check: rbl4.test.ex!&0.0.0.7
 >>> using result of previous DNS lookup
 >>> DNS lookup for 15.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.15 is not listed at rbl4.test.ex
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_mail"
 >>> processing "warn"
 >>> check dnslists = rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> DNS list check: rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> using result of previous DNS lookup
 >>> DNS lookup for 15.12.11.V4NET.rbl4.test.ex failed
 >>> => that means V4NET.11.12.15 is not listed at rbl4.test.ex
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_mail"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_mail"
 >>> using ACL "check_recipient"
 >>> processing "warn"
 >>> check dnslists = rbl3.test.ex!=127.0.0.3
@@ -166,14 +166,14 @@ LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=[V4NET.11.12.14] P=smtp S=sss
 >>> DNS lookup for 15.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.3)
 >>> => but we are not accepting this block class because
 >>> => there was an exclude match for =127.0.0.3
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check dnslists = rbl3.test.ex=127.0.0.3
 >>> DNS list check: rbl3.test.ex=127.0.0.3
 >>> using result of previous DNS lookup
 >>> DNS lookup for 15.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.3)
 >>> => that means V4NET.11.12.15 is listed at rbl3.test.ex
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.test.ex>: host is listed in rbl3.test.ex with value 127.0.0.3
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -190,7 +190,7 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> new DNS lookup for 20.12.11.V4NET.rbl4.test.ex
 >>> DNS lookup for 20.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.6)
 >>> => that means V4NET.11.12.20 is listed at rbl4.test.ex
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_mail"
 >>> processing "warn"
 >>> check dnslists = rbl4.test.ex&127.0.0.3
 >>> DNS list check: rbl4.test.ex&127.0.0.3
@@ -198,7 +198,7 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> DNS lookup for 20.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.6)
 >>> => but we are not accepting this block class because
 >>> => there was no match for &127.0.0.3
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_mail"
 >>> processing "warn"
 >>> check dnslists = rbl4.test.ex!&0.0.0.7
 >>> DNS list check: rbl4.test.ex!&0.0.0.7
@@ -207,7 +207,7 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> => that means V4NET.11.12.20 is listed at rbl4.test.ex
 >>> check add_header = DNSlist: $dnslist_domain $dnslist_text $dnslist_matched
 >>>                  = DNSlist: rbl4.test.ex  V4NET.11.12.20
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_mail"
 >>> processing "warn"
 >>> check dnslists = rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> DNS list check: rbl5.test.ex,rbl4.test.ex=127.0.0.128
@@ -215,9 +215,9 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> DNS lookup for 20.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.6)
 >>> => but we are not accepting this block class because
 >>> => there was no match for =127.0.0.128
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_mail"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_mail"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -233,14 +233,14 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> new DNS lookup for 21.12.11.V4NET.rbl4.test.ex
 >>> DNS lookup for 21.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.7)
 >>> => that means V4NET.11.12.21 is listed at rbl4.test.ex
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_mail"
 >>> processing "warn"
 >>> check dnslists = rbl4.test.ex&127.0.0.3
 >>> DNS list check: rbl4.test.ex&127.0.0.3
 >>> using result of previous DNS lookup
 >>> DNS lookup for 21.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.7)
 >>> => that means V4NET.11.12.21 is listed at rbl4.test.ex
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_mail"
 >>> processing "warn"
 >>> check dnslists = rbl4.test.ex!&0.0.0.7
 >>> DNS list check: rbl4.test.ex!&0.0.0.7
@@ -248,7 +248,7 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> DNS lookup for 21.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.7)
 >>> => but we are not accepting this block class because
 >>> => there was an exclude match for &0.0.0.7
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_mail"
 >>> processing "warn"
 >>> check dnslists = rbl5.test.ex,rbl4.test.ex=127.0.0.128
 >>> DNS list check: rbl5.test.ex,rbl4.test.ex=127.0.0.128
@@ -256,9 +256,9 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> DNS lookup for 21.12.11.V4NET.rbl4.test.ex succeeded (yielding 127.0.0.7)
 >>> => but we are not accepting this block class because
 >>> => there was no match for =127.0.0.128
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_mail"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_mail"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -279,9 +279,9 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> new DNS lookup for 15.12.11.V4NET.rbl3.test.ex
 >>> DNS lookup for 15.12.11.V4NET.rbl3.test.ex succeeded (yielding 127.0.0.3)
 >>> => that means V4NET.11.12.15 is listed at rbl3.test.ex
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_helo"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_helo"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -298,7 +298,7 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> new DNS lookup for 2.13.13.V4NET.rbl.test.ex
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_vrfy"
 >>> processing "warn"
 >>> check dnslists = rbl.test.ex!=127.0.0.1
 >>> DNS list check: rbl.test.ex!=127.0.0.1
@@ -306,14 +306,14 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
 >>> => but we are not accepting this block class because
 >>> => there was an exclude match for =127.0.0.1
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_vrfy"
 >>> processing "warn"
 >>> check dnslists = rbl.test.ex!=127.0.0.3
 >>> DNS list check: rbl.test.ex!=127.0.0.3
 >>> using result of previous DNS lookup
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_vrfy"
 >>> processing "warn"
 >>> check dnslists = rbl.test.ex==127.0.0.1
 >>> DNS list check: rbl.test.ex==127.0.0.1
@@ -321,28 +321,28 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
 >>> => but we are not accepting this block class because
 >>> => there was an IP address that did not match for ==127.0.0.1
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_vrfy"
 >>> processing "warn"
 >>> check dnslists = rbl.test.ex==127.0.0.1,127.0.0.2
 >>> DNS list check: rbl.test.ex==127.0.0.1,127.0.0.2
 >>> using result of previous DNS lookup
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_vrfy"
 >>> processing "warn"
 >>> check dnslists = rbl.test.ex!==127.0.0.1
 >>> DNS list check: rbl.test.ex!==127.0.0.1
 >>> using result of previous DNS lookup
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_vrfy"
 >>> processing "warn"
 >>> check dnslists = rbl.test.ex!==127.0.0.3
 >>> DNS list check: rbl.test.ex!==127.0.0.3
 >>> using result of previous DNS lookup
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_vrfy"
 >>> processing "warn"
 >>> check dnslists = rbl.test.ex!==127.0.0.1,127.0.0.2
 >>> DNS list check: rbl.test.ex!==127.0.0.1,127.0.0.2
@@ -350,9 +350,9 @@ LOG: H=[V4NET.11.12.15] F=<postmaster@exim.test.ex> rejected RCPT <userx@exim.te
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
 >>> => but we are not accepting this block class because
 >>> => there were no IP addresses that did not match for ==127.0.0.1,127.0.0.2
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_vrfy"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_vrfy"
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing a@b
 >>> calling system_aliases router

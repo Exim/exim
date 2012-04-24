@@ -20,7 +20,7 @@ processing "accept"
 check domains = +fail
 expansion of "${if eq {x}{y}{}fail}" forced failure: assume not in this list
 y in "+fail"? no (end of list)
-accept: condition test failed
+accept: condition test failed in inline ACL
 end of inline ACL: implicit DENY
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT

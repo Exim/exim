@@ -14,11 +14,11 @@ MUNGED: ::1 will be omitted in what follows
 >>> get[host|ipnode]byname[2] looked up these IP addresses:
 >>>   name=localhost address=127.0.0.1
 >>> host in "!localhost"? no (matched "!localhost")
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_etrn"
 >>> processing "warn"
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_etrn"
 LOG: H=[127.0.0.1] Warning: accepted etrn #some.random.domain
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_etrn"
 >>> ETRN command is: exim -R
 >>> ETRN command execution skipped

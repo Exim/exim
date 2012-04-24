@@ -24,11 +24,11 @@ r4: $local_part_data = LOCAL PART DATA
 >>> xxx in "+test_local_parts"? yes (matched "+test_local_parts")
 >>> check condition = ${if eq{$domain_data/$local_part_data}{DOMAIN DATA/LOCAL PART DATA}{no}{yes}}
 >>>                 = no
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "a1"
 >>> processing "deny"
 >>> check domains = +test_domains
 >>> a.b.c in "+test_domains"? yes (matched "+test_domains" - cached)
 >>> check local_parts = +test_local_parts
 >>> xxx in "+test_local_parts"? yes (matched "+test_local_parts" - cached)
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "a1"
 LOG: H=[V4NET.0.0.0] F=<a@b.c> rejected RCPT xxx@a.b.c: $domain_data=DOMAIN DATA $local_part_data=LOCAL PART DATA

@@ -255,7 +255,7 @@ subprocess will run with uid=EXIM_UID gid=EXIM_GID
 command wrote: FAIL cannot route this one (FAIL)
 q router forced address failure
 ----------- end verify ------------
-accept: condition test failed
+accept: condition test failed in inline ACL
 end of inline ACL: implicit DENY
 LOG: MAIN REJECT
   H=(some.name) [V4NET.2.3.4] F=<x@y> rejected RCPT <"FAIL cannot route this one (FAIL)"@some.host>: cannot route this one (FAIL)

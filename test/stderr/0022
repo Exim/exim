@@ -29,9 +29,9 @@ SMTP>> 250 OK
 SMTP<< rcpt to:<warn_empty@test.ex>
 using ACL "warn_empty"
 processing "warn"
-warn: condition test succeeded
+warn: condition test succeeded in ACL "warn_empty"
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in ACL "warn_empty"
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -92,11 +92,11 @@ SMTP>> 250 OK
 SMTP<< rcpt to:<warn_log@test.ex>
 using ACL "warn_log"
 processing "warn"
-warn: condition test succeeded
+warn: condition test succeeded in ACL "warn_log"
 LOG: MAIN
   H=[V4NET.9.8.7] Warning: warn log message
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in ACL "warn_log"
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -157,9 +157,9 @@ SMTP>> 250 OK
 SMTP<< rcpt to:<warn_user@test.ex>
 using ACL "warn_user"
 processing "warn"
-warn: condition test succeeded
+warn: condition test succeeded in ACL "warn_user"
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in ACL "warn_user"
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -203,14 +203,14 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "defer"
 >>> processing "defer"
->>> defer: condition test succeeded
+>>> defer: condition test succeeded in ACL "defer"
 LOG: H=[V4NET.9.8.7] F=<x@y> temporarily rejected RCPT <defer@y>: forcibly deferred
 >>> using ACL "accept"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "accept"
 >>> using ACL "drop"
 >>> processing "drop"
->>> drop: condition test succeeded
+>>> drop: condition test succeeded in ACL "drop"
 LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <drop@y>: forcibly dropped
 LOG: SMTP connection from [V4NET.9.8.7] closed by DROP in ACL
 >>> host in hosts_connection_nolog? no (end of list)
@@ -226,7 +226,7 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> processing "defer"
 >>> check senders = :
 >>>  in ":"? yes (matched "")
->>> defer: condition test succeeded
+>>> defer: condition test succeeded in ACL "defer_senders"
 LOG: H=[V4NET.9.8.7] F=<> temporarily rejected RCPT <defer_senders@y>
 LOG: SMTP connection from [V4NET.9.8.7] closed by QUIT
 >>> host in hosts_connection_nolog? no (end of list)
@@ -243,15 +243,15 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> check delay = 1s
 >>> delay modifier requests 1-second delay
 >>> delay skipped in -bh checking mode
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "delay_accept"
 >>> using ACL "delay_warn"
 >>> processing "warn"
 >>> check delay = 1s
 >>> delay modifier requests 1-second delay
 >>> delay skipped in -bh checking mode
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "delay_warn"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "delay_warn"
 LOG: SMTP connection from [V4NET.9.8.7] closed by QUIT
 >>> host in hosts_connection_nolog? no (end of list)
 LOG: SMTP connection from [V4NET.9.8.7]
@@ -266,26 +266,26 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> processing "deny"
 >>> check hosts = net-lsearch;TESTSUITE/aux-var/0022.hosts
 >>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "host_check"
 LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A host-specific message<
 >>> using ACL "host_check"
 >>> processing "deny"
 >>> check hosts = net-lsearch;TESTSUITE/aux-var/0022.hosts
 >>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "host_check"
 LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <host_check@y>: host data >A host-specific message<
 >>> using ACL "host_check2"
 >>> processing "deny"
 >>> check hosts = +some_hosts
 >>> host in "net-lsearch;TESTSUITE/aux-var/0022.hosts"? yes (matched "net-lsearch;TESTSUITE/aux-var/0022.hosts")
 >>> host in "+some_hosts"? yes (matched "+some_hosts")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "host_check2"
 LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <host_check2@y>: host data >A host-specific message<
 >>> using ACL "host_check2"
 >>> processing "deny"
 >>> check hosts = +some_hosts
 >>> host in "+some_hosts"? yes (matched "+some_hosts" - cached)
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "host_check2"
 LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <host_check2@y>: host data >A host-specific message<
 LOG: SMTP connection from [V4NET.9.8.7] closed by QUIT
 LOG: smtp_connection MAIN
@@ -330,8 +330,8 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> check acl = drop
 >>> using ACL "drop"
 >>> processing "drop"
->>> drop: condition test succeeded
->>> accept: condition test yielded "drop"
+>>> drop: condition test succeeded in ACL "drop"
+>>> accept: condition test yielded "drop" in ACL "nested_drop"
 >>> accept: endpass encountered - denying access
 LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <nested_drop@y>: forcibly dropped
 LOG: SMTP connection from [V4NET.9.8.7] closed by DROP in ACL
@@ -349,8 +349,8 @@ LOG: SMTP connection from [V4NET.9.8.7]
 >>> check acl = drop
 >>> using ACL "drop"
 >>> processing "drop"
->>> drop: condition test succeeded
->>> require: condition test yielded "drop"
+>>> drop: condition test succeeded in ACL "drop"
+>>> require: condition test yielded "drop" in ACL "nested_drop_require"
 LOG: H=[V4NET.9.8.7] F=<x@y> rejected RCPT <nested_drop_require@y>: forcibly dropped
 LOG: SMTP connection from [V4NET.9.8.7] closed by DROP in ACL
 

@@ -19,7 +19,7 @@
 >>> temp router: defer for userx@test.again.dns
 >>>   message: host lookup did not complete
 >>> ----------- end verify ------------
->>> accept: condition test deferred
+>>> accept: condition test deferred in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <userx@test.again.dns>: host lookup did not complete
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -40,5 +40,5 @@ LOG: H=[1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <userx@test.again.d
 >>> r1 router: defer for r1-userx@test.again.dns
 >>>   message: host lookup did not complete
 >>> ----------- end verify ------------
->>> accept: condition test deferred
+>>> accept: condition test deferred in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<userx@test.ex> temporarily rejected RCPT <r1-userx@test.again.dns>: host lookup did not complete

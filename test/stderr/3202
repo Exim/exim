@@ -10,7 +10,7 @@
 >>> processing "accept"
 >>> check hosts = net-testdb;defer
 >>> host in "net-testdb;defer"? list match deferred for net-testdb;defer
->>> accept: condition test deferred
+>>> accept: condition test deferred in ACL "acl_1_1_1"
 LOG: H=[1.1.1.1] F=<x@y> temporarily rejected RCPT <x@y>: testdb lookup forced DEFER
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -24,7 +24,7 @@ LOG: H=[1.1.1.1] F=<x@y> temporarily rejected RCPT <x@y>: testdb lookup forced D
 >>> processing "deny"
 >>> check domains = testdb;defer
 >>> y in "testdb;defer"? list match deferred for testdb;defer
->>> deny: condition test deferred
+>>> deny: condition test deferred in ACL "acl_1_1_2"
 LOG: H=[1.1.2.1] F=<x@y> temporarily rejected RCPT <x@y>: testdb lookup forced DEFER
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -38,5 +38,5 @@ LOG: H=[1.1.2.1] F=<x@y> temporarily rejected RCPT <x@y>: testdb lookup forced D
 >>> processing "require"
 >>> check local_parts = testdb;defer
 >>> x in "testdb;defer"? list match deferred for testdb;defer
->>> require: condition test deferred
+>>> require: condition test deferred in ACL "acl_1_1_3"
 LOG: H=[1.1.3.1] F=<x@y> temporarily rejected RCPT <x@y>: testdb lookup forced DEFER

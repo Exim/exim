@@ -10,881 +10,881 @@
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> b1@x in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> b1@x in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> b1@x in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> x in "domain.only"? no (end of list)
 >>> x in "*.domain2.only"? no (end of list)
 >>> b1@x in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> b1@x in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> b1@x in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>>  in ":"? yes (matched "")
 >>> check recipients = b1@x
 >>> x in "x"? yes (matched "x")
 >>> b1@x in "b1@x"? yes (matched "b1@x")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<> rejected RCPT <b1@x>: failed 7
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> b2@x in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> b2@x in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> b2@x in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> x in "domain.only"? no (end of list)
 >>> x in "*.domain2.only"? no (end of list)
 >>> b2@x in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> b2@x in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> b2@x in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>>  in ":"? yes (matched "")
 >>> check recipients = b1@x
 >>> b2@x in "b1@x"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>>  in "^$"? yes (matched "^$")
 >>> check recipients = b2@x
 >>> x in "x"? yes (matched "x")
 >>> b2@x in "b2@x"? yes (matched "b2@x")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<> rejected RCPT <b2@x>: failed 8
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> b9@x in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> b9@x in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> b9@x in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> x in "domain.only"? no (end of list)
 >>> x in "*.domain2.only"? no (end of list)
 >>> b9@x in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> b9@x in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> b9@x in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>>  in ":"? yes (matched "")
 >>> check recipients = b1@x
 >>> b9@x in "b1@x"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>>  in "^$"? yes (matched "^$")
 >>> check recipients = b2@x
 >>> b9@x in "b2@x"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = *@lsearch;TESTSUITE/aux-fixed/0304.d3
 >>> x in "lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
 >>> b9@x in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = xyz@lsearch;TESTSUITE/aux-fixed/0304.d4
 >>> b9@x in "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d5
 >>> b9@x in "lsearch*@;TESTSUITE/aux-fixed/0304.d5"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl1"
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> abc@w.x.y.z in "^abc.*@.*\.x\.y\.z : a@b"? yes (matched "^abc.*@.*\.x\.y\.z")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abc@w.x.y.z>: failed 1
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> abcdef@q.x.y.z in "^abc.*@.*\.x\.y\.z : a@b"? yes (matched "^abc.*@.*\.x\.y\.z")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abcdef@q.x.y.z>: failed 1
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> b in "b"? yes (matched "b")
 >>> a@b in "^abc.*@.*\.x\.y\.z : a@b"? yes (matched "a@b")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <a@b>: failed 1
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> ok@ok in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> ok@ok in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> ok@ok in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> ok in "domain.only"? no (end of list)
 >>> ok in "*.domain2.only"? no (end of list)
 >>> ok@ok in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> ok@ok in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> ok@ok in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>> y in ""? no (end of list)
 >>> x@y in ":"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>> x@y in "^$"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = *@lsearch;TESTSUITE/aux-fixed/0304.d3
 >>> ok in "lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
 >>> ok@ok in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = xyz@lsearch;TESTSUITE/aux-fixed/0304.d4
 >>> ok@ok in "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d5
 >>> ok@ok in "lsearch*@;TESTSUITE/aux-fixed/0304.d5"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl1"
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> x@a.b.c in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> x@a.b.c in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0304.d1")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@a.b.c>: failed 2
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> abc@d.e.f in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> abc@d.e.f in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0304.d1")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abc@d.e.f>: failed 2
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> x@d.e.f in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> x@d.e.f in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> x@d.e.f in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> d.e.f in "domain.only"? no (end of list)
 >>> d.e.f in "*.domain2.only"? no (end of list)
 >>> x@d.e.f in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> x@d.e.f in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> x@d.e.f in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>> y in ""? no (end of list)
 >>> x@y in ":"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>> x@y in "^$"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = *@lsearch;TESTSUITE/aux-fixed/0304.d3
 >>> d.e.f in "lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
 >>> x@d.e.f in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = xyz@lsearch;TESTSUITE/aux-fixed/0304.d4
 >>> x@d.e.f in "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d5
 >>> x@d.e.f in "lsearch*@;TESTSUITE/aux-fixed/0304.d5"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl1"
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> abc@at.1 in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> abc@at.1 in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> abc@at.1 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? yes (matched "@@lsearch;TESTSUITE/aux-fixed/0304.d2")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abc@at.1>: failed 3
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> xyz@at.1 in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> xyz@at.1 in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> xyz@at.1 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? yes (matched "@@lsearch;TESTSUITE/aux-fixed/0304.d2")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <xyz@at.1>: failed 3
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> abcxyz@at.1 in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> abcxyz@at.1 in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> abcxyz@at.1 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? yes (matched "@@lsearch;TESTSUITE/aux-fixed/0304.d2")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abcxyz@at.1>: failed 3
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> ok@at.1 in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> ok@at.1 in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> ok@at.1 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> at.1 in "domain.only"? no (end of list)
 >>> at.1 in "*.domain2.only"? no (end of list)
 >>> ok@at.1 in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> ok@at.1 in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> ok@at.1 in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>> y in ""? no (end of list)
 >>> x@y in ":"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>> x@y in "^$"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = *@lsearch;TESTSUITE/aux-fixed/0304.d3
 >>> at.1 in "lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
 >>> ok@at.1 in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = xyz@lsearch;TESTSUITE/aux-fixed/0304.d4
 >>> ok@at.1 in "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d5
 >>> ok@at.1 in "lsearch*@;TESTSUITE/aux-fixed/0304.d5"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl1"
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> x@domain.only in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> x@domain.only in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> x@domain.only in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> domain.only in "domain.only"? yes (matched "domain.only")
 >>> x@domain.only in "domain.only : *.domain2.only"? yes (matched "domain.only")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@domain.only>: failed 4
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> x@abc.domain2.only in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> x@abc.domain2.only in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> x@abc.domain2.only in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> abc.domain2.only in "domain.only"? no (end of list)
 >>> abc.domain2.only in "*.domain2.only"? yes (matched "*.domain2.only")
 >>> x@abc.domain2.only in "domain.only : *.domain2.only"? yes (matched "*.domain2.only")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@abc.domain2.only>: failed 4
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> x@domain2.only in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> x@domain2.only in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> x@domain2.only in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> domain2.only in "domain.only"? no (end of list)
 >>> domain2.only in "*.domain2.only"? no (end of list)
 >>> x@domain2.only in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> x@domain2.only in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> x@domain2.only in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>> y in ""? no (end of list)
 >>> x@y in ":"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>> x@y in "^$"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = *@lsearch;TESTSUITE/aux-fixed/0304.d3
 >>> domain2.only in "lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
 >>> x@domain2.only in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = xyz@lsearch;TESTSUITE/aux-fixed/0304.d4
 >>> x@domain2.only in "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d5
 >>> x@domain2.only in "lsearch*@;TESTSUITE/aux-fixed/0304.d5"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl1"
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> abc@domain3 in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> abc@domain3 in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> abc@domain3 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> domain3 in "domain.only"? no (end of list)
 >>> domain3 in "*.domain2.only"? no (end of list)
 >>> abc@domain3 in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> domain3 in "domain3"? yes (matched "domain3")
 >>> abc@domain3 in "abc@domain3 : xyz@*.domain4"? yes (matched "abc@domain3")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <abc@domain3>: failed 5
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> xyz@x.domain4 in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> xyz@x.domain4 in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> xyz@x.domain4 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> x.domain4 in "domain.only"? no (end of list)
 >>> x.domain4 in "*.domain2.only"? no (end of list)
 >>> xyz@x.domain4 in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> x.domain4 in "*.domain4"? yes (matched "*.domain4")
 >>> xyz@x.domain4 in "abc@domain3 : xyz@*.domain4"? yes (matched "xyz@*.domain4")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <xyz@x.domain4>: failed 5
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> abc@x.domain4 in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> abc@x.domain4 in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> abc@x.domain4 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> x.domain4 in "domain.only"? no (end of list)
 >>> x.domain4 in "*.domain2.only"? no (end of list)
 >>> abc@x.domain4 in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> x.domain4 in "domain3"? no (end of list)
 >>> abc@x.domain4 in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> abc@x.domain4 in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>> y in ""? no (end of list)
 >>> x@y in ":"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>> x@y in "^$"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = *@lsearch;TESTSUITE/aux-fixed/0304.d3
 >>> x.domain4 in "lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
 >>> abc@x.domain4 in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = xyz@lsearch;TESTSUITE/aux-fixed/0304.d4
 >>> abc@x.domain4 in "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d5
 >>> abc@x.domain4 in "lsearch*@;TESTSUITE/aux-fixed/0304.d5"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl1"
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> xyz@domain3 in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> xyz@domain3 in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> xyz@domain3 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> domain3 in "domain.only"? no (end of list)
 >>> domain3 in "*.domain2.only"? no (end of list)
 >>> xyz@domain3 in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> domain3 in "*.domain4"? no (end of list)
 >>> xyz@domain3 in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> xyz@domain3 in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>> y in ""? no (end of list)
 >>> x@y in ":"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>> x@y in "^$"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = *@lsearch;TESTSUITE/aux-fixed/0304.d3
 >>> domain3 in "lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
 >>> xyz@domain3 in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = xyz@lsearch;TESTSUITE/aux-fixed/0304.d4
 >>> domain3 in "lsearch;TESTSUITE/aux-fixed/0304.d4"? no (end of list)
 >>> xyz@domain3 in "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d5
 >>> xyz@domain3 in "lsearch*@;TESTSUITE/aux-fixed/0304.d5"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl1"
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> pqr@myhost.test.ex in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> pqr@myhost.test.ex in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> pqr@myhost.test.ex in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> myhost.test.ex in "domain.only"? no (end of list)
 >>> myhost.test.ex in "*.domain2.only"? no (end of list)
 >>> pqr@myhost.test.ex in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> pqr@myhost.test.ex in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> myhost.test.ex in "@"? yes (matched "@")
 >>> pqr@myhost.test.ex in "pqr@@"? yes (matched "pqr@@")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <pqr@myhost.test.ex>: failed 6
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> xxx@myhost.test.ex in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> xxx@myhost.test.ex in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> xxx@myhost.test.ex in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> myhost.test.ex in "domain.only"? no (end of list)
 >>> myhost.test.ex in "*.domain2.only"? no (end of list)
 >>> xxx@myhost.test.ex in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> xxx@myhost.test.ex in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> xxx@myhost.test.ex in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>> y in ""? no (end of list)
 >>> x@y in ":"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>> x@y in "^$"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = *@lsearch;TESTSUITE/aux-fixed/0304.d3
 >>> myhost.test.ex in "lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
 >>> xxx@myhost.test.ex in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = xyz@lsearch;TESTSUITE/aux-fixed/0304.d4
 >>> xxx@myhost.test.ex in "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d5
 >>> xxx@myhost.test.ex in "lsearch*@;TESTSUITE/aux-fixed/0304.d5"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl1"
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> domain5 in "b"? no (end of list)
 >>> a@domain5 in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> a@domain5 in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> a@domain5 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> domain5 in "domain.only"? no (end of list)
 >>> domain5 in "*.domain2.only"? no (end of list)
 >>> a@domain5 in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> a@domain5 in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> a@domain5 in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>> y in ""? no (end of list)
 >>> x@y in ":"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>> x@y in "^$"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = *@lsearch;TESTSUITE/aux-fixed/0304.d3
 >>> domain5 in "lsearch;TESTSUITE/aux-fixed/0304.d3"? yes (matched "lsearch;TESTSUITE/aux-fixed/0304.d3")
 >>> a@domain5 in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? yes (matched "*@lsearch;TESTSUITE/aux-fixed/0304.d3")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <a@domain5>: failed 9
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> xyz@domain6 in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> xyz@domain6 in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> xyz@domain6 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> domain6 in "domain.only"? no (end of list)
 >>> domain6 in "*.domain2.only"? no (end of list)
 >>> xyz@domain6 in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> domain6 in "*.domain4"? no (end of list)
 >>> xyz@domain6 in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> xyz@domain6 in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>> y in ""? no (end of list)
 >>> x@y in ":"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>> x@y in "^$"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = *@lsearch;TESTSUITE/aux-fixed/0304.d3
 >>> domain6 in "lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
 >>> xyz@domain6 in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = xyz@lsearch;TESTSUITE/aux-fixed/0304.d4
 >>> domain6 in "lsearch;TESTSUITE/aux-fixed/0304.d4"? yes (matched "lsearch;TESTSUITE/aux-fixed/0304.d4")
 >>> xyz@domain6 in "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4"? yes (matched "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <xyz@domain6>: failed 10
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> abc@domain6 in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> abc@domain6 in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> abc@domain6 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> domain6 in "domain.only"? no (end of list)
 >>> domain6 in "*.domain2.only"? no (end of list)
 >>> abc@domain6 in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> domain6 in "domain3"? no (end of list)
 >>> abc@domain6 in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> abc@domain6 in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>> y in ""? no (end of list)
 >>> x@y in ":"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>> x@y in "^$"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = *@lsearch;TESTSUITE/aux-fixed/0304.d3
 >>> domain6 in "lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
 >>> abc@domain6 in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = xyz@lsearch;TESTSUITE/aux-fixed/0304.d4
 >>> abc@domain6 in "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d5
 >>> abc@domain6 in "lsearch*@;TESTSUITE/aux-fixed/0304.d5"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl1"
 >>> using ACL "acl1"
 >>> processing "deny"
 >>> check recipients = \N^abc.*@.*\.x\.y\.z\N : a@b
 >>> x@domain7 in "^abc.*@.*\.x\.y\.z : a@b"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d1
 >>> x@domain7 in "lsearch*@;TESTSUITE/aux-fixed/0304.d1"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = @@lsearch;TESTSUITE/aux-fixed/0304.d2
 >>> x@domain7 in "@@lsearch;TESTSUITE/aux-fixed/0304.d2"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = domain.only : *.domain2.only
 >>> domain7 in "domain.only"? no (end of list)
 >>> domain7 in "*.domain2.only"? no (end of list)
 >>> x@domain7 in "domain.only : *.domain2.only"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = abc@domain3 : xyz@*.domain4
 >>> x@domain7 in "abc@domain3 : xyz@*.domain4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = pqr@@
 >>> x@domain7 in "pqr@@"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = :
 >>> y in ""? no (end of list)
 >>> x@y in ":"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check senders = ^\$
 >>> x@y in "^$"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = *@lsearch;TESTSUITE/aux-fixed/0304.d3
 >>> domain7 in "lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
 >>> x@domain7 in "*@lsearch;TESTSUITE/aux-fixed/0304.d3"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = xyz@lsearch;TESTSUITE/aux-fixed/0304.d4
 >>> x@domain7 in "xyz@lsearch;TESTSUITE/aux-fixed/0304.d4"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl1"
 >>> processing "deny"
 >>> check recipients = lsearch*@;TESTSUITE/aux-fixed/0304.d5
 >>> x@domain7 in "lsearch*@;TESTSUITE/aux-fixed/0304.d5"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0304.d5")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl1"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@domain7>: failed 11

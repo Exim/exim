@@ -94,7 +94,7 @@ routed by r2 router
   envelope to: abc@xxx.domain1
   transport: smtp
 ----------- end verify ------------
-require: condition test succeeded
+require: condition test succeeded in ACL "rcpt"
 processing "require"
 check domains = +special_domains
 cached yes match for +special_domains
@@ -160,9 +160,9 @@ routed by r2 router
   envelope to: abc@xxx.domain1
   transport: smtp
 ----------- end verify ------------
-require: condition test succeeded
+require: condition test succeeded in ACL "rcpt"
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in ACL "rcpt"
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

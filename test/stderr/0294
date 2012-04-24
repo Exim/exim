@@ -107,18 +107,18 @@ SMTP<< rcpt to:<one@z>
 processing "deny"
 check local_parts = reject
 one in "reject"? no (end of list)
-deny: condition test failed
+deny: condition test failed in inline ACL
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in inline ACL
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<one@z>
 host in smtp_ratelimit_hosts? no (end of list)
 processing "deny"
 check local_parts = reject
 one in "reject"? no (end of list)
-deny: condition test failed
+deny: condition test failed in inline ACL
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in inline ACL
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -149,9 +149,9 @@ SMTP<< rcpt to:<one@z>
 processing "deny"
 check local_parts = reject
 one in "reject"? no (end of list)
-deny: condition test failed
+deny: condition test failed in inline ACL
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in inline ACL
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<one@z>
 host in smtp_ratelimit_hosts? yes (matched "V4NET.9.8.7")
@@ -159,9 +159,9 @@ rate limit RCPT: delay 0.25 sec
 processing "deny"
 check local_parts = reject
 one in "reject"? no (end of list)
-deny: condition test failed
+deny: condition test failed in inline ACL
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in inline ACL
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

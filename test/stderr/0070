@@ -31,7 +31,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "NULL"
 >>> no EHLO/HELO command was issued
->>> require: condition test failed
+>>> require: condition test failed in ACL "rcpt"
 LOG: H=[V4NET.0.0.13] F=<userx@cus.cam.ac.uk> rejected RCPT <a@b>: helo not verified
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -56,7 +56,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> using ACL "rcpt"
 >>> processing "require"
 >>> check verify = helo
->>> require: condition test failed
+>>> require: condition test failed in ACL "rcpt"
 LOG: H=([V4NET.0.0.1]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo not verified
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -81,9 +81,9 @@ MUNGED: ::1 will be omitted in what follows
 >>> using ACL "rcpt"
 >>> processing "require"
 >>> check verify = helo
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "rcpt"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "rcpt"
 LOG: H=([V4NET.0.0.2]) [V4NET.0.0.2] F=<a@b> rejected RCPT <c@d>: helo did verify
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -207,7 +207,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> processing "require"
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "[V4NET.0.0.99]"
->>> require: condition test failed
+>>> require: condition test failed in ACL "rcpt"
 LOG: H=([V4NET.0.0.99]) [V4NET.0.0.13] F=<a@b> rejected RCPT <c@d>: helo not verified
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -232,9 +232,9 @@ MUNGED: ::1 will be omitted in what follows
 >>> check verify = helo
 >>> verifying EHLO/HELO argument "[V4NET.0.0.13]"
 >>> matched host address
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "rcpt"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "rcpt"
 LOG: H=([V4NET.0.0.13]) [V4NET.0.0.13] F=<a@b> rejected RCPT <c@d>: helo did verify
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -263,5 +263,5 @@ MUNGED: ::1 will be omitted in what follows
 >>> Test harness: host name lookup returns DEFER
 >>> getting IP address for rhubarb
 >>> no IP address found for host rhubarb (during SMTP connection from (rhubarb) [99.99.99.99])
->>> require: condition test failed
+>>> require: condition test failed in ACL "rcpt"
 LOG: H=(rhubarb) [99.99.99.99] F=<a@b> rejected RCPT <c@d>: helo not verified

@@ -184,7 +184,7 @@ lookup yielded:
 host in "<
  partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch 
  1.2.3.4"? yes (matched "partial-lsearch;TESTSUITE/aux-fixed/0002.lsearch")
-deny: condition test succeeded
+deny: condition test succeeded in ACL "connect1"
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT
   H=ten-1.test.ex [V4NET.0.0.1] rejected connection in "connect" ACL
@@ -227,7 +227,7 @@ file lookup required for V4NET.0.0.2
   in TESTSUITE/aux-fixed/0002.lsearch
 lookup failed
 host in "net-lsearch;TESTSUITE/aux-fixed/0002.lsearch"? no (end of list)
-deny: condition test failed
+deny: condition test failed in ACL "connect2"
 end of ACL "connect2": implicit DENY
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT
@@ -244,65 +244,65 @@ search_tidyup called
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect0"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "connect0"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in inline ACL
 >>> using ACL "check_data"
 >>> processing "warn"
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: ""
 LOG: 10HmaX-0005vi-00 Subject is: ""
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmaX-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in inline ACL
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: ""
 LOG: 10HmaY-0005vi-00 Subject is: ""
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmaY-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<a@b>
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in inline ACL
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: ""
 LOG: 10HmaZ-0005vi-00 Subject is: ""
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmaZ-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<c@d>
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in inline ACL
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: ""
 LOG: 10HmbA-0005vi-00 Subject is: ""
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmbA-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in inline ACL
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: ""
 LOG: 10HmbB-0005vi-00 Subject is: ""
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmbB-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<x@y>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -314,18 +314,18 @@ LOG: 10HmbB-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<x
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect0"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "connect0"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in inline ACL
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: "=?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_it_will_go_over_the_75-char_limit_by_a_long_way=3B_in_fact_this_one_will_go_over_the_150_character_limit?="
 LOG: 10HmbC-0005vi-00 Subject is: "=?iso-8859-8?Q?_here_we_go=3A_a_string_that_is_going_to_be_encoded=3A_it_will_go_over_the_75-char_limit_by_a_long_way=3B_in_fact_this_one_will_go_over_the_150_character_limit?="
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmbC-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -337,18 +337,18 @@ LOG: 10HmbC-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> using ACL "connect0"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "connect0"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in inline ACL
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
 >>> check logwrite = Subject is: "$h_subject:"
 >>>                = Subject is: " here we go: a string that is going to be encoded: it will go over the 75-char limit by a long way; in fact this one will go over the 150 character limit"
 LOG: 10HmbD-0005vi-00 Subject is: " here we go: a string that is going to be encoded: it will go over the 75-char limit by a long way; in fact this one will go over the 150 character limit"
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmbD-0005vi-00 H=[V4NET.0.0.0] F=<> rejected after DATA: reply_address=<>
 Exim version x.yz ....
 changed uid/gid: -C, -D, -be or -bf forces real uid

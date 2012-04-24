@@ -17,7 +17,7 @@
 >>> unknown in "userx"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
->>> require: condition test failed
+>>> require: condition test failed in ACL "check_recipient"
 LOG: H=[127.0.0.1] sender verify fail for <unknown@test.ex>: Unrouteable address
 LOG: H=[127.0.0.1] F=<unknown@test.ex> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> using ACL "check_recipient"
@@ -30,7 +30,7 @@ LOG: H=[127.0.0.1] F=<unknown@test.ex> rejected RCPT <userx@test.ex>: Sender ver
 >>> calling fail_remote_domains router
 >>> fail_remote_domains router forced address failure
 >>> ----------- end verify ------------
->>> require: condition test failed
+>>> require: condition test failed in ACL "check_recipient"
 LOG: H=[127.0.0.1] sender verify fail for <userx@unknown.dom.ain>: unrouteable mail domain "unknown.dom.ain"
 LOG: H=[127.0.0.1] F=<userx@unknown.dom.ain> rejected RCPT <userx@test.ex>: Sender verify failed
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
@@ -46,12 +46,12 @@ LOG: H=[127.0.0.1] F=<userx@unknown.dom.ain> rejected RCPT <userx@test.ex>: Send
 >>> calling userx router
 >>> routed by userx router
 >>> ----------- end verify ------------
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
@@ -64,7 +64,7 @@ LOG: H=[127.0.0.1] F=<userx@unknown.dom.ain> rejected RCPT <userx@test.ex>: Send
 >>> unknown in "defer"? no (end of list)
 >>> unknown in "userx"? no (end of list)
 >>> no more routers
->>> require: condition test failed
+>>> require: condition test failed in ACL "check_message"
 LOG: 10HmaX-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: there is no valid sender in any header line
 >>> using ACL "check_recipient"
 >>> processing "require"
@@ -78,18 +78,18 @@ LOG: 10HmaX-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: there
 >>> calling userx router
 >>> routed by userx router
 >>> ----------- end verify ------------
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
 >>> check verify = header_sender
 >>> verifying From: header address <>
->>> require: condition test failed
+>>> require: condition test failed in ACL "check_message"
 LOG: 10HmaY-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: syntax error in 'From:' header when scanning for sender: missing or malformed local part in "<>"
 >>> using ACL "check_recipient"
 >>> processing "require"
@@ -103,7 +103,7 @@ LOG: 10HmaY-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> rejected after DATA: synta
 >>> defer router: defer for defer@test.ex
 >>>   message: forced defer
 >>> ----------- end verify ------------
->>> require: condition test deferred
+>>> require: condition test deferred in ACL "check_recipient"
 LOG: H=[127.0.0.1] sender verify defer for <defer@test.ex>: forced defer
 LOG: H=[127.0.0.1] F=<defer@test.ex> temporarily rejected RCPT <userx@test.ex>: Could not complete sender verify
 >>> using ACL "check_recipient"
@@ -118,12 +118,12 @@ LOG: H=[127.0.0.1] F=<defer@test.ex> temporarily rejected RCPT <userx@test.ex>: 
 >>> calling userx router
 >>> routed by userx router
 >>> ----------- end verify ------------
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_message"
 >>> processing "require"
@@ -137,5 +137,5 @@ LOG: H=[127.0.0.1] F=<defer@test.ex> temporarily rejected RCPT <userx@test.ex>: 
 >>> calling defer router
 >>> defer router: defer for defer@test.ex
 >>>   message: forced defer
->>> require: condition test deferred
+>>> require: condition test deferred in ACL "check_message"
 LOG: 10HmaZ-0005vi-00 H=[127.0.0.1] F=<userx@test.ex> temporarily rejected after DATA: all attempts to verify a sender in a header line deferred

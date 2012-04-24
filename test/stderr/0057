@@ -12,21 +12,21 @@
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> anotherhost.example.com in percent_hack_domains? no (end of list)
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "test.ex : myhost.ex : *.test.ex"? no (end of list)
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "test.ex : !*"? no (matched "!*")
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
 >>> 3rdhost.example.com in percent_hack_domains? no (end of list)
 >>> using ACL "check_recipient"
@@ -34,13 +34,13 @@ LOG: H=[V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@another
 >>> check domains = +local_domains
 >>> 3rdhost.example.com in "test.ex : myhost.ex : *.test.ex"? no (end of list)
 >>> 3rdhost.example.com in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +relay_domains
 >>> 3rdhost.example.com in "test.ex : !*"? no (matched "!*")
 >>> 3rdhost.example.com in "+relay_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@3rdhost.example.com>: relay not permitted
 LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=[V4NET.0.0.1] P=smtp S=sss

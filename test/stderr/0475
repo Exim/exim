@@ -11,12 +11,12 @@
 >>> check hosts = 1.2.3.4 : <; 1.2.3.4::5.6.7.8
 LOG: unknown lookup type "<" in host list item "<; 1.2.3.4:5.6.7.8"
 >>> host in "1.2.3.4 : <; 1.2.3.4::5.6.7.8"? list match deferred for <; 1.2.3.4:5.6.7.8
->>> deny: condition test deferred
+>>> deny: condition test deferred in ACL "a1"
 LOG: H=[V4NET.0.0.0] F=<> temporarily rejected RCPT <a1@b>: unknown lookup type "<"
 >>> using ACL "a2"
 >>> processing "deny"
 >>> check hosts = 1.2.3/24
 >>> host in "1.2.3/24"? no (malformed IPv4 address or address mask)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "a2"
 >>> end of ACL "a2": implicit DENY
 LOG: H=[V4NET.0.0.0] F=<> rejected RCPT <a2@b>

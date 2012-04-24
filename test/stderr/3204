@@ -10,5 +10,5 @@
 >>> processing "deny"
 >>> check senders = testdb;defer
 >>> userx@somehost.example.com in "testdb;defer"? list match deferred for testdb;defer
->>> deny: condition test deferred
+>>> deny: condition test deferred in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<userx@somehost.example.com> temporarily rejected RCPT <x@y>: testdb lookup forced DEFER

@@ -51,7 +51,7 @@ SMTP<< mail from:<>
 SMTP>> 250 OK
 SMTP<< rcpt to:<abc@domain.>
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in inline ACL
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -75,7 +75,7 @@ P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 using ACL "check_data"
 processing "accept"
 check verify = header_syntax
-accept: condition test succeeded
+accept: condition test succeeded in ACL "check_data"
 calling local_scan(); timeout=300
 local_scan() returned 0 NULL
 Writing spool header file
@@ -113,7 +113,7 @@ SMTP<< mail from:<>
 SMTP>> 250 OK
 SMTP<< rcpt to:<abc@xyz>
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in inline ACL
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -137,7 +137,7 @@ P Received: from CALLER by myhost.test.ex with local-smtp (Exim x.yz)
 using ACL "check_data"
 processing "accept"
 check verify = header_syntax
-accept: condition test failed
+accept: condition test failed in ACL "check_data"
 end of ACL "check_data": implicit DENY
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT

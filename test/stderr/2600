@@ -138,7 +138,7 @@ processing "accept"
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "accept"
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
@@ -153,9 +153,9 @@ lookup forced cache cleanup
 lookup failed
 host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "deny"
-deny: condition test succeeded
+deny: condition test succeeded in ACL "check_recipient"
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=[10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
@@ -165,7 +165,7 @@ processing "accept"
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "accept"
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
@@ -181,9 +181,9 @@ lookup forced cache cleanup
 lookup failed
 host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.0.0.0'"? no (end of list)
 host in "+relay_hosts"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "deny"
-deny: condition test succeeded
+deny: condition test succeeded in ACL "check_recipient"
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=[10.0.0.0] F=<a@b> rejected RCPT <c@d>: relay not permitted
@@ -227,7 +227,7 @@ processing "accept"
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "accept"
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
@@ -241,7 +241,7 @@ file lookup required for select * from them where id='10.10.10.10'
 lookup yielded: name=ok id=10.10.10.10 
 host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
 host in "+relay_hosts"? yes (matched "+relay_hosts")
-accept: condition test succeeded
+accept: condition test succeeded in ACL "check_recipient"
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<c@d>
 using ACL "check_recipient"
@@ -249,7 +249,7 @@ processing "accept"
 check domains = +local_domains
 d in "@"? no (end of list)
 d in "+local_domains"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "accept"
 check hosts = +relay_hosts
 search_open: sqlite "TESTSUITE/aux-fixed/sqlitedb"
@@ -264,7 +264,7 @@ cached data used for lookup of select * from them where id='10.10.10.10'
 lookup yielded: name=ok id=10.10.10.10 
 host in "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'"? yes (matched "sqlite;TESTSUITE/aux-fixed/sqlitedb select * from them where id='10.10.10.10'")
 host in "+relay_hosts"? yes (matched "+relay_hosts")
-accept: condition test succeeded
+accept: condition test succeeded in ACL "check_recipient"
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection

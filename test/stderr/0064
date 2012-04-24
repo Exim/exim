@@ -11,18 +11,18 @@
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "test.ex"? no (end of list)
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = +relay_hosts
 >>> sender host name required, to match against lsearch;TESTSUITE/aux-fixed/0064.hosts
@@ -35,9 +35,9 @@ MUNGED: ::1 will be omitted in what follows
 >>>   V4NET.0.0.1 OK
 >>> host in "lsearch;TESTSUITE/aux-fixed/0064.hosts"? no (end of list)
 >>> host in "+relay_hosts"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=ten-1.test.ex [V4NET.0.0.1] F=<userx@somehost.example.com> rejected RCPT <userx@anotherhost.example.com>: relay not permitted
 LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=ten-1.test.ex [V4NET.0.0.1] P=smtp S=sss
 >>> host in hosts_connection_nolog? no (option unset)
@@ -53,18 +53,18 @@ LOG: 10HmaX-0005vi-00 <= userx@somehost.example.com H=ten-1.test.ex [V4NET.0.0.1
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> anotherhost.example.com in "test.ex : myhost.ex"? no (end of list)
 >>> anotherhost.example.com in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +relay_domains
 >>> anotherhost.example.com in "test.ex"? no (end of list)
 >>> anotherhost.example.com in "+relay_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = +relay_hosts
 >>> sender host name required, to match against lsearch;TESTSUITE/aux-fixed/0064.hosts
@@ -77,5 +77,5 @@ MUNGED: ::1 will be omitted in what follows
 >>>   V4NET.0.0.2 OK
 >>> host in "lsearch;TESTSUITE/aux-fixed/0064.hosts"? yes (matched "lsearch;TESTSUITE/aux-fixed/0064.hosts")
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 LOG: 10HmaY-0005vi-00 <= userx@somehost.example.com H=ten-2.test.ex [V4NET.0.0.2] P=smtp S=sss

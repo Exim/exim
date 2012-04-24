@@ -19,16 +19,16 @@ LOG: SMTP command timeout on connection from [V4NET.0.0.1]
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check recipients = verify@test.ex
 >>> userx@test.ex in "verify@test.ex"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 LOG: SMTP data timeout (message abandoned) on connection from [V4NET.0.0.1] F=<userx@test.ex>
 exim: timed out while reading - message abandoned
 exim: timed out while reading - message abandoned
@@ -44,7 +44,7 @@ exim: timed out while reading - message abandoned
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check recipients = verify@test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
@@ -58,7 +58,7 @@ exim: timed out while reading - message abandoned
 >>> forward router declined for verify@test.ex
 >>> no more routers
 >>> ----------- end verify ------------
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.0.0.1] F=<userx@test.ex> rejected RCPT verify@test.ex: Unrouteable address
 LOG: SMTP command timeout on connection from [V4NET.0.0.1]
 An error was detected while processing a file of BSMTP input.

@@ -7,13 +7,13 @@
 >>> host in helo_try_verify_hosts? no (option unset)
 >>> host in helo_accept_junk_hosts? no (option unset)
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in inline ACL
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in inline ACL
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in inline ACL
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in inline ACL
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in inline ACL
 LOG: too many recipients: message rejected: sender=<x@y> H=[V4NET.10.10.10]

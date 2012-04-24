@@ -3708,7 +3708,7 @@ while (acl != NULL)
   switch (cond)
     {
     case DEFER:
-    HDEBUG(D_acl) debug_printf("%s: condition test deferred\n", verbs[acl->verb]);
+    HDEBUG(D_acl) debug_printf("%s: condition test deferred in %s\n", verbs[acl->verb], acl_name);
     if (basic_errno != ERRNO_CALLOUTDEFER)
       {
       if (search_error_message != NULL && *search_error_message != 0)
@@ -3724,29 +3724,29 @@ while (acl != NULL)
 
     default:      /* Paranoia */
     case ERROR:
-    HDEBUG(D_acl) debug_printf("%s: condition test error\n", verbs[acl->verb]);
+    HDEBUG(D_acl) debug_printf("%s: condition test error in %s\n", verbs[acl->verb], acl_name);
     return ERROR;
 
     case OK:
-    HDEBUG(D_acl) debug_printf("%s: condition test succeeded\n",
-      verbs[acl->verb]);
+    HDEBUG(D_acl) debug_printf("%s: condition test succeeded in %s\n",
+      verbs[acl->verb], acl_name);
     break;
 
     case FAIL:
-    HDEBUG(D_acl) debug_printf("%s: condition test failed\n", verbs[acl->verb]);
+    HDEBUG(D_acl) debug_printf("%s: condition test failed in %s\n", verbs[acl->verb], acl_name);
     break;
 
     /* DISCARD and DROP can happen only from a nested ACL condition, and
     DISCARD can happen only for an "accept" or "discard" verb. */
 
     case DISCARD:
-    HDEBUG(D_acl) debug_printf("%s: condition test yielded \"discard\"\n",
-      verbs[acl->verb]);
+    HDEBUG(D_acl) debug_printf("%s: condition test yielded \"discard\" in %s\n",
+      verbs[acl->verb], acl_name);
     break;
 
     case FAIL_DROP:
-    HDEBUG(D_acl) debug_printf("%s: condition test yielded \"drop\"\n",
-      verbs[acl->verb]);
+    HDEBUG(D_acl) debug_printf("%s: condition test yielded \"drop\" in %s\n",
+      verbs[acl->verb], acl_name);
     break;
     }
 

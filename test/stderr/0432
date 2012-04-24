@@ -22,7 +22,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> ... callout omitted by default when host testing
 >>> (Use -bhc if you want the callouts to happen.)
 >>> ----------- end verify ------------
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "mail"
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
   uid=uuuu gid=CALLER_GID pid=pppp
@@ -108,7 +108,7 @@ dbfn_write: key=x@y
 wrote positive callout cache address record
 ----------- end verify ------------
 sender x@y verified ok
-accept: condition test succeeded
+accept: condition test succeeded in ACL "mail"
 SMTP>> 250 OK
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -182,7 +182,7 @@ callout cache: found address record
 callout cache: address record is positive
 ----------- end verify ------------
 sender x@y verified ok
-accept: condition test succeeded
+accept: condition test succeeded in ACL "mail"
 SMTP>> 250 OK
 SMTP<< quit
 SMTP>> 221 myhost.test.ex closing connection
@@ -215,7 +215,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> callout cache: found address record
 >>> callout cache: address record is positive
 >>> ----------- end verify ------------
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "mail"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -253,7 +253,7 @@ MUNGED: ::1 will be omitted in what follows
 >>>   result=1 postmaster=0 random=0
 >>> wrote positive callout cache address record
 >>> ----------- end verify ------------
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "mail"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -283,6 +283,6 @@ MUNGED: ::1 will be omitted in what follows
 >>>   SMTP>> HELO myhost.test.ex
 >>> SMTP timeout
 >>> ----------- end verify ------------
->>> accept: condition test deferred
+>>> accept: condition test deferred in ACL "mail"
 LOG: H=[1.2.3.4] sender verify defer for <p1@q>: Could not complete sender verify callout
 LOG: H=[1.2.3.4] temporarily rejected MAIL <p1@q>: Could not complete sender verify callout

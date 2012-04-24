@@ -10,37 +10,37 @@
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> b.c in "test.ex"? no (end of list)
 >>> b.c in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = V4NET.0.0.1
 >>> host in "V4NET.0.0.1"? yes (matched "V4NET.0.0.1")
 >>> check senders = userx@test.ex
 >>> x@y.z in "userx@test.ex"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> accept: endpass encountered - denying access
 LOG: H=[V4NET.0.0.1] F=<x@y.z> rejected RCPT <a@b.c>: invalid sender
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> b.c in "test.ex"? no (end of list)
 >>> b.c in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = V4NET.0.0.1
 >>> host in "V4NET.0.0.1"? yes (matched "V4NET.0.0.1")
 >>> check senders = userx@test.ex
 >>> test.ex in "test.ex"? yes (matched "test.ex")
 >>> userx@test.ex in "userx@test.ex"? yes (matched "userx@test.ex")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -53,39 +53,39 @@ LOG: H=[V4NET.0.0.1] F=<x@y.z> rejected RCPT <a@b.c>: invalid sender
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> b.c in "test.ex"? no (end of list)
 >>> b.c in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = V4NET.0.0.1
 >>> host in "V4NET.0.0.1"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = +relay_hosts
 >>> host in "V4NET.0.0.1 : V4NET.0.0.2"? yes (matched "V4NET.0.0.2")
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> b.c in "test.ex"? no (end of list)
 >>> b.c in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = V4NET.0.0.1
 >>> host in "V4NET.0.0.1"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"? yes (matched "+relay_hosts" - cached)
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -98,42 +98,42 @@ LOG: H=[V4NET.0.0.1] F=<x@y.z> rejected RCPT <a@b.c>: invalid sender
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> b.c in "test.ex"? no (end of list)
 >>> b.c in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = V4NET.0.0.1
 >>> host in "V4NET.0.0.1"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = +relay_hosts
 >>> host in "V4NET.0.0.1 : V4NET.0.0.2"? no (end of list)
 >>> host in "+relay_hosts"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.0.0.3] F=<x@y.z> rejected RCPT <a@b.c>: relay not permitted
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> b.c in "test.ex"? no (end of list)
 >>> b.c in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = V4NET.0.0.1
 >>> host in "V4NET.0.0.1"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = +relay_hosts
 >>> host in "+relay_hosts"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.0.0.3] F=<userx@test.ex> rejected RCPT <a@b.c>: relay not permitted

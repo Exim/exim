@@ -22,9 +22,9 @@
 >>> calling algemeen_aliases router
 >>> routed by algemeen_aliases router
 >>> ----------- end verify ------------
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> nl.demon.net in "nl.demon.net"? yes (matched "nl.demon.net")
 >>> nl.demon.net in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"

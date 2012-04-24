@@ -15,10 +15,10 @@
 >>> ratelimit initializing new key's data
 >>> ratelimit db updated
 >>> ratelimit computed rate 0.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_rcpt"
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -27,10 +27,10 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=0.0 sender_rate_limit=
 >>> ratelimit initializing new key's data
 >>> ratelimit db updated
 >>> ratelimit computed rate 0.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -48,10 +48,10 @@ LOG: 10HmaX-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit condition limit=0 period=3600 key=1h/per_mail/strict/V4NET.9.8.7
 >>> ratelimit db updated
 >>> ratelimit computed rate 1.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_rcpt"
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -59,10 +59,10 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=
 >>> ratelimit condition limit=0 period=3600 key=1h/per_byte/strict/V4NET.9.8.7
 >>> ratelimit db updated
 >>> ratelimit computed rate 19.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=19.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -81,20 +81,20 @@ LOG: 10HmaY-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit initializing new key's data
 >>> ratelimit db updated
 >>> ratelimit computed rate 0.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_rcpt"
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
 >>> check ratelimit = 0/1h/per_conn/strict
 >>> ratelimit condition limit=0 period=3600 key=1h/per_conn/strict/V4NET.9.8.7
 >>> ratelimit found pre-computed rate 0.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -112,20 +112,20 @@ LOG: 10HmaZ-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit condition limit=0 period=3600 key=1h/per_conn/strict/V4NET.9.8.7
 >>> ratelimit db updated
 >>> ratelimit computed rate 1.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_rcpt"
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
 >>> check ratelimit = 0/1h/per_conn/strict
 >>> ratelimit condition limit=0 period=3600 key=1h/per_conn/strict/V4NET.9.8.7
 >>> ratelimit found pre-computed rate 1.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=1.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -144,10 +144,10 @@ LOG: 10HmbA-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit initializing new key's data
 >>> ratelimit db not updated: over the limit, but leaky
 >>> ratelimit computed rate 0.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_rcpt"
 LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_rcpt"
 >>> using ACL "check_rcpt"
 >>> processing "warn"
 >>> check ratelimit = 0/1h/per_rcpt
@@ -155,9 +155,9 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=0.0 sender_rate_limit=
 >>> ratelimit initializing new key's data
 >>> ratelimit db not updated: over the limit, but leaky
 >>> ratelimit computed rate 0.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_rcpt"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_rcpt"
 >>> using ACL "check_rcpt"
 >>> processing "warn"
 >>> check ratelimit = 0/1h/per_rcpt
@@ -165,9 +165,9 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=0.0 sender_rate_limit=
 >>> ratelimit initializing new key's data
 >>> ratelimit db not updated: over the limit, but leaky
 >>> ratelimit computed rate 0.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_rcpt"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_rcpt"
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -176,10 +176,10 @@ LOG: H=(test.ex) [V4NET.9.8.7] Warning: RCPT: sender_rate=0.0 sender_rate_limit=
 >>> ratelimit initializing new key's data
 >>> ratelimit db not updated: over the limit, but leaky
 >>> ratelimit computed rate 0.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] Warning: DATA: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -198,31 +198,31 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit initializing new key's data
 >>> ratelimit db not updated: noupdate set
 >>> ratelimit computed rate 0.0
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_rcpt2"
 >>> processing "warn"
 >>> check ratelimit = 1/1m/per_rcpt
 >>> ratelimit condition limit=1 period=60 key=1m/per_cmd/leaky/V4NET.9.8.6
 >>> ratelimit initializing new key's data
 >>> ratelimit db updated
 >>> ratelimit computed rate 0.0
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_rcpt2"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_rcpt2"
 >>> using ACL "check_rcpt2"
 >>> processing "warn"
 >>> check ratelimit = 1/1m/per_rcpt/noupdate
 >>> ratelimit condition limit=1 period=60 key=1m/per_cmd/leaky/V4NET.9.8.6
 >>> ratelimit db not updated: noupdate set
 >>> ratelimit computed rate 1.0
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_rcpt2"
 >>> processing "warn"
 >>> check ratelimit = 1/1m/per_rcpt
 >>> ratelimit condition limit=1 period=60 key=1m/per_cmd/leaky/V4NET.9.8.6
 >>> ratelimit db updated
 >>> ratelimit computed rate 1.0
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "check_rcpt2"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_rcpt2"
 >>> host in ignore_fromline_hosts? no (option unset)
 >>> using ACL "check_data"
 >>> processing "warn"
@@ -231,8 +231,8 @@ LOG: 10HmbB-0005vi-00 H=(test.ex) [V4NET.9.8.7] F=<> rejected after DATA
 >>> ratelimit initializing new key's data
 >>> ratelimit db updated
 >>> ratelimit computed rate 0.0
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "check_data"
 LOG: 10HmbC-0005vi-00 H=(test.ex) [V4NET.9.8.6] Warning: DATA: sender_rate=0.0 sender_rate_limit=0 sender_rate_period=1h
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_data"
 LOG: 10HmbC-0005vi-00 H=(test.ex) [V4NET.9.8.6] F=<> rejected after DATA

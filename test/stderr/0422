@@ -13,9 +13,9 @@
 >>> new DNS lookup for 1.13.13.V4NET.rbl.test.ex
 >>> DNS lookup for 1.13.13.V4NET.rbl.test.ex failed
 >>> => that means V4NET.13.13.1 is not listed at rbl.test.ex
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "connect"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "connect"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -31,5 +31,5 @@
 >>> new DNS lookup for 2.13.13.V4NET.rbl.test.ex
 >>> DNS lookup for 2.13.13.V4NET.rbl.test.ex succeeded (yielding 127.0.0.1, 127.0.0.2)
 >>> => that means V4NET.13.13.2 is listed at rbl.test.ex
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "connect"
 LOG: H=[V4NET.13.13.2] rejected connection in "connect" ACL: dnslist_value is 127.0.0.1, 127.0.0.2

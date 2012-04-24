@@ -12,20 +12,20 @@ LOG: no host name found for IP address V4NET.11.12.13
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> cam.ac.uk in "test.ex"? no (end of list)
 >>> cam.ac.uk in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = +relay_hosts
 >>> sender host name required, to match against *.masq.test.ex
 >>> host in "*.masq.test.ex"? no (failed to find host name for V4NET.11.12.13)
 >>> host in "+relay_hosts"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[V4NET.11.12.13] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: relay not permitted
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? yes (matched "0.0.0.0/0")
@@ -46,19 +46,19 @@ MUNGED: ::1 will be omitted in what follows
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> cam.ac.uk in "test.ex"? no (end of list)
 >>> cam.ac.uk in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = +relay_hosts
 >>> host in "*.masq.test.ex"? no (end of list)
 >>> host in "+relay_hosts"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=ten-1.test.ex [V4NET.0.0.1] F=<userx@cam.ac.uk> rejected RCPT <userx@cam.ac.uk>: relay not permitted
 Exim version x.yz ....
 changed uid/gid: forcing real = effective
@@ -117,31 +117,31 @@ using ACL "check_recipient"
 processing "accept"
 check hosts = :
 host in ":"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "accept"
 check domains = +local_domains
 test.ex in "test.ex"? yes (matched "test.ex")
 test.ex in "+local_domains"? yes (matched "+local_domains")
-accept: condition test succeeded
+accept: condition test succeeded in ACL "check_recipient"
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<userx@cam.ac.uk>
 using ACL "check_recipient"
 processing "accept"
 check hosts = :
 host in ":"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "accept"
 check domains = +local_domains
 cam.ac.uk in "test.ex"? no (end of list)
 cam.ac.uk in "+local_domains"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "accept"
 check hosts = +relay_hosts
 host in "*.masq.test.ex"? no (end of list)
 host in "+relay_hosts"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_recipient"
 processing "deny"
-deny: condition test succeeded
+deny: condition test succeeded in ACL "check_recipient"
 SMTP>> 550 relay not permitted
 LOG: MAIN REJECT
   H=oneback.test.ex [V4NET.99.99.90] F=<userx@test.ex> rejected RCPT <userx@cam.ac.uk>: relay not permitted

@@ -60,7 +60,7 @@ cioce.test.again.dns in dns_again_means_nonexist? yes (matched "*")
 cioce.test.again.dns is in dns_again_means_nonexist: returning HOST_FIND_FAILED
 failed to find IP address for cioce.test.again.dns: item ignored by +ignore_unknown
 host in "+ignore_unknown : *.cioce.test.again.dns : cioce.test.again.dns : "? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "rcpt"
 end of ACL "rcpt": implicit DENY
 SMTP>> 550 Administrative prohibition
 LOG: MAIN REJECT

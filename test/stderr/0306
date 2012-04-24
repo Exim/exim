@@ -23,7 +23,7 @@
 >>> calling r5 router
 >>> routed by r5 router
 >>> ----------- end verify ------------
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "rcpt"
 >>> using ACL "rcpt"
 >>> processing "accept"
 >>> check verify = recipient
@@ -34,7 +34,7 @@
 >>> calling r2 router
 >>> routed by r2 router
 >>> ----------- end verify ------------
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "rcpt"
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "rcpt"
 >>> processing "accept"
@@ -47,7 +47,7 @@
 >>> calling r3 router
 >>> r3 router forced address failure
 >>> ----------- end verify ------------
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "rcpt"
 >>> accept: endpass encountered - denying access
 LOG: H=[1.2.3.4] F=<anyone@anywhere> rejected RCPT <list1@lists.test.ex>: list1@lists.test.ex is a closed mailing list
 >>> using ACL "rcpt"
@@ -64,6 +64,6 @@ LOG: H=[1.2.3.4] F=<anyone@anywhere> rejected RCPT <list1@lists.test.ex>: list1@
 >>> calling r3 router
 >>> r3 router forced address failure
 >>> ----------- end verify ------------
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "rcpt"
 >>> accept: endpass encountered - denying access
 LOG: H=[1.2.3.4] F=<anyone@anywhere> rejected RCPT <nonlist@lists.test.ex>: nonlist@lists.test.ex is a closed mailing list

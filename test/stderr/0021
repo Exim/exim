@@ -16,29 +16,29 @@ using ACL "connect"
 processing "deny"
 check hosts = : 10.9.8.7
 host in ": 10.9.8.7"? no (end of list)
-deny: condition test failed
+deny: condition test failed in ACL "connect"
 processing "drop"
 check hosts = 10.9.8.9
 host in "10.9.8.9"? no (end of list)
-drop: condition test failed
+drop: condition test failed in ACL "connect"
 processing "accept"
 check logwrite = $sender_host_address accepted by connect ACL
                = 10.9.8.8 accepted by connect ACL
 LOG: MAIN
   10.9.8.8 accepted by connect ACL
-accept: condition test succeeded
+accept: condition test succeeded in ACL "connect"
 using ACL "mail"
 processing "warn"
 check senders = ok@test3
 address match: subject=bad@test1 pattern=ok@test3
 bad@test1 in "ok@test3"? no (end of list)
-warn: condition test failed
+warn: condition test failed in ACL "mail"
 processing "accept"
 check senders = ok@test1 : ok@test3
 address match: subject=bad@test1 pattern=ok@test1
 address match: subject=bad@test1 pattern=ok@test3
 bad@test1 in "ok@test1 : ok@test3"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "mail"
 end of ACL "mail": implicit DENY
 LOG: MAIN REJECT
   H=[10.9.8.8] U=CALLER rejected MAIL <bad@test1>
@@ -48,7 +48,7 @@ check senders = ok@test3
 address match: subject=ok@test1 pattern=ok@test3
 test1 in "test3"? no (end of list)
 ok@test1 in "ok@test3"? no (end of list)
-warn: condition test failed
+warn: condition test failed in ACL "mail"
 processing "accept"
 check senders = ok@test1 : ok@test3
 address match: subject=ok@test1 pattern=ok@test1
@@ -62,7 +62,7 @@ check logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argu
                = :main,reject: mail accepted "mail from:<ok@test1>" "<ok@test1>"
 LOG: MAIN REJECT
   mail accepted "mail from:<ok@test1>" "<ok@test1>"
-accept: condition test succeeded
+accept: condition test succeeded in ACL "mail"
 using ACL "rcpt"
 processing "accept"
 check senders = +ok_senders
@@ -78,7 +78,7 @@ test1 in "+ok_sender_domains"? yes (matched "+ok_sender_domains")
 check logwrite = :panic: rcpt accepted
 LOG: PANIC
   rcpt accepted
-accept: condition test succeeded
+accept: condition test succeeded in ACL "rcpt"
 using ACL "rcpt"
 processing "accept"
 check senders = +ok_senders
@@ -91,7 +91,7 @@ test1 in "+ok_sender_domains"? yes (matched "+ok_sender_domains" - cached)
 check logwrite = :panic: rcpt accepted
 LOG: PANIC
   rcpt accepted
-accept: condition test succeeded
+accept: condition test succeeded in ACL "rcpt"
 LOG: smtp_connection MAIN
   SMTP connection from CALLER closed by QUIT
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
@@ -114,24 +114,24 @@ using ACL "connect"
 processing "deny"
 check hosts = : 10.9.8.7
 host in ": 10.9.8.7"? no (end of list)
-deny: condition test failed
+deny: condition test failed in ACL "connect"
 processing "drop"
 check hosts = 10.9.8.9
 host in "10.9.8.9"? no (end of list)
-drop: condition test failed
+drop: condition test failed in ACL "connect"
 processing "accept"
 check logwrite = $sender_host_address accepted by connect ACL
                = 10.9.8.8 accepted by connect ACL
 LOG: MAIN
   10.9.8.8 accepted by connect ACL
-accept: condition test succeeded
+accept: condition test succeeded in ACL "connect"
 using ACL "mail"
 processing "warn"
 check senders = ok@test3
 address match: subject=ok@test3 pattern=ok@test3
 test3 in "test3"? yes (matched "test3")
 ok@test3 in "ok@test3"? yes (matched "ok@test3")
-warn: condition test succeeded
+warn: condition test succeeded in ACL "mail"
 processing "accept"
 check senders = ok@test1 : ok@test3
 address match: subject=ok@test3 pattern=ok@test1
@@ -147,7 +147,7 @@ check logwrite = :main,reject: mail accepted "$smtp_command" "$smtp_command_argu
                = :main,reject: mail accepted "mail from:<ok@test3>" "<ok@test3>"
 LOG: MAIN REJECT
   mail accepted "mail from:<ok@test3>" "<ok@test3>"
-accept: condition test succeeded
+accept: condition test succeeded in ACL "mail"
 using ACL "rcpt"
 processing "accept"
 check senders = +ok_senders
@@ -165,7 +165,7 @@ test3 in "+ok_sender_domains"? yes (matched "+ok_sender_domains")
 check logwrite = :panic: rcpt accepted
 LOG: PANIC
   rcpt accepted
-accept: condition test succeeded
+accept: condition test succeeded in ACL "rcpt"
 host in ignore_fromline_hosts? no (option unset)
 >>Headers added by MAIL or RCPT ACL:
   X-ACL-Warn: added header line

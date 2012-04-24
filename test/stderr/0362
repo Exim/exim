@@ -32,7 +32,7 @@ processing "accept"
 check domains = +local_domains
 a.b.c in "*.test.ex"? no (end of list)
 a.b.c in "+local_domains"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "check_rcpt"
 processing "accept"
 check domains = +relay_domains
 a.b.c in "a.b.c"? yes (matched "a.b.c")
@@ -72,7 +72,7 @@ routed by r2 router
   envelope to: x@x.test.ex
   transport: t2
 ----------- end verify ------------
-accept: condition test succeeded
+accept: condition test succeeded in ACL "check_rcpt"
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 the.local.host.name closing connection

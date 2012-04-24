@@ -13,11 +13,11 @@
 >>> looking up host name for V4NET.0.0.97
 LOG: no host name found for IP address V4NET.0.0.97
 >>> host in "*.test.ex"? no (failed to find host name for V4NET.0.0.97)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_V4NET_0_0"
 >>> processing "accept"
 >>> check hosts = V4NET.0.0.97
 >>> host in "V4NET.0.0.97"? yes (matched "V4NET.0.0.97")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_V4NET_0_0"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -38,4 +38,4 @@ MUNGED: ::1 will be omitted in what follows
 >>> checking addresses for ten-1.test.ex
 >>>   V4NET.0.0.1 OK
 >>> host in "*.test.ex"? yes (matched "*.test.ex")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_V4NET_0_0"

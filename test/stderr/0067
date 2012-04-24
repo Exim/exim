@@ -10,567 +10,567 @@
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> somehost.example.com in "b.c"? no (end of list)
 >>> somehost.example.com in "bb.cc"? no (end of list)
 >>> somehost.example.com in "bbb.ccc"? no (end of list)
 >>> userx@somehost.example.com in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> userx@somehost.example.com in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> b.c in "b.c"? yes (matched "b.c")
 >>> x@b.c in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (matched "!x@b.c")
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> x@b.c in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> b.c in "b.c"? yes (matched "b.c")
 >>> y@b.c in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "*@b.c")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<y@b.c> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> xy.z in "b.c"? no (end of list)
 >>> philip@xy.z in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "^(phil|quil)[^@]*@")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<philip@xy.z> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> patch.work in "b.c"? no (end of list)
 >>> quilt@patch.work in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "^(phil|quil)[^@]*@")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<quilt@patch.work> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> a.b.c in "b.c"? no (end of list)
 >>> philip@a.b.c in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (matched "!^philip@a.b.c")
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> philip@a.b.c in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> abc.def in "b.c"? no (end of list)
 >>> xx@abc.def in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<xx@abc.def> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> d.e.f in "b.c"? no (end of list)
 >>> abc@d.e.f in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<abc@d.e.f> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> d.e.f in "b.c"? no (end of list)
 >>> d.e.f in "bb.cc"? no (end of list)
 >>> d.e.f in "bbb.ccc"? no (end of list)
 >>> xyz@d.e.f in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> xyz@d.e.f in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> abc.def in "b.c"? no (end of list)
 >>> abc.def in "lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch"? yes (matched "lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch")
 >>> yy@abc.def in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (matched "!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch")
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> yy@abc.def in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> z.z in "b.c"? no (end of list)
 >>> abc@z.z in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<abc@z.z> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> z.z in "b.c"? no (end of list)
 >>> z.z in "bb.cc"? no (end of list)
 >>> z.z in "bbb.ccc"? no (end of list)
 >>> cba@z.z in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> cba@z.z in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> z.z in "b.c"? no (end of list)
 >>> xyz@z.z in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<xyz@z.z> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> p.q.r in "b.c"? no (end of list)
 >>> 12345678@p.q.r in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<12345678@p.q.r> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> z.z in "b.c"? no (end of list)
 >>> 12345678@z.z in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<12345678@z.z> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> p.q.r in "b.c"? no (end of list)
 >>> p.q.r in "bb.cc"? no (end of list)
 >>> p.q.r in "bbb.ccc"? no (end of list)
 >>> 1234@p.q.r in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> p.q.r in "m.n.o"? no (end of list)
 >>> 1234@p.q.r in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> userx@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> m.n.o in "b.c"? no (end of list)
 >>> m.n.o in "bb.cc"? no (end of list)
 >>> m.n.o in "bbb.ccc"? no (end of list)
 >>> 1234@m.n.o in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> m.n.o in "m.n.o"? yes (matched "m.n.o")
 >>> 1234@m.n.o in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? yes (matched "1234@m.n.o")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<1234@m.n.o> rejected RCPT <userx@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> test.ex in "*"? yes (matched "*")
 >>> postmaster@test.ex in "postmaster@*"? yes (matched "postmaster@*")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> myhost.ex in "*"? yes (matched "*")
 >>> postmaster@myhost.ex in "postmaster@*"? yes (matched "postmaster@*")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> userx@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> a.b.c in "b.c"? no (end of list)
 >>> a.b.c in "bb.cc"? no (end of list)
 >>> a.b.c in "bbb.ccc"? no (end of list)
 >>> rr01@a.b.c in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> a.b.c in "a.b.c"? yes (matched "a.b.c")
 >>> rr01@a.b.c in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? yes (matched "rr01@a.b.c" in TESTSUITE/aux-fixed/0067.rejrec)
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<rr01@a.b.c> rejected RCPT <userx@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> userx@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> a.b.c in "b.c"? no (end of list)
 >>> a.b.c in "bb.cc"? no (end of list)
 >>> a.b.c in "bbb.ccc"? no (end of list)
 >>> qqq@a.b.c in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> qqq@a.b.c in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? yes (matched "!^qqq" in TESTSUITE/aux-fixed/0067.rejrec)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> userx@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> a.b.c in "b.c"? no (end of list)
 >>> a.b.c in "bb.cc"? no (end of list)
 >>> a.b.c in "bbb.ccc"? no (end of list)
 >>> qq@a.b.c in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> qq@a.b.c in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? yes (matched "^qq" in TESTSUITE/aux-fixed/0067.rejrec)
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<qq@a.b.c> rejected RCPT <userx@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> userx@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> z.z in "b.c"? no (end of list)
 >>> z.z in "bb.cc"? no (end of list)
 >>> z.z in "bbb.ccc"? no (end of list)
 >>> !excl@z.z in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> !excl@z.z in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? yes (matched "^!excl" in TESTSUITE/aux-fixed/0067.rejrec)
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<!excl@z.z> rejected RCPT <userx@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> userx@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> y.p.s in "b.c"? no (end of list)
 >>> y.p.s in "bb.cc"? no (end of list)
 >>> y.p.s in "bbb.ccc"? no (end of list)
 >>> sh#rp@y.p.s in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> y.p.s in "y.p.s"? yes (matched "y.p.s")
 >>> sh#rp@y.p.s in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? yes (matched "sh#rp@y.p.s" in TESTSUITE/aux-fixed/0067.rejrec)
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<sh#rp@y.p.s> rejected RCPT <userx@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> xx.yy in "b.c"? no (end of list)
 >>> xx.yy in "bb.cc"? no (end of list)
 >>> xx.yy in "bbb.ccc"? no (end of list)
 >>> abc@xx.yy in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> abc@xx.yy in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> xx.yy in "b.c"? no (end of list)
 >>> xyzbc@xx.yy in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<xyzbc@xx.yy> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> xx.yy in "b.c"? no (end of list)
 >>> aabc@xx.yy in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<aabc@xx.yy> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> bb.cc in "b.c"? no (end of list)
 >>> bb.cc in "b.c"? no (end of list)
 >>> bb.cc in "bb.cc"? yes (matched "bb.cc")
 >>> x@bb.cc in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (matched "! x@bb.cc")
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> x@bb.cc in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> bb.cc in "b.c"? no (end of list)
 >>> bb.cc in "bb.cc"? yes (matched "bb.cc")
 >>> y@bb.cc in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "*@bb.cc")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<y@bb.cc> rejected RCPT <x@test.ex>
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> bbb.ccc in "b.c"? no (end of list)
@@ -579,55 +579,55 @@ LOG: H=[1.2.3.4] F=<y@bb.cc> rejected RCPT <x@test.ex>
 >>> bbb.ccc in "bb.cc"? no (end of list)
 >>> bbb.ccc in "bbb.ccc"? yes (matched "bbb.ccc")
 >>> x@bbb.ccc in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (matched "x@bbb.ccc" in TESTSUITE/aux-fixed/0067.not1)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> x@bbb.ccc in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> bbb.ccc in "b.c"? no (end of list)
 >>> bbb.ccc in "bb.cc"? no (end of list)
 >>> bbb.ccc in "bbb.ccc"? yes (matched "bbb.ccc")
 >>> y@bbb.ccc in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? no (matched "y@bbb.ccc" in TESTSUITE/aux-fixed/0067.not2)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = 1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec
 >>> y@bbb.ccc in "1234@m.n.o : TESTSUITE/aux-fixed/0067.rejrec"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : myhost.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@*
 >>> x@test.ex in "postmaster@*"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check senders = !x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc
 >>> bbb.ccc in "b.c"? no (end of list)
 >>> bbb.ccc in "bb.cc"? no (end of list)
 >>> bbb.ccc in "bbb.ccc"? yes (matched "bbb.ccc")
 >>> z@bbb.ccc in "!x@b.c : *@b.c :!^philip@a.b.c : ^(phil|quil)[^@]*@ :!yy@lsearch;TESTSUITE/aux-fixed/0067.rej.lsearch :lsearch*@;TESTSUITE/aux-fixed/0067.rej.lsearch :@@lsearch*;TESTSUITE/aux-fixed/0067.rej.bydomain : ! x@bb.cc : *@bb.cc :! TESTSUITE/aux-fixed/0067.not1 : !TESTSUITE/aux-fixed/0067.not2 : bbb.ccc"? yes (matched "bbb.ccc")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=[1.2.3.4] F=<z@bbb.ccc> rejected RCPT <x@test.ex>

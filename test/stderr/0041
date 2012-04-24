@@ -13,7 +13,7 @@ LOG: H=[1.1.1.1] rejected VRFY userx@test.ex
 >>> processing "accept"
 >>> check hosts = 2.2.2.2
 >>> host in "2.2.2.2"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_expn"
 >>> end of ACL "check_expn": implicit DENY
 LOG: H=[1.1.1.1] rejected EXPN postmaster
 >>> host in hosts_connection_nolog? no (option unset)
@@ -29,7 +29,7 @@ LOG: H=[1.1.1.1] rejected EXPN postmaster
 >>> processing "accept"
 >>> check hosts = 2.2.2.2
 >>> host in "2.2.2.2"? yes (matched "2.2.2.2")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_expn"
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 >>> routing list@test.ex
 >>> calling system_aliases router

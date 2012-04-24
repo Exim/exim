@@ -10,169 +10,169 @@
 >>> processing "require"
 >>> check domains = !nopass
 >>> test.ex in "!nopass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !wontpass
 >>> test.ex in "!wontpass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny"
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
 >>> test.ex in "deny.test.ex"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> check domains = !refuse.test.ex
 >>> test.ex in "!refuse.test.ex"? yes (end of list)
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_1_2_3"
 >>> using ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !nopass
 >>> z in "!nopass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !wontpass
 >>> z in "!wontpass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny"
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
 >>> z in "deny.test.ex"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> z in "test.ex : *.test.ex"? no (end of list)
 >>> z in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept"
 >>> check domains = +relay_domains
 >>> z in "relay.test.ex"? no (end of list)
 >>> z in "+relay_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept"
 >>> check domains = +relay_domains
 >>> z in "+relay_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_1_2_3"
 >>> end of ACL "acl_1_2_3": implicit DENY
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <z@z>
 >>> using ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !nopass
 >>> test.ex in "!nopass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !wontpass
 >>> test.ex in "!wontpass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny"
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
 >>> test.ex in "deny.test.ex"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> check domains = !refuse.test.ex
 >>> test.ex in "!refuse.test.ex"? yes (end of list)
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_1_2_3"
 >>> using ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !nopass
 >>> test.ex in "!nopass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !wontpass
 >>> test.ex in "!wontpass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny"
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
 >>> test.ex in "deny.test.ex"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "test.ex : *.test.ex"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> check domains = !refuse.test.ex
 >>> test.ex in "!refuse.test.ex"? yes (end of list)
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_1_2_3"
 >>> using ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !nopass
 >>> relay.test.ex in "!nopass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !wontpass
 >>> relay.test.ex in "!wontpass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny"
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
 >>> relay.test.ex in "deny.test.ex"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> relay.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
 >>> relay.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> check domains = !refuse.test.ex
 >>> relay.test.ex in "!refuse.test.ex"? yes (end of list)
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_1_2_3"
 >>> using ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !nopass
 >>> deny.test.ex in "!nopass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !wontpass
 >>> deny.test.ex in "!wontpass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny"
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
 >>> deny.test.ex in "deny.test.ex"? yes (matched "deny.test.ex")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl_1_2_3"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@deny.test.ex>: DOMAIN EXPLICITLY DENIED
 >>> using ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !nopass
 >>> refuse.test.ex in "!nopass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !wontpass
 >>> refuse.test.ex in "!wontpass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "deny"
 >>> check continue = this value is not used
 >>> check domains = deny.test.ex
 >>> refuse.test.ex in "deny.test.ex"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_1_2_3"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> refuse.test.ex in "test.ex : *.test.ex"? yes (matched "*.test.ex")
 >>> refuse.test.ex in "+local_domains"? yes (matched "+local_domains")
 >>> check domains = !refuse.test.ex
 >>> refuse.test.ex in "!refuse.test.ex"? no (matched "!refuse.test.ex")
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_1_2_3"
 >>> accept: endpass encountered - denying access
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@refuse.test.ex>: refuse.test.ex gets refused
 >>> using ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !nopass
 >>> nopass in "!nopass"? no (matched "!nopass")
->>> require: condition test failed
+>>> require: condition test failed in ACL "acl_1_2_3"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@nopass>
 >>> using ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !nopass
 >>> wontpass in "!nopass"? yes (end of list)
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_1_2_3"
 >>> processing "require"
 >>> check domains = !wontpass
 >>> wontpass in "!wontpass"? no (matched "!wontpass")
->>> require: condition test failed
+>>> require: condition test failed in ACL "acl_1_2_3"
 LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@wontpass>: x@wontpass shall not pass
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -186,7 +186,7 @@ LOG: H=[1.2.3.4] F=<x@y> rejected RCPT <x@wontpass>: x@wontpass shall not pass
 >>> processing "accept"
 >>> check domains = lsearch;TESTSUITE/aux-fixed/0023.doms
 >>> y in "lsearch;TESTSUITE/aux-fixed/0023.doms"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_7"
 >>> end of ACL "acl_5_6_7": implicit DENY
 LOG: H=[5.6.7.8] F=<x@y> rejected RCPT <x@y>
 >>> using ACL "acl_5_6_7"
@@ -195,7 +195,7 @@ LOG: H=[5.6.7.8] F=<x@y> rejected RCPT <x@y>
 >>> test.ex in "lsearch;TESTSUITE/aux-fixed/0023.doms"? yes (matched "lsearch;TESTSUITE/aux-fixed/0023.doms")
 >>> check local_parts = $domain_data
 >>> x in "userx : spqr"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_7"
 >>> end of ACL "acl_5_6_7": implicit DENY
 LOG: H=[5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> using ACL "acl_5_6_7"
@@ -204,14 +204,14 @@ LOG: H=[5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> test.ex in "lsearch;TESTSUITE/aux-fixed/0023.doms"? yes (matched "lsearch;TESTSUITE/aux-fixed/0023.doms")
 >>> check local_parts = $domain_data
 >>> userx in "userx : spqr"? yes (matched "userx")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_7"
 >>> using ACL "acl_5_6_7"
 >>> processing "accept"
 >>> check domains = lsearch;TESTSUITE/aux-fixed/0023.doms
 >>> test.ex in "lsearch;TESTSUITE/aux-fixed/0023.doms"? yes (matched "lsearch;TESTSUITE/aux-fixed/0023.doms")
 >>> check local_parts = $domain_data
 >>> spqr in "userx : spqr"? yes (matched "spqr")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_7"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -225,12 +225,12 @@ LOG: H=[5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> check hosts = +ok9_hosts
 >>> host in "9.9.9.9"? yes (matched "9.9.9.9")
 >>> host in "+ok9_hosts"? yes (matched "+ok9_hosts")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_9_9_9"
 >>> using ACL "acl_9_9_9"
 >>> processing "accept"
 >>> check hosts = +ok9_hosts
 >>> host in "+ok9_hosts"? yes (matched "+ok9_hosts" - cached)
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_9_9_9"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -244,21 +244,21 @@ LOG: H=[5.6.7.8] F=<x@y> rejected RCPT <x@test.ex>
 >>> check hosts = +ok9_hosts
 >>> host in "9.9.9.9"? no (end of list)
 >>> host in "+ok9_hosts"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_9_9_9"
 >>> processing "deny"
 >>> check hosts = 9.9.9.0/26
 >>> host in "9.9.9.0/26"? yes (matched "9.9.9.0/26")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl_9_9_9"
 LOG: H=[9.9.9.8] F=<x@y> rejected RCPT <x@y>: don't like this host
 >>> using ACL "acl_9_9_9"
 >>> processing "accept"
 >>> check hosts = +ok9_hosts
 >>> host in "+ok9_hosts"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_9_9_9"
 >>> processing "deny"
 >>> check hosts = 9.9.9.0/26
 >>> host in "9.9.9.0/26"? yes (matched "9.9.9.0/26")
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl_9_9_9"
 LOG: H=[9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -273,28 +273,28 @@ LOG: H=[9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
 >>> check hosts = +ok9_hosts
 >>> host in "9.9.9.9"? no (end of list)
 >>> host in "+ok9_hosts"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_9_9_9"
 >>> processing "deny"
 >>> check hosts = 9.9.9.0/26
 >>> host in "9.9.9.0/26"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_9_9_9"
 >>> processing "accept"
 >>> check hosts = 9.9.9.0/24
 >>> host in "9.9.9.0/24"? yes (matched "9.9.9.0/24")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_9_9_9"
 >>> using ACL "acl_9_9_9"
 >>> processing "accept"
 >>> check hosts = +ok9_hosts
 >>> host in "+ok9_hosts"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_9_9_9"
 >>> processing "deny"
 >>> check hosts = 9.9.9.0/26
 >>> host in "9.9.9.0/26"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_9_9_9"
 >>> processing "accept"
 >>> check hosts = 9.9.9.0/24
 >>> host in "9.9.9.0/24"? yes (matched "9.9.9.0/24")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_9_9_9"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -309,7 +309,7 @@ LOG: H=[9.9.9.8] F=<x@y> rejected RCPT <a@b>: don't like this host
 >>> y in "domain2"? no (end of list)
 >>> x@y in "ok@ok.ok"? no (end of list)
 >>> x@y in "user1@domain1 : domain2 : +ok_senders"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": implicit DENY
 LOG: H=[5.6.8.1] F=<x@y> rejected RCPT <x@y>
 >>> using ACL "acl_5_6_8"
@@ -317,7 +317,7 @@ LOG: H=[5.6.8.1] F=<x@y> rejected RCPT <x@y>
 >>> check senders = user1@domain1 : domain2 : +ok_senders
 >>> y in "domain2"? no (end of list)
 >>> x@y in "user1@domain1 : domain2 : +ok_senders"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": implicit DENY
 LOG: H=[5.6.8.1] F=<x@y> rejected RCPT <y@x>
 >>> using ACL "acl_5_6_8"
@@ -325,7 +325,7 @@ LOG: H=[5.6.8.1] F=<x@y> rejected RCPT <y@x>
 >>> check senders = user1@domain1 : domain2 : +ok_senders
 >>> domain1 in "domain1"? yes (matched "domain1")
 >>> user1@domain1 in "user1@domain1 : domain2 : +ok_senders"? yes (matched "user1@domain1")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_8"
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "acl_5_6_8"
 >>> processing "accept"
@@ -333,7 +333,7 @@ LOG: H=[5.6.8.1] F=<x@y> rejected RCPT <y@x>
 >>> domain1 in "domain2"? no (end of list)
 >>> user2@domain1 in "ok@ok.ok"? no (end of list)
 >>> user2@domain1 in "user1@domain1 : domain2 : +ok_senders"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_8"
 >>> end of ACL "acl_5_6_8": implicit DENY
 LOG: H=[5.6.8.1] F=<user2@domain1> rejected RCPT <x@y>
 >>> using ACL "acl_5_6_8"
@@ -342,7 +342,7 @@ LOG: H=[5.6.8.1] F=<user2@domain1> rejected RCPT <x@y>
 >>> domain2 in "domain1"? no (end of list)
 >>> domain2 in "domain2"? yes (matched "domain2")
 >>> user1@domain2 in "user1@domain1 : domain2 : +ok_senders"? yes (matched "domain2")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_8"
 >>> using ACL "acl_5_6_8"
 >>> processing "accept"
 >>> check senders = user1@domain1 : domain2 : +ok_senders
@@ -350,13 +350,13 @@ LOG: H=[5.6.8.1] F=<user2@domain1> rejected RCPT <x@y>
 >>> ok.ok in "ok.ok"? yes (matched "ok.ok")
 >>> ok@ok.ok in "ok@ok.ok"? yes (matched "ok@ok.ok")
 >>> ok@ok.ok in "user1@domain1 : domain2 : +ok_senders"? yes (matched "+ok_senders")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_8"
 >>> using ACL "acl_5_6_8"
 >>> processing "accept"
 >>> check senders = user1@domain1 : domain2 : +ok_senders
 >>> ok.ok in "domain2"? no (end of list)
 >>> ok@ok.ok in "user1@domain1 : domain2 : +ok_senders"? yes (matched "+ok_senders" - cached)
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_8"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -369,19 +369,19 @@ LOG: H=[5.6.8.1] F=<user2@domain1> rejected RCPT <x@y>
 >>> processing "accept"
 >>> check condition = ${if match{$local_part}{^x}{yes}{no}}
 >>>                 = yes
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_11"
 >>> using ACL "acl_5_6_11"
 >>> processing "accept"
 >>> check condition = ${if match{$local_part}{^x}{yes}{no}}
 >>>                 = yes
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_11"
 >>> using ACL "acl_5_6_11"
 >>> processing "accept"
 >>> check condition = ${if match{$local_part}{^x}{yes}{no}}
 >>>                 = no
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_11"
 >>> processing "deny"
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl_5_6_11"
 LOG: H=[5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -400,8 +400,8 @@ LOG: H=[5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
 >>> processing "accept"
 >>> check domains = ok
 >>> ok in "ok"? yes (matched "ok")
->>> accept: condition test succeeded
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_12A"
+>>> accept: condition test succeeded in ACL "acl_5_6_12"
 >>> using ACL "acl_5_6_12"
 >>> processing "accept"
 >>> check hosts = 5.6.12.1
@@ -411,9 +411,9 @@ LOG: H=[5.6.11.1] F=<x@y> rejected RCPT <y2@y>: "local part of wrong type
 >>> processing "accept"
 >>> check domains = ok
 >>> y in "ok"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_12A"
 >>> end of ACL "acl_5_6_12A": implicit DENY
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_12"
 >>> accept: endpass encountered - denying access
 LOG: H=[5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
 >>> host in hosts_connection_nolog? no (option unset)
@@ -428,16 +428,16 @@ LOG: H=[5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
 >>> processing "accept"
 >>> check hosts = 5.6.12.1
 >>> host in "5.6.12.1"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_12"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_12"
 >>> using ACL "acl_5_6_12"
 >>> processing "accept"
 >>> check hosts = 5.6.12.1
 >>> host in "5.6.12.1"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_12"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_12"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -509,27 +509,27 @@ LOG: H=[5.6.12.1] F=<x@y> rejected RCPT <x@y>: failed nested acl
 >>> using ACL "acl_8_8_8"
 >>> processing "accept"
 >>> check acl = acl_8_8_8
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
->>> accept: condition test error
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
+>>> accept: condition test error in ACL "acl_8_8_8"
 LOG: H=[8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too deep: possible loop
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -548,8 +548,8 @@ LOG: H=[8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too deep: p
 >>> y in "y"? yes (matched "y")
 >>> check local_parts = x
 >>> x in "x"? yes (matched "x")
->>> accept: condition test succeeded
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0023.acl1"
+>>> accept: condition test succeeded in ACL "acl_5_6_13"
 >>> using ACL "acl_5_6_13"
 >>> processing "accept"
 >>> check acl = TESTSUITE/aux-fixed/0023.acl1
@@ -559,9 +559,9 @@ LOG: H=[8.8.8.8] F=<x@y> temporarily rejected RCPT <x@y>: ACL nested too deep: p
 >>> y in "y"? yes (matched "y")
 >>> check local_parts = x
 >>> x1 in "x"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl1"
 >>> end of ACL "TESTSUITE/aux-fixed/0023.acl1": implicit DENY
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_13"
 >>> end of ACL "acl_5_6_13": implicit DENY
 LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x1@y>
 >>> using ACL "acl_5_6_13"
@@ -573,9 +573,9 @@ LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x1@y>
 >>> y in "y"? yes (matched "y")
 >>> check local_parts = x
 >>> x2 in "x"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl1"
 >>> end of ACL "TESTSUITE/aux-fixed/0023.acl1": implicit DENY
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_13"
 >>> end of ACL "acl_5_6_13": implicit DENY
 LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x2@y>
 >>> host in hosts_connection_nolog? no (option unset)
@@ -593,7 +593,7 @@ LOG: H=[5.6.13.1] F=<x@y> rejected RCPT <x2@y>
 >>> new DNS lookup for 13.12.11.V4NET.rbl.test.ex
 >>> DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.13 is listed at rbl.test.ex
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl_V4NET_11_12"
 LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x@y>: DNSLIST (rbl.test.ex: This is a test blacklisting message)
 >>> using ACL "acl_V4NET_11_12"
 >>> processing "deny"
@@ -602,7 +602,7 @@ LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x@y>: DNSLIST (rbl.test.ex: This 
 >>> using result of previous DNS lookup
 >>> DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.13 is listed at rbl.test.ex
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl_V4NET_11_12"
 LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This is a test blacklisting message)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -619,9 +619,9 @@ LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This
 >>> new DNS lookup for 12.12.11.V4NET.rbl.test.ex
 >>> DNS lookup for 12.12.11.V4NET.rbl.test.ex failed
 >>> => that means V4NET.11.12.12 is not listed at rbl.test.ex
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_V4NET_11_12"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_V4NET_11_12"
 >>> using ACL "acl_V4NET_11_12"
 >>> processing "deny"
 >>> check dnslists = rbl.test.ex
@@ -629,9 +629,9 @@ LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This
 >>> using result of previous DNS lookup
 >>> DNS lookup for 12.12.11.V4NET.rbl.test.ex failed
 >>> => that means V4NET.11.12.12 is not listed at rbl.test.ex
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_V4NET_11_12"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_V4NET_11_12"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -650,7 +650,7 @@ LOG: H=[V4NET.11.12.13] F=<x@y> rejected RCPT <x1@y>: DNSLIST (rbl.test.ex: This
 >>> x in "fail"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_20_20_20"
 >>> accept: endpass encountered - denying access
 LOG: H=[20.20.20.20] sender verify fail for <x@y>: Unrouteable address
 LOG: H=[20.20.20.20] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
@@ -658,7 +658,7 @@ LOG: H=[20.20.20.20] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
 >>> processing "accept"
 >>> check verify = sender
 >>> using cached sender verify result
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_20_20_20"
 >>> accept: endpass encountered - denying access
 LOG: H=[20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
@@ -687,7 +687,7 @@ LOG: H=[20.20.20.20] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> x1 in "fail"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_20_20_20"
 >>> accept: endpass encountered - denying access
 LOG: H=[20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
 >>> using ACL "acl_20_20_20"
@@ -702,7 +702,7 @@ LOG: H=[20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_20_20_20"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -729,7 +729,7 @@ LOG: H=[20.20.20.20] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
 >>> x1 in "fail"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_21_21_21"
 >>> end of ACL "acl_21_21_21": implicit DENY
 LOG: H=[21.21.21.21] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
 >>> using ACL "acl_21_21_21"
@@ -744,7 +744,7 @@ LOG: H=[21.21.21.21] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_21_21_21"
 >>> using ACL "acl_21_21_21"
 >>> processing "accept"
 >>> check verify = sender
@@ -758,7 +758,7 @@ LOG: H=[21.21.21.21] F=<userx@y> rejected RCPT <x1@y>: Unrouteable address
 >>> calling r2 router
 >>> r2 router forced address failure
 >>> ----------- end verify ------------
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_21_21_21"
 >>> end of ACL "acl_21_21_21": implicit DENY
 LOG: H=[21.21.21.21] F=<userx@y> rejected RCPT <fail@y>: here is a fail message
 >>> using ACL "acl_21_21_21"
@@ -771,7 +771,7 @@ LOG: H=[21.21.21.21] F=<userx@y> rejected RCPT <fail@y>: here is a fail message
 >>> x in "fail"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_21_21_21"
 >>> end of ACL "acl_21_21_21": implicit DENY
 LOG: H=[21.21.21.21] sender verify fail for <x@y>: Unrouteable address
 LOG: H=[21.21.21.21] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
@@ -779,7 +779,7 @@ LOG: H=[21.21.21.21] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
 >>> processing "accept"
 >>> check verify = sender
 >>> using cached sender verify result
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_21_21_21"
 >>> end of ACL "acl_21_21_21": implicit DENY
 LOG: H=[21.21.21.21] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
@@ -794,7 +794,7 @@ LOG: H=[21.21.21.21] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> calling r2 router
 >>> r2 router forced address failure
 >>> ----------- end verify ------------
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_21_21_21"
 >>> end of ACL "acl_21_21_21": implicit DENY
 LOG: H=[21.21.21.21] sender verify fail for <fail@y>: here is a fail message
 LOG: H=[21.21.21.21] F=<fail@y> rejected RCPT <x@y>: Sender verify failed
@@ -810,7 +810,7 @@ LOG: H=[21.21.21.21] F=<fail@y> rejected RCPT <x@y>: Sender verify failed
 >>> processing "accept"
 >>> check recipients = x@y
 >>> userx@y in "x@y"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_22_22_22"
 >>> end of ACL "acl_22_22_22": implicit DENY
 LOG: H=[22.22.22.22] F=<userx@y> rejected RCPT <userx@y>
 >>> using ACL "acl_22_22_22"
@@ -818,7 +818,7 @@ LOG: H=[22.22.22.22] F=<userx@y> rejected RCPT <userx@y>
 >>> check recipients = x@y
 >>> y in "y"? yes (matched "y")
 >>> x@y in "x@y"? yes (matched "x@y")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_22_22_22"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -839,7 +839,7 @@ LOG: H=[22.22.22.22] F=<userx@y> rejected RCPT <userx@y>
 >>> x in "fail"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl_23_23_23"
 LOG: H=[23.23.23.0] sender verify fail for <x@y>: Unrouteable address
 LOG: H=[23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
 >>> using ACL "acl_23_23_23"
@@ -854,9 +854,9 @@ LOG: H=[23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
 >>> calling r1 router
 >>> routed by r1 router
 >>> ----------- end verify ------------
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_23_23_23"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_23_23_23"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -869,9 +869,9 @@ LOG: H=[23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
 >>> processing "deny"
 >>> check hosts = 23.23.23.0
 >>> host in "23.23.23.0"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_23_23_23"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_23_23_23"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -883,7 +883,7 @@ LOG: H=[23.23.23.0] F=<x@y> rejected RCPT <userx@y>: Sender verify failed
 >>> using ACL "acl_24_24_24"
 >>> processing "warn"
 >>> check condition = yes
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "acl_24_24_24"
 >>> end of ACL "acl_24_24_24": implicit DENY
 LOG: H=[24.24.24.24] F=<x@y> rejected RCPT <userx@y>
 >>> host in hosts_connection_nolog? no (option unset)
@@ -898,7 +898,7 @@ LOG: H=[24.24.24.24] F=<x@y> rejected RCPT <userx@y>
 >>> processing "deny"
 >>> check domains = x
 >>> y in "x"? no (end of list)
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_25_25_25"
 >>> end of ACL "acl_25_25_25": implicit DENY
 LOG: H=[25.25.25.25] F=<x@y> rejected RCPT <x@y>
 >>> host in hosts_connection_nolog? no (option unset)
@@ -915,16 +915,16 @@ LOG: H=[25.25.25.25] F=<x@y> rejected RCPT <x@y>
 >>>  in ":"? yes (matched "")
 >>> check condition = ${if > {$recipients_count}{0}{yes}{no}}
 >>>                 = no
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_26_26_26"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_26_26_26"
 >>> using ACL "acl_26_26_26"
 >>> processing "deny"
 >>> check senders = :
 >>>  in ":"? yes (matched "")
 >>> check condition = ${if > {$recipients_count}{0}{yes}{no}}
 >>>                 = yes
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl_26_26_26"
 LOG: H=[26.26.26.26] F=<> rejected RCPT <y@y>: bounce messages can have only one recipient
 >>> using ACL "acl_26_26_26"
 >>> processing "deny"
@@ -932,7 +932,7 @@ LOG: H=[26.26.26.26] F=<> rejected RCPT <y@y>: bounce messages can have only one
 >>>  in ":"? yes (matched "")
 >>> check condition = ${if > {$recipients_count}{0}{yes}{no}}
 >>>                 = yes
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl_26_26_26"
 LOG: H=[26.26.26.26] F=<> rejected RCPT <z@y>: bounce messages can have only one recipient
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -946,9 +946,9 @@ LOG: H=[26.26.26.26] F=<> rejected RCPT <z@y>: bounce messages can have only one
 >>> processing "deny"
 >>> check hosts = ${if eq {1}{0}{}fail}
 >>> expansion of "${if eq {1}{0}{}fail}" forced failure: assume not in this list
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_27_27_27"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_27_27_27"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -961,18 +961,18 @@ LOG: H=[26.26.26.26] F=<> rejected RCPT <z@y>: bounce messages can have only one
 >>> processing "accept"
 >>> check sender_domains = : okdomain
 >>>  in ": okdomain"? yes (matched "")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_28_28_28"
 >>> using ACL "acl_28_28_28"
 >>> processing "accept"
 >>> check sender_domains = : okdomain
 >>> okdomain in ": okdomain"? yes (matched "okdomain")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_28_28_28"
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "acl_28_28_28"
 >>> processing "accept"
 >>> check sender_domains = : okdomain
 >>> baddomain in ": okdomain"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_28_28_28"
 >>> end of ACL "acl_28_28_28": implicit DENY
 LOG: H=[28.28.28.28] F=<a@baddomain> rejected RCPT <x@y>
 >>> host in hosts_connection_nolog? no (option unset)
@@ -1000,9 +1000,9 @@ MUNGED: ::1 will be omitted in what follows
 >>>   name=ten-3-alias.test.ex address=V4NET.0.0.3
 >>> checking addresses for ten-3-alias.test.ex
 >>>   V4NET.0.0.3 OK
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "acl_V4NET_0_0"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_V4NET_0_0"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -1017,7 +1017,7 @@ MUNGED: ::1 will be omitted in what follows
 >>> looking up host name to force name/address consistency check
 >>> looking up host name for V4NET.0.0.97
 LOG: no host name found for IP address V4NET.0.0.97
->>> require: condition test failed
+>>> require: condition test failed in ACL "acl_V4NET_0_0"
 LOG: H=[V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for reverse lookup check (failed to find host name from IP address)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -1035,7 +1035,7 @@ LOG: H=[V4NET.0.0.97] F=<> rejected RCPT <x@y>: host lookup failed for reverse l
 >>> new DNS lookup for localhost.test.ex
 >>> DNS lookup for localhost.test.ex succeeded (yielding 127.0.0.1)
 >>> => that means localhost is listed at test.ex
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl_29_29_29"
 LOG: H=[29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
 >>> using ACL "acl_29_29_29"
 >>> processing "deny"
@@ -1045,9 +1045,9 @@ LOG: H=[29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
 >>> new DNS lookup for elsewhere.test.ex
 >>> DNS lookup for elsewhere.test.ex failed
 >>> => that means elsewhere is not listed at test.ex
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_29_29_29"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_29_29_29"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -1064,7 +1064,7 @@ LOG: H=[29.29.29.29] F=<a@localhost> rejected RCPT <x@y>
 >>> new DNS lookup for ten-1.test.ex
 >>> DNS lookup for ten-1.test.ex succeeded (yielding V4NET.0.0.1)
 >>> => that means ten-1 is listed at test.ex
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl_30_30_30"
 LOG: H=[30.30.30.30] F=<a@ten-1> rejected RCPT <x@y>: domain=test.ex
 >>> using ACL "acl_30_30_30"
 >>> processing "deny"
@@ -1075,9 +1075,9 @@ LOG: H=[30.30.30.30] F=<a@ten-1> rejected RCPT <x@y>: domain=test.ex
 >>> DNS lookup for ten-2.test.ex succeeded (yielding V4NET.0.0.2)
 >>> => but we are not accepting this block class because
 >>> => there was no match for =V4NET.0.0.1,127.0.0.2
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_30_30_30"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_30_30_30"
 >>> host in smtp_accept_max_nonmail_hosts? yes (matched "*")
 >>> using ACL "acl_30_30_30"
 >>> processing "deny"
@@ -1087,7 +1087,7 @@ LOG: H=[30.30.30.30] F=<a@ten-1> rejected RCPT <x@y>: domain=test.ex
 >>> new DNS lookup for 13.12.11.V4NET.rbl.test.ex
 >>> DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means 13.12.11.V4NET.rbl is listed at test.ex
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "acl_30_30_30"
 LOG: H=[30.30.30.30] F=<a@13.12.11.V4NET.rbl> rejected RCPT <x@y>: domain=test.ex
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
@@ -1103,9 +1103,9 @@ LOG: H=[30.30.30.30] F=<a@13.12.11.V4NET.rbl> rejected RCPT <x@y>: domain=test.e
 >>>                = test.ex/y+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END
 >>> DNS list check: test.ex/y+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+END
 LOG: dnslist query is too long (ignored): y+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+extra+...
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "acl_31_31_31"
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_31_31_31"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -1124,14 +1124,14 @@ LOG: dnslist query is too long (ignored): y+extra+extra+extra+extra+extra+extra+
 >>> x in "fail"? no (end of list)
 >>> no more routers
 >>> ----------- end verify ------------
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_33_33_33"
 >>> accept: endpass encountered - denying access
 LOG: H=[33.33.33.33] F=<x@y> rejected RCPT <x1@y>: Sender verify failed
 >>> using ACL "acl_33_33_33"
 >>> processing "accept"
 >>> check verify = sender/no_details
 >>> using cached sender verify result
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_33_33_33"
 >>> accept: endpass encountered - denying access
 LOG: H=[33.33.33.33] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
@@ -1149,7 +1149,7 @@ LOG: H=[33.33.33.33] F=<x@y> rejected RCPT <x2@y>: Sender verify failed
 >>> new DNS lookup for 1.44.44.44.test.again.dns
 >>> 1.44.44.44.test.again.dns in dns_again_means_nonexist? no (option unset)
 LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: assumed not in list
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "acl_44_44_44"
 >>> processing "warn"
 >>> check dnslists = +include_unknown : test.again.dns
 >>> DNS list check: +include_unknown
@@ -1157,24 +1157,24 @@ LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: ass
 >>> using result of previous DNS lookup
 LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: assumed in list
 >>> => that means 44.44.44.1 is listed at test.again.dns
->>> warn: condition test succeeded
+>>> warn: condition test succeeded in ACL "acl_44_44_44"
 >>> processing "warn"
 >>> check dnslists = +exclude_unknown : test.again.dns
 >>> DNS list check: +exclude_unknown
 >>> DNS list check: test.again.dns
 >>> using result of previous DNS lookup
 LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: assumed not in list
->>> warn: condition test failed
+>>> warn: condition test failed in ACL "acl_44_44_44"
 >>> processing "warn"
 >>> check dnslists = +defer_unknown : test.again.dns
 >>> DNS list check: +defer_unknown
 >>> DNS list check: test.again.dns
 >>> using result of previous DNS lookup
 LOG: DNS list lookup defer (probably timeout) for 1.44.44.44.test.again.dns: returned DEFER
->>> warn: condition test deferred
+>>> warn: condition test deferred in ACL "acl_44_44_44"
 LOG: H=[44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferred
 >>> processing "accept"
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_44_44_44"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -1190,9 +1190,9 @@ LOG: H=[44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferr
 >>> processing "accept"
 >>> check domains = b
 >>> y in "b"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "TESTSUITE/aux-fixed/0023.acl2"
 >>> end of ACL "TESTSUITE/aux-fixed/0023.acl2": implicit DENY
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_60_60_60"
 >>> using ACL "acl_60_60_60"
 >>> processing "accept"
 >>> check !acl = TESTSUITE/aux-fixed/0023.acl2
@@ -1202,7 +1202,7 @@ LOG: H=[44.44.44.1] Warning: ACL "warn" statement skipped: condition test deferr
 >>> b in "b"? yes (matched "b")
 >>> check local_parts = a
 >>> a in "a"? yes (matched "a")
->>> accept: condition test succeeded
->>> accept: condition test failed
+>>> accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0023.acl2"
+>>> accept: condition test failed in ACL "acl_60_60_60"
 >>> end of ACL "acl_60_60_60": implicit DENY
 LOG: H=[60.60.60.60] F=<x@y> rejected RCPT <a@b>

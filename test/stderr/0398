@@ -67,7 +67,7 @@ routed by r2 router
   host 127.0.0.1 [127.0.0.1]
 ----------- end verify ------------
 sender qq@remote verified ok
-deny: condition test failed
+deny: condition test failed in ACL "rcpt"
 processing "warn"
 check senders = qq@remote
 address match: subject=qq@remote pattern=qq@remote
@@ -144,7 +144,7 @@ wrote callout cache domain record:
 dbfn_write: key=qq@remote
 wrote negative callout cache address record
 ----------- end verify ------------
-warn: condition test succeeded
+warn: condition test succeeded in ACL "rcpt"
 LOG: MAIN
   U=CALLER Warning: Sender verify failed: response to "RCPT TO:<qq@remote>" from 127.0.0.1 [127.0.0.1] was: 550 Unknown
 processing "accept"
@@ -152,7 +152,7 @@ check senders = qq@remote
 address match: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
-accept: condition test succeeded
+accept: condition test succeeded in ACL "rcpt"
 SMTP>> 250 Accepted
 SMTP<< rcpt to:<xyz@local>
 using ACL "rcpt"
@@ -163,7 +163,7 @@ remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
 check !verify = sender
 using cached sender verify result
-deny: condition test failed
+deny: condition test failed in ACL "rcpt"
 processing "warn"
 check senders = qq@remote
 address match: subject=qq@remote pattern=qq@remote
@@ -221,7 +221,7 @@ dbfn_read: key=qq@remote
 callout cache: found address record
 callout cache: address record is negative
 ----------- end verify ------------
-warn: condition test succeeded
+warn: condition test succeeded in ACL "rcpt"
 LOG: MAIN
   U=CALLER Warning: Sender verify failed
 processing "accept"
@@ -229,7 +229,7 @@ check senders = qq@remote
 address match: subject=qq@remote pattern=qq@remote
 remote in "remote"? yes (matched "remote")
 qq@remote in "qq@remote"? yes (matched "qq@remote")
-accept: condition test succeeded
+accept: condition test succeeded in ACL "rcpt"
 SMTP>> 250 Accepted
 SMTP<< quit
 SMTP>> 221 mail.test.ex closing connection

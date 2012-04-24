@@ -12,7 +12,7 @@ LOG: no host name found for IP address V4NET.255.255.255
 >>> using ACL "connect"
 >>> processing "require"
 >>> check verify = reverse_host_lookup
->>> require: condition test failed
+>>> require: condition test failed in ACL "connect"
 LOG: H=[V4NET.255.255.255] rejected connection in "connect" ACL: host lookup failed (failed to find host name from IP address)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? yes (matched "*")
@@ -28,7 +28,7 @@ LOG: no host name found for IP address V4NET.255.255.255
 >>> using ACL "connect"
 >>> processing "require"
 >>> check verify = reverse_host_lookup/defer_ok
->>> require: condition test error
+>>> require: condition test error in ACL "connect"
 LOG: H=[V4NET.255.255.255] temporarily rejected connection in "connect" ACL: unexpected '/' found in "reverse_host_lookup/defer_ok" (this verify item has no options)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? yes (matched "*")
@@ -44,7 +44,7 @@ LOG: no host name found for IP address V4NET.255.255.255
 >>> using ACL "connect"
 >>> processing "require"
 >>> check verify = certificate/defer_ok
->>> require: condition test error
+>>> require: condition test error in ACL "connect"
 LOG: H=[V4NET.255.255.255] temporarily rejected connection in "connect" ACL: unexpected '/' found in "certificate/defer_ok" (this verify item has no options)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? yes (matched "*")
@@ -60,7 +60,7 @@ LOG: no host name found for IP address V4NET.255.255.255
 >>> using ACL "connect"
 >>> processing "require"
 >>> check verify = helo/defer_ok
->>> require: condition test error
+>>> require: condition test error in ACL "connect"
 LOG: H=[V4NET.255.255.255] temporarily rejected connection in "connect" ACL: unexpected '/' found in "helo/defer_ok" (this verify item has no options)
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? yes (matched "*")
@@ -76,5 +76,5 @@ LOG: no host name found for IP address V4NET.255.255.255
 >>> using ACL "connect"
 >>> processing "require"
 >>> check verify = header_syntax/defer_ok
->>> require: condition test error
+>>> require: condition test error in ACL "connect"
 LOG: H=[V4NET.255.255.255] temporarily rejected connection in "connect" ACL: unexpected '/' found in "header_syntax/defer_ok" (this verify item has no options)

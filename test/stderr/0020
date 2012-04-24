@@ -2106,4 +2106,4 @@ MUNGED: ::1 will be omitted in what follows
 >>> processing "accept"
 >>> check hosts = 10.250.104.0/21
 >>> host in "10.250.104.0/21"? yes (matched "10.250.104.0/21")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_connect"

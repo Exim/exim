@@ -9,7 +9,7 @@
 >>> using ACL "acl_5_6_9"
 >>> processing "accept"
 >>> check authenticated = *
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_9"
 >>> accept: endpass encountered - denying access
 LOG: H=[5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>> rhu.barb in helo_lookup_domains? no (end of list)
@@ -27,7 +27,7 @@ LOG: H=[5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>> processing "accept"
 >>> check authenticated = *
 >>> auth1 in "*"? yes (matched "*")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_9"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -39,7 +39,7 @@ LOG: H=[5.6.9.1] F=<x@y> rejected RCPT <x@y>: You must authenticate
 >>> using ACL "acl_5_6_10"
 >>> processing "accept"
 >>> check authenticated = auth1
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_10"
 >>> end of ACL "acl_5_6_10": implicit DENY
 LOG: H=[5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> rhu.barb in helo_lookup_domains? no (end of list)
@@ -57,7 +57,7 @@ LOG: H=[5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> processing "accept"
 >>> check authenticated = auth1
 >>> auth1 in "auth1"? yes (matched "auth1")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "acl_5_6_10"
 >>> host in hosts_connection_nolog? no (option unset)
 >>> host in host_lookup? no (option unset)
 >>> host in host_reject_connection? no (option unset)
@@ -79,6 +79,6 @@ LOG: H=[5.6.10.1] F=<x@y> rejected RCPT <x@y>
 >>> processing "accept"
 >>> check authenticated = auth1
 >>> auth2 in "auth1"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "acl_5_6_10"
 >>> end of ACL "acl_5_6_10": implicit DENY
 LOG: H=(rhu.barb) [5.6.10.1] F=<x@y> A=auth2 rejected RCPT <x@y>

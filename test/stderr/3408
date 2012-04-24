@@ -13,21 +13,21 @@
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@exim.test.ex
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@exim.test.ex")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@exim.test.ex
 >>> userx@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check !authenticated = *
 >>> check dnslists = rbl.test.ex
@@ -35,7 +35,7 @@
 >>> new DNS lookup for 14.12.11.V4NET.rbl.test.ex
 >>> DNS lookup for 14.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 >>> => that means V4NET.11.12.14 is listed at rbl.test.ex
->>> deny: condition test succeeded
+>>> deny: condition test succeeded in ACL "check_recipient"
 LOG: H=(exim.test.ex) [V4NET.11.12.14] F=<postmaster@exim.test.ex> rejected RCPT userx@exim.test.ex: host is listed in rbl.test.ex
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.14] P=esmtp S=sss
@@ -62,25 +62,25 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@exim.test.ex
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> postmaster@exim.test.ex in "postmaster@exim.test.ex"? yes (matched "postmaster@exim.test.ex")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check recipients = postmaster@exim.test.ex
 >>> userx@exim.test.ex in "postmaster@exim.test.ex"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "deny"
 >>> check !authenticated = *
 >>> plain in "*"? yes (matched "*")
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "require"
 >>> check verify = sender
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -94,7 +94,7 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> calling localuser router
 >>> routed by localuser router
 >>> ----------- end verify ------------
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "deny"
 >>> check !verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -105,11 +105,11 @@ LOG: 10HmaX-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.1
 >>> calling list router
 >>> routed by list router
 >>> ----------- end verify ------------
->>> deny: condition test failed
+>>> deny: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> exim.test.ex in "exim.test.ex"? yes (matched "exim.test.ex")
 >>> exim.test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> host in ignore_fromline_hosts? no (option unset)
 LOG: 10HmaY-0005vi-00 <= postmaster@exim.test.ex H=(exim.test.ex) [V4NET.11.12.14] P=esmtpa A=plain:userx S=sss

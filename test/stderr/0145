@@ -16,7 +16,7 @@
 >>> "more" is false: skipping remaining routers
 >>> no more routers
 >>> ----------- end verify ------------
->>> require: condition test failed
+>>> require: condition test failed in ACL "check_recipient"
 LOG: H=[V4NET.9.8.7] sender verify fail for <x@mxt10.test.ex>: all relevant MX records point to non-existent hosts or (invalidly) to IP addresses
 LOG: H=[V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender verify failed
 >>> host in hosts_connection_nolog? no (option unset)
@@ -35,7 +35,7 @@ LOG: H=[V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender verify fail
 >>> calling domainlist router
 >>> routed by domainlist router
 >>> ----------- end verify ------------
->>> require: condition test succeeded
+>>> require: condition test succeeded in ACL "check_recipient"
 >>> processing "require"
 >>> check verify = recipient
 >>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -45,5 +45,5 @@ LOG: H=[V4NET.9.8.7] F=<x@mxt10.test.ex> rejected RCPT <x@y>: Sender verify fail
 >>> "more" is false: skipping remaining routers
 >>> no more routers
 >>> ----------- end verify ------------
->>> require: condition test failed
+>>> require: condition test failed in ACL "check_recipient"
 LOG: H=[V4NET.9.8.7] F=<x@ten-1.test.ex> rejected RCPT <x@mxt10.test.ex>: all relevant MX records point to non-existent hosts or (invalidly) to IP addresses

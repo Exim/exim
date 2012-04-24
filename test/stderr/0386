@@ -34,11 +34,11 @@ read ACL from file TESTSUITE/aux-fixed/0386.acl1
 processing "accept"
 check hosts = :
 host in ":"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "deny"
 check local_parts = ^.*[@%!/|]
 1 in "^.*[@%!/|]"? no (end of list)
-deny: condition test failed
+deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "require"
 check verify = sender/defer_ok
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -62,9 +62,9 @@ routed by r1 router
   transport: t1
 ----------- end verify ------------
 sender x@y verified ok
-require: condition test succeeded
+require: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "deny"
-deny: condition test succeeded
+deny: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
 SMTP>> 550 No such user here
 LOG: MAIN REJECT
   H=[V4NET.9.8.7] F=<x@y> rejected RCPT <1@b>: No such user here
@@ -77,11 +77,11 @@ using ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "accept"
 check hosts = :
 host in ":"? no (end of list)
-accept: condition test failed
+accept: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "deny"
 check local_parts = ^.*[@%!/|]
 1 in "^.*[@%!/|]"? no (end of list)
-deny: condition test failed
+deny: condition test failed in ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "require"
 check verify = sender/defer_ok
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -104,9 +104,9 @@ routed by r1 router
   transport: t1
 ----------- end verify ------------
 sender x@y verified ok
-require: condition test succeeded
+require: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
 processing "deny"
-deny: condition test succeeded
+deny: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl1"
 SMTP>> 550 No such user here
 LOG: MAIN REJECT
   H=[V4NET.9.8.7] F=<x@y> rejected RCPT <1@b>: No such user here
@@ -161,12 +161,12 @@ DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) using fakens
 DNS lookup of 13.12.11.V4NET.rbl.test.ex (TXT) succeeded
 => that means V4NET.11.12.13 is listed at rbl.test.ex
-warn: condition test succeeded
+warn: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
 LOG: MAIN
   H=[V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
 created log directory TESTSUITE/spool/log
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself
@@ -320,11 +320,11 @@ DNS list check: rbl.test.ex
 using result of previous DNS lookup
 DNS lookup for 13.12.11.V4NET.rbl.test.ex succeeded (yielding 127.0.0.2)
 => that means V4NET.11.12.13 is listed at rbl.test.ex
-warn: condition test succeeded
+warn: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
 LOG: MAIN
   H=[V4NET.11.12.13] U=CALLER Warning: found in rbl.test.ex: This is a test blacklisting message
 processing "accept"
-accept: condition test succeeded
+accept: condition test succeeded in ACL "TESTSUITE/aux-fixed/0386.acl2"
 SMTP>> 250 Accepted
 SMTP<< data
 SMTP>> 354 Enter message, ending with "." on a line by itself

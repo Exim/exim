@@ -13,12 +13,12 @@
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> other.ex in percent_hack_domains? list match deferred for testdb;defer
 LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCPT <a@other.ex>: defer in percent_hack_domains check
 >>> testhack.ex in percent_hack_domains? yes (matched "testhack.ex")
@@ -29,12 +29,12 @@ LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCP
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> test.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? yes (matched "test.ex")
 >>> test.ex in "+local_domains"? yes (matched "+local_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> testhack2.ex in percent_hack_domains? list match deferred for testdb;defer
 LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCPT <a%b@testhack2.ex>: defer in percent_hack_domains check
 >>> yesrelay.ex in percent_hack_domains? no (matched "!*relay.ex")
@@ -42,33 +42,33 @@ LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCP
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> yesrelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? no (matched "!*relay.ex")
 >>> yesrelay.ex in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +relay_domains
 >>> yesrelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? yes (matched "yesrelay.ex")
 >>> yesrelay.ex in "+relay_domains"? yes (matched "+relay_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> norelay.ex in percent_hack_domains? no (matched "!*relay.ex")
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> norelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? no (matched "!*relay.ex")
 >>> norelay.ex in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +relay_domains
 >>> norelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? list match deferred for testdb;defer
 >>> norelay.ex in "+relay_domains"? list match deferred for +relay_domains
->>> accept: condition test deferred
+>>> accept: condition test deferred in ACL "check_recipient"
 LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCPT <a@norelay.ex>: testdb lookup forced DEFER
 >>> testhack.ex in percent_hack_domains? yes (matched "testhack.ex")
 >>> yesrelay.ex in percent_hack_domains? no (matched "!*relay.ex")
@@ -76,32 +76,32 @@ LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCP
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> yesrelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? no (matched "!*relay.ex")
 >>> yesrelay.ex in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +relay_domains
 >>> yesrelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? yes (matched "yesrelay.ex")
 >>> yesrelay.ex in "+relay_domains"? yes (matched "+relay_domains")
->>> accept: condition test succeeded
+>>> accept: condition test succeeded in ACL "check_recipient"
 >>> testhack.ex in percent_hack_domains? yes (matched "testhack.ex")
 >>> norelay.ex in percent_hack_domains? no (matched "!*relay.ex")
 >>> using ACL "check_recipient"
 >>> processing "accept"
 >>> check hosts = :
 >>> host in ":"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +local_domains
 >>> norelay.ex in "!*relay.ex : test.ex : testhack.ex : testhack2.ex : testdb;defer"? no (matched "!*relay.ex")
 >>> norelay.ex in "+local_domains"? no (end of list)
->>> accept: condition test failed
+>>> accept: condition test failed in ACL "check_recipient"
 >>> processing "accept"
 >>> check domains = +relay_domains
 >>> norelay.ex in "test.ex : testhack.ex : testhack2.ex : yesrelay.ex : testdb;defer"? list match deferred for testdb;defer
 >>> norelay.ex in "+relay_domains"? list match deferred for +relay_domains
->>> accept: condition test deferred
+>>> accept: condition test deferred in ACL "check_recipient"
 LOG: H=(remote.host) [V4NET.0.0.1] F=<user@remote.host> temporarily rejected RCPT <a%norelay.ex@testhack.ex>: testdb lookup forced DEFER
