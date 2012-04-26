@@ -251,6 +251,8 @@ extern int     continue_sequence;      /* Sequence num for continued delivery */
 extern uschar *continue_transport;     /* Transport for continued delivery */
 
 extern uschar *csa_status;             /* Client SMTP Authorization result */
+extern BOOL    cutthrough_delivery;    /* Deliver in foreground */
+extern int     cutthrough_fd;          /* Connection for ditto */
 
 extern BOOL    daemon_listen;          /* True if listening required */
 extern uschar *daemon_smtp_port;       /* Can be a list of ports */

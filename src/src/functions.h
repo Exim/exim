@@ -66,10 +66,17 @@ extern int     auth_get_no64_data(uschar **, uschar *);
 extern uschar *auth_xtextencode(uschar *, int);
 extern int     auth_xtextdecode(uschar *, uschar **);
 
+extern void    cancel_cutthrough_connection(void);
 extern int     check_host(void *, uschar *, uschar **, uschar **);
 extern uschar **child_exec_exim(int, BOOL, int *, BOOL, int, ...);
 extern pid_t   child_open_uid(uschar **, uschar **, int, uid_t *, gid_t *,
                  int *, int *, uschar *, BOOL);
+extern uschar *cutthrough_finaldot(void);
+extern BOOL    cutthrough_flush_send(void);
+extern BOOL    cutthrough_headers_send(void);
+extern BOOL    cutthrough_predata(void);
+extern BOOL    cutthrough_puts(uschar *, int);
+extern BOOL    cutthrough_put_nl(void);
 
 extern void    daemon_go(void);
 
@@ -86,6 +93,7 @@ extern void    debug_vprintf(const char *, va_list);
 extern void    decode_bits(unsigned int *, unsigned int *,
                   int, int, uschar *, bit_table *, int, uschar *, int);
 extern address_item *deliver_make_addr(uschar *, BOOL);
+extern void    delivery_log(address_item *, int);
 extern int     deliver_message(uschar *, BOOL, BOOL);
 extern void    deliver_msglog(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    deliver_set_expansions(address_item *);
@@ -197,6 +205,8 @@ extern void    moan_tell_someone(uschar *, address_item *,
 extern BOOL    moan_to_sender(int, error_block *, header_line *, FILE *, BOOL);
 extern void    moan_write_from(FILE *);
 extern FILE   *modefopen(const uschar *, const char *, mode_t);
+
+extern void   open_cutthrough_connection( address_item * addr );
 
 extern uschar *parse_extract_address(uschar *, uschar **, int *, int *, int *,
                  BOOL);

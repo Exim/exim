@@ -177,6 +177,7 @@ enum {
   CONTROL_ERROR,
   CONTROL_CASEFUL_LOCAL_PART,
   CONTROL_CASELOWER_LOCAL_PART,
+  CONTROL_CUTTHROUGH_DELIVERY,
   CONTROL_ENFORCE_SYNC,
   CONTROL_NO_ENFORCE_SYNC,
   CONTROL_FREEZE,
@@ -212,6 +213,7 @@ static uschar *controls[] = {
   US"error",
   US"caseful_local_part",
   US"caselower_local_part",
+  US"cutthrough_delivery",
   US"enforce_sync",
   US"no_enforce_sync",
   US"freeze",
@@ -538,6 +540,9 @@ static unsigned int control_forbids[] = {
   (unsigned int)
   ~(1<<ACL_WHERE_RCPT),                            /* caselower_local_part */
 
+  (unsigned int)
+  0,						   /* cutthrough_delivery */
+
   (1<<ACL_WHERE_NOTSMTP)|                          /* enforce_sync */
     (1<<ACL_WHERE_NOTSMTP_START),
 
@@ -627,7 +632,8 @@ static control_def controls_list[] = {
   { US"fakedefer",               CONTROL_FAKEDEFER, TRUE },
   { US"fakereject",              CONTROL_FAKEREJECT, TRUE },
   { US"submission",              CONTROL_SUBMISSION, TRUE },
-  { US"suppress_local_fixups",   CONTROL_SUPPRESS_LOCAL_FIXUPS, FALSE }
+  { US"suppress_local_fixups",   CONTROL_SUPPRESS_LOCAL_FIXUPS, FALSE },
+  { US"cutthrough_delivery",     CONTROL_CUTTHROUGH_DELIVERY, FALSE }
   };
 
 /* Support data structures for Client SMTP Authorization. acl_verify_csa()
@@ -3033,6 +3039,20 @@ for (; cb != NULL; cb = cb->next)
       case CONTROL_SUPPRESS_LOCAL_FIXUPS:
       suppress_local_fixups = TRUE;
       break;
+
+      case CONTROL_CUTTHROUGH_DELIVERY:
+      if (deliver_freeze)
+        {
+        *log_msgptr = string_sprintf("\"control=%s\" on frozen item", arg);
+        return ERROR;
+        }
+       if (queue_only_policy)
+        {
+        *log_msgptr = string_sprintf("\"control=%s\" on queue-only item", arg);
+        return ERROR;
+        }
+      cutthrough_delivery = TRUE;
+      break;
       }
     break;
 
@@ -3894,6 +3914,61 @@ if (where == ACL_WHERE_RCPT)
   }
 
 rc = acl_check_internal(where, addr, s, 0, user_msgptr, log_msgptr);
+
+/*XXX cutthrough - if requested,
+and WHERE_RCPT and not yet opened conn as reult of verify,
+and rc==OK
+open one now and run it up to RCPT acceptance.
+Query: what to do with xple rcpts?  Avoid for now by only doing on 1st, and
+cancelling on any subsequents.
+A failed verify should cancel cutthrough request.
+For now, ensure we only accept requests to cutthrough pre-data.  Maybe relax that later.
+
+On a pre-data acl, if not accept and a cutthrough conn is open, close it.  If accept and
+a cutthrough conn is open, send DATA command and setup byte-by-byte copy mode and
+cancel spoolfile-write mode.
+NB this means no DATA acl, no content checking - might want an option for that?.
+
+Initial implementation:  dual-write to spool (do the no-spool later).
+Assume the rxd datastream is now being copied byte-for-byte to an open cutthrough connection.
+
+Cease cutthrough copy on rxd final dot; do not send one.
+
+On a data acl, if not accept and a cutthrough conn is open, hard-close it (no SMTP niceness).
+
+On data acl accept, terminate the dataphase on an open cutthrough conn.  If accepted or
+perm-rejected, reflect that to the original sender - and dump the spooled copy.
+If temp-reject, close the conn (and keep the spooled copy).
+If conn-failure, no action (and keep the spooled copy).
+
+
+XXX What about TLS?   Callouts never seem to do it atm. but we ought to support it eventually.
+XXX What about pipelining?   Callouts don't, and we probably don't care too much.
+*/
+switch (where)
+{
+case ACL_WHERE_RCPT:
+  if( rcpt_count > 1 )
+    cancel_cutthrough_connection();
+  else if (rc == OK  &&  cutthrough_delivery  &&  cutthrough_fd < 0)
+    open_cutthrough_connection(addr);
+  break;
+
+case ACL_WHERE_PREDATA:
+  if( rc == OK )
+    cutthrough_predata();
+  else
+    cancel_cutthrough_connection();
+  break;
+
+case ACL_WHERE_QUIT:
+case ACL_WHERE_NOTQUIT:
+  cancel_cutthrough_connection();
+  break;
+
+default:
+  break;
+}
 
 deliver_domain = deliver_localpart = deliver_address_data =
   sender_address_data = NULL;

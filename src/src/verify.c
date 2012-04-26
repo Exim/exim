@@ -11,6 +11,9 @@ caching was contributed by Kevin Fleming (but I hacked it around a bit). */
 
 #include "exim.h"
 
+#define CUTTHROUGH_CMD_TIMEOUT  30	/* timeout for cutthrough-routing calls */
+#define CUTTHROUGH_DATA_TIMEOUT 60	/* timeout for cutthrough-routing calls */
+address_item cutthrough_addr;
 
 /* Structure for caching DNSBL lookups */
 
@@ -641,6 +644,9 @@ for (host = host_list; host != NULL && !done; host = host->next)
 
       if (done && pm_mailfrom != NULL)
         {
+        /*XXX not suitable for cutthrough - sequencing problems */
+	cutthrough_delivery= FALSE;
+
         done =
           smtp_write_command(&outblock, FALSE, "RSET\r\n") >= 0 &&
           smtp_read_response(&inblock, responsebuffer,
@@ -733,8 +739,32 @@ for (host = host_list; host != NULL && !done; host = host->next)
 
   /* End the SMTP conversation and close the connection. */
 
-  if (send_quit) (void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
-  (void)close(inblock.sock);
+  /*XXX cutthrough - if "done"
+  and "yeild" is OK
+  and we have no cutthrough conn so far
+  here is where we want to leave the conn open */
+  /* and leave some form of marker for it */
+  /*XXX in fact for simplicity we should abandon cutthrough as soon as more than one address
+  comes into play */
+/*XXX what about TLS? */
+  if (  cutthrough_delivery
+     && done
+     && yield == OK
+     && cutthrough_fd < 0
+     && (options & (vopt_callout_recipsender|vopt_callout_recippmaster)) == vopt_callout_recipsender
+     && !random_local_part
+     && !pm_mailfrom
+     )
+    {
+    cutthrough_fd= outblock.sock;	/* We assume no buffer in use in the outblock */
+    cutthrough_addr= *addr;		/* Save the address_item for later logging */
+    }
+  else
+    {
+    if (send_quit) (void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
+    (void)close(inblock.sock);
+    }
+
   }    /* Loop through all hosts, while !done */
 
 /* If we get here with done == TRUE, a successful callout happened, and yield
@@ -825,6 +855,218 @@ if (dbm_file != NULL) dbfn_close(dbm_file);
 return yield;
 }
 
+
+
+void
+open_cutthrough_connection( address_item * addr )
+{
+address_item addr2;
+
+/* Use a recipient-verify-callout to set up the cutthrough connection. */
+/* We must use a copy of the address for verification, because it might
+get rewritten. */
+
+addr2 = *addr;
+HDEBUG(D_acl) debug_printf("----------- start cutthrough setup ------------\n");
+(void) verify_address(&addr2, NULL,
+	vopt_is_recipient | vopt_callout_recipsender | vopt_callout_no_cache,
+	CUTTHROUGH_CMD_TIMEOUT, -1, -1,
+	NULL, NULL, NULL);
+HDEBUG(D_acl) debug_printf("----------- end cutthrough setup ------------\n");
+return;
+}
+
+
+static smtp_outblock ctblock;
+uschar ctbuffer[8192];
+
+
+void
+cancel_cutthrough_connection( void )
+{
+ctblock.ptr = ctbuffer;
+cutthrough_delivery= FALSE;
+if(cutthrough_fd >= 0)    /*XXX get that initialised, also at RSET */
+  {
+  int rc;
+
+  /* We could be sending this after a bunch of data, but that is ok as
+     the only way to cancel the transfer in dataphase is to drop the tcp
+     conn before the final dot.
+  */
+  HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> QUIT\n");
+  rc= send(cutthrough_fd, "QUIT\r\n", 6, 0);
+  /*XXX error handling?   TLS?   See flush_buffer() in smtp_out.c */
+
+  (void)close(cutthrough_fd);
+  cutthrough_fd= -1;
+  HDEBUG(D_acl) debug_printf("----------- cutthrough shutdown ------------\n");
+  }
+}
+
+
+
+/* Buffered output counted data block.   Return boolean success */
+BOOL
+cutthrough_puts(uschar * cp, int n)
+{
+if(cutthrough_fd >= 0)
+  while(n--)
+  {
+  /*XXX TLS?   See flush_buffer() in smtp_out.c */
+
+  if(ctblock.ptr >= ctblock.buffer+ctblock.buffersize)
+    {
+    if(send(cutthrough_fd, ctblock.buffer, ctblock.buffersize, 0) < 0)
+	goto bad;
+    transport_count += ctblock.buffersize;
+    ctblock.ptr= ctblock.buffer;
+    }
+
+  *ctblock.ptr++ = *cp++;
+  }
+return TRUE;
+
+bad:
+cancel_cutthrough_connection();
+return FALSE;
+}
+
+BOOL
+cutthrough_flush_send( void )
+{
+if(cutthrough_fd >= 0)
+  {
+  if(send(cutthrough_fd, ctblock.buffer, ctblock.ptr-ctblock.buffer, 0) < 0)
+    goto bad;
+  transport_count += ctblock.ptr-ctblock.buffer;
+  ctblock.ptr= ctblock.buffer;
+  }
+return TRUE;
+
+bad:
+cancel_cutthrough_connection();
+return FALSE;
+}
+
+
+BOOL
+cutthrough_put_nl( void )
+{
+return cutthrough_puts(US"\r\n", 2);
+}
+
+
+/* Get and check response from cutthrough target */
+static uschar
+cutthrough_response(char expect, uschar ** copy)
+{
+smtp_inblock inblock;
+uschar inbuffer[4096];
+uschar responsebuffer[4096];
+
+inblock.buffer = inbuffer;
+inblock.buffersize = sizeof(inbuffer);
+inblock.ptr = inbuffer;
+inblock.ptrend = inbuffer;
+inblock.sock = cutthrough_fd;
+if(!smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), expect, CUTTHROUGH_DATA_TIMEOUT))
+  cancel_cutthrough_connection();
+
+if(copy != NULL)
+  {
+  uschar * cp;
+  *copy= cp= string_copy(responsebuffer);
+  /* Trim the trailing end of line */
+  cp += Ustrlen(responsebuffer);
+  if(cp > *copy  &&  cp[-1] == '\n') *--cp = '\0';
+  if(cp > *copy  &&  cp[-1] == '\r') *--cp = '\0';
+  }
+
+return responsebuffer[0];
+}
+
+
+/* Negotiate dataphase with the cutthrough target, returning success boolean */
+BOOL
+cutthrough_predata( void )
+{
+int rc;
+
+if(cutthrough_fd < 0)
+  return FALSE;
+
+HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> DATA\n");
+rc= send(cutthrough_fd, "DATA\r\n", 6, 0);
+if (rc <= 0)
+  {
+  HDEBUG(D_transport|D_acl) debug_printf("send failed: %s\n", strerror(errno));
+  cancel_cutthrough_connection();
+  return FALSE;
+  }
+/*XXX error handling?   TLS?   See flush_buffer() in smtp_out.c */
+
+/* Assume nothing buffered.  If it was it gets ignored. */
+return cutthrough_response('3', NULL) == '3';
+}
+
+
+/* Buffered send of headers.  Return success boolean. */
+/* Also sends header-terminating blank line.          */
+/* Sets up the "ctblock" buffer as a side-effect.     */
+BOOL
+cutthrough_headers_send( void )
+{
+header_line * h;
+
+if(cutthrough_fd < 0)
+  return FALSE;
+
+ctblock.buffer = ctbuffer;
+ctblock.buffersize = sizeof(ctbuffer);
+ctblock.ptr = ctbuffer;
+/* ctblock.cmd_count = 0; ctblock.authenticating = FALSE; */
+ctblock.sock = cutthrough_fd;
+
+for(h= header_list; h != NULL; h= h->next)
+  if(h->type != htype_old  &&  h->text != NULL)
+    if(!cutthrough_puts(h->text, h->slen))
+      return FALSE;
+
+if(!cutthrough_put_nl())
+  return TRUE;
+}
+
+
+/* Have senders final-dot.  Send one to cutthrough target, and grab the response.
+   Log an OK response as a transmission.
+   Return smtp response-class digit.
+   XXX where do fail responses from target get logged?
+*/
+uschar *
+cutthrough_finaldot( void )
+{
+HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> .\n");
+
+/* Assume data finshed with new-line */
+if(!cutthrough_puts(US".", 1) || !cutthrough_put_nl()
+  || !cutthrough_flush_send()
+  || cutthrough_response('2', &cutthrough_addr.message) != '2')
+  return cutthrough_addr.message;
+
+(void)close(cutthrough_fd);
+cutthrough_fd= -1;
+HDEBUG(D_acl) debug_printf("----------- cutthrough close ------------\n");
+
+delivery_log(&cutthrough_addr, (int)'>');
+/* C= ok */
+/* QT ok */
+/* DT always 0? */
+/* delivery S= zero!  (transport_count) */
+/* not TLS yet hence no X, CV, DN */
+
+return cutthrough_addr.message;
+}
 
 
 /*************************************************
@@ -1282,6 +1524,7 @@ while (addr_new != NULL)
         }
       respond_printf(f, "%s\n", cr);
       }
+    cancel_cutthrough_connection();
 
     if (!full_info) return copy_error(vaddr, addr, FAIL);
       else yield = FAIL;
@@ -1316,6 +1559,8 @@ while (addr_new != NULL)
         }
       respond_printf(f, "%s\n", cr);
       }
+    cancel_cutthrough_connection();
+
     if (!full_info) return copy_error(vaddr, addr, DEFER);
       else if (yield == OK) yield = DEFER;
     }

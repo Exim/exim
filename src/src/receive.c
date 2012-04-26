@@ -716,12 +716,15 @@ Arguments:
 
 Returns:    One of the END_xxx values indicating why it stopped reading
 */
+/*XXX cutthrough - need to copy to destination, not including the
+	terminating dot, canonicalizing newlines.
+*/
 
 static int
 read_message_data_smtp(FILE *fout)
 {
 int ch_state = 0;
-register int ch;
+int ch;
 register int linelength = 0;
 
 while ((ch = (receive_getc)()) != EOF)
@@ -768,6 +771,7 @@ while ((ch = (receive_getc)()) != EOF)
       {
       message_size++;
       if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
+      (void) cutthrough_put_nl();
       if (ch != '\r') ch_state = 1; else continue;
       }
     break;
@@ -788,6 +792,7 @@ while ((ch = (receive_getc)()) != EOF)
     message_size++;
     body_linecount++;
     if (fout != NULL && fputc('\n', fout) == EOF) return END_WERROR;
+    (void) cutthrough_put_nl();
     if (ch == '\r')
       {
       ch_state = 2;
@@ -806,6 +811,13 @@ while ((ch = (receive_getc)()) != EOF)
     {
     if (fputc(ch, fout) == EOF) return END_WERROR;
     if (message_size > thismessage_size_limit) return END_SIZE;
+    }
+  if(ch == '\n')
+    (void) cutthrough_put_nl();
+  else
+    {
+    uschar c= ch;
+    (void) cutthrough_puts(&c, 1);
     }
   }
 
@@ -1197,6 +1209,52 @@ return TRUE;
 #endif  /* WITH_CONTENT_SCAN */
 
 
+
+void
+received_header_gen(void)
+{
+uschar *received;
+uschar *timestamp;
+header_line *received_header= header_list;
+
+timestamp = expand_string(US"${tod_full}");
+if (recipients_count == 1) received_for = recipients_list[0].address;
+received = expand_string(received_header_text);
+received_for = NULL;
+
+if (received == NULL)
+  {
+  if(spool_name[0] != 0)
+    Uunlink(spool_name);           /* Lose the data file */
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" "
+    "(received_header_text) failed: %s", string_printing(received_header_text),
+      expand_string_message);
+  }
+
+/* The first element on the header chain is reserved for the Received header,
+so all we have to do is fill in the text pointer, and set the type. However, if
+the result of the expansion is an empty string, we leave the header marked as
+"old" so as to refrain from adding a Received header. */
+
+if (received[0] == 0)
+  {
+  received_header->text = string_sprintf("Received: ; %s\n", timestamp);
+  received_header->type = htype_old;
+  }
+else
+  {
+  received_header->text = string_sprintf("%s; %s\n", received, timestamp);
+  received_header->type = htype_received;
+  }
+
+received_header->slen = Ustrlen(received_header->text);
+
+DEBUG(D_receive) debug_printf(">>Generated Received: header line\n%c %s",
+  received_header->type, received_header->text);
+}
+
+
+
 /*************************************************
 *                 Receive message                *
 *************************************************/
@@ -1346,7 +1404,6 @@ header_line *received_header;
 
 /* Variables for use when building the Received: header. */
 
-uschar *received;
 uschar *timestamp;
 int tslen;
 
@@ -1355,6 +1412,13 @@ accept the message - e.g. by verifying addresses - because reading a message
 might take a fair bit of real time. */
 
 search_tidyup();
+
+/* Extracting the recipient list from an input file is incompatible with
+cutthrough delivery with the no-spool option.  It shouldn't be possible
+ to set up the combination, but just in case kill any ongoing connection. */
+/*XXX add no-spool */
+if (extract_recip || !smtp_input)
+  cancel_cutthrough_connection();
 
 /* Initialize the chain of headers by setting up a place-holder for Received:
 header. Temporarily mark it as "old", i.e. not to be used. We keep header_last
@@ -1974,6 +2038,7 @@ for (h = header_list->next; h != NULL; h = h->next)
 
     case htype_received:
     h->type = htype_received;
+/*XXX cutthrough delivery - need to error on excessive number here */
     received_count++;
     break;
 
@@ -2645,6 +2710,23 @@ if (filter_test != FTEST_NONE)
   return message_ended == END_DOT;
   }
 
+/*XXX cutthrough deliver:
+	We have to create the Received header now rather than at the end of reception,
+	so the timestamp behaviour is a change to the normal case.
+	XXX Ensure this gets documented XXX.
+*/
+if (cutthrough_fd >= 0)
+  {
+  received_header_gen();
+  add_acl_headers(US"MAIL or RCPT");
+  (void) cutthrough_headers_send();
+  }
+
+
+/*XXX cutthrough deliver:
+  Here's where we open the data spoolfile.  Want to optionally avoid.
+*/
+
 /* Open a new spool file for the data portion of the message. We need
 to access it both via a file descriptor and a stream. Try to make the
 directory if it isn't there. Note re use of sprintf: spool_directory
@@ -2701,6 +2783,7 @@ if (next != NULL)
   {
   uschar *s = next->text;
   int len = next->slen;
+  /*XXX cutthrough - writing the data spool file here.  Want to optionally avoid. */
   (void)fwrite(s, 1, len, data_file);
   body_linecount++;                 /* Assumes only 1 line */
   }
@@ -2709,10 +2792,13 @@ if (next != NULL)
 (indicated by '.'), or might have encountered an error while writing the
 message id or "next" line. */
 
+/* XXX cutthrough - no-spool option....... */
 if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
   {
   if (smtp_input)
     {
+    /*XXX cutthrough - writing the data spool file here.  Want to optionally avoid. */
+    /*	Would suffice to leave data_file arg NULL */
     message_ended = read_message_data_smtp(data_file);
     receive_linecount++;                /* The terminating "." line */
     }
@@ -2726,6 +2812,7 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
   if (smtp_input && message_ended == END_EOF)
     {
     Uunlink(spool_name);                     /* Lose data file when closed */
+    cancel_cutthrough_connection();
     message_id[0] = 0;                       /* Indicate no message accepted */
     smtp_reply = handle_lost_connection(US"");
     smtp_yield = FALSE;
@@ -2738,6 +2825,7 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
   if (message_ended == END_SIZE)
     {
     Uunlink(spool_name);                /* Lose the data file when closed */
+    cancel_cutthrough_connection();
     if (smtp_input) receive_swallow_smtp();  /* Swallow incoming SMTP */
 
     log_write(L_size_reject, LOG_MAIN|LOG_REJECT, "rejected from <%s>%s%s%s%s: "
@@ -2781,6 +2869,7 @@ we can then give up. Note that for SMTP input we must swallow the remainder of
 the input in cases of output errors, since the far end doesn't expect to see
 anything until the terminating dot line is sent. */
 
+/* XXX cutthrough - no-spool option....... */
 if (fflush(data_file) == EOF || ferror(data_file) ||
     EXIMfsync(fileno(data_file)) < 0 || (receive_ferror)())
   {
@@ -2793,6 +2882,7 @@ if (fflush(data_file) == EOF || ferror(data_file) ||
 
   log_write(0, LOG_MAIN, "Message abandoned: %s", msg);
   Uunlink(spool_name);                /* Lose the data file */
+  cancel_cutthrough_connection();
 
   if (smtp_input)
     {
@@ -2819,6 +2909,7 @@ if (fflush(data_file) == EOF || ferror(data_file) ||
 
 /* No I/O errors were encountered while writing the data file. */
 
+/*XXX cutthrough - avoid message if no-spool option */
 DEBUG(D_receive) debug_printf("Data file written for message %s\n", message_id);
 
 
@@ -2832,6 +2923,9 @@ We need to rewind the data file in order to read it. In the case of no
 recipients or stderr error writing, throw the data file away afterwards, and
 exit. (This can't be SMTP, which always ensures there's at least one
 syntactically good recipient address.) */
+
+/*XXX cutthrough - can't if no-spool option.  extract_recip is a fn arg.
+  Make incompat with no-spool at fn start. */
 
 if (extract_recip && (bad_addresses != NULL || recipients_count == 0))
   {
@@ -2912,50 +3006,29 @@ for use when we generate the Received: header.
 
 Note: the checking for too many Received: headers is handled by the delivery
 code. */
+/*XXX eventually add excess Received: check for cutthrough case back when classifying them */
 
-timestamp = expand_string(US"${tod_full}");
-if (recipients_count == 1) received_for = recipients_list[0].address;
-received = expand_string(received_header_text);
-received_for = NULL;
-
-if (received == NULL)
+if (received_header->text == NULL)	/* Non-cutthrough case */
   {
-  Uunlink(spool_name);           /* Lose the data file */
-  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "Expansion of \"%s\" "
-    "(received_header_text) failed: %s", string_printing(received_header_text),
-      expand_string_message);
-  }
+  received_header_gen();
 
-/* The first element on the header chain is reserved for the Received header,
-so all we have to do is fill in the text pointer, and set the type. However, if
-the result of the expansion is an empty string, we leave the header marked as
-"old" so as to refrain from adding a Received header. */
+  /* Set the value of message_body_size for the DATA ACL and for local_scan() */
 
-if (received[0] == 0)
-  {
-  received_header->text = string_sprintf("Received: ; %s\n", timestamp);
-  received_header->type = htype_old;
+  message_body_size = (fstat(data_fd, &statbuf) == 0)?
+    statbuf.st_size - SPOOL_DATA_START_OFFSET : -1;
+
+  /* If an ACL from any RCPT commands set up any warning headers to add, do so
+  now, before running the DATA ACL. */
+
+  add_acl_headers(US"MAIL or RCPT");
   }
+else if (data_fd >= 0)
+  message_body_size = (fstat(data_fd, &statbuf) == 0)?
+    statbuf.st_size - SPOOL_DATA_START_OFFSET : -1;
 else
-  {
-  received_header->text = string_sprintf("%s; %s\n", received, timestamp);
-  received_header->type = htype_received;
-  }
-
-received_header->slen = Ustrlen(received_header->text);
-
-DEBUG(D_receive) debug_printf(">>Generated Received: header line\n%c %s",
-  received_header->type, received_header->text);
-
-/* Set the value of message_body_size for the DATA ACL and for local_scan() */
-
-message_body_size = (fstat(data_fd, &statbuf) == 0)?
-  statbuf.st_size - SPOOL_DATA_START_OFFSET : -1;
-
-/* If an ACL from any RCPT commands set up any warning headers to add, do so
-now, before running the DATA ACL. */
-
-add_acl_headers(US"MAIL or RCPT");
+  /*XXX cutthrough - XXX how to get the body size? */
+  /*	perhaps a header-size to subtract from message_size? */
+  message_body_size = message_size - 1;
 
 /* If an ACL is specified for checking things at this stage of reception of a
 message, run it, unless all the recipients were removed by "discard" in earlier
@@ -2983,6 +3056,7 @@ else
 #ifndef DISABLE_DKIM
     if (!dkim_disable_verify)
       {
+/* XXX cutthrough - no-spool option....... */
       /* Finish verification, this will log individual signature results to
          the mainlog */
       dkim_exim_verify_finish();
@@ -3060,6 +3134,7 @@ else
               {
                 DEBUG(D_receive)
                   debug_printf("acl_smtp_dkim: acl_check returned %d on %s, skipping remaining items\n", rc, item);
+	        cancel_cutthrough_connection();
                 break;
               }
             }
@@ -3086,6 +3161,7 @@ else
 #endif /* DISABLE_DKIM */
 
 #ifdef WITH_CONTENT_SCAN
+/* XXX cutthrough - no-spool option....... */
     if (recipients_count > 0 &&
         acl_smtp_mime != NULL &&
         !run_mime_acl(acl_smtp_mime, &smtp_yield, &smtp_reply, &blackholed_by))
@@ -3094,6 +3170,9 @@ else
 
     /* Check the recipients count again, as the MIME ACL might have changed
     them. */
+
+/* XXX cutthrough - no-spool option must document that data-acl has no file access */
+/*	but can peek at headers */
 
     if (acl_smtp_data != NULL && recipients_count > 0)
       {
@@ -3105,10 +3184,12 @@ else
         blackholed_by = US"DATA ACL";
         if (log_msg != NULL)
           blackhole_log_msg = string_sprintf(": %s", log_msg);
+	cancel_cutthrough_connection();
         }
       else if (rc != OK)
         {
         Uunlink(spool_name);
+	cancel_cutthrough_connection();
 #ifdef WITH_CONTENT_SCAN
         unspool_mbox();
 #endif
@@ -3219,6 +3300,7 @@ local_scan_data = NULL;
 
 os_non_restarting_signal(SIGALRM, local_scan_timeout_handler);
 if (local_scan_timeout > 0) alarm(local_scan_timeout);
+/* XXX cutthrough - no-spool option..... */
 rc = local_scan(data_fd, &local_scan_data);
 alarm(0);
 os_non_restarting_signal(SIGALRM, sigalrm_handler);
@@ -3366,6 +3448,7 @@ the message to be abandoned. */
 signal(SIGTERM, SIG_IGN);
 signal(SIGINT, SIG_IGN);
 
+
 /* Ensure the first time flag is set in the newly-received message. */
 
 deliver_firsttime = TRUE;
@@ -3373,6 +3456,7 @@ deliver_firsttime = TRUE;
 #ifdef EXPERIMENTAL_BRIGHTMAIL
 if (bmi_run == 1) {
   /* rewind data file */
+  /* XXX cutthrough - no-spool option..... */
   lseek(data_fd, (long int)SPOOL_DATA_START_OFFSET, SEEK_SET);
   bmi_verdicts = bmi_process_message(header_list, data_fd);
 };
@@ -3414,6 +3498,9 @@ if (host_checking || blackholed_by != NULL)
 
 else
   {
+  /*XXX cutthrough -
+     Optionally want to avoid writing spool files (when no data-time filtering needed) */
+
   if ((msg_size = spool_write_header(message_id, SW_RECEIVING, &errmsg)) < 0)
     {
     log_write(0, LOG_MAIN, "Message abandoned: %s", errmsg);
@@ -3551,7 +3638,7 @@ s[sptr] = 0;
 
 /* Create a message log file if message logs are being used and this message is
 not blackholed. Write the reception stuff to it. We used to leave message log
-creation until the first delivery, but this has proved confusing for somep
+creation until the first delivery, but this has proved confusing for some
 people. */
 
 if (message_logs && blackholed_by == NULL)
@@ -3672,17 +3759,78 @@ if (smtp_input && sender_host_address != NULL && !sender_host_notsocket &&
 /* The connection has not gone away; we really are going to take responsibility
 for this message. */
 
-log_write(0, LOG_MAIN |
-  (((log_extra_selector & LX_received_recipients) != 0)? LOG_RECIPIENTS : 0) |
-  (((log_extra_selector & LX_received_sender) != 0)? LOG_SENDER : 0),
-  "%s", s);
+/*XXX cutthrough - had sender last-dot; assume we've sent or bufferred all
+   data onward by now.
+
+   Send dot onward.  If accepted, can the spooled files, log as delivered and accept
+   the sender's dot (below).
+   If not accepted: copy response to sender, can the spooled files, log approriately.
+
+   Having the normal spool files lets us do data-filtering, and store/forward on temp-reject.
+*/
+if(cutthrough_fd >= 0)
+  {
+  uschar * msg= cutthrough_finaldot();	/* Ask the target system to accept the messsage */
+  switch(msg[0])
+  {
+  case '2':	/* Accept. Do the same to the source; dump any spoolfiles.   */
+    /* logging was done in finaldot() */
+    if(data_file != NULL)
+      {
+      sprintf(CS spool_name, "%s/input/%s/%s-D", spool_directory,
+        message_subdir, message_id);
+      Uunlink(spool_name);
+      sprintf(CS spool_name, "%s/input/%s/%s-H", spool_directory,
+        message_subdir, message_id);
+      Uunlink(spool_name);
+      sprintf(CS spool_name, "%s/msglog/%s/%s", spool_directory,
+        message_subdir, message_id);
+      Uunlink(spool_name);
+      }
+    break;
+
+  default:	/* Unknown response, or error.  Treat as temp-reject.         */
+  case '4':	/* Temp-reject. If we wrote spoolfiles, keep them and accept. */
+  		/* If not, temp-reject the source.                            */
+    /*XXX could we mark the spoolfile queue-only or already-tried? */
+    log_write(0, LOG_MAIN, "cutthrough target temp-reject: %s", msg);
+    if(data_file == NULL)
+	smtp_reply= msg;	/* Pass on the exact error */
+    break;
+
+  case '5':	/* Perm-reject.  Do the same to the source.  Dump any spoolfiles */
+    log_write(0, LOG_MAIN, "cutthrough target perm-reject: %s", msg);
+    smtp_reply= msg;		/* Pass on the exact error */
+    if(data_file != NULL)
+      {
+      sprintf(CS spool_name, "%s/input/%s/%s-D", spool_directory,
+        message_subdir, message_id);
+      Uunlink(spool_name);
+      sprintf(CS spool_name, "%s/input/%s/%s-H", spool_directory,
+        message_subdir, message_id);
+      Uunlink(spool_name);
+      sprintf(CS spool_name, "%s/msglog/%s/%s", spool_directory,
+        message_subdir, message_id);
+      Uunlink(spool_name);
+      }
+    break;
+  }
+  }
+
+if(smtp_reply == NULL)
+  {
+  log_write(0, LOG_MAIN |
+    (((log_extra_selector & LX_received_recipients) != 0)? LOG_RECIPIENTS : 0) |
+    (((log_extra_selector & LX_received_sender) != 0)? LOG_SENDER : 0),
+    "%s", s);
+
+  /* Log any control actions taken by an ACL or local_scan(). */
+
+  if (deliver_freeze) log_write(0, LOG_MAIN, "frozen by %s", frozen_by);
+  if (queue_only_policy) log_write(L_delay_delivery, LOG_MAIN,
+    "no immediate delivery: queued by %s", queued_by);
+  }
 receive_call_bombout = FALSE;
-
-/* Log any control actions taken by an ACL or local_scan(). */
-
-if (deliver_freeze) log_write(0, LOG_MAIN, "frozen by %s", frozen_by);
-if (queue_only_policy) log_write(L_delay_delivery, LOG_MAIN,
-  "no immediate delivery: queued by %s", queued_by);
 
 store_reset(s);   /* The store for the main log message can be reused */
 
@@ -3710,6 +3858,7 @@ data file will be flushed(!) out thereby. Nevertheless, it is theoretically
 possible for fclose() to fail - but what to do? What has happened to the lock
 if this happens? */
 
+
 TIDYUP:
 process_info[process_info_len] = 0;                /* Remove message id */
 if (data_file != NULL) (void)fclose(data_file);    /* Frees the lock */
@@ -3735,6 +3884,7 @@ if (smtp_input)
 
   if (!smtp_batched_input)
     {
+/*XXX cutthrough - here's where the originating sender gets given the data-acceptance */
     if (smtp_reply == NULL)
       {
       if (fake_response != OK)
@@ -3769,6 +3919,12 @@ if (smtp_input)
           fake_response_text);
       else
         smtp_printf("%.1024s\r\n", smtp_reply);
+      }
+
+    if (cutthrough_delivery)
+      {
+      log_write(0, LOG_MAIN, "Completed");
+      message_id[0] = 0;			/* Prevent a delivery from starting */
       }
     }
 

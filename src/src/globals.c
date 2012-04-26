@@ -429,6 +429,8 @@ int     continue_sequence      = 1;
 uschar *continue_transport     = NULL;
 
 uschar *csa_status             = NULL;
+BOOL    cutthrough_delivery    = FALSE;
+int     cutthrough_fd          = -1;
 
 BOOL    daemon_listen          = FALSE;
 uschar *daemon_smtp_port       = US"smtp";
