@@ -228,7 +228,7 @@ if (bmi_verdicts != NULL) fprintf(f, "-bmi_verdicts %s\n", bmi_verdicts);
 #ifdef SUPPORT_TLS
 if (tls_certificate_verified) fprintf(f, "-tls_certificate_verified\n");
 if (tls_cipher != NULL) fprintf(f, "-tls_cipher %s\n", tls_cipher);
-if (tls_peerdn != NULL) fprintf(f, "-tls_peerdn %s\n", tls_peerdn);
+if (tls_peerdn != NULL) fprintf(f, "-tls_peerdn %s\n", string_printing(tls_peerdn));
 #endif
 
 /* To complete the envelope, write out the tree of non-recipients, followed by

@@ -331,6 +331,7 @@ extern uschar *string_nextinlist(uschar **, int *, uschar *, int);
 extern uschar *string_open_failed(int, const char *, ...) PRINTF_FUNCTION(2,3);
 extern uschar *string_printing2(uschar *, BOOL);
 extern uschar *string_split_message(uschar *);
+extern uschar *string_unprinting(uschar *);
 extern BOOL    string_vformat(uschar *, int, const char *, va_list);
 extern int     strcmpic(const uschar *, const uschar *);
 extern int     strncmpic(const uschar *, const uschar *, int);

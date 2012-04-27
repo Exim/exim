@@ -548,7 +548,7 @@ for (;;)
     else if (Ustrncmp(p, "ls_cipher", 9) == 0)
       tls_cipher = string_copy(big_buffer + 12);
     else if (Ustrncmp(p, "ls_peerdn", 9) == 0)
-      tls_peerdn = string_copy(big_buffer + 12);
+      tls_peerdn = string_unprinting(string_copy(big_buffer + 12));
     break;
     #endif
 

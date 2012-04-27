@@ -242,9 +242,12 @@ if (isdigit(ch) && ch != '8' && ch != '9')
   }
 else switch(ch)
   {
+  case 'b':  ch = '\b'; break;
+  case 'f':  ch = '\f'; break;
   case 'n':  ch = '\n'; break;
   case 'r':  ch = '\r'; break;
   case 't':  ch = '\t'; break;
+  case 'v':  ch = '\v'; break;
   case 'x':
   ch = 0;
   if (isxdigit(p[1]))
@@ -327,6 +330,72 @@ while (*t != 0)
     }
   }
 *tt = 0;
+return ss;
+}
+
+/*************************************************
+*        Undo printing escapes in string         *
+*************************************************/
+
+/* This function is the reverse of string_printing2.  It searches for
+backslash characters and if any are found, it makes a new copy of the
+string with escape sequences parsed.  Otherwise it returns the original
+string.
+
+Arguments:
+  s             the input string
+
+Returns:        string with printing escapes parsed back
+*/
+
+uschar *
+string_unprinting(uschar *s)
+{
+uschar *p, *q, *r, *ss;
+int len, off;
+
+p = Ustrchr(s, '\\');
+if (!p) return s;
+
+len = Ustrlen(s) + 1;
+ss = store_get(len);
+
+q = ss;
+off = p - s;
+if (off)
+  {
+  memcpy(q, s, off);
+  q += off;
+  }
+
+while (*p)
+  {
+  if (*p == '\\')
+    {
+    *q = string_interpret_escape(&p);
+    }
+  else
+    {
+    r = Ustrchr(p, '\\');
+    if (!r)
+      {
+      off = Ustrlen(p);
+      memcpy(q, p, off);
+      p += off;
+      q += off;
+      break;
+      }
+    else
+      {
+      off = r - p;
+      memcpy(q, p, off);
+      q += off;
+      p = r;
+      }
+    }
+  }
+*q = '\0';
+
 return ss;
 }
 #endif  /* COMPILE_UTILITY */
