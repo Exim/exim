@@ -62,6 +62,9 @@ TK/01 Bugzilla 1239 - fix DKIM verification when signature was not inserted
       as a tracking header (ie: a signed header comes before the signature).
       Patch from Wolfgang Breyha.
 
+JH/01 Bugzilla 660 - Multi-valued attributes from ldap now parseable as a
+      comma-sep list; embedded commas doubled.
+
 
 Exim version 4.77
 -----------------

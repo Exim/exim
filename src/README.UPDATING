@@ -47,6 +47,11 @@ Exim version 4.78
 
    "openssl_options" gains "no_tlsv1_1", "no_tlsv1_2" and "no_compression".
 
+ * Ldap lookups returning multi-valued attributes now separate the attributes
+   with only a comma, not a comma-space sequence.  Also, an actual comma within
+   a returned attribute is doubled.  This makes it possible to parse the
+   attribute as a comma-separated list.  Note the distinction from multiple
+   attributes being returned, where each one is a name=value pair.
 
 
 Exim version 4.77
