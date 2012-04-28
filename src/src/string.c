@@ -210,7 +210,6 @@ return yield;
 
 
 
-#ifndef COMPILE_UTILITY
 /*************************************************
 *          Interpret escape sequence             *
 *************************************************/
@@ -227,6 +226,9 @@ Returns:   the value of the character escape
 int
 string_interpret_escape(uschar **pp)
 {
+#ifdef COMPILE_UTILITY
+const uschar *hex_digits= CUS"0123456789abcdef";
+#endif
 int ch;
 uschar *p = *pp;
 ch = *(++p);
@@ -262,7 +264,6 @@ else switch(ch)
 *pp = p;
 return ch;
 }
-#endif  /* COMPILE_UTILITY */
 
 
 
@@ -333,9 +334,6 @@ while (*t != 0)
 return ss;
 }
 #endif  /* COMPILE_UTILITY */
-
-
-
 
 /*************************************************
 *        Undo printing escapes in string         *
