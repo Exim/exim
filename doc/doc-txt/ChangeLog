@@ -53,6 +53,11 @@ PP/13 tls_peerdn now print-escaped for spool files.
       Observed some $tls_peerdn in wild which contained \n, which resulted
       in spool file corruption.
 
+PP/14 TLS fixes for OpenSSL: support TLS 1.1 & 1.2; new "openssl_options"
+      values; set SSL_MODE_AUTO_RETRY so that OpenSSL will retry a read
+      or write after TLS renegotiation, which otherwise led to messages
+      "Got SSL error 2".
+
 
 Exim version 4.77
 -----------------

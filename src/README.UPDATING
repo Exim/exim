@@ -39,6 +39,15 @@ Exim version 4.78
    the message.  No tool has been provided as we believe this is a rare
    occurence.
 
+ * With OpenSSL 1.0.1+, Exim now supports TLS 1.1 and TLS 1.2.  If built
+   against 1.0.1a then you will get a warning message and the
+   "openssl_options" value will not parse "no_tlsv1_1": the value changes
+   incompatibly between 1.0.1a and 1.0.1b, because the value chosen for 1.0.1a
+   is infelicitous.  We advise avoiding 1.0.1a.
+
+   "openssl_options" gains "no_tlsv1_1", "no_tlsv1_2" and "no_compression".
+
+
 
 Exim version 4.77
 -----------------

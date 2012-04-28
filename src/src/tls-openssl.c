@@ -347,6 +347,9 @@ level. */
 
 SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
 
+/* Automatically re-try reads/writes after renegotiation. */
+(void) SSL_CTX_set_mode(ctx, SSL_MODE_AUTO_RETRY);
+
 /* Apply administrator-supplied work-arounds.
 Historically we applied just one requested option,
 SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS, but when bug 994 requested a second, we
@@ -455,6 +458,18 @@ switch (ssl->session->ssl_version)
   case TLS1_VERSION:
   ver = US"TLSv1";
   break;
+
+#ifdef TLS1_1_VERSION
+  case TLS1_1_VERSION:
+  ver = US"TLSv1.1";
+  break;
+#endif
+
+#ifdef TLS1_2_VERSION
+  case TLS1_2_VERSION:
+  ver = US"TLSv1.2";
+  break;
+#endif
 
   default:
   ver = US"UNKNOWN";
@@ -873,8 +888,8 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
   int error;
   int inbytes;
 
-  DEBUG(D_tls) debug_printf("Calling SSL_read(%lx, %lx, %u)\n", (long)ssl,
-    (long)ssl_xfer_buffer, ssl_xfer_buffer_size);
+  DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", ssl,
+    ssl_xfer_buffer, ssl_xfer_buffer_size);
 
   if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
   inbytes = SSL_read(ssl, CS ssl_xfer_buffer, ssl_xfer_buffer_size);
@@ -920,6 +935,7 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
     ssl_xfer_error = 1;
     return EOF;
     }
+
 #ifndef DISABLE_DKIM
   dkim_exim_verify_feed(ssl_xfer_buffer, inbytes);
 #endif
@@ -953,8 +969,8 @@ tls_read(uschar *buff, size_t len)
 int inbytes;
 int error;
 
-DEBUG(D_tls) debug_printf("Calling SSL_read(%lx, %lx, %u)\n", (long)ssl,
-  (long)buff, (unsigned int)len);
+DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", ssl,
+  buff, (unsigned int)len);
 
 inbytes = SSL_read(ssl, CS buff, len);
 error = SSL_get_error(ssl, inbytes);
@@ -996,10 +1012,10 @@ int outbytes;
 int error;
 int left = len;
 
-DEBUG(D_tls) debug_printf("tls_do_write(%lx, %d)\n", (long)buff, left);
+DEBUG(D_tls) debug_printf("tls_do_write(%p, %d)\n", buff, left);
 while (left > 0)
   {
-  DEBUG(D_tls) debug_printf("SSL_write(SSL, %lx, %d)\n", (long)buff, left);
+  DEBUG(D_tls) debug_printf("SSL_write(SSL, %p, %d)\n", buff, left);
   outbytes = SSL_write(ssl, CS buff, left);
   error = SSL_get_error(ssl, outbytes);
   DEBUG(D_tls) debug_printf("outbytes=%d error=%d\n", outbytes, error);
@@ -1177,7 +1193,7 @@ all options unless explicitly for DTLS, let the administrator choose which
 to apply.
 
 This list is current as of:
-  ==>  1.0.0c  <==  */
+  ==>  1.0.1b  <==  */
 static struct exim_openssl_option exim_openssl_options[] = {
 /* KEEP SORTED ALPHABETICALLY! */
 #ifdef SSL_OP_ALL
@@ -1213,6 +1229,9 @@ static struct exim_openssl_option exim_openssl_options[] = {
 #ifdef SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG
   { US"netscape_reuse_cipher_change_bug", SSL_OP_NETSCAPE_REUSE_CIPHER_CHANGE_BUG },
 #endif
+#ifdef SSL_OP_NO_COMPRESSION
+  { US"no_compression", SSL_OP_NO_COMPRESSION },
+#endif
 #ifdef SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION
   { US"no_session_resumption_on_renegotiation", SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION },
 #endif
@@ -1227,6 +1246,17 @@ static struct exim_openssl_option exim_openssl_options[] = {
 #endif
 #ifdef SSL_OP_NO_TLSv1
   { US"no_tlsv1", SSL_OP_NO_TLSv1 },
+#endif
+#ifdef SSL_OP_NO_TLSv1_1
+#if SSL_OP_NO_TLSv1_1 == 0x00000400L
+  /* Error in chosen value in 1.0.1a; see first item in CHANGES for 1.0.1b */
+#warning OpenSSL 1.0.1a uses a bad value for SSL_OP_NO_TLSv1_1, ignoring
+#else
+  { US"no_tlsv1_1", SSL_OP_NO_TLSv1_1 },
+#endif
+#endif
+#ifdef SSL_OP_NO_TLSv1_2
+  { US"no_tlsv1_2", SSL_OP_NO_TLSv1_2 },
 #endif
 #ifdef SSL_OP_SINGLE_DH_USE
   { US"single_dh_use", SSL_OP_SINGLE_DH_USE },
@@ -1252,6 +1282,7 @@ static struct exim_openssl_option exim_openssl_options[] = {
 };
 static int exim_openssl_options_size =
   sizeof(exim_openssl_options)/sizeof(struct exim_openssl_option);
+
 
 static BOOL
 tls_openssl_one_option_parse(uschar *name, long *value)

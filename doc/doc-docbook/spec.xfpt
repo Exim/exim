@@ -14362,6 +14362,61 @@ An example:
 openssl_options = -all +microsoft_big_sslv3_buffer
 .endd
 
+Possible options may include:
+.ilist
+&`all`&
+.ilist
+&`allow_unsafe_legacy_renegotiation`&
+.ilist
+&`cipher_server_preference`&
+.ilist
+&`dont_insert_empty_fragments`&
+.ilist
+&`ephemeral_rsa`&
+.ilist
+&`legacy_server_connect`&
+.ilist
+&`microsoft_big_sslv3_buffer`&
+.ilist
+&`microsoft_sess_id_bug`&
+.ilist
+&`msie_sslv2_rsa_padding`&
+.ilist
+&`netscape_challenge_bug`&
+.ilist
+&`netscape_reuse_cipher_change_bug`&
+.ilist
+&`no_compression`&
+.ilist
+&`no_session_resumption_on_renegotiation`&
+.ilist
+&`no_sslv2`&
+.ilist
+&`no_sslv3`&
+.ilist
+&`no_ticket`&
+.ilist
+&`no_tlsv1`&
+.ilist
+&`no_tlsv1_1`&
+.ilist
+&`no_tlsv1_2`&
+.ilist
+&`single_dh_use`&
+.ilist
+&`single_ecdh_use`&
+.ilist
+&`ssleay_080_client_dh_bug`&
+.ilist
+&`sslref2_reuse_cert_type_bug`&
+.ilist
+&`tls_block_padding_bug`&
+.ilist
+&`tls_d5_bug`&
+.ilist
+&`tls_rollback_bug`&
+.endlist
+
 
 .option oracle_servers main "string list" unset
 .cindex "Oracle" "server list"
