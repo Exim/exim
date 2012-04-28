@@ -332,6 +332,10 @@ while (*t != 0)
 *tt = 0;
 return ss;
 }
+#endif  /* COMPILE_UTILITY */
+
+
+
 
 /*************************************************
 *        Undo printing escapes in string         *
@@ -398,7 +402,6 @@ while (*p)
 
 return ss;
 }
-#endif  /* COMPILE_UTILITY */
 
 
 
