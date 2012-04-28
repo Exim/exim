@@ -49,6 +49,10 @@ NM/04 Bugzilla 1237 - fix cases where printf format usage no indicated
       Bug report from Lars Müller <lars@samba.org> (via SUSE), 
       Patch from Dirk Mueller <dmueller@suse.com>
 
+PP/13 tls_peerdn now print-escaped for spool files.
+      Observed some $tls_peerdn in wild which contained \n, which resulted
+      in spool file corruption.
+
 
 Exim version 4.77
 -----------------

@@ -26,6 +26,20 @@ The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
 
+Exim version 4.78
+-----------------
+
+ * The value of $tls_peerdn is now print-escaped when written to the spool file
+   in a -tls_peerdn line, and unescaped when read back in.  We received reports
+   of values with embedded newlines, which caused spool file corruption.
+
+   If you have a corrupt spool file and you wish to recover the contents after
+   upgrading, then lock the message, replace the new-lines that should be part
+   of the -tls_peerdn line with the two-character sequence \n and then unlock
+   the message.  No tool has been provided as we believe this is a rare
+   occurence.
+
+
 Exim version 4.77
 -----------------
 
