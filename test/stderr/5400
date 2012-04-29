@@ -1,0 +1,104 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+processing "accept"
+check control = cutthrough_delivery
+accept: condition test succeeded in inline ACL
+----------- start cutthrough setup ------------
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
+  SMTP<< 220 ESMTP
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP<< 250 Sender OK
+  SMTP>> RCPT TO:<userx@domain.com>
+  SMTP<< 250 Recipient OK
+----------- end cutthrough setup ------------
+processing "accept"
+accept: condition test succeeded in inline ACL
+  SMTP>> DATA
+  SMTP<< 354 Send data
+  SMTP>> .
+  SMTP<< 250 OK
+----------- cutthrough close ------------
+LOG: MAIN
+  >> userx@domain.com R=all T=smtp
+created log directory TESTSUITE/spool/log
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
+LOG: MAIN
+  Completed
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+processing "accept"
+check control = cutthrough_delivery
+accept: condition test succeeded in inline ACL
+----------- start cutthrough setup ------------
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
+  SMTP<< 220 ESMTP
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP<< 250 Sender OK
+  SMTP>> RCPT TO:<userx@domain.com>
+  SMTP<< 250 Recipient OK
+----------- end cutthrough setup ------------
+processing "accept"
+check control = cutthrough_delivery
+accept: condition test succeeded in inline ACL
+  SMTP>> QUIT
+----------- cutthrough shutdown ------------
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+trusted user
+admin user
+>>>>>>>>>>>>>>>> Remote deliveries >>>>>>>>>>>>>>>>
+--------> userx@domain.com <--------
+smtp transport entered
+  userx@domain.com
+  usery@domain.com
+checking status of 127.0.0.1
+127.0.0.1 [127.0.0.1]:1111 status = usable
+delivering 10HmaY-0005vi-00 to 127.0.0.1 [127.0.0.1] (userx@domain.com, ...)
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
+  SMTP<< 220 ESMTP
+  SMTP>> EHLO myhost.test.ex
+  SMTP<< 250 OK
+not using PIPELINING
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP<< 250 Sender OK
+  SMTP>> RCPT TO:<userx@domain.com>
+  SMTP<< 250 Recipient OK
+  SMTP>> RCPT TO:<usery@domain.com>
+  SMTP<< 250 Recipient OK
+  SMTP>> DATA
+  SMTP<< 354 Send data
+  SMTP>> writing message and terminating "."
+writing data block fd=dddd size=sss timeout=300
+  SMTP<< 250 OK
+ok=1 send_quit=1 send_rset=0 continue_more=0 yield=0 first_address is NULL
+transport_check_waiting entered
+  sequence=1 local_max=500 global_max=-1
+no messages waiting for 127.0.0.1
+  SMTP>> QUIT
+Leaving smtp transport
+LOG: MAIN
+  => userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]
+LOG: MAIN
+  -> usery@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]
+LOG: MAIN
+  Completed
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

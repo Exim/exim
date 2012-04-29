@@ -1,0 +1,38 @@
+Exim version x.yz ....
+configuration file is TESTSUITE/test-config
+admin user
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER
+using ACL "acl_rcpt"
+processing "accept"
+check control = cutthrough_delivery
+check verify = recipient
+----------- end verify ------------
+accept: condition test succeeded in ACL "acl_rcpt"
+----------- start cutthrough setup ------------
+Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
+  SMTP<< 220 ESMTP
+  SMTP>> HELO myhost.test.ex
+  SMTP<< 250 OK
+  SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
+  SMTP<< 250 Sender OK
+  SMTP>> RCPT TO:<userx@domain.com>
+  SMTP<< 250 Recipient OK
+----------- end cutthrough setup ------------
+processing "accept"
+accept: condition test succeeded in inline ACL
+  SMTP>> DATA
+  SMTP<< 354 Send data
+  SMTP>> .
+  SMTP<< 250 OK
+----------- cutthrough close ------------
+LOG: MAIN
+  >> userx@domain.com R=all T=smtp
+created log directory TESTSUITE/spool/log
+LOG: MAIN
+  <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
+LOG: MAIN
+  Completed
+LOG: smtp_connection MAIN
+  SMTP connection from CALLER closed by QUIT
+>>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

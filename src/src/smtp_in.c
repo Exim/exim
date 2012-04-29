@@ -3773,12 +3773,14 @@ while (done <= 0)
       }
 
     /* If there is an ACL, re-check the synchronization afterwards, since the
-    ACL may have delayed. */
+    ACL may have delayed.  To handle cutthrough delivery enforce a dummy call
+    to get the DATA command sent. */
 
-    if (acl_smtp_predata == NULL) rc = OK; else
+    if (acl_smtp_predata == NULL && cutthrough_fd < 0) rc = OK; else
       {
+      uschar * acl= acl_smtp_predata ? acl_smtp_predata : US"accept";
       enable_dollar_recipients = TRUE;
-      rc = acl_check(ACL_WHERE_PREDATA, NULL, acl_smtp_predata, &user_msg,
+      rc = acl_check(ACL_WHERE_PREDATA, NULL, acl, &user_msg,
         &log_msg);
       enable_dollar_recipients = FALSE;
       if (rc == OK && !check_sync()) goto SYNC_FAILURE;
