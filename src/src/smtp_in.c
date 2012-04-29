@@ -455,9 +455,10 @@ if (rcpt_in_progress)
 /* Now write the string */
 
 #ifdef SUPPORT_TLS
-if (tls_active >= 0)
+if (tls_in.active >= 0)
   {
-  if (tls_write(big_buffer, Ustrlen(big_buffer)) < 0) smtp_write_error = -1;
+  if (tls_write(TRUE, big_buffer, Ustrlen(big_buffer)) < 0)
+    smtp_write_error = -1;
   }
 else
 #endif
@@ -483,7 +484,7 @@ Returns:    0 for no error; -1 after an error
 int
 smtp_fflush(void)
 {
-if (tls_active < 0 && fflush(smtp_out) != 0) smtp_write_error = -1;
+if (tls_in.active < 0 && fflush(smtp_out) != 0) smtp_write_error = -1;
 return smtp_write_error;
 }
 
@@ -506,7 +507,7 @@ command_timeout_handler(int sig)
 sig = sig;    /* Keep picky compilers happy */
 log_write(L_lost_incoming_connection,
           LOG_MAIN, "SMTP command timeout on%s connection from %s",
-          (tls_active >= 0)? " TLS" : "",
+          (tls_in.active >= 0)? " TLS" : "",
           host_and_ident(FALSE));
 if (smtp_batched_input)
   moan_smtp_batch(NULL, "421 SMTP command timeout");  /* Does not return */
@@ -707,7 +708,7 @@ fd_set fds;
 struct timeval tzero;
 
 if (!smtp_enforce_sync || sender_host_address == NULL ||
-    sender_host_notsocket || tls_active >= 0)
+    sender_host_notsocket || tls_in.active >= 0)
   return TRUE;
 
 fd = fileno(smtp_in);
@@ -850,18 +851,18 @@ if (sender_host_authenticated != NULL)
   }
 
 #ifdef SUPPORT_TLS
-if ((log_extra_selector & LX_tls_cipher) != 0 && tls_cipher != NULL)
-  s = string_append(s, &size, &ptr, 2, US" X=", tls_cipher);
+if ((log_extra_selector & LX_tls_cipher) != 0 && tls_in.cipher != NULL)
+  s = string_append(s, &size, &ptr, 2, US" X=", tls_in.cipher);
 if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
-     tls_cipher != NULL)
+     tls_in.cipher != NULL)
   s = string_append(s, &size, &ptr, 2, US" CV=",
-    tls_certificate_verified? "yes":"no");
-if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_peerdn != NULL)
+    tls_in.certificate_verified? "yes":"no");
+if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_in.peerdn != NULL)
   s = string_append(s, &size, &ptr, 3, US" DN=\"",
-    string_printing(tls_peerdn), US"\"");
-if ((log_extra_selector & LX_tls_sni) != 0 && tls_sni != NULL)
+    string_printing(tls_in.peerdn), US"\"");
+if ((log_extra_selector & LX_tls_sni) != 0 && tls_in.sni != NULL)
   s = string_append(s, &size, &ptr, 3, US" SNI=\"",
-    string_printing(tls_sni), US"\"");
+    string_printing(tls_in.sni), US"\"");
 #endif
 
 sep = (smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE)?
@@ -1404,7 +1405,7 @@ if (!host_checking && !sender_host_notsocket) sender_host_authenticated = NULL;
 authenticated_by = NULL;
 
 #ifdef SUPPORT_TLS
-tls_cipher = tls_peerdn = NULL;
+tls_in.cipher = tls_in.peerdn = NULL;
 tls_advertised = FALSE;
 #endif
 
@@ -1692,8 +1693,7 @@ if (!sender_host_unknown)
   smtps port for use with older style SSL MTAs. */
 
   #ifdef SUPPORT_TLS
-  if (tls_on_connect &&
-      tls_server_start(tls_require_ciphers) != OK)
+  if (tls_in.on_connect && tls_server_start(tls_require_ciphers) != OK)
     return FALSE;
   #endif
 
@@ -2808,7 +2808,7 @@ while (done <= 0)
         sender_host_authenticated = au->name;
         authentication_failed = FALSE;
         received_protocol =
-          protocols[pextend + pauthed + ((tls_active >= 0)? pcrpted:0)] +
+          protocols[pextend + pauthed + ((tls_in.active >= 0)? pcrpted:0)] +
             ((sender_host_address != NULL)? pnlocal : 0);
         s = ss = US"235 Authentication succeeded";
         authenticated_by = au;
@@ -2942,7 +2942,7 @@ while (done <= 0)
 
       host_build_sender_fullhost();  /* Rebuild */
       set_process_info("handling%s incoming connection from %s",
-        (tls_active >= 0)? " TLS" : "", host_and_ident(FALSE));
+        (tls_in.active >= 0)? " TLS" : "", host_and_ident(FALSE));
 
       /* Verify if configured. This doesn't give much security, but it does
       make some people happy to be able to do it. If helo_required is set,
@@ -3167,7 +3167,7 @@ while (done <= 0)
       secure connection. */
 
       #ifdef SUPPORT_TLS
-      if (tls_active < 0 &&
+      if (tls_in.active < 0 &&
           verify_check_host(&tls_advertise_hosts) != FAIL)
         {
         s = string_cat(s, &size, &ptr, smtp_code, 3);
@@ -3188,7 +3188,7 @@ while (done <= 0)
     s[ptr] = 0;
 
     #ifdef SUPPORT_TLS
-    if (tls_active >= 0) (void)tls_write(s, ptr); else
+    if (tls_in.active >= 0) (void)tls_write(TRUE, s, ptr); else
     #endif
 
     (void)fwrite(s, 1, ptr, smtp_out);
@@ -3206,9 +3206,9 @@ while (done <= 0)
     received_protocol = (esmtp?
       protocols[pextend +
         ((sender_host_authenticated != NULL)? pauthed : 0) +
-        ((tls_active >= 0)? pcrpted : 0)]
+        ((tls_in.active >= 0)? pcrpted : 0)]
       :
-      protocols[pnormal + ((tls_active >= 0)? pcrpted : 0)])
+      protocols[pnormal + ((tls_in.active >= 0)? pcrpted : 0)])
       +
       ((sender_host_address != NULL)? pnlocal : 0);
 
@@ -3914,7 +3914,7 @@ while (done <= 0)
       {
       DEBUG(D_any)
         debug_printf("Non-empty input buffer after STARTTLS; naive attack?");
-      if (tls_active < 0)
+      if (tls_in.active < 0)
         smtp_inend = smtp_inptr = smtp_inbuffer;
       /* and if TLS is already active, tls_server_start() should fail */
       }
@@ -3975,7 +3975,7 @@ while (done <= 0)
       }
 
     /* Hard failure. Reject everything except QUIT or closed connection. One
-    cause for failure is a nested STARTTLS, in which case tls_active remains
+    cause for failure is a nested STARTTLS, in which case tls_in.active remains
     set, but we must still reject all incoming commands. */
 
     DEBUG(D_tls) debug_printf("TLS failed to start\n");
@@ -4019,7 +4019,7 @@ while (done <= 0)
         break;
         }
       }
-    tls_close(TRUE);
+    tls_close(TRUE, TRUE);
     break;
     #endif
 
@@ -4044,7 +4044,7 @@ while (done <= 0)
       smtp_respond(US"221", 3, TRUE, user_msg);
 
     #ifdef SUPPORT_TLS
-    tls_close(TRUE);
+    tls_close(TRUE, TRUE);
     #endif
 
     done = 2;
@@ -4082,7 +4082,7 @@ while (done <= 0)
       buffer[0] = 0;
       Ustrcat(buffer, " AUTH");
       #ifdef SUPPORT_TLS
-      if (tls_active < 0 &&
+      if (tls_in.active < 0 &&
           verify_check_host(&tls_advertise_hosts) != FAIL)
         Ustrcat(buffer, " STARTTLS");
       #endif

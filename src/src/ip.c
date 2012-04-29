@@ -347,8 +347,10 @@ for (;;)
 close down of the connection), set errno to zero; otherwise leave it alone. */
 
 #ifdef SUPPORT_TLS
-if (tls_active == sock)
-  rc = tls_read(buffer, buffsize);
+if (tls_out.active == sock)
+  rc = tls_read(FALSE, buffer, buffsize);
+else if (tls_in.active == sock)
+  rc = tls_read(TRUE, buffer, buffsize);
 else
 #endif
   rc = recv(sock, buffer, buffsize, 0);

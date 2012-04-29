@@ -256,19 +256,19 @@ if( rc != SASL_OK )
   return DEFER;
   }
 
-if (tls_cipher)
+if (tls_in.cipher)
   {
-  rc = sasl_setprop(conn, SASL_SSF_EXTERNAL, (sasl_ssf_t *) &tls_bits);
+  rc = sasl_setprop(conn, SASL_SSF_EXTERNAL, (sasl_ssf_t *) &tls_in.bits);
   if (rc != SASL_OK)
     {
     HDEBUG(D_auth) debug_printf("Cyrus SASL EXTERNAL SSF set %d failed: %s\n",
-        tls_bits, sasl_errstring(rc, NULL, NULL));
+        tls_in.bits, sasl_errstring(rc, NULL, NULL));
     auth_defer_msg = US"couldn't set Cyrus SASL EXTERNAL SSF";
     sasl_done();
     return DEFER;
     }
   else
-    HDEBUG(D_auth) debug_printf("Cyrus SASL set EXTERNAL SSF to %d\n", tls_bits);
+    HDEBUG(D_auth) debug_printf("Cyrus SASL set EXTERNAL SSF to %d\n", tls_in.bits);
   }
 else
   HDEBUG(D_auth) debug_printf("Cyrus SASL: no TLS, no EXTERNAL SSF set\n");

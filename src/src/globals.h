@@ -74,13 +74,20 @@ extern BOOL    move_frozen_messages;   /* Get them out of the normal directory *
 cluttered in several places (e.g. during logging) if we can always refer to
 them. Also, the tls_ variables are now always visible. */
 
-extern int     tls_active;             /* fd/socket when in a TLS session */
-extern int     tls_bits;               /* bits used in TLS session */
-extern BOOL    tls_certificate_verified; /* Client certificate verified */
-extern uschar *tls_cipher;             /* Cipher used */
-extern BOOL    tls_on_connect;         /* For older MTAs that don't STARTTLS */
-extern uschar *tls_on_connect_ports;   /* Ports always tls-on-connect */
-extern uschar *tls_peerdn;             /* DN from peer */
+typedef struct {
+  int     active;             /* fd/socket when in a TLS session */
+  int     bits;               /* bits used in TLS session */
+  BOOL    certificate_verified; /* Client certificate verified */
+  uschar *cipher;             /* Cipher used */
+  BOOL    on_connect;         /* For older MTAs that don't STARTTLS */
+  uschar *on_connect_ports;   /* Ports always tls-on-connect */
+  uschar *peerdn;             /* DN from peer */
+#ifndef USE_GNUTLS
+  uschar *sni;                /* Server Name Indication */
+#endif
+} tls_support;
+extern tls_support tls_in;
+extern tls_support tls_out;
 
 #ifdef SUPPORT_TLS
 extern BOOL    gnutls_compat_mode;     /* Less security, more compatibility */
@@ -102,7 +109,6 @@ extern BOOL    tls_offered;            /* Server offered TLS */
 extern uschar *tls_privatekey;         /* Private key file */
 extern BOOL    tls_remember_esmtp;     /* For YAEB */
 extern uschar *tls_require_ciphers;    /* So some can be avoided */
-extern uschar *tls_sni;                /* Server Name Indication */
 extern uschar *tls_try_verify_hosts;   /* Optional client verification */
 extern uschar *tls_verify_certificates;/* Path for certificates to check */
 extern uschar *tls_verify_hosts;       /* Mandatory client verification */

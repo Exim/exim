@@ -526,7 +526,7 @@ close_unwanted(void)
 if (smtp_input)
   {
   #ifdef SUPPORT_TLS
-  tls_close(FALSE);      /* Shut down the TLS library */
+  tls_close(FALSE, FALSE);      /* Shut down the TLS library */
   #endif
   (void)close(fileno(smtp_in));
   (void)close(fileno(smtp_out));
@@ -3276,7 +3276,7 @@ for (i = 1; i < argc; i++)
     /* -tls-on-connect: don't wait for STARTTLS (for old clients) */
 
     #ifdef SUPPORT_TLS
-    else if (Ustrcmp(argrest, "ls-on-connect") == 0) tls_on_connect = TRUE;
+    else if (Ustrcmp(argrest, "ls-on-connect") == 0) tls_in.on_connect = TRUE;
     #endif
 
     else badarg = TRUE;
@@ -4093,7 +4093,7 @@ if (smtp_input)
         interface_address = host_ntoa(-1, &interface_sock, NULL,
           &interface_port);
 
-      if (host_is_tls_on_connect_port(interface_port)) tls_on_connect = TRUE;
+      if (host_is_tls_on_connect_port(interface_port)) tls_in.on_connect = TRUE;
 
       if (real_uid == root_uid || real_uid == exim_uid || interface_port < 1024)
         {

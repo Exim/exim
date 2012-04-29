@@ -300,8 +300,8 @@ flush_buffer(smtp_outblock *outblock)
 int rc;
 
 #ifdef SUPPORT_TLS
-if (tls_active == outblock->sock)
-  rc = tls_write(outblock->buffer, outblock->ptr - outblock->buffer);
+if (tls_out.active == outblock->sock)
+  rc = tls_write(FALSE, outblock->buffer, outblock->ptr - outblock->buffer);
 else
 #endif
 

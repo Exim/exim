@@ -1177,10 +1177,10 @@ host_is_tls_on_connect_port(int port)
 {
 int sep = 0;
 uschar buffer[32];
-uschar *list = tls_on_connect_ports;
+uschar *list = tls_in.on_connect_ports;
 uschar *s;
 
-if (tls_on_connect) return TRUE;
+if (tls_in.on_connect) return TRUE;
 
 while ((s = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
   {

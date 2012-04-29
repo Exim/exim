@@ -612,13 +612,22 @@ static var_entry var_table[] = {
   { "srs_status",          vtype_stringptr,   &srs_status },
 #endif
   { "thisaddress",         vtype_stringptr,   &filter_thisaddress },
-  { "tls_bits",            vtype_int,         &tls_bits },
-  { "tls_certificate_verified", vtype_int,    &tls_certificate_verified },
-  { "tls_cipher",          vtype_stringptr,   &tls_cipher },
-  { "tls_peerdn",          vtype_stringptr,   &tls_peerdn },
-#ifdef SUPPORT_TLS
-  { "tls_sni",             vtype_stringptr,   &tls_sni },
+
+  { "tls_bits",            vtype_int,         &tls_in.bits },
+  { "tls_certificate_verified", vtype_int,    &tls_in.certificate_verified },
+  { "tls_cipher",          vtype_stringptr,   &tls_in.cipher },
+  { "tls_peerdn",          vtype_stringptr,   &tls_in.peerdn },
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+  { "tls_sni",             vtype_stringptr,   &tls_in.sni },
 #endif
+  { "tls_out_bits",        vtype_int,         &tls_out.bits },
+  { "tls_out_certificate_verified", vtype_int, &tls_out.certificate_verified },
+  { "tls_out_cipher",      vtype_stringptr,   &tls_out.cipher },
+  { "tls_out_peerdn",      vtype_stringptr,   &tls_out.peerdn },
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+  { "tls_out_sni",         vtype_stringptr,   &tls_out.sni },
+#endif
+
   { "tod_bsdinbox",        vtype_todbsdin,    NULL },
   { "tod_epoch",           vtype_tode,        NULL },
   { "tod_epoch_l",         vtype_todel,       NULL },

@@ -93,13 +93,27 @@ BOOL    move_frozen_messages   = FALSE;
 cluttered in several places (e.g. during logging) if we can always refer to
 them. Also, the tls_ variables are now always visible. */
 
-BOOL    tls_active             = -1;
-int     tls_bits               = 0;
-BOOL    tls_certificate_verified = FALSE;
-uschar *tls_cipher             = NULL;
-BOOL    tls_on_connect         = FALSE;
-uschar *tls_on_connect_ports   = NULL;
-uschar *tls_peerdn             = NULL;
+tls_support tls_in = {
+ -1,   /* tls_active */
+ 0,    /* tls_bits */
+ FALSE,/* tls_certificate_verified */
+ NULL, /* tls_cipher */
+ FALSE,/* tls_on_connect */
+ NULL, /* tls_on_connect_ports */
+ NULL, /* tls_peerdn */
+ NULL  /* tls_sni */
+};
+tls_support tls_out = {
+ -1,   /* tls_active */
+ 0,    /* tls_bits */
+ FALSE,/* tls_certificate_verified */
+ NULL, /* tls_cipher */
+ FALSE,/* tls_on_connect */
+ NULL, /* tls_on_connect_ports */
+ NULL, /* tls_peerdn */
+ NULL  /* tls_sni */
+};
+
 
 #ifdef SUPPORT_TLS
 BOOL    gnutls_compat_mode     = FALSE;
@@ -123,7 +137,6 @@ BOOL    tls_offered            = FALSE;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
 uschar *tls_require_ciphers    = NULL;
-uschar *tls_sni                = NULL;
 uschar *tls_try_verify_hosts   = NULL;
 uschar *tls_verify_certificates= NULL;
 uschar *tls_verify_hosts       = NULL;

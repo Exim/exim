@@ -283,10 +283,10 @@ dkim_collect_input = FALSE;
 #endif
 
 #ifdef SUPPORT_TLS
-tls_certificate_verified = FALSE;
-tls_cipher = NULL;
-tls_peerdn = NULL;
-tls_sni = NULL;
+tls_in.certificate_verified = FALSE;
+tls_in.cipher = NULL;
+tls_in.peerdn = NULL;
+tls_in.sni = NULL;
 #endif
 
 #ifdef WITH_CONTENT_SCAN
@@ -545,13 +545,13 @@ for (;;)
     #ifdef SUPPORT_TLS
     case 't':
     if (Ustrncmp(p, "ls_certificate_verified", 23) == 0)
-      tls_certificate_verified = TRUE;
+      tls_in.certificate_verified = TRUE;
     else if (Ustrncmp(p, "ls_cipher", 9) == 0)
-      tls_cipher = string_copy(big_buffer + 12);
+      tls_in.cipher = string_copy(big_buffer + 12);
     else if (Ustrncmp(p, "ls_peerdn", 9) == 0)
-      tls_peerdn = string_unprinting(string_copy(big_buffer + 12));
+      tls_in.peerdn = string_unprinting(string_copy(big_buffer + 12));
     else if (Ustrncmp(p, "ls_sni", 6) == 0)
-      tls_sni = string_unprinting(string_copy(big_buffer + 9));
+      tls_in.sni = string_unprinting(string_copy(big_buffer + 9));
     break;
     #endif
 

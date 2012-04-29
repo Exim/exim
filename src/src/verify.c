@@ -10,10 +10,14 @@ caching was contributed by Kevin Fleming (but I hacked it around a bit). */
 
 
 #include "exim.h"
+#include "transports/smtp.h"
 
 #define CUTTHROUGH_CMD_TIMEOUT  30	/* timeout for cutthrough-routing calls */
 #define CUTTHROUGH_DATA_TIMEOUT 60	/* timeout for cutthrough-routing calls */
 address_item cutthrough_addr;
+static smtp_outblock ctblock;
+uschar ctbuffer[8192];
+
 
 /* Structure for caching DNSBL lookups */
 
@@ -150,6 +154,7 @@ do_callout(address_item *addr, host_item *host_list, transport_feedback *tf,
   int callout, int callout_overall, int callout_connect, int options,
   uschar *se_mailfrom, uschar *pm_mailfrom)
 {
+smtp_transport_options_block *ob = (smtp_transport_options_block *)(addr->transport->options_block);
 BOOL is_recipient = (options & vopt_is_recipient) != 0;
 BOOL callout_no_cache = (options & vopt_callout_no_cache) != 0;
 BOOL callout_random = (options & vopt_callout_random) != 0;
@@ -394,6 +399,13 @@ optimization. */
 
 if (smtp_out != NULL && !disable_callout_flush) mac_smtp_fflush();
 
+/* Precompile some regex that are used to recognize parameters in response
+to an EHLO command, if they aren't already compiled. */
+#ifdef SUPPORT_TLS
+if (regex_STARTTLS == NULL) regex_STARTTLS =
+  regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
+#endif
+
 /* Now make connections to the hosts and do real callouts. The list of hosts
 is passed in as an argument. */
 
@@ -405,7 +417,10 @@ for (host = host_list; host != NULL && !done; host = host->next)
   int port = 25;
   BOOL send_quit = TRUE;
   uschar *active_hostname = smtp_active_hostname;
-  uschar *helo = US"HELO";
+  BOOL lmtp;
+  BOOL smtps;
+  BOOL esmtp;
+  BOOL suppress_tls = FALSE;
   uschar *interface = NULL;  /* Outgoing interface to use; NULL => any */
   uschar inbuffer[4096];
   uschar outbuffer[1024];
@@ -452,8 +467,9 @@ for (host = host_list; host != NULL && !done; host = host->next)
       addr->message);
 
   /* Set HELO string according to the protocol */
+  lmtp= Ustrcmp(tf->protocol, "lmtp") == 0;
+  smtps= Ustrcmp(tf->protocol, "smtps") == 0;
 
-  if (Ustrcmp(tf->protocol, "lmtp") == 0) helo = US"LHLO";
 
   HDEBUG(D_verify) debug_printf("interface=%s port=%d\n", interface, port);
 
@@ -472,8 +488,13 @@ for (host = host_list; host != NULL && !done; host = host->next)
   outblock.cmd_count = 0;
   outblock.authenticating = FALSE;
 
+  /* Reset the parameters of a TLS session */
+  tls_out.cipher = tls_out.peerdn = NULL;
+
   /* Connect to the host; on failure, just loop for the next one, but we
   set the error for the last one. Use the callout_connect timeout. */
+
+  tls_retry_connection:
 
   inblock.sock = outblock.sock =
     smtp_connect(host, host_af, port, interface, callout_connect, TRUE, NULL);
@@ -508,13 +529,173 @@ for (host = host_list; host != NULL && !done; host = host->next)
 
   Ustrcpy(big_buffer, "initial connection");
 
-  done =
-    smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
-      '2', callout) &&
-    smtp_write_command(&outblock, FALSE, "%s %s\r\n", helo,
-      active_hostname) >= 0 &&
-    smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer),
-      '2', callout);
+  /* Unless ssl-on-connect, wait for the initial greeting */
+  smtps_redo_greeting:
+
+  #ifdef SUPPORT_TLS
+  if (!smtps || (smtps && tls_out.active >= 0))
+  #endif
+    if (!(done= smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), '2', callout)))
+      goto RESPONSE_FAILED;
+  
+  /* Not worth checking greeting line for ESMTP support */
+  if (!(esmtp = verify_check_this_host(&(ob->hosts_avoid_esmtp), NULL,
+    host->name, host->address, NULL) != OK))
+    DEBUG(D_transport)
+      debug_printf("not sending EHLO (host matches hosts_avoid_esmtp)\n");
+
+  tls_redo_helo:
+
+  #ifdef SUPPORT_TLS
+  if (smtps  &&  tls_out.active < 0)	/* ssl-on-connect, first pass */
+    {
+    tls_offered = TRUE;
+    ob->tls_tempfail_tryclear = FALSE;
+    }
+    else				/* all other cases */
+  #endif
+
+    { esmtp_retry:
+
+    if (!(done= smtp_write_command(&outblock, FALSE, "%s %s\r\n",
+      !esmtp? "HELO" : lmtp? "LHLO" : "EHLO", active_hostname) >= 0))
+      goto SEND_FAILED;
+    if (!smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), '2', callout))
+      {
+      if (errno != 0 || responsebuffer[0] == 0 || lmtp || !esmtp || tls_out.active >= 0)
+	{
+	done= FALSE;
+        goto RESPONSE_FAILED;
+	}
+      #ifdef SUPPORT_TLS
+      tls_offered = FALSE;
+      #endif
+      esmtp = FALSE;
+      goto esmtp_retry;			/* fallback to HELO */
+      }
+
+    /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
+    #ifdef SUPPORT_TLS
+    tls_offered = esmtp && !suppress_tls &&  tls_out.active < 0  &&
+      pcre_exec(regex_STARTTLS, NULL, CS responsebuffer, Ustrlen(responsebuffer), 0,
+        PCRE_EOPT, NULL, 0) >= 0;
+    #endif
+    }
+
+  /* If TLS is available on this connection attempt to
+  start up a TLS session, unless the host is in hosts_avoid_tls. If successful,
+  send another EHLO - the server may give a different answer in secure mode. We
+  use a separate buffer for reading the response to STARTTLS so that if it is
+  negative, the original EHLO data is available for subsequent analysis, should
+  the client not be required to use TLS. If the response is bad, copy the buffer
+  for error analysis. */
+
+  #ifdef SUPPORT_TLS
+  if (tls_offered &&
+  	verify_check_this_host(&(ob->hosts_avoid_tls), NULL, host->name,
+	  host->address, NULL) != OK)
+    {
+    uschar buffer2[4096];
+    if (  !smtps
+       && !(done= smtp_write_command(&outblock, FALSE, "STARTTLS\r\n") >= 0))
+      goto SEND_FAILED;
+
+    /* If there is an I/O error, transmission of this message is deferred. If
+    there is a temporary rejection of STARRTLS and tls_tempfail_tryclear is
+    false, we also defer. However, if there is a temporary rejection of STARTTLS
+    and tls_tempfail_tryclear is true, or if there is an outright rejection of
+    STARTTLS, we carry on. This means we will try to send the message in clear,
+    unless the host is in hosts_require_tls (tested below). */
+
+    if (!smtps && !smtp_read_response(&inblock, buffer2, sizeof(buffer2), '2',
+			ob->command_timeout))
+      {
+      if (errno != 0 || buffer2[0] == 0 ||
+      	(buffer2[0] == '4' && !ob->tls_tempfail_tryclear))
+	{
+	Ustrncpy(responsebuffer, buffer2, sizeof(responsebuffer));
+	done= FALSE;
+	goto RESPONSE_FAILED;
+	}
+      }
+
+     /* STARTTLS accepted or ssl-on-connect: try to negotiate a TLS session. */
+    else
+      {
+      int rc = tls_client_start(inblock.sock, host, addr,
+	 NULL,                    /* No DH param */
+	 ob->tls_certificate, ob->tls_privatekey,
+	 ob->tls_sni,
+	 ob->tls_verify_certificates, ob->tls_crl,
+	 ob->tls_require_ciphers,
+	 ob->gnutls_require_mac, ob->gnutls_require_kx, ob->gnutls_require_proto,
+	 callout);
+
+      /* TLS negotiation failed; give an error.  Try in clear on a new connection,
+         if the options permit it for this host. */
+      if (rc != OK)
+        {
+	if (rc == DEFER && ob->tls_tempfail_tryclear && !smtps &&
+	   verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
+	     host->address, NULL) != OK)
+	  {
+          (void)close(inblock.sock);
+	  log_write(0, LOG_MAIN, "TLS session failure: delivering unencrypted "
+	    "to %s [%s] (not in hosts_require_tls)", host->name, host->address);
+	  suppress_tls = TRUE;
+	  goto tls_retry_connection;
+	  }
+	/*save_errno = ERRNO_TLSFAILURE;*/
+	/*message = US"failure while setting up TLS session";*/
+	send_quit = FALSE;
+	done= FALSE;
+	goto TLS_FAILED;
+	}
+
+      /* TLS session is set up.  Copy info for logging. */
+      addr->cipher = tls_out.cipher;
+      addr->peerdn = tls_out.peerdn;
+
+      /* For SMTPS we need to wait for the initial OK response, then do HELO. */
+      if (smtps)
+	 goto smtps_redo_greeting;
+
+      /* For STARTTLS we need to redo EHLO */
+      goto tls_redo_helo;
+      }
+    }
+
+  /* If the host is required to use a secure channel, ensure that we have one. */
+  if (tls_out.active < 0)
+    if (verify_check_this_host(&(ob->hosts_require_tls), NULL, host->name,
+    	host->address, NULL) == OK)
+      {
+      /*save_errno = ERRNO_TLSREQUIRED;*/
+      log_write(0, LOG_MAIN, "a TLS session is required for %s [%s], but %s",
+        host->name, host->address,
+	tls_offered? "an attempt to start TLS failed" : "the server did not offer TLS support");
+      done= FALSE;
+      goto TLS_FAILED;
+      }
+
+  #endif /*SUPPORT_TLS*/
+
+  done = TRUE; /* so far so good; have response to HELO */
+
+  /*XXX the EHLO response would be analyzed here for IGNOREQUOTA, SIZE, PIPELINING, AUTH */
+  /* If we haven't authenticated, but are required to, give up. */
+
+  /*XXX "filter command specified for this transport" ??? */
+  /* for now, transport_filter by cutthrough-delivery is not supported */
+  /* Need proper integration with the proper transport mechanism. */
+
+
+  SEND_FAILED:
+  RESPONSE_FAILED:
+  TLS_FAILED:
+  ;
+  /* Clear down of the TLS, SMTP and TCP layers on error is handled below.  */
+
 
   /* Failure to accept HELO is cached; this blocks the whole domain for all
   senders. I/O errors and defer responses are not cached. */
@@ -646,6 +827,7 @@ for (host = host_list; host != NULL && !done; host = host->next)
         {
         /*XXX not suitable for cutthrough - sequencing problems */
 	cutthrough_delivery= FALSE;
+	HDEBUG(D_acl|D_v) debug_printf("Cutthrough cancelled by presence of postmaster verify\n");
 
         done =
           smtp_write_command(&outblock, FALSE, "RSET\r\n") >= 0 &&
@@ -739,29 +921,41 @@ for (host = host_list; host != NULL && !done; host = host->next)
 
   /* End the SMTP conversation and close the connection. */
 
-  /*XXX cutthrough - if "done"
-  and "yeild" is OK
+  /* Cutthrough - on a successfull connect and recipient-verify with use-sender
   and we have no cutthrough conn so far
   here is where we want to leave the conn open */
-  /* and leave some form of marker for it */
-  /*XXX in fact for simplicity we should abandon cutthrough as soon as more than one address
-  comes into play */
-/*XXX what about TLS? */
   if (  cutthrough_delivery
      && done
      && yield == OK
-     && cutthrough_fd < 0
      && (options & (vopt_callout_recipsender|vopt_callout_recippmaster)) == vopt_callout_recipsender
      && !random_local_part
      && !pm_mailfrom
+     && cutthrough_fd < 0
      )
     {
     cutthrough_fd= outblock.sock;	/* We assume no buffer in use in the outblock */
-    cutthrough_addr= *addr;		/* Save the address_item for later logging */
+    cutthrough_addr = *addr;		/* Save the address_item for later logging */
+    cutthrough_addr.host_used = store_get(sizeof(host_item));
+    cutthrough_addr.host_used->name =    host->name;
+    cutthrough_addr.host_used->address = host->address;
+    cutthrough_addr.host_used->port =    port;
+    if (addr->parent)
+      *(cutthrough_addr.parent = store_get(sizeof(address_item)))= *addr->parent;
+    ctblock.buffer = ctbuffer;
+    ctblock.buffersize = sizeof(ctbuffer);
+    ctblock.ptr = ctbuffer;
+    /* ctblock.cmd_count = 0; ctblock.authenticating = FALSE; */
+    ctblock.sock = cutthrough_fd;
     }
   else
     {
+    if (options & vopt_callout_recipsender)
+      cancel_cutthrough_connection();	/* Ensure no cutthrough on multiple address verifies */
     if (send_quit) (void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
+
+    #ifdef SUPPORT_TLS
+    tls_close(FALSE, TRUE);
+    #endif
     (void)close(inblock.sock);
     }
 
@@ -857,6 +1051,9 @@ return yield;
 
 
 
+/* Called after recipient-acl to get a cutthrough connection open when
+   one was requested and a recipient-verify wasn't subsequently done.
+*/
 void
 open_cutthrough_connection( address_item * addr )
 {
@@ -877,74 +1074,74 @@ return;
 }
 
 
-static smtp_outblock ctblock;
-uschar ctbuffer[8192];
 
-
-void
-cancel_cutthrough_connection( void )
+/* Send given number of bytes from the buffer */
+static BOOL
+cutthrough_send(int n)
 {
-ctblock.ptr = ctbuffer;
-cutthrough_delivery= FALSE;
-if(cutthrough_fd >= 0)    /*XXX get that initialised, also at RSET */
-  {
-  int rc;
+if(cutthrough_fd < 0)
+  return TRUE;
 
-  /* We could be sending this after a bunch of data, but that is ok as
-     the only way to cancel the transfer in dataphase is to drop the tcp
-     conn before the final dot.
-  */
-  HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> QUIT\n");
-  rc= send(cutthrough_fd, "QUIT\r\n", 6, 0);
-  /*XXX error handling?   TLS?   See flush_buffer() in smtp_out.c */
+if(
+#ifdef SUPPORT_TLS
+   (tls_out.active == cutthrough_fd) ? tls_write(FALSE, ctblock.buffer, n) :
+#endif
+   send(cutthrough_fd, ctblock.buffer, n, 0) > 0
+  )
+{
+  transport_count += n;
+  ctblock.ptr= ctblock.buffer;
+  return TRUE;
+}
 
-  (void)close(cutthrough_fd);
-  cutthrough_fd= -1;
-  HDEBUG(D_acl) debug_printf("----------- cutthrough shutdown ------------\n");
-  }
+HDEBUG(D_transport|D_acl) debug_printf("cutthrough_send failed: %s\n", strerror(errno));
+return FALSE;
 }
 
 
 
-/* Buffered output counted data block.   Return boolean success */
+static BOOL
+_cutthrough_puts(uschar * cp, int n)
+{
+while(n--)
+ {
+ if(ctblock.ptr >= ctblock.buffer+ctblock.buffersize)
+   if(!cutthrough_send(ctblock.buffersize))
+     return FALSE;
+
+ *ctblock.ptr++ = *cp++;
+ }
+return TRUE;
+}
+
+/* Buffered output of counted data block.   Return boolean success */
 BOOL
 cutthrough_puts(uschar * cp, int n)
 {
-if(cutthrough_fd >= 0)
-  while(n--)
-  {
-  /*XXX TLS?   See flush_buffer() in smtp_out.c */
-
-  if(ctblock.ptr >= ctblock.buffer+ctblock.buffersize)
-    {
-    if(send(cutthrough_fd, ctblock.buffer, ctblock.buffersize, 0) < 0)
-	goto bad;
-    transport_count += ctblock.buffersize;
-    ctblock.ptr= ctblock.buffer;
-    }
-
-  *ctblock.ptr++ = *cp++;
-  }
-return TRUE;
-
-bad:
+if (cutthrough_fd < 0)       return TRUE;
+if (_cutthrough_puts(cp, n)) return TRUE;
 cancel_cutthrough_connection();
 return FALSE;
 }
 
+
+static BOOL
+_cutthrough_flush_send( void )
+{
+int n= ctblock.ptr-ctblock.buffer;
+
+if(n>0)
+  if(!cutthrough_send(n))
+    return FALSE;
+return TRUE;
+}
+
+
+/* Send out any bufferred output.  Return boolean success. */
 BOOL
 cutthrough_flush_send( void )
 {
-if(cutthrough_fd >= 0)
-  {
-  if(send(cutthrough_fd, ctblock.buffer, ctblock.ptr-ctblock.buffer, 0) < 0)
-    goto bad;
-  transport_count += ctblock.ptr-ctblock.buffer;
-  ctblock.ptr= ctblock.buffer;
-  }
-return TRUE;
-
-bad:
+if (_cutthrough_flush_send()) return TRUE;
 cancel_cutthrough_connection();
 return FALSE;
 }
@@ -970,6 +1167,7 @@ inblock.buffersize = sizeof(inbuffer);
 inblock.ptr = inbuffer;
 inblock.ptrend = inbuffer;
 inblock.sock = cutthrough_fd;
+/* this relies on (inblock.sock == tls_out.active) */
 if(!smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), expect, CUTTHROUGH_DATA_TIMEOUT))
   cancel_cutthrough_connection();
 
@@ -991,20 +1189,12 @@ return responsebuffer[0];
 BOOL
 cutthrough_predata( void )
 {
-int rc;
-
 if(cutthrough_fd < 0)
   return FALSE;
 
 HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> DATA\n");
-rc= send(cutthrough_fd, "DATA\r\n", 6, 0);
-if (rc <= 0)
-  {
-  HDEBUG(D_transport|D_acl) debug_printf("send failed: %s\n", strerror(errno));
-  cancel_cutthrough_connection();
-  return FALSE;
-  }
-/*XXX error handling?   TLS?   See flush_buffer() in smtp_out.c */
+cutthrough_puts(US"DATA\r\n", 6);
+cutthrough_flush_send();
 
 /* Assume nothing buffered.  If it was it gets ignored. */
 return cutthrough_response('3', NULL) == '3';
@@ -1012,36 +1202,68 @@ return cutthrough_response('3', NULL) == '3';
 
 
 /* Buffered send of headers.  Return success boolean. */
+/* Expands newlines to wire format (CR,NL).           */
 /* Also sends header-terminating blank line.          */
-/* Sets up the "ctblock" buffer as a side-effect.     */
 BOOL
 cutthrough_headers_send( void )
 {
 header_line * h;
+uschar * cp1, * cp2;
 
 if(cutthrough_fd < 0)
   return FALSE;
 
-ctblock.buffer = ctbuffer;
-ctblock.buffersize = sizeof(ctbuffer);
-ctblock.ptr = ctbuffer;
-/* ctblock.cmd_count = 0; ctblock.authenticating = FALSE; */
-ctblock.sock = cutthrough_fd;
-
 for(h= header_list; h != NULL; h= h->next)
   if(h->type != htype_old  &&  h->text != NULL)
-    if(!cutthrough_puts(h->text, h->slen))
-      return FALSE;
+    for (cp1 = h->text; *cp1 && (cp2 = Ustrchr(cp1, '\n')); cp1 = cp2+1)
+      if(  !cutthrough_puts(cp1, cp2-cp1)
+        || !cutthrough_put_nl())
+        return FALSE;
 
-if(!cutthrough_put_nl())
-  return TRUE;
+HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>>(nl)\n");
+return cutthrough_put_nl();
 }
+
+
+static void
+close_cutthrough_connection( void )
+{
+if(cutthrough_fd >= 0)
+  {
+  /* We could be sending this after a bunch of data, but that is ok as
+     the only way to cancel the transfer in dataphase is to drop the tcp
+     conn before the final dot.
+  */
+  ctblock.ptr = ctbuffer;
+  HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> QUIT\n");
+  _cutthrough_puts(US"QUIT\r\n", 6);	/* avoid recursion */
+  _cutthrough_flush_send();
+  /* No wait for response */
+
+  #ifdef SUPPORT_TLS
+  tls_close(FALSE, TRUE);
+  #endif
+  (void)close(cutthrough_fd);
+  cutthrough_fd= -1;
+  HDEBUG(D_acl) debug_printf("----------- cutthrough shutdown ------------\n");
+  }
+ctblock.ptr = ctbuffer;
+}
+
+void
+cancel_cutthrough_connection( void )
+{
+close_cutthrough_connection();
+cutthrough_delivery= FALSE;
+}
+
+
 
 
 /* Have senders final-dot.  Send one to cutthrough target, and grab the response.
    Log an OK response as a transmission.
+   Close the connection.
    Return smtp response-class digit.
-   XXX where do fail responses from target get logged?
 */
 uschar *
 cutthrough_finaldot( void )
@@ -1049,24 +1271,30 @@ cutthrough_finaldot( void )
 HDEBUG(D_transport|D_acl|D_v) debug_printf("  SMTP>> .\n");
 
 /* Assume data finshed with new-line */
-if(!cutthrough_puts(US".", 1) || !cutthrough_put_nl()
-  || !cutthrough_flush_send()
-  || cutthrough_response('2', &cutthrough_addr.message) != '2')
+if(!cutthrough_puts(US".", 1) || !cutthrough_put_nl() || !cutthrough_flush_send())
   return cutthrough_addr.message;
 
-(void)close(cutthrough_fd);
-cutthrough_fd= -1;
-HDEBUG(D_acl) debug_printf("----------- cutthrough close ------------\n");
+switch(cutthrough_response('2', &cutthrough_addr.message))
+  {
+  case '2':
+    delivery_log(LOG_MAIN, &cutthrough_addr, (int)'>', NULL);
+    close_cutthrough_connection();
+    break;
 
-delivery_log(&cutthrough_addr, (int)'>');
-/* C= ok */
-/* QT ok */
-/* DT always 0? */
-/* delivery S= zero!  (transport_count) */
-/* not TLS yet hence no X, CV, DN */
+  case '4':
+    delivery_log(LOG_MAIN, &cutthrough_addr, 0, US"tmp-reject from cutthrough after DATA:");
+    break;
 
-return cutthrough_addr.message;
+  case '5':
+    delivery_log(LOG_MAIN|LOG_REJECT, &cutthrough_addr, 0, US"rejected after DATA:");
+    break;
+
+  default:
+    break;
+  }
+  return cutthrough_addr.message;
 }
+
 
 
 /*************************************************

@@ -902,11 +902,18 @@ outblock.authenticating = FALSE;
 
 /* Reset the parameters of a TLS session. */
 
-tls_bits = 0;
-tls_cipher = NULL;
-tls_peerdn = NULL;
+tls_in.bits = 0;
+tls_in.cipher = NULL;	/* for back-compatible behaviour */
+tls_in.peerdn = NULL;
 #if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
-tls_sni = NULL;
+tls_in.sni = NULL;
+#endif
+
+tls_out.bits = 0;
+tls_out.cipher = NULL;	/* the one we may use for this transport */
+tls_out.peerdn = NULL;
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+tls_out.sni = NULL;
 #endif
 
 /* If an authenticated_sender override has been specified for this transport
@@ -1164,8 +1171,8 @@ if (tls_offered && !suppress_tls &&
       {
       if (addr->transport_return == PENDING_DEFER)
         {
-        addr->cipher = tls_cipher;
-        addr->peerdn = tls_peerdn;
+        addr->cipher = tls_out.cipher;
+        addr->peerdn = tls_out.peerdn;
         }
       }
     }
@@ -1181,7 +1188,7 @@ another process, and so we won't have expanded helo_data above. We have to
 expand it here. $sending_ip_address and $sending_port are set up right at the
 start of the Exim process (in exim.c). */
 
-if (tls_active >= 0)
+if (tls_out.active >= 0)
   {
   char *greeting_cmd;
   if (helo_data == NULL)
@@ -1243,7 +1250,7 @@ we skip this. */
 
 if (continue_hostname == NULL
     #ifdef SUPPORT_TLS
-    || tls_active >= 0
+    || tls_out.active >= 0
     #endif
     )
   {
@@ -2003,7 +2010,7 @@ if (completed_address && ok && send_quit)
   BOOL more;
   if (first_addr != NULL || continue_more ||
         (
-           (tls_active < 0 ||
+           (tls_out.active < 0 ||
            verify_check_this_host(&(ob->hosts_nopass_tls), NULL, host->name,
              host->address, NULL) != OK)
         &&
@@ -2052,9 +2059,9 @@ if (completed_address && ok && send_quit)
       don't get a good response, we don't attempt to pass the socket on. */
 
       #ifdef SUPPORT_TLS
-      if (tls_active >= 0)
+      if (tls_out.active >= 0)
         {
-        tls_close(TRUE);
+        tls_close(FALSE, TRUE);
         if (smtps)
           ok = FALSE;
         else
@@ -2104,7 +2111,7 @@ if (send_quit) (void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
 END_OFF:
 
 #ifdef SUPPORT_TLS
-tls_close(TRUE);
+tls_close(FALSE, TRUE);
 #endif
 
 /* Close the socket, and return the appropriate value, first setting

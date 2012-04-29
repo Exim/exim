@@ -1615,7 +1615,7 @@ switch(vp->value)
     test whether it was successful or not. (This is for optional verification; for
     mandatory verification, the connection doesn't last this long.) */
 
-      if (tls_certificate_verified) return OK;
+      if (tls_in.certificate_verified) return OK;
       *user_msgptr = US"no verified certificate";
       return FAIL;
 
@@ -3166,11 +3166,11 @@ for (; cb != NULL; cb = cb->next)
     writing is poorly documented. */
 
     case ACLC_ENCRYPTED:
-    if (tls_cipher == NULL) rc = FAIL; else
+    if (tls_in.cipher == NULL) rc = FAIL; else
       {
       uschar *endcipher = NULL;
-      uschar *cipher = Ustrchr(tls_cipher, ':');
-      if (cipher == NULL) cipher = tls_cipher; else
+      uschar *cipher = Ustrchr(tls_in.cipher, ':');
+      if (cipher == NULL) cipher = tls_in.cipher; else
         {
         endcipher = Ustrchr(++cipher, ':');
         if (endcipher != NULL) *endcipher = 0;
@@ -3915,21 +3915,14 @@ if (where == ACL_WHERE_RCPT)
 
 rc = acl_check_internal(where, addr, s, 0, user_msgptr, log_msgptr);
 
-/*XXX cutthrough - if requested,
-and WHERE_RCPT and not yet opened conn as reult of verify,
-and rc==OK
+/* Cutthrough - if requested,
+and WHERE_RCPT and not yet opened conn as result of recipient-verify,
+and rcpt acl returned accept,
+and first recipient (cancel on any subsequents)
 open one now and run it up to RCPT acceptance.
-Query: what to do with xple rcpts?  Avoid for now by only doing on 1st, and
-cancelling on any subsequents.
 A failed verify should cancel cutthrough request.
-For now, ensure we only accept requests to cutthrough pre-data.  Maybe relax that later.
 
-On a pre-data acl, if not accept and a cutthrough conn is open, close it.  If accept and
-a cutthrough conn is open, send DATA command and setup byte-by-byte copy mode and
-cancel spoolfile-write mode.
-NB this means no DATA acl, no content checking - might want an option for that?.
-
-Initial implementation:  dual-write to spool (do the no-spool later).
+Initial implementation:  dual-write to spool.
 Assume the rxd datastream is now being copied byte-for-byte to an open cutthrough connection.
 
 Cease cutthrough copy on rxd final dot; do not send one.
@@ -3940,10 +3933,6 @@ On data acl accept, terminate the dataphase on an open cutthrough conn.  If acce
 perm-rejected, reflect that to the original sender - and dump the spooled copy.
 If temp-reject, close the conn (and keep the spooled copy).
 If conn-failure, no action (and keep the spooled copy).
-
-
-XXX What about TLS?   Callouts never seem to do it atm. but we ought to support it eventually.
-XXX What about pipelining?   Callouts don't, and we probably don't care too much.
 */
 switch (where)
 {

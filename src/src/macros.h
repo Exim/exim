@@ -81,7 +81,7 @@ as unsigned. */
 a no-op once an SSL session is in progress. */
 
 #ifdef SUPPORT_TLS
-#define mac_smtp_fflush() if (tls_active < 0) fflush(smtp_out);
+#define mac_smtp_fflush() if (tls_in.active < 0) fflush(smtp_out);
 #else
 #define mac_smtp_fflush() fflush(smtp_out);
 #endif

@@ -28,15 +28,15 @@ extern const char *
 extern int     tls_client_start(int, host_item *, address_item *, uschar *,
                  uschar *, uschar *, uschar *, uschar *, uschar *, uschar *,
                  int, int);
-extern void    tls_close(BOOL);
+extern void    tls_close(BOOL, BOOL);
 extern int     tls_feof(void);
 extern int     tls_ferror(void);
 extern int     tls_getc(void);
-extern int     tls_read(uschar *, size_t);
+extern int     tls_read(BOOL, uschar *, size_t);
 extern int     tls_server_start(const uschar *);
 extern BOOL    tls_smtp_buffered(void);
 extern int     tls_ungetc(int);
-extern int     tls_write(const uschar *, size_t);
+extern int     tls_write(BOOL, int, const uschar *, size_t);
 extern uschar *tls_validate_require_cipher(void);
 extern void    tls_version_report(FILE *);
 #ifndef USE_GNUTLS
@@ -93,7 +93,7 @@ extern void    debug_vprintf(const char *, va_list);
 extern void    decode_bits(unsigned int *, unsigned int *,
                   int, int, uschar *, bit_table *, int, uschar *, int);
 extern address_item *deliver_make_addr(uschar *, BOOL);
-extern void    delivery_log(address_item *, int);
+extern void    delivery_log(int, address_item *, int, uschar *);
 extern int     deliver_message(uschar *, BOOL, BOOL);
 extern void    deliver_msglog(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    deliver_set_expansions(address_item *);

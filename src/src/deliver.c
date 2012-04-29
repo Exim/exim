@@ -673,8 +673,15 @@ while (addr->parent != NULL)
 
 
 
+/* If msg is NULL this is a delivery log and logchar is used. Otherwise
+this is a nonstandard call; no two-characher delivery flag is written
+but sender-host and sender are prefixed and "msg" is inserted in the log line.
+
+Arguments:
+  flags		passed to log_write()
+*/
 void
-delivery_log(address_item * addr, int logchar)
+delivery_log(int flags, address_item * addr, int logchar, uschar * msg)
 {
 uschar *log_address;
 int size = 256;         /* Used for a temporary, */
@@ -689,12 +696,17 @@ have a pointer to the host item that succeeded; local deliveries can have a
 pointer to a single host item in their host list, for use by the transport. */
 
 s = reset_point = store_get(size);
-s[ptr++] = logchar;
 
 log_address = string_log_address(addr, (log_write_selector & L_all_parents) != 0, TRUE);
-s = string_append(s, &size, &ptr, 2, US"> ", log_address);
+if (msg)
+  s = string_append(s, &size, &ptr, 3, host_and_ident(TRUE), US" ", log_address);
+else
+  {
+  s[ptr++] = logchar;
+  s = string_append(s, &size, &ptr, 2, US"> ", log_address);
+  }
 
-if ((log_extra_selector & LX_sender_on_delivery) != 0)
+if ((log_extra_selector & LX_sender_on_delivery) != 0  ||  msg)
   s = string_append(s, &size, &ptr, 3, US" F=<", sender_address, US">");
 
 #ifdef EXPERIMENTAL_SRS
@@ -711,8 +723,10 @@ if (used_return_path != NULL &&
       (log_extra_selector & LX_return_path_on_delivery) != 0)
   s = string_append(s, &size, &ptr, 3, US" P=<", used_return_path, US">");
 
-/* For a delivery from a system filter, there may not be a router */
+if (msg)
+  s = string_append(s, &size, &ptr, 2, US" ", msg);
 
+/* For a delivery from a system filter, there may not be a router */
 if (addr->router != NULL)
   s = string_append(s, &size, &ptr, 2, US" R=", addr->router->name);
 
@@ -796,7 +810,7 @@ if ((log_extra_selector & LX_deliver_time) != 0)
 store we used to build the line after writing it. */
 
 s[ptr] = 0;
-log_write(0, LOG_MAIN, "%s", s);
+log_write(0, flags, "%s", s);
 store_reset(reset_point);
 return;
 }
@@ -992,7 +1006,7 @@ if (result == OK)
     child_done(addr, now);
     }
 
-  delivery_log(addr, logchar);
+  delivery_log(LOG_MAIN, addr, logchar, NULL);
   }
 
 
@@ -3948,7 +3962,7 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
 
       /* The certificate verification status goes into the flags */
 
-      if (tls_certificate_verified) setflag(addr, af_cert_verified);
+      if (tls_out.certificate_verified) setflag(addr, af_cert_verified);
 
       /* Use an X item only if there's something to send */
 

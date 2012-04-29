@@ -45,11 +45,14 @@ typedef struct randstuff {
 static BOOL verify_callback_called = FALSE;
 static const uschar *sid_ctx = US"exim";
 
-static SSL_CTX *ctx = NULL;
+static SSL_CTX *client_ctx = NULL;
+static SSL_CTX *server_ctx = NULL;
+static SSL     *client_ssl = NULL;
+static SSL     *server_ssl = NULL;
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
-static SSL_CTX *ctx_sni = NULL;
+static SSL_CTX *client_sni = NULL;
+static SSL_CTX *server_sni = NULL;
 #endif
-static SSL *ssl = NULL;
 
 static char ssl_errstring[256];
 
@@ -77,7 +80,8 @@ typedef struct tls_ext_ctx_cb {
 /* should figure out a cleanup of API to handle state preserved per
 implementation, for various reasons, which can be void * in the APIs.
 For now, we hack around it. */
-tls_ext_ctx_cb *static_cbinfo = NULL;
+tls_ext_ctx_cb *client_static_cbinfo = NULL;
+tls_ext_ctx_cb *server_static_cbinfo = NULL;
 
 static int
 setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional);
@@ -214,7 +218,7 @@ if (state == 0)
     x509ctx->error_depth,
     X509_verify_cert_error_string(x509ctx->error),
     txt);
-  tls_certificate_verified = FALSE;
+  tls_in.certificate_verified = FALSE;
   verify_callback_called = TRUE;
   if (!verify_optional) return 0;    /* reject */
   DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
@@ -231,10 +235,10 @@ else
   {
   DEBUG(D_tls) debug_printf("SSL%s peer: %s\n",
     verify_callback_called? "" : " authenticated", txt);
-  tls_peerdn = txt;
+  tls_in.peerdn = txt;
   }
 
-if (!verify_callback_called) tls_certificate_verified = TRUE;
+if (!verify_callback_called) tls_in.certificate_verified = TRUE;
 verify_callback_called = TRUE;
 
 return 1;   /* accept */
@@ -282,7 +286,11 @@ Returns:    TRUE if OK (nothing to set up, or setup worked)
 */
 
 static BOOL
+<<<<<<< HEAD
 init_dh(SSL_CTX *sctx, uschar *dhparam, host_item *host)
+=======
+init_dh(SSL_CTX *ctx, uschar *dhparam, host_item *host)
+>>>>>>> Dual-tls - split management of TLS into in- and out-bound connection-handling.
 {
 BIO *bio;
 DH *dh;
@@ -599,7 +607,7 @@ DEBUG(D_tls) debug_printf("Received TLS SNI \"%s\"%s\n", servername,
 
 /* Make the extension value available for expansion */
 store_pool = POOL_PERM;
-tls_sni = string_copy(US servername);
+tls_in.sni = string_copy(US servername);
 store_pool = old_pool;
 
 if (!reexpand_tls_files_for_sni)
@@ -609,8 +617,8 @@ if (!reexpand_tls_files_for_sni)
 not confident that memcpy wouldn't break some internal reference counting.
 Especially since there's a references struct member, which would be off. */
 
-ctx_sni = SSL_CTX_new(SSLv23_server_method());
-if (!ctx_sni)
+server_sni = SSL_CTX_new(SSLv23_server_method());
+if (!server_sni)
   {
   ERR_error_string(ERR_get_error(), ssl_errstring);
   DEBUG(D_tls) debug_printf("SSL_CTX_new() failed: %s\n", ssl_errstring);
@@ -620,35 +628,35 @@ if (!ctx_sni)
 /* Not sure how many of these are actually needed, since SSL object
 already exists.  Might even need this selfsame callback, for reneg? */
 
-SSL_CTX_set_info_callback(ctx_sni, SSL_CTX_get_info_callback(ctx));
-SSL_CTX_set_mode(ctx_sni, SSL_CTX_get_mode(ctx));
-SSL_CTX_set_options(ctx_sni, SSL_CTX_get_options(ctx));
-SSL_CTX_set_timeout(ctx_sni, SSL_CTX_get_timeout(ctx));
-SSL_CTX_set_tlsext_servername_callback(ctx_sni, tls_servername_cb);
-SSL_CTX_set_tlsext_servername_arg(ctx_sni, cbinfo);
+SSL_CTX_set_info_callback(server_sni, SSL_CTX_get_info_callback(server_ctx));
+SSL_CTX_set_mode(server_sni, SSL_CTX_get_mode(server_ctx));
+SSL_CTX_set_options(server_sni, SSL_CTX_get_options(server_ctx));
+SSL_CTX_set_timeout(server_sni, SSL_CTX_get_timeout(server_ctx));
+SSL_CTX_set_tlsext_servername_callback(server_sni, tls_servername_cb);
+SSL_CTX_set_tlsext_servername_arg(server_sni, cbinfo);
 if (cbinfo->server_cipher_list)
-  SSL_CTX_set_cipher_list(ctx_sni, CS cbinfo->server_cipher_list);
+  SSL_CTX_set_cipher_list(server_sni, CS cbinfo->server_cipher_list);
 #ifdef EXPERIMENTAL_OCSP
 if (cbinfo->ocsp_file)
   {
-  SSL_CTX_set_tlsext_status_cb(ctx_sni, tls_stapling_cb);
+  SSL_CTX_set_tlsext_status_cb(server_sni, tls_stapling_cb);
   SSL_CTX_set_tlsext_status_arg(ctx, cbinfo);
   }
 #endif
 
-rc = setup_certs(ctx_sni, tls_verify_certificates, tls_crl, NULL, FALSE);
+rc = setup_certs(server_sni, tls_verify_certificates, tls_crl, NULL, FALSE);
 if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 
 /* do this after setup_certs, because this can require the certs for verifying
 OCSP information. */
-rc = tls_expand_session_files(ctx_sni, cbinfo);
+rc = tls_expand_session_files(server_sni, cbinfo);
 if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 
 rc = init_dh(ctx_sni, cbinfo->dhparam, NULL);
 if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 
 DEBUG(D_tls) debug_printf("Switching SSL context.\n");
-SSL_set_SSL_CTX(s, ctx_sni);
+SSL_set_SSL_CTX(s, server_sni);
 
 return SSL_TLSEXT_ERR_OK;
 }
@@ -714,12 +722,12 @@ Returns:          OK/DEFER/FAIL
 */
 
 static int
-tls_init(host_item *host, uschar *dhparam, uschar *certificate,
+tls_init(SSL_CTX **ctxp, host_item *host, uschar *dhparam, uschar *certificate,
   uschar *privatekey,
 #ifdef EXPERIMENTAL_OCSP
   uschar *ocsp_file,
 #endif
-  address_item *addr)
+  address_item *addr, tls_ext_ctx_cb ** cbp)
 {
 long init_options;
 int rc;
@@ -752,10 +760,10 @@ when OpenSSL is built without SSLv2 support.
 By disabling with openssl_options, we can let admins re-enable with the
 existing knob. */
 
-ctx = SSL_CTX_new((host == NULL)?
+*ctxp = SSL_CTX_new((host == NULL)?
   SSLv23_server_method() : SSLv23_client_method());
 
-if (ctx == NULL) return tls_error(US"SSL_CTX_new", host, NULL);
+if (*ctxp == NULL) return tls_error(US"SSL_CTX_new", host, NULL);
 
 /* It turns out that we need to seed the random number generator this early in
 order to get the full complement of ciphers to work. It took me roughly a day
@@ -783,10 +791,10 @@ if (!RAND_status())
 /* Set up the information callback, which outputs if debugging is at a suitable
 level. */
 
-SSL_CTX_set_info_callback(ctx, (void (*)())info_callback);
+SSL_CTX_set_info_callback(*ctxp, (void (*)())info_callback);
 
 /* Automatically re-try reads/writes after renegotiation. */
-(void) SSL_CTX_set_mode(ctx, SSL_MODE_AUTO_RETRY);
+(void) SSL_CTX_set_mode(*ctxp, SSL_MODE_AUTO_RETRY);
 
 /* Apply administrator-supplied work-arounds.
 Historically we applied just one requested option,
@@ -804,7 +812,7 @@ if (!okay)
 if (init_options)
   {
   DEBUG(D_tls) debug_printf("setting SSL CTX options: %#lx\n", init_options);
-  if (!(SSL_CTX_set_options(ctx, init_options)))
+  if (!(SSL_CTX_set_options(*ctxp, init_options)))
     return tls_error(string_sprintf(
           "SSL_CTX_set_option(%#lx)", init_options), host, NULL);
   }
@@ -813,11 +821,15 @@ else
 
 /* Initialize with DH parameters if supplied */
 
+<<<<<<< HEAD
 if (!init_dh(ctx, dhparam, host)) return DEFER;
+=======
+if (!init_dh(*ctxp, dhparam, host)) return DEFER;
+>>>>>>> Dual-tls - split management of TLS into in- and out-bound connection-handling.
 
 /* Set up certificate and key (and perhaps OCSP info) */
 
-rc = tls_expand_session_files(ctx, cbinfo);
+rc = tls_expand_session_files(*ctxp, cbinfo);
 if (rc != OK) return rc;
 
 /* If we need to handle SNI, do so */
@@ -837,21 +849,21 @@ if (host == NULL)
 #endif
   /* We always do this, so that $tls_sni is available even if not used in
   tls_certificate */
-  SSL_CTX_set_tlsext_servername_callback(ctx, tls_servername_cb);
-  SSL_CTX_set_tlsext_servername_arg(ctx, cbinfo);
+  SSL_CTX_set_tlsext_servername_callback(*ctxp, tls_servername_cb);
+  SSL_CTX_set_tlsext_servername_arg(*ctxp, cbinfo);
   }
 #endif
 
 /* Set up the RSA callback */
 
-SSL_CTX_set_tmp_rsa_callback(ctx, rsa_callback);
+SSL_CTX_set_tmp_rsa_callback(*ctxp, rsa_callback);
 
 /* Finally, set the timeout, and we are done */
 
-SSL_CTX_set_timeout(ctx, ssl_session_timeout);
+SSL_CTX_set_timeout(*ctxp, ssl_session_timeout);
 DEBUG(D_tls) debug_printf("Initialized TLS\n");
 
-static_cbinfo = cbinfo;
+*cbp = cbinfo;
 
 return OK;
 }
@@ -863,17 +875,17 @@ return OK;
 *           Get name of cipher in use            *
 *************************************************/
 
-/* The answer is left in a static buffer, and tls_cipher is set to point
-to it.
-
+/*
 Argument:   pointer to an SSL structure for the connection
+            buffer to use for answer
+            size of buffer
+	    pointer to number of bits for cipher
 Returns:    nothing
 */
 
 static void
-construct_cipher_name(SSL *ssl)
+construct_cipher_name(SSL *ssl, uschar *cipherbuf, int bsize, int *bits)
 {
-static uschar cipherbuf[256];
 /* With OpenSSL 1.0.0a, this needs to be const but the documentation doesn't
 yet reflect that.  It should be a safe change anyway, even 0.9.8 versions have
 the accessor functions use const in the prototype. */
@@ -911,11 +923,10 @@ switch (ssl->session->ssl_version)
   }
 
 c = (const SSL_CIPHER *) SSL_get_current_cipher(ssl);
-SSL_CIPHER_get_bits(c, &tls_bits);
+SSL_CIPHER_get_bits(c, bits);
 
-string_format(cipherbuf, sizeof(cipherbuf), "%s:%s:%u", ver,
-  SSL_CIPHER_get_name(c), tls_bits);
-tls_cipher = cipherbuf;
+string_format(cipherbuf, bsize, "%s:%s:%u", ver,
+  SSL_CIPHER_get_name(c), *bits);
 
 DEBUG(D_tls) debug_printf("Cipher: %s\n", cipherbuf);
 }
@@ -1072,10 +1083,11 @@ tls_server_start(const uschar *require_ciphers)
 int rc;
 uschar *expciphers;
 tls_ext_ctx_cb *cbinfo;
+static uschar cipherbuf[256];
 
 /* Check for previous activation */
 
-if (tls_active >= 0)
+if (tls_in.active >= 0)
   {
   tls_error(US"STARTTLS received after TLS started", NULL, US"");
   smtp_printf("554 Already in TLS\r\n");
@@ -1085,13 +1097,13 @@ if (tls_active >= 0)
 /* Initialize the SSL library. If it fails, it will already have logged
 the error. */
 
-rc = tls_init(NULL, tls_dhparam, tls_certificate, tls_privatekey,
+rc = tls_init(&server_ctx, NULL, tls_dhparam, tls_certificate, tls_privatekey,
 #ifdef EXPERIMENTAL_OCSP
     tls_ocsp_file,
 #endif
-    NULL);
+    NULL, &server_static_cbinfo);
 if (rc != OK) return rc;
-cbinfo = static_cbinfo;
+cbinfo = server_static_cbinfo;
 
 if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers))
   return FAIL;
@@ -1106,7 +1118,7 @@ if (expciphers != NULL)
   uschar *s = expciphers;
   while (*s != 0) { if (*s == '_') *s = '-'; s++; }
   DEBUG(D_tls) debug_printf("required ciphers: %s\n", expciphers);
-  if (!SSL_CTX_set_cipher_list(ctx, CS expciphers))
+  if (!SSL_CTX_set_cipher_list(server_ctx, CS expciphers))
     return tls_error(US"SSL_CTX_set_cipher_list", NULL, NULL);
   cbinfo->server_cipher_list = expciphers;
   }
@@ -1114,25 +1126,25 @@ if (expciphers != NULL)
 /* If this is a host for which certificate verification is mandatory or
 optional, set up appropriately. */
 
-tls_certificate_verified = FALSE;
+tls_in.certificate_verified = FALSE;
 verify_callback_called = FALSE;
 
 if (verify_check_host(&tls_verify_hosts) == OK)
   {
-  rc = setup_certs(ctx, tls_verify_certificates, tls_crl, NULL, FALSE);
+  rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL, FALSE);
   if (rc != OK) return rc;
   verify_optional = FALSE;
   }
 else if (verify_check_host(&tls_try_verify_hosts) == OK)
   {
-  rc = setup_certs(ctx, tls_verify_certificates, tls_crl, NULL, TRUE);
+  rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL, TRUE);
   if (rc != OK) return rc;
   verify_optional = TRUE;
   }
 
 /* Prepare for new connection */
 
-if ((ssl = SSL_new(ctx)) == NULL) return tls_error(US"SSL_new", NULL, NULL);
+if ((server_ssl = SSL_new(server_ctx)) == NULL) return tls_error(US"SSL_new", NULL, NULL);
 
 /* Warning: we used to SSL_clear(ssl) here, it was removed.
  *
@@ -1153,8 +1165,8 @@ make them disconnect. We need to have an explicit fflush() here, to force out
 the response. Other smtp_printf() calls do not need it, because in non-TLS
 mode, the fflush() happens when smtp_getc() is called. */
 
-SSL_set_session_id_context(ssl, sid_ctx, Ustrlen(sid_ctx));
-if (!tls_on_connect)
+SSL_set_session_id_context(server_ssl, sid_ctx, Ustrlen(sid_ctx));
+if (!tls_in.on_connect)
   {
   smtp_printf("220 TLS go ahead\r\n");
   fflush(smtp_out);
@@ -1163,15 +1175,15 @@ if (!tls_on_connect)
 /* Now negotiate the TLS session. We put our own timer on it, since it seems
 that the OpenSSL library doesn't. */
 
-SSL_set_wfd(ssl, fileno(smtp_out));
-SSL_set_rfd(ssl, fileno(smtp_in));
-SSL_set_accept_state(ssl);
+SSL_set_wfd(server_ssl, fileno(smtp_out));
+SSL_set_rfd(server_ssl, fileno(smtp_in));
+SSL_set_accept_state(server_ssl);
 
 DEBUG(D_tls) debug_printf("Calling SSL_accept\n");
 
 sigalrm_seen = FALSE;
 if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
-rc = SSL_accept(ssl);
+rc = SSL_accept(server_ssl);
 alarm(0);
 
 if (rc <= 0)
@@ -1188,16 +1200,22 @@ DEBUG(D_tls) debug_printf("SSL_accept was successful\n");
 /* TLS has been set up. Adjust the input functions to read via TLS,
 and initialize things. */
 
-construct_cipher_name(ssl);
+construct_cipher_name(server_ssl, cipherbuf, sizeof(cipherbuf), &tls_in.bits);
+tls_in.cipher = cipherbuf;
 
 DEBUG(D_tls)
   {
   uschar buf[2048];
-  if (SSL_get_shared_ciphers(ssl, CS buf, sizeof(buf)) != NULL)
+  if (SSL_get_shared_ciphers(server_ssl, CS buf, sizeof(buf)) != NULL)
     debug_printf("Shared ciphers: %s\n", buf);
   }
 
 
+/* Only used by the server-side tls (tls_in), including tls_getc.
+   Client-side (tls_out) reads (seem to?) go via
+   smtp_read_response()/ip_recv().
+   Hence no need to duplicate for _in and _out.
+ */
 ssl_xfer_buffer = store_malloc(ssl_xfer_buffer_size);
 ssl_xfer_buffer_lwm = ssl_xfer_buffer_hwm = 0;
 ssl_xfer_eof = ssl_xfer_error = 0;
@@ -1208,7 +1226,7 @@ receive_feof = tls_feof;
 receive_ferror = tls_ferror;
 receive_smtp_buffered = tls_smtp_buffered;
 
-tls_active = fileno(smtp_out);
+tls_in.active = fileno(smtp_out);
 return OK;
 }
 
@@ -1252,15 +1270,16 @@ static uschar txt[256];
 uschar *expciphers;
 X509* server_cert;
 int rc;
+static uschar cipherbuf[256];
 
-rc = tls_init(host, dhparam, certificate, privatekey,
+rc = tls_init(&client_ctx, host, dhparam, certificate, privatekey,
 #ifdef EXPERIMENTAL_OCSP
     NULL,
 #endif
-    addr);
+    addr, &client_static_cbinfo);
 if (rc != OK) return rc;
 
-tls_certificate_verified = FALSE;
+tls_out.certificate_verified = FALSE;
 verify_callback_called = FALSE;
 
 if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers))
@@ -1275,29 +1294,29 @@ if (expciphers != NULL)
   uschar *s = expciphers;
   while (*s != 0) { if (*s == '_') *s = '-'; s++; }
   DEBUG(D_tls) debug_printf("required ciphers: %s\n", expciphers);
-  if (!SSL_CTX_set_cipher_list(ctx, CS expciphers))
+  if (!SSL_CTX_set_cipher_list(client_ctx, CS expciphers))
     return tls_error(US"SSL_CTX_set_cipher_list", host, NULL);
   }
 
-rc = setup_certs(ctx, verify_certs, crl, host, FALSE);
+rc = setup_certs(client_ctx, verify_certs, crl, host, FALSE);
 if (rc != OK) return rc;
 
-if ((ssl = SSL_new(ctx)) == NULL) return tls_error(US"SSL_new", host, NULL);
-SSL_set_session_id_context(ssl, sid_ctx, Ustrlen(sid_ctx));
-SSL_set_fd(ssl, fd);
-SSL_set_connect_state(ssl);
+if ((client_ssl = SSL_new(client_ctx)) == NULL) return tls_error(US"SSL_new", host, NULL);
+SSL_set_session_id_context(client_ssl, sid_ctx, Ustrlen(sid_ctx));
+SSL_set_fd(client_ssl, fd);
+SSL_set_connect_state(client_ssl);
 
 if (sni)
   {
-  if (!expand_check(sni, US"tls_sni", &tls_sni))
+  if (!expand_check(sni, US"tls_sni", &tls_out.sni))
     return FAIL;
-  if (!Ustrlen(tls_sni))
-    tls_sni = NULL;
+  if (!Ustrlen(tls_out.sni))
+    tls_out.sni = NULL;
   else
     {
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
-    DEBUG(D_tls) debug_printf("Setting TLS SNI \"%s\"\n", tls_sni);
-    SSL_set_tlsext_host_name(ssl, tls_sni);
+    DEBUG(D_tls) debug_printf("Setting TLS SNI \"%s\"\n", tls_out.sni);
+    SSL_set_tlsext_host_name(client_ssl, tls_out.sni);
 #else
     DEBUG(D_tls)
       debug_printf("OpenSSL at build-time lacked SNI support, ignoring \"%s\"\n",
@@ -1311,7 +1330,7 @@ if (sni)
 DEBUG(D_tls) debug_printf("Calling SSL_connect\n");
 sigalrm_seen = FALSE;
 alarm(timeout);
-rc = SSL_connect(ssl);
+rc = SSL_connect(client_ssl);
 alarm(0);
 
 if (rc <= 0)
@@ -1320,19 +1339,20 @@ if (rc <= 0)
 DEBUG(D_tls) debug_printf("SSL_connect succeeded\n");
 
 /* Beware anonymous ciphers which lead to server_cert being NULL */
-server_cert = SSL_get_peer_certificate (ssl);
+server_cert = SSL_get_peer_certificate (client_ssl);
 if (server_cert)
   {
-  tls_peerdn = US X509_NAME_oneline(X509_get_subject_name(server_cert),
+  tls_out.peerdn = US X509_NAME_oneline(X509_get_subject_name(server_cert),
     CS txt, sizeof(txt));
-  tls_peerdn = txt;
+  tls_out.peerdn = txt;
   }
 else
-  tls_peerdn = NULL;
+  tls_out.peerdn = NULL;
 
-construct_cipher_name(ssl);   /* Sets tls_cipher */
+construct_cipher_name(client_ssl, cipherbuf, sizeof(cipherbuf), &tls_out.bits);
+tls_out.cipher = cipherbuf;
 
-tls_active = fd;
+tls_out.active = fd;
 return OK;
 }
 
@@ -1349,6 +1369,8 @@ it refills the buffer via the SSL reading function.
 
 Arguments:  none
 Returns:    the next character or EOF
+
+Only used by the server-side TLS.
 */
 
 int
@@ -1359,12 +1381,12 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
   int error;
   int inbytes;
 
-  DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", ssl,
+  DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", server_ssl,
     ssl_xfer_buffer, ssl_xfer_buffer_size);
 
   if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
-  inbytes = SSL_read(ssl, CS ssl_xfer_buffer, ssl_xfer_buffer_size);
-  error = SSL_get_error(ssl, inbytes);
+  inbytes = SSL_read(server_ssl, CS ssl_xfer_buffer, ssl_xfer_buffer_size);
+  error = SSL_get_error(server_ssl, inbytes);
   alarm(0);
 
   /* SSL_ERROR_ZERO_RETURN appears to mean that the SSL session has been
@@ -1381,13 +1403,13 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
     receive_ferror = smtp_ferror;
     receive_smtp_buffered = smtp_buffered;
 
-    SSL_free(ssl);
-    ssl = NULL;
-    tls_active = -1;
-    tls_bits = 0;
-    tls_cipher = NULL;
-    tls_peerdn = NULL;
-    tls_sni = NULL;
+    SSL_free(server_ssl);
+    server_ssl = NULL;
+    tls_in.active = -1;
+    tls_in.bits = 0;
+    tls_in.cipher = NULL;
+    tls_in.peerdn = NULL;
+    tls_in.sni = NULL;
 
     return smtp_getc();
     }
@@ -1434,6 +1456,8 @@ Arguments:
 
 Returns:    the number of bytes read
             -1 after a failed read
+
+Only used by the client-side TLS.
 */
 
 int
@@ -1442,11 +1466,11 @@ tls_read(uschar *buff, size_t len)
 int inbytes;
 int error;
 
-DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", ssl,
+DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", client_ssl,
   buff, (unsigned int)len);
 
-inbytes = SSL_read(ssl, CS buff, len);
-error = SSL_get_error(ssl, inbytes);
+inbytes = SSL_read(client_ssl, CS buff, len);
+error = SSL_get_error(client_ssl, inbytes);
 
 if (error == SSL_ERROR_ZERO_RETURN)
   {
@@ -1471,19 +1495,23 @@ return inbytes;
 
 /*
 Arguments:
+  is_server channel specifier
   buff      buffer of data
   len       number of bytes
 
 Returns:    the number of bytes after a successful write,
             -1 after a failed write
+
+Used by both server-side and client-side TLS.
 */
 
 int
-tls_write(const uschar *buff, size_t len)
+tls_write(BOOL is_server, const uschar *buff, size_t len)
 {
 int outbytes;
 int error;
 int left = len;
+SSL *ssl = is_server ? server_ssl : client_ssl;
 
 DEBUG(D_tls) debug_printf("tls_do_write(%p, %d)\n", buff, left);
 while (left > 0)
@@ -1508,6 +1536,11 @@ while (left > 0)
     log_write(0, LOG_MAIN, "SSL channel closed on write");
     return -1;
 
+    case SSL_ERROR_SYSCALL:
+    log_write(0, LOG_MAIN, "SSL_write: (from %s) syscall: %s",
+      sender_fullhost ? sender_fullhost : US"<unknown>",
+      strerror(errno));
+
     default:
     log_write(0, LOG_MAIN, "SSL_write error %d", error);
     return -1;
@@ -1528,23 +1561,27 @@ would tamper with the SSL session in the parent process).
 
 Arguments:   TRUE if SSL_shutdown is to be called
 Returns:     nothing
+
+Used by both server-side and client-side TLS.
 */
 
 void
-tls_close(BOOL shutdown)
+tls_close(BOOL is_server, BOOL shutdown)
 {
-if (tls_active < 0) return;  /* TLS was not active */
+SSL **sslp = is_server ? &server_ssl : &client_ssl;
+
+if (*fdp < 0) return;  /* TLS was not active */
 
 if (shutdown)
   {
   DEBUG(D_tls) debug_printf("tls_close(): shutting down SSL\n");
-  SSL_shutdown(ssl);
+  SSL_shutdown(*sslp);
   }
 
-SSL_free(ssl);
-ssl = NULL;
+SSL_free(*sslp);
+*sslp = NULL;
 
-tls_active = -1;
+*fdp = -1;
 }
 
 

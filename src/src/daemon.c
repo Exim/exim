@@ -382,7 +382,7 @@ if (pid == 0)
 
   /* Check for a tls-on-connect port */
 
-  if (host_is_tls_on_connect_port(interface_port)) tls_on_connect = TRUE;
+  if (host_is_tls_on_connect_port(interface_port)) tls_in.on_connect = TRUE;
 
   /* Expand smtp_active_hostname if required. We do not do this any earlier,
   because it may depend on the local interface address (indeed, that is most
@@ -639,7 +639,7 @@ if (pid == 0)
         the data structures if necessary. */
 
         #ifdef SUPPORT_TLS
-        tls_close(FALSE);
+        tls_close(FALSE, FALSE);
         #endif
 
         /* Reset SIGHUP and SIGCHLD in the child in both cases. */
