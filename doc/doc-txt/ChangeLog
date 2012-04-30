@@ -58,6 +58,10 @@ PP/14 TLS fixes for OpenSSL: support TLS 1.1 & 1.2; new "openssl_options"
       or write after TLS renegotiation, which otherwise led to messages
       "Got SSL error 2".
 
+TK/01 Bugzilla 1239 - fix DKIM verification when signature was not inserted
+      as a tracking header (ie: a signed header comes before the signature).
+      Patch from Wolfgang Breyha.
+
 
 Exim version 4.77
 -----------------
