@@ -237,10 +237,6 @@ typedef struct pdkim_signature {
   /* Signing specific ------------------------------------------------- */
   char *rsa_privkey;     /* Private RSA key                             */
   char *sign_headers;    /* To-be-signed header names                   */
-  /* Verification specific -------------------------------------------- */
-  char *hnames_check;    /* Tick-off header list that we use to keep
-                            track of header names that we have already
-                            added to the signature candidates.          */
   char *rawsig_no_b_val; /* Original signature header w/o b= tag value. */
 } pdkim_signature;
 
@@ -274,6 +270,7 @@ typedef struct pdkim_ctx {
   int        past_headers;
   int        num_buffered_crlf;
   int        num_headers;
+  pdkim_stringlist *headers; /* Raw headers for verification         */
 
 #ifdef PDKIM_DEBUG
   /* A FILE pointer. When not NULL, debug output will be generated

@@ -51,6 +51,7 @@
 /* -------------------------------------------------------------------------- */
 struct pdkim_stringlist {
   char *value;
+  int  tag;
   void *next;
 };
 
@@ -301,7 +302,6 @@ void pdkim_free_sig(pdkim_signature *sig) {
     if (sig->signature_header != NULL) free(sig->signature_header);
     if (sig->sha1_body        != NULL) free(sig->sha1_body);
     if (sig->sha2_body        != NULL) free(sig->sha2_body);
-    if (sig->hnames_check     != NULL) free(sig->hnames_check);
 
     if (sig->pubkey != NULL) pdkim_free_pubkey(sig->pubkey);
 
@@ -314,6 +314,13 @@ void pdkim_free_sig(pdkim_signature *sig) {
 /* -------------------------------------------------------------------------- */
 DLLEXPORT void pdkim_free_ctx(pdkim_ctx *ctx) {
   if (ctx) {
+    pdkim_stringlist *e = ctx->headers;
+    while(e != NULL) {
+      pdkim_stringlist *c = e;
+      if (e->value != NULL) free(e->value);
+      e = e->next;
+      free(c);
+    }
     pdkim_free_sig(ctx->sig);
     pdkim_strfree(ctx->cur_header);
     free(ctx);
@@ -701,9 +708,6 @@ pdkim_signature *pdkim_parse_sig_header(pdkim_ctx *ctx, char *raw_hdr) {
     return NULL;
   }
 
-  /* Copy header list to 'tick-off' header list */
-  sig->hnames_check = strdup(sig->headernames);
-
   *q = '\0';
   /* Chomp raw header. The final newline must not be added to the signature. */
   q--;
@@ -1062,65 +1066,69 @@ int pdkim_header_complete(pdkim_ctx *ctx) {
   ctx->num_headers++;
   if (ctx->num_headers > PDKIM_MAX_HEADERS) goto BAIL;
 
-  /* Traverse all signatures */
-  while (sig != NULL) {
-    pdkim_stringlist *list;
+  /* SIGNING -------------------------------------------------------------- */
+  if (ctx->mode == PDKIM_MODE_SIGN) {
+    /* Traverse all signatures */
+    while (sig != NULL) {
+      pdkim_stringlist *list;
 
-    /* SIGNING -------------------------------------------------------------- */
-    if (ctx->mode == PDKIM_MODE_SIGN) {
       if (header_name_match(ctx->cur_header->str,
                             sig->sign_headers?
                               sig->sign_headers:
                               PDKIM_DEFAULT_SIGN_HEADERS, 0) != PDKIM_OK) goto NEXT_SIG;
-    }
-    /* VERIFICATION --------------------------------------------------------- */
-    else {
-      /* Header is not included or all instances were already 'ticked off' */
-      if (header_name_match(ctx->cur_header->str,
-                            sig->hnames_check, 1) != PDKIM_OK) goto NEXT_SIG;
-    }
 
-    /* Add header to the signed headers list (in reverse order) */
-    list = pdkim_prepend_stringlist(sig->headers,
-                                    ctx->cur_header->str);
-    if (list == NULL) return PDKIM_ERR_OOM;
-    sig->headers = list;
-
-    NEXT_SIG:
-    sig = sig->next;
+      /* Add header to the signed headers list (in reverse order) */
+      list = pdkim_prepend_stringlist(sig->headers,
+                                      ctx->cur_header->str);
+      if (list == NULL) return PDKIM_ERR_OOM;
+      sig->headers = list;
+  
+      NEXT_SIG:
+      sig = sig->next;
+    }
   }
 
   /* DKIM-Signature: headers are added to the verification list */
-  if ( (ctx->mode == PDKIM_MODE_VERIFY) &&
-       (strncasecmp(ctx->cur_header->str,
+  if (ctx->mode == PDKIM_MODE_VERIFY) {
+    if (strncasecmp(ctx->cur_header->str,
                     DKIM_SIGNATURE_HEADERNAME,
-                    strlen(DKIM_SIGNATURE_HEADERNAME)) == 0) ) {
-     pdkim_signature *new_sig;
-    /* Create and chain new signature block */
-    #ifdef PDKIM_DEBUG
-    if (ctx->debug_stream)
-      fprintf(ctx->debug_stream,
-        "PDKIM >> Found sig, trying to parse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-    #endif
-    new_sig = pdkim_parse_sig_header(ctx, ctx->cur_header->str);
-    if (new_sig != NULL) {
-      pdkim_signature *last_sig = ctx->sig;
-      if (last_sig == NULL) {
-        ctx->sig = new_sig;
+                    strlen(DKIM_SIGNATURE_HEADERNAME)) == 0) {
+      pdkim_signature *new_sig;
+      /* Create and chain new signature block */
+      #ifdef PDKIM_DEBUG
+      if (ctx->debug_stream)
+        fprintf(ctx->debug_stream,
+          "PDKIM >> Found sig, trying to parse >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+      #endif
+      new_sig = pdkim_parse_sig_header(ctx, ctx->cur_header->str);
+      if (new_sig != NULL) {
+        pdkim_signature *last_sig = ctx->sig;
+        if (last_sig == NULL) {
+          ctx->sig = new_sig;
+        }
+        else {
+          while (last_sig->next != NULL) { last_sig = last_sig->next; }
+          last_sig->next = new_sig;
+        }
       }
       else {
-        while (last_sig->next != NULL) { last_sig = last_sig->next; }
-        last_sig->next = new_sig;
+        #ifdef PDKIM_DEBUG
+        if (ctx->debug_stream) {
+          fprintf(ctx->debug_stream,"Error while parsing signature header\n");
+          fprintf(ctx->debug_stream,
+            "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+        }
+        #endif
       }
     }
+    /* every other header is stored for signature verification */
     else {
-      #ifdef PDKIM_DEBUG
-      if (ctx->debug_stream) {
-        fprintf(ctx->debug_stream,"Error while parsing signature header\n");
-        fprintf(ctx->debug_stream,
-          "PDKIM <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-      }
-      #endif
+      pdkim_stringlist *list;
+
+      list = pdkim_prepend_stringlist(ctx->headers,
+                                      ctx->cur_header->str);
+      if (list == NULL) return PDKIM_ERR_OOM;
+      ctx->headers = list;
     }
   }
 
@@ -1377,12 +1385,20 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
       char *q = NULL;
       if (b == NULL) return PDKIM_ERR_OOM;
 
+      /* clear tags */
+      pdkim_stringlist *hdrs = ctx->headers;
+      while (hdrs != NULL) {
+        hdrs->tag = 0;
+        hdrs = hdrs->next;
+      }
+
       while(1) {
-        pdkim_stringlist *hdrs = sig->headers;
+        hdrs = ctx->headers;
         q = strchr(p,':');
         if (q != NULL) *q = '\0';
         while (hdrs != NULL) {
-          if ( (strncasecmp(hdrs->value,p,strlen(p)) == 0) &&
+          if ( (hdrs->tag == 0) &&
+               (strncasecmp(hdrs->value,p,strlen(p)) == 0) &&
                ((hdrs->value)[strlen(p)] == ':') ) {
             char *rh = NULL;
             if (sig->canon_headers == PDKIM_CANON_RELAXED)
@@ -1400,7 +1416,7 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
               pdkim_quoteprint(ctx->debug_stream, rh, strlen(rh), 1);
             #endif
             free(rh);
-            (hdrs->value)[0] = '_';
+            hdrs->tag = 1;
             break;
           }
           hdrs = hdrs->next;
