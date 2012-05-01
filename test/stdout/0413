@@ -10,7 +10,7 @@
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Server ready
-HELO mail.test.ex
+EHLO mail.test.ex
 250 OK
 MAIL FROM:<>
 250 OK
@@ -22,7 +22,7 @@ Expected EOF read from client
 Listening on port 1224 ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 Server ready
-HELO mail.test.ex
+EHLO mail.test.ex
 250 OK
 MAIL FROM:<>
 250 OK
@@ -34,7 +34,7 @@ Expected EOF read from client
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 Server ready
-HELO mail.test.ex
+EHLO mail.test.ex
 250 OK
 MAIL FROM:<>
 250 OK

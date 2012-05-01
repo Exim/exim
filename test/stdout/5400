@@ -24,7 +24,7 @@
 Listening on port 1224 ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
-HELO myhost.test.ex
+EHLO myhost.test.ex
 250 OK
 MAIL FROM:<CALLER@myhost.test.ex>
 250 Sender OK
@@ -43,15 +43,17 @@ Date: Tue, 2 Mar 1999 09:44:33 +0000
 
 .
 250 OK
-Unexpected EOF read from client
+QUIT
+250 OK
+End of script
 Listening on port 1224 ... 
 Connection request from [ip4.ip4.ip4.ip4]
 220 ESMTP
-HELO myhost.test.ex
+EHLO myhost.test.ex
 250 OK
 MAIL FROM:<CALLER@myhost.test.ex>
 250 Sender OK
-RCPT TO:<userx@domain.com>
+RCPT TO:<usery@domain.com>
 250 Recipient OK
 QUIT
 Expected EOF read from client
@@ -62,9 +64,9 @@ EHLO myhost.test.ex
 250 OK
 MAIL FROM:<CALLER@myhost.test.ex>
 250 Sender OK
-RCPT TO:<userx@domain.com>
-250 Recipient OK
 RCPT TO:<usery@domain.com>
+250 Recipient OK
+RCPT TO:<userz@domain.com>
 250 Recipient OK
 DATA
 354 Send data

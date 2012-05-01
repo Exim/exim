@@ -3,7 +3,7 @@ need_ipv4
 #
 server PORT_S
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK
@@ -27,7 +27,7 @@ QUIT
 # This one fails the actual address
 server PORT_S
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK
@@ -44,7 +44,7 @@ QUIT
 # Same again, but with sender_verify_fail logging turned off
 server PORT_S
 220 Server ready
-HELO
+EHLO
 250 OK
 MAIL FROM
 250 OK

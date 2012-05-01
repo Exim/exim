@@ -621,7 +621,7 @@ static var_entry var_table[] = {
   { "tls_sni",             vtype_stringptr,   &tls_in.sni },
 #endif
   { "tls_out_bits",        vtype_int,         &tls_out.bits },
-  { "tls_out_certificate_verified", vtype_int, &tls_out.certificate_verified },
+  { "tls_out_certificate_verified", vtype_int,&tls_out.certificate_verified },
   { "tls_out_cipher",      vtype_stringptr,   &tls_out.cipher },
   { "tls_out_peerdn",      vtype_stringptr,   &tls_out.peerdn },
 #if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)

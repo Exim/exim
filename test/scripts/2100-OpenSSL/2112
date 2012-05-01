@@ -1,5 +1,5 @@
 # TLS client: verify certificate from server - fails
-exim -DSERVER=server -bd -oX PORT_D
+exim -DSERVER=server -d+all -bd -oX PORT_D
 ****
 exim userx@test.ex
 Testing

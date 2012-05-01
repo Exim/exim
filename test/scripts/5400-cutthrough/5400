@@ -3,7 +3,7 @@ need_ipv4
 #
 server PORT_S
 220 ESMTP
-HELO
+EHLO
 250 OK
 MAIL FROM:
 250 Sender OK
@@ -28,7 +28,7 @@ QUIT
 # cutthrough cancelled by multiple recipients
 server PORT_S 2
 220 ESMTP
-HELO
+EHLO
 250 OK
 MAIL FROM:
 250 Sender OK
@@ -55,8 +55,8 @@ QUIT
 exim -d-all+acl+transport -bs
 EHLO myhost.test.ex
 MAIL FROM:<eximtest@myhost.test.ex>
-RCPT TO:<userx@domain.com>
 RCPT TO:<usery@domain.com>
+RCPT TO:<userz@domain.com>
 DATA
 
 .

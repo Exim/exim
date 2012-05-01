@@ -2,7 +2,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
-  SMTP>> HELO myhost.test.ex
+  SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
   SMTP<< 250 OK
@@ -19,7 +19,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
-  SMTP>> HELO myhost.test.ex
+  SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
   SMTP<< 250 OK
@@ -36,7 +36,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
-  SMTP>> HELO myhost.test.ex
+  SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
   SMTP<< 250 OK
@@ -53,7 +53,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
-  SMTP>> HELO myhost.test.ex
+  SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
   SMTP<< 550 Error for <>
@@ -68,7 +68,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
-  SMTP>> HELO myhost.test.ex
+  SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
   SMTP<< 550-Multiline error for <>
@@ -84,7 +84,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
-  SMTP>> HELO myhost.test.ex
+  SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
   SMTP<< 250 OK
@@ -99,7 +99,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
-  SMTP>> HELO myhost.test.ex
+  SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
   SMTP<< 250 OK
@@ -123,7 +123,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
-  SMTP>> HELO myhost.test.ex
+  SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
   SMTP<< 250 OK
@@ -138,7 +138,7 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
-  SMTP>> HELO myhost.test.ex
+  SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
   SMTP<< 250 OK
@@ -153,12 +153,13 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
-  SMTP>> HELO myhost.test.ex
+  SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
   SMTP<< 250 OK
   SMTP>> RCPT TO:<ok@localhost1>
   SMTP<< 250 OK
+Cutthrough cancelled by presence of postmaster verify
   SMTP>> RSET
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
@@ -174,12 +175,13 @@ LOG: smtp_connection MAIN
   SMTP connection from root
 Connecting to 127.0.0.1 [127.0.0.1]:1224 ... connected
   SMTP<< 220 Server ready
-  SMTP>> HELO myhost.test.ex
+  SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>
   SMTP<< 250 OK
   SMTP>> RCPT TO:<ok@localhost1>
   SMTP<< 250 OK
+Cutthrough cancelled by presence of postmaster verify
   SMTP>> RSET
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<>

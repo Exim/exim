@@ -51,7 +51,7 @@
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 server ready
-HELO myhost.test.ex
+EHLO myhost.test.ex
 250 OK
 MAIL FROM:<>
 250 OK
@@ -63,7 +63,7 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 server ready
-HELO myhost.test.ex
+EHLO myhost.test.ex
 250 OK
 MAIL FROM:<>
 250 OK
@@ -75,7 +75,7 @@ End of script
 Listening on port 1224 ... 
 Connection request from [127.0.0.1]
 220 server ready
-HELO myhost.test.ex
+EHLO myhost.test.ex
 *sleep 2
 Expected EOF read from client
 End of script
