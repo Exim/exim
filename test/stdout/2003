@@ -22,7 +22,7 @@ Succeeded in starting TLS
 <<< 250 OK
 >>> rcpt to:<userx@test.ex>
 ??? 550
-<<< 550 unacceptable cipher TLS-1.0:RSA_AES_256_CBC_SHA1:32
+<<< 550 unacceptable cipher TLS1.0:RSA_AES_256_CBC_SHA1:256
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection

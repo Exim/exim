@@ -7,31 +7,31 @@
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS-1.0:RSA_ARCFOUR_SHA1:16 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
+1999-03-02 09:44:33 10HmaY-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.2:RSA_ARCFOUR_SHA1:128 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS-1.0:RSA_ARCFOUR_MD5:16 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
+1999-03-02 09:44:33 10HmaZ-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.2:RSA_ARCFOUR_MD5:128 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmbA-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS-1.0:RSA_ARCFOUR_MD5:16 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
+1999-03-02 09:44:33 10HmbA-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.2:RSA_ARCFOUR_MD5:128 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
 1999-03-02 09:44:33 10HmbA-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmbB-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS-1.0:RSA_AES_256_CBC_SHA1:32 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
+1999-03-02 09:44:33 10HmbB-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.2:RSA_AES_256_CBC_SHA1:256 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
 1999-03-02 09:44:33 10HmbB-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmbC-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS-1.0:RSA_AES_256_CBC_SHA1:32 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
+1999-03-02 09:44:33 10HmbC-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.2:RSA_AES_256_CBC_SHA1:256 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
 1999-03-02 09:44:33 10HmbC-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmbD-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=SSL 3.0:RSA_AES_256_CBC_SHA1:32 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
+1999-03-02 09:44:33 10HmbD-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=SSL3.0:RSA_AES_256_CBC_SHA1:256 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
 1999-03-02 09:44:33 10HmbD-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
-1999-03-02 09:44:33 10HmbE-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS-1.0:RSA_ARCFOUR_MD5:16 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
+1999-03-02 09:44:33 10HmbE-0005vi-00 => userx@test.ex R=client T=send_to_server H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.2:RSA_ARCFOUR_MD5:128 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
 1999-03-02 09:44:33 10HmbE-0005vi-00 Completed
 1999-03-02 09:44:33 End queue run: pid=pppp -qf
 
@@ -40,11 +40,11 @@
 1999-03-02 09:44:33 TLS error on connection from the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] (gnutls_handshake): A TLS packet with unexpected length was received.
 1999-03-02 09:44:33 TLS error on connection from localhost (myhost.test.ex) [127.0.0.1] (gnutls_handshake): A TLS packet with unexpected length was received.
 1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@myhost.test.ex H=localhost (myhost.test.ex) [127.0.0.1] P=esmtp S=sss id=E10HmaX-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS-1.0:RSA_ARCFOUR_SHA1:16 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS-1.0:RSA_ARCFOUR_MD5:16 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS-1.0:RSA_ARCFOUR_MD5:16 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS-1.0:RSA_AES_256_CBC_SHA1:32 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS-1.0:RSA_AES_256_CBC_SHA1:32 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
-1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=SSL 3.0:RSA_AES_256_CBC_SHA1:32 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmaZ-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.2:RSA_ARCFOUR_SHA1:128 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbA-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.2:RSA_ARCFOUR_MD5:128 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbB-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.2:RSA_ARCFOUR_MD5:128 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbC-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.2:RSA_AES_256_CBC_SHA1:256 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbD-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.2:RSA_AES_256_CBC_SHA1:256 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbE-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=SSL3.0:RSA_AES_256_CBC_SHA1:256 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
-1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS-1.0:RSA_ARCFOUR_MD5:16 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex
+1999-03-02 09:44:33 10HmbF-0005vi-00 <= CALLER@myhost.test.ex H=the.local.host.name (myhost.test.ex) [ip4.ip4.ip4.ip4] P=esmtps X=TLS1.2:RSA_ARCFOUR_MD5:128 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss id=E10HmaX-0005vi-00@myhost.test.ex

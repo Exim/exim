@@ -1,1 +1,1 @@
-1999-03-02 09:44:33 H=[ip4.ip4.ip4.ip4] F=<userx@test.ex> rejected RCPT <userx@test.ex>: unacceptable cipher TLS-1.0:RSA_AES_256_CBC_SHA1:32
+1999-03-02 09:44:33 H=[ip4.ip4.ip4.ip4] F=<userx@test.ex> rejected RCPT <userx@test.ex>: unacceptable cipher TLS1.0:RSA_AES_256_CBC_SHA1:256
