@@ -523,7 +523,12 @@ if (!lcp->bound ||
   /* The Oracle LDAP libraries (LDAP_LIB_TYPE=SOLARIS) don't support this: */
   if (eldap_start_tls)
     {
-    ldap_start_tls_s(lcp->ld, NULL, NULL);
+        if ( (rc = ldap_start_tls_s(lcp->ld, NULL, NULL)) != LDAP_SUCCESS) {
+            *errmsg = string_sprintf("failed to initiate TLS processing on an "
+                "LDAP session to server %s%s - ldap_start_tls_s() returned %d:"
+                " %s", host, porttext, rc, ldap_err2string(rc));
+            goto RETURN_ERROR;
+        }
     }
 #endif
   if ((msgid = ldap_bind(lcp->ld, CS user, CS password, LDAP_AUTH_SIMPLE))
