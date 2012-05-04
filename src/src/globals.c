@@ -116,6 +116,9 @@ BOOL    tls_offered            = FALSE;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
 uschar *tls_require_ciphers    = NULL;
+#ifndef USE_GNUTLS
+uschar *tls_sni                = NULL;
+#endif
 uschar *tls_try_verify_hosts   = NULL;
 uschar *tls_verify_certificates= NULL;
 uschar *tls_verify_hosts       = NULL;

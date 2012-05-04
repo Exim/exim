@@ -286,6 +286,9 @@ dkim_collect_input = FALSE;
 tls_certificate_verified = FALSE;
 tls_cipher = NULL;
 tls_peerdn = NULL;
+#ifndef USE_GNUTLS
+tls_sni = NULL;
+#endif
 #endif
 
 #ifdef WITH_CONTENT_SCAN
@@ -549,6 +552,10 @@ for (;;)
       tls_cipher = string_copy(big_buffer + 12);
     else if (Ustrncmp(p, "ls_peerdn", 9) == 0)
       tls_peerdn = string_unprinting(string_copy(big_buffer + 12));
+    #ifndef USE_GNUTLS
+    else if (Ustrncmp(p, "ls_sni", 6) == 0)
+      tls_sni = string_unprinting(string_copy(big_buffer + 9));
+    #endif
     break;
     #endif
 

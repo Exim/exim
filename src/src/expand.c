@@ -615,6 +615,9 @@ static var_entry var_table[] = {
   { "tls_certificate_verified", vtype_int,    &tls_certificate_verified },
   { "tls_cipher",          vtype_stringptr,   &tls_cipher },
   { "tls_peerdn",          vtype_stringptr,   &tls_peerdn },
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+  { "tls_sni",             vtype_stringptr,   &tls_sni },
+#endif
   { "tod_bsdinbox",        vtype_todbsdin,    NULL },
   { "tod_epoch",           vtype_tode,        NULL },
   { "tod_full",            vtype_todf,        NULL },

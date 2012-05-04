@@ -42,6 +42,13 @@ Version 4.78
     administrators can choose to make the trade-off themselves and restore
     compatibility at the cost of session security.
 
+ 7. Use of the new expansion variable $tls_sni in the main configuration option
+    tls_certificate will cause Exim to re-expand the option, if the client
+    sends the TLS Server Name Indication extension, to permit choosing a
+    different certificate; tls_privatekey will also be re-expanded.  You must
+    still set these options to expand to valid files when $tls_sni is not set.
+    Currently OpenSSL only.
+
 
 Version 4.77
 ------------

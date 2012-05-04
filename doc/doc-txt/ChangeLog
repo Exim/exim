@@ -73,6 +73,9 @@ PP/16 Removed "dont_insert_empty_fragments" fron "openssl_options".
       Removed SSL_clear() after SSL_new() which led to protocol negotiation
       failures.  We appear to now support TLS1.1+ with Exim.
 
+PP/17 OpenSSL: new expansion var $tls_sni, which if used in tls_certificate
+      lets Exim select keys and certificates based upon TLS SNI from client.
+
 
 Exim version 4.77
 -----------------

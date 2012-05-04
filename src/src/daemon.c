@@ -828,8 +828,17 @@ pid_t pid;
 while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
   {
   int i;
-  DEBUG(D_any) debug_printf("child %d ended: status=0x%x\n", (int)pid,
-    status);
+  DEBUG(D_any)
+    {
+    debug_printf("child %d ended: status=0x%x\n", (int)pid, status);
+#ifdef WCOREDUMP
+    if (WIFEXITED(status))
+      debug_printf("  normal exit, %d\n", WEXITSTATUS(status));
+    else if (WIFSIGNALED(status))
+      debug_printf("  signal exit, signal %d%s\n", WTERMSIG(status),
+          WCOREDUMP(status) ? " (core dumped)" : "");
+#endif
+    }
 
   /* If it's a listening daemon for which we are keeping track of individual
   subprocesses, deal with an accepting process that has terminated. */
