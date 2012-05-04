@@ -27,7 +27,7 @@ int spam(uschar **listptr) {
   uschar user_name_buffer[128];
   unsigned long mbox_size;
   FILE *mbox_file;
-  int spamd_sock;
+  int spamd_sock = -1;
   uschar spamd_buffer[32600];
   int i, j, offset, result;
   uschar spamd_version[8];
@@ -218,6 +218,14 @@ int spam(uschar **listptr) {
       return DEFER;
     }
 
+  }
+
+  if (spamd_sock == -1) {
+    log_write(0, LOG_MAIN|LOG_PANIC,
+        "programming fault, spamd_sock unexpectedly unset");
+    (void)fclose(mbox_file);
+    (void)close(spamd_sock);
+    return DEFER;
   }
 
   /* now we are connected to spamd on spamd_sock */
