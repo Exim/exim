@@ -14381,7 +14381,9 @@ some now infamous attacks.
 
 An example:
 .code
-openssl_options = -all +microsoft_big_sslv3_buffer +dont_insert_empty_fragments
+# Make both old MS and old Eudora happy:
+openssl_options = -all +microsoft_big_sslv3_buffer \
+                       +dont_insert_empty_fragments
 .endd
 
 Possible options may include:
