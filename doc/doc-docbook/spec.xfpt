@@ -11897,7 +11897,8 @@ deliveries.
 When a TLS session is being established, if the client sends the Server
 Name Indication extension, the value will be placed in this variable.
 If the variable appears in &%tls_certificate%& then this option and
-&%tls_privatekey%& will be re-expanded early in the TLS session, to permit
+some others, described in &<<SECTtlssni>>&,
+will be re-expanded early in the TLS session, to permit
 a different certificate to be presented (and optionally a different key to be
 used) to the client, based upon the value of the SNI extension.
 
@@ -15635,8 +15636,8 @@ option in the relevant &(smtp)& transport.
 .new
 If the option contains &$tls_sni$& and Exim is built against OpenSSL, then
 if the OpenSSL build supports TLS extensions and the TLS client sends the
-Server Name Indication extension, then this option and &%tls_privatekey%&
-will be re-expanded.
+Server Name Indication extension, then this option and others documented in
+&<<SECTtlssni>>& will be re-expanded.
 .wen
 
 .option tls_crl main string&!! unset
@@ -15644,6 +15645,10 @@ will be re-expanded.
 .cindex "certificate" "revocation list for server"
 This option specifies a certificate revocation list. The expanded value must
 be the name of a file that contains a CRL in PEM format.
+
+.new
+See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
+.wen
 
 
 .option tls_dhparam main string&!! unset
@@ -15671,8 +15676,7 @@ key is assumed to be in the same file as the server's certificates. See chapter
 &<<CHAPTLS>>& for further details.
 
 .new
-See &%tls_certificate%& discussion of &$tls_sni$& for when this option may be
-re-expanded.
+See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
 .wen
 
 
@@ -15720,6 +15724,10 @@ the value is a file then the certificates are sent by Exim as a server to
 connecting clients, defining the list of accepted certificate authorities.
 Thus the values defined should be considered public data.  To avoid this,
 use OpenSSL with a directory.
+
+.new
+See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
+.wen
 
 
 .option tls_verify_hosts main "host list&!!" unset
@@ -21803,12 +21811,15 @@ that are in force when the &%helo_data%&, &%hosts_try_auth%&, &%interface%&,
 
 
 .section "Use of $tls_cipher and $tls_peerdn" "usecippeer"
+.vindex &$tls_bits$&
 .vindex &$tls_cipher$&
 .vindex &$tls_peerdn$&
-At the start of a run of the &(smtp)& transport, the values of &$tls_cipher$&
-and &$tls_peerdn$& are the values that were set when the message was received.
+.vindex &$tls_sni$&
+At the start of a run of the &(smtp)& transport, the values of &$tls_bits$&,
+&$tls_cipher$&, &$tls_peerdn$& and &$tls_sni$&
+are the values that were set when the message was received.
 These are the values that are used for options that are expanded before any
-SMTP connections are made. Just before each connection is made, these two
+SMTP connections are made. Just before each connection is made, these four
 variables are emptied. If TLS is subsequently started, they are set to the
 appropriate values for the outgoing connection, and these are the values that
 are in force when any authenticators are run and when the
@@ -22395,6 +22406,8 @@ If this option is set then it sets the $tls_sni variable and causes any
 TLS session to pass this value as the Server Name Indication extension to
 the remote side, which can be used by the remote side to select an appropriate
 certificate and private key for the session.
+
+See &<<SECTtlssni>>& for more information.
 
 OpenSSL only, also requiring a build of OpenSSL that supports TLS extensions.
 .wen
@@ -24926,6 +24939,13 @@ option).
 .next
 The &%tls_require_ciphers%& options operate differently, as described in the
 sections &<<SECTreqciphssl>>& and &<<SECTreqciphgnu>>&.
+.new
+.next
+Some other recently added features may only be available in one or the other.
+This should be documented with the feature.  If the documentation does not
+explicitly state that the feature is infeasible in the other TLS
+implementation, then patches are welcome.
+.wen
 .endlist
 
 
@@ -25322,13 +25342,86 @@ All the TLS options in the &(smtp)& transport are expanded before use, with
 which the client is connected. Forced failure of an expansion causes Exim to
 behave as if the relevant option were unset.
 
+.vindex &$tls_bits$&
 .vindex &$tls_cipher$&
 .vindex &$tls_peerdn$&
-Before an SMTP connection is established, the &$tls_cipher$& and &$tls_peerdn$&
+.vindex &$tls_sni$&
+Before an SMTP connection is established, the
+&$tls_bits$&, &$tls_cipher$&, &$tls_peerdn$& and &$tls_sni$&
 variables are emptied. (Until the first connection, they contain the values
 that were set when the message was received.) If STARTTLS is subsequently
 successfully obeyed, these variables are set to the relevant values for the
 outgoing connection.
+
+
+
+.new
+.section "Use of TLS Server Name Indication" "SECTtlssni"
+.cindex "TLS" "Server Name Indication"
+.vindex "&$tls_sni$&"
+.oindex "&%tls_sni%&"
+With TLS1.0 or above, there is an extension mechanism by which extra
+information can be included at various points in the protocol.  One of these
+extensions, documented in RFC 6066 (and before that RFC 4366) is
+&"Server Name Indication"&, commonly &"SNI"&.  This extension is sent by the
+client in the initial handshake, so that the server can examine the servername
+within and possibly choose to use different certificates and keys (and more)
+for this session.
+
+This is analagous to HTTP's &"Host:"& header, and is the main mechanism by
+which HTTPS-enabled web-sites can be virtual-hosted, many sites to one IP
+address.
+
+With SMTP to MX, there are the same problems here as in choosing the identity
+against which to validate a certificate: you can't rely on insecure DNS to
+provide the identity which you then cryptographically verify.  So this will
+be of limited use in that environment.
+
+With SMTP to Submission, there is a well-defined hostname which clients are
+connecting to and can validate certificates against.  Thus clients &*can*&
+choose to include this information in the TLS negotiation.  If this becomes
+wide-spread, then hosters can choose to present different certificates to
+different clients.  Or even negotiate different cipher suites.
+
+The &%tls_sni%& option on an SMTP transport is an expanded string; the result,
+if not empty, will be sent on a TLS session as part of the handshake.  There's
+nothing more to it.  Choosing a sensible value not derived insecurely is the
+only point of caution.  The &$tls_sni$& variable will be set to this string
+for the lifetime of the client connection (including during authentication).
+
+Except during SMTP client sessions, if &$tls_sni$& is set then it is a string
+received from a client.
+It can be logged with the &%log_selector%& item &`+tls_sni`&.
+
+If the string &`tls_sni`& appears in the main section's &%tls_certificate%&
+option (prior to expansion) then the following options will be re-expanded
+during TLS session handshake, to permit alternative values to be chosen:
+
+.ilist
+.vindex "&%tls_certificate%&"
+&%tls_certificate%&
+.next
+.vindex "&%tls_crl%&"
+&%tls_crl%&
+.next
+.vindex "&%tls_privatekey%&"
+&%tls_privatekey%&
+.next
+.vindex "&%tls_verify_certificates%&"
+&%tls_verify_certificates%&
+.endlist
+
+Great care should be taken to deal with matters of case, various injection
+attacks in the string (&`../`& or SQL), and ensuring that a valid filename
+can always be referenced; it is important to remember that &$tls_sni$& is
+arbitrary unverified data provided prior to authentication.
+
+The Exim developers are proceeding cautiously and so far no other TLS options
+are re-expanded.
+
+Currently SNI support is only available if using OpenSSL, with TLS Extensions
+support enabled therein.
+.wen
 
 
 
