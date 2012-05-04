@@ -489,13 +489,15 @@ extern lookup_module_info cdb_lookup_module_info;
 
 void init_lookup_list(void)
 {
+#ifdef LOOKUP_MODULE_DIR
   DIR *dd;
   struct dirent *ent;
-  const pcre *regex_islookupmod = regex_must_compile(
-      US"\\." DYNLIB_FN_EXT "$", FALSE, TRUE);
   int countmodules = 0;
   int moduleerrors = 0;
+#endif
   struct lookupmodulestr *p;
+  const pcre *regex_islookupmod = regex_must_compile(
+      US"\\." DYNLIB_FN_EXT "$", FALSE, TRUE);
 
   if (lookup_list_init_done)
     return;
