@@ -695,7 +695,19 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
 /* Prepare for new connection */
 
 if ((ssl = SSL_new(ctx)) == NULL) return tls_error(US"SSL_new", NULL, NULL);
-SSL_clear(ssl);
+
+/* Warning: we used to SSL_clear(ssl) here, it was removed.
+ *
+ * With the SSL_clear(), we get strange interoperability bugs with
+ * OpenSSL 1.0.1b and TLS1.1/1.2.  It looks as though this may be a bug in
+ * OpenSSL itself, as a clear should not lead to inability to follow protocols.
+ *
+ * The SSL_clear() call is to let an existing SSL* be reused, typically after
+ * session shutdown.  In this case, we have a brand new object and there's no
+ * obvious reason to immediately clear it.  I'm guessing that this was
+ * originally added because of incomplete initialisation which the clear fixed,
+ * in some historic release.
+ */
 
 /* Set context and tell client to go ahead, except in the case of TLS startup
 on connection, where outputting anything now upsets the clients and tends to
@@ -1332,10 +1344,8 @@ uschar keep_c;
 BOOL adding, item_parsed;
 
 result = 0L;
-/* We grandfather in as default the one option which we used to set always. */
-#ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
-result |= SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS;
-#endif
+/* Prior to 4.78 we or'd in SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS; removed
+ * from default because it increases BEAST susceptibility. */
 
 if (option_spec == NULL)
   {

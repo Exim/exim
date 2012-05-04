@@ -14333,16 +14333,12 @@ harm. This option overrides the &%pipe_as_creator%& option of the &(pipe)&
 transport driver.
 
 
-.option openssl_options main "string list" +dont_insert_empty_fragments
+.option openssl_options main "string list" unset
 .cindex "OpenSSL "compatibility options"
 This option allows an administrator to adjust the SSL options applied
 by OpenSSL to connections.  It is given as a space-separated list of items,
-each one to be +added or -subtracted from the current value.  The default
-value is one option which happens to have been set historically.  You can
-remove all options with:
-.code
-openssl_options = -all
-.endd
+each one to be +added or -subtracted from the current value.
+
 This option is only available if Exim is built against OpenSSL.  The values
 available for this option vary according to the age of your OpenSSL install.
 The &"all"& value controls a subset of flags which are available, typically
@@ -14354,12 +14350,19 @@ names lose the leading &"SSL_OP_"& and are lower-cased.
 Note that adjusting the options can have severe impact upon the security of
 SSL as used by Exim.  It is possible to disable safety checks and shoot
 yourself in the foot in various unpleasant ways.  This option should not be
-adjusted lightly.  An unrecognised item will be detected at by invoking Exim
-with the &%-bV%& flag.
+adjusted lightly.  An unrecognised item will be detected at startup, by
+invoking Exim with the &%-bV%& flag.
+
+.new
+Historical note: prior to release 4.78, Exim defaulted this value to
+"+dont_insert_empty_fragments", which may still be needed for compatibility
+with some clients, but which lowers security by increasing exposure to
+some now infamous attacks.
+.wen
 
 An example:
 .code
-openssl_options = -all +microsoft_big_sslv3_buffer
+openssl_options = -all +microsoft_big_sslv3_buffer +dont_insert_empty_fragments
 .endd
 
 Possible options may include:
