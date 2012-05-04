@@ -955,6 +955,8 @@ sub _parse_header {
         $self->{_vars}{tls_cipher} = $arg;
       } elsif ($tag eq '-tls_peerdn') {
         $self->{_vars}{tls_peerdn} = $arg;
+      } elsif ($tag eq '-tls_sni') {
+        $self->{_vars}{tls_sni} = $arg;
       } elsif ($tag eq '-host_address') {
         $self->{_vars}{sender_host_port} = $self->_get_host_and_port(\$arg);
         $self->{_vars}{sender_host_address} = $arg;
@@ -1792,6 +1794,10 @@ The cipher suite that was negotiated for encrypted SMTP connections.
 =item S . $tls_peerdn
 
 The value of the Distinguished Name of the certificate if Exim is configured to request one
+
+=item S . $tls_sni
+
+The value of the Server Name Indication TLS extension sent by a client, if one was sent.
 
 =item N + $warning_count
 

@@ -23,7 +23,7 @@ extern uschar *init_perl(uschar *);
 #ifdef SUPPORT_TLS
 extern int     tls_client_start(int, host_item *, address_item *, uschar *,
                  uschar *, uschar *, uschar *, uschar *, uschar *, uschar *,
-                 uschar *, uschar *, int);
+                 uschar *, uschar *, uschar *, int);
 extern void    tls_close(BOOL);
 extern int     tls_feof(void);
 extern int     tls_ferror(void);

@@ -841,6 +841,11 @@ if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
 if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_peerdn != NULL)
   s = string_append(s, &size, &ptr, 3, US" DN=\"",
     string_printing(tls_peerdn), US"\"");
+#ifndef USE_GNUTLS
+if ((log_extra_selector & LX_tls_sni) != 0 && tls_sni != NULL)
+  s = string_append(s, &size, &ptr, 3, US" SNI=\"",
+    string_printing(tls_sni), US"\"");
+#endif
 #endif
 
 sep = (smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE)?

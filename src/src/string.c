@@ -415,7 +415,7 @@ Returns:  copy of string in new store
 */
 
 uschar *
-string_copy(uschar *s)
+string_copy(const uschar *s)
 {
 int len = Ustrlen(s) + 1;
 uschar *ss = store_get(len);

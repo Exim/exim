@@ -47,6 +47,13 @@ Version 4.78
     sends the TLS Server Name Indication extension, to permit choosing a
     different certificate; tls_privatekey will also be re-expanded.  You must
     still set these options to expand to valid files when $tls_sni is not set.
+
+    The SMTP Transport has gained the option tls_sni, which will set a hostname
+    for outbound TLS sessions, and set $tls_sni too.
+
+    A new log_selector, +tls_sni, has been added, to log received SNI values
+    for Exim as a server.
+
     Currently OpenSSL only.
 
 

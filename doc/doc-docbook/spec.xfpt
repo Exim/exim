@@ -11899,8 +11899,8 @@ If the variable appears in &%tls_certificate%& then this option and
 a different certificate to be presented (and optionally a different key to be
 used) to the client, based upon the value of the SNI extension.
 
-The value will be retained for the lifetime of the message, and not changed
-during outbound SMTP.
+The value will be retained for the lifetime of the message.  During outbound
+SMTP deliveries, it reflects the value of the tls_sni option on the transport.
 
 This is currently only available when using OpenSSL, built with support for
 SNI.
@@ -15627,6 +15627,12 @@ receiving incoming messages as a server. If you want to supply certificates for
 use when sending messages as a client, you must set the &%tls_certificate%&
 option in the relevant &(smtp)& transport.
 
+.new
+If the option contains &$tls_sni$& and Exim is built against OpenSSL, then
+if the OpenSSL build supports TLS extensions and the TLS client sends the
+Server Name Indication extension, then this option and &%tls_privatekey%&
+will be re-expanded.
+.wen
 
 .option tls_crl main string&!! unset
 .cindex "TLS" "server certificate revocation list"
@@ -15658,6 +15664,11 @@ file which contains the server's private key. If this option is unset, or if
 the expansion is forced to fail, or the result is an empty string, the private
 key is assumed to be in the same file as the server's certificates. See chapter
 &<<CHAPTLS>>& for further details.
+
+.new
+See &%tls_certificate%& discussion of &$tls_sni$& for when this option may be
+re-expanded.
+.wen
 
 
 .option tls_remember_esmtp main boolean false
@@ -22368,6 +22379,20 @@ expansion. See chapter &<<CHAPTLS>>& for details of TLS; note that this option
 is used in different ways by OpenSSL and GnuTLS (see sections
 &<<SECTreqciphssl>>& and &<<SECTreqciphgnu>>&). For GnuTLS, the order of the
 ciphers is a preference order.
+
+
+
+.new
+.option tls_sni smtp string&!! unset
+.cindex "TLS" "Server Name Indication"
+.vindex "&$tls_sni$&"
+If this option is set then it sets the $tls_sni variable and causes any
+TLS session to pass this value as the Server Name Indication extension to
+the remote side, which can be used by the remote side to select an appropriate
+certificate and private key for the session.
+
+OpenSSL only, also requiring a build of OpenSSL that supports TLS extensions.
+.wen
 
 
 
@@ -33155,6 +33180,7 @@ selection marked by asterisks:
 &` tls_certificate_verified   `&  certificate verification status
 &`*tls_cipher                 `&  TLS cipher suite on <= and => lines
 &` tls_peerdn                 `&  TLS peer DN on <= and => lines
+&` tls_sni                    `&  TLS SNI on <= lines
 &` unknown_in_list            `&  DNS lookup failed in list match
 
 &` all                        `&  all of the above
@@ -33449,6 +33475,12 @@ connection, the cipher suite used is added to the log line, preceded by X=.
 &%tls_peerdn%&: When a message is sent or received over an encrypted
 connection, and a certificate is supplied by the remote host, the peer DN is
 added to the log line, preceded by DN=.
+.next
+.cindex "log" "TLS SNI"
+.cindex "TLS" "logging SNI"
+&%tls_sni%&: When a message is received over an encrypted connection, and
+the remote host provided the Server Name Indication extension, the SNI is
+added to the log line, preceded by SNI=.
 .next
 .cindex "log" "DNS failure in list"
 &%unknown_in_list%&: This setting causes a log entry to be written when the

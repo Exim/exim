@@ -385,15 +385,18 @@ tls_servername_cb(SSL *s, int *ad ARG_UNUSED, void *arg)
 const char *servername = SSL_get_servername(s, TLSEXT_NAMETYPE_host_name);
 const tls_ext_ctx_cb *cbinfo = (tls_ext_ctx_cb *) arg;
 int rc;
+int old_pool = store_pool;
 
 if (!servername)
   return SSL_TLSEXT_ERR_OK;
 
-DEBUG(D_tls) debug_printf("TLS SNI: %s%s\n", servername,
+DEBUG(D_tls) debug_printf("Received TLS SNI \"%s\"%s\n", servername,
     reexpand_tls_files_for_sni ? "" : " (unused for certificate selection)");
 
 /* Make the extension value available for expansion */
-tls_sni = servername;
+store_pool = POOL_PERM;
+tls_sni = string_copy(US servername);
+store_pool = old_pool;
 
 if (!reexpand_tls_files_for_sni)
   return SSL_TLSEXT_ERR_OK;
@@ -550,10 +553,13 @@ if (rc != OK) return rc;
 
 /* If we need to handle SNI, do so */
 #if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
-/* We always do this, so that $tls_sni is available even if not used in
-tls_certificate */
-SSL_CTX_set_tlsext_servername_callback(ctx, tls_servername_cb);
-SSL_CTX_set_tlsext_servername_arg(ctx, cbinfo);
+if (host == NULL)
+  {
+  /* We always do this, so that $tls_sni is available even if not used in
+  tls_certificate */
+  SSL_CTX_set_tlsext_servername_callback(ctx, tls_servername_cb);
+  SSL_CTX_set_tlsext_servername_arg(ctx, cbinfo);
+  }
 #endif
 
 /* Set up the RSA callback */
@@ -944,6 +950,7 @@ Argument:
   dhparam          DH parameter file
   certificate      certificate file
   privatekey       private key file
+  sni              TLS SNI to send to remote host
   verify_certs     file for certificate verify
   crl              file containing CRL
   require_ciphers  list of allowed ciphers
@@ -961,7 +968,8 @@ Returns:           OK on success
 
 int
 tls_client_start(int fd, host_item *host, address_item *addr, uschar *dhparam,
-  uschar *certificate, uschar *privatekey, uschar *verify_certs, uschar *crl,
+  uschar *certificate, uschar *privatekey, uschar *sni,
+  uschar *verify_certs, uschar *crl,
   uschar *require_ciphers, uschar *require_mac, uschar *require_kx,
   uschar *require_proto, int timeout)
 {
@@ -999,6 +1007,19 @@ if ((ssl = SSL_new(ctx)) == NULL) return tls_error(US"SSL_new", host, NULL);
 SSL_set_session_id_context(ssl, sid_ctx, Ustrlen(sid_ctx));
 SSL_set_fd(ssl, fd);
 SSL_set_connect_state(ssl);
+
+if (sni)
+  {
+  if (!expand_check(sni, US"tls_sni", &tls_sni))
+    return FAIL;
+  if (!Ustrlen(tls_sni))
+    tls_sni = NULL;
+  else
+    {
+    DEBUG(D_tls) debug_printf("Setting TLS SNI \"%s\"\n", tls_sni);
+    SSL_set_tlsext_host_name(ssl, tls_sni);
+    }
+  }
 
 /* There doesn't seem to be a built-in timeout on connection. */
 
@@ -1078,8 +1099,10 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
     SSL_free(ssl);
     ssl = NULL;
     tls_active = -1;
+    tls_bits = 0;
     tls_cipher = NULL;
     tls_peerdn = NULL;
+    tls_sni = NULL;
 
     return smtp_getc();
     }

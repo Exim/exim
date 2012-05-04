@@ -75,6 +75,8 @@ PP/16 Removed "dont_insert_empty_fragments" fron "openssl_options".
 
 PP/17 OpenSSL: new expansion var $tls_sni, which if used in tls_certificate
       lets Exim select keys and certificates based upon TLS SNI from client.
+      Also option tls_sni on SMTP Transports.  Also clear $tls_bits correctly
+      before an outbound SMTP session.  New log_selector, +tls_sni.
 
 
 Exim version 4.77
