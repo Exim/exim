@@ -9755,11 +9755,13 @@ dotted-quad decimal form, while for IPv6 addreses the result is in
 dotted-nibble hexadecimal form.  In both cases, this is the "natural" form
 for DNS.  For example,
 .code
-${reverse_ip:192.0.2.4} and ${reverse_ip:2001:0db8:c42:9:1:abcd:192.0.2.3}
+${reverse_ip:192.0.2.4}
+${reverse_ip:2001:0db8:c42:9:1:abcd:192.0.2.3}
 .endd
 returns
 .code
-4.2.0.192 and 3.0.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
+4.2.0.192
+3.0.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
 .endd
 
 
@@ -24163,9 +24165,10 @@ login:
   server_prompts = Username:: : Password::
   server_condition = ${if and{{ \
     !eq{}{$auth1} }{ \
-    ldapauth{user="cn=${quote_ldap_dn:$auth1},ou=people,o=example.org" \
-             pass=${quote:$auth2} \
-             ldap://ldap.example.org/} }} }
+    ldapauth{\
+      user="uid=${quote_ldap_dn:$auth1},ou=people,o=example.org" \
+      pass=${quote:$auth2} \
+      ldap://ldap.example.org/} }} }
   server_set_id = uid=$auth1,ou=people,o=example.org
 .endd
 We have to check that the username is not empty before using it, because LDAP
@@ -27824,14 +27827,14 @@ in the MAIL ACL. Subsequent connections from the same client will check this
 new rate.
 .code
 acl_check_connect:
-  deny ratelimit = 100 / 5m / readonly
-       log_message = RATE CHECK: $sender_rate/$sender_rate_period \
-                     (max $sender_rate_limit)
+ deny ratelimit = 100 / 5m / readonly
+    log_message = RATE CHECK: $sender_rate/$sender_rate_period \
+                  (max $sender_rate_limit)
 # ...
 acl_check_mail:
-  warn ratelimit = 100 / 5m / strict
-       log_message  = RATE UPDATE: $sender_rate/$sender_rate_period \
-                      (max $sender_rate_limit)
+ warn ratelimit = 100 / 5m / strict
+    log_message = RATE UPDATE: $sender_rate/$sender_rate_period \
+                  (max $sender_rate_limit)
 .endd
 
 If Exim encounters multiple &%ratelimit%& conditions with the same key when
@@ -35289,9 +35292,14 @@ unqualified domain &'foundation'&.
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 
-.chapter "Support for DKIM (DomainKeys Identified Mail) - RFC4871" "CHID12" &&&
+.chapter "Support for DKIM (DomainKeys Identified Mail)" "CHID12" &&&
          "DKIM Support"
 .cindex "DKIM"
+
+DKIM is a mechanism by which messages sent by some entity can be provably
+linked to a domain which that entity controls.  It permits reputation to
+be tracked on a per-domain basis, rather than merely upon source IP address.
+DKIM is documented in RFC 4871.
 
 Since version 4.70, DKIM support is compiled into Exim by default. It can be
 disabled by setting DISABLE_DKIM=yes in Local/Makefile.
@@ -35313,9 +35321,12 @@ Exim's standard controls.
 Please note that verification of DKIM signatures in incoming mail is turned
 on by default for logging purposes. For each signature in incoming email,
 exim will log a line displaying the most important signature details, and the
-signature status. Here is an example:
+signature status. Here is an example (with line-breaks added for clarity):
 .code
-2009-09-09 10:22:28 1MlIRf-0003LU-U3 DKIM: d=facebookmail.com s=q1-2009b c=relaxed/relaxed a=rsa-sha1 i=@facebookmail.com t=1252484542 [verification succeeded]
+2009-09-09 10:22:28 1MlIRf-0003LU-U3 DKIM:
+    d=facebookmail.com s=q1-2009b
+    c=relaxed/relaxed a=rsa-sha1
+    i=@facebookmail.com t=1252484542 [verification succeeded]
 .endd
 You might want to turn off DKIM verification processing entirely for internal
 or relay mail sources. To do that, set the &%dkim_disable_verify%& ACL
@@ -35523,7 +35534,7 @@ for a match against the domain or identity that the ACL is currently verifying
 verb to a group of domains or identities. For example:
 
 .code
-# Warn when message apparently from GMail has no signature at all
+# Warn when Mail purportedly from GMail has no signature at all
 warn log_message = GMail sender without DKIM signature
      sender_domains = gmail.com
      dkim_signers = gmail.com
@@ -35533,10 +35544,10 @@ warn log_message = GMail sender without DKIM signature
 .vitem &%dkim_status%&
 ACL condition that checks a colon-separated list of possible DKIM verification
 results agains the actual result of verification. This is typically used
-to restrict an ACL verb to a list of verification outcomes, like:
+to restrict an ACL verb to a list of verification outcomes, for example:
 
 .code
-deny message = Message from Paypal with invalid or missing signature
+deny message = Mail from Paypal with invalid/missing signature
      sender_domains = paypal.com:paypal.de
      dkim_signers = paypal.com:paypal.de
      dkim_status = none:invalid:fail
