@@ -1199,6 +1199,12 @@ TMPDIR="/tmp"
 
 
 #------------------------------------------------------------------------------
+# If you wish to disable valgrind in the binary, define NVALGRIND=1.
+# This should not be needed.
+
+# NVALGRIND=1
+
+#------------------------------------------------------------------------------
 # Identifying the daemon: When an Exim daemon starts up, it writes its pid
 # (process id) to a file so that it can easily be identified. The path of the
 # file can be specified here. Some installations may want something like this:

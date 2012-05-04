@@ -39,6 +39,9 @@ The following different types of store are recognized:
 
 
 #include "exim.h"
+/* keep config.h before memcheck.h, for NVALGRIND */
+#include "config.h"
+
 #include "memcheck.h"
 
 
@@ -342,7 +345,7 @@ if ((char *)ptr < bc || (char *)ptr > bc + b->length)
     if ((char *)ptr >= bc && (char *)ptr <= bc + b->length) break;
     }
   if (b == NULL)
-    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "internal error: store_reset(%d) "
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE, "internal error: store_reset(%p) "
       "failed: pool=%d %-14s %4d", ptr, store_pool, filename, linenumber);
   }
 
