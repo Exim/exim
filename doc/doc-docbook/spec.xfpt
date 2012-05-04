@@ -11900,7 +11900,8 @@ a different certificate to be presented (and optionally a different key to be
 used) to the client, based upon the value of the SNI extension.
 
 The value will be retained for the lifetime of the message.  During outbound
-SMTP deliveries, it reflects the value of the tls_sni option on the transport.
+SMTP deliveries, it reflects the value of the &%tls_sni%& option on
+the transport.
 
 This is currently only available when using OpenSSL, built with support for
 SNI.
@@ -14386,55 +14387,55 @@ openssl_options = -all +microsoft_big_sslv3_buffer +dont_insert_empty_fragments
 Possible options may include:
 .ilist
 &`all`&
-.ilist
+.next
 &`allow_unsafe_legacy_renegotiation`&
-.ilist
+.next
 &`cipher_server_preference`&
-.ilist
+.next
 &`dont_insert_empty_fragments`&
-.ilist
+.next
 &`ephemeral_rsa`&
-.ilist
+.next
 &`legacy_server_connect`&
-.ilist
+.next
 &`microsoft_big_sslv3_buffer`&
-.ilist
+.next
 &`microsoft_sess_id_bug`&
-.ilist
+.next
 &`msie_sslv2_rsa_padding`&
-.ilist
+.next
 &`netscape_challenge_bug`&
-.ilist
+.next
 &`netscape_reuse_cipher_change_bug`&
-.ilist
+.next
 &`no_compression`&
-.ilist
+.next
 &`no_session_resumption_on_renegotiation`&
-.ilist
+.next
 &`no_sslv2`&
-.ilist
+.next
 &`no_sslv3`&
-.ilist
+.next
 &`no_ticket`&
-.ilist
+.next
 &`no_tlsv1`&
-.ilist
+.next
 &`no_tlsv1_1`&
-.ilist
+.next
 &`no_tlsv1_2`&
-.ilist
+.next
 &`single_dh_use`&
-.ilist
+.next
 &`single_ecdh_use`&
-.ilist
+.next
 &`ssleay_080_client_dh_bug`&
-.ilist
+.next
 &`sslref2_reuse_cert_type_bug`&
-.ilist
+.next
 &`tls_block_padding_bug`&
-.ilist
+.next
 &`tls_d5_bug`&
-.ilist
+.next
 &`tls_rollback_bug`&
 .endlist
 
