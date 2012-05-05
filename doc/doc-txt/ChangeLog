@@ -69,6 +69,18 @@ PP/15 LDAP: Check for errors of TLS initialisation, to give correct
       diagnostics.
       Report and patch from Dmitry Banschikov.
 
+PP/16 Removed "dont_insert_empty_fragments" fron "openssl_options".
+      Removed SSL_clear() after SSL_new() which led to protocol negotiation
+      failures.  We appear to now support TLS1.1+ with Exim.
+
+PP/17 OpenSSL: new expansion var $tls_sni, which if used in tls_certificate
+      lets Exim select keys and certificates based upon TLS SNI from client.
+      Also option tls_sni on SMTP Transports.  Also clear $tls_bits correctly
+      before an outbound SMTP session.  New log_selector, +tls_sni.
+
+PP/18 Bugzilla 1122 - check localhost_number expansion for failure, avoid
+      NULL dereference.  Report and patch from Alun Jones.
+
 
 Exim version 4.77
 -----------------

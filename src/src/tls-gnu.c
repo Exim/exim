@@ -1055,6 +1055,7 @@ Arguments:
   dhparam           DH parameter file
   certificate       certificate file
   privatekey        private key file
+  sni               TLS SNI to send to remote host
   verify_certs      file for certificate verify
   verify_crl        CRL for verify
   require_ciphers   list of allowed ciphers or NULL
@@ -1069,8 +1070,9 @@ Returns:            OK/DEFER/FAIL (because using common functions),
 
 int
 tls_client_start(int fd, host_item *host, address_item *addr, uschar *dhparam,
-  uschar *certificate, uschar *privatekey, uschar *verify_certs,
-  uschar *verify_crl, uschar *require_ciphers, uschar *require_mac,
+  uschar *certificate, uschar *privatekey, uschar *sni ARG_UNUSED,
+  uschar *verify_certs, uschar *verify_crl,
+  uschar *require_ciphers, uschar *require_mac,
   uschar *require_kx, uschar *require_proto, int timeout)
 {
 const gnutls_datum *server_certs;

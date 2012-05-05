@@ -555,7 +555,7 @@ else
 
   (void)gettimeofday(&tv, NULL);
   tempname = string_sprintf("%s/tmp/%lu.H%luP%lu.%s", path, tv.tv_sec,
-    tv.tv_usec, getpid(), primary_hostname);
+    tv.tv_usec, (long unsigned) getpid(), primary_hostname);
 
   fd = Uopen(tempname, O_RDWR|O_CREAT|O_EXCL, ob->mode ? ob->mode : 0600);
   if (fd >= 0)

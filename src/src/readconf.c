@@ -520,7 +520,7 @@ while (isalnum(*s) || *s == '_')
   {
   if (namelen >= sizeof(name) - 1)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG_IN,
-      "macro name too long (maximum is %d characters)", sizeof(name) - 1);
+      "macro name too long (maximum is " SIZE_T_FMT " characters)", sizeof(name) - 1);
   name[namelen++] = *s++;
   }
 name[namelen] = 0;
@@ -3189,9 +3189,14 @@ so as to ensure that everything else is set up before the expansion. */
 
 if (host_number_string != NULL)
   {
+  long int n;
   uschar *end;
   uschar *s = expand_string(host_number_string);
-  long int n = Ustrtol(s, &end, 0);
+  if (s == NULL)
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+        "failed to expand localhost_number \"%s\": %s",
+        host_number_string, expand_string_message);
+  n = Ustrtol(s, &end, 0);
   while (isspace(*end)) end++;
   if (*end != 0)
     log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
@@ -3607,7 +3612,7 @@ else if (strncmpic(pp, US"tls_required", p - pp) == 0)
   *basic_errno = ERRNO_TLSREQUIRED;
 
 else if (len != 1 || Ustrncmp(pp, "*", 1) != 0)
-  return string_sprintf("unknown or malformed retry error \"%.*s\"", p-pp, pp);
+  return string_sprintf("unknown or malformed retry error \"%.*s\"", (int) (p-pp), pp);
 
 return NULL;
 }

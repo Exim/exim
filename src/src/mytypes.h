@@ -31,8 +31,10 @@ the arguments of printf-like functions. This is done by a macro. */
 
 #if defined(__GNUC__) || defined(__clang__)
 #define PRINTF_FUNCTION(A,B)  __attribute__((format(printf,A,B)))
+#define ARG_UNUSED  __attribute__((__unused__))
 #else
 #define PRINTF_FUNCTION(A,B)
+#define ARG_UNUSED  /**/
 #endif
 
 

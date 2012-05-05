@@ -98,6 +98,9 @@ extern BOOL    tls_offered;            /* Server offered TLS */
 extern uschar *tls_privatekey;         /* Private key file */
 extern BOOL    tls_remember_esmtp;     /* For YAEB */
 extern uschar *tls_require_ciphers;    /* So some can be avoided */
+#ifndef USE_GNUTLS
+extern uschar *tls_sni;                /* Server Name Indication */
+#endif
 extern uschar *tls_try_verify_hosts;   /* Optional client verification */
 extern uschar *tls_verify_certificates;/* Path for certificates to check */
 extern uschar *tls_verify_hosts;       /* Mandatory client verification */

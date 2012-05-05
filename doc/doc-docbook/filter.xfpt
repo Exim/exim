@@ -21,7 +21,7 @@
 <?sdop
   foot_right_recto="&chaptertitle;"
   foot_right_verso="&chaptertitle;"
-  table_warn_soft_overflow="no"
+  table_warn_overflow="overprint"
   toc_chapter_blanks="yes,yes"
   toc_title="Exim's interfaces to mail filtering"
 ?>

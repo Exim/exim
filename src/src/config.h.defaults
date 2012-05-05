@@ -101,6 +101,8 @@ it's a default value. */
 #define MAX_NAMED_LIST               16
 #define MSGLOG_DIRECTORY_MODE      0750
 
+#define NVALGRIND
+
 #define PID_FILE_PATH
 
 #define RADIUS_CONFIG_FILE

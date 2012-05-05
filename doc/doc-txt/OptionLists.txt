@@ -373,7 +373,7 @@ once                                 string*         unset         autoreply
 once_file_size                       integer         0             autoreply         3.20
 once_repeat                          time            0s            autoreply         2.95
 one_time                             boolean         false         redirect          4.00
-openssl_options                      string "+dont_insert_empty_fragments" main      4.73
+openssl_options                      string          unset         main              4.73 default to unset in 4.78
 optional                             boolean         false         iplookup          4.00
 oracle_servers                       string          unset         main              4.00
 owners                               string list     unset         redirect          4.00
@@ -554,6 +554,7 @@ tls_privatekey                       string*         unset         main         
 tls_remember_emstp                   boolean         false         main              4.21
 tls_require_ciphers                  string*         unset         smtp              4.00 replaces tls_verify_ciphers
                                      string*         unset         main              4.33
+tls_sni                              string*         unset         main              4.78
 tls_tempfail_tryclear                boolean         true          smtp              4.05
 tls_try_verify_hosts                 host list       unset         main              4.00
 tls_verify_certificates              string*         unset         main              3.20

@@ -128,8 +128,10 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, tls_crl) },
   { "tls_privatekey",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_privatekey) },
-  { "tls_require_ciphers",   opt_stringptr,
+  { "tls_require_ciphers",  opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_require_ciphers) },
+  { "tls_sni",              opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, tls_sni) },
   { "tls_tempfail_tryclear", opt_bool,
       (void *)offsetof(smtp_transport_options_block, tls_tempfail_tryclear) },
   { "tls_verify_certificates", opt_stringptr,
@@ -191,7 +193,8 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* gnutls_require_mac */
   NULL,                /* gnutls_require_proto */
   NULL,                /* tls_verify_certificates */
-  TRUE                 /* tls_tempfail_tryclear */
+  TRUE,                /* tls_tempfail_tryclear */
+  NULL                 /* tls_sni */
 #endif
 #ifndef DISABLE_DKIM
  ,NULL,                /* dkim_canon */
@@ -889,8 +892,10 @@ outblock.authenticating = FALSE;
 
 /* Reset the parameters of a TLS session. */
 
+tls_bits = 0;
 tls_cipher = NULL;
 tls_peerdn = NULL;
+tls_sni = NULL;
 
 /* If an authenticated_sender override has been specified for this transport
 instance, expand it. If the expansion is forced to fail, and there was already
@@ -1122,6 +1127,7 @@ if (tls_offered && !suppress_tls &&
       NULL,                    /* No DH param */
       ob->tls_certificate,
       ob->tls_privatekey,
+      ob->tls_sni,
       ob->tls_verify_certificates,
       ob->tls_crl,
       ob->tls_require_ciphers,

@@ -33,6 +33,29 @@ Version 4.78
     into the DBM library.  Can be used with gsasl to access sasldb2 files as
     used by Cyrus SASL.
 
+ 6. OpenSSL now supports TLS1.1 and TLS1.2 with OpenSSL 1.0.1.
+
+    Avoid release 1.0.1a if you can.  Note that the default value of
+    "openssl_options" is no longer "+dont_insert_empty_fragments", as that
+    increased susceptibility to attack.  This may still have interoperability
+    implications for very old clients (see version 4.31 change 37) but
+    administrators can choose to make the trade-off themselves and restore
+    compatibility at the cost of session security.
+
+ 7. Use of the new expansion variable $tls_sni in the main configuration option
+    tls_certificate will cause Exim to re-expand the option, if the client
+    sends the TLS Server Name Indication extension, to permit choosing a
+    different certificate; tls_privatekey will also be re-expanded.  You must
+    still set these options to expand to valid files when $tls_sni is not set.
+
+    The SMTP Transport has gained the option tls_sni, which will set a hostname
+    for outbound TLS sessions, and set $tls_sni too.
+
+    A new log_selector, +tls_sni, has been added, to log received SNI values
+    for Exim as a server.
+
+    Currently OpenSSL only.
+
 
 Version 4.77
 ------------

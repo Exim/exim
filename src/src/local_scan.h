@@ -186,7 +186,7 @@ extern uschar *rfc2047_decode(uschar *, BOOL, uschar *, int, int *, uschar **);
 extern int     smtp_fflush(void);
 extern void    smtp_printf(const char *, ...) PRINTF_FUNCTION(1,2);
 extern void    smtp_vprintf(const char *, va_list);
-extern uschar *string_copy(uschar *);
+extern uschar *string_copy(const uschar *);
 extern uschar *string_copyn(uschar *, int);
 extern uschar *string_sprintf(const char *, ...) PRINTF_FUNCTION(1,2);
 

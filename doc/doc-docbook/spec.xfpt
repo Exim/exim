@@ -9755,11 +9755,13 @@ dotted-quad decimal form, while for IPv6 addreses the result is in
 dotted-nibble hexadecimal form.  In both cases, this is the "natural" form
 for DNS.  For example,
 .code
-${reverse_ip:192.0.2.4} and ${reverse_ip:2001:0db8:c42:9:1:abcd:192.0.2.3}
+${reverse_ip:192.0.2.4}
+${reverse_ip:2001:0db8:c42:9:1:abcd:192.0.2.3}
 .endd
 returns
 .code
-4.2.0.192 and 3.0.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
+4.2.0.192
+3.0.2.0.0.0.0.c.d.c.b.a.1.0.0.0.9.0.0.0.2.4.c.0.8.b.d.0.1.0.0.2
 .endd
 
 
@@ -11887,6 +11889,26 @@ the value of the Distinguished Name of the certificate is made available in the
 &$tls_peerdn$& during subsequent processing. Like &$tls_cipher$&, the
 value is retained during message delivery, except during outbound SMTP
 deliveries.
+
+.new
+.vitem &$tls_sni$&
+.vindex "&$tls_sni$&"
+.cindex "TLS" "Server Name Indication"
+When a TLS session is being established, if the client sends the Server
+Name Indication extension, the value will be placed in this variable.
+If the variable appears in &%tls_certificate%& then this option and
+some others, described in &<<SECTtlssni>>&,
+will be re-expanded early in the TLS session, to permit
+a different certificate to be presented (and optionally a different key to be
+used) to the client, based upon the value of the SNI extension.
+
+The value will be retained for the lifetime of the message.  During outbound
+SMTP deliveries, it reflects the value of the &%tls_sni%& option on
+the transport.
+
+This is currently only available when using OpenSSL, built with support for
+SNI.
+.wen
 
 .vitem &$tod_bsdinbox$&
 .vindex "&$tod_bsdinbox$&"
@@ -14333,16 +14355,12 @@ harm. This option overrides the &%pipe_as_creator%& option of the &(pipe)&
 transport driver.
 
 
-.option openssl_options main "string list" +dont_insert_empty_fragments
+.option openssl_options main "string list" unset
 .cindex "OpenSSL "compatibility options"
 This option allows an administrator to adjust the SSL options applied
 by OpenSSL to connections.  It is given as a space-separated list of items,
-each one to be +added or -subtracted from the current value.  The default
-value is one option which happens to have been set historically.  You can
-remove all options with:
-.code
-openssl_options = -all
-.endd
+each one to be +added or -subtracted from the current value.
+
 This option is only available if Exim is built against OpenSSL.  The values
 available for this option vary according to the age of your OpenSSL install.
 The &"all"& value controls a subset of flags which are available, typically
@@ -14354,66 +14372,75 @@ names lose the leading &"SSL_OP_"& and are lower-cased.
 Note that adjusting the options can have severe impact upon the security of
 SSL as used by Exim.  It is possible to disable safety checks and shoot
 yourself in the foot in various unpleasant ways.  This option should not be
-adjusted lightly.  An unrecognised item will be detected at by invoking Exim
-with the &%-bV%& flag.
+adjusted lightly.  An unrecognised item will be detected at startup, by
+invoking Exim with the &%-bV%& flag.
+
+.new
+Historical note: prior to release 4.78, Exim defaulted this value to
+"+dont_insert_empty_fragments", which may still be needed for compatibility
+with some clients, but which lowers security by increasing exposure to
+some now infamous attacks.
+.wen
 
 An example:
 .code
-openssl_options = -all +microsoft_big_sslv3_buffer
+# Make both old MS and old Eudora happy:
+openssl_options = -all +microsoft_big_sslv3_buffer \
+                       +dont_insert_empty_fragments
 .endd
 
 Possible options may include:
 .ilist
 &`all`&
-.ilist
+.next
 &`allow_unsafe_legacy_renegotiation`&
-.ilist
+.next
 &`cipher_server_preference`&
-.ilist
+.next
 &`dont_insert_empty_fragments`&
-.ilist
+.next
 &`ephemeral_rsa`&
-.ilist
+.next
 &`legacy_server_connect`&
-.ilist
+.next
 &`microsoft_big_sslv3_buffer`&
-.ilist
+.next
 &`microsoft_sess_id_bug`&
-.ilist
+.next
 &`msie_sslv2_rsa_padding`&
-.ilist
+.next
 &`netscape_challenge_bug`&
-.ilist
+.next
 &`netscape_reuse_cipher_change_bug`&
-.ilist
+.next
 &`no_compression`&
-.ilist
+.next
 &`no_session_resumption_on_renegotiation`&
-.ilist
+.next
 &`no_sslv2`&
-.ilist
+.next
 &`no_sslv3`&
-.ilist
+.next
 &`no_ticket`&
-.ilist
+.next
 &`no_tlsv1`&
-.ilist
+.next
 &`no_tlsv1_1`&
-.ilist
+.next
 &`no_tlsv1_2`&
-.ilist
+.next
 &`single_dh_use`&
-.ilist
+.next
 &`single_ecdh_use`&
-.ilist
+.next
 &`ssleay_080_client_dh_bug`&
-.ilist
+.next
 &`sslref2_reuse_cert_type_bug`&
-.ilist
+.next
 &`tls_block_padding_bug`&
-.ilist
+.next
 &`tls_d5_bug`&
-.ilist
+.next
 &`tls_rollback_bug`&
 .endlist
 
@@ -15606,12 +15633,22 @@ receiving incoming messages as a server. If you want to supply certificates for
 use when sending messages as a client, you must set the &%tls_certificate%&
 option in the relevant &(smtp)& transport.
 
+.new
+If the option contains &$tls_sni$& and Exim is built against OpenSSL, then
+if the OpenSSL build supports TLS extensions and the TLS client sends the
+Server Name Indication extension, then this option and others documented in
+&<<SECTtlssni>>& will be re-expanded.
+.wen
 
 .option tls_crl main string&!! unset
 .cindex "TLS" "server certificate revocation list"
 .cindex "certificate" "revocation list for server"
 This option specifies a certificate revocation list. The expanded value must
 be the name of a file that contains a CRL in PEM format.
+
+.new
+See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
+.wen
 
 
 .option tls_dhparam main string&!! unset
@@ -15637,6 +15674,10 @@ file which contains the server's private key. If this option is unset, or if
 the expansion is forced to fail, or the result is an empty string, the private
 key is assumed to be in the same file as the server's certificates. See chapter
 &<<CHAPTLS>>& for further details.
+
+.new
+See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
+.wen
 
 
 .option tls_remember_esmtp main boolean false
@@ -15683,6 +15724,10 @@ the value is a file then the certificates are sent by Exim as a server to
 connecting clients, defining the list of accepted certificate authorities.
 Thus the values defined should be considered public data.  To avoid this,
 use OpenSSL with a directory.
+
+.new
+See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
+.wen
 
 
 .option tls_verify_hosts main "host list&!!" unset
@@ -21766,12 +21811,15 @@ that are in force when the &%helo_data%&, &%hosts_try_auth%&, &%interface%&,
 
 
 .section "Use of $tls_cipher and $tls_peerdn" "usecippeer"
+.vindex &$tls_bits$&
 .vindex &$tls_cipher$&
 .vindex &$tls_peerdn$&
-At the start of a run of the &(smtp)& transport, the values of &$tls_cipher$&
-and &$tls_peerdn$& are the values that were set when the message was received.
+.vindex &$tls_sni$&
+At the start of a run of the &(smtp)& transport, the values of &$tls_bits$&,
+&$tls_cipher$&, &$tls_peerdn$& and &$tls_sni$&
+are the values that were set when the message was received.
 These are the values that are used for options that are expanded before any
-SMTP connections are made. Just before each connection is made, these two
+SMTP connections are made. Just before each connection is made, these four
 variables are emptied. If TLS is subsequently started, they are set to the
 appropriate values for the outgoing connection, and these are the values that
 are in force when any authenticators are run and when the
@@ -22347,6 +22395,22 @@ expansion. See chapter &<<CHAPTLS>>& for details of TLS; note that this option
 is used in different ways by OpenSSL and GnuTLS (see sections
 &<<SECTreqciphssl>>& and &<<SECTreqciphgnu>>&). For GnuTLS, the order of the
 ciphers is a preference order.
+
+
+
+.new
+.option tls_sni smtp string&!! unset
+.cindex "TLS" "Server Name Indication"
+.vindex "&$tls_sni$&"
+If this option is set then it sets the $tls_sni variable and causes any
+TLS session to pass this value as the Server Name Indication extension to
+the remote side, which can be used by the remote side to select an appropriate
+certificate and private key for the session.
+
+See &<<SECTtlssni>>& for more information.
+
+OpenSSL only, also requiring a build of OpenSSL that supports TLS extensions.
+.wen
 
 
 
@@ -24114,9 +24178,10 @@ login:
   server_prompts = Username:: : Password::
   server_condition = ${if and{{ \
     !eq{}{$auth1} }{ \
-    ldapauth{user="cn=${quote_ldap_dn:$auth1},ou=people,o=example.org" \
-             pass=${quote:$auth2} \
-             ldap://ldap.example.org/} }} }
+    ldapauth{\
+      user="uid=${quote_ldap_dn:$auth1},ou=people,o=example.org" \
+      pass=${quote:$auth2} \
+      ldap://ldap.example.org/} }} }
   server_set_id = uid=$auth1,ou=people,o=example.org
 .endd
 We have to check that the username is not empty before using it, because LDAP
@@ -24874,6 +24939,13 @@ option).
 .next
 The &%tls_require_ciphers%& options operate differently, as described in the
 sections &<<SECTreqciphssl>>& and &<<SECTreqciphgnu>>&.
+.new
+.next
+Some other recently added features may only be available in one or the other.
+This should be documented with the feature.  If the documentation does not
+explicitly state that the feature is infeasible in the other TLS
+implementation, then patches are welcome.
+.wen
 .endlist
 
 
@@ -25270,13 +25342,86 @@ All the TLS options in the &(smtp)& transport are expanded before use, with
 which the client is connected. Forced failure of an expansion causes Exim to
 behave as if the relevant option were unset.
 
+.vindex &$tls_bits$&
 .vindex &$tls_cipher$&
 .vindex &$tls_peerdn$&
-Before an SMTP connection is established, the &$tls_cipher$& and &$tls_peerdn$&
+.vindex &$tls_sni$&
+Before an SMTP connection is established, the
+&$tls_bits$&, &$tls_cipher$&, &$tls_peerdn$& and &$tls_sni$&
 variables are emptied. (Until the first connection, they contain the values
 that were set when the message was received.) If STARTTLS is subsequently
 successfully obeyed, these variables are set to the relevant values for the
 outgoing connection.
+
+
+
+.new
+.section "Use of TLS Server Name Indication" "SECTtlssni"
+.cindex "TLS" "Server Name Indication"
+.vindex "&$tls_sni$&"
+.oindex "&%tls_sni%&"
+With TLS1.0 or above, there is an extension mechanism by which extra
+information can be included at various points in the protocol.  One of these
+extensions, documented in RFC 6066 (and before that RFC 4366) is
+&"Server Name Indication"&, commonly &"SNI"&.  This extension is sent by the
+client in the initial handshake, so that the server can examine the servername
+within and possibly choose to use different certificates and keys (and more)
+for this session.
+
+This is analagous to HTTP's &"Host:"& header, and is the main mechanism by
+which HTTPS-enabled web-sites can be virtual-hosted, many sites to one IP
+address.
+
+With SMTP to MX, there are the same problems here as in choosing the identity
+against which to validate a certificate: you can't rely on insecure DNS to
+provide the identity which you then cryptographically verify.  So this will
+be of limited use in that environment.
+
+With SMTP to Submission, there is a well-defined hostname which clients are
+connecting to and can validate certificates against.  Thus clients &*can*&
+choose to include this information in the TLS negotiation.  If this becomes
+wide-spread, then hosters can choose to present different certificates to
+different clients.  Or even negotiate different cipher suites.
+
+The &%tls_sni%& option on an SMTP transport is an expanded string; the result,
+if not empty, will be sent on a TLS session as part of the handshake.  There's
+nothing more to it.  Choosing a sensible value not derived insecurely is the
+only point of caution.  The &$tls_sni$& variable will be set to this string
+for the lifetime of the client connection (including during authentication).
+
+Except during SMTP client sessions, if &$tls_sni$& is set then it is a string
+received from a client.
+It can be logged with the &%log_selector%& item &`+tls_sni`&.
+
+If the string &`tls_sni`& appears in the main section's &%tls_certificate%&
+option (prior to expansion) then the following options will be re-expanded
+during TLS session handshake, to permit alternative values to be chosen:
+
+.ilist
+.vindex "&%tls_certificate%&"
+&%tls_certificate%&
+.next
+.vindex "&%tls_crl%&"
+&%tls_crl%&
+.next
+.vindex "&%tls_privatekey%&"
+&%tls_privatekey%&
+.next
+.vindex "&%tls_verify_certificates%&"
+&%tls_verify_certificates%&
+.endlist
+
+Great care should be taken to deal with matters of case, various injection
+attacks in the string (&`../`& or SQL), and ensuring that a valid filename
+can always be referenced; it is important to remember that &$tls_sni$& is
+arbitrary unverified data provided prior to authentication.
+
+The Exim developers are proceeding cautiously and so far no other TLS options
+are re-expanded.
+
+Currently SNI support is only available if using OpenSSL, with TLS Extensions
+support enabled therein.
+.wen
 
 
 
@@ -27775,14 +27920,14 @@ in the MAIL ACL. Subsequent connections from the same client will check this
 new rate.
 .code
 acl_check_connect:
-  deny ratelimit = 100 / 5m / readonly
-       log_message = RATE CHECK: $sender_rate/$sender_rate_period \
-                     (max $sender_rate_limit)
+ deny ratelimit = 100 / 5m / readonly
+    log_message = RATE CHECK: $sender_rate/$sender_rate_period \
+                  (max $sender_rate_limit)
 # ...
 acl_check_mail:
-  warn ratelimit = 100 / 5m / strict
-       log_message  = RATE UPDATE: $sender_rate/$sender_rate_period \
-                      (max $sender_rate_limit)
+ warn ratelimit = 100 / 5m / strict
+    log_message = RATE UPDATE: $sender_rate/$sender_rate_period \
+                  (max $sender_rate_limit)
 .endd
 
 If Exim encounters multiple &%ratelimit%& conditions with the same key when
@@ -33134,6 +33279,7 @@ selection marked by asterisks:
 &` tls_certificate_verified   `&  certificate verification status
 &`*tls_cipher                 `&  TLS cipher suite on <= and => lines
 &` tls_peerdn                 `&  TLS peer DN on <= and => lines
+&` tls_sni                    `&  TLS SNI on <= lines
 &` unknown_in_list            `&  DNS lookup failed in list match
 
 &` all                        `&  all of the above
@@ -33428,6 +33574,12 @@ connection, the cipher suite used is added to the log line, preceded by X=.
 &%tls_peerdn%&: When a message is sent or received over an encrypted
 connection, and a certificate is supplied by the remote host, the peer DN is
 added to the log line, preceded by DN=.
+.next
+.cindex "log" "TLS SNI"
+.cindex "TLS" "logging SNI"
+&%tls_sni%&: When a message is received over an encrypted connection, and
+the remote host provided the Server Name Indication extension, the SNI is
+added to the log line, preceded by SNI=.
 .next
 .cindex "log" "DNS failure in list"
 &%unknown_in_list%&: This setting causes a log entry to be written when the
@@ -35233,9 +35385,14 @@ unqualified domain &'foundation'&.
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 
-.chapter "Support for DKIM (DomainKeys Identified Mail) - RFC4871" "CHID12" &&&
+.chapter "Support for DKIM (DomainKeys Identified Mail)" "CHID12" &&&
          "DKIM Support"
 .cindex "DKIM"
+
+DKIM is a mechanism by which messages sent by some entity can be provably
+linked to a domain which that entity controls.  It permits reputation to
+be tracked on a per-domain basis, rather than merely upon source IP address.
+DKIM is documented in RFC 4871.
 
 Since version 4.70, DKIM support is compiled into Exim by default. It can be
 disabled by setting DISABLE_DKIM=yes in Local/Makefile.
@@ -35257,9 +35414,12 @@ Exim's standard controls.
 Please note that verification of DKIM signatures in incoming mail is turned
 on by default for logging purposes. For each signature in incoming email,
 exim will log a line displaying the most important signature details, and the
-signature status. Here is an example:
+signature status. Here is an example (with line-breaks added for clarity):
 .code
-2009-09-09 10:22:28 1MlIRf-0003LU-U3 DKIM: d=facebookmail.com s=q1-2009b c=relaxed/relaxed a=rsa-sha1 i=@facebookmail.com t=1252484542 [verification succeeded]
+2009-09-09 10:22:28 1MlIRf-0003LU-U3 DKIM:
+    d=facebookmail.com s=q1-2009b
+    c=relaxed/relaxed a=rsa-sha1
+    i=@facebookmail.com t=1252484542 [verification succeeded]
 .endd
 You might want to turn off DKIM verification processing entirely for internal
 or relay mail sources. To do that, set the &%dkim_disable_verify%& ACL
@@ -35467,7 +35627,7 @@ for a match against the domain or identity that the ACL is currently verifying
 verb to a group of domains or identities. For example:
 
 .code
-# Warn when message apparently from GMail has no signature at all
+# Warn when Mail purportedly from GMail has no signature at all
 warn log_message = GMail sender without DKIM signature
      sender_domains = gmail.com
      dkim_signers = gmail.com
@@ -35477,10 +35637,10 @@ warn log_message = GMail sender without DKIM signature
 .vitem &%dkim_status%&
 ACL condition that checks a colon-separated list of possible DKIM verification
 results agains the actual result of verification. This is typically used
-to restrict an ACL verb to a list of verification outcomes, like:
+to restrict an ACL verb to a list of verification outcomes, for example:
 
 .code
-deny message = Message from Paypal with invalid or missing signature
+deny message = Mail from Paypal with invalid/missing signature
      sender_domains = paypal.com:paypal.de
      dkim_signers = paypal.com:paypal.de
      dkim_status = none:invalid:fail

@@ -34,6 +34,7 @@ static BOOL verify_callback_called = FALSE;
 static const uschar *sid_ctx = US"exim";
 
 static SSL_CTX *ctx = NULL;
+static SSL_CTX *ctx_sni = NULL;
 static SSL *ssl = NULL;
 
 static char ssl_errstring[256];
@@ -41,8 +42,26 @@ static char ssl_errstring[256];
 static int  ssl_session_timeout = 200;
 static BOOL verify_optional = FALSE;
 
+static BOOL    reexpand_tls_files_for_sni = FALSE;
 
 
+typedef struct tls_ext_ctx_cb {
+  uschar *certificate;
+  uschar *privatekey;
+  uschar *dhparam;
+  /* these are cached from first expand */
+  uschar *server_cipher_list;
+  /* only passed down to tls_error: */
+  host_item *host;
+} tls_ext_ctx_cb;
+
+/* should figure out a cleanup of API to handle state preserved per
+implementation, for various reasons, which can be void * in the APIs.
+For now, we hack around it. */
+tls_ext_ctx_cb *static_cbinfo = NULL;
+
+static int
+setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional);
 
 
 /*************************************************
@@ -201,8 +220,8 @@ return 1;   /* accept */
 *************************************************/
 
 /* The SSL library functions call this from time to time to indicate what they
-are doing. We copy the string to the debugging output when the level is high
-enough.
+are doing. We copy the string to the debugging output when TLS debugging has
+been requested.
 
 Arguments:
   s         the SSL connection
@@ -280,6 +299,148 @@ return yield;
 
 
 /*************************************************
+*        Expand key and cert file specs          *
+*************************************************/
+
+/* Called once during tls_init and possibly againt during TLS setup, for a
+new context, if Server Name Indication was used and tls_sni was seen in
+the certificate string.
+
+Arguments:
+  sctx            the SSL_CTX* to update
+  cbinfo          various parts of session state
+
+Returns:          OK/DEFER/FAIL
+*/
+
+static int
+tls_expand_session_files(SSL_CTX *sctx, const tls_ext_ctx_cb *cbinfo)
+{
+uschar *expanded;
+
+if (cbinfo->certificate == NULL)
+  return OK;
+
+if (Ustrstr(cbinfo->certificate, US"tls_sni"))
+  reexpand_tls_files_for_sni = TRUE;
+
+if (!expand_check(cbinfo->certificate, US"tls_certificate", &expanded))
+  return DEFER;
+
+if (expanded != NULL)
+  {
+  DEBUG(D_tls) debug_printf("tls_certificate file %s\n", expanded);
+  if (!SSL_CTX_use_certificate_chain_file(sctx, CS expanded))
+    return tls_error(string_sprintf(
+      "SSL_CTX_use_certificate_chain_file file=%s", expanded),
+        cbinfo->host, NULL);
+  }
+
+if (cbinfo->privatekey != NULL &&
+    !expand_check(cbinfo->privatekey, US"tls_privatekey", &expanded))
+  return DEFER;
+
+/* If expansion was forced to fail, key_expanded will be NULL. If the result
+of the expansion is an empty string, ignore it also, and assume the private
+key is in the same file as the certificate. */
+
+if (expanded != NULL && *expanded != 0)
+  {
+  DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
+  if (!SSL_CTX_use_PrivateKey_file(sctx, CS expanded, SSL_FILETYPE_PEM))
+    return tls_error(string_sprintf(
+      "SSL_CTX_use_PrivateKey_file file=%s", expanded), cbinfo->host, NULL);
+  }
+
+return OK;
+}
+
+
+
+
+/*************************************************
+*            Callback to handle SNI              *
+*************************************************/
+
+/* Called when acting as server during the TLS session setup if a Server Name
+Indication extension was sent by the client.
+
+API documentation is OpenSSL s_server.c implementation.
+
+Arguments:
+  s               SSL* of the current session
+  ad              unknown (part of OpenSSL API) (unused)
+  arg             Callback of "our" registered data
+
+Returns:          SSL_TLSEXT_ERR_{OK,ALERT_WARNING,ALERT_FATAL,NOACK}
+*/
+
+static int
+tls_servername_cb(SSL *s, int *ad ARG_UNUSED, void *arg);
+/* pre-declared for SSL_CTX_set_tlsext_servername_callback call within func */
+
+static int
+tls_servername_cb(SSL *s, int *ad ARG_UNUSED, void *arg)
+{
+const char *servername = SSL_get_servername(s, TLSEXT_NAMETYPE_host_name);
+const tls_ext_ctx_cb *cbinfo = (tls_ext_ctx_cb *) arg;
+int rc;
+int old_pool = store_pool;
+
+if (!servername)
+  return SSL_TLSEXT_ERR_OK;
+
+DEBUG(D_tls) debug_printf("Received TLS SNI \"%s\"%s\n", servername,
+    reexpand_tls_files_for_sni ? "" : " (unused for certificate selection)");
+
+/* Make the extension value available for expansion */
+store_pool = POOL_PERM;
+tls_sni = string_copy(US servername);
+store_pool = old_pool;
+
+if (!reexpand_tls_files_for_sni)
+  return SSL_TLSEXT_ERR_OK;
+
+/* Can't find an SSL_CTX_clone() or equivalent, so we do it manually;
+not confident that memcpy wouldn't break some internal reference counting.
+Especially since there's a references struct member, which would be off. */
+
+ctx_sni = SSL_CTX_new(SSLv23_server_method());
+if (!ctx_sni)
+  {
+  ERR_error_string(ERR_get_error(), ssl_errstring);
+  DEBUG(D_tls) debug_printf("SSL_CTX_new() failed: %s\n", ssl_errstring);
+  return SSL_TLSEXT_ERR_NOACK;
+  }
+
+/* Not sure how many of these are actually needed, since SSL object
+already exists.  Might even need this selfsame callback, for reneg? */
+
+SSL_CTX_set_info_callback(ctx_sni, SSL_CTX_get_info_callback(ctx));
+SSL_CTX_set_mode(ctx_sni, SSL_CTX_get_mode(ctx));
+SSL_CTX_set_options(ctx_sni, SSL_CTX_get_options(ctx));
+SSL_CTX_set_timeout(ctx_sni, SSL_CTX_get_timeout(ctx));
+SSL_CTX_set_tlsext_servername_callback(ctx_sni, tls_servername_cb);
+SSL_CTX_set_tlsext_servername_arg(ctx_sni, cbinfo);
+if (cbinfo->server_cipher_list)
+  SSL_CTX_set_cipher_list(ctx_sni, CS cbinfo->server_cipher_list);
+
+rc = tls_expand_session_files(ctx_sni, cbinfo);
+if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
+
+rc = setup_certs(ctx_sni, tls_verify_certificates, tls_crl, NULL, FALSE);
+if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
+
+DEBUG(D_tls) debug_printf("Switching SSL context.\n");
+SSL_set_SSL_CTX(s, ctx_sni);
+
+return SSL_TLSEXT_ERR_OK;
+}
+
+
+
+
+/*************************************************
 *            Initialize for TLS                  *
 *************************************************/
 
@@ -301,7 +462,15 @@ tls_init(host_item *host, uschar *dhparam, uschar *certificate,
   uschar *privatekey, address_item *addr)
 {
 long init_options;
+int rc;
 BOOL okay;
+tls_ext_ctx_cb *cbinfo;
+
+cbinfo = store_malloc(sizeof(tls_ext_ctx_cb));
+cbinfo->certificate = certificate;
+cbinfo->privatekey = privatekey;
+cbinfo->dhparam = dhparam;
+cbinfo->host = host;
 
 SSL_load_error_strings();          /* basic set up */
 OpenSSL_add_ssl_algorithms();
@@ -379,36 +548,19 @@ if (!init_dh(dhparam, host)) return DEFER;
 
 /* Set up certificate and key */
 
-if (certificate != NULL)
+rc = tls_expand_session_files(ctx, cbinfo);
+if (rc != OK) return rc;
+
+/* If we need to handle SNI, do so */
+#if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
+if (host == NULL)
   {
-  uschar *expanded;
-  if (!expand_check(certificate, US"tls_certificate", &expanded))
-    return DEFER;
-
-  if (expanded != NULL)
-    {
-    DEBUG(D_tls) debug_printf("tls_certificate file %s\n", expanded);
-    if (!SSL_CTX_use_certificate_chain_file(ctx, CS expanded))
-      return tls_error(string_sprintf(
-        "SSL_CTX_use_certificate_chain_file file=%s", expanded), host, NULL);
-    }
-
-  if (privatekey != NULL &&
-      !expand_check(privatekey, US"tls_privatekey", &expanded))
-    return DEFER;
-
-  /* If expansion was forced to fail, key_expanded will be NULL. If the result
-  of the expansion is an empty string, ignore it also, and assume the private
-  key is in the same file as the certificate. */
-
-  if (expanded != NULL && *expanded != 0)
-    {
-    DEBUG(D_tls) debug_printf("tls_privatekey file %s\n", expanded);
-    if (!SSL_CTX_use_PrivateKey_file(ctx, CS expanded, SSL_FILETYPE_PEM))
-      return tls_error(string_sprintf(
-        "SSL_CTX_use_PrivateKey_file file=%s", expanded), host, NULL);
-    }
+  /* We always do this, so that $tls_sni is available even if not used in
+  tls_certificate */
+  SSL_CTX_set_tlsext_servername_callback(ctx, tls_servername_cb);
+  SSL_CTX_set_tlsext_servername_arg(ctx, cbinfo);
   }
+#endif
 
 /* Set up the RSA callback */
 
@@ -418,6 +570,9 @@ SSL_CTX_set_tmp_rsa_callback(ctx, rsa_callback);
 
 SSL_CTX_set_timeout(ctx, ssl_session_timeout);
 DEBUG(D_tls) debug_printf("Initialized TLS\n");
+
+static_cbinfo = cbinfo;
+
 return OK;
 }
 
@@ -496,6 +651,7 @@ DEBUG(D_tls) debug_printf("Cipher: %s\n", cipherbuf);
 /* Called by both client and server startup
 
 Arguments:
+  sctx          SSL_CTX* to initialise
   certs         certs file or NULL
   crl           CRL file or NULL
   host          NULL in a server; the remote host in a client
@@ -506,7 +662,7 @@ Returns:        OK/DEFER/FAIL
 */
 
 static int
-setup_certs(uschar *certs, uschar *crl, host_item *host, BOOL optional)
+setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional)
 {
 uschar *expcerts, *expcrl;
 
@@ -516,7 +672,7 @@ if (!expand_check(certs, US"tls_verify_certificates", &expcerts))
 if (expcerts != NULL)
   {
   struct stat statbuf;
-  if (!SSL_CTX_set_default_verify_paths(ctx))
+  if (!SSL_CTX_set_default_verify_paths(sctx))
     return tls_error(US"SSL_CTX_set_default_verify_paths", host, NULL);
 
   if (Ustat(expcerts, &statbuf) < 0)
@@ -539,12 +695,12 @@ if (expcerts != NULL)
     says no certificate was supplied.) But this is better. */
 
     if ((file == NULL || statbuf.st_size > 0) &&
-          !SSL_CTX_load_verify_locations(ctx, CS file, CS dir))
+          !SSL_CTX_load_verify_locations(sctx, CS file, CS dir))
       return tls_error(US"SSL_CTX_load_verify_locations", host, NULL);
 
     if (file != NULL)
       {
-      SSL_CTX_set_client_CA_list(ctx, SSL_load_client_CA_file(CS file));
+      SSL_CTX_set_client_CA_list(sctx, SSL_load_client_CA_file(CS file));
       }
     }
 
@@ -576,7 +732,7 @@ if (expcerts != NULL)
       {
       /* is it a file or directory? */
       uschar *file, *dir;
-      X509_STORE *cvstore = SSL_CTX_get_cert_store(ctx);
+      X509_STORE *cvstore = SSL_CTX_get_cert_store(sctx);
       if ((statbufcrl.st_mode & S_IFMT) == S_IFDIR)
         {
         file = NULL;
@@ -603,7 +759,7 @@ if (expcerts != NULL)
 
   /* If verification is optional, don't fail if no certificate */
 
-  SSL_CTX_set_verify(ctx,
+  SSL_CTX_set_verify(sctx,
     SSL_VERIFY_PEER | (optional? 0 : SSL_VERIFY_FAIL_IF_NO_PEER_CERT),
     verify_callback);
   }
@@ -641,6 +797,7 @@ tls_server_start(uschar *require_ciphers, uschar *require_mac,
 {
 int rc;
 uschar *expciphers;
+tls_ext_ctx_cb *cbinfo;
 
 /* Check for previous activation */
 
@@ -656,6 +813,7 @@ the error. */
 
 rc = tls_init(NULL, tls_dhparam, tls_certificate, tls_privatekey, NULL);
 if (rc != OK) return rc;
+cbinfo = static_cbinfo;
 
 if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers))
   return FAIL;
@@ -671,6 +829,7 @@ if (expciphers != NULL)
   DEBUG(D_tls) debug_printf("required ciphers: %s\n", expciphers);
   if (!SSL_CTX_set_cipher_list(ctx, CS expciphers))
     return tls_error(US"SSL_CTX_set_cipher_list", NULL, NULL);
+  cbinfo->server_cipher_list = expciphers;
   }
 
 /* If this is a host for which certificate verification is mandatory or
@@ -681,13 +840,13 @@ verify_callback_called = FALSE;
 
 if (verify_check_host(&tls_verify_hosts) == OK)
   {
-  rc = setup_certs(tls_verify_certificates, tls_crl, NULL, FALSE);
+  rc = setup_certs(ctx, tls_verify_certificates, tls_crl, NULL, FALSE);
   if (rc != OK) return rc;
   verify_optional = FALSE;
   }
 else if (verify_check_host(&tls_try_verify_hosts) == OK)
   {
-  rc = setup_certs(tls_verify_certificates, tls_crl, NULL, TRUE);
+  rc = setup_certs(ctx, tls_verify_certificates, tls_crl, NULL, TRUE);
   if (rc != OK) return rc;
   verify_optional = TRUE;
   }
@@ -695,7 +854,19 @@ else if (verify_check_host(&tls_try_verify_hosts) == OK)
 /* Prepare for new connection */
 
 if ((ssl = SSL_new(ctx)) == NULL) return tls_error(US"SSL_new", NULL, NULL);
-SSL_clear(ssl);
+
+/* Warning: we used to SSL_clear(ssl) here, it was removed.
+ *
+ * With the SSL_clear(), we get strange interoperability bugs with
+ * OpenSSL 1.0.1b and TLS1.1/1.2.  It looks as though this may be a bug in
+ * OpenSSL itself, as a clear should not lead to inability to follow protocols.
+ *
+ * The SSL_clear() call is to let an existing SSL* be reused, typically after
+ * session shutdown.  In this case, we have a brand new object and there's no
+ * obvious reason to immediately clear it.  I'm guessing that this was
+ * originally added because of incomplete initialisation which the clear fixed,
+ * in some historic release.
+ */
 
 /* Set context and tell client to go ahead, except in the case of TLS startup
 on connection, where outputting anything now upsets the clients and tends to
@@ -779,6 +950,7 @@ Argument:
   dhparam          DH parameter file
   certificate      certificate file
   privatekey       private key file
+  sni              TLS SNI to send to remote host
   verify_certs     file for certificate verify
   crl              file containing CRL
   require_ciphers  list of allowed ciphers
@@ -796,7 +968,8 @@ Returns:           OK on success
 
 int
 tls_client_start(int fd, host_item *host, address_item *addr, uschar *dhparam,
-  uschar *certificate, uschar *privatekey, uschar *verify_certs, uschar *crl,
+  uschar *certificate, uschar *privatekey, uschar *sni,
+  uschar *verify_certs, uschar *crl,
   uschar *require_ciphers, uschar *require_mac, uschar *require_kx,
   uschar *require_proto, int timeout)
 {
@@ -827,13 +1000,26 @@ if (expciphers != NULL)
     return tls_error(US"SSL_CTX_set_cipher_list", host, NULL);
   }
 
-rc = setup_certs(verify_certs, crl, host, FALSE);
+rc = setup_certs(ctx, verify_certs, crl, host, FALSE);
 if (rc != OK) return rc;
 
 if ((ssl = SSL_new(ctx)) == NULL) return tls_error(US"SSL_new", host, NULL);
 SSL_set_session_id_context(ssl, sid_ctx, Ustrlen(sid_ctx));
 SSL_set_fd(ssl, fd);
 SSL_set_connect_state(ssl);
+
+if (sni)
+  {
+  if (!expand_check(sni, US"tls_sni", &tls_sni))
+    return FAIL;
+  if (!Ustrlen(tls_sni))
+    tls_sni = NULL;
+  else
+    {
+    DEBUG(D_tls) debug_printf("Setting TLS SNI \"%s\"\n", tls_sni);
+    SSL_set_tlsext_host_name(ssl, tls_sni);
+    }
+  }
 
 /* There doesn't seem to be a built-in timeout on connection. */
 
@@ -913,8 +1099,10 @@ if (ssl_xfer_buffer_lwm >= ssl_xfer_buffer_hwm)
     SSL_free(ssl);
     ssl = NULL;
     tls_active = -1;
+    tls_bits = 0;
     tls_cipher = NULL;
     tls_peerdn = NULL;
+    tls_sni = NULL;
 
     return smtp_getc();
     }
@@ -1332,10 +1520,8 @@ uschar keep_c;
 BOOL adding, item_parsed;
 
 result = 0L;
-/* We grandfather in as default the one option which we used to set always. */
-#ifdef SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS
-result |= SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS;
-#endif
+/* Prior to 4.78 we or'd in SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS; removed
+ * from default because it increases BEAST susceptibility. */
 
 if (option_spec == NULL)
   {

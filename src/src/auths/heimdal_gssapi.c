@@ -526,7 +526,7 @@ exim_gssapi_error_defer(uschar *store_reset_point,
   va_start(ap, format);
   if (!string_vformat(buffer, sizeof(buffer), format, ap))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-        "exim_gssapi_error_defer expansion larger than %d",
+        "exim_gssapi_error_defer expansion larger than %lu",
         sizeof(buffer));
   va_end(ap);
 

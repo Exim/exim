@@ -992,7 +992,7 @@ for (p = q = hstring; *p != 0; )
     if (*s == ':' || !isgraph(*s)) break;
     }
 
-  s = string_sprintf("%s%.*s", (*s == ':')? "" : "X-ACL-Warn: ", q - p, p);
+  s = string_sprintf("%s%.*s", (*s == ':')? "" : "X-ACL-Warn: ", (int) (q - p), p);
   hlen = Ustrlen(s);
 
   /* See if this line has already been added */
@@ -1723,16 +1723,16 @@ while ((ss = string_nextinlist(&list, &sep, big_buffer, big_buffer_size))
               != NULL)
           {
 	  callout_opt_t * op;
-	  double period;
+	  double period = 1.0F;
 
 	  for (op= callout_opt_list; op->name; op++)
-	    if (strncmpic(opt, op->name, strlen(op->name)) == 0)
+	    if (strncmpic(opt, op->name, Ustrlen(op->name)) == 0)
 	      break;
 
 	  verify_options |= op->flag;
 	  if (op->has_option)
 	    {
-	    opt += strlen(op->name);
+	    opt += Ustrlen(op->name);
             while (isspace(*opt)) opt++;
             if (*opt++ != '=')
               {
@@ -2093,7 +2093,7 @@ uschar buffer[STRING_SPRINTF_BUFFER_SIZE];
 va_start(ap, format);
 if (!string_vformat(buffer, sizeof(buffer), format, ap))
   log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-    "string_sprintf expansion was longer than %d", sizeof(buffer));
+    "string_sprintf expansion was longer than " SIZE_T_FMT, sizeof(buffer));
 va_end(ap);
 *log_msgptr = string_sprintf(
   "error in arguments to \"ratelimit\" condition: %s", buffer);
@@ -2228,7 +2228,7 @@ while ((ss = string_nextinlist(&arg, &sep, big_buffer, big_buffer_size))
   else if (strcmpic(ss, US"per_addr") == 0)
     {
     RATE_SET(mode, PER_RCPT);
-    if (where != ACL_WHERE_RCPT) badacl = TRUE, unique = "*";
+    if (where != ACL_WHERE_RCPT) badacl = TRUE, unique = US"*";
       else unique = string_sprintf("%s@%s", deliver_localpart, deliver_domain);
     }
   else if (strncmpic(ss, US"count=", 6) == 0)

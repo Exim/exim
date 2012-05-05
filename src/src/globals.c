@@ -116,6 +116,9 @@ BOOL    tls_offered            = FALSE;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;
 uschar *tls_require_ciphers    = NULL;
+#ifndef USE_GNUTLS
+uschar *tls_sni                = NULL;
+#endif
 uschar *tls_try_verify_hosts   = NULL;
 uschar *tls_verify_certificates= NULL;
 uschar *tls_verify_hosts       = NULL;
@@ -694,7 +697,7 @@ uschar *log_file_path          = US LOG_FILE_PATH
 /* Those log options with L_xxx identifiers have values less than 0x800000 and
 are the ones that get put into log_write_selector. They can be used in calls to
 log_write() to test for the bit. The options with LX_xxx identifiers have
-values greater than 0x80000000 and are put int log_extra_selector (without the
+values greater than 0x80000000 and are put into log_extra_selector (without the
 top bit). They are never used in calls to log_write(), but are tested
 independently. This separation became necessary when the number of log
 selectors was getting close to filling a 32-bit word. */
@@ -743,6 +746,7 @@ bit_table log_options[]        = {
   { US"tls_certificate_verified",     LX_tls_certificate_verified },
   { US"tls_cipher",                   LX_tls_cipher },
   { US"tls_peerdn",                   LX_tls_peerdn },
+  { US"tls_sni",                      LX_tls_sni },
   { US"unknown_in_list",              LX_unknown_in_list }
 };
 
