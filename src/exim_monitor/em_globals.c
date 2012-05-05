@@ -214,6 +214,9 @@ BOOL    timestamps_utc         = FALSE;
 BOOL    tls_certificate_verified = FALSE;
 uschar *tls_cipher             = NULL;
 uschar *tls_peerdn             = NULL;
+#ifndef USE_GNUTLS
+uschar *tls_sni                = NULL;
+#endif
 
 tree_node *tree_duplicates     = NULL;
 tree_node *tree_nonrecipients  = NULL;
