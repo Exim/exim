@@ -481,7 +481,13 @@ list of available digests. */
 EVP_add_digest(EVP_sha256());
 #endif
 
-/* Create a context */
+/* Create a context.
+The OpenSSL docs in 1.0.1b have not been updated to clarify TLS variant
+negotiation in the different methods; as far as I can tell, the only
+*_{server,client}_method which allows negotiation is SSLv23, which exists even
+when OpenSSL is built without SSLv2 support.
+By disabling with openssl_options, we can let admins re-enable with the
+existing knob. */
 
 ctx = SSL_CTX_new((host == NULL)?
   SSLv23_server_method() : SSLv23_client_method());
@@ -1522,6 +1528,9 @@ BOOL adding, item_parsed;
 result = 0L;
 /* Prior to 4.78 we or'd in SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS; removed
  * from default because it increases BEAST susceptibility. */
+#ifdef SSL_OP_NO_SSLv2
+result |= SSL_OP_NO_SSLv2;
+#endif
 
 if (option_spec == NULL)
   {

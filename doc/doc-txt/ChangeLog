@@ -86,6 +86,8 @@ PP/19 DNS resolver init changes for NetBSD compatibility.  (Risk of breakage
       Not seeing resolver debug output on NetBSD, but suspect this is a
       resolver implementation change.
 
+PP/20 Disable SSLv2 by default in OpenSSL support.
+
 
 Exim version 4.77
 -----------------
