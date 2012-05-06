@@ -3,7 +3,7 @@ need_ipv4
 #
 server PORT_S
 220 ESMTP
-HELO
+EHLO
 250 OK
 MAIL FROM:
 250 Sender OK

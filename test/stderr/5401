@@ -12,7 +12,7 @@ accept: condition test succeeded in ACL "acl_rcpt"
 ----------- start cutthrough setup ------------
 Connecting to 127.0.0.1 [127.0.0.1]:1224 from ip4.ip4.ip4.ip4 ... connected
   SMTP<< 220 ESMTP
-  SMTP>> HELO myhost.test.ex
+  SMTP>> EHLO myhost.test.ex
   SMTP<< 250 OK
   SMTP>> MAIL FROM:<CALLER@myhost.test.ex>
   SMTP<< 250 Sender OK
@@ -23,12 +23,14 @@ processing "accept"
 accept: condition test succeeded in inline ACL
   SMTP>> DATA
   SMTP<< 354 Send data
+  SMTP>>(nl)
   SMTP>> .
   SMTP<< 250 OK
------------ cutthrough close ------------
 LOG: MAIN
-  >> userx@domain.com R=all T=smtp
+  >> userx@domain.com R=all T=smtp H=127.0.0.1 [127.0.0.1]
 created log directory TESTSUITE/spool/log
+  SMTP>> QUIT
+----------- cutthrough shutdown ------------
 LOG: MAIN
   <= CALLER@myhost.test.ex U=CALLER P=local-esmtp S=sss
 LOG: MAIN
