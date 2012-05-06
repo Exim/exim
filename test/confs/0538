@@ -38,6 +38,13 @@ r1:
   route_list = * "<= 127.0.0.1:PORT_S"
   self = send
   verify_only
+  transport = t1
+
+
+begin transports
+
+t1:
+  driver = smtp
 
 
 # End

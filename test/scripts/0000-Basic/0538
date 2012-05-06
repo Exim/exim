@@ -4,7 +4,7 @@ need_ipv4
 # Do a sender address verify that rejects MAIL FROM:<>
 server PORT_S
 220 Welcome
-HELO
+EHLO
 250 Hi
 MAIL FROM
 550 I'm misconfigured
@@ -18,7 +18,7 @@ quit
 # Now do a recipient verify for the same domain, with use_sender
 server PORT_S
 220 Welcome
-HELO
+EHLO
 250 Hi
 MAIL FROM
 250 OK

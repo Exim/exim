@@ -1,17 +1,6 @@
 # callout with no transport
 need_ipv4
 #
-server PORT_S
-220 Welcome
-HELO
-250 Hi
-MAIL FROM
-250 OK
-RCPT TO
-550 unrouteable address
-QUIT
-221 Bye
-****
 exim -bs
 mail from:<unknown@x.x.x.x>
 rcpt to:<unknown@u.u.u.u>
