@@ -598,7 +598,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # Handle only the Gnu and MacOS space, dot, plus and at-sign.  A full [[:graph:]]
   # unfortunately matches a non-ls linefull of dashes.
   # Allow the case where we've already picked out the file protection bits.
-  if (s/^([-d](?:[-r][-w][-SsTtx]){3})[.+@]?( +|$)/\1\2/) {
+  if (s/^([-d](?:[-r][-w][-SsTtx]){3})[.+@]?( +|$)/$1$2/) {
     s/ +/ /g;
   }
 
@@ -2947,7 +2947,16 @@ if ($have_ipv4 && $parm_ipv4 ne "127.0.0.1")
 
 if ($have_ipv6 && $parm_ipv6 ne "::1")
   {
-  my(@components) = split /:/, $parm_ipv6;
+  my($exp_v6) = $parm_ipv6;
+  $exp_v6 =~ s/[^:]//g;
+  if ( $parm_ipv6 =~ /^([^:].+)::$/ ) {
+    $exp_v6 = $1 . ':0' x (9-length($exp_v6));
+  } elsif ( $parm_ipv6 =~ /^(.+)::(.+)$/ ) {
+    $exp_v6 = $1 . ':0' x (8-length($exp_v6)) . ':' . $2;
+  } elsif ( $parm_ipv6 =~ /^::(.+[^:])$/ ) {
+    $exp_v6 = '0:' x (9-length($exp_v6)) . $1;
+  }
+  my(@components) = split /:/, $exp_v6;
   my(@nibbles) = reverse (split /\s*/, shift @components);
   my($sep) =  "";
 
