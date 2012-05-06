@@ -807,7 +807,7 @@ directly, instead making you call a function per thread to get a handle.
 Other OSs handle thread-safe resolver differently, in ways which fail if the
 programmer creates their own structs. */
 
-#ifndef OS_GET_DNS_RESOLVER_RES
+#if !defined(OS_GET_DNS_RESOLVER_RES) && !defined(COMPILE_UTILITY)
 
 #include <resolv.h>
 
