@@ -353,6 +353,17 @@ to undefine it if resolv.h defines it. */
 #undef __P
 #endif
 
+/* If not defined by os.h, we do nothing special to push DNS resolver state
+back to be available by the classic resolver routines.  Also, provide
+prototype for our get routine, unless defined away. */
+
+#ifndef os_put_dns_resolver_res
+# define os_put_dns_resolver_res(R) do {/**/} while(0)
+#endif
+#ifndef os_get_dns_resolver_res
+res_state os_get_dns_resolver_res(void);
+#endif
+
 /* These three are to support the IP option logging code. Linux is
 different to everyone else and there are also other systems which don't
 have netinet/ip_var.h, so there's a general macro to control its inclusion. */

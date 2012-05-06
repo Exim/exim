@@ -795,6 +795,50 @@ return yield;
 
 
 
+/* ----------------------------------------------------------------------- */
+
+/***********************************************************
+*                 DNS Resolver Base Finder                 *
+***********************************************************/
+
+/* We need to be able to set options for the system resolver(5), historically
+made available as _res.  At least one OS (NetBSD) now no longer provides this
+directly, instead making you call a function per thread to get a handle.
+Other OSs handle thread-safe resolver differently, in ways which fail if the
+programmer creates their own structs. */
+
+#ifndef OS_GET_DNS_RESOLVER_RES
+
+#include <resolv.h>
+
+/* confirmed that res_state is typedef'd as a struct* on BSD and Linux, will
+find out how unportable it is on other OSes, but most resolver implementations
+should be descended from ISC's bind.
+
+Linux and BSD do:
+  define _res (*__res_state())
+identically.  We just can't rely on __foo functions.  It's surprising that use
+of _res has been as portable as it has, for so long.
+
+So, since _res works everywhere, and everything can decode the struct, I'm
+going to gamble that res_state is a typedef everywhere and use that as the
+return type.
+*/
+
+res_state
+os_get_dns_resolver_res(void)
+{
+  return &_res;
+}
+
+#endif /* OS_GET_DNS_RESOLVER_RES */
+
+
+/* ----------------------------------------------------------------------- */
+
+
+
+
 
 /*************************************************
 **************************************************

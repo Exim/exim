@@ -166,26 +166,30 @@ Returns:            nothing
 void
 dns_init(BOOL qualify_single, BOOL search_parents)
 {
-if ((_res.options & RES_INIT) == 0)
+res_state resp = os_get_dns_resolver_res();
+
+if ((resp->options & RES_INIT) == 0)
   {
-  DEBUG(D_resolver) _res.options |= RES_DEBUG;     /* For Cygwin */
+  DEBUG(D_resolver) resp->options |= RES_DEBUG;     /* For Cygwin */
+  os_put_dns_resolver_res(resp);
   res_init();
-  DEBUG(D_resolver) _res.options |= RES_DEBUG;
+  DEBUG(D_resolver) resp->options |= RES_DEBUG;
+  os_put_dns_resolver_res(resp);
   }
 
-_res.options &= ~(RES_DNSRCH | RES_DEFNAMES);
-_res.options |= (qualify_single? RES_DEFNAMES : 0) |
+resp->options &= ~(RES_DNSRCH | RES_DEFNAMES);
+resp->options |= (qualify_single? RES_DEFNAMES : 0) |
                 (search_parents? RES_DNSRCH : 0);
-if (dns_retrans > 0) _res.retrans = dns_retrans;
-if (dns_retry > 0) _res.retry = dns_retry;
+if (dns_retrans > 0) resp->retrans = dns_retrans;
+if (dns_retry > 0) resp->retry = dns_retry;
 
 #ifdef RES_USE_EDNS0
 if (dns_use_edns0 >= 0)
   {
   if (dns_use_edns0)
-    _res.options |= RES_USE_EDNS0;
+    resp->options |= RES_USE_EDNS0;
   else
-    _res.options &= ~RES_USE_EDNS0;
+    resp->options &= ~RES_USE_EDNS0;
   DEBUG(D_resolver)
     debug_printf("Coerced resolver EDNS0 support %s.\n",
         dns_use_edns0 ? "on" : "off");
@@ -196,6 +200,8 @@ if (dns_use_edns0 >= 0)
     debug_printf("Unable to %sset EDNS0 without resolver support.\n",
         dns_use_edns0 ? "" : "un");
 #endif
+
+os_put_dns_resolver_res(resp);
 }
 
 
@@ -440,9 +446,10 @@ Returns:     the return code
 static int
 dns_return(uschar *name, int type, int rc)
 {
+res_state resp = os_get_dns_resolver_res();
 tree_node *node = store_get_perm(sizeof(tree_node) + 290);
 sprintf(CS node->name, "%.255s-%s-%lx", name, dns_text_type(type),
-  _res.options);
+  resp->options);
 node->data.val = rc;
 (void)tree_insertnode(&tree_dns_fails, node);
 return rc;
@@ -482,6 +489,7 @@ dns_basic_lookup(dns_answer *dnsa, uschar *name, int type)
 int rc = -1;
 uschar *save;
 #endif
+res_state resp = os_get_dns_resolver_res();
 
 tree_node *previous;
 uschar node_name[290];
@@ -492,7 +500,7 @@ have many addresses in the same domain. We rely on the resolver and name server
 caching for successful lookups. */
 
 sprintf(CS node_name, "%.255s-%s-%lx", name, dns_text_type(type),
-  _res.options);
+  resp->options);
 previous = tree_search(tree_dns_fails, node_name);
 if (previous != NULL)
   {

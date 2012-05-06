@@ -70,6 +70,10 @@ the other stuff in os.c, so force the other macros to omit it. */
   #define FIND_RUNNING_INTERFACES
 #endif
 
+#ifndef OS_GET_DNS_RESOLVER_RES
+  #define OS_GET_DNS_RESOLVER_RES
+#endif
+
 #include "../src/os.c"
 
 

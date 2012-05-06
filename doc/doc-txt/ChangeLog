@@ -81,6 +81,11 @@ PP/17 OpenSSL: new expansion var $tls_sni, which if used in tls_certificate
 PP/18 Bugzilla 1122 - check localhost_number expansion for failure, avoid
       NULL dereference.  Report and patch from Alun Jones.
 
+PP/19 DNS resolver init changes for NetBSD compatibility.  (Risk of breakage
+      on less well tested platforms).  Obviates NetBSD pkgsrc patch-ac.
+      Not seeing resolver debug output on NetBSD, but suspect this is a
+      resolver implementation change.
+
 
 Exim version 4.77
 -----------------
