@@ -6,6 +6,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello test.ex [V4NET.9.8.7]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 250 OK
@@ -21,6 +22,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello test.ex [V4NET.9.8.7]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 250 OK
@@ -36,6 +38,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello test.ex [V4NET.9.8.7]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 250 OK
@@ -51,6 +54,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello test.ex [V4NET.9.8.7]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 250 OK
@@ -66,6 +70,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello test.ex [V4NET.9.8.7]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 250 OK
@@ -83,6 +88,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello test.ex [V4NET.9.8.6]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 250 OK

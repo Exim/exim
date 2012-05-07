@@ -14,6 +14,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello ten-1.test.ex [V4NET.0.0.1]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 221 myhost.test.ex closing connection
@@ -33,6 +34,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello [V4NET.2.3.4] [V4NET.2.3.4]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 250 OK
@@ -51,6 +53,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello host.name.tld [V4NET.2.3.4]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 250 OK

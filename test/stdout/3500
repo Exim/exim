@@ -1,6 +1,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
 250-SIZE 52428800
+250-8BITMIME
 250-ETRN
 250-EXPN
 250-PIPELINING
@@ -16,6 +17,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello CALLER at test.host [10.0.0.1]
 250-SIZE 52428800
+250-8BITMIME
 250-ETRN
 250-EXPN
 250-PIPELINING
@@ -32,6 +34,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello test.host [10.0.0.4]
 250-SIZE 52428800
+250-8BITMIME
 250-ETRN
 250-EXPN
 250-PIPELINING
@@ -45,6 +48,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello test.host [10.0.0.1]
 250-SIZE 52428800
+250-8BITMIME
 250-ETRN
 250-EXPN
 250-PIPELINING
@@ -68,6 +72,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello test.host [10.0.0.5]
 250-SIZE 52428800
+250-8BITMIME
 250-ETRN
 250-EXPN
 250-PIPELINING

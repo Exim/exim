@@ -1,6 +1,7 @@
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-One line
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 299-MAIL is
@@ -12,6 +13,7 @@
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-Two
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 299-MAIL is
@@ -21,6 +23,7 @@
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 299-With code
 299-SIZE 52428800
+299-8BITMIME
 299-PIPELINING
 299 HELP
 221 the.local.host.name closing connection

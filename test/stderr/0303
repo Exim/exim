@@ -75,6 +75,7 @@ set_process_info: pppp handling incoming connection from ([V4NET.2.3.4]) [V4NET.
 host in pipelining_advertise_hosts? yes (matched "*")
 SMTP>> 250-myhost.test.ex Hello [V4NET.2.3.4] [V4NET.2.3.4]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 SMTP<< mail from:<>
@@ -143,6 +144,7 @@ set_process_info: pppp handling incoming connection from host.name.tld [V4NET.2.
 host in pipelining_advertise_hosts? yes (matched "*")
 SMTP>> 250-myhost.test.ex Hello host.name.tld [V4NET.2.3.4]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 SMTP<< mail from:<>

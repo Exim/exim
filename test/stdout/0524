@@ -6,12 +6,14 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello csa1.test.ex [V4NET.9.8.7]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 250 OK
 250 Reset OK
 250-myhost.test.ex Hello csa2.test.ex [V4NET.9.8.7]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 550 CSA status is fail
@@ -24,12 +26,14 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello csa1.test.ex [V4NET.9.8.8]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 550 CSA status is fail
 250 Reset OK
 250-myhost.test.ex Hello csa2.test.ex [V4NET.9.8.8]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250 HELP
 550 CSA status is fail

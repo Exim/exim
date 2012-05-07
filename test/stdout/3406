@@ -1,6 +1,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello CALLER at testing.ex [10.0.0.2]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250-AUTH FIRST
 250 HELP
@@ -9,6 +10,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello CALLER at testing.ex [10.0.0.3]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250-AUTH SECOND
 250 HELP
@@ -17,6 +19,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello CALLER at testing.ex [10.0.0.2]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250-AUTH FIRST
 250 HELP
@@ -25,6 +28,7 @@
 220 myhost.test.ex ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-myhost.test.ex Hello CALLER at testing.ex [10.0.0.3]
 250-SIZE 52428800
+250-8BITMIME
 250-PIPELINING
 250-AUTH SECOND
 250 HELP

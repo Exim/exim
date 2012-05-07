@@ -895,7 +895,9 @@ outblock.authenticating = FALSE;
 tls_bits = 0;
 tls_cipher = NULL;
 tls_peerdn = NULL;
+#ifndef USE_GNUTLS
 tls_sni = NULL;
+#endif
 
 /* If an authenticated_sender override has been specified for this transport
 instance, expand it. If the expansion is forced to fail, and there was already

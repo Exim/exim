@@ -401,6 +401,7 @@ host in "10.0.0.3 : 10.0.0.4"? no (end of list)
 host in auth_advertise_hosts? yes (matched "10.0.0.5")
 SMTP>> 250-myhost.test.ex Hello CALLER at testing.testing [10.0.0.5]
 250-SIZE 52428800
+250-8BITMIME
 250-ETRN
 250-EXPN
 250-PIPELINING

@@ -9,6 +9,8 @@ Succeeded in starting TLS
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-8BITMIME
+??? 250-
 <<< 250-PIPELINING
 ??? 250
 <<< 250 HELP

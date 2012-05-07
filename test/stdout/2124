@@ -9,6 +9,8 @@ Key file = aux-fixed/cert2
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-8BITMIME
+??? 250-
 <<< 250-PIPELINING
 ??? 250-
 <<< 250-STARTTLS
@@ -46,6 +48,8 @@ Key file = aux-fixed/cert2
 <<< 250-myhost.test.ex Hello rhu.barb [ip4.ip4.ip4.ip4]
 ??? 250-
 <<< 250-SIZE 52428800
+??? 250-
+<<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
 ??? 250-

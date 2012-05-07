@@ -19,6 +19,7 @@
 501 argument must begin with #
 250-the.local.host.name Hello CALLER at a.b.c
 250-SIZE 52428800
+250-8BITMIME
 250-ETRN
 250-PIPELINING
 250 HELP

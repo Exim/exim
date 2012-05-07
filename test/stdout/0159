@@ -7,6 +7,8 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-8BITMIME
+??? 250-
 <<< 250-PIPELINING
 ??? 250
 <<< 250 HELP
@@ -30,6 +32,8 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 <<< 250-myhost.test.ex Hello [IPV4:ip4.ip4.ip4.ip4] [ip4.ip4.ip4.ip4]
 ??? 250-
 <<< 250-SIZE 52428800
+??? 250-
+<<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
 ??? 250
@@ -55,6 +59,8 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 ??? 250-
 <<< 250-SIZE 52428800
 ??? 250-
+<<< 250-8BITMIME
+??? 250-
 <<< 250-PIPELINING
 ??? 250
 <<< 250 HELP
@@ -78,6 +84,8 @@ Connecting to ip4.ip4.ip4.ip4 port 1225 ... connected
 <<< 250-myhost.test.ex Hello [V4NET.1.2.3] [ip4.ip4.ip4.ip4]
 ??? 250-
 <<< 250-SIZE 52428800
+??? 250-
+<<< 250-8BITMIME
 ??? 250-
 <<< 250-PIPELINING
 ??? 250

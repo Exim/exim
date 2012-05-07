@@ -1,6 +1,7 @@
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-the.local.host.name Hello CALLER at a.b.c
 250-SIZE 52428800
+250-8BITMIME
 250-ETRN
 250-PIPELINING
 250-AUTH PLAIN
@@ -13,6 +14,7 @@
 220 the.local.host.name ESMTP Exim x.yz Tue, 2 Mar 1999 09:44:33 +0000
 250-the.local.host.name Hello CALLER at a.b.c
 250-SIZE 52428800
+250-8BITMIME
 250-ETRN
 250-PIPELINING
 250-AUTH PLAIN

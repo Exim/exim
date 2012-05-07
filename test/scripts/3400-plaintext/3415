@@ -10,6 +10,7 @@ ehlo rhu.barb
 ??? 250-
 ??? 250-
 ??? 250-
+??? 250-
 ??? 250
 auth plain AHVzZXJuYW1lAG15c2VjcmV0
 ??? 235
@@ -44,31 +45,6 @@ ehlo rhu.barb
 ??? 250-
 ??? 250-
 ??? 250-
-??? 250
-auth plain AHVzZXJuYW1lAG15c2VjcmV0
-??? 235
-mail from:<>
-??? 250
-rcpt to:<x@y>
-??? 250
-data
-??? 354
-.
-??? 250
-quit
-??? 221
-****
-killdaemon
-# Wait for delivery process
-millisleep 500
-exim -DSERVER=server -DSUBMISSION_OPTIONS=/domain= -DAUTH_ID_DOMAIN=@auth.id.domain -bd -oX PORT_D
-****
-client 127.0.0.1 PORT_D
-??? 220
-ehlo rhu.barb
-??? 250-
-??? 250-
-??? 250-
 ??? 250-
 ??? 250
 auth plain AHVzZXJuYW1lAG15c2VjcmV0
@@ -92,6 +68,34 @@ exim -DSERVER=server -DSUBMISSION_OPTIONS=/domain= -DAUTH_ID_DOMAIN=@auth.id.dom
 client 127.0.0.1 PORT_D
 ??? 220
 ehlo rhu.barb
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+auth plain AHVzZXJuYW1lAG15c2VjcmV0
+??? 235
+mail from:<>
+??? 250
+rcpt to:<x@y>
+??? 250
+data
+??? 354
+.
+??? 250
+quit
+??? 221
+****
+killdaemon
+# Wait for delivery process
+millisleep 500
+exim -DSERVER=server -DSUBMISSION_OPTIONS=/domain= -DAUTH_ID_DOMAIN=@auth.id.domain -bd -oX PORT_D
+****
+client 127.0.0.1 PORT_D
+??? 220
+ehlo rhu.barb
+??? 250-
 ??? 250-
 ??? 250-
 ??? 250-
