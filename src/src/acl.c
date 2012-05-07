@@ -3938,7 +3938,7 @@ switch (where)
 {
 case ACL_WHERE_RCPT:
   if( rcpt_count > 1 )
-    cancel_cutthrough_connection();
+    cancel_cutthrough_connection("more than one recipient");
   else if (rc == OK  &&  cutthrough_delivery  &&  cutthrough_fd < 0)
     open_cutthrough_connection(addr);
   break;
@@ -3947,12 +3947,12 @@ case ACL_WHERE_PREDATA:
   if( rc == OK )
     cutthrough_predata();
   else
-    cancel_cutthrough_connection();
+    cancel_cutthrough_connection("predata acl not ok");
   break;
 
 case ACL_WHERE_QUIT:
 case ACL_WHERE_NOTQUIT:
-  cancel_cutthrough_connection();
+  cancel_cutthrough_connection("quit or notquit");
   break;
 
 default:

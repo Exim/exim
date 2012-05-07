@@ -1415,7 +1415,7 @@ search_tidyup();
 cutthrough delivery with the no-spool option.  It shouldn't be possible
 to set up the combination, but just in case kill any ongoing connection. */
 if (extract_recip || !smtp_input)
-  cancel_cutthrough_connection();
+  cancel_cutthrough_connection("not smtp input");
 
 /* Initialize the chain of headers by setting up a place-holder for Received:
 header. Temporarily mark it as "old", i.e. not to be used. We keep header_last
@@ -2716,7 +2716,7 @@ if (cutthrough_fd >= 0)
   {
   if (received_count > received_headers_max)
     {
-    cancel_cutthrough_connection();
+    cancel_cutthrough_connection("too many headers");
     if (smtp_input) receive_swallow_smtp();  /* Swallow incoming SMTP */
     log_write(0, LOG_MAIN|LOG_REJECT, "rejected from <%s>%s%s%s%s: "
       "Too many \"Received\" headers",
@@ -2816,7 +2816,7 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
   if (smtp_input && message_ended == END_EOF)
     {
     Uunlink(spool_name);                     /* Lose data file when closed */
-    cancel_cutthrough_connection();
+    cancel_cutthrough_connection("sender closed connection");
     message_id[0] = 0;                       /* Indicate no message accepted */
     smtp_reply = handle_lost_connection(US"");
     smtp_yield = FALSE;
@@ -2829,7 +2829,7 @@ if (!ferror(data_file) && !(receive_feof)() && message_ended != END_DOT)
   if (message_ended == END_SIZE)
     {
     Uunlink(spool_name);                /* Lose the data file when closed */
-    cancel_cutthrough_connection();
+    cancel_cutthrough_connection("mail too big");
     if (smtp_input) receive_swallow_smtp();  /* Swallow incoming SMTP */
 
     log_write(L_size_reject, LOG_MAIN|LOG_REJECT, "rejected from <%s>%s%s%s%s: "
@@ -2885,7 +2885,7 @@ if (fflush(data_file) == EOF || ferror(data_file) ||
 
   log_write(0, LOG_MAIN, "Message abandoned: %s", msg);
   Uunlink(spool_name);                /* Lose the data file */
-  cancel_cutthrough_connection();
+  cancel_cutthrough_connection("error writing spoolfile");
 
   if (smtp_input)
     {
@@ -3128,7 +3128,7 @@ else
               {
                 DEBUG(D_receive)
                   debug_printf("acl_smtp_dkim: acl_check returned %d on %s, skipping remaining items\n", rc, item);
-	        cancel_cutthrough_connection();
+	        cancel_cutthrough_connection("dkim acl not ok");
                 break;
               }
             }
@@ -3174,12 +3174,12 @@ else
         blackholed_by = US"DATA ACL";
         if (log_msg != NULL)
           blackhole_log_msg = string_sprintf(": %s", log_msg);
-	cancel_cutthrough_connection();
+	cancel_cutthrough_connection("data acl discard");
         }
       else if (rc != OK)
         {
         Uunlink(spool_name);
-	cancel_cutthrough_connection();
+	cancel_cutthrough_connection("data acl not ok");
 #ifdef WITH_CONTENT_SCAN
         unspool_mbox();
 #endif

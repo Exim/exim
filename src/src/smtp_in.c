@@ -1037,7 +1037,7 @@ store_reset(reset_point);
 recipients_list = NULL;
 rcpt_count = rcpt_defer_count = rcpt_fail_count =
   raw_recipients_count = recipients_count = recipients_list_max = 0;
-cancel_cutthrough_connection();
+cancel_cutthrough_connection("smtp reset");
 message_linecount = 0;
 message_size = -1;
 acl_added_headers = NULL;

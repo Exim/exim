@@ -66,7 +66,7 @@ extern int     auth_get_no64_data(uschar **, uschar *);
 extern uschar *auth_xtextencode(uschar *, int);
 extern int     auth_xtextdecode(uschar *, uschar **);
 
-extern void    cancel_cutthrough_connection(void);
+extern void    cancel_cutthrough_connection(const char *);
 extern int     check_host(void *, uschar *, uschar **, uschar **);
 extern uschar **child_exec_exim(int, BOOL, int *, BOOL, int, ...);
 extern pid_t   child_open_uid(uschar **, uschar **, int, uid_t *, gid_t *,

@@ -957,8 +957,9 @@ else
       }
     else
       {
+      /* Ensure no cutthrough on multiple address verifies */
       if (options & vopt_callout_recipsender)
-        cancel_cutthrough_connection();	/* Ensure no cutthrough on multiple address verifies */
+        cancel_cutthrough_connection("multiple verify calls");
       if (send_quit) (void)smtp_write_command(&outblock, FALSE, "QUIT\r\n");
 
       #ifdef SUPPORT_TLS
@@ -1129,7 +1130,7 @@ cutthrough_puts(uschar * cp, int n)
 {
 if (cutthrough_fd < 0)       return TRUE;
 if (_cutthrough_puts(cp, n)) return TRUE;
-cancel_cutthrough_connection();
+cancel_cutthrough_connection("transmit failed");
 return FALSE;
 }
 
@@ -1151,7 +1152,7 @@ BOOL
 cutthrough_flush_send( void )
 {
 if (_cutthrough_flush_send()) return TRUE;
-cancel_cutthrough_connection();
+cancel_cutthrough_connection("transmit failed");
 return FALSE;
 }
 
@@ -1178,7 +1179,7 @@ inblock.ptrend = inbuffer;
 inblock.sock = cutthrough_fd;
 /* this relies on (inblock.sock == tls_out.active) */
 if(!smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), expect, CUTTHROUGH_DATA_TIMEOUT))
-  cancel_cutthrough_connection();
+  cancel_cutthrough_connection("target timeout on read");
 
 if(copy != NULL)
   {
@@ -1235,7 +1236,7 @@ return cutthrough_put_nl();
 
 
 static void
-close_cutthrough_connection( void )
+close_cutthrough_connection( const char * why )
 {
 if(cutthrough_fd >= 0)
   {
@@ -1254,15 +1255,15 @@ if(cutthrough_fd >= 0)
   #endif
   (void)close(cutthrough_fd);
   cutthrough_fd= -1;
-  HDEBUG(D_acl) debug_printf("----------- cutthrough shutdown ------------\n");
+  HDEBUG(D_acl) debug_printf("----------- cutthrough shutdown (%s) ------------\n", why);
   }
 ctblock.ptr = ctbuffer;
 }
 
 void
-cancel_cutthrough_connection( void )
+cancel_cutthrough_connection( const char * why )
 {
-close_cutthrough_connection();
+close_cutthrough_connection(why);
 cutthrough_delivery= FALSE;
 }
 
@@ -1287,7 +1288,7 @@ switch(cutthrough_response('2', &cutthrough_addr.message))
   {
   case '2':
     delivery_log(LOG_MAIN, &cutthrough_addr, (int)'>', NULL);
-    close_cutthrough_connection();
+    close_cutthrough_connection("delivered");
     break;
 
   case '4':
@@ -1761,7 +1762,7 @@ while (addr_new != NULL)
         }
       respond_printf(f, "%s\n", cr);
       }
-    cancel_cutthrough_connection();
+    cancel_cutthrough_connection("routing hard fail");
 
     if (!full_info) return copy_error(vaddr, addr, FAIL);
       else yield = FAIL;
@@ -1796,7 +1797,7 @@ while (addr_new != NULL)
         }
       respond_printf(f, "%s\n", cr);
       }
-    cancel_cutthrough_connection();
+    cancel_cutthrough_connection("routing soft fail");
 
     if (!full_info) return copy_error(vaddr, addr, DEFER);
       else if (yield == OK) yield = DEFER;
