@@ -5,7 +5,7 @@
 # The name of the eximon binary, usually the same as the eximon script,
 # with .bin stuck on the end.
 
-EXIMON_BINARY=${EXIMON_BINARY-$0.bin}
+EXIMON_BINARY="${EXIMON_BINARY-$0.bin}"
 
 # The remaining parameters are values likely to be changed to suit the
 # user's taste. They are documented in the EDITME file.

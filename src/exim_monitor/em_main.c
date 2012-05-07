@@ -654,7 +654,9 @@ today.) */
 
 if (log_file[0] != 0)
   {
-  (void)string_format(log_file_open, sizeof(log_file_open), "%s", CS log_file);
+  /* Do *not* use "%s" here, we need the %D datestamp in the log_file to
+  be expanded! */
+  (void)string_format(log_file_open, sizeof(log_file_open), CS log_file);
   log_datestamping = string_datestamp_offset >= 0;
 
   LOG = fopen(CS log_file_open, "r");

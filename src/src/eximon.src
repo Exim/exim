@@ -19,6 +19,14 @@
 
 # PROCESSED_FLAG
 
+# See if caller wants to invoke gdb
+
+use_gdb=''
+
+case ${1:-foo} in
+  gdb*) use_gdb="$1"; shift ;;
+esac
+
 # Save arguments (can be the usual X parameters)
 
 cmd_args="$@"
@@ -181,8 +189,13 @@ export EXIM_PATH LD_LIBRARY_PATH \
 
 # Exec to the program we really want to run, thereby continuing in
 # just the one process, and let it run in parallel with whatever
-# called this script.
+# called this script (unless gdb was requested in original $1).
 
-exec ${EXIMON_BINARY} $cmd_args &
+if [ "${use_gdb:-}" = "" ] ; then
+  exec "${EXIMON_BINARY}" $cmd_args &
+else
+  exec "$use_gdb" "${EXIMON_BINARY}" $cmd_args
+  # not backgrounded
+fi
 
 # End

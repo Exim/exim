@@ -34371,6 +34371,12 @@ End
 In order to see the contents of messages on the queue, and to operate on them,
 &'eximon'& must either be run as root or by an admin user.
 
+The command-line parameters of &'eximon'& are passed to &_eximon.bin_& and may
+contain X11 resource parameters interpreted by the X11 library.  In addition,
+if the first parameter starts with the string "gdb" then it is removed and the
+binary is invoked under gdb (the parameter is used as the gdb command-name, so
+versioned variants of gdb can be invoked).
+
 The monitor's window is divided into three parts. The first contains one or
 more stripcharts and two action buttons, the second contains a &"tail"& of the
 main log file, and the third is a display of the queue of messages awaiting
