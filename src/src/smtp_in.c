@@ -3991,7 +3991,7 @@ while (done <= 0)
         break;
 
         /* It is perhaps arguable as to which exit ACL should be called here,
-        but as it is probably a situtation that almost never arises, it
+        but as it is probably a situation that almost never arises, it
         probably doesn't matter. We choose to call the real QUIT ACL, which in
         some sense is perhaps "right". */
 

@@ -13,8 +13,16 @@ gecos_name = CALLER_NAME
 
 domainlist local_domains = test.ex : *.test.ex
 
-acl_smtp_rcpt = accept control = cutthrough_delivery
+acl_smtp_rcpt = ar
 
+
+# ----- ACLs -----
+
+begin acl
+
+ar:
+	accept control = cutthrough_delivery
+	logwrite = rcpt for $local_part@$domain
 
 # ----- Routers -----
 

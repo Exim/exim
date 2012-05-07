@@ -25,6 +25,35 @@ DATA
 .
 QUIT
 ****
+# cutthrough_delivery into HELO-only server
+need_ipv4
+#
+server PORT_S
+220 SMTP only spoken here
+EHLO
+550 Not here, mate
+HELO
+250 OK
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Recipient OK
+DATA
+354 Send data
+.
+250 OK
+QUIT
+250 OK
+****
+exim -d-all+acl+transport -bs
+EHLO myhost.test.ex
+MAIL FROM:<eximtest@myhost.test.ex>
+RCPT TO:<userz@domain.com>
+DATA
+
+.
+QUIT
+****
 # cutthrough cancelled by multiple recipients
 server PORT_S 2
 220 ESMTP
@@ -56,9 +85,10 @@ exim -d-all+acl+transport -bs
 EHLO myhost.test.ex
 MAIL FROM:<eximtest@myhost.test.ex>
 RCPT TO:<usery@domain.com>
-RCPT TO:<userz@domain.com>
+RCPT TO:<userx@domain.com>
 DATA
 
 .
 QUIT
 ****
+sleep 1
