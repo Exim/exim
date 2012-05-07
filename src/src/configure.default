@@ -304,6 +304,13 @@ timeout_frozen_after = 7d
 # because of some popular, yet buggy, mail composition software.
 
 
+# If you wish to be strictly RFC compliant, or if you know you'll be
+# exchanging email with systems that are not 8-bit clean, then you may
+# wish to disable advertising 8BITMIME.  Uncomment this option to do so.
+
+# accept_8bitmime = false
+
+
 ######################################################################
 #                       ACL CONFIGURATION                            #
 #         Specifies access control lists for incoming SMTP mail      #

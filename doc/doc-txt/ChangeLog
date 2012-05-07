@@ -89,6 +89,8 @@ PP/19 DNS resolver init changes for NetBSD compatibility.  (Risk of breakage
 PP/20 Revert part of NM/04, it broke log_path containing %D expansions.
       Left warnings.  Added "eximon gdb" invocation mode.
 
+PP/21 Defaulting "accept_8bitmime" to true, not false.
+
 
 Exim version 4.77
 -----------------

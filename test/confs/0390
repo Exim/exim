@@ -12,7 +12,7 @@ gecos_name = CALLER_NAME
 # ----- Main settings -----
 
 .ifdef AA
-accept_8bitmime
+no_accept_8bitmime
 .endif
 
 .ifndef AA

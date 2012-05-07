@@ -1,4 +1,4 @@
-accept_8bitmime
+no_accept_8bitmime
 bounce_message_file = 
 callout_domain_negative_expire = 1h
 daemon_smtp_ports = 

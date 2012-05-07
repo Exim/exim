@@ -1,4 +1,4 @@
-no_accept_8bitmime
+accept_8bitmime
 acl_not_smtp = xxx
 acl_smtp_auth = 
 acl_smtp_connect = 
@@ -8,7 +8,7 @@ acl_smtp_expn = zzz
 acl_smtp_mail = yyy
 acl_smtp_rcpt = 
 acl_smtp_vrfy = 
-accept_8bitmime
+no_accept_8bitmime
 acl_not_smtp = 
 acl_smtp_auth = xxx
 acl_smtp_connect = xxx
@@ -18,7 +18,7 @@ acl_smtp_expn =
 acl_smtp_mail = xxx
 acl_smtp_rcpt = 
 acl_smtp_vrfy = 
-no_accept_8bitmime
+accept_8bitmime
 acl_not_smtp = xxx
 acl_smtp_auth = xxx
 acl_smtp_connect = yyy
@@ -28,7 +28,7 @@ acl_smtp_expn = yyy
 acl_smtp_mail = yyy
 acl_smtp_rcpt = 
 acl_smtp_vrfy = 
-accept_8bitmime
+no_accept_8bitmime
 acl_not_smtp = 
 acl_smtp_auth = xxx
 acl_smtp_connect = xxx

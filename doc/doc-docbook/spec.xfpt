@@ -12850,14 +12850,23 @@ See also the &'Policy controls'& section above.
 Those options that undergo string expansion before use are marked with
 &dagger;.
 
-.option accept_8bitmime main boolean false
+.new
+.option accept_8bitmime main boolean true
 .cindex "8BITMIME"
 .cindex "8-bit characters"
 This option causes Exim to send 8BITMIME in its response to an SMTP
 EHLO command, and to accept the BODY= parameter on MAIL commands.
 However, though Exim is 8-bit clean, it is not a protocol converter, and it
 takes no steps to do anything special with messages received by this route.
-Consequently, this option is turned off by default.
+
+Historically Exim kept this option off by default, but the maintainers
+feel that in today's Internet, this causes more problems than it solves.
+It now defaults to true.
+A more detailed analysis of the issues is provided by Dan Bernstein:
+.display
+&url(http://cr.yp.to/smtp/8bitmime.html)
+.endd
+.wen
 
 .option acl_not_smtp main string&!! unset
 .cindex "&ACL;" "for non-SMTP messages"

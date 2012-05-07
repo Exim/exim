@@ -56,6 +56,12 @@ Version 4.78
 
     Currently OpenSSL only.
 
+ 8. The existing "accept_8bitmime" option now defaults to true.  This means
+    that Exim is deliberately not strictly RFC compliant.  We're following
+    Dan Bernstein's advice in http://cr.yp.to/smtp/8bitmime.html by default.
+    Those who disagree, or know that they are talking to mail servers that,
+    even today, are not 8-bit clean, need to turn off this option.
+
 
 Version 4.77
 ------------

@@ -247,7 +247,7 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
 
 BOOL    active_local_from_check = FALSE;
 BOOL    active_local_sender_retain = FALSE;
-BOOL    accept_8bitmime        = FALSE;
+BOOL    accept_8bitmime        = TRUE; /* deliberately not RFC compliant */
 address_item  *addr_duplicate  = NULL;
 
 address_item address_defaults = {

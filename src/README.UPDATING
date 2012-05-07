@@ -69,6 +69,14 @@ Exim version 4.78
    attribute as a comma-separated list.  Note the distinction from multiple
    attributes being returned, where each one is a name=value pair.
 
+ * accept_8bitmime now defaults on, which is not RFC compliant but is better
+   suited to today's Internet.  See http://cr.yp.to/smtp/8bitmime.html for a
+   sane rationale.  Those who wish to be strictly RFC compliant, or know that
+   they need to talk to servers that are not 8-bit-clean, now need to take
+   explicit configuration action to default this option off.  This is not a
+   new option, you can safely force it off before upgrading, to decouple
+   configuration changes from the binary upgrade while remaining RFC compliant.
+
 
 Exim version 4.77
 -----------------

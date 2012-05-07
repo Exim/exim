@@ -48,7 +48,7 @@ release 4.00, and so no router options are shown as earlier than 4.00, though
 in fact some of them were inherited from earlier versions.
 
 -----------------------------------------------------------------------------------------
-accept_8bitmime                      boolean         false         main              1.60
+accept_8bitmime                      boolean         true          main              1.60 changed to true in 4.78
 acl_not_smtp                         string*         unset         main              4.11
 acl_not_smtp_mime                    string*         unset         main              4.51 with content scan
 acl_smtp_auth                        string*         unset         main              4.00
