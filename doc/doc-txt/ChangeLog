@@ -91,6 +91,8 @@ PP/20 Revert part of NM/04, it broke log_path containing %D expansions.
 
 PP/21 Defaulting "accept_8bitmime" to true, not false.
 
+PP/22 Added EXPERIMENTAL_OCSP for OpenSSL.
+
 
 Exim version 4.77
 -----------------

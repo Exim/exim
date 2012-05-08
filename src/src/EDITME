@@ -439,6 +439,11 @@ EXIM_MONITOR=eximon.bin
 # CFLAGS  += -I/opt/brightmail/bsdk-6.0/include
 # LDFLAGS += -lxml2_single -lbmiclient_single -L/opt/brightmail/bsdk-6.0/lib
 
+# Uncomment the following line to add OCSP stapling support in TLS, if Exim
+# was built using OpenSSL.
+
+# EXPERIMENTAL_OCSP=yes
+
 
 
 ###############################################################################

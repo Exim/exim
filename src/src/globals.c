@@ -112,6 +112,9 @@ uschar *tls_advertise_hosts    = NULL;    /* This is deliberate */
 uschar *tls_certificate        = NULL;
 uschar *tls_crl                = NULL;
 uschar *tls_dhparam            = NULL;
+#if defined(EXPERIMENTAL_OCSP) && !defined(USE_GNUTLS)
+uschar *tls_ocsp_file          = NULL;
+#endif
 BOOL    tls_offered            = FALSE;
 uschar *tls_privatekey         = NULL;
 BOOL    tls_remember_esmtp     = FALSE;

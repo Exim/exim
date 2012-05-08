@@ -415,6 +415,9 @@ static optionlist optionlist_config[] = {
   { "tls_certificate",          opt_stringptr,   &tls_certificate },
   { "tls_crl",                  opt_stringptr,   &tls_crl },
   { "tls_dhparam",              opt_stringptr,   &tls_dhparam },
+#if defined(EXPERIMENTAL_OCSP) && !defined(USE_GNUTLS)
+  { "tls_ocsp_file",            opt_stringptr,   &tls_ocsp_file },
+#endif
   { "tls_on_connect_ports",     opt_stringptr,   &tls_on_connect_ports },
   { "tls_privatekey",           opt_stringptr,   &tls_privatekey },
   { "tls_remember_esmtp",       opt_bool,        &tls_remember_esmtp },

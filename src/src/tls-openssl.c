@@ -20,6 +20,14 @@ functions from the OpenSSL library. */
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
+#ifdef EXPERIMENTAL_OCSP
+#include <openssl/ocsp.h>
+#endif
+
+#ifdef EXPERIMENTAL_OCSP
+#define EXIM_OCSP_SKEW_SECONDS (300L)
+#define EXIM_OCSP_MAX_AGE (-1L)
+#endif
 
 /* Structure for collecting random data for seeding. */
 
@@ -48,6 +56,11 @@ static BOOL    reexpand_tls_files_for_sni = FALSE;
 typedef struct tls_ext_ctx_cb {
   uschar *certificate;
   uschar *privatekey;
+#ifdef EXPERIMENTAL_OCSP
+  uschar *ocsp_file;
+  uschar *ocsp_file_expanded;
+  OCSP_RESPONSE *ocsp_response;
+#endif
   uschar *dhparam;
   /* these are cached from first expand */
   uschar *server_cipher_list;
@@ -62,6 +75,12 @@ tls_ext_ctx_cb *static_cbinfo = NULL;
 
 static int
 setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional);
+
+/* Callbacks */
+static int tls_servername_cb(SSL *s, int *ad ARG_UNUSED, void *arg);
+#ifdef EXPERIMENTAL_OCSP
+static int tls_stapling_cb(SSL *s, void *arg);
+#endif
 
 
 /*************************************************
@@ -298,6 +317,131 @@ return yield;
 
 
 
+#ifdef EXPERIMENTAL_OCSP
+/*************************************************
+*       Load OCSP information into state         *
+*************************************************/
+
+/* Called to load the OCSP response from the given file into memory, once
+caller has determined this is needed.  Checks validity.  Debugs a message
+if invalid.
+
+ASSUMES: single response, for single cert.
+
+Arguments:
+  sctx            the SSL_CTX* to update
+  cbinfo          various parts of session state
+  expanded        the filename putatively holding an OCSP response
+
+*/
+
+static void
+ocsp_load_response(SSL_CTX *sctx,
+    tls_ext_ctx_cb *cbinfo,
+    const uschar *expanded)
+{
+BIO *bio;
+OCSP_RESPONSE *resp;
+OCSP_BASICRESP *basic_response;
+OCSP_SINGLERESP *single_response;
+ASN1_GENERALIZEDTIME *rev, *thisupd, *nextupd;
+X509_STORE *store;
+unsigned long verify_flags;
+int status, reason, i;
+
+cbinfo->ocsp_file_expanded = string_copy(expanded);
+if (cbinfo->ocsp_response)
+  {
+  OCSP_RESPONSE_free(cbinfo->ocsp_response);
+  cbinfo->ocsp_response = NULL;
+  }
+
+bio = BIO_new_file(CS cbinfo->ocsp_file_expanded, "rb");
+if (!bio)
+  {
+  DEBUG(D_tls) debug_printf("Failed to open OCSP response file \"%s\"\n",
+      cbinfo->ocsp_file_expanded);
+  return;
+  }
+
+resp = d2i_OCSP_RESPONSE_bio(bio, NULL);
+BIO_free(bio);
+if (!resp)
+  {
+  DEBUG(D_tls) debug_printf("Error reading OCSP response.\n");
+  return;
+  }
+
+status = OCSP_response_status(resp);
+if (status != OCSP_RESPONSE_STATUS_SUCCESSFUL)
+  {
+  DEBUG(D_tls) debug_printf("OCSP response not valid: %s (%d)\n",
+      OCSP_response_status_str(status), status);
+  return;
+  }
+
+basic_response = OCSP_response_get1_basic(resp);
+if (!basic_response)
+  {
+  DEBUG(D_tls)
+    debug_printf("OCSP response parse error: unable to extract basic response.\n");
+  return;
+  }
+
+store = SSL_CTX_get_cert_store(sctx);
+verify_flags = OCSP_NOVERIFY; /* check sigs, but not purpose */
+
+/* May need to expose ability to adjust those flags?
+OCSP_NOSIGS OCSP_NOVERIFY OCSP_NOCHAIN OCSP_NOCHECKS OCSP_NOEXPLICIT
+OCSP_TRUSTOTHER OCSP_NOINTERN */
+
+i = OCSP_basic_verify(basic_response, NULL, store, verify_flags);
+if (i <= 0)
+  {
+  DEBUG(D_tls) {
+    ERR_error_string(ERR_get_error(), ssl_errstring);
+    debug_printf("OCSP response verify failure: %s\n", US ssl_errstring);
+  }
+  return;
+  }
+
+/* Here's the simplifying assumption: there's only one response, for the
+one certificate we use, and nothing for anything else in a chain.  If this
+proves false, we need to extract a cert id from our issued cert
+(tls_certificate) and use that for OCSP_resp_find_status() (which finds the
+right cert in the stack and then calls OCSP_single_get0_status()).
+
+I'm hoping to avoid reworking a bunch more of how we handle state here. */
+single_response = OCSP_resp_get0(basic_response, 0);
+if (!single_response)
+  {
+  DEBUG(D_tls)
+    debug_printf("Unable to get first response from OCSP basic response.\n");
+  return;
+  }
+
+status = OCSP_single_get0_status(single_response, &reason, &rev, &thisupd, &nextupd);
+/* how does this status differ from the one above? */
+if (status != OCSP_RESPONSE_STATUS_SUCCESSFUL)
+  {
+  DEBUG(D_tls) debug_printf("OCSP response not valid (take 2): %s (%d)\n",
+      OCSP_response_status_str(status), status);
+  return;
+  }
+
+if (!OCSP_check_validity(thisupd, nextupd, EXIM_OCSP_SKEW_SECONDS, EXIM_OCSP_MAX_AGE))
+  {
+  DEBUG(D_tls) debug_printf("OCSP status invalid times.\n");
+  return;
+  }
+
+cbinfo->ocsp_response = resp;
+}
+#endif
+
+
+
+
 /*************************************************
 *        Expand key and cert file specs          *
 *************************************************/
@@ -314,7 +458,7 @@ Returns:          OK/DEFER/FAIL
 */
 
 static int
-tls_expand_session_files(SSL_CTX *sctx, const tls_ext_ctx_cb *cbinfo)
+tls_expand_session_files(SSL_CTX *sctx, tls_ext_ctx_cb *cbinfo)
 {
 uschar *expanded;
 
@@ -352,6 +496,27 @@ if (expanded != NULL && *expanded != 0)
       "SSL_CTX_use_PrivateKey_file file=%s", expanded), cbinfo->host, NULL);
   }
 
+#ifdef EXPERIMENTAL_OCSP
+if (cbinfo->ocsp_file != NULL)
+  {
+  if (!expand_check(cbinfo->ocsp_file, US"tls_ocsp_file", &expanded))
+    return DEFER;
+
+  if (expanded != NULL && *expanded != 0)
+    {
+    DEBUG(D_tls) debug_printf("tls_ocsp_file %s\n", expanded);
+    if (cbinfo->ocsp_file_expanded &&
+        (Ustrcmp(expanded, cbinfo->ocsp_file_expanded) == 0))
+      {
+      DEBUG(D_tls)
+        debug_printf("tls_ocsp_file value unchanged, using existing values.\n");
+      } else {
+        ocsp_load_response(sctx, cbinfo, expanded);
+      }
+    }
+  }
+#endif
+
 return OK;
 }
 
@@ -376,14 +541,10 @@ Returns:          SSL_TLSEXT_ERR_{OK,ALERT_WARNING,ALERT_FATAL,NOACK}
 */
 
 static int
-tls_servername_cb(SSL *s, int *ad ARG_UNUSED, void *arg);
-/* pre-declared for SSL_CTX_set_tlsext_servername_callback call within func */
-
-static int
 tls_servername_cb(SSL *s, int *ad ARG_UNUSED, void *arg)
 {
 const char *servername = SSL_get_servername(s, TLSEXT_NAMETYPE_host_name);
-const tls_ext_ctx_cb *cbinfo = (tls_ext_ctx_cb *) arg;
+tls_ext_ctx_cb *cbinfo = (tls_ext_ctx_cb *) arg;
 int rc;
 int old_pool = store_pool;
 
@@ -424,11 +585,20 @@ SSL_CTX_set_tlsext_servername_callback(ctx_sni, tls_servername_cb);
 SSL_CTX_set_tlsext_servername_arg(ctx_sni, cbinfo);
 if (cbinfo->server_cipher_list)
   SSL_CTX_set_cipher_list(ctx_sni, CS cbinfo->server_cipher_list);
-
-rc = tls_expand_session_files(ctx_sni, cbinfo);
-if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
+#ifdef EXPERIMENTAL_OCSP
+if (cbinfo->ocsp_file)
+  {
+  SSL_CTX_set_tlsext_status_cb(ctx_sni, tls_stapling_cb);
+  SSL_CTX_set_tlsext_status_arg(ctx, cbinfo);
+  }
+#endif
 
 rc = setup_certs(ctx_sni, tls_verify_certificates, tls_crl, NULL, FALSE);
+if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
+
+/* do this after setup_certs, because this can require the certs for verifying
+OCSP information. */
+rc = tls_expand_session_files(ctx_sni, cbinfo);
 if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 
 DEBUG(D_tls) debug_printf("Switching SSL context.\n");
@@ -436,6 +606,45 @@ SSL_set_SSL_CTX(s, ctx_sni);
 
 return SSL_TLSEXT_ERR_OK;
 }
+
+
+
+
+#ifdef EXPERIMENTAL_OCSP
+/*************************************************
+*        Callback to handle OCSP Stapling        *
+*************************************************/
+
+/* Called when acting as server during the TLS session setup if the client
+requests OCSP information with a Certificate Status Request.
+
+Documentation via openssl s_server.c and the Apache patch from the OpenSSL
+project.
+
+*/
+
+static int
+tls_stapling_cb(SSL *s, void *arg)
+{
+const tls_ext_ctx_cb *cbinfo = (tls_ext_ctx_cb *) arg;
+uschar *response_der;
+int response_der_len;
+
+DEBUG(D_tls) debug_printf("Received TLS status request (OCSP stapling); %s response.\n",
+    cbinfo->ocsp_response ? "have" : "lack");
+if (!cbinfo->ocsp_response)
+  return SSL_TLSEXT_ERR_NOACK;
+
+response_der = NULL;
+response_der_len = i2d_OCSP_RESPONSE(cbinfo->ocsp_response, &response_der);
+if (response_der_len <= 0)
+  return SSL_TLSEXT_ERR_NOACK;
+
+SSL_set_tlsext_status_ocsp_resp(ssl, response_der, response_der_len);
+return SSL_TLSEXT_ERR_OK;
+}
+
+#endif /* EXPERIMENTAL_OCSP */
 
 
 
@@ -459,7 +668,11 @@ Returns:          OK/DEFER/FAIL
 
 static int
 tls_init(host_item *host, uschar *dhparam, uschar *certificate,
-  uschar *privatekey, address_item *addr)
+  uschar *privatekey,
+#ifdef EXPERIMENTAL_OCSP
+  uschar *ocsp_file,
+#endif
+  address_item *addr)
 {
 long init_options;
 int rc;
@@ -469,6 +682,9 @@ tls_ext_ctx_cb *cbinfo;
 cbinfo = store_malloc(sizeof(tls_ext_ctx_cb));
 cbinfo->certificate = certificate;
 cbinfo->privatekey = privatekey;
+#ifdef EXPERIMENTAL_OCSP
+cbinfo->ocsp_file = ocsp_file;
+#endif
 cbinfo->dhparam = dhparam;
 cbinfo->host = host;
 
@@ -546,7 +762,7 @@ else
 
 if (!init_dh(dhparam, host)) return DEFER;
 
-/* Set up certificate and key */
+/* Set up certificate and key (and perhaps OCSP info) */
 
 rc = tls_expand_session_files(ctx, cbinfo);
 if (rc != OK) return rc;
@@ -555,6 +771,17 @@ if (rc != OK) return rc;
 #if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
 if (host == NULL)
   {
+#ifdef EXPERIMENTAL_OCSP
+  /* We check ocsp_file, not ocsp_response, because we care about if
+  the option exists, not what the current expansion might be, as SNI might
+  change the certificate and OCSP file in use between now and the time the
+  callback is invoked. */
+  if (cbinfo->ocsp_file)
+    {
+    SSL_CTX_set_tlsext_status_cb(ctx, tls_stapling_cb);
+    SSL_CTX_set_tlsext_status_arg(ctx, cbinfo);
+    }
+#endif
   /* We always do this, so that $tls_sni is available even if not used in
   tls_certificate */
   SSL_CTX_set_tlsext_servername_callback(ctx, tls_servername_cb);
@@ -811,7 +1038,11 @@ if (tls_active >= 0)
 /* Initialize the SSL library. If it fails, it will already have logged
 the error. */
 
-rc = tls_init(NULL, tls_dhparam, tls_certificate, tls_privatekey, NULL);
+rc = tls_init(NULL, tls_dhparam, tls_certificate, tls_privatekey,
+#ifdef EXPERIMENTAL_OCSP
+    tls_ocsp_file,
+#endif
+    NULL);
 if (rc != OK) return rc;
 cbinfo = static_cbinfo;
 
@@ -978,7 +1209,11 @@ uschar *expciphers;
 X509* server_cert;
 int rc;
 
-rc = tls_init(host, dhparam, certificate, privatekey, addr);
+rc = tls_init(host, dhparam, certificate, privatekey,
+#ifdef EXPERIMENTAL_OCSP
+    NULL,
+#endif
+    addr);
 if (rc != OK) return rc;
 
 tls_certificate_verified = FALSE;

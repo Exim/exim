@@ -62,6 +62,14 @@ Version 4.78
     Those who disagree, or know that they are talking to mail servers that,
     even today, are not 8-bit clean, need to turn off this option.
 
+ 9. With OpenSSL, if built with EXPERIMENTAL_OCSP, a new option tls_ocsp_file
+    is now available.  If the contents of the file are valid, then Exim will
+    send that back in response to a TLS status request; this is OCSP Stapling.
+    Exim will not maintain the contents of the file in any way: administrators
+    are responsible for ensuring that it is up-to-date.
+
+    See "experimental-spec.txt" for more details.
+
 
 Version 4.77
 ------------
