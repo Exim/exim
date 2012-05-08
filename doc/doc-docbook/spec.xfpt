@@ -3386,6 +3386,23 @@ This option acts like &%-bv%&, but verifies the address as a sender rather
 than a recipient address. This affects any rewriting and qualification that
 might happen.
 
+.vitem &%-bw%&
+.oindex "&%-bw%&"
+.cindex "daemon"
+.cindex "inetd"
+.cindex "inetd" "wait mode"
+This option runs Exim as a daemon, awaiting incoming SMTP connections,
+similarly to the &%-bd%& option.  All port specifications on the command-line
+and in the configuration file are ignored.  Queue-running may not be specified.
+
+In this mode, Exim expects to be passed a socket as fd 0 (stdin) which is
+listening for connections.  This permits the system to start up and have
+inetd (or equivalent) listen on the SMTP ports, starting an Exim daemon for
+each port only when the first connection is received.
+
+If the option is given as &%-bw%&<&'time'&> then the time is a timeout, after
+which the daemon will exit, which should cause inetd to listen once more.
+
 .vitem &%-C%&&~<&'filelist'&>
 .oindex "&%-C%&"
 .cindex "configuration file" "alternate"

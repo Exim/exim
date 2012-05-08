@@ -62,6 +62,12 @@ Version 4.78
     Those who disagree, or know that they are talking to mail servers that,
     even today, are not 8-bit clean, need to turn off this option.
 
+ 9. Exim can now be started with -bw (with an optional timeout, given as
+    -bw<timespec>).  With this, stdin at startup is a socket that is
+    already listening for connections.  This has a more modern name of
+    "socket activation", but forcing the activated socket to fd 0.  We're
+    interested in adding more support for modern variants.
+
 
 Version 4.77
 ------------
