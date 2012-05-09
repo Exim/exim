@@ -895,7 +895,7 @@ outblock.authenticating = FALSE;
 tls_bits = 0;
 tls_cipher = NULL;
 tls_peerdn = NULL;
-#ifndef USE_GNUTLS
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
 tls_sni = NULL;
 #endif
 
