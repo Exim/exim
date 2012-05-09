@@ -913,11 +913,66 @@ struct passwd *pw;
 int *listen_sockets = NULL;
 int listen_socket_count = 0;
 ip_address_item *addresses = NULL;
+time_t last_connection_time = (time_t)0;
 
 /* If any debugging options are set, turn on the D_pid bit so that all
 debugging lines get the pid added. */
 
 DEBUG(D_any|D_v) debug_selector |= D_pid;
+
+if (inetd_wait_mode)
+  {
+  int on = 1;
+
+  listen_socket_count = 1;
+  listen_sockets = store_get(sizeof(int *));
+  (void) close(3);
+  if (dup2(0, 3) == -1)
+    {
+    log_write(0, LOG_MAIN|LOG_PANIC_DIE,
+        "failed to dup inetd socket safely away: %s", strerror(errno));
+    }
+  listen_sockets[0] = 3;
+  (void) close(0);
+  (void) close(1);
+  (void) close(2);
+  exim_nullstd();
+
+  if (debug_file == stderr)
+    {
+    /* need a call to log_write before call to open debug_file, so that
+    log.c:file_path has been initialised.  This is unfortunate. */
+    log_write(0, LOG_MAIN, "debugging Exim in inetd wait mode starting");
+
+    fclose(debug_file);
+    debug_file = NULL;
+    exim_nullstd(); /* re-open fd2 after we just closed it again */
+    debug_logging_activate(US"-wait", NULL);
+    }
+
+  DEBUG(D_any) debug_printf("running in inetd wait mode\n");
+
+  /* As per below, when creating sockets ourselves, we handle tcp_nodelay for
+  our own buffering; we assume though that inetd set the socket REUSEADDR. */
+
+  if (tcp_nodelay) setsockopt(3, IPPROTO_TCP, TCP_NODELAY,
+    (uschar *)(&on), sizeof(on));
+  }
+
+
+if (inetd_wait_mode || daemon_listen)
+  {
+  /* If any option requiring a load average to be available during the
+  reception of a message is set, call os_getloadavg() while we are root
+  for those OS for which this is necessary the first time it is called (in
+  order to perform an "open" on the kernel memory file). */
+
+  #ifdef LOAD_AVG_NEEDS_ROOT
+  if (queue_only_load >= 0 || smtp_load_reserve >= 0 ||
+       (deliver_queue_load_max >= 0 && deliver_drop_privilege))
+    (void)os_getloadavg();
+  #endif
+  }
 
 
 /* Do the preparation for setting up a listener on one or more interfaces, and
@@ -987,7 +1042,7 @@ The preparation code decodes options and sets up the relevant data. We do this
 first, so that we can return non-zero if there are any syntax errors, and also
 write to stderr. */
 
-if (daemon_listen)
+else if (daemon_listen)
   {
   int *default_smtp_port;
   int sep;
@@ -997,17 +1052,6 @@ if (daemon_listen)
   uschar *local_iface_source = US"local_interfaces";
   ip_address_item *ipa;
   ip_address_item **pipa;
-
-  /* If any option requiring a load average to be available during the
-  reception of a message is set, call os_getloadavg() while we are root
-  for those OS for which this is necessary the first time it is called (in
-  order to perform an "open" on the kernel memory file). */
-
-  #ifdef LOAD_AVG_NEEDS_ROOT
-  if (queue_only_load >= 0 || smtp_load_reserve >= 0 ||
-       (deliver_queue_load_max >= 0 && deliver_drop_privilege))
-    (void)os_getloadavg();
-  #endif
 
   /* If -oX was used, disable the writing of a pid file unless -oP was
   explicitly used to force it. Then scan the string given to -oX. Any items
@@ -1208,6 +1252,11 @@ if (daemon_listen)
     listen_socket_count++;
   listen_sockets = store_get(sizeof(int *) * listen_socket_count);
 
+  } /* daemon_listen but not inetd_wait_mode */
+
+if (daemon_listen)
+  {
+
   /* Do a sanity check on the max connects value just to save us from getting
   a huge amount of store. */
 
@@ -1233,7 +1282,8 @@ if (daemon_listen)
 /* The variable background_daemon is always false when debugging, but
 can also be forced false in order to keep a non-debugging daemon in the
 foreground. If background_daemon is true, close all open file descriptors that
-we know about, but then re-open stdin, stdout, and stderr to /dev/null.
+we know about, but then re-open stdin, stdout, and stderr to /dev/null.  Also
+do this for inetd_wait mode.
 
 This is protection against any called functions (in libraries, or in
 Perl, or whatever) that think they can write to stderr (or stdout). Before this
@@ -1244,7 +1294,7 @@ Then disconnect from the controlling terminal, Most modern Unixes seem to have
 setsid() for getting rid of the controlling terminal. For any OS that doesn't,
 setsid() can be #defined as a no-op, or as something else. */
 
-if (background_daemon)
+if (background_daemon || inetd_wait_mode)
   {
   log_close_all();    /* Just in case anything was logged earlier */
   search_tidyup();    /* Just in case any were used in reading the config. */
@@ -1253,7 +1303,10 @@ if (background_daemon)
   (void)close(2);
   exim_nullstd();     /* Connect stdin/stdout/stderr to /dev/null */
   log_stderr = NULL;  /* So no attempt to copy paniclog output */
+  }
 
+if (background_daemon)
+  {
   /* If the parent process of this one has pid == 1, we are re-initializing the
   daemon as the result of a SIGHUP. In this case, there is no need to do
   anything, because the controlling terminal has long gone. Otherwise, fork, in
@@ -1273,7 +1326,7 @@ if (background_daemon)
 /* We are now in the disconnected, daemon process (unless debugging). Set up
 the listening sockets if required. */
 
-if (daemon_listen)
+if (daemon_listen && !inetd_wait_mode)
   {
   int sk;
   int on = 1;
@@ -1513,7 +1566,25 @@ sigalrm_seen = (queue_interval > 0);
 /* Log the start up of a daemon - at least one of listening or queue running
 must be set up. */
 
-if (daemon_listen)
+if (inetd_wait_mode)
+  {
+  uschar *p = big_buffer;
+
+  if (inetd_wait_timeout >= 0)
+    sprintf(CS p, "terminating after %d seconds", inetd_wait_timeout);
+  else
+    sprintf(CS p, "with no wait timeout");
+
+  log_write(0, LOG_MAIN,
+    "exim %s daemon started: pid=%d, launched with listening socket, %s",
+    version_string, getpid(), big_buffer);
+  set_process_info("daemon: pre-listening socket");
+
+  /* set up the timeout logic */
+  sigalrm_seen = 1;
+  }
+
+else if (daemon_listen)
   {
   int i, j;
   int smtp_ports = 0;
@@ -1631,122 +1702,166 @@ for (;;)
   pid_t pid;
 
   /* This code is placed first in the loop, so that it gets obeyed at the
-  start, before the first wait. This causes the first queue-runner to be
-  started immediately. */
+  start, before the first wait, for the queue-runner case, so that the first
+  one can be started immediately.
+
+  The other option is that we have an inetd wait timeout specified to -bw. */
 
   if (sigalrm_seen)
     {
-    DEBUG(D_any) debug_printf("SIGALRM received\n");
-
-    /* Do a full queue run in a child process, if required, unless we already
-    have enough queue runners on the go. If we are not running as root, a
-    re-exec is required. */
-
-    if (queue_interval > 0 &&
-       (queue_run_max <= 0 || queue_run_count < queue_run_max))
+    if (inetd_wait_timeout > 0)
       {
-      if ((pid = fork()) == 0)
+      time_t resignal_interval = inetd_wait_timeout;
+
+      if (last_connection_time == (time_t)0)
         {
-        int sk;
-
-        DEBUG(D_any) debug_printf("Starting queue-runner: pid %d\n",
-          (int)getpid());
-
-        /* Disable debugging if it's required only for the daemon process. We
-        leave the above message, because it ties up with the "child ended"
-        debugging messages. */
-
-        if (debug_daemon) debug_selector = 0;
-
-        /* Close any open listening sockets in the child */
-
-        for (sk = 0; sk < listen_socket_count; sk++)
-          (void)close(listen_sockets[sk]);
-
-        /* Reset SIGHUP and SIGCHLD in the child in both cases. */
-
-        signal(SIGHUP,  SIG_DFL);
-        signal(SIGCHLD, SIG_DFL);
-
-        /* Re-exec if privilege has been given up, unless deliver_drop_
-        privilege is set. Reset SIGALRM before exec(). */
-
-        if (geteuid() != root_uid && !deliver_drop_privilege)
-          {
-          uschar opt[8];
-          uschar *p = opt;
-          uschar *extra[5];
-          int extracount = 1;
-
-          signal(SIGALRM, SIG_DFL);
-          *p++ = '-';
-          *p++ = 'q';
-          if (queue_2stage) *p++ = 'q';
-          if (queue_run_first_delivery) *p++ = 'i';
-          if (queue_run_force) *p++ = 'f';
-          if (deliver_force_thaw) *p++ = 'f';
-          if (queue_run_local) *p++ = 'l';
-          *p = 0;
-          extra[0] = opt;
-
-          /* If -R or -S were on the original command line, ensure they get
-          passed on. */
-
-          if (deliver_selectstring != NULL)
-            {
-            extra[extracount++] = deliver_selectstring_regex? US"-Rr" : US"-R";
-            extra[extracount++] = deliver_selectstring;
-            }
-
-          if (deliver_selectstring_sender != NULL)
-            {
-            extra[extracount++] = deliver_selectstring_sender_regex?
-              US"-Sr" : US"-S";
-            extra[extracount++] = deliver_selectstring_sender;
-            }
-
-          /* Overlay this process with a new execution. */
-
-          (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, TRUE, extracount,
-            extra[0], extra[1], extra[2], extra[3], extra[4]);
-
-          /* Control never returns here. */
-          }
-
-        /* No need to re-exec; SIGALRM remains set to the default handler */
-
-        queue_run(NULL, NULL, FALSE);
-        _exit(EXIT_SUCCESS);
-        }
-
-      if (pid < 0)
-        {
-        log_write(0, LOG_MAIN|LOG_PANIC, "daemon: fork of queue-runner "
-          "process failed: %s", strerror(errno));
-        log_close_all();
+        DEBUG(D_any)
+          debug_printf("inetd wait timeout expired, but still not seen first message, ignoring\n");
         }
       else
         {
-        int i;
-        for (i = 0; i < queue_run_max; ++i)
+        time_t now = time(NULL);
+        if (now == (time_t)-1)
           {
-          if (queue_pid_slots[i] <= 0)
+          DEBUG(D_any) debug_printf("failed to get time: %s\n", strerror(errno));
+          }
+        else
+          {
+          if ((now - last_connection_time) >= inetd_wait_timeout)
             {
-            queue_pid_slots[i] = pid;
-            queue_run_count++;
-            break;
+            DEBUG(D_any)
+              debug_printf("inetd wait timeout %d expired, ending daemon\n",
+                  inetd_wait_timeout);
+            log_write(0, LOG_MAIN, "exim %s daemon terminating, inetd wait timeout reached.\n",
+                version_string);
+            exit(EXIT_SUCCESS);
+            }
+          else
+            {
+            resignal_interval -= (now - last_connection_time);
             }
           }
-        DEBUG(D_any) debug_printf("%d queue-runner process%s running\n",
-          queue_run_count, (queue_run_count == 1)? "" : "es");
         }
+
+      sigalrm_seen = FALSE;
+      alarm(resignal_interval);
       }
 
-    /* Reset the alarm clock */
+    else
+      {
+      DEBUG(D_any) debug_printf("SIGALRM received\n");
 
-    sigalrm_seen = FALSE;
-    alarm(queue_interval);
-    }
+      /* Do a full queue run in a child process, if required, unless we already
+      have enough queue runners on the go. If we are not running as root, a
+      re-exec is required. */
+
+      if (queue_interval > 0 &&
+         (queue_run_max <= 0 || queue_run_count < queue_run_max))
+        {
+        if ((pid = fork()) == 0)
+          {
+          int sk;
+
+          DEBUG(D_any) debug_printf("Starting queue-runner: pid %d\n",
+            (int)getpid());
+
+          /* Disable debugging if it's required only for the daemon process. We
+          leave the above message, because it ties up with the "child ended"
+          debugging messages. */
+
+          if (debug_daemon) debug_selector = 0;
+
+          /* Close any open listening sockets in the child */
+
+          for (sk = 0; sk < listen_socket_count; sk++)
+            (void)close(listen_sockets[sk]);
+
+          /* Reset SIGHUP and SIGCHLD in the child in both cases. */
+
+          signal(SIGHUP,  SIG_DFL);
+          signal(SIGCHLD, SIG_DFL);
+
+          /* Re-exec if privilege has been given up, unless deliver_drop_
+          privilege is set. Reset SIGALRM before exec(). */
+
+          if (geteuid() != root_uid && !deliver_drop_privilege)
+            {
+            uschar opt[8];
+            uschar *p = opt;
+            uschar *extra[5];
+            int extracount = 1;
+
+            signal(SIGALRM, SIG_DFL);
+            *p++ = '-';
+            *p++ = 'q';
+            if (queue_2stage) *p++ = 'q';
+            if (queue_run_first_delivery) *p++ = 'i';
+            if (queue_run_force) *p++ = 'f';
+            if (deliver_force_thaw) *p++ = 'f';
+            if (queue_run_local) *p++ = 'l';
+            *p = 0;
+            extra[0] = opt;
+
+            /* If -R or -S were on the original command line, ensure they get
+            passed on. */
+
+            if (deliver_selectstring != NULL)
+              {
+              extra[extracount++] = deliver_selectstring_regex? US"-Rr" : US"-R";
+              extra[extracount++] = deliver_selectstring;
+              }
+
+            if (deliver_selectstring_sender != NULL)
+              {
+              extra[extracount++] = deliver_selectstring_sender_regex?
+                US"-Sr" : US"-S";
+              extra[extracount++] = deliver_selectstring_sender;
+              }
+
+            /* Overlay this process with a new execution. */
+
+            (void)child_exec_exim(CEE_EXEC_PANIC, FALSE, NULL, TRUE, extracount,
+              extra[0], extra[1], extra[2], extra[3], extra[4]);
+
+            /* Control never returns here. */
+            }
+
+          /* No need to re-exec; SIGALRM remains set to the default handler */
+
+          queue_run(NULL, NULL, FALSE);
+          _exit(EXIT_SUCCESS);
+          }
+
+        if (pid < 0)
+          {
+          log_write(0, LOG_MAIN|LOG_PANIC, "daemon: fork of queue-runner "
+            "process failed: %s", strerror(errno));
+          log_close_all();
+          }
+        else
+          {
+          int i;
+          for (i = 0; i < queue_run_max; ++i)
+            {
+            if (queue_pid_slots[i] <= 0)
+              {
+              queue_pid_slots[i] = pid;
+              queue_run_count++;
+              break;
+              }
+            }
+          DEBUG(D_any) debug_printf("%d queue-runner process%s running\n",
+            queue_run_count, (queue_run_count == 1)? "" : "es");
+          }
+        }
+
+      /* Reset the alarm clock */
+
+      sigalrm_seen = FALSE;
+      alarm(queue_interval);
+      }
+
+    } /* sigalrm_seen */
 
 
   /* Sleep till a connection happens if listening, and handle the connection if
@@ -1886,8 +2001,12 @@ for (;;)
       /* If select/accept succeeded, deal with the connection. */
 
       if (accept_socket >= 0)
+        {
+        if (inetd_wait_timeout)
+          last_connection_time = time(NULL);
         handle_smtp_call(listen_sockets, listen_socket_count, accept_socket,
           (struct sockaddr *)&accepted);
+        }
       }
     }
 

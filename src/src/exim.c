@@ -2060,6 +2060,24 @@ for (i = 1; i < argc; i++)
       show_whats_supported(stdout);
       }
 
+    /* -bw: inetd wait mode, accept a listening socket as stdin */
+
+    else if (*argrest == 'w')
+      {
+      inetd_wait_mode = TRUE;
+      background_daemon = FALSE;
+      daemon_listen = TRUE;
+      if (*(++argrest) != '\0')
+        {
+        inetd_wait_timeout = readconf_readtime(argrest, 0, FALSE);
+        if (inetd_wait_timeout <= 0)
+          {
+          fprintf(stderr, "exim: bad time value %s: abandoned\n", argv[i]);
+          exit(EXIT_FAILURE);
+          }
+        }
+      }
+
     else badarg = TRUE;
     break;
 
@@ -3220,6 +3238,9 @@ if ((
     ) ||
     (
     daemon_listen && queue_interval == 0
+    ) ||
+    (
+    inetd_wait_mode && queue_interval >= 0
     ) ||
     (
     list_options &&
@@ -4406,7 +4427,7 @@ returns. We leave this till here so that the originator_ fields are available
 for incoming messages via the daemon. The daemon cannot be run in mua_wrapper
 mode. */
 
-if (daemon_listen || queue_interval > 0)
+if (daemon_listen || inetd_wait_mode || queue_interval > 0)
   {
   if (mua_wrapper)
     {

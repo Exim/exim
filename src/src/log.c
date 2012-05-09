@@ -1306,7 +1306,7 @@ misconfiguration.
 
 The first use of this is in ACL logic, "control = debug/tag=foo/opts=+expand"
 which can be combined with conditions, etc, to activate extra logging only
-for certain sources. */
+for certain sources. The second use is inetd wait mode debug preservation. */
 
 void
 debug_logging_activate(uschar *tag_name, uschar *opts)
@@ -1316,7 +1316,7 @@ int fd = -1;
 if (debug_file)
   {
   debug_printf("DEBUGGING ACTIVATED FROM WITHIN CONFIG.\n"
-      "DEBUG: Tag=\"%s\" Opts=\"%s\"\n", tag_name, opts);
+      "DEBUG: Tag=\"%s\" Opts=\"%s\"\n", tag_name, opts ? opts : US"");
   return;
   }
 

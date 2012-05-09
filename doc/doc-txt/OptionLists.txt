@@ -641,6 +641,7 @@ provide compatibility with Sendmail.
 -bV              Verify version number
 -bv              Test recipient address verification
 -bvs             Test sender address verification
+-bw            + Inetd wait mode
 -C             + Use alternate configuration file
 -D             + Define macro for configuration file
 -d             + Turn on debugging output
