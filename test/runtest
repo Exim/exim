@@ -3200,10 +3200,10 @@ foreach $test (@test_list)
 
       for (;;)
         {
-        print "\nshow stdErr, show stdOut, Continue (without file comparison), or Quit? [Q] ";
+        print "\nshow stdErr, show stdOut, Retry, Continue (without file comparison), or Quit? [Q] ";
         $_ = <T>;
         tests_exit(1) if /^q?$/i;
-        last if /^c$/i;
+        last if /^[rc]$/i;
         if (/^e$/i)
           {
           system("$more test-stderr");
@@ -3214,6 +3214,7 @@ foreach $test (@test_list)
           }
         }
 
+      $retry = 1 if /^r$/i;
       $docheck = 0;
       }
 
@@ -3236,10 +3237,10 @@ foreach $test (@test_list)
 
         for (;;)
           {
-          print "\nShow server stdout, Continue, or Quit? [Q] ";
+          print "\nShow server stdout, Retry, Continue, or Quit? [Q] ";
           $_ = <T>;
           tests_exit(1) if /^q?$/i;
-          last if /^c$/i;
+          last if /^[rc]$/i;
 
           if (/^s$/i)
             {
@@ -3249,6 +3250,7 @@ foreach $test (@test_list)
             close(S);
             }
           }
+        $retry = 1 if /^r$/i;
         }
       }
     }
@@ -3258,6 +3260,13 @@ foreach $test (@test_list)
   # The script has finished. Check the all the output that was generated. The
   # function returns 0 if all is well, 1 if we should rerun the test (the files
   # have been updated). It does not return if the user responds Q to a prompt.
+
+  if ($retry)
+    {
+    $retry = '0';
+    print (("#" x 79) . "\n");
+    redo;
+    }
 
   if ($docheck)
     {
