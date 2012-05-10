@@ -1042,7 +1042,7 @@ The preparation code decodes options and sets up the relevant data. We do this
 first, so that we can return non-zero if there are any syntax errors, and also
 write to stderr. */
 
-else if (daemon_listen)
+if (daemon_listen && !inetd_wait_mode)
   {
   int *default_smtp_port;
   int sep;
