@@ -407,13 +407,6 @@ else
 
   if (smtp_out != NULL && !disable_callout_flush) mac_smtp_fflush();
 
-  /* Precompile some regex that are used to recognize parameters in response
-  to an EHLO command, if they aren't already compiled. */
-  #ifdef SUPPORT_TLS
-  if (regex_STARTTLS == NULL) regex_STARTTLS =
-    regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
-  #endif
-
   /* Now make connections to the hosts and do real callouts. The list of hosts
   is passed in as an argument. */
 
@@ -570,11 +563,11 @@ else
         goto SEND_FAILED;
       if (!smtp_read_response(&inblock, responsebuffer, sizeof(responsebuffer), '2', callout))
         {
-        if (errno != 0 || responsebuffer[0] == 0 || lmtp || !esmtp || tls_out.active >= 0)
-  	{
-  	done= FALSE;
-          goto RESPONSE_FAILED;
-  	}
+	if (errno != 0 || responsebuffer[0] == 0 || lmtp || !esmtp || tls_out.active >= 0)
+	  {
+	  done= FALSE;
+	  goto RESPONSE_FAILED;
+	  }
         #ifdef SUPPORT_TLS
         tls_offered = FALSE;
         #endif
@@ -584,9 +577,16 @@ else
 
       /* Set tls_offered if the response to EHLO specifies support for STARTTLS. */
       #ifdef SUPPORT_TLS
-      tls_offered = esmtp && !suppress_tls &&  tls_out.active < 0  &&
-        pcre_exec(regex_STARTTLS, NULL, CS responsebuffer, Ustrlen(responsebuffer), 0,
-          PCRE_EOPT, NULL, 0) >= 0;
+      if (esmtp && !suppress_tls &&  tls_out.active < 0)
+        {
+          if (regex_STARTTLS == NULL) regex_STARTTLS =
+	    regex_must_compile(US"\\n250[\\s\\-]STARTTLS(\\s|\\n|$)", FALSE, TRUE);
+
+          tls_offered = pcre_exec(regex_STARTTLS, NULL, CS responsebuffer,
+			Ustrlen(responsebuffer), 0, PCRE_EOPT, NULL, 0) >= 0;
+	}
+      else
+        tls_offered = FALSE;
       #endif
       }
 
@@ -1711,6 +1711,9 @@ while (addr_new != NULL)
           }
         else
           {
+#ifdef SUPPORT_TLS
+	  deliver_set_expansions(addr);
+#endif
           rc = do_callout(addr, host_list, &tf, callout, callout_overall,
             callout_connect, options, se_mailfrom, pm_mailfrom);
           }
