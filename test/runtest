@@ -21,7 +21,7 @@ use Socket;
 
 # Start by initializing some global variables
 
-$testversion = "4.72 (02-Jun-10)";
+$testversion = "4.78 (08-May-12)";
 
 $cf = "bin/cf -exact";
 $cr = "\r";
@@ -118,6 +118,12 @@ s?\bV6NET:?$parm_ipv6_test_net:?g;
 }
 
 
+##################################################
+#     Any state to be preserved across tests     #
+##################################################
+
+my $TEST_STATE = {};
+
 
 ##################################################
 #        Subroutine to tidy up and exit          #
@@ -139,6 +145,13 @@ my($spool);
 # Search for daemon pid files and kill the daemons. We kill with SIGINT rather
 # than SIGTERM to stop it outputting "Terminated" to the terminal when not in
 # the background.
+
+if (exists $TEST_STATE->{exim_pid})
+  {
+  $pid = $TEST_STATE->{exim_pid};
+  print "Tidyup: killing wait-mode daemon pid=$pid\n";
+  system("sudo kill -SIGINT $pid");
+  }
 
 if (opendir(DIR, "spool"))
   {
@@ -1360,17 +1373,21 @@ system("$cmd");
 #            reference to the subtest number, holding previous value
 #            reference to the expected return code value
 #            reference to where to put the command name (for messages)
+#            auxilliary information returned from a previous run
 #
 # Returns:   0 the commmand was executed inline, no subprocess was run
 #            1 a non-exim command was run and waited for
 #            2 an exim command was run and waited for
 #            3 a command was run and not waited for (daemon, server, exim_lock)
 #            4 EOF was encountered after an initial return code line
+# Optionally alse a second parameter, a hash-ref, with auxilliary information:
+#            exim_pid: pid of a run process
 
 sub run_command{
 my($testno) = $_[0];
 my($subtestref) = $_[1];
 my($commandnameref) = $_[3];
+my($aux_info) = $_[4];
 my($yield) = 1;
 
 if (/^(\d+)\s*$/)                # Handle unusual return code
@@ -1541,11 +1558,19 @@ if (/^gnutls/)
 
 if (/^killdaemon/)
   {
-  $pid = `cat $parm_cwd/spool/exim-daemon.*`;
+  my $return_extra = {};
+  if (exists $aux_info->{exim_pid})
+    {
+    $pid = $aux_info->{exim_pid};
+    $return_extra->{exim_pid} = undef;
+    print ">> killdaemon: recovered pid $pid\n" if $debug;
+    } else {
+    $pid = `cat $parm_cwd/spool/exim-daemon.*`;
+    }
   run_system("sudo /bin/kill -SIGINT $pid");
   close DAEMONCMD;                                   # Waits for process
   run_system("sudo /bin/rm -f spool/exim-daemon.*");
-  return 1;
+  return (1, $return_extra);
   }
 
 
@@ -1816,6 +1841,36 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
     select(undef, undef, undef, 0.3);             # Let the daemon get going
     return 3;                                     # Don't wait
     }
+  elsif ($cmd =~ /\s-DSERVER=wait:(\d+)\s/)
+    {
+    my $listen_port = $1;
+    if ($debug) { printf ">> wait-mode daemon: $cmd\n"; }
+    run_system("sudo mkdir spool/log 2>/dev/null");
+    run_system("sudo chown $parm_eximuser:$parm_eximgroup spool/log");
+
+    my ($s_ip,$s_port) = ('127.0.0.1', $listen_port);
+    my $sin = sockaddr_in($s_port, inet_aton($s_ip))
+        or die "** Failed packing $s_ip:$s_port\n";
+    socket(SOCK, PF_INET, SOCK_STREAM, getprotobyname('tcp'))
+        or die "** Unable to open socket $s_ip:$s_port: $!\n";
+    setsockopt(SOCK, SOL_SOCKET, SO_REUSEADDR, 1)
+        or die "** Unable to setsockopt(SO_REUSEADDR): $!\n";
+    bind(SOCK, $sin)
+        or die "** Unable to bind socket ($s_port): $!\n";
+    listen(SOCK, 5);
+    my $pid = fork();
+    if (not defined $pid) { die "** fork failed: $!\n" }
+    if (not $pid) {
+      close(STDIN);
+      open(STDIN, "<&", SOCK) or die "** dup sock to stdin failed: $!\n";
+      print "[$$]>> ${cmd}-server\n" if ($debug);
+      exec "exec ${cmd}-server";
+      exit(1);
+    }
+    while (<SCRIPT>) { $lineno++; last if /^\*{4}\s*$/; }   # Ignore any input
+    select(undef, undef, undef, 0.3);             # Let the daemon get going
+    return (3, { exim_pid => $pid });             # Don't wait
+    }
   }
 
 
@@ -1916,7 +1971,7 @@ else
 # If the first character of the first argument is '/', the argument is taken
 # as the path to the binary.
 
-$parm_exim = (@ARGV > 0 && $ARGV[0] =~ ?^/?)? shift @ARGV : "";
+$parm_exim = (@ARGV > 0 && $ARGV[0] =~ m?^/?)? shift @ARGV : "";
 print "Exim binary is $parm_exim\n" if $parm_exim ne "";
 
 
@@ -2649,7 +2704,7 @@ system("sudo cp eximdir/exim eximdir/exim_exim;" .
 # Certain of the tests make use of some of Exim's utilities. We do not need
 # to be root to copy these.
 
-($parm_exim_dir) = $parm_exim =~ ?^(.*)/exim?;
+($parm_exim_dir) = $parm_exim =~ m?^(.*)/exim?;
 
 $dbm_build_deleted = 0;
 if (defined $parm_lookups{'dbm'} &&
@@ -3168,10 +3223,30 @@ foreach $test (@test_list)
 
     my($commandname) = "";
     my($expectrc) = 0;
-    my($rc) = run_command($testno, \$subtestno, \$expectrc, \$commandname);
+    my($rc, $run_extra) = run_command($testno, \$subtestno, \$expectrc, \$commandname, $TEST_STATE);
     my($cmdrc) = $?;
 
-    print ">> rc=$rc cmdrc=$cmdrc\n" if $debug;
+    if ($debug) {
+      print ">> rc=$rc cmdrc=$cmdrc\n";
+      if (defined $run_extra) {
+        foreach my $k (keys %$run_extra) {
+          my $v = defined $run_extra->{$k} ? qq!"$run_extra->{$k}"! : '<undef>';
+          print ">>   $k -> $v\n";
+        }
+      }
+    }
+    $run_extra = {} unless defined $run_extra;
+    foreach my $k (keys %$run_extra) {
+      if (exists $TEST_STATE->{$k}) {
+        my $nv = defined $run_extra->{$k} ? qq!"$run_extra->{$k}"! : 'removed';
+        print ">> override of $k; was $TEST_STATE->{$k}, now $nv\n" if $debug;
+      }
+      if (defined $run_extra->{$k}) {
+        $TEST_STATE->{$k} = $run_extra->{$k};
+      } elsif (exists $TEST_STATE->{$k}) {
+        delete $TEST_STATE->{$k};
+      }
+    }
 
     # Hit EOF after an initial return code number
 
@@ -3291,4 +3366,4 @@ tests_exit(-1, "No runnable tests selected") if @test_list == 0;
 tests_exit(0);
 
 # End of runtest script
-# vim: set sw=2 :
+# vim: set sw=2 et :

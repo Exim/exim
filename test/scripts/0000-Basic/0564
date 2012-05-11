@@ -1,0 +1,25 @@
+# testing -bw inetd wait mode
+need_ipv4
+#
+exim -DSERVER=wait:PORT_D -bw
+****
+client 127.0.0.1 PORT_D
+??? 220
+ehlo abcd
+??? 250-
+??? 250-
+??? 250-
+??? 250-
+??? 250
+mail from:<userx@test.ex>\r\nrcpt to:<userx@test.ex>\r\ndata
+??? 250
+??? 250
+??? 354
+This is a test message.
+.
+??? 250
+quit
+??? 221
+****
+sleep 1
+killdaemon
