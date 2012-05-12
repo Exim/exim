@@ -910,7 +910,8 @@ MAX_INTERFACES               system       maximum network interfaces
 MSGLOG_DIRECTORY_MODE        optional*    mode for message log directory
 MV_COMMAND                   system       path to mv command
 NO_SYMLINK                   optional     install doesn't make 'exim" symlink
-PCRE_CFLAGS                  system       compile flags for PCRE library
+PCRE_CONFIG                  system*      use pcre-config for PCRE support
+PCRE_LIBS                    system*      library for using PCRE
 PERL_CC                      system*      compiler for Perl interface code
 PERL_CCOPTS                  system*      flags for same
 PERL_COMMAND                 system       path to Perl

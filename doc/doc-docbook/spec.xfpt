@@ -1647,6 +1647,7 @@ architecture and operating system for itself, but the defaults can be
 overridden if necessary.
 
 
+.new
 .section "PCRE library" "SECTpcre"
 .cindex "PCRE library"
 Exim no longer has an embedded PCRE library as the vast majority of
@@ -1654,10 +1655,14 @@ modern systems include PCRE as a system library, although you may need
 to install the PCRE or PCRE development package for your operating
 system. If your system has a normal PCRE installation the Exim build
 process will need no further configuration. If the library or the
-headers are in an unusual location you will need to set the PCRE_LIBS
-and INCLUDE directives appropriately. If your operating system has no
+headers are in an unusual location you will need to either set the PCRE_LIBS
+and INCLUDE directives appropriately,
+or set PCRE_CONFIG=yes to use the installed &(pcre-config)& command.
+If your operating system has no
 PCRE support then you will need to obtain and build the current PCRE
 from &url(ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/).
+More information on PCRE is available at &url(http://www.pcre.org/).
+.wen
 
 .section "DBM libraries" "SECTdb"
 .cindex "DBM libraries" "discussion of"

@@ -26,6 +26,9 @@ Version 4.78
     "LOOKUP_LIBS" directly.  Similarly for handling the TLS library support
     without adjusting "TLS_INCLUDE" and "TLS_LIBS".
 
+    In addition, setting PCRE_CONFIG=yes will query the pcre-config tool to
+    find the headers and libraries for PCRE.
+
  4. New expansion variable $tls_bits.
 
  5. New lookup type, "dbmjz".  Key is an Exim list, the elements of which will

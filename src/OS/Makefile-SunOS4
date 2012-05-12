@@ -2,11 +2,6 @@
 
 CFLAGS=-O
 
-# Don't need -DSTRERROR_FROM_ERRLIST in PCRE_CFLAGS, because it is in os.h
-# for SunOS4, which gets included for pcre.
-
-PCRE_CFLAGS=-DUSE_BCOPY
-
 CHOWN_COMMAND=/usr/etc/chown
 HOSTNAME_COMMAND=/usr/bin/hostname
 EXIT_FAILURE=1

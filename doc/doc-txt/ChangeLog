@@ -93,6 +93,9 @@ PP/21 Defaulting "accept_8bitmime" to true, not false.
 
 PP/22 Added -bw for inetd wait mode support.
 
+PP/23 Added PCRE_CONFIG=yes support to Makefile for using pcre-config to
+      locate the relevant includes and libraries.  Made this the default.
+
 
 Exim version 4.77
 -----------------

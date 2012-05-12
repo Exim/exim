@@ -117,7 +117,7 @@ done >> $mft || exit 1
 egrep "^[$st]*(AUTH|LOOKUP)_[A-Z0-9_]*[$st]*=[$st]*" $mft | \
   sed "s/[$st]*=/='/" | \
   sed "s/\$/'/" > $mftt
-egrep "^[$st]*((USE_(OPENSSL|GNUTLS)_PC)|SUPPORT_TLS|USE_GNUTLS)[$st]*=[$st]*" $mft | \
+egrep "^[$st]*((USE_(OPENSSL|GNUTLS)_PC)|SUPPORT_TLS|USE_GNUTLS|PCRE_CONFIG)[$st]*=[$st]*" $mft | \
   sed "s/[$st]*=/='/" | \
   sed "s/\$/'/" >> $mftt
 if test -s $mftt
@@ -171,6 +171,19 @@ then
             echo >&2 "Don't know how to handle pkg-config for $var"
           fi
         fi
+        ;;
+
+      PCRE_CONFIG)
+        case $PCRE_CONFIG in
+          yes|YES|y|Y)
+            cflags=`pcre-config --cflags`
+            libs=`pcre-config --libs`
+            if [ ".$cflags" != "." ]; then
+              echo "INCLUDE += $cflags"
+            fi
+            echo "PCRE_LIBS=$libs"
+            ;;
+        esac
         ;;
 
     esac
