@@ -517,7 +517,7 @@ uid/gid/initgroups settings for the two addresses are going to be the same when
 they are delivered.
 
 Arguments:
-  tp            the transort
+  tp            the transport
   addr1         the first address
   addr2         the second address
 
@@ -544,6 +544,43 @@ if (!tp->gid_set && tp->expand_gid == NULL)
   }
 
 return TRUE;
+}
+
+
+
+
+/*************************************************
+*  Check identity variants on an smtp transport  *
+*************************************************/
+
+/* This host might present as multiple identities to a remote host; for
+instance, different source IP addresses, different HELO data, anything
+which differs as a connection characteristic, not just a per-message
+characteristic.  If it is evaluated per-message (DKIM) then that's fine.
+
+We care about characteristics of the connection as presented to the remote
+host.  TLS parameters of this host (a client cert) are in-scope.
+
+The caller will already have verified that the same actual transport is used
+for both addresses.  We only need to worry about expansion variables.
+
+We delegate this to be set per-transport driver, but only implement it for
+SMTP (at time of writing).
+
+Arguments:
+  tp            the transport
+  addr1         the first address
+  addr2         the second address
+
+Returns:        TRUE or FALSE
+*/
+
+static BOOL
+same_local_identity(transport_instance *tp, address_item *addr1, address_item *addr2)
+{
+if (tp->ti_same_local_identity == NULL)
+  return TRUE;
+return tp->ti_same_local_identity(tp, addr1, addr2);
 }
 
 
@@ -3570,7 +3607,13 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
   entirely different domains. The host list pointers can be NULL in the case
   where the hosts are defined in the transport. There is also a configured
   maximum limit of addresses that can be handled at once (see comments above
-  for how it is computed). */
+  for how it is computed).
+
+  In addition, if the transport is smtp and specifies the interface option,
+  and it's an expanded string, then it must expand to the same value.
+  Similarly for any other connection characteristics.  same_local_identity()
+  will dispatch this to a per-transport-driver check (only defined for SMTP).
+  */
 
   while ((next = *anchor) != NULL && address_count < address_count_max)
     {
@@ -3585,6 +3628,8 @@ for (delivery_count = 0; addr_remote != NULL; delivery_count++)
         same_headers(next->p.extra_headers, addr->p.extra_headers)
         &&
         same_ugid(tp, next, addr)
+        &&
+        same_local_identity(tp, next, addr)
         &&
         (next->p.remove_headers == addr->p.remove_headers ||
           (next->p.remove_headers != NULL &&

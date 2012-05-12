@@ -213,6 +213,9 @@ static uschar *smtp_command;   /* Points to last cmd for error messages */
 static uschar *mail_command;   /* Points to MAIL cmd for error messages */
 static BOOL    update_waiting; /* TRUE to update the "wait" database */
 
+static BOOL smtp_same_local_identity(  /* safety of connection reuse check */
+    struct transport_instance *, struct address_item *, struct address_item *);
+
 
 /*************************************************
 *             Setup entry point                  *
@@ -330,6 +333,13 @@ if (ob->hosts_override && ob->hosts != NULL) tblock->overrides_hosts = TRUE;
 for them, but do not do any lookups at this time. */
 
 host_build_hostlist(&(ob->fallback_hostlist), ob->fallback_hosts, FALSE);
+
+/* Set up the verifier that the local identity presented to the remote
+host is the same, to ensure multiple messages delivered down one connection
+have the same connection-level identity. */
+
+if (strcmpic(ob->protocol, US"lmtp") != 0)
+  tblock->ti_same_local_identity = smtp_same_local_identity;
 }
 
 
@@ -2207,6 +2217,100 @@ for (addr = addrlist; addr != NULL; addr = addr->next)
   }
 return first_addr;
 }
+
+
+
+
+/*************************************************
+*   Check identity variants at connection level  *
+*************************************************/
+
+/* When do_remote_deliveries() is determining which messages to send over one
+connection, it's not enough to check per-address characteristics.  Attributes
+of the transport might evaluate differently (eg, "interface"); some are fine,
+they vary per-message and the connection doesn't matter (eg, DKIM signing
+identity).  But anything which affects the identity of the connection, as
+perceived by the remote host, is in scope.
+
+This check checks various connection-level options to see if they vary
+per-message.
+
+Returns:    TRUE if the transport presents the same identity
+            FALSE if the messages should be sent down different connections
+*/
+
+static BOOL
+smtp_same_local_identity(
+    struct transport_instance *tblock,
+    struct address_item *addr1,
+    struct address_item *addr2)
+{
+smtp_transport_options_block *ob =
+  (smtp_transport_options_block *)(tblock->options_block);
+uschar *if1, *if2, *helo1, *helo2;
+BOOL need_interface_check = FALSE;
+BOOL need_helo_check = FALSE;
+#ifdef SUPPORT_TLS
+uschar *tlsc1, *tlsc2;
+BOOL need_cert_check = FALSE;
+#endif
+
+if (ob->interface && Ustrchr(ob->interface, '$'))
+  need_interface_check = TRUE;
+if (ob->helo_data && Ustrchr(ob->helo_data, '$'))
+  need_helo_check = TRUE;
+#ifdef SUPPORT_TLS
+if (ob->tls_certificate && Ustrchr(ob->tls_certificate, '$'))
+  need_cert_check = TRUE;
+#endif
+
+if (!(need_interface_check || need_helo_check
+#ifdef SUPPORT_TLS
+      || need_cert_check
+#endif
+      ))
+  return TRUE;
+
+/* silence bogus compiler warnings */
+if1 = if2 = helo1 = helo2 = NULL;
+#ifdef SUPPORT_TLS
+tlsc1 = tlsc2 = NULL;
+#endif
+
+deliver_set_expansions(addr1);
+if (need_interface_check)
+  if1 = expand_string(ob->interface);
+if (need_helo_check)
+  helo1 = expand_string(ob->helo_data);
+#ifdef SUPPORT_TLS
+if (need_cert_check)
+  tlsc1 = expand_string(ob->tls_certificate);
+#endif
+
+deliver_set_expansions(addr2);
+if (need_interface_check)
+  if2 = expand_string(ob->interface);
+if (need_helo_check)
+  helo2 = expand_string(ob->helo_data);
+#ifdef SUPPORT_TLS
+if (need_cert_check)
+  tlsc2 = expand_string(ob->tls_certificate);
+#endif
+
+deliver_set_expansions(NULL);
+
+if (need_interface_check && (Ustrcmp(if1, if2) != 0))
+  return FALSE;
+if (need_helo_check && (Ustrcmp(helo1, helo2) != 0))
+  return FALSE;
+#ifdef SUPPORT_TLS
+if (need_cert_check && (Ustrcmp(tlsc1, tlsc2) != 0))
+  return FALSE;
+#endif
+
+return TRUE;
+}
+
 
 
 

@@ -1224,6 +1224,7 @@ transport_instance  transport_defaults = {
     FALSE,                    /* overrides_hosts */
     100,                      /* max_addresses */
     500,                      /* connection_max_messages */
+    NULL,                     /* ti_same_local_identity */
     FALSE,                    /* deliver_as_creator */
     FALSE,                    /* disable_logging */
     FALSE,                    /* initgroups */

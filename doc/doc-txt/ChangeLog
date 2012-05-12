@@ -93,6 +93,11 @@ PP/21 Defaulting "accept_8bitmime" to true, not false.
 
 PP/22 Added -bw for inetd wait mode support.
 
+PP/23 Safety checks against connection reuse where transport options present
+      a different identity to a remote host for two different messages (in
+      expansion of interface, helo_data, tls_certificate).
+      Bugzilla 1141.
+
 
 Exim version 4.77
 -----------------

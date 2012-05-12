@@ -149,6 +149,10 @@ typedef struct transport_instance {
   BOOL    overrides_hosts;        /* ) Used only for remote transports  */
   int     max_addresses;          /* )                                  */
   int     connection_max_messages;/* )                                  */
+  BOOL (*ti_same_local_identity)( /* ) For seeing if this transport     */
+    struct transport_instance *,  /* ) presents as the same local       */
+    struct address_item *,        /* ) identity when evaluated for both */
+    struct address_item *);       /* ) address items                    */
                                   /**************************************/
   BOOL    deliver_as_creator;     /* Used only by pipe at present */
   BOOL    disable_logging;        /* For very weird requirements */
