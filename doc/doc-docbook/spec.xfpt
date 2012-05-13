@@ -9544,9 +9544,10 @@ decimal, even if they start with a leading zero; hexadecimal numbers are not
 permitted. This can be useful when processing numbers extracted from dates or
 times, which often do have leading zeros.
 
-A number may be followed by &"K"& or &"M"& to multiply it by 1024 or 1024*1024,
+A number may be followed by &"K"&, &"M"& or &"G"& to multiply it by 1024, 1024*1024
+or 1024*1024*1024,
 respectively. Negative numbers are supported. The result of the computation is
-a decimal representation of the answer (without &"K"& or &"M"&). For example:
+a decimal representation of the answer (without &"K"&, &"M"& or &"G"&). For example:
 
 .display
 &`${eval:1+1}            `&  yields 2

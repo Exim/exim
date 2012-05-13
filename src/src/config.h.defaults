@@ -171,4 +171,18 @@ just in case. */
 #define ROOT_UID                      0
 #define ROOT_GID                      0
 
+/* Sizes for integer arithmetic.  Go for 64bit; can be overridden in OS/os.h-FOO */
+#ifndef int_eximarith_t
+ #define int_eximarith_t int64_t
+#endif
+#ifndef PR_EXIM_ARITH
+ #define PR_EXIM_ARITH "%" PRId64		/* C99 standard, printf %lld */
+#endif
+#ifndef SC_EXIM_ARITH
+ #define SC_EXIM_ARITH "%" SCNi64		/* scanf incl. 0x prefix */
+#endif
+#ifndef SC_EXIM_DEC
+ #define SC_EXIM_DEC   "%" SCNd64		/* scanf decimal */
+#endif
+
 /* End of config.h.defaults */

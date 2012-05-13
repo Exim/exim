@@ -332,6 +332,16 @@ while (fgets(buffer, sizeof(buffer), base) != NULL)
 
   while (*p == ' ' || *p == '\t') p++;
 
+  if (strncmp(p, "#ifdef ", 7) == 0
+   || strncmp(p, "#ifndef ", 8) == 0
+   || strncmp(p, "#if ", 4) == 0
+   || strncmp(p, "#endif", 6) == 0
+     )
+    {
+    fputs(buffer, new);
+    continue;
+    }
+
   if (strncmp(p, "#define ", 8) != 0) continue;
 
   p += 8;

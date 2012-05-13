@@ -1781,7 +1781,7 @@ BOOL tempcond, combined_cond;
 BOOL *subcondptr;
 BOOL sub2_honour_dollar = TRUE;
 int i, rc, cond_type, roffset;
-int64_t num[2];
+int_eximarith_t num[2];
 struct stat statbuf;
 uschar name[256];
 uschar *sub[4];
@@ -3069,14 +3069,14 @@ Returns:      on success: the value of the expression, with *error still NULL
               on failure: an undefined value, with *error = a message
 */
 
-static int64_t eval_op_or(uschar **, BOOL, uschar **);
+static int_eximarith_t eval_op_or(uschar **, BOOL, uschar **);
 
 
-static int64_t
+static int_eximarith_t
 eval_expr(uschar **sptr, BOOL decimal, uschar **error, BOOL endket)
 {
 uschar *s = *sptr;
-int64_t x = eval_op_or(&s, decimal, error);
+int_eximarith_t x = eval_op_or(&s, decimal, error);
 if (*error == NULL)
   {
   if (endket)
@@ -3093,21 +3093,26 @@ return x;
 }
 
 
-static int64_t
+static int_eximarith_t
 eval_number(uschar **sptr, BOOL decimal, uschar **error)
 {
 register int c;
-int64_t n;
+int_eximarith_t n;
 uschar *s = *sptr;
 while (isspace(*s)) s++;
 c = *s;
 if (isdigit(c))
   {
   int count;
-  (void)sscanf(CS s, (decimal? "%lld%n" : "%lli%n"), &n, &count);
+  (void)sscanf(CS s, (decimal? SC_EXIM_DEC "%n" : SC_EXIM_ARITH "%n"), &n, &count);
   s += count;
-  if (tolower(*s) == 'k') { n *= 1024; s++; }
-    else if (tolower(*s) == 'm') { n *= 1024*1024; s++; }
+  switch (tolower(*s))
+    {
+    default: break;
+    case 'k': n *= 1024; s++; break;
+    case 'm': n *= 1024*1024; s++; break;
+    case 'g': n *= 1024*1024*1024; s++; break;
+    }
   while (isspace (*s)) s++;
   }
 else if (c == '(')
@@ -3125,11 +3130,11 @@ return n;
 }
 
 
-static int64_t
+static int_eximarith_t
 eval_op_unary(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int64_t x;
+int_eximarith_t x;
 while (isspace(*s)) s++;
 if (*s == '+' || *s == '-' || *s == '~')
   {
@@ -3147,17 +3152,17 @@ return x;
 }
 
 
-static int64_t
+static int_eximarith_t
 eval_op_mult(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int64_t x = eval_op_unary(&s, decimal, error);
+int_eximarith_t x = eval_op_unary(&s, decimal, error);
 if (*error == NULL)
   {
   while (*s == '*' || *s == '/' || *s == '%')
     {
     int op = *s++;
-    int64_t y = eval_op_unary(&s, decimal, error);
+    int_eximarith_t y = eval_op_unary(&s, decimal, error);
     if (*error != NULL) break;
     /* SIGFPE both on div/mod by zero and on INT_MIN / -1, which would give
      * a value of INT_MAX+1. Note that INT_MIN * -1 gives INT_MIN for me, which
@@ -3180,7 +3185,7 @@ if (*error == NULL)
     if (y == -1 && x == LLONG_MIN && op != '*')
       {
       DEBUG(D_expand)
-        debug_printf("Integer exception dodging: %lld%c-1 coerced to %lld\n",
+        debug_printf("Integer exception dodging: " PR_EXIM_ARITH "%c-1 coerced to " PR_EXIM_ARITH "\n",
             LLONG_MIN, op, LLONG_MAX);
       x = LLONG_MAX;
       continue;
@@ -3207,17 +3212,17 @@ return x;
 }
 
 
-static int64_t
+static int_eximarith_t
 eval_op_sum(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int64_t x = eval_op_mult(&s, decimal, error);
+int_eximarith_t x = eval_op_mult(&s, decimal, error);
 if (*error == NULL)
   {
   while (*s == '+' || *s == '-')
     {
     int op = *s++;
-    int64_t y = eval_op_mult(&s, decimal, error);
+    int_eximarith_t y = eval_op_mult(&s, decimal, error);
     if (*error != NULL) break;
     if (op == '+') x += y; else x -= y;
     }
@@ -3227,16 +3232,16 @@ return x;
 }
 
 
-static int64_t
+static int_eximarith_t
 eval_op_shift(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int64_t x = eval_op_sum(&s, decimal, error);
+int_eximarith_t x = eval_op_sum(&s, decimal, error);
 if (*error == NULL)
   {
   while ((*s == '<' || *s == '>') && s[1] == s[0])
     {
-    int64_t y;
+    int_eximarith_t y;
     int op = *s++;
     s++;
     y = eval_op_sum(&s, decimal, error);
@@ -3249,16 +3254,16 @@ return x;
 }
 
 
-static int64_t
+static int_eximarith_t
 eval_op_and(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int64_t x = eval_op_shift(&s, decimal, error);
+int_eximarith_t x = eval_op_shift(&s, decimal, error);
 if (*error == NULL)
   {
   while (*s == '&')
     {
-    int64_t y;
+    int_eximarith_t y;
     s++;
     y = eval_op_shift(&s, decimal, error);
     if (*error != NULL) break;
@@ -3270,16 +3275,16 @@ return x;
 }
 
 
-static int64_t
+static int_eximarith_t
 eval_op_xor(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int64_t x = eval_op_and(&s, decimal, error);
+int_eximarith_t x = eval_op_and(&s, decimal, error);
 if (*error == NULL)
   {
   while (*s == '^')
     {
-    int64_t y;
+    int_eximarith_t y;
     s++;
     y = eval_op_and(&s, decimal, error);
     if (*error != NULL) break;
@@ -3291,16 +3296,16 @@ return x;
 }
 
 
-static int64_t
+static int_eximarith_t
 eval_op_or(uschar **sptr, BOOL decimal, uschar **error)
 {
 uschar *s = *sptr;
-int64_t x = eval_op_xor(&s, decimal, error);
+int_eximarith_t x = eval_op_xor(&s, decimal, error);
 if (*error == NULL)
   {
   while (*s == '|')
     {
-    int64_t y;
+    int_eximarith_t y;
     s++;
     y = eval_op_xor(&s, decimal, error);
     if (*error != NULL) break;
@@ -5700,7 +5705,7 @@ while (*s != 0)
         {
         uschar *save_sub = sub;
         uschar *error = NULL;
-        int64_t n = eval_expr(&sub, (c == EOP_EVAL10), &error, FALSE);
+        int_eximarith_t n = eval_expr(&sub, (c == EOP_EVAL10), &error, FALSE);
         if (error != NULL)
           {
           expand_string_message = string_sprintf("error in expression "
@@ -5708,7 +5713,7 @@ while (*s != 0)
               save_sub);
           goto EXPAND_FAILED;
           }
-        sprintf(CS var_buffer, "%lld", n);
+        sprintf(CS var_buffer, PR_EXIM_ARITH, n);
         yield = string_cat(yield, &size, &ptr, var_buffer, Ustrlen(var_buffer));
         continue;
         }
@@ -5913,7 +5918,7 @@ while (*s != 0)
 
       case EOP_RANDINT:
         {
-        int64_t max;
+        int_eximarith_t max;
         uschar *s;
 
         max = expand_string_integer(sub, TRUE);
@@ -6110,10 +6115,10 @@ Returns:  the integer value, or
           expand_string_message is set NULL for an OK integer
 */
 
-int64_t
+int_eximarith_t
 expand_string_integer(uschar *string, BOOL isplus)
 {
-int64_t value;
+int_eximarith_t value;
 uschar *s = expand_string(string);
 uschar *msg = US"invalid integer \"%s\"";
 uschar *endptr;

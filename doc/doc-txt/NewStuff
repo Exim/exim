@@ -71,6 +71,9 @@ Version 4.78
     "socket activation", but forcing the activated socket to fd 0.  We're
     interested in adding more support for modern variants.
 
+10. ${eval } now uses 64-bit values on supporting platforms.  A new "G" suffux
+    for numbers indicates multiplication by 1024^3.
+
 
 Version 4.77
 ------------
