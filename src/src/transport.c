@@ -919,19 +919,19 @@ if ((options & topt_no_body) == 0)
       }
     }
 
-  /* Finished with the check string */
-
-  nl_check_length = nl_escape_length = 0;
-
   /* A read error on the body will have left len == -1 and errno set. */
 
   if (len != 0) return FALSE;
-
-  /* If requested, add a terminating "." line (SMTP output). */
-
-  if ((options & topt_end_dot) != 0 && !write_chunk(fd, US".\n", 2, use_crlf))
-    return FALSE;
   }
+
+/* Finished with the check string */
+
+nl_check_length = nl_escape_length = 0;
+
+/* If requested, add a terminating "." line (SMTP output). */
+
+if ((options & topt_end_dot) != 0 && !write_chunk(fd, US".\n", 2, use_crlf))
+  return FALSE;
 
 /* Write out any remaining data in the buffer before returning. */
 
