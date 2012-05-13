@@ -13,6 +13,7 @@
 # Placed in the Exim CVS: 06 February 2006                                    #
 ###############################################################################
 
+#use strict;
 require Cwd;
 use Errno;
 use FileHandle;
@@ -1564,12 +1565,20 @@ if (/^killdaemon/)
     $pid = $aux_info->{exim_pid};
     $return_extra->{exim_pid} = undef;
     print ">> killdaemon: recovered pid $pid\n" if $debug;
+    if ($pid)
+      {
+      run_system("sudo /bin/kill -SIGINT $pid");
+      wait;
+      }
     } else {
     $pid = `cat $parm_cwd/spool/exim-daemon.*`;
+    if ($pid)
+      {
+      run_system("sudo /bin/kill -SIGINT $pid");
+      close DAEMONCMD;                                   # Waits for process
+      }
     }
-  run_system("sudo /bin/kill -SIGINT $pid");
-  close DAEMONCMD;                                   # Waits for process
-  run_system("sudo /bin/rm -f spool/exim-daemon.*");
+    run_system("sudo /bin/rm -f spool/exim-daemon.*");
   return (1, $return_extra);
   }
 
@@ -1798,6 +1807,10 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
 
     my($i);
     for ($i = @msglist; $i > 0; $i--) { $args =~ s/\$msg$i/$msglist[$i-1]/g; }
+    if ( $args =~ /\$msg\d/ )
+      {
+      tests_exit(-1, "Not enough messages in spool, for test $testno line $lineno\n");
+      }
     }
 
   # If -d is specified in $optargs, remove it from $args; i.e. let
@@ -1844,6 +1857,7 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
   elsif ($cmd =~ /\s-DSERVER=wait:(\d+)\s/)
     {
     my $listen_port = $1;
+    my $waitmode_sock = new FileHandle;
     if ($debug) { printf ">> wait-mode daemon: $cmd\n"; }
     run_system("sudo mkdir spool/log 2>/dev/null");
     run_system("sudo chown $parm_eximuser:$parm_eximgroup spool/log");
@@ -1851,18 +1865,19 @@ elsif (/^([A-Z_]+=\S+\s+)?(\d+)?\s*(sudo\s+)?exim(_\S+)?\s+(.*)$/)
     my ($s_ip,$s_port) = ('127.0.0.1', $listen_port);
     my $sin = sockaddr_in($s_port, inet_aton($s_ip))
         or die "** Failed packing $s_ip:$s_port\n";
-    socket(SOCK, PF_INET, SOCK_STREAM, getprotobyname('tcp'))
+    socket($waitmode_sock, PF_INET, SOCK_STREAM, getprotobyname('tcp'))
         or die "** Unable to open socket $s_ip:$s_port: $!\n";
-    setsockopt(SOCK, SOL_SOCKET, SO_REUSEADDR, 1)
+    setsockopt($waitmode_sock, SOL_SOCKET, SO_REUSEADDR, 1)
         or die "** Unable to setsockopt(SO_REUSEADDR): $!\n";
-    bind(SOCK, $sin)
+    bind($waitmode_sock, $sin)
         or die "** Unable to bind socket ($s_port): $!\n";
-    listen(SOCK, 5);
+    listen($waitmode_sock, 5);
     my $pid = fork();
     if (not defined $pid) { die "** fork failed: $!\n" }
     if (not $pid) {
       close(STDIN);
-      open(STDIN, "<&", SOCK) or die "** dup sock to stdin failed: $!\n";
+      open(STDIN, "<&", $waitmode_sock) or die "** dup sock to stdin failed: $!\n";
+      close($waitmode_sock);
       print "[$$]>> ${cmd}-server\n" if ($debug);
       exec "exec ${cmd}-server";
       exit(1);
@@ -2234,6 +2249,8 @@ unlink("$parm_cwd/test-config");
 
 if (defined $parm_support{'Content_Scanning'})
   {
+  my $sock = new FileHandle;
+
   if (system("spamc -h 2>/dev/null >/dev/null") == 0)
     {
     print "The spamc command works:\n";
@@ -2250,23 +2267,23 @@ if (defined $parm_support{'Content_Scanning'})
       {
       my $sin = sockaddr_in($sport, inet_aton($sint))
           or die "** Failed packing $sint:$sport\n";
-      socket(SOCK, PF_INET, SOCK_STREAM, getprotobyname('tcp'))
+      socket($sock, PF_INET, SOCK_STREAM, getprotobyname('tcp'))
           or die "** Unable to open socket $sint:$sport\n";
 
       local $SIG{ALRM} =
           sub { die "** Timeout while connecting to socket $sint:$sport\n"; };
       alarm(5);
-      connect(SOCK, $sin)
+      connect($sock, $sin)
           or die "** Unable to connect to socket $sint:$sport\n";
       alarm(0);
 
-      select((select(SOCK), $| = 1)[0]);
-      print SOCK "bad command\r\n";
+      select((select($sock), $| = 1)[0]);
+      print $sock "bad command\r\n";
 
       $SIG{ALRM} =
           sub { die "** Timeout while reading from socket $sint:$sport\n"; };
       alarm(10);
-      my $res = <SOCK>;
+      my $res = <$sock>;
       alarm(0);
 
       $res =~ m|^SPAMD/|
@@ -2377,18 +2394,18 @@ if (defined $parm_support{'Content_Scanning'})
             {
             die "** Unknown socket domain '$socket_domain' (should not happen)\n";
             }
-          socket(SOCK, $socket_domain, SOCK_STREAM, 0) or die "** Unable to open socket '$parm_clamsocket'\n";
+          socket($sock, $socket_domain, SOCK_STREAM, 0) or die "** Unable to open socket '$parm_clamsocket'\n";
           local $SIG{ALRM} = sub { die "** Timeout while connecting to socket '$parm_clamsocket'\n"; };
           alarm(5);
-          connect(SOCK, $socket) or die "** Unable to connect to socket '$parm_clamsocket'\n";
+          connect($sock, $socket) or die "** Unable to connect to socket '$parm_clamsocket'\n";
           alarm(0);
 
-          my $ofh = select SOCK; $| = 1; select $ofh;
-          print SOCK "PING\n";
+          my $ofh = select $sock; $| = 1; select $ofh;
+          print $sock "PING\n";
 
           $SIG{ALRM} = sub { die "** Timeout while reading from socket '$parm_clamsocket'\n"; };
           alarm(10);
-          my $res = <SOCK>;
+          my $res = <$sock>;
           alarm(0);
 
           $res =~ /PONG/ or die "** Did not get PONG from socket '$parm_clamsocket'. It said: $res\n";
