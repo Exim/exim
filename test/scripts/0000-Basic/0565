@@ -1,0 +1,58 @@
+# headers_only in SMTP
+need_ipv4
+server -noipv6 PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Receiver OK
+DATA
+354 Send it
+.
+250 OK (wizzle)
+QUIT
+221 bye
+****
+exim -odf -bs
+mail from:<postmaster@y>
+rcpt to:<x@y>
+data
+From: postmaster@y
+To: x@y
+Subject: first test message
+
+This is the FIRST message body.
+.
+quit
+****
+server -noipv6 PORT_S
+220 ESMTP
+EHLO
+250-OK
+250 HELP
+MAIL FROM:
+250 Sender OK
+RCPT TO:
+250 Receiver OK
+DATA
+354 Send it
+.
+250 OK (wizzle)
+QUIT
+221 bye
+****
+exim -odf -bs
+mail from:<postmaster@y>
+rcpt to:<x@test.ex>
+data
+From: postmaster@y
+To: x@y
+Subject: second test message
+
+This is the SECOND message body.
+.
+quit
+****
