@@ -142,7 +142,7 @@ RUNNING THE TEST SUITE
 
 (2) cd into the exim-testsuite-x.xx directory.
 
-(3) Run "sutoconf" then "./configure" and then "make". This builds a few
+(3) Run "autoconf" then "./configure" and then "make". This builds a few
     auxiliary programs that are written in C.
 
 (4) echo $PWD/test-config >> your_TRUSTED_CONFIG_LIST_filename
