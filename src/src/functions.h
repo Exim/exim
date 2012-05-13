@@ -114,7 +114,7 @@ extern void    exim_wait_tick(struct timeval *, int);
 extern BOOL    expand_check_condition(uschar *, uschar *, uschar *);
 extern uschar *expand_string(uschar *);
 extern uschar *expand_string_copy(uschar *);
-extern int     expand_string_integer(uschar *, BOOL);
+extern int_eximarith_t expand_string_integer(uschar *, BOOL);
 
 extern int     filter_interpret(uschar *, int, address_item **, uschar **);
 extern BOOL    filter_personal(string_item *, BOOL);

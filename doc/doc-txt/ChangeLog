@@ -99,6 +99,9 @@ PP/23 Added PCRE_CONFIG=yes support to Makefile for using pcre-config to
 PP/24 Fixed headers_only on smtp transports (was not sending trailing dot).
       Bugzilla 1246, report and most of solution from Tomasz Kusy.
 
+JH/02 ${eval } now uses 64-bit and supports a "g" suffix (like to "k" and "m").
+      This may cause build issues on older platforms.
+
 
 Exim version 4.77
 -----------------
