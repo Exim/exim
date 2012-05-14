@@ -1,5 +1,5 @@
 +++++++++++++++++++++++++++
   T:jack@myhost.test.ex -46 12800 LMTP error after end of data: 450 Number 2 is now delayed
-first failed = time last try = time2 next try = time2 + 0
+first failed = time last try = time2 next try = time2 + 86400
   T:tom@myhost.test.ex -44 12800 LMTP error after RCPT TO:<tom@myhost.test.ex>: 450 This one is delayed on RCPT
 first failed = time last try = time2 next try = time2 + 60

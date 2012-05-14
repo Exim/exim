@@ -18,6 +18,7 @@ require Cwd;
 use Errno;
 use FileHandle;
 use Socket;
+use Time::Local;
 
 
 # Start by initializing some global variables
@@ -210,14 +211,26 @@ return $newid;
 }
 
 
-# This is used while munging the output from exim_dumpdb. We cheat by assuming
-# that the  date always the same, and just return the number of seconds since
-# midnight.
+# This is used while munging the output from exim_dumpdb.
+# May go wrong across DST changes.
 
 sub date_seconds {
 my($day,$month,$year,$hour,$min,$sec) =
   $_[0] =~ /^(\d\d)-(\w\w\w)-(\d{4})\s(\d\d):(\d\d):(\d\d)/;
-return $hour * 60 * 60 + $min * 60 + $sec;
+my($mon);
+if   ($month =~ /Jan/) {$mon = 0;}
+elsif($month =~ /Feb/) {$mon = 1;}
+elsif($month =~ /Mar/) {$mon = 2;}
+elsif($month =~ /Apr/) {$mon = 3;}
+elsif($month =~ /May/) {$mon = 4;}
+elsif($month =~ /Jun/) {$mon = 5;}
+elsif($month =~ /Jul/) {$mon = 6;}
+elsif($month =~ /Aug/) {$mon = 7;}
+elsif($month =~ /Sep/) {$mon = 8;}
+elsif($month =~ /Oct/) {$mon = 9;}
+elsif($month =~ /Nov/) {$mon = 10;}
+elsif($month =~ /Dec/) {$mon = 11;}
+return timelocal($sec,$min,$hour,$day,$mon,$year);
 }
 
 
