@@ -42,7 +42,8 @@ typedef struct randstuff {
 
 /* Local static variables */
 
-static BOOL verify_callback_called = FALSE;
+static BOOL client_verify_callback_called = FALSE;
+static BOOL server_verify_callback_called = FALSE;
 static const uschar *sid_ctx = US"exim";
 
 static SSL_CTX *client_ctx = NULL;
@@ -57,7 +58,8 @@ static SSL_CTX *server_sni = NULL;
 static char ssl_errstring[256];
 
 static int  ssl_session_timeout = 200;
-static BOOL verify_optional = FALSE;
+static BOOL client_verify_optional = FALSE;
+static BOOL server_verify_optional = FALSE;
 
 static BOOL    reexpand_tls_files_for_sni = FALSE;
 
@@ -84,7 +86,7 @@ tls_ext_ctx_cb *client_static_cbinfo = NULL;
 tls_ext_ctx_cb *server_static_cbinfo = NULL;
 
 static int
-setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional);
+setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional, BOOL client);
 
 /* Callbacks */
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
@@ -200,14 +202,31 @@ setting SSL_VERIFY_FAIL_IF_NO_PEER_CERT in the non-optional case.
 Arguments:
   state      current yes/no state as 1/0
   x509ctx    certificate information.
+  client     TRUE for client startup, FALSE for server startup
 
 Returns:     1 if verified, 0 if not
 */
 
 static int
-verify_callback(int state, X509_STORE_CTX *x509ctx)
+verify_callback(int state, X509_STORE_CTX *x509ctx, BOOL client)
 {
 static uschar txt[256];
+tls_support * tlsp;
+BOOL * calledp;
+BOOL * optionalp;
+
+if (client)
+  {
+  tlsp= &tls_out;
+  calledp= &client_verify_callback_called;
+  optionalp= &client_verify_optional;
+  }
+else
+  {
+  tlsp= &tls_in;
+  calledp= &server_verify_callback_called;
+  optionalp= &server_verify_optional;
+  }
 
 X509_NAME_oneline(X509_get_subject_name(x509ctx->current_cert),
   CS txt, sizeof(txt));
@@ -218,9 +237,9 @@ if (state == 0)
     x509ctx->error_depth,
     X509_verify_cert_error_string(x509ctx->error),
     txt);
-  tls_in.certificate_verified = FALSE;
-  verify_callback_called = TRUE;
-  if (!verify_optional) return 0;    /* reject */
+  tlsp->certificate_verified = FALSE;
+  *calledp = TRUE;
+  if (!*optionalp) return 0;    /* reject */
   DEBUG(D_tls) debug_printf("SSL verify failure overridden (host in "
     "tls_try_verify_hosts)\n");
   return 1;                          /* accept */
@@ -234,14 +253,26 @@ if (x509ctx->error_depth != 0)
 else
   {
   DEBUG(D_tls) debug_printf("SSL%s peer: %s\n",
-    verify_callback_called? "" : " authenticated", txt);
-  tls_in.peerdn = txt;
+    *calledp ? "" : " authenticated", txt);
+  tlsp->peerdn = txt;
   }
 
-if (!verify_callback_called) tls_in.certificate_verified = TRUE;
-verify_callback_called = TRUE;
+if (!*calledp) tlsp->certificate_verified = TRUE;
+*calledp = TRUE;
 
 return 1;   /* accept */
+}
+
+static int
+verify_callback_client(int state, X509_STORE_CTX *x509ctx)
+{
+return verify_callback(state, x509ctx, TRUE);
+}
+
+static int
+verify_callback_server(int state, X509_STORE_CTX *x509ctx)
+{
+return verify_callback(state, x509ctx, FALSE);
 }
 
 
@@ -644,7 +675,7 @@ if (cbinfo->ocsp_file)
   }
 #endif
 
-rc = setup_certs(server_sni, tls_verify_certificates, tls_crl, NULL, FALSE);
+rc = setup_certs(server_sni, tls_verify_certificates, tls_crl, NULL, FALSE, FALSE);
 if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 
 /* do this after setup_certs, because this can require the certs for verifying
@@ -948,12 +979,13 @@ Arguments:
   host          NULL in a server; the remote host in a client
   optional      TRUE if called from a server for a host in tls_try_verify_hosts;
                 otherwise passed as FALSE
+  client        TRUE if called for client startup, FALSE for server startup
 
 Returns:        OK/DEFER/FAIL
 */
 
 static int
-setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional)
+setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional, BOOL client)
 {
 uschar *expcerts, *expcrl;
 
@@ -1052,7 +1084,7 @@ if (expcerts != NULL)
 
   SSL_CTX_set_verify(sctx,
     SSL_VERIFY_PEER | (optional? 0 : SSL_VERIFY_FAIL_IF_NO_PEER_CERT),
-    verify_callback);
+    client ? verify_callback_client : verify_callback_server);
   }
 
 return OK;
@@ -1127,19 +1159,19 @@ if (expciphers != NULL)
 optional, set up appropriately. */
 
 tls_in.certificate_verified = FALSE;
-verify_callback_called = FALSE;
+server_verify_callback_called = FALSE;
 
 if (verify_check_host(&tls_verify_hosts) == OK)
   {
-  rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL, FALSE);
+  rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL, FALSE, FALSE);
   if (rc != OK) return rc;
-  verify_optional = FALSE;
+  server_verify_optional = FALSE;
   }
 else if (verify_check_host(&tls_try_verify_hosts) == OK)
   {
-  rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL, TRUE);
+  rc = setup_certs(server_ctx, tls_verify_certificates, tls_crl, NULL, TRUE, FALSE);
   if (rc != OK) return rc;
-  verify_optional = TRUE;
+  server_verify_optional = TRUE;
   }
 
 /* Prepare for new connection */
@@ -1280,7 +1312,7 @@ rc = tls_init(&client_ctx, host, dhparam, certificate, privatekey,
 if (rc != OK) return rc;
 
 tls_out.certificate_verified = FALSE;
-verify_callback_called = FALSE;
+client_verify_callback_called = FALSE;
 
 if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers))
   return FAIL;
@@ -1298,7 +1330,7 @@ if (expciphers != NULL)
     return tls_error(US"SSL_CTX_set_cipher_list", host, NULL);
   }
 
-rc = setup_certs(client_ctx, verify_certs, crl, host, FALSE);
+rc = setup_certs(client_ctx, verify_certs, crl, host, FALSE, TRUE);
 if (rc != OK) return rc;
 
 if ((client_ssl = SSL_new(client_ctx)) == NULL) return tls_error(US"SSL_new", host, NULL);
