@@ -77,6 +77,10 @@ making unique names. */
 #include <limits.h>
 #endif
 
+/* C99 integer types, figure out how to undo this if needed for older systems */
+
+#include <inttypes.h>
+
 /* Just in case some aged system doesn't define them... */
 
 #ifndef INT_MAX

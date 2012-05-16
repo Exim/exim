@@ -779,11 +779,6 @@ a TLS session.
 
 Arguments:
   require_ciphers   allowed ciphers
-  ------------------------------------------------------
-  require_mac      list of allowed MACs                 ) Not used
-  require_kx       list of allowed key_exchange methods )   for
-  require_proto    list of allowed protocols            ) OpenSSL
-  ------------------------------------------------------
 
 Returns:            OK on success
                     DEFER for errors before the start of the negotiation
@@ -792,8 +787,7 @@ Returns:            OK on success
 */
 
 int
-tls_server_start(uschar *require_ciphers, uschar *require_mac,
-  uschar *require_kx, uschar *require_proto)
+tls_server_start(const uschar *require_ciphers)
 {
 int rc;
 uschar *expciphers;
@@ -819,8 +813,9 @@ if (!expand_check(require_ciphers, US"tls_require_ciphers", &expciphers))
   return FAIL;
 
 /* In OpenSSL, cipher components are separated by hyphens. In GnuTLS, they
-are separated by underscores. So that I can use either form in my tests, and
-also for general convenience, we turn underscores into hyphens here. */
+were historically separated by underscores. So that I can use either form in my
+tests, and also for general convenience, we turn underscores into hyphens here.
+*/
 
 if (expciphers != NULL)
   {
@@ -954,11 +949,6 @@ Argument:
   verify_certs     file for certificate verify
   crl              file containing CRL
   require_ciphers  list of allowed ciphers
-  ------------------------------------------------------
-  require_mac      list of allowed MACs                 ) Not used
-  require_kx       list of allowed key_exchange methods )   for
-  require_proto    list of allowed protocols            ) OpenSSL
-  ------------------------------------------------------
   timeout          startup timeout
 
 Returns:           OK on success
@@ -970,8 +960,7 @@ int
 tls_client_start(int fd, host_item *host, address_item *addr, uschar *dhparam,
   uschar *certificate, uschar *privatekey, uschar *sni,
   uschar *verify_certs, uschar *crl,
-  uschar *require_ciphers, uschar *require_mac, uschar *require_kx,
-  uschar *require_proto, int timeout)
+  uschar *require_ciphers, int timeout)
 {
 static uschar txt[256];
 uschar *expciphers;
@@ -1292,7 +1281,7 @@ fprintf(f, "Library version: OpenSSL: Compile: %s\n"
 
 
 /*************************************************
-*        Pseudo-random number generation         *
+*            Random number generation            *
 *************************************************/
 
 /* Pseudo-random number generation.  The result is not expected to be
@@ -1307,7 +1296,7 @@ Returns     a random number in range [0, max-1]
 */
 
 int
-pseudo_random_number(int max)
+vaguely_random_number(int max)
 {
 unsigned int r;
 int i, needed_len;
@@ -1343,7 +1332,14 @@ if (i < needed_len)
   needed_len = i;
 
 /* We do not care if crypto-strong */
-(void) RAND_pseudo_bytes(smallbuf, needed_len);
+i = RAND_pseudo_bytes(smallbuf, needed_len);
+if (i < 0)
+  {
+  DEBUG(D_all)
+    debug_printf("OpenSSL RAND_pseudo_bytes() not supported by RAND method, using fallback.\n");
+  return vaguely_random_number_fallback(max);
+  }
+
 r = 0;
 for (p = smallbuf; needed_len; --needed_len, ++p)
   {

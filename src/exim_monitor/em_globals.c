@@ -214,7 +214,7 @@ BOOL    timestamps_utc         = FALSE;
 BOOL    tls_certificate_verified = FALSE;
 uschar *tls_cipher             = NULL;
 uschar *tls_peerdn             = NULL;
-#ifndef USE_GNUTLS
+#ifdef SUPPORT_TLS
 uschar *tls_sni                = NULL;
 #endif
 

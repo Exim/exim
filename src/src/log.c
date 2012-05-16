@@ -528,11 +528,11 @@ Returns:
   length actually written, persisting an errno from write()
 */
 ssize_t
-write_to_fd_buf(int fd, uschar *buf, size_t length)
+write_to_fd_buf(int fd, const uschar *buf, size_t length)
 {
 ssize_t wrote;
 size_t total_written = 0;
-uschar *p = buf;
+const uschar *p = buf;
 size_t left = length;
 
 while (1)

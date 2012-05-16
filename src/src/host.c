@@ -68,7 +68,7 @@ sprintf(addr, "%d.%d.%d.%d",
 very good for the uses to which it is put. When running the regression tests,
 start with a fixed seed.
 
-If you need better, see pseudo_random_number() which is potentially stronger,
+If you need better, see vaguely_random_number() which is potentially stronger,
 if a crypto library is available, but might end up just calling this instead.
 
 Arguments:

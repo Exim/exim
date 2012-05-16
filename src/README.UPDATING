@@ -77,6 +77,30 @@ Exim version 4.78
    new option, you can safely force it off before upgrading, to decouple
    configuration changes from the binary upgrade while remaining RFC compliant.
 
+ * The GnuTLS support has been mostly rewritten, to use 2.12.x APIs.  As part
+   of this, these three options are no longer supported:
+
+     gnutls_require_kx
+     gnutls_require_mac
+     gnutls_require_protocols
+
+   Their functionality is entirely subsumed into tls_require_ciphers, which is
+   no longer parsed apart by Exim but is instead given to
+   gnutls_priority_init(3), which is no longer an Exim list.  See:
+
+     http://www.gnu.org/software/gnutls/manual/html_node/Priority-Strings.html
+
+   for fuller documentation of the strings parsed.  The three gnutls_require_*
+   options are still parsed by Exim and, for this release, silently ignored.
+   A future release will add warnings, before a later still release removes
+   parsing entirely and the presence of the options will be a configuration
+   error.
+
+   This rewrite means that Exim will continue to build against GnuTLS in the
+   future, brings Exim closer to other GnuTLS applications and lets us add
+   support for SNI and other features more readily.  We regret that it wasn't
+   feasible to retain the three dropped options.
+
 
 Exim version 4.77
 -----------------

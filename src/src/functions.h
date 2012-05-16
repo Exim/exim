@@ -23,13 +23,13 @@ extern uschar *init_perl(uschar *);
 #ifdef SUPPORT_TLS
 extern int     tls_client_start(int, host_item *, address_item *, uschar *,
                  uschar *, uschar *, uschar *, uschar *, uschar *, uschar *,
-                 uschar *, uschar *, uschar *, int);
+                 int);
 extern void    tls_close(BOOL);
 extern int     tls_feof(void);
 extern int     tls_ferror(void);
 extern int     tls_getc(void);
 extern int     tls_read(uschar *, size_t);
-extern int     tls_server_start(uschar *, uschar *, uschar *, uschar *);
+extern int     tls_server_start(const uschar *);
 extern BOOL    tls_smtp_buffered(void);
 extern int     tls_ungetc(int);
 extern int     tls_write(const uschar *, size_t);
@@ -199,7 +199,10 @@ extern uschar *parse_fix_phrase(uschar *, int, uschar *, int);
 extern uschar *parse_message_id(uschar *, uschar **, uschar **);
 extern uschar *parse_quote_2047(uschar *, int, uschar *, uschar *, int, BOOL);
 extern uschar *parse_date_time(uschar *str, time_t *t);
-extern int     pseudo_random_number(int);
+extern int     vaguely_random_number(int);
+#ifdef SUPPORT_TLS
+extern int     vaguely_random_number_fallback(int);
+#endif
 
 extern BOOL    queue_action(uschar *, int, uschar **, int, int);
 extern void    queue_check_only(void);
@@ -378,5 +381,7 @@ extern void    verify_get_ident(int);
 extern BOOL    verify_sender(int *, uschar **);
 extern BOOL    verify_sender_preliminary(int *, uschar **);
 extern void    version_init(void);
+
+extern ssize_t write_to_fd_buf(int, const uschar *, size_t);
 
 /* End of functions.h */

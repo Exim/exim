@@ -62,6 +62,9 @@ optionlist smtp_transport_options[] = {
   { "gethostbyname",        opt_bool,
       (void *)offsetof(smtp_transport_options_block, gethostbyname) },
 #ifdef SUPPORT_TLS
+  /* These are no longer honoured, as of Exim 4.78; for now, we silently
+  ignore; a later release will warn, and a later-still release will remove
+  these options, so that using them becomes an error. */
   { "gnutls_require_kx",    opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, gnutls_require_kx) },
   { "gnutls_require_mac",   opt_stringptr,
@@ -1133,9 +1136,6 @@ if (tls_offered && !suppress_tls &&
       ob->tls_verify_certificates,
       ob->tls_crl,
       ob->tls_require_ciphers,
-      ob->gnutls_require_mac,
-      ob->gnutls_require_kx,
-      ob->gnutls_require_proto,
       ob->command_timeout);
 
     /* TLS negotiation failed; give an error. From outside, this function may

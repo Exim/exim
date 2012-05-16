@@ -103,6 +103,7 @@ off_t test_off_t = 0;
 time_t test_time_t = 0;
 #if ! (__STDC_VERSION__ >= 199901L)
 size_t test_size_t = 0;
+ssize_t test_ssize_t = 0;
 unsigned long test_ulong_t = 0L;
 #endif
 long test_long_t = 0;
@@ -179,15 +180,22 @@ else
 fprintf(new, "#endif\n\n");
 
 /* And for sizeof() results, size_t, which should with C99 be just %zu, deal
-with C99 not being ubiquitous yet.  Unfortunately. */
+with C99 not being ubiquitous yet.  Unfortunately.  Assume ssize_t is same
+size as size_t on C99; if someone comes up with a version where it's not, fix
+it then. */
 
 #if __STDC_VERSION__ >= 199901L
 fprintf(new, "#define SIZE_T_FMT  \"%%zu\"\n");
+fprintf(new, "#define SSIZE_T_FMT  \"%%zd\"\n");
 #else
 if (sizeof(test_size_t) > sizeof (test_ulong_t))
   fprintf(new, "#define SIZE_T_FMT  \"%%llu\"\n");
 else
   fprintf(new, "#define SIZE_T_FMT  \"%%lu\"\n");
+if (sizeof(test_ssize_t) > sizeof(test_long_t))
+  fprintf(new, "#define SSIZE_T_FMT  \"%%lld\"\n");
+else
+  fprintf(new, "#define SSIZE_T_FMT  \"%%ld\"\n");
 #endif
 
 /* Now search the makefile for certain settings */

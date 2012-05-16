@@ -57,8 +57,6 @@ Version 4.78
     A new log_selector, +tls_sni, has been added, to log received SNI values
     for Exim as a server.
 
-    Currently OpenSSL only.
-
  8. The existing "accept_8bitmime" option now defaults to true.  This means
     that Exim is deliberately not strictly RFC compliant.  We're following
     Dan Bernstein's advice in http://cr.yp.to/smtp/8bitmime.html by default.
@@ -73,6 +71,14 @@ Version 4.78
 
 10. ${eval } now uses 64-bit values on supporting platforms.  A new "G" suffux
     for numbers indicates multiplication by 1024^3.
+
+11. The GnuTLS support has been revamped; the three options gnutls_require_kx,
+    gnutls_require_mac & gnutls_require_protocols are no longer supported.
+    tls_require_ciphers is now parsed by gnutls_priority_init(3) as a priority
+    string, documentation for which is at:
+    http://www.gnu.org/software/gnutls/manual/html_node/Priority-Strings.html
+
+    SNI support has been added to Exim's GnuTLS integration too.
 
 
 Version 4.77

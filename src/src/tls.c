@@ -34,7 +34,7 @@ functions and the common functions below. */
 
 
 static uschar *ssl_xfer_buffer = NULL;
-static int ssl_xfer_buffer_size = 4096;
+static const int ssl_xfer_buffer_size = 4096;
 static int ssl_xfer_buffer_lwm = 0;
 static int ssl_xfer_buffer_hwm = 0;
 static int ssl_xfer_eof = 0;
@@ -59,11 +59,11 @@ Returns:    TRUE if OK; result may still be NULL after forced failure
 */
 
 static BOOL
-expand_check(uschar *s, uschar *name, uschar **result)
+expand_check(const uschar *s, const uschar *name, uschar **result)
 {
 if (s == NULL) *result = NULL; else
   {
-  *result = expand_string(s);
+  *result = expand_string(US s); /* need to clean up const some more */
   if (*result == NULL && !expand_string_forcedfail)
     {
     log_write(0, LOG_MAIN|LOG_PANIC, "expansion of %s failed: %s", name,

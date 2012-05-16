@@ -9766,6 +9766,9 @@ This operator returns a somewhat random number which is less than the
 supplied number and is at least 0.  The quality of this randomness depends
 on how Exim was built; the values are not suitable for keying material.
 If Exim is linked against OpenSSL then RAND_pseudo_bytes() is used.
+.new
+if Exim is linked against GnuTLS then gnutls_rnd(GNUTLS_RND_NONCE) is used.
+.wen
 Otherwise, the implementation may be arc4random(), random() seeded by
 srandomdev() or srandom(), or a custom implementation even weaker than
 random().
@@ -11928,9 +11931,6 @@ used) to the client, based upon the value of the SNI extension.
 The value will be retained for the lifetime of the message.  During outbound
 SMTP deliveries, it reflects the value of the &%tls_sni%& option on
 the transport.
-
-This is currently only available when using OpenSSL, built with support for
-SNI.
 .wen
 
 .vitem &$tod_bsdinbox$&
@@ -12677,9 +12677,6 @@ listed in more than one group.
 
 .section "TLS" "SECID108"
 .table2
-.row &%gnutls_require_kx%&           "control GnuTLS key exchanges"
-.row &%gnutls_require_mac%&          "control GnuTLS MAC algorithms"
-.row &%gnutls_require_protocols%&    "control GnuTLS protocols"
 .row &%gnutls_compat_mode%&          "use GnuTLS compatibility mode"
 .row &%openssl_options%&             "adjust OpenSSL compatibility options"
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
@@ -13691,18 +13688,6 @@ gecos_name = $1
 .option gecos_pattern main string unset
 See &%gecos_name%& above.
 
-
-.option gnutls_require_kx main string unset
-This option controls the key exchange mechanisms when GnuTLS is used in an Exim
-server. For details, see section &<<SECTreqciphgnu>>&.
-
-.option gnutls_require_mac main string unset
-This option controls the MAC algorithms when GnuTLS is used in an Exim
-server. For details, see section &<<SECTreqciphgnu>>&.
-
-.option gnutls_require_protocols main string unset
-This option controls the protocols when GnuTLS is used in an Exim
-server. For details, see section &<<SECTreqciphgnu>>&.
 
 .option gnutls_compat_mode main boolean unset
 This option controls whether GnuTLS is used in compatibility mode in an Exim
@@ -22037,18 +22022,6 @@ being used, names are looked up using &[gethostbyname()]&
 instead of using the DNS. Of course, that function may in fact use the DNS, but
 it may also consult other sources of information such as &_/etc/hosts_&.
 
-.option gnutls_require_kx smtp string unset
-This option controls the key exchange mechanisms when GnuTLS is used in an Exim
-client. For details, see section &<<SECTreqciphgnu>>&.
-
-.option gnutls_require_mac smtp string unset
-This option controls the MAC algorithms when GnuTLS is used in an Exim
-client. For details, see section &<<SECTreqciphgnu>>&.
-
-.option gnutls_require_protocols smtp string unset
-This option controls the protocols when GnuTLS is used in an Exim
-client. For details, see section &<<SECTreqciphgnu>>&.
-
 .option gnutls_compat_mode smtp boolean unset
 This option controls whether GnuTLS is used in compatibility mode in an Exim
 server. This reduces security slightly, but improves interworking with older
@@ -24982,10 +24955,12 @@ implementation, then patches are welcome.
 
 
 .section "GnuTLS parameter computation" "SECID181"
+.new
 GnuTLS uses D-H parameters that may take a substantial amount of time
 to compute. It is unreasonable to re-compute them for every TLS session.
 Therefore, Exim keeps this data in a file in its spool directory, called
-&_gnutls-params_&. The file is owned by the Exim user and is readable only by
+&_gnutls-params-normal_&.
+The file is owned by the Exim user and is readable only by
 its owner. Every Exim process that start up GnuTLS reads the D-H
 parameters from this file. If the file does not exist, the first Exim process
 that needs it computes the data and writes it to a temporary file which is
@@ -25003,8 +24978,8 @@ until enough randomness (entropy) is available. This may cause Exim to hang for
 a substantial amount of time, causing timeouts on incoming connections.
 
 The solution is to generate the parameters externally to Exim. They are stored
-in &_gnutls-params_& in PEM format, which means that they can be generated
-externally using the &(certtool)& command that is part of GnuTLS.
+in &_gnutls-params-normal_& in PEM format, which means that they can be
+generated externally using the &(certtool)& command that is part of GnuTLS.
 
 To replace the parameters with new ones, instead of deleting the file
 and letting Exim re-create it, you can generate new parameters using
@@ -25014,14 +24989,18 @@ renaming. The relevant commands are something like this:
 # rm -f new-params
 # touch new-params
 # chown exim:exim new-params
+# chmod 0600 new-params
+# certtool --generate-dh-params >>new-params
 # chmod 0400 new-params
-# certtool --generate-privkey --bits 512 >new-params
-# echo "" >>new-params
-# certtool --generate-dh-params --bits 1024 >> new-params
-# mv new-params gnutls-params
+# mv new-params gnutls-params-normal
 .endd
 If Exim never has to generate the parameters itself, the possibility of
 stalling is removed.
+
+The filename changed in Exim 4.78, to gain the -normal suffix, corresponding
+to the GnuTLS constant &`GNUTLS_SEC_PARAM_NORMAL`&, defining the number of
+bits to include.  At time of writing, NORMAL corresponds to 2432 bits for D-H.
+.wen
 
 
 .section "Requiring specific ciphers in OpenSSL" "SECTreqciphssl"
@@ -25070,6 +25049,7 @@ not be moved to the end of the list.
 
 
 
+.new
 .section "Requiring specific ciphers or other parameters in GnuTLS" &&&
          "SECTreqciphgnu"
 .cindex "GnuTLS" "specifying parameters for"
@@ -25077,84 +25057,29 @@ not be moved to the end of the list.
 .cindex "TLS" "specifying key exchange methods (GnuTLS)"
 .cindex "TLS" "specifying MAC algorithms (GnuTLS)"
 .cindex "TLS" "specifying protocols (GnuTLS)"
+.cindex "TLS" "specifying priority string (GnuTLS)"
 .oindex "&%tls_require_ciphers%&" "GnuTLS"
-The GnuTLS library allows the caller to specify separate lists of permitted key
-exchange methods, main cipher algorithms, MAC algorithms, and protocols.
-Unfortunately, these lists are numerical, and the library does not have a
-function for turning names into numbers. Consequently, lists of recognized
-names have to be built into the application. The permitted key exchange
-methods, ciphers, and MAC algorithms may be used in any combination to form a
-cipher suite. This is unlike OpenSSL, where complete cipher suite names are
-passed to its control function.
+The GnuTLS library allows the caller to provide a "priority string", documented
+as part of the &[gnutls_priority_init]& function.  This is very similar to the
+ciphersuite specification in OpenSSL.
 
-For compatibility with OpenSSL, the &%tls_require_ciphers%& option can be set
-to complete cipher suite names such as RSA_ARCFOUR_SHA, but for GnuTLS this
-option controls only the cipher algorithms. Exim searches each item in the
-list for the name of an available algorithm. For example, if the list
-contains RSA_AES_SHA, then AES is recognized, and the behaviour is exactly
-the same as if just AES were given.
+The &%tls_require_ciphers%& option is treated as the GnuTLS priority string.
 
-.oindex "&%gnutls_require_kx%&"
-.oindex "&%gnutls_require_mac%&"
-.oindex "&%gnutls_require_protocols%&"
-There are additional options called &%gnutls_require_kx%&,
-&%gnutls_require_mac%&, and &%gnutls_require_protocols%& that can be used to
-restrict the key exchange methods, MAC algorithms, and protocols, respectively.
-These options are ignored if OpenSSL is in use.
+The &%tls_require_ciphers%& option is available both as an global option,
+controlling how Exim behaves as a server, and also as an option of the
+&(smtp)& transport, controlling how Exim behaves as a client.  In both cases
+the value is string expanded.  The resulting string is not an Exim list and
+the string is given to the GnuTLS library, so that Exim does not need to be
+aware of future feature enhancements of GnuTLS.
 
-All four options are available as global options, controlling how Exim
-behaves as a server, and also as options of the &(smtp)& transport, controlling
-how Exim behaves as a client. All the values are string expanded. After
-expansion, the values must be colon-separated lists, though the separator
-can be changed in the usual way.
+Documentation of the strings accepted may be found in the GnuTLS manual, under
+"Priority strings".  This is online as
+&url(http://www.gnu.org/software/gnutls/manual/html_node/Priority-Strings.html).
 
-Each of the four lists starts out with a default set of algorithms. If the
-first item in a list does &'not'& start with an exclamation mark, all the
-default items are deleted. In this case, only those that are explicitly
-specified can be used. If the first item in a list &'does'& start with an
-exclamation mark, the defaults are left on the list.
-
-Then, any item that starts with an exclamation mark causes the relevant
-entry to be removed from the list, and any item that does not start with an
-exclamation mark causes a new entry to be added to the list. Unrecognized
-items in the list are ignored. Thus:
-.code
-tls_require_ciphers = !ARCFOUR
-.endd
-allows all the defaults except ARCFOUR, whereas
-.code
-tls_require_ciphers = AES : 3DES
-.endd
-allows only cipher suites that use AES or 3DES.
-
-For &%tls_require_ciphers%& the recognized names are AES_256, AES_128, AES
-(both of the preceding), 3DES, ARCFOUR_128, ARCFOUR_40, and ARCFOUR (both of
-the preceding). The default list does not contain all of these; it just has
-AES_256, AES_128, 3DES, and ARCFOUR_128.
-
-For &%gnutls_require_kx%&, the recognized names are DHE_RSA, RSA (which
-includes DHE_RSA), DHE_DSS, and DHE (which includes both DHE_RSA and
-DHE_DSS). The default list contains RSA, DHE_DSS, DHE_RSA.
-
-For &%gnutls_require_mac%&, the recognized names are SHA (synonym SHA1), and
-MD5. The default list contains SHA, MD5.
-
-.new
-For &%gnutls_require_protocols%&, the recognized names are TLS1.2, TLS1.1,
-TLS1.0, (TLS1) and SSL3.
-The default list contains TLS1.2, TLS1.1, TLS1.0, SSL3.
-TLS1 is an alias for TLS1.0, for backwards compatibility.
-For sufficiently old versions of the GnuTLS library, TLS1.2 or TLS1.1 might
-not be supported and will not be recognised by Exim.
+Prior to Exim 4.78, an older API of GnuTLS was used, and Exim supported three
+additional options, "&%gnutls_require_kx%&", "&%gnutls_require_mac%&" and
+"&%gnutls_require_protocols%&".  &%tls_require_ciphers%& was an Exim list.
 .wen
-
-In a server, the order of items in these lists is unimportant. The server
-advertises the availability of all the relevant cipher suites. However, in a
-client, the order in the &%tls_require_ciphers%& list specifies a preference
-order for the cipher algorithms. The first one in the client's list that is
-also advertised by the server is tried first. The default order is as listed
-above.
-
 
 
 .section "Configuring an Exim server to use TLS" "SECID182"
@@ -25451,8 +25376,14 @@ arbitrary unverified data provided prior to authentication.
 The Exim developers are proceeding cautiously and so far no other TLS options
 are re-expanded.
 
-Currently SNI support is only available if using OpenSSL, with TLS Extensions
-support enabled therein.
+When Exim is built againt OpenSSL, OpenSSL must have been built with support
+for TLS Extensions.  This holds true for OpenSSL 1.0.0+ and 0.9.8+ with
+enable-tlsext in EXTRACONFIGURE.  If you invoke &(openssl s_client -h)& and
+see &`-servername`& in the output, then OpenSSL has support.
+
+When Exim is built against GnuTLS, SNI support is available as of GnuTLS
+0.5.10.  (Its presence predates the current API which Exim uses, so if Exim
+built, then you have SNI support).
 .wen
 
 

@@ -241,12 +241,12 @@ gecos_name                           string*         unset         main
 gecos_pattern                        string          unset         main
 gethostbyname                        boolean         false         smtp
 gnutls_compat_mode                   boolean         unset         main              4.70
-gnutls_require_kx                    string*         unset         main              4.67
-                                     string*         unset         smtp              4.67
-gnutls_require_mac                   string*         unset         main              4.67
-                                     string*         unset         smtp              4.67
-gnutls_require_protocols             string*         unset         main              4.67
-                                     string*         unset         smtp              4.67
+gnutls_require_kx                    string*         unset         main              4.67 deprecated, warns
+                                     string*         unset         smtp              4.67 deprecated, warns
+gnutls_require_mac                   string*         unset         main              4.67 deprecated, warns
+                                     string*         unset         smtp              4.67 deprecated, warns
+gnutls_require_protocols             string*         unset         main              4.67 deprecated, warns
+                                     string*         unset         smtp              4.67 deprecated, warns
 group                                string          +             routers           4.00
                                                      unset         transports        4.00 replaces local option in some transports
 header_line_maxsize                  integer         0 (unset)     main              4.14

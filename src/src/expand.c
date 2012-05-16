@@ -615,7 +615,7 @@ static var_entry var_table[] = {
   { "tls_certificate_verified", vtype_int,    &tls_certificate_verified },
   { "tls_cipher",          vtype_stringptr,   &tls_cipher },
   { "tls_peerdn",          vtype_stringptr,   &tls_peerdn },
-#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+#ifdef SUPPORT_TLS
   { "tls_sni",             vtype_stringptr,   &tls_sni },
 #endif
   { "tod_bsdinbox",        vtype_todbsdin,    NULL },
@@ -776,6 +776,7 @@ return rc;
 
 
 
+
 /*************************************************
 *        Pseudo-random number generation         *
 *************************************************/
@@ -788,19 +789,23 @@ weirdness they'll twist this into.  The result should ideally handle fork().
 However, if we're stuck unable to provide this, then we'll fall back to
 appallingly bad randomness.
 
-If SUPPORT_TLS is defined and OpenSSL is used, then this will not be used.
-The GNUTLS randomness functions found do not seem amenable to extracting
-random numbers outside of a TLS context.  Any volunteers?
+If SUPPORT_TLS is defined then this will not be used except as an emergency
+fallback.
 
 Arguments:
   max       range maximum
 Returns     a random number in range [0, max-1]
 */
 
-#if !defined(SUPPORT_TLS) || defined(USE_GNUTLS)
+#ifdef SUPPORT_TLS
+# define vaguely_random_number vaguely_random_number_fallback
+#endif
 int
-pseudo_random_number(int max)
+vaguely_random_number(int max)
 {
+#ifdef SUPPORT_TLS
+# undef vaguely_random_number
+#endif
   static pid_t pid = 0;
   pid_t p2;
 #if defined(HAVE_SRANDOM) && !defined(HAVE_SRANDOMDEV)
@@ -843,7 +848,8 @@ pseudo_random_number(int max)
 #endif
 }
 
-#endif
+
+
 
 /*************************************************
 *             Pick out a name from a string      *
@@ -5914,7 +5920,7 @@ while (*s != 0)
         continue;
         }
 
-      /* pseudo-random number less than N */
+      /* vaguely random number less than N */
 
       case EOP_RANDINT:
         {
@@ -5924,7 +5930,7 @@ while (*s != 0)
         max = expand_string_integer(sub, TRUE);
         if (expand_string_message != NULL)
           goto EXPAND_FAILED;
-        s = string_sprintf("%d", pseudo_random_number((int)max));
+        s = string_sprintf("%d", vaguely_random_number((int)max));
         yield = string_cat(yield, &size, &ptr, s, Ustrlen(s));
         continue;
         }

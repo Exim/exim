@@ -841,11 +841,9 @@ if ((log_extra_selector & LX_tls_certificate_verified) != 0 &&
 if ((log_extra_selector & LX_tls_peerdn) != 0 && tls_peerdn != NULL)
   s = string_append(s, &size, &ptr, 3, US" DN=\"",
     string_printing(tls_peerdn), US"\"");
-#ifndef USE_GNUTLS
 if ((log_extra_selector & LX_tls_sni) != 0 && tls_sni != NULL)
   s = string_append(s, &size, &ptr, 3, US" SNI=\"",
     string_printing(tls_sni), US"\"");
-#endif
 #endif
 
 sep = (smtp_connection_had[SMTP_HBUFF_SIZE-1] != SCH_NONE)?
@@ -1676,8 +1674,7 @@ if (!sender_host_unknown)
 
   #ifdef SUPPORT_TLS
   if (tls_on_connect &&
-      tls_server_start(tls_require_ciphers,
-        gnutls_require_mac, gnutls_require_kx, gnutls_require_proto) != OK)
+      tls_server_start(tls_require_ciphers) != OK)
     return FALSE;
   #endif
 
@@ -3893,8 +3890,7 @@ while (done <= 0)
     We must allow for an extra EHLO command and an extra AUTH command after
     STARTTLS that don't add to the nonmail command count. */
 
-    if ((rc = tls_server_start(tls_require_ciphers, gnutls_require_mac,
-           gnutls_require_kx, gnutls_require_proto)) == OK)
+    if ((rc = tls_server_start(tls_require_ciphers)) == OK)
       {
       if (!tls_remember_esmtp)
         helo_seen = esmtp = auth_advertised = pipelining_advertised = FALSE;

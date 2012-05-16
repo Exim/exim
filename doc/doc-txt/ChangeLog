@@ -102,6 +102,11 @@ PP/24 Fixed headers_only on smtp transports (was not sending trailing dot).
 JH/02 ${eval } now uses 64-bit and supports a "g" suffix (like to "k" and "m").
       This may cause build issues on older platforms.
 
+PP/25 Revamped GnuTLS support, passing tls_require_ciphers to
+      gnutls_priority_init, ignoring Exim options gnutls_require_kx,
+      gnutls_require_mac & gnutls_require_protocols (no longer supported).
+      Added SNI support via GnuTLS too.
+
 
 Exim version 4.77
 -----------------

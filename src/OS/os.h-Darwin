@@ -35,4 +35,8 @@ updating Exim to use the newer interface. */
 /* It's not .so for dynamic libraries on Darwin. */
 #define DYNLIB_FN_EXT "dylib"
 
+/* We currently need some assistance getting OFF_T_FMT correct on MacOS */
+#define OFF_T_FMT "%llu"
+#define LONGLONG_T long int
+
 /* End */
