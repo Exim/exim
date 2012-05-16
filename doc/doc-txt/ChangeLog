@@ -107,6 +107,8 @@ PP/25 Revamped GnuTLS support, passing tls_require_ciphers to
       gnutls_require_mac & gnutls_require_protocols (no longer supported).
       Added SNI support via GnuTLS too.
 
+PP/26 Added EXPERIMENTAL_OCSP for OpenSSL.
+
 
 Exim version 4.77
 -----------------

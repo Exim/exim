@@ -94,6 +94,9 @@ extern uschar *tls_certificate;        /* Certificate file */
 extern uschar *tls_channelbinding_b64; /* string of base64 channel binding */
 extern uschar *tls_crl;                /* CRL File */
 extern uschar *tls_dhparam;            /* DH param file */
+#if defined(EXPERIMENTAL_OCSP) && !defined(USE_GNUTLS)
+extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */
+#endif
 extern BOOL    tls_offered;            /* Server offered TLS */
 extern uschar *tls_privatekey;         /* Private key file */
 extern BOOL    tls_remember_esmtp;     /* For YAEB */

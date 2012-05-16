@@ -6,6 +6,65 @@ about experimenatal  features, all  of which  are unstable and
 liable to incompatibile change.
 
 
+OCSP Stapling support
+--------------------------------------------------------------
+
+X509 PKI certificates expire and can be revoked; to handle this, the
+clients need some way to determine if a particular certificate, from a
+particular Certificate Authority (CA), is still valid.  There are three
+main ways to do so.
+
+The simplest way is to serve up a Certificate Revocation List (CRL) with
+an ordinary web-server, regenerating the CRL before it expires.  The
+downside is that clients have to periodically re-download a potentially
+huge file from every certificate authority it knows of.
+
+The way with most moving parts at query time is Online Certificate
+Status Protocol (OCSP), where the client verifies the certificate
+against an OCSP server run by the CA.  This lets the CA track all
+usage of the certs.  This requires running software with access to the
+private key of the CA, to sign the responses to the OCSP queries.  OCSP
+is based on HTTP and can be proxied accordingly.
+
+The only widespread OCSP server implementation (known to this writer)
+comes as part of OpenSSL and aborts on an invalid request, such as
+connecting to the port and then disconnecting.  This requires
+re-entering the passphrase each time some random client does this.
+
+The third way is OCSP Stapling; in this, the server using a certificate
+issued by the CA periodically requests an OCSP proof of validity from
+the OCSP server, then serves it up inline as part of the TLS
+negotiation.   This approach adds no extra round trips, does not let the
+CA track users, scales well with number of certs issued by the CA and is
+resilient to temporary OCSP server failures, as long as the server
+starts retrying to fetch an OCSP proof some time before its current
+proof expires.  The downside is that it requires server support.
+
+If Exim is built with EXPERIMENTAL_OCSP and it was built with OpenSSL,
+then it gains one new option: "tls_ocsp_file".
+
+The file specified therein is expected to be in DER format, and contain
+an OCSP proof.  Exim will serve it as part of the TLS handshake.  This
+option will be re-expanded for SNI, if the tls_certificate option
+contains $tls_sni, as per other TLS options.
+
+Exim does not at this time implement any support for fetching a new OCSP
+proof.  The burden is on the administrator to handle this, outside of
+Exim.  The file specified should be replaced atomically, so that the
+contents are always valid.  Exim will expand the "tls_ocsp_file" option
+on each connection, so a new file will be handled transparently on the
+next connection.
+
+Exim will check for a validity next update timestamp in the OCSP proof;
+if not present, or if the proof has expired, it will be ignored.
+
+At this point in time, we're gathering feedback on use, to determine if
+it's worth adding complexity to the Exim daemon to periodically re-fetch
+OCSP files and somehow handling multiple files.
+
+
+
+
 Brightmail AntiSpam (BMI) suppport
 --------------------------------------------------------------
 

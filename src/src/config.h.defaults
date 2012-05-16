@@ -158,10 +158,11 @@ it's a default value. */
 #define WITH_OLD_CLAMAV_STREAM
 
 /* EXPERIMENTAL features */
-#define EXPERIMENTAL_SPF
-#define EXPERIMENTAL_SRS
 #define EXPERIMENTAL_BRIGHTMAIL
 #define EXPERIMENTAL_DCC
+#define EXPERIMENTAL_OCSP
+#define EXPERIMENTAL_SPF
+#define EXPERIMENTAL_SRS
 
 /* Things that are not routinely changed but are nevertheless configurable
 just in case. */
