@@ -181,6 +181,8 @@ system("sudo /bin/rm -rf ./spool test-* ./dnszones/*")
   if ($rc == 0 && !$save_output);
 
 system("sudo /bin/rm -rf ./eximdir/*");
+
+print "\nYou were in test $test at the end there.\n\n" if defined $test;
 exit $rc if ($rc >= 0);
 die "** runtest error: $_[1]\n";
 }
@@ -466,6 +468,23 @@ RESET_AFTER_EXTRA_LINE_READ:
   # Eximstats heading
   s/Exim\sstatistics\sfrom\s\d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d\sto\s
     \d{4}-\d\d-\d\d\s\d\d:\d\d:\d\d/Exim statistics from <time> to <time>/x;
+
+
+  # ======== TLS certificate algorithms ========
+  # Test machines might have various different TLS library versions supporting
+  # different protocols; can't rely upon TLS 1.2's AES256-GCM-SHA384, so we
+  # treat the standard algorithms the same.
+  # So far, have seen:
+  #   TLSv1:AES256-SHA:256
+  #   TLSv1.2:AES256-GCM-SHA384:256
+  # We also need to handle the ciphersuite without the TLS part present, for
+  # client-ssl's output.  We also see some older forced ciphersuites, but
+  # negotiating TLS 1.2 instead of 1.0.
+  # Mail headers (...), log-lines X=..., client-ssl output ...
+  # (and \b doesn't match between ' ' and '(' )
+
+  s/( (?: (?:\b|\s) [\(=] ) | \s )TLSv1\.2:/$1TLSv1:/xg;
+  s/\bAES256-GCM-SHA384\b/AES256-SHA/g;
 
 
   # ======== Caller's login, uid, gid, home, gecos ========

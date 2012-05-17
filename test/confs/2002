@@ -35,6 +35,7 @@ check_recipient:
   accept  hosts = :
   deny    hosts = HOSTIPV4
          !encrypted = AES256-SHA : \
+                      AES256-GCM-SHA384 : \
                       IDEA-CBC-MD5 : \
                       DES-CBC3-SHA : \
                       DHE_RSA_AES_256_CBC_SHA1 : \
