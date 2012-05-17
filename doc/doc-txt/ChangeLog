@@ -112,6 +112,8 @@ PP/26 Added EXPERIMENTAL_OCSP for OpenSSL.
 
 PP/27 Applied dnsdb SPF support patch from Janne Snabb.
 
+JH/03 Added expansion variable $tod_epoch_l for a higher-precision time.
+
 
 Exim version 4.77
 -----------------

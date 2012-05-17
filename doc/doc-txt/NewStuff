@@ -94,6 +94,7 @@ Version 4.80
 13. ${lookup dnsdb{ }} supports now SPF record types. They are handled
     identically to TXT record lookups.
 
+14. New expansion variable $tod_epoch_l for higher-precision time.
 
 Version 4.77
 ------------

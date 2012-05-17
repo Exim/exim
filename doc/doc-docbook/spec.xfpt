@@ -11948,6 +11948,10 @@ files, for example: Thu Oct 17 17:14:09 1995.
 .vindex "&$tod_epoch$&"
 The time and date as a number of seconds since the start of the Unix epoch.
 
+.vitem &$tod_epoch_l$&
+.vindex "&$tod_epoch_l$&"
+The time and date as a number of microseconds since the start of the Unix epoch.
+
 .vitem &$tod_full$&
 .vindex "&$tod_full$&"
 A full version of the time and date, for example: Wed, 16 Oct 1995 09:51:40
