@@ -160,11 +160,6 @@ before, for now. */
 #define exim_gnutls_err_check(Label) do { \
   if (rc != GNUTLS_E_SUCCESS) { return tls_error((Label), gnutls_strerror(rc), host); } } while (0)
 
-#define exim_gnutls_err_debugreturn0(Label) do { \
-  if (rc != GNUTLS_E_SUCCESS) { \
-    DEBUG(D_tls) debug_printf("TLS failure: %s: %s", (Label), gnutls_strerror(rc)); \
-    return 0; } } while (0)
-
 #define expand_check_tlsvar(Varname) expand_check(state->Varname, US #Varname, &state->exp_##Varname)
 
 #if GNUTLS_VERSION_NUMBER >= 0x020c00
@@ -409,7 +404,7 @@ dh_bits = gnutls_sec_param_to_pk_bits(GNUTLS_PK_DH, GNUTLS_SEC_PARAM_NORMAL);
 if (!dh_bits)
   return tls_error(US"gnutls_sec_param_to_pk_bits() failed", NULL, NULL);
 DEBUG(D_tls)
-  debug_printf("GnuTLS tells us that for D-H PL, NORMAL is %d bits.\n",
+  debug_printf("GnuTLS tells us that for D-H PK, NORMAL is %d bits.\n",
       dh_bits);
 #else
 dh_bits = EXIM_SERVER_DH_BITS_PRE2_12;
@@ -659,12 +654,12 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
     if ((Ustrcmp(state->exp_tls_certificate, saved_tls_certificate) == 0) &&
         (Ustrcmp(state->exp_tls_privatekey, saved_tls_privatekey) == 0))
       {
-      DEBUG(D_tls) debug_printf("cert and key unchanged with SNI.\n");
+      DEBUG(D_tls) debug_printf("TLS SNI: cert and key unchanged\n");
       setit = FALSE;
       }
     else
       {
-      DEBUG(D_tls) debug_printf("SNI changed cert/key pair.\n");
+      DEBUG(D_tls) debug_printf("TLS SNI: have a changed cert/key pair.\n");
       }
     }
 
@@ -676,8 +671,9 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
     exim_gnutls_err_check(
         string_sprintf("cert/key setup: cert=%s key=%s",
           state->exp_tls_certificate, state->exp_tls_privatekey));
+    DEBUG(D_tls) debug_printf("TLS: cert/key registered\n");
     }
-  }
+  } /* tls_certificate */
 
 /* Set the trusted CAs file if one is provided, and then add the CRL if one is
 provided. Experiment shows that, if the certificate file is empty, an unhelpful
@@ -698,15 +694,32 @@ if (state->tls_verify_certificates && *state->tls_verify_certificates)
 
   if (state->received_sni)
     {
-    if (Ustrcmp(state->exp_tls_verify_certificates, saved_tls_verify_certificates) == 0)
-      setit_vc = FALSE;
-    if (Ustrcmp(state->exp_tls_crl, saved_tls_crl) == 0)
-      setit_crl = FALSE;
+    state->exp_tls_verify_certificates, state->exp_tls_verify_certificates,
+    saved_tls_verify_certificates, saved_tls_verify_certificates);
+    if (!(state->exp_tls_verify_certificates || saved_tls_verify_certificates))
+      setit_vc = FALSE; /* never was set */
+    else if (!state->exp_tls_verify_certificates || !saved_tls_verify_certificates)
+      setit_vc = TRUE; /* changed whether set */
+    else if (Ustrcmp(state->exp_tls_verify_certificates, saved_tls_verify_certificates) == 0)
+      setit_vc = FALSE; /* not changed value */
+
+    state->exp_tls_crl, state->exp_tls_crl,
+    saved_tls_crl, saved_tls_crl);
+    if (!(state->exp_tls_crl || saved_tls_crl))
+      setit_crl = FALSE; /* never was set */
+    else if (!state->exp_tls_crl || !saved_tls_crl)
+      setit_crl = TRUE; /* changed whether set */
+    else if (Ustrcmp(state->exp_tls_crl, saved_tls_crl) == 0)
+      setit_crl = FALSE; /* not changed value */
     }
 
   /* nb: early exit; change if add more expansions to this function */
   if (!(setit_vc || setit_crl))
+    {
+    DEBUG(D_tls)
+      debug_printf("TLS SNI: no change to tls_crl or tls_verify_certificates\n");
     return OK;
+    }
 
   if (Ustat(state->exp_tls_verify_certificates, &statbuf) < 0)
     {
@@ -749,6 +762,10 @@ if (state->tls_verify_certificates && *state->tls_verify_certificates)
         }
       DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n", cert_count);
       }
+    else
+      {
+      DEBUG(D_tls) debug_printf("TLS SNI: tls_verify_certificates unchanged\n");
+      }
 
     if (setit_crl && state->tls_crl && *state->tls_crl)
       {
@@ -760,6 +777,8 @@ if (state->tls_verify_certificates && *state->tls_verify_certificates)
         exim_gnutls_err_check(US"gnutls_certificate_set_x509_crl_file");
         }
       }
+    DEBUG(D_tls)
+      if (!setit_crl) debug_printf("TLS SNI: tls_crl unchanged\n");
     } /* statbuf.st_size */
   } /* tls_verify_certificates */
 
@@ -1154,7 +1173,18 @@ unsigned int sni_type;
 int rc, old_pool;
 
 rc = gnutls_server_name_get(session, sni_name, &data_len, &sni_type, 0);
-exim_gnutls_err_debugreturn0("gnutls_server_name_get()");
+if (rc != GNUTLS_E_SUCCESS)
+  {
+  DEBUG(D_tls) {
+    if (rc == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE)
+      debug_printf("TLS: no SNI presented in handshake.\n");
+    else
+      debug_printf("TLS failure: gnutls_server_name_get(): %s [%d]\n",
+        gnutls_strerror(rc), rc);
+  };
+  return 0;
+  }
+
 if (sni_type != GNUTLS_NAME_DNS)
   {
   DEBUG(D_tls) debug_printf("TLS: ignoring SNI of unhandled type %u\n", sni_type);
