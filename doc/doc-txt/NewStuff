@@ -80,6 +80,9 @@ Version 4.78
 
     SNI support has been added to Exim's GnuTLS integration too.
 
+    For sufficiently recent GnuTLS libraries, ${randint:..} will now use
+    gnutls_rnd(), asking for GNUTLS_RND_NONCE level randomness.
+
 12. With OpenSSL, if built with EXPERIMENTAL_OCSP, a new option tls_ocsp_file
     is now available.  If the contents of the file are valid, then Exim will
     send that back in response to a TLS status request; this is OCSP Stapling.

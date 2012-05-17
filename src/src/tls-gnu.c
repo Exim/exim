@@ -141,12 +141,6 @@ static BOOL exim_gnutls_base_init_done = FALSE;
 
 
 /* ------------------------------------------------------------------------ */
-/* Callback declarations */
-
-static void exim_gnutls_logger_cb(int level, const char *message);
-static int exim_sni_handling_cb(gnutls_session_t session);
-
-/* ------------------------------------------------------------------------ */
 /* macros */
 
 #define MAX_HOST_LEN 255
@@ -157,6 +151,11 @@ callbacks. */
 #define EXIM_GNUTLS_LIBRARY_LOG_LEVEL -1
 
 #define EXIM_CLIENT_DH_MIN_BITS 1024
+
+/* With GnuTLS 2.12.x+ we have gnutls_sec_param_to_pk_bits() with which we
+can ask for a bit-strength.  Without that, we stick to the constant we had
+before, for now. */
+#define EXIM_SERVER_DH_BITS_PRE2_12 1024
 
 #define exim_gnutls_err_check(Label) do { \
   if (rc != GNUTLS_E_SUCCESS) { return tls_error((Label), gnutls_strerror(rc), host); } } while (0)
@@ -170,7 +169,24 @@ callbacks. */
 
 #if GNUTLS_VERSION_NUMBER >= 0x020c00
 #define HAVE_GNUTLS_SESSION_CHANNEL_BINDING
+#define HAVE_GNUTLS_SEC_PARAM_CONSTANTS
+#define HAVE_GNUTLS_RND
 #endif
+
+
+
+
+/* ------------------------------------------------------------------------ */
+/* Callback declarations */
+
+#if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
+static void exim_gnutls_logger_cb(int level, const char *message);
+#endif
+
+static int exim_sni_handling_cb(gnutls_session_t session);
+
+
+
 
 /* ------------------------------------------------------------------------ */
 /* Static functions */
@@ -380,21 +396,30 @@ gnutls_datum m;
 uschar filename[PATH_MAX];
 size_t sz;
 host_item *host = NULL; /* dummy for macros */
-const char * const dh_param_fn_ext = "normal"; /* change as dh_bits changes */
 
 DEBUG(D_tls) debug_printf("Initialising GnuTLS server params.\n");
 
 rc = gnutls_dh_params_init(&dh_server_params);
 exim_gnutls_err_check(US"gnutls_dh_params_init");
 
-/* If you change this, also change dh_param_fn_ext so that we can use a
+#ifdef HAVE_GNUTLS_SEC_PARAM_CONSTANTS
+/* If you change this constant, also change dh_param_fn_ext so that we can use a
 different filename and ensure we have sufficient bits. */
 dh_bits = gnutls_sec_param_to_pk_bits(GNUTLS_PK_DH, GNUTLS_SEC_PARAM_NORMAL);
 if (!dh_bits)
   return tls_error(US"gnutls_sec_param_to_pk_bits() failed", NULL, NULL);
+DEBUG(D_tls)
+  debug_printf("GnuTLS tells us that for D-H PL, NORMAL is %d bits.\n",
+      dh_bits);
+#else
+dh_bits = EXIM_SERVER_DH_BITS_PRE2_12;
+DEBUG(D_tls)
+  debug_printf("GnuTLS lacks gnutls_sec_param_to_pk_bits(), using %d bits.\n",
+      dh_bits);
+#endif
 
 if (!string_format(filename, sizeof(filename),
-      "%s/gnutls-params-%s", spool_directory, dh_param_fn_ext))
+      "%s/gnutls-params-%d", spool_directory, dh_bits))
   return tls_error(US"overlong filename", NULL, NULL);
 
 /* Open the cache file for reading and if successful, read it and set up the
@@ -1095,11 +1120,13 @@ return TRUE;
  *   gnutls_global_set_log_function()
  *   gnutls_global_set_log_level() 0..9
  */
+#if EXIM_GNUTLS_LIBRARY_LOG_LEVEL >= 0
 static void
 exim_gnutls_logger_cb(int level, const char *message)
 {
   DEBUG(D_tls) debug_printf("GnuTLS<%d>: %s\n", level, message);
 }
+#endif
 
 
 /* Called after client hello, should handle SNI work.
@@ -1667,6 +1694,7 @@ Arguments:
 Returns     a random number in range [0, max-1]
 */
 
+#ifdef HAVE_GNUTLS_RND
 int
 vaguely_random_number(int max)
 {
@@ -1704,6 +1732,13 @@ for (p = smallbuf; needed_len; --needed_len, ++p)
  * smooth distribution and cares enough then they should submit a patch then. */
 return r % max;
 }
+#else /* HAVE_GNUTLS_RND */
+int
+vaguely_random_number(int max)
+{
+  return vaguely_random_number_fallback(max);
+}
+#endif /* HAVE_GNUTLS_RND */
 
 
 

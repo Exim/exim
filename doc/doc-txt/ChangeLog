@@ -106,6 +106,7 @@ PP/25 Revamped GnuTLS support, passing tls_require_ciphers to
       gnutls_priority_init, ignoring Exim options gnutls_require_kx,
       gnutls_require_mac & gnutls_require_protocols (no longer supported).
       Added SNI support via GnuTLS too.
+      Made ${randint:..} supplier available, if using not-too-old GnuTLS.
 
 PP/26 Added EXPERIMENTAL_OCSP for OpenSSL.
 

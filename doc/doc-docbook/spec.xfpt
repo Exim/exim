@@ -9772,7 +9772,8 @@ supplied number and is at least 0.  The quality of this randomness depends
 on how Exim was built; the values are not suitable for keying material.
 If Exim is linked against OpenSSL then RAND_pseudo_bytes() is used.
 .new
-if Exim is linked against GnuTLS then gnutls_rnd(GNUTLS_RND_NONCE) is used.
+If Exim is linked against GnuTLS then gnutls_rnd(GNUTLS_RND_NONCE) is used,
+for versions of GnuTLS with that function.
 .wen
 Otherwise, the implementation may be arc4random(), random() seeded by
 srandomdev() or srandom(), or a custom implementation even weaker than
@@ -24964,7 +24965,8 @@ implementation, then patches are welcome.
 GnuTLS uses D-H parameters that may take a substantial amount of time
 to compute. It is unreasonable to re-compute them for every TLS session.
 Therefore, Exim keeps this data in a file in its spool directory, called
-&_gnutls-params-normal_&.
+&_gnutls-params-NNNN_& for some value of NNNN, corresponding to the number
+of bits requested.
 The file is owned by the Exim user and is readable only by
 its owner. Every Exim process that start up GnuTLS reads the D-H
 parameters from this file. If the file does not exist, the first Exim process
@@ -24983,7 +24985,7 @@ until enough randomness (entropy) is available. This may cause Exim to hang for
 a substantial amount of time, causing timeouts on incoming connections.
 
 The solution is to generate the parameters externally to Exim. They are stored
-in &_gnutls-params-normal_& in PEM format, which means that they can be
+in &_gnutls-params-N_& in PEM format, which means that they can be
 generated externally using the &(certtool)& command that is part of GnuTLS.
 
 To replace the parameters with new ones, instead of deleting the file
@@ -24991,20 +24993,27 @@ and letting Exim re-create it, you can generate new parameters using
 &(certtool)& and, when this has been done, replace Exim's cache file by
 renaming. The relevant commands are something like this:
 .code
+# ls
+[ look for file; assume gnutls-params-1024 is the most recent ]
 # rm -f new-params
 # touch new-params
 # chown exim:exim new-params
 # chmod 0600 new-params
-# certtool --generate-dh-params >>new-params
+# certtool --generate-dh-params --bits 1024 >>new-params
 # chmod 0400 new-params
-# mv new-params gnutls-params-normal
+# mv new-params gnutls-params-1024
 .endd
 If Exim never has to generate the parameters itself, the possibility of
 stalling is removed.
 
-The filename changed in Exim 4.78, to gain the -normal suffix, corresponding
-to the GnuTLS constant &`GNUTLS_SEC_PARAM_NORMAL`&, defining the number of
-bits to include.  At time of writing, NORMAL corresponds to 2432 bits for D-H.
+The filename changed in Exim 4.78, to gain the -bits suffix.  The value which
+Exim will choose depends upon the version of GnuTLS in use.  For older GnuTLS,
+the value remains hard-coded in Exim as 1024.  As of GnuTLS 2.12.x, there is
+a way for Exim to ask for the "normal" number of bits for D-H public-key usage,
+and Exim does so.  Exim thus removes itself from the policy decision, and the
+filename and bits used change as the GnuTLS maintainers change the value for
+their parameter &`GNUTLS_SEC_PARAM_NORMAL`&.  At the time of writing, this
+gives 2432 bits.
 .wen
 
 
