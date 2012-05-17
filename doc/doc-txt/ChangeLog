@@ -65,6 +65,8 @@ TK/01 Bugzilla 1239 - fix DKIM verification when signature was not inserted
 JH/01 Bugzilla 660 - Multi-valued attributes from ldap now parseable as a
       comma-sep list; embedded commas doubled.
 
+JH/02 Refactored ACL "verify =" logic to table-driven dispatch.
+
 PP/15 LDAP: Check for errors of TLS initialisation, to give correct
       diagnostics.
       Report and patch from Dmitry Banschikov.
@@ -99,7 +101,7 @@ PP/23 Added PCRE_CONFIG=yes support to Makefile for using pcre-config to
 PP/24 Fixed headers_only on smtp transports (was not sending trailing dot).
       Bugzilla 1246, report and most of solution from Tomasz Kusy.
 
-JH/02 ${eval } now uses 64-bit and supports a "g" suffix (like to "k" and "m").
+JH/03 ${eval } now uses 64-bit and supports a "g" suffix (like to "k" and "m").
       This may cause build issues on older platforms.
 
 PP/25 Revamped GnuTLS support, passing tls_require_ciphers to
@@ -112,7 +114,7 @@ PP/26 Added EXPERIMENTAL_OCSP for OpenSSL.
 
 PP/27 Applied dnsdb SPF support patch from Janne Snabb.
 
-JH/03 Added expansion variable $tod_epoch_l for a higher-precision time.
+JH/04 Added expansion variable $tod_epoch_l for a higher-precision time.
 
 
 Exim version 4.77
