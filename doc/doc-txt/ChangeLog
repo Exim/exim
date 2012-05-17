@@ -45,7 +45,7 @@ PP/12 MAIL args handles TAB as well as SP, for better interop with
       non-compliant senders.
       Analysis and variant patch by Todd Lyons.
 
-NM/04 Bugzilla 1237 - fix cases where printf format usage no indicated
+NM/04 Bugzilla 1237 - fix cases where printf format usage not indicated
       Bug report from Lars Müller <lars@samba.org> (via SUSE), 
       Patch from Dirk Mueller <dmueller@suse.com>
 
@@ -108,6 +108,8 @@ PP/25 Revamped GnuTLS support, passing tls_require_ciphers to
       Added SNI support via GnuTLS too.
 
 PP/26 Added EXPERIMENTAL_OCSP for OpenSSL.
+
+PP/27 Applied dnsdb SPF support patch from Janne Snabb.
 
 
 Exim version 4.77

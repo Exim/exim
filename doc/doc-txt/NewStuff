@@ -69,7 +69,7 @@ Version 4.78
     "socket activation", but forcing the activated socket to fd 0.  We're
     interested in adding more support for modern variants.
 
-10. ${eval } now uses 64-bit values on supporting platforms.  A new "G" suffux
+10. ${eval } now uses 64-bit values on supporting platforms.  A new "G" suffix
     for numbers indicates multiplication by 1024^3.
 
 11. The GnuTLS support has been revamped; the three options gnutls_require_kx,
@@ -87,6 +87,9 @@ Version 4.78
     are responsible for ensuring that it is up-to-date.
 
     See "experimental-spec.txt" for more details.
+
+13. ${lookup dnsdb{ }} supports now SPF record types. They are handled
+    identically to TXT record lookups.
 
 
 Version 4.77

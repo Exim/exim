@@ -6756,11 +6756,13 @@ is used on its own as the result. If the lookup does not succeed, the
 &`fail`& keyword causes a &'forced expansion failure'& &-- see section
 &<<SECTforexpfai>>& for an explanation of what this means.
 
-The supported DNS record types are A, CNAME, MX, NS, PTR, SRV, and TXT, and,
-when Exim is compiled with IPv6 support, AAAA (and A6 if that is also
+.new
+The supported DNS record types are A, CNAME, MX, NS, PTR, SPF, SRV, and TXT,
+and, when Exim is compiled with IPv6 support, AAAA (and A6 if that is also
 configured). If no type is given, TXT is assumed. When the type is PTR,
 the data can be an IP address, written as normal; inversion and the addition of
 &%in-addr.arpa%& or &%ip6.arpa%& happens automatically. For example:
+.wen
 .code
 ${lookup dnsdb{ptr=192.168.4.5}{$value}fail}
 .endd
@@ -6786,10 +6788,13 @@ It is permitted to specify a space as the separator character. Further
 white space is ignored.
 
 .cindex "TXT record" "in &(dnsdb)& lookup"
-For TXT records with multiple items of data, only the first item is returned,
+.cindex "SPF record" "in &(dnsdb)& lookup"
+.new
+For TXT and SPF records with multiple items of data, only the first item is returned,
 unless a separator for them is specified using a comma after the separator
-character followed immediately by the TXT record item separator. To concatenate
+character followed immediately by the TXT/SPF record item separator. To concatenate
 items without a separator, use a semicolon instead.
+.wen
 .code
 ${lookup dnsdb{>\n,: txt=a.b.example}}
 ${lookup dnsdb{>\n; txt=a.b.example}}

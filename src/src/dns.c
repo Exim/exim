@@ -415,6 +415,7 @@ switch(t)
   case T_AAAA:  return US"AAAA";
   case T_A6:    return US"A6";
   case T_TXT:   return US"TXT";
+  case T_SPF:   return US"SPF";
   case T_PTR:   return US"PTR";
   case T_SOA:   return US"SOA";
   case T_SRV:   return US"SRV";

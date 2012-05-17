@@ -299,6 +299,12 @@ header files. I don't suppose they have T_SRV either. */
 #define T_SRV 33
 #endif
 
+/* Many systems do not have T_SPF. */
+
+#ifndef T_SPF
+#define T_SPF 99
+#endif
+
 /* It seems that some versions of arpa/nameser.h don't define *any* of the
 T_xxx macros, which seem to be non-standard nowadays. Just to be on the safe
 side, put in definitions for all the ones that Exim uses. */

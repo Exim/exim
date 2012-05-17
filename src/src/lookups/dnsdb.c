@@ -17,6 +17,11 @@ header files. */
 #define T_TXT 16
 #endif
 
+/* Many systems do not have T_SPF. */
+#ifndef T_SPF
+#define T_SPF 99
+#endif
+
 /* Table of recognized DNS record types and their integer values. */
 
 static const char *type_names[] = {
@@ -33,6 +38,7 @@ static const char *type_names[] = {
   "mxh",
   "ns",
   "ptr",
+  "spf",
   "srv",
   "txt",
   "zns"
@@ -52,6 +58,7 @@ static int type_values[] = {
   T_MXH,     /* Private type for "MX hostnames" */
   T_NS,
   T_PTR,
+  T_SPF,
   T_SRV,
   T_TXT,
   T_ZNS      /* Private type for "zone nameservers" */
@@ -316,7 +323,7 @@ while ((domain = string_nextinlist(&keystring, &sep, buffer, sizeof(buffer)))
 
     if (ptr != 0) yield = string_cat(yield, &size, &ptr, outsep, 1);
 
-    if (type == T_TXT)
+    if (type == T_TXT || type == T_SPF)
       {
       if (outsep2 == NULL)
         {
