@@ -361,13 +361,14 @@ return session;
 *                 Main Program                   *
 *************************************************/
 
-/* Usage: client
-          <IP address>
-          <port>
-          [<outgoing interface>]
-          [<cert file>]
-          [<key file>]
-*/
+const char * const HELP_MESSAGE = "\n\
+Usage: client\n\
+          <IP address>\n\
+          <port>\n\
+          [<outgoing interface>]\n\
+          [<cert file>]\n\
+          [<key file>]\n\
+\n";
 
 int main(int argc, char **argv)
 {
@@ -403,6 +404,13 @@ unsigned char *inptr = inbuffer;
 
 while (argc >= argi + 1 && argv[argi][0] == '-')
   {
+  if (strcmp(argv[argi], "-help") == 0 ||
+      strcmp(argv[argi], "--help") == 0 ||
+      strcmp(argv[argi], "-h") == 0)
+    {
+    printf(HELP_MESSAGE);
+    exit(0);
+    }
   if (strcmp(argv[argi], "-tls-on-connect") == 0)
     {
     tls_on_connect = 1;

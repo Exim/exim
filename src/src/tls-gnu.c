@@ -76,6 +76,7 @@ typedef struct exim_gnutls_state {
   int fd_out;
   BOOL peer_cert_verified;
   BOOL trigger_sni_changes;
+  BOOL have_set_peerdn;
   const struct host_item *host;
   uschar *peerdn;
   uschar *received_sni;
@@ -103,7 +104,7 @@ typedef struct exim_gnutls_state {
 } exim_gnutls_state_st;
 
 static const exim_gnutls_state_st exim_gnutls_state_init = {
-  NULL, NULL, NULL, VERIFY_NONE, -1, -1, FALSE, FALSE,
+  NULL, NULL, NULL, VERIFY_NONE, -1, -1, FALSE, FALSE, FALSE,
   NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL,
@@ -297,11 +298,7 @@ Argument:
 static void
 extract_exim_vars_from_tls_state(exim_gnutls_state_st *state)
 {
-gnutls_protocol_t protocol;
 gnutls_cipher_algorithm_t cipher;
-gnutls_kx_algorithm_t kx;
-gnutls_mac_algorithm_t mac;
-uschar *p;
 #ifdef HAVE_GNUTLS_SESSION_CHANNEL_BINDING
 int old_pool;
 int rc;
@@ -316,25 +313,6 @@ cipher = gnutls_cipher_get(state->session);
 /* returns size in "bytes" */
 tls_bits = gnutls_cipher_get_key_size(cipher) * 8;
 
-if (!*state->cipherbuf)
-  {
-  protocol = gnutls_protocol_get_version(state->session);
-  mac = gnutls_mac_get(state->session);
-  kx = gnutls_kx_get(state->session);
-
-  string_format(state->cipherbuf, sizeof(state->cipherbuf),
-      "%s:%s:%u",
-      gnutls_protocol_get_name(protocol),
-      gnutls_cipher_suite_get_name(kx, cipher, mac),
-      tls_bits);
-
-  /* I don't see a way that spaces could occur, in the current GnuTLS
-  code base, but it was a concern in the old code and perhaps older GnuTLS
-  releases did return "TLS 1.0"; play it safe, just in case. */
-  for (p = state->cipherbuf; *p != '\0'; ++p)
-    if (isspace(*p))
-      *p = '-';
-  }
 tls_cipher = state->cipherbuf;
 
 DEBUG(D_tls) debug_printf("cipher: %s\n", tls_cipher);
@@ -994,7 +972,8 @@ return OK;
 *************************************************/
 
 /* Called from both server and client code.
-Only this is allowed to set state->peerdn and we use that to detect double-calls.
+Only this is allowed to set state->peerdn and state->have_set_peerdn
+and we use that to detect double-calls.
 
 Arguments:
   state           exim_gnutls_state_st *
@@ -1008,21 +987,45 @@ peer_status(exim_gnutls_state_st *state)
 const gnutls_datum *cert_list;
 int rc;
 unsigned int cert_list_size = 0;
+gnutls_protocol_t protocol;
+gnutls_cipher_algorithm_t cipher;
+gnutls_kx_algorithm_t kx;
+gnutls_mac_algorithm_t mac;
 gnutls_certificate_type_t ct;
 gnutls_x509_crt_t crt;
-uschar *dn_buf;
+uschar *p, *dn_buf;
 size_t sz;
 
-if (state->peerdn)
+if (state->have_set_peerdn)
   return OK;
+state->have_set_peerdn = TRUE;
 
-state->peerdn = US"unknown";
+state->peerdn = NULL;
 
+/* tls_cipher */
+cipher = gnutls_cipher_get(state->session);
+protocol = gnutls_protocol_get_version(state->session);
+mac = gnutls_mac_get(state->session);
+kx = gnutls_kx_get(state->session);
+
+string_format(state->cipherbuf, sizeof(state->cipherbuf),
+    "%s:%s:%d",
+    gnutls_protocol_get_name(protocol),
+    gnutls_cipher_suite_get_name(kx, cipher, mac),
+    (int) gnutls_cipher_get_key_size(cipher) * 8);
+
+/* I don't see a way that spaces could occur, in the current GnuTLS
+code base, but it was a concern in the old code and perhaps older GnuTLS
+releases did return "TLS 1.0"; play it safe, just in case. */
+for (p = state->cipherbuf; *p != '\0'; ++p)
+  if (isspace(*p))
+    *p = '-';
+
+/* tls_peerdn */
 cert_list = gnutls_certificate_get_peers(state->session, &cert_list_size);
 
 if (cert_list == NULL || cert_list_size == 0)
   {
-  state->peerdn = US"unknown (no certificate)";
   DEBUG(D_tls) debug_printf("TLS: no certificate from peer (%p & %d)\n",
       cert_list, cert_list_size);
   if (state->verify_requirement == VERIFY_REQUIRED)
@@ -1035,7 +1038,6 @@ ct = gnutls_certificate_type_get(state->session);
 if (ct != GNUTLS_CRT_X509)
   {
   const char *ctn = gnutls_certificate_type_get_name(ct);
-  state->peerdn = string_sprintf("unknown (type %s)", ctn);
   DEBUG(D_tls)
     debug_printf("TLS: peer cert not X.509 but instead \"%s\"\n", ctn);
   if (state->verify_requirement == VERIFY_REQUIRED)
@@ -1122,7 +1124,7 @@ if ((rc < 0) || (verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED)) != 0)
 
   DEBUG(D_tls)
     debug_printf("TLS certificate verification failed (%s): peerdn=%s\n",
-        *error, state->peerdn);
+        *error, state->peerdn ? state->peerdn : US"<unset>");
 
   if (state->verify_requirement == VERIFY_REQUIRED)
     {
@@ -1135,7 +1137,8 @@ if ((rc < 0) || (verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED)) != 0)
 else
   {
   state->peer_cert_verified = TRUE;
-  DEBUG(D_tls) debug_printf("TLS certificate verified: peerdn=%s\n", state->peerdn);
+  DEBUG(D_tls) debug_printf("TLS certificate verified: peerdn=%s\n",
+      state->peerdn ? state->peerdn : US"<unset>");
   }
 
 tls_peerdn = state->peerdn;
@@ -1479,6 +1482,10 @@ do
   } while ((rc == GNUTLS_E_AGAIN) || (rc == GNUTLS_E_INTERRUPTED));
 alarm(0);
 
+if (rc != GNUTLS_E_SUCCESS)
+  return tls_error(US"gnutls_handshake",
+      sigalrm_seen ? "timed out" : gnutls_strerror(rc), state->host);
+
 DEBUG(D_tls) debug_printf("gnutls_handshake was successful\n");
 
 /* Verify late */
@@ -1492,7 +1499,7 @@ if (state->verify_requirement != VERIFY_NONE &&
 rc = peer_status(state);
 if (rc != OK) return rc;
 
-/* Sets various Exim expansion variables; always safe within server */
+/* Sets various Exim expansion variables; may need to adjust for ACL callouts */
 
 extract_exim_vars_from_tls_state(state);
 

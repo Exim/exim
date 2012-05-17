@@ -30,15 +30,19 @@ static void dummy(int x) { dummy(x-1); }
 #else
 
 /* Static variables that are used for buffering data by both sets of
-functions and the common functions below. */
+functions and the common functions below.
 
+We're moving away from this; GnuTLS is already using a state, which
+can switch, so we can do TLS callouts during ACLs. */
 
-static uschar *ssl_xfer_buffer = NULL;
 static const int ssl_xfer_buffer_size = 4096;
+#ifndef USE_GNUTLS
+static uschar *ssl_xfer_buffer = NULL;
 static int ssl_xfer_buffer_lwm = 0;
 static int ssl_xfer_buffer_hwm = 0;
 static int ssl_xfer_eof = 0;
 static int ssl_xfer_error = 0;
+#endif
 
 uschar *tls_channelbinding_b64 = NULL;
 
@@ -81,6 +85,13 @@ return TRUE;
 
 #ifdef USE_GNUTLS
 #include "tls-gnu.c"
+
+#define ssl_xfer_buffer (current_global_tls_state->xfer_buffer)
+#define ssl_xfer_buffer_lwm (current_global_tls_state->xfer_buffer_lwm)
+#define ssl_xfer_buffer_hwm (current_global_tls_state->xfer_buffer_hwm)
+#define ssl_xfer_eof (current_global_tls_state->xfer_eof)
+#define ssl_xfer_error (current_global_tls_state->xfer_error)
+
 #else
 #include "tls-openssl.c"
 #endif

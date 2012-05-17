@@ -1,7 +1,7 @@
 1999-03-02 09:44:33 exim x.yz daemon started: pid=pppp, no queue runs, listening for SMTP on port 1225
 1999-03-02 09:44:33 10HmaX-0005vi-00 <= CALLER@test.ex H=[127.0.0.1] P=smtps X=TLS1.0:RSA_AES_256_CBC_SHA1:256 S=sss
 1999-03-02 09:44:33 TLS error on connection from (rhu.barb) [ip4.ip4.ip4.ip4] (gnutls_handshake): The peer did not send any certificate.
-1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLS1.0:RSA_AES_256_CBC_SHA1:256 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel" S=sss
+1999-03-02 09:44:33 10HmaY-0005vi-00 <= CALLER@test.ex H=[ip4.ip4.ip4.ip4] P=smtps X=TLS1.0:RSA_AES_256_CBC_SHA1:256 DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock" S=sss
 1999-03-02 09:44:33 Start queue run: pid=pppp -qf
 1999-03-02 09:44:33 10HmaX-0005vi-00 => CALLER <CALLER@test.ex> R=abc T=local_delivery
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
