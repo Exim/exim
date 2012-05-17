@@ -4,7 +4,7 @@
 # The build process concatenates on the front of this various settings from
 # os-specific files and from the user's configuration file.
 
-# Copyright (c) 2004 University of Cambridge.
+# Copyright (c) 2004 - 2012 University of Cambridge.
 # See the file NOTICE for conditions of use and distribution.
 
 # Except when they appear in comments, the following placeholders in this

@@ -46,7 +46,7 @@
 . /////////////////////////////////////////////////////////////////////////////
 
 .set previousversion "4.75"
-.set version "4.77"
+.set version "4.80"
 
 .set ACL "access control lists (ACLs)"
 .set I   "&nbsp;&nbsp;&nbsp;&nbsp;"
@@ -170,15 +170,15 @@
 <bookinfo>
 <title>Specification of the Exim Mail Transfer Agent</title>
 <titleabbrev>The Exim MTA</titleabbrev>
-<date>06 May 2011</date>
+<date>17 May 2012</date>
 <author><firstname>Exim</firstname><surname>Maintainers</surname></author>
 <authorinitials>EM</authorinitials>
 <revhistory><revision>
-  <revnumber>4.77</revnumber>
-  <date>10 Oct 2011</date>
+  <revnumber>4.80</revnumber>
+  <date>17 May 2012</date>
   <authorinitials>EM</authorinitials>
 </revision></revhistory>
-<copyright><year>2011</year><holder>University of Cambridge</holder></copyright>
+<copyright><year>2012</year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
 

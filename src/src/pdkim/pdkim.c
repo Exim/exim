@@ -1,7 +1,7 @@
 /*
  *  PDKIM - a RFC4871 (DKIM) implementation
  *
- *  Copyright (C) 2009  Tom Kistner <tom@duncanthrax.net>
+ *  Copyright (C) 2009 - 2012  Tom Kistner <tom@duncanthrax.net>
  *
  *  http://duncanthrax.net/pdkim/
  *
