@@ -148,14 +148,20 @@ static BOOL exim_gnutls_base_init_done = FALSE;
 /* Set this to control gnutls_global_set_log_level(); values 0 to 9 will setup
 the library logging; a value less than 0 disables the calls to set up logging
 callbacks. */
+#ifndef EXIM_GNUTLS_LIBRARY_LOG_LEVEL
 #define EXIM_GNUTLS_LIBRARY_LOG_LEVEL -1
+#endif
 
+#ifndef EXIM_CLIENT_DH_MIN_BITS
 #define EXIM_CLIENT_DH_MIN_BITS 1024
+#endif
 
 /* With GnuTLS 2.12.x+ we have gnutls_sec_param_to_pk_bits() with which we
 can ask for a bit-strength.  Without that, we stick to the constant we had
 before, for now. */
+#ifndef EXIM_SERVER_DH_BITS_PRE2_12
 #define EXIM_SERVER_DH_BITS_PRE2_12 1024
+#endif
 
 #define exim_gnutls_err_check(Label) do { \
   if (rc != GNUTLS_E_SUCCESS) { return tls_error((Label), gnutls_strerror(rc), host); } } while (0)

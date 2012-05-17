@@ -49,6 +49,9 @@ it's a default value. */
 #define EXIMDB_LOCK_TIMEOUT          60
 #define EXIMDB_LOCKFILE_MODE       0640
 #define EXIMDB_MODE                0640
+#define EXIM_CLIENT_DH_MIN_BITS
+#define EXIM_GNUTLS_LIBRARY_LOG_LEVEL
+#define EXIM_SERVER_DH_BITS_PRE2_12
 #define EXIM_PERL
 /* Both uid and gid are triggered by this */
 #define EXIM_UID

@@ -823,8 +823,49 @@ else if (isgroup)
       else if (strcmp(name, "TIMEZONE_DEFAULT") == 0||
                strcmp(name, "TCP_WRAPPERS_DAEMON_NAME") == 0||
                strcmp(name, "HEADERS_CHARSET") == 0||
-	       strcmp(name, "WHITELIST_D_MACROS") == 0)
+               strcmp(name, "WHITELIST_D_MACROS") == 0)
         fprintf(new, "\"%s\"\n", value);
+
+      /* GnuTLS constants; first is for debugging, others are tuning */
+
+      /* less than 0 is not-active; 0-9 are normal, API suggests higher
+      taken without problems */
+      else if (strcmp(name, "EXIM_GNUTLS_LIBRARY_LOG_LEVEL") == 0)
+        {
+        long nv;
+        char *end;
+        nv = strtol(value, &end, 10);
+        if (end != value && *end == '\0' && nv >= -1 && nv <= 100)
+          {
+          fprintf(new, "%s\n", value);
+          }
+        else
+          {
+          printf("Value of %s should be -1..9\n", name);
+          return 1;
+          }
+        }
+
+      /* how many bits Exim, as a client, demands must be in D-H */
+      /* as of GnuTLS 2.12.x, we ask for "normal" for D-H PK; before that, we
+      specify the number of bits.  We've stuck with the historical value, but
+      it can be overriden. */
+      else if ((strcmp(name, "EXIM_CLIENT_DH_MIN_BITS") == 0) ||
+               (strcmp(name, "EXIM_SERVER_DH_BITS_PRE2_12") == 0))
+        {
+        long nv;
+        char *end;
+        nv = strtol(value, &end, 10);
+        if (end != value && *end == '\0' && nv >= 1000 && nv < 50000)
+          {
+          fprintf(new, "%s\n", value);
+          }
+        else
+          {
+          printf("Unreasonable value (%s) of \"%s\".\n", value, name);
+          return 1;
+          }
+        }
 
       /* For others, quote any paths and don't quote anything else */
 
