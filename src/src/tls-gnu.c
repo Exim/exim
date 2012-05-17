@@ -582,6 +582,7 @@ Returns:          OK/DEFER/FAIL
 static int
 tls_expand_session_files(exim_gnutls_state_st *state)
 {
+struct stat statbuf;
 int rc;
 const host_item *host = state->host;  /* macro should be reconsidered? */
 uschar *saved_tls_certificate = NULL;
@@ -603,12 +604,16 @@ if (!state->host)
     }
   else
     {
+    /* useful for debugging */
     saved_tls_certificate = state->exp_tls_certificate;
     saved_tls_privatekey = state->exp_tls_privatekey;
     saved_tls_verify_certificates = state->exp_tls_verify_certificates;
     saved_tls_crl = state->exp_tls_crl;
     }
   }
+
+rc = gnutls_certificate_allocate_credentials(&state->x509_cred);
+exim_gnutls_err_check(US"gnutls_certificate_allocate_credentials");
 
 /* remember: expand_check_tlsvar() is expand_check() but fiddling with
 state members, assuming consistent naming; and expand_check() returns
@@ -645,7 +650,6 @@ if (state->tls_privatekey == NULL || *state->tls_privatekey == '\0')
 
 if (state->exp_tls_certificate && *state->exp_tls_certificate)
   {
-  BOOL setit = TRUE;
   DEBUG(D_tls) debug_printf("certificate file = %s\nkey file = %s\n",
       state->exp_tls_certificate, state->exp_tls_privatekey);
 
@@ -655,7 +659,6 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
         (Ustrcmp(state->exp_tls_privatekey, saved_tls_privatekey) == 0))
       {
       DEBUG(D_tls) debug_printf("TLS SNI: cert and key unchanged\n");
-      setit = FALSE;
       }
     else
       {
@@ -663,16 +666,13 @@ if (state->exp_tls_certificate && *state->exp_tls_certificate)
       }
     }
 
-  if (setit)
-    {
-    rc = gnutls_certificate_set_x509_key_file(state->x509_cred,
-        CS state->exp_tls_certificate, CS state->exp_tls_privatekey,
-        GNUTLS_X509_FMT_PEM);
-    exim_gnutls_err_check(
-        string_sprintf("cert/key setup: cert=%s key=%s",
-          state->exp_tls_certificate, state->exp_tls_privatekey));
-    DEBUG(D_tls) debug_printf("TLS: cert/key registered\n");
-    }
+  rc = gnutls_certificate_set_x509_key_file(state->x509_cred,
+      CS state->exp_tls_certificate, CS state->exp_tls_privatekey,
+      GNUTLS_X509_FMT_PEM);
+  exim_gnutls_err_check(
+      string_sprintf("cert/key setup: cert=%s key=%s",
+        state->exp_tls_certificate, state->exp_tls_privatekey));
+  DEBUG(D_tls) debug_printf("TLS: cert/key registered\n");
   } /* tls_certificate */
 
 /* Set the trusted CAs file if one is provided, and then add the CRL if one is
@@ -683,111 +683,123 @@ behaviour. */
 
 if (state->tls_verify_certificates && *state->tls_verify_certificates)
   {
-  struct stat statbuf;
-  BOOL setit_vc = TRUE, setit_crl = TRUE;
-
   if (!expand_check_tlsvar(tls_verify_certificates))
     return DEFER;
   if (state->tls_crl && *state->tls_crl)
     if (!expand_check_tlsvar(tls_crl))
       return DEFER;
 
-  if (state->received_sni)
-    {
-    state->exp_tls_verify_certificates, state->exp_tls_verify_certificates,
-    saved_tls_verify_certificates, saved_tls_verify_certificates);
-    if (!(state->exp_tls_verify_certificates || saved_tls_verify_certificates))
-      setit_vc = FALSE; /* never was set */
-    else if (!state->exp_tls_verify_certificates || !saved_tls_verify_certificates)
-      setit_vc = TRUE; /* changed whether set */
-    else if (Ustrcmp(state->exp_tls_verify_certificates, saved_tls_verify_certificates) == 0)
-      setit_vc = FALSE; /* not changed value */
-
-    state->exp_tls_crl, state->exp_tls_crl,
-    saved_tls_crl, saved_tls_crl);
-    if (!(state->exp_tls_crl || saved_tls_crl))
-      setit_crl = FALSE; /* never was set */
-    else if (!state->exp_tls_crl || !saved_tls_crl)
-      setit_crl = TRUE; /* changed whether set */
-    else if (Ustrcmp(state->exp_tls_crl, saved_tls_crl) == 0)
-      setit_crl = FALSE; /* not changed value */
-    }
-
-  /* nb: early exit; change if add more expansions to this function */
-  if (!(setit_vc || setit_crl))
+  if (!(state->exp_tls_verify_certificates &&
+        *state->exp_tls_verify_certificates))
     {
     DEBUG(D_tls)
-      debug_printf("TLS SNI: no change to tls_crl or tls_verify_certificates\n");
+      debug_printf("TLS: tls_verify_certificates expanded empty, ignoring\n");
+    /* With no tls_verify_certificates, we ignore tls_crl too */
     return OK;
     }
+  }
 
-  if (Ustat(state->exp_tls_verify_certificates, &statbuf) < 0)
+if (Ustat(state->exp_tls_verify_certificates, &statbuf) < 0)
+  {
+  log_write(0, LOG_MAIN|LOG_PANIC, "could not stat %s "
+      "(tls_verify_certificates): %s", state->exp_tls_verify_certificates,
+      strerror(errno));
+  return DEFER;
+  }
+
+if (!S_ISREG(statbuf.st_mode))
+  {
+  DEBUG(D_tls)
+    debug_printf("verify certificates path is not a file: \"%s\"\n%s\n",
+        state->exp_tls_verify_certificates,
+        S_ISDIR(statbuf.st_mode)
+          ? " it's a directory, that's OpenSSL, this is GnuTLS"
+          : " (not a directory either)");
+  log_write(0, LOG_MAIN|LOG_PANIC,
+      "tls_verify_certificates \"%s\" is not a file",
+      state->exp_tls_verify_certificates);
+  return DEFER;
+  }
+
+DEBUG(D_tls) debug_printf("verify certificates = %s size=" OFF_T_FMT "\n",
+        state->exp_tls_verify_certificates, statbuf.st_size);
+
+if (statbuf.st_size == 0)
+  {
+  DEBUG(D_tls)
+    debug_printf("cert file empty, no certs, no verification, ignoring any CRL\n");
+  return OK;
+  }
+
+cert_count = gnutls_certificate_set_x509_trust_file(state->x509_cred,
+    CS state->exp_tls_verify_certificates, GNUTLS_X509_FMT_PEM);
+if (cert_count < 0)
+  {
+  rc = cert_count;
+  exim_gnutls_err_check(US"gnutls_certificate_set_x509_trust_file");
+  }
+DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n", cert_count);
+
+if (state->tls_crl && *state->tls_crl)
+  {
+  if (state->exp_tls_crl && *state->exp_tls_crl)
     {
-    log_write(0, LOG_MAIN|LOG_PANIC, "could not stat %s "
-        "(tls_verify_certificates): %s", state->exp_tls_verify_certificates,
-        strerror(errno));
-    return DEFER;
+    DEBUG(D_tls) debug_printf("loading CRL file = %s\n", state->exp_tls_crl);
+    rc = gnutls_certificate_set_x509_crl_file(state->x509_cred,
+        CS state->exp_tls_crl, GNUTLS_X509_FMT_PEM);
+    exim_gnutls_err_check(US"gnutls_certificate_set_x509_crl_file");
     }
-
-  if (!S_ISREG(statbuf.st_mode))
-    {
-    DEBUG(D_tls)
-      debug_printf("verify certificates path is not a file: \"%s\"\n%s\n",
-          state->exp_tls_verify_certificates,
-          S_ISDIR(statbuf.st_mode)
-            ? " it's a directory, that's OpenSSL, this is GnuTLS"
-            : " (not a directory either)");
-    log_write(0, LOG_MAIN|LOG_PANIC,
-        "tls_verify_certificates \"%s\" is not a file",
-        state->exp_tls_verify_certificates);
-    return DEFER;
-    }
-
-  DEBUG(D_tls) debug_printf("verify certificates = %s size=" OFF_T_FMT "\n",
-          state->exp_tls_verify_certificates, statbuf.st_size);
-
-  /* If the CA cert file is empty, there's no point in loading the CRL file,
-  as we aren't verifying, so checking for revocation is pointless. */
-
-  if (statbuf.st_size > 0)
-    {
-    if (setit_vc)
-      {
-      cert_count = gnutls_certificate_set_x509_trust_file(state->x509_cred,
-          CS state->exp_tls_verify_certificates, GNUTLS_X509_FMT_PEM);
-      if (cert_count < 0)
-        {
-        rc = cert_count;
-        exim_gnutls_err_check(US"gnutls_certificate_set_x509_trust_file");
-        }
-      DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n", cert_count);
-      }
-    else
-      {
-      DEBUG(D_tls) debug_printf("TLS SNI: tls_verify_certificates unchanged\n");
-      }
-
-    if (setit_crl && state->tls_crl && *state->tls_crl)
-      {
-      if (state->exp_tls_crl && *state->exp_tls_crl)
-        {
-        DEBUG(D_tls) debug_printf("loading CRL file = %s\n", state->exp_tls_crl);
-        rc = gnutls_certificate_set_x509_crl_file(state->x509_cred,
-            CS state->exp_tls_crl, GNUTLS_X509_FMT_PEM);
-        exim_gnutls_err_check(US"gnutls_certificate_set_x509_crl_file");
-        }
-      }
-    DEBUG(D_tls)
-      if (!setit_crl) debug_printf("TLS SNI: tls_crl unchanged\n");
-    } /* statbuf.st_size */
-  } /* tls_verify_certificates */
+  }
 
 return OK;
-/* also above, during verify_certificates/crl, during SNI, if unchanged */
 }
 
 
 
+
+/*************************************************
+*          Set X.509 state variables             *
+*************************************************/
+
+/* In GnuTLS, the registered cert/key are not replaced by a later
+set of a cert/key, so for SNI support we need a whole new x509_cred
+structure.  Which means various other non-re-expanded pieces of state
+need to be re-set in the new struct, so the setting logic is pulled
+out to this.
+
+Arguments:
+  state           exim_gnutls_state_st *
+
+Returns:          OK/DEFER/FAIL
+*/
+
+static int
+tls_set_remaining_x509(exim_gnutls_state_st *state)
+{
+int rc;
+const host_item *host = state->host;  /* macro should be reconsidered? */
+
+/* Create D-H parameters, or read them from the cache file. This function does
+its own SMTP error messaging. This only happens for the server, TLS D-H ignores
+client-side params. */
+
+if (!state->host)
+  {
+  if (!dh_server_params)
+    {
+    rc = init_server_dh();
+    if (rc != OK) return rc;
+    }
+  gnutls_certificate_set_dh_params(state->x509_cred, dh_server_params);
+  }
+
+/* Link the credentials to the session. */
+
+rc = gnutls_credentials_set(state->session, GNUTLS_CRD_CERTIFICATE, state->x509_cred);
+exim_gnutls_err_check(US"gnutls_credentials_set");
+
+return OK;
+}
 
 /*************************************************
 *            Initialize for GnuTLS               *
@@ -869,9 +881,6 @@ state->tls_sni = sni;
 state->tls_verify_certificates = cas;
 state->tls_crl = crl;
 
-rc = gnutls_certificate_allocate_credentials(&state->x509_cred);
-exim_gnutls_err_check(US"gnutls_certificate_allocate_credentials");
-
 /* This handles the variables that might get re-expanded after TLS SNI;
 that's tls_certificate, tls_privatekey, tls_verify_certificates, tls_crl */
 
@@ -880,21 +889,11 @@ DEBUG(D_tls)
 rc = tls_expand_session_files(state);
 if (rc != OK) return rc;
 
-/* Create D-H parameters, or read them from the cache file. This function does
-its own SMTP error messaging. This only happens for the server, TLS D-H ignores
-client-side params. */
+/* These are all other parts of the x509_cred handling, since SNI in GnuTLS
+requires a new structure afterwards. */
 
-if (!host)
-  {
-  rc = init_server_dh();
-  if (rc != OK) return rc;
-  gnutls_certificate_set_dh_params(state->x509_cred, dh_server_params);
-  }
-
-/* Link the credentials to the session. */
-
-rc = gnutls_credentials_set(state->session, GNUTLS_CRD_CERTIFICATE, state->x509_cred);
-exim_gnutls_err_check(US"gnutls_credentials_set");
+rc = tls_set_remaining_x509(state);
+if (rc != OK) return rc;
 
 /* set SNI in client, only */
 if (host)
@@ -1214,8 +1213,10 @@ if (rc != OK)
   return GNUTLS_E_APPLICATION_ERROR_MIN;
   }
 
-rc = gnutls_credentials_set(state->session, GNUTLS_CRD_CERTIFICATE, state->x509_cred);
-return (rc == GNUTLS_E_SUCCESS) ? 0 : rc;
+rc = tls_set_remaining_x509(state);
+if (rc != OK) return GNUTLS_E_APPLICATION_ERROR_MIN;
+
+return 0;
 }
 
 
