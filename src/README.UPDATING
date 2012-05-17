@@ -119,6 +119,9 @@ Exim version 4.77
    problem.  Prior to this release, supported values were "TLS1" and "SSL3",
    so you should be able to update configuration prior to update.
 
+    [nb: gnutls_require_protocols removed in Exim 4.80, instead use
+         tls_require_ciphers to provide a priority string; see notes above]
+
  * The match_<type>{string1}{string2} expansion conditions no longer subject
    string2 to string expansion, unless Exim was built with the new
    "EXPAND_LISTMATCH_RHS" option.  Too many people have inadvertently created
