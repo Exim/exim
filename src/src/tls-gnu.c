@@ -698,6 +698,12 @@ if (state->tls_verify_certificates && *state->tls_verify_certificates)
     return OK;
     }
   }
+else
+  {
+  DEBUG(D_tls)
+    debug_printf("TLS: tls_verify_certificates not set or empty, ignoring\n");
+  return OK;
+  }
 
 if (Ustat(state->exp_tls_verify_certificates, &statbuf) < 0)
   {
@@ -939,6 +945,9 @@ if (state->tls_require_ciphers && *state->tls_require_ciphers)
   }
 if (want_default_priorities)
   {
+  DEBUG(D_tls)
+    debug_printf("GnuTLS using default session cipher/priority \"%s\"\n",
+        exim_default_gnutls_priority);
   rc = gnutls_priority_init(&state->priority_cache,
       exim_default_gnutls_priority, &errpos);
   p = US exim_default_gnutls_priority;

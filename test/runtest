@@ -25,6 +25,13 @@ use Time::Local;
 
 $testversion = "4.78 (08-May-12)";
 
+# This gets embedded in the D-H params filename, and the value comes
+# from asking GnuTLS for "normal", but there appears to be no way to
+# use certtool/... to ask what that value currently is.  *sigh*
+# This value is correct as of GnuTLS 2.12.18.
+#
+$gnutls_dh_bits_normal = 2432;
+
 $cf = "bin/cf -exact";
 $cr = "\r";
 $debug = 0;
@@ -1578,9 +1585,10 @@ if (/^eximstats\s+(.*)/)
 
 if (/^gnutls/)
   {
-  run_system "sudo cp -p aux-fixed/gnutls-params spool/gnutls-params;" .
-         "sudo chown $parm_eximuser:$parm_eximgroup spool/gnutls-params;" .
-         "sudo chmod 0400 spool/gnutls-params";
+  my $gen_fn = "spool/gnutls-params-$gnutls_dh_bits_normal";
+  run_system "sudo cp -p aux-fixed/gnutls-params $gen_fn;" .
+         "sudo chown $parm_eximuser:$parm_eximgroup $gen_fn;" .
+         "sudo chmod 0400 $gen_fn";
   return 1;
   }
 

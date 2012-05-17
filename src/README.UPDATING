@@ -26,8 +26,11 @@ The rest of this document contains information about changes in 4.xx releases
 that might affect a running system.
 
 
-Exim version 4.78
+Exim version 4.80
 -----------------
+
+ * BEWARE backwards-incompatible changes in SSL libraries, thus the version
+   bump.  See points below for details.
 
  * The value of $tls_peerdn is now print-escaped when written to the spool file
    in a -tls_peerdn line, and unescaped when read back in.  We received reports
@@ -95,6 +98,11 @@ Exim version 4.78
    A future release will add warnings, before a later still release removes
    parsing entirely and the presence of the options will be a configuration
    error.
+
+   Note that by default, GnuTLS will not accept RSA-MD5 signatures in chains.
+   A tls_require_ciphers value of NORMAL:%VERIFY_ALLOW_SIGN_RSA_MD5 may
+   re-enable support, but this is not supported by the Exim maintainers.
+   Our test suite no longer includes MD5-based certificates.
 
    This rewrite means that Exim will continue to build against GnuTLS in the
    future, brings Exim closer to other GnuTLS applications and lets us add
