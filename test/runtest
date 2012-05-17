@@ -23,7 +23,7 @@ use Time::Local;
 
 # Start by initializing some global variables
 
-$testversion = "4.78 (08-May-12)";
+$testversion = "4.80 (08-May-12)";
 
 # This gets embedded in the D-H params filename, and the value comes
 # from asking GnuTLS for "normal", but there appears to be no way to

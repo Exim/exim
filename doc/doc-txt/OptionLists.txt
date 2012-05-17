@@ -48,7 +48,7 @@ release 4.00, and so no router options are shown as earlier than 4.00, though
 in fact some of them were inherited from earlier versions.
 
 -----------------------------------------------------------------------------------------
-accept_8bitmime                      boolean         true          main              1.60 changed to true in 4.78
+accept_8bitmime                      boolean         true          main              1.60 changed to true in 4.80
 acl_not_smtp                         string*         unset         main              4.11
 acl_not_smtp_mime                    string*         unset         main              4.51 with content scan
 acl_smtp_auth                        string*         unset         main              4.00
@@ -373,7 +373,7 @@ once                                 string*         unset         autoreply
 once_file_size                       integer         0             autoreply         3.20
 once_repeat                          time            0s            autoreply         2.95
 one_time                             boolean         false         redirect          4.00
-openssl_options                      string          unset         main              4.73 default to unset in 4.78
+openssl_options                      string          unset         main              4.73 default to unset in 4.80
 optional                             boolean         false         iplookup          4.00
 oracle_servers                       string          unset         main              4.00
 owners                               string list     unset         redirect          4.00
@@ -466,19 +466,19 @@ sender_unqualified_hosts             host list       unset         main
 senders                              address list    unset         routers           4.00
 serialize_hosts                      host list       unset         smtp              1.60
 server_advertise_condition           string*         unset         authenticators    4.14
-server_channelbinding                bool            false         gsasl             4.78
+server_channelbinding                bool            false         gsasl             4.80
 server_condition                     string*         unset         authenticators    3.10 (plaintext) 4.64 (others)
-server_hostname                      string*   "$primary_hostname" cyrus_sasl,gsasl,heimdal_gssapi (cyrus-only) 4.78 (others)
-server_keytab                        string*         unset         heimdal_gssapi    4.78
+server_hostname                      string*   "$primary_hostname" cyrus_sasl,gsasl,heimdal_gssapi (cyrus-only) 4.80 (others)
+server_keytab                        string*         unset         heimdal_gssapi    4.80
 server_mail_auth_condition           string*         unset         authenticators    3.22
-server_mech                          string          public_name   cyrus_sasl,gsasl  4.43 (cyrus-only) 4.78 (others)
-server_password                      string          unset         gsasl             4.78
+server_mech                          string          public_name   cyrus_sasl,gsasl  4.43 (cyrus-only) 4.80 (others)
+server_password                      string          unset         gsasl             4.80
 server_prompts                       string*         unset         plaintext         3.10
-server_realm                         string          unset         cyrus_sasl,gsasl  4.43 (cyrus-only) 4.78 (others)
-server_scram_iter                    string*         unset         gsasl             4.78
-server_scram_salt                    string*         unset         gsasl             4.78
+server_realm                         string          unset         cyrus_sasl,gsasl  4.43 (cyrus-only) 4.80 (others)
+server_scram_iter                    string*         unset         gsasl             4.80
+server_scram_salt                    string*         unset         gsasl             4.80
 server_secret                        string*         unset         cram_md5          3.10
-server_service                       string          "smtp"  cyrus_sasl,gsasl,heimdal_gssapi  (cyrus-only) 4.78 (others)
+server_service                       string          "smtp"  cyrus_sasl,gsasl,heimdal_gssapi  (cyrus-only) 4.80 (others)
 server_set_id                        string*         unset         authenticators    3.10
 shadow_condition                     string*         unset         transports
 shadow_transport                     string          unset         transports
@@ -554,7 +554,7 @@ tls_privatekey                       string*         unset         main         
 tls_remember_emstp                   boolean         false         main              4.21
 tls_require_ciphers                  string*         unset         smtp              4.00 replaces tls_verify_ciphers
                                      string*         unset         main              4.33
-tls_sni                              string*         unset         main              4.78
+tls_sni                              string*         unset         main              4.80
 tls_tempfail_tryclear                boolean         true          smtp              4.05
 tls_try_verify_hosts                 host list       unset         main              4.00
 tls_verify_certificates              string*         unset         main              3.20

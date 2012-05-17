@@ -14399,7 +14399,7 @@ adjusted lightly.  An unrecognised item will be detected at startup, by
 invoking Exim with the &%-bV%& flag.
 
 .new
-Historical note: prior to release 4.78, Exim defaulted this value to
+Historical note: prior to release 4.80, Exim defaulted this value to
 "+dont_insert_empty_fragments", which may still be needed for compatibility
 with some clients, but which lowers security by increasing exposure to
 some now infamous attacks.
@@ -24552,7 +24552,7 @@ who authenticated is placed in &$auth1$&.
 .cindex "authentication" "CRAM-MD5"
 .cindex "authentication" "SCRAM-SHA-1"
 The &(gsasl)& authenticator provides server integration for the GNU SASL
-library and the mechanisms it provides.  This is new as of the 4.78 release
+library and the mechanisms it provides.  This is new as of the 4.80 release
 and there are a few areas where the library does not let Exim smoothly
 scale to handle future authentication mechanisms, so no guarantee can be
 made that any particular new authentication mechanism will be supported
@@ -25006,7 +25006,7 @@ renaming. The relevant commands are something like this:
 If Exim never has to generate the parameters itself, the possibility of
 stalling is removed.
 
-The filename changed in Exim 4.78, to gain the -bits suffix.  The value which
+The filename changed in Exim 4.80, to gain the -bits suffix.  The value which
 Exim will choose depends upon the version of GnuTLS in use.  For older GnuTLS,
 the value remains hard-coded in Exim as 1024.  As of GnuTLS 2.12.x, there is
 a way for Exim to ask for the "normal" number of bits for D-H public-key usage,
@@ -25090,7 +25090,7 @@ Documentation of the strings accepted may be found in the GnuTLS manual, under
 "Priority strings".  This is online as
 &url(http://www.gnu.org/software/gnutls/manual/html_node/Priority-Strings.html).
 
-Prior to Exim 4.78, an older API of GnuTLS was used, and Exim supported three
+Prior to Exim 4.80, an older API of GnuTLS was used, and Exim supported three
 additional options, "&%gnutls_require_kx%&", "&%gnutls_require_mac%&" and
 "&%gnutls_require_protocols%&".  &%tls_require_ciphers%& was an Exim list.
 .wen

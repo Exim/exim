@@ -1751,7 +1751,7 @@ uschar keep_c;
 BOOL adding, item_parsed;
 
 result = 0L;
-/* Prior to 4.78 we or'd in SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS; removed
+/* Prior to 4.80 we or'd in SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS; removed
  * from default because it increases BEAST susceptibility. */
 
 if (option_spec == NULL)

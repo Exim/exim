@@ -62,7 +62,7 @@ optionlist smtp_transport_options[] = {
   { "gethostbyname",        opt_bool,
       (void *)offsetof(smtp_transport_options_block, gethostbyname) },
 #ifdef SUPPORT_TLS
-  /* These are no longer honoured, as of Exim 4.78; for now, we silently
+  /* These are no longer honoured, as of Exim 4.80; for now, we silently
   ignore; a later release will warn, and a later-still release will remove
   these options, so that using them becomes an error. */
   { "gnutls_require_kx",    opt_stringptr,
