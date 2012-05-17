@@ -79,6 +79,7 @@ typedef struct exim_gnutls_state {
   BOOL have_set_peerdn;
   const struct host_item *host;
   uschar *peerdn;
+  uschar *ciphersuite;
   uschar *received_sni;
 
   const uschar *tls_certificate;
@@ -99,17 +100,14 @@ typedef struct exim_gnutls_state {
   int xfer_buffer_hwm;
   int xfer_eof;
   int xfer_error;
-
-  uschar cipherbuf[256];
 } exim_gnutls_state_st;
 
 static const exim_gnutls_state_st exim_gnutls_state_init = {
   NULL, NULL, NULL, VERIFY_NONE, -1, -1, FALSE, FALSE, FALSE,
-  NULL, NULL, NULL,
+  NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, 0, 0, 0, 0,
-  ""
 };
 
 /* Not only do we have our own APIs which don't pass around state, assuming
@@ -313,7 +311,7 @@ cipher = gnutls_cipher_get(state->session);
 /* returns size in "bytes" */
 tls_bits = gnutls_cipher_get_key_size(cipher) * 8;
 
-tls_cipher = state->cipherbuf;
+tls_cipher = state->ciphersuite;
 
 DEBUG(D_tls) debug_printf("cipher: %s\n", tls_cipher);
 
@@ -975,6 +973,20 @@ return OK;
 Only this is allowed to set state->peerdn and state->have_set_peerdn
 and we use that to detect double-calls.
 
+NOTE: the state blocks last while the TLS connection is up, which is fine
+for logging in the server side, but for the client side, we log after teardown
+in src/deliver.c.  While the session is up, we can twist about states and
+repoint tls_* globals, but those variables used for logging or other variable
+expansion that happens _after_ delivery need to have a longer life-time.
+
+So for those, we get the data from POOL_PERM; the re-invoke guard keeps us from
+doing this more than once per generation of a state context.  We set them in
+the state context, and repoint tls_* to them.  After the state goes away, the
+tls_* copies of the pointers remain valid and client delivery logging is happy.
+
+tls_certificate_verified is a BOOL, so the tls_peerdn and tls_cipher issues
+don't apply.
+
 Arguments:
   state           exim_gnutls_state_st *
 
@@ -984,8 +996,9 @@ Returns:          OK/DEFER/FAIL
 static int
 peer_status(exim_gnutls_state_st *state)
 {
+uschar cipherbuf[256];
 const gnutls_datum *cert_list;
-int rc;
+int old_pool, rc;
 unsigned int cert_list_size = 0;
 gnutls_protocol_t protocol;
 gnutls_cipher_algorithm_t cipher;
@@ -1008,7 +1021,7 @@ protocol = gnutls_protocol_get_version(state->session);
 mac = gnutls_mac_get(state->session);
 kx = gnutls_kx_get(state->session);
 
-string_format(state->cipherbuf, sizeof(state->cipherbuf),
+string_format(cipherbuf, sizeof(cipherbuf),
     "%s:%s:%d",
     gnutls_protocol_get_name(protocol),
     gnutls_cipher_suite_get_name(kx, cipher, mac),
@@ -1017,9 +1030,14 @@ string_format(state->cipherbuf, sizeof(state->cipherbuf),
 /* I don't see a way that spaces could occur, in the current GnuTLS
 code base, but it was a concern in the old code and perhaps older GnuTLS
 releases did return "TLS 1.0"; play it safe, just in case. */
-for (p = state->cipherbuf; *p != '\0'; ++p)
+for (p = cipherbuf; *p != '\0'; ++p)
   if (isspace(*p))
     *p = '-';
+old_pool = store_pool;
+store_pool = POOL_PERM;
+state->ciphersuite = string_copy(cipherbuf);
+store_pool = old_pool;
+tls_cipher = state->ciphersuite;
 
 /* tls_peerdn */
 cert_list = gnutls_certificate_get_peers(state->session, &cert_list_size);

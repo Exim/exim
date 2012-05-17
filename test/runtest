@@ -484,6 +484,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # So far, have seen:
   #   TLSv1:AES256-SHA:256
   #   TLSv1.2:AES256-GCM-SHA384:256
+  #   TLS1.2:DHE_RSA_AES_128_CBC_SHA1:128
   # We also need to handle the ciphersuite without the TLS part present, for
   # client-ssl's output.  We also see some older forced ciphersuites, but
   # negotiating TLS 1.2 instead of 1.0.
@@ -492,6 +493,20 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   s/( (?: (?:\b|\s) [\(=] ) | \s )TLSv1\.2:/$1TLSv1:/xg;
   s/\bAES256-GCM-SHA384\b/AES256-SHA/g;
+
+  # GnuTLS have seen:
+  #   TLS1.2:RSA_AES_256_CBC_SHA1:256 (canonical)
+  #   TLS1.2:DHE_RSA_AES_128_CBC_SHA1:128
+  #
+  #   X=TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256
+  #   X=TLS1.0:DHE_RSA_AES_256_CBC_SHA1:256
+  # and as stand-alone cipher:
+  #   DHE-RSA-AES256-SHA256
+  #   DHE-RSA-AES256-SHA
+  # picking latter as canonical simply because regex easier that way.
+  s/\bDHE_RSA_AES_128_CBC_SHA1:128/RSA_AES_256_CBC_SHA1:256/g;
+  s/X=TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256/X=TLS1.0:DHE_RSA_AES_256_CBC_SHA1:256/g;
+  s/\bDHE-RSA-AES256-SHA256\b/DHE-RSA-AES256-SHA/g;
 
 
   # ======== Caller's login, uid, gid, home, gecos ========

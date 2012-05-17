@@ -7,7 +7,7 @@
 1999-03-02 09:44:33 10HmaY-0005vi-00 => userx <userx@myhost.test.ex> R=r0 T=t2
 1999-03-02 09:44:33 10HmaY-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaX-0005vi-00 => userx@myhost.test.ex R=r1 T=t1 H=127.0.0.1 [127.0.0.1]
-1999-03-02 09:44:33 10HmaX-0005vi-00 => usery@myhost.test.ex R=r1 T=t1 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.2:RSA_AES_256_CBC_SHA1:256 DN="C=UK,L=Cambridge,O=University of Cambridge,OU=Computing Service,CN=Philip Hazel"
+1999-03-02 09:44:33 10HmaX-0005vi-00 => usery@myhost.test.ex R=r1 T=t1 H=ip4.ip4.ip4.ip4 [ip4.ip4.ip4.ip4] X=TLS1.2:RSA_AES_256_CBC_SHA1:256 DN="C=UK,O=The Exim Maintainers,OU=Test Suite,CN=Phil Pennock"
 1999-03-02 09:44:33 10HmaX-0005vi-00 Completed
 1999-03-02 09:44:33 10HmaZ-0005vi-00 => usery <usery@myhost.test.ex> R=r0 T=t2
 1999-03-02 09:44:33 10HmaZ-0005vi-00 Completed
