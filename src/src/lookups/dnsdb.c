@@ -122,7 +122,7 @@ int size = 256;
 int ptr = 0;
 int sep = 0;
 int defer_mode = PASS;
-int type = T_TXT;
+int type;
 int failrc = FAIL;
 uschar *outsep = US"\n";
 uschar *outsep2 = NULL;
@@ -164,14 +164,6 @@ if (*keystring == '>')
   while (isspace(*keystring)) keystring++;
   }
 
-/* SPF strings should be concatenated without a separator, thus make
-it the default if not defined (see RFC 4408 section 3.1.3).
-Multiple SPF records are forbidden (section 3.1.2) but are currently
-not handled specially, thus they are concatenated with \n by default. */
-
-if (type == T_SPF && outsep2 == NULL)
-  outsep2 = US"";
-
 /* Check for a defer behaviour keyword. */
 
 if (strncmpic(keystring, US"defer_", 6) == 0)
@@ -206,8 +198,10 @@ if (strncmpic(keystring, US"defer_", 6) == 0)
   while (isspace(*keystring)) keystring++;
   }
 
-/* If the keystring contains an = this must be preceded by a valid type name. */
+/* Figure out the "type" value if it is not T_TXT.
+If the keystring contains an = this must be preceded by a valid type name. */
 
+type = T_TXT;
 if ((equals = Ustrchr(keystring, '=')) != NULL)
   {
   int i, len;
@@ -254,6 +248,14 @@ it is treated as one item. */
 if (type == T_PTR && keystring[0] != '<' &&
     string_is_ip_address(keystring, NULL) != 0)
   sep = -1;
+
+/* SPF strings should be concatenated without a separator, thus make
+it the default if not defined (see RFC 4408 section 3.1.3).
+Multiple SPF records are forbidden (section 3.1.2) but are currently
+not handled specially, thus they are concatenated with \n by default. */
+
+if (type == T_SPF && outsep2 == NULL)
+  outsep2 = US"";
 
 /* Now scan the list and do a lookup for each item */
 
