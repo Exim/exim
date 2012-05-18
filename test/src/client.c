@@ -378,12 +378,14 @@ char *interface = NULL;
 char *address = NULL;
 char *certfile = NULL;
 char *keyfile = NULL;
+char *end = NULL;
 int argi = 1;
 int host_af, port, s_len, rc, sock, save_errno;
 int timeout = 1;
 int tls_active = 0;
 int sent_starttls = 0;
 int tls_on_connect = 0;
+long tmplong;
 
 #if HAVE_IPV6
 struct sockaddr_in6 s_in6;
@@ -418,12 +420,30 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
     }
   else if (argv[argi][1] == 't' && isdigit(argv[argi][2]))
     {
-    timeout = atoi(argv[argi]+1);
+    tmplong = strtol(argv[argi]+2, &end, 10);
+    if (end == argv[argi]+2 || *end)
+      {
+      fprintf(stderr, "Failed to parse seconds from option <%s>\n",
+        argv[argi]);
+      exit(1);
+      }
+    if (tmplong > 10000L)
+      {
+      fprintf(stderr, "Unreasonably long wait of %d seconds requested\n",
+        tmplong);
+      exit(1);
+      }
+    if (tmplong < 0L)
+      {
+      fprintf(stderr, "Timeout must not be negative (%d)\n", tmplong);
+      exit(1);
+      }
+    timeout = (int) tmplong;
     argi++;
     }
   else
     {
-    printf("Unrecognized option %s\n", argv[argi]);
+    fprintf(stderr, "Unrecognized option %s\n", argv[argi]);
     exit(1);
     }
   }
@@ -432,7 +452,7 @@ while (argc >= argi + 1 && argv[argi][0] == '-')
 
 if (argc < argi+1)
   {
-  printf("No IP address given\n");
+  fprintf(stderr, "No IP address given\n");
   exit(1);
   }
 
@@ -443,7 +463,7 @@ host_af = (strchr(address, ':') != NULL)? AF_INET6 : AF_INET;
 
 if (argc < argi+1)
   {
-  printf("No port number given\n");
+  fprintf(stderr, "No port number given\n");
   exit(1);
   }
 
