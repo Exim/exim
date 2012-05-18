@@ -578,7 +578,7 @@ if (!state->host)
   {
   if (!state->received_sni)
     {
-    if (Ustrstr(state->tls_certificate, US"tls_sni"))
+    if (state->tls_certificate && Ustrstr(state->tls_certificate, US"tls_sni"))
       {
       DEBUG(D_tls) debug_printf("We will re-expand TLS session files if we receive SNI.\n");
       state->trigger_sni_changes = TRUE;
@@ -695,16 +695,18 @@ if (Ustat(state->exp_tls_verify_certificates, &statbuf) < 0)
   return DEFER;
   }
 
-if (!S_ISREG(statbuf.st_mode))
+/* The test suite passes in /dev/null; we could check for that path explicitly,
+but who knows if someone has some weird FIFO which always dumps some certs, or
+other weirdness.  The thing we really want to check is that it's not a
+directory, since while OpenSSL supports that, GnuTLS does not.
+So s/!S_ISREG/S_ISDIR/ and change some messsaging ... */
+if (S_ISDIR(statbuf.st_mode))
   {
   DEBUG(D_tls)
-    debug_printf("verify certificates path is not a file: \"%s\"\n%s\n",
-        state->exp_tls_verify_certificates,
-        S_ISDIR(statbuf.st_mode)
-          ? " it's a directory, that's OpenSSL, this is GnuTLS"
-          : " (not a directory either)");
+    debug_printf("verify certificates path is a dir: \"%s\"\n",
+        state->exp_tls_verify_certificates);
   log_write(0, LOG_MAIN|LOG_PANIC,
-      "tls_verify_certificates \"%s\" is not a file",
+      "tls_verify_certificates \"%s\" is a directory",
       state->exp_tls_verify_certificates);
   return DEFER;
   }
@@ -1365,7 +1367,8 @@ if (smtp_receive_timeout > 0) alarm(smtp_receive_timeout);
 do
   {
   rc = gnutls_handshake(state->session);
-  } while ((rc == GNUTLS_E_AGAIN) || (rc == GNUTLS_E_INTERRUPTED));
+  } while ((rc == GNUTLS_E_AGAIN) ||
+      (rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen));
 alarm(0);
 
 if (rc != GNUTLS_E_SUCCESS)
@@ -1500,7 +1503,8 @@ alarm(timeout);
 do
   {
   rc = gnutls_handshake(state->session);
-  } while ((rc == GNUTLS_E_AGAIN) || (rc == GNUTLS_E_INTERRUPTED));
+  } while ((rc == GNUTLS_E_AGAIN) ||
+      (rc == GNUTLS_E_INTERRUPTED && !sigalrm_seen));
 alarm(0);
 
 if (rc != GNUTLS_E_SUCCESS)
