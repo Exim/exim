@@ -416,6 +416,11 @@ EXIM_MONITOR=eximon.bin
 # experimental-spec.txt. "Experimental" means that the way these features are
 # implemented may still change. Backward compatibility is not guaranteed.
 
+# Uncomment the following line to add support for talking to dccifd.  This
+# defaults the socket path to /usr/local/dcc/var/dccifd.
+
+# EXPERIMENTAL_DCC=yes
+
 # Uncomment the following lines to add SPF support. You need to have libspf2
 # installed on your system (www.libspf2.org). Depending on where it is installed
 # you may have to edit the CFLAGS and LDFLAGS lines.

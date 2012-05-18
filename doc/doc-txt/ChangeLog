@@ -118,6 +118,10 @@ PP/27 Applied dnsdb SPF support patch from Janne Snabb.
 
 JH/04 Added expansion variable $tod_epoch_l for a higher-precision time.
 
+PP/28 Fix DCC dcc_header content corruption (stack memory referenced,
+      read-only, out of scope).
+      Patch from Wolfgang Breyha, report from Stuart Northfield.
+
 
 Exim version 4.77
 -----------------

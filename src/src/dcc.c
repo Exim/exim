@@ -2,7 +2,7 @@
 *     Exim - an Internet mail transport agent    *
 *************************************************/
 
-/* Copyright (c) Wolfgang Breyha 2005-2009
+/* Copyright (c) Wolfgang Breyha 2005-2012
  * Vienna University Computer Center
  * wbreyha@gmx.net
  * See the file NOTICE for conditions of use and distribution.
@@ -19,7 +19,6 @@
 #include "unistd.h"
 
 uschar dcc_header_str[256];
-uschar dcc_result_str[256];
 int dcc_ok = 0;
 int dcc_rc = 0;
 
@@ -68,7 +67,6 @@ int dcc_process(uschar **listptr) {
   uschar rcpt[128], from[128];
   uschar sendbuf[4096];
   uschar recvbuf[4096];
-  uschar xhdr[256];
   uschar dcc_return_text[1024];
   uschar mbox_path[1024];
   uschar message_subdir[2];
@@ -173,7 +171,7 @@ int dcc_process(uschar **listptr) {
   retval = DEFER;
 
   bzero(sendbuf,sizeof(sendbuf));
-  bzero(xhdr,sizeof(xhdr));
+  bzero(dcc_header_str,sizeof(dcc_header_str));
   bzero(rcpt,sizeof(rcpt));
   bzero(from,sizeof(from));
 
@@ -302,7 +300,7 @@ int dcc_process(uschar **listptr) {
     }
   }
 
-  /* a blank line separates header from body */
+  /* a blank line seperates header from body */
   Ustrncat(sendbuf, "\n", sizeof(sendbuf)-Ustrlen(sendbuf)-1);
   flushbuffer(sockfd, sendbuf);
   DEBUG(D_acl)
@@ -353,7 +351,7 @@ int dcc_process(uschar **listptr) {
 
   line = 1;    /* we start at the first line of the output */
   j = 0;       /* will be used as index for the recipients list */
-  k = 0;       /* initializing the index of the X-DCC header: xhdr[k] */
+  k = 0;       /* initializing the index of the X-DCC header: dcc_header_str[k] */
 
   /* Let's read from the socket until there's nothing left to read */
   bzero(recvbuf, sizeof(recvbuf));
@@ -441,16 +439,16 @@ int dcc_process(uschar **listptr) {
         }
         else if(line == 2) {
           /* On the second line we get a list of
-           * answer for each recipient. We don't care about
-           * it because we're in an acl and so just take the
+           * answers for each recipient. We don't care about
+           * it because we're in an acl and take the
            * global result. */
         }
         else if(line > 2) {
-          /* The third and following lines is the X-DCC header,
-           * so we store it in xhdr. */
-          /* check if we don't get more than what we can handle */
-          if(k < sizeof(xhdr)) { /* xhdr has a length of 120 */
-            xhdr[k] = recvbuf[i];
+          /* The third and following lines are the X-DCC header,
+           * so we store it in dcc_header_str. */
+          /* check if we don't get more than we can handle */
+          if(k < sizeof(dcc_header_str)) { 
+            dcc_header_str[k] = recvbuf[i];
             k++;
           }
           else {
@@ -470,26 +468,26 @@ int dcc_process(uschar **listptr) {
   }
   /* We have read everything from the socket */
 
-  /* We need the terminate the X-DCC header with a '\n' character. This needs to be k-1
-   * for xhdr[k] contains '\0'. */
-  xhdr[k-1] = '\n';
+  /* We need to terminate the X-DCC header with a '\n' character. This needs to be k-1
+   * since dcc_header_str[k] contains '\0'. */
+  dcc_header_str[k-1] = '\n';
 
   /* Now let's sum up what we've got. */
   DEBUG(D_acl)
-    debug_printf("\n--------------------------\nOverall result = %d\nX-DCC header: %sReturn message: %s\ndcc_result: %s\n", retval, xhdr, dcc_return_text, dcc_result);
+    debug_printf("\n--------------------------\nOverall result = %d\nX-DCC header: %sReturn message: %s\ndcc_result: %s\n", retval, dcc_header_str, dcc_return_text, dcc_result);
 
   /* We only add the X-DCC header if it starts with X-DCC */
-  if(!(Ustrncmp(xhdr, "X-DCC", 5))){
-    dcc_header = xhdr;
+  if(!(Ustrncmp(dcc_header_str, "X-DCC", 5))){
+    dcc_header = dcc_header_str;
     if(dcc_direct_add_header) {
-      header_add(' ' , "%s", xhdr);
+      header_add(' ' , "%s", dcc_header_str);
   /* since the MIME ACL already writes the .eml file to disk without DCC Header we've to erase it */
       unspool_mbox();
     }
   }
   else {
     DEBUG(D_acl)
-      debug_printf("Wrong format of the X-DCC header: %s\n", xhdr);
+      debug_printf("Wrong format of the X-DCC header: %s\n", dcc_header_str);
   }
 
   /* check if we should add additional headers passed in acl_m_dcc_add_header */
