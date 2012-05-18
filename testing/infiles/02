@@ -51,3 +51,16 @@ Try &&abcd without semicolon: &abcd and at EOL &abcd
 .endmacro
 
 .a
+
+Test unterminated things that should give warnings.
+
+.ilist
+.olist
+.vlist
+.footnote
+.display
+.code
+.blockquote
+.table
+.itable
+.figure

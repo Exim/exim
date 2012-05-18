@@ -602,7 +602,9 @@ if (ps != NULL) popto = *p;
 /* This directive pushes the rest of the line onto a stack. If the first thing
 on the line is a single upper case letter followed by space, we set that as the
 stack marker letter. Following that we either have a quoted item, or the rest
-of the line unquoted.
+of the line unquoted. After a quoted item, the word "check" means we should
+record the base file line number for a warning if the item is not popped by the
+end of the input.
 
 Argument:   the rest of the line
 Returns:    nothing
@@ -613,7 +615,9 @@ do_push(uschar *p)
 {
 int length;
 int letter = 0;
+int check = 0;
 pushstr *ps;
+uschar *macname = NULL;
 uschar *porig = p;
 uschar buffer[INBUFFSIZE];
 
@@ -628,6 +632,14 @@ if (*p == '"')
   uschar *s = misc_readitem(p, NULL, &length, buffer, INBUFFSIZE);
   p += length;
   while (isspace(*p)) p++;
+  if (Ustrncmp(p, "check", 5) == 0 && (p[5] == 0 || isspace(p[5])))
+    {
+    p += 5;
+    while (isspace(*p)) p++;
+    check = istackbase->linenumber;
+    if (from_type[from_type_ptr] == FROM_MACRO)
+      macname = macrocurrent->macro->name;
+    }
   if (*p != 0) error(19, ".push", porig, p - porig + 6, spaces, Ustrlen(p),
     circumflexes);
   p = s;
@@ -636,6 +648,8 @@ if (*p == '"')
 length = Ustrlen(p);
 ps = misc_malloc(sizeof(pushstr) + length);
 ps->letter = letter;
+ps->check = check;
+ps->macname = macname;
 memcpy(ps->string, p, length);
 ps->string[length] = 0;
 ps->next = pushed;

@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2008 */
+/* Copyright (c) University of Cambridge, 2012 */
 /* Written by Philip Hazel. */
 
 /* This module contains the main program and initialization functions. */
@@ -118,6 +118,7 @@ int
 main(int argc, char **argv)
 {
 BOOL para_unfinished[MAXNEST+1];
+int warnpop = 0;
 uschar *p, *q;
 
 if (!xfpt_decode_arg(argc, argv)) return EXIT_FAILURE;
@@ -127,7 +128,7 @@ parabuffer = misc_malloc(PARABUFFSIZE);
 
 /* Set up the first file */
 
-istack = misc_malloc(sizeof(istackstr));
+istackbase = istack = misc_malloc(sizeof(istackstr));
 istack->prev = NULL;
 istack->linenumber = 0;
 
@@ -221,8 +222,30 @@ while ((p = read_nextline()) != NULL)
 
 /* Empty the stack of pushed texts, close the output, and we are done. */
 
-while (pushed != 0)
+while (pushed != NULL)
   {
+  if (!suppress_warnings)
+    {
+    if (pushed->check != 0)
+      {
+      if (warnpop++ == 0)
+        fprintf(stderr,
+           "** Warning: one or more items were left unclosed at the end of processing.\n"
+           "   The numbers are the lines in the original file %s from where\n"
+           "   the items were generated:\n",
+           ((xfpt_filename == NULL)? "(stdin)" : (char *)xfpt_filename));
+      if (pushed->macname == NULL)
+        fprintf(stderr, "%d: %s\n", pushed->check, pushed->string);
+      else
+        fprintf(stderr, "%d: .%s\n", pushed->check, pushed->macname);
+
+      if (warnpop > 10)
+        {
+        fprintf(stderr, "... too many to list\n");
+        suppress_warnings = TRUE;
+        }
+      }
+    }
   para_process(pushed->string);
   (void)fprintf(outfile, "\n");
   pushed = pushed->next;

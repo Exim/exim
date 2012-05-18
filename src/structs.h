@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2006 */
+/* Copyright (c) University of Cambridge, 2012 */
 /* Written by Philip Hazel. */
 
 /* This module contains definitions of structures that are used throughout the
@@ -34,6 +34,8 @@ typedef struct flagstr {
 typedef struct pushstr {
   struct pushstr *next;
   int letter;
+  int check;
+  uschar *macname;
   uschar string[1];
 } pushstr;
 

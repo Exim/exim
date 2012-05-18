@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2007 */
+/* Copyright (c) University of Cambridge, 2012 */
 /* Written by Philip Hazel. */
 
 /* Header file for all the global variables */
@@ -23,6 +23,7 @@ extern int         from_type_ptr;
 
 extern uschar     *inbuffer;
 extern istackstr  *istack;
+extern istackstr  *istackbase;
 
 extern int         literal_state;
 
@@ -45,5 +46,7 @@ extern pushstr    *pushed;
 
 extern int         return_code;
 extern uschar     *revision;
+
+extern BOOL        suppress_warnings;
 
 /* End of globals.h */

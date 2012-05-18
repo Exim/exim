@@ -103,3 +103,16 @@
    Processing macro a
    Detected near line 53 of infiles/02
 
+** Warning: one or more items were left unclosed at the end of processing.
+   The numbers are the lines in the original file infiles/02 from where
+   the items were generated:
+66: .figure
+65: .itable
+64: .table
+63: .blockquote
+62: .code
+61: .display
+60: .footnote
+59: .vlist
+58: .olist
+57: .ilist

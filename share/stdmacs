@@ -1,5 +1,17 @@
 . Standard macros for xfpt
 
+. Letters used for push/pop:
+. B blockquote
+. C chapter, appendix, preface, colophon
+. D display
+. F footnote
+. G figure
+. I item in list
+. L list
+. S section
+. T table
+. U subsection
+
 . =============== Standard boilerplate ===============
 
 .macro docbook
@@ -147,7 +159,7 @@
 
 .macro ilist
 .literal layout
-.push L &</itemizedlist>&
+.push L "&</itemizedlist>&" check
 .push I &</listitem>&
 &<itemizedlist$=1/ mark="$1"/&xfpt.rev;>&
 &<listitem>&
@@ -156,7 +168,7 @@
 
 .macro olist "arabic"
 .literal layout
-.push L &</orderedlist>&
+.push L "&</orderedlist>&" check
 .push I &</listitem>&
 &<orderedlist numeration="$1"&xfpt.rev;>&
 &<listitem>&
@@ -179,7 +191,7 @@
 
 .macro vlist
 .literal layout
-.push L &</variablelist>&
+.push L "&</variablelist>&" check
 &<variablelist&xfpt.rev;>&
 .arg 1
 &<title>&$1&</title>&
@@ -203,18 +215,20 @@
 
 .macro display
 .literal layout
+.push D "&</literallayout>&" check
 &<literallayout&xfpt.rev;>&
 .endmacro
 
 .macro code
 .literal layout
+.push D "&</literallayout>&" check
 &<literallayout class="monospaced"&xfpt.rev;>&
 .literal text
 .endmacro
 
 .macro endd
 .literal layout
-&</literallayout>&
+.pop D
 .literal off
 .endmacro
 
@@ -222,13 +236,14 @@
 
 .macro blockquote
 .literal layout
+.push B "&</blockquote>&" check
 &<blockquote&xfpt.rev;>&
 .literal off
 .endmacro
 
 .macro endblockquote
 .literal layout
-&</blockquote>&
+.pop B
 .literal off
 .endmacro
 
@@ -236,7 +251,7 @@
 
 .macro itable "none" "0" "0" "2"
 .literal layout
-.push &</informaltable>&
+.push T "&</informaltable>&" check
 &<informaltable frame="$1"&xfpt.rev;>&
 &<tgroup cols="$4" colsep="$2" rowsep="$3">&
 .eacharg 5
@@ -247,7 +262,7 @@
 
 .macro table "title" "ref" "none" "0" "0" "2"
 .literal layout
-.push &</table>&
+.push T "&</table>&" check
 &<table$=2+ id="$2"+ $=3+frame="$3"+&xfpt.rev;>&
 .arg 1
 &<title>&$1&</title>&
@@ -272,7 +287,7 @@
 .literal layout
 &</tbody>&
 &</tgroup>&
-.pop
+.pop T
 .literal off
 .endmacro
 
@@ -388,19 +403,20 @@
 
 .macro footnote
 &<footnote>&
-.push &</footnote>&
+.push F "&</footnote>&" check
 .nest begin
 .endmacro
 
 .macro endnote
 .nest end
-.pop
+.pop F
 .endmacro
 
 . =============== Figures ===============
 
 .macro figure
 .literal layout
+.push G "&</figure>&" check
 &<figure$=2+ id="$2"+&xfpt.rev;>&
 .arg 1
 &<title>&$1&</title>&
@@ -410,7 +426,7 @@
 
 .macro endfigure
 .literal layout
-&</figure>&
+.pop G
 .literal off
 .endmacro
 
