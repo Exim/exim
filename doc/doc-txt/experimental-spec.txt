@@ -520,6 +520,60 @@ EXPERIMENTAL_SRS=yes
 in your Local/Makefile.
 
 
+DCC Support
+--------------------------------------------------------------
+
+*) Building exim
+
+In order to build exim with DCC support add
+
+EXPERIMENTAL_DCC=yes
+
+to your Makefile. (Re-)build/install exim. exim -d should show
+EXPERIMENTAL_DCC under "Support for".
+
+
+*) Configuration
+
+In the main section of exim.cf add at least
+  dccifd_address = /usr/local/dcc/var/dccifd
+or
+  dccifd_address = <ip> <port>
+
+In the DATA ACL you can use the new condition
+        dcc = *
+
+After that "$dcc_header" contains the X-DCC-Header.
+
+Returnvalues are:
+  fail    for overall "R", "G" from dccifd
+  defer   for overall "T" from dccifd
+  accept  for overall "A", "S" from dccifd
+
+dcc = */defer_ok works as for spamd.
+
+The "$dcc_result" variable contains the overall result from DCC
+answer.  There will an X-DCC: header added to the mail.
+
+Usually you'll use
+  defer   !dcc = *
+to greylist with DCC.
+
+If you set, in the main section,
+  dcc_direct_add_header = true
+then the dcc header will be added "in deep" and if the spool
+file was already written it gets removed. This forces Exim to
+write it again if needed.  This helps to get the DCC Header
+through to eg. SpamAssassin.
+
+If you want to pass even more headers in the middle of the
+DATA stage you can set
+  $acl_m_dcc_add_header
+to tell the DCC routines add more information; eg, you might set
+this to some results from ClamAV.  Be careful.  Header syntax is
+not checked and is added "as is".
+
+
 --------------------------------------------------------------
 End of file
 --------------------------------------------------------------
