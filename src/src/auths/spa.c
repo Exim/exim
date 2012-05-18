@@ -202,6 +202,11 @@ auth_vars[0] = expand_nstring[1] = msgbuf;
 expand_nlength[1] = Ustrlen(msgbuf);
 expand_nmax = 1;
 
+/* clean up globals which aren't referenced, but still shouldn't be left
+pointing to stack memory */
+#define CLEANUP_RETURN(Code) do { auth_vars[0] = expand_nstring[1] = NULL; \
+  expand_nlength[1] = expand_nmax = 0; return (Code); } while (0);
+
 debug_print_string(ablock->server_debug_string);    /* customized debug */
 
 /* look up password */
@@ -213,13 +218,13 @@ if (clearpass == NULL)
     {
     DEBUG(D_auth) debug_printf("auth_spa_server(): forced failure while "
       "expanding spa_serverpassword\n");
-    return FAIL;
+    CLEANUP_RETURN(FAIL);
     }
   else
     {
     DEBUG(D_auth) debug_printf("auth_spa_server(): error while expanding "
       "spa_serverpassword: %s\n", expand_string_message);
-    return DEFER;
+    CLEANUP_RETURN(DEFER);
     }
   }
 
@@ -234,11 +239,14 @@ if (memcmp(ntRespData,
       ((unsigned char*)responseptr)+IVAL(&responseptr->ntResponse.offset,0),
       24) == 0)
   /* success. we have a winner. */
+  {
+  int rc = auth_check_serv_cond(ablock);
+  CLEANUP_RETURN(rc);
+  }
 
   /* Expand server_condition as an authorization check (PH) */
-  return auth_check_serv_cond(ablock);
 
-return FAIL;
+CLEANUP_RETURN(FAIL);
 }
 
 

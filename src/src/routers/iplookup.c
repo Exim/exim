@@ -142,7 +142,7 @@ iplookup_router_entry(
   address_item **addr_succeed)    /* put old address here on success */
 {
 uschar *query = NULL;
-uschar reply[256];
+uschar *reply;
 uschar *hostname, *reroute, *domain, *listptr;
 uschar host_buffer[256];
 host_item *host = store_get(sizeof(host_item));
@@ -160,6 +160,8 @@ pw = pw;
 
 DEBUG(D_route) debug_printf("%s router called for %s: domain = %s\n",
   rblock->name, addr->address, addr->domain);
+
+reply = store_get(256);
 
 /* Build the query string to send. If not explicitly given, a default of
 "user@domain user@domain" is used. */

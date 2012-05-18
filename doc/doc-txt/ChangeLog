@@ -122,6 +122,11 @@ PP/28 Fix DCC dcc_header content corruption (stack memory referenced,
       read-only, out of scope).
       Patch from Wolfgang Breyha, report from Stuart Northfield.
 
+PP/29 Fix three issues highlighted by clang analyser static analysis.
+      Only crash-plausible issue would require the Cambridge-specific
+      iplookup router and a misconfiguration.
+      Report from Marcin Mirosław.
+
 
 Exim version 4.77
 -----------------
