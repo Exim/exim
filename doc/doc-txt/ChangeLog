@@ -113,6 +113,8 @@ PP/25 Revamped GnuTLS support, passing tls_require_ciphers to
 PP/26 Added EXPERIMENTAL_OCSP for OpenSSL.
 
 PP/27 Applied dnsdb SPF support patch from Janne Snabb.
+      Applied second patch from Janne, implementing suggestion to default
+      multiple-strings-in-record handling to match SPF spec.
 
 JH/04 Added expansion variable $tod_epoch_l for a higher-precision time.
 

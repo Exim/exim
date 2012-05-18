@@ -96,7 +96,8 @@ separator is newline.
 character used for multiple items of text in "TXT" records. Alternatively,
 if the next character is ';' then these multiple items are concatenated with
 no separator. With neither of these options specified, only the first item
-is output.
+is output.  Similarly for "SPF" records, but the default for joining multiple
+items in one SPF record is the empty string, for direct concatenation.
 
 (c) If the next sequence of characters is 'defer_FOO' followed by a comma,
 the defer behaviour is set to FOO. The possible behaviours are: 'strict', where
@@ -162,6 +163,14 @@ if (*keystring == '>')
     }
   while (isspace(*keystring)) keystring++;
   }
+
+/* SPF strings should be concatenated without a separator, thus make
+it the default if not defined (see RFC 4408 section 3.1.3).
+Multiple SPF records are forbidden (section 3.1.2) but are currently
+not handled specially, thus they are concatenated with \n by default. */
+
+if (type == T_SPF && outsep2 == NULL)
+  outsep2 = US"";
 
 /* Check for a defer behaviour keyword. */
 

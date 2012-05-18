@@ -6790,14 +6790,16 @@ white space is ignored.
 .cindex "TXT record" "in &(dnsdb)& lookup"
 .cindex "SPF record" "in &(dnsdb)& lookup"
 .new
-For TXT and SPF records with multiple items of data, only the first item is returned,
+For TXT records with multiple items of data, only the first item is returned,
 unless a separator for them is specified using a comma after the separator
-character followed immediately by the TXT/SPF record item separator. To concatenate
-items without a separator, use a semicolon instead.
+character followed immediately by the TXT record item separator. To concatenate
+items without a separator, use a semicolon instead. For SPF records the
+default behaviour is to concatenate multiple items without using a separator.
 .wen
 .code
 ${lookup dnsdb{>\n,: txt=a.b.example}}
 ${lookup dnsdb{>\n; txt=a.b.example}}
+${lookup dnsdb{spf=example.org}}
 .endd
 It is permitted to specify a space as the separator character. Further
 white space is ignored.
