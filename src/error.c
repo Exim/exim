@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2008 */
+/* Copyright (c) University of Cambridge, 2012 */
 /* Written by Philip Hazel. */
 
 /* Error handling routines */
@@ -25,7 +25,6 @@
 
 static int  error_count = 0;
 static int  warning_count = 0;
-static BOOL suppress_warnings = FALSE;
 
 
 

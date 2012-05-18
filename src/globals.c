@@ -2,7 +2,7 @@
 *     xfpt - Simple ASCII->Docbook processor     *
 *************************************************/
 
-/* Copyright (c) University of Cambridge, 2010 */
+/* Copyright (c) University of Cambridge, 2012 */
 /* Written by Philip Hazel. */
 
 /* Allocate storage and initialize global variables */
@@ -11,7 +11,7 @@
 
 
 uschar    *xfpt_share                = US DATADIR;
-uschar    *xfpt_version              = US "0.08 08-June-2010";
+uschar    *xfpt_version              = US "0.09 16-May-2012";
 
 tree_node *entities                  = NULL;
 
@@ -21,6 +21,7 @@ int        from_type_ptr             = 0;
 
 uschar    *inbuffer                  = NULL;
 istackstr *istack                    = NULL;
+istackstr *istackbase                = NULL;
 
 int        literal_state             = LITERAL_OFF;
 
@@ -43,5 +44,7 @@ pushstr   *pushed                    = NULL;
 
 int        return_code               = 0;
 uschar    *revision                  = NULL;
+
+BOOL       suppress_warnings         = FALSE;
 
 /* End of globals.c */

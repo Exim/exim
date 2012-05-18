@@ -13,14 +13,14 @@
 <bookinfo>
 <title>The xfpt plain text to XML processor</title>
 <titleabbrev>xfpt</titleabbrev>
-<date>22 July 2009</date>
+<date>18 May 2012</date>
 <author>
   <firstname>Philip</firstname>
   <surname>Hazel</surname>
 </author>
 <authorinitials>PH</authorinitials>
-<revhistory><revision><revnumber>0.07</revnumber><date>22 July 2009</date><authorinitials>PH</authorinitials></revision></revhistory>
-<copyright><year>2009</year><holder>University of Cambridge</holder></copyright>
+<revhistory><revision><revnumber>0.09</revnumber><date>18 May 2012</date><authorinitials>PH</authorinitials></revision></revhistory>
+<copyright><year>2012</year><holder>University of Cambridge</holder></copyright>
 </bookinfo>
 .literal off
 
@@ -629,7 +629,8 @@ for example the &*.new*& macro in the standard macros.
 &X; keeps a stack of text strings that are manipulated by the &*.push*& and
 &*.pop*& directives. When the end of the input is reached, any strings that
 remain on the stack are popped off, processed for flags, and written to the
-output.
+output. In some cases (see the &*.push*& directive below) a warning message is 
+given.
 
 Each string on the stack may, optionally, be associated with an upper case
 letter. If &*.pop*& is followed by an upper case letter, it searches down the
@@ -643,9 +644,15 @@ stack and writes it out. If there is nothing on the stack, an error occurs.
 
 .section "The &*.push*& directive" ID27
 This directive pushes a string onto the stack. If the rest of the command line
-starts with an upper case letter followed by white space, that letter is
-associated with the string that is pushed, which consists of the rest of the
-line. For example, the &*.chapter*& macro contains this line:
+starts with an upper case letter followed by white space or the end of the
+line, that letter is associated with the string that is pushed, which consists
+either of a quoted string, or the rest of the line. After a quoted string, the 
+word `check' may appear. In this case, if the string has not been popped off 
+the stack by the end of processing, a warning message is output. This facility 
+is used by the standard macros to give warnings for unclosed items such as 
+&*.ilist*&.
+
+For example, the &*.chapter*& macro contains this line:
 .code
  .push C &</chapter>&
 .endd
@@ -654,8 +661,18 @@ Earlier in the macro there is the line:
  .pop C
 .endd
 This arrangement ensures that any previous chapter is terminated before
-starting a new one, and also when the end of the input is reached.
-
+starting a new one, and also when the end of the input is reached. The 
+&*.ilist*& macro contains this line:
+.code
+ .push L "&</itemizedlist>&" check
+.endd
+Item lists are terminatated by &*.endlist*&, which contains:
+.code
+ .pop L
+.endd  
+However, if &*.endlist*& is accidentally omitted (or &*.ilist*& is accidentally
+included), the appearance of `check' means that a warning is issued to alert 
+the user to a possible problem.
 
 .section "The &*.revision*& directive" "SECTrevision" ID28
 This directive is provided to make it easy to set the &`revisionflag`&
