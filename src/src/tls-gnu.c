@@ -728,15 +728,18 @@ if (cert_count < 0)
   }
 DEBUG(D_tls) debug_printf("Added %d certificate authorities.\n", cert_count);
 
-if (state->tls_crl && *state->tls_crl)
+if (state->tls_crl && *state->tls_crl &&
+    state->exp_tls_crl && *state->exp_tls_crl)
   {
-  if (state->exp_tls_crl && *state->exp_tls_crl)
+  DEBUG(D_tls) debug_printf("loading CRL file = %s\n", state->exp_tls_crl);
+  cert_count = gnutls_certificate_set_x509_crl_file(state->x509_cred,
+      CS state->exp_tls_crl, GNUTLS_X509_FMT_PEM);
+  if (cert_count < 0)
     {
-    DEBUG(D_tls) debug_printf("loading CRL file = %s\n", state->exp_tls_crl);
-    rc = gnutls_certificate_set_x509_crl_file(state->x509_cred,
-        CS state->exp_tls_crl, GNUTLS_X509_FMT_PEM);
+    rc = cert_count;
     exim_gnutls_err_check(US"gnutls_certificate_set_x509_crl_file");
     }
+  DEBUG(D_tls) debug_printf("Processed %d CRLs.\n", cert_count);
   }
 
 return OK;
