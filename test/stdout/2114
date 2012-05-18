@@ -274,9 +274,9 @@ Succeeded in starting TLS
 <<< 250 OK
 >>> rcpt to:<userx@test.ex>
 ??? 550-
-<<< 550-certificate not verified: peerdn=/C=UK/L=Cambridge/O=University of
+<<< 550-certificate not verified: peerdn=/C=UK/O=The Exim Maintainers/OU=Test
 ??? 550
-<<< 550 Cambridge/OU=Computing Service/CN=Philip Hazel
+<<< 550 Suite/CN=Phil Pennock
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection
@@ -367,9 +367,9 @@ Succeeded in starting TLS
 <<< 250 OK
 >>> rcpt to:<userx@test.ex>
 ??? 550-
-<<< 550-certificate not verified: peerdn=/C=UK/L=Cambridge/O=University of
+<<< 550-certificate not verified: peerdn=/C=UK/O=The Exim Maintainers/OU=Test
 ??? 550
-<<< 550 Cambridge/OU=Computing Service/CN=Philip Hazel
+<<< 550 Suite/CN=Phil Pennock
 >>> quit
 ??? 221
 <<< 221 myhost.test.ex closing connection

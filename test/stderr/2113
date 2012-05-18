@@ -35,7 +35,7 @@ Connecting to 127.0.0.1 [127.0.0.1]:1225 ... connected
          250-STARTTLS
          250 HELP
 LOG: MAIN
-  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 DN="/C=UK/L=Cambridge/O=University of Cambridge/OU=Computing Service/CN=Philip Hazel"
+  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1] X=TLSv1:AES256-SHA:256 DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock"
 LOG: MAIN
   Completed
 Exim version x.yz ....
@@ -59,7 +59,7 @@ admin user
   SMTP<< 250 OK id=10HmbA-0005vi-00
   SMTP>> QUIT
 LOG: MAIN
-  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLSv1:AES256-SHA:256 DN="/C=UK/L=Cambridge/O=University of Cambridge/OU=Computing Service/CN=Philip Hazel"
+  => userx@test.ex R=client T=send_to_server H=127.0.0.1 [127.0.0.1]* X=TLSv1:AES256-SHA:256 DN="/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock"
 LOG: MAIN
   Completed
 >>>>>>>>>>>>>>>> Exim pid=pppp terminating with rc=0 >>>>>>>>>>>>>>>>

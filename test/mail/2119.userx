@@ -16,7 +16,7 @@ Received: from [ip4.ip4.ip4.ip4]
 	(envelope-from <userx@test.ex>)
 	id 10HmaY-0005vi-00
 	for userx@test.ex; Tue, 2 Mar 1999 09:44:33 +0000
-TLS: cipher=TLSv1:AES256-SHA:256 peerdn=/C=UK/L=Cambridge/O=University of Cambridge/OU=Computing Service/CN=Philip Hazel
+TLS: cipher=TLSv1:AES256-SHA:256 peerdn=/C=UK/O=The Exim Maintainers/OU=Test Suite/CN=Phil Pennock
 
 This is a test encrypted message from a verified host.
 
