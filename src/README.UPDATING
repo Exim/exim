@@ -80,16 +80,18 @@ Exim version 4.80
    new option, you can safely force it off before upgrading, to decouple
    configuration changes from the binary upgrade while remaining RFC compliant.
 
- * The GnuTLS support has been mostly rewritten, to use 2.12.x APIs.  As part
-   of this, these three options are no longer supported:
+ * The GnuTLS support has been mostly rewritten, to use APIs which don't cause
+   deprecation warnings in GnuTLS 2.12.x.  As part of this, these three options
+   are no longer supported:
 
      gnutls_require_kx
      gnutls_require_mac
      gnutls_require_protocols
 
-   Their functionality is entirely subsumed into tls_require_ciphers, which is
-   no longer parsed apart by Exim but is instead given to
-   gnutls_priority_init(3), which is no longer an Exim list.  See:
+   Their functionality is entirely subsumed into tls_require_ciphers.  In turn,
+   tls_require_ciphers is no longer an Exim list and is not parsed by Exim, but
+   is instead given to gnutls_priority_init(3), which expects a priority string;
+   this behaviour is much closer to the OpenSSL behaviour.  See:
 
      http://www.gnu.org/software/gnutls/manual/html_node/Priority-Strings.html
 
