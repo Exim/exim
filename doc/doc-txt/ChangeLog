@@ -127,6 +127,8 @@ PP/29 Fix three issues highlighted by clang analyser static analysis.
       iplookup router and a misconfiguration.
       Report from Marcin Mirosław.
 
+PP/30 Another attempt to deal with PCRE_PRERELEASE, this one less buggy.
+
 
 Exim version 4.77
 -----------------

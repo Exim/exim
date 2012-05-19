@@ -976,20 +976,21 @@ DEBUG(D_any) do {
     }
   }
 
+  /* PRE_PRERELEASE is either defined and empty or a bare sequence of
+  characters; unless it's an ancient version of PCRE in which case it
+  is not defined. */
+#ifndef PCRE_PRERELEASE
+#define PCRE_PRERELEASE
+#endif
+#define QUOTE(X) #X
+#define EXPAND_AND_QUOTE(X) QUOTE(X)
   fprintf(f, "Library version: PCRE: Compile: %d.%d%s\n"
              "                       Runtime: %s\n",
           PCRE_MAJOR, PCRE_MINOR,
-          /* PRE_PRERELEASE is either defined and empty or a string.
-           * unless its an ancient version of PCRE in which case it
-           * is not defined */
-#ifdef PCRE_PRERELEASE
-# define STRINGIFY(x) #x
-          STRINGIFY(PCRE_PRERELEASE) "",
-# undef STRINGIFY
-#else
-          "",
-#endif
+          EXPAND_AND_QUOTE(PCRE_PRERELEASE) "",
           pcre_version());
+#undef QUOTE
+#undef EXPAND_AND_QUOTE
 
   init_lookup_list();
   for (i = 0; i < lookup_list_count; i++)
