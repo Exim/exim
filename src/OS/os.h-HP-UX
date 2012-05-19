@@ -17,4 +17,11 @@
 
 typedef struct flock flock_t;
 
+typedef struct __res_state *res_state;
+
+#define LLONG_MIN LONG_LONG_MIN
+#define LLONG_MAX LONG_LONG_MAX
+
+#define strtoll(a,b,c) strtoimax(a,b,c)
+
 /* End */
