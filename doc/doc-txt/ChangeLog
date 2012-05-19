@@ -129,6 +129,11 @@ PP/29 Fix three issues highlighted by clang analyser static analysis.
 
 PP/30 Another attempt to deal with PCRE_PRERELEASE, this one less buggy.
 
+PP/31 %D in printf continues to cause issues (-Wformat=security), so for
+      now guard some of the printf checks behind WANT_DEEPER_PRINTF_CHECKS.
+      As part of this, removing so much warning spew let me fix some minor
+      real issues in debug logging.
+
 
 Exim version 4.77
 -----------------

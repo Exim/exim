@@ -167,6 +167,9 @@ it's a default value. */
 #define EXPERIMENTAL_SPF
 #define EXPERIMENTAL_SRS
 
+/* For developers */
+#define WANT_DEEPER_PRINTF_CHECKS
+
 /* Things that are not routinely changed but are nevertheless configurable
 just in case. */
 

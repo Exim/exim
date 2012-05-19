@@ -56,7 +56,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size, uschar *source_file_override) {
     mbox_file = modefopen(mbox_path, "wb", SPOOL_MODE);
     if (mbox_file == NULL) {
       log_write(0, LOG_MAIN|LOG_PANIC, "%s", string_open_failed(errno,
-        "scan file %s", mbox_file));
+        "scan file %s", mbox_path));
       goto OUT;
     };
 
@@ -155,7 +155,7 @@ FILE *spool_mbox(unsigned long *mbox_file_size, uschar *source_file_override) {
   if (Ustat(mbox_path, &statbuf) != 0 ||
       (yield = Ufopen(mbox_path,"rb")) == NULL) {
     log_write(0, LOG_MAIN|LOG_PANIC, "%s", string_open_failed(errno,
-      "scan file %s", mbox_file));
+      "scan file %s", mbox_path));
     goto OUT;
   };
 

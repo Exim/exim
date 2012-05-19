@@ -325,7 +325,7 @@ extern uschar *string_copy_malloc(uschar *);
 extern uschar *string_copylc(uschar *);
 extern uschar *string_copynlc(uschar *, int);
 extern uschar *string_dequote(uschar **);
-extern BOOL    string_format(uschar *, int, const char *, ...) PRINTF_FUNCTION(3,4);
+extern BOOL    string_format(uschar *, int, const char *, ...) ALMOST_PRINTF(3,4);
 extern uschar *string_format_size(int, uschar *);
 extern int     string_interpret_escape(uschar **);
 extern int     string_is_ip_address(uschar *, int *);

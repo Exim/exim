@@ -1213,7 +1213,7 @@ if (format != NULL)
   va_start(ap, format);
   if (!string_vformat(buffer, sizeof(buffer), CS format, ap))
     log_write(0, LOG_MAIN|LOG_PANIC_DIE,
-      "common_error expansion was longer than %d", sizeof(buffer));
+      "common_error expansion was longer than " SIZE_T_FMT, sizeof(buffer));
   va_end(ap);
   addr->message = string_copy(buffer);
   }

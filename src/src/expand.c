@@ -1527,8 +1527,8 @@ while (last > first)
     domain = Ustrrchr(s, '@');
     if (domain == NULL) return s;
     if (domain - s > sizeof(var_buffer) - 1)
-      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "local part longer than %d in "
-        "string expansion", sizeof(var_buffer));
+      log_write(0, LOG_MAIN|LOG_PANIC_DIE, "local part longer than " SIZE_T_FMT
+          " in string expansion", sizeof(var_buffer));
     Ustrncpy(var_buffer, s, domain - s);
     var_buffer[domain - s] = 0;
     return var_buffer;

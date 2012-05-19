@@ -37,6 +37,12 @@ the arguments of printf-like functions. This is done by a macro. */
 #define ARG_UNUSED  /**/
 #endif
 
+#ifdef WANT_DEEPER_PRINTF_CHECKS
+#define ALMOST_PRINTF(A, B) PRINTF_FUNCTION(A, B)
+#else
+#define ALMOST_PRINTF(A, B)
+#endif
+
 
 /* Some operating systems (naughtily, imo) include a definition for "uchar" in
 the standard header files, so we use "uschar". Solaris has u_char in
