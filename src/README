@@ -331,7 +331,7 @@ also need to add a new alias definition: "alias utf8 utf-8".
 
 2. For some strange reason make will fail at building "exim_dbmbuild" when
    called the first time. However simply calling make a second time will solve
-   the problem. Alternatively, run "make makfile" and then "make".
+   the problem. Alternatively, run "make makefile" and then "make".
 
 
 ******* IMPORTANT FOR ULTRIX USERS *******
