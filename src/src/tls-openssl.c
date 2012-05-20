@@ -29,6 +29,10 @@ functions from the OpenSSL library. */
 #define EXIM_OCSP_MAX_AGE (-1L)
 #endif
 
+#if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
+#define EXIM_HAVE_OPENSSL_TLSEXT
+#endif
+
 /* Structure for collecting random data for seeding. */
 
 typedef struct randstuff {
@@ -77,7 +81,9 @@ static int
 setup_certs(SSL_CTX *sctx, uschar *certs, uschar *crl, host_item *host, BOOL optional);
 
 /* Callbacks */
+#ifdef EXIM_HAVE_OPENSSL_TLSEXT
 static int tls_servername_cb(SSL *s, int *ad ARG_UNUSED, void *arg);
+#endif
 #ifdef EXPERIMENTAL_OCSP
 static int tls_stapling_cb(SSL *s, void *arg);
 #endif
@@ -540,6 +546,7 @@ Arguments:
 Returns:          SSL_TLSEXT_ERR_{OK,ALERT_WARNING,ALERT_FATAL,NOACK}
 */
 
+#ifdef EXIM_HAVE_OPENSSL_TLSEXT
 static int
 tls_servername_cb(SSL *s, int *ad ARG_UNUSED, void *arg)
 {
@@ -606,6 +613,7 @@ SSL_set_SSL_CTX(s, ctx_sni);
 
 return SSL_TLSEXT_ERR_OK;
 }
+#endif /* EXIM_HAVE_OPENSSL_TLSEXT */
 
 
 
@@ -768,7 +776,7 @@ rc = tls_expand_session_files(ctx, cbinfo);
 if (rc != OK) return rc;
 
 /* If we need to handle SNI, do so */
-#if OPENSSL_VERSION_NUMBER >= 0x0090806fL && !defined(OPENSSL_NO_TLSEXT)
+#ifdef EXIM_HAVE_OPENSSL_TLSEXT
 if (host == NULL)
   {
 #ifdef EXPERIMENTAL_OCSP
