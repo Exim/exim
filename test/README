@@ -421,6 +421,33 @@ OTHER ISSUES
 
 . Test 0142 tests open file descriptors; on some hosts the output may vary.
 
+. Some tests may fail, for example 0022, because it says it uses cached data
+  when the expected output thinks it should not be in cache.  Item #5 in the
+  Requirements section has:
+    "Exim must be built with its user and group specified at build time"
+  This means that you cannot use the "ref:username" in your Local/Makefile
+  when building the exim binary, in any of the following fields:
+    EXIM_USER  EXIM_GROUP  CONFIGURE_OWNER  CONFIGURE_GROUP
+
+. If the runtest script warns that the hostname is not a Fully Qualified
+  Domain Name (FQDN), expect that some tests will fail, for example 0036,
+  with an extra log line saying the hostname doesn't resolve.  You must use a
+  FQDN for the hostname for proper test functionality.
+
+. If your hostname has an uppercase characters in it, expect that some tests
+  will fail, for example, 0036, because some log lines will have the hostname
+  in all lowercase.  The regex which extracts the hostname from the log lines
+  will not match the lowercased version.
+
+. Some tests may fail, for example 0015, with a cryptic error message:
+    Server return code 99
+  Due to security concerns, some specific files MUST have the group write bit
+  off.  For the purposes of the test suite, some test/aux-fixed/* files MUST
+  have the group write bit off, so it's easier to just remove the group write
+  bit for all of them.  If your umask is set to 002, the group write bit will
+  be on by default and you'll see this problem, so make sure your umask is
+  022 and re-checkout the test/ subdirectory.
+
 
 OTHER SCRIPTS AND PROGRAMS
 --------------------------
