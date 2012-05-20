@@ -2714,6 +2714,11 @@ if ($parm_hostname !~ /\./)
   print "\n*** Host name is not fully qualified: this may cause problems ***\n\n";
   }
 
+if ($parm_hostname =~ /[[:upper:]]/)
+  {
+  print "\n*** Host name has upper case characters: this may cause problems ***\n\n";
+  }
+
 # Find the user's shell
 
 $parm_shell = $ENV{'SHELL'};
