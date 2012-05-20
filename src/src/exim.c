@@ -976,7 +976,7 @@ DEBUG(D_any) do {
     }
   }
 
-  /* PRE_PRERELEASE is either defined and empty or a bare sequence of
+  /* PCRE_PRERELEASE is either defined and empty or a bare sequence of
   characters; unless it's an ancient version of PCRE in which case it
   is not defined. */
 #ifndef PCRE_PRERELEASE
