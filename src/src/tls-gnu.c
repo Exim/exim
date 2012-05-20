@@ -870,6 +870,7 @@ state->host = host;
 
 state->tls_certificate = certificate;
 state->tls_privatekey = privatekey;
+state->tls_require_ciphers = require_ciphers;
 state->tls_sni = sni;
 state->tls_verify_certificates = cas;
 state->tls_crl = crl;

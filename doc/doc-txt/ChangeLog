@@ -134,6 +134,9 @@ PP/31 %D in printf continues to cause issues (-Wformat=security), so for
       As part of this, removing so much warning spew let me fix some minor
       real issues in debug logging.
 
+PP/32 GnuTLS was always using default tls_require_ciphers, due to a missing
+      assignment on my part.  Fixed.
+
 
 Exim version 4.77
 -----------------
