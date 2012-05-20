@@ -1183,7 +1183,14 @@ return TRUE;
 static void
 exim_gnutls_logger_cb(int level, const char *message)
 {
-  DEBUG(D_tls) debug_printf("GnuTLS<%d>: %s\n", level, message);
+  size_t len = strlen(message);
+  if (len < 1)
+    {
+    DEBUG(D_tls) debug_printf("GnuTLS<%d> empty debug message\n", level);
+    return;
+    }
+  DEBUG(D_tls) debug_printf("GnuTLS<%d>: %s%s", level, message,
+      message[len-1] == '\n' ? "" : "\n");
 }
 #endif
 
