@@ -24963,10 +24963,11 @@ The &%tls_verify_certificates%& option must contain the name of a file, not the
 name of a directory (for OpenSSL it can be either).
 .next
 The &%tls_dhparam%& option is ignored, because early versions of GnuTLS had no
-facility for varying its Diffie-Hellman parameters. I understand that this has
-changed, but Exim has not been updated to provide this facility.
+facility for varying its Diffie-Hellman parameters.
 .new
-Instead, the GnuTLS support will use a file from the spool directory.
+Since then, the GnuTLS support has been updated to generate parameters upon
+demand, keeping them in the spool directory.  See &<<SECTgnutlsparam>>& for
+details.
 .wen
 .next
 .vindex "&$tls_peerdn$&"
@@ -24975,10 +24976,11 @@ separating fields; GnuTLS uses commas, in accordance with RFC 2253. This
 affects the value of the &$tls_peerdn$& variable.
 .next
 OpenSSL identifies cipher suites using hyphens as separators, for example:
-DES-CBC3-SHA. GnuTLS uses underscores, for example: RSA_ARCFOUR_SHA. What is
-more, OpenSSL complains if underscores are present in a cipher list. To make
-life simpler, Exim changes underscores to hyphens for OpenSSL and hyphens to
-underscores for GnuTLS when processing lists of cipher suites in the
+DES-CBC3-SHA. GnuTLS historically used underscores, for example:
+RSA_ARCFOUR_SHA. What is more, OpenSSL complains if underscores are present
+in a cipher list. To make life simpler, Exim changes underscores to hyphens
+for OpenSSL and passes the string unchanged to GnuTLS (expecting the library
+to handle its own older variants) when processing lists of cipher suites in the
 &%tls_require_ciphers%& options (the global option and the &(smtp)& transport
 option).
 .next
@@ -24994,7 +24996,7 @@ implementation, then patches are welcome.
 .endlist
 
 
-.section "GnuTLS parameter computation" "SECID181"
+.section "GnuTLS parameter computation" "SECTgnutlsparam"
 .new
 GnuTLS uses D-H parameters that may take a substantial amount of time
 to compute. It is unreasonable to re-compute them for every TLS session.
@@ -25028,14 +25030,14 @@ and letting Exim re-create it, you can generate new parameters using
 renaming. The relevant commands are something like this:
 .code
 # ls
-[ look for file; assume gnutls-params-1024 is the most recent ]
+[ look for file; assume gnutls-params-2236 is the most recent ]
 # rm -f new-params
 # touch new-params
 # chown exim:exim new-params
 # chmod 0600 new-params
-# certtool --generate-dh-params --bits 1024 >>new-params
+# certtool --generate-dh-params --bits 2236 >>new-params
 # chmod 0400 new-params
-# mv new-params gnutls-params-1024
+# mv new-params gnutls-params-2236
 .endd
 If Exim never has to generate the parameters itself, the possibility of
 stalling is removed.
@@ -25044,10 +25046,18 @@ The filename changed in Exim 4.80, to gain the -bits suffix.  The value which
 Exim will choose depends upon the version of GnuTLS in use.  For older GnuTLS,
 the value remains hard-coded in Exim as 1024.  As of GnuTLS 2.12.x, there is
 a way for Exim to ask for the "normal" number of bits for D-H public-key usage,
-and Exim does so.  Exim thus removes itself from the policy decision, and the
-filename and bits used change as the GnuTLS maintainers change the value for
-their parameter &`GNUTLS_SEC_PARAM_NORMAL`&.  At the time of writing, this
-gives 2432 bits.
+and Exim does so.  This attempt to remove Exim from TLS policy decisions
+failed, as GnuTLS 2.12 returns a value higher than the current hard-coded limit
+of the NSS library.  Thus Exim gains the &%tls_dh_max_bits%& global option,
+which applies to all D-H usage, client or server.  If the value returned by
+GnuTLS is greater than &%tls_dh_max_bits%& then the value will be clamped down
+to &%tls_dh_max_bits%&.  The default value has been set at the current NSS
+limit, which is still much higher than Exim historically used.
+
+The filename and bits used will change as the GnuTLS maintainers change the
+value for their parameter &`GNUTLS_SEC_PARAM_NORMAL`&, as clamped by
+&%tls_dh_max_bits%&.  At the time of writing (mid 2012), GnuTLS 2.12 recommends
+2432 bits, while NSS is limited to 2236 bits.
 .wen
 
 

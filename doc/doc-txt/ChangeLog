@@ -143,7 +143,8 @@ PP/33 Added tls_dh_max_bits option, defaulting to current hard-coded limit
 
 PP/34 Validate tls_require_ciphers on startup, since debugging an invalid
       string otherwise requires a connection and a bunch more work and it's
-      relatively easy to get wrong.
+      relatively easy to get wrong.  Should also expose TLS library linkage
+      problems.
 
 
 Exim version 4.77
