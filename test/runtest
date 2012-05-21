@@ -28,9 +28,10 @@ $testversion = "4.80 (08-May-12)";
 # This gets embedded in the D-H params filename, and the value comes
 # from asking GnuTLS for "normal", but there appears to be no way to
 # use certtool/... to ask what that value currently is.  *sigh*
-# This value is correct as of GnuTLS 2.12.18.
-#
-$gnutls_dh_bits_normal = 2432;
+# We also clamp it because of NSS interop, see addition of tls_dh_max_bits.
+# This value is correct as of GnuTLS 2.12.18 as clamped by tls_dh_max_bits.
+# normal = 2432   tls_dh_max_bits = 2236
+$gnutls_dh_bits_normal = 2236;
 
 $cf = "bin/cf -exact";
 $cr = "\r";
@@ -716,7 +717,6 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   s/(TLS error on connection (?:from|to) .*? \(SSL_\w+\): error:)(.*)/$1 <<detail omitted>>/;
 
-
   # ======== Maildir things ========
   # timestamp output in maildir processing
   s/(timestamp=|\(timestamp_only\): )\d+/$1ddddddd/g;
@@ -848,6 +848,15 @@ RESET_AFTER_EXTRA_LINE_READ:
     # with -be, privileges will have been dropped, so this will always
     # be the case
     next if /^changing group to \d+ failed: Operation not permitted/;
+
+    # We might not keep this check; rather than change all the tests, just
+    # ignore it as long as it succeeds; then we only need to change the
+    # TLS tests where tls_require_ciphers has been set.
+    if (m{^changed uid/gid: calling tls_validate_require_cipher}) {
+      my $discard = <IN>;
+      next;
+    }
+    next if /^tls_validate_require_cipher child \d+ ended: status=0x0/;
 
     # We invoke Exim with -D, so we hit this new messag as of Exim 4.73:
     next if /^macros_trusted overridden to true by whitelisting/;

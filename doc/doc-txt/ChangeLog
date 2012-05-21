@@ -146,6 +146,9 @@ PP/34 Validate tls_require_ciphers on startup, since debugging an invalid
       relatively easy to get wrong.  Should also expose TLS library linkage
       problems.
 
+PP/35 Pull in <features.h> on Linux, for some portability edge-cases of
+      64-bit ${eval} (JH/03).
+
 
 Exim version 4.77
 -----------------

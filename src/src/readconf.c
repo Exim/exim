@@ -2824,7 +2824,7 @@ do {
   rc = waitpid(pid, &status, 0);
 } while (rc < 0 && errno == EINTR);
 
-DEBUG(D_all)
+DEBUG(D_tls)
   debug_printf("tls_validate_require_cipher child %d ended: status=0x%x\n",
       (int)pid, status);
 

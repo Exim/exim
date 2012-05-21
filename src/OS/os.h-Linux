@@ -1,5 +1,12 @@
 /* Exim: OS-specific C header file for Linux */
 
+/* Some weird variants may require invocation with C99 and features.h
+inclusion to build, with the 64-bit arithmetic. Make compiler selection
+their problem, but build anyway. */
+
+#include <features.h>
+
+
 #define CRYPT_H
 #define GLIBC_IP_OPTIONS
 #define HAVE_MMAP
