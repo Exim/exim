@@ -512,8 +512,9 @@ if (rc < 0)
   m.data = malloc(m.size);
   if (m.data == NULL)
     return tls_error(US"memory allocation failed", strerror(errno), NULL);
+  /* this will return a size 1 less than the allocation size above */
   rc = gnutls_dh_params_export_pkcs3(dh_server_params, GNUTLS_X509_FMT_PEM,
-      m.data, &sz);
+      m.data, &m.size);
   if (rc != GNUTLS_E_SUCCESS)
     {
     free(m.data);
