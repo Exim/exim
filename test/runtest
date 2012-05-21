@@ -392,7 +392,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   s/:[^:]+: while opening named pipe/: Error: while opening named pipe/;
 
   # The name of the shell may vary
-  s/\s\Q$parm_shell\E\b/ SHELL/;
+  s/\s\Q$parm_shell\E\b/ ENV_SHELL/;
 
   # Debugging output of lists of hosts may have different sort keys
   s/sort=\S+/sort=xx/ if /^\S+ (?:\d+\.){3}\d+ mx=\S+ sort=\S+/;
@@ -2728,9 +2728,9 @@ if ($parm_hostname =~ /[[:upper:]]/)
   print "\n*** Host name has upper case characters: this may cause problems ***\n\n";
   }
 
-# Find the user's shell
-
-$parm_shell = $ENV{'SHELL'};
+# Set a user's shell, distinguishable from /bin/sh
+symlink("/bin/sh","aux-var/sh");
+$ENV{'SHELL'} = $parm_shell = $parm_cwd . "aux-var/sh";
 
 
 ##################################################
