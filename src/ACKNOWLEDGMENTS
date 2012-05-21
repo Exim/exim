@@ -18,8 +18,12 @@ relatively small patches.
 Philip Hazel
 
 Lists created: 20 November 2002
-Last updated:  22 August 2007
+Last updated (by PH):  22 August 2007
 
+  Note: at current time, Exim is maintained in git; the commit messages
+  typically credit sources, at the very least.  Also the ChangeLog file
+  will record who provided patches.  This file is not very up-to-date.
+  -Phil Pennock, 2012
 
 THE OLD LIST
 
