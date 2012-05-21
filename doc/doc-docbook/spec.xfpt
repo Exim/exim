@@ -15710,7 +15710,7 @@ ignored. See section &<<SECTopenvsgnu>>& for further details.
 .new
 If the DH bit-count from loading the file is greater than tls_dh_max_bits then
 it will be ignored.
-.end
+.wen
 
 
 .option tls_on_connect_ports main "string list" unset
