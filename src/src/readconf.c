@@ -2805,8 +2805,10 @@ if ((pid = fork()) < 0)
 
 if (pid == 0)
   {
-  exim_setugid(exim_uid, exim_gid, FALSE,
-      US"calling tls_validate_require_cipher");
+  /* in some modes, will have dropped privilege already */
+  if (!geteuid())
+    exim_setugid(exim_uid, exim_gid, FALSE,
+        US"calling tls_validate_require_cipher");
 
   errmsg = tls_validate_require_cipher();
   if (errmsg)
