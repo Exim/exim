@@ -11,4 +11,6 @@ typedef struct flock flock_t;
 #define os_strsignal strsignal
 #define OS_STRSIGNAL
 
+typedef struct __res_state *res_state;
+
 /* End */
