@@ -308,10 +308,19 @@ else
     }
   else
     {
-    SSL_CTX_set_tmp_dh(ctx, dh);
-    DEBUG(D_tls)
-      debug_printf("Diffie-Hellman initialized from %s with %d-bit key\n",
-        dhexpanded, 8*DH_size(dh));
+    if ((8*DH_size(dh)) > tls_dh_max_bits)
+      {
+      DEBUG(D_tls)
+        debug_printf("dhparams file %d bits, is > tls_dh_max_bits limit of %d",
+            8*DH_size(dh), tls_dh_max_bits);
+      }
+    else
+      {
+      SSL_CTX_set_tmp_dh(ctx, dh);
+      DEBUG(D_tls)
+        debug_printf("Diffie-Hellman initialized from %s with %d-bit key\n",
+          dhexpanded, 8*DH_size(dh));
+      }
     DH_free(dh);
     }
   BIO_free(bio);
@@ -1492,6 +1501,72 @@ SSL_free(ssl);
 ssl = NULL;
 
 tls_active = -1;
+}
+
+
+
+
+/*************************************************
+*  Let tls_require_ciphers be checked at startup *
+*************************************************/
+
+/* The tls_require_ciphers option, if set, must be something which the
+library can parse.
+
+Returns:     NULL on success, or error message
+*/
+
+uschar *
+tls_validate_require_cipher(void)
+{
+SSL_CTX *ctx;
+uschar *s, *expciphers, *err;
+
+/* this duplicates from tls_init(), we need a better "init just global
+state, for no specific purpose" singleton function of our own */
+
+SSL_load_error_strings();
+OpenSSL_add_ssl_algorithms();
+#if (OPENSSL_VERSION_NUMBER >= 0x0090800fL) && !defined(OPENSSL_NO_SHA256)
+/* SHA256 is becoming ever more popular. This makes sure it gets added to the
+list of available digests. */
+EVP_add_digest(EVP_sha256());
+#endif
+
+if (!(tls_require_ciphers && *tls_require_ciphers))
+  return NULL;
+
+if (!expand_check(tls_require_ciphers, US"tls_require_ciphers", &expciphers))
+  return US"failed to expand tls_require_ciphers";
+
+if (!(expciphers && *expciphers))
+  return NULL;
+
+/* normalisation ripped from above */
+s = expciphers;
+while (*s != 0) { if (*s == '_') *s = '-'; s++; }
+
+err = NULL;
+
+ctx = SSL_CTX_new(SSLv23_server_method());
+if (!ctx)
+  {
+  ERR_error_string(ERR_get_error(), ssl_errstring);
+  return string_sprintf("SSL_CTX_new() failed: %s", ssl_errstring);
+  }
+
+DEBUG(D_tls)
+  debug_printf("tls_require_ciphers expands to \"%s\"\n", expciphers);
+
+if (!SSL_CTX_set_cipher_list(ctx, CS expciphers))
+  {
+  ERR_error_string(ERR_get_error(), ssl_errstring);
+  err = string_sprintf("SSL_CTX_set_cipher_list(%s) failed", expciphers);
+  }
+
+SSL_CTX_free(ctx);
+
+return err;
 }
 
 

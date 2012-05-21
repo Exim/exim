@@ -111,6 +111,10 @@ const pcre *regex_STARTTLS     = NULL;
 uschar *tls_advertise_hosts    = NULL;    /* This is deliberate */
 uschar *tls_certificate        = NULL;
 uschar *tls_crl                = NULL;
+/* This default matches NSS DH_MAX_P_BITS value at current time (2012), because
+that's the interop problem which has been observed: GnuTLS suggesting a higher
+bit-count as "NORMAL" (2432) and Thunderbird dropping connection. */
+int     tls_dh_max_bits        = 2236;
 uschar *tls_dhparam            = NULL;
 #if defined(EXPERIMENTAL_OCSP) && !defined(USE_GNUTLS)
 uschar *tls_ocsp_file          = NULL;

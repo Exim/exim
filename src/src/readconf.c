@@ -415,6 +415,7 @@ static optionlist optionlist_config[] = {
   { "tls_advertise_hosts",      opt_stringptr,   &tls_advertise_hosts },
   { "tls_certificate",          opt_stringptr,   &tls_certificate },
   { "tls_crl",                  opt_stringptr,   &tls_crl },
+  { "tls_dh_max_bits",          opt_int,         &tls_dh_max_bits },
   { "tls_dhparam",              opt_stringptr,   &tls_dhparam },
 #if defined(EXPERIMENTAL_OCSP) && !defined(USE_GNUTLS)
   { "tls_ocsp_file",            opt_stringptr,   &tls_ocsp_file },
@@ -2772,6 +2773,69 @@ log_write(0, LOG_MAIN|LOG_PANIC_DIE, "malformed ratelimit data: %s", s);
 
 
 /*************************************************
+*       Drop privs for checking TLS config      *
+*************************************************/
+
+/* We want to validate TLS options during readconf, but do not want to be
+root when we call into the TLS library, in case of library linkage errors
+which cause segfaults; before this check, those were always done as the Exim
+runtime user and it makes sense to continue with that.
+
+Assumes:  tls_require_ciphers has been set, if it will be
+          exim_user has been set, if it will be
+          exim_group has been set, if it will be
+
+Returns:  bool for "okay"; false will cause caller to immediately exit.
+*/
+
+#ifdef SUPPORT_TLS
+static BOOL
+tls_dropprivs_validate_require_cipher(void)
+{
+const uschar *errmsg;
+pid_t pid;
+int rc, status;
+void (*oldsignal)(int);
+
+oldsignal = signal(SIGCHLD, SIG_DFL);
+
+fflush(NULL);
+if ((pid = fork()) < 0)
+  log_write(0, LOG_MAIN|LOG_PANIC_DIE, "fork failed for TLS check");
+
+if (pid == 0)
+  {
+  exim_setugid(exim_uid, exim_gid, FALSE,
+      US"calling tls_validate_require_cipher");
+
+  errmsg = tls_validate_require_cipher();
+  if (errmsg)
+    {
+    log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+        "tls_require_ciphers invalid: %s", errmsg);
+    }
+  fflush(NULL);
+  _exit(0);
+  }
+
+do {
+  rc = waitpid(pid, &status, 0);
+} while (rc < 0 && errno == EINTR);
+
+DEBUG(D_all)
+  debug_printf("tls_validate_require_cipher child %d ended: status=0x%x\n",
+      (int)pid, status);
+
+signal(SIGCHLD, oldsignal);
+
+return status == 0;
+}
+#endif /* SUPPORT_TLS */
+
+
+
+
+/*************************************************
 *         Read main configuration options        *
 *************************************************/
 
@@ -3220,6 +3284,18 @@ if ((tls_verify_hosts != NULL || tls_try_verify_hosts != NULL) &&
   log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
     "tls_%sverify_hosts is set, but tls_verify_certificates is not set",
     (tls_verify_hosts != NULL)? "" : "try_");
+
+/* This also checks that the library linkage is working and we can call
+routines in it, so call even if tls_require_ciphers is unset */
+if (!tls_dropprivs_validate_require_cipher())
+  exit(1);
+
+/* Magic number: at time of writing, 1024 has been the long-standing value
+used by so many clients, and what Exim used to use always, that it makes
+sense to just min-clamp this max-clamp at that. */
+if (tls_dh_max_bits < 1024)
+  log_write(0, LOG_PANIC_DIE|LOG_CONFIG,
+      "tls_dh_max_bits is too small, must be at least 1024 for interop");
 
 /* If openssl_options is set, validate it */
 if (openssl_options != NULL)

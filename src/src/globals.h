@@ -93,6 +93,7 @@ extern uschar *tls_advertise_hosts;    /* host for which TLS is advertised */
 extern uschar *tls_certificate;        /* Certificate file */
 extern uschar *tls_channelbinding_b64; /* string of base64 channel binding */
 extern uschar *tls_crl;                /* CRL File */
+extern int     tls_dh_max_bits;        /* don't accept higher lib suggestions */
 extern uschar *tls_dhparam;            /* DH param file */
 #if defined(EXPERIMENTAL_OCSP) && !defined(USE_GNUTLS)
 extern uschar *tls_ocsp_file;          /* OCSP stapling proof file */

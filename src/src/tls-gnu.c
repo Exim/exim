@@ -395,6 +395,15 @@ DEBUG(D_tls)
       dh_bits);
 #endif
 
+/* Some clients have hard-coded limits. */
+if (dh_bits > tls_dh_max_bits)
+  {
+  DEBUG(D_tls)
+    debug_printf("tls_dh_max_bits clamping override, using %d bits instead.\n",
+        tls_dh_max_bits);
+  dh_bits = tls_dh_max_bits;
+  }
+
 if (!string_format(filename, sizeof(filename),
       "%s/gnutls-params-%d", spool_directory, dh_bits))
   return tls_error(US"overlong filename", NULL, NULL);
@@ -1825,6 +1834,64 @@ vaguely_random_number(int max)
   return vaguely_random_number_fallback(max);
 }
 #endif /* HAVE_GNUTLS_RND */
+
+
+
+
+/*************************************************
+*  Let tls_require_ciphers be checked at startup *
+*************************************************/
+
+/* The tls_require_ciphers option, if set, must be something which the
+library can parse.
+
+Returns:     NULL on success, or error message
+*/
+
+uschar *
+tls_validate_require_cipher(void)
+{
+int rc;
+uschar *expciphers = NULL;
+gnutls_priority_t priority_cache;
+const char *errpos;
+
+#define validate_check_rc(Label) do { \
+  if (rc != GNUTLS_E_SUCCESS) { if (exim_gnutls_base_init_done) gnutls_global_deinit(); \
+  return string_sprintf("%s failed: %s", (Label), gnutls_strerror(rc)); } } while (0)
+#define return_deinit(Label) do { gnutls_global_deinit(); return (Label); } while (0)
+
+if (exim_gnutls_base_init_done)
+  log_write(0, LOG_MAIN|LOG_PANIC,
+      "already initialised GnuTLS, Exim developer bug");
+
+rc = gnutls_global_init();
+validate_check_rc(US"gnutls_global_init()");
+exim_gnutls_base_init_done = TRUE;
+
+if (!(tls_require_ciphers && *tls_require_ciphers))
+  return_deinit(NULL);
+
+if (!expand_check(tls_require_ciphers, US"tls_require_ciphers", &expciphers))
+  return_deinit(US"failed to expand tls_require_ciphers");
+
+if (!(expciphers && *expciphers))
+  return_deinit(NULL);
+
+DEBUG(D_tls)
+  debug_printf("tls_require_ciphers expands to \"%s\"\n", expciphers);
+
+rc = gnutls_priority_init(&priority_cache, CS expciphers, &errpos);
+validate_check_rc(string_sprintf(
+      "gnutls_priority_init(%s) failed at offset %ld, \"%.8s..\"",
+      expciphers, errpos - CS expciphers, errpos));
+
+#undef return_deinit
+#undef validate_check_rc
+gnutls_global_deinit();
+
+return NULL;
+}
 
 
 

@@ -66,6 +66,11 @@ Exim version 4.80
    security for compatibility.  Exim is now defaulting to higher security and
    rewarding more modern clients.
 
+   If the option tls_dhparams is set and the parameters loaded from the file
+   have a bit-count greater than the new option tls_dh_max_bits, then the file
+   will now be ignored.  If this affects you, raise the tls_dh_max_bits limit.
+   We suspect that most folks are using dated defaults and will not be affected.
+
  * Ldap lookups returning multi-valued attributes now separate the attributes
    with only a comma, not a comma-space sequence.  Also, an actual comma within
    a returned attribute is doubled.  This makes it possible to parse the
@@ -110,6 +115,25 @@ Exim version 4.80
    future, brings Exim closer to other GnuTLS applications and lets us add
    support for SNI and other features more readily.  We regret that it wasn't
    feasible to retain the three dropped options.
+
+ * If built with TLS support, then Exim will now validate the value of
+   the main section tls_require_ciphers option at start-up.  Before, this
+   would cause a STARTTLS 4xx failure, now it causes a failure to start.
+   Running with a broken configuration which causes failures that may only
+   be left in the logs has been traded off for something more visible.  This
+   change makes an existing problem more prominent, but we do not believe
+   anyone would deliberately be running with an invalid tls_require_ciphers
+   option.
+
+   This also means that library linkage issues caused by conflicts of some
+   kind might take out the main daemon, not just the delivery or receiving
+   process.  Conceivably some folks might prefer to continue delivering
+   mail plaintext when their binary is broken in this way, if there is a
+   server that is a candidate to receive such mails that does not advertise
+   STARTTLS.  Note that Exim is typically a setuid root binary and given
+   broken linkage problems that cause segfaults, we feel it is safer to
+   fail completely.  (The check is not done as root, to ensure that problems
+   here are not made worse by the check).
 
 
 Exim version 4.77

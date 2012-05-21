@@ -12694,6 +12694,7 @@ listed in more than one group.
 .row &%tls_advertise_hosts%&         "advertise TLS to these hosts"
 .row &%tls_certificate%&             "location of server certificate"
 .row &%tls_crl%&                     "certificate revocation list"
+.row &%tls_dh_max_bits%&             "clamp D-H bit count suggestion"
 .row &%tls_dhparam%&                 "DH parameters for server"
 .row &%tls_on_connect_ports%&        "specify SSMTP (SMTPS) ports"
 .row &%tls_privatekey%&              "location of server private key"
@@ -15680,12 +15681,36 @@ See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
 .wen
 
 
+.new
+.option tls_dh_max_bits main integer 2236
+.cindex "TLS" "D-H bit count"
+The number of bits used for Diffie-Hellman key-exchange may be suggested by
+the chosen TLS library.  That value might prove to be too high for
+interoperability.  This option provides a maximum clamp on the value
+suggested, trading off security for interoperability.
+
+The value must be at least 1024.
+
+The value 2236 was chosen because, at time of adding the option, it was the
+hard-coded maximum value supported by the NSS cryptographic library, as used
+by Thunderbird, while GnuTLS was suggesting 2432 bits as normal.
+
+If you prefer more security and are willing to break some clients, raise this
+number.
+.wen
+
+
 .option tls_dhparam main string&!! unset
 .cindex "TLS" "D-H parameters for server"
 The value of this option is expanded, and must then be the absolute path to
 a file which contains the server's DH parameter values.
 This is used only for OpenSSL. When Exim is linked with GnuTLS, this option is
 ignored. See section &<<SECTopenvsgnu>>& for further details.
+
+.new
+If the DH bit-count from loading the file is greater than tls_dh_max_bits then
+it will be ignored.
+.end
 
 
 .option tls_on_connect_ports main "string list" unset
@@ -24565,7 +24590,7 @@ made that any particular new authentication mechanism will be supported
 without code changes in Exim.
 
 
-.option server_channelbinding gsasl bool false
+.option server_channelbinding gsasl boolean false
 Some authentication mechanisms are able to use external context at both ends
 of the session to bind the authentication to that context, and fail the
 authentication process if that context differs.  Specifically, some TLS
@@ -24940,6 +24965,9 @@ name of a directory (for OpenSSL it can be either).
 The &%tls_dhparam%& option is ignored, because early versions of GnuTLS had no
 facility for varying its Diffie-Hellman parameters. I understand that this has
 changed, but Exim has not been updated to provide this facility.
+.new
+Instead, the GnuTLS support will use a file from the spool directory.
+.wen
 .next
 .vindex "&$tls_peerdn$&"
 Distinguished Name (DN) strings reported by the OpenSSL library use a slash for

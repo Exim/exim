@@ -96,6 +96,10 @@ Version 4.80
 
 14. New expansion variable $tod_epoch_l for higher-precision time.
 
+15. New global option tls_dh_max_bits, defaulting to current value of NSS
+    hard-coded limit of DH ephemeral bits, to fix interop problems caused by
+    GnuTLS 2.12 library recommending a bit count higher than NSS supports.
+
 
 Version 4.77
 ------------

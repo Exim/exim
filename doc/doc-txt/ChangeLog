@@ -137,6 +137,14 @@ PP/31 %D in printf continues to cause issues (-Wformat=security), so for
 PP/32 GnuTLS was always using default tls_require_ciphers, due to a missing
       assignment on my part.  Fixed.
 
+PP/33 Added tls_dh_max_bits option, defaulting to current hard-coded limit
+      of NSS, for GnuTLS/NSS interop.  Problem root cause diagnosis by
+      Janne Snabb (who went above and beyond: thank you).
+
+PP/34 Validate tls_require_ciphers on startup, since debugging an invalid
+      string otherwise requires a connection and a bunch more work and it's
+      relatively easy to get wrong.
+
 
 Exim version 4.77
 -----------------
