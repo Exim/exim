@@ -55,12 +55,13 @@ contents are always valid.  Exim will expand the "tls_ocsp_file" option
 on each connection, so a new file will be handled transparently on the
 next connection.
 
-Exim will check for a validity next update timestamp in the OCSP proof;
+Exim will check for a valid next update timestamp in the OCSP proof;
 if not present, or if the proof has expired, it will be ignored.
 
 At this point in time, we're gathering feedback on use, to determine if
 it's worth adding complexity to the Exim daemon to periodically re-fetch
-OCSP files and somehow handling multiple files.
+OCSP files and somehow handling multiple files.  There is no client support
+for OCSP in Exim, this is feature expected to be used by mail clients.
 
 
 
