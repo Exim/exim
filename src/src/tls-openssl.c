@@ -46,7 +46,9 @@ static BOOL verify_callback_called = FALSE;
 static const uschar *sid_ctx = US"exim";
 
 static SSL_CTX *ctx = NULL;
+#ifdef EXIM_HAVE_OPENSSL_TLSEXT
 static SSL_CTX *ctx_sni = NULL;
+#endif
 static SSL *ssl = NULL;
 
 static char ssl_errstring[256];
@@ -1257,8 +1259,14 @@ if (sni)
     tls_sni = NULL;
   else
     {
+#ifdef EXIM_HAVE_OPENSSL_TLSEXT
     DEBUG(D_tls) debug_printf("Setting TLS SNI \"%s\"\n", tls_sni);
     SSL_set_tlsext_host_name(ssl, tls_sni);
+#else
+    DEBUG(D_tls)
+      debug_printf("OpenSSL at build-time lacked SNI support, ignoring \"%s\"\n",
+          tls_sni);
+#endif
     }
   }
 
