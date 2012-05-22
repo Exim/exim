@@ -347,7 +347,7 @@ LOOKUP_DNSDB=yes
 # to find the include files and libraries, else use PCRE_LIBS and set INCLUDE
 # too if needed.
 
-# PCRE_CONFIG=yes
+PCRE_CONFIG=yes
 # PCRE_LIBS=-lpcre
 
 
