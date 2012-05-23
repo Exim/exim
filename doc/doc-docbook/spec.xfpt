@@ -25068,7 +25068,10 @@ There is a function in the OpenSSL library that can be passed a list of cipher
 suites before the cipher negotiation takes place. This specifies which ciphers
 are acceptable. The list is colon separated and may contain names like
 DES-CBC3-SHA. Exim passes the expanded value of &%tls_require_ciphers%&
-directly to this function call. The following quotation from the OpenSSL
+directly to this function call.
+Many systems will install the OpenSSL manual-pages, so you may have
+&'ciphers(1)'& available to you.
+The following quotation from the OpenSSL
 documentation specifies what forms of item are allowed in the cipher string:
 
 .ilist
@@ -25105,6 +25108,26 @@ includes any ciphers already present they will be ignored: that is, they will
 not be moved to the end of the list.
 .endlist
 
+.new
+The OpenSSL &'ciphers(1)'& command may be used to test the results of a given
+string:
+.code
+# note single-quotes to get ! past any shell history expansion
+$ openssl ciphers 'HIGH:!MD5:!SHA1'
+.endd
+
+This example will let the library defaults be permitted on the MX port, where
+there's probably no identity verification anyway, but ups the ante on the
+submission ports where the administrator might have some influence on the
+choice of clients used:
+.code
+# OpenSSL variant; see man ciphers(1)
+tls_require_ciphers = ${if =={$received_port}{25}\
+                           {DEFAULT}\
+                           {HIGH:!MD5:!SHA1}}
+.endd
+.wen
+
 
 
 .new
@@ -25132,11 +25155,27 @@ aware of future feature enhancements of GnuTLS.
 
 Documentation of the strings accepted may be found in the GnuTLS manual, under
 "Priority strings".  This is online as
-&url(http://www.gnu.org/software/gnutls/manual/html_node/Priority-Strings.html).
+&url(http://www.gnu.org/software/gnutls/manual/html_node/Priority-Strings.html),
+but beware that this relates to GnuTLS 3, which may be newer than the version
+installed on your system.  If you are using GnuTLS 3,
+&url(http://www.gnu.org/software/gnutls/manual/html_node/Listing-the-ciphersuites-in-a-priority-string.html, then the example code)
+on that site can be used to test a given string.
 
 Prior to Exim 4.80, an older API of GnuTLS was used, and Exim supported three
 additional options, "&%gnutls_require_kx%&", "&%gnutls_require_mac%&" and
 "&%gnutls_require_protocols%&".  &%tls_require_ciphers%& was an Exim list.
+
+This example will let the library defaults be permitted on the MX port, where
+there's probably no identity verification anyway, and lowers security further
+by increasing compatibility; but this ups the ante on the submission ports
+where the administrator might have some influence on the choice of clients
+used:
+.code
+# GnuTLS variant
+tls_require_ciphers = ${if =={$received_port}{25}\
+                           {NORMAL:%COMPAT}\
+                           {SECURE128}}
+.endd
 .wen
 
 
