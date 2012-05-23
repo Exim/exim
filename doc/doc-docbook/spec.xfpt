@@ -17103,6 +17103,40 @@ look for A or AAAA records, unless the domain matches &%mx_domains%&, in which
 case routing fails.
 
 
+.new
+.section "Declining addresses by dnslookup" "SECTdnslookupdecline"
+.cindex "&(dnslookup)& router" "declines"
+There are a few cases where a &(dnslookup)& router will decline to accept
+an address; if such a router is expected to handle "all remaining non-local
+DNS", then it is important to set &%no_more%&.
+
+Reasons for a &(dnslookup)& router to decline currently include:
+.ilist
+The domain does not exist in DNS
+.next
+The domain exists but the MX record's host part is just "."; this is a common
+convention (borrowed from SRV) used to indicate that there is no such service
+for this domain and to not fall back to trying A/AAAA records.
+.next
+Ditto, but for SRV records, when &%check_srv%& is set on this router.
+.next
+MX record points to a non-existent host.
+.next
+MX record points to an IP address and the main section option
+&%allow_mx_to_ip%& is not set.
+.next
+MX records exist and point to valid hosts, but all hosts resolve only to
+addresses blocked by the &%ignore_target_hosts%& generic option on this router.
+.next
+The domain is not syntactically valid (see also &%allow_utf8_domains%& and
+&%dns_check_names_pattern%& for handling one variant of this)
+.next
+&%check_secondary_mx%& is set on this router but the local host can
+not be found in the MX records (see below)
+.endlist
+.wen
+
+
 
 
 .section "Private options for dnslookup" "SECID118"
