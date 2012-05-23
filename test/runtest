@@ -75,6 +75,9 @@ $parm_port_d2 = 1226;        # Additional for daemon
 $parm_port_d3 = 1227;        # Additional for daemon
 $parm_port_d4 = 1228;        # Additional for daemon
 
+# Manually set locale
+$ENV{'LC_ALL'} = 'C';
+
 
 
 ###############################################################################
