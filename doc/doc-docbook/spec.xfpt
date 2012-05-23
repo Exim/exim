@@ -17108,7 +17108,7 @@ case routing fails.
 .cindex "&(dnslookup)& router" "declines"
 There are a few cases where a &(dnslookup)& router will decline to accept
 an address; if such a router is expected to handle "all remaining non-local
-DNS", then it is important to set &%no_more%&.
+domains", then it is important to set &%no_more%&.
 
 Reasons for a &(dnslookup)& router to decline currently include:
 .ilist
