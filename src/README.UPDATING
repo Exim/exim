@@ -31,6 +31,7 @@ Exim version 4.80
 
  * BEWARE backwards-incompatible changes in SSL libraries, thus the version
    bump.  See points below for details.
+   Also an LDAP data returned format change.
 
  * The value of $tls_peerdn is now print-escaped when written to the spool file
    in a -tls_peerdn line, and unescaped when read back in.  We received reports
@@ -76,6 +77,12 @@ Exim version 4.80
    a returned attribute is doubled.  This makes it possible to parse the
    attribute as a comma-separated list.  Note the distinction from multiple
    attributes being returned, where each one is a name=value pair.
+
+   If you are currently splitting the results from LDAP upon a comma, then you
+   should check carefully to see if adjustments are needed.
+
+   This change lets cautious folks distinguish "comma used as separator for
+   joining values" from "comma inside the data".
 
  * accept_8bitmime now defaults on, which is not RFC compliant but is better
    suited to today's Internet.  See http://cr.yp.to/smtp/8bitmime.html for a
