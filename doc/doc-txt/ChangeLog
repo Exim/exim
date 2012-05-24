@@ -149,6 +149,11 @@ PP/34 Validate tls_require_ciphers on startup, since debugging an invalid
 PP/35 Pull in <features.h> on Linux, for some portability edge-cases of
       64-bit ${eval} (JH/03).
 
+PP/36 Define _ISOC99_SOURCE in exim.h; it's needed for some releases of
+      GNU libc to support some of the 64-bit stuff, should not lead to
+      conflicts.  Defined before os.h is pulled in, so if a given platform
+      needs to override this, it can.
+
 
 Exim version 4.77
 -----------------

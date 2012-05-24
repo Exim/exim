@@ -20,6 +20,11 @@ This call dates back at least as far as SUSv2. */
 
 #define HAVE_SRANDOM
 
+/* This is primarily for the Gnu C library; we define it before os.h so that
+os.h has a chance to hurriedly undef it, Just In Case. */
+
+#define _ISOC99_SOURCE 1
+
 /* First of all include the os-specific header, which might set things that
 are needed by any of the other headers, including system headers. */
 

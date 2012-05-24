@@ -1,8 +1,8 @@
 /* Exim: OS-specific C header file for Linux */
 
-/* Some weird variants may require invocation with C99 and features.h
-inclusion to build, with the 64-bit arithmetic. Make compiler selection
-their problem, but build anyway. */
+/* Some old systems we've received bug-reports for have a <limits.h> which
+does not pull in <features.h>.  Best to just pull it in now and have done
+with the issue. */
 
 #include <features.h>
 
