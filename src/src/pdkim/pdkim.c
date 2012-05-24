@@ -1383,10 +1383,11 @@ DLLEXPORT int pdkim_feed_finish(pdkim_ctx *ctx, pdkim_signature **return_signatu
       char *b = strdup(sig->headernames);
       char *p = b;
       char *q = NULL;
+      pdkim_stringlist *hdrs = ctx->headers;
+
       if (b == NULL) return PDKIM_ERR_OOM;
 
       /* clear tags */
-      pdkim_stringlist *hdrs = ctx->headers;
       while (hdrs != NULL) {
         hdrs->tag = 0;
         hdrs = hdrs->next;
