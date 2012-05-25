@@ -357,7 +357,7 @@ sub create_tar_files {
         compressors => {
                 gzip    => 1,
                 bzip2   => 1,
-                lzip    => 1,
+                lzip    => 0,
         },
     };
     my $delete;
@@ -435,9 +435,9 @@ Use to override the path to the tar command; without this, will search for
 gtar, and if not found use tar.  Need GNU tar for lzip, unless --no-lzip is
 used.
 
-=item B<--no-lzip>
+=item B<--lzip>
 
-Do not build the lzip tarballs.
+Build the lzip tarballs.
 
 =item B<--verbose>
 
