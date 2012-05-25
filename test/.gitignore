@@ -1,0 +1,11 @@
+autom4te.cache/
+aux-var/
+bin/
+configure
+config.log
+config.status
+dnszones/
+eximdir/
+Makefile
+spool/
+test-*

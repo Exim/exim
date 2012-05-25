@@ -1,3 +1,4 @@
 exim-packaging-*
 *~
 *.bak
+.*.swp
