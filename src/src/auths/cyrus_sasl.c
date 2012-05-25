@@ -205,7 +205,7 @@ uschar *debug = NULL;   /* Stops compiler complaining */
 sasl_callback_t cbs[]={{SASL_CB_LIST_END, NULL, NULL}};
 sasl_conn_t *conn;
 char *realm_expanded;
-int rc, firsttime=1, clen, negotiated_ssf;
+int rc, firsttime=1, clen, *negotiated_ssf_ptr=NULL, negotiated_ssf;
 unsigned int inlen, outlen;
 
 input=data;
@@ -258,7 +258,7 @@ if( rc != SASL_OK )
 
 if (tls_cipher)
   {
-  rc = sasl_setprop(conn, SASL_SSF_EXTERNAL, &tls_bits);
+  rc = sasl_setprop(conn, SASL_SSF_EXTERNAL, (sasl_ssf_t *) &tls_bits);
   if (rc != SASL_OK)
     {
     HDEBUG(D_auth) debug_printf("Cyrus SASL EXTERNAL SSF set %d failed: %s\n",
@@ -392,7 +392,7 @@ while(rc==SASL_CONTINUE)
       debug_printf("Cyrus SASL %s authentication succeeded for %s\n",
           ob->server_mech, auth_vars[0]);
 
-    rc = sasl_getprop(conn, SASL_SSF, (const void **)(&negotiated_ssf));
+    rc = sasl_getprop(conn, SASL_SSF, (const void **)(&negotiated_ssf_ptr));
     if (rc != SASL_OK)
       {
       HDEBUG(D_auth)
@@ -405,6 +405,7 @@ while(rc==SASL_CONTINUE)
       sasl_done();
       return FAIL;
       }
+    negotiated_ssf = *negotiated_ssf_ptr;
     HDEBUG(D_auth)
       debug_printf("Cyrus SASL %s negotiated SSF: %d\n", ob->server_mech, negotiated_ssf);
     if (negotiated_ssf > 0)

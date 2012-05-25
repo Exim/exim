@@ -154,6 +154,10 @@ PP/36 Define _GNU_SOURCE in exim.h; it's needed for some releases of
       conflicts.  Defined before os.h is pulled in, so if a given platform
       needs to override this, it can.
 
+PP/37 Unbreak Cyrus SASL auth: SSF retrieval was incorrect, Exim thought
+      protection layer was required, which is not implemented.
+      Bugzilla 1254, patch from Wolfgang Breyha.
+
 
 Exim version 4.77
 -----------------
