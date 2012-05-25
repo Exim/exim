@@ -6026,16 +6026,16 @@ that it implements the details of the specific authentication mechanism,
 i.e. PLAIN or LOGIN. The &%server_advertise_condition%& setting controls
 when Exim offers authentication to clients; in the examples, this is only
 when TLS or SSL has been started, so to enable the authenticators you also
-need to add support for TLS as described in &<<SECTdefconfmain>>&.
+need to add support for TLS as described in section &<<SECTdefconfmain>>&.
 
 The &%server_condition%& setting defines how to verify that the username and
 password are correct. In the examples it just produces an error message.
 To make the authenticators work, you can use a string expansion
-expression like one of the examples in &<<CHAPplaintext>>&.
+expression like one of the examples in chapter &<<CHAPplaintext>>&.
 
 Beware that the sequence of the parameters to PLAIN and LOGIN differ; the
-usercode and password are in different positions.  &<<CHAPplaintext>>&
-covers both.
+usercode and password are in different positions.
+Chapter &<<CHAPplaintext>>& covers both.
 
 .ecindex IIDconfiwal
 
