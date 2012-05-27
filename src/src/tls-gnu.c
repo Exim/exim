@@ -512,18 +512,15 @@ if (rc < 0)
   m.data = malloc(m.size);
   if (m.data == NULL)
     return tls_error(US"memory allocation failed", strerror(errno), NULL);
-  /* this will return a size 1 less than the allocation size above; I
-  originally used sz so as to avoid type compatibility errors, as gnutls_datum
-  uses "unsigned int" for the size field, but this call takes separate data
-  and size fields, with the latter being a size_t*.  For now, we live with
-  the error as being safer than throwing away type information. */
+  /* this will return a size 1 less than the allocation size above */
   rc = gnutls_dh_params_export_pkcs3(dh_server_params, GNUTLS_X509_FMT_PEM,
-      m.data, &m.size);
+      m.data, &sz);
   if (rc != GNUTLS_E_SUCCESS)
     {
     free(m.data);
     exim_gnutls_err_check(US"gnutls_dh_params_export_pkcs3() real");
     }
+  m.size = sz; /* shrink by 1, probably */
 
   sz = write_to_fd_buf(fd, m.data, (size_t) m.size);
   if (sz != m.size)
