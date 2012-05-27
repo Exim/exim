@@ -8,7 +8,7 @@
 
 : ${EXIM_KEY:=nigel@exim.org}
 
-for file in *.tar.gz *.tar.bz2 *.tar.lz
+for file in *.tar.gz *.tar.bz2
 do
   gpg  --local-user ${EXIM_KEY} --detach-sig --armor $file
 done
