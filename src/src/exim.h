@@ -55,7 +55,7 @@ making unique names. */
 #define LOCALHOST_MAX  10
 #endif
 
-/* If not overriden by os.h, dynamic libraries have filenames ending .so */
+/* If not overridden by os.h, dynamic libraries have filenames ending .so */
 #ifndef DYNLIB_FN_EXT
 # define DYNLIB_FN_EXT "so"
 #endif

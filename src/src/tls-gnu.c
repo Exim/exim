@@ -1231,7 +1231,7 @@ if ((rc < 0) || (verify & (GNUTLS_CERT_INVALID|GNUTLS_CERT_REVOKED)) != 0)
     return FALSE;
     }
   DEBUG(D_tls)
-    debug_printf("TLS verify failure overriden (host in tls_try_verify_hosts)\n");
+    debug_printf("TLS verify failure overridden (host in tls_try_verify_hosts)\n");
   }
 else
   {
