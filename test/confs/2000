@@ -21,6 +21,8 @@ queue_only
 queue_run_in_order
 
 tls_advertise_hosts = *
+# needed to force generation
+tls_dhparam = historic
 
 # Set certificate only if server
 

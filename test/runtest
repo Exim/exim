@@ -488,6 +488,7 @@ RESET_AFTER_EXTRA_LINE_READ:
   # So far, have seen:
   #   TLSv1:AES256-SHA:256
   #   TLSv1.2:AES256-GCM-SHA384:256
+  #   TLSv1.2:DHE-RSA-AES256-SHA:256
   #   TLS1.2:DHE_RSA_AES_128_CBC_SHA1:128
   # We also need to handle the ciphersuite without the TLS part present, for
   # client-ssl's output.  We also see some older forced ciphersuites, but
@@ -497,6 +498,7 @@ RESET_AFTER_EXTRA_LINE_READ:
 
   s/( (?: (?:\b|\s) [\(=] ) | \s )TLSv1\.2:/$1TLSv1:/xg;
   s/\bAES256-GCM-SHA384\b/AES256-SHA/g;
+  s/\bDHE-RSA-AES256-SHA\b/AES256-SHA/g;
 
   # GnuTLS have seen:
   #   TLS1.2:RSA_AES_256_CBC_SHA1:256 (canonical)

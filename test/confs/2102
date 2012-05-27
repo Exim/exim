@@ -38,6 +38,7 @@ check_recipient:
                       AES256-GCM-SHA384 : \
                       IDEA-CBC-MD5 : \
                       DES-CBC3-SHA : \
+		      DHE-RSA-AES256-GCM-SHA384 : \
                       DHE_RSA_AES_256_CBC_SHA1 : \
                       DHE_RSA_3DES_EDE_CBC_SHA
   accept
