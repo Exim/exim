@@ -1134,7 +1134,8 @@ return yield;
 BOOL
 string_vformat(uschar *buffer, int buflen, const char *format, va_list ap)
 {
-enum { L_NORMAL, L_SHORT, L_LONG, L_LONGLONG, L_LONGDOUBLE };
+/* We assume numbered ascending order, C does not guarantee that */
+enum { L_NORMAL=1, L_SHORT=2, L_LONG=3, L_LONGLONG=4, L_LONGDOUBLE=5, L_SIZE=6 };
 
 BOOL yield = TRUE;
 int width, precision;
@@ -1204,7 +1205,7 @@ while (*fp != 0)
       }
     }
 
-  /* Skip over 'h', 'L', 'l', and 'll', remembering the item length */
+  /* Skip over 'h', 'L', 'l', 'll' and 'z', remembering the item length */
 
   if (*fp == 'h')
     { fp++; length = L_SHORT; }
@@ -1223,6 +1224,8 @@ while (*fp != 0)
       length = L_LONG;
       }
     }
+  else if (*fp == 'z')
+    { fp++; length = L_SIZE; }
 
   /* Handle each specific format type. */
 
@@ -1252,6 +1255,7 @@ while (*fp != 0)
       case L_NORMAL:   sprintf(CS p, newformat, va_arg(ap, int)); break;
       case L_LONG:     sprintf(CS p, newformat, va_arg(ap, long int)); break;
       case L_LONGLONG: sprintf(CS p, newformat, va_arg(ap, LONGLONG_T)); break;
+      case L_SIZE:     sprintf(CS p, newformat, va_arg(ap, size_t)); break;
       }
     while (*p) p++;
     break;
