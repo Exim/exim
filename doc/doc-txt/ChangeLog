@@ -158,6 +158,11 @@ PP/37 Unbreak Cyrus SASL auth: SSF retrieval was incorrect, Exim thought
       protection layer was required, which is not implemented.
       Bugzilla 1254, patch from Wolfgang Breyha.
 
+PP/38 Overhaul DH prime handling, supply RFC-specified DH primes as built
+      into Exim, default to IKE id 23 from RFC 5114 (2048 bit).  Make
+      tls_dhparam take prime identifiers.  Also unbreak combination of
+      OpenSSL+DH_params+TLSSNI.
+
 
 Exim version 4.77
 -----------------

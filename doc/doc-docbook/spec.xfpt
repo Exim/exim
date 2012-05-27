@@ -15706,14 +15706,43 @@ larger prime than requested.
 
 .option tls_dhparam main string&!! unset
 .cindex "TLS" "D-H parameters for server"
-The value of this option is expanded, and must then be the absolute path to
-a file which contains the server's DH parameter values.
-This is used only for OpenSSL. When Exim is linked with GnuTLS, this option is
-ignored. See section &<<SECTopenvsgnu>>& for further details.
-
 .new
-If the DH bit-count from loading the file is greater than &%tls_dh_max_bits$&
-then it will be ignored.
+The value of this option is expanded and indicates the source of DH parameters
+to be used by Exim.
+
+If it is a filename starting with a &`/`&, then it names a file from which DH
+parameters should be loaded.  If the file exists, it should hold a PEM-encoded
+PKCS#3 representation of the DH prime.  If the file does not exist, for
+OpenSSL it is an error.  For GnuTLS, Exim will attempt to create the file and
+fill it with a generated DH prime.  For OpenSSL, if the DH bit-count from
+loading the file is greater than &%tls_dh_max_bits$& then it will be ignored,
+and treated as though the &%tls_dhparam%& were set to "none".
+
+If this option expands to the string "none", then no DH parameters will be
+loaded by Exim.
+
+If this option expands to the string "historic" and Exim is using GnuTLS, then
+Exim will attempt to load a file from inside the spool directory.  If the file
+does not exist, Exim will attempt to create it.
+See section &<<SECTgnutlsparam>>& for further details.
+
+If Exim is using OpenSSL and this option is empty or unset, then Exim will load
+a default DH prime; the default is the 2048 bit prime described in section
+2.2 of RFC 5114, "2048-bit MODP Group with 224-bit Prime Order Subgroup", which
+in IKE is assigned number 23.
+
+Otherwise, the option must expand to the name used by Exim for any of a number
+of DH primes specified in RFC 2409, RFC 3526 and RFC 5114.  As names, Exim uses
+"ike" followed by the number used by IKE, of "default" which corresponds to
+"ike23".
+
+The available primes are:
+&`ike1`&, &`ike2`&, &`ike5`&,
+&`ike14`&, &`ike15`&, &`ike16`&, &`ike17`&, &`ike18`&,
+&`ike22`&, &`ike23`& (aka &`default`&) and &`ike24`&.
+
+Some of these will be too small to be accepted by clients.
+Some may be too large to be accepted by clients.
 .wen
 
 
@@ -25000,12 +25029,8 @@ There are some differences in usage when using GnuTLS instead of OpenSSL:
 The &%tls_verify_certificates%& option must contain the name of a file, not the
 name of a directory (for OpenSSL it can be either).
 .next
-The &%tls_dhparam%& option is ignored, because early versions of GnuTLS had no
-facility for varying its Diffie-Hellman parameters.
 .new
-Since then, the GnuTLS support has been updated to generate parameters upon
-demand, keeping them in the spool directory.  See &<<SECTgnutlsparam>>& for
-details.
+The default value for &%tls_dhparam%& differs for historical reasons.
 .wen
 .next
 .vindex "&$tls_peerdn$&"
@@ -25284,13 +25309,24 @@ this). There is one other option that may be needed in other situations. If
 tls_dhparam = /some/file/name
 .endd
 is set, the SSL library is initialized for the use of Diffie-Hellman ciphers
-with the parameters contained in the file. This increases the set of cipher
-suites that the server supports. See the command
+with the parameters contained in the file.
+.new
+Set this to &`none`& to disable use of DH entirely, by making no prime
+available:
+.code
+tls_dhparam = none
+.endd
+This may also be set to a string identifying a standard prime to be used for
+DH; if it is set to &`default`& or, for OpenSSL, is unset, then the prime
+used is &`ike23`&.  There are a few standard primes available, see the
+documetnation for &%tls_dhparam%& for the complete list.
+
+See the command
 .code
 openssl dhparam
 .endd
-for a way of generating this data. At present, &%tls_dhparam%& is used only
-when Exim is linked with OpenSSL. It is ignored if GnuTLS is being used.
+for a way of generating file data.
+.wen
 
 The strings supplied for these three options are expanded every time a client
 host connects. It is therefore possible to use different certificates and keys

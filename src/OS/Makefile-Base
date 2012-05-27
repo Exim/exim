@@ -312,7 +312,7 @@ OBJ_EXIM = acl.o child.o crypt16.o daemon.o dbfn.o debug.o deliver.o \
         os.o parse.o queue.o \
         rda.o readconf.o receive.o retry.o rewrite.o rfc2047.o \
         route.o search.o sieve.o smtp_in.o smtp_out.o spool_in.o spool_out.o \
-        store.o string.o tls.o tod.o transport.o tree.o verify.o \
+        std-crypto.o store.o string.o tls.o tod.o transport.o tree.o verify.o \
         $(OBJ_LOOKUPS) \
         local_scan.o $(EXIM_PERL) $(OBJ_WITH_CONTENT_SCAN) \
         $(OBJ_WITH_OLD_DEMIME) $(OBJ_EXPERIMENTAL)
@@ -575,6 +575,7 @@ smtp_in.o:       $(HDRS) smtp_in.c
 smtp_out.o:      $(HDRS) smtp_out.c
 spool_in.o:      $(HDRS) spool_in.c
 spool_out.o:     $(HDRS) spool_out.c
+std-crypto.o:    $(HDRS) std-crypto.c
 store.o:         $(HDRS) store.c
 string.o:        $(HDRS) string.c
 tls.o:           $(HDRS) tls.c tls-gnu.c tls-openssl.c

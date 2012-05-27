@@ -358,9 +358,6 @@ file is never present. If two processes both compute some new parameters, you
 waste a bit of effort, but it doesn't seem worth messing around with locking to
 prevent this.
 
-Argument:
-  host       NULL for server, server for client (for error handling)
-
 Returns:     OK/DEFER/FAIL
 */
 
@@ -370,14 +367,58 @@ init_server_dh(void)
 int fd, rc;
 unsigned int dh_bits;
 gnutls_datum m;
-uschar filename[PATH_MAX];
+uschar filename_buf[PATH_MAX];
+uschar *filename = NULL;
 size_t sz;
+uschar *exp_tls_dhparam;
+BOOL use_file_in_spool = FALSE;
+BOOL use_fixed_file = FALSE;
 host_item *host = NULL; /* dummy for macros */
 
 DEBUG(D_tls) debug_printf("Initialising GnuTLS server params.\n");
 
 rc = gnutls_dh_params_init(&dh_server_params);
 exim_gnutls_err_check(US"gnutls_dh_params_init");
+
+m.data = NULL;
+m.size = 0;
+
+if (!expand_check(tls_dhparam, US"tls_dhparam", &exp_tls_dhparam))
+  return DEFER;
+
+if (!exp_tls_dhparam)
+  {
+  DEBUG(D_tls) debug_printf("Loading default hard-coded DH params\n");
+  m.data = US std_dh_prime_default();
+  m.size = Ustrlen(m.data);
+  }
+else if (Ustrcmp(exp_tls_dhparam, "historic") == 0)
+  use_file_in_spool = TRUE;
+else if (Ustrcmp(exp_tls_dhparam, "none") == 0)
+  {
+  DEBUG(D_tls) debug_printf("Requested no DH parameters.\n");
+  return OK;
+  }
+else if (exp_tls_dhparam[0] != '/')
+  {
+  m.data = US std_dh_prime_named(exp_tls_dhparam);
+  if (m.data == NULL)
+    return tls_error(US"No standard prime named", CS exp_tls_dhparam, NULL);
+  m.size = Ustrlen(m.data);
+  }
+else
+  {
+  use_fixed_file = TRUE;
+  filename = exp_tls_dhparam;
+  }
+
+if (m.data)
+  {
+  rc = gnutls_dh_params_import_pkcs3(dh_server_params, &m, GNUTLS_X509_FMT_PEM);
+  exim_gnutls_err_check(US"gnutls_dh_params_import_pkcs3");
+  DEBUG(D_tls) debug_printf("Loaded fixed standard D-H parameters\n");
+  return OK;
+  }
 
 #ifdef HAVE_GNUTLS_SEC_PARAM_CONSTANTS
 /* If you change this constant, also change dh_param_fn_ext so that we can use a
@@ -404,9 +445,13 @@ if (dh_bits > tls_dh_max_bits)
   dh_bits = tls_dh_max_bits;
   }
 
-if (!string_format(filename, sizeof(filename),
-      "%s/gnutls-params-%d", spool_directory, dh_bits))
-  return tls_error(US"overlong filename", NULL, NULL);
+if (use_file_in_spool)
+  {
+  if (!string_format(filename_buf, sizeof(filename_buf),
+        "%s/gnutls-params-%d", spool_directory, dh_bits))
+    return tls_error(US"overlong filename", NULL, NULL);
+  filename = filename_buf;
+  }
 
 /* Open the cache file for reading and if successful, read it and set up the
 parameters. */

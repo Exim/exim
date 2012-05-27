@@ -142,6 +142,21 @@ Exim version 4.80
    fail completely.  (The check is not done as root, to ensure that problems
    here are not made worse by the check).
 
+ * The "tls_dhparam" option has been updated, so that it can now specify a
+   path or an identifier for a standard DH prime from one of a few RFCs.
+   The default for OpenSSL is no longer to not use DH but instead to use
+   one of these standard primes.  The default for GnuTLS is no longer to use
+   a file in the spool directory, but to use that same standard prime.
+   The option is now used by GnuTLS too.  If it points to a path, then
+   GnuTLS will use that path, instead of a file in the spool directory;
+   GnuTLS will attempt to create it if it does not exist.
+
+   To preserve the previous behaviour of generating files in the spool
+   directory, set "tls_dhparam = historic".  Since prior releases of Exim
+   ignored tls_dhparam when using GnuTLS, this can safely be done before
+   the upgrade.
+
+
 
 Exim version 4.77
 -----------------

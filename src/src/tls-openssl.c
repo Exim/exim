@@ -275,60 +275,85 @@ DEBUG(D_tls) debug_printf("SSL info: %s\n", SSL_state_string_long(s));
 /* If dhparam is set, expand it, and load up the parameters for DH encryption.
 
 Arguments:
-  dhparam   DH parameter file
+  dhparam   DH parameter file or fixed parameter identity string
   host      connected host, if client; NULL if server
 
 Returns:    TRUE if OK (nothing to set up, or setup worked)
 */
 
 static BOOL
-init_dh(uschar *dhparam, host_item *host)
+init_dh(SSL_CTX *sctx, uschar *dhparam, host_item *host)
 {
-BOOL yield = TRUE;
 BIO *bio;
 DH *dh;
 uschar *dhexpanded;
+const char *pem;
 
 if (!expand_check(dhparam, US"tls_dhparam", &dhexpanded))
   return FALSE;
 
-if (dhexpanded == NULL) return TRUE;
-
-if ((bio = BIO_new_file(CS dhexpanded, "r")) == NULL)
+if (dhexpanded == NULL || *dhexpanded == '\0')
   {
-  tls_error(string_sprintf("could not read dhparams file %s", dhexpanded),
-    host, (uschar *)strerror(errno));
-  yield = FALSE;
+  bio = BIO_new_mem_buf(CS std_dh_prime_default(), -1);
+  }
+else if (dhexpanded[0] == '/')
+  {
+  bio = BIO_new_file(CS dhexpanded, "r");
+  if (bio == NULL)
+    {
+    tls_error(string_sprintf("could not read dhparams file %s", dhexpanded),
+          host, US strerror(errno));
+    return FALSE;
+    }
   }
 else
   {
-  if ((dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL)) == NULL)
+  if (Ustrcmp(dhexpanded, "none") == 0)
     {
-    tls_error(string_sprintf("could not read dhparams file %s", dhexpanded),
-      host, NULL);
-    yield = FALSE;
+    DEBUG(D_tls) debug_printf("Requested no DH parameters.\n");
+    return TRUE;
     }
-  else
+
+  pem = std_dh_prime_named(dhexpanded);
+  if (!pem)
     {
-    if ((8*DH_size(dh)) > tls_dh_max_bits)
-      {
-      DEBUG(D_tls)
-        debug_printf("dhparams file %d bits, is > tls_dh_max_bits limit of %d",
-            8*DH_size(dh), tls_dh_max_bits);
-      }
-    else
-      {
-      SSL_CTX_set_tmp_dh(ctx, dh);
-      DEBUG(D_tls)
-        debug_printf("Diffie-Hellman initialized from %s with %d-bit key\n",
-          dhexpanded, 8*DH_size(dh));
-      }
-    DH_free(dh);
+    tls_error(string_sprintf("Unknown standard DH prime \"%s\"", dhexpanded),
+        host, US strerror(errno));
+    return FALSE;
     }
-  BIO_free(bio);
+  bio = BIO_new_mem_buf(CS pem, -1);
   }
 
-return yield;
+dh = PEM_read_bio_DHparams(bio, NULL, NULL, NULL);
+if (dh == NULL)
+  {
+  BIO_free(bio);
+  tls_error(string_sprintf("Could not read tls_dhparams \"%s\"", dhexpanded),
+      host, NULL);
+  return FALSE;
+  }
+
+/* Even if it is larger, we silently return success rather than cause things
+ * to fail out, so that a too-large DH will not knock out all TLS; it's a
+ * debatable choice. */
+if ((8*DH_size(dh)) > tls_dh_max_bits)
+  {
+  DEBUG(D_tls)
+    debug_printf("dhparams file %d bits, is > tls_dh_max_bits limit of %d",
+        8*DH_size(dh), tls_dh_max_bits);
+  }
+else
+  {
+  SSL_CTX_set_tmp_dh(sctx, dh);
+  DEBUG(D_tls)
+    debug_printf("Diffie-Hellman initialized from %s with %d-bit prime\n",
+      dhexpanded ? dhexpanded : US"default", 8*DH_size(dh));
+  }
+
+DH_free(dh);
+BIO_free(bio);
+
+return TRUE;
 }
 
 
@@ -619,6 +644,9 @@ OCSP information. */
 rc = tls_expand_session_files(ctx_sni, cbinfo);
 if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 
+rc = init_dh(ctx_sni, cbinfo->dhparam, NULL);
+if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
+
 DEBUG(D_tls) debug_printf("Switching SSL context.\n");
 SSL_set_SSL_CTX(s, ctx_sni);
 
@@ -779,7 +807,7 @@ else
 
 /* Initialize with DH parameters if supplied */
 
-if (!init_dh(dhparam, host)) return DEFER;
+if (!init_dh(ctx, dhparam, host)) return DEFER;
 
 /* Set up certificate and key (and perhaps OCSP info) */
 

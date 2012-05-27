@@ -100,6 +100,12 @@ Version 4.80
     hard-coded limit of DH ephemeral bits, to fix interop problems caused by
     GnuTLS 2.12 library recommending a bit count higher than NSS supports.
 
+16. tls_dhparam now used by both OpenSSL and GnuTLS, can be path or identifier.
+    Option can now be a path or an identifier for a standard prime.
+    If unset, we use the DH prime from section 2.2 of RFC 5114, "ike23".
+    Set to "historic" to get the old GnuTLS behaviour of auto-generated DH
+    primes.
+
 
 Version 4.77
 ------------

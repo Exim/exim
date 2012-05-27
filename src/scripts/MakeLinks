@@ -228,6 +228,7 @@ ln -s ../src/smtp_in.c         smtp_in.c
 ln -s ../src/smtp_out.c        smtp_out.c
 ln -s ../src/spool_in.c        spool_in.c
 ln -s ../src/spool_out.c       spool_out.c
+ln -s ../src/std-crypto.c      std-crypto.c
 ln -s ../src/store.c           store.c
 ln -s ../src/string.c          string.c
 ln -s ../src/tls.c             tls.c

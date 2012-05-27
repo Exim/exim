@@ -143,6 +143,10 @@ connections.
 (6): What's the deal with tls_dh_max_bits?  What's DH?
 ------------------------------------------------------
 
+You can avoid all of the tls_dh_max_bits issues if you leave "tls_dhparam"
+unset, so that you get one of the standard built-in primes used for DH.
+
+
 DH, Diffie-Hellman (or Diffie-Hellman-Merkle, or something naming Williamson)
 is the common name for a way for two parties to a communication stream to
 exchange some private random data so that both end up with a shared secret
@@ -258,9 +262,15 @@ Ideally, the first line will read "PKCS#3 DH Parameters: (2236 bit)".  If the
 count is more than 2236, then remove the file and let Exim regenerate it, or
 generate one yourself and move it into place.  Ideally use "openssl dhparam"
 to generate it, and then wait a very long time; at least this way, the size
-will be correct.  (This developer is now convinced that Exim 4.81 should
-bundle the suggested primes from a few RFCs and let the administrator choose
-those.)
+will be correct.
+
+The use of "hope" as a strategy was felt to be unacceptable as a default, so
+late in the RC series for 4.80, the whole issue was side-stepped.  The primes
+used for DH are publicly revealed; moreover, there are selection criteria for
+what makes a "good" DH prime.  As it happens, there are *standard* primes
+which can be used, and are specified to be used for certain protocols.  So
+these primes were built into Exim, and by default exim now uses a 2048 bit
+prime from section 2.2 of RFC 5114.
 
 
 A TLS client does not get to choose the DH prime used, but can choose a

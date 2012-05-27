@@ -21,6 +21,10 @@ extern uschar *init_perl(uschar *);
 
 
 #ifdef SUPPORT_TLS
+extern const char *
+               std_dh_prime_default(void);
+extern const char *
+               std_dh_prime_named(const uschar *);
 extern int     tls_client_start(int, host_item *, address_item *, uschar *,
                  uschar *, uschar *, uschar *, uschar *, uschar *, uschar *,
                  int);
