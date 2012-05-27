@@ -15715,7 +15715,7 @@ parameters should be loaded.  If the file exists, it should hold a PEM-encoded
 PKCS#3 representation of the DH prime.  If the file does not exist, for
 OpenSSL it is an error.  For GnuTLS, Exim will attempt to create the file and
 fill it with a generated DH prime.  For OpenSSL, if the DH bit-count from
-loading the file is greater than &%tls_dh_max_bits$& then it will be ignored,
+loading the file is greater than &%tls_dh_max_bits%& then it will be ignored,
 and treated as though the &%tls_dhparam%& were set to "none".
 
 If this option expands to the string "none", then no DH parameters will be
