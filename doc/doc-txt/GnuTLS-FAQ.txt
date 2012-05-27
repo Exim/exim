@@ -232,6 +232,37 @@ security versus compatibility by raising it.
 A future release of Exim may even let the administrator tell GnuTLS to ask for
 more or less than "NORMAL".
 
+To add to the fun, the size of the prime returned by GnuTLS when we call
+gnutls_dh_params_generate2() is not limited to be the requested size.  GnuTLS
+has a tendency to overshoot.  2237 bit primes are common when 2236 is
+requested, and higher still have been observed.  Further, there is no API to
+ask how large the prime bundled up inside the parameter is; the most we can do
+is ask how large the DH prime used in an active TLS session is.  Since we're
+not able to use GnuTLS API calls (and exporting to PKCS3 and then calling
+OpenSSL routines would be undiplomatic, plus add a library dependency), we're
+left with no way to actually know the size of the freshly generated DH prime.
+
+Thus we check if the the value returned is at least 10 more than the minimum
+we'll accept as a client (EXIM_CLIENT_DH_MIN_BITS, see below, defaults to
+1024) and if it is, we subtract 10.  Then we reluctantly deploy a strategy
+called "hope".  This is not guaranteed to be successful; in the first code
+pass on this logic, we subtracted 3, asked for 2233 bits and got 2240 in the
+first test.
+
+If you see Thunderbird clients still failing, then as a user who can see into
+Exim's spool directory, run:
+
+$ openssl dhparam -noout -text -in /path/to/spool/gnutls-params-2236 | head
+
+Ideally, the first line will read "PKCS#3 DH Parameters: (2236 bit)".  If the
+count is more than 2236, then remove the file and let Exim regenerate it, or
+generate one yourself and move it into place.  Ideally use "openssl dhparam"
+to generate it, and then wait a very long time; at least this way, the size
+will be correct.  (This developer is now convinced that Exim 4.81 should
+bundle the suggested primes from a few RFCs and let the administrator choose
+those.)
+
+
 A TLS client does not get to choose the DH prime used, but can choose a
 minimum acceptable value.  For Exim, this is a compile-time constant called
 "EXIM_CLIENT_DH_MIN_BITS" of 1024, which can be overruled in "Local/Makefile".

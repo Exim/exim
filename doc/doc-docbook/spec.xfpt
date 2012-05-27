@@ -15697,6 +15697,10 @@ by Thunderbird, while GnuTLS was suggesting 2432 bits as normal.
 
 If you prefer more security and are willing to break some clients, raise this
 number.
+
+Note that the value passed to GnuTLS for *generating* a new prime may be a
+little less than this figure, because GnuTLS is inexact and may produce a
+larger prime than requested.
 .wen
 
 
@@ -15708,8 +15712,8 @@ This is used only for OpenSSL. When Exim is linked with GnuTLS, this option is
 ignored. See section &<<SECTopenvsgnu>>& for further details.
 
 .new
-If the DH bit-count from loading the file is greater than tls_dh_max_bits then
-it will be ignored.
+If the DH bit-count from loading the file is greater than &%tls_dh_max_bits$&
+then it will be ignored.
 .wen
 
 
@@ -25070,6 +25074,10 @@ renaming. The relevant commands are something like this:
 # chown exim:exim new-params
 # chmod 0600 new-params
 # certtool --generate-dh-params --bits 2236 >>new-params
+# openssl dhparam -noout -text -in new-params | head
+[ check the first line, make sure it's not more than 2236;
+  if it is, then go back to the start ("rm") and repeat
+  until the size generated is at most the size requested ]
 # chmod 0400 new-params
 # mv new-params gnutls-params-2236
 .endd
@@ -25092,6 +25100,12 @@ The filename and bits used will change as the GnuTLS maintainers change the
 value for their parameter &`GNUTLS_SEC_PARAM_NORMAL`&, as clamped by
 &%tls_dh_max_bits%&.  At the time of writing (mid 2012), GnuTLS 2.12 recommends
 2432 bits, while NSS is limited to 2236 bits.
+
+In fact, the requested value will be *lower* than &%tls_dh_max_bits%&, to
+increase the chance of the generated prime actually being within acceptable
+bounds, as GnuTLS has been observed to overshoot.  Note the check step in the
+procedure above.  There is no sane procedure available to Exim to double-check
+the size of the generated prime, so it might still be too large.
 .wen
 
 

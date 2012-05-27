@@ -483,6 +483,7 @@ case. */
 if (rc < 0)
   {
   uschar *temp_fn;
+  unsigned int dh_bits_gen = dh_bits;
 
   if ((PATH_MAX - Ustrlen(filename)) < 10)
     return tls_error(US"Filename too long to generate replacement",
@@ -494,8 +495,26 @@ if (rc < 0)
     return tls_error(US"Unable to open temp file", strerror(errno), NULL);
   (void)fchown(fd, exim_uid, exim_gid);   /* Probably not necessary */
 
-  DEBUG(D_tls) debug_printf("generating %d bits Diffie-Hellman key ...\n", dh_bits);
-  rc = gnutls_dh_params_generate2(dh_server_params, dh_bits);
+  /* GnuTLS overshoots!
+   * If we ask for 2236, we might get 2237 or more.
+   * But there's no way to ask GnuTLS how many bits there really are.
+   * We can ask how many bits were used in a TLS session, but that's it!
+   * The prime itself is hidden behind too much abstraction.
+   * So we ask for less, and proceed on a wing and a prayer.
+   * First attempt, subtracted 3 for 2233 and got 2240.
+   */
+  if (dh_bits > EXIM_CLIENT_DH_MIN_BITS + 10)
+    {
+    dh_bits_gen = dh_bits - 10;
+    DEBUG(D_tls)
+      debug_printf("being paranoid about DH generation, make it '%d' bits'\n",
+          dh_bits_gen);
+    }
+
+  DEBUG(D_tls)
+    debug_printf("requesting generation of %d bit Diffie-Hellman prime ...\n",
+        dh_bits_gen);
+  rc = gnutls_dh_params_generate2(dh_server_params, dh_bits_gen);
   exim_gnutls_err_check(US"gnutls_dh_params_generate2");
 
   /* gnutls_dh_params_export_pkcs3() will tell us the exact size, every time,
