@@ -25061,6 +25061,12 @@ implementation, then patches are welcome.
 
 .section "GnuTLS parameter computation" "SECTgnutlsparam"
 .new
+This section only applies if &%tls_dhparam%& is set to &`historic`& or to
+an explicit path; if the latter, then the text about generation still applies,
+but not the chosen filename.
+By default, as of Exim 4.80 a hard-coded D-H prime is used.
+See the documentation of &%tls_dhparam%& for more information.
+
 GnuTLS uses D-H parameters that may take a substantial amount of time
 to compute. It is unreasonable to re-compute them for every TLS session.
 Therefore, Exim keeps this data in a file in its spool directory, called
@@ -25076,6 +25082,10 @@ place, new Exim processes immediately start using it.
 
 For maximum security, the parameters that are stored in this file should be
 recalculated periodically, the frequency depending on your paranoia level.
+If you are avoiding using the fixed D-H primes published in RFCs, then you
+are concerned about some advanced attacks and will wish to do this; if you do
+not regenerate then you might as well stick to the standard primes.
+
 Arranging this is easy in principle; just delete the file when you want new
 values to be computed. However, there may be a problem. The calculation of new
 parameters needs random numbers, and these are obtained from &_/dev/random_&.
