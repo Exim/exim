@@ -503,7 +503,7 @@ if (rc < 0)
    * So we ask for less, and proceed on a wing and a prayer.
    * First attempt, subtracted 3 for 2233 and got 2240.
    */
-  if (dh_bits > EXIM_CLIENT_DH_MIN_BITS + 10)
+  if (dh_bits >= EXIM_CLIENT_DH_MIN_BITS + 10)
     {
     dh_bits_gen = dh_bits - 10;
     DEBUG(D_tls)
