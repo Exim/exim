@@ -373,7 +373,7 @@ once                                 string*         unset         autoreply
 once_file_size                       integer         0             autoreply         3.20
 once_repeat                          time            0s            autoreply         2.95
 one_time                             boolean         false         redirect          4.00
-openssl_options                      string          unset         main              4.73 default to unset in 4.80
+openssl_options                      string          +no_sslv2     main              4.73 default changed in 4.80
 optional                             boolean         false         iplookup          4.00
 oracle_servers                       string          unset         main              4.00
 owners                               string list     unset         redirect          4.00

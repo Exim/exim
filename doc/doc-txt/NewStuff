@@ -106,6 +106,10 @@ Version 4.80
     Set to "historic" to get the old GnuTLS behaviour of auto-generated DH
     primes.
 
+17. SSLv2 now disabled by default in OpenSSL.  (Never supported by GnuTLS).
+    Use "openssl_options -no_sslv2" to re-enable support, if your OpenSSL
+    install was not built with OPENSSL_NO_SSL2 ("no-ssl2").
+
 
 Version 4.77
 ------------

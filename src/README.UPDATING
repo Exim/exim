@@ -43,6 +43,12 @@ Exim version 4.80
    the message.  No tool has been provided as we believe this is a rare
    occurence.
 
+ * For OpenSSL, SSLv2 is now disabled by default.  (GnuTLS does not support
+   SSLv2).  RFC 6176 prohibits SSLv2 and some informal surveys suggest no
+   actual usage.  You can re-enable with the "openssl_options" Exim option,
+   in the main configuration section.  Note that supporting SSLv2 exposes
+   you to ciphersuite downgrade attacks.
+
  * With OpenSSL 1.0.1+, Exim now supports TLS 1.1 and TLS 1.2.  If built
    against 1.0.1a then you will get a warning message and the
    "openssl_options" value will not parse "no_tlsv1_1": the value changes
@@ -52,8 +58,9 @@ Exim version 4.80
    "openssl_options" gains "no_tlsv1_1", "no_tlsv1_2" and "no_compression".
 
    COMPATIBILITY WARNING: The default value of "openssl_options" is no longer
-   "+dont_insert_empty_fragments".  We default to unset.  That old default was
-   grandfathered in from before openssl_options became a configuration option.
+   "+dont_insert_empty_fragments".  We default to "+no_sslv2".
+   That old default was grandfathered in from before openssl_options became a
+   configuration option.
    Empty fragments are inserted by default through TLS1.0, to partially defend
    against certain attacks; TLS1.1+ change the protocol so that this is not
    needed.  The DIEF SSL option was required for some old releases of mail

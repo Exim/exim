@@ -163,6 +163,8 @@ PP/38 Overhaul DH prime handling, supply RFC-specified DH primes as built
       tls_dhparam take prime identifiers.  Also unbreak combination of
       OpenSSL+DH_params+TLSSNI.
 
+PP/39 Disable SSLv2 by default in OpenSSL support.
+
 
 Exim version 4.77
 -----------------
