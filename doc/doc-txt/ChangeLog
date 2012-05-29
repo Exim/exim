@@ -31,6 +31,7 @@ PP/07 Handle "exim -L <tag>" to indicate to use syslog with tag as the process
       Also parse but ignore: -Ac -Am -X<logfile>
       Bugzilla 1117.
 
+TL/01 Bugzilla 1258 - Refactor MAIL FROM optional args processing.
 
 Exim version 4.80
 -----------------

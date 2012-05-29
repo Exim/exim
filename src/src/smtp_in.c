@@ -207,6 +207,24 @@ static uschar *protocols[] = {
 #define pauthed  2  /* added to pextend */
 #define pnlocal  6  /* offset to remove "local" */
 
+/* Sanity check and validate optional args to MAIL FROM: envelope */
+enum {
+  ENV_MAIL_OPT_SIZE, ENV_MAIL_OPT_BODY, ENV_MAIL_OPT_AUTH,
+  ENV_MAIL_OPT_PRDR, ENV_MAIL_OPT_NULL
+  };
+typedef struct {
+  uschar *   name;  /* option requested during MAIL cmd */
+  int       value;  /* enum type */
+  BOOL need_value;  /* TRUE requires value (name=value pair format)
+                       FALSE is a singleton */
+  } env_mail_type_t;
+static env_mail_type_t env_mail_type_list[] = {
+    { US"SIZE",   ENV_MAIL_OPT_SIZE,   TRUE  },
+    { US"BODY",   ENV_MAIL_OPT_BODY,   TRUE  },
+    { US"AUTH",   ENV_MAIL_OPT_AUTH,   TRUE  },
+    { US"NULL",   ENV_MAIL_OPT_NULL,   FALSE }  /* Placeholder for ending */
+  };
+
 /* When reading SMTP from a remote host, we have to use our own versions of the
 C input-reading functions, in order to be able to flush the SMTP output only
 when about to read more data from the socket. This is the only way to get
@@ -3208,6 +3226,7 @@ while (done <= 0)
     HAD(SCH_MAIL);
     smtp_mailcmd_count++;              /* Count for limit and ratelimit */
     was_rej_mail = TRUE;               /* Reset if accepted */
+    env_mail_type_t * mail_args;       /* Sanity check & validate args */
 
     if (helo_required && !helo_seen)
       {
@@ -3256,113 +3275,137 @@ while (done <= 0)
       {
       uschar *name, *value, *end;
       unsigned long int size;
+      BOOL arg_error = FALSE;
 
       if (!extract_option(&name, &value)) break;
 
-      /* Handle SIZE= by reading the value. We don't do the check till later,
-      in order to be able to log the sender address on failure. */
-
-      if (strcmpic(name, US"SIZE") == 0 &&
-          ((size = Ustrtoul(value, &end, 10)), *end == 0))
+      for (mail_args = env_mail_type_list;
+           (char *)mail_args < (char *)env_mail_type_list + sizeof(env_mail_type_list);
+           mail_args++
+          )
         {
-        if ((size == ULONG_MAX && errno == ERANGE) || size > INT_MAX)
-          size = INT_MAX;
-        message_size = (int)size;
+        if (strcmpic(name, mail_args->name) == 0)
+          break;
         }
+      if (mail_args->need_value && strcmpic(value, US"") == 0)
+        break;
+      /* This doesn't seem right to use
+        if ((char *)mail_args >= (char *)env_mail_type_list + sizeof(env_mail_type_list))
+        goto BAD_MAIL_ARGS;
+      */
 
-      /* If this session was initiated with EHLO and accept_8bitmime is set,
-      Exim will have indicated that it supports the BODY=8BITMIME option. In
-      fact, it does not support this according to the RFCs, in that it does not
-      take any special action for forwarding messages containing 8-bit
-      characters. That is why accept_8bitmime is not the default setting, but
-      some sites want the action that is provided. We recognize both "8BITMIME"
-      and "7BIT" as body types, but take no action. */
-
-      else if (accept_8bitmime && strcmpic(name, US"BODY") == 0 &&
-          (strcmpic(value, US"8BITMIME") == 0 ||
-           strcmpic(value, US"7BIT") == 0)) {}
-
-      /* Handle the AUTH extension. If the value given is not "<>" and either
-      the ACL says "yes" or there is no ACL but the sending host is
-      authenticated, we set it up as the authenticated sender. However, if the
-      authenticator set a condition to be tested, we ignore AUTH on MAIL unless
-      the condition is met. The value of AUTH is an xtext, which means that +,
-      = and cntrl chars are coded in hex; however "<>" is unaffected by this
-      coding. */
-
-      else if (strcmpic(name, US"AUTH") == 0)
+      switch(mail_args->value)
         {
-        if (Ustrcmp(value, "<>") != 0)
-          {
-          int rc;
-          uschar *ignore_msg;
-
-          if (auth_xtextdecode(value, &authenticated_sender) < 0)
+        /* Handle SIZE= by reading the value. We don't do the check till later,
+        in order to be able to log the sender address on failure. */
+        case ENV_MAIL_OPT_SIZE:
+          /* if (strcmpic(name, US"SIZE") == 0 && */
+          if (((size = Ustrtoul(value, &end, 10)), *end == 0))
             {
-            /* Put back terminator overrides for error message */
-            name[-1] = ' ';
-            value[-1] = '=';
-            done = synprot_error(L_smtp_syntax_error, 501, NULL,
-              US"invalid data for AUTH");
-            goto COMMAND_LOOP;
-            }
-
-          if (acl_smtp_mailauth == NULL)
-            {
-            ignore_msg = US"client not authenticated";
-            rc = (sender_host_authenticated != NULL)? OK : FAIL;
+            if ((size == ULONG_MAX && errno == ERANGE) || size > INT_MAX)
+              size = INT_MAX;
+            message_size = (int)size;
             }
           else
-            {
-            ignore_msg = US"rejected by ACL";
-            rc = acl_check(ACL_WHERE_MAILAUTH, NULL, acl_smtp_mailauth,
-              &user_msg, &log_msg);
-            }
+            arg_error = TRUE;
+          break;
 
-          switch (rc)
-            {
-            case OK:
-            if (authenticated_by == NULL ||
-                authenticated_by->mail_auth_condition == NULL ||
-                expand_check_condition(authenticated_by->mail_auth_condition,
-                    authenticated_by->name, US"authenticator"))
-              break;     /* Accept the AUTH */
-
-            ignore_msg = US"server_mail_auth_condition failed";
-            if (authenticated_id != NULL)
-              ignore_msg = string_sprintf("%s: authenticated ID=\"%s\"",
-                ignore_msg, authenticated_id);
-
-            /* Fall through */
-
-            case FAIL:
-            authenticated_sender = NULL;
-            log_write(0, LOG_MAIN, "ignoring AUTH=%s from %s (%s)",
-              value, host_and_ident(TRUE), ignore_msg);
+        /* If this session was initiated with EHLO and accept_8bitmime is set,
+        Exim will have indicated that it supports the BODY=8BITMIME option. In
+        fact, it does not support this according to the RFCs, in that it does not
+        take any special action for forwarding messages containing 8-bit
+        characters. That is why accept_8bitmime is not the default setting, but
+        some sites want the action that is provided. We recognize both "8BITMIME"
+        and "7BIT" as body types, but take no action. */
+        case ENV_MAIL_OPT_BODY:
+          if (accept_8bitmime &&
+              (strcmpic(value, US"8BITMIME") == 0 ||
+               strcmpic(value, US"7BIT") == 0) )
             break;
+          arg_error = TRUE;
+          break;
 
-            /* Should only get DEFER or ERROR here. Put back terminator
-            overrides for error message */
+        /* Handle the AUTH extension. If the value given is not "<>" and either
+        the ACL says "yes" or there is no ACL but the sending host is
+        authenticated, we set it up as the authenticated sender. However, if the
+        authenticator set a condition to be tested, we ignore AUTH on MAIL unless
+        the condition is met. The value of AUTH is an xtext, which means that +,
+        = and cntrl chars are coded in hex; however "<>" is unaffected by this
+        coding. */
+        case ENV_MAIL_OPT_AUTH:
+          if (Ustrcmp(value, "<>") != 0)
+            {
+            int rc;
+            uschar *ignore_msg;
 
-            default:
-            name[-1] = ' ';
-            value[-1] = '=';
-            (void)smtp_handle_acl_fail(ACL_WHERE_MAILAUTH, rc, user_msg,
-              log_msg);
-            goto COMMAND_LOOP;
+            if (auth_xtextdecode(value, &authenticated_sender) < 0)
+              {
+              /* Put back terminator overrides for error message */
+              name[-1] = ' ';
+              value[-1] = '=';
+              done = synprot_error(L_smtp_syntax_error, 501, NULL,
+                US"invalid data for AUTH");
+              goto COMMAND_LOOP;
+              }
+            if (acl_smtp_mailauth == NULL)
+              {
+              ignore_msg = US"client not authenticated";
+              rc = (sender_host_authenticated != NULL)? OK : FAIL;
+              }
+            else
+              {
+              ignore_msg = US"rejected by ACL";
+              rc = acl_check(ACL_WHERE_MAILAUTH, NULL, acl_smtp_mailauth,
+                &user_msg, &log_msg);
+              }
+  
+            switch (rc)
+              {
+              case OK:
+              if (authenticated_by == NULL ||
+                  authenticated_by->mail_auth_condition == NULL ||
+                  expand_check_condition(authenticated_by->mail_auth_condition,
+                      authenticated_by->name, US"authenticator"))
+                break;     /* Accept the AUTH */
+  
+              ignore_msg = US"server_mail_auth_condition failed";
+              if (authenticated_id != NULL)
+                ignore_msg = string_sprintf("%s: authenticated ID=\"%s\"",
+                  ignore_msg, authenticated_id);
+  
+              /* Fall through */
+  
+              case FAIL:
+              authenticated_sender = NULL;
+              log_write(0, LOG_MAIN, "ignoring AUTH=%s from %s (%s)",
+                value, host_and_ident(TRUE), ignore_msg);
+              break;
+  
+              /* Should only get DEFER or ERROR here. Put back terminator
+              overrides for error message */
+  
+              default:
+              name[-1] = ' ';
+              value[-1] = '=';
+              (void)smtp_handle_acl_fail(ACL_WHERE_MAILAUTH, rc, user_msg,
+                log_msg);
+              goto COMMAND_LOOP;
+              }
             }
-          }
-        }
+            break;
+ 
+        /* Unknown option. Stick back the terminator characters and break
+        the loop. An error for a malformed address will occur. */
+        default:
 
-      /* Unknown option. Stick back the terminator characters and break
-      the loop. An error for a malformed address will occur. */
-
-      else
-        {
-        name[-1] = ' ';
-        value[-1] = '=';
-        break;
+          /* BAD_MAIL_ARGS: */
+          name[-1] = ' ';
+          value[-1] = '=';
+          break;
         }
+      /* Break out of for loop if switch() had bad argument or
+         when start of the email address is reached */
+      if (arg_error) break;
       }
 
     /* If we have passed the threshold for rate limiting, apply the current

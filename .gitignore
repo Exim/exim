@@ -2,3 +2,4 @@ exim-packaging-*
 *~
 *.bak
 .*.swp
+0*.patch
