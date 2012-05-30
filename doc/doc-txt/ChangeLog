@@ -165,6 +165,10 @@ PP/38 Overhaul DH prime handling, supply RFC-specified DH primes as built
 
 PP/39 Disable SSLv2 by default in OpenSSL support.
 
+PP/40 Lower default size of EXIM_CLIENT_DH_MIN_BITS constant (used only by
+      GnuTLS at this time) from 1024 to 512.  Cautious folk can override
+      in Local/Makefile.
+
 
 Exim version 4.77
 -----------------

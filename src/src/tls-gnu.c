@@ -152,7 +152,7 @@ callbacks. */
 #endif
 
 #ifndef EXIM_CLIENT_DH_MIN_BITS
-#define EXIM_CLIENT_DH_MIN_BITS 1024
+#define EXIM_CLIENT_DH_MIN_BITS 512
 #endif
 
 /* With GnuTLS 2.12.x+ we have gnutls_sec_param_to_pk_bits() with which we
