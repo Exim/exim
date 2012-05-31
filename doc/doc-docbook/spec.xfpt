@@ -45,7 +45,7 @@
 . the <bookinfo> element must also be updated for each new edition.
 . /////////////////////////////////////////////////////////////////////////////
 
-.set previousversion "4.75"
+.set previousversion "4.80"
 .set version "4.80"
 
 .set ACL "access control lists (ACLs)"
@@ -1647,7 +1647,6 @@ architecture and operating system for itself, but the defaults can be
 overridden if necessary.
 
 
-.new
 .section "PCRE library" "SECTpcre"
 .cindex "PCRE library"
 Exim no longer has an embedded PCRE library as the vast majority of
@@ -1662,7 +1661,6 @@ If your operating system has no
 PCRE support then you will need to obtain and build the current PCRE
 from &url(ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/).
 More information on PCRE is available at &url(http://www.pcre.org/).
-.wen
 
 .section "DBM libraries" "SECTdb"
 .cindex "DBM libraries" "discussion of"
@@ -1873,14 +1871,12 @@ SUPPORT_TLS=yes
 TLS_LIBS=-L/usr/local/openssl/lib -lssl -lcrypto
 TLS_INCLUDE=-I/usr/local/openssl/include/
 .endd
-.new
 .cindex "pkg-config" "OpenSSL"
 If you have &'pkg-config'& available, then instead you can just use:
 .code
 SUPPORT_TLS=yes
 USE_OPENSSL_PC=openssl
 .endd
-.wen
 .cindex "USE_GNUTLS"
 If GnuTLS is installed, you should set
 .code
@@ -1896,7 +1892,6 @@ USE_GNUTLS=yes
 TLS_LIBS=-L/usr/gnu/lib -lgnutls -ltasn1 -lgcrypt
 TLS_INCLUDE=-I/usr/gnu/include
 .endd
-.new
 .cindex "pkg-config" "GnuTLS"
 If you have &'pkg-config'& available, then instead you can just use:
 .code
@@ -1904,7 +1899,6 @@ SUPPORT_TLS=yes
 USE_GNUTLS=yes
 USE_GNUTLS_PC=gnutls
 .endd
-.wen
 
 You do not need to set TLS_INCLUDE if the relevant directory is already
 specified in INCLUDE. Details of how to configure Exim to make use of TLS are
@@ -2133,7 +2127,6 @@ files or libraries are required. When a lookup type is not included in the
 binary, attempts to configure Exim to use it cause run time configuration
 errors.
 
-.new
 .cindex "pkg-config" "lookups"
 .cindex "pkg-config" "authenticators"
 Many systems now use a tool called &'pkg-config'& to encapsulate information
@@ -2153,7 +2146,6 @@ AUTH_GSASL_PC=libgsasl
 AUTH_HEIMDAL_GSSAPI=yes
 AUTH_HEIMDAL_GSSAPI_PC=heimdal-gssapi
 .endd
-.wen
 
 .cindex "Perl" "including support for"
 Exim can be linked with an embedded Perl interpreter, allowing Perl
@@ -6245,7 +6237,6 @@ using Berkeley DB versions 3 or 4, it opens existing databases for reading with
 the DB_UNKNOWN option. This enables it to handle any of the types of database
 that the library supports, and can be useful for accessing DBM files created by
 other applications. (For earlier DB versions, DB_HASH is always used.)
-.new
 .next
 .cindex "lookup" "dbmjz"
 .cindex "lookup" "dbm &-- embedded NULs"
@@ -6257,7 +6248,6 @@ ASCII NUL characters to form the lookup key.  An example usage would be to
 authenticate incoming SMTP calls using the passwords from Cyrus SASL's
 &_/etc/sasldb2_& file with the &(gsasl)& authenticator or Exim's own
 &(cram_md5)& authenticator.
-.wen
 .next
 .cindex "lookup" "dbmnz"
 .cindex "lookup" "dbm &-- terminating zero"
@@ -6756,13 +6746,11 @@ is used on its own as the result. If the lookup does not succeed, the
 &`fail`& keyword causes a &'forced expansion failure'& &-- see section
 &<<SECTforexpfai>>& for an explanation of what this means.
 
-.new
 The supported DNS record types are A, CNAME, MX, NS, PTR, SPF, SRV, and TXT,
 and, when Exim is compiled with IPv6 support, AAAA (and A6 if that is also
 configured). If no type is given, TXT is assumed. When the type is PTR,
 the data can be an IP address, written as normal; inversion and the addition of
 &%in-addr.arpa%& or &%ip6.arpa%& happens automatically. For example:
-.wen
 .code
 ${lookup dnsdb{ptr=192.168.4.5}{$value}fail}
 .endd
@@ -6789,13 +6777,11 @@ white space is ignored.
 
 .cindex "TXT record" "in &(dnsdb)& lookup"
 .cindex "SPF record" "in &(dnsdb)& lookup"
-.new
 For TXT records with multiple items of data, only the first item is returned,
 unless a separator for them is specified using a comma after the separator
 character followed immediately by the TXT record item separator. To concatenate
 items without a separator, use a semicolon instead. For SPF records the
 default behaviour is to concatenate multiple items without using a separator.
-.wen
 .code
 ${lookup dnsdb{>\n,: txt=a.b.example}}
 ${lookup dnsdb{>\n; txt=a.b.example}}
@@ -9773,10 +9759,8 @@ This operator returns a somewhat random number which is less than the
 supplied number and is at least 0.  The quality of this randomness depends
 on how Exim was built; the values are not suitable for keying material.
 If Exim is linked against OpenSSL then RAND_pseudo_bytes() is used.
-.new
 If Exim is linked against GnuTLS then gnutls_rnd(GNUTLS_RND_NONCE) is used,
 for versions of GnuTLS with that function.
-.wen
 Otherwise, the implementation may be arc4random(), random() seeded by
 srandomdev() or srandom(), or a custom implementation even weaker than
 random().
@@ -10182,7 +10166,6 @@ string is lexically greater than the second string. For &%gt%& the comparison
 includes the case of letters, whereas for &%gti%& the comparison is
 case-independent.
 
-.new
 .vitem &*inlist&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*& &&&
        &*inlisti&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
 .cindex "string" "comparison"
@@ -10199,7 +10182,6 @@ ${if inlist{needle}{foo:needle:bar}}
 ${if inlisti{Needle}{fOo:NeeDLE:bAr}}
   ${if forany{fOo:NeeDLE:bAr}{eqi{$item}{Needle}}}
 .endd
-.wen
 
 .vitem &*isip&~{*&<&'string'&>&*}*&  &&&
        &*isip4&~{*&<&'string'&>&*}*& &&&
@@ -10311,12 +10293,10 @@ See &*match_local_part*&.
 
 .vitem &*match_ip&~{*&<&'string1'&>&*}{*&<&'string2'&>&*}*&
 .cindex "&%match_ip%& expansion condition"
-.new
 This condition matches an IP address to a list of IP address patterns. It must
 be followed by two argument strings. The first (after expansion) must be an IP
 address or an empty string. The second (not expanded) is a restricted host
 list that can match only an IP address, not a host name. For example:
-.wen
 .code
 ${if match_ip{$sender_host_address}{1.2.3.4:5.6.7.8}{...}{...}}
 .endd
@@ -10362,10 +10342,8 @@ just as easy to use the fact that a lookup is itself a condition, and write:
 .endd
 .endlist ilist
 
-.new
 Note that <&'string2'&> is not itself subject to string expansion, unless
 Exim was built with the EXPAND_LISTMATCH_RHS option.
-.wen
 
 Consult section &<<SECThoslispatip>>& for further details of these patterns.
 
@@ -10394,10 +10372,8 @@ item can be used, as in all address lists, to cause subsequent items to
 have their local parts matched casefully. Domains are always matched
 caselessly.
 
-.new
 Note that <&'string2'&> is not itself subject to string expansion, unless
 Exim was built with the EXPAND_LISTMATCH_RHS option.
-.wen
 
 &*Note*&: Host lists are &'not'& supported in this way. This is because
 hosts have two identities: a name and an IP address, and it is not clear
@@ -10744,14 +10720,12 @@ is empty and &$authentication_failed$& is set to &"1"&). Failure includes any
 negative response to an AUTH command, including (for example) an attempt to use
 an undefined mechanism.
 
-.new
 .vitem &$av_failed$&
 .cindex "content scanning" "AV scanner failure"
 This variable is available when Exim is compiled with the content-scanning
 extension. It is set to &"0"& by default, but will be set to &"1"& if any
 problem occurs with the virus scanner (specified by &%av_scanner%&) during
 the ACL malware condition.
-.wen
 
 .vitem &$body_linecount$&
 .cindex "message body" "line count"
@@ -11884,7 +11858,6 @@ command in a filter file. Its use is explained in the description of that
 command, which can be found in the separate document entitled &'Exim's
 interfaces to mail filtering'&.
 
-.new
 .vitem &$tls_bits$&
 .vindex "&$tls_bits$&"
 Contains an approximation of the TLS cipher's bit-strength; the meaning of
@@ -11892,7 +11865,6 @@ this depends upon the TLS implementation used.
 If TLS has not been negotiated, the value will be 0.
 The value of this is automatically fed into the Cyrus SASL authenticator
 when acting as a server, to specify the "external SSF" (a SASL term).
-.wen
 
 .vitem &$tls_certificate_verified$&
 .vindex "&$tls_certificate_verified$&"
@@ -11924,7 +11896,6 @@ the value of the Distinguished Name of the certificate is made available in the
 value is retained during message delivery, except during outbound SMTP
 deliveries.
 
-.new
 .vitem &$tls_sni$&
 .vindex "&$tls_sni$&"
 .cindex "TLS" "Server Name Indication"
@@ -11939,7 +11910,6 @@ used) to the client, based upon the value of the SNI extension.
 The value will be retained for the lifetime of the message.  During outbound
 SMTP deliveries, it reflects the value of the &%tls_sni%& option on
 the transport.
-.wen
 
 .vitem &$tod_bsdinbox$&
 .vindex "&$tod_bsdinbox$&"
@@ -12883,7 +12853,6 @@ See also the &'Policy controls'& section above.
 Those options that undergo string expansion before use are marked with
 &dagger;.
 
-.new
 .option accept_8bitmime main boolean true
 .cindex "8BITMIME"
 .cindex "8-bit characters"
@@ -12899,7 +12868,6 @@ A more detailed analysis of the issues is provided by Dan Bernstein:
 .display
 &url(http://cr.yp.to/smtp/8bitmime.html)
 .endd
-.wen
 
 .option acl_not_smtp main string&!! unset
 .cindex "&ACL;" "for non-SMTP messages"
@@ -13481,7 +13449,6 @@ to set in them.
 See &%dns_retrans%& above.
 
 
-.new
 .option dns_use_edns0 main integer -1
 .cindex "DNS" "resolver options"
 .cindex "DNS" "EDNS0"
@@ -13491,7 +13458,6 @@ the system default. A value of 0 coerces EDNS0 off, a value of 1 coerces EDNS0
 on.
 
 If the resolver library does not support EDNS0 then this option has no effect.
-.wen
 
 
 .option drop_cr main boolean false
@@ -14405,12 +14371,10 @@ yourself in the foot in various unpleasant ways.  This option should not be
 adjusted lightly.  An unrecognised item will be detected at startup, by
 invoking Exim with the &%-bV%& flag.
 
-.new
 Historical note: prior to release 4.80, Exim defaulted this value to
 "+dont_insert_empty_fragments", which may still be needed for compatibility
 with some clients, but which lowers security by increasing exposure to
 some now infamous attacks.
-.wen
 
 An example:
 .code
@@ -15663,12 +15627,10 @@ receiving incoming messages as a server. If you want to supply certificates for
 use when sending messages as a client, you must set the &%tls_certificate%&
 option in the relevant &(smtp)& transport.
 
-.new
 If the option contains &$tls_sni$& and Exim is built against OpenSSL, then
 if the OpenSSL build supports TLS extensions and the TLS client sends the
 Server Name Indication extension, then this option and others documented in
 &<<SECTtlssni>>& will be re-expanded.
-.wen
 
 .option tls_crl main string&!! unset
 .cindex "TLS" "server certificate revocation list"
@@ -15676,12 +15638,9 @@ Server Name Indication extension, then this option and others documented in
 This option specifies a certificate revocation list. The expanded value must
 be the name of a file that contains a CRL in PEM format.
 
-.new
 See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
-.wen
 
 
-.new
 .option tls_dh_max_bits main integer 2236
 .cindex "TLS" "D-H bit count"
 The number of bits used for Diffie-Hellman key-exchange may be suggested by
@@ -15701,12 +15660,10 @@ number.
 Note that the value passed to GnuTLS for *generating* a new prime may be a
 little less than this figure, because GnuTLS is inexact and may produce a
 larger prime than requested.
-.wen
 
 
 .option tls_dhparam main string&!! unset
 .cindex "TLS" "D-H parameters for server"
-.new
 The value of this option is expanded and indicates the source of DH parameters
 to be used by Exim.
 
@@ -15743,7 +15700,6 @@ The available primes are:
 
 Some of these will be too small to be accepted by clients.
 Some may be too large to be accepted by clients.
-.wen
 
 
 .option tls_on_connect_ports main "string list" unset
@@ -15762,9 +15718,7 @@ the expansion is forced to fail, or the result is an empty string, the private
 key is assumed to be in the same file as the server's certificates. See chapter
 &<<CHAPTLS>>& for further details.
 
-.new
 See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
-.wen
 
 
 .option tls_remember_esmtp main boolean false
@@ -15812,9 +15766,7 @@ connecting clients, defining the list of accepted certificate authorities.
 Thus the values defined should be considered public data.  To avoid this,
 use OpenSSL with a directory.
 
-.new
 See &<<SECTtlssni>>& for discussion of when this option might be re-expanded.
-.wen
 
 
 .option tls_verify_hosts main "host list&!!" unset
@@ -17136,7 +17088,6 @@ look for A or AAAA records, unless the domain matches &%mx_domains%&, in which
 case routing fails.
 
 
-.new
 .section "Declining addresses by dnslookup" "SECTdnslookupdecline"
 .cindex "&(dnslookup)& router" "declines"
 There are a few cases where a &(dnslookup)& router will decline to accept
@@ -17167,7 +17118,6 @@ The domain is not syntactically valid (see also &%allow_utf8_domains%& and
 &%check_secondary_mx%& is set on this router but the local host can
 not be found in the MX records (see below)
 .endlist
-.wen
 
 
 
@@ -20288,7 +20238,6 @@ This option applies only to deliveries in maildir format, and is described in
 section &<<SECTmaildirdelivery>>& below.
 
 
-.new
 .option maildir_use_size_file appendfile&!! boolean false
 .cindex "maildir format" "&_maildirsize_& file"
 The result of string expansion for this option must be a valid boolean value.
@@ -20297,7 +20246,6 @@ creates a &_maildirsize_& file in a maildir if one does not exist, taking the
 quota from the &%quota%& option of the transport. If &%quota%& is unset, the
 value is zero. See &%maildir_quota_directory_regex%& above and section
 &<<SECTmaildirdelivery>>& below for further details.
-.wen
 
 .option maildirfolder_create_regex appendfile string unset
 .cindex "maildir format" "&_maildirfolder_& file"
@@ -22389,12 +22337,10 @@ protocol (RFC 2033) instead of SMTP. This protocol is sometimes used for local
 deliveries into closed message stores. Exim also has support for running LMTP
 over a pipe to a local process &-- see chapter &<<CHAPLMTP>>&.
 
-.new
 If this option is set to &"smtps"&, the default vaule for the &%port%& option
 changes to &"smtps"&, and the transport initiates TLS immediately after
 connecting, as an outbound SSL-on-connect, instead of using STARTTLS to upgrade.
 The Internet standards bodies strongly discourage use of this mode.
-.wen
 
 
 .option retry_include_ip_address smtp boolean true
@@ -22507,7 +22453,6 @@ ciphers is a preference order.
 
 
 
-.new
 .option tls_sni smtp string&!! unset
 .cindex "TLS" "Server Name Indication"
 .vindex "&$tls_sni$&"
@@ -22518,8 +22463,9 @@ certificate and private key for the session.
 
 See &<<SECTtlssni>>& for more information.
 
-OpenSSL only, also requiring a build of OpenSSL that supports TLS extensions.
-.wen
+Note that for OpenSSL, this feature requires a build of OpenSSL that supports
+TLS extensions.
+
 
 
 
@@ -23698,18 +23644,15 @@ included by setting
 .code
 AUTH_CRAM_MD5=yes
 AUTH_CYRUS_SASL=yes
-.new
 AUTH_DOVECOT=yes
 AUTH_GSASL=yes
 AUTH_HEIMDAL_GSSAPI=yes
-.wen
 AUTH_PLAINTEXT=yes
 AUTH_SPA=yes
 .endd
 in &_Local/Makefile_&, respectively. The first of these supports the CRAM-MD5
 authentication mechanism (RFC 2195), and the second provides an interface to
 the Cyrus SASL authentication library.
-.new
 The third is an interface to Dovecot's authentication system, delegating the
 work via a socket interface.
 The fourth provides an interface to the GNU SASL authentication library, which
@@ -23720,7 +23663,6 @@ The sixth can be configured to support
 the PLAIN authentication mechanism (RFC 2595) or the LOGIN mechanism, which is
 not formally documented, but used by several MUAs. The seventh authenticator
 supports Microsoft's &'Secure Password Authentication'& mechanism.
-.wen
 
 The authenticators are configured using the same syntax as other drivers (see
 section &<<SECTfordricon>>&). If no authenticators are required, no
@@ -23752,7 +23694,6 @@ The remainder of this chapter covers the generic options for the
 authenticators, followed by general discussion of the way authentication works
 in Exim.
 
-.new
 &*Beware:*& the meaning of &$auth1$&, &$auth2$&, ... varies on a per-driver and
 per-mechanism basis.  Please read carefully to determine which variables hold
 account labels such as usercodes and which hold passwords or other
@@ -23774,7 +23715,6 @@ A &'realm'& is a text string, typically a domain name, presented by a server
 to a client to help it select an account and credentials to use.  In some
 mechanisms, the client and server provably agree on the realm, but clients
 typically can not treat the realm as secure data to be blindly trusted.
-.wen
 
 
 
@@ -23822,10 +23762,8 @@ This option must be set for a &%plaintext%& server authenticator, where it
 is used directly to control authentication. See section &<<SECTplainserver>>&
 for details.
 
-.new
 For the &(gsasl)& authenticator, this option is required for various
 mechanisms; see chapter &<<CHAPgsasl>>& for details.
-.wen
 
 For the other authenticators, &%server_condition%& can be used as an additional
 authentication or authorization mechanism that is applied after the other
@@ -24432,7 +24370,6 @@ lookup_cram:
 Note that this expansion explicitly forces failure if the lookup fails
 because &$auth1$& contains an unknown user name.
 
-.new
 As another example, if you wish to re-use a Cyrus SASL sasldb2 file without
 using the relevant libraries, you need to know the realm to specify in the
 lookup and then ask for the &"userPassword"& attribute for that user in that
@@ -24445,7 +24382,6 @@ cyrusless_crammd5:
                   dbmjz{/etc/sasldb2}}
   server_set_id = $auth1
 .endd
-.wen
 
 .section "Using cram_md5 as a client" "SECID177"
 .cindex "options" "&(cram_md5)& authenticator (client)"
@@ -24520,7 +24456,7 @@ Kerberos, note that because of limitations in the GSSAPI interface,
 changing the server keytab might need to be communicated down to the Kerberos
 layer independently. The mechanism for doing so is dependent upon the Kerberos
 implementation.
-.new
+
 For example, for older releases of Heimdal, the environment variable KRB5_KTNAME
 may be set to point to an alternative keytab file. Exim will pass this
 variable through from its own inherited environment when started as root or the
@@ -24529,7 +24465,6 @@ With newer releases of Heimdal, a setuid Exim may cause Heimdal to discard the
 environment variable.  In practice, for those releases, the Cyrus authenticator
 is not a suitable interface for GSSAPI (Kerberos) support.  Instead, consider
 the &(heimdal_gssapi)& authenticator, described in chapter &<<CHAPheimdalgss>>&
-.wen
 
 
 .section "Using cyrus_sasl as a server" "SECID178"
@@ -24560,10 +24495,8 @@ sasl:
   server_set_id = $auth1
 .endd
 
-.new
 .option server_realm cyrus_sasl string&!! unset
 This specifies the SASL realm that the server claims to be in.
-.wen
 
 
 .option server_service cyrus_sasl string &`smtp`&
@@ -24636,7 +24569,6 @@ who authenticated is placed in &$auth1$&.
 
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
-.new
 .chapter "The gsasl authenticator" "CHAPgsasl"
 .scindex IIDgsaslauth1 "&(gsasl)& authenticator"
 .scindex IIDgsaslauth2 "authenticators" "&(gsasl)&"
@@ -24791,12 +24723,10 @@ gsasl_cyrusless_crammd5:
   server_condition = yes
 .endd
 
-.wen
 
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
 
-.new
 .chapter "The heimdal_gssapi authenticator" "CHAPheimdalgss"
 .scindex IIDheimdalgssauth1 "&(heimdal_gssapi)& authenticator"
 .scindex IIDheimdalgssauth2 "authenticators" "&(heimdal_gssapi)&"
@@ -24843,7 +24773,6 @@ authentication.  If that was empty, this will also be set to the
 GSS Display Name.
 .endlist
 
-.wen
 
 . ////////////////////////////////////////////////////////////////////////////
 . ////////////////////////////////////////////////////////////////////////////
@@ -25029,9 +24958,7 @@ There are some differences in usage when using GnuTLS instead of OpenSSL:
 The &%tls_verify_certificates%& option must contain the name of a file, not the
 name of a directory (for OpenSSL it can be either).
 .next
-.new
 The default value for &%tls_dhparam%& differs for historical reasons.
-.wen
 .next
 .vindex "&$tls_peerdn$&"
 Distinguished Name (DN) strings reported by the OpenSSL library use a slash for
@@ -25049,18 +24976,15 @@ option).
 .next
 The &%tls_require_ciphers%& options operate differently, as described in the
 sections &<<SECTreqciphssl>>& and &<<SECTreqciphgnu>>&.
-.new
 .next
 Some other recently added features may only be available in one or the other.
 This should be documented with the feature.  If the documentation does not
 explicitly state that the feature is infeasible in the other TLS
 implementation, then patches are welcome.
-.wen
 .endlist
 
 
 .section "GnuTLS parameter computation" "SECTgnutlsparam"
-.new
 This section only applies if &%tls_dhparam%& is set to &`historic`& or to
 an explicit path; if the latter, then the text about generation still applies,
 but not the chosen filename.
@@ -25141,7 +25065,6 @@ increase the chance of the generated prime actually being within acceptable
 bounds, as GnuTLS has been observed to overshoot.  Note the check step in the
 procedure above.  There is no sane procedure available to Exim to double-check
 the size of the generated prime, so it might still be too large.
-.wen
 
 
 .section "Requiring specific ciphers in OpenSSL" "SECTreqciphssl"
@@ -25191,7 +25114,6 @@ includes any ciphers already present they will be ignored: that is, they will
 not be moved to the end of the list.
 .endlist
 
-.new
 The OpenSSL &'ciphers(1)'& command may be used to test the results of a given
 string:
 .code
@@ -25209,11 +25131,9 @@ tls_require_ciphers = ${if =={$received_port}{25}\
                            {DEFAULT}\
                            {HIGH:!MD5:!SHA1}}
 .endd
-.wen
 
 
 
-.new
 .section "Requiring specific ciphers or other parameters in GnuTLS" &&&
          "SECTreqciphgnu"
 .cindex "GnuTLS" "specifying parameters for"
@@ -25259,7 +25179,6 @@ tls_require_ciphers = ${if =={$received_port}{25}\
                            {NORMAL:%COMPAT}\
                            {SECURE128}}
 .endd
-.wen
 
 
 .section "Configuring an Exim server to use TLS" "SECID182"
@@ -25320,7 +25239,6 @@ tls_dhparam = /some/file/name
 .endd
 is set, the SSL library is initialized for the use of Diffie-Hellman ciphers
 with the parameters contained in the file.
-.new
 Set this to &`none`& to disable use of DH entirely, by making no prime
 available:
 .code
@@ -25336,7 +25254,6 @@ See the command
 openssl dhparam
 .endd
 for a way of generating file data.
-.wen
 
 The strings supplied for these three options are expanded every time a client
 host connects. It is therefore possible to use different certificates and keys
@@ -25503,7 +25420,6 @@ outgoing connection.
 
 
 
-.new
 .section "Use of TLS Server Name Indication" "SECTtlssni"
 .cindex "TLS" "Server Name Indication"
 .vindex "&$tls_sni$&"
@@ -25575,7 +25491,6 @@ see &`-servername`& in the output, then OpenSSL has support.
 When Exim is built against GnuTLS, SNI support is available as of GnuTLS
 0.5.10.  (Its presence predates the current API which Exim uses, so if Exim
 built, then you have SNI support).
-.wen
 
 
 
