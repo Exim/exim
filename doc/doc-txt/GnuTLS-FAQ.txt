@@ -248,7 +248,7 @@ left with no way to actually know the size of the freshly generated DH prime.
 
 Thus we check if the the value returned is at least 10 more than the minimum
 we'll accept as a client (EXIM_CLIENT_DH_MIN_BITS, see below, defaults to
-512) and if it is, we subtract 10.  Then we reluctantly deploy a strategy
+1024) and if it is, we subtract 10.  Then we reluctantly deploy a strategy
 called "hope".  This is not guaranteed to be successful; in the first code
 pass on this logic, we subtracted 3, asked for 2233 bits and got 2240 in the
 first test.
@@ -275,11 +275,7 @@ prime from section 2.2 of RFC 5114.
 
 A TLS client does not get to choose the DH prime used, but can choose a
 minimum acceptable value.  For Exim, this is a compile-time constant called
-"EXIM_CLIENT_DH_MIN_BITS" of 512, which can be overruled in "Local/Makefile".
-(It should be higher, but some real-world sites are using dangerously small
-values.  Although some might argue that our old size of 1024 was dangerously
-low; "opinions vary".  This is expected to be a configure file option for
-the Exim 4.81 release.)
+"EXIM_CLIENT_DH_MIN_BITS" of 1024, which can be overruled in "Local/Makefile".
 
 
 
