@@ -6,6 +6,16 @@ Before a formal release, there may be quite a lot of detail so that people can
 test from the snapshots or the CVS before the documentation is updated. Once
 the documentation is updated, this file is reduced to a short list.
 
+Version 4.81
+------------
+
+ 1. New command-line option -bI:sieve will list all supported sieve extensions
+    of this Exim build on standard output, one per line.
+    ManageSieve (RFC 5804) providers managing scripts for use by Exim should
+    query this to establish the correct list to include in the protocol's
+    SIEVE capability line.
+
+
 Version 4.80
 ------------
 

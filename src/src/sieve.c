@@ -107,6 +107,38 @@ struct Notification
   struct Notification *next;
   };
 
+/* This should be a complete list of supported extensions, so that an external
+ManageSieve (RFC 5804) program can interrogate the current Exim binary for the
+list of extensions and provide correct information to a client.
+
+We'll emit the list in the order given here; keep it alphabetically sorted, so
+that callers don't get surprised.
+
+List *MUST* end with a NULL.  Which at least makes ifdef-vs-comma easier. */
+
+const uschar *exim_sieve_extension_list[] = {
+  CUS"comparator-i;ascii-numeric",
+  CUS"copy",
+#ifdef ENCODED_CHARACTER
+  CUS"encoded-character",
+#endif
+#ifdef ENOTIFY
+  CUS"enotify",
+#endif
+  CUS"envelope",
+#ifdef ENVELOPE_AUTH
+  CUS"envelope-auth",
+#endif
+  CUS"fileinto",
+#ifdef SUBADDRESS
+  CUS"subaddress",
+#endif
+#ifdef VACATION
+  CUS"vacation",
+#endif
+  NULL
+};
+
 static int eq_asciicase(const struct String *needle, const struct String *haystack, int match_prefix);
 static int parse_test(struct Sieve *filter, int *cond, int exec);
 static int parse_commands(struct Sieve *filter, int exec, address_item **generated);

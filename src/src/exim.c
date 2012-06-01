@@ -53,6 +53,16 @@ store_free(block);
 
 
 /*************************************************
+*         Enums for cmdline interface            *
+*************************************************/
+
+enum commandline_info { CMDINFO_NONE=0,
+  CMDINFO_HELP, CMDINFO_SIEVE };
+
+
+
+
+/*************************************************
 *  Compile regular expression and panic on fail  *
 *************************************************/
 
@@ -1014,6 +1024,36 @@ DEBUG(D_any) do {
 }
 
 
+/*************************************************
+*     Show auxiliary information about Exim      *
+*************************************************/
+
+static void
+show_exim_information(enum commandline_info request, FILE *stream)
+{
+const uschar **pp;
+
+switch(request)
+  {
+  case CMDINFO_NONE:
+    fprintf(stream, "Oops, something went wrong.\n");
+    return;
+  case CMDINFO_HELP:
+    fprintf(stream,
+"The -bI: flag takes a string indicating which information to provide.\n"
+"If the string is not recognised, you'll get this help (on stderr).\n"
+"\n"
+"  exim -bI:help    this information\n"
+"  exim -bI:sieve   list of supported sieve extensions, one per line.\n"
+);
+    return;
+  case CMDINFO_SIEVE:
+    for (pp = exim_sieve_extension_list; *pp; ++pp)
+      fprintf(stream, "%s\n", *pp);
+    return;
+
+  }
+}
 
 
 /*************************************************
@@ -1428,6 +1468,10 @@ struct stat statbuf;
 pid_t passed_qr_pid = (pid_t)0;
 int passed_qr_pipe = -1;
 gid_t group_list[NGROUPS_MAX];
+
+/* For the -bI: flag */
+enum commandline_info info_flag = CMDINFO_NONE;
+BOOL info_stdout = FALSE;
 
 /* Possible options for -R and -S */
 
@@ -1927,6 +1971,27 @@ for (i = 1; i < argc; i++)
     sendmail this way, some support must be provided. */
 
     else if (Ustrcmp(argrest, "i") == 0) bi_option = TRUE;
+
+    /* -bI: provide information, of the type to follow after a colon.
+    This is an Exim flag. */
+
+    else if (argrest[0] == 'I' && Ustrlen(argrest) >= 2 && argrest[1] == ':')
+      {
+      uschar *p = &argrest[2];
+      info_flag = CMDINFO_HELP;
+      if (Ustrlen(p))
+        {
+        if (strcmpic(p, CUS"sieve") == 0)
+          {
+          info_flag = CMDINFO_SIEVE;
+          info_stdout = TRUE;
+          }
+        else if (strcmpic(p, CUS"help") == 0)
+          {
+          info_stdout = TRUE;
+          }
+        }
+      }
 
     /* -bm: Accept and deliver message - the default option. Reinstate
     receiving_message, which got turned off for all -b options. */
@@ -4766,7 +4831,8 @@ if (host_checking)
 
 /* Arrange for message reception if recipients or SMTP were specified;
 otherwise complain unless a version print (-bV) happened or this is a filter
-verification test. In the former case, show the configuration file name. */
+verification test or info dump.
+In the former case, show the configuration file name. */
 
 if (recipients_arg >= argc && !extract_recipients && !smtp_input)
   {
@@ -4774,6 +4840,12 @@ if (recipients_arg >= argc && !extract_recipients && !smtp_input)
     {
     printf("Configuration file is %s\n", config_main_filename);
     return EXIT_SUCCESS;
+    }
+
+  if (info_flag != CMDINFO_NONE)
+    {
+    show_exim_information(info_flag, info_stdout ? stdout : stderr);
+    return info_stdout ? EXIT_SUCCESS : EXIT_FAILURE;
     }
 
   if (filter_test == FTEST_NONE)

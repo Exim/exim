@@ -2937,6 +2937,25 @@ use the &'exim_dbmbuild'& utility, or some other means, to rebuild alias files
 if this is required. If the &%bi_command%& option is not set, calling Exim with
 &%-bi%& is a no-op.
 
+.vitem &%-bI:help%&
+.oindex "&%-bI:help%&"
+.cindex "querying exim information"
+We shall provide various options starting &`-bI:`& for querying Exim for
+information.  The output of many of these will be intended for machine
+consumption.  This one is not.  The &%-bI:help%& option asks Exim for a
+synopsis of supported options beginning &`-bI:`&.  Use of any of these
+options shall cause Exim to exit after producing the requested output.
+
+.vitem &%-bI:sieve%&
+.oindex "&%-bI:sieve%&"
+.cindex "Sieve filter" "capabilities"
+This option causes Exim to emit an alphabetically sorted list of all supported
+Sieve protocol extensions on stdout, one per line.  This is anticipated to be
+useful for ManageSieve (RFC 5804) implementations, in providing that protocol's
+&`SIEVE`& capability response line.  As the precise list may depend upon
+compile-time build options, which this option will adapt to, this is the only
+way to guarantee a correct response.
+
 .vitem &%-bm%&
 .oindex "&%-bm%&"
 .cindex "local message reception"

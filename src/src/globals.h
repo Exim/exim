@@ -360,6 +360,7 @@ extern int     errors_sender_rc;       /* Return after message to sender*/
 extern gid_t   exim_gid;               /* To be used with exim_uid */
 extern BOOL    exim_gid_set;           /* TRUE if exim_gid set */
 extern uschar *exim_path;              /* Path to exec exim */
+extern const uschar *exim_sieve_extension_list[]; /* list of sieve extensions */
 extern uid_t   exim_uid;               /* Non-root uid for exim */
 extern BOOL    exim_uid_set;           /* TRUE if exim_uid set */
 extern int     expand_forbid;          /* RDO flags for forbidding things */
