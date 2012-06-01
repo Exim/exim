@@ -15,6 +15,11 @@ Version 4.81
     query this to establish the correct list to include in the protocol's
     SIEVE capability line.
 
+ 2. If the -n option is combined with the -bP option, then the name of an
+    emitted option is not output, only the value (if visible to you).
+    For instance, "exim -n -bP pid_file_path" should just emit a pathname
+    followed by a newline, and no other text.
+
 
 Version 4.80
 ------------

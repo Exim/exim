@@ -2937,6 +2937,7 @@ use the &'exim_dbmbuild'& utility, or some other means, to rebuild alias files
 if this is required. If the &%bi_command%& option is not set, calling Exim with
 &%-bi%& is a no-op.
 
+.new
 .vitem &%-bI:help%&
 .oindex "&%-bI:help%&"
 .cindex "querying exim information"
@@ -2955,6 +2956,7 @@ useful for ManageSieve (RFC 5804) implementations, in providing that protocol's
 &`SIEVE`& capability response line.  As the precise list may depend upon
 compile-time build options, which this option will adapt to, this is the only
 way to guarantee a correct response.
+.wen
 
 .vitem &%-bm%&
 .oindex "&%-bm%&"
@@ -3068,6 +3070,12 @@ If &%configure_file%& is given as an argument, the name of the run time
 configuration file is output.
 If a list of configuration files was supplied, the value that is output here
 is the name of the file that was actually used.
+
+.new
+.cindex "options" "hiding name of"
+If the &%-n%& flag is given, then for most modes of &%-bP%& operation the
+name will not be output.
+.wen
 
 .cindex "daemon" "process id (pid)"
 .cindex "pid (process id)" "of daemon"
@@ -3930,9 +3938,9 @@ for that message.
 
 .vitem &%-n%&
 .oindex "&%-n%&"
-.cindex "Sendmail compatibility" "&%-n%& option ignored"
-This option is interpreted by Sendmail to mean &"no aliasing"&. It is ignored
-by Exim.
+This option is interpreted by Sendmail to mean &"no aliasing"&.
+For normal modes of operation, it is ignored by Exim.
+When combined with &%-bP%& it suppresses the name of an option from being output.
 
 .vitem &%-O%&&~<&'data'&>
 .oindex "&%-O%&"

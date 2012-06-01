@@ -1431,6 +1431,7 @@ BOOL checking = FALSE;
 BOOL count_queue = FALSE;
 BOOL expansion_test = FALSE;
 BOOL extract_recipients = FALSE;
+BOOL flag_n = FALSE;
 BOOL forced_delivery = FALSE;
 BOOL f_end_dot = FALSE;
 BOOL deliver_give_up = FALSE;
@@ -2764,10 +2765,12 @@ for (i = 1; i < argc; i++)
     break;
 
 
-    /* -n: This means "don't alias" in sendmail, apparently. Just ignore
-    it. */
+    /* -n: This means "don't alias" in sendmail, apparently.
+    For normal invocations, it has no effect.
+    It may affect some other options. */
 
     case 'n':
+    flag_n = TRUE;
     break;
 
     /* -O: Just ignore it. In sendmail, apparently -O option=value means set
@@ -4288,11 +4291,12 @@ if (test_retry_arg >= 0)
   }
 
 /* Handle a request to list one or more configuration options */
+/* If -n was set, we suppress some information */
 
 if (list_options)
   {
   set_process_info("listing variables");
-  if (recipients_arg >= argc) readconf_print(US"all", NULL);
+  if (recipients_arg >= argc) readconf_print(US"all", NULL, flag_n);
     else for (i = recipients_arg; i < argc; i++)
       {
       if (i < argc - 1 &&
@@ -4301,10 +4305,10 @@ if (list_options)
            Ustrcmp(argv[i], "authenticator") == 0 ||
            Ustrcmp(argv[i], "macro") == 0))
         {
-        readconf_print(argv[i+1], argv[i]);
+        readconf_print(argv[i+1], argv[i], flag_n);
         i++;
         }
-      else readconf_print(argv[i], NULL);
+      else readconf_print(argv[i], NULL, flag_n);
       }
   exim_exit(EXIT_SUCCESS);
   }
