@@ -784,7 +784,7 @@ NM/32 Bugzilla 889: Change all instances of "expr" in shell scripts to "expr --"
 NM/33 Bugzilla 898: Transport filter timeout fix.
       Patch by Todd Rinaldo.
 
-NM/34 Bugzilla 901: Fix sign/unsigned and UTF mistmatches.
+NM/34 Bugzilla 901: Fix sign/unsigned and UTF mismatches.
       Patch by Serge Demonchaux.
 
 NM/35 Bugzilla 39: Base64 decode bug fixes.
