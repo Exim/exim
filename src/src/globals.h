@@ -335,6 +335,7 @@ extern BOOL    dns_csa_use_reverse;    /* Check CSA in reverse DNS? (non-standar
 extern uschar *dns_ipv4_lookup;        /* For these domains, don't look for AAAA (or A6) */
 extern int     dns_retrans;            /* Retransmission time setting */
 extern int     dns_retry;              /* Number of retries */
+extern int     dns_use_dnssec;         /* When constructing DNS query, set DO flag */
 extern int     dns_use_edns0;          /* Coerce EDNS0 support on/off in resolver. */
 extern uschar *dnslist_domain;         /* DNS (black) list domain */
 extern uschar *dnslist_matched;        /* DNS (black) list matched key */
@@ -660,6 +661,7 @@ extern uschar *sender_fullhost;        /* Sender host name + address */
 extern uschar *sender_helo_name;       /* Host name from HELO/EHLO */
 extern uschar **sender_host_aliases;   /* Points to list of alias names */
 extern unsigned int sender_host_cache[(MAX_NAMED_LIST * 2)/32]; /* Cache bits for incoming host */
+extern BOOL    sender_host_dnssec;     /* true if sender_host_name verified in DNSSEC */
 extern BOOL    sender_host_notsocket;  /* Set for -bs and -bS */
 extern BOOL    sender_host_unknown;    /* TRUE for -bs and -bS except inetd */
 extern uschar *sender_ident;           /* Sender identity via RFC 1413 */

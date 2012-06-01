@@ -11687,6 +11687,31 @@ driver that successfully authenticated the client from which the message was
 received. It is empty if there was no successful authentication. See also
 &$authenticated_id$&.
 
+.new
+.vitem &$sender_host_dnssec$&
+.vindex "&$sender_host_dnssec$&"
+If &$sender_host_name$& has been populated (by reference, &%hosts_lookup%& or
+otherwise) then this boolean will have been set true if, and only if, the
+resolver library states that the reverse DNS was authenticated data.  At all
+other times, this variable is false.
+
+It is likely that you will need to coerce DNSSEC support on in the resolver
+library, by setting:
+.code
+dns_use_dnssec = 1
+.endd
+
+Exim does not perform DNSSEC validation itself, instead leaving that to a
+validating resolver (eg, unbound, or bind with suitable configuration).
+
+Exim does not (currently) check to see if the forward DNS was also secured
+with DNSSEC, only the reverse DNS.
+
+If you have changed &%host_lookup_order%& so that &`bydns`& is not the first
+mechanism in the list, then this variable will be false.
+.wen
+
+
 .vitem &$sender_host_name$&
 .vindex "&$sender_host_name$&"
 When a message is received from a remote host, this variable contains the
@@ -12836,6 +12861,9 @@ See also the &'Policy controls'& section above.
 .row &%dns_ipv4_lookup%&             "only v4 lookup for these domains"
 .row &%dns_retrans%&                 "parameter for resolver"
 .row &%dns_retry%&                   "parameter for resolver"
+.new
+.row &%dns_use_dnssec%&              "parameter for resolver"
+.wen
 .row &%dns_use_edns0%&               "parameter for resolver"
 .row &%hold_domains%&                "hold delivery for these domains"
 .row &%local_interfaces%&            "for routing checks"
@@ -13474,6 +13502,18 @@ to set in them.
 
 .option dns_retry main integer 0
 See &%dns_retrans%& above.
+
+
+.new
+.option dns_use_dnssec main integer -1
+.cindex "DNS" "resolver options"
+.cindex "DNS" "DNSSEC"
+If this option is set to a non-negative number then Exim will initialise the
+DNS resolver library to either use or not use DNSSEC, overriding the system
+default. A value of 0 coerces DNSSEC off, a value of 1 coerces DNSSEC on.
+
+If the resolver library does not support DNSSEC then this option has no effect.
+.wen
 
 
 .option dns_use_edns0 main integer -1

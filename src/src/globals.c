@@ -549,6 +549,7 @@ BOOL    dns_csa_use_reverse    = TRUE;
 uschar *dns_ipv4_lookup        = NULL;
 int     dns_retrans            = 0;
 int     dns_retry              = 0;
+int     dns_use_dnssec         = -1; /* <0 = not coerced */
 int     dns_use_edns0          = -1; /* <0 = not coerced */
 uschar *dnslist_domain         = NULL;
 uschar *dnslist_matched        = NULL;
@@ -1066,6 +1067,7 @@ uschar **sender_host_aliases   = &no_aliases;
 uschar *sender_host_address    = NULL;
 uschar *sender_host_authenticated = NULL;
 unsigned int sender_host_cache[(MAX_NAMED_LIST * 2)/32];
+BOOL    sender_host_dnssec     = FALSE;
 uschar *sender_host_name       = NULL;
 int     sender_host_port       = 0;
 BOOL    sender_host_notsocket  = FALSE;

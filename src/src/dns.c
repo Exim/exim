@@ -201,6 +201,36 @@ if (dns_use_edns0 >= 0)
         dns_use_edns0 ? "" : "un");
 #endif
 
+#ifndef DISABLE_DNSSEC
+# ifdef RES_USE_DNSSEC
+#  ifndef RES_USE_EDNS0
+#   error Have RES_USE_DNSSEC but not RES_USE_EDNS0?  Something hinky ...
+#  endif
+if (dns_use_dnssec >= 0)
+  {
+  if (dns_use_edns0 == 0 && dns_use_dnssec != 0)
+    {
+    DEBUG(D_resolver)
+      debug_printf("CONFLICT: dns_use_edns0 forced false, dns_use_dnssec forced true!\n");
+    }
+  else
+    {
+    if (dns_use_dnssec)
+      resp->options |= RES_USE_DNSSEC;
+    else
+      resp->options &= ~RES_USE_DNSSEC;
+    DEBUG(D_resolver) debug_printf("Coerced resolver DNSSEC support %s.\n",
+        dns_use_dnssec ? "on" : "off");
+    }
+  }
+# else
+if (dns_use_dnssec >= 0)
+  DEBUG(D_resolver)
+    debug_printf("Unable to %sset DNSSEC without resolver support.\n",
+        dns_use_dnssec ? "" : "un");
+# endif
+#endif /* DISABLE_DNSSEC */
+
 os_put_dns_resolver_res(resp);
 }
 
@@ -389,6 +419,34 @@ dnss->aptr += dnss->srr.size;         /* Advance to next RR */
 for convenience so that the scans can use nice-looking for loops. */
 
 return &(dnss->srr);
+}
+
+
+
+
+/*************************************************
+*    Return whether AD bit set in DNS result     *
+*************************************************/
+
+/* We do not perform DNSSEC work ourselves; if the administrator has installed
+a verifying resolver which sets AD as appropriate, though, we'll use that.
+(AD = Authentic Data)
+
+Argument:   pointer to dns answer block
+Returns:    bool indicating presence of AD bit
+*/
+
+BOOL
+dns_is_secure(dns_answer *dnsa)
+{
+#ifdef DISABLE_DNSSEC
+DEBUG(D_dns)
+  debug_printf("DNSSEC support disabled at build-time; dns_is_secure() false\n");
+return FALSE;
+#else
+HEADER *h = (HEADER *)dnsa->answer;
+return h->ad ? TRUE : FALSE;
+#endif
 }
 
 

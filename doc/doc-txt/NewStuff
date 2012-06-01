@@ -31,6 +31,14 @@ Version 4.81
 
     Unless you really know what you are doing, leave it alone.
 
+ 4. If not built with DISABLE_DNSSEC, Exim now has the main option
+    dns_use_dnssec; if set to 1 then Exim will initialise the resolver library
+    to send the DO flag to your recursive resolver.  If you have a recursive
+    resolver, which can set the Authenticated Data (AD) flag in results, Exim
+    can now detect this.
+
+    Current status: work-in-progress; $sender_host_dnssec variable added.
+
 
 Version 4.80
 ------------

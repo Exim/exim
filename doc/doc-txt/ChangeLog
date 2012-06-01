@@ -12,6 +12,10 @@ PP/02 Make -n do something, by making it not do something.
 PP/03 Added tls_dh_min_bits SMTP transport driver option, only honoured
       by GnuTLS.
 
+PP/04 First step towards DNSSEC, provide $sender_host_dnssec for
+      $sender_host_name and config options to manage this, and basic check
+      routines.
+
 
 Exim version 4.80
 -----------------

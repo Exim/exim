@@ -104,6 +104,7 @@ extern dns_address *dns_address_from_rr(dns_answer *, dns_record *);
 extern void    dns_build_reverse(uschar *, uschar *);
 extern void    dns_init(BOOL, BOOL);
 extern int     dns_basic_lookup(dns_answer *, uschar *, int);
+extern BOOL    dns_is_secure(dns_answer *);
 extern int     dns_lookup(dns_answer *, uschar *, int, uschar **);
 extern int     dns_special_lookup(dns_answer *, uschar *, int, uschar **);
 extern dns_record *dns_next_rr(dns_answer *, dns_scan *, int);
