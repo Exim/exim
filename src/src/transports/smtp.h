@@ -52,9 +52,10 @@ typedef struct {
   uschar *gnutls_require_kx;
   uschar *gnutls_require_mac;
   uschar *gnutls_require_proto;
-  uschar *tls_verify_certificates;
-  BOOL    tls_tempfail_tryclear;
   uschar *tls_sni;
+  uschar *tls_verify_certificates;
+  int     tls_dh_min_bits;
+  BOOL    tls_tempfail_tryclear;
   #endif
   #ifndef DISABLE_DKIM
   uschar *dkim_domain;

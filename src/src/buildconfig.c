@@ -847,16 +847,17 @@ else if (isgroup)
         }
 
       /* how many bits Exim, as a client, demands must be in D-H */
-      /* as of GnuTLS 2.12.x, we ask for "normal" for D-H PK; before that, we
-      specify the number of bits.  We've stuck with the historical value, but
-      it can be overridden. */
-      else if ((strcmp(name, "EXIM_CLIENT_DH_MIN_BITS") == 0) ||
+      /* 1024 is a historical figure; some sites actually use lower, so we
+      permit the value to be lowered "dangerously" low, but not "insanely"
+      low.  Though actually, 1024 is becoming "dangerous". */
+      else if ((strcmp(name, "EXIM_CLIENT_DH_MIN_MIN_BITS") == 0) ||
+               (strcmp(name, "EXIM_CLIENT_DH_DEFAULT_MIN_BITS") == 0) ||
                (strcmp(name, "EXIM_SERVER_DH_BITS_PRE2_12") == 0))
         {
         long nv;
         char *end;
         nv = strtol(value, &end, 10);
-        if (end != value && *end == '\0' && nv >= 1000 && nv < 50000)
+        if (end != value && *end == '\0' && nv >= 512 && nv < 500000)
           {
           fprintf(new, "%s\n", value);
           }

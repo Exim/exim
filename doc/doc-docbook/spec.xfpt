@@ -22451,6 +22451,19 @@ This option specifies a certificate revocation list. The expanded value must
 be the name of a file that contains a CRL in PEM format.
 
 
+.new
+.option tls_dh_min_bits smtp integer 1024
+.cindex "TLS" "Diffie-Hellman minimum acceptable size"
+When establishing a TLS session, if a ciphersuite which uses Diffie-Hellman
+key agreement is negotiated, the server will provide a large prime number
+for use.  This option establishes the minimum acceptable size of that number.
+If the parameter offered by the server is too small, then the TLS handshake
+will fail.
+
+Only supported when using GnuTLS.
+.wen
+
+
 .option tls_privatekey smtp string&!! unset
 .cindex "TLS" "client private key, location of"
 .vindex "&$host$&"
@@ -25003,6 +25016,13 @@ option).
 .next
 The &%tls_require_ciphers%& options operate differently, as described in the
 sections &<<SECTreqciphssl>>& and &<<SECTreqciphgnu>>&.
+.next
+.new
+The &%tls_dh_min_bits%& SMTP transport option is only honoured by GnuTLS.
+When using OpenSSL, this option is ignored.
+(If an API is found to let OpenSSL be configured in this way,
+let the Exim Maintainers know and we'll likely use it).
+.wen
 .next
 Some other recently added features may only be available in one or the other.
 This should be documented with the feature.  If the documentation does not

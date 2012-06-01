@@ -1233,6 +1233,8 @@ Argument:
   verify_certs     file for certificate verify
   crl              file containing CRL
   require_ciphers  list of allowed ciphers
+  dh_min_bits      minimum number of bits acceptable in server's DH prime
+                   (unused in OpenSSL)
   timeout          startup timeout
 
 Returns:           OK on success
@@ -1244,7 +1246,7 @@ int
 tls_client_start(int fd, host_item *host, address_item *addr, uschar *dhparam,
   uschar *certificate, uschar *privatekey, uschar *sni,
   uschar *verify_certs, uschar *crl,
-  uschar *require_ciphers, int timeout)
+  uschar *require_ciphers, int dh_min_bits ARG_UNUSED, int timeout)
 {
 static uschar txt[256];
 uschar *expciphers;

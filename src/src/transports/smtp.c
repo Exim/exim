@@ -129,6 +129,8 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, tls_certificate) },
   { "tls_crl",              opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_crl) },
+  { "tls_dh_min_bits",      opt_int,
+      (void *)offsetof(smtp_transport_options_block, tls_dh_min_bits) },
   { "tls_privatekey",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, tls_privatekey) },
   { "tls_require_ciphers",  opt_stringptr,
@@ -195,9 +197,11 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* gnutls_require_kx */
   NULL,                /* gnutls_require_mac */
   NULL,                /* gnutls_require_proto */
+  NULL,                /* tls_sni */
   NULL,                /* tls_verify_certificates */
-  TRUE,                /* tls_tempfail_tryclear */
-  NULL                 /* tls_sni */
+  EXIM_CLIENT_DH_DEFAULT_MIN_BITS,
+                       /* tls_dh_min_bits */
+  TRUE                 /* tls_tempfail_tryclear */
 #endif
 #ifndef DISABLE_DKIM
  ,NULL,                /* dkim_canon */
@@ -1136,6 +1140,7 @@ if (tls_offered && !suppress_tls &&
       ob->tls_verify_certificates,
       ob->tls_crl,
       ob->tls_require_ciphers,
+      ob->tls_dh_min_bits,
       ob->command_timeout);
 
     /* TLS negotiation failed; give an error. From outside, this function may

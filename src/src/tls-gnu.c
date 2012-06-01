@@ -1536,6 +1536,7 @@ Arguments:
   verify_certs      file for certificate verify
   verify_crl        CRL for verify
   require_ciphers   list of allowed ciphers or NULL
+  dh_min_bits       minimum number of bits acceptable in server's DH prime
   timeout           startup timeout
 
 Returns:            OK/DEFER/FAIL (because using common functions),
@@ -1547,7 +1548,7 @@ tls_client_start(int fd, host_item *host,
     address_item *addr ARG_UNUSED, uschar *dhparam ARG_UNUSED,
     uschar *certificate, uschar *privatekey, uschar *sni,
     uschar *verify_certs, uschar *verify_crl,
-    uschar *require_ciphers, int timeout)
+    uschar *require_ciphers, int dh_min_bits, int timeout)
 {
 int rc;
 const char *error;
@@ -1559,7 +1560,17 @@ rc = tls_init(host, certificate, privatekey,
     sni, verify_certs, verify_crl, require_ciphers, &state);
 if (rc != OK) return rc;
 
-gnutls_dh_set_prime_bits(state->session, EXIM_CLIENT_DH_MIN_BITS);
+if (dh_min_bits < EXIM_CLIENT_DH_MIN_MIN_BITS)
+  {
+  DEBUG(D_tls)
+    debug_printf("WARNING: tls_dh_min_bits far too low, clamping %d up to %d\n",
+        dh_min_bits, EXIM_CLIENT_DH_MIN_MIN_BITS);
+  dh_min_bits = EXIM_CLIENT_DH_MIN_MIN_BITS;
+  }
+
+DEBUG(D_tls) debug_printf("Setting D-H prime minimum acceptable bits to %d\n",
+    dh_min_bits);
+gnutls_dh_set_prime_bits(state->session, dh_min_bits);
 
 if (verify_certs == NULL)
   {

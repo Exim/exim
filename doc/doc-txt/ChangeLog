@@ -9,6 +9,9 @@ PP/01 Add -bI: framework, and -bI:sieve for querying sieve capabilities.
 PP/02 Make -n do something, by making it not do something.
       When combined with -bP, the name of an option is not output.
 
+PP/03 Added tls_dh_min_bits SMTP transport driver option, only honoured
+      by GnuTLS.
+
 
 Exim version 4.80
 -----------------

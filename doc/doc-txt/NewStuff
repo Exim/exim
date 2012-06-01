@@ -20,6 +20,17 @@ Version 4.81
     For instance, "exim -n -bP pid_file_path" should just emit a pathname
     followed by a newline, and no other text.
 
+ 3. When built with SUPPORT_TLS and USE_GNUTLS, the SMTP transport driver now
+    has a "tls_dh_min_bits" option, to set the minimum acceptable number of
+    bits in the Diffie-Hellman prime offered by a server (in DH ciphersuites)
+    acceptable for security.  (Option accepted but ignored if using OpenSSL).
+    Defaults to 1024, the old value.  May be lowered only to 512, or raised as
+    far as you like.  Raising this may hinder TLS interoperability with other
+    sites and is not currently recommended.  Lowering this will permit you to
+    establish a TLS session which is not as secure as you might like.
+
+    Unless you really know what you are doing, leave it alone.
+
 
 Version 4.80
 ------------
