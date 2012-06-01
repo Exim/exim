@@ -359,4 +359,114 @@ return -1;
 }
 
 
+
+
+/*************************************************
+*       Lookup DSCP settings for a socket        *
+*************************************************/
+
+struct dscp_name_tableentry {
+  const uschar *name;
+  int value;
+};
+/* Keep both of these tables sorted! */
+static struct dscp_name_tableentry dscp_table[] = {
+#ifdef IPTOS_DSCP_AF11
+    { "af11", IPTOS_DSCP_AF11 },
+    { "af12", IPTOS_DSCP_AF12 },
+    { "af13", IPTOS_DSCP_AF13 },
+    { "af21", IPTOS_DSCP_AF21 },
+    { "af22", IPTOS_DSCP_AF22 },
+    { "af23", IPTOS_DSCP_AF23 },
+    { "af31", IPTOS_DSCP_AF31 },
+    { "af32", IPTOS_DSCP_AF32 },
+    { "af33", IPTOS_DSCP_AF33 },
+    { "af41", IPTOS_DSCP_AF41 },
+    { "af42", IPTOS_DSCP_AF42 },
+    { "af43", IPTOS_DSCP_AF43 },
+    { "ef", IPTOS_DSCP_EF },
+#endif
+#ifdef IPTOS_LOWCOST
+    { "lowcost", IPTOS_LOWCOST },
+#endif
+    { "lowdelay", IPTOS_LOWDELAY },
+#ifdef IPTOS_MINCOST
+    { "mincost", IPTOS_MINCOST },
+#endif
+    { "reliability", IPTOS_RELIABILITY },
+    { "throughput", IPTOS_THROUGHPUT }
+};
+static int dscp_table_size =
+  sizeof(dscp_table) / sizeof(struct dscp_name_tableentry);
+
+/* DSCP values change by protocol family, and so do the options used for
+setsockopt(); this utility does all the lookups.
+
+Arguments:
+  dscp_name   a string, so far unvalidated
+  af          address_family in use
+  level       setsockopt level to use
+  optname     setsockopt name to use
+  dscp_value  value for dscp_name
+
+Returns: TRUE if okay to setsockopt(), else FALSE
+*/
+
+BOOL
+dscp_lookup(const uschar *dscp_name, int af,
+    int *level, int *optname, int *dscp_value)
+{
+uschar *dscp_lookup;
+int first, last;
+
+if (af == AF_INET)
+  {
+  *level = IPPROTO_IP;
+  *optname = IP_TOS;
+  }
+else if (af == AF_INET6)
+  {
+  *level = IPPROTO_IPV6;
+  *optname = IPV6_TCLASS;
+  }
+else
+  {
+  DEBUG(D_transport)
+    debug_printf("Unhandled address family %d in dscp_lookup()\n", af);
+  return FALSE;
+  }
+if (!dscp_name)
+  {
+  DEBUG(D_transport)
+    debug_printf("[empty DSCP]\n");
+  return FALSE;
+  }
+dscp_lookup = expand_string(US dscp_name);
+if (dscp_lookup == NULL || *dscp_lookup == '\0')
+  return FALSE;
+
+first = 0;
+last = dscp_table_size;
+while (last > first)
+  {
+  int middle = (first + last)/2;
+  int c = Ustrcmp(dscp_lookup, dscp_table[middle].name);
+  if (c == 0)
+    {
+    *dscp_value = dscp_table[middle].value;
+    return TRUE;
+    }
+  else if (c > 0)
+    {
+    first = middle + 1;
+    }
+  else
+    {
+    last = middle;
+    }
+  }
+return FALSE;
+}
+
+
 /* End of ip.c */

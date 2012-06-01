@@ -473,7 +473,8 @@ for (host = host_list; host != NULL && !done; host = host->next)
   set the error for the last one. Use the callout_connect timeout. */
 
   inblock.sock = outblock.sock =
-    smtp_connect(host, host_af, port, interface, callout_connect, TRUE);
+    smtp_connect(host, host_af, port, interface, callout_connect, TRUE, NULL);
+  /* reconsider DSCP here */
   if (inblock.sock < 0)
     {
     addr->message = string_sprintf("could not connect to %s [%s]: %s",

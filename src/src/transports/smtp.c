@@ -55,6 +55,8 @@ optionlist smtp_transport_options[] = {
       (void *)offsetof(smtp_transport_options_block, dns_qualify_single) },
   { "dns_search_parents",   opt_bool,
       (void *)offsetof(smtp_transport_options_block, dns_search_parents) },
+  { "dscp",                 opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, dscp) },
   { "fallback_hosts",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, fallback_hosts) },
   { "final_timeout",        opt_time,
@@ -162,6 +164,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* interface */
   NULL,                /* port */
   US"smtp",            /* protocol */
+  NULL,                /* DSCP */
   NULL,                /* serialize_hosts */
   NULL,                /* hosts_try_auth */
   NULL,                /* hosts_require_auth */
@@ -945,7 +948,7 @@ if (continue_hostname == NULL)
   {
   inblock.sock = outblock.sock =
     smtp_connect(host, host_af, port, interface, ob->connect_timeout,
-      ob->keepalive);   /* This puts port into host->port */
+      ob->keepalive, ob->dscp);   /* This puts port into host->port */
 
   if (inblock.sock < 0)
     {

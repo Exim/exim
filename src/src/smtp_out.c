@@ -164,16 +164,20 @@ Arguments:
   interface   outgoing interface address or NULL
   timeout     timeout value or 0
   keepalive   TRUE to use keepalive
+  dscp        DSCP value to assign to socket
 
 Returns:      connected socket number, or -1 with errno set
 */
 
 int
 smtp_connect(host_item *host, int host_af, int port, uschar *interface,
-  int timeout, BOOL keepalive)
+  int timeout, BOOL keepalive, const uschar *dscp)
 {
 int on = 1;
 int save_errno = 0;
+int dscp_value;
+int dscp_level;
+int dscp_option;
 int sock;
 
 if (host->port != PORT_NONE)
@@ -201,6 +205,25 @@ if ((sock = ip_socket(SOCK_STREAM, host_af)) < 0) return -1;
 /* Set TCP_NODELAY; Exim does its own buffering. */
 
 setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (uschar *)(&on), sizeof(on));
+
+/* Set DSCP value, if we can. For now, if we fail to set the value, we don't
+bomb out, just log it and continue in default traffic class. */
+
+if (dscp && dscp_lookup(dscp, host_af, &dscp_level, &dscp_option, &dscp_value))
+  {
+  HDEBUG(D_transport|D_acl|D_v)
+    debug_printf("DSCP \"%s\"=%d ", dscp, dscp_value);
+  if (setsockopt(sock, dscp_level, dscp_option, &dscp_value, sizeof(dscp_value)) < 0)
+    HDEBUG(D_transport|D_acl|D_v)
+      debug_printf("failed to set DSCP: %s ", strerror(errno));
+  /* If the kernel supports IPv4 and IPv6 on an IPv6 socket, we need to set the
+  option for both; ignore failures here */
+  if (host_af == AF_INET6 &&
+      dscp_lookup(dscp, AF_INET, &dscp_level, &dscp_option, &dscp_value))
+    {
+    (void) setsockopt(sock, dscp_level, dscp_option, &dscp_value, sizeof(dscp_value));
+    }
+  }
 
 /* Bind to a specific interface if requested. Caller must ensure the interface
 is the same type (IPv4 or IPv6) as the outgoing address. */

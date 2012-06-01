@@ -109,6 +109,7 @@ extern int     dns_lookup(dns_answer *, uschar *, int, uschar **);
 extern int     dns_special_lookup(dns_answer *, uschar *, int, uschar **);
 extern dns_record *dns_next_rr(dns_answer *, dns_scan *, int);
 extern uschar *dns_text_type(int);
+extern BOOL    dscp_lookup(const uschar *, int, int *, int *, int *);
 
 extern void    enq_end(uschar *);
 extern BOOL    enq_start(uschar *);
@@ -290,7 +291,7 @@ extern int     sieve_interpret(uschar *, int, uschar *, uschar *, uschar *,
 extern void    sigalrm_handler(int);
 extern BOOL    smtp_buffered(void);
 extern void    smtp_closedown(uschar *);
-extern int     smtp_connect(host_item *, int, int, uschar *, int, BOOL);
+extern int     smtp_connect(host_item *, int, int, uschar *, int, BOOL, const uschar *);
 extern int     smtp_feof(void);
 extern int     smtp_ferror(void);
 extern uschar *smtp_get_connection_info(void);

@@ -17,6 +17,7 @@ typedef struct {
   uschar *interface;
   uschar *port;
   uschar *protocol;
+  uschar *dscp;
   uschar *serialize_hosts;
   uschar *hosts_try_auth;
   uschar *hosts_require_auth;
