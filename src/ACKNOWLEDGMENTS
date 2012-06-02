@@ -402,6 +402,7 @@ John Horne                Patch adding $av_failed
 Andreas M. Kirchwitz      Let /dev/null have normal permissions (4.73 fallout)
 Roberto Lima              Patch letting exicyclog rotate paniclog
 Todd Lyons                Patch handling TAB in MAIL arguments
+Christof Meerwald         Provided insight & suggested patch for GnuTLS update
 Andreas Metzler           Patch upgrading PolarSSL (DKIM)
                           Reported delivery logging problems (4.73 fallout)
                           Patch to build without WITH_CONTENT_SCAN
