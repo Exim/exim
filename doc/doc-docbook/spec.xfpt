@@ -18417,6 +18417,18 @@ quote just the command. An item such as
 .endd
 is interpreted as a pipe with a rather strange command name, and no arguments.
 
+.new
+Note that the above example assumes that the text comes from a lookup source
+of some sort, so that the quotes are part of the data.  If composing a
+redirect router with a &%data%& option directly specifying this command, the
+quotes will be used by the configuration parser to define the extent of one
+string, but will not be passed down into the redirect router itself.  There
+are two main approaches to get around this: escape quotes to be part of the
+data itself, or avoid using this mechanism and instead create a custom
+transport with the &%command%& option set and reference that transport from
+an &%accept%& router.
+.wen
+
 .next
 .cindex "file" "in redirection list"
 .cindex "address redirection" "to file"
