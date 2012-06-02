@@ -57,7 +57,7 @@ store_free(block);
 *************************************************/
 
 enum commandline_info { CMDINFO_NONE=0,
-  CMDINFO_HELP, CMDINFO_SIEVE };
+  CMDINFO_HELP, CMDINFO_SIEVE, CMDINFO_DSCP };
 
 
 
@@ -1044,6 +1044,7 @@ switch(request)
 "If the string is not recognised, you'll get this help (on stderr).\n"
 "\n"
 "  exim -bI:help    this information\n"
+"  exim -bI:dscp    dscp value keywords known\n"
 "  exim -bI:sieve   list of supported sieve extensions, one per line.\n"
 );
     return;
@@ -1051,7 +1052,9 @@ switch(request)
     for (pp = exim_sieve_extension_list; *pp; ++pp)
       fprintf(stream, "%s\n", *pp);
     return;
-
+  case CMDINFO_DSCP:
+    dscp_list_to_stream(stream);
+    return;
   }
 }
 
@@ -1985,6 +1988,11 @@ for (i = 1; i < argc; i++)
         if (strcmpic(p, CUS"sieve") == 0)
           {
           info_flag = CMDINFO_SIEVE;
+          info_stdout = TRUE;
+          }
+        else if (strcmpic(p, CUS"dscp") == 0)
+          {
+          info_flag = CMDINFO_DSCP;
           info_stdout = TRUE;
           }
         else if (strcmpic(p, CUS"help") == 0)

@@ -372,29 +372,29 @@ struct dscp_name_tableentry {
 /* Keep both of these tables sorted! */
 static struct dscp_name_tableentry dscp_table[] = {
 #ifdef IPTOS_DSCP_AF11
-    { "af11", IPTOS_DSCP_AF11 },
-    { "af12", IPTOS_DSCP_AF12 },
-    { "af13", IPTOS_DSCP_AF13 },
-    { "af21", IPTOS_DSCP_AF21 },
-    { "af22", IPTOS_DSCP_AF22 },
-    { "af23", IPTOS_DSCP_AF23 },
-    { "af31", IPTOS_DSCP_AF31 },
-    { "af32", IPTOS_DSCP_AF32 },
-    { "af33", IPTOS_DSCP_AF33 },
-    { "af41", IPTOS_DSCP_AF41 },
-    { "af42", IPTOS_DSCP_AF42 },
-    { "af43", IPTOS_DSCP_AF43 },
-    { "ef", IPTOS_DSCP_EF },
+    { CUS"af11", IPTOS_DSCP_AF11 },
+    { CUS"af12", IPTOS_DSCP_AF12 },
+    { CUS"af13", IPTOS_DSCP_AF13 },
+    { CUS"af21", IPTOS_DSCP_AF21 },
+    { CUS"af22", IPTOS_DSCP_AF22 },
+    { CUS"af23", IPTOS_DSCP_AF23 },
+    { CUS"af31", IPTOS_DSCP_AF31 },
+    { CUS"af32", IPTOS_DSCP_AF32 },
+    { CUS"af33", IPTOS_DSCP_AF33 },
+    { CUS"af41", IPTOS_DSCP_AF41 },
+    { CUS"af42", IPTOS_DSCP_AF42 },
+    { CUS"af43", IPTOS_DSCP_AF43 },
+    { CUS"ef", IPTOS_DSCP_EF },
 #endif
 #ifdef IPTOS_LOWCOST
-    { "lowcost", IPTOS_LOWCOST },
+    { CUS"lowcost", IPTOS_LOWCOST },
 #endif
-    { "lowdelay", IPTOS_LOWDELAY },
+    { CUS"lowdelay", IPTOS_LOWDELAY },
 #ifdef IPTOS_MINCOST
-    { "mincost", IPTOS_MINCOST },
+    { CUS"mincost", IPTOS_MINCOST },
 #endif
-    { "reliability", IPTOS_RELIABILITY },
-    { "throughput", IPTOS_THROUGHPUT }
+    { CUS"reliability", IPTOS_RELIABILITY },
+    { CUS"throughput", IPTOS_THROUGHPUT }
 };
 static int dscp_table_size =
   sizeof(dscp_table) / sizeof(struct dscp_name_tableentry);
@@ -466,6 +466,14 @@ while (last > first)
     }
   }
 return FALSE;
+}
+
+void
+dscp_list_to_stream(FILE *stream)
+{
+int i;
+for (i=0; i < dscp_table_size; ++i)
+  fprintf(stream, "%s\n", dscp_table[i].name);
 }
 
 

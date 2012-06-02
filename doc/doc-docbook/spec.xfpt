@@ -2938,6 +2938,7 @@ if this is required. If the &%bi_command%& option is not set, calling Exim with
 &%-bi%& is a no-op.
 
 .new
+. // Keep :help first, then the rest in alphabetical order
 .vitem &%-bI:help%&
 .oindex "&%-bI:help%&"
 .cindex "querying exim information"
@@ -2946,6 +2947,12 @@ information.  The output of many of these will be intended for machine
 consumption.  This one is not.  The &%-bI:help%& option asks Exim for a
 synopsis of supported options beginning &`-bI:`&.  Use of any of these
 options shall cause Exim to exit after producing the requested output.
+
+.vitem &%-bI:dscp%&
+.oindex "&%-bI:dscp%&"
+.cindex "DSCP" "values"
+This option causes Exim to emit an alphabetically sorted list of all
+recognised DSCP names.
 
 .vitem &%-bI:sieve%&
 .oindex "&%-bI:sieve%&"
@@ -22093,6 +22100,22 @@ If the &%hosts%& or &%fallback_hosts%& option is being used, and the
 See the &%search_parents%& option in chapter &<<CHAPdnslookup>>& for more
 details.
 
+
+.new
+.option dscp smtp string unset
+.cindex "DCSP"
+.cindex "DiffServ"
+This option causes the DSCP value associated with a socket to be set to one
+of a number of fixed strings.  The &%-bI:dscp%& option may be used to ask
+Exim which values it knows of.  Common values include &`throughput`&,
+&`mincost`&, and on newer systems &`ef`&, &`af41`&, ...
+
+The outbound packets from Exim will be marked with this value in the header
+(for IPv4, the TOS field; for IPv6, the TCLASS field); there is no guarantee
+that these packets will have any effect, not be stripped by networking
+equipment, or do much of anything without cooperation with your Network
+Engineer and those of all network operators between the source and destination.
+.wen
 
 
 .option fallback_hosts smtp "string list" unset

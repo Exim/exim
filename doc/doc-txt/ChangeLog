@@ -16,6 +16,8 @@ PP/04 First step towards DNSSEC, provide $sender_host_dnssec for
       $sender_host_name and config options to manage this, and basic check
       routines.
 
+PP/05 DSCP support for outbound connections.
+
 
 Exim version 4.80
 -----------------

@@ -109,6 +109,7 @@ extern int     dns_lookup(dns_answer *, uschar *, int, uschar **);
 extern int     dns_special_lookup(dns_answer *, uschar *, int, uschar **);
 extern dns_record *dns_next_rr(dns_answer *, dns_scan *, int);
 extern uschar *dns_text_type(int);
+extern void    dscp_list_to_stream(FILE *);
 extern BOOL    dscp_lookup(const uschar *, int, int *, int *, int *);
 
 extern void    enq_end(uschar *);

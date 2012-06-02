@@ -212,7 +212,7 @@ bomb out, just log it and continue in default traffic class. */
 if (dscp && dscp_lookup(dscp, host_af, &dscp_level, &dscp_option, &dscp_value))
   {
   HDEBUG(D_transport|D_acl|D_v)
-    debug_printf("DSCP \"%s\"=%d ", dscp, dscp_value);
+    debug_printf("DSCP \"%s\"=%x ", dscp, dscp_value);
   if (setsockopt(sock, dscp_level, dscp_option, &dscp_value, sizeof(dscp_value)) < 0)
     HDEBUG(D_transport|D_acl|D_v)
       debug_printf("failed to set DSCP: %s ", strerror(errno));

@@ -187,6 +187,7 @@ driver                               string          unset         authenticator
                                                      unset         routers           4.00
                                                      unset         transports
 drop_cr                              boolean         false         main              4.00 became a no-op in 4.21
+dscp                                 string          unset         smtp              4.81
 dsn_from                             string*         +             main              4.67
 envelope_to_add                      boolean         false         transports
 envelope_to_remove                   boolean         true          main

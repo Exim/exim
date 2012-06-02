@@ -39,6 +39,11 @@ Version 4.81
 
     Current status: work-in-progress; $sender_host_dnssec variable added.
 
+ 5. DSCP support for outbound connections: on a transport using the smtp driver,
+    set "dscp = ef", for instance, to cause the connections to have the relevant
+    DSCP (IPv4 TOS or IPv6 TCLASS) value in the header.  Supported values depend
+    upon system libraries.  "exim -bI:dscp" to list the ones Exim knows of.
+
 
 Version 4.80
 ------------
