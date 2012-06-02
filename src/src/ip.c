@@ -400,7 +400,11 @@ static int dscp_table_size =
   sizeof(dscp_table) / sizeof(struct dscp_name_tableentry);
 
 /* DSCP values change by protocol family, and so do the options used for
-setsockopt(); this utility does all the lookups.
+setsockopt(); this utility does all the lookups.  It takes an unexpanded
+option string, expands it, strips off affix whitespace, then checks if it's
+a number.  If all of what's left is a number, then that's how the option will
+be parsed and success/failure is a range check.  If it's not all a number,
+then it must be a supported keyword.
 
 Arguments:
   dscp_name   a string, so far unvalidated
@@ -410,14 +414,17 @@ Arguments:
   dscp_value  value for dscp_name
 
 Returns: TRUE if okay to setsockopt(), else FALSE
+
+*level and *optname may be set even if FALSE is returned
 */
 
 BOOL
 dscp_lookup(const uschar *dscp_name, int af,
     int *level, int *optname, int *dscp_value)
 {
-uschar *dscp_lookup;
+uschar *dscp_lookup, *p;
 int first, last;
+long rawlong;
 
 if (af == AF_INET)
   {
@@ -444,6 +451,27 @@ if (!dscp_name)
 dscp_lookup = expand_string(US dscp_name);
 if (dscp_lookup == NULL || *dscp_lookup == '\0')
   return FALSE;
+
+p = dscp_lookup + Ustrlen(dscp_lookup) - 1;
+while (isspace(*p)) *p-- = '\0';
+while (isspace(*dscp_lookup) && dscp_lookup < p) dscp_lookup++;
+if (*dscp_lookup == '\0')
+  return FALSE;
+
+rawlong = Ustrtol(dscp_lookup, &p, 0);
+if (p != dscp_lookup && *p == '\0')
+  {
+  /* We have six bits available, which will end up shifted to fit in 0xFC mask.
+  RFC 2597 defines the values unshifted. */
+  if (rawlong < 0 || rawlong > 0x3F)
+    {
+    DEBUG(D_transport)
+      debug_printf("DSCP value %ld out of range, ignored.\n", rawlong);
+    return FALSE;
+    }
+  *dscp_value = rawlong << 2;
+  return TRUE;
+  }
 
 first = 0;
 last = dscp_table_size;

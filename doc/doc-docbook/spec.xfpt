@@ -22102,13 +22102,14 @@ details.
 
 
 .new
-.option dscp smtp string unset
+.option dscp smtp string&!! unset
 .cindex "DCSP"
 .cindex "DiffServ"
 This option causes the DSCP value associated with a socket to be set to one
-of a number of fixed strings.  The &%-bI:dscp%& option may be used to ask
-Exim which values it knows of.  Common values include &`throughput`&,
-&`mincost`&, and on newer systems &`ef`&, &`af41`&, ...
+of a number of fixed strings or to numeric value.
+The &%-bI:dscp%& option may be used to ask Exim which names it knows of.
+Common values include &`throughput`&, &`mincost`&, and on newer systems
+&`ef`&, &`af41`&, etc.  Numeric values may be in the range 0 to 0x3F.
 
 The outbound packets from Exim will be marked with this value in the header
 (for IPv4, the TOS field; for IPv6, the TCLASS field); there is no guarantee
