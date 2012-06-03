@@ -173,6 +173,7 @@ enum {
   #ifndef DISABLE_DKIM
   CONTROL_DKIM_VERIFY,
   #endif
+  CONTROL_DSCP,
   CONTROL_ERROR,
   CONTROL_CASEFUL_LOCAL_PART,
   CONTROL_CASELOWER_LOCAL_PART,
@@ -207,6 +208,7 @@ static uschar *controls[] = {
   #ifndef DISABLE_DKIM
   US"dkim_disable_verify",
   #endif
+  US"dscp",
   US"error",
   US"caseful_local_part",
   US"caselower_local_part",
@@ -524,6 +526,10 @@ static unsigned int control_forbids[] = {
     (1<<ACL_WHERE_NOTSMTP_START),
   #endif
 
+  (1<<ACL_WHERE_NOTSMTP)|
+    (1<<ACL_WHERE_NOTSMTP_START)|
+    (1<<ACL_WHERE_NOTQUIT),                        /* dscp */
+
   0,                                               /* error */
 
   (unsigned int)
@@ -604,6 +610,7 @@ static control_def controls_list[] = {
 #ifndef DISABLE_DKIM
   { US"dkim_disable_verify",     CONTROL_DKIM_VERIFY, FALSE },
 #endif
+  { US"dscp",                    CONTROL_DSCP, TRUE },
   { US"caseful_local_part",      CONTROL_CASEFUL_LOCAL_PART, FALSE },
   { US"caselower_local_part",    CONTROL_CASELOWER_LOCAL_PART, FALSE },
   { US"enforce_sync",            CONTROL_ENFORCE_SYNC, FALSE },
@@ -2846,6 +2853,46 @@ for (; cb != NULL; cb = cb->next)
       dkim_disable_verify = TRUE;
       break;
       #endif
+
+      case CONTROL_DSCP:
+      if (*p == '/')
+        {
+        int fd, af, level, optname, value;
+        /* If we are acting on stdin, the setsockopt may fail if stdin is not
+        a socket; we can accept that, we'll just debug-log failures anyway. */
+        fd = fileno(smtp_in);
+        af = ip_get_address_family(fd);
+        if (af < 0)
+          {
+          HDEBUG(D_acl)
+            debug_printf("smtp input is probably not a socket [%s], not setting DSCP\n",
+                strerror(errno));
+          break;
+          }
+        if (dscp_lookup(p+1, af, &level, &optname, &value))
+          {
+          if (setsockopt(fd, level, optname, &value, sizeof(value)) < 0)
+            {
+            HDEBUG(D_acl) debug_printf("failed to set input DSCP[%s]: %s\n",
+                p+1, strerror(errno));
+            }
+          else
+            {
+            HDEBUG(D_acl) debug_printf("set input DSCP to \"%s\"\n", p+1);
+            }
+          }
+        else
+          {
+          *log_msgptr = string_sprintf("unrecognised DSCP value in \"control=%s\"", arg);
+          return ERROR;
+          }
+        }
+      else
+        {
+        *log_msgptr = string_sprintf("syntax error in \"control=%s\"", arg);
+        return ERROR;
+        }
+      break;
 
       case CONTROL_ERROR:
       return ERROR;

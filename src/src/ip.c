@@ -362,6 +362,37 @@ return -1;
 
 
 /*************************************************
+*    Lookup address family of potential socket   *
+*************************************************/
+
+/* Given a file-descriptor, check to see if it's a socket and, if so,
+return the address family; detects IPv4 vs IPv6.  If not a socket then
+return -1.
+
+The value 0 is typically AF_UNSPEC, which should not be seen on a connected
+fd.  If the return is -1, the errno will be from getsockname(); probably
+ENOTSOCK or ECONNRESET.
+
+Arguments:     socket-or-not fd
+Returns:       address family or -1
+*/
+
+int
+ip_get_address_family(int fd)
+{
+struct sockaddr_storage ss;
+socklen_t sslen = sizeof(ss);
+
+if (getsockname(fd, (struct sockaddr *) &ss, &sslen) < 0)
+  return -1;
+
+return (int) ss.ss_family;
+}
+
+
+
+
+/*************************************************
 *       Lookup DSCP settings for a socket        *
 *************************************************/
 

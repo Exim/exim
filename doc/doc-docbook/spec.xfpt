@@ -22115,8 +22115,7 @@ details.
 
 .new
 .option dscp smtp string&!! unset
-.cindex "DCSP"
-.cindex "DiffServ"
+.cindex "DCSP" "outbound"
 This option causes the DSCP value associated with a socket to be set to one
 of a number of fixed strings or to numeric value.
 The &%-bI:dscp%& option may be used to ask Exim which names it knows of.
@@ -22125,7 +22124,7 @@ Common values include &`throughput`&, &`mincost`&, and on newer systems
 
 The outbound packets from Exim will be marked with this value in the header
 (for IPv4, the TOS field; for IPv6, the TCLASS field); there is no guarantee
-that these packets will have any effect, not be stripped by networking
+that these values will have any effect, not be stripped by networking
 equipment, or do much of anything without cooperation with your Network
 Engineer and those of all network operators between the source and destination.
 .wen
@@ -26809,6 +26808,25 @@ warn  control = caseful_local_part
 .endd
 Notice that we put back the lower cased version afterwards, assuming that
 is what is wanted for subsequent tests.
+
+
+.new
+.vitem &*control&~=&~dscp/*&<&'value'&>
+.cindex "&ACL;" "setting DSCP value"
+.cindex "DSCP" "inbound"
+This option causes the DSCP value associated with the socket for the inbound
+connection to be adjusted to a given value, given as one of a number of fixed
+strings or to numeric value.
+The &%-bI:dscp%& option may be used to ask Exim which names it knows of.
+Common values include &`throughput`&, &`mincost`&, and on newer systems
+&`ef`&, &`af41`&, etc.  Numeric values may be in the range 0 to 0x3F.
+
+The outbound packets from Exim will be marked with this value in the header
+(for IPv4, the TOS field; for IPv6, the TCLASS field); there is no guarantee
+that these values will have any effect, not be stripped by networking
+equipment, or do much of anything without cooperation with your Network
+Engineer and those of all network operators between the source and destination.
+.wen
 
 
 .vitem &*control&~=&~debug/*&<&'options'&>

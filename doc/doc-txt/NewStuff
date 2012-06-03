@@ -41,9 +41,13 @@ Version 4.81
 
  5. DSCP support for outbound connections: on a transport using the smtp driver,
     set "dscp = ef", for instance, to cause the connections to have the relevant
-    DSCP (IPv4 TOS or IPv6 TCLASS) value in the header.  Supported values depend
-    upon system libraries.  "exim -bI:dscp" to list the ones Exim knows of.
-    You can also set a raw number 0..0x3F.
+    DSCP (IPv4 TOS or IPv6 TCLASS) value in the header.
+
+    Similarly for inbound connections, there is a new control modifier, dscp,
+    so "warn control = dscp/ef" in the connect ACL, or after authentication.
+
+    Supported values depend upon system libraries.  "exim -bI:dscp" to list the
+    ones Exim knows of.  You can also set a raw number 0..0x3F.
 
 
 Version 4.80
