@@ -1455,6 +1455,7 @@ BOOL verify_as_sender = FALSE;
 BOOL version_printed = FALSE;
 uschar *alias_arg = NULL;
 uschar *called_as = US"";
+uschar *cmdline_syslog_name = NULL;
 uschar *start_queue_run_id = NULL;
 uschar *stop_queue_run_id = NULL;
 uschar *expansion_test_message = NULL;
@@ -1465,6 +1466,7 @@ uschar *ftest_suffix = NULL;
 uschar *malware_test_file = NULL;
 uschar *real_sender_address;
 uschar *originator_home = US"/";
+size_t sz;
 void *reset_point;
 
 struct passwd *pw;
@@ -1875,6 +1877,26 @@ for (i = 1; i < argc; i++)
 
   switch(switchchar)
     {
+
+    /* sendmail uses -Ac and -Am to control which .cf file is used;
+    we ignore them. */
+    case 'A':
+    if (*argrest == '\0') { badarg = TRUE; break; }
+    else
+      {
+      BOOL ignore = FALSE;
+      switch (*argrest)
+        {
+        case 'c':
+        case 'm':
+          if (*(argrest + 1) == '\0')
+            ignore = TRUE;
+          break;
+        }
+      if (!ignore) { badarg = TRUE; break; }
+      }
+    break;
+
     /* -Btype is a sendmail option for 7bit/8bit setting. Exim is 8-bit clean
     so has no need of it. */
 
@@ -2484,7 +2506,10 @@ for (i = 1; i < argc; i++)
       }
     break;
 
-    /* This is some Sendmail thing which can be ignored */
+    /* -G: sendmail invocation to specify that it's a gateway submission and
+    sendmail may complain about problems instead of fixing them.  We might use
+    it to disable submission mode fixups for command-line?  Currently we just
+    ignore it. */
 
     case 'G':
     break;
@@ -2510,6 +2535,29 @@ for (i = 1; i < argc; i++)
     if (*argrest == 0) dot_ends = FALSE; else badarg = TRUE;
     break;
 
+
+    /* -L: set the identifier used for syslog; equivalent to setting
+    syslog_processname in the config file, but needs to be an admin option. */
+
+    case 'L':
+    if (*argrest == '\0')
+      {
+      if(++i < argc) argrest = argv[i]; else
+        { badarg = TRUE; break; }
+      }
+    sz = Ustrlen(argrest);
+    if (sz > 32)
+      {
+      fprintf(stderr, "exim: the -L syslog name is too long: \"%s\"\n", argrest);
+      return EXIT_FAILURE;
+      }
+    if (sz < 1)
+      {
+      fprintf(stderr, "exim: the -L syslog name is too short\n");
+      return EXIT_FAILURE;
+      }
+    cmdline_syslog_name = argrest;
+    break;
 
     case 'M':
     receiving_message = FALSE;
@@ -3267,6 +3315,20 @@ for (i = 1; i < argc; i++)
     if (*argrest != 0) badarg = TRUE;
     break;
 
+    /* -X: in sendmail: takes one parameter, logfile, and sends debugging
+    logs to that file.  We swallow the parameter and otherwise ignore it. */
+
+    case 'X':
+    if (*argrest == '\0')
+      {
+      if (++i >= argc)
+        {
+        fprintf(stderr, "exim: string expected after -X\n");
+        exit(EXIT_FAILURE);
+        }
+      }
+    break;
+
     /* All other initial characters are errors */
 
     default:
@@ -3571,6 +3633,66 @@ configuration data for delivery can be read if needed. */
 
 readconf_main();
 
+/* If an action on specific messages is requested, or if a daemon or queue
+runner is being started, we need to know if Exim was called by an admin user.
+This is the case if the real user is root or exim, or if the real group is
+exim, or if one of the supplementary groups is exim or a group listed in
+admin_groups. We don't fail all message actions immediately if not admin_user,
+since some actions can be performed by non-admin users. Instead, set admin_user
+for later interrogation. */
+
+if (real_uid == root_uid || real_uid == exim_uid || real_gid == exim_gid)
+  admin_user = TRUE;
+else
+  {
+  int i, j;
+  for (i = 0; i < group_count; i++)
+    {
+    if (group_list[i] == exim_gid) admin_user = TRUE;
+    else if (admin_groups != NULL)
+      {
+      for (j = 1; j <= (int)(admin_groups[0]); j++)
+        if (admin_groups[j] == group_list[i])
+          { admin_user = TRUE; break; }
+      }
+    if (admin_user) break;
+    }
+  }
+
+/* Another group of privileged users are the trusted users. These are root,
+exim, and any caller matching trusted_users or trusted_groups. Trusted callers
+are permitted to specify sender_addresses with -f on the command line, and
+other message parameters as well. */
+
+if (real_uid == root_uid || real_uid == exim_uid)
+  trusted_caller = TRUE;
+else
+  {
+  int i, j;
+
+  if (trusted_users != NULL)
+    {
+    for (i = 1; i <= (int)(trusted_users[0]); i++)
+      if (trusted_users[i] == real_uid)
+        { trusted_caller = TRUE; break; }
+    }
+
+  if (!trusted_caller && trusted_groups != NULL)
+    {
+    for (i = 1; i <= (int)(trusted_groups[0]); i++)
+      {
+      if (trusted_groups[i] == real_gid)
+        trusted_caller = TRUE;
+      else for (j = 0; j < group_count; j++)
+        {
+        if (trusted_groups[i] == group_list[j])
+          { trusted_caller = TRUE; break; }
+        }
+      if (trusted_caller) break;
+      }
+    }
+  }
+
 /* Handle the decoding of logging options. */
 
 decode_bits(&log_write_selector, &log_extra_selector, 0, 0,
@@ -3598,6 +3720,24 @@ if (sender_address != NULL)
     {
     fprintf(stderr, "exim: bad -f address \"%s.\": domain is malformed "
       "(trailing dot not allowed)\n", sender_address);
+    return EXIT_FAILURE;
+    }
+  }
+
+/* See if an admin user overrode our logging. */
+
+if (cmdline_syslog_name != NULL)
+  {
+  if (admin_user)
+    {
+    syslog_processname = cmdline_syslog_name;
+    log_file_path = string_copy(CUS"syslog");
+    }
+  else
+    {
+    /* not a panic, non-privileged users should not be able to spam paniclog */
+    fprintf(stderr,
+        "exim: you lack sufficient privilege to specify syslog process name\n");
     return EXIT_FAILURE;
     }
   }
@@ -3845,65 +3985,9 @@ if (bi_option)
     }
   }
 
-/* If an action on specific messages is requested, or if a daemon or queue
-runner is being started, we need to know if Exim was called by an admin user.
-This is the case if the real user is root or exim, or if the real group is
-exim, or if one of the supplementary groups is exim or a group listed in
-admin_groups. We don't fail all message actions immediately if not admin_user,
-since some actions can be performed by non-admin users. Instead, set admin_user
-for later interrogation. */
-
-if (real_uid == root_uid || real_uid == exim_uid || real_gid == exim_gid)
-  admin_user = TRUE;
-else
-  {
-  int i, j;
-  for (i = 0; i < group_count; i++)
-    {
-    if (group_list[i] == exim_gid) admin_user = TRUE;
-    else if (admin_groups != NULL)
-      {
-      for (j = 1; j <= (int)(admin_groups[0]); j++)
-        if (admin_groups[j] == group_list[i])
-          { admin_user = TRUE; break; }
-      }
-    if (admin_user) break;
-    }
-  }
-
-/* Another group of privileged users are the trusted users. These are root,
-exim, and any caller matching trusted_users or trusted_groups. Trusted callers
-are permitted to specify sender_addresses with -f on the command line, and
-other message parameters as well. */
-
-if (real_uid == root_uid || real_uid == exim_uid)
-  trusted_caller = TRUE;
-else
-  {
-  int i, j;
-
-  if (trusted_users != NULL)
-    {
-    for (i = 1; i <= (int)(trusted_users[0]); i++)
-      if (trusted_users[i] == real_uid)
-        { trusted_caller = TRUE; break; }
-    }
-
-  if (!trusted_caller && trusted_groups != NULL)
-    {
-    for (i = 1; i <= (int)(trusted_groups[0]); i++)
-      {
-      if (trusted_groups[i] == real_gid)
-        trusted_caller = TRUE;
-      else for (j = 0; j < group_count; j++)
-        {
-        if (trusted_groups[i] == group_list[j])
-          { trusted_caller = TRUE; break; }
-        }
-      if (trusted_caller) break;
-      }
-    }
-  }
+/* We moved the admin/trusted check to be immediately after reading the
+configuration file.  We leave these prints here to ensure that syslog setup,
+logfile setup, and so on has already happened. */
 
 if (trusted_caller) DEBUG(D_any) debug_printf("trusted user\n");
 if (admin_user) DEBUG(D_any) debug_printf("admin user\n");

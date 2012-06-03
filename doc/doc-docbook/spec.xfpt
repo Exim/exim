@@ -2678,6 +2678,15 @@ no arguments.
 This option is an alias for &%-bV%& and causes version information to be
 displayed.
 
+.new
+.vitem &%-Ac%& &&&
+       &%-Am%&
+.oindex "&%-Ac%&"
+.oindex "&%-Am%&"
+These options are used by Sendmail for selecting configuration files and are
+ignored by Exim.
+.wen
+
 .vitem &%-B%&<&'type'&>
 .oindex "&%-B%&"
 .cindex "8-bit characters"
@@ -3705,6 +3714,19 @@ line by itself should not terminate an incoming, non-SMTP message. I can find
 no documentation for this option in Solaris 2.4 Sendmail, but the &'mailx'&
 command in Solaris 2.4 uses it. See also &%-ti%&.
 
+.new
+.vitem &%-L%&&~<&'tag'&>
+.oindex "&%-L%&"
+.cindex "syslog" "process name; set with flag"
+This option is equivalent to setting &%syslog_processname%& in the config
+file and setting &%log_file_path%& to &`syslog`&.
+Its use is restricted to administrators.  The configuration file has to be
+read and parsed, to determine access rights, before this is set and takes
+effect, so early configuration file errors will not honour this flag.
+
+The tag should not be longer than 32 characters.
+.wen
+
 .vitem &%-M%&&~<&'message&~id'&>&~<&'message&~id'&>&~...
 .oindex "&%-M%&"
 .cindex "forcing delivery"
@@ -4566,6 +4588,13 @@ AIX uses &%-x%& for a private purpose (&"mail from a local mail program has
 National Language Support extended characters in the body of the mail item"&).
 It sets &%-x%& when calling the MTA from its &%mail%& command. Exim ignores
 this option.
+
+.new
+.vitem &%-X%&&~<&'logfile'&>
+.oindex "&%-X%&"
+This option is interpreted by Sendmail to cause debug information to be sent
+to the named file.  It is ignored by Exim.
+.wen
 .endlist
 
 .ecindex IIDclo1

@@ -24,6 +24,10 @@ PP/06 Cyrus SASL: set local and remote IP;port properties for driver.
       conceivably use it, even though it would break NAT; stuff *should* be
       using channel bindings instead).
 
+PP/07 Handle "exim -L <tag>" to indicate to use syslog with tag as the process
+      name; added for Sendmail compatibility.
+      Also parse but ignore: -Ac -Am -X<logfile>
+
 
 Exim version 4.80
 -----------------
