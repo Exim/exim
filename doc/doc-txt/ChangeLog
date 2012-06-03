@@ -19,6 +19,10 @@ PP/04 First step towards DNSSEC, provide $sender_host_dnssec for
 PP/05 DSCP support for outbound connections and control modifier for inbound.
 
 PP/06 Cyrus SASL: set local and remote IP;port properties for driver.
+      (Only plugin which currently uses this is kerberos4, which nobody should
+      be using, but we should make it available and other future plugins might
+      conceivably use it, even though it would break NAT; stuff *should* be
+      using channel bindings instead).
 
 
 Exim version 4.80
