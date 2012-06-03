@@ -18,6 +18,8 @@ PP/04 First step towards DNSSEC, provide $sender_host_dnssec for
 
 PP/05 DSCP support for outbound connections and control modifier for inbound.
 
+PP/06 Cyrus SASL: set local and remote IP;port properties for driver.
+
 
 Exim version 4.80
 -----------------

@@ -205,7 +205,7 @@ uschar *debug = NULL;   /* Stops compiler complaining */
 sasl_callback_t cbs[]={{SASL_CB_LIST_END, NULL, NULL}};
 sasl_conn_t *conn;
 char *realm_expanded;
-int rc, firsttime=1, clen, *negotiated_ssf_ptr=NULL, negotiated_ssf;
+int rc, i, firsttime=1, clen, *negotiated_ssf_ptr=NULL, negotiated_ssf;
 unsigned int inlen, outlen;
 
 input=data;
@@ -272,6 +272,64 @@ if (tls_cipher)
   }
 else
   HDEBUG(D_auth) debug_printf("Cyrus SASL: no TLS, no EXTERNAL SSF set\n");
+
+/* So sasl_setprop() documents non-shorted IPv6 addresses which is incredibly
+annoying; looking at cyrus-imapd-2.3.x source, the IP address is constructed
+with their iptostring() function, which just wraps
+getnameinfo(..., NI_NUMERICHOST|NI_NUMERICSERV), which is equivalent to the
+inet_ntop which we wrap in our host_ntoa() function.
+
+So the docs are too strict and we shouldn't worry about :: contractions. */
+
+/* Set properties for remote and local host-ip;port */
+for (i=0; i < 2; ++i)
+  {
+  struct sockaddr_storage ss;
+  int (*query)(int, struct sockaddr *, socklen_t *);
+  int propnum, port;
+  const uschar *label;
+  uschar *address, *address_port;
+  const char *s_err;
+  socklen_t sslen;
+
+  if (i)
+    {
+    query = &getpeername;
+    propnum = SASL_IPREMOTEPORT;
+    label = CUS"peer";
+    }
+  else
+    {
+    query = &getsockname;
+    propnum = SASL_IPLOCALPORT;
+    label = CUS"local";
+    }
+
+  sslen = sizeof(ss);
+  rc = query(fileno(smtp_in), (struct sockaddr *) &ss, &sslen);
+  if (rc < 0)
+    {
+    HDEBUG(D_auth)
+      debug_printf("Failed to get %s address information: %s\n",
+          label, strerror(errno));
+    break;
+    }
+
+  address = host_ntoa(-1, &ss, NULL, &port);
+  address_port = string_sprintf("%s;%d", address, port);
+
+  rc = sasl_setprop(conn, propnum, address_port);
+  if (rc != SASL_OK)
+    {
+    s_err = sasl_errdetail(conn);
+    HDEBUG(D_auth)
+      debug_printf("Failed to set %s SASL property: [%d] %s\n",
+          label, rc, s_err ? s_err : "<unknown reason>");
+    break;
+    }
+  HDEBUG(D_auth) debug_printf("Cyrus SASL set %s hostport to: %s\n",
+      label, address_port);
+  }
 
 rc=SASL_CONTINUE;
 
