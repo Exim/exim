@@ -26906,6 +26906,27 @@ is what is wanted for subsequent tests.
 
 
 .new
+.vitem &*control&~=&~cutthrough_delivery*&
+.cindex "&ACL;" "cutthrough routing"
+This option requests delivery be attempted while the item is being received.
+It is usable in the RCPT ACL and valid only for single-recipient mails forwarded
+from one SMTP connection to another.  If a recipient-verify callout connection is
+requested in the same ACL it is held open and used for the data, otherwise one is made
+after the ACL completes.
+
+Should the ultimate destination system positively accept or reject the mail,
+a corresponding indication is given to the source system and nothing is queued.
+If there is a temporary error the item is queued for later delivery in the
+usual fashion. If the item is successfully delivered in cutthrough mode the log line
+is tagged with ">>" rather than "=>" and appears before the acceptance "<="
+line.
+
+Delivery in this mode avoids the generation of a bounce mail to a (possibly faked)
+sender when the destination system is doing content-scan based rejection.
+.wen
+
+
+.new
 .vitem &*control&~=&~dscp/*&<&'value'&>
 .cindex "&ACL;" "setting DSCP value"
 .cindex "DSCP" "inbound"
@@ -31632,6 +31653,8 @@ required for the transaction.
 If the remote server advertises support for the STARTTLS command, and Exim
 was built to support TLS encryption, it tries to start a TLS session unless the
 server matches &%hosts_avoid_tls%&. See chapter &<<CHAPTLS>>& for more details.
+Either a match in that or &%hosts_verify_avoid_tls%& apply when the transport
+is called for verification.
 
 If the remote server advertises support for the AUTH command, Exim scans
 the authenticators configuration for any suitable client settings, as described

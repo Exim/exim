@@ -33,6 +33,8 @@ PP/07 Handle "exim -L <tag>" to indicate to use syslog with tag as the process
 
 TL/01 Bugzilla 1258 - Refactor MAIL FROM optional args processing.
 
+JH/01 Bugzilla 1201 & 304 - New cutthrough-delivery feature, with TLS support.
+
 Exim version 4.80
 -----------------
 

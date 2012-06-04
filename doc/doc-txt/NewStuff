@@ -55,6 +55,35 @@ Version 4.81
     process name.  A few other flags used by Sendmail are now accepted and
     ignored.
 
+ 7. New cutthrough routing feature.  Requested by a "control = cutthrough_delivery"
+    ACL modifier; works for single-recipient mails which are recieved on and
+    deliverable via SMTP.  Using the connection made for a recipient verify,
+    if requested before the verify, or a new one made for the purpose while
+    the inbound connection is still active.  The bulk of the mail item is copied
+    direct from the inbound socket to the outbound (as well as the spool file).
+    When the source notifies the end of data, the data acceptance by the destination
+    is negociated before the acceptance is sent to the source.  If the destination
+    does not accept the mail item, for example due to content-scanning, the item
+    is not accepted from the source and therefore there is no need to generate
+    a bounce mail.  This is of benefit when providing a secondary-MX service.
+    The downside is that delays are under the control of the ultimate destination
+    system not your own.
+
+    The Recieved-by: header on items delivered by cutthrough is generated
+    early in of reception rather than at the end; this will affect any timestamp
+    included.  The log line showing delivery is recorded before that showing
+    reception; it uses a new ">>" tag instead of "=>".
+    
+    To support the feature, verify-callout connections can now use ESMTP and TLS.
+    The usual smtp transport options are honoured, plus a (new, default everything)
+    hosts_verify_avoid_tls.
+
+    New variable families named tls_in_cipher, tls_out_cipher etc. are introduced
+    for specific access to the information for each connection.  The old names
+    are present for now but deprecated.
+
+    Not yet supported: IGNOREQUOTA, SIZE, PIPELINING, AUTH.
+
 
 Version 4.80
 ------------
