@@ -106,6 +106,10 @@ optionlist smtp_transport_options[] = {
 #endif
   { "hosts_try_auth",       opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, hosts_try_auth) },
+#ifdef SUPPORT_TLS
+  { "hosts_verify_avoid_tls", opt_stringptr,
+      (void *)offsetof(smtp_transport_options_block, hosts_verify_avoid_tls) },
+#endif
   { "interface",            opt_stringptr,
       (void *)offsetof(smtp_transport_options_block, interface) },
   { "keepalive",            opt_bool,
@@ -170,6 +174,7 @@ smtp_transport_options_block smtp_transport_option_defaults = {
   NULL,                /* hosts_require_auth */
   NULL,                /* hosts_require_tls */
   NULL,                /* hosts_avoid_tls */
+  US"*",               /* hosts_verify_avoid_tls */
   NULL,                /* hosts_avoid_pipelining */
   NULL,                /* hosts_avoid_esmtp */
   NULL,                /* hosts_nopass_tls */

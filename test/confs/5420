@@ -1,4 +1,4 @@
-# Exim test configuration 5402
+# Exim test configuration 5420
 
 exim_path = EXIM_PATH
 host_lookup_order = bydns
@@ -52,7 +52,8 @@ smtp:
   driver = smtp
   interface = HOSTIPV4
   port = PORT_D
-  hosts_avoid_tls = ${if eq {$address_data}{usery}{*}{:}}
+  hosts_avoid_tls =        ${if eq {$address_data}{usery}{*}{:}}
+  hosts_verify_avoid_tls = ${if eq {$address_data}{userz}{*}{:}}
 
 
 # End

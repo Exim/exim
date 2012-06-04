@@ -601,7 +601,10 @@ else
     #ifdef SUPPORT_TLS
     if (tls_offered &&
     	verify_check_this_host(&(ob->hosts_avoid_tls), NULL, host->name,
-  	  host->address, NULL) != OK)
+  	  host->address, NULL) != OK &&
+    	verify_check_this_host(&(ob->hosts_verify_avoid_tls), NULL, host->name,
+  	  host->address, NULL) != OK
+       )
       {
       uschar buffer2[4096];
       if (  !smtps

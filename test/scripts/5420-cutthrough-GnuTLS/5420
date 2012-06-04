@@ -1,4 +1,4 @@
-# cutthrough_delivery to target oferring TLS
+# cutthrough_delivery to target offering TLS
 exim -DSERVER=server -bd -oX PORT_D
 ****
 exim -d-all+acl+transport+expand+lists -bs
@@ -10,7 +10,17 @@ DATA
 .
 QUIT
 ****
-# via a transport setting never-tls
+# via a transport setting hosts_avoid_tls
+exim -d-all+acl+transport+expand+lists -bs
+EHLO myhost.test.ex
+MAIL FROM:<eximtest@myhost.test.ex>
+RCPT TO:<usery@domain.com>
+DATA
+
+.
+QUIT
+****
+# via a transport setting hosts_verify_avoid_tls
 exim -d-all+acl+transport+expand+lists -bs
 EHLO myhost.test.ex
 MAIL FROM:<eximtest@myhost.test.ex>

@@ -23,6 +23,7 @@ typedef struct {
   uschar *hosts_require_auth;
   uschar *hosts_require_tls;
   uschar *hosts_avoid_tls;
+  uschar *hosts_verify_avoid_tls;
   uschar *hosts_avoid_pipelining;
   uschar *hosts_avoid_esmtp;
   uschar *hosts_nopass_tls;
