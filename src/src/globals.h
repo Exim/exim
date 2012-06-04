@@ -82,9 +82,7 @@ typedef struct {
   BOOL    on_connect;         /* For older MTAs that don't STARTTLS */
   uschar *on_connect_ports;   /* Ports always tls-on-connect */
   uschar *peerdn;             /* DN from peer */
-#ifndef USE_GNUTLS
   uschar *sni;                /* Server Name Indication */
-#endif
 } tls_support;
 extern tls_support tls_in;
 extern tls_support tls_out;

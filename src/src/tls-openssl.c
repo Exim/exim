@@ -50,6 +50,7 @@ static SSL_CTX *client_ctx = NULL;
 static SSL_CTX *server_ctx = NULL;
 static SSL     *client_ssl = NULL;
 static SSL     *server_ssl = NULL;
+
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
 static SSL_CTX *client_sni = NULL;
 static SSL_CTX *server_sni = NULL;
@@ -317,11 +318,7 @@ Returns:    TRUE if OK (nothing to set up, or setup worked)
 */
 
 static BOOL
-<<<<<<< HEAD
 init_dh(SSL_CTX *sctx, uschar *dhparam, host_item *host)
-=======
-init_dh(SSL_CTX *ctx, uschar *dhparam, host_item *host)
->>>>>>> Dual-tls - split management of TLS into in- and out-bound connection-handling.
 {
 BIO *bio;
 DH *dh;
@@ -683,7 +680,7 @@ OCSP information. */
 rc = tls_expand_session_files(server_sni, cbinfo);
 if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 
-rc = init_dh(ctx_sni, cbinfo->dhparam, NULL);
+rc = init_dh(server_sni, cbinfo->dhparam, NULL);
 if (rc != OK) return SSL_TLSEXT_ERR_NOACK;
 
 DEBUG(D_tls) debug_printf("Switching SSL context.\n");
@@ -852,11 +849,7 @@ else
 
 /* Initialize with DH parameters if supplied */
 
-<<<<<<< HEAD
-if (!init_dh(ctx, dhparam, host)) return DEFER;
-=======
 if (!init_dh(*ctxp, dhparam, host)) return DEFER;
->>>>>>> Dual-tls - split management of TLS into in- and out-bound connection-handling.
 
 /* Set up certificate and key (and perhaps OCSP info) */
 
@@ -1493,16 +1486,17 @@ Only used by the client-side TLS.
 */
 
 int
-tls_read(uschar *buff, size_t len)
+tls_read(BOOL is_server, uschar *buff, size_t len)
 {
+SSL *ssl = is_server ? server_ssl : client_ssl;
 int inbytes;
 int error;
 
-DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", client_ssl,
+DEBUG(D_tls) debug_printf("Calling SSL_read(%p, %p, %u)\n", ssl,
   buff, (unsigned int)len);
 
-inbytes = SSL_read(client_ssl, CS buff, len);
-error = SSL_get_error(client_ssl, inbytes);
+inbytes = SSL_read(ssl, CS buff, len);
+error = SSL_get_error(ssl, inbytes);
 
 if (error == SSL_ERROR_ZERO_RETURN)
   {
@@ -1601,6 +1595,7 @@ void
 tls_close(BOOL is_server, BOOL shutdown)
 {
 SSL **sslp = is_server ? &server_ssl : &client_ssl;
+int *fdp = is_server ? &tls_in.active : &tls_out.active;
 
 if (*fdp < 0) return;  /* TLS was not active */
 

@@ -63,7 +63,7 @@ Some of these correspond to variables in globals.c; those variables will
 be set to point to content in one of these instances, as appropriate for
 the stage of the process lifetime.
 
-Not handled here: global tls_channelbinding_b64.	/*XXX JGH */
+Not handled here: global tls_channelbinding_b64.
 */
 
 typedef struct exim_gnutls_state {
@@ -94,7 +94,7 @@ typedef struct exim_gnutls_state {
   uschar *exp_tls_crl;
   uschar *exp_tls_require_ciphers;
 
-  tls_support *tlsp;
+  tls_support *tlsp;	/* set in tls_init() */
 
   uschar *xfer_buffer;
   int xfer_buffer_lwm;
@@ -966,7 +966,7 @@ if (rc != OK) return rc;
 /* set SNI in client, only */
 if (host)
   {
-  if (!expand_check_tlsvar(state->tlsp->sni))
+  if (!expand_check(state->tlsp->sni, "tls_sni", &state->exp_tls_sni))
     return DEFER;
   if (state->exp_tls_sni && *state->exp_tls_sni)
     {
@@ -1641,7 +1641,7 @@ tls_close(BOOL is_server, BOOL shutdown)
 {
 exim_gnutls_state_st *state = is_server ? &state_server : &state_client;
 
-if (state->tlsp->active < 0) return;  /* TLS was not active */
+if (!state->tlsp || state->tlsp->active < 0) return;  /* TLS was not active */
 
 if (shutdown)
   {
@@ -1651,6 +1651,7 @@ if (shutdown)
 
 gnutls_deinit(state->session);
 
+state->tlsp->active = -1;
 memcpy(state, &exim_gnutls_state_init, sizeof(exim_gnutls_state_init));
 
 if ((state_server.session == NULL) && (state_client.session == NULL))
@@ -1659,7 +1660,6 @@ if ((state_server.session == NULL) && (state_client.session == NULL))
   exim_gnutls_base_init_done = FALSE;
   }
 
-state->tlsp->active = -1;
 }
 
 

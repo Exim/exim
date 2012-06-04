@@ -498,7 +498,7 @@ else
     tls_retry_connection:
 
     inblock.sock = outblock.sock =
-      smtp_connect(host, host_af, port, interface, callout_connect, TRUE);
+      smtp_connect(host, host_af, port, interface, callout_connect, TRUE, NULL);
     /* reconsider DSCP here */
     if (inblock.sock < 0)
       {
@@ -635,8 +635,7 @@ else
   	 ob->tls_certificate, ob->tls_privatekey,
   	 ob->tls_sni,
   	 ob->tls_verify_certificates, ob->tls_crl,
-  	 ob->tls_require_ciphers,
-  	 ob->gnutls_require_mac, ob->gnutls_require_kx, ob->gnutls_require_proto,
+  	 ob->tls_require_ciphers,     ob->tls_dh_min_bits,
   	 callout);
 
         /* TLS negotiation failed; give an error.  Try in clear on a new connection,
