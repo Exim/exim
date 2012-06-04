@@ -3104,6 +3104,8 @@ if ($have_ipv6 && $parm_ipv6 ne "::1")
     $exp_v6 = $1 . ':0' x (8-length($exp_v6)) . ':' . $2;
   } elsif ( $parm_ipv6 =~ /^::(.+[^:])$/ ) {
     $exp_v6 = '0:' x (9-length($exp_v6)) . $1;
+  } else {
+    $exp_v6 = $parm_ipv6;
   }
   my(@components) = split /:/, $exp_v6;
   my(@nibbles) = reverse (split /\s*/, shift @components);
