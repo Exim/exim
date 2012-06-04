@@ -771,7 +771,7 @@ begin authenticators
 #  server_set_id              = $auth2
 #  server_prompts             = :
 #  server_condition           = Authentication is not yet configured
-#  server_advertise_condition = ${if def:tls_cipher }
+#  server_advertise_condition = ${if def:tls_in_cipher }
 
 # LOGIN authentication has traditional prompts and responses. There is no
 # authorization ID in this mechanism, so unlike PLAIN the username and
@@ -783,7 +783,7 @@ begin authenticators
 #  server_set_id              = $auth1
 #  server_prompts             = <| Username: | Password:
 #  server_condition           = Authentication is not yet configured
-#  server_advertise_condition = ${if def:tls_cipher }
+#  server_advertise_condition = ${if def:tls_in_cipher }
 
 
 ######################################################################

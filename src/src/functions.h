@@ -131,6 +131,7 @@ extern BOOL    expand_check_condition(uschar *, uschar *, uschar *);
 extern uschar *expand_string(uschar *);
 extern uschar *expand_string_copy(uschar *);
 extern int_eximarith_t expand_string_integer(uschar *, BOOL);
+extern void    modify_variable(uschar *, void *);
 
 extern int     filter_interpret(uschar *, int, address_item **, uschar **);
 extern BOOL    filter_personal(string_item *, BOOL);

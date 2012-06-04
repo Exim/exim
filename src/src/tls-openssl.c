@@ -543,7 +543,10 @@ uschar *expanded;
 if (cbinfo->certificate == NULL)
   return OK;
 
-if (Ustrstr(cbinfo->certificate, US"tls_sni"))
+if (Ustrstr(cbinfo->certificate, US"tls_sni") ||
+    Ustrstr(cbinfo->certificate, US"tls_in_sni") ||
+    Ustrstr(cbinfo->certificate, US"tls_out_sni")
+   )
   reexpand_tls_files_for_sni = TRUE;
 
 if (!expand_check(cbinfo->certificate, US"tls_certificate", &expanded))

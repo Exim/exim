@@ -1521,6 +1521,18 @@ addresses, such rewriting fails. */
 
 if (address[0] == 0) return OK;
 
+/* Flip the legacy TLS-related variables over to the outbound set in case
+they're used in the context of a transport used by verification. Reset them
+at exit from this routine. */
+
+modify_variable(US"tls_bits",                 &tls_out.bits);
+modify_variable(US"tls_certificate_verified", &tls_out.certificate_verified);
+modify_variable(US"tls_cipher",               &tls_out.cipher);
+modify_variable(US"tls_peerdn",               &tls_out.peerdn);
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+modify_variable(US"tls_sni",                  &tls_out.sni);
+#endif
+
 /* Save a copy of the sender address for re-instating if we change it to <>
 while verifying a sender address (a nice bit of self-reference there). */
 
@@ -1769,8 +1781,12 @@ while (addr_new != NULL)
       }
     cancel_cutthrough_connection("routing hard fail");
 
-    if (!full_info) return copy_error(vaddr, addr, FAIL);
-      else yield = FAIL;
+    if (!full_info)
+    {
+      yield = copy_error(vaddr, addr, FAIL);
+      goto out;
+    }
+    else yield = FAIL;
     }
 
   /* Soft failure */
@@ -1804,8 +1820,12 @@ while (addr_new != NULL)
       }
     cancel_cutthrough_connection("routing soft fail");
 
-    if (!full_info) return copy_error(vaddr, addr, DEFER);
-      else if (yield == OK) yield = DEFER;
+    if (!full_info)
+      {
+      yield = copy_error(vaddr, addr, DEFER);
+      goto out;
+      }
+    else if (yield == OK) yield = DEFER;
     }
 
   /* If we are handling EXPN, we do not want to continue to route beyond
@@ -1828,7 +1848,8 @@ while (addr_new != NULL)
       if (addr_new == NULL) ok_prefix = US"250 ";
       respond_printf(f, "%s<%s>\r\n", ok_prefix, addr2->address);
       }
-    return OK;
+    yield = OK;
+    goto out;
     }
 
   /* Successful routing other than EXPN. */
@@ -1863,7 +1884,8 @@ while (addr_new != NULL)
       of $address_data to be that of the child */
 
       vaddr->p.address_data = addr->p.address_data;
-      return OK;
+      yield = OK;
+      goto out;
       }
     }
   }     /* Loop for generated addresses */
@@ -1880,7 +1902,7 @@ discarded, usually because of the use of :blackhole: in an alias file. */
 if (allok && addr_local == NULL && addr_remote == NULL)
   {
   fprintf(f, "mail to %s is discarded\n", address);
-  return yield;
+  goto out;
   }
 
 for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
@@ -1964,8 +1986,18 @@ for (addr_list = addr_local, i = 0; i < 2; addr_list = addr_remote, i++)
     }
   }
 
-/* Will be DEFER or FAIL if any one address has, only for full_info (which is
+/* Yield will be DEFER or FAIL if any one address has, only for full_info (which is
 the -bv or -bt case). */
+
+out:
+
+modify_variable(US"tls_bits",                 &tls_in.bits);
+modify_variable(US"tls_certificate_verified", &tls_in.certificate_verified);
+modify_variable(US"tls_cipher",               &tls_in.cipher);
+modify_variable(US"tls_peerdn",               &tls_in.peerdn);
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+modify_variable(US"tls_sni",                  &tls_in.sni);
+#endif
 
 return yield;
 }

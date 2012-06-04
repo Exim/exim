@@ -649,7 +649,11 @@ if (!state->host)
   {
   if (!state->received_sni)
     {
-    if (state->tls_certificate && Ustrstr(state->tls_certificate, US"tls_sni"))
+    if (state->tls_certificate &&
+        (Ustrstr(state->tls_certificate, US"tls_sni") ||
+         Ustrstr(state->tls_certificate, US"tls_in_sni") ||
+         Ustrstr(state->tls_certificate, US"tls_out_sni")
+       ))
       {
       DEBUG(D_tls) debug_printf("We will re-expand TLS session files if we receive SNI.\n");
       state->trigger_sni_changes = TRUE;
@@ -966,7 +970,7 @@ if (rc != OK) return rc;
 /* set SNI in client, only */
 if (host)
   {
-  if (!expand_check(state->tlsp->sni, "tls_sni", &state->exp_tls_sni))
+  if (!expand_check(state->tlsp->sni, "tls_out_sni", &state->exp_tls_sni))
     return DEFER;
   if (state->exp_tls_sni && *state->exp_tls_sni)
     {

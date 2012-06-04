@@ -613,9 +613,18 @@ static var_entry var_table[] = {
 #endif
   { "thisaddress",         vtype_stringptr,   &filter_thisaddress },
 
+  /* The non-(in,out) variables are now deprecated */
   { "tls_bits",            vtype_int,         &tls_in.bits },
   { "tls_certificate_verified", vtype_int,    &tls_in.certificate_verified },
   { "tls_cipher",          vtype_stringptr,   &tls_in.cipher },
+
+  { "tls_in_bits",         vtype_int,         &tls_in.bits },
+  { "tls_in_certificate_verified", vtype_int, &tls_in.certificate_verified },
+  { "tls_in_cipher",       vtype_stringptr,   &tls_in.cipher },
+  { "tls_in_peerdn",       vtype_stringptr,   &tls_in.peerdn },
+#if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
+  { "tls_in_sni",          vtype_stringptr,   &tls_in.sni },
+#endif
   { "tls_out_bits",        vtype_int,         &tls_out.bits },
   { "tls_out_certificate_verified", vtype_int,&tls_out.certificate_verified },
   { "tls_out_cipher",      vtype_stringptr,   &tls_out.cipher },
@@ -623,6 +632,7 @@ static var_entry var_table[] = {
 #if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
   { "tls_out_sni",         vtype_stringptr,   &tls_out.sni },
 #endif
+
   { "tls_peerdn",          vtype_stringptr,   &tls_in.peerdn },	/* mind the alphabetical order! */
 #if defined(SUPPORT_TLS) && !defined(USE_GNUTLS)
   { "tls_sni",             vtype_stringptr,   &tls_in.sni },	/* mind the alphabetical order! */
@@ -1684,6 +1694,31 @@ while (last > first)
 
 return NULL;          /* Unknown variable name */
 }
+
+
+
+
+void
+modify_variable(uschar *name, void * value)
+{
+int first = 0;
+int last = var_table_size;
+
+while (last > first)
+  {
+  int middle = (first + last)/2;
+  int c = Ustrcmp(name, var_table[middle].name);
+
+  if (c > 0) { first = middle + 1; continue; }
+  if (c < 0) { last = middle; continue; }
+
+  /* Found an existing variable; change the item it refers to */
+  var_table[middle].value = value;
+  return;
+  }
+return;          /* Unknown variable name, fail silently */
+}
+
 
 
 
