@@ -1206,7 +1206,8 @@ Either a non-null list of recipients, or the extract flag will be true, or
 both. The flag sender_local is true for locally generated messages. The flag
 submission_mode is true if an ACL has obeyed "control = submission". The flag
 suppress_local_fixups is true if an ACL has obeyed "control =
-suppress_local_fixups". The flag smtp_input is true if the message is to be
+suppress_local_fixups" or -G was passed on the command-line.
+The flag smtp_input is true if the message is to be
 handled using SMTP conventions about termination and lines starting with dots.
 For non-SMTP messages, dot_ends is true for dot-terminated messages.
 

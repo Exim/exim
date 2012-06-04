@@ -1187,6 +1187,7 @@ uschar *submission_domain      = NULL;
 BOOL    submission_mode        = FALSE;
 uschar *submission_name        = NULL;
 BOOL    suppress_local_fixups  = FALSE;
+BOOL    suppress_local_fixups_default = FALSE;
 BOOL    synchronous_delivery   = FALSE;
 BOOL    syslog_duplication     = TRUE;
 int     syslog_facility        = LOG_MAIL;

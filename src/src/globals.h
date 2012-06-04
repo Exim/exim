@@ -771,6 +771,7 @@ extern uschar *submission_domain;      /* Domain for submission mode */
 extern BOOL    submission_mode;        /* Can be forced from ACL */
 extern uschar *submission_name;        /* User name set from ACL */
 extern BOOL    suppress_local_fixups;  /* Can be forced from ACL */
+extern BOOL    suppress_local_fixups_default; /* former is reset to this; override with -G */
 extern BOOL    synchronous_delivery;   /* TRUE if -odi is set */
 extern BOOL    syslog_duplication;     /* FALSE => no duplicate logging */
 extern int     syslog_facility;        /* As defined by Syslog.h */

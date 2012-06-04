@@ -3695,8 +3695,19 @@ if &%-f%& is also present, it overrides &"From&~"&.
 
 .vitem &%-G%&
 .oindex "&%-G%&"
-.cindex "Sendmail compatibility" "&%-G%& option ignored"
-This is a Sendmail option which is ignored by Exim.
+.cindex "submission fixups, suppressing (command-line)"
+.new
+This option is equivalent to an ACL applying:
+.code
+control = suppress_local_fixups
+.endd
+for every message received.  Note that Sendmail will complain about such
+bad formatting, where Exim silently just does not fix it up.  This may change
+in future.
+
+As this affects audit information, the caller must be a trusted user to use
+this option.
+.wen
 
 .vitem &%-h%&&~<&'number'&>
 .oindex "&%-h%&"

@@ -1434,6 +1434,7 @@ BOOL checking = FALSE;
 BOOL count_queue = FALSE;
 BOOL expansion_test = FALSE;
 BOOL extract_recipients = FALSE;
+BOOL flag_G = FALSE;
 BOOL flag_n = FALSE;
 BOOL forced_delivery = FALSE;
 BOOL f_end_dot = FALSE;
@@ -2507,11 +2508,12 @@ for (i = 1; i < argc; i++)
     break;
 
     /* -G: sendmail invocation to specify that it's a gateway submission and
-    sendmail may complain about problems instead of fixing them.  We might use
-    it to disable submission mode fixups for command-line?  Currently we just
-    ignore it. */
+    sendmail may complain about problems instead of fixing them.
+    We make it equivalent to an ACL "control = suppress_local_fixups" and do
+    not at this time complain about problems. */
 
     case 'G':
+    flag_G = TRUE;
     break;
 
     /* -h: Set the hop count for an incoming message. Exim does not currently
@@ -4053,6 +4055,21 @@ else
     sender_host_port = check_port(sender_host_address);
   if (interface_address != NULL)
     interface_port = check_port(interface_address);
+  }
+
+/* If the caller is trusted, then they can use -G to suppress_local_fixups. */
+if (flag_G)
+  {
+  if (trusted_caller)
+    {
+    suppress_local_fixups = suppress_local_fixups_default = TRUE;
+    DEBUG(D_acl) debug_printf("suppress_local_fixups forced on by -G\n");
+    }
+  else
+    {
+    fprintf(stderr, "exim: permission denied (-G requires a trusted user)\n");
+    return EXIT_FAILURE;
+    }
   }
 
 /* If an SMTP message is being received check to see if the standard input is a

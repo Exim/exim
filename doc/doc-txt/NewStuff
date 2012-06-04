@@ -49,6 +49,12 @@ Version 4.81
     Supported values depend upon system libraries.  "exim -bI:dscp" to list the
     ones Exim knows of.  You can also set a raw number 0..0x3F.
 
+ 6. The -G command-line flag is no longer ignored; it is now equivalent to an
+    ACL setting "control = suppress_local_fixups".  The -L command-line flag
+    is now accepted and forces use of syslog, with the provided tag as the
+    process name.  A few other flags used by Sendmail are now accepted and
+    ignored.
+
 
 Version 4.80
 ------------

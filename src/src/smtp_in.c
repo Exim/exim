@@ -1032,7 +1032,7 @@ fake_response = OK;                                  /* Can be set by ACL */
 no_mbox_unspool = FALSE;                             /* Can be set by ACL */
 #endif
 submission_mode = FALSE;                             /* Can be set by ACL */
-suppress_local_fixups = FALSE;                       /* Can be set by ACL */
+suppress_local_fixups = suppress_local_fixups_default; /* Can be set by ACL */
 active_local_from_check = local_from_check;          /* Can be set by ACL */
 active_local_sender_retain = local_sender_retain;    /* Can be set by ACL */
 sender_address = NULL;
