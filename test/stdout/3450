@@ -62,7 +62,7 @@ SSL info: SSLv3 flush data
 SSL info: SSLv3 read finished A
 SSL info: SSL negotiation finished successfully
 SSL info: SSL negotiation finished successfully
-SSL connection using DHE-RSA-AES256-SHA
+SSL connection using AES256-SHA
 Succeeded in starting TLS
 >>> ehlo foobar
 ??? 250-

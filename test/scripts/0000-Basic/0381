@@ -1,4 +1,5 @@
 # negatives with wildcard hosts when host has multiple names
+munge dnssec
 exim -d -bs -oMa V4NET.99.99.97
 mail from:<notgov@test.ex>
 rcpt to:<x@test.ex>

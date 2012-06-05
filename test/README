@@ -715,6 +715,12 @@ This command causes the script to sleep for m milliseconds. Nothing is output
 to the screen.
 
 
+  munge <name>
+
+This command requests custom munging of the test outputs.  The munge names
+used are coded in the runtest script.
+
+
   need_ipv4
 
 This command must be at the head of a script. If no IPv4 interface has been

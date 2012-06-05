@@ -220,6 +220,12 @@
 > md5:    NO
 > mask:   NO
 > 
+> # Number suffixes in conditions
+> 1k: y
+> 1K: y
+> 1M: y
+> 1G: y
+> 
 > # Numeric overflow
 > # >32b should work, >64b not
 > 

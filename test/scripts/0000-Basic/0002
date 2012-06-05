@@ -4,6 +4,7 @@
 # be present in the basic Exim binary which we require in order to run these
 # tests at all. Specialized expansion tests also exist for optional features
 # in other test scripts.
+munge dnssec
 
 exim -be
 

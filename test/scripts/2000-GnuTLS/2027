@@ -1,5 +1,6 @@
 # TLS server & client: no certificate in client
 gnutls
+munge gnutls_handshake
 exim -DSERVER=server -bd -oX PORT_D
 ****
 exim userx@test.ex
