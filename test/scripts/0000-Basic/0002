@@ -238,6 +238,12 @@ hash:   ${if eq {1}{2}{${hash_3:invalid}}{NO}}
 md5:    ${if eq {1}{2}{${md5:invalid}}{NO}}
 mask:   ${if eq {1}{2}{${mask:invalid}}{NO}}
 
+# Number suffixes in conditions
+1k: ${if >{1}{1k}{n}{y}}
+1K: ${if >{1}{1K}{n}{y}}
+1M: ${if >{1}{1M}{n}{y}}
+1G: ${if >{1}{1G}{n}{y}}
+
 # Numeric overflow
 # >32b should work, >64b not
 

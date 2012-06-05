@@ -6217,18 +6217,25 @@ else if (value < 0 && isplus)
   }
 else
   {
-  if (tolower(*endptr) == 'k')
+  switch (tolower(*endptr))
     {
-    if (value > LLONG_MAX/1024 || value < LLONG_MIN/1024) errno = ERANGE;
+    default:
+      break;
+    case 'k':
+      if (value > LLONG_MAX/1024 || value < LLONG_MIN/1024) errno = ERANGE;
       else value *= 1024;
-    endptr++;
-    }
-    else if (tolower(*endptr) == 'm')
-    {
-    if (value > LLONG_MAX/(1024*1024) || value < LLONG_MIN/(1024*1024))
-      errno = ERANGE;
-    else value *= 1024*1024;
-    endptr++;
+      endptr++;
+      break;
+    case 'm':
+      if (value > LLONG_MAX/(1024*1024) || value < LLONG_MIN/(1024*1024)) errno = ERANGE;
+      else value *= 1024*1024;
+      endptr++;
+      break;
+    case 'g':
+      if (value > LLONG_MAX/(1024*1024*1024) || value < LLONG_MIN/(1024*1024*1024)) errno = ERANGE;
+      else value *= 1024*1024*1024;
+      endptr++;
+      break;
     }
   if (errno == ERANGE)
     msg = US"absolute value of integer \"%s\" is too large (overflow)";
