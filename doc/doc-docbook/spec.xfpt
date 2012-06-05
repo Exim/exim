@@ -10013,8 +10013,8 @@ ${if >{$message_size}{10M} ...
 .endd
 Note that the general negation operator provides for inequality testing. The
 two strings must take the form of optionally signed decimal integers,
-optionally followed by one of the letters &"K"& or &"M"& (in either upper or
-lower case), signifying multiplication by 1024 or 1024*1024, respectively.
+optionally followed by one of the letters &"K"&, &"M"& or &"G"& (in either upper or
+lower case), signifying multiplication by 1024, 1024*1024 or 1024*1024*1024, respectively.
 As a special case, the numerical value of an empty string is taken as
 zero.
 
