@@ -37,6 +37,9 @@ JH/01 Bugzilla 1201 & 304 - New cutthrough-delivery feature, with TLS support.
 
 JH/02 Support "G" suffix to numbers in ${if comparisons.
 
+PP/08 Handle smtp transport tls_sni option forced-fail for OpenSSL.
+
+
 Exim version 4.80
 -----------------
 
