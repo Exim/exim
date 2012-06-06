@@ -1289,7 +1289,11 @@ if (sni)
   {
   if (!expand_check(sni, US"tls_sni", &tls_sni))
     return FAIL;
-  if (!Ustrlen(tls_sni))
+  if (tls_sni == NULL)
+    {
+    DEBUG(D_tls) debug_printf("Setting TLS SNI forced to fail, not sending\n");
+    }
+  else if (!Ustrlen(tls_sni))
     tls_sni = NULL;
   else
     {
