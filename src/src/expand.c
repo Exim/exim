@@ -351,6 +351,7 @@ enum {
   vtype_ino,            /* value is address of ino_t (not always an int) */
   vtype_uid,            /* value is address of uid_t (not always an int) */
   vtype_gid,            /* value is address of gid_t (not always an int) */
+  vtype_bool,           /* value is address of bool */
   vtype_stringptr,      /* value is address of pointer to string */
   vtype_msgbody,        /* as stringptr, but read when first required */
   vtype_msgbody_end,    /* ditto, the end of the message */
@@ -562,6 +563,7 @@ static var_entry var_table[] = {
   { "sender_helo_name",    vtype_stringptr,   &sender_helo_name },
   { "sender_host_address", vtype_stringptr,   &sender_host_address },
   { "sender_host_authenticated",vtype_stringptr, &sender_host_authenticated },
+  { "sender_host_dnssec",  vtype_bool,        &sender_host_dnssec },
   { "sender_host_name",    vtype_host_lookup, NULL },
   { "sender_host_port",    vtype_int,         &sender_host_port },
   { "sender_ident",        vtype_stringptr,   &sender_ident },
@@ -1520,6 +1522,10 @@ while (last > first)
 
     case vtype_uid:
     sprintf(CS var_buffer, "%ld", (long int)(*(uid_t *)(var_table[middle].value))); /* uid */
+    return var_buffer;
+
+    case vtype_bool:
+    sprintf(CS var_buffer, "%s", *(BOOL *)(var_table[middle].value) ? "yes" : "no"); /* bool */
     return var_buffer;
 
     case vtype_stringptr:                      /* Pointer to string */
