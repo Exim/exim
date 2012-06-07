@@ -52,7 +52,6 @@ static SSL     *client_ssl = NULL;
 static SSL     *server_ssl = NULL;
 
 #ifdef EXIM_HAVE_OPENSSL_TLSEXT
-static SSL_CTX *client_sni = NULL;
 static SSL_CTX *server_sni = NULL;
 #endif
 
@@ -671,7 +670,7 @@ if (cbinfo->server_cipher_list)
 if (cbinfo->ocsp_file)
   {
   SSL_CTX_set_tlsext_status_cb(server_sni, tls_stapling_cb);
-  SSL_CTX_set_tlsext_status_arg(ctx, cbinfo);
+  SSL_CTX_set_tlsext_status_arg(server_ctx, cbinfo);
   }
 #endif
 
@@ -726,7 +725,7 @@ response_der_len = i2d_OCSP_RESPONSE(cbinfo->ocsp_response, &response_der);
 if (response_der_len <= 0)
   return SSL_TLSEXT_ERR_NOACK;
 
-SSL_set_tlsext_status_ocsp_resp(ssl, response_der, response_der_len);
+SSL_set_tlsext_status_ocsp_resp(server_ssl, response_der, response_der_len);
 return SSL_TLSEXT_ERR_OK;
 }
 
@@ -870,8 +869,8 @@ if (host == NULL)
   callback is invoked. */
   if (cbinfo->ocsp_file)
     {
-    SSL_CTX_set_tlsext_status_cb(ctx, tls_stapling_cb);
-    SSL_CTX_set_tlsext_status_arg(ctx, cbinfo);
+    SSL_CTX_set_tlsext_status_cb(server_ctx, tls_stapling_cb);
+    SSL_CTX_set_tlsext_status_arg(server_ctx, cbinfo);
     }
 #endif
   /* We always do this, so that $tls_sni is available even if not used in
