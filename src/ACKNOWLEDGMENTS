@@ -311,7 +311,8 @@ The Exim Maintainers Lists
 
 We'll start with the Exim Maintainers, who are the people with commit
 access to the master git repository and a couple more folk; then we'll list
-known contributors since the lists above.
+known contributors since the lists above.  Then we list the folks who work
+to make Exim available on various operating systems as porters/packagers.
 
 For the Maintainers, we may list primary focus area.  All maintainers
 will have contributed to work outside those areas.  The maintainers'
@@ -441,6 +442,19 @@ Moritz Wilhelmy           Pointed out PCRE_PRERELEASE glitch
 Alain Williams            Patch supporting MySQL stored procedures
 Mark Zealey               Patch updating $message_linecount for maildir_tag
                           Patch improving spamd server selection
+
+
+Packagers
+---------
+Mark Baker                Debian, through Exim 3
+Hilko Bengen              Debian, Exim 4, current(*) maintenance
+Tim Cutts                 Debian, initial packaging
+Marc Haber                Debian, Exim 4, current(*) maintenance
+Steve Haslam              Debian, Exim 4
+Andreas Metzler           Debian, current(*) maintenance
+Christian Perrier         Debian, current(*) maintenance
+
+(*) Current as of our last information as of release: Exim 4.81
 
 
 # vim: set fileencoding=utf-8 expandtab :
