@@ -363,7 +363,8 @@ Dmitry Banschikov         Path to check for LDAP TLS initialisation errors
 René Berber               Pointed out mistake in build instructions for QNX
 Johannes Berg             Maintained dynamically loadable module code out-of-tree
                           Patch expanding spamd_address if contains $
-Jasen Betts               Spotted lack of docs re bool{} on empty string
+Jasen Betts               Spotted lack of docs re bool{} on empty string 
+                            and typo fixes
 Wolfgang Breyha           DCC integration; expandable spamd_address
                           Patch handling IPv6 addresses for SPF
                           Patch fixing DKIM verification when signature header
