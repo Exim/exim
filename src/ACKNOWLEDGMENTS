@@ -408,7 +408,7 @@ Christof Meerwald         Provided insight & suggested patch for GnuTLS update
 Andreas Metzler           Patch upgrading PolarSSL (DKIM)
                           Reported delivery logging problems (4.73 fallout)
                           Patch to build without WITH_CONTENT_SCAN
-                          Patch fixing docs for max_rcpts
+                          Patches fixing docs for max_rcpts, relay hosts/domains
 Kirill Miazine            Multiple patches improving Dovecot authenticator
 Robert Millan             Wrote SPF Best Guess support
 Marcin Mirosław           Running static analysis tools for us, catching issues

@@ -5369,7 +5369,7 @@ it is unset, Exim uses the &[uname()]& system function to obtain the host name.
 
 The first three non-comment configuration lines are as follows:
 .code
-domainlist local_domains = @
+domainlist local_domains    = @
 domainlist relay_to_domains =
 hostlist   relay_from_hosts = 127.0.0.1
 .endd
@@ -5711,7 +5711,7 @@ examples described in &<<SECTdefconfauth>>&. This means that no client can in
 fact authenticate until you complete the authenticator definitions.
 .code
 require message = relay not permitted
-        domains = +local_domains : +relay_domains
+        domains = +local_domains : +relay_to_domains
 .endd
 This statement rejects the address if its domain is neither a local domain nor
 one of the domains for which this host is a relay.
@@ -7485,7 +7485,7 @@ ${lookup sqlite {/some/thing/sqlitedb \
 .endd
 In a list, the syntax is similar. For example:
 .code
-domainlist relay_domains = sqlite;/some/thing/sqlitedb \
+domainlist relay_to_domains = sqlite;/some/thing/sqlitedb \
    select * from relays where ip='$sender_host_address';
 .endd
 The only character affected by the &%quote_sqlite%& operator is a single
@@ -7567,13 +7567,13 @@ subject is not in the set. If the end of the list is reached without the
 subject having matched any of the patterns, it is in the set if the last item
 was a negative one, but not if it was a positive one. For example, the list in
 .code
-domainlist relay_domains = !a.b.c : *.b.c
+domainlist relay_to_domains = !a.b.c : *.b.c
 .endd
 matches any domain ending in &'.b.c'& except for &'a.b.c'&. Domains that match
 neither &'a.b.c'& nor &'*.b.c'& do not match, because the last item in the
 list is positive. However, if the setting were
 .code
-domainlist relay_domains = !a.b.c
+domainlist relay_to_domains = !a.b.c
 .endd
 then all domains other than &'a.b.c'& would match because the last item in the
 list is negative. In other words, a list that ends with a negative item behaves
@@ -7677,7 +7677,7 @@ the words &%domainlist%&, &%hostlist%&, &%addresslist%&, or &%localpartlist%&,
 respectively. Then there follows the name that you are defining, followed by an
 equals sign and the list itself. For example:
 .code
-hostlist    relay_hosts = 192.168.23.0/24 : my.friend.example
+hostlist    relay_from_hosts = 192.168.23.0/24 : my.friend.example
 addresslist bad_senders = cdb;/etc/badsenders
 .endd
 A named list may refer to other named lists:
@@ -29032,16 +29032,16 @@ Suppose your LAN is 192.168.45.0/24.
 
 In the main part of the configuration, you put the following definitions:
 .code
-domainlist local_domains = my.dom1.example : my.dom2.example
-domainlist relay_domains = friend1.example : friend2.example
-hostlist   relay_hosts   = 192.168.45.0/24
+domainlist local_domains    = my.dom1.example : my.dom2.example
+domainlist relay_to_domains = friend1.example : friend2.example
+hostlist   relay_from_hosts = 192.168.45.0/24
 .endd
 Now you can use these definitions in the ACL that is run for every RCPT
 command:
 .code
 acl_check_rcpt:
-  accept domains = +local_domains : +relay_domains
-  accept hosts   = +relay_hosts
+  accept domains = +local_domains : +relay_to_domains
+  accept hosts   = +relay_from_hosts
 .endd
 The first statement accepts any RCPT command that contains an address in
 the local or relay domains. For any other domain, control passes to the second

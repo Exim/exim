@@ -39,7 +39,8 @@ JH/02 Support "G" suffix to numbers in ${if comparisons.
 
 PP/08 Handle smtp transport tls_sni option forced-fail for OpenSSL.
 
-NM/01 Buzilla 1197 - Spec typo
+NM/01 Bugzilla 1197 - Spec typo
+      Bugzilla 1196 - Spec examples corrections
 
 Exim version 4.80
 -----------------
