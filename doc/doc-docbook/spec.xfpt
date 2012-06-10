@@ -9734,6 +9734,25 @@ extracted from it. If the string does not parse successfully, the result is
 empty.
 
 
+.vitem &*${list:*&<&'name'&>&*}*&&~and&~&*${list_*&<&'type'&>&*name'&>&*}*&
+.cindex "expansion" "named list"
+.cindex "&%list%& expansion item"
+The name is interpreted as a named list and the content of the list is returned,
+expanding any referenced lists, re-quoting as needed for colon-separation.
+If the optional type if given it must be one of "a", "d", "h" or "l"
+and selects address-, domain-, host- or localpart- lists to search among respectively.
+Otherwise all types are searched in an undefined order and the first
+matching list is returned.
+
+
+.vitem &*${nlist:*&<&'string'&>&*}*&
+.cindex "expansion" "list item count"
+.cindex "list" "item count"
+.cindex "list" "count of items"
+.cindex "&%nlist%& expansion item"
+The string is interpreted as a list and the number of items is returned.
+
+
 .vitem &*${mask:*&<&'IP&~address'&>&*/*&<&'bit&~count'&>&*}*&
 .cindex "masked IP address"
 .cindex "IP address" "masking"

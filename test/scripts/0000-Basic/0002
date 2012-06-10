@@ -60,6 +60,21 @@ reduce: ${reduce{a:b:c}{+}{$value$item}}
 reduce: ${reduce {<, 1,2,3}{0}{${eval:$value+$item}}}
 reduce: ${reduce {3:0:9:4:6}{0}{${if >{$item}{$value}{$item}{$value}}}}
 
+list: ${list:dlist}
+list: ${list:+dlist}
+list: ${list:hlist}
+list: ${list:elist}
+list: ${list:flist}
+list: ${list:nolist}
+list: ${list_d:dlist}
+list: ${list_d:hlist}
+list: ${list_z:dlist}
+
+nlist: ${nlist:a:b:c}
+nlist: ${nlist:}
+nlist: ${nlist:<;a;b;c}
+nlist: ${nlist:${list:dlist}}
+
 # Tests with iscntrl() and illegal separators
 
 map: ${map{<\n a\n\nb\nc}{'$item'}}

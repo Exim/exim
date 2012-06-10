@@ -70,7 +70,7 @@ Version 4.81
     system not your own.
 
     The Recieved-by: header on items delivered by cutthrough is generated
-    early in of reception rather than at the end; this will affect any timestamp
+    early in reception rather than at the end; this will affect any timestamp
     included.  The log line showing delivery is recorded before that showing
     reception; it uses a new ">>" tag instead of "=>".
     
@@ -84,6 +84,8 @@ Version 4.81
 
     Not yet supported: IGNOREQUOTA, SIZE, PIPELINING, AUTH.
 
+ 8. New expansion operators ${list:name} to get the content of a named list
+    and ${nlist:string} to count the items in a list.
 
 Version 4.80
 ------------

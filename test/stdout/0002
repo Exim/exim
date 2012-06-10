@@ -49,6 +49,21 @@
 > reduce: 6
 > reduce: 9
 > 
+> list: *.aa.bb : ^\Nxxx(.*)
+> list: *.aa.bb : ^\Nxxx(.*)
+> list: V4NET.11.12.13 : iplsearch;TESTSUITE/aux-fixed/0002.iplsearch
+> list: *.aa.bb : ^\Nxxx(.*) : ;;
+> list: a : b;c : *.aa.bb : ^\Nxxx(.*) : ;; : 2001::630::212::8::204::::b664
+> Failed: "nolist" is not a named list
+> list: *.aa.bb : ^\Nxxx(.*)
+> Failed: "hlist" is not a domain named list
+> Failed: bad suffix on "list" operator
+> 
+> nlist: 3
+> nlist: 0
+> nlist: 3
+> nlist: 2
+> 
 > # Tests with iscntrl() and illegal separators
 > 
 > map: 'a'
