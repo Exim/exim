@@ -78,6 +78,17 @@
 > 
 > # Operators
 > 
+> Failed: missing or misplaced { or }
+> Failed: missing or misplaced { or }
+> Failed: acl "a_bad" did not accept
+> acl: []
+> acl: [person@dom.ain]
+> acl: 
+> acl: 
+> Failed: acl "a_deny" did not accept
+> Failed: acl "a_deny" did not accept
+> acl:  [1] [2] [3] [4]
+> 
 > addrss: local-part@dom.ain
 > addrss: local-part@dom.ain
 > domain: dom.ain

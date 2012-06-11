@@ -44,6 +44,8 @@ NM/01 Bugzilla 1197 - Spec typo
 
 JH/03 Add expansion operators ${listnamed:name} and ${listcount:string}
 
+JH/04 Add expansion item ${acl {name}{argument}}
+
 Exim version 4.80
 -----------------
 

@@ -8758,6 +8758,20 @@ string easier to understand.
 This item inserts &"basic"& header lines. It is described with the &%header%&
 expansion item below.
 
+
+.vitem "&*${acl{*&<&'name'&>&*}{*&<&'string'&>&*}}*&"
+.cindex "expansion" "calling an acl"
+.cindex "&%acl%&" "call from expansion"
+The name and <&'string'&> are first expanded separately.  The expanded
+<&'string'&> is assigned to the &$address_data$& variable.  If {<&'string'&>}
+is omitted, &$address_data$& is made empty.  The named ACL (see chapter
+&<<CHAPACL>>&) is called and may use &$address_data$&.  If the ACL sets
+a value using a "message =" modifier and returns accept, the value becomes
+the result of the expansion.
+If no message was set but the ACL returned accept, or if the ACL returned defer,
+the value is an empty string.  Otherwise the expansion fails.
+
+
 .vitem "&*${dlfunc{*&<&'file'&>&*}{*&<&'function'&>&*}{*&<&'arg'&>&*}&&&
        {*&<&'arg'&>&*}...}*&"
 .cindex &%dlfunc%&

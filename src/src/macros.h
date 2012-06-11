@@ -820,7 +820,9 @@ enum { ACL_WHERE_RCPT,       /* Some controls are for RCPT only */
        ACL_WHERE_NOTQUIT,
        ACL_WHERE_QUIT,
        ACL_WHERE_STARTTLS,
-       ACL_WHERE_VRFY
+       ACL_WHERE_VRFY,
+
+       ACL_WHERE_EXPANSION   /* Currently used by a ${acl:name} expansion */
      };
 
 /* Situations for spool_write_header() */

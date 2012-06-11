@@ -192,7 +192,6 @@ uschar *acl_not_smtp           = NULL;
 uschar *acl_not_smtp_mime      = NULL;
 #endif
 uschar *acl_not_smtp_start     = NULL;
-
 uschar *acl_smtp_auth          = NULL;
 uschar *acl_smtp_connect       = NULL;
 uschar *acl_smtp_data          = NULL;
@@ -240,7 +239,8 @@ uschar *acl_wherenames[]       = { US"RCPT",
                                    US"NOTQUIT",
                                    US"QUIT",
                                    US"STARTTLS",
-                                   US"VRFY"
+                                   US"VRFY",
+				   US"expansion"
                                  };
 
 uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
@@ -260,7 +260,8 @@ uschar *acl_wherecodes[]       = { US"550",     /* RCPT */
                                    US"0",       /* NOTQUIT; not relevant */
                                    US"0",       /* QUIT; not relevant */
                                    US"550",     /* STARTTLS */
-                                   US"252"      /* VRFY */
+                                   US"252",     /* VRFY */
+				   US"0"        /* unknown; not relevant */
                                  };
 
 BOOL    active_local_from_check = FALSE;

@@ -44,4 +44,12 @@ check_data:
   warn  logwrite = Subject is: "$h_subject:"
   deny  message = reply_address=<$reply_address>
 
+a_ret:
+  accept message = [$address_data]
+
+a_none:
+  accept
+
+a_deny:
+
 # End

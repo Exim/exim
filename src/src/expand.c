@@ -102,6 +102,7 @@ bcrypt ({CRYPT}$2a$).
 alphabetical order. */
 
 static uschar *item_table[] = {
+  US"acl",
   US"dlfunc",
   US"extract",
   US"filter",
@@ -124,6 +125,7 @@ static uschar *item_table[] = {
   US"tr" };
 
 enum {
+  EITEM_ACL,
   EITEM_DLFUNC,
   EITEM_EXTRACT,
   EITEM_FILTER,
@@ -3641,6 +3643,45 @@ while (*s != 0)
 
   switch(item_type)
     {
+    /* Call an ACL from an expansion.  We feed data in via $address_data.
+    If the ACL returns acceptance we return content set by "message ="
+    There is currently no limit on recursion; this would have us call
+    acl_check_internal() directly and get a current level from somewhere.
+    */
+
+    case EITEM_ACL:
+      {
+      int rc;
+      uschar *sub[2];
+      uschar *new_yield;
+      uschar *user_msg;
+      uschar *log_msg;
+      switch(read_subs(sub, 2, 1, &s, skipping, TRUE, US"acl"))
+        {
+        case 1: goto EXPAND_FAILED_CURLY;
+        case 2:
+        case 3: goto EXPAND_FAILED;
+        }
+      if (skipping) continue;
+
+      DEBUG(D_expand)
+        debug_printf("expanding: acl: %s  arg: %s\n", sub[0], sub[1]?sub[1]:US"<none>");
+
+      deliver_address_data = sub[1];
+      switch(rc = acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], &user_msg, &log_msg))
+	{
+	case OK:
+	  if (user_msg)
+            yield = string_cat(yield, &size, &ptr, user_msg, Ustrlen(user_msg));
+	  continue;
+	case DEFER:
+	  continue;
+	default:
+          expand_string_message = string_sprintf("acl \"%s\" did not accept", sub[0]);
+	  goto EXPAND_FAILED;
+	}
+      }
+
     /* Handle conditionals - preserve the values of the numerical expansion
     variables in case they get changed by a regular expression match in the
     condition. If not, they retain their external settings. At the end
@@ -5533,7 +5574,6 @@ while (*s != 0)
 	  goto EXPAND_FAILED;
 	  }
 
-	if (skipping) continue;
 	list = ((namedlist_block *)(t->data.ptr))->string;
 
 	while ((item = string_nextinlist(&list, &sep, buffer, sizeof(buffer))) != NULL)
