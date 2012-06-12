@@ -15,6 +15,8 @@ gecos_name = CALLER_NAME
 # ----- Main settings -----
 
 domainlist dlist = *.aa.bb : ^\Nxxx(.*)
+domainlist elist = +dlist : ;;
+domainlist flist = <; a ; b;;c ; +elist ; 2001:630:212:8:204::b664 ;
 hostlist   hlist = V4NET.11.12.13 : iplsearch;DIR/aux-fixed/0002.iplsearch
 headers_charset = iso-8859-8
 

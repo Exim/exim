@@ -42,6 +42,8 @@ PP/08 Handle smtp transport tls_sni option forced-fail for OpenSSL.
 NM/01 Bugzilla 1197 - Spec typo
       Bugzilla 1196 - Spec examples corrections
 
+JH/03 Add expansion operators ${listnamed:name} and ${listcount:string}
+
 Exim version 4.80
 -----------------
 

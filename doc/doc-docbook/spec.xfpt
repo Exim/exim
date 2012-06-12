@@ -9567,6 +9567,7 @@ environments where Exim uses base 36 instead of base 62 for its message
 identifiers, base-36 digits. The number is converted to decimal and output as a
 string.
 
+
 .vitem &*${domain:*&<&'string'&>&*}*&
 .cindex "domain" "extraction"
 .cindex "expansion" "domain extraction"
@@ -9724,6 +9725,25 @@ ${length{<number>}{<string>}}
 See the description of the general &%length%& item above for details. Note that
 &%length%& is not the same as &%strlen%&. The abbreviation &%l%& can be used
 when &%length%& is used as an operator.
+
+
+.vitem &*${listcount:*&<&'string'&>&*}*&
+.cindex "expansion" "list item count"
+.cindex "list" "item count"
+.cindex "list" "count of items"
+.cindex "&%listcount%& expansion item"
+The string is interpreted as a list and the number of items is returned.
+
+
+.vitem &*${listnamed:*&<&'name'&>&*}*&&~and&~&*${list_*&<&'type'&>&*name'&>&*}*&
+.cindex "expansion" "named list"
+.cindex "&%listnamed%& expansion item"
+The name is interpreted as a named list and the content of the list is returned,
+expanding any referenced lists, re-quoting as needed for colon-separation.
+If the optional type if given it must be one of "a", "d", "h" or "l"
+and selects address-, domain-, host- or localpart- lists to search among respectively.
+Otherwise all types are searched in an undefined order and the first
+matching list is returned.
 
 
 .vitem &*${local_part:*&<&'string'&>&*}*&
