@@ -9567,6 +9567,7 @@ environments where Exim uses base 36 instead of base 62 for its message
 identifiers, base-36 digits. The number is converted to decimal and output as a
 string.
 
+
 .vitem &*${domain:*&<&'string'&>&*}*&
 .cindex "domain" "extraction"
 .cindex "expansion" "domain extraction"
@@ -9726,17 +9727,17 @@ See the description of the general &%length%& item above for details. Note that
 when &%length%& is used as an operator.
 
 
-.vitem &*${local_part:*&<&'string'&>&*}*&
-.cindex "expansion" "local part extraction"
-.cindex "&%local_part%& expansion item"
-The string is interpreted as an RFC 2822 address and the local part is
-extracted from it. If the string does not parse successfully, the result is
-empty.
+.vitem &*${listcount:*&<&'string'&>&*}*&
+.cindex "expansion" "list item count"
+.cindex "list" "item count"
+.cindex "list" "count of items"
+.cindex "&%listcount%& expansion item"
+The string is interpreted as a list and the number of items is returned.
 
 
-.vitem &*${list:*&<&'name'&>&*}*&&~and&~&*${list_*&<&'type'&>&*name'&>&*}*&
+.vitem &*${listnamed:*&<&'name'&>&*}*&&~and&~&*${list_*&<&'type'&>&*name'&>&*}*&
 .cindex "expansion" "named list"
-.cindex "&%list%& expansion item"
+.cindex "&%listnamed%& expansion item"
 The name is interpreted as a named list and the content of the list is returned,
 expanding any referenced lists, re-quoting as needed for colon-separation.
 If the optional type if given it must be one of "a", "d", "h" or "l"
@@ -9745,12 +9746,12 @@ Otherwise all types are searched in an undefined order and the first
 matching list is returned.
 
 
-.vitem &*${nlist:*&<&'string'&>&*}*&
-.cindex "expansion" "list item count"
-.cindex "list" "item count"
-.cindex "list" "count of items"
-.cindex "&%nlist%& expansion item"
-The string is interpreted as a list and the number of items is returned.
+.vitem &*${local_part:*&<&'string'&>&*}*&
+.cindex "expansion" "local part extraction"
+.cindex "&%local_part%& expansion item"
+The string is interpreted as an RFC 2822 address and the local part is
+extracted from it. If the string does not parse successfully, the result is
+empty.
 
 
 .vitem &*${mask:*&<&'IP&~address'&>&*/*&<&'bit&~count'&>&*}*&

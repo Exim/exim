@@ -84,8 +84,8 @@ Version 4.81
 
     Not yet supported: IGNOREQUOTA, SIZE, PIPELINING, AUTH.
 
- 8. New expansion operators ${list:name} to get the content of a named list
-    and ${nlist:string} to count the items in a list.
+ 8. New expansion operators ${listnamed:name} to get the content of a named list
+    and ${listcount:string} to count the items in a list.
 
 Version 4.80
 ------------

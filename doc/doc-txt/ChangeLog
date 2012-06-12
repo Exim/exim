@@ -39,7 +39,7 @@ JH/02 Support "G" suffix to numbers in ${if comparisons.
 
 PP/08 Handle smtp transport tls_sni option forced-fail for OpenSSL.
 
-JH/03 Add expansion operators ${list:name} and ${nlist:string}
+JH/03 Add expansion operators ${listnamed:name} and ${listcount:string}
 
 
 Exim version 4.80

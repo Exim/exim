@@ -182,12 +182,12 @@ static uschar *op_table_main[] = {
   US"l",
   US"lc",
   US"length",
-  US"list",
+  US"listcount",
+  US"listnamed",
   US"mask",
   US"md5",
   US"nh",
   US"nhash",
-  US"nlist",
   US"quote",
   US"randint",
   US"rfc2047",
@@ -217,12 +217,12 @@ enum {
   EOP_L,
   EOP_LC,
   EOP_LENGTH,
-  EOP_LIST,
+  EOP_LISTCOUNT,
+  EOP_LISTNAMED,
   EOP_MASK,
   EOP_MD5,
   EOP_NH,
   EOP_NHASH,
-  EOP_NLIST,
   EOP_QUOTE,
   EOP_RANDINT,
   EOP_RFC2047,
@@ -5474,10 +5474,25 @@ while (*s != 0)
         continue;
         }
 
-      /* expand a named list given the name */
-      /* handles nested named lists but will confuse the separators in the result */
+      /* count the number of list elements */
 
-      case EOP_LIST:
+      case EOP_LISTCOUNT:
+        {
+	int cnt = 0;
+	int sep = 0;
+	uschar * cp;
+	uschar buffer[256];
+
+	while (string_nextinlist(&sub, &sep, buffer, sizeof(buffer)) != NULL) cnt++;
+	cp = string_sprintf("%d", cnt);
+        yield = string_cat(yield, &size, &ptr, cp, Ustrlen(cp));
+        continue;
+        }
+
+      /* expand a named list given the name */
+      /* handles nested named lists; requotes as colon-sep list */
+
+      case EOP_LISTNAMED:
 	{
 	tree_node *t = NULL;
 	uschar * list;
@@ -5531,7 +5546,7 @@ while (*s != 0)
 
 	  if (*item == '+')	/* list item is itself a named list */
 	    {
-	    uschar * sub = string_sprintf("${list%s:%s}", suffix, item);
+	    uschar * sub = string_sprintf("${listnamed%s:%s}", suffix, item);
 	    item = expand_string_internal(sub, FALSE, NULL, FALSE, TRUE);
 	    }
 	  else if (sep != ':')	/* item from non-colon-sep list, re-quote for colon list-separator */
@@ -5559,21 +5574,6 @@ while (*s != 0)
 	  }
         continue;
 	}
-
-      /* count the number of list elements */
-
-      case EOP_NLIST:
-        {
-	int cnt = 0;
-	int sep = 0;
-	uschar * cp;
-	uschar buffer[256];
-
-	while (string_nextinlist(&sub, &sep, buffer, sizeof(buffer)) != NULL) cnt++;
-	cp = string_sprintf("%d", cnt);
-        yield = string_cat(yield, &size, &ptr, cp, Ustrlen(cp));
-        continue;
-        }
 
       /* mask applies a mask to an IP address; for example the result of
       ${mask:131.111.10.206/28} is 131.111.10.192/28. */
