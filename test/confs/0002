@@ -45,7 +45,7 @@ check_data:
   deny  message = reply_address=<$reply_address>
 
 a_ret:
-  accept message = [$address_data]
+  accept message = ($acl_narg) [$acl_arg1] [$acl_arg2]
 
 a_none:
   accept

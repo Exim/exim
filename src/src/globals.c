@@ -186,6 +186,9 @@ int address_expansions_count = sizeof(address_expansions)/sizeof(uschar **);
 
 header_line *acl_added_headers = NULL;
 tree_node *acl_anchor          = NULL;
+uschar *acl_arg[9]             = {NULL, NULL, NULL, NULL, NULL,
+                                  NULL, NULL, NULL, NULL};
+int     acl_narg               = 0;
 
 uschar *acl_not_smtp           = NULL;
 #ifdef WITH_CONTENT_SCAN

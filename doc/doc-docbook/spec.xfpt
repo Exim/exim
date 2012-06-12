@@ -8759,13 +8759,15 @@ This item inserts &"basic"& header lines. It is described with the &%header%&
 expansion item below.
 
 
-.vitem "&*${acl{*&<&'name'&>&*}{*&<&'string'&>&*}}*&"
+.vitem "&*${acl{*&<&'name'&>&*}{*&<&'arg'&>&*}...}*&"
 .cindex "expansion" "calling an acl"
 .cindex "&%acl%&" "call from expansion"
-The name and <&'string'&> are first expanded separately.  The expanded
-<&'string'&> is assigned to the &$address_data$& variable.  If {<&'string'&>}
-is omitted, &$address_data$& is made empty.  The named ACL (see chapter
-&<<CHAPACL>>&) is called and may use &$address_data$&.  If the ACL sets
+The name and zero to nine argument strings are first expanded separately.  The expanded
+arguments are assigned to the variables &$acl_arg1$& to &$acl_arg9$& in order.
+Any used are made empty.  The variable &$acl_narg$& is set to the number of
+arguments.  The named ACL (see chapter &<<CHAPACL>>&) is called
+and may use the variables; if another acl expansion is used the values
+are overwritten.  If the ACL sets
 a value using a "message =" modifier and returns accept, the value becomes
 the result of the expansion.
 If no message was set but the ACL returned accept, or if the ACL returned defer,

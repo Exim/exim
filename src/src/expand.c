@@ -392,6 +392,16 @@ enum {
 static var_entry var_table[] = {
   /* WARNING: Do not invent variables whose names start acl_c or acl_m because
      they will be confused with user-creatable ACL variables. */
+  { "acl_arg1",            vtype_stringptr,   &acl_arg[0] },
+  { "acl_arg2",            vtype_stringptr,   &acl_arg[1] },
+  { "acl_arg3",            vtype_stringptr,   &acl_arg[2] },
+  { "acl_arg4",            vtype_stringptr,   &acl_arg[3] },
+  { "acl_arg5",            vtype_stringptr,   &acl_arg[4] },
+  { "acl_arg6",            vtype_stringptr,   &acl_arg[5] },
+  { "acl_arg7",            vtype_stringptr,   &acl_arg[6] },
+  { "acl_arg8",            vtype_stringptr,   &acl_arg[7] },
+  { "acl_arg9",            vtype_stringptr,   &acl_arg[8] },
+  { "acl_narg",            vtype_int,         &acl_narg },
   { "acl_verify_message",  vtype_stringptr,   &acl_verify_message },
   { "address_data",        vtype_stringptr,   &deliver_address_data },
   { "address_file",        vtype_stringptr,   &address_file },
@@ -3643,7 +3653,7 @@ while (*s != 0)
 
   switch(item_type)
     {
-    /* Call an ACL from an expansion.  We feed data in via $address_data.
+    /* Call an ACL from an expansion.  We feed data in via $acl_arg1 - $acl_arg9.
     If the ACL returns acceptance we return content set by "message ="
     There is currently no limit on recursion; this would have us call
     acl_check_internal() directly and get a current level from somewhere.
@@ -3652,11 +3662,11 @@ while (*s != 0)
     case EITEM_ACL:
       {
       int rc;
-      uschar *sub[2];
+      uschar *sub[10];	/* name + arg1-arg9, must match number of acl_arg[] */
       uschar *new_yield;
       uschar *user_msg;
       uschar *log_msg;
-      switch(read_subs(sub, 2, 1, &s, skipping, TRUE, US"acl"))
+      switch(read_subs(sub, 10, 1, &s, skipping, TRUE, US"acl"))
         {
         case 1: goto EXPAND_FAILED_CURLY;
         case 2:
@@ -3664,10 +3674,18 @@ while (*s != 0)
         }
       if (skipping) continue;
 
-      DEBUG(D_expand)
-        debug_printf("expanding: acl: %s  arg: %s\n", sub[0], sub[1]?sub[1]:US"<none>");
+      for (rc = 1; rc < sizeof(sub)/sizeof(*sub) && sub[rc]; rc++)
+        acl_arg[rc-1] = sub[rc];
+      acl_narg = rc-1;
+      while (rc < sizeof(sub)/sizeof(*sub))
+        acl_arg[rc++ - 1] = NULL;
 
-      deliver_address_data = sub[1];
+      DEBUG(D_expand)
+        debug_printf("expanding: acl: %s  arg: %s%s\n",
+	  sub[0],
+	  acl_narg>0 ? sub[1]   : US"<none>",
+	  acl_narg>1 ? " +more" : "");
+
       switch(rc = acl_check(ACL_WHERE_EXPANSION, NULL, sub[0], &user_msg, &log_msg))
 	{
 	case OK:

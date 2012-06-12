@@ -134,6 +134,8 @@ extern uschar **address_expansions[ADDRESS_EXPANSIONS_COUNT];
 extern BOOL    accept_8bitmime;        /* Allow *BITMIME incoming */
 extern header_line *acl_added_headers; /* Headers added by an ACL */
 extern tree_node *acl_anchor;          /* Tree of named ACLs */
+extern uschar *acl_arg[9];             /* Argument to ACL call */
+extern int     acl_narg;               /* Number of arguments to ACL call */
 extern uschar *acl_not_smtp;           /* ACL run for non-SMTP messages */
 #ifdef WITH_CONTENT_SCAN
 extern uschar *acl_not_smtp_mime;      /* For MIME parts of ditto */

@@ -87,9 +87,10 @@ Version 4.81
  8. New expansion operators ${listnamed:name} to get the content of a named list
     and ${listcount:string} to count the items in a list.
 
- 9. New expansion item ${acl {name}{argument}} to call an ACL.  The argument can
-    be accessed by the ACL in $address_data.  The expansion result is set by
-    a "message =" modifier and an "accept" return from the ACL.
+ 9. New expansion item ${acl {name}{arg}...} to call an ACL.  The argument can
+    be accessed by the ACL in $acl_arg1 to $acl_arg9.  $acl_narg will be the
+    number of arguments. The expansion result is set by a "message =" modifier
+    and an "accept" return from the ACL.
 
 Version 4.80
 ------------

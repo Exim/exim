@@ -91,6 +91,8 @@ acl: ${acl}
 acl: ${acl {a_bad}}
 acl: ${acl {a_ret}}
 acl: ${acl {a_ret}{person@dom.ain}}
+acl: ${acl {a_ret}{firstarg}{secondarg}}
+acl: ${acl {a_ret}{arg with spaces}}
 acl: ${acl {a_none}}
 acl: ${acl {a_none}{person@dom.ain}}
 acl: ${acl {a_deny}}
